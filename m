@@ -1,219 +1,274 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [RFC PATCH 1/2] PCI: Add PCI device flag
- PCI_DEV_FLAGS_BRIDGE_SKIP_ALIAS
-Date: Thu, 18 Feb 2016 07:14:50 -0700
-Message-ID: <20160218071450.6b65676e@t450s.home>
-References: <1455487501-28630-1-git-send-email-jchandra@broadcom.com>
-	<20160215182023.GB12641@localhost>
-	<20160215123901.1600f86f@t450s.home>
-	<CAKc_7PUtm7443qv40DNWKqJneWnVT6Do7s7vr_hOerkGLOgkJg@mail.gmail.com>
-	<20160216152529.33855bc1@t450s.home>
-	<CAKc_7PVExWkm0NqoGcf4d5bSPEcbhzn45oBgYRc7xZ8CJg+WEw@mail.gmail.com>
-	<20160217082828.3d164080@t450s.home>
-	<CAKc_7PXwAUVc1=Sh2B9+BFts2bDGObtQCMCBg-bYrKfjE9iwVw@mail.gmail.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC v3 05/15] iommu/arm-smmu: implement
+	alloc/free_reserved_iova_domain
+Date: Thu, 18 Feb 2016 16:22:28 +0100
+Message-ID: <56C5E1B4.20905@linaro.org>
+References: <1455264797-2334-1-git-send-email-eric.auger@linaro.org>
+	<1455264797-2334-6-git-send-email-eric.auger@linaro.org>
+	<56C5A65D.5010401@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <CAKc_7PXwAUVc1=Sh2B9+BFts2bDGObtQCMCBg-bYrKfjE9iwVw@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jayachandran Chandrashekaran Nair <jayachandran.chandrashekaran@broadcom.com>
-Cc: Bjorn Helgaas <helgaas@kernel.org>, Jayachandran C <jchandra@broadcom.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <56C5A65D.5010401-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Thomas.Lendacky-5C7GfCeVMHo@public.gmane.org, brijesh.singh-5C7GfCeVMHo@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, sherry.hurwitz-5C7GfCeVMHo@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 18 Feb 2016 18:57:12 +0530
-Jayachandran Chandrashekaran Nair
-<jayachandran.chandrashekaran@broadcom.com> wrote:
-
-> On Wed, Feb 17, 2016 at 8:58 PM, Alex Williamson
-> <alex.williamson@redhat.com> wrote:
-> > On Wed, 17 Feb 2016 17:15:09 +0530
-> > Jayachandran Chandrashekaran Nair
-> > <jayachandran.chandrashekaran@broadcom.com> wrote:
-> >  
-> >> On Wed, Feb 17, 2016 at 3:55 AM, Alex Williamson
-> >> <alex.williamson@redhat.com> wrote:  
-> >> > On Wed, 17 Feb 2016 02:38:24 +0530
-> >> > Jayachandran Chandrashekaran Nair
-> >> > <jayachandran.chandrashekaran@broadcom.com> wrote:
-> >> >  
-> >> >> On Tue, Feb 16, 2016 at 1:09 AM, Alex Williamson
-> >> >> <alex.williamson@redhat.com> wrote:  
-> >> >> > On Mon, 15 Feb 2016 12:20:23 -0600
-> >> >> > Bjorn Helgaas <helgaas@kernel.org> wrote:
-> >> >> >  
-> >> >> >> [+cc Alex, iommu list]
-> >> >> >>
-> >> >> >> On Mon, Feb 15, 2016 at 03:35:00AM +0530, Jayachandran C wrote:  
-> >> >> >> > Add a new flag PCI_DEV_FLAGS_BRIDGE_SKIP_ALIAS to indicate bridges
-> >> >> >> > that should not be considered during DMA alias search. This is
-> >> >> >> > to support hardware (in this case Broadcom Vulcan PCIe subsystem)
-> >> >> >> > that has internal bridges which have either missing or wrong PCIe
-> >> >> >> > capabilities.  
-> >> >> >
-> >> >> > I figured this would come at some point, the right answer is of course
-> >> >> > to follow the PCIe spec and implement the required PCIe capability in
-> >> >> > the hardware.  
-> >> >>
-> >> >> There are  PCIe controllers on the chip that follows the spec, the issue is
-> >> >> how it is integrated to the northbridge (equivalent) on the chip, I have
-> >> >> tried to explain it below.
-> >> >>  
-> >> >> >> This needs more explanation, like what exactly is wrong with this
-> >> >> >> device?  A missing PCIe capability might cause other problems.
-> >> >> >>
-> >> >> >> What problem does this fix?  Without these patches, do we merely add
-> >> >> >> aliases that are unnecessary?  Do we crash because something goes
-> >> >> >> wrong in the pci_pcie_type() switch because of the incorrect
-> >> >> >> capability?  
-> >> >>
-> >> >> Here's how (for example) how the PCI enumeration of a 2 node Vulcan
-> >> >> processor will look like:
-> >> >>
-> >> >>
-> >> >> [0] +-0.0.0--[1]---+--1.a.0----[2]-----2.0.0---[3]----3.0.0
-> >> >>     |              +--1.a.1----[4]-----4.0.0---[5]----5.0.0
-> >> >>     |              .
-> >> >>     |              ... etc...
-> >> >>     |
-> >> >>     +-0.0.1--[10]--+-10.a.0----[11]---11.0.0---[12]---12.0.0
-> >> >>                    +-10.a.1----[13]---13.0.0---[14]---14.0.0
-> >> >>                    .
-> >> >>                    ... etc...  
-> >> >
-> >> > So we have:
-> >> >
-> >> >     "Glue Bridge"---"Glue Bridges"---Root Ports---Endpoints
-> >> >       (no pcie)      (pci/x-pcie)  
-> >>
-> >> The top level is one glue bridge per chip in a multi-chip board,
-> >> but otherwise this is accurate.
-> >>  
-> >> >>
-> >> >> The devices 0.0.x and x.a.x are glue bridges that are there to
-> >> >> bring the real PCIe controllers (pcie cap type 4) 2.0.0, 4.0.0,
-> >> >> 11.0.0, 13.0.0 under a single PCI hierarchy. The x.a.x bridges
-> >> >> have a PCIe capability (type 8) and 0.0.x does not have any pcie
-> >> >> capability.
-> >> >>
-> >> >> In case of Vulcan, both the GICv3 ITS driver code and the SMMUv3
-> >> >> driver code does dma alias walk to find the device id to use
-> >> >> in ITS and SMMU. In both cases it will ignore the x.0.0 bridges
-> >> >> since they are type root port, but will continue on up and end
-> >> >> up with incorrect device id.
-> >> >>
-> >> >> The flag I have added is to make the pci_for_each_dma_alias()
-> >> >> ignore the last 2 levels of glue/internal bridges.  
-> >> >
-> >> > Per the PCIe spec, I'm not even sure what you have is a valid
-> >> > hierarchy, root ports sit on root complexes, not behind a PCI-to-PCIe
-> >> > bridge.  So really you're pretending that the downstream "glue bridge"
-> >> > is your host bridge and therefore root complex, but the PCI topology
-> >> > would clearly dictate that the top-most bus is conventional PCI and
-> >> > therefore everything is an alias of everything else and the DMA alias
-> >> > code is doing exactly what it should.  
-> >>
-> >> Yes, I am not arguing that there is any issue in the current code. I
-> >> am trying to figure out the correct way to implement the quirk. We
-> >> have to support the hardware we have, not the hardware we want to
-> >> have :)
-> >>  
-> >> > Also note that the caller of pci_for_each_dma_alias() owns the callback
-> >> > function triggered for each alias, that function could choose to prune
-> >> > out these "glue bridges" itself if that's the appropriate thing to do.  
-> >>
-> >> I had implemented this first, but moved to the current approach because
-> >> it is needed in multiple places. The problem is: "On vulcan, while
-> >> going up the pcie bus heirarchy for finding aliases, skip the glue bridges",
-> >> So the logical place to put the fix is in pci_for_each_dma_alias()
-> >>  
-> >> > Where do the SMMU and ITS actually reside in the above diagram?  You
-> >> > can use the callout function to stop the traversal anywhere you wish,
-> >> > it's free to return a -errno to stop or positive number, which the
-> >> > caller can interpret as error or non-failure stop condition.  
-> >>
-> >> The SMMU (for translation requests) and ITS (for MSI writes for
-> >> interrupts) are connected directly to the proper PCIe controller
-> >> (2/4/11/13.0.0 above)  
-> >
-> >
-> > If the translation unit is on the root port then DMA aliases upstream of
-> > the translation unit are irrelevant and the callback function should
-> > stop the traversal at that point.
-> >  
-> >> > You could even think about changing what Linux considers to be the host
-> >> > bridge.  Maybe these glue bridges shouldn't even be visible to Linux,
-> >> > would that also solve the issue with the broken BAR?  
-> >>
-> >> The glue bridges have to seen by Linux for assigning resources like
-> >> bus ranges and memory windows. So these are required bridges in
-> >> the topology and will work with the standard linux code
-> >> (provided we skip them for aliases, and and ignore the BAR).
-> >>  
-> >> >> > The change takes the same code path as it would for a real PCIe bridge
-> >> >> > port (downstream/upstream/root), which means they want to skip adding
-> >> >> > this bridge as an alias of the device.  So we're adding in aliases that
-> >> >> > don't exist, the bridge itself.
-> >> >> >
-> >> >> > If anything I'd suggest a flag that actually tries to address the
-> >> >> > problem rather than a symptom of the problem.  For example, maybe the
-> >> >> > flag should be PCI_DEV_FLAGS_IS_PCIE.  Maybe pci_is_pcie() should even
-> >> >> > take that into account.  That has some trickle through for
-> >> >> > pci_pcie_type() and all the accessor functions, but maybe it's a
-> >> >> > cleaner solution overall (or maybe it explodes further).  Thanks,  
-> >> >>
-> >> >> I didn't really want to mark the glue bridges as PCIe or have fake
-> >> >> PCIe capability there, the obvious simple solution was to add
-> >> >> the flag PCI_DEV_FLAGS_BRIDGE_SKIP_ALIAS
-> >> >>
-> >> >> Any suggestions/comments on how to do this better would be welcome.  
-> >> >
-> >> > I definitely don't think either flag idea is the right solution, I
-> >> > think you've actually already got the tools you need to solve it by
-> >> > putting the intelligence in the callback function or by going further
-> >> > down the path of pretending the glue bridge is really a host bridge.  
-> >>
-> >> If I understand your suggestion, I need to fake the PCIe capability
-> >> for the glue bridges, which may be reasonable for the second level.
-> >> But for the first level, there is no pcie capability and faking that
-> >> becomes more difficult.  
-> >
-> > That's not what I'm suggesting.
-> >  
-> >> If the concern is adding a flag for just one platform, I can check
-> >> for the vendor ID/device ID in the pci_for_each_dma_alias()
-> >> function, which would be slightly uglier, but still a simple and
-> >> maintainable solution.
-> >>
-> >> Another option is to break the pci_for_each_dma_alias when it
-> >> reaches to root port (for vulcan), this too can be done without
-> >> a flag.  
-> >
-> > Exactly, this can be done by the callback function provided on vulcan
-> > systems and requires no core changes.  The IOMMU needs to provide a
-> > callback function that makes sense for collecting aliases on the
-> > specific platform.  If the translation unit is not on the root bus, the
-> > callback function should stop the topology walk earlier.  Thanks,  
+Hi Robin,
+On 02/18/2016 12:09 PM, Robin Murphy wrote:
+> Hi Eric,
 > 
-> Fixing every callback function is going to be painful and ugly.
-> I will have to change drivers/irqchip/irq-gic-v3-its-pci-msi.c,
-> drivers/pci/msi.c, and drivers/iommu/arm-smmu-v3.c with the
-> same check for vendor/device ids and return early.
+> On 12/02/16 08:13, Eric Auger wrote:
+>> Implement alloc/free_reserved_iova_domain for arm-smmu. we use
+>> the iova allocator (iova.c). The iova_domain is attached to the
+>> arm_smmu_domain struct. A mutex is introduced to protect it.
 > 
-> I can update the patch to check the vendor/device id in the
-> case of ROOT_PORT in pci_for_each_dma_alias(). If you
-> think that will not be acceptable, I don't have any reasonable
-> options left.
+> The IOMMU API currently leaves IOVA management entirely up to the caller
+I agree
 
-I've never known there to necessarily be a correlation between the
-easiest solution and the correct one, but I think there's probably
-still an easy and clean solution not far from your original approach.
-pci_for_each_dma_alias() is meant to collect all the aliases for a
-given device.  It stops at the root bus both because it can't go
-further and because on many platforms, that's where the translation
-unit lives.  If we want to have a common and easy way to stop it above
-the root bus then we could flag a device as being the DMA alias root
-and exit at that point.  I think that makes more sense architecturally
-than some mystery devices flagged to skip reporting an alias.  Thanks,
+> - VFIO is already managing its own IOVA space, so what warrants this
+> being pushed all the way down to the IOMMU driver?
+In practice, with upstreamed code, VFIO uses IOVA = GPA provided by the
+user-space (corresponding to RAM regions) and does not allocate IOVA
+itself. The IOVA is passed through the VFIO_IOMMU_MAP_DMA ioctl.
 
-Alex
+With that series we propose that the user-space provides a pool of
+unused IOVA that can be used to map Host physical addresses (MSI frame
+address). So effectively someone needs to use an iova allocator to
+allocate within that window. This can be vfio or the iommu driver. But
+in both cases this is a new capability introduced in either component.
+
+In the first version of this series
+(https://lkml.org/lkml/2016/1/26/371) I put this iova allocation in
+vfio_iommu_type1. the vfio-pci driver then was using this vfio internal
+API to overwrite the physical address written in the PCI device by the
+MSI controller.
+
+However I was advised by Alex to move things at a lower level
+(http://www.spinics.net/lists/kvm/msg126809.html), IOMMU core or irq
+remapping driver; also the MSI controller should directly program the
+IOVA address in the PCI device.
+
+On ARM, irq remapping is somehow abstracted in ITS driver. Also we need
+that functionality in GICv2M so I eventually chose to put the
+functionality in the IOMMU driver. Since iova.c is not compiled by
+everyone and since that functionality is needed for a restricted set of
+architectures, ARM/ARM64 & PowerPC I chose to implement this in arhc
+specific code, for the time being in arm-smmu.c.
+
+This allows the MSI controller to interact with the IOMMU API to bind
+its MSI address. I think it may be feasible to have the MSI controller
+interact with the vfio external user API but does it look better?
+
+Assuming we can agree on the relevance of adding that functionality at
+IOMMU API level, maybe we can create a separate .c file to share code
+between arm-smmu and arm-smmu-v3.c? or even I could dare to add this
+into the iommu generic part. What is your opinion?
+
+ All I see here is
+> abstract code with no hardware-specific details that'll have to be
+> copy-pasted into other IOMMU drivers (e.g. SMMUv3), which strongly
+> suggests it's the wrong place to do it.
+> 
+> As I understand the problem, VFIO has a generic "configure an IOMMU to
+> point at an MSI doorbell" step to do in the process of attaching a
+> device, which hasn't needed implementing yet due to VT-d's
+> IOMMU_CAP_I_AM_ALSO_ACTUALLY_THE_MSI_CONTROLLER_IN_DISGUISE flag, which
+> most of us have managed to misinterpret so far.
+
+Maybe I misunderstood the above comment but I would say this is the
+contrary: ie up to now, VFIO did not need to care about that issue since
+MSI addresses were not mapped in the IOMMU on x86. Now they need to be
+so we need to extend an existing API, would it be VFIO external user API
+or IOMMU API. But please correct if I misunderstood you.
+
+Also I found it more practical to have a all-in-one API doing both the
+iova allocation and binding (dma_map_single like). the user of the API
+does not have to care about the iommu page size.
+
+Thanks for your time and looking forward to reading from you!
+
+Best Regards
+
+Eric
+
+ AFAICS all the IOMMU
+> driver should need to know about this is an iommu_map() call (which will
+> want a slight extension[1] to make things behave properly). We should be
+> fixing the abstraction to be less x86-centric, not hacking up all the
+> ARM drivers to emulate x86 hardware behaviour in software.
+> 
+> Robin.
+> 
+> [1]:http://article.gmane.org/gmane.linux.kernel.cross-arch/30833
+> 
+>> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>>
+>> ---
+>> v2 -> v3:
+>> - select IOMMU_IOVA when ARM_SMMU or ARM_SMMU_V3 is set
+>>
+>> v1 -> v2:
+>> - formerly implemented in vfio_iommu_type1
+>> ---
+>>   drivers/iommu/Kconfig    |  2 ++
+>>   drivers/iommu/arm-smmu.c | 87
+>> +++++++++++++++++++++++++++++++++++++++---------
+>>   2 files changed, 74 insertions(+), 15 deletions(-)
+>>
+>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+>> index a1e75cb..1106528 100644
+>> --- a/drivers/iommu/Kconfig
+>> +++ b/drivers/iommu/Kconfig
+>> @@ -289,6 +289,7 @@ config ARM_SMMU
+>>       bool "ARM Ltd. System MMU (SMMU) Support"
+>>       depends on (ARM64 || ARM) && MMU
+>>       select IOMMU_API
+>> +    select IOMMU_IOVA
+>>       select IOMMU_IO_PGTABLE_LPAE
+>>       select ARM_DMA_USE_IOMMU if ARM
+>>       help
+>> @@ -302,6 +303,7 @@ config ARM_SMMU_V3
+>>       bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
+>>       depends on ARM64 && PCI
+>>       select IOMMU_API
+>> +    select IOMMU_IOVA
+>>       select IOMMU_IO_PGTABLE_LPAE
+>>       select GENERIC_MSI_IRQ_DOMAIN
+>>       help
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index c8b7e71..f42341d 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -42,6 +42,7 @@
+>>   #include <linux/platform_device.h>
+>>   #include <linux/slab.h>
+>>   #include <linux/spinlock.h>
+>> +#include <linux/iova.h>
+>>
+>>   #include <linux/amba/bus.h>
+>>
+>> @@ -347,6 +348,9 @@ struct arm_smmu_domain {
+>>       enum arm_smmu_domain_stage    stage;
+>>       struct mutex            init_mutex; /* Protects smmu pointer */
+>>       struct iommu_domain        domain;
+>> +    struct iova_domain        *reserved_iova_domain;
+>> +    /* protects reserved domain manipulation */
+>> +    struct mutex            reserved_mutex;
+>>   };
+>>
+>>   static struct iommu_ops arm_smmu_ops;
+>> @@ -975,6 +979,7 @@ static struct iommu_domain
+>> *arm_smmu_domain_alloc(unsigned type)
+>>           return NULL;
+>>
+>>       mutex_init(&smmu_domain->init_mutex);
+>> +    mutex_init(&smmu_domain->reserved_mutex);
+>>       spin_lock_init(&smmu_domain->pgtbl_lock);
+>>
+>>       return &smmu_domain->domain;
+>> @@ -1446,22 +1451,74 @@ out_unlock:
+>>       return ret;
+>>   }
+>>
+>> +static int arm_smmu_alloc_reserved_iova_domain(struct iommu_domain
+>> *domain,
+>> +                           dma_addr_t iova, size_t size,
+>> +                           unsigned long order)
+>> +{
+>> +    unsigned long granule, mask;
+>> +    struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>> +    int ret = 0;
+>> +
+>> +    granule = 1UL << order;
+>> +    mask = granule - 1;
+>> +    if (iova & mask || (!size) || (size & mask))
+>> +        return -EINVAL;
+>> +
+>> +    if (smmu_domain->reserved_iova_domain)
+>> +        return -EEXIST;
+>> +
+>> +    mutex_lock(&smmu_domain->reserved_mutex);
+>> +
+>> +    smmu_domain->reserved_iova_domain =
+>> +        kzalloc(sizeof(struct iova_domain), GFP_KERNEL);
+>> +    if (!smmu_domain->reserved_iova_domain) {
+>> +        ret = -ENOMEM;
+>> +        goto unlock;
+>> +    }
+>> +
+>> +    init_iova_domain(smmu_domain->reserved_iova_domain,
+>> +             granule, iova >> order, (iova + size - 1) >> order);
+>> +
+>> +unlock:
+>> +    mutex_unlock(&smmu_domain->reserved_mutex);
+>> +    return ret;
+>> +}
+>> +
+>> +static void arm_smmu_free_reserved_iova_domain(struct iommu_domain
+>> *domain)
+>> +{
+>> +    struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>> +    struct iova_domain *iovad = smmu_domain->reserved_iova_domain;
+>> +
+>> +    if (!iovad)
+>> +        return;
+>> +
+>> +    mutex_lock(&smmu_domain->reserved_mutex);
+>> +
+>> +    put_iova_domain(iovad);
+>> +    kfree(iovad);
+>> +
+>> +    mutex_unlock(&smmu_domain->reserved_mutex);
+>> +}
+>> +
+>>   static struct iommu_ops arm_smmu_ops = {
+>> -    .capable        = arm_smmu_capable,
+>> -    .domain_alloc        = arm_smmu_domain_alloc,
+>> -    .domain_free        = arm_smmu_domain_free,
+>> -    .attach_dev        = arm_smmu_attach_dev,
+>> -    .detach_dev        = arm_smmu_detach_dev,
+>> -    .map            = arm_smmu_map,
+>> -    .unmap            = arm_smmu_unmap,
+>> -    .map_sg            = default_iommu_map_sg,
+>> -    .iova_to_phys        = arm_smmu_iova_to_phys,
+>> -    .add_device        = arm_smmu_add_device,
+>> -    .remove_device        = arm_smmu_remove_device,
+>> -    .device_group        = arm_smmu_device_group,
+>> -    .domain_get_attr    = arm_smmu_domain_get_attr,
+>> -    .domain_set_attr    = arm_smmu_domain_set_attr,
+>> -    .pgsize_bitmap        = -1UL, /* Restricted during device attach */
+>> +    .capable            = arm_smmu_capable,
+>> +    .domain_alloc            = arm_smmu_domain_alloc,
+>> +    .domain_free            = arm_smmu_domain_free,
+>> +    .attach_dev            = arm_smmu_attach_dev,
+>> +    .detach_dev            = arm_smmu_detach_dev,
+>> +    .map                = arm_smmu_map,
+>> +    .unmap                = arm_smmu_unmap,
+>> +    .map_sg                = default_iommu_map_sg,
+>> +    .iova_to_phys            = arm_smmu_iova_to_phys,
+>> +    .add_device            = arm_smmu_add_device,
+>> +    .remove_device            = arm_smmu_remove_device,
+>> +    .device_group            = arm_smmu_device_group,
+>> +    .domain_get_attr        = arm_smmu_domain_get_attr,
+>> +    .domain_set_attr        = arm_smmu_domain_set_attr,
+>> +    .alloc_reserved_iova_domain    =
+>> arm_smmu_alloc_reserved_iova_domain,
+>> +    .free_reserved_iova_domain    = arm_smmu_free_reserved_iova_domain,
+>> +    /* Page size bitmap, restricted during device attach */
+>> +    .pgsize_bitmap            = -1UL,
+>>   };
+>>
+>>   static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>>
+> 
