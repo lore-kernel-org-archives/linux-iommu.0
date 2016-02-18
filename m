@@ -1,74 +1,55 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: RFC: extend IOMMU attributes
-Date: Thu, 18 Feb 2016 16:21:45 +0000
-Message-ID: <20160218162145.GB16883@arm.com>
-References: <HE1PR04MB1641F22E38710B68F4ED891F8DAF0@HE1PR04MB1641.eurprd04.prod.outlook.com>
+From: Eric Auger <eric.auger@linaro.org>
+Subject: Re: [RFC v3 07/15] iommu: iommu_get/put_single_reserved
+Date: Thu, 18 Feb 2016 17:42:26 +0100
+Message-ID: <56C5F472.1020003@linaro.org>
+References: <1455264797-2334-1-git-send-email-eric.auger@linaro.org>
+ <1455264797-2334-8-git-send-email-eric.auger@linaro.org>
+ <20160218110616.05108071@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <HE1PR04MB1641F22E38710B68F4ED891F8DAF0-6LN7OEpIatU5tNmRkpaxD89NdZoXdze2vxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>
-Cc: Peter Newton <peter.newton-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Varun Sethi <V.Sethi-3arQi8VN3Tc@public.gmane.org>, Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <20160218110616.05108071@arm.com>
+Sender: kvm-owner@vger.kernel.org
+To: Marc Zyngier <marc.zyngier@arm.com>
+Cc: eric.auger@st.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, suravee.suthikulpanit@amd.com, patches@linaro.org, linux-kernel@vger.kernel.org, Manish.Jaggi@caviumnetworks.com, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, sherry.hurwitz@amd.com, brijesh.singh@amd.com, leo.duran@amd.com, Thomas.Lendacky@amd.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Stuart,
-
-On Thu, Feb 18, 2016 at 04:16:26PM +0000, Stuart Yoder wrote:
-> We are implementing support for some specialized NXP SoC network
-> devices and have the desire to extend the mapping attributes beyond
-> those currently in iommu.h. (I see there is a recent proposal to
-> add an IOMMU_MMIO flag)
+Hello,
+On 02/18/2016 12:06 PM, Marc Zyngier wrote:
+> On Fri, 12 Feb 2016 08:13:09 +0000
+> Eric Auger <eric.auger@linaro.org> wrote:
 > 
-> What we have right now in Linux is a least-common-denominator set of
-> attributes, while for the ARM SMMU there is a much richer set of
-> attributes that seem useful to support. Specifically, we have one
-> SoC device we're dealing with right now that is the target of DMA
-> that functionally requires a "cacheable, non-shareable" attribute
-> in its SMMU mapping.
+>> This patch introduces iommu_get/put_single_reserved.
+>>
+>> iommu_get_single_reserved allows to allocate a new reserved iova page
+>> and map it onto the physical page that contains a given physical address.
+>> It returns the iova that is mapped onto the provided physical address.
+>> Hence the physical address passed in argument does not need to be aligned.
+>>
+>> In case a mapping already exists between both pages, the IOVA mapped
+>> to the PA is directly returned.
+>>
+>> Each time an iova is successfully returned a binding ref count is
+>> incremented.
+>>
+>> iommu_put_single_reserved decrements the ref count and when this latter
+>> is null, the mapping is destroyed and the iova is released.
 > 
-> In addition, there are many other attributes such as r/w allocate
-> hints, transient hints, write-back/write-thru, etc in the SMMU.
+> I wonder if there is a requirement for the caller to find out about the
+> size of the mapping, or to impose a given size... MSIs clearly do not
+> have that requirement (this is always a 32bit value), but since. 
+> allocations usually pair address and size, I though I'd ask...
+Yes. Currently this only makes sure the host PA is mapped and returns
+the corresponding IOVA. It is part of the discussion we need to have on
+the API besides the problematic of which API it should belong to.
+
+Thanks
+
+Eric
 > 
-> We wanted to see what your thinking is with respect to the
-> direction the Linux IOMMU layer will head over the longer term with
-> respect to attributes.
+> Thanks,
 > 
-> Is there anything problematic with continuing to grow the
-> attributes in iommu.h?...e.g.:
+> 	M.
 > 
->  #define IOMMU_READ            (1 << 0)
->  #define IOMMU_WRITE           (1 << 1)
-> -#define IOMMU_CACHE           (1 << 2) /* DMA cache coherency */
-> +#define IOMMU_CACHE_COHERENT  (1 << 2) /* cacheable and coherent */
->  #define IOMMU_NOEXEC          (1 << 3)
->  #define IOMMU_MMIO            (1 << 4) /* e.g. things like MSI doorbells */
-> +#define IOMMU_CACHEABLE       (1 << 5) /* cacheable, not coherent */
 
-What does that even mean?
-
-> +#define IOMMU_CACHE_ALLOCATE  (1 << 6) /* hint to allocate in the cache */
-> 
-> Also, are we willing to let somewhat architecture specific flags
-> onto that list?  For, example the ARM 'transient' hint.
-
-If we're going to support fine-grained attribute control, I think it needs
-to be done in a page-table specific manner. That is, io-pgtable-arm could
-provide those attribute controls which feature in the ARMv8 architecture...
-
-...but that brings me onto my next question: Who on Earth is actually
-going to provide these attributes to the IOMMU API?
-
-There seems to be a missing piece.
-
-Will
