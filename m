@@ -1,59 +1,42 @@
-From: Marc Zyngier <marc.zyngier@arm.com>
-Subject: Re: [RFC v3 07/15] iommu: iommu_get/put_single_reserved
-Date: Thu, 18 Feb 2016 16:51:05 +0000
-Message-ID: <56C5F679.8000002@arm.com>
-References: <1455264797-2334-1-git-send-email-eric.auger@linaro.org>
- <1455264797-2334-8-git-send-email-eric.auger@linaro.org>
- <20160218110616.05108071@arm.com> <56C5F472.1020003@linaro.org>
+From: Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+Subject: Re: [PATCH v8 3/5] memory: mediatek: Add SMI driver
+Date: Thu, 18 Feb 2016 17:50:51 +0100
+Message-ID: <1455814251.3937.27.camel@pengutronix.de>
+References: <1453781562-23556-1-git-send-email-yong.wu@mediatek.com>
+	 <1453781562-23556-4-git-send-email-yong.wu@mediatek.com>
+	 <56ADE959.2050309@gmail.com> <20160216141059.GT18805@8bytes.org>
+	 <56C340FB.1050607@arm.com> <20160216161009.GW18805@8bytes.org>
+	 <20160216162000.GI14509@arm.com> <20160216162641.GY18805@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56C5F472.1020003@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Eric Auger <eric.auger@linaro.org>
-Cc: eric.auger@st.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, suravee.suthikulpanit@amd.com, patches@linaro.org, linux-kernel@vger.kernel.org, Manish.Jaggi@caviumnetworks.com, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, sherry.hurwitz@amd.com, brijesh.singh@amd.com, leo.duran@amd.com, Thomas.Lendacky@amd.com
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20160216162641.GY18805-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 18/02/16 16:42, Eric Auger wrote:
-> Hello,
-> On 02/18/2016 12:06 PM, Marc Zyngier wrote:
->> On Fri, 12 Feb 2016 08:13:09 +0000
->> Eric Auger <eric.auger@linaro.org> wrote:
->>
->>> This patch introduces iommu_get/put_single_reserved.
->>>
->>> iommu_get_single_reserved allows to allocate a new reserved iova page
->>> and map it onto the physical page that contains a given physical address.
->>> It returns the iova that is mapped onto the provided physical address.
->>> Hence the physical address passed in argument does not need to be aligned.
->>>
->>> In case a mapping already exists between both pages, the IOVA mapped
->>> to the PA is directly returned.
->>>
->>> Each time an iova is successfully returned a binding ref count is
->>> incremented.
->>>
->>> iommu_put_single_reserved decrements the ref count and when this latter
->>> is null, the mapping is destroyed and the iova is released.
->>
->> I wonder if there is a requirement for the caller to find out about the
->> size of the mapping, or to impose a given size... MSIs clearly do not
->> have that requirement (this is always a 32bit value), but since. 
->> allocations usually pair address and size, I though I'd ask...
-> Yes. Currently this only makes sure the host PA is mapped and returns
-> the corresponding IOVA. It is part of the discussion we need to have on
-> the API besides the problematic of which API it should belong to.
+Hi Joerg,
 
-One of the issues I have with the API at the moment is that there is no
-control on the page size. Imagine you have allocated a 4kB IOVA window
-for your MSI, but your IOMMU can only map 64kB (not unreasonable to
-imagine on arm64). What happens then?
+Am Dienstag, den 16.02.2016, 17:26 +0100 schrieb Joerg Roedel:
+> On Tue, Feb 16, 2016 at 04:20:00PM +0000, Will Deacon wrote:
+> > I'm more than happy to bake a branch containing all the page table stuff,
+> > but Yong's stuff depends on it so I'll work with whatever is easiest for
+> > you.
+> 
+> Okay, to the best is if you would collect all the page table patches and
+> send me a pull-request. I pull that into my tree then and put Yong's
+> stuff on-top.
 
-Somehow, userspace should be told about it, one way or another.
+could you provide a branch that I may then pull in, stack the
+mediatek-drm driver patches (that depend on the SMI driver) on top and
+have them merged via drm-next?
 
-Thanks,
+regards
+Philipp
 
-	M.
--- 
-Jazz is not dead. It just smells funny...
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
