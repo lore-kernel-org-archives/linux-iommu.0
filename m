@@ -1,92 +1,84 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH V4 4/6] perf/amd/iommu: Introduce get_iommu_bnk_cnt_evt_idx
-Date: Thu, 18 Feb 2016 12:45:47 +0100
-Message-ID: <20160218114547.GB28866@pd.tnic>
-References: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1455182127-17551-5-git-send-email-Suravee.Suthikulpanit@amd.com>
+From: "Sricharan" <sricharan@codeaurora.org>
+Subject: RE: [PATCH v2 2/4] iommu/arm-smmu: Invoke DT probe from arm_smmu_of_setup()
+Date: Thu, 18 Feb 2016 17:30:08 +0530
+Message-ID: <001f01d16a43$ef47d3b0$cdd77b10$@codeaurora.org>
+References: <1454908652-15317-1-git-send-email-anup.patel@broadcom.com> <1454908652-15317-3-git-send-email-anup.patel@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1455182127-17551-5-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1454908652-15317-3-git-send-email-anup.patel@broadcom.com>
+Content-Language: en-us
+Sender: linux-kernel-owner@vger.kernel.org
+To: 'Anup Patel' <anup.patel@broadcom.com>, 'Catalin Marinas' <catalin.marinas@arm.com>, 'Joerg Roedel' <joro@8bytes.org>, 'Will Deacon' <will.deacon@arm.com>, 'Robin Murphy' <Robin.Murphy@arm.com>, 'Linux IOMMU' <iommu@lists.linux-foundation.org>, 'Linux ARM Kernel' <linux-arm-kernel@lists.infradead.org>
+Cc: 'Mark Rutland' <mark.rutland@arm.com>, 'Device Tree' <devicetree@vger.kernel.org>, 'Scott Branden' <sbranden@broadcom.com>, 'Pawel Moll' <pawel.moll@arm.com>, 'Ian Campbell' <ijc+devicetree@hellion.org.uk>, 'Ray Jui' <rjui@broadcom.com>, 'Linux Kernel' <linux-kernel@vger.kernel.org>, 'Vikram Prakash' <vikramp@broadcom.com>, 'Rob Herring' <robh+dt@kernel.org>, 'BCM Kernel Feedback' <bcm-kernel-feedback-list@broadcom.com>, 'Kumar Gala' <galak@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 11, 2016 at 04:15:25PM +0700, Suravee Suthikulpanit wrote:
-> Introduce a helper function to calculate bit-index for assigning
-> performance counter assignment.
+Hi,
+
+> -----Original Message-----
+> From: linux-arm-kernel [mailto:linux-arm-kernel-
+> bounces@lists.infradead.org] On Behalf Of Anup Patel
+> Sent: Monday, February 08, 2016 10:48 AM
+> To: Catalin Marinas; Joerg Roedel; Will Deacon; Robin Murphy; Sricharan R;
+> Linux IOMMU; Linux ARM Kernel
+> Cc: Mark Rutland; Device Tree; Scott Branden; Pawel Moll; Ian Campbell;
+Ray
+> Jui; Linux Kernel; Vikram Prakash; Rob Herring; BCM Kernel Feedback; Kumar
+> Gala; Anup Patel
+> Subject: [PATCH v2 2/4] iommu/arm-smmu: Invoke DT probe from
+> arm_smmu_of_setup()
 > 
-> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> The SMMUv1/SMMUv2 driver is initialized very early using the
+> IOMMU_OF_DECLARE() but the actual platform device is probed via normal
+> DT probing.
+> 
+> This patch uses of_platform_device_create() from arm_smmu_of_setup() to
+> ensure that SMMU platform device is probed immediately.
+> 
+> Signed-off-by: Anup Patel <anup.patel@broadcom.com>
 > ---
->  arch/x86/events/amd/iommu.c | 19 ++++++++++++++-----
->  1 file changed, 14 insertions(+), 5 deletions(-)
+>  drivers/iommu/arm-smmu.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
-> index debf22d..812eff2 100644
-> --- a/arch/x86/events/amd/iommu.c
-> +++ b/arch/x86/events/amd/iommu.c
-> @@ -145,18 +145,27 @@ static struct attribute_group amd_iommu_cpumask_group = {
->  
->  /*---------------------------------------------*/
->  
-> +static inline
-> +int get_iommu_bnk_cnt_evt_idx(struct perf_amd_iommu *perf_iommu,
-> +				  int iommu_index, int bank_index,
-> +				  int cntr_index)
-
-Align args at the opening brace.
-
-> +{
-> +	int cntrs_per_iommu = perf_iommu->max_banks * perf_iommu->max_counters;
-> +	int index = (perf_iommu->max_counters * bank_index) + cntr_index;
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c index
+> 2c8f871..02cd67d 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -40,6 +40,7 @@
+>  #include <linux/of.h>
+>  #include <linux/of_address.h>
+>  #include <linux/of_iommu.h>
+> +#include <linux/of_platform.h>
+>  #include <linux/pci.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/slab.h>
+> @@ -1956,10 +1957,15 @@ static int __init arm_smmu_init(void)
+> 
+>  static int __init arm_smmu_of_setup(struct device_node *np)  {
+> +	struct platform_device *pdev;
+> 
+>  	if (!init_done)
+>  		arm_smmu_init();
+> 
+> +	pdev = of_platform_device_create(np, NULL, NULL);
+> +	if (IS_ERR(pdev))
+> +		return PTR_ERR(pdev);
 > +
-> +	return (cntrs_per_iommu * iommu_index) + index;
-> +}
-> +
->  static int get_next_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu)
->  {
->  	unsigned long flags;
->  	int shift, bank, cntr, retval;
-> -	int max_banks = perf_iommu->max_banks;
-> -	int max_cntrs = perf_iommu->max_counters;
->  
->  	raw_spin_lock_irqsave(&perf_iommu->lock, flags);
->  
-> -	for (bank = 0, shift = 0; bank < max_banks; bank++) {
-> -		for (cntr = 0; cntr < max_cntrs; cntr++) {
-> -			shift = bank + (bank*3) + cntr;
-> +	for (bank = 0, shift = 0; bank < perf_iommu->max_banks; bank++) {
+>  	of_iommu_set_ops(np, &arm_smmu_ops);
 
-Please init that shift variable above in the function entry - it
-confuses unnecessarily here as if it had anything to do with the loop
-stride.
+ A question here is,  There was a probe deferral series [1], to take care of
+deferred
+ probing of devices behind iommus. With that this sort of early device
+probing during setup
+ should not be required and also it clears other dependencies of iommus on
+clocks, etc, if any.
+ My intention was to check whats the right way to do this  ? (or) point me
+to any updates 
+ on the probe deferral series that I miss ?
 
-> +		for (cntr = 0; cntr < perf_iommu->max_counters; cntr++) {
-> +			shift = get_iommu_bnk_cnt_evt_idx(perf_iommu, 0, bank, cntr);
-
-\n here
-
->  			if (perf_iommu->cntr_assign_mask & (1ULL<<shift)) {
->  				continue;
->  			} else {
-> -- 
-> 2.5.0
-> 
-> 
-
--- 
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
+[1]  http://lkml.iu.edu/hypermail/linux/kernel/1505.3/03280.html
+ 
+Regards,
+ Sricharan
