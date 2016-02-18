@@ -1,8 +1,8 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v2 02/13] iommu: exynos: add support for IOMMU_DOMAIN_DMA
- domain type
-Date: Thu, 18 Feb 2016 15:12:49 +0100
-Message-ID: <1455804780-9616-3-git-send-email-m.szyprowski@samsung.com>
+Subject: [PATCH v2 09/13] iommu: exynos: add support for SYSMMU controller with
+ bogus version reg
+Date: Thu, 18 Feb 2016 15:12:56 +0100
+Message-ID: <1455804780-9616-10-git-send-email-m.szyprowski@samsung.com>
 References: <1455804780-9616-1-git-send-email-m.szyprowski@samsung.com>
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 In-reply-to: <1455804780-9616-1-git-send-email-m.szyprowski@samsung.com>
@@ -11,73 +11,63 @@ To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-a
 Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds support for DMA domain type. Such domain have DMA cookie
-prepared and can be used by generic DMA-IOMMU glue layer.
+SYSMMU on some SoCs reports bogus values in VERSION register. Force
+hardware version to 1.0 for such controllers. This patch also moves reading
+version register to driver's probe() function.
 
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/iommu/exynos-iommu.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ drivers/iommu/exynos-iommu.c | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 4fc079073c86..595e0da55db4 100644
+index e42a76cc9674..8e289e2a05fb 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -25,9 +25,9 @@
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/slab.h>
-+#include <linux/dma-iommu.h>
+@@ -284,6 +284,28 @@ static void __sysmmu_set_ptbase(struct sysmmu_drvdata *data, phys_addr_t pgd)
+ 	__sysmmu_tlb_invalidate(data);
+ }
  
- #include <asm/cacheflush.h>
--#include <asm/dma-iommu.h>
- #include <asm/pgtable.h>
- 
- typedef u32 sysmmu_iova_t;
-@@ -662,16 +662,21 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
- 	struct exynos_iommu_domain *domain;
- 	int i;
- 
--	if (type != IOMMU_DOMAIN_UNMANAGED)
--		return NULL;
- 
- 	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
- 	if (!domain)
- 		return NULL;
- 
-+	if (type == IOMMU_DOMAIN_DMA) {
-+		if (iommu_get_dma_cookie(&domain->domain) != 0)
-+			goto err_pgtable;
-+	} else if (type != IOMMU_DOMAIN_UNMANAGED) {
-+		goto err_pgtable;
-+	}
++static void __sysmmu_get_version(struct sysmmu_drvdata *data)
++{
++	u32 ver;
 +
- 	domain->pgtable = (sysmmu_pte_t *)__get_free_pages(GFP_KERNEL, 2);
- 	if (!domain->pgtable)
--		goto err_pgtable;
-+		goto err_dma_cookie;
- 
- 	domain->lv2entcnt = (short *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 1);
- 	if (!domain->lv2entcnt)
-@@ -703,6 +708,9 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
- 
- err_counter:
- 	free_pages((unsigned long)domain->pgtable, 2);
-+err_dma_cookie:
-+	if (type == IOMMU_DOMAIN_DMA)
-+		iommu_put_dma_cookie(&domain->domain);
- err_pgtable:
- 	kfree(domain);
- 	return NULL;
-@@ -727,6 +735,9 @@ static void exynos_iommu_domain_free(struct iommu_domain *iommu_domain)
- 
- 	spin_unlock_irqrestore(&domain->lock, flags);
- 
-+	if (iommu_domain->type == IOMMU_DOMAIN_DMA)
-+		iommu_put_dma_cookie(iommu_domain);
++	clk_enable(data->clk_master);
++	clk_enable(data->clk);
 +
- 	for (i = 0; i < NUM_LV1ENTRIES; i++)
- 		if (lv1ent_page(domain->pgtable + i))
- 			kmem_cache_free(lv2table_kmem_cache,
++	ver = __raw_readl(data->sfrbase + REG_MMU_VERSION);
++
++	/* controllers on some SoCs don't report proper version */
++	if (ver == 0x80000001u)
++		data->version = MAKE_MMU_VER(1, 0);
++	else
++		data->version = MMU_RAW_VER(ver);
++
++	dev_dbg(data->sysmmu, "hardware version: %d.%d\n",
++		MMU_MAJ_VER(data->version), MMU_MIN_VER(data->version));
++
++	clk_disable(data->clk);
++	clk_disable(data->clk_master);
++}
++
+ static void show_fault_information(struct sysmmu_drvdata *data,
+ 				   const struct sysmmu_fault_info *finfo,
+ 				   sysmmu_iova_t fault_addr)
+@@ -385,7 +407,6 @@ static void __sysmmu_init_config(struct sysmmu_drvdata *data)
+ {
+ 	unsigned int cfg;
+ 
+-	data->version = MMU_RAW_VER(__raw_readl(data->sfrbase + REG_MMU_VERSION));
+ 	if (data->version <= MAKE_MMU_VER(3, 1))
+ 		cfg = CFG_LRU | CFG_QOS(15);
+ 	else if (data->version <= MAKE_MMU_VER(3, 2))
+@@ -551,6 +572,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, data);
+ 
++	__sysmmu_get_version(data);
+ 	pm_runtime_enable(dev);
+ 
+ 	return 0;
 -- 
 1.9.2
