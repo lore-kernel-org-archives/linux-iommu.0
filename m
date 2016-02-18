@@ -1,190 +1,226 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH V4 2/6] perf/amd/iommu: Modify functions to query max
- banks and counters
-Date: Thu, 18 Feb 2016 12:11:16 +0100
-Message-ID: <20160218111116.GE3694@pd.tnic>
-References: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
- <1455182127-17551-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+From: Marc Zyngier <marc.zyngier@arm.com>
+Subject: Re: [RFC v3 15/15] irqchip/gicv2m/v3-its-pci-msi: IOMMU map the MSI
+ frame when needed
+Date: Thu, 18 Feb 2016 11:33:07 +0000
+Message-ID: <20160218113307.2b263b10@arm.com>
+References: <1455264797-2334-1-git-send-email-eric.auger@linaro.org>
+ <1455264797-2334-16-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1455182127-17551-3-git-send-email-Suravee.Suthikulpanit@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
-Cc: joro@8bytes.org, peterz@infradead.org, mingo@redhat.com, acme@kernel.org, andihartmann@freenet.de, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-Reply-To: <1455264797-2334-16-git-send-email-eric.auger@linaro.org>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: Eric Auger <eric.auger@linaro.org>, leo.duran@amd.com
+Cc: Thomas.Lendacky@amd.com, eric.auger@st.com, jason@lakedaemon.net, kvm@vger.kernel.org, patches@linaro.org, joro@8bytes.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Manish.Jaggi@caviumnetworks.com, alex.williamson@redhat.com, linux-arm-kernel@lists.infradead.org, sherry.hurwitz@amd.com, brijesh.singh@amd.com, tglx@linutronix.de, kvmarm@lists.cs.columbia.edu
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 11, 2016 at 04:15:23PM +0700, Suravee Suthikulpanit wrote:
-> Currently, amd_iommu_pc_get_max_[banks|counters]() require devid,
-> which should not be the case.
+On Fri, 12 Feb 2016 08:13:17 +0000
+Eric Auger <eric.auger@linaro.org> wrote:
 
-Why?
-
-Commit message could use an explanation.
-
-> Also, these don't properly support
-> multi-IOMMU system.
+> In case the msi_desc references a device attached to an iommu
+> domain, the msi address needs to be mapped in the IOMMU. Else any
+> MSI write transaction will cause a fault.
 > 
-> Current and future AMD systems with IOMMU that support perf counter
-
-				"with an IOMMU that supports performance counters"
-
-> would likely contain homogeneous IOMMUs where multiple IOMMUs are
-
-What are homogeneous IOMMUs?
-
-> availalbe. So, this patch modifies these function to iterate all IOMMU
-
-Please integrate a spellchecker in your patch creation workflow:
-
-s/availalbe/available/
-
-> to check the max banks and counters reported by the hardware.
+> gic_set_msi_addr detects that case and allocates an iova bound
+> to the physical address page comprising the MSI frame. This iova
+> then is used as the msi_msg address. Unset operation decrements the
+> reference on the binding.
 > 
-> Reviewed-by: Joerg Roedel <jroedel@suse.de>
-> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+> The functions are called in the irq_write_msi_msg ops implementation.
+> At that time we can recognize whether the msi is setup or teared down
+> looking at the msi_msg content. Indeed msi_domain_deactivate zeroes all
+> the fields.
+> 
+> Signed-off-by: Eric Auger <eric.auger@linaro.org>
+> 
 > ---
->  arch/x86/events/amd/iommu.c           | 17 +++++++----------
->  arch/x86/include/asm/perf/amd/iommu.h |  7 ++-----
->  drivers/iommu/amd_iommu_init.c        | 20 ++++++++++++--------
->  3 files changed, 21 insertions(+), 23 deletions(-)
 > 
-> diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
-> index 2f96072..debf22d 100644
-> --- a/arch/x86/events/amd/iommu.c
-> +++ b/arch/x86/events/amd/iommu.c
-> @@ -232,14 +232,6 @@ static int perf_iommu_event_init(struct perf_event *event)
->  		return -EINVAL;
->  	}
+> v2 -> v3:
+> - protect iova/addr manipulation with CONFIG_ARCH_DMA_ADDR_T_64BIT and
+>   CONFIG_PHYS_ADDR_T_64BIT
+> - only expose gic_pci_msi_domain_write_msg in case CONFIG_IOMMU_API &
+>   CONFIG_PCI_MSI_IRQ_DOMAIN are set.
+> - gic_set/unset_msi_addr duly become static
+> ---
+>  drivers/irqchip/irq-gic-common.c         | 69 ++++++++++++++++++++++++++++++++
+>  drivers/irqchip/irq-gic-common.h         |  5 +++
+>  drivers/irqchip/irq-gic-v2m.c            |  7 +++-
+>  drivers/irqchip/irq-gic-v3-its-pci-msi.c |  5 +++
+>  4 files changed, 85 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/irqchip/irq-gic-common.c b/drivers/irqchip/irq-gic-common.c
+> index f174ce0..46cd06c 100644
+> --- a/drivers/irqchip/irq-gic-common.c
+> +++ b/drivers/irqchip/irq-gic-common.c
+> @@ -18,6 +18,8 @@
+>  #include <linux/io.h>
+>  #include <linux/irq.h>
+>  #include <linux/irqchip/arm-gic.h>
+> +#include <linux/iommu.h>
+> +#include <linux/msi.h>
 >  
-> -	/* integrate with iommu base devid (0000), assume one iommu */
-> -	perf_iommu->max_banks =
-> -		amd_iommu_pc_get_max_banks(IOMMU_BASE_DEVID);
-> -	perf_iommu->max_counters =
-> -		amd_iommu_pc_get_max_counters(IOMMU_BASE_DEVID);
-> -	if ((perf_iommu->max_banks == 0) || (perf_iommu->max_counters == 0))
-> -		return -EINVAL;
-> -
->  	/* update the hw_perf_event struct with the iommu config data */
->  	hwc->config = config;
->  	hwc->extra_reg.config = config1;
-> @@ -450,6 +442,11 @@ static __init int _init_perf_amd_iommu(
-
-Btw, that _init_perf_amd_iommu is unnecessarily split from
-amd_iommu_pc_init(). You should merge those two. But that's another
-patch. In that same cleanup patch you could do
-
-s/perf_iommu/pi/g
-
-or so because that perf_iommu local var is unnecesarily long and impairs
-readability.
-
->  	if (_init_events_attrs(perf_iommu) != 0)
->  		pr_err("perf: amd_iommu: Only support raw events.\n");
+>  #include "irq-gic-common.h"
 >  
-> +	perf_iommu->max_banks = amd_iommu_pc_get_max_banks();
-> +	perf_iommu->max_counters = amd_iommu_pc_get_max_counters();
-> +	if ((perf_iommu->max_banks == 0) || (perf_iommu->max_counters == 0))
-
-Simplify:
-
-	if (!perf_iommu->max_banks ||
-	    !perf_iommu->max_counters)
-
-> +		return -EINVAL;
+> @@ -121,3 +123,70 @@ void gic_cpu_config(void __iomem *base, void (*sync_access)(void))
+>  	if (sync_access)
+>  		sync_access();
+>  }
 > +
->  	/* Init null attributes */
->  	perf_iommu->null_group = NULL;
->  	perf_iommu->pmu.attr_groups = perf_iommu->attr_groups;
-> @@ -460,8 +457,8 @@ static __init int _init_perf_amd_iommu(
->  		amd_iommu_pc_exit();
->  	} else {
->  		pr_info("perf: amd_iommu: Detected. (%d banks, %d counters/bank)\n",
-> -			amd_iommu_pc_get_max_banks(IOMMU_BASE_DEVID),
-> -			amd_iommu_pc_get_max_counters(IOMMU_BASE_DEVID));
-> +			amd_iommu_pc_get_max_banks(),
-> +			amd_iommu_pc_get_max_counters());
->  	}
->  
->  	return ret;
-> diff --git a/arch/x86/include/asm/perf/amd/iommu.h b/arch/x86/include/asm/perf/amd/iommu.h
-> index 72f64b7..97e1be5 100644
-> --- a/arch/x86/include/asm/perf/amd/iommu.h
-> +++ b/arch/x86/include/asm/perf/amd/iommu.h
-> @@ -24,15 +24,12 @@
->  #define PC_MAX_SPEC_BNKS			64
->  #define PC_MAX_SPEC_CNTRS			16
->  
-> -/* iommu pc reg masks*/
-> -#define IOMMU_BASE_DEVID			0x0000
-> -
->  /* amd_iommu_init.c external support functions */
->  bool amd_iommu_pc_supported(void);
->  
-> -u8 amd_iommu_pc_get_max_banks(u16 devid);
-> +u8 amd_iommu_pc_get_max_banks(void);
->  
-> -u8 amd_iommu_pc_get_max_counters(u16 devid);
-> +u8 amd_iommu_pc_get_max_counters(void);
->  
->  int amd_iommu_pc_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn, u64 *value);
->  
-> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-> index d30f4b2..a62b5ce 100644
-> --- a/drivers/iommu/amd_iommu_init.c
-> +++ b/drivers/iommu/amd_iommu_init.c
-> @@ -2251,15 +2251,17 @@ EXPORT_SYMBOL(amd_iommu_v2_supported);
->   *
->   ****************************************************************************/
->  
-> -u8 amd_iommu_pc_get_max_banks(u16 devid)
-> +u8 amd_iommu_pc_get_max_banks(void)
->  {
->  	struct amd_iommu *iommu;
->  	u8 ret = 0;
->  
-> -	/* locate the iommu governing the devid */
-> -	iommu = amd_iommu_rlookup_table[devid];
-> -	if (iommu)
-> +	for_each_iommu(iommu) {
-> +		if (!iommu->max_banks ||
-> +		    (ret && (iommu->max_banks != ret)))
-
-What is that supposed to do?
-
-Check that the max_banks of a previous IOMMU are == to the max_banks of
-the current IOMMU?
-
-Why? Could definitely use a comment.
-
-> +			return 0;
->  		ret = iommu->max_banks;
+> +#if defined(CONFIG_IOMMU_API) && defined(CONFIG_PCI_MSI_IRQ_DOMAIN)
+> +static int gic_set_msi_addr(struct irq_data *data, struct msi_msg *msg)
+> +{
+> +	struct msi_desc *desc = irq_data_get_msi_desc(data);
+> +	struct device *dev = msi_desc_to_dev(desc);
+> +	struct iommu_domain *d;
+> +	phys_addr_t addr;
+> +	dma_addr_t iova;
+> +	int ret;
+> +
+> +	d = iommu_get_domain_for_dev(dev);
+> +	if (!d)
+> +		return 0;
+> +#ifdef CONFIG_PHYS_ADDR_T_64BIT
+> +	addr = ((phys_addr_t)(msg->address_hi) << 32) | msg->address_lo;
+> +#else
+> +	addr = msg->address_lo;
+> +#endif
+> +
+> +	ret = iommu_get_single_reserved(d, addr, IOMMU_WRITE, &iova);
+> +
+> +	if (!ret) {
+> +		msg->address_lo = lower_32_bits(iova);
+> +		msg->address_hi = upper_32_bits(iova);
 > +	}
+> +	return ret;
+> +}
+> +
+> +
+> +static void gic_unset_msi_addr(struct irq_data *data)
+> +{
+> +	struct msi_desc *desc = irq_data_get_msi_desc(data);
+> +	struct device *dev;
+> +	struct iommu_domain *d;
+> +	dma_addr_t iova;
+> +
+> +#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+> +	iova = ((dma_addr_t)(desc->msg.address_hi) << 32) |
+> +		desc->msg.address_lo;
+> +#else
+> +	iova = desc->msg.address_lo;
+> +#endif
+> +
+> +	dev = msi_desc_to_dev(desc);
+> +	if (!dev)
+> +		return;
+> +
+> +	d = iommu_get_domain_for_dev(dev);
+> +	if (!d)
+> +		return;
+> +
+> +	iommu_put_single_reserved(d, iova);
+> +}
+> +
+> +void gic_pci_msi_domain_write_msg(struct irq_data *irq_data,
+> +				  struct msi_msg *msg)
+> +{
+> +	if (!msg->address_hi && !msg->address_lo && !msg->data)
+> +		gic_unset_msi_addr(irq_data); /* deactivate */
+> +	else
+> +		gic_set_msi_addr(irq_data, msg); /* activate, set_affinity */
+> +
+> +	pci_msi_domain_write_msg(irq_data, msg);
+> +}
+
+So by doing that, you are specializing this infrastructure to PCI.
+If you hijacked irq_compose_msi_msg() instead, you'd have both
+platform and PCI MSI for the same price.
+
+I can see a potential problem with the teardown of an MSI (I don't
+think the compose method is called on teardown), but I think this could
+be easily addressed.
+
+> +#endif
+> +
+> diff --git a/drivers/irqchip/irq-gic-common.h b/drivers/irqchip/irq-gic-common.h
+> index fff697d..98681fd 100644
+> --- a/drivers/irqchip/irq-gic-common.h
+> +++ b/drivers/irqchip/irq-gic-common.h
+> @@ -35,4 +35,9 @@ void gic_cpu_config(void __iomem *base, void (*sync_access)(void));
+>  void gic_enable_quirks(u32 iidr, const struct gic_quirk *quirks,
+>  		void *data);
 >  
->  	return ret;
->  }
-> @@ -2271,15 +2273,17 @@ bool amd_iommu_pc_supported(void)
->  }
->  EXPORT_SYMBOL(amd_iommu_pc_supported);
+> +#if defined(CONFIG_PCI_MSI_IRQ_DOMAIN) && defined(CONFIG_IOMMU_API)
+> +void gic_pci_msi_domain_write_msg(struct irq_data *irq_data,
+> +				  struct msi_msg *msg);
+> +#endif
+> +
+>  #endif /* _IRQ_GIC_COMMON_H */
+> diff --git a/drivers/irqchip/irq-gic-v2m.c b/drivers/irqchip/irq-gic-v2m.c
+> index c779f83..692d809 100644
+> --- a/drivers/irqchip/irq-gic-v2m.c
+> +++ b/drivers/irqchip/irq-gic-v2m.c
+> @@ -24,6 +24,7 @@
+>  #include <linux/of_pci.h>
+>  #include <linux/slab.h>
+>  #include <linux/spinlock.h>
+> +#include "irq-gic-common.h"
 >  
-> -u8 amd_iommu_pc_get_max_counters(u16 devid)
-> +u8 amd_iommu_pc_get_max_counters(void)
+>  /*
+>  * MSI_TYPER:
+> @@ -83,7 +84,11 @@ static struct irq_chip gicv2m_msi_irq_chip = {
+>  	.irq_mask		= gicv2m_mask_msi_irq,
+>  	.irq_unmask		= gicv2m_unmask_msi_irq,
+>  	.irq_eoi		= irq_chip_eoi_parent,
+> -	.irq_write_msi_msg	= pci_msi_domain_write_msg,
+> +#ifdef CONFIG_IOMMU_API
+> +	.irq_write_msi_msg	= gic_pci_msi_domain_write_msg,
+> +#else
+> +	.irq_write_msi_msg      = pci_msi_domain_write_msg,
+> +#endif
+
+Irrespective of the way you implement the translation procedure, you
+should make this unconditional, and have the #ifdefery in the code that
+implements it.
+
+>  };
+>  
+>  static struct msi_domain_info gicv2m_msi_domain_info = {
+> diff --git a/drivers/irqchip/irq-gic-v3-its-pci-msi.c b/drivers/irqchip/irq-gic-v3-its-pci-msi.c
+> index 8223765..690504e 100644
+> --- a/drivers/irqchip/irq-gic-v3-its-pci-msi.c
+> +++ b/drivers/irqchip/irq-gic-v3-its-pci-msi.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/of.h>
+>  #include <linux/of_irq.h>
+>  #include <linux/of_pci.h>
+> +#include "irq-gic-common.h"
+>  
+>  static void its_mask_msi_irq(struct irq_data *d)
 >  {
->  	struct amd_iommu *iommu;
->  	u8 ret = 0;
+> @@ -37,7 +38,11 @@ static struct irq_chip its_msi_irq_chip = {
+>  	.irq_unmask		= its_unmask_msi_irq,
+>  	.irq_mask		= its_mask_msi_irq,
+>  	.irq_eoi		= irq_chip_eoi_parent,
+> +#ifdef CONFIG_IOMMU_API
+> +	.irq_write_msi_msg	= gic_pci_msi_domain_write_msg,
+> +#else
+>  	.irq_write_msi_msg	= pci_msi_domain_write_msg,
+> +#endif
+>  };
 >  
-> -	/* locate the iommu governing the devid */
-> -	iommu = amd_iommu_rlookup_table[devid];
-> -	if (iommu)
-> +	for_each_iommu(iommu) {
-> +		if (!iommu->max_counters ||
-> +		    (ret && (iommu->max_counters != ret)))
+>  struct its_pci_alias {
 
-Ditto.
+Thanks,
 
+	M.
 -- 
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
+Jazz is not dead. It just smells funny.
