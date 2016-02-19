@@ -1,97 +1,122 @@
-From: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v2 2/4] iommu/arm-smmu: Invoke DT probe from
-	arm_smmu_of_setup()
-Date: Fri, 19 Feb 2016 08:44:20 +0530
-Message-ID: <CAALAos-62Oo8KxODCvkLto5yeKfaTaXKfdrfVUz8nEmTb2p68Q@mail.gmail.com>
-References: <1454908652-15317-1-git-send-email-anup.patel@broadcom.com>
-	<1454908652-15317-3-git-send-email-anup.patel@broadcom.com>
-	<001f01d16a43$ef47d3b0$cdd77b10$@codeaurora.org>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [RFC 0/3] Unify IOMMU-based DMA-mapping code for ARM and ARM64
+Date: Fri, 19 Feb 2016 09:22:41 +0100
+Message-ID: <1455870164-25337-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <001f01d16a43$ef47d3b0$cdd77b10$@codeaurora.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Device Tree <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Pawel Moll <pawel.moll-5wv7dgnIgG8@public.gmane.org>, Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Ian Campbell <ijc+devicetree-KcIKpvwj1kUDXYZnReoRVg@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Vikram Prakash <vikramp-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, BCM Kernel Feedback <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Linux ARM Kernel <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: Krzysztof Kozlowski <k.kozlowski@samsung.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org, Tomasz Figa <tfiga@chromium.org>, linaro-mm-sig@lists.linaro.org, Sakari Ailus <sakari.ailus@iki.fi>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 18, 2016 at 5:30 PM, Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
-> Hi,
->
->> -----Original Message-----
->> From: linux-arm-kernel [mailto:linux-arm-kernel-
->> bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org] On Behalf Of Anup Patel
->> Sent: Monday, February 08, 2016 10:48 AM
->> To: Catalin Marinas; Joerg Roedel; Will Deacon; Robin Murphy; Sricharan R;
->> Linux IOMMU; Linux ARM Kernel
->> Cc: Mark Rutland; Device Tree; Scott Branden; Pawel Moll; Ian Campbell;
-> Ray
->> Jui; Linux Kernel; Vikram Prakash; Rob Herring; BCM Kernel Feedback; Kumar
->> Gala; Anup Patel
->> Subject: [PATCH v2 2/4] iommu/arm-smmu: Invoke DT probe from
->> arm_smmu_of_setup()
->>
->> The SMMUv1/SMMUv2 driver is initialized very early using the
->> IOMMU_OF_DECLARE() but the actual platform device is probed via normal
->> DT probing.
->>
->> This patch uses of_platform_device_create() from arm_smmu_of_setup() to
->> ensure that SMMU platform device is probed immediately.
->>
->> Signed-off-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
->> ---
->>  drivers/iommu/arm-smmu.c | 6 ++++++
->>  1 file changed, 6 insertions(+)
->>
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c index
->> 2c8f871..02cd67d 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -40,6 +40,7 @@
->>  #include <linux/of.h>
->>  #include <linux/of_address.h>
->>  #include <linux/of_iommu.h>
->> +#include <linux/of_platform.h>
->>  #include <linux/pci.h>
->>  #include <linux/platform_device.h>
->>  #include <linux/slab.h>
->> @@ -1956,10 +1957,15 @@ static int __init arm_smmu_init(void)
->>
->>  static int __init arm_smmu_of_setup(struct device_node *np)  {
->> +     struct platform_device *pdev;
->>
->>       if (!init_done)
->>               arm_smmu_init();
->>
->> +     pdev = of_platform_device_create(np, NULL, NULL);
->> +     if (IS_ERR(pdev))
->> +             return PTR_ERR(pdev);
->> +
->>       of_iommu_set_ops(np, &arm_smmu_ops);
->
->  A question here is,  There was a probe deferral series [1], to take care of
-> deferred
->  probing of devices behind iommus. With that this sort of early device
-> probing during setup
->  should not be required and also it clears other dependencies of iommus on
-> clocks, etc, if any.
->  My intention was to check whats the right way to do this  ? (or) point me
-> to any updates
->  on the probe deferral series that I miss ?
->
-> [1]  http://lkml.iu.edu/hypermail/linux/kernel/1505.3/03280.html
-
-I think probe deferral is better way of handling this. I will drop this
-patch.
-
-Thanks,
-Anup
+RGVhciBBbGwsCgpUaGlzIGlzIGFuIGluaXRpYWwgUkZDIG9uIHRoZSB1bmlmaWNhdGlvbiBvZiBJ
+T01NVS1iYXNlZCBETUEtbWFwcGluZwpjb2RlIGZvciBBUk0gYW5kIEFSTTY0IGFyY2hpdGVjdHVy
+ZXMuCgpSaWdodCBub3cgQVJNIGFyY2hpdGVjdHVyZSBzdGlsbCB1c2UgbXkgb2xkIGNvZGUgZm9y
+IElPTU1VLWJhc2VkCkRNQS1tYXBwaW5nIGdsdWUsIGluaXRpYWxseSBtZXJnZWQgaW4gY29tbWl0
+CjRjZTYzZmNkOTE5YzMyZDIyNTI4ZTU0ZGNkODk1MDY5NjI5MzM3MTkgKCJBUk06IGRtYS1tYXBw
+aW5nOiBhZGQgc3VwcG9ydApmb3IgSU9NTVUgbWFwcGVyIikuIEluIG1lYW50aW1lIEFSTTY0IGdv
+dCBhIG5ldywgc2xpZ2h0bHkgaW1wcm92ZWQKaW1wbGVtZW50YXRpb24gcHJvdmlkZWQgYnkgUm9i
+aW4gTXVycGh5IGluIGNvbW1pdAoxM2I4NjI5ZjY1MTE2NGQ3MWY0ZDM4YjgyMTkyNWY5M2JhNDIz
+NmM4ICgiYXJtNjQ6IEFkZCBJT01NVSBkbWFfb3BzIikuCgpCb3RoIGltcGxlbWVudGF0aW9ucyBh
+cmUgdmVyeSBzaW1pbGFyIHRodXMgdGhlaXIgdW5pZmljYXRpb24gaXMgZGVzaXJlZAp0byBhdm9p
+ZCBkdXBsaWNhdGluZyBmdXR1cmUgd29ya3MgYW5kIHNpbXBsaWZ5IGNvZGUsIHdoaWNoIHVzZXMg
+dGhpcwpsYXllciBvbiBib3RoIGFyY2hpdGVjdHVyZXMuIEluIHRoaXMgcGF0Y2hzZXQgSSd2ZSBz
+ZWxlY3RlZCB0aGUgbmV3CmltcGxlbWVudGF0aW9uIChmcm9tIEFSTTY0IGFyY2hpdGVjdHVyZSkg
+YXMgYSBiYXNlLiBUaGlzIG1lYW5zIHRoYXQKQVJNLXNwZWNpZmljLCBvbGQgaW50ZXJmYWNlIChh
+cm1faW9tbXVfKiBmdW5jdGlvbnMpIGZvciBjb25maWd1cmluZwpJT01NVSBkb21haW5zIHdpbGwg
+YmUgbm8gbG9uZ2VyIGF2YWlsYWJsZSBhbmQgaXRzIHVzZXJzIGhhdmUgdG8gYmUKY29udmVydGVk
+IHRvIG5ldyBBUEkuCgpCZXNpZGVzIGxhY2sgb2Ygb2xkIGludGVyZmFjZSwgdGhlIHNlY29uZCBk
+aWZmZXJlbmNlIGlzIGFkZGl0aW9uYWwKcmVxdWlyZW1lbnRzIGZvciBJT01NVSBkcml2ZXJzLiBO
+ZXcgY29kZSByZWxpZXMgb24gdGhlIHN1cHBvcnQgZm9yCklPTU1VX0RPTUFJTl9ETUEgYW5kIGRl
+ZmF1bHQgSU9NTVUgZG9tYWluLCB3aGljaCBpcyBhdXRvbWF0aWNhbGx5CmF0dGFjaGVkIGJ5IHRo
+ZSBJT01NVSBjb3JlLgoKVGhlIG5ldyBjb2RlIGFsc28gYXNzdW1lcyB0aGF0IHRoZSBJT01NVS1i
+YXNlZCBETUEtbWFwcGluZyBvcHMgYXJlCm1haW5seSBjb25maWd1cmVkIGZyb20gYXJjaF9zZXR1
+cF9kbWFfb3BzKCkgZnVuY3Rpb24sIHdoaWNoIG1lYW5zIHRoYXQKdGhlIElPTU1VIGRyaXZlciBz
+aG91bGQgcHJvdmlkZSBuZWVkZWQgb2ZfeGxhdGUgY2FsbGJhY2tzIGFuZCBpbml0aWFsaXplCklP
+TU1VIG9wcyBmb3IgZGV2aWNlIG5vZGVzLiBIb3dldmVyIGl0IHNob3VsZCBiZSBhbHNvIHBvc3Np
+YmxlIHRvCmluaXRpYWxpemUgSU9NTVUtYmFzZWQgRE1BLW1hcHBpbmcgb3BzIGZvciBjbGllbnQg
+ZGV2aWNlcyBkaXJlY3RseSBmcm9tCklPTU1VIGRyaXZlcnMgYnkgY2FsbGluZyBjb21tb25faW9t
+bXVfc2V0dXBfZG1hX29wcygpIChzb21lIGRyaXZlcnMgdXNlZApzdWNoIGFwcHJvYWNoKS4KCklP
+TU1VIGRyaXZlcnMgc2hvdWxkIGJlIGFsc28gYXdhcmUgb2YgdGhlIGZhY3QgdGhhdCB0aGUKZGVm
+YXVsdCBkb21haW4gaXMgYXR0YWNoZWQgdmlhIGRldmljZV9hdHRhY2ggYW5kIHRoZW4gZGV2aWNl
+X2F0dGFjaApjYWxsYmFjayBjYW4gYmUgY2FsbGVkIG9uY2UgYWdhaW4gd2l0aCBkaWZmZXJlbnQg
+ZG9tYWluIHdpdGhvdXQgcHJldmlvdXMKZGV0YWNoIGZyb20gZGVmYXVsdCBkb21haW4uIEZvciBt
+b3JlIGluZm9ybWF0aW9uIG9uIHRoaXMgaXNzdWUsIHNlZSB0aGUKZm9sbG93aW5nIHRocmVhZDoK
+aHR0cHM6Ly9saXN0cy5saW5hcm8ub3JnL3BpcGVybWFpbC9saW5hcm8tbW0tc2lnLzIwMTYtRmVi
+cnVhcnkvMDA0NjI1Lmh0bWwKCkN1cnJlbnRseSB0aGVyZSBhcmUgNCB1c2VycyBvZiB0aGUgb2xk
+IGFybV9pb21tdV8qIGludGVyZmFjZToKMS4gRXh5bm9zIERSTSBkcml2ZXIKMi4gUm9ja2NoaXAg
+RFJNIGRyaXZlcgozLiBPTUFQMyBJU1AgY2FtZXJhIGRyaXZlcgo0LiBSZW5lc2FzIFZNU0EtY29t
+cGF0aWJsZSBJUE1NVSBkcml2ZXIKCkluIHRoaXMgcGF0Y2hzZXQgSSd2ZSBjb252ZXJ0ZWQgRXh5
+bm9zIERSTSBkcml2ZXIgZm9yIHRoZSBuZXcgQVBJIChwYXRjaAoxKS4gVGhpcyByZXF1aXJlZCBz
+b21lIGNoYW5nZXMgaW4gdGhlIG1lbW9yeSBtYW5hZ2VtZW50IG1vZGVsIGluc2lkZSB0aGUKZHJp
+dmVyIGFuZCByZW1vdmFsIG9mIHNvbWUgaGFja3MsIHdoaWNoIHdlcmUgdXNlZCB0byBzZXR1cCBJ
+T01NVS1iYXNlZApETUEtbWFwcGluZyBvcHMgb24gdGhlICdleHlub3MtZHJtJyB2aXJ0dWFsIGRl
+dmljZSBhbmQgY29tbW9uIElPTU1VCmRvbWFpbiBmb3IgYWxsIEV4eW5vcyBEUk0gc3ViLWRldmlj
+ZXMsIHRob3NlIGNoYW5nZXMgaGF2ZSBiZWVuIHBvc3RlZApzZXBhcmF0ZWx5IGhlcmU6IGh0dHA6
+Ly93d3cuc3Bpbmljcy5uZXQvbGlzdHMvZHJpLWRldmVsL21zZzEwMDg2MS5odG1sIApSb2NrY2hp
+cCBEUk0gZHJpdmVyIHJlcXVpcmVzIHNpbWlsYXIgY29udmVyc2lvbi4KCkNvbnZlcnRpbmcgT01B
+UDMgSVNQIGNhbWVyYSBkcml2ZXIgdG8gbmV3IEFQSSByZXF1aXJlcyBhZGRpbmcgc3VwcG9ydApm
+b3IgSU9NTVUgZ3JvdXBzIHRvIE9NQVAgSU9NTVUgZHJpdmVyLCBiZWNhdXNlIHRoZSBuZXcgRE1B
+L0lPTU1VIGNvZGUKdXNlZCBJT01NVV9ET01BSU5fRE1BIHR5cGUgZG9tYWlucyBhbmQgZGVmYXVs
+dCBncm91cHMuCgpSZW5lc2FzIElQTU1VIGRyaXZlciBuZWVkcyBhbHNvIHRvIGJlIGV4dGVuZGVk
+IHdpdGggSU9NTVVfRE9NQUlOX0RNQSBkb21haW4KdHlwZSBzdXBwb3J0LiBJdCBjYW4gYWxzbyBi
+ZSBwcmVwYXJlZCBmb3IgSU9NTVVfT0ZfREVDTEFSRSBhbmQgb2ZfeGxhdGUKY2FsbGJhY2stYmFz
+ZWQgaW5pdGlhbGl6YXRpb24gdG8gbGV0IGNvcmUgdG8gYXV0b21hdGljYWxseSBzZXR1cCBvZgpJ
+T01NVS1iYXNlZCBETUEgbWFwcGluZyBpbXBsZW1lbnRhdGlvbi4KClBhdGNoIDIgbW92ZXMgZXhp
+c3RpbmcgY29kZSBmcm9tIGFyY2gvYXJtNjQgdG8gZHJpdmVycy9pb21tdSBhbmQKaW50cm9kdWNl
+cyBzb21lIG1pbm9yIGNoYW5nZXMgaW4gZnVuY3Rpb24gbmFtZXMgLSBtYWlubHkgYWRkaW5nIGFy
+Y2hfCnByZWZpeCB0byBzb21lIGRtYS1tYXBwaW5nIGludGVybmFsIGZ1bmN0aW9ucywgd2hpY2gg
+c3RheSBpbiBhcmNoL2FybTY0LwooZnVuY3Rpb25zIG9mIHNpbWlsYXIgbmFtZXMgYXJlIHByZXNl
+bnQgaW4gYXJjaC9hcm0pLiBQYXRjaCAzIGFkYXB0cyBBUk0KYXJjaGl0ZWN0dXJlIGZvciB0aGUg
+Y29tbW9uIGNvZGUuCgpJIHdvdWxkIGxpa2UgdG8gZ2V0IHlvdXIgY29tbWVudHMgb24gdGhlIHBy
+b3Bvc2VkIGFwcHJvYWNoLiBUaGVyZSBpcwpzdGlsbCBzb21lIHdvcmsgdGhhdCBuZWVkIHRvIGJl
+IGRvbmUgdG8gY29udmVydCByZW1haW5pbmcgdXNlcnMgb2YgdGhlCm9sZCBBUEkgYW5kIHVwZGF0
+aW5nIElPTU1VIGRyaXZlcnMgdG8gdGhlIG5ldyBBUEkgcmVxdWlyZW1lbnRzLiBUaGlzCmNoYW5n
+ZSBuZWVkIHRvIGJlIHRlc3RlZCBvbiB0aGUgYWxsIGFmZmVjdGVkIEFSTSBzdWItYXJjaGl0ZWN0
+dXJlcy4KClJpZ2h0IG5vdyBwYXRjaGVzIHdlcmUgdGVzdGVkIG9uIG9ubHkgRXh5bm9zIGJhc2Vk
+IGJvYXJkczogQVJNIDMyYml0OgpFeHlub3M0NDEyIGFuZCBFeHlub3M1NDIyIGJvYXJkcyBhbmQg
+QVJNIDY0IGJpdCBFeG55b3MgNTQzMyAod2l0aCBzb21lCm91dC1vZi10cmVlIERUUykuCgpUbyBl
+YXNlIHRlc3RpbmcgSSd2ZSBwcmVwYXJlZCBhIGJyYW5jaCB3aXRoIGFsbCB0aGUgcGF0Y2hlcyBu
+ZWVkZWQKKHRoZXJlIGFyZSBhbGwgbmVlZGVkIHBhdGNoZXMgZm9yIEV4eW5vcyBzdWJhcmNoLCB3
+aGljaCBoYXZlIGJlZW4gcG9zdGVkCmFzIHNlcGFyYXRlIHBhdGNoc2V0cyk6Cmh0dHBzOi8vZ2l0
+LmxpbmFyby5vcmcvcGVvcGxlL21hcmVrLnN6eXByb3dza2kvbGludXgtc3Jwb2wuZ2l0IHY0LjUt
+ZG1hLWlvbW11LXVuaWZpY2F0aW9uCgpQYXRjaGVzIGFyZSBiYXNlZCBvbiBMaW51eCB2NC41LXJj
+NCB2YW5pbGxhIHRyZWUuCgpCZXN0IHJlZ2FyZHMKTWFyZWsgU3p5cHJvd3NraQpTYW1zdW5nIFIm
+RCBJbnN0aXR1dGUgUG9sYW5kCgoKUGF0Y2ggc3VtbWFyeToKCk1hcmVrIFN6eXByb3dza2kgKDMp
+OgogIGRybS9leHlub3M6IHJld3JpdGUgSU9NTVUgc3VwcG9ydCBjb2RlCiAgaW9tbXU6IGRtYS1p
+b21tdTogbW92ZSBJT01NVS9ETUEtbWFwcGluZyBjb2RlIGZyb20gQVJNNjQgYXJjaCB0byBkcml2
+ZXJzCiAgaW9tbXU6IGRtYS1pb21tdTogdXNlIGNvbW1vbiBpbXBsZW1lbnRhdGlvbiBhbHNvIG9u
+IEFSTSBhcmNoaXRlY3R1cmUKCiBhcmNoL2FybS9LY29uZmlnICAgICAgICAgICAgICAgICAgICAg
+ICAgICB8ICAgMjIgKy0KIGFyY2gvYXJtL2luY2x1ZGUvYXNtL2RldmljZS5oICAgICAgICAgICAg
+IHwgICAgOSAtCiBhcmNoL2FybS9pbmNsdWRlL2FzbS9kbWEtaW9tbXUuaCAgICAgICAgICB8ICAg
+MzcgLQogYXJjaC9hcm0vaW5jbHVkZS9hc20vZG1hLW1hcHBpbmcuaCAgICAgICAgfCAgIDU5ICst
+CiBhcmNoL2FybS9tbS9kbWEtbWFwcGluZy5jICAgICAgICAgICAgICAgICB8IDExNTggKy0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIGFyY2gvYXJtNjQvaW5jbHVkZS9hc20vZG1hLW1hcHBp
+bmcuaCAgICAgIHwgICAzOSArLQogYXJjaC9hcm02NC9tbS9kbWEtbWFwcGluZy5jICAgICAgICAg
+ICAgICAgfCAgNDkxICstLS0tLS0tLS0tLQogZHJpdmVycy9ncHUvZHJtL2V4eW5vcy9LY29uZmln
+ICAgICAgICAgICAgfCAgICAyICstCiBkcml2ZXJzL2dwdS9kcm0vZXh5bm9zL2V4eW5vc19kcm1f
+ZHJ2LmMgICB8ICAgIDcgKy0KIGRyaXZlcnMvZ3B1L2RybS9leHlub3MvZXh5bm9zX2RybV9kcnYu
+aCAgIHwgICAgMiArLQogZHJpdmVycy9ncHUvZHJtL2V4eW5vcy9leHlub3NfZHJtX2lvbW11LmMg
+fCAgIDkxICsrLQogZHJpdmVycy9ncHUvZHJtL2V4eW5vcy9leHlub3NfZHJtX2lvbW11LmggfCAg
+ICAyICstCiBkcml2ZXJzL2dwdS9kcm0vcm9ja2NoaXAvS2NvbmZpZyAgICAgICAgICB8ICAgIDEg
+KwogZHJpdmVycy9pb21tdS9LY29uZmlnICAgICAgICAgICAgICAgICAgICAgfCAgICAxICsKIGRy
+aXZlcnMvaW9tbXUvTWFrZWZpbGUgICAgICAgICAgICAgICAgICAgIHwgICAgMiArLQogZHJpdmVy
+cy9pb21tdS9kbWEtaW9tbXUtb3BzLmMgICAgICAgICAgICAgfCAgNDcxICsrKysrKysrKysrKwog
+ZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9LY29uZmlnICAgICAgICAgICAgfCAgICAxICsKIGluY2x1
+ZGUvbGludXgvZG1hLWlvbW11LmggICAgICAgICAgICAgICAgIHwgICAxNCArCiAxOCBmaWxlcyBj
+aGFuZ2VkLCA2NzkgaW5zZXJ0aW9ucygrKSwgMTczMCBkZWxldGlvbnMoLSkKIGRlbGV0ZSBtb2Rl
+IDEwMDY0NCBhcmNoL2FybS9pbmNsdWRlL2FzbS9kbWEtaW9tbXUuaAogY3JlYXRlIG1vZGUgMTAw
+NjQ0IGRyaXZlcnMvaW9tbXUvZG1hLWlvbW11LW9wcy5jCgotLSAKMS45LjIKCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxp
+c3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNr
+dG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
