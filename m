@@ -1,8 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 3/6] of: iommu: Increment DT node refcount in
-	of_iommu_set_ops()
-Date: Fri, 19 Feb 2016 17:46:40 +0000
-Message-ID: <1455904003-28069-4-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 1/6] iommu/arm-smmu: Treat all device transactions as
+	unprivileged
+Date: Fri, 19 Feb 2016 17:46:38 +0000
+Message-ID: <1455904003-28069-2-git-send-email-will.deacon@arm.com>
 References: <1455904003-28069-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,31 +22,58 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-We are saving pointer to iommu DT node in of_iommu_set_ops()
-hence we should increment DT node ref count.
+The IOMMU API has no concept of privilege so assumes all devices and
+mappings are equal, and indeed most non-CPU master devices on an AMBA
+interconnect make little use of the attribute bits on the bus thus by
+default perform unprivileged data accesses.
 
-Reviewed-by: Ray Jui <rjui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Reviewed-by: Scott Branden <sbranden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Some devices, however, believe themselves more equal than others, such
+as programmable DMA controllers whose 'master' thread issues bus
+transactions marked as privileged instruction fetches, while the data
+accesses of its channel threads (under the control of Linux, at least)
+are marked as unprivileged. This poses a problem for implementing the
+DMA API on an IOMMU conforming to ARM VMSAv8, under which a page that is
+unprivileged-writeable is also implicitly privileged-execute-never.
+Given that, there is no one set of attributes with which iommu_map() can
+implement, say, dma_alloc_coherent() that will allow every possible type
+of access without something running into unexecepted permission faults.
+
+Fortunately the SMMU architecture provides a means to mitigate such
+issues by overriding the incoming attributes of a transaction; make use
+of that to strip the privileged/unprivileged status off incoming
+transactions, leaving just the instruction/data dichotomy which the
+IOMMU API does at least understand; Four states good, two states better.
+
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/of_iommu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/arm-smmu.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 60ba238090d9..5fea665af99d 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -110,6 +110,7 @@ void of_iommu_set_ops(struct device_node *np, struct iommu_ops *ops)
- 	if (WARN_ON(!iommu))
- 		return;
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 59ee4b8a3236..1f9093d76d93 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -167,6 +167,9 @@
+ #define S2CR_TYPE_BYPASS		(1 << S2CR_TYPE_SHIFT)
+ #define S2CR_TYPE_FAULT			(2 << S2CR_TYPE_SHIFT)
  
-+	of_node_get(np);
- 	INIT_LIST_HEAD(&iommu->list);
- 	iommu->np = np;
- 	iommu->ops = ops;
++#define S2CR_PRIVCFG_SHIFT		24
++#define S2CR_PRIVCFG_UNPRIV		(2 << S2CR_PRIVCFG_SHIFT)
++
+ /* Context bank attribute registers */
+ #define ARM_SMMU_GR1_CBAR(n)		(0x0 + ((n) << 2))
+ #define CBAR_VMID_SHIFT			0
+@@ -1083,7 +1086,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ 		u32 idx, s2cr;
+ 
+ 		idx = cfg->smrs ? cfg->smrs[i].idx : cfg->streamids[i];
+-		s2cr = S2CR_TYPE_TRANS |
++		s2cr = S2CR_TYPE_TRANS | S2CR_PRIVCFG_UNPRIV |
+ 		       (smmu_domain->cfg.cbndx << S2CR_CBNDX_SHIFT);
+ 		writel_relaxed(s2cr, gr0_base + ARM_SMMU_GR0_S2CR(idx));
+ 	}
 -- 
 2.1.4
