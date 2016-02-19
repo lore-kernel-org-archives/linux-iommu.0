@@ -1,89 +1,51 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [RFC 3/3] iommu: dma-iommu: use common implementation also on ARM
- architecture
-Date: Fri, 19 Feb 2016 11:30:55 +0100
-Message-ID: <2724572.qtPjgumFDJ@wuerfel>
-References: <1455870164-25337-1-git-send-email-m.szyprowski@samsung.com>
- <1455870164-25337-4-git-send-email-m.szyprowski@samsung.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v2: Add support for 16 bit VMID
+Date: Fri, 19 Feb 2016 17:13:30 +0000
+Message-ID: <20160219171329.GO27062@arm.com>
+References: <1455819817-8432-1-git-send-email-tchalamarla@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1455870164-25337-4-git-send-email-m.szyprowski@samsung.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Krzysztof Kozlowski <k.kozlowski@samsung.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, Tomasz Figa <tfiga@chromium.org>, linaro-mm-sig@lists.linaro.org, iommu@lists.linux-foundation.org, Sakari Ailus <sakari.ailus@iki.fi>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1455819817-8432-1-git-send-email-tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
+Cc: Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gRnJpZGF5IDE5IEZlYnJ1YXJ5IDIwMTYgMDk6MjI6NDQgTWFyZWsgU3p5cHJvd3NraSB3cm90
-ZToKPiBUaGlzIHBhdGNoIHJlcGxhY2VzIEFSTS1zcGVjaWZpYyBJT01NVS1iYXNlZCBETUEtbWFw
-cGluZyBpbXBsZW1lbnRhdGlvbgo+IHdpdGggZ2VuZXJpYyBJT01NVSBETUEtbWFwcGluZyBjb2Rl
-IHNoYXJlZCB3aXRoIEFSTTY0IGFyY2hpdGVjdHVyZS4gVGhlCj4gc2lkZS1lZmZlY3Qgb2YgdGhp
-cyBjaGFuZ2UgaXMgYSBzd2l0Y2ggZnJvbSBiaXRtYXAtYmFzZWQgSU8gYWRkcmVzcyBzcGFjZQo+
-IG1hbmFnZW1lbnQgdG8gdHJlZS1iYXNlZCBjb2RlLiBUaGVyZSBzaG91bGQgYmUgbm8gZnVuY3Rp
-b25hbCBjaGFuZ2VzCj4gZm9yIGRyaXZlcnMsIHdoaWNoIHJlbHkgb24gaW5pdGlhbGl6YXRpb24g
-ZnJvbSBnZW5lcmljIGFyY2hfc2V0dXBfZG5hX29wcygpCj4gaW50ZXJmYWNlLiBDb2RlLCB3aGlj
-aCB1c2VkIG9sZCBhcm1faW9tbXVfKiBmdW5jdGlvbnMgbXVzdCBiZSB1cGRhdGVkIHRvCj4gbmV3
-IGludGVyZmFjZS4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBNYXJlayBTenlwcm93c2tpIDxtLnN6eXBy
-b3dza2lAc2Ftc3VuZy5jb20+CgpJIGxpa2UgdGhlIG92ZXJhbGwgaWRlYS4gSG93ZXZlciwgdGhp
-cyBpbnRlcmZhY2UgZnJvbSB0aGUgaW9tbXUKc3Vic3lzdGVtIGludG8gYXJjaGl0ZWN0dXJlIHNw
-ZWNpZmljIGNvZGU6Cgo+ICsvKgo+ICsgKiBUaGUgRE1BIEFQSSBpcyBidWlsdCB1cG9uIHRoZSBu
-b3Rpb24gb2YgImJ1ZmZlciBvd25lcnNoaXAiLiAgQSBidWZmZXIKPiArICogaXMgZWl0aGVyIGV4
-Y2x1c2l2ZWx5IG93bmVkIGJ5IHRoZSBDUFUgKGFuZCB0aGVyZWZvcmUgbWF5IGJlIGFjY2Vzc2Vk
-Cj4gKyAqIGJ5IGl0KSBvciBleGNsdXNpdmVseSBvd25lZCBieSB0aGUgRE1BIGRldmljZS4gIFRo
-ZXNlIGhlbHBlciBmdW5jdGlvbnMKPiArICogcmVwcmVzZW50IHRoZSB0cmFuc2l0aW9ucyBiZXR3
-ZWVuIHRoZXNlIHR3byBvd25lcnNoaXAgc3RhdGVzLgo+ICsgKgo+ICsgKiBOb3RlLCBob3dldmVy
-LCB0aGF0IG9uIGxhdGVyIEFSTXMsIHRoaXMgbm90aW9uIGRvZXMgbm90IHdvcmsgZHVlIHRvCj4g
-KyAqIHNwZWN1bGF0aXZlIHByZWZldGNoZXMuICBXZSBtb2RlbCBvdXIgYXBwcm9hY2ggb24gdGhl
-IGFzc3VtcHRpb24gdGhhdAo+ICsgKiB0aGUgQ1BVIGRvZXMgZG8gc3BlY3VsYXRpdmUgcHJlZmV0
-Y2hlcywgd2hpY2ggbWVhbnMgd2UgY2xlYW4gY2FjaGVzCj4gKyAqIGJlZm9yZSB0cmFuc2ZlcnMg
-YW5kIGRlbGF5IGNhY2hlIGludmFsaWRhdGlvbiB1bnRpbCB0cmFuc2ZlciBjb21wbGV0aW9uLgo+
-ICsgKgo+ICsgKi8KPiArZXh0ZXJuIHZvaWQgX19kbWFfcGFnZV9jcHVfdG9fZGV2KHN0cnVjdCBw
-YWdlICosIHVuc2lnbmVkIGxvbmcsIHNpemVfdCwKPiArCQkJCSAgZW51bSBkbWFfZGF0YV9kaXJl
-Y3Rpb24pOwo+ICtleHRlcm4gdm9pZCBfX2RtYV9wYWdlX2Rldl90b19jcHUoc3RydWN0IHBhZ2Ug
-KiwgdW5zaWduZWQgbG9uZywgc2l6ZV90LAo+ICsJCQkJICBlbnVtIGRtYV9kYXRhX2RpcmVjdGlv
-bik7Cj4gKwo+ICtzdGF0aWMgaW5saW5lIHZvaWQgYXJjaF9mbHVzaF9wYWdlKHN0cnVjdCBkZXZp
-Y2UgKmRldiwgY29uc3Qgdm9pZCAqdmlydCwKPiArCQkJICAgIHBoeXNfYWRkcl90IHBoeXMpCj4g
-K3sKPiArCWRtYWNfZmx1c2hfcmFuZ2UodmlydCwgdmlydCArIFBBR0VfU0laRSk7Cj4gKwlvdXRl
-cl9mbHVzaF9yYW5nZShwaHlzLCBwaHlzICsgUEFHRV9TSVpFKTsKPiArfQo+ICsKPiArc3RhdGlj
-IGlubGluZSB2b2lkIGFyY2hfZG1hX21hcF9hcmVhKHBoeXNfYWRkcl90IHBoeXMsIHNpemVfdCBz
-aXplLAo+ICsJCQkJICAgICBlbnVtIGRtYV9kYXRhX2RpcmVjdGlvbiBkaXIpCj4gK3sKPiArCXVu
-c2lnbmVkIGludCBvZmZzZXQgPSBwaHlzICYgflBBR0VfTUFTSzsKPiArCV9fZG1hX3BhZ2VfY3B1
-X3RvX2RldihwaHlzX3RvX3BhZ2UocGh5cyAmIFBBR0VfTUFTSyksIG9mZnNldCwgc2l6ZSwgZGly
-KTsKPiArfQo+ICsKPiArc3RhdGljIGlubGluZSB2b2lkIGFyY2hfZG1hX3VubWFwX2FyZWEocGh5
-c19hZGRyX3QgcGh5cywgc2l6ZV90IHNpemUsCj4gKwkJCQkgICAgICAgZW51bSBkbWFfZGF0YV9k
-aXJlY3Rpb24gZGlyKQo+ICt7Cj4gKwl1bnNpZ25lZCBpbnQgb2Zmc2V0ID0gcGh5cyAmIH5QQUdF
-X01BU0s7Cj4gKwlfX2RtYV9wYWdlX2Rldl90b19jcHUocGh5c190b19wYWdlKHBoeXMgJiBQQUdF
-X01BU0spLCBvZmZzZXQsIHNpemUsIGRpcik7Cj4gK30KPiArCj4gK3N0YXRpYyBpbmxpbmUgcGdw
-cm90X3QgYXJjaF9nZXRfZG1hX3BncHJvdChzdHJ1Y3QgZG1hX2F0dHJzICphdHRycywKPiArCQkJ
-CQlwZ3Byb3RfdCBwcm90LCBib29sIGNvaGVyZW50KQo+ICt7Cj4gKwlpZiAoY29oZXJlbnQpCj4g
-KwkJcmV0dXJuIHByb3Q7Cj4gKwo+ICsJcHJvdCA9IGRtYV9nZXRfYXR0cihETUFfQVRUUl9XUklU
-RV9DT01CSU5FLCBhdHRycykgPwo+ICsJCQkgICAgcGdwcm90X3dyaXRlY29tYmluZShwcm90KSA6
-Cj4gKwkJCSAgICBwZ3Byb3RfZG1hY29oZXJlbnQocHJvdCk7Cj4gKwlyZXR1cm4gcHJvdDsKPiAr
-fQo+ICsKPiArZXh0ZXJuIHZvaWQgKmFyY2hfYWxsb2NfZnJvbV9hdG9taWNfcG9vbChzaXplX3Qg
-c2l6ZSwgc3RydWN0IHBhZ2UgKipyZXRfcGFnZSwKPiArCQkJCQkgZ2ZwX3QgZmxhZ3MpOwo+ICtl
-eHRlcm4gYm9vbCBhcmNoX2luX2F0b21pY19wb29sKHZvaWQgKnN0YXJ0LCBzaXplX3Qgc2l6ZSk7
-Cj4gK2V4dGVybiBpbnQgYXJjaF9mcmVlX2Zyb21fYXRvbWljX3Bvb2wodm9pZCAqc3RhcnQsIHNp
-emVfdCBzaXplKTsKPiArCj4gKwoKZG9lc24ndCBmZWVsIGNvbXBsZXRlbHkgcmlnaHQgeWV0LiBJ
-biBwYXJ0aWN1bGFyIHRoZSBhcmNoX2ZsdXNoX3BhZ2UoKQppbnRlcmZhY2UgaXMgcHJvYmFibHkg
-c3RpbGwgdG9vIHNwZWNpZmljIHRvIEFSTS9BUk02NCBhbmQgd29uJ3Qgd29yawp0aGF0IHdheSBv
-biBvdGhlciBhcmNoaXRlY3R1cmVzLgoKSSB0aGluayBpdCB3b3VsZCBiZSBiZXR0ZXIgdG8gZG8g
-dGhpcyBlaXRoZXIgbW9yZSBnZW5lcmljLCBvciBsZXNzIGdlbmVyaWM6CgphKSBsZWF2ZSB0aGUg
-aW9tbXVfZG1hX21hcF9vcHMgZGVmaW5pdGlvbiBpbiB0aGUgYXJjaGl0ZWN0dXJlIHNwZWNpZmlj
-CiAgIGNvZGUsIGJ1dCBtYWtlIGl0IGNhbGwgaGVscGVyIGZ1bmN0aW9ucyBpbiB0aGUgZHJpdmVy
-cy9pb21tdSB0byBkbyBhbGwKICAgb2YgdGhlIHJlYWxseSBnZW5lcmljIHBhcnRzLgoKYikgY2xh
-cmlmeSB0aGF0IHRoaXMgaXMgb25seSBhcHBsaWNhYmxlIHRvIGFyY2gvYXJtIGFuZCBhcmNoL2Fy
-bTY0LCBhbmQKICAgdW5pZnkgdGhpbmdzIGZ1cnRoZXIgYmV0d2VlbiB0aGVzZSB0d28sIGFzIHRo
-ZXkgaGF2ZSB2ZXJ5IHNpbWlsYXIKICAgcmVxdWlyZW1lbnRzIGluIHRoZSBDUFUgYXJjaGl0ZWN0
-dXJlLgoKCUFybmQKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3Jn
-Cmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVs
-Cg==
+On Thu, Feb 18, 2016 at 10:23:37AM -0800, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org wrote:
+> From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> 
+> ARM-SMMUv2 supports upto 16 bit VMID. This patch enables
+> 16 bit VMID when requested from device-tree.
+> 
+> Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> ---
+>  .../devicetree/bindings/iommu/arm,smmu.txt          |  2 ++
+>  drivers/iommu/arm-smmu.c                            | 21 ++++++++++++++++++++-
+>  2 files changed, 22 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> index 7180745..bb7e569 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> @@ -55,6 +55,8 @@ conditions.
+>                    aliases of secure registers have to be used during
+>                    SMMU configuration.
+>  
+> +- smmu-enable-vmid16 : Enable 16 bit VMID, if allowed.
+
+Why do we need a new property for this, given that we can detect it
+from the ID registers? I can't think of a reason why we wouldn't use
+16-bit VMIDs if they were available to us.
+
+Will
