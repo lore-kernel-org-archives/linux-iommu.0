@@ -1,8 +1,7 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 1/6] iommu/arm-smmu: Treat all device transactions as
-	unprivileged
-Date: Fri, 19 Feb 2016 17:46:38 +0000
-Message-ID: <1455904003-28069-2-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 6/6] iommu/arm-smmu: Treat IOMMU_DOMAIN_DMA as bypass for now
+Date: Fri, 19 Feb 2016 17:46:43 +0000
+Message-ID: <1455904003-28069-7-git-send-email-will.deacon@arm.com>
 References: <1455904003-28069-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,58 +21,51 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Until all upstream devices have their DMA ops swizzled to point at the
+SMMU, we need to treat the IOMMU_DOMAIN_DMA domain as bypass to avoid
+putting devices into an empty address space when detaching from VFIO.
 
-The IOMMU API has no concept of privilege so assumes all devices and
-mappings are equal, and indeed most non-CPU master devices on an AMBA
-interconnect make little use of the attribute bits on the bus thus by
-default perform unprivileged data accesses.
-
-Some devices, however, believe themselves more equal than others, such
-as programmable DMA controllers whose 'master' thread issues bus
-transactions marked as privileged instruction fetches, while the data
-accesses of its channel threads (under the control of Linux, at least)
-are marked as unprivileged. This poses a problem for implementing the
-DMA API on an IOMMU conforming to ARM VMSAv8, under which a page that is
-unprivileged-writeable is also implicitly privileged-execute-never.
-Given that, there is no one set of attributes with which iommu_map() can
-implement, say, dma_alloc_coherent() that will allow every possible type
-of access without something running into unexecepted permission faults.
-
-Fortunately the SMMU architecture provides a means to mitigate such
-issues by overriding the incoming attributes of a transaction; make use
-of that to strip the privileged/unprivileged status off incoming
-transactions, leaving just the instruction/data dichotomy which the
-IOMMU API does at least understand; Four states good, two states better.
-
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu-v3.c | 7 ++++++-
+ drivers/iommu/arm-smmu.c    | 7 +++++++
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index d96d45ddf500..4ff73ff64e49 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1687,7 +1687,12 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		goto out_unlock;
+ 
+ 	smmu_group->domain	= smmu_domain;
+-	smmu_group->ste.bypass	= false;
++
++	/*
++	 * FIXME: This should always be "false" once we have IOMMU-backed
++	 * DMA ops for all devices behind the SMMU.
++	 */
++	smmu_group->ste.bypass	= domain->type == IOMMU_DOMAIN_DMA;
+ 
+ 	ret = arm_smmu_install_ste_for_group(smmu_group);
+ 	if (IS_ERR_VALUE(ret))
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 59ee4b8a3236..1f9093d76d93 100644
+index f21332a15040..2409e3bd3df2 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -167,6 +167,9 @@
- #define S2CR_TYPE_BYPASS		(1 << S2CR_TYPE_SHIFT)
- #define S2CR_TYPE_FAULT			(2 << S2CR_TYPE_SHIFT)
+@@ -1094,6 +1094,13 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ 	if (ret)
+ 		return ret == -EEXIST ? 0 : ret;
  
-+#define S2CR_PRIVCFG_SHIFT		24
-+#define S2CR_PRIVCFG_UNPRIV		(2 << S2CR_PRIVCFG_SHIFT)
++	/*
++	 * FIXME: This won't be needed once we have IOMMU-backed DMA ops
++	 * for all devices behind the SMMU.
++	 */
++	if (smmu_domain->domain.type == IOMMU_DOMAIN_DMA)
++		return 0;
 +
- /* Context bank attribute registers */
- #define ARM_SMMU_GR1_CBAR(n)		(0x0 + ((n) << 2))
- #define CBAR_VMID_SHIFT			0
-@@ -1083,7 +1086,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ 	for (i = 0; i < cfg->num_streamids; ++i) {
  		u32 idx, s2cr;
  
- 		idx = cfg->smrs ? cfg->smrs[i].idx : cfg->streamids[i];
--		s2cr = S2CR_TYPE_TRANS |
-+		s2cr = S2CR_TYPE_TRANS | S2CR_PRIVCFG_UNPRIV |
- 		       (smmu_domain->cfg.cbndx << S2CR_CBNDX_SHIFT);
- 		writel_relaxed(s2cr, gr0_base + ARM_SMMU_GR0_S2CR(idx));
- 	}
 -- 
 2.1.4
