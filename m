@@ -1,7 +1,7 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 6/6] iommu/arm-smmu: Treat IOMMU_DOMAIN_DMA as bypass for now
-Date: Fri, 19 Feb 2016 17:46:43 +0000
-Message-ID: <1455904003-28069-7-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 4/6] iommu/arm-smmu: Allow disabling unmatched stream bypass
+Date: Fri, 19 Feb 2016 17:46:41 +0000
+Message-ID: <1455904003-28069-5-git-send-email-will.deacon@arm.com>
 References: <1455904003-28069-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,51 +21,81 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, jroedel-l3A5Bk7waGM@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Until all upstream devices have their DMA ops swizzled to point at the
-SMMU, we need to treat the IOMMU_DOMAIN_DMA domain as bypass to avoid
-putting devices into an empty address space when detaching from VFIO.
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
+Borrow the disable_bypass parameter from the SMMUv3 driver as a handy
+debugging/security feature so that unmatched stream IDs (i.e. devices
+not attached to an IOMMU domain) may be configured to fault.
+
+Rather than introduce unsightly inconsistency, or repeat the existing
+unnecessary use of module_param_named(), fix that as well in passing.
+
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 7 ++++++-
- drivers/iommu/arm-smmu.c    | 7 +++++++
- 2 files changed, 13 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index d96d45ddf500..4ff73ff64e49 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1687,7 +1687,12 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		goto out_unlock;
- 
- 	smmu_group->domain	= smmu_domain;
--	smmu_group->ste.bypass	= false;
-+
-+	/*
-+	 * FIXME: This should always be "false" once we have IOMMU-backed
-+	 * DMA ops for all devices behind the SMMU.
-+	 */
-+	smmu_group->ste.bypass	= domain->type == IOMMU_DOMAIN_DMA;
- 
- 	ret = arm_smmu_install_ste_for_group(smmu_group);
- 	if (IS_ERR_VALUE(ret))
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index f21332a15040..2409e3bd3df2 100644
+index e8e7bcc4540c..7012531abe62 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1094,6 +1094,13 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- 	if (ret)
- 		return ret == -EEXIST ? 0 : ret;
+@@ -261,9 +261,13 @@
+ #define FSYNR0_WNR			(1 << 4)
  
-+	/*
-+	 * FIXME: This won't be needed once we have IOMMU-backed DMA ops
-+	 * for all devices behind the SMMU.
-+	 */
-+	if (smmu_domain->domain.type == IOMMU_DOMAIN_DMA)
-+		return 0;
-+
+ static int force_stage;
+-module_param_named(force_stage, force_stage, int, S_IRUGO);
++module_param(force_stage, int, S_IRUGO);
+ MODULE_PARM_DESC(force_stage,
+ 	"Force SMMU mappings to be installed at a particular stage of translation. A value of '1' or '2' forces the corresponding stage. All other values are ignored (i.e. no stage is forced). Note that selecting a specific stage will disable support for nested translation.");
++static bool disable_bypass;
++module_param(disable_bypass, bool, S_IRUGO);
++MODULE_PARM_DESC(disable_bypass,
++	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
+ 
+ enum arm_smmu_arch_version {
+ 	ARM_SMMU_V1 = 1,
+@@ -1119,9 +1123,9 @@ static void arm_smmu_domain_remove_master(struct arm_smmu_domain *smmu_domain,
+ 	 */
  	for (i = 0; i < cfg->num_streamids; ++i) {
- 		u32 idx, s2cr;
+ 		u32 idx = cfg->smrs ? cfg->smrs[i].idx : cfg->streamids[i];
++		u32 reg = disable_bypass ? S2CR_TYPE_FAULT : S2CR_TYPE_BYPASS;
  
+-		writel_relaxed(S2CR_TYPE_BYPASS,
+-			       gr0_base + ARM_SMMU_GR0_S2CR(idx));
++		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_S2CR(idx));
+ 	}
+ 
+ 	arm_smmu_master_free_smrs(smmu, cfg);
+@@ -1484,11 +1488,11 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
+ 	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
+ 
+-	/* Mark all SMRn as invalid and all S2CRn as bypass */
++	/* Mark all SMRn as invalid and all S2CRn as bypass unless overridden */
++	reg = disable_bypass ? S2CR_TYPE_FAULT : S2CR_TYPE_BYPASS;
+ 	for (i = 0; i < smmu->num_mapping_groups; ++i) {
+ 		writel_relaxed(0, gr0_base + ARM_SMMU_GR0_SMR(i));
+-		writel_relaxed(S2CR_TYPE_BYPASS,
+-			gr0_base + ARM_SMMU_GR0_S2CR(i));
++		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_S2CR(i));
+ 	}
+ 
+ 	/* Make sure all context banks are disabled and clear CB_FSR  */
+@@ -1510,8 +1514,12 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 	/* Disable TLB broadcasting. */
+ 	reg |= (sCR0_VMIDPNE | sCR0_PTM);
+ 
+-	/* Enable client access, but bypass when no mapping is found */
+-	reg &= ~(sCR0_CLIENTPD | sCR0_USFCFG);
++	/* Enable client access, handling unmatched streams as appropriate */
++	reg &= ~sCR0_CLIENTPD;
++	if (disable_bypass)
++		reg |= sCR0_USFCFG;
++	else
++		reg &= ~sCR0_USFCFG;
+ 
+ 	/* Disable forced broadcasting */
+ 	reg &= ~sCR0_FB;
 -- 
 2.1.4
