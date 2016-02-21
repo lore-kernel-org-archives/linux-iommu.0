@@ -1,79 +1,65 @@
-From: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
-Subject: Re: Warning from AMD IOMMU performance counters
-Date: Mon, 22 Feb 2016 09:52:07 +0800
-Message-ID: <56CA69C7.3050508@iommu.org>
-References: <56C798B8.6080009@redhat.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [v9,4/5] iommu/mediatek: Add mt8173 IOMMU driver
+Date: Mon, 22 Feb 2016 02:43:09 +0800
+Message-ID: <1456080189.25237.4.camel@mhfsdcap03>
+References: <1455669974-1527-5-git-send-email-yong.wu@mediatek.com>
+	 <20160220070209.GA16577@roeck-us.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <56C798B8.6080009-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20160220070209.GA16577-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, 2016-02-19 at 23:02 -0800, Guenter Roeck wrote:
+> On Wed, Feb 17, 2016 at 08:46:13AM +0800, Yong Wu wrote:
+> > This patch adds support for mediatek m4u (MultiMedia Memory Management
+> > Unit).
+[...]
+> > +#include <linux/clk.h>
+> > +#include <linux/component.h>
+> > +#include <linux/dma-iommu.h>
+> > +#include <linux/interrupt.h>
+> > +#include <linux/io.h>
+> > +#include <linux/iommu.h>
+> > +#include <linux/iopoll.h>
+> > +#include <linux/list.h>
+> > +#include <linux/module.h>
+> > +#include <linux/of_address.h>
+> > +#include <linux/of_iommu.h>
+> > +#include <linux/of_irq.h>
+> > +#include <linux/of_platform.h>
+> > +#include <linux/platform_device.h>
+> > +#include <soc/mediatek/smi.h>
+> > +#include <dt-bindings/memory/mt8173-larb-port.h>
+> > +
+> 
+> Some missing includes:
+> 
+> linux/bug.h
+> 	for WARN_ON()
+> linux/device.h
+> 	for dev_xxx() error messages, dev_get_drvdata(), etc.
+> linux/err.h
+> 	for error functions (IS_ERR, error definitions)
+> linux/slab.h
+> 	for kzalloc() etc.
+> linux/spinlock.h
+> 	for spinlock functions
+> asm/barrier.h
+> 	for wmb()
+> 
+> Guenter
+
+Hi Guenter,
+    Thanks for this suggestion. I'm sorry that I didn't get any build
+warning or error here. Anyway I will add them and send a quick v10.
 
 
--------- Original Message --------
-> Hi,
->
-> Since about 4.4, we've been seeing reports of this warning on every boot
-> from some users:
->
-> WARNING: CPU: 2 PID: 1 at drivers/iommu/amd_iommu_init.c:2301
-> amd_iommu_pc_get_set_reg_val+0xa8/0xe0()
-> Modules linked in:
-> CPU: 2 PID: 1 Comm: swapper/0 Not tainted 4.4.2-300.fc23.x86_64 #1
-> Hardware name: Hewlett-Packard HP EliteBook 755 G2/221C, BIOS M84 Ver.
-> 01.10 10/20/2015
->   0000000000000000 0000000026124b43 ffff88042d687d20 ffffffff813b0c9f
->   0000000000000000 ffff88042d687d58 ffffffff810a2f12 ffff88042f014800
->   0000000000000040 0000000000000000 ffffffff81d6c73d 0000000000000000
-> Call Trace:
->   [<ffffffff813b0c9f>] dump_stack+0x44/0x55
->   [<ffffffff810a2f12>] warn_slowpath_common+0x82/0xc0
->   [<ffffffff81d6c73d>] ? memblock_find_dma_reserve+0x16a/0x16a
->   [<ffffffff810a305a>] warn_slowpath_null+0x1a/0x20
->   [<ffffffff814d3f48>] amd_iommu_pc_get_set_reg_val+0xa8/0xe0
->   [<ffffffff81dafda7>] iommu_go_to_state+0x4d6/0x1384
->   [<ffffffff813c02ea>] ? kvasprintf+0x7a/0xa0
->   [<ffffffff81d6c73d>] ? memblock_find_dma_reserve+0x16a/0x16a
->   [<ffffffff81db0cbd>] amd_iommu_init+0x13/0x201
->   [<ffffffff81d6c74f>] pci_iommu_init+0x12/0x3c
->   [<ffffffff81002123>] do_one_initcall+0xb3/0x200
->   [<ffffffff810c0935>] ? parse_args+0x295/0x4b0
->   [<ffffffff81d621c8>] kernel_init_freeable+0x189/0x223
->   [<ffffffff8178dc00>] ? rest_init+0x80/0x80
->   [<ffffffff8178dc0e>] kernel_init+0xe/0xe0
->   [<ffffffff81799c8f>] ret_from_fork+0x3f/0x70
->   [<ffffffff8178dc00>] ? rest_init+0x80/0x80
->
-> Full bugzilla https://bugzilla.redhat.com/show_bug.cgi?id=1310258
->
-> Any idea what might be causing this spew?
-
-I also see this warning.
-
-Suravee's the one of this patch series might be fix this issue, you can 
-try it.
-
-[PATCH V4 0/6] perf/amd/iommu: Enable multi-IOMMU support
-
-
->
-> Thanks,
-> Laura
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
