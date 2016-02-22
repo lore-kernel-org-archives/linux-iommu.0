@@ -1,38 +1,79 @@
-From: Simon Horman <horms+renesas@verge.net.au>
-Subject: [PATCH] iommu: ipmmu-vmsa: Use ARCH_RENESAS
-Date: Mon, 22 Feb 2016 10:41:35 +0900
-Message-ID: <1456105295-13497-1-git-send-email-horms+renesas@verge.net.au>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Magnus Damm <magnus.damm@gmail.com>, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
+From: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
+Subject: Re: Warning from AMD IOMMU performance counters
+Date: Mon, 22 Feb 2016 09:52:07 +0800
+Message-ID: <56CA69C7.3050508@iommu.org>
+References: <56C798B8.6080009@redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <56C798B8.6080009-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Make use of ARCH_RENESAS in place of ARCH_SHMOBILE.
 
-This is part of an ongoing process to migrate from ARCH_SHMOBILE to
-ARCH_RENESAS the motivation for which being that RENESAS seems to be a more
-appropriate name than SHMOBILE for the majority of Renesas ARM based SoCs.
 
-Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
----
- drivers/iommu/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+-------- Original Message --------
+> Hi,
+>
+> Since about 4.4, we've been seeing reports of this warning on every boot
+> from some users:
+>
+> WARNING: CPU: 2 PID: 1 at drivers/iommu/amd_iommu_init.c:2301
+> amd_iommu_pc_get_set_reg_val+0xa8/0xe0()
+> Modules linked in:
+> CPU: 2 PID: 1 Comm: swapper/0 Not tainted 4.4.2-300.fc23.x86_64 #1
+> Hardware name: Hewlett-Packard HP EliteBook 755 G2/221C, BIOS M84 Ver.
+> 01.10 10/20/2015
+>   0000000000000000 0000000026124b43 ffff88042d687d20 ffffffff813b0c9f
+>   0000000000000000 ffff88042d687d58 ffffffff810a2f12 ffff88042f014800
+>   0000000000000040 0000000000000000 ffffffff81d6c73d 0000000000000000
+> Call Trace:
+>   [<ffffffff813b0c9f>] dump_stack+0x44/0x55
+>   [<ffffffff810a2f12>] warn_slowpath_common+0x82/0xc0
+>   [<ffffffff81d6c73d>] ? memblock_find_dma_reserve+0x16a/0x16a
+>   [<ffffffff810a305a>] warn_slowpath_null+0x1a/0x20
+>   [<ffffffff814d3f48>] amd_iommu_pc_get_set_reg_val+0xa8/0xe0
+>   [<ffffffff81dafda7>] iommu_go_to_state+0x4d6/0x1384
+>   [<ffffffff813c02ea>] ? kvasprintf+0x7a/0xa0
+>   [<ffffffff81d6c73d>] ? memblock_find_dma_reserve+0x16a/0x16a
+>   [<ffffffff81db0cbd>] amd_iommu_init+0x13/0x201
+>   [<ffffffff81d6c74f>] pci_iommu_init+0x12/0x3c
+>   [<ffffffff81002123>] do_one_initcall+0xb3/0x200
+>   [<ffffffff810c0935>] ? parse_args+0x295/0x4b0
+>   [<ffffffff81d621c8>] kernel_init_freeable+0x189/0x223
+>   [<ffffffff8178dc00>] ? rest_init+0x80/0x80
+>   [<ffffffff8178dc0e>] kernel_init+0xe/0xe0
+>   [<ffffffff81799c8f>] ret_from_fork+0x3f/0x70
+>   [<ffffffff8178dc00>] ? rest_init+0x80/0x80
+>
+> Full bugzilla https://bugzilla.redhat.com/show_bug.cgi?id=1310258
+>
+> Any idea what might be causing this spew?
 
- Based on the next branch of Joerg's iommu tree on kernel.org
+I also see this warning.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index a1e75cba18e0..d4b38e4d27fe 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -266,7 +266,7 @@ config EXYNOS_IOMMU_DEBUG
- config IPMMU_VMSA
- 	bool "Renesas VMSA-compatible IPMMU"
- 	depends on ARM_LPAE
--	depends on ARCH_SHMOBILE || COMPILE_TEST
-+	depends on ARCH_RENESAS || COMPILE_TEST
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU
--- 
-2.1.4
+Suravee's the one of this patch series might be fix this issue, you can 
+try it.
+
+[PATCH V4 0/6] perf/amd/iommu: Enable multi-IOMMU support
+
+
+>
+> Thanks,
+> Laura
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>
