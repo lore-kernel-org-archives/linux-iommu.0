@@ -1,36 +1,33 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] iommu: ipmmu-vmsa: Use ARCH_RENESAS
-Date: Mon, 22 Feb 2016 14:45:08 +0100
-Message-ID: <CAMuHMdVZS=qPiTBYjK=5XsUZmEYdEwjf=j3+X_VU5F9Ut3hpQg@mail.gmail.com>
-References: <1456105295-13497-1-git-send-email-horms+renesas@verge.net.au>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH V4 5/6] perf/amd/iommu: Enable support for multiple IOMMUs
+Date: Mon, 22 Feb 2016 15:07:41 +0100
+Message-ID: <20160222140741.GH6357@twins.programming.kicks-ass.net>
+References: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+ <1455182127-17551-6-git-send-email-Suravee.Suthikulpanit@amd.com>
+ <20160218131853.GU6357@twins.programming.kicks-ass.net>
+ <56CAC01F.8090800@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <1456105295-13497-1-git-send-email-horms+renesas@verge.net.au>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Simon Horman <horms+renesas@verge.net.au>
-Cc: Joerg Roedel <joro@8bytes.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Magnus Damm <magnus.damm@gmail.com>, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <56CAC01F.8090800@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+Cc: joro@8bytes.org, bp@alien8.de, mingo@redhat.com, acme@kernel.org, andihartmann@freenet.de, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 22, 2016 at 2:41 AM, Simon Horman
-<horms+renesas@verge.net.au> wrote:
-> Make use of ARCH_RENESAS in place of ARCH_SHMOBILE.
->
-> This is part of an ongoing process to migrate from ARCH_SHMOBILE to
-> ARCH_RENESAS the motivation for which being that RENESAS seems to be a more
-> appropriate name than SHMOBILE for the majority of Renesas ARM based SoCs.
->
-> Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+On Mon, Feb 22, 2016 at 03:00:31PM +0700, Suravee Suthikulpanit wrote:
+> >So I really don't have time to review new muck while I'm hunting perf
+> >core fail, but Boris made me look at this.
+> >
+> >This is crazy, if you have multiple IOMMUs then create an event per
+> >IOMMU, do _NOT_ fold them all into a single event.
+> 
+> These are system-wide events, which are programmed on every IOMMU the same
+> way. I am not sure what you meant by creating an event per IOMMU. Do you
+> mean I should create internal per-IOMMU struct perf_event for each event?
 
-Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+No, I meant to expose each IOMMU individually to userspace, as a
+separate device.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Is there never a case to profile just one of the IOMMUs ?
