@@ -1,65 +1,153 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [v9,4/5] iommu/mediatek: Add mt8173 IOMMU driver
-Date: Mon, 22 Feb 2016 02:43:09 +0800
-Message-ID: <1456080189.25237.4.camel@mhfsdcap03>
-References: <1455669974-1527-5-git-send-email-yong.wu@mediatek.com>
-	 <20160220070209.GA16577@roeck-us.net>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH V4 2/6] perf/amd/iommu: Modify functions to query max
+	banks and counters
+Date: Mon, 22 Feb 2016 11:55:30 +0700
+Message-ID: <56CA94C2.9090501@amd.com>
+References: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1455182127-17551-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<20160218111116.GE3694@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20160220070209.GA16577-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Guenter Roeck <linux-0h96xk9xTtrk1uMJSBkQmQ@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160218111116.GE3694-fF5Pk5pvG8Y@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2016-02-19 at 23:02 -0800, Guenter Roeck wrote:
-> On Wed, Feb 17, 2016 at 08:46:13AM +0800, Yong Wu wrote:
-> > This patch adds support for mediatek m4u (MultiMedia Memory Management
-> > Unit).
-[...]
-> > +#include <linux/clk.h>
-> > +#include <linux/component.h>
-> > +#include <linux/dma-iommu.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/io.h>
-> > +#include <linux/iommu.h>
-> > +#include <linux/iopoll.h>
-> > +#include <linux/list.h>
-> > +#include <linux/module.h>
-> > +#include <linux/of_address.h>
-> > +#include <linux/of_iommu.h>
-> > +#include <linux/of_irq.h>
-> > +#include <linux/of_platform.h>
-> > +#include <linux/platform_device.h>
-> > +#include <soc/mediatek/smi.h>
-> > +#include <dt-bindings/memory/mt8173-larb-port.h>
-> > +
-> 
-> Some missing includes:
-> 
-> linux/bug.h
-> 	for WARN_ON()
-> linux/device.h
-> 	for dev_xxx() error messages, dev_get_drvdata(), etc.
-> linux/err.h
-> 	for error functions (IS_ERR, error definitions)
-> linux/slab.h
-> 	for kzalloc() etc.
-> linux/spinlock.h
-> 	for spinlock functions
-> asm/barrier.h
-> 	for wmb()
-> 
-> Guenter
+Hi,
 
-Hi Guenter,
-    Thanks for this suggestion. I'm sorry that I didn't get any build
-warning or error here. Anyway I will add them and send a quick v10.
+On 02/18/2016 06:11 PM, Borislav Petkov wrote:
+> On Thu, Feb 11, 2016 at 04:15:23PM +0700, Suravee Suthikulpanit wrote:
+>> Currently, amd_iommu_pc_get_max_[banks|counters]() require devid,
+>> which should not be the case.
+>
+> Why?
+>
+> Commit message could use an explanation.
+>
+>> Also, these don't properly support
+>> multi-IOMMU system.
+>>
+>> Current and future AMD systems with IOMMU that support perf counter
+>
+> 				"with an IOMMU that supports performance counters"
+>
+>> would likely contain homogeneous IOMMUs where multiple IOMMUs are
+>
+> What are homogeneous IOMMUs?
 
+I intended to mean the same IOMMU version/capability for all IOMMUs in 
+the system.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+>> availalbe. So, this patch modifies these function to iterate all IOMMU
+>
+> Please integrate a spellchecker in your patch creation workflow:
+>
+> s/availalbe/available/
+>
+
+Thanks. I have now rephrased and spell check the new commit message for 
+the V5.
+
+>>
+>> Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+>> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+>> ---
+>>   arch/x86/events/amd/iommu.c           | 17 +++++++----------
+>>   arch/x86/include/asm/perf/amd/iommu.h |  7 ++-----
+>>   drivers/iommu/amd_iommu_init.c        | 20 ++++++++++++--------
+>>   3 files changed, 21 insertions(+), 23 deletions(-)
+>>
+>> diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+>> index 2f96072..debf22d 100644
+>> --- a/arch/x86/events/amd/iommu.c
+>> +++ b/arch/x86/events/amd/iommu.c
+>> @@ -232,14 +232,6 @@ static int perf_iommu_event_init(struct perf_event *event)
+>>   		return -EINVAL;
+>>   	}
+>>
+>> -	/* integrate with iommu base devid (0000), assume one iommu */
+>> -	perf_iommu->max_banks =
+>> -		amd_iommu_pc_get_max_banks(IOMMU_BASE_DEVID);
+>> -	perf_iommu->max_counters =
+>> -		amd_iommu_pc_get_max_counters(IOMMU_BASE_DEVID);
+>> -	if ((perf_iommu->max_banks == 0) || (perf_iommu->max_counters == 0))
+>> -		return -EINVAL;
+>> -
+>>   	/* update the hw_perf_event struct with the iommu config data */
+>>   	hwc->config = config;
+>>   	hwc->extra_reg.config = config1;
+>> @@ -450,6 +442,11 @@ static __init int _init_perf_amd_iommu(
+>
+> Btw, that _init_perf_amd_iommu is unnecessarily split from
+> amd_iommu_pc_init(). You should merge those two. But that's another
+> patch. In that same cleanup patch you could do
+>
+> s/perf_iommu/pi/g
+>
+> or so because that perf_iommu local var is unnecesarily long and impairs
+> readability.
+>
+
+Sure, I'll clean up both of these.
+
+>>   	if (_init_events_attrs(perf_iommu) != 0)
+>>   		pr_err("perf: amd_iommu: Only support raw events.\n");
+>>
+>> +	perf_iommu->max_banks = amd_iommu_pc_get_max_banks();
+>> +	perf_iommu->max_counters = amd_iommu_pc_get_max_counters();
+>> +	if ((perf_iommu->max_banks == 0) || (perf_iommu->max_counters == 0))
+>
+> Simplify:
+>
+> 	if (!perf_iommu->max_banks ||
+> 	    !perf_iommu->max_counters)
+
+Ok
+
+[....]
+>> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+>> index d30f4b2..a62b5ce 100644
+>> --- a/drivers/iommu/amd_iommu_init.c
+>> +++ b/drivers/iommu/amd_iommu_init.c
+>> @@ -2251,15 +2251,17 @@ EXPORT_SYMBOL(amd_iommu_v2_supported);
+>>    *
+>>    ****************************************************************************/
+>>
+>> -u8 amd_iommu_pc_get_max_banks(u16 devid)
+>> +u8 amd_iommu_pc_get_max_banks(void)
+>>   {
+>>   	struct amd_iommu *iommu;
+>>   	u8 ret = 0;
+>>
+>> -	/* locate the iommu governing the devid */
+>> -	iommu = amd_iommu_rlookup_table[devid];
+>> -	if (iommu)
+>> +	for_each_iommu(iommu) {
+>> +		if (!iommu->max_banks ||
+>> +		    (ret && (iommu->max_banks != ret)))
+>
+> What is that supposed to do?
+>
+> Check that the max_banks of a previous IOMMU are == to the max_banks of
+> the current IOMMU?
+>
+> Why? Could definitely use a comment.
+
+Current AMD IOMMU perf implementation assumes that all IOMMUs must have
+the same value of max_counters. Therefore, this logic iterates through 
+all IOMMUs to check this. I'll add the comment here.
+
+Thanks,
+Suravee
