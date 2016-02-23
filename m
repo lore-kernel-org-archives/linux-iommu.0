@@ -1,16 +1,13 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH] iommu/amd: Fix boot warning when device 00:00.0 is not iommu
-Date: Tue, 23 Feb 2016 13:12:15 +0100
-Message-ID: <20160223121215.GA31151@8bytes.org>
-References: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<20160223110406.GA22747@8bytes.org> <56CC422E.7050905@amd.com>
-	<56CC44D8.4080604@amd.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH V2] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
+Date: Tue, 23 Feb 2016 12:19:20 +0000
+Message-ID: <56CC4E48.1060103@arm.com>
+References: <1455820158-8529-1-git-send-email-tchalamarla@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <56CC44D8.4080604-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <1455820158-8529-1-git-send-email-tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,113 +17,179 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
+To: tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 23, 2016 at 06:39:04PM +0700, Suravee Suthikulpanit wrote:
-> Actually, my V5 is rebased from tips which has moved several files.
-> I think we might need to create a separate patch series to fix this
-> issue in older kernels. Which branch should I rebase my changes for
-> the older kernel?
+On 18/02/16 18:29, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org wrote:
+> From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+>
+> Due to Errata#27704 CN88xx SMMUv2,supports  only shared ASID and VMID
+> namespaces; specifically within a given node SMMU0 and SMMU1 share,
+> as does SMMU2 and SMMU3.
+>
+> This patch tries to address these issuee by supplying asid and vmid
+> base from devicetree.
+>
+> changes from V1:
+> 	- rebased on top of 16 bit VMID patch
+> 	- removed redundent options from DT
+> 	- insted of transform, DT now supplies starting ASID/VMID
+>
+> Signed-off-by: Akula Geethasowjanya <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> ---
+>   .../devicetree/bindings/iommu/arm,smmu.txt         |  8 +++++
+>   drivers/iommu/arm-smmu.c                           | 37 +++++++++++++++-------
+>   2 files changed, 34 insertions(+), 11 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> index bb7e569..80b8484 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> @@ -57,6 +57,14 @@ conditions.
+>
+>   - smmu-enable-vmid16 : Enable 16 bit VMID, if allowed.
+>
+> +- asid-base :	Buggy SMMUv2 implementations which doesn't satisfy the
+> +		ASID namespace needs, use this field to specify starting
+> +		ASID for the SMMU.
+> +
+> +- vmid-base :	Buggy SMMUv2 implementations which doesn't satisfy the VMID
+> +		namespace needs, use this field to specify starting VMID
+> +		for the SMMU.
+> +
 
-The fix is iommu-code only. Based on your patches, I extracted this
-smaller patch, which only fixes the issue. Does it look good to you? If
-you are okay with it I am going to queue it asap into my iommu/fixes
-branch and send it upstream.
+ From how you've described the situation, this is still just some 
+arbitrary number for the sake of a driver workaround and not an actual 
+property of the hardware. Either way there should be a proper compatible 
+string for this implementation, e.g. something like "cavium,cn88xx-smmu".
 
+Given that, you then shouldn't actually need anything else, because you 
+can simply keep track of how many Cavium SMMUs have been probed and 
+automatically generate a suitable offset, e.g. (smmu->index * 
+ARM_SMMU_MAX_CBS) to ensure global ASID/VMID uniqueness.
 
-	Joerg
+Robin.
 
->From b91309eedd77374fdecc379942c44f903e2dedff Mon Sep 17 00:00:00 2001
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Date: Tue, 23 Feb 2016 13:03:30 +0100
-Subject: [PATCH] iommu/amd: Fix boot warning when device 00:00.0 is not iommu
- covered
-
-The setup code for the performance counters in the AMD IOMMU driver
-tests whether the counters can be written. It tests to setup a counter
-for device 00:00.0, which fails on systems where this particular device
-is not covered by the IOMMU.
-
-Fix this by not relying on device 00:00.0 but only on the IOMMU being
-present.
-
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/amd_iommu_init.c | 34 ++++++++++++++++++++++------------
- 1 file changed, 22 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 013bdff..d06a6d9 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -228,6 +228,10 @@ static int amd_iommu_enable_interrupts(void);
- static int __init iommu_go_to_state(enum iommu_init_state state);
- static void init_device_table_dma(void);
- 
-+static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
-+				    u8 bank, u8 cntr, u8 fxn,
-+				    u64 *value, bool is_write);
-+
- static inline void update_last_devid(u16 devid)
- {
- 	if (devid > amd_iommu_last_bdf)
-@@ -1142,8 +1146,8 @@ static void init_iommu_perf_ctr(struct amd_iommu *iommu)
- 	amd_iommu_pc_present = true;
- 
- 	/* Check if the performance counters can be written to */
--	if ((0 != amd_iommu_pc_get_set_reg_val(0, 0, 0, 0, &val, true)) ||
--	    (0 != amd_iommu_pc_get_set_reg_val(0, 0, 0, 0, &val2, false)) ||
-+	if ((0 != iommu_pc_get_set_reg_val(iommu, 0, 0, 0, &val, true)) ||
-+	    (0 != iommu_pc_get_set_reg_val(iommu, 0, 0, 0, &val2, false)) ||
- 	    (val != val2)) {
- 		pr_err("AMD-Vi: Unable to write to IOMMU perf counter.\n");
- 		amd_iommu_pc_present = false;
-@@ -2283,22 +2287,15 @@ u8 amd_iommu_pc_get_max_counters(u16 devid)
- }
- EXPORT_SYMBOL(amd_iommu_pc_get_max_counters);
- 
--int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
-+static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
-+				    u8 bank, u8 cntr, u8 fxn,
- 				    u64 *value, bool is_write)
- {
--	struct amd_iommu *iommu;
- 	u32 offset;
- 	u32 max_offset_lim;
- 
--	/* Make sure the IOMMU PC resource is available */
--	if (!amd_iommu_pc_present)
--		return -ENODEV;
--
--	/* Locate the iommu associated with the device ID */
--	iommu = amd_iommu_rlookup_table[devid];
--
- 	/* Check for valid iommu and pc register indexing */
--	if (WARN_ON((iommu == NULL) || (fxn > 0x28) || (fxn & 7)))
-+	if (WARN_ON((fxn > 0x28) || (fxn & 7)))
- 		return -ENODEV;
- 
- 	offset = (u32)(((0x40|bank) << 12) | (cntr << 8) | fxn);
-@@ -2322,3 +2319,16 @@ int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
- 	return 0;
- }
- EXPORT_SYMBOL(amd_iommu_pc_get_set_reg_val);
-+
-+int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
-+				    u64 *value, bool is_write)
-+{
-+	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
-+
-+	/* Make sure the IOMMU PC resource is available */
-+	if (!amd_iommu_pc_present || iommu == NULL)
-+		return -ENODEV;
-+
-+	return iommu_pc_get_set_reg_val(iommu, bank, cntr, fxn,
-+					value, is_write);
-+}
--- 
-1.8.4.5
+>   Example:
+>
+>           smmu {
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 003c442..dc46b9a 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -320,6 +320,9 @@ struct arm_smmu_device {
+>   	unsigned long			ipa_size;
+>   	unsigned long			pa_size;
+>
+> +	u32				asid_base;
+> +	u32				vmid_base;
+> +
+>   	u32				num_global_irqs;
+>   	u32				num_context_irqs;
+>   	unsigned int			*irqs;
+> @@ -335,8 +338,8 @@ struct arm_smmu_cfg {
+>   };
+>   #define INVALID_IRPTNDX			0xff
+>
+> -#define ARM_SMMU_CB_ASID(cfg)		((cfg)->cbndx)
+> -#define ARM_SMMU_CB_VMID(cfg)		((cfg)->cbndx + 1)
+> +#define ARM_SMMU_CB_ASID(smmu, cfg)	((u16)((smmu)->asid_base + (cfg)->cbndx))
+> +#define ARM_SMMU_CB_VMID(smmu, cfg)	((u16)((smmu)->vmid_base + (cfg)->cbndx))
+>
+>   enum arm_smmu_domain_stage {
+>   	ARM_SMMU_DOMAIN_S1 = 0,
+> @@ -576,11 +579,11 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+>
+>   	if (stage1) {
+>   		base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+> -		writel_relaxed(ARM_SMMU_CB_ASID(cfg),
+> +		writel_relaxed(ARM_SMMU_CB_ASID(smmu, cfg),
+>   			       base + ARM_SMMU_CB_S1_TLBIASID);
+>   	} else {
+>   		base = ARM_SMMU_GR0(smmu);
+> -		writel_relaxed(ARM_SMMU_CB_VMID(cfg),
+> +		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg),
+>   			       base + ARM_SMMU_GR0_TLBIVMID);
+>   	}
+>
+> @@ -602,7 +605,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>
+>   		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
+>   			iova &= ~12UL;
+> -			iova |= ARM_SMMU_CB_ASID(cfg);
+> +			iova |= ARM_SMMU_CB_ASID(smmu, cfg);
+>   			do {
+>   				writel_relaxed(iova, reg);
+>   				iova += granule;
+> @@ -610,7 +613,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>   #ifdef CONFIG_64BIT
+>   		} else {
+>   			iova >>= 12;
+> -			iova |= (u64)ARM_SMMU_CB_ASID(cfg) << 48;
+> +			iova |= (u64)ARM_SMMU_CB_ASID(smmu, cfg) << 48;
+>   			do {
+>   				writeq_relaxed(iova, reg);
+>   				iova += granule >> 12;
+> @@ -630,7 +633,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>   #endif
+>   	} else {
+>   		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
+> -		writel_relaxed(ARM_SMMU_CB_VMID(cfg), reg);
+> +		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg), reg);
+>   	}
+>   }
+>
+> @@ -744,7 +747,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>   #endif
+>   		/* if 16bit VMID required set VMID in CBA2R */
+>   		if (smmu->options & ARM_SMMU_OPT_ENABLE_VMID16)
+> -			reg |= ARM_SMMU_CB_VMID(cfg) << CBA2R_VMID_SHIFT;
+> +			reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBA2R_VMID_SHIFT;
+>
+>   		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
+>   	}
+> @@ -763,7 +766,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>   			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
+>   	} else if (!(smmu->options & ARM_SMMU_OPT_ENABLE_VMID16)) {
+>   		/*16 bit VMID is not enabled set 8 bit VMID here */
+> -		reg |= ARM_SMMU_CB_VMID(cfg) << CBAR_VMID_SHIFT;
+> +		reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBAR_VMID_SHIFT;
+>   	}
+>   	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
+>
+> @@ -771,11 +774,11 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>   	if (stage1) {
+>   		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+>
+> -		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
+> +		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
+>   		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+>
+>   		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+> -		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
+> +		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
+>   		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR1);
+>   	} else {
+>   		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+> @@ -1812,6 +1815,18 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>
+>   	parse_driver_options(smmu);
+>
+> +	if (of_property_read_u32(dev->of_node, "#asid-base",
+> +				 &smmu->asid_base)) {
+> +		smmu->asid_base = 0;
+> +	}
+> +
+> +	if (of_property_read_u32(dev->of_node, "#vmid-base",
+> +				 &smmu->vmid_base)) {
+> +		smmu->vmid_base = 1;
+> +	}
+> +	if (smmu->vmid_base == 0)
+> +		smmu->vmid_base = 1;
+> +
+>   	if (smmu->version > ARM_SMMU_V1 &&
+>   	    smmu->num_context_banks != smmu->num_context_irqs) {
+>   		dev_err(dev,
+>
