@@ -1,14 +1,14 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH V4 0/6] perf/amd/iommu: Enable multi-IOMMU support
-Date: Tue, 23 Feb 2016 18:39:04 +0700
-Message-ID: <56CC44D8.4080604@amd.com>
-References: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<20160223110406.GA22747@8bytes.org> <56CC422E.7050905@amd.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH V2] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
+Date: Tue, 23 Feb 2016 11:49:50 +0000
+Message-ID: <20160223114950.GG3966@arm.com>
+References: <1455820158-8529-1-git-send-email-tchalamarla@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <56CC422E.7050905-5C7GfCeVMHo@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1455820158-8529-1-git-send-email-tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,48 +18,169 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
+To: tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
+Cc: Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Thu, Feb 18, 2016 at 10:29:18AM -0800, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org wrote:
+> From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> 
+> Due to Errata#27704 CN88xx SMMUv2,supports  only shared ASID and VMID
+> namespaces; specifically within a given node SMMU0 and SMMU1 share,
+> as does SMMU2 and SMMU3.
+> 
+> This patch tries to address these issuee by supplying asid and vmid
+> base from devicetree.
+> 
+> changes from V1:
+> 	- rebased on top of 16 bit VMID patch
+> 	- removed redundent options from DT
+> 	- insted of transform, DT now supplies starting ASID/VMID
+> 
+> Signed-off-by: Akula Geethasowjanya <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> ---
+>  .../devicetree/bindings/iommu/arm,smmu.txt         |  8 +++++
+>  drivers/iommu/arm-smmu.c                           | 37 +++++++++++++++-------
+>  2 files changed, 34 insertions(+), 11 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> index bb7e569..80b8484 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> @@ -57,6 +57,14 @@ conditions.
+>  
+>  - smmu-enable-vmid16 : Enable 16 bit VMID, if allowed.
+>  
+> +- asid-base :	Buggy SMMUv2 implementations which doesn't satisfy the
+> +		ASID namespace needs, use this field to specify starting
+> +		ASID for the SMMU.
 
+Can you make this cavium,asid-base please?
 
-On 02/23/2016 06:27 PM, Suravee Suthikulpanit wrote:
-> Hi,
->
-> On 02/23/2016 06:04 PM, Joerg Roedel wrote:
->> Hi Suravee,
->>
->> On Thu, Feb 11, 2016 at 04:15:21PM +0700, Suthikulpanit, Suravee wrote:
->>> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->>>
->>> This patch series modifies the existing perf_event_amd_iommu driver
->>> to support systems with multiple IOMMUs. It introduces new AMD IOMMU
->>> APIs,
->>> which are used by the AMD IOMMU Perf driver to access performance
->>> counters in multiple IOMMUs.
->>>
->>> In addition, this series should also fix current AMD IOMMU PMU driver
->>> initialization issue in some existing KV and CZ platform, where it fails
->>> to write to IOMMU perf counter as reported by Andreas Hartmann here
->>> (http://comments.gmane.org/gmane.linux.kernel.pci/49147).
->>
->> Since that problem also affects older kernels, we need a stand-alone
->> fix for this initialization issue. We can't backport new features to fix
->> bugs in old kernels.
->>
->>
->>     Joerg
->>
->
-> OK, I am spliting V5 into two part. First would be just to fix the
-> issue. Then the second part would be to add the multiple IOMMU support.
->
-> Suravee
+> +
+> +- vmid-base :	Buggy SMMUv2 implementations which doesn't satisfy the VMID
+> +		namespace needs, use this field to specify starting VMID
+> +		for the SMMU.
 
-Actually, my V5 is rebased from tips which has moved several files. I 
-think we might need to create a separate patch series to fix this issue 
-in older kernels. Which branch should I rebase my changes for the older 
-kernel?
+Similarly here.
 
-Suravee
+> +
+>  Example:
+>  
+>          smmu {
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 003c442..dc46b9a 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -320,6 +320,9 @@ struct arm_smmu_device {
+>  	unsigned long			ipa_size;
+>  	unsigned long			pa_size;
+>  
+> +	u32				asid_base;
+> +	u32				vmid_base;
+> +
+>  	u32				num_global_irqs;
+>  	u32				num_context_irqs;
+>  	unsigned int			*irqs;
+> @@ -335,8 +338,8 @@ struct arm_smmu_cfg {
+>  };
+>  #define INVALID_IRPTNDX			0xff
+>  
+> -#define ARM_SMMU_CB_ASID(cfg)		((cfg)->cbndx)
+> -#define ARM_SMMU_CB_VMID(cfg)		((cfg)->cbndx + 1)
+> +#define ARM_SMMU_CB_ASID(smmu, cfg)	((u16)((smmu)->asid_base + (cfg)->cbndx))
+> +#define ARM_SMMU_CB_VMID(smmu, cfg)	((u16)((smmu)->vmid_base + (cfg)->cbndx))
+
+Why are you removing the +1 from the macro and then adding it to all the
+callers instead? I also think we should be performing a range-check
+somewhere so that we don't silently truncate values (e.g. if we try to
+program more than 8 bits on a system with 8-bit VMIDs).
+
+>  
+>  enum arm_smmu_domain_stage {
+>  	ARM_SMMU_DOMAIN_S1 = 0,
+> @@ -576,11 +579,11 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+>  
+>  	if (stage1) {
+>  		base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+> -		writel_relaxed(ARM_SMMU_CB_ASID(cfg),
+> +		writel_relaxed(ARM_SMMU_CB_ASID(smmu, cfg),
+>  			       base + ARM_SMMU_CB_S1_TLBIASID);
+>  	} else {
+>  		base = ARM_SMMU_GR0(smmu);
+> -		writel_relaxed(ARM_SMMU_CB_VMID(cfg),
+> +		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg),
+>  			       base + ARM_SMMU_GR0_TLBIVMID);
+>  	}
+>  
+> @@ -602,7 +605,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>  
+>  		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
+>  			iova &= ~12UL;
+> -			iova |= ARM_SMMU_CB_ASID(cfg);
+> +			iova |= ARM_SMMU_CB_ASID(smmu, cfg);
+>  			do {
+>  				writel_relaxed(iova, reg);
+>  				iova += granule;
+> @@ -610,7 +613,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>  #ifdef CONFIG_64BIT
+>  		} else {
+>  			iova >>= 12;
+> -			iova |= (u64)ARM_SMMU_CB_ASID(cfg) << 48;
+> +			iova |= (u64)ARM_SMMU_CB_ASID(smmu, cfg) << 48;
+>  			do {
+>  				writeq_relaxed(iova, reg);
+>  				iova += granule >> 12;
+> @@ -630,7 +633,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>  #endif
+>  	} else {
+>  		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
+> -		writel_relaxed(ARM_SMMU_CB_VMID(cfg), reg);
+> +		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg), reg);
+>  	}
+>  }
+>  
+> @@ -744,7 +747,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>  #endif
+>  		/* if 16bit VMID required set VMID in CBA2R */
+>  		if (smmu->options & ARM_SMMU_OPT_ENABLE_VMID16)
+> -			reg |= ARM_SMMU_CB_VMID(cfg) << CBA2R_VMID_SHIFT;
+> +			reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBA2R_VMID_SHIFT;
+>  
+>  		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
+>  	}
+> @@ -763,7 +766,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>  			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
+>  	} else if (!(smmu->options & ARM_SMMU_OPT_ENABLE_VMID16)) {
+>  		/*16 bit VMID is not enabled set 8 bit VMID here */
+> -		reg |= ARM_SMMU_CB_VMID(cfg) << CBAR_VMID_SHIFT;
+> +		reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBAR_VMID_SHIFT;
+>  	}
+>  	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
+>  
+> @@ -771,11 +774,11 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>  	if (stage1) {
+>  		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+>  
+> -		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
+> +		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
+>  		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+>  
+>  		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+> -		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
+> +		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
+>  		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR1);
+>  	} else {
+>  		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+> @@ -1812,6 +1815,18 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>  
+>  	parse_driver_options(smmu);
+>  
+> +	if (of_property_read_u32(dev->of_node, "#asid-base",
+> +				 &smmu->asid_base)) {
+> +		smmu->asid_base = 0;
+
+The smmu structure is zeroed on allocation, so no need for this.
+
+Will
