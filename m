@@ -1,7 +1,7 @@
 From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 Subject: Re: [PATCH V2] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
-Date: Tue, 23 Feb 2016 15:50:21 -0800
-Message-ID: <56CCF03D.3000809@caviumnetworks.com>
+Date: Tue, 23 Feb 2016 15:54:47 -0800
+Message-ID: <56CCF147.7080308@caviumnetworks.com>
 References: <1455820158-8529-1-git-send-email-tchalamarla@caviumnetworks.com>
 	<20160223122616.GE4989@leverpostej>
 Mime-Version: 1.0
@@ -22,15 +22,7 @@ To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-in Summary,
 
-if i change asid-base to cavium,asid-base and still use DT for supplying 
-base value, is this a solution that will be accepted, of course i will 
-do range check to see we are not supplying 16bit VMID for 8 bit systems 
-even though the property now indicates Cavium only.
-
-Thanks,
-Tirumalesh.
 
 On 02/23/2016 04:26 AM, Mark Rutland wrote:
 > On Thu, Feb 18, 2016 at 10:29:18AM -0800, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org wrote:
@@ -75,6 +67,9 @@ On 02/23/2016 04:26 AM, Mark Rutland wrote:
 > hardware, and are insufficient to aovid the issue in general (adding an
 > arbitrary base does not enforce IDs fall within a particular range).
 >
+
+pardon my ignorance, are you saying what happens if DT don't know what 
+values to send?
 > So NAK for *-base properties alone.
 >
 >> +	if (of_property_read_u32(dev->of_node, "#asid-base",
