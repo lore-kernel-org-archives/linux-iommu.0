@@ -1,14 +1,12 @@
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V2] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
-Date: Tue, 23 Feb 2016 12:26:17 +0000
-Message-ID: <20160223122616.GE4989@leverpostej>
-References: <1455820158-8529-1-git-send-email-tchalamarla@caviumnetworks.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [GIT PULL] iommu/arm-smmu: Updates for 4.6
+Date: Tue, 23 Feb 2016 12:33:22 +0000
+Message-ID: <20160223123322.GL3966@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1455820158-8529-1-git-send-email-tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,64 +16,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
+To: jroedel-l3A5Bk7waGM@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 18, 2016 at 10:29:18AM -0800, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org wrote:
-> From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> 
-> Due to Errata#27704 CN88xx SMMUv2,supports  only shared ASID and VMID
-> namespaces; specifically within a given node SMMU0 and SMMU1 share,
-> as does SMMU2 and SMMU3.
-> 
-> This patch tries to address these issuee by supplying asid and vmid
-> base from devicetree.
-> 
-> changes from V1:
-> 	- rebased on top of 16 bit VMID patch
-> 	- removed redundent options from DT
-> 	- insted of transform, DT now supplies starting ASID/VMID
-> 
-> Signed-off-by: Akula Geethasowjanya <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> ---
->  .../devicetree/bindings/iommu/arm,smmu.txt         |  8 +++++
->  drivers/iommu/arm-smmu.c                           | 37 +++++++++++++++-------
->  2 files changed, 34 insertions(+), 11 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> index bb7e569..80b8484 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> @@ -57,6 +57,14 @@ conditions.
->  
->  - smmu-enable-vmid16 : Enable 16 bit VMID, if allowed.
->  
-> +- asid-base :	Buggy SMMUv2 implementations which doesn't satisfy the
-> +		ASID namespace needs, use this field to specify starting
-> +		ASID for the SMMU.
-> +
-> +- vmid-base :	Buggy SMMUv2 implementations which doesn't satisfy the VMID
-> +		namespace needs, use this field to specify starting VMID
-> +		for the SMMU.
+Hi Joerg,
 
-As has been pointed out, these are not strictly properties of the
-hardware, and are insufficient to aovid the issue in general (adding an
-arbitrary base does not enforce IDs fall within a particular range).
+Please pull the following arm-smmu updates for 4.6. This lays the
+foundations for a functional IOMMU_DOMAIN_DMA for the two drivers,
+although we haven't yet thrown the switch since we need to ensure
+that the DMA ops all point in the right direction first. Hopefully we'll
+get that going for 4.7.
 
-So NAK for *-base properties alone.
+Will
 
-> +	if (of_property_read_u32(dev->of_node, "#asid-base",
-> +				 &smmu->asid_base)) {
-> +		smmu->asid_base = 0;
-> +	}
-> +
-> +	if (of_property_read_u32(dev->of_node, "#vmid-base",
-> +				 &smmu->vmid_base)) {
-> +		smmu->vmid_base = 1;
-> +	}
+--->8
 
-These do not match the documentation above.
+The following changes since commit 18558cae0272f8fd9647e69d3fec1565a7949865:
 
-Mark.
+  Linux 4.5-rc4 (2016-02-14 13:05:20 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+
+for you to fetch changes up to cbf8277ef4562075eb4e3932ccd60cc11ee9454c:
+
+  iommu/arm-smmu: Treat IOMMU_DOMAIN_DMA as bypass for now (2016-02-18 15:02:44 +0000)
+
+----------------------------------------------------------------
+Anup Patel (1):
+      of: iommu: Increment DT node refcount in of_iommu_set_ops()
+
+Robin Murphy (3):
+      iommu/arm-smmu: Treat all device transactions as unprivileged
+      iommu/arm-smmu: Support DMA-API domains
+      iommu/arm-smmu: Allow disabling unmatched stream bypass
+
+Will Deacon (2):
+      iommu/arm-smmu: Don't fail device attach if already attached to a domain
+      iommu/arm-smmu: Treat IOMMU_DOMAIN_DMA as bypass for now
+
+ drivers/iommu/arm-smmu-v3.c | 50 +++++++++++++++-------------
+ drivers/iommu/arm-smmu.c    | 79 ++++++++++++++++++++++++++++-----------------
+ drivers/iommu/of_iommu.c    |  1 +
+ 3 files changed, 78 insertions(+), 52 deletions(-)
