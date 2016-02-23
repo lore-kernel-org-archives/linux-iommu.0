@@ -1,13 +1,17 @@
-From: Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Warning from AMD IOMMU performance counters
-Date: Mon, 22 Feb 2016 17:36:09 -0800
-Message-ID: <56CBB789.4020704@redhat.com>
-References: <56C798B8.6080009@redhat.com> <56CA69C7.3050508@iommu.org>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH V4 5/6] perf/amd/iommu: Enable support for multiple IOMMUs
+Date: Tue, 23 Feb 2016 12:12:42 +0700
+Message-ID: <56CBEA4A.8070001@amd.com>
+References: <1455182127-17551-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1455182127-17551-6-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<20160218131853.GU6357@twins.programming.kicks-ass.net>
+	<56CAC01F.8090800@amd.com>
+	<20160222140741.GH6357@twins.programming.kicks-ass.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <56CA69C7.3050508-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
+In-Reply-To: <20160222140741.GH6357-ndre7Fmf5hadTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,70 +21,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/21/2016 05:52 PM, Wan Zongshun wrote:
->
->
-> -------- Original Message --------
->> Hi,
+Hi
+
+On 02/22/2016 09:07 PM, Peter Zijlstra wrote:
+> On Mon, Feb 22, 2016 at 03:00:31PM +0700, Suravee Suthikulpanit wrote:
+>>> So I really don't have time to review new muck while I'm hunting perf
+>>> core fail, but Boris made me look at this.
+>>>
+>>> This is crazy, if you have multiple IOMMUs then create an event per
+>>> IOMMU, do _NOT_ fold them all into a single event.
 >>
->> Since about 4.4, we've been seeing reports of this warning on every boot
->> from some users:
->>
->> WARNING: CPU: 2 PID: 1 at drivers/iommu/amd_iommu_init.c:2301
->> amd_iommu_pc_get_set_reg_val+0xa8/0xe0()
->> Modules linked in:
->> CPU: 2 PID: 1 Comm: swapper/0 Not tainted 4.4.2-300.fc23.x86_64 #1
->> Hardware name: Hewlett-Packard HP EliteBook 755 G2/221C, BIOS M84 Ver.
->> 01.10 10/20/2015
->>   0000000000000000 0000000026124b43 ffff88042d687d20 ffffffff813b0c9f
->>   0000000000000000 ffff88042d687d58 ffffffff810a2f12 ffff88042f014800
->>   0000000000000040 0000000000000000 ffffffff81d6c73d 0000000000000000
->> Call Trace:
->>   [<ffffffff813b0c9f>] dump_stack+0x44/0x55
->>   [<ffffffff810a2f12>] warn_slowpath_common+0x82/0xc0
->>   [<ffffffff81d6c73d>] ? memblock_find_dma_reserve+0x16a/0x16a
->>   [<ffffffff810a305a>] warn_slowpath_null+0x1a/0x20
->>   [<ffffffff814d3f48>] amd_iommu_pc_get_set_reg_val+0xa8/0xe0
->>   [<ffffffff81dafda7>] iommu_go_to_state+0x4d6/0x1384
->>   [<ffffffff813c02ea>] ? kvasprintf+0x7a/0xa0
->>   [<ffffffff81d6c73d>] ? memblock_find_dma_reserve+0x16a/0x16a
->>   [<ffffffff81db0cbd>] amd_iommu_init+0x13/0x201
->>   [<ffffffff81d6c74f>] pci_iommu_init+0x12/0x3c
->>   [<ffffffff81002123>] do_one_initcall+0xb3/0x200
->>   [<ffffffff810c0935>] ? parse_args+0x295/0x4b0
->>   [<ffffffff81d621c8>] kernel_init_freeable+0x189/0x223
->>   [<ffffffff8178dc00>] ? rest_init+0x80/0x80
->>   [<ffffffff8178dc0e>] kernel_init+0xe/0xe0
->>   [<ffffffff81799c8f>] ret_from_fork+0x3f/0x70
->>   [<ffffffff8178dc00>] ? rest_init+0x80/0x80
->>
->> Full bugzilla https://bugzilla.redhat.com/show_bug.cgi?id=1310258
->>
->> Any idea what might be causing this spew?
+>> These are system-wide events, which are programmed on every IOMMU the same
+>> way. I am not sure what you meant by creating an event per IOMMU. Do you
+>> mean I should create internal per-IOMMU struct perf_event for each event?
 >
-> I also see this warning.
+> No, I meant to expose each IOMMU individually to userspace, as a
+> separate device.
 >
-> Suravee's the one of this patch series might be fix this issue, you can try it.
->
-> [PATCH V4 0/6] perf/amd/iommu: Enable multi-IOMMU support
->
+> Is there never a case to profile just one of the IOMMUs ?
 >
 
-That patch had other dependencies. I brought what I thought were enough of
-them in to at least compile for the reporter to test (perf_event changes
-from Borislav Petkov). Apparently the kernel doesn't boot with the series
-so suspect there is an integration issue somewhere. I'm going to see if
-I can more information from the reporter about what exactly went wrong
-to see if I need more dependencies.
+I see. That's definitely doable and simpler to implement.
 
-It would be nice to get a single patch which could be applied to stable.
-Tainting the kernel immediately on bootup makes sorting through problems
-more difficult.
+I was not sure if making users specify the IOMMU instance (e.g. 
+amd_iommu_0/<ev name> , amd_iommu_1/<ev_name>, ....) would be too 
+tedious. However, this would actually give users better control of the 
+performance events, which is a good trade-off. I think it is acceptable.
+
+I'll make the change and send this out in V5.
 
 Thanks,
-Laura
-  
+Suravee
