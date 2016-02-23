@@ -1,11 +1,14 @@
 From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH V3] iommu/arm-smmu-v2: Add support for 16 bit VMID
-Date: Tue, 23 Feb 2016 10:19:00 -0800
-Message-ID: <1456251540-1269-1-git-send-email-tchalamarla@caviumnetworks.com>
+Subject: Re: [PATCH V2] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
+Date: Tue, 23 Feb 2016 15:50:21 -0800
+Message-ID: <56CCF03D.3000809@caviumnetworks.com>
+References: <1455820158-8529-1-git-send-email-tchalamarla@caviumnetworks.com>
+	<20160223122616.GE4989@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160223122616.GE4989@leverpostej>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,113 +18,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-ARM-SMMUv2 supports upto 16 bit VMID. This patch enables
-16 bit VMID when HW supports.
+in Summary,
 
-Changes from V2:
-	- Bug fix.
-	- Removed not needed prints and comments.
+if i change asid-base to cavium,asid-base and still use DT for supplying 
+base value, is this a solution that will be accepted, of course i will 
+do range check to see we are not supplying 16bit VMID for 8 bit systems 
+even though the property now indicates Cavium only.
 
-changes from V1:
-	- Remove DT Property and enable 16 bit VMID if ID says.
+Thanks,
+Tirumalesh.
 
-Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 24 ++++++++++++++++++------
- 1 file changed, 18 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 59ee4b8..247a469 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -93,6 +93,7 @@
- #define sCR0_VMIDPNE			(1 << 11)
- #define sCR0_PTM			(1 << 12)
- #define sCR0_FB				(1 << 13)
-+#define sCR0_VMID16EN			(1 << 31)
- #define sCR0_BSU_SHIFT			14
- #define sCR0_BSU_MASK			0x3
- 
-@@ -140,6 +141,7 @@
- #define ID2_PTFS_4K			(1 << 12)
- #define ID2_PTFS_16K			(1 << 13)
- #define ID2_PTFS_64K			(1 << 14)
-+#define ID2_VMID16			(1 << 15)
- 
- /* Global TLB invalidation */
- #define ARM_SMMU_GR0_TLBIVMID		0x64
-@@ -189,6 +191,8 @@
- #define ARM_SMMU_GR1_CBA2R(n)		(0x800 + ((n) << 2))
- #define CBA2R_RW64_32BIT		(0 << 0)
- #define CBA2R_RW64_64BIT		(1 << 0)
-+#define CBA2R_VMID_SHIFT		16
-+#define CBA2R_VMID_MASK			0xffff
- 
- /* Translation context bank */
- #define ARM_SMMU_CB_BASE(smmu)		((smmu)->base + ((smmu)->size >> 1))
-@@ -297,6 +301,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_TRANS_S2		(1 << 3)
- #define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
- #define ARM_SMMU_FEAT_TRANS_OPS		(1 << 5)
-+#define ARM_SMMU_FEAT_VMID16		(1 << 6)
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
-@@ -726,16 +731,15 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
- 
- 	if (smmu->version > ARM_SMMU_V1) {
--		/*
--		 * CBA2R.
--		 * *Must* be initialised before CBAR thanks to VMID16
--		 * architectural oversight affected some implementations.
--		 */
- #ifdef CONFIG_64BIT
- 		reg = CBA2R_RW64_64BIT;
- #else
- 		reg = CBA2R_RW64_32BIT;
- #endif
-+		/* if 16bit VMID supported set VMID in CBA2R */
-+		if (smmu->features & ARM_SMMU_FEAT_VMID16)
-+			reg |= ARM_SMMU_CB_VMID(cfg) << CBA2R_VMID_SHIFT;
-+
- 		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
- 	}
- 
-@@ -751,7 +755,8 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 	if (stage1) {
- 		reg |= (CBAR_S1_BPSHCFG_NSH << CBAR_S1_BPSHCFG_SHIFT) |
- 			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
--	} else {
-+	} else if (!(smmu->features & ARM_SMMU_FEAT_VMID16)) {
-+		/*16 bit VMID is not supported set 8 bit VMID here */
- 		reg |= ARM_SMMU_CB_VMID(cfg) << CBAR_VMID_SHIFT;
- 	}
- 	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
-@@ -1508,6 +1513,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 	/* Don't upgrade barriers */
- 	reg &= ~(sCR0_BSU_MASK << sCR0_BSU_SHIFT);
- 
-+	if (smmu->features & ARM_SMMU_FEAT_VMID16)
-+		reg |= sCR0_VMID16EN;
-+
- 	/* Push the button */
- 	__arm_smmu_tlb_sync(smmu);
- 	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-@@ -1658,6 +1666,10 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 	size = arm_smmu_id_size_to_bits((id >> ID2_OAS_SHIFT) & ID2_OAS_MASK);
- 	smmu->pa_size = size;
- 
-+	/* See if 16bit VMID is supported */
-+	if (id & ID2_VMID16)
-+		smmu->features |= ARM_SMMU_FEAT_VMID16;
-+
- 	/*
- 	 * What the page table walker can address actually depends on which
- 	 * descriptor format is in use, but since a) we don't know that yet,
--- 
-2.1.0
+On 02/23/2016 04:26 AM, Mark Rutland wrote:
+> On Thu, Feb 18, 2016 at 10:29:18AM -0800, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org wrote:
+>> From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+>>
+>> Due to Errata#27704 CN88xx SMMUv2,supports  only shared ASID and VMID
+>> namespaces; specifically within a given node SMMU0 and SMMU1 share,
+>> as does SMMU2 and SMMU3.
+>>
+>> This patch tries to address these issuee by supplying asid and vmid
+>> base from devicetree.
+>>
+>> changes from V1:
+>> 	- rebased on top of 16 bit VMID patch
+>> 	- removed redundent options from DT
+>> 	- insted of transform, DT now supplies starting ASID/VMID
+>>
+>> Signed-off-by: Akula Geethasowjanya <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+>> Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+>> ---
+>>   .../devicetree/bindings/iommu/arm,smmu.txt         |  8 +++++
+>>   drivers/iommu/arm-smmu.c                           | 37 +++++++++++++++-------
+>>   2 files changed, 34 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>> index bb7e569..80b8484 100644
+>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>> @@ -57,6 +57,14 @@ conditions.
+>>
+>>   - smmu-enable-vmid16 : Enable 16 bit VMID, if allowed.
+>>
+>> +- asid-base :	Buggy SMMUv2 implementations which doesn't satisfy the
+>> +		ASID namespace needs, use this field to specify starting
+>> +		ASID for the SMMU.
+>> +
+>> +- vmid-base :	Buggy SMMUv2 implementations which doesn't satisfy the VMID
+>> +		namespace needs, use this field to specify starting VMID
+>> +		for the SMMU.
+>
+> As has been pointed out, these are not strictly properties of the
+> hardware, and are insufficient to aovid the issue in general (adding an
+> arbitrary base does not enforce IDs fall within a particular range).
+>
+> So NAK for *-base properties alone.
+>
+>> +	if (of_property_read_u32(dev->of_node, "#asid-base",
+>> +				 &smmu->asid_base)) {
+>> +		smmu->asid_base = 0;
+>> +	}
+>> +
+>> +	if (of_property_read_u32(dev->of_node, "#vmid-base",
+>> +				 &smmu->vmid_base)) {
+>> +		smmu->vmid_base = 1;
+>> +	}
+>
+> These do not match the documentation above.
+>
+> Mark.
+>
