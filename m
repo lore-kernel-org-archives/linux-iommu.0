@@ -1,7 +1,8 @@
 From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v4 2/6] PCI: Move informational printk to pci_add_dma_alias()
-Date: Wed, 24 Feb 2016 13:43:54 -0600
-Message-ID: <20160224194354.7585.30654.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+Subject: [PATCH v4 4/6] PCI: Rename dma_alias_is_enabled() to
+ pci_devs_are_dma_aliases()
+Date: Wed, 24 Feb 2016 13:44:15 -0600
+Message-ID: <20160224194415.7585.37290.stgit@bhelgaas-glaptop2.roam.corp.google.com>
 References: <20160224193926.7585.10833.stgit@bhelgaas-glaptop2.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -13,44 +14,44 @@ To: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
 Cc: linux-pci@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
+This should be folded into the previous patch.  I left it separate to show
+the interface difference more clearly.
 
-One of the quirks that adds DMA aliases logs an informational message in
-dmesg.  Move that to pci_add_dma_alias() so all users log the message
-consistently.  No functional change intended (except extra message).
+Also, pci_devs_are_dma_aliases() uses PCI internals (dma_alias_mask), so I
+think it should be in PCI code instead of in IOMMU code.  That would mean
+both it and pci_add_dma_alias() should probably be declared in
+include/linux/pci.h (but not exported to modules with EXPORT_SYMBOL()).
 ---
- drivers/pci/pci.c    |    2 ++
- drivers/pci/quirks.c |    6 +-----
- 2 files changed, 3 insertions(+), 5 deletions(-)
+ drivers/iommu/iommu.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 7fccc8a..8b0a637 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -4580,6 +4580,8 @@ void pci_add_dma_alias(struct pci_dev *dev, u8 devfn)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index a214e19..031d06b 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -659,10 +659,12 @@ static struct iommu_group *get_pci_function_alias_group(struct pci_dev *pdev,
+ 	return NULL;
+ }
+ 
+-static bool dma_alias_is_enabled(struct pci_dev *dev, u8 devfn)
++static bool pci_devs_are_dma_aliases(struct pci_dev *pdev1, struct pci_dev *pdev2)
  {
- 	dev->dma_alias_devfn = PCI_DEVFN(PCI_SLOT(dev->devfn), 0);
- 	dev->dev_flags |= PCI_DEV_FLAGS_DMA_ALIAS_DEVFN;
-+	dev_info(&dev->dev, "Enabling fixed DMA alias to %02x.%d\n",
-+		 PCI_SLOT(devfn), PCI_FUNC(devfn));
+-	return dev->dma_alias_mask &&
+-	       test_bit(devfn, dev->dma_alias_mask);
++	return (pdev1->dma_alias_mask &&
++		test_bit(pdev2->devfn, pdev1->dma_alias_mask)) ||
++	       (pdev2->dma_alias_mask &&
++		test_bit(pdev1->devfn, pdev2->dma_alias_mask));
  }
  
- bool pci_device_is_present(struct pci_dev *pdev)
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index df28dce..cf023ea 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3662,12 +3662,8 @@ static void quirk_fixed_dma_alias(struct pci_dev *dev)
- 	const struct pci_device_id *id;
+ /*
+@@ -692,8 +694,7 @@ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+ 			continue;
  
- 	id = pci_match_id(fixed_dma_alias_tbl, dev);
--	if (id) {
-+	if (id)
- 		pci_add_dma_alias(dev, id->driver_data);
--		dev_info(&dev->dev, "Enabling fixed DMA alias to %02x.%d\n",
--			 PCI_SLOT(id->driver_data),
--			 PCI_FUNC(id->driver_data));
--	}
- }
- 
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_ADAPTEC2, 0x0285, quirk_fixed_dma_alias);
+ 		/* We alias them or they alias us */
+-		if (dma_alias_is_enabled(pdev, tmp->devfn) ||
+-		    dma_alias_is_enabled(tmp, pdev->devfn)) {
++		if (pci_devs_are_dma_aliases(pdev, tmp)) {
+ 			group = get_pci_alias_group(tmp, devfns);
+ 			if (group) {
+ 				pci_dev_put(tmp);
