@@ -1,50 +1,201 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v4 6/6] PCI: Squash pci_dev_flags to remove holes
-Date: Wed, 24 Feb 2016 13:44:31 -0600
-Message-ID: <20160224194431.7585.78791.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-References: <20160224193926.7585.10833.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
+Date: Wed, 24 Feb 2016 13:13:53 -0800
+Message-ID: <1456348433-3337-1-git-send-email-tchalamarla@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20160224193926.7585.10833.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
-Cc: linux-pci@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
+Due to Errata#27704 CN88xx SMMUv2,supports  only shared ASID and VMID
+namespaces; specifically within a given node SMMU0 and SMMU1 share,
+as does SMMU2 and SMMU3.
 
-After removing PCI_DEV_FLAGS_DMA_ALIAS_DEVFN, the (1 << 4) value was
-unused.  Squash the other values so all the bits are adjacent.  No
-functional change intended.
+This patch address these issuee by supplying asid and vmid
+while calculating ASID and VMID for Thunder SMMUv2.
 
-(I'm not sure this is worth doing.  We have 16 flag bits and we're not
-even close to exhausting them.  But if we do squash them, it should be
-in a separate patch so we don't clutter up the main patches.)
+NOTE: resending with commit message fix.
+
+changes from V2:
+	- removed *_base from DT, and replaced with compatible string
+
+changes from V1:
+	- rebased on top of 16 bit VMID patch
+	- removed redundent options from DT
+	- insted of transform, DT now supplies starting ASID/VMID
+
+Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Signed-off-by: Akula Geethasowjanya <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 ---
- include/linux/pci.h |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ .../devicetree/bindings/iommu/arm,smmu.txt         |  1 +
+ drivers/iommu/arm-smmu.c                           | 48 +++++++++++++++++-----
+ 2 files changed, 38 insertions(+), 11 deletions(-)
 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index d9e0c84..4e36024 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -173,13 +173,13 @@ enum pci_dev_flags {
- 	/* Flag for quirk use to store if quirk-specific ACS is enabled */
- 	PCI_DEV_FLAGS_ACS_ENABLED_QUIRK = (__force pci_dev_flags_t) (1 << 3),
- 	/* Use a PCIe-to-PCI bridge alias even if !pci_is_pcie */
--	PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS = (__force pci_dev_flags_t) (1 << 5),
-+	PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS = (__force pci_dev_flags_t) (1 << 4),
- 	/* Do not use bus resets for device */
--	PCI_DEV_FLAGS_NO_BUS_RESET = (__force pci_dev_flags_t) (1 << 6),
-+	PCI_DEV_FLAGS_NO_BUS_RESET = (__force pci_dev_flags_t) (1 << 5),
- 	/* Do not use PM reset even if device advertises NoSoftRst- */
--	PCI_DEV_FLAGS_NO_PM_RESET = (__force pci_dev_flags_t) (1 << 7),
-+	PCI_DEV_FLAGS_NO_PM_RESET = (__force pci_dev_flags_t) (1 << 6),
- 	/* Get VPD from function 0 VPD */
--	PCI_DEV_FLAGS_VPD_REF_F0 = (__force pci_dev_flags_t) (1 << 8),
-+	PCI_DEV_FLAGS_VPD_REF_F0 = (__force pci_dev_flags_t) (1 << 7),
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+index 7180745..19fe6f2 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+@@ -16,6 +16,7 @@ conditions.
+                         "arm,mmu-400"
+                         "arm,mmu-401"
+                         "arm,mmu-500"
++                        "cavium,smmu-v2"
+ 
+                   depending on the particular implementation and/or the
+                   version of the architecture implemented.
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 247a469..c704f88 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -326,6 +326,12 @@ struct arm_smmu_device {
+ 
+ 	struct list_head		list;
+ 	struct rb_root			masters;
++	/*
++	 *The following fields are specific to Cavium, Thunder
++	 */
++	u32				cavium_smmu_id;
++	u32				cavium_id_base;
++
  };
  
- enum pci_irq_reroute_variant {
+ struct arm_smmu_cfg {
+@@ -335,8 +341,8 @@ struct arm_smmu_cfg {
+ };
+ #define INVALID_IRPTNDX			0xff
+ 
+-#define ARM_SMMU_CB_ASID(cfg)		((cfg)->cbndx)
+-#define ARM_SMMU_CB_VMID(cfg)		((cfg)->cbndx + 1)
++#define ARM_SMMU_CB_ASID(smmu, cfg) ((u16)(smmu)->cavium_id_base + (cfg)->cbndx)
++#define ARM_SMMU_CB_VMID(smmu, cfg) ((u16)(smmu)->cavium_id_base + (cfg)->cbndx + 1)
+ 
+ enum arm_smmu_domain_stage {
+ 	ARM_SMMU_DOMAIN_S1 = 0,
+@@ -364,6 +370,8 @@ struct arm_smmu_option_prop {
+ 	const char *prop;
+ };
+ 
++static int cavium_smmu_count;
++
+ static struct arm_smmu_option_prop arm_smmu_options[] = {
+ 	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
+ 	{ 0, NULL},
+@@ -575,11 +583,11 @@ static void arm_smmu_tlb_inv_context(void *cookie)
+ 
+ 	if (stage1) {
+ 		base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+-		writel_relaxed(ARM_SMMU_CB_ASID(cfg),
++		writel_relaxed(ARM_SMMU_CB_ASID(smmu, cfg),
+ 			       base + ARM_SMMU_CB_S1_TLBIASID);
+ 	} else {
+ 		base = ARM_SMMU_GR0(smmu);
+-		writel_relaxed(ARM_SMMU_CB_VMID(cfg),
++		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg),
+ 			       base + ARM_SMMU_GR0_TLBIVMID);
+ 	}
+ 
+@@ -601,7 +609,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 
+ 		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
+ 			iova &= ~12UL;
+-			iova |= ARM_SMMU_CB_ASID(cfg);
++			iova |= ARM_SMMU_CB_ASID(smmu, cfg);
+ 			do {
+ 				writel_relaxed(iova, reg);
+ 				iova += granule;
+@@ -609,7 +617,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ #ifdef CONFIG_64BIT
+ 		} else {
+ 			iova >>= 12;
+-			iova |= (u64)ARM_SMMU_CB_ASID(cfg) << 48;
++			iova |= (u64)ARM_SMMU_CB_ASID(smmu, cfg) << 48;
+ 			do {
+ 				writeq_relaxed(iova, reg);
+ 				iova += granule >> 12;
+@@ -629,7 +637,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ #endif
+ 	} else {
+ 		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
+-		writel_relaxed(ARM_SMMU_CB_VMID(cfg), reg);
++		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg), reg);
+ 	}
+ }
+ 
+@@ -738,7 +746,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ #endif
+ 		/* if 16bit VMID supported set VMID in CBA2R */
+ 		if (smmu->features & ARM_SMMU_FEAT_VMID16)
+-			reg |= ARM_SMMU_CB_VMID(cfg) << CBA2R_VMID_SHIFT;
++			reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBA2R_VMID_SHIFT;
+ 
+ 		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
+ 	}
+@@ -757,7 +765,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
+ 	} else if (!(smmu->features & ARM_SMMU_FEAT_VMID16)) {
+ 		/*16 bit VMID is not supported set 8 bit VMID here */
+-		reg |= ARM_SMMU_CB_VMID(cfg) << CBAR_VMID_SHIFT;
++		reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBAR_VMID_SHIFT;
+ 	}
+ 	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
+ 
+@@ -765,11 +773,11 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 	if (stage1) {
+ 		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+ 
+-		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
++		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
+ 		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+ 
+ 		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+-		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
++		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
+ 		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR1);
+ 	} else {
+ 		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+@@ -1717,6 +1725,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
+ 	{ .compatible = "arm,mmu-400", .data = (void *)ARM_SMMU_V1 },
+ 	{ .compatible = "arm,mmu-401", .data = (void *)ARM_SMMU_V1 },
+ 	{ .compatible = "arm,mmu-500", .data = (void *)ARM_SMMU_V2 },
++	{ .compatible = "cavium,smmu-v2", .data = (void *)ARM_SMMU_V2 },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+@@ -1827,6 +1836,23 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
++	/*
++	 * Due to Errata#27704 CN88xx SMMUv2,supports  only shared ASID and VMID
++	 * namespaces; specifically within a given node SMMU0 and SMMU1 share,
++	 * as does SMMU2 and SMMU3. see if this is a Cavium SMMU, if so
++	 * set asid and vmid base such that each SMMU gets unique
++	 * asid/vmid space.
++	 */
++	if (!strcasecmp(of_id->compatible, "cavium,smmu-v2")) {
++		/* VMID16 must be present on Cavium SMMUv2*/
++		if (!(smmu->features & ARM_SMMU_FEAT_VMID16))
++			goto out_free_irqs;
++		smmu->cavium_smmu_id = cavium_smmu_count;
++		cavium_smmu_count++;
++		smmu->cavium_id_base =
++			(smmu->cavium_smmu_id * ARM_SMMU_MAX_CBS);
++	}
++
+ 	INIT_LIST_HEAD(&smmu->list);
+ 	spin_lock(&arm_smmu_devices_lock);
+ 	list_add(&smmu->list, &arm_smmu_devices);
+-- 
+2.1.0
