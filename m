@@ -1,96 +1,121 @@
-From: Yong Wu <yong.wu@mediatek.com>
-Subject: [PATCH 2/2] iommu/mediatek: Add 4GB mode support
-Date: Wed, 24 Feb 2016 07:02:32 +0800
-Message-ID: <1456268552-16635-3-git-send-email-yong.wu@mediatek.com>
-References: <1456268552-16635-1-git-send-email-yong.wu@mediatek.com>
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH V2] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
+Date: Wed, 24 Feb 2016 11:32:28 +0000
+Message-ID: <20160224113227.GB11579@leverpostej>
+References: <1455820158-8529-1-git-send-email-tchalamarla@caviumnetworks.com>
+	<20160223122616.GE4989@leverpostej>
+	<56CCF03D.3000809@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1456268552-16635-1-git-send-email-yong.wu@mediatek.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Lucas Stach <l.stach@pengutronix.de>, Rob Herring <robh+dt@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, linux-mediatek@lists.infradead.org, Sasha Hauer <kernel@pengutronix.de>, srv_heupstream@mediatek.com, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, pebolle@tiscali.nl, arnd@arndb.de, mitchelh@codeaurora.org, youhua.li@mediatek.com, milton.chiang@mediatek.com, Yong Wu <yong.wu@mediatek.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <56CCF03D.3000809-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch add 4GB mode support for m4u.
+On Tue, Feb 23, 2016 at 03:50:21PM -0800, Tirumalesh Chalamarla wrote:
+> in Summary,
+> 
+> if i change asid-base to cavium,asid-base and still use DT for
+> supplying base value, is this a solution that will be accepted, 
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
-In this patch I use the global "max_pfn" to check whether the current
-dram size is over 4GB, I am not sure this is proper.
+No. The property is _insufficient_, regardless of its name. This has
+been pointed out more than once.
 
-If there is any other suggestions, please let me know.
-Thanks.
+A base alone does not tell you what set of IDs it is valid to use
+without risking a clash. The OS is well within its rights to allocate
+_any_ ID above that base. It is not a requirement of the hardware nor
+the binding that the OS allocate a contiguous set of IDs starting at the
+base.
 
- drivers/iommu/mtk_iommu.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+Consider:
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 721ffdb..5b1ddb5 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -11,6 +11,7 @@
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  * GNU General Public License for more details.
-  */
-+#include <linux/bootmem.h>
- #include <linux/bug.h>
- #include <linux/clk.h>
- #include <linux/component.h>
-@@ -56,7 +57,7 @@
- #define F_MMU_TF_PROTECT_SEL(prot)		(((prot) & 0x3) << 5)
- 
- #define REG_MMU_IVRP_PADDR			0x114
--#define F_MMU_IVRP_PA_SET(pa)			((pa) >> 1)
-+#define F_MMU_IVRP_PA_SET(pa, ext)		(((pa) >> 1) | ((!!(ext)) << 31))
- 
- #define REG_MMU_INT_CONTROL0			0x120
- #define F_L2_MULIT_HIT_EN			BIT(0)
-@@ -125,6 +126,7 @@ struct mtk_iommu_data {
- 	struct mtk_iommu_domain		*m4u_dom;
- 	struct iommu_group		*m4u_group;
- 	struct mtk_smi_iommu		smi_imu;      /* SMI larb iommu info */
-+	bool                            enable_4GB;
- };
- 
- static struct iommu_ops mtk_iommu_ops;
-@@ -257,6 +259,9 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_data *data)
- 		.iommu_dev = data->dev,
- 	};
- 
-+	if (data->enable_4GB)
-+		dom->cfg.quirks |= IO_PGTABLE_QUIRK_MTK_4GB_EXT;
-+
- 	dom->iop = alloc_io_pgtable_ops(ARM_V7S, &dom->cfg, data);
- 	if (!dom->iop) {
- 		dev_err(data->dev, "Failed to alloc io pgtable\n");
-@@ -530,7 +535,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 		F_INT_PRETETCH_TRANSATION_FIFO_FAULT;
- 	writel_relaxed(regval, data->base + REG_MMU_INT_MAIN_CONTROL);
- 
--	writel_relaxed(F_MMU_IVRP_PA_SET(data->protect_base),
-+	writel_relaxed(F_MMU_IVRP_PA_SET(data->protect_base, data->enable_4GB),
- 		       data->base + REG_MMU_IVRP_PADDR);
- 
- 	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
-@@ -592,6 +597,9 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
- 
-+	/* Whether the current dram size is over 4GB */
-+	data->enable_4GB = !!(max_pfn > (0xffffffffUL >> PAGE_SHIFT));
-+
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	data->base = devm_ioremap_resource(dev, res);
- 	if (IS_ERR(data->base))
-@@ -691,7 +699,7 @@ static int mtk_iommu_resume(struct device *dev)
- 	writel_relaxed(reg->ctrl_reg, base + REG_MMU_CTRL_REG);
- 	writel_relaxed(reg->int_control0, base + REG_MMU_INT_CONTROL0);
- 	writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
--	writel_relaxed(F_MMU_IVRP_PA_SET(data->protect_base),
-+	writel_relaxed(F_MMU_IVRP_PA_SET(data->protect_base, data->enable_4GB),
- 		       base + REG_MMU_IVRP_PADDR);
- 	return 0;
- }
--- 
-1.8.1.1.dirty
+smmu_a {
+	whatver,*id-base = <128>;
+};
+
+smmu_b {
+	whatever,*id-base = <64>;
+};
+
+In both cases, the *IDs 129+ could be allocated on both SMMUs.
+
+Mark.
+
+> of course i will do range check to see we are not supplying 16bit VMID
+> for 8 bit systems even though the property now indicates Cavium only.
+> 
+> Thanks,
+> Tirumalesh.
+> 
+> On 02/23/2016 04:26 AM, Mark Rutland wrote:
+> >On Thu, Feb 18, 2016 at 10:29:18AM -0800, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org wrote:
+> >>From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> >>
+> >>Due to Errata#27704 CN88xx SMMUv2,supports  only shared ASID and VMID
+> >>namespaces; specifically within a given node SMMU0 and SMMU1 share,
+> >>as does SMMU2 and SMMU3.
+> >>
+> >>This patch tries to address these issuee by supplying asid and vmid
+> >>base from devicetree.
+> >>
+> >>changes from V1:
+> >>	- rebased on top of 16 bit VMID patch
+> >>	- removed redundent options from DT
+> >>	- insted of transform, DT now supplies starting ASID/VMID
+> >>
+> >>Signed-off-by: Akula Geethasowjanya <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> >>Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> >>---
+> >>  .../devicetree/bindings/iommu/arm,smmu.txt         |  8 +++++
+> >>  drivers/iommu/arm-smmu.c                           | 37 +++++++++++++++-------
+> >>  2 files changed, 34 insertions(+), 11 deletions(-)
+> >>
+> >>diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> >>index bb7e569..80b8484 100644
+> >>--- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> >>+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> >>@@ -57,6 +57,14 @@ conditions.
+> >>
+> >>  - smmu-enable-vmid16 : Enable 16 bit VMID, if allowed.
+> >>
+> >>+- asid-base :	Buggy SMMUv2 implementations which doesn't satisfy the
+> >>+		ASID namespace needs, use this field to specify starting
+> >>+		ASID for the SMMU.
+> >>+
+> >>+- vmid-base :	Buggy SMMUv2 implementations which doesn't satisfy the VMID
+> >>+		namespace needs, use this field to specify starting VMID
+> >>+		for the SMMU.
+> >
+> >As has been pointed out, these are not strictly properties of the
+> >hardware, and are insufficient to aovid the issue in general (adding an
+> >arbitrary base does not enforce IDs fall within a particular range).
+> >
+> >So NAK for *-base properties alone.
+> >
+> >>+	if (of_property_read_u32(dev->of_node, "#asid-base",
+> >>+				 &smmu->asid_base)) {
+> >>+		smmu->asid_base = 0;
+> >>+	}
+> >>+
+> >>+	if (of_property_read_u32(dev->of_node, "#vmid-base",
+> >>+				 &smmu->vmid_base)) {
+> >>+		smmu->vmid_base = 1;
+> >>+	}
+> >
+> >These do not match the documentation above.
+> >
+> >Mark.
+> >
+> 
