@@ -1,30 +1,27 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [GIT PULL] iommu/io-pgtable: Updates for 4.6
-Date: Thu, 25 Feb 2016 14:25:39 +0100
-Message-ID: <20160225132539.GC22747@8bytes.org>
-References: <20160218174918.GF16883@arm.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu: fix second argument of trace_map() to report
+ correct paddr
+Date: Thu, 25 Feb 2016 14:57:59 +0100
+Message-ID: <20160225135759.GA16675@8bytes.org>
+References: <1455067084-6560-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160218174918.GF16883-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
+In-Reply-To: <1455067084-6560-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 18, 2016 at 05:49:18PM +0000, Will Deacon wrote:
-> are available in the git repository at:
+On Wed, Feb 10, 2016 at 10:18:04AM +0900, Yoshihiro Shimoda wrote:
+> Since iommu_map() code added pgsize value to the paddr, trace_map()
+> used wrong paddr. So, this patch adds "orig_paddr" value in the
+> iommu_map() to use for the trace_map().
 > 
->   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/io-pgtable
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> ---
+>  drivers/iommu/iommu.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-Pulled. Thanks Will.
+Applied, thanks.
