@@ -1,16 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: Warning from AMD IOMMU performance counters
-Date: Thu, 25 Feb 2016 15:57:16 +0100
-Message-ID: <20160225145716.GA18581@8bytes.org>
-References: <56C798B8.6080009@redhat.com> <56CA69C7.3050508@iommu.org>
-	<56CBB789.4020704@redhat.com> <56CC963A.1080607@redhat.com>
-	<20160223175113.GA3711@pd.tnic>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: RFC: extend IOMMU attributes
+Date: Thu, 25 Feb 2016 15:00:54 +0000
+Message-ID: <20160225150053.GA15330@arm.com>
+References: <HE1PR04MB1641F22E38710B68F4ED891F8DAF0@HE1PR04MB1641.eurprd04.prod.outlook.com>
+	<20160225143855.GD16675@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20160223175113.GA3711-fF5Pk5pvG8Y@public.gmane.org>
+In-Reply-To: <20160225143855.GD16675-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,24 +19,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Varun Sethi <V.Sethi-3arQi8VN3Tc@public.gmane.org>, Peter Newton <peter.newton-3arQi8VN3Tc@public.gmane.org>, Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 23, 2016 at 06:51:13PM +0100, Borislav Petkov wrote:
-> On Tue, Feb 23, 2016 at 09:26:18AM -0800, Laura Abbott wrote:
-> > It was an issue with build signing on the testers machine. Once that was
-> > fixed it was confirmed that the patches did fix the issue.
+On Thu, Feb 25, 2016 at 03:38:55PM +0100, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org wrote:
+> On Thu, Feb 18, 2016 at 04:16:26PM +0000, Stuart Yoder wrote:
+> >  #define IOMMU_READ            (1 << 0)
+> >  #define IOMMU_WRITE           (1 << 1)
+> > -#define IOMMU_CACHE           (1 << 2) /* DMA cache coherency */
+> > +#define IOMMU_CACHE_COHERENT  (1 << 2) /* cacheable and coherent */
+> >  #define IOMMU_NOEXEC          (1 << 3)
+> >  #define IOMMU_MMIO            (1 << 4) /* e.g. things like MSI doorbells */
+> > +#define IOMMU_CACHEABLE       (1 << 5) /* cacheable, not coherent */
+> > +#define IOMMU_CACHE_ALLOCATE  (1 << 6) /* hint to allocate in the cache */
 > 
-> Btw, Joerg did come up with a minimal fix today:
-> 
-> https://lkml.kernel.org/r/20160223121215.GA31151-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-> 
-> in case you want to run it instead of that big patchset which is still
-> being reviewed...
+> Hmm, this might be a valid use-case to introduce the
+> map_attr()/unmap_attr() calls to the IOMMU-API. I have been resistant to
+> these functions until now because the proposed use-cases were not
+> convincing, but for hardware-specific map-attributes like this one it
+> could make sense.
 
-I just queued that small fix and tagged it for stable. Suravees patches
-are too intrusive for that and better suited for v4.6.
+So this particular use-case is completely insane, but something like
+read/write allocation hints could make sense for arm-smmu systems.
 
-
-	Joerg
+Will
