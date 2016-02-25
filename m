@@ -1,158 +1,42 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v4 3/6] PCI: Add support for multiple DMA aliases
-Date: Thu, 25 Feb 2016 08:38:41 -0600
-Message-ID: <20160225143841.GA8726@localhost>
-References: <20160224193926.7585.10833.stgit@bhelgaas-glaptop2.roam.corp.google.com>
- <20160224194406.7585.17447.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: RFC: extend IOMMU attributes
+Date: Thu, 25 Feb 2016 15:38:55 +0100
+Message-ID: <20160225143855.GD16675@8bytes.org>
+References: <HE1PR04MB1641F22E38710B68F4ED891F8DAF0@HE1PR04MB1641.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20160224194406.7585.17447.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>, linux-pci@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
+In-Reply-To: <HE1PR04MB1641F22E38710B68F4ED891F8DAF0-6LN7OEpIatU5tNmRkpaxD89NdZoXdze2vxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>
+Cc: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Peter Newton <peter.newton-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Varun Sethi <V.Sethi-3arQi8VN3Tc@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 24, 2016 at 01:44:06PM -0600, Bjorn Helgaas wrote:
-> From: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
-> 
-> <Insert changelog here>
+On Thu, Feb 18, 2016 at 04:16:26PM +0000, Stuart Yoder wrote:
+>  #define IOMMU_READ            (1 << 0)
+>  #define IOMMU_WRITE           (1 << 1)
+> -#define IOMMU_CACHE           (1 << 2) /* DMA cache coherency */
+> +#define IOMMU_CACHE_COHERENT  (1 << 2) /* cacheable and coherent */
+>  #define IOMMU_NOEXEC          (1 << 3)
+>  #define IOMMU_MMIO            (1 << 4) /* e.g. things like MSI doorbells */
+> +#define IOMMU_CACHEABLE       (1 << 5) /* cacheable, not coherent */
+> +#define IOMMU_CACHE_ALLOCATE  (1 << 6) /* hint to allocate in the cache */
 
-(Sorry, I should have copied this changelog in the patch; I copied
-this manually from your v3 posting):
+Hmm, this might be a valid use-case to introduce the
+map_attr()/unmap_attr() calls to the IOMMU-API. I have been resistant to
+these functions until now because the proposed use-cases were not
+convincing, but for hardware-specific map-attributes like this one it
+could make sense.
 
-> This patch solves IOMMU support issues with PCIe non-transparent bridges
-> that use Requester ID look-up tables (LUT), e.g. PEX8733. Before exiting
-> the bridge, packet's RID is rewritten according to LUT programmed by
-> a driver. Modified packets are then passed to a destination bus and
-> processed upstream. The problem is that such packets seem to come from
-> non-existent nodes that are hidden behind NTB and are not discoverable
-> by a destination node, so IOMMU discards them. Adding DMA alias for a
-> given LUT entry allows IOMMU to create a proper mapping that enables
-> inter-node communication.
 
-A specific example here would help me understand.  Here's how I
-understand this (correct me if I'm wrong): We're talking about a DMA
-packet being forwarded upstream from an NTB.  The NTB uses the LUT to
-rewrite the RID in the DMA packet.  The new RID from the LUT is
-unknown to the IOMMU, so it discards the DMA packet.
-
-> The current DMA alias implementation supports only single alias, so it's
-> not possible to connect more than two nodes when IOMMU is enabled. This
-> implementation enables all possible aliases on a given bus (256) that
-> are stored in a bitset. Alias devfn is directly translated to a bit
-> number. The bitset is not allocated for devices that have no need for
-> DMA aliases.
-
-I think "two nodes" is referring to two PCIe devices on the other side
-of the NTB.  You want DMA packets from those devices to have different
-RIDs so the IOMMU can distinguish them.
-
-The LUT entries basically create aliases of the NTB (one alias for
-each device beyond the NTB).  Your quirk uses pci_add_dma_alias(), and
-the aliases are all on the same bus as the NTB itself.
-
-The quirk adds PCI_DEVFN(0x10, 0x0), PCI_DEVFN(0x11, 0x0), and
-PCI_DEVFN(0x12, 0x0).  Shouldn't there be some connection between this
-and the LUT programming?  I assume the LUT is programmed to correspond
-to those aliases.  Does this mean you're limited to three devices
-beyond the NTB?
-
-> ---
->  drivers/iommu/iommu.c |   17 ++++++++++-------
->  drivers/pci/pci.c     |   11 +++++++++--
->  drivers/pci/probe.c   |    1 +
->  drivers/pci/search.c  |   14 +++++++++-----
->  include/linux/pci.h   |    4 +---
->  5 files changed, 30 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 0e3b009..a214e19 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -659,9 +659,15 @@ static struct iommu_group *get_pci_function_alias_group(struct pci_dev *pdev,
->  	return NULL;
->  }
->  
-> +static bool dma_alias_is_enabled(struct pci_dev *dev, u8 devfn)
-> +{
-> +	return dev->dma_alias_mask &&
-> +	       test_bit(devfn, dev->dma_alias_mask);
-> +}
-> +
->  /*
-> - * Look for aliases to or from the given device for exisiting groups.  The
-> - * dma_alias_devfn only supports aliases on the same bus, therefore the search
-> + * Look for aliases to or from the given device for existing groups. DMA
-> + * aliases are only supported on the same bus, therefore the search
-
-I'm trying to reconcile this statement that "DMA aliases are only
-supported on the same bus" (which was there even before this patch)
-with the fact that pci_for_each_dma_alias() does not have that
-limitation.
-
->   * space is quite small (especially since we're really only looking at pcie
->   * device, and therefore only expect multiple slots on the root complex or
->   * downstream switch ports).  It's conceivable though that a pair of
-> @@ -686,11 +692,8 @@ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
->  			continue;
->  
->  		/* We alias them or they alias us */
-> -		if (((pdev->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_DEVFN) &&
-> -		     pdev->dma_alias_devfn == tmp->devfn) ||
-> -		    ((tmp->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_DEVFN) &&
-> -		     tmp->dma_alias_devfn == pdev->devfn)) {
-> -
-> +		if (dma_alias_is_enabled(pdev, tmp->devfn) ||
-> +		    dma_alias_is_enabled(tmp, pdev->devfn)) {
->  			group = get_pci_alias_group(tmp, devfns);
-
-We basically have this:
-
-  for_each_pci_dev(tmp) {
-    if (<pdev and tmp are DMA aliases>)
-      group = get_pci_alias_group();
-      ...
-  }
-
-The DMA alias stuff relies on PCI internals, so it doesn't doesn't
-seem quite right to use things like PCI_DEV_FLAGS_DMA_ALIAS_DEVFN and
-dma_alias_devfn here in the IOMMU code.  
-
-I'm trying to figure out why we don't do something like the following
-instead:
-
-  callback(struct pci_dev *pdev, u16 alias, void *opaque)
-  {
-    struct iommu_group *group;
-
-    group = get_pci_alias_group();
-    if (group)
-      return group;
-
-    return 0;
-  }
-
-  pci_for_each_dma_alias(pdev, callback, ...);
-
-Is the existing code some sort of optimization, e.g., checking
-PCI_DEV_FLAGS_DMA_ALIAS_DEVFN is cheaper than using
-pci_for_each_dma_alias()?
-
-It seems like this won't work for some very unlikely but theoretically
-possible topologies, e.g.,
-
-  PCIe Root Complex/IOMMU
-    PCIe switch A
-      PCIe to conventional PCI bridge
-        PCI to PCIe Root Complex
-	  PCIe NTB
-
-Here, I think the IOMMU will only see RIDs from PCIe switch A, but the
-current code only looks at DMA aliases that are on the same bus as the
-PCIe NTB.  Wouldn't using pci_for_each_dma_alias() handle this
-correctly?
-
->  			if (group) {
->  				pci_dev_put(tmp);
+	Joerg
