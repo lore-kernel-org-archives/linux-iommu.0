@@ -1,14 +1,16 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH V5 00/10] perf/amd/iommu: Enable multi-IOMMU support
-Date: Thu, 25 Feb 2016 15:54:30 +0100
-Message-ID: <20160225145429.GA18390@8bytes.org>
-References: <1456236764-1569-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: Re: Warning from AMD IOMMU performance counters
+Date: Thu, 25 Feb 2016 15:57:16 +0100
+Message-ID: <20160225145716.GA18581@8bytes.org>
+References: <56C798B8.6080009@redhat.com> <56CA69C7.3050508@iommu.org>
+	<56CBB789.4020704@redhat.com> <56CC963A.1080607@redhat.com>
+	<20160223175113.GA3711@pd.tnic>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1456236764-1569-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <20160223175113.GA3711-fF5Pk5pvG8Y@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,27 +20,24 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Suravee,
-
-On Tue, Feb 23, 2016 at 08:12:34AM -0600, Suravee Suthikulpanit wrote:
-> This is a two-part patch series:
+On Tue, Feb 23, 2016 at 06:51:13PM +0100, Borislav Petkov wrote:
+> On Tue, Feb 23, 2016 at 09:26:18AM -0800, Laura Abbott wrote:
+> > It was an issue with build signing on the testers machine. Once that was
+> > fixed it was confirmed that the patches did fix the issue.
 > 
-> Part1: 1-4 :
-> Introduce a workaround for the current AMD IOMMU perf initialization issue
-> in some existing KV and CZ platforms, where it fails to write to IOMMU
-> perf counter as reported by Andreas Hartmann here
-> (http://comments.gmane.org/gmane.linux.kernel.pci/49147).
+> Btw, Joerg did come up with a minimal fix today:
+> 
+> https://lkml.kernel.org/r/20160223121215.GA31151-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+> 
+> in case you want to run it instead of that big patchset which is still
+> being reviewed...
 
-Okay, these 4 patches fix the issue, but they also refactor the code and
-so a lot more. They are not suitable for stable kernels, so to just fix
-the issue I take the small patch I extracted from yours and posted
-previously. I retains your authorship, hope that is fine with you.
-
-You can rebase these patches on-top of that minimal fix.
+I just queued that small fix and tagged it for stable. Suravees patches
+are too intrusive for that and better suited for v4.6.
 
 
 	Joerg
