@@ -1,15 +1,14 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [RFC 3/3] iommu: dma-iommu: use common implementation also on ARM
-	architecture
-Date: Thu, 25 Feb 2016 15:44:44 +0100
-Message-ID: <4895295.FP9RzJmAYS@wuerfel>
-References: <1455870164-25337-1-git-send-email-m.szyprowski@samsung.com>
-	<2724572.qtPjgumFDJ@wuerfel> <56CEF2E9.5040706@samsung.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH V5 00/10] perf/amd/iommu: Enable multi-IOMMU support
+Date: Thu, 25 Feb 2016 15:54:30 +0100
+Message-ID: <20160225145429.GA18390@8bytes.org>
+References: <1456236764-1569-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <56CEF2E9.5040706-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1456236764-1569-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,49 +18,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Russell King - ARM Linux <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linaro-mm-sig-cunTk1MwBs8s++Sfvej+rw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Sakari Ailus <sakari.ailus-X3B1VOXEql0@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Mark Yao <mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thursday 25 February 2016 13:26:17 Marek Szyprowski wrote:
-> >> +}
-> >> +
-> >> +extern void *arch_alloc_from_atomic_pool(size_t size, struct page **ret_page,
-> >> +                                     gfp_t flags);
-> >> +extern bool arch_in_atomic_pool(void *start, size_t size);
-> >> +extern int arch_free_from_atomic_pool(void *start, size_t size);
-> >> +
-> >> +
-> > doesn't feel completely right yet. In particular the arch_flush_page()
-> > interface is probably still too specific to ARM/ARM64 and won't work
-> > that way on other architectures.
-> >
-> > I think it would be better to do this either more generic, or less generic:
-> >
-> > a) leave the iommu_dma_map_ops definition in the architecture specific
-> >     code, but make it call helper functions in the drivers/iommu to do all
-> >     of the really generic parts.
-> >
-> > b) clarify that this is only applicable to arch/arm and arch/arm64, and
-> >     unify things further between these two, as they have very similar
-> >     requirements in the CPU architecture.
-> 
-> Some really generic parts are already in iommu/dma-iommu.c and one can build
-> it's own, non-ARM CPU architecture based IOMMU/DMA-mapping code. Initially I
-> also wanted to use that generic code on both ARM and ARM64, but it 
-> turned out
-> that both archs, ARM and ARM64 will duplicate 99% of code, which use this
-> 'generic' functions. This was the reason why I dedided to move all that
-> common code from arch/{arm,arm64}/mm/dma-mapping.c to
-> drivers/iommu/dma-iommu-ops.c
-> 
-> I'm not sure if I can design all the changes that need to be made to
-> drivers/iommu/dma-iommu-ops.c to make it more generic. Maybe when one will
-> try to use that code with other, non-ARM architecture based arch glue code,
-> a better abstraction can be developed. For now I would like to keep all this
-> code in a common place so both arm and arm64 will benefit from improvements
-> done there.
+Hi Suravee,
 
-Fair enough. Let's stay with your approach then.
+On Tue, Feb 23, 2016 at 08:12:34AM -0600, Suravee Suthikulpanit wrote:
+> This is a two-part patch series:
+> 
+> Part1: 1-4 :
+> Introduce a workaround for the current AMD IOMMU perf initialization issue
+> in some existing KV and CZ platforms, where it fails to write to IOMMU
+> perf counter as reported by Andreas Hartmann here
+> (http://comments.gmane.org/gmane.linux.kernel.pci/49147).
 
-	Arnd
+Okay, these 4 patches fix the issue, but they also refactor the code and
+so a lot more. They are not suitable for stable kernels, so to just fix
+the issue I take the small patch I extracted from yours and posted
+previously. I retains your authorship, hope that is fine with you.
+
+You can rebase these patches on-top of that minimal fix.
+
+
+	Joerg
