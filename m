@@ -1,37 +1,45 @@
-From: Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
-Subject: Re: [PATCH v10 0/5] MT8173 IOMMU SUPPORT
-Date: Fri, 26 Feb 2016 16:49:12 +0100
-Message-ID: <1456501752.3383.26.camel@pengutronix.de>
-References: <1456161651-6136-1-git-send-email-yong.wu@mediatek.com>
-	 <20160225155007.GA19092@8bytes.org>
-	 <1456476955.3383.21.camel@pengutronix.de>
-	 <20160226110633.GE22747@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: Can't boot new 4.4 kernel with IOMMU enabled
+Date: Fri, 26 Feb 2016 17:23:19 +0100
+Message-ID: <20160226162319.GH22747@8bytes.org>
+References: <569FB013.4050709@compro.net> <20160120161904.GI18805@8bytes.org>
+	<569FCFC8.2000606@compro.net> <20160120182602.GJ18805@8bytes.org>
+	<56A0F03C.8010109@compro.net> <56A0F221.10502@compro.net>
+	<20160121223958.GL18805@8bytes.org> <56B0CFF7.80907@compro.net>
+	<20160216162455.GX18805@8bytes.org> <56C35D1A.9080307@compro.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20160226110633.GE22747-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <56C35D1A.9080307-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Am Freitag, den 26.02.2016, 12:06 +0100 schrieb Joerg Roedel:
-> Hi Philipp,
-> 
-> On Fri, Feb 26, 2016 at 09:55:55AM +0100, Philipp Zabel wrote:
-> > Do you have a stable branch that I could base the mediatek-drm patches
-> > on and that I may include in a pull request to be merged via drm-next?
-> 
-> You can base it on the arm/mediatek branch of the iommu tree. I'll push
-> it out in the next minutes.
+Hi Mark,
 
-Excellent, thank you.
+On Tue, Feb 16, 2016 at 12:32:10PM -0500, Mark Hounschell wrote:
+> Thanks, I'll be standing by.
 
-regards
-Philipp
+I am pretty sure I have seen a dmesg from your machine when it runs into
+this issue, but somehow I can't find it anymore.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Can you please boot a v4.5-rc5 kernel with iommu enabled and
+'amd_iommu_dump' on the kernel command line and send me dmesg after
+boot again?
+
+
+Thanks a lot,
+
+
+       Joerg
