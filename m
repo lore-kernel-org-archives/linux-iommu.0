@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger@linaro.org>
-Subject: [RFC v4 07/14] msi: Add a new MSI_FLAG_IRQ_REMAPPING flag
-Date: Fri, 26 Feb 2016 17:35:47 +0000
-Message-ID: <1456508154-2253-8-git-send-email-eric.auger@linaro.org>
+Subject: [RFC v4 10/14] vfio: introduce VFIO_IOVA_RESERVED vfio_dma type
+Date: Fri, 26 Feb 2016 17:35:50 +0000
+Message-ID: <1456508154-2253-11-git-send-email-eric.auger@linaro.org>
 References: <1456508154-2253-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,45 +21,65 @@ To: eric.auger@st.com, eric.auger@linaro.org, robin.murphy@arm.com, alex.william
 Cc: patches@linaro.org, Manish.Jaggi@caviumnetworks.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Let's introduce a new msi_domain_info flag value, MSI_FLAG_IRQ_REMAPPING
-meant to tell the domain supports IRQ REMAPPING, also known as Interrupt
-Translation Service. On Intel HW this capability is abstracted on IOMMU
-side while on ARM it is abstracted on MSI controller side.
-
-GICv3 ITS HW is the first HW advertising that feature.
+We introduce a vfio_dma type since we will need to discriminate
+legacy vfio_dma's from new reserved ones. Since those latter are
+not mapped at registration, some treatments need to be reworked:
+removal, replay. Currently they are unplugged. In subsequent patches
+they will be reworked.
 
 Signed-off-by: Eric Auger <eric.auger@linaro.org>
 ---
- drivers/irqchip/irq-gic-v3-its-pci-msi.c | 3 ++-
- include/linux/msi.h                      | 2 ++
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ drivers/vfio/vfio_iommu_type1.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/irqchip/irq-gic-v3-its-pci-msi.c b/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-index aee60ed..8223765 100644
---- a/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-+++ b/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-@@ -96,7 +96,8 @@ static struct msi_domain_ops its_pci_msi_ops = {
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 6f1ea3d..692e9a2 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -53,6 +53,15 @@ module_param_named(disable_hugepages,
+ MODULE_PARM_DESC(disable_hugepages,
+ 		 "Disable VFIO IOMMU support for IOMMU hugepages.");
  
- static struct msi_domain_info its_pci_msi_domain_info = {
- 	.flags	= (MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
--		   MSI_FLAG_MULTI_PCI_MSI | MSI_FLAG_PCI_MSIX),
-+		   MSI_FLAG_MULTI_PCI_MSI | MSI_FLAG_PCI_MSIX |
-+		   MSI_FLAG_IRQ_REMAPPING),
- 	.ops	= &its_pci_msi_ops,
- 	.chip	= &its_msi_irq_chip,
- };
-diff --git a/include/linux/msi.h b/include/linux/msi.h
-index a2a0068..03eda72 100644
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -261,6 +261,8 @@ enum {
- 	MSI_FLAG_MULTI_PCI_MSI		= (1 << 3),
- 	/* Support PCI MSIX interrupts */
- 	MSI_FLAG_PCI_MSIX		= (1 << 4),
-+	/* Support MSI IRQ remapping service */
-+	MSI_FLAG_IRQ_REMAPPING		= (1 << 5),
++enum vfio_iova_type {
++	VFIO_IOVA_USER = 0, /* standard IOVA used to map user vaddr */
++	/*
++	 * IOVA reserved to map special host physical addresses,
++	 * MSI frames for instance
++	 */
++	VFIO_IOVA_RESERVED,
++};
++
+ struct vfio_iommu {
+ 	struct list_head	domain_list;
+ 	struct mutex		lock;
+@@ -75,6 +84,7 @@ struct vfio_dma {
+ 	unsigned long		vaddr;		/* Process virtual addr */
+ 	size_t			size;		/* Map size (bytes) */
+ 	int			prot;		/* IOMMU_READ/WRITE */
++	enum vfio_iova_type	type;		/* type of IOVA */
  };
  
- int msi_domain_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ struct vfio_group {
+@@ -395,7 +405,8 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
+ 
+ static void vfio_remove_dma(struct vfio_iommu *iommu, struct vfio_dma *dma)
+ {
+-	vfio_unmap_unpin(iommu, dma);
++	if (likely(dma->type != VFIO_IOVA_RESERVED))
++		vfio_unmap_unpin(iommu, dma);
+ 	vfio_unlink_dma(iommu, dma);
+ 	kfree(dma);
+ }
+@@ -671,6 +682,10 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+ 		dma_addr_t iova;
+ 
+ 		dma = rb_entry(n, struct vfio_dma, node);
++
++		if (unlikely(dma->type == VFIO_IOVA_RESERVED))
++			continue;
++
+ 		iova = dma->iova;
+ 
+ 		while (iova < dma->iova + dma->size) {
 -- 
 1.9.1
