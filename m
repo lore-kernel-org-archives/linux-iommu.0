@@ -1,173 +1,41 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC v4 09/14] msi: IOMMU map the doorbell address when needed
-Date: Mon, 29 Feb 2016 16:27:13 +0100
-Message-ID: <56D46351.5060701@linaro.org>
-References: <1456508154-2253-1-git-send-email-eric.auger@linaro.org>
-	<1456508154-2253-10-git-send-email-eric.auger@linaro.org>
-	<alpine.DEB.2.11.1602261907050.3638@nanos>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu: exynos: pointers are nto physical addresses
+Date: Mon, 29 Feb 2016 16:45:47 +0100
+Message-ID: <20160229154547.GA13711@8bytes.org>
+References: <1456735568-3886545-1-git-send-email-arnd@arndb.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <alpine.DEB.2.11.1602261907050.3638@nanos>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1456735568-3886545-1-git-send-email-arnd@arndb.de>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Joerg Roedel <jroedel@suse.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thomas,
-On 02/26/2016 07:19 PM, Thomas Gleixner wrote:
-> On Fri, 26 Feb 2016, Eric Auger wrote:
->> +static int msi_map_doorbell(struct iommu_domain *d, struct msi_msg *msg)
->> +{
->> +#ifdef CONFIG_IOMMU_DMA_RESERVED
->> +	dma_addr_t iova;
->> +	phys_addr_t addr;
->> +	int ret;
->> +
->> +#ifdef CONFIG_PHYS_ADDR_T_64BIT
->> +	addr = ((phys_addr_t)(msg->address_hi) << 32) | msg->address_lo;
->> +#else
->> +	addr = msg->address_lo;
->> +#endif
->> +
->> +	ret = iommu_get_single_reserved(d, addr, IOMMU_WRITE, &iova);
->> +	if (!ret) {
->> +		msg->address_lo = lower_32_bits(iova);
->> +		msg->address_hi = upper_32_bits(iova);
->> +	}
->> +	return ret;
->> +#else
->> +	return -ENODEV;
->> +#endif
+On Mon, Feb 29, 2016 at 09:45:59AM +0100, Arnd Bergmann wrote:
+> The exynos iommu driver changed an incorrect cast from pointer
+> to 'unsigned int' to an equally incorrect cast to a 'phys_addr_t',
+> which results in an obvious compile-time error when phys_addr_t
+> is wider than pointers are:
 > 
-> This is completely unreadable. Please make this in a way which is parseable.
-> A few small inline functions do the trick.
-OK I will rewrite this.
+> drivers/iommu/exynos-iommu.c: In function 'alloc_lv2entry':
+> drivers/iommu/exynos-iommu.c:918:32: error: cast from pointer to integer of different size [-Werror=pointer-to-int-cast]
 > 
->> +static void msi_unmap_doorbell(struct iommu_domain *d, struct msi_msg *msg)
->> +{
->> +#ifdef CONFIG_IOMMU_DMA_RESERVED
->> +	dma_addr_t iova;
->> +
->> +#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
->> +	iova = ((dma_addr_t)(msg->address_hi) << 32) | msg->address_lo;
->> +#else
->> +	iova = msg->address_lo;
->> +#endif
->> +
->> +	iommu_put_single_reserved(d, iova);
->> +#endif
+> The code does not actually want the physical address (which would
+> involve using virt_to_phys()), but just checks the alignment,
+> so we can change it to use a cast to uintptr_t instead.
 > 
-> Ditto.
-ok
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Fixes: 740a01eee9ad ("iommu/exynos: Add support for v5 SYSMMU")
+> ---
+> I also see that some incorrect __raw_writel() calls have crept in
+> around the same time, which breaks running big-endian kernels when
+> this driver is loaded.
 > 
->> +}
->> +
->> +#ifdef CONFIG_IOMMU_API
->> +static struct iommu_domain *
->> +	irq_data_to_msi_mapping_domain(struct irq_data *irq_data)
+> Please fix and that that as well.
 > 
-> If you split lines, then the function name starts at the beginning of the line
-> and not at some randome place.
-ok
-> 
->> +{
->> +
->> +	struct msi_desc *desc;
->> +	struct device *dev;
->> +	struct iommu_domain *d;
->> +	int ret;
-> 
-> Please order variables by descending length
-ok
-> 
->> +	desc = irq_data_get_msi_desc(irq_data);
->> +	if (!desc)
->> +		return NULL;
->> +
->> +	dev = msi_desc_to_dev(desc);
->> +
->> +	d = iommu_get_domain_for_dev(dev);
->> +	if (!d)
->> +		return NULL;
->> +
->> +	ret = iommu_domain_get_attr(d, DOMAIN_ATTR_MSI_MAPPING, NULL);
->> +	if (!ret)
->> +		return d;
->> +	else
->> +		return NULL;
-> 
-> Does anyone except you understand the purpose of the function? Comments have
-> been invented for a reason.
-ok I will comment on the role of those functions.
-> 
->> +}
->> +#else
->> +static inline iommu_domain *
->> +		irq_data_to_msi_mapping_domain(struct irq_data *irq_data)
->> +{
->> +	return NULL;
->> +}
->> +#endif /* CONFIG_IOMMU_API */
->> +
->> +static int msi_compose(struct irq_data *irq_data,
->> +		       struct msi_msg *msg, bool erase)
->> +{
->> +	struct msi_msg old_msg;
->> +	struct iommu_domain *d;
->> +	int ret = 0;
->> +
->> +	d = irq_data_to_msi_mapping_domain(irq_data);
->> +	if (unlikely(d))
->> +		get_cached_msi_msg(irq_data->irq, &old_msg);
->> +
->> +	if (erase)
->> +		memset(msg, 0, sizeof(*msg));
->> +	else
->> +		ret = irq_chip_compose_msi_msg(irq_data, msg);
->> +
->> +	if (!d)
->> +		goto out;
->> +
->> +	/* handle (re-)mapping of MSI doorbell */
->> +	if ((old_msg.address_lo != msg->address_lo) ||
->> +	    (old_msg.address_hi != msg->address_hi))
->> +		msi_unmap_doorbell(d, &old_msg);
->> +
->> +	if (!erase)
->> +		WARN_ON(msi_map_doorbell(d, msg));
->> +
->> +out:
->> +	return ret;
->> +}
-> 
-> No, this is not the way we do this. You replace existing functionality by some
-> new fangled thing. which behaves differently.
-> 
-> This wants to be seperate patches, which first create a wrapper for
-> irq_chip_compose_msi_msg() and then adds the new functionality to it including
-> a proper explanation.
-> 
-> I have no idea how the above is supposed to be the same as the existing code
-> for the non iommu case.
-Sure I will decompose things and provide more explanation.
+>  drivers/iommu/exynos-iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thank you for your time.
-
-Best Regards
-
-Eric
-> 
-> Thanks,
-> 
-> 	tglx
-> 
+Applied, thanks Arnd.
