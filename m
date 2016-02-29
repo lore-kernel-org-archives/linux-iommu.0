@@ -1,291 +1,64 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 11/12] iommu/arm-smmu: Generic IOMMU DT bindings support
-Date: Mon, 29 Feb 2016 13:46:20 +0000
-Message-ID: <a3edd4225fe8b39440fb9b6a70a70883d3cb103b.1456514380.git.robin.murphy@arm.com>
-References: <cover.1456514380.git.robin.murphy@arm.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <cover.1456514380.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org, Thomas.Lendacky-5C7GfCeVMHo@public.gmane.org, stuart.yoder-3arQi8VN3Tc@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: [PATCH] iommu/ipmmu-vmsa: Add r8a7795 DT binding
+Date: Mon, 29 Feb 2016 23:33:09 +0900
+Message-ID: <20160229143309.28517.77269.sendpatchset@little-apple>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: devicetree@vger.kernel.org
+Cc: mark.rutland@arm.com, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, joro@8bytes.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, galak@codeaurora.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Implement an of_xlate callback and the appropriate registration so that
-we can configure masters via generic DT bindings. Initially, we have the
-equivalent level of functionality with respect to groups, stream ID
-limits, etc. as for the old bindings, but the door is now open for
-further improvements.
+From: Magnus Damm <damm+renesas@opensource.se>
 
-Since of_iommmu_configure() is not yet clever enough to enforce the
-necessary probe ordering dependencies, employ the same explicit device
-creation tactic as the Exynos IOMMU driver to ensure our actual SMMU
-instance is up and running in time to handle of_xlate calls.
+Update the IPMMU DT binding documentation to include the r8a7795 compat
+string as well as the "renesas,ipmmu-main" property that on r8a7795 will
+be used to describe the topology and the relationship between the various
+cache IPMMU instances and the main IPMMU.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 ---
- drivers/iommu/arm-smmu.c | 144 ++++++++++++++++++++++++++++++++++-------------
- 1 file changed, 106 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 91b0a1b..8fcf27a 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -39,6 +39,8 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_address.h>
-+#include <linux/of_iommu.h>
-+#include <linux/of_platform.h>
- #include <linux/pci.h>
- #include <linux/platform_device.h>
- #include <linux/slab.h>
-@@ -421,6 +423,9 @@ static struct arm_smmu_master *find_smmu_master(struct device_node *dev_node)
- {
- 	struct arm_smmu_master *master;
- 
-+	if (!dev_node)
-+		return NULL;
-+
- 	read_lock(&arm_smmu_masters_lock);
- 	list_for_each_entry(master, &arm_smmu_masters, list)
- 		if (master->of_node == dev_node)
-@@ -1011,13 +1016,6 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- 	if (ret)
- 		return ret;
- 
--	/*
--	 * FIXME: This won't be needed once we have IOMMU-backed DMA ops
--	 * for all devices behind the SMMU.
--	 */
--	if (smmu_domain->domain.type == IOMMU_DOMAIN_DMA)
--		return 0;
--
- 	for (i = 0; i < cfg->num_streamids; ++i) {
- 		u32 idx = cfg->streamids[i].s2cr_idx - 1;
- 		u32 s2cr = S2CR_TYPE_TRANS | S2CR_PRIVCFG_UNPRIV |
-@@ -1206,57 +1204,79 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- 	}
- }
- 
-+static int arm_smmu_add_dev_streamid(struct arm_smmu_device *smmu,
-+				     struct device *dev, u16 sid)
-+{
-+	struct arm_smmu_master_cfg *cfg = dev->archdata.iommu;
-+	int i;
-+
-+	if (!cfg) {
-+		cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
-+		if (!cfg)
-+			return -ENOMEM;
-+
-+		cfg->smmu = smmu;
-+		dev->archdata.iommu = cfg;
-+	}
-+
-+	if (cfg->num_streamids >= MAX_MASTER_STREAMIDS)
-+		return -ENOSPC;
-+
-+	/* Avoid duplicate SIDs, as this can lead to SMR conflicts */
-+	for (i = 0; i < cfg->num_streamids; ++i)
-+		if (cfg->streamids[i].id == sid) {
-+			dev_warn(dev, "Stream ID 0x%hx repeated; ignoring\n",
-+				 sid);
-+			return 0;
-+		}
-+
-+	cfg->streamids[cfg->num_streamids++].id = sid;
-+
-+	return 0;
-+}
-+
- static int __arm_smmu_get_pci_sid(struct pci_dev *pdev, u16 alias, void *data)
- {
- 	*((u16 *)data) = alias;
- 	return 0; /* Continue walking */
- }
- 
--static int arm_smmu_init_pci_device(struct arm_smmu_device *smmu,
--				    struct pci_dev *pdev)
-+static int arm_smmu_init_legacy_master(struct device *dev)
- {
--	struct arm_smmu_master_cfg *cfg;
-+	struct arm_smmu_master *master;
-+	struct device_node *np = dev_get_dev_node(dev);
- 	u16 sid;
- 
--	cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
--	if (!cfg)
--		return -ENOMEM;
--	/*
--	 * Assume Stream ID == Requester ID for now.
--	 * We need a way to describe the ID mappings in FDT.
--	 */
--	pci_for_each_dma_alias(pdev, __arm_smmu_get_pci_sid, &sid);
-+	master = find_smmu_master(np);
-+	if (!master)
-+		return -ENODEV;
- 
--	cfg->streamids[0].id = sid;
--	cfg->num_streamids = 1;
-+	if (!dev_is_pci(dev)) {
-+		dev->archdata.iommu = &master->cfg;
-+		return 0;
-+	}
- 
--	cfg->smmu = smmu;
--	pdev->dev.archdata.iommu = cfg;
--
--	return 0;
-+	/* Legacy bindings assume Stream ID == Requester ID */
-+	pci_for_each_dma_alias(to_pci_dev(dev), __arm_smmu_get_pci_sid, &sid);
-+	return arm_smmu_add_dev_streamid(master->cfg.smmu, dev, sid);
- }
- 
- static int arm_smmu_add_device(struct device *dev)
- {
- 	struct iommu_group *group;
--	struct arm_smmu_master *master;
- 
--	if (dev->archdata.iommu)
--		return -EEXIST;
-+	if (!dev->archdata.iommu) {
-+		int ret = arm_smmu_init_legacy_master(dev);
- 
--	master = find_smmu_master(dev_get_dev_node(dev));
--	if (!master)
--		return -ENODEV;
--
--	if (dev_is_pci(dev)) {
--		int ret = arm_smmu_init_pci_device(master->cfg.smmu,
--						   to_pci_dev(dev));
- 		if (ret)
- 			return ret;
--	} else {
--		dev->archdata.iommu = &master->cfg;
- 	}
- 
-+	/*
-+	 * For now, assume that the default group allocators suffice.
-+	 * We might have to do some preparatory work here to properly
-+	 * handle multiple devices sharing stream IDs.
-+	 */
- 	group = iommu_group_get_for_dev(dev);
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
-@@ -1268,7 +1288,7 @@ static int arm_smmu_add_device(struct device *dev)
- static void arm_smmu_remove_device(struct device *dev)
- {
- 	iommu_group_remove_device(dev);
--	if (dev_is_pci(dev))
-+	if (!find_smmu_master(dev->of_node))
- 		kfree(dev->archdata.iommu);
- }
- 
-@@ -1381,6 +1401,20 @@ out_unlock:
- 	return ret;
- }
- 
-+static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
-+{
-+	struct arm_smmu_device *smmu;
-+	struct platform_device *smmu_pdev;
-+
-+	smmu_pdev = of_find_device_by_node(args->np);
-+	if (!smmu_pdev)
-+		return -ENODEV;
-+
-+	smmu = platform_get_drvdata(smmu_pdev);
-+
-+	return arm_smmu_add_dev_streamid(smmu, dev, args->args[0]);
-+}
-+
- static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -1395,6 +1429,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.device_group		= arm_smmu_device_group,
- 	.domain_get_attr	= arm_smmu_domain_get_attr,
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
-+	.of_xlate		= arm_smmu_of_xlate,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- };
- 
-@@ -1731,6 +1766,9 @@ static int arm_smmu_probe_mmu_masters(struct arm_smmu_device *smmu)
- 	struct of_phandle_args masterspec;
- 	int err, i = 0;
- 
-+	dev_notice(smmu->dev,
-+		   "Deprecated \"mmu-masters\" property found; update DT to \"iommus\" property if possible\n");
-+
- 	while (!of_parse_phandle_with_args(smmu->dev->of_node, "mmu-masters",
- 			"#stream-id-cells", i,
- 			&masterspec)) {
-@@ -1838,7 +1876,9 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	}
- 
- 	platform_set_drvdata(pdev, smmu);
--	arm_smmu_probe_mmu_masters(smmu);
-+	/* Check first to avoid of_parse_phandle_with_args complaining */
-+	if (of_property_read_bool(dev->of_node, "mmu-masters"))
-+		arm_smmu_probe_mmu_masters(smmu);
- 	arm_smmu_device_reset(smmu);
- 	return 0;
- 
-@@ -1881,8 +1921,11 @@ static struct platform_driver arm_smmu_driver = {
- static int __init arm_smmu_init(void)
- {
- 	struct device_node *np;
-+	static bool done;
- 	int ret;
- 
-+	if (done)
-+		return 0;
- 	/*
- 	 * Play nice with systems that don't have an ARM SMMU by checking that
- 	 * an ARM SMMU exists in the system before proceeding with the driver
-@@ -1912,6 +1955,7 @@ static int __init arm_smmu_init(void)
- 		bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
- #endif
- 
-+	done = true;
- 	return 0;
- }
- 
-@@ -1923,6 +1967,30 @@ static void __exit arm_smmu_exit(void)
- subsys_initcall(arm_smmu_init);
- module_exit(arm_smmu_exit);
- 
-+static int __init arm_smmu_of_init(struct device_node *np)
-+{
-+	struct arm_smmu_device *smmu;
-+	struct platform_device *pdev;
-+	int ret = arm_smmu_init();
-+
-+	if (ret)
-+		return ret;
-+
-+	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
-+	if (!pdev)
-+		return -ENODEV;
-+
-+	smmu = platform_get_drvdata(pdev);
-+	of_iommu_set_ops(np, &arm_smmu_ops);
-+
-+	return 0;
-+}
-+IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1", arm_smmu_of_init);
-+IOMMU_OF_DECLARE(arm_smmuv2, "arm,smmu-v2", arm_smmu_of_init);
-+IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400", arm_smmu_of_init);
-+IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401", arm_smmu_of_init);
-+IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500", arm_smmu_of_init);
-+
- MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
- MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
- MODULE_LICENSE("GPL v2");
--- 
-2.7.2.333.g70bd996.dirty
+ Written against linux-next tag next-20160229
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |   15 ++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+--- 0001/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
++++ work/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt	2016-02-29 23:25:15.540513000 +0900
+@@ -7,23 +7,34 @@ connected to the IPMMU through a port ca
+ 
+ Required Properties:
+ 
+-  - compatible: Must contain SoC-specific and generic entries from below.
++  - compatible: Must contain SoC-specific and generic entry below in case
++    the device is compatible with the R-Car Gen2 VMSA-compatible IPMMU.
+ 
+     - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
+     - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
+     - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
+     - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
+     - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
++    - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
+     - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
+ 
+   - reg: Base address and size of the IPMMU registers.
+   - interrupts: Specifiers for the MMU fault interrupts. For instances that
+     support secure mode two interrupts must be specified, for non-secure and
+     secure mode, in that order. For instances that don't support secure mode a
+-    single interrupt must be specified.
++    single interrupt must be specified. Not required for cache IPMMUs.
+ 
+   - #iommu-cells: Must be 1.
+ 
++Optional properties:
++
++  - renesas,ipmmu-main: reference to the main IPMMU instance in two cells.
++    The first cell is a phandle to the main IPMMU and the second cell is
++    the interrupt bit number associated with the particular cache IPMMU device.
++    The interrupt bit number needs to match the main IPMMU IMSSTR register.
++    Only used by cache IPMMU instances.
++
++
+ Each bus master connected to an IPMMU must reference the IPMMU in its device
+ node with the following property:
+ 
