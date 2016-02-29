@@ -1,64 +1,48 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH] iommu/ipmmu-vmsa: Add r8a7795 DT binding
-Date: Mon, 29 Feb 2016 23:33:09 +0900
-Message-ID: <20160229143309.28517.77269.sendpatchset@little-apple>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: devicetree@vger.kernel.org
-Cc: mark.rutland@arm.com, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, joro@8bytes.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, galak@codeaurora.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC v4 07/14] msi: Add a new MSI_FLAG_IRQ_REMAPPING flag
+Date: Mon, 29 Feb 2016 16:25:39 +0100
+Message-ID: <56D462F3.1020206@linaro.org>
+References: <1456508154-2253-1-git-send-email-eric.auger@linaro.org>
+	<1456508154-2253-8-git-send-email-eric.auger@linaro.org>
+	<alpine.DEB.2.11.1602261904500.3638@nanos>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <alpine.DEB.2.11.1602261904500.3638@nanos>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas@opensource.se>
+Hi Thomas,
+On 02/26/2016 07:06 PM, Thomas Gleixner wrote:
+> On Fri, 26 Feb 2016, Eric Auger wrote:
+> 
+>> Let's introduce a new msi_domain_info flag value, MSI_FLAG_IRQ_REMAPPING
+>> meant to tell the domain supports IRQ REMAPPING, also known as Interrupt
+>> Translation Service. On Intel HW this capability is abstracted on IOMMU
+>> side while on ARM it is abstracted on MSI controller side.
+>>
+>> GICv3 ITS HW is the first HW advertising that feature.
+> 
+> No. We add the flag, epxlain what it does and then in a second step add the
+> user _after_ all other preliminaries are implemented.
+Sure I will proceed that way.
 
-Update the IPMMU DT binding documentation to include the r8a7795 compat
-string as well as the "renesas,ipmmu-main" property that on r8a7795 will
-be used to describe the topology and the relationship between the various
-cache IPMMU instances and the main IPMMU.
+Best Regards
 
-Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
----
-
- Written against linux-next tag next-20160229
-
- Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |   15 ++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
-
---- 0001/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-+++ work/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt	2016-02-29 23:25:15.540513000 +0900
-@@ -7,23 +7,34 @@ connected to the IPMMU through a port ca
- 
- Required Properties:
- 
--  - compatible: Must contain SoC-specific and generic entries from below.
-+  - compatible: Must contain SoC-specific and generic entry below in case
-+    the device is compatible with the R-Car Gen2 VMSA-compatible IPMMU.
- 
-     - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
-     - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
-     - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
-     - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
-     - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
-+    - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
-     - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
- 
-   - reg: Base address and size of the IPMMU registers.
-   - interrupts: Specifiers for the MMU fault interrupts. For instances that
-     support secure mode two interrupts must be specified, for non-secure and
-     secure mode, in that order. For instances that don't support secure mode a
--    single interrupt must be specified.
-+    single interrupt must be specified. Not required for cache IPMMUs.
- 
-   - #iommu-cells: Must be 1.
- 
-+Optional properties:
-+
-+  - renesas,ipmmu-main: reference to the main IPMMU instance in two cells.
-+    The first cell is a phandle to the main IPMMU and the second cell is
-+    the interrupt bit number associated with the particular cache IPMMU device.
-+    The interrupt bit number needs to match the main IPMMU IMSSTR register.
-+    Only used by cache IPMMU instances.
-+
-+
- Each bus master connected to an IPMMU must reference the IPMMU in its device
- node with the following property:
- 
+Eric
+>  
+> Thanks,
+> 
+> 	tglx
+> 
