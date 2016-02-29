@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 06/12] iommu/arm-smmu: Streamline SMMU data lookup
-Date: Mon, 29 Feb 2016 13:46:15 +0000
-Message-ID: <dea9c65414a1134bbe74dee79a055bf2222d8adc.1456514380.git.robin.murphy@arm.com>
+Subject: [PATCH 12/12] iommu/arm-smmu: Group platform devices appropriately
+Date: Mon, 29 Feb 2016 13:46:21 +0000
+Message-ID: <472100c4e1392f20937935ef175d8a49940aa299.1456514380.git.robin.murphy@arm.com>
 References: <cover.1456514380.git.robin.murphy@arm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1456514380.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
@@ -10,66 +10,134 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ar
 Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org, Thomas.Lendacky-5C7GfCeVMHo@public.gmane.org, stuart.yoder-3arQi8VN3Tc@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Simplify things by stashing our SMMU instance data in drvdata, so that
-we don't need to go off hunting for it in the driver model callbacks.
-Watch out, arm_smmu_devices list, your days are numbered!
+IOMMU groups are necessary to represent multiple devices which the IOMMU
+cannot tell apart; if two platform devices are wired up with the same
+stream ID, then the current approach of blindly placing every device in
+its own group makes it possible for each device to end up attached to a
+different domain. This is a Very Bad Thing under the SMMU architecture,
+where mapping a stream ID to more than one context leads to various
+unpleasant behaviours.
+
+In the absence of a suitable common abstraction (which is difficult due
+to the implementation-specific nature of platform device IDs), implement
+a simple lookup table within the SMMU driver to ensure that any devices
+with overlapping stream IDs end up in the same group as they should.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 20 +++++++-------------
- 1 file changed, 7 insertions(+), 13 deletions(-)
+ drivers/iommu/arm-smmu.c | 61 +++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 50 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 2409e3b..514ae2d 100644
+index 8fcf27a..2d65de4 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1836,6 +1836,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 		}
+@@ -333,6 +333,7 @@ struct arm_smmu_device {
+ 
+ 	u32				num_mapping_groups;
+ 	DECLARE_BITMAP(smr_map, ARM_SMMU_MAX_SMRS);
++	struct iommu_group		**group_lut;
+ 
+ 	unsigned long			va_size;
+ 	unsigned long			ipa_size;
+@@ -1272,11 +1273,6 @@ static int arm_smmu_add_device(struct device *dev)
+ 			return ret;
  	}
  
-+	platform_set_drvdata(pdev, smmu);
- 	INIT_LIST_HEAD(&smmu->list);
- 	spin_lock(&arm_smmu_devices_lock);
- 	list_add(&smmu->list, &arm_smmu_devices);
-@@ -1860,24 +1861,17 @@ out_put_masters:
+-	/*
+-	 * For now, assume that the default group allocators suffice.
+-	 * We might have to do some preparatory work here to properly
+-	 * handle multiple devices sharing stream IDs.
+-	 */
+ 	group = iommu_group_get_for_dev(dev);
+ 	if (IS_ERR(group))
+ 		return PTR_ERR(group);
+@@ -1297,6 +1293,45 @@ static void __arm_smmu_release_iommudata(void *data)
+ 	kfree(data);
+ }
  
- static int arm_smmu_device_remove(struct platform_device *pdev)
- {
-+	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
- 	int i;
--	struct device *dev = &pdev->dev;
--	struct arm_smmu_device *curr, *smmu = NULL;
- 	struct rb_node *node;
- 
--	spin_lock(&arm_smmu_devices_lock);
--	list_for_each_entry(curr, &arm_smmu_devices, list) {
--		if (curr->dev == dev) {
--			smmu = curr;
--			list_del(&smmu->list);
--			break;
--		}
--	}
--	spin_unlock(&arm_smmu_devices_lock);
--
- 	if (!smmu)
- 		return -ENODEV;
- 
-+	spin_lock(&arm_smmu_devices_lock);
-+	list_del(&smmu->list);
-+	spin_unlock(&arm_smmu_devices_lock);
++static struct iommu_group *arm_smmu_group_lookup(struct device *dev)
++{
++	struct arm_smmu_master_cfg *cfg = dev->archdata.iommu;
++	struct arm_smmu_device *smmu = cfg->smmu;
++	struct iommu_group **lut = smmu->group_lut;
++	struct iommu_group *group = NULL;
++	int i;
 +
- 	for (node = rb_first(&smmu->masters); node; node = rb_next(node)) {
- 		struct arm_smmu_master *master
- 			= container_of(node, struct arm_smmu_master, node);
-@@ -1885,7 +1879,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
- 	}
++	if (!lut) {
++		/*
++		 * Unfortunately this has to be sized for the worst-case until
++		 * we get even cleverer with stream ID management.
++		 */
++		lut = devm_kcalloc(smmu->dev, SMR_ID_MASK + 1,
++				   sizeof(*lut), GFP_KERNEL);
++		if (lut)
++			smmu->group_lut = lut;
++		else
++			group = ERR_PTR(-ENOMEM);
++	} else {
++		/* Check for platform or cross-bus aliases */
++		for (i = 0; i < cfg->num_streamids; i++) {
++			struct iommu_group *tmp = lut[cfg->streamids[i].id];
++
++			if (!tmp)
++				continue;
++
++			if (group && tmp != group) {
++				dev_err(smmu->dev,
++					"Cannot handle master %s aliasing multiple groups\n",
++					dev_name(dev));
++				return ERR_PTR(-EBUSY);
++			}
++			group = tmp;
++		}
++	}
++	return group;
++}
++
+ static inline bool __streamid_match_sme(struct arm_smmu_streamid *sid,
+ 					struct arm_smmu_stream_map_entry *sme)
+ {
+@@ -1306,22 +1341,24 @@ static inline bool __streamid_match_sme(struct arm_smmu_streamid *sid,
  
- 	if (!bitmap_empty(smmu->context_map, ARM_SMMU_MAX_CBS))
--		dev_err(dev, "removing device with active domains!\n");
-+		dev_err(&pdev->dev, "removing device with active domains!\n");
+ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+ {
+-	struct arm_smmu_master_cfg *master_cfg;
++	struct arm_smmu_master_cfg *master_cfg = dev->archdata.iommu;
+ 	struct arm_smmu_group_cfg *group_cfg;
+ 	struct arm_smmu_streamid *sids;
+ 	struct arm_smmu_stream_map_entry *smes;
+ 	struct iommu_group *group;
+ 	int i, j;
  
- 	for (i = 0; i < smmu->num_global_irqs; ++i)
- 		free_irq(smmu->irqs[i], smmu);
+-	if (dev_is_pci(dev))
+-		group = pci_device_group(dev);
+-	else
+-		group = generic_device_group(dev);
++	group = arm_smmu_group_lookup(dev);
++	if (!group) {
++		if (dev_is_pci(dev))
++			group = pci_device_group(dev);
++		else
++			group = generic_device_group(dev);
++	}
+ 
+ 	if (IS_ERR(group))
+ 		return group;
+ 
+-	master_cfg = dev->archdata.iommu;
+ 	group_cfg = iommu_group_get_iommudata(group);
+ 	if (!group_cfg) {
+ 		group_cfg = kzalloc(sizeof(*group_cfg), GFP_KERNEL);
+@@ -1336,6 +1373,8 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+ 	sids = master_cfg->streamids;
+ 	smes = group_cfg->smes;
+ 	for (i = 0; i < master_cfg->num_streamids; i++) {
++		master_cfg->smmu->group_lut[sids[i].id] = group;
++
+ 		for (j = 0; j < group_cfg->num_smes; j++) {
+ 			if (__streamid_match_sme(&sids[i], &smes[j])) {
+ 				sids[i].s2cr_idx = STREAM_MULTIPLE;
 -- 
 2.7.2.333.g70bd996.dirty
 
