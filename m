@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger@linaro.org>
-Subject: [RFC v5 09/17] irqchip/gic-v3-its: ITS advertises
- MSI_FLAG_IRQ_REMAPPING
-Date: Tue,  1 Mar 2016 18:27:49 +0000
-Message-ID: <1456856877-4817-10-git-send-email-eric.auger@linaro.org>
+Subject: [RFC v5 08/17] msi: Add a new MSI_FLAG_IRQ_REMAPPING flag
+Date: Tue,  1 Mar 2016 18:27:48 +0000
+Message-ID: <1456856877-4817-9-git-send-email-eric.auger@linaro.org>
 References: <1456856877-4817-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,48 +21,35 @@ To: eric.auger@st.com, eric.auger@linaro.org, robin.murphy@arm.com, alex.william
 Cc: patches@linaro.org, Manish.Jaggi@caviumnetworks.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-The ITS is the first ARM MSI controller advertising the new
-MSI_FLAG_IRQ_REMAPPING flag. It does so because it supports
-interrupt translation service. This HW support offers isolation
-of MSIs, feature used when using KVM device passthrough.
+Let's introduce a new msi_domain_info flag value, MSI_FLAG_IRQ_REMAPPING
+meant to tell the domain supports IRQ REMAPPING, also known as Interrupt
+Translation Service. On Intel HW this IRQ remapping capability is
+abstracted on IOMMU side while on ARM it is abstracted on MSI controller
+side. This flag will be used to know whether the MSI passthrough is
+safe.
 
 Signed-off-by: Eric Auger <eric.auger@linaro.org>
 
 ---
 
-v5: new
+v4 -> v5:
+- seperate flag introduction from first user addition (ITS)
 ---
- drivers/irqchip/irq-gic-v3-its-pci-msi.c      | 3 ++-
- drivers/irqchip/irq-gic-v3-its-platform-msi.c | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ include/linux/msi.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/irqchip/irq-gic-v3-its-pci-msi.c b/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-index aee60ed..8223765 100644
---- a/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-+++ b/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-@@ -96,7 +96,8 @@ static struct msi_domain_ops its_pci_msi_ops = {
- 
- static struct msi_domain_info its_pci_msi_domain_info = {
- 	.flags	= (MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
--		   MSI_FLAG_MULTI_PCI_MSI | MSI_FLAG_PCI_MSIX),
-+		   MSI_FLAG_MULTI_PCI_MSI | MSI_FLAG_PCI_MSIX |
-+		   MSI_FLAG_IRQ_REMAPPING),
- 	.ops	= &its_pci_msi_ops,
- 	.chip	= &its_msi_irq_chip,
- };
-diff --git a/drivers/irqchip/irq-gic-v3-its-platform-msi.c b/drivers/irqchip/irq-gic-v3-its-platform-msi.c
-index 470b4aa..8c0d69d 100644
---- a/drivers/irqchip/irq-gic-v3-its-platform-msi.c
-+++ b/drivers/irqchip/irq-gic-v3-its-platform-msi.c
-@@ -63,7 +63,8 @@ static struct msi_domain_ops its_pmsi_ops = {
+diff --git a/include/linux/msi.h b/include/linux/msi.h
+index a2a0068..03eda72 100644
+--- a/include/linux/msi.h
++++ b/include/linux/msi.h
+@@ -261,6 +261,8 @@ enum {
+ 	MSI_FLAG_MULTI_PCI_MSI		= (1 << 3),
+ 	/* Support PCI MSIX interrupts */
+ 	MSI_FLAG_PCI_MSIX		= (1 << 4),
++	/* Support MSI IRQ remapping service */
++	MSI_FLAG_IRQ_REMAPPING		= (1 << 5),
  };
  
- static struct msi_domain_info its_pmsi_domain_info = {
--	.flags	= (MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS),
-+	.flags	= (MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
-+		   MSI_FLAG_IRQ_REMAPPING),
- 	.ops	= &its_pmsi_ops,
- 	.chip	= &its_pmsi_irq_chip,
- };
+ int msi_domain_set_affinity(struct irq_data *data, const struct cpumask *mask,
 -- 
 1.9.1
