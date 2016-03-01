@@ -1,18 +1,11 @@
-From: Jacek Lawrynowicz <jacek.lawrynowicz-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v4 3/6] PCI: Add support for multiple DMA aliases
-Date: Tue, 1 Mar 2016 17:57:29 +0100
-Message-ID: <20160301165728.GA7292@jlawryno-MOBL1>
-References: <20160224193926.7585.10833.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-	<20160224194406.7585.17447.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-	<20160225143841.GA8726@localhost>
-	<36D38C1F74839847A52A484C31F3E51A62180790@irsmsx105.ger.corp.intel.com>
-	<20160229224417.GD3653@localhost>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/io-pgtable-armv7s: Fix kmem_cache_alloc() flags
+Date: Tue,  1 Mar 2016 18:17:38 +0000
+Message-ID: <cbd13a3db3924a67f8aa8a352f04c883c47d8815.1456856051.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160229224417.GD3653@localhost>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,131 +15,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 29, 2016 at 04:44:17PM -0600, Bjorn Helgaas wrote:
-> On Thu, Feb 25, 2016 at 03:41:51PM +0000, Lawrynowicz, Jacek wrote:
-> > > -----Original Message-----
-> > > From: Bjorn Helgaas [mailto:helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org]
-> > > Sent: Thursday, February 25, 2016 3:39 PM
-> > > To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-> > > Cc: Lawrynowicz, Jacek <jacek.lawrynowicz-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>; linux-
-> > > pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>; Joerg
-> > > Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>; David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>;
-> > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> > > Subject: Re: [PATCH v4 3/6] PCI: Add support for multiple DMA aliases
-> > > 
-> > > On Wed, Feb 24, 2016 at 01:44:06PM -0600, Bjorn Helgaas wrote:
-> > > > From: Jacek Lawrynowicz <jacek.lawrynowicz-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> 
-> What about my questions on the code itself, below?
-> 
+Whilst the default SLUB allocator happily just merges the original
+allocation flags from kmem_cache_create() with those passed through
+kmem_cache_alloc(), there is a code path in the SLAB allocator which
+will aggressively BUG_ON() if the cache was created with SLAB_CACHE_DMA
+but GFP_DMA is not specified for an allocation.
 
-Sorry but I'm not able to answer it.
-Maybe Joerg or David could help here?
+Keep the peace by adding GFP_DMA when allocating a table.
 
-> > > > ---
-> > > >  drivers/iommu/iommu.c |   17 ++++++++++-------
-> > > >  drivers/pci/pci.c     |   11 +++++++++--
-> > > >  drivers/pci/probe.c   |    1 +
-> > > >  drivers/pci/search.c  |   14 +++++++++-----
-> > > >  include/linux/pci.h   |    4 +---
-> > > >  5 files changed, 30 insertions(+), 17 deletions(-)
-> > > >
-> > > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > > > index 0e3b009..a214e19 100644
-> > > > --- a/drivers/iommu/iommu.c
-> > > > +++ b/drivers/iommu/iommu.c
-> > > > @@ -659,9 +659,15 @@ static struct iommu_group
-> > > *get_pci_function_alias_group(struct pci_dev *pdev,
-> > > >  	return NULL;
-> > > >  }
-> > > >
-> > > > +static bool dma_alias_is_enabled(struct pci_dev *dev, u8 devfn)
-> > > > +{
-> > > > +	return dev->dma_alias_mask &&
-> > > > +	       test_bit(devfn, dev->dma_alias_mask);
-> > > > +}
-> > > > +
-> > > >  /*
-> > > > - * Look for aliases to or from the given device for exisiting groups.  The
-> > > > - * dma_alias_devfn only supports aliases on the same bus, therefore the
-> > > search
-> > > > + * Look for aliases to or from the given device for existing groups. DMA
-> > > > + * aliases are only supported on the same bus, therefore the search
-> > > 
-> > > I'm trying to reconcile this statement that "DMA aliases are only
-> > > supported on the same bus" (which was there even before this patch)
-> > > with the fact that pci_for_each_dma_alias() does not have that
-> > > limitation.
-> > > 
-> > > >   * space is quite small (especially since we're really only looking at pcie
-> > > >   * device, and therefore only expect multiple slots on the root complex or
-> > > >   * downstream switch ports).  It's conceivable though that a pair of
-> > > > @@ -686,11 +692,8 @@ static struct iommu_group *get_pci_alias_group(struct
-> > > pci_dev *pdev,
-> > > >  			continue;
-> > > >
-> > > >  		/* We alias them or they alias us */
-> > > > -		if (((pdev->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_DEVFN)
-> > > &&
-> > > > -		     pdev->dma_alias_devfn == tmp->devfn) ||
-> > > > -		    ((tmp->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_DEVFN) &&
-> > > > -		     tmp->dma_alias_devfn == pdev->devfn)) {
-> > > > -
-> > > > +		if (dma_alias_is_enabled(pdev, tmp->devfn) ||
-> > > > +		    dma_alias_is_enabled(tmp, pdev->devfn)) {
-> > > >  			group = get_pci_alias_group(tmp, devfns);
-> > > 
-> > > We basically have this:
-> > > 
-> > >   for_each_pci_dev(tmp) {
-> > >     if (<pdev and tmp are DMA aliases>)
-> > >       group = get_pci_alias_group();
-> > >       ...
-> > >   }
-> > > 
-> > > The DMA alias stuff relies on PCI internals, so it doesn't doesn't
-> > > seem quite right to use things like PCI_DEV_FLAGS_DMA_ALIAS_DEVFN and
-> > > dma_alias_devfn here in the IOMMU code.
-> > > 
-> > > I'm trying to figure out why we don't do something like the following
-> > > instead:
-> > > 
-> > >   callback(struct pci_dev *pdev, u16 alias, void *opaque)
-> > >   {
-> > >     struct iommu_group *group;
-> > > 
-> > >     group = get_pci_alias_group();
-> > >     if (group)
-> > >       return group;
-> > > 
-> > >     return 0;
-> > >   }
-> > > 
-> > >   pci_for_each_dma_alias(pdev, callback, ...);
-> > > 
-> > > Is the existing code some sort of optimization, e.g., checking
-> > > PCI_DEV_FLAGS_DMA_ALIAS_DEVFN is cheaper than using
-> > > pci_for_each_dma_alias()?
-> > > 
-> > > It seems like this won't work for some very unlikely but theoretically
-> > > possible topologies, e.g.,
-> > > 
-> > >   PCIe Root Complex/IOMMU
-> > >     PCIe switch A
-> > >       PCIe to conventional PCI bridge
-> > >         PCI to PCIe Root Complex
-> > > 	  PCIe NTB
-> > > 
-> > > Here, I think the IOMMU will only see RIDs from PCIe switch A, but the
-> > > current code only looks at DMA aliases that are on the same bus as the
-> > > PCIe NTB.  Wouldn't using pci_for_each_dma_alias() handle this
-> > > correctly?
-> > > 
-> > > >  			if (group) {
-> > > >  				pci_dev_put(tmp);
-> 
-> 
+Reported-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/io-pgtable-arm-v7s.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index 9fcceb1..9488e3c 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -192,7 +192,7 @@ static void *__arm_v7s_alloc_table(int lvl, gfp_t gfp,
+ 	if (lvl == 1)
+ 		table = (void *)__get_dma_pages(__GFP_ZERO, get_order(size));
+ 	else if (lvl == 2)
+-		table = kmem_cache_zalloc(data->l2_tables, gfp);
++		table = kmem_cache_zalloc(data->l2_tables, gfp | GFP_DMA);
+ 	if (table && !selftest_running) {
+ 		dma = dma_map_single(dev, table, size, DMA_TO_DEVICE);
+ 		if (dma_mapping_error(dev, dma))
+-- 
+2.7.2.333.g70bd996.dirty
