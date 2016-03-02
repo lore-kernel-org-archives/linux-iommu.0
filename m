@@ -1,14 +1,14 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH v10 0/5] MT8173 IOMMU SUPPORT
-Date: Wed, 02 Mar 2016 12:26:35 +0100
-Message-ID: <15221728.nr4S7fgC2l@wuerfel>
-References: <1456161651-6136-1-git-send-email-yong.wu@mediatek.com>
-	<20160226110633.GE22747@8bytes.org> <56D6C50B.3040108@gmail.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC v5 00/17] KVM PCIe/MSI passthrough on ARM/ARM64
+Date: Wed, 2 Mar 2016 13:30:11 +0100
+Message-ID: <56D6DCD3.7070004@linaro.org>
+References: <1456856877-4817-1-git-send-email-eric.auger@linaro.org>
+	<BY1PR0701MB1594168E79366B507B7C8A16E1BC0@BY1PR0701MB1594.namprd07.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <56D6C50B.3040108-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <BY1PR0701MB1594168E79366B507B7C8A16E1BC0-vsFp3N3nJ9josxbTuffl3E5OhdzP3rhOnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,32 +18,60 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, arm-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: "Jaggi, Manish" <Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "eric.auger-qxv4g6HH51o@public.gmane.org" <eric.auger-qxv4g6HH51o@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org" <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org" <kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: "patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday 02 March 2016 11:48:43 Matthias Brugger wrote:
+Hi Manish,
+On 03/02/2016 09:11 AM, Jaggi, Manish wrote:
 > 
-> On 26/02/16 12:06, Joerg Roedel wrote:
-> > Hi Philipp,
-> >
-> > On Fri, Feb 26, 2016 at 09:55:55AM +0100, Philipp Zabel wrote:
-> >> Do you have a stable branch that I could base the mediatek-drm patches
-> >> on and that I may include in a pull request to be merged via drm-next?
-> >
-> > You can base it on the arm/mediatek branch of the iommu tree. I'll push
-> > it out in the next minutes.
-> >
 > 
-> I realized that Joerg accidentally merged the dts parts as well through 
-> his branch.
+>>> From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>>> Sent: Tuesday, March 1, 2016 11:57 PM
+>>> To: eric.auger-qxv4g6HH51o@public.gmane.org; eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; robin.murphy-5wv7dgnIgG8@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org; >>jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org; marc.zyngier-5wv7dgnIgG8@public.gmane.org; christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>>> Cc: suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org; patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Jaggi, Manish; Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org; >>pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org; p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>>> Subject: [RFC v5 00/17] KVM PCIe/MSI passthrough on ARM/ARM64
 > 
-> As expected this patches conflict when merging the arm-soc tree.
+>>> This series addresses KVM PCIe passthrough with MSI enabled on ARM/ARM64.
+>>> It pursues the efforts done on [1], [2], [3]. It also aims at covering the
+>>> same need on PowerPC platforms although the same kind of integration
+>>> .should be carried out.
+>>>
+> [snip]
+>>> - Not tested: ARM GICv3 ITS
 > 
-> Shall Joerg drops the patches and you take it through your branch, or
-> I queue them for the next release cycle?
+> [snip]
+>>> QEMU Integration:
+>>> [RFC v2 0/8] KVM PCI/MSI passthrough with mach-virt
+>>> (http://lists.gnu.org/archive/html/qemu-arm/2016-01/msg00444.html)
+>>> https://git.linaro.org/people/eric.auger/qemu.git/shortlog/refs/heads/v2.5.0-pci-passthrough-rfc-v2
+> 
+> For gicv3 its, I believe, the below series for qemu and kernel is required for gicv3-its
+> 
+> [RFC PATCH v3 0/5] vITS support
+> https://lists.gnu.org/archive/html/qemu-devel/2015-11/msg05197.html
+> 
+> and in kernel CONFIG_HAVE_KVM_MSI must be enabled so that qemu sees MSI capability KVM_CAP_SIGNAL_MSI
+> 
+> This has a dependency on gsi routing support
+> KVM: arm/arm64: gsi routing support
+> https://lkml.org/lkml/2015/6/29/290
 
-I think this time, we can live with the conflict, it's easy enough
-to resolve when Linus pulls both branches.
+which has a dependency on Andre's ITS emulation series too.
 
-	Arnd
+The Kernel series will be resent soon on top on new vgic design.
+> 
+> I had both the above series in 4.2 in my local 4.2 tree. 
+
+Did you have a chance to test with GICv3 ITS already?
+
+Best Regards
+
+Eric
+
+
+> 
+> BR
+> -Manish
+> 
+> 
