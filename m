@@ -1,16 +1,19 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
-Date: Wed, 2 Mar 2016 13:35:01 +0000
-Message-ID: <20160302133457.GD7637@arm.com>
-References: <1456348433-3337-1-git-send-email-tchalamarla@caviumnetworks.com>
-	<20160302030756.GC7637@arm.com>
-	<C2D36A36-8247-4432-BE50-14129D9D8E5B@caviumnetworks.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: Bug: Freeing dma regions
+Date: Wed, 2 Mar 2016 14:45:28 +0100
+Message-ID: <20160302134528.GA20213@8bytes.org>
+References: <CABdVeACY5dWoj-q4uMUnc-NgqqShemunLU1bbvLpAN6jPdBC+w@mail.gmail.com>
+	<20160302082940.GS22747@8bytes.org>
+	<CABdVeAB4C2aDGSgmCnGOjSzSZZ3Er5gu-ngsSVPc_XbBxsVaTA@mail.gmail.com>
+	<CABdVeABM7OzGWeoXo1uui7f0HyP9wVLCPsEe+LnXrWXcmt7dVg@mail.gmail.com>
+	<20160302123519.GT22747@8bytes.org>
+	<CABdVeAAq_u6kAC9pm96UAdozWN5VSiiNm3HMBJ5wGqpd5zvbrQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <C2D36A36-8247-4432-BE50-14129D9D8E5B-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+In-Reply-To: <CABdVeAAq_u6kAC9pm96UAdozWN5VSiiNm3HMBJ5wGqpd5zvbrQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,25 +23,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Akula,
-	Geethasowjanya" <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: David Kiarie <davidkiarie4-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jan Kiszka <jan.kiszka-S0/GAf8tV78@public.gmane.org>, Valentine Sinitsyn <valentine.sinitsyn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 02, 2016 at 03:23:57AM +0000, Chalamarla, Tirumalesh wrote:
-> On 3/1/16, 7:07 PM, "Will Deacon" <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> >On Wed, Feb 24, 2016 at 01:13:53PM -0800, Tirumalesh Chalamarla wrote:
-> >> +		smmu->cavium_smmu_id = cavium_smmu_count;
-> >> +		cavium_smmu_count++;
-> >> +		smmu->cavium_id_base =
-> >> +			(smmu->cavium_smmu_id * ARM_SMMU_MAX_CBS);
+On Wed, Mar 02, 2016 at 03:58:18PM +0300, David Kiarie wrote:
+> On Wed, Mar 2, 2016 at 3:35 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> > On Wed, Mar 02, 2016 at 11:40:04AM +0300, David Kiarie wrote:
+> >> What effect is setting the value next_bit to last invalidated index
+> >> supposed to have ?
 > >
-> >Can you not use num_context_banks here, instead of the constant?
-> We need total context banks so far, so ARM_SMMU_MAX_CBS is best option.
-> For Thunder both are same anyway. 
+> > The idea is to safe the IOTLB flush by not re-using the address-range
+> > until the allocator wraps around to 0 again. We only allocate address
+> > ranges between next_bit and end-of-range. This way we don't need a flush
+> > after every unmap operation.
+> 
+> Okay, I'll look at this issue again.
+> 
+> Last unrelated question. If I have 'iommu=pt' IOMMU doesn't seem to
+> allocate any addresses and doesn't populate the 'root page table'
+> until I try to pass-through a device. Why is that set like this ?
 
-Hmm, so couldn't you instead just update a running total as you go along?
-That is, initialise it to zero, then atomic_add_return(num_context_banks)
-when you probe?
+The pt stands for passthrough. In this mode the IOMMU is enabled, but
+configured in way as if it is disabled. This means that all devices get
+access to the physical address space and no remapping through the
+DMA-API is done at all. Often this is used for performance reasons.
 
-Will
+This only changes when a device is is assigned to a guest. In that case
+it will only see the guest-physical address space via a page-table.
+
+
+	Joerg
