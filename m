@@ -1,102 +1,61 @@
-From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
-Date: Wed, 2 Mar 2016 03:23:57 +0000
-Message-ID: <C2D36A36-8247-4432-BE50-14129D9D8E5B@caviumnetworks.com>
-References: <1456348433-3337-1-git-send-email-tchalamarla@caviumnetworks.com>
-	<20160302030756.GC7637@arm.com>
+From: "Jaggi, Manish" <Manish.Jaggi@caviumnetworks.com>
+Subject: Re: [RFC v5 00/17] KVM PCIe/MSI passthrough on ARM/ARM64
+Date: Wed, 2 Mar 2016 08:11:31 +0000
+Message-ID: <BY1PR0701MB1594168E79366B507B7C8A16E1BC0@BY1PR0701MB1594.namprd07.prod.outlook.com>
+References: <1456856877-4817-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160302030756.GC7637-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1456856877-4817-1-git-send-email-eric.auger@linaro.org>
 Content-Language: en-US
-Content-ID: <64782AEA4189A846BFC7234BADAF7DA6-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Akula,
-	Geethasowjanya" <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Eric Auger <eric.auger@linaro.org>, "eric.auger@st.com" <eric.auger@st.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "tglx@linutronix.de" <tglx@linutronix.de>, "jason@lakedaemon.net" <jason@lakedaemon.net>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "christoffer.dall@linaro.org" <christoffer.dall@linaro.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Cc: "patches@linaro.org" <patches@linaro.org>, "p.fedin@samsung.com" <p.fedin@samsung.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Bharat.Bhushan@freescale.com" <Bharat.Bhushan@freescale.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "pranav.sawargaonkar@gmail.com" <pranav.sawargaonkar@gmail.com>, "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-DQoNCg0KDQoNCk9uIDMvMS8xNiwgNzowNyBQTSwgIldpbGwgRGVhY29uIiA8d2lsbC5kZWFjb25A
-YXJtLmNvbT4gd3JvdGU6DQoNCj5PbiBXZWQsIEZlYiAyNCwgMjAxNiBhdCAwMToxMzo1M1BNIC0w
-ODAwLCBUaXJ1bWFsZXNoIENoYWxhbWFybGEgd3JvdGU6DQo+PiBEdWUgdG8gRXJyYXRhIzI3NzA0
-IENOODh4eCBTTU1VdjIsc3VwcG9ydHMgIG9ubHkgc2hhcmVkIEFTSUQgYW5kIFZNSUQNCj4+IG5h
-bWVzcGFjZXM7IHNwZWNpZmljYWxseSB3aXRoaW4gYSBnaXZlbiBub2RlIFNNTVUwIGFuZCBTTU1V
-MSBzaGFyZSwNCj4+IGFzIGRvZXMgU01NVTIgYW5kIFNNTVUzLg0KPj4gDQo+PiBUaGlzIHBhdGNo
-IGFkZHJlc3MgdGhlc2UgaXNzdWVlIGJ5IHN1cHBseWluZyBhc2lkIGFuZCB2bWlkDQo+PiB3aGls
-ZSBjYWxjdWxhdGluZyBBU0lEIGFuZCBWTUlEIGZvciBUaHVuZGVyIFNNTVV2Mi4NCj4+IA0KPj4g
-Tk9URTogcmVzZW5kaW5nIHdpdGggY29tbWl0IG1lc3NhZ2UgZml4Lg0KPj4gDQo+PiBjaGFuZ2Vz
-IGZyb20gVjI6DQo+PiAJLSByZW1vdmVkICpfYmFzZSBmcm9tIERULCBhbmQgcmVwbGFjZWQgd2l0
-aCBjb21wYXRpYmxlIHN0cmluZw0KPj4gDQo+PiBjaGFuZ2VzIGZyb20gVjE6DQo+PiAJLSByZWJh
-c2VkIG9uIHRvcCBvZiAxNiBiaXQgVk1JRCBwYXRjaA0KPj4gCS0gcmVtb3ZlZCByZWR1bmRlbnQg
-b3B0aW9ucyBmcm9tIERUDQo+PiAJLSBpbnN0ZWQgb2YgdHJhbnNmb3JtLCBEVCBub3cgc3VwcGxp
-ZXMgc3RhcnRpbmcgQVNJRC9WTUlEDQo+PiANCj4+IFNpZ25lZC1vZmYtYnk6IFRpcnVtYWxlc2gg
-Q2hhbGFtYXJsYSA8dGNoYWxhbWFybGFAY2F2aXVtbmV0d29ya3MuY29tPg0KPj4gU2lnbmVkLW9m
-Zi1ieTogQWt1bGEgR2VldGhhc293amFueWEgPEdlZXRoYXNvd2phbnlhLkFrdWxhQGNhdml1bW5l
-dHdvcmtzLmNvbT4NCj4+IC0tLQ0KPj4gIC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lvbW11L2Fy
-bSxzbW11LnR4dCAgICAgICAgIHwgIDEgKw0KPj4gIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIHwgNDggKysrKysrKysrKysrKysrKystLS0tLQ0KPj4g
-IDIgZmlsZXMgY2hhbmdlZCwgMzggaW5zZXJ0aW9ucygrKSwgMTEgZGVsZXRpb25zKC0pDQo+PiAN
-Cj4+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUv
-YXJtLHNtbXUudHh0IGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lvbW11L2Fy
-bSxzbW11LnR4dA0KPj4gaW5kZXggNzE4MDc0NS4uMTlmZTZmMiAxMDA2NDQNCj4+IC0tLSBhL0Rv
-Y3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQNCj4+ICsr
-KyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQN
-Cj4+IEBAIC0xNiw2ICsxNiw3IEBAIGNvbmRpdGlvbnMuDQo+PiAgICAgICAgICAgICAgICAgICAg
-ICAgICAgImFybSxtbXUtNDAwIg0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICJhcm0sbW11
-LTQwMSINCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAiYXJtLG1tdS01MDAiDQo+PiArICAg
-ICAgICAgICAgICAgICAgICAgICAgImNhdml1bSxzbW11LXYyIg0KPj4gIA0KPj4gICAgICAgICAg
-ICAgICAgICAgIGRlcGVuZGluZyBvbiB0aGUgcGFydGljdWxhciBpbXBsZW1lbnRhdGlvbiBhbmQv
-b3IgdGhlDQo+PiAgICAgICAgICAgICAgICAgICAgdmVyc2lvbiBvZiB0aGUgYXJjaGl0ZWN0dXJl
-IGltcGxlbWVudGVkLg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBi
-L2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYw0KPj4gaW5kZXggMjQ3YTQ2OS4uYzcwNGY4OCAxMDA2
-NDQNCj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYw0KPj4gKysrIGIvZHJpdmVycy9p
-b21tdS9hcm0tc21tdS5jDQo+PiBAQCAtMzI2LDYgKzMyNiwxMiBAQCBzdHJ1Y3QgYXJtX3NtbXVf
-ZGV2aWNlIHsNCj4+ICANCj4+ICAJc3RydWN0IGxpc3RfaGVhZAkJbGlzdDsNCj4+ICAJc3RydWN0
-IHJiX3Jvb3QJCQltYXN0ZXJzOw0KPj4gKwkvKg0KPj4gKwkgKlRoZSBmb2xsb3dpbmcgZmllbGRz
-IGFyZSBzcGVjaWZpYyB0byBDYXZpdW0sIFRodW5kZXINCj4+ICsJICovDQo+PiArCXUzMgkJCQlj
-YXZpdW1fc21tdV9pZDsNCj4NCj5XaHkgZG8geW91IG5lZWQgdGhpcyBmaWVsZCBhcyB3ZWxsIGFz
-IHRoZSBiYXNlPw0KV2lsbCBiZSByZW1vdmVkLiANCj4NCj4+ICsJdTMyCQkJCWNhdml1bV9pZF9i
-YXNlOw0KPj4gKw0KPj4gIH07DQo+PiAgDQo+PiAgc3RydWN0IGFybV9zbW11X2NmZyB7DQo+PiBA
-QCAtMzM1LDggKzM0MSw4IEBAIHN0cnVjdCBhcm1fc21tdV9jZmcgew0KPj4gIH07DQo+PiAgI2Rl
-ZmluZSBJTlZBTElEX0lSUFRORFgJCQkweGZmDQo+PiAgDQo+PiAtI2RlZmluZSBBUk1fU01NVV9D
-Ql9BU0lEKGNmZykJCSgoY2ZnKS0+Y2JuZHgpDQo+PiAtI2RlZmluZSBBUk1fU01NVV9DQl9WTUlE
-KGNmZykJCSgoY2ZnKS0+Y2JuZHggKyAxKQ0KPj4gKyNkZWZpbmUgQVJNX1NNTVVfQ0JfQVNJRChz
-bW11LCBjZmcpICgodTE2KShzbW11KS0+Y2F2aXVtX2lkX2Jhc2UgKyAoY2ZnKS0+Y2JuZHgpDQo+
-PiArI2RlZmluZSBBUk1fU01NVV9DQl9WTUlEKHNtbXUsIGNmZykgKCh1MTYpKHNtbXUpLT5jYXZp
-dW1faWRfYmFzZSArIChjZmcpLT5jYm5keCArIDEpDQo+PiAgDQo+PiAgZW51bSBhcm1fc21tdV9k
-b21haW5fc3RhZ2Ugew0KPj4gIAlBUk1fU01NVV9ET01BSU5fUzEgPSAwLA0KPj4gQEAgLTM2NCw2
-ICszNzAsOCBAQCBzdHJ1Y3QgYXJtX3NtbXVfb3B0aW9uX3Byb3Agew0KPj4gIAljb25zdCBjaGFy
-ICpwcm9wOw0KPj4gIH07DQo+PiAgDQo+PiArc3RhdGljIGludCBjYXZpdW1fc21tdV9jb3VudDsN
-Cj4NCj5JJ2QgYmUgbW9yZSBjb21mb3J0YWJsZSBpZiB0aGlzIHdhcyBhbiBhdG9taWNfdC4NCg0K
-U3VyZS4NCj4NCj4+ICsJLyoNCj4+ICsJICogRHVlIHRvIEVycmF0YSMyNzcwNCBDTjg4eHggU01N
-VXYyLHN1cHBvcnRzICBvbmx5IHNoYXJlZCBBU0lEIGFuZCBWTUlEDQo+PiArCSAqIG5hbWVzcGFj
-ZXM7IHNwZWNpZmljYWxseSB3aXRoaW4gYSBnaXZlbiBub2RlIFNNTVUwIGFuZCBTTU1VMSBzaGFy
-ZSwNCj4+ICsJICogYXMgZG9lcyBTTU1VMiBhbmQgU01NVTMuIHNlZSBpZiB0aGlzIGlzIGEgQ2F2
-aXVtIFNNTVUsIGlmIHNvDQo+PiArCSAqIHNldCBhc2lkIGFuZCB2bWlkIGJhc2Ugc3VjaCB0aGF0
-IGVhY2ggU01NVSBnZXRzIHVuaXF1ZQ0KPj4gKwkgKiBhc2lkL3ZtaWQgc3BhY2UuDQo+PiArCSAq
-Lw0KPj4gKwlpZiAoIXN0cmNhc2VjbXAob2ZfaWQtPmNvbXBhdGlibGUsICJjYXZpdW0sc21tdS12
-MiIpKSB7DQo+DQo+b2ZfZGV2aWNlX2lzX2NvbXBhdGlibGUNClN1cmUuDQo+DQo+PiArCQkvKiBW
-TUlEMTYgbXVzdCBiZSBwcmVzZW50IG9uIENhdml1bSBTTU1VdjIqLw0KPj4gKwkJaWYgKCEoc21t
-dS0+ZmVhdHVyZXMgJiBBUk1fU01NVV9GRUFUX1ZNSUQxNikpDQo+PiArCQkJZ290byBvdXRfZnJl
-ZV9pcnFzOw0KPg0KPlRoaXMgY2hlY2sgc2VlbXMgYSBiaXQgb3ZlcmtpbGwuIEkgdGhpbmsgeW91
-IGNhbiByZW1vdmUgaXQuDQpJIGRvbuKAmXQgdGhpbmsgaXQgaXMgcG9zc2libGUgdG8gc3VwcG9y
-dCB1bmlxdWUgQVNJRCBzcGFjZSB3aXRoIG91dCAxNiBiaXQgVk1JRC4NCkJ1dCBJIGNhbiByZW1v
-dmUgdGhpcyBjaGVjayBpZiB0aGF04oCZcyBpbXBsaWNpdC4gDQo+DQo+PiArCQlzbW11LT5jYXZp
-dW1fc21tdV9pZCA9IGNhdml1bV9zbW11X2NvdW50Ow0KPj4gKwkJY2F2aXVtX3NtbXVfY291bnQr
-KzsNCj4+ICsJCXNtbXUtPmNhdml1bV9pZF9iYXNlID0NCj4+ICsJCQkoc21tdS0+Y2F2aXVtX3Nt
-bXVfaWQgKiBBUk1fU01NVV9NQVhfQ0JTKTsNCj4NCj5DYW4geW91IG5vdCB1c2UgbnVtX2NvbnRl
-eHRfYmFua3MgaGVyZSwgaW5zdGVhZCBvZiB0aGUgY29uc3RhbnQ/DQpXZSBuZWVkIHRvdGFsIGNv
-bnRleHQgYmFua3Mgc28gZmFyLCBzbyBBUk1fU01NVV9NQVhfQ0JTIGlzIGJlc3Qgb3B0aW9uLg0K
-Rm9yIFRodW5kZXIgYm90aCBhcmUgc2FtZSBhbnl3YXkuICANCj4NCj5XaWxsDQpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QK
-aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5k
-YXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+
+
+>>From: Eric Auger <eric.auger@linaro.org>
+>>Sent: Tuesday, March 1, 2016 11:57 PM
+>>To: eric.auger@st.com; eric.auger@linaro.org; robin.murphy@arm.com; alex.williamson@redhat.com; will.deacon@arm.com; joro@8bytes.org; tglx@linutronix.de; >>jason@lakedaemon.net; marc.zyngier@arm.com; christoffer.dall@linaro.org; linux-arm-kernel@lists.infradead.org; kvmarm@lists.cs.columbia.edu; kvm@vger.kernel.org
+>>Cc: suravee.suthikulpanit@amd.com; patches@linaro.org; linux-kernel@vger.kernel.org; Jaggi, Manish; Bharat.Bhushan@freescale.com; >>pranav.sawargaonkar@gmail.com; p.fedin@samsung.com; iommu@lists.linux-foundation.org
+>>Subject: [RFC v5 00/17] KVM PCIe/MSI passthrough on ARM/ARM64
+
+>>This series addresses KVM PCIe passthrough with MSI enabled on ARM/ARM64.
+>>It pursues the efforts done on [1], [2], [3]. It also aims at covering the
+>>same need on PowerPC platforms although the same kind of integration
+>>.should be carried out.
+>>
+[snip]
+>>- Not tested: ARM GICv3 ITS
+
+[snip]
+>>QEMU Integration:
+>>[RFC v2 0/8] KVM PCI/MSI passthrough with mach-virt
+>>(http://lists.gnu.org/archive/html/qemu-arm/2016-01/msg00444.html)
+>>https://git.linaro.org/people/eric.auger/qemu.git/shortlog/refs/heads/v2.5.0-pci-passthrough-rfc-v2
+
+For gicv3 its, I believe, the below series for qemu and kernel is required for gicv3-its
+
+[RFC PATCH v3 0/5] vITS support
+https://lists.gnu.org/archive/html/qemu-devel/2015-11/msg05197.html
+
+and in kernel CONFIG_HAVE_KVM_MSI must be enabled so that qemu sees MSI capability KVM_CAP_SIGNAL_MSI
+
+This has a dependency on gsi routing support
+KVM: arm/arm64: gsi routing support
+https://lkml.org/lkml/2015/6/29/290
+
+I had both the above series in 4.2 in my local 4.2 tree. 
+
+BR
+-Manish
