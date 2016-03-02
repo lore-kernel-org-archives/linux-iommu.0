@@ -1,17 +1,13 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: Bug: Freeing dma regions
-Date: Wed, 2 Mar 2016 13:35:19 +0100
-Message-ID: <20160302123519.GT22747@8bytes.org>
-References: <CABdVeACY5dWoj-q4uMUnc-NgqqShemunLU1bbvLpAN6jPdBC+w@mail.gmail.com>
-	<20160302082940.GS22747@8bytes.org>
-	<CABdVeAB4C2aDGSgmCnGOjSzSZZ3Er5gu-ngsSVPc_XbBxsVaTA@mail.gmail.com>
-	<CABdVeABM7OzGWeoXo1uui7f0HyP9wVLCPsEe+LnXrWXcmt7dVg@mail.gmail.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [patch] iommu/exynos: checking for IS_ERR() instead of NULL
+Date: Wed, 02 Mar 2016 13:47:35 +0100
+Message-ID: <56D6E0E7.9080204@samsung.com>
+References: <20160302101047.GH5533@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CABdVeABM7OzGWeoXo1uui7f0HyP9wVLCPsEe+LnXrWXcmt7dVg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-reply-to: <20160302101047.GH5533@mwanda>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,19 +17,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Kiarie <davidkiarie4-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jan Kiszka <jan.kiszka-S0/GAf8tV78@public.gmane.org>, Valentine Sinitsyn <valentine.sinitsyn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 02, 2016 at 11:40:04AM +0300, David Kiarie wrote:
-> What effect is setting the value next_bit to last invalidated index
-> supposed to have ?
+Hello,
 
-The idea is to safe the IOTLB flush by not re-using the address-range
-until the allocator wraps around to 0 again. We only allocate address
-ranges between next_bit and end-of-range. This way we don't need a flush
-after every unmap operation.
+On 2016-03-02 11:10, Dan Carpenter wrote:
+> of_platform_device_create() returns NULL on error, it never returns
+> error pointers.
+>
+> Fixes: 8ed55c812fa8 ('iommu/exynos: Init from dt-specific callback instead of initcall')
+> Signed-off-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 
+Acked-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index b066504..cb57bda 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -1347,8 +1347,8 @@ static int __init exynos_iommu_of_setup(struct device_node *np)
+>   		exynos_iommu_init();
+>   
+>   	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
+> -	if (IS_ERR(pdev))
+> -		return PTR_ERR(pdev);
+> +	if (!pdev)
+> +		return -ENOMEM;
+>   
+>   	/*
+>   	 * use the first registered sysmmu device for performing
+>
+>
 
-	Joerg
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
