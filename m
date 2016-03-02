@@ -1,40 +1,126 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Add r8a7795 DT binding
-Date: Thu, 3 Mar 2016 09:05:39 +0900
-Message-ID: <20160303000539.GB23040@verge.net.au>
-References: <20160229143309.28517.77269.sendpatchset@little-apple>
- <20160302145559.GU22747@8bytes.org>
- <CANqRtoQQzav-kweM80NnVUqtr2xxaA95XV88U1Ye7yoYHzSUsA@mail.gmail.com>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH] arm64/dma-mapping: Add DMA_ATTR_ALLOC_SINGLE_PAGES support
+Date: Thu, 3 Mar 2016 02:54:26 +0800
+Message-ID: <1456944866-15990-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CANqRtoQQzav-kweM80NnVUqtr2xxaA95XV88U1Ye7yoYHzSUsA@mail.gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: Joerg Roedel <joro@8bytes.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Pawel Moll <pawel.moll@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, Kumar Gala <galak@codeaurora.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 03, 2016 at 12:46:30AM +0900, Magnus Damm wrote:
-> On Wed, Mar 2, 2016 at 11:55 PM, Joerg Roedel <joro@8bytes.org> wrote:
-> > On Mon, Feb 29, 2016 at 11:33:09PM +0900, Magnus Damm wrote:
-> >> From: Magnus Damm <damm+renesas@opensource.se>
-> >>
-> >> Update the IPMMU DT binding documentation to include the r8a7795 compat
-> >> string as well as the "renesas,ipmmu-main" property that on r8a7795 will
-> >> be used to describe the topology and the relationship between the various
-> >> cache IPMMU instances and the main IPMMU.
-> >>
-> >> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
-> >> ---
-> >>
-> >>  Written against linux-next tag next-20160229
-> >>
-> >>  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |   15 ++++++++--
-> >>  1 file changed, 13 insertions(+), 2 deletions(-)
-> >
-> > Through which tree should this go?
-> 
-> Unless anyone objects may I suggest going through your tree please!
+Sometimes it is not worth for the iommu allocating big chunks.
+Here we enable DMA_ATTR_ALLOC_SINGLE_PAGES which could help avoid to
+allocate big chunks while iommu allocating buffer.
 
-FWIW that would be my preferred option.
+More information about this attribute, please check Doug's commit[1].
+
+[1]: https://lkml.org/lkml/2016/1/11/720
+
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Suggested-by: Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+---
+
+Our video drivers may soon use this.
+
+ arch/arm64/mm/dma-mapping.c |  4 ++--
+ drivers/iommu/dma-iommu.c   | 14 ++++++++++----
+ include/linux/dma-iommu.h   |  4 ++--
+ 3 files changed, 14 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 331c4ca..3225e3ca 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -562,8 +562,8 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+ 		struct page **pages;
+ 		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
+ 
+-		pages = iommu_dma_alloc(dev, iosize, gfp, ioprot, handle,
+-					flush_page);
++		pages = iommu_dma_alloc(dev, iosize, gfp, ioprot, attrs,
++					handle, flush_page);
+ 		if (!pages)
+ 			return NULL;
+ 
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 72d6182..3569cb6 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -190,7 +190,8 @@ static void __iommu_dma_free_pages(struct page **pages, int count)
+ 	kvfree(pages);
+ }
+ 
+-static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
++static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp,
++					     struct dma_attrs *attrs)
+ {
+ 	struct page **pages;
+ 	unsigned int i = 0, array_size = count * sizeof(*pages);
+@@ -203,6 +204,10 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
+ 	if (!pages)
+ 		return NULL;
+ 
++	/* Go straight to 4K chunks if caller says it's OK. */
++	if (dma_get_attr(DMA_ATTR_ALLOC_SINGLE_PAGES, attrs))
++		order = 0;
++
+ 	/* IOMMU can map any pages, so himem can also be used here */
+ 	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
+ 
+@@ -268,6 +273,7 @@ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
+  * @size: Size of buffer in bytes
+  * @gfp: Allocation flags
+  * @prot: IOMMU mapping flags
++ * @attrs: DMA attributes flags
+  * @handle: Out argument for allocated DMA handle
+  * @flush_page: Arch callback which must ensure PAGE_SIZE bytes from the
+  *		given VA/PA are visible to the given non-coherent device.
+@@ -278,8 +284,8 @@ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
+  * Return: Array of struct page pointers describing the buffer,
+  *	   or NULL on failure.
+  */
+-struct page **iommu_dma_alloc(struct device *dev, size_t size,
+-		gfp_t gfp, int prot, dma_addr_t *handle,
++struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
++		int prot, struct dma_attrs *attrs, dma_addr_t *handle,
+ 		void (*flush_page)(struct device *, const void *, phys_addr_t))
+ {
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+@@ -292,7 +298,7 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size,
+ 
+ 	*handle = DMA_ERROR_CODE;
+ 
+-	pages = __iommu_dma_alloc_pages(count, gfp);
++	pages = __iommu_dma_alloc_pages(count, gfp, attrs);
+ 	if (!pages)
+ 		return NULL;
+ 
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index fc48103..08d9603 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -38,8 +38,8 @@ int dma_direction_to_prot(enum dma_data_direction dir, bool coherent);
+  * These implement the bulk of the relevant DMA mapping callbacks, but require
+  * the arch code to take care of attributes and cache maintenance
+  */
+-struct page **iommu_dma_alloc(struct device *dev, size_t size,
+-		gfp_t gfp, int prot, dma_addr_t *handle,
++struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
++		int prot, struct dma_attrs *attrs, dma_addr_t *handle,
+ 		void (*flush_page)(struct device *, const void *, phys_addr_t));
+ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
+ 		dma_addr_t *handle);
+-- 
+1.8.1.1.dirty
