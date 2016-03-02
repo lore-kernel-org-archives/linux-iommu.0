@@ -1,15 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 11/12] iommu/arm-smmu: Generic IOMMU DT bindings support
-Date: Wed, 2 Mar 2016 13:30:43 +0000
-Message-ID: <56D6EB03.403@arm.com>
-References: <cover.1456514380.git.robin.murphy@arm.com>
-	<a3edd4225fe8b39440fb9b6a70a70883d3cb103b.1456514380.git.robin.murphy@arm.com>
-	<004c01d1731c$968ebb30$c3ac3190$@codeaurora.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
+Date: Wed, 2 Mar 2016 13:35:01 +0000
+Message-ID: <20160302133457.GD7637@arm.com>
+References: <1456348433-3337-1-git-send-email-tchalamarla@caviumnetworks.com>
+	<20160302030756.GC7637@arm.com>
+	<C2D36A36-8247-4432-BE50-14129D9D8E5B@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <004c01d1731c$968ebb30$c3ac3190$@codeaurora.org>
+Content-Disposition: inline
+In-Reply-To: <C2D36A36-8247-4432-BE50-14129D9D8E5B-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,77 +20,25 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Thomas.Lendacky-5C7GfCeVMHo@public.gmane.org, Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, stuart.yoder-3arQi8VN3Tc@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
+To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Akula,
+	Geethasowjanya" <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 29/02/16 18:09, Sricharan wrote:
-> Hi Robin,
->
->> -----Original Message-----
+On Wed, Mar 02, 2016 at 03:23:57AM +0000, Chalamarla, Tirumalesh wrote:
+> On 3/1/16, 7:07 PM, "Will Deacon" <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> >On Wed, Feb 24, 2016 at 01:13:53PM -0800, Tirumalesh Chalamarla wrote:
+> >> +		smmu->cavium_smmu_id = cavium_smmu_count;
+> >> +		cavium_smmu_count++;
+> >> +		smmu->cavium_id_base =
+> >> +			(smmu->cavium_smmu_id * ARM_SMMU_MAX_CBS);
+> >
+> >Can you not use num_context_banks here, instead of the constant?
+> We need total context banks so far, so ARM_SMMU_MAX_CBS is best option.
+> For Thunder both are same anyway. 
 
-[...]
+Hmm, so couldn't you instead just update a running total as you go along?
+That is, initialise it to zero, then atomic_add_return(num_context_banks)
+when you probe?
 
->> +static int __init arm_smmu_of_init(struct device_node *np) {
->> +	struct arm_smmu_device *smmu;
->> +	struct platform_device *pdev;
->> +	int ret = arm_smmu_init();
->> +
->> +	if (ret)
->> +		return ret;
->> +
->> +	pdev = of_platform_device_create(np, NULL,
->> platform_bus_type.dev_root);
->> +	if (!pdev)
->> +		return -ENODEV;
->> +
->> +	smmu = platform_get_drvdata(pdev);
->> +	of_iommu_set_ops(np, &arm_smmu_ops);
->> +
->> +	return 0;
->> +}
->> +IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1",
->> arm_smmu_of_init);
->> +IOMMU_OF_DECLARE(arm_smmuv2, "arm,smmu-v2",
->> arm_smmu_of_init);
->> +IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400",
->> arm_smmu_of_init);
->> +IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401",
->> arm_smmu_of_init);
->> +IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500",
->> arm_smmu_of_init);
->> +
->   Thanks for this series. I am going to use and test this. Also I wanted to
->   ask about the iommu probe deferral series [1] to avoid early device
-> registration and wanted know the direction on that ?
-
-It's certainly on my near-term to-do list to revisit. I recall running 
-into problems with that series if the IOMMU was ready but the device 
-itself then requested probe deferral, and I have vague memories of 
-thinking more needed to be done generally around the failure/device 
-teardown path too. I also had high hopes for the on-demand device 
-probing series from around the same time[2], which would have helped 
-simplify things quite a bit, but that also seems to have died after a 
-brief stint breaking things in -next.
-
-Anyway, Marc reckons that we also have the exact same probe-dependency 
-problem for things like IRQ-MSI bridges, so I'll be looking into a more 
-general solution at some point unless anyone wants to beat me to it ;)
-
-Thanks,
-Robin.
-
-[2]:http://thread.gmane.org/gmane.linux.acpi.devel/78833
-
->
-> [1] http://lkml.iu.edu/hypermail/linux/kernel/1505.3/03280.html
->
-> Regards,
->   Sricharan
->
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
->
+Will
