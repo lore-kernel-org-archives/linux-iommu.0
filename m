@@ -1,7 +1,7 @@
 From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: [patch 1/2] iommu/mediatek: signedness bug in probe function
-Date: Wed, 2 Mar 2016 13:10:06 +0300
-Message-ID: <20160302101006.GF5533@mwanda>
+Subject: [patch] iommu/exynos: checking for IS_ERR() instead of NULL
+Date: Wed, 2 Mar 2016 13:10:47 +0300
+Message-ID: <20160302101047.GH5533@mwanda>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,26 +16,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-"larb_nr" needs to be signed for the error handling to work.  "i" can
-be int as well.
+of_platform_device_create() returns NULL on error, it never returns
+error pointers.
 
-Fixes: 0df4fabe208d ('iommu/mediatek: Add mt8173 IOMMU driver')
+Fixes: 8ed55c812fa8 ('iommu/exynos: Init from dt-specific callback instead of initcall')
 Signed-off-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 721ffdb..1a4022c 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -578,7 +578,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	struct resource         *res;
- 	struct component_match  *match = NULL;
- 	void                    *protect;
--	unsigned int            i, larb_nr;
-+	int			i, larb_nr;
- 	int                     ret;
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index b066504..cb57bda 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1347,8 +1347,8 @@ static int __init exynos_iommu_of_setup(struct device_node *np)
+ 		exynos_iommu_init();
  
- 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+ 	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
+-	if (IS_ERR(pdev))
+-		return PTR_ERR(pdev);
++	if (!pdev)
++		return -ENOMEM;
+ 
+ 	/*
+ 	 * use the first registered sysmmu device for performing
