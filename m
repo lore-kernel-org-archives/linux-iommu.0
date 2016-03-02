@@ -1,14 +1,16 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 Subject: Re: [PATCH] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
-Date: Wed, 2 Mar 2016 03:07:56 +0000
-Message-ID: <20160302030756.GC7637@arm.com>
+Date: Wed, 2 Mar 2016 03:23:57 +0000
+Message-ID: <C2D36A36-8247-4432-BE50-14129D9D8E5B@caviumnetworks.com>
 References: <1456348433-3337-1-git-send-email-tchalamarla@caviumnetworks.com>
+	<20160302030756.GC7637@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1456348433-3337-1-git-send-email-tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+In-Reply-To: <20160302030756.GC7637-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+Content-ID: <64782AEA4189A846BFC7234BADAF7DA6-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,108 +20,83 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "Akula,
+	Geethasowjanya" <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 24, 2016 at 01:13:53PM -0800, Tirumalesh Chalamarla wrote:
-> Due to Errata#27704 CN88xx SMMUv2,supports  only shared ASID and VMID
-> namespaces; specifically within a given node SMMU0 and SMMU1 share,
-> as does SMMU2 and SMMU3.
-> 
-> This patch address these issuee by supplying asid and vmid
-> while calculating ASID and VMID for Thunder SMMUv2.
-> 
-> NOTE: resending with commit message fix.
-> 
-> changes from V2:
-> 	- removed *_base from DT, and replaced with compatible string
-> 
-> changes from V1:
-> 	- rebased on top of 16 bit VMID patch
-> 	- removed redundent options from DT
-> 	- insted of transform, DT now supplies starting ASID/VMID
-> 
-> Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> Signed-off-by: Akula Geethasowjanya <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> ---
->  .../devicetree/bindings/iommu/arm,smmu.txt         |  1 +
->  drivers/iommu/arm-smmu.c                           | 48 +++++++++++++++++-----
->  2 files changed, 38 insertions(+), 11 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> index 7180745..19fe6f2 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> @@ -16,6 +16,7 @@ conditions.
->                          "arm,mmu-400"
->                          "arm,mmu-401"
->                          "arm,mmu-500"
-> +                        "cavium,smmu-v2"
->  
->                    depending on the particular implementation and/or the
->                    version of the architecture implemented.
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 247a469..c704f88 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -326,6 +326,12 @@ struct arm_smmu_device {
->  
->  	struct list_head		list;
->  	struct rb_root			masters;
-> +	/*
-> +	 *The following fields are specific to Cavium, Thunder
-> +	 */
-> +	u32				cavium_smmu_id;
-
-Why do you need this field as well as the base?
-
-> +	u32				cavium_id_base;
-> +
->  };
->  
->  struct arm_smmu_cfg {
-> @@ -335,8 +341,8 @@ struct arm_smmu_cfg {
->  };
->  #define INVALID_IRPTNDX			0xff
->  
-> -#define ARM_SMMU_CB_ASID(cfg)		((cfg)->cbndx)
-> -#define ARM_SMMU_CB_VMID(cfg)		((cfg)->cbndx + 1)
-> +#define ARM_SMMU_CB_ASID(smmu, cfg) ((u16)(smmu)->cavium_id_base + (cfg)->cbndx)
-> +#define ARM_SMMU_CB_VMID(smmu, cfg) ((u16)(smmu)->cavium_id_base + (cfg)->cbndx + 1)
->  
->  enum arm_smmu_domain_stage {
->  	ARM_SMMU_DOMAIN_S1 = 0,
-> @@ -364,6 +370,8 @@ struct arm_smmu_option_prop {
->  	const char *prop;
->  };
->  
-> +static int cavium_smmu_count;
-
-I'd be more comfortable if this was an atomic_t.
-
-> +	/*
-> +	 * Due to Errata#27704 CN88xx SMMUv2,supports  only shared ASID and VMID
-> +	 * namespaces; specifically within a given node SMMU0 and SMMU1 share,
-> +	 * as does SMMU2 and SMMU3. see if this is a Cavium SMMU, if so
-> +	 * set asid and vmid base such that each SMMU gets unique
-> +	 * asid/vmid space.
-> +	 */
-> +	if (!strcasecmp(of_id->compatible, "cavium,smmu-v2")) {
-
-of_device_is_compatible
-
-> +		/* VMID16 must be present on Cavium SMMUv2*/
-> +		if (!(smmu->features & ARM_SMMU_FEAT_VMID16))
-> +			goto out_free_irqs;
-
-This check seems a bit overkill. I think you can remove it.
-
-> +		smmu->cavium_smmu_id = cavium_smmu_count;
-> +		cavium_smmu_count++;
-> +		smmu->cavium_id_base =
-> +			(smmu->cavium_smmu_id * ARM_SMMU_MAX_CBS);
-
-Can you not use num_context_banks here, instead of the constant?
-
-Will
+DQoNCg0KDQoNCk9uIDMvMS8xNiwgNzowNyBQTSwgIldpbGwgRGVhY29uIiA8d2lsbC5kZWFjb25A
+YXJtLmNvbT4gd3JvdGU6DQoNCj5PbiBXZWQsIEZlYiAyNCwgMjAxNiBhdCAwMToxMzo1M1BNIC0w
+ODAwLCBUaXJ1bWFsZXNoIENoYWxhbWFybGEgd3JvdGU6DQo+PiBEdWUgdG8gRXJyYXRhIzI3NzA0
+IENOODh4eCBTTU1VdjIsc3VwcG9ydHMgIG9ubHkgc2hhcmVkIEFTSUQgYW5kIFZNSUQNCj4+IG5h
+bWVzcGFjZXM7IHNwZWNpZmljYWxseSB3aXRoaW4gYSBnaXZlbiBub2RlIFNNTVUwIGFuZCBTTU1V
+MSBzaGFyZSwNCj4+IGFzIGRvZXMgU01NVTIgYW5kIFNNTVUzLg0KPj4gDQo+PiBUaGlzIHBhdGNo
+IGFkZHJlc3MgdGhlc2UgaXNzdWVlIGJ5IHN1cHBseWluZyBhc2lkIGFuZCB2bWlkDQo+PiB3aGls
+ZSBjYWxjdWxhdGluZyBBU0lEIGFuZCBWTUlEIGZvciBUaHVuZGVyIFNNTVV2Mi4NCj4+IA0KPj4g
+Tk9URTogcmVzZW5kaW5nIHdpdGggY29tbWl0IG1lc3NhZ2UgZml4Lg0KPj4gDQo+PiBjaGFuZ2Vz
+IGZyb20gVjI6DQo+PiAJLSByZW1vdmVkICpfYmFzZSBmcm9tIERULCBhbmQgcmVwbGFjZWQgd2l0
+aCBjb21wYXRpYmxlIHN0cmluZw0KPj4gDQo+PiBjaGFuZ2VzIGZyb20gVjE6DQo+PiAJLSByZWJh
+c2VkIG9uIHRvcCBvZiAxNiBiaXQgVk1JRCBwYXRjaA0KPj4gCS0gcmVtb3ZlZCByZWR1bmRlbnQg
+b3B0aW9ucyBmcm9tIERUDQo+PiAJLSBpbnN0ZWQgb2YgdHJhbnNmb3JtLCBEVCBub3cgc3VwcGxp
+ZXMgc3RhcnRpbmcgQVNJRC9WTUlEDQo+PiANCj4+IFNpZ25lZC1vZmYtYnk6IFRpcnVtYWxlc2gg
+Q2hhbGFtYXJsYSA8dGNoYWxhbWFybGFAY2F2aXVtbmV0d29ya3MuY29tPg0KPj4gU2lnbmVkLW9m
+Zi1ieTogQWt1bGEgR2VldGhhc293amFueWEgPEdlZXRoYXNvd2phbnlhLkFrdWxhQGNhdml1bW5l
+dHdvcmtzLmNvbT4NCj4+IC0tLQ0KPj4gIC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lvbW11L2Fy
+bSxzbW11LnR4dCAgICAgICAgIHwgIDEgKw0KPj4gIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIHwgNDggKysrKysrKysrKysrKysrKystLS0tLQ0KPj4g
+IDIgZmlsZXMgY2hhbmdlZCwgMzggaW5zZXJ0aW9ucygrKSwgMTEgZGVsZXRpb25zKC0pDQo+PiAN
+Cj4+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUv
+YXJtLHNtbXUudHh0IGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lvbW11L2Fy
+bSxzbW11LnR4dA0KPj4gaW5kZXggNzE4MDc0NS4uMTlmZTZmMiAxMDA2NDQNCj4+IC0tLSBhL0Rv
+Y3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQNCj4+ICsr
+KyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9hcm0sc21tdS50eHQN
+Cj4+IEBAIC0xNiw2ICsxNiw3IEBAIGNvbmRpdGlvbnMuDQo+PiAgICAgICAgICAgICAgICAgICAg
+ICAgICAgImFybSxtbXUtNDAwIg0KPj4gICAgICAgICAgICAgICAgICAgICAgICAgICJhcm0sbW11
+LTQwMSINCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAiYXJtLG1tdS01MDAiDQo+PiArICAg
+ICAgICAgICAgICAgICAgICAgICAgImNhdml1bSxzbW11LXYyIg0KPj4gIA0KPj4gICAgICAgICAg
+ICAgICAgICAgIGRlcGVuZGluZyBvbiB0aGUgcGFydGljdWxhciBpbXBsZW1lbnRhdGlvbiBhbmQv
+b3IgdGhlDQo+PiAgICAgICAgICAgICAgICAgICAgdmVyc2lvbiBvZiB0aGUgYXJjaGl0ZWN0dXJl
+IGltcGxlbWVudGVkLg0KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBi
+L2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYw0KPj4gaW5kZXggMjQ3YTQ2OS4uYzcwNGY4OCAxMDA2
+NDQNCj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYw0KPj4gKysrIGIvZHJpdmVycy9p
+b21tdS9hcm0tc21tdS5jDQo+PiBAQCAtMzI2LDYgKzMyNiwxMiBAQCBzdHJ1Y3QgYXJtX3NtbXVf
+ZGV2aWNlIHsNCj4+ICANCj4+ICAJc3RydWN0IGxpc3RfaGVhZAkJbGlzdDsNCj4+ICAJc3RydWN0
+IHJiX3Jvb3QJCQltYXN0ZXJzOw0KPj4gKwkvKg0KPj4gKwkgKlRoZSBmb2xsb3dpbmcgZmllbGRz
+IGFyZSBzcGVjaWZpYyB0byBDYXZpdW0sIFRodW5kZXINCj4+ICsJICovDQo+PiArCXUzMgkJCQlj
+YXZpdW1fc21tdV9pZDsNCj4NCj5XaHkgZG8geW91IG5lZWQgdGhpcyBmaWVsZCBhcyB3ZWxsIGFz
+IHRoZSBiYXNlPw0KV2lsbCBiZSByZW1vdmVkLiANCj4NCj4+ICsJdTMyCQkJCWNhdml1bV9pZF9i
+YXNlOw0KPj4gKw0KPj4gIH07DQo+PiAgDQo+PiAgc3RydWN0IGFybV9zbW11X2NmZyB7DQo+PiBA
+QCAtMzM1LDggKzM0MSw4IEBAIHN0cnVjdCBhcm1fc21tdV9jZmcgew0KPj4gIH07DQo+PiAgI2Rl
+ZmluZSBJTlZBTElEX0lSUFRORFgJCQkweGZmDQo+PiAgDQo+PiAtI2RlZmluZSBBUk1fU01NVV9D
+Ql9BU0lEKGNmZykJCSgoY2ZnKS0+Y2JuZHgpDQo+PiAtI2RlZmluZSBBUk1fU01NVV9DQl9WTUlE
+KGNmZykJCSgoY2ZnKS0+Y2JuZHggKyAxKQ0KPj4gKyNkZWZpbmUgQVJNX1NNTVVfQ0JfQVNJRChz
+bW11LCBjZmcpICgodTE2KShzbW11KS0+Y2F2aXVtX2lkX2Jhc2UgKyAoY2ZnKS0+Y2JuZHgpDQo+
+PiArI2RlZmluZSBBUk1fU01NVV9DQl9WTUlEKHNtbXUsIGNmZykgKCh1MTYpKHNtbXUpLT5jYXZp
+dW1faWRfYmFzZSArIChjZmcpLT5jYm5keCArIDEpDQo+PiAgDQo+PiAgZW51bSBhcm1fc21tdV9k
+b21haW5fc3RhZ2Ugew0KPj4gIAlBUk1fU01NVV9ET01BSU5fUzEgPSAwLA0KPj4gQEAgLTM2NCw2
+ICszNzAsOCBAQCBzdHJ1Y3QgYXJtX3NtbXVfb3B0aW9uX3Byb3Agew0KPj4gIAljb25zdCBjaGFy
+ICpwcm9wOw0KPj4gIH07DQo+PiAgDQo+PiArc3RhdGljIGludCBjYXZpdW1fc21tdV9jb3VudDsN
+Cj4NCj5JJ2QgYmUgbW9yZSBjb21mb3J0YWJsZSBpZiB0aGlzIHdhcyBhbiBhdG9taWNfdC4NCg0K
+U3VyZS4NCj4NCj4+ICsJLyoNCj4+ICsJICogRHVlIHRvIEVycmF0YSMyNzcwNCBDTjg4eHggU01N
+VXYyLHN1cHBvcnRzICBvbmx5IHNoYXJlZCBBU0lEIGFuZCBWTUlEDQo+PiArCSAqIG5hbWVzcGFj
+ZXM7IHNwZWNpZmljYWxseSB3aXRoaW4gYSBnaXZlbiBub2RlIFNNTVUwIGFuZCBTTU1VMSBzaGFy
+ZSwNCj4+ICsJICogYXMgZG9lcyBTTU1VMiBhbmQgU01NVTMuIHNlZSBpZiB0aGlzIGlzIGEgQ2F2
+aXVtIFNNTVUsIGlmIHNvDQo+PiArCSAqIHNldCBhc2lkIGFuZCB2bWlkIGJhc2Ugc3VjaCB0aGF0
+IGVhY2ggU01NVSBnZXRzIHVuaXF1ZQ0KPj4gKwkgKiBhc2lkL3ZtaWQgc3BhY2UuDQo+PiArCSAq
+Lw0KPj4gKwlpZiAoIXN0cmNhc2VjbXAob2ZfaWQtPmNvbXBhdGlibGUsICJjYXZpdW0sc21tdS12
+MiIpKSB7DQo+DQo+b2ZfZGV2aWNlX2lzX2NvbXBhdGlibGUNClN1cmUuDQo+DQo+PiArCQkvKiBW
+TUlEMTYgbXVzdCBiZSBwcmVzZW50IG9uIENhdml1bSBTTU1VdjIqLw0KPj4gKwkJaWYgKCEoc21t
+dS0+ZmVhdHVyZXMgJiBBUk1fU01NVV9GRUFUX1ZNSUQxNikpDQo+PiArCQkJZ290byBvdXRfZnJl
+ZV9pcnFzOw0KPg0KPlRoaXMgY2hlY2sgc2VlbXMgYSBiaXQgb3ZlcmtpbGwuIEkgdGhpbmsgeW91
+IGNhbiByZW1vdmUgaXQuDQpJIGRvbuKAmXQgdGhpbmsgaXQgaXMgcG9zc2libGUgdG8gc3VwcG9y
+dCB1bmlxdWUgQVNJRCBzcGFjZSB3aXRoIG91dCAxNiBiaXQgVk1JRC4NCkJ1dCBJIGNhbiByZW1v
+dmUgdGhpcyBjaGVjayBpZiB0aGF04oCZcyBpbXBsaWNpdC4gDQo+DQo+PiArCQlzbW11LT5jYXZp
+dW1fc21tdV9pZCA9IGNhdml1bV9zbW11X2NvdW50Ow0KPj4gKwkJY2F2aXVtX3NtbXVfY291bnQr
+KzsNCj4+ICsJCXNtbXUtPmNhdml1bV9pZF9iYXNlID0NCj4+ICsJCQkoc21tdS0+Y2F2aXVtX3Nt
+bXVfaWQgKiBBUk1fU01NVV9NQVhfQ0JTKTsNCj4NCj5DYW4geW91IG5vdCB1c2UgbnVtX2NvbnRl
+eHRfYmFua3MgaGVyZSwgaW5zdGVhZCBvZiB0aGUgY29uc3RhbnQ/DQpXZSBuZWVkIHRvdGFsIGNv
+bnRleHQgYmFua3Mgc28gZmFyLCBzbyBBUk1fU01NVV9NQVhfQ0JTIGlzIGJlc3Qgb3B0aW9uLg0K
+Rm9yIFRodW5kZXIgYm90aCBhcmUgc2FtZSBhbnl3YXkuICANCj4NCj5XaWxsDQpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QK
+aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5k
+YXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
