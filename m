@@ -1,14 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/io-pgtable-armv7s: Fix kmem_cache_alloc() flags
-Date: Wed, 2 Mar 2016 14:49:21 +0100
-Message-ID: <20160302134921.GB20213@8bytes.org>
-References: <526555051e63e72a4b1e68461e51a7b6e33df352.1456859025.git.robin.murphy@arm.com>
+Subject: Re: [patch 1/2] iommu/mediatek: signedness bug in probe function
+Date: Wed, 2 Mar 2016 14:53:52 +0100
+Message-ID: <20160302135351.GC20213@8bytes.org>
+References: <20160302101006.GF5533@mwanda>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <526555051e63e72a4b1e68461e51a7b6e33df352.1456859025.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20160302101006.GF5533@mwanda>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,14 +18,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Mar 01, 2016 at 07:07:03PM +0000, Robin Murphy wrote:
-> v2: Add the backtrace to the commit log, add Will's ack.
+On Wed, Mar 02, 2016 at 01:10:06PM +0300, Dan Carpenter wrote:
+> "larb_nr" needs to be signed for the error handling to work.  "i" can
+> be int as well.
+> 
+> Fixes: 0df4fabe208d ('iommu/mediatek: Add mt8173 IOMMU driver')
+> Signed-off-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 721ffdb..1a4022c 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -578,7 +578,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+>  	struct resource         *res;
+>  	struct component_match  *match = NULL;
+>  	void                    *protect;
+> -	unsigned int            i, larb_nr;
+> +	int			i, larb_nr;
+>  	int                     ret;
 >  
->  drivers/iommu/io-pgtable-arm-v7s.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
 
-Applied, thanks.
+I merged a similar fix from Andrzej Hajda yesterday.
