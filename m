@@ -1,14 +1,19 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [patch 1/2] iommu/mediatek: signedness bug in probe function
-Date: Wed, 2 Mar 2016 14:53:52 +0100
-Message-ID: <20160302135351.GC20213@8bytes.org>
-References: <20160302101006.GF5533@mwanda>
+From: David Kiarie <davidkiarie4-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: Bug: Freeing dma regions
+Date: Wed, 2 Mar 2016 17:06:14 +0300
+Message-ID: <CABdVeACRxL1Cisce7w_dzJR4oNP7--JxUhcHhS=uqgCHHqAeug@mail.gmail.com>
+References: <CABdVeACY5dWoj-q4uMUnc-NgqqShemunLU1bbvLpAN6jPdBC+w@mail.gmail.com>
+	<20160302082940.GS22747@8bytes.org>
+	<CABdVeAB4C2aDGSgmCnGOjSzSZZ3Er5gu-ngsSVPc_XbBxsVaTA@mail.gmail.com>
+	<CABdVeABM7OzGWeoXo1uui7f0HyP9wVLCPsEe+LnXrWXcmt7dVg@mail.gmail.com>
+	<20160302123519.GT22747@8bytes.org>
+	<CABdVeAAq_u6kAC9pm96UAdozWN5VSiiNm3HMBJ5wGqpd5zvbrQ@mail.gmail.com>
+	<20160302134528.GA20213@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160302101006.GF5533@mwanda>
+In-Reply-To: <20160302134528.GA20213-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,29 +23,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jan Kiszka <jan.kiszka-S0/GAf8tV78@public.gmane.org>, Valentine Sinitsyn <valentine.sinitsyn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 02, 2016 at 01:10:06PM +0300, Dan Carpenter wrote:
-> "larb_nr" needs to be signed for the error handling to work.  "i" can
-> be int as well.
-> 
-> Fixes: 0df4fabe208d ('iommu/mediatek: Add mt8173 IOMMU driver')
-> Signed-off-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-> 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 721ffdb..1a4022c 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -578,7 +578,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
->  	struct resource         *res;
->  	struct component_match  *match = NULL;
->  	void                    *protect;
-> -	unsigned int            i, larb_nr;
-> +	int			i, larb_nr;
->  	int                     ret;
->  
->  	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+On Wed, Mar 2, 2016 at 4:45 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> On Wed, Mar 02, 2016 at 03:58:18PM +0300, David Kiarie wrote:
+>> On Wed, Mar 2, 2016 at 3:35 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+>> > On Wed, Mar 02, 2016 at 11:40:04AM +0300, David Kiarie wrote:
+>> >> What effect is setting the value next_bit to last invalidated index
+>> >> supposed to have ?
+>> >
+>> > The idea is to safe the IOTLB flush by not re-using the address-range
+>> > until the allocator wraps around to 0 again. We only allocate address
+>> > ranges between next_bit and end-of-range. This way we don't need a flush
+>> > after every unmap operation.
+>>
+>> Okay, I'll look at this issue again.
+>>
+>> Last unrelated question. If I have 'iommu=pt' IOMMU doesn't seem to
+>> allocate any addresses and doesn't populate the 'root page table'
+>> until I try to pass-through a device. Why is that set like this ?
+>
+> The pt stands for passthrough. In this mode the IOMMU is enabled, but
+> configured in way as if it is disabled. This means that all devices get
+> access to the physical address space and no remapping through the
+> DMA-API is done at all. Often this is used for performance reasons.
+>
+> This only changes when a device is is assigned to a guest. In that case
+> it will only see the guest-physical address space via a page-table.
 
-I merged a similar fix from Andrzej Hajda yesterday.
+Thanks for the insight!
+
+>
+>
+>         Joerg
+>
