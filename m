@@ -1,26 +1,29 @@
-From: Simon Horman <horms@verge.net.au>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Add r8a7795 DT binding
-Date: Wed, 2 Mar 2016 09:30:19 +0900
-Message-ID: <20160302003019.GI17986@verge.net.au>
-References: <20160229143309.28517.77269.sendpatchset@little-apple>
+From: David Kiarie <davidkiarie4-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Bug: Freeing dma regions
+Date: Wed, 2 Mar 2016 03:45:39 +0300
+Message-ID: <CABdVeACY5dWoj-q4uMUnc-NgqqShemunLU1bbvLpAN6jPdBC+w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160229143309.28517.77269.sendpatchset@little-apple>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: devicetree@vger.kernel.org, mark.rutland@arm.com, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, joro@8bytes.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, robh+dt@kernel.org, galak@codeaurora.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, Valentine Sinitsyn <valentine.sinitsyn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Jan Kiszka <jan.kiszka-S0/GAf8tV78@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 29, 2016 at 11:33:09PM +0900, Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas@opensource.se>
-> 
-> Update the IPMMU DT binding documentation to include the r8a7795 compat
-> string as well as the "renesas,ipmmu-main" property that on r8a7795 will
-> be used to describe the topology and the relationship between the various
-> cache IPMMU instances and the main IPMMU.
-> 
-> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+Hello,
 
-Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+This patch seems to have introduced a bug -
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=4eeca8c5e72fad752eba9efc293c924d65faa86e
+
+As the commit message says, it should check for regions behind the
+next_bit but it checks for regions beyond.
+
+David.
