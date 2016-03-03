@@ -1,71 +1,44 @@
-From: Xunlei Pang <xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Assign old irt entries a common valid vector
-	in kdump kernel
-Date: Thu, 3 Mar 2016 11:29:14 +0800
-Message-ID: <56D7AF8A.7080008@redhat.com>
-References: <1456912948-5052-1-git-send-email-xlpang@redhat.com>
-	<20160302145823.GV22747@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: Add r8a7795 DT binding
+Date: Thu, 3 Mar 2016 10:59:34 +0100
+Message-ID: <20160303095934.GA27379@8bytes.org>
+References: <20160229143309.28517.77269.sendpatchset@little-apple>
+ <20160302145559.GU22747@8bytes.org>
+ <CANqRtoQQzav-kweM80NnVUqtr2xxaA95XV88U1Ye7yoYHzSUsA@mail.gmail.com>
+ <20160303000539.GB23040@verge.net.au>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160302145823.GV22747-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160303000539.GB23040@verge.net.au>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Simon Horman <horms@verge.net.au>
+Cc: Magnus Damm <magnus.damm@gmail.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Pawel Moll <pawel.moll@arm.com>, "ijc+devicetree@hellion.org.uk" <ijc+devicetree@hellion.org.uk>, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, Kumar Gala <galak@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/02/2016 at 10:58 PM, Joerg Roedel wrote:
-> On Wed, Mar 02, 2016 at 06:02:28PM +0800, Xunlei Pang wrote:
->> Currently, the kernel copies the old irt entries during iommu
->> initialization for kdump, so old vectors in the first kernel are
->> used but having no related kernel irq handlers set explicitly,
->> this can lead to some problems after lapics are enabled:
->>  - When some in-flight dma finished and triggered an interrupt,
->>    the kernel will throw a warning message in do_IRQ() like "No
->>    irq handler", because handle_irq() will return false with no
->>    irq_desc handlers. This may confuse users.
->>  - When the in-flight dma interrupt arrives, and if there happens
->>    to be an irq with the same vector allocated in kdump kernel,
->>    it will invoke the existing ISR registered in kdump kernel as
->>    if one valid interrupt in the kdump kernel happens. This might
->>    cause some wrong software logic, for example if the ISR always
->>    wakes up a process.
-> Hmm, the current situation with misdirected irq messages in the kdump
-> kernel is not different from a situation without any iommu at all,
-> right?
+On Thu, Mar 03, 2016 at 09:05:39AM +0900, Simon Horman wrote:
+> On Thu, Mar 03, 2016 at 12:46:30AM +0900, Magnus Damm wrote:
+> > On Wed, Mar 2, 2016 at 11:55 PM, Joerg Roedel <joro@8bytes.org> wrote:
+> > > On Mon, Feb 29, 2016 at 11:33:09PM +0900, Magnus Damm wrote:
+> > >> From: Magnus Damm <damm+renesas@opensource.se>
+> > >>
+> > >> Update the IPMMU DT binding documentation to include the r8a7795 compat
+> > >> string as well as the "renesas,ipmmu-main" property that on r8a7795 will
+> > >> be used to describe the topology and the relationship between the various
+> > >> cache IPMMU instances and the main IPMMU.
+> > >>
+> > >> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+> > >> ---
+> > >>
+> > >>  Written against linux-next tag next-20160229
+> > >>
+> > >>  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |   15 ++++++++--
+> > >>  1 file changed, 13 insertions(+), 2 deletions(-)
+> > >
+> > > Through which tree should this go?
+> > 
+> > Unless anyone objects may I suggest going through your tree please!
+> 
+> FWIW that would be my preferred option.
 
-Right, non-iommu in-flight DMA after crash also suffers from this.
-I think both of them should be fixed if possible.
-
-> And the goal of preserving the old mappings is to get as close as
-> possible to the situation without iommu. This seems to carry the VT-d
-> driver away from that.
-
-Without iommu, it's not so easy to fix due to the MSI registers
-located in different pci devices. But vt-d introduces a mechanism
-to redirect both MSI/MSI-X and I/O APIC to a common IR table,
-so we can handle that much easily with the help of the IR table.
-
-On kdump side, present-day servers with vt-d enabled are
-becoming increasingly common-place, if this does happen in
-real world(usually it will), that would be hard to dig it out, so I
-think it would be better if we can fix it.
-
-Also CC kexec list
-
-Regards,
-Xunlei
-
->
->
-> 	Joerg
->
+Okay, applied.
