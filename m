@@ -1,24 +1,13 @@
-From: Jacek Lawrynowicz <jacek.lawrynowicz-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] PCI: Add support for multiple DMA aliases
-Date: Thu,  3 Mar 2016 15:22:36 +0100
-Message-ID: <1457014956-10612-1-git-send-email-jacek.lawrynowicz@intel.com>
+From: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
+Subject: [PATCH v5 3/6] PCI: Add support for multiple DMA aliases
+Date: Thu,  3 Mar 2016 15:38:02 +0100
+Message-ID: <1457015882-11793-1-git-send-email-jacek.lawrynowicz@intel.com>
 References: <20160229224417.GD3653@localhost>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
 In-Reply-To: <20160229224417.GD3653@localhost>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: jroedel-l3A5Bk7waGM@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Sender: linux-pci-owner@vger.kernel.org
+To: helgaas@kernel.org
+Cc: jroedel@suse.de, dwmw2@infradead.org, alex.williamson@redhat.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
 This patch solves IOMMU support issues with PCIe non-transparent bridges
@@ -46,13 +35,15 @@ DMA aliases.
 More details can be found in following article:
 http://www.plxtech.com/files/pdf/technical/expresslane/RTC_Enabling%20MulitHostSystemDesigns.pdf
 
-Signed-off-by: Jacek Lawrynowicz <jacek.lawrynowicz-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
+Acked-by: David Woodhouse <David.Woodhouse@intel.com>
+Acked-by: Joerg Roedel <jroedel@suse.de>
 ---
  I updated the commit message based on discussion with Bjorn. It should be
  now a little easier to understand. I'm not resubmitting the whole patch set
  because it could make the thread harder to follow.
+ 
+ This time resubmitting with correct subject.
 
  drivers/iommu/iommu.c | 17 ++++++++++-------
  drivers/pci/pci.c     | 11 +++++++++--
