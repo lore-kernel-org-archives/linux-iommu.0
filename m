@@ -1,11 +1,15 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH] arm64/dma-mapping: Add DMA_ATTR_ALLOC_SINGLE_PAGES support
-Date: Thu, 3 Mar 2016 02:54:26 +0800
-Message-ID: <1456944866-15990-1-git-send-email-yong.wu@mediatek.com>
+From: Xunlei Pang <xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Assign old irt entries a common valid vector
+	in kdump kernel
+Date: Thu, 3 Mar 2016 11:29:14 +0800
+Message-ID: <56D7AF8A.7080008@redhat.com>
+References: <1456912948-5052-1-git-send-email-xlpang@redhat.com>
+	<20160302145823.GV22747@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160302145823.GV22747-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,112 +19,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Sometimes it is not worth for the iommu allocating big chunks.
-Here we enable DMA_ATTR_ALLOC_SINGLE_PAGES which could help avoid to
-allocate big chunks while iommu allocating buffer.
+On 03/02/2016 at 10:58 PM, Joerg Roedel wrote:
+> On Wed, Mar 02, 2016 at 06:02:28PM +0800, Xunlei Pang wrote:
+>> Currently, the kernel copies the old irt entries during iommu
+>> initialization for kdump, so old vectors in the first kernel are
+>> used but having no related kernel irq handlers set explicitly,
+>> this can lead to some problems after lapics are enabled:
+>>  - When some in-flight dma finished and triggered an interrupt,
+>>    the kernel will throw a warning message in do_IRQ() like "No
+>>    irq handler", because handle_irq() will return false with no
+>>    irq_desc handlers. This may confuse users.
+>>  - When the in-flight dma interrupt arrives, and if there happens
+>>    to be an irq with the same vector allocated in kdump kernel,
+>>    it will invoke the existing ISR registered in kdump kernel as
+>>    if one valid interrupt in the kdump kernel happens. This might
+>>    cause some wrong software logic, for example if the ISR always
+>>    wakes up a process.
+> Hmm, the current situation with misdirected irq messages in the kdump
+> kernel is not different from a situation without any iommu at all,
+> right?
 
-More information about this attribute, please check Doug's commit[1].
+Right, non-iommu in-flight DMA after crash also suffers from this.
+I think both of them should be fixed if possible.
 
-[1]: https://lkml.org/lkml/2016/1/11/720
+> And the goal of preserving the old mappings is to get as close as
+> possible to the situation without iommu. This seems to carry the VT-d
+> driver away from that.
 
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Suggested-by: Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
----
+Without iommu, it's not so easy to fix due to the MSI registers
+located in different pci devices. But vt-d introduces a mechanism
+to redirect both MSI/MSI-X and I/O APIC to a common IR table,
+so we can handle that much easily with the help of the IR table.
 
-Our video drivers may soon use this.
+On kdump side, present-day servers with vt-d enabled are
+becoming increasingly common-place, if this does happen in
+real world(usually it will), that would be hard to dig it out, so I
+think it would be better if we can fix it.
 
- arch/arm64/mm/dma-mapping.c |  4 ++--
- drivers/iommu/dma-iommu.c   | 14 ++++++++++----
- include/linux/dma-iommu.h   |  4 ++--
- 3 files changed, 14 insertions(+), 8 deletions(-)
+Also CC kexec list
 
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 331c4ca..3225e3ca 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -562,8 +562,8 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
- 		struct page **pages;
- 		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
- 
--		pages = iommu_dma_alloc(dev, iosize, gfp, ioprot, handle,
--					flush_page);
-+		pages = iommu_dma_alloc(dev, iosize, gfp, ioprot, attrs,
-+					handle, flush_page);
- 		if (!pages)
- 			return NULL;
- 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 72d6182..3569cb6 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -190,7 +190,8 @@ static void __iommu_dma_free_pages(struct page **pages, int count)
- 	kvfree(pages);
- }
- 
--static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
-+static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp,
-+					     struct dma_attrs *attrs)
- {
- 	struct page **pages;
- 	unsigned int i = 0, array_size = count * sizeof(*pages);
-@@ -203,6 +204,10 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
- 	if (!pages)
- 		return NULL;
- 
-+	/* Go straight to 4K chunks if caller says it's OK. */
-+	if (dma_get_attr(DMA_ATTR_ALLOC_SINGLE_PAGES, attrs))
-+		order = 0;
-+
- 	/* IOMMU can map any pages, so himem can also be used here */
- 	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
- 
-@@ -268,6 +273,7 @@ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
-  * @size: Size of buffer in bytes
-  * @gfp: Allocation flags
-  * @prot: IOMMU mapping flags
-+ * @attrs: DMA attributes flags
-  * @handle: Out argument for allocated DMA handle
-  * @flush_page: Arch callback which must ensure PAGE_SIZE bytes from the
-  *		given VA/PA are visible to the given non-coherent device.
-@@ -278,8 +284,8 @@ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
-  * Return: Array of struct page pointers describing the buffer,
-  *	   or NULL on failure.
-  */
--struct page **iommu_dma_alloc(struct device *dev, size_t size,
--		gfp_t gfp, int prot, dma_addr_t *handle,
-+struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
-+		int prot, struct dma_attrs *attrs, dma_addr_t *handle,
- 		void (*flush_page)(struct device *, const void *, phys_addr_t))
- {
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-@@ -292,7 +298,7 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size,
- 
- 	*handle = DMA_ERROR_CODE;
- 
--	pages = __iommu_dma_alloc_pages(count, gfp);
-+	pages = __iommu_dma_alloc_pages(count, gfp, attrs);
- 	if (!pages)
- 		return NULL;
- 
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index fc48103..08d9603 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -38,8 +38,8 @@ int dma_direction_to_prot(enum dma_data_direction dir, bool coherent);
-  * These implement the bulk of the relevant DMA mapping callbacks, but require
-  * the arch code to take care of attributes and cache maintenance
-  */
--struct page **iommu_dma_alloc(struct device *dev, size_t size,
--		gfp_t gfp, int prot, dma_addr_t *handle,
-+struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
-+		int prot, struct dma_attrs *attrs, dma_addr_t *handle,
- 		void (*flush_page)(struct device *, const void *, phys_addr_t));
- void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
- 		dma_addr_t *handle);
--- 
-1.8.1.1.dirty
+Regards,
+Xunlei
+
+>
+>
+> 	Joerg
+>
