@@ -1,10 +1,13 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.5-rc6
-Date: Thu, 3 Mar 2016 14:51:51 +0100
-Message-ID: <20160303135151.GA30025@8bytes.org>
+From: Jacek Lawrynowicz <jacek.lawrynowicz-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] PCI: Add support for multiple DMA aliases
+Date: Thu,  3 Mar 2016 15:22:36 +0100
+Message-ID: <1457014956-10612-1-git-send-email-jacek.lawrynowicz@intel.com>
+References: <20160229224417.GD3653@localhost>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5480306712686849692=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160229224417.GD3653@localhost>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -14,107 +17,166 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Cc: jroedel-l3A5Bk7waGM@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+This patch solves IOMMU support issues with PCIe non-transparent bridges
+that use Requester ID look-up tables (RID-LUT), e.g. PEX8733.
 
---===============5480306712686849692==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="82I3+IH0IqGh5yIs"
-Content-Disposition: inline
+The NTB connects devices in two independent PCI domains. Devices
+separated by the NTB are not able to discover each other. A PCI packet
+being forwared from one domain to another has to have its RID modified
+so it appears on correct bus and completions are forwarded back to the
+original domain through the NTB. RID is translated using preprogrammed
+table (LUT) and the PCI packet propagates upstream away from the NTB.
+If the destination system has IOMMU enabled, the packet will be
+discarded because the new RID is unknown to the IOMMU. Adding a DMA
+alias for the new RID allows IOMMU to properly recognize the packet.
 
+Each device behind the NTB has a unique RID assigned in the RID-LUT.
+Current DMA alias implementation supports only single alias, so it's not
+possible to support mutiple devices behind the NTB when IOMMU is enabled.
 
---82I3+IH0IqGh5yIs
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This implementation enables all possible aliases on a given bus (256)
+that are stored in a bitset. Alias devfn is directly translated to a bit
+number. The bitset is not allocated for devices that have no need for
+DMA aliases.
 
-Hi Linus,
+More details can be found in following article:
+http://www.plxtech.com/files/pdf/technical/expresslane/RTC_Enabling%20MulitHostSystemDesigns.pdf
 
-The following changes since commit 81f70ba233d5f660e1ea5fe23260ee323af5d53a:
+Signed-off-by: Jacek Lawrynowicz <jacek.lawrynowicz-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ I updated the commit message based on discussion with Bjorn. It should be
+ now a little easier to understand. I'm not resubmitting the whole patch set
+ because it could make the thread harder to follow.
 
-  Linux 4.5-rc5 (2016-02-20 13:39:35 -0800)
+ drivers/iommu/iommu.c | 17 ++++++++++-------
+ drivers/pci/pci.c     | 11 +++++++++--
+ drivers/pci/probe.c   |  1 +
+ drivers/pci/search.c  | 14 +++++++++-----
+ include/linux/pci.h   |  4 +---
+ 5 files changed, 30 insertions(+), 17 deletions(-)
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.5-rc6
-
-for you to fetch changes up to e6a8c9b337eed56eb481e1b4dd2180c25a1e5310:
-
-  iommu/vt-d: Use BUS_NOTIFY_REMOVED_DEVICE in hotplug path (2016-02-29 23:55:16 +0100)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v4.5-rc6
-
-Including one fix for Intel VT-d:
-
-	* Use BUS_NOTIFY_REMOVED_DEVICE notifier to unbind a device from
-	  its domain _after_ it has been unbound from its driver. This
-	  fixes a BUG_ON being triggered in the PCI hotplug path.
-
-And three for AMD IOMMU:
-
-	* Add a workaround for a hardware issue with ATS in use
-
-	* Fix ATS enable/disable balance when a device is removed
-
-	* Fix a boot warning being triggered when the system has IOMMU
-	  performance counters and PCI device 00:00.0 is not covered by
-	  the IOMMU
-
-----------------------------------------------------------------
-Jay Cornwall (1):
-      iommu/amd: Apply workaround for ATS write permission check
-
-Joerg Roedel (2):
-      iommu/amd: Detach device from domain before removal
-      iommu/vt-d: Use BUS_NOTIFY_REMOVED_DEVICE in hotplug path
-
-Suravee Suthikulpanit (1):
-      iommu/amd: Fix boot warning when device 00:00.0 is not iommu covered
-
- drivers/iommu/amd_iommu.c      |  4 +++
- drivers/iommu/amd_iommu_init.c | 63 ++++++++++++++++++++++++++++++++++--------
- drivers/iommu/dmar.c           |  5 ++--
- drivers/iommu/intel-iommu.c    |  4 +--
- 4 files changed, 60 insertions(+), 16 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
-
---82I3+IH0IqGh5yIs
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJW2EF3AAoJECvwRC2XARrjm48QANMJ4zT/S1I87WHz9TtvYDD/
-LmoFDWd3PhlL2uPw3J9SPHtNxDcCyE3YsVyx5/x67AlcufK/UatW3lKVQwwnKwG6
-ioRCaLYvhMyfhJLcN6US10offe6oeXoiOaq/zPqyJrT+haZmIzxf49xzr7r8Ksrz
-RWnkUUmqyPAdcPIjBNV/L4LrQwE4+Oj9bz0KBkgZ0pIjayjMllskI4BOqfoMH0E4
-MkW9S00+q1mNcEEiKpyYzUVono9KE8QMk+CmEPc3nIOQAajinvfzfL3k6LnJwSBx
-W7jXW3M8fPQBrAyIWP8sZAf7D/4TUVW1isZgh84ag7kTKH/kzWxbwTSY5foLBl8V
-pJvdMHTdBtwnWkpFikcJrmOUOuDCw679xP+1o5K+f0zbepCA+0PAYG9W2ROjjSXl
-CrZsq5riA9Pw+hWF1iEvFYvWePIbHzqqVc5+z15FgMRiBG44FBH5QPO5jbXc9kRK
-T4ChZlYVoAhH93TYnc8LKHxrqmXBIBlV4jdWycUFEbw1E7ZDJkc46e6AJ2U5rCUM
-3Xlv/Gmvj094J0RYEaqZ9PQNZ8hJBm0iR2L58iEcS5WF4NXS4gIDplVGE9X6ZAHS
-AQPyZphVmOXuVumjt1OY6DuAz6ojBg/6ABgfne5jXaYCdfDonHtFlx7bPxyeBHem
-wS5H+MdIj2hpSsNErSqs
-=uY1W
------END PGP SIGNATURE-----
-
---82I3+IH0IqGh5yIs--
-
---===============5480306712686849692==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============5480306712686849692==--
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index bfd4f7c..4c10da1 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -659,9 +659,15 @@ static struct iommu_group *get_pci_function_alias_group(struct pci_dev *pdev,
+ 	return NULL;
+ }
+ 
++static bool dma_alias_is_enabled(struct pci_dev *dev, u8 devfn)
++{
++	return dev->dma_alias_mask &&
++	       test_bit(devfn, dev->dma_alias_mask);
++}
++
+ /*
+- * Look for aliases to or from the given device for exisiting groups.  The
+- * dma_alias_devfn only supports aliases on the same bus, therefore the search
++ * Look for aliases to or from the given device for existing groups. DMA
++ * aliases are only supported on the same bus, therefore the search
+  * space is quite small (especially since we're really only looking at pcie
+  * device, and therefore only expect multiple slots on the root complex or
+  * downstream switch ports).  It's conceivable though that a pair of
+@@ -686,11 +692,8 @@ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+ 			continue;
+ 
+ 		/* We alias them or they alias us */
+-		if (((pdev->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_DEVFN) &&
+-		     pdev->dma_alias_devfn == tmp->devfn) ||
+-		    ((tmp->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_DEVFN) &&
+-		     tmp->dma_alias_devfn == pdev->devfn)) {
+-
++		if (dma_alias_is_enabled(pdev, tmp->devfn) ||
++		    dma_alias_is_enabled(tmp, pdev->devfn)) {
+ 			group = get_pci_alias_group(tmp, devfns);
+ 			if (group) {
+ 				pci_dev_put(tmp);
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index e5e2c9d..33f3d24 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -4577,8 +4577,15 @@ int pci_set_vga_state(struct pci_dev *dev, bool decode,
+  */
+ void pci_add_dma_alias(struct pci_dev *dev, u8 devfn)
+ {
+-	dev->dma_alias_devfn = PCI_DEVFN(PCI_SLOT(dev->devfn), 0);
+-	dev->dev_flags |= PCI_DEV_FLAGS_DMA_ALIAS_DEVFN;
++	if (!dev->dma_alias_mask)
++		dev->dma_alias_mask = kcalloc(BITS_TO_LONGS(U8_MAX),
++					      sizeof(long), GFP_KERNEL);
++	if (!dev->dma_alias_mask) {
++		dev_warn(&dev->dev, "Unable to allocate DMA alias mask\n");
++		return;
++	}
++
++	set_bit(devfn, dev->dma_alias_mask);
+ 	dev_info(&dev->dev, "Enabling fixed DMA alias to %02x.%d\n",
+ 		 PCI_SLOT(devfn), PCI_FUNC(devfn));
+ }
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 5eb378f..cf09307 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -1502,6 +1502,7 @@ static void pci_release_dev(struct device *dev)
+ 	pcibios_release_device(pci_dev);
+ 	pci_bus_put(pci_dev->bus);
+ 	kfree(pci_dev->driver_override);
++	kfree(pci_dev->dma_alias_mask);
+ 	kfree(pci_dev);
+ }
+ 
+diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+index a20ce7d..33e0f03 100644
+--- a/drivers/pci/search.c
++++ b/drivers/pci/search.c
+@@ -40,11 +40,15 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
+ 	 * If the device is broken and uses an alias requester ID for
+ 	 * DMA, iterate over that too.
+ 	 */
+-	if (unlikely(pdev->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_DEVFN)) {
+-		ret = fn(pdev, PCI_DEVID(pdev->bus->number,
+-					 pdev->dma_alias_devfn), data);
+-		if (ret)
+-			return ret;
++	if (unlikely(pdev->dma_alias_mask)) {
++		u8 devfn;
++
++		for_each_set_bit(devfn, pdev->dma_alias_mask, U8_MAX) {
++			ret = fn(pdev, PCI_DEVID(pdev->bus->number, devfn),
++				 data);
++			if (ret)
++				return ret;
++		}
+ 	}
+ 
+ 	for (bus = pdev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 614d70d..0c176e5 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -172,8 +172,6 @@ enum pci_dev_flags {
+ 	PCI_DEV_FLAGS_ASSIGNED = (__force pci_dev_flags_t) (1 << 2),
+ 	/* Flag for quirk use to store if quirk-specific ACS is enabled */
+ 	PCI_DEV_FLAGS_ACS_ENABLED_QUIRK = (__force pci_dev_flags_t) (1 << 3),
+-	/* Flag to indicate the device uses dma_alias_devfn */
+-	PCI_DEV_FLAGS_DMA_ALIAS_DEVFN = (__force pci_dev_flags_t) (1 << 4),
+ 	/* Use a PCIe-to-PCI bridge alias even if !pci_is_pcie */
+ 	PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS = (__force pci_dev_flags_t) (1 << 5),
+ 	/* Do not use bus resets for device */
+@@ -279,7 +277,7 @@ struct pci_dev {
+ 	u8		rom_base_reg;	/* which config register controls the ROM */
+ 	u8		pin;		/* which interrupt pin this device uses */
+ 	u16		pcie_flags_reg;	/* cached PCIe Capabilities Register */
+-	u8		dma_alias_devfn;/* devfn of DMA alias, if any */
++	unsigned long	*dma_alias_mask;/* mask of enabled devfn aliases */
+ 
+ 	struct pci_driver *driver;	/* which driver has allocated this device */
+ 	u64		dma_mask;	/* Mask of the bits of bus address this
+-- 
+1.8.3.1
