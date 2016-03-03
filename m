@@ -1,53 +1,46 @@
-From: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
-Subject: [PATCH v5 5/6] PCI: Add DMA alias quirk for mic_x200_dma
-Date: Thu,  3 Mar 2016 15:53:20 +0100
-Message-ID: <1457016800-11903-1-git-send-email-jacek.lawrynowicz@intel.com>
-References: <20160224194423.7585.46582.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20160224194423.7585.46582.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: helgaas@kernel.org
-Cc: jroedel@suse.de, dwmw2@infradead.org, alex.williamson@redhat.com, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
+From: Julien Grall <julien.grall@arm.com>
+Subject: Re: [RFC v5 03/17] iommu: introduce a reserved iova cookie
+Date: Thu, 3 Mar 2016 16:26:31 +0000
+Message-ID: <56D865B7.7000404@arm.com>
+References: <1456856877-4817-1-git-send-email-eric.auger@linaro.org>
+ <1456856877-4817-4-git-send-email-eric.auger@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-Reply-To: <1456856877-4817-4-git-send-email-eric.auger@linaro.org>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: Eric Auger <eric.auger@linaro.org>, eric.auger@st.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org
+Cc: Manish.Jaggi@caviumnetworks.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, patches@linaro.org
 List-Id: iommu@lists.linux-foundation.org
 
-MIC x200 NTB forwards PCIe traffic using multiple alien RID. They have to
-be added as aliases to the DMA device in order to allow buffer access
-when IOMMU is enabled.
+Hi Eric,
 
-Signed-off-by: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
-Acked-by: David Woodhouse <David.Woodhouse@intel.com>
----
- Updated quirk comment with requirement that aliases have to be matching
- values programmed in the EEPROM. The LUT table on x200 is static so there
- is no need to program it from the driver.
+On 01/03/16 18:27, Eric Auger wrote:
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 0e3b009..7b2bb94 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1072,6 +1072,7 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+>
+>   	domain->ops  = bus->iommu_ops;
+>   	domain->type = type;
+> +	mutex_init(&domain->reserved_mutex);
 
- drivers/pci/quirks.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+For consistency, the RB-tree reserved_binding_list should be initialized 
+too:
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 51927a5..e66f09d 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3696,6 +3696,20 @@ DECLARE_PCI_FIXUP_HEADER(0x1283, 0x8892, quirk_use_pcie_bridge_dma_alias);
- DECLARE_PCI_FIXUP_HEADER(0x8086, 0x244e, quirk_use_pcie_bridge_dma_alias);
- 
- /*
-+ * MIC x200 NTB forwards PCIe traffic using multiple alien RIDs. They have to
-+ * be added as aliases to the DMA device in order to allow buffer access
-+ * when IOMMU is enabled. Following devfns have to match RIT-LUT table
-+ * programmed in the EEPROM.
-+ */
-+static void quirk_mic_x200_dma_alias(struct pci_dev *pdev)
-+{
-+	pci_add_dma_alias(pdev, PCI_DEVFN(0x10, 0x0));
-+	pci_add_dma_alias(pdev, PCI_DEVFN(0x11, 0x0));
-+	pci_add_dma_alias(pdev, PCI_DEVFN(0x12, 0x3));
-+}
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2264, quirk_mic_x200_dma_alias);
-+
-+/*
-  * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
-  * class code.  Fix it.
-  */
+domain->reserved_binding_list = RB_ROOT;
+
+Cheers,
+
 -- 
-1.8.3.1
+Julien Grall
