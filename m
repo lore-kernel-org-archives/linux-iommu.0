@@ -1,206 +1,57 @@
-From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH V4] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
-Date: Thu, 3 Mar 2016 19:44:03 -0800
-Message-ID: <1457063043-10623-1-git-send-email-tchalamarla@caviumnetworks.com>
+From: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [PATCH] arm64/dma-mapping: Add DMA_ATTR_ALLOC_SINGLE_PAGES
+ support
+Date: Fri, 4 Mar 2016 08:00:49 +0800
+Message-ID: <1457049649.26149.11.camel@mhfsdcap03>
+References: <1456944866-15990-1-git-send-email-yong.wu@mediatek.com>
+	 <CAD=FV=VOJT_Nd67O21J2-rabXRQ2=iTJxP8yCAty2xFhcVupGw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <CAD=FV=VOJT_Nd67O21J2-rabXRQ2=iTJxP8yCAty2xFhcVupGw@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Doug Anderson <dianders@chromium.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Arnd Bergmann <arnd@arndb.de>, Lucas Stach <l.stach@pengutronix.de>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, srv_heupstream@mediatek.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Due to Errata#27704 CN88xx SMMUv2,supports  only shared ASID and VMID
-namespaces; specifically within a given node SMMU0 and SMMU1 share,
-as does SMMU2 and SMMU3.
+On Thu, 2016-03-03 at 09:44 -0800, Doug Anderson wrote:
+> Hi,
+> 
+> On Wed, Mar 2, 2016 at 10:54 AM, Yong Wu <yong.wu@mediatek.com> wrote:
+> > Sometimes it is not worth for the iommu allocating big chunks.
+> > Here we enable DMA_ATTR_ALLOC_SINGLE_PAGES which could help avoid to
+> > allocate big chunks while iommu allocating buffer.
+> >
+> > More information about this attribute, please check Doug's commit[1].
+> >
+> > [1]: https://lkml.org/lkml/2016/1/11/720
+> >
+> > Cc: Robin Murphy <robin.murphy@arm.com>
+> > Suggested-by: Douglas Anderson <dianders@chromium.org>
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > ---
+> >
+> > Our video drivers may soon use this.
+> >
+> >  arch/arm64/mm/dma-mapping.c |  4 ++--
+> >  drivers/iommu/dma-iommu.c   | 14 ++++++++++----
+> >  include/linux/dma-iommu.h   |  4 ++--
+> >  3 files changed, 14 insertions(+), 8 deletions(-)
+> 
+> It should also be mentioned that this depends on commit df05c6f6e0bb
+> ("ARM: 8506/1: common: DMA-mapping: add DMA_ATTR_ALLOC_SINGLE_PAGES
+> attribute") which is not in mainline quite yet.
 
-This patch make sures ASID and VMID space is unique across cavium SMMUv2.
+Thanks. I will add it in the commit message.
 
-changes from V3:
-	- Removed redundent variable.
+> 
+> Also please CC Marek Szyprowski on any future patches in this area
+> since I saw a patch series from him that was touching this same area.
 
-changes from V2:
-	- removed *_base from DT, and replaced with compatible string
+Will do.
 
-changes from V1:
-	- rebased on top of 16 bit VMID patch
-	- removed redundent options from DT
-	- insted of transform, DT now supplies starting ASID/VMID
+> 
+> Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
-Signed-off-by: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Signed-off-by: Akula Geethasowjanya <Geethasowjanya.Akula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
----
- Documentation/arm64/silicon-errata.txt             |  1 +
- .../devicetree/bindings/iommu/arm,smmu.txt         |  1 +
- drivers/iommu/arm-smmu.c                           | 43 ++++++++++++++++------
- 3 files changed, 34 insertions(+), 11 deletions(-)
-
-diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
-index 58b71dd..3747a4b 100644
---- a/Documentation/arm64/silicon-errata.txt
-+++ b/Documentation/arm64/silicon-errata.txt
-@@ -56,3 +56,4 @@ stable kernels.
- |                |                 |                 |                         |
- | Cavium         | ThunderX ITS    | #22375, #24313  | CAVIUM_ERRATUM_22375    |
- | Cavium         | ThunderX GICv3  | #23154          | CAVIUM_ERRATUM_23154    |
-+| Cavium         | ThunderX SMMUv2 | #27704          | N/A		       |
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-index 7180745..19fe6f2 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-@@ -16,6 +16,7 @@ conditions.
-                         "arm,mmu-400"
-                         "arm,mmu-401"
-                         "arm,mmu-500"
-+                        "cavium,smmu-v2"
-
-                   depending on the particular implementation and/or the
-                   version of the architecture implemented.
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 247a469..bfe38f3 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -326,6 +326,11 @@ struct arm_smmu_device {
-
- 	struct list_head		list;
- 	struct rb_root			masters;
-+	/*
-+	 *The following fields are specific to Cavium, Thunder
-+	 */
-+	u32				cavium_id_base;
-+
- };
-
- struct arm_smmu_cfg {
-@@ -335,8 +340,8 @@ struct arm_smmu_cfg {
- };
- #define INVALID_IRPTNDX			0xff
-
--#define ARM_SMMU_CB_ASID(cfg)		((cfg)->cbndx)
--#define ARM_SMMU_CB_VMID(cfg)		((cfg)->cbndx + 1)
-+#define ARM_SMMU_CB_ASID(smmu, cfg) ((u16)(smmu)->cavium_id_base + (cfg)->cbndx)
-+#define ARM_SMMU_CB_VMID(smmu, cfg) ((u16)(smmu)->cavium_id_base + (cfg)->cbndx + 1)
-
- enum arm_smmu_domain_stage {
- 	ARM_SMMU_DOMAIN_S1 = 0,
-@@ -364,6 +369,8 @@ struct arm_smmu_option_prop {
- 	const char *prop;
- };
-
-+static u32 cavium_smmu_context_count;
-+
- static struct arm_smmu_option_prop arm_smmu_options[] = {
- 	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
- 	{ 0, NULL},
-@@ -575,11 +582,11 @@ static void arm_smmu_tlb_inv_context(void *cookie)
-
- 	if (stage1) {
- 		base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
--		writel_relaxed(ARM_SMMU_CB_ASID(cfg),
-+		writel_relaxed(ARM_SMMU_CB_ASID(smmu, cfg),
- 			       base + ARM_SMMU_CB_S1_TLBIASID);
- 	} else {
- 		base = ARM_SMMU_GR0(smmu);
--		writel_relaxed(ARM_SMMU_CB_VMID(cfg),
-+		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg),
- 			       base + ARM_SMMU_GR0_TLBIVMID);
- 	}
-
-@@ -601,7 +608,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
-
- 		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
- 			iova &= ~12UL;
--			iova |= ARM_SMMU_CB_ASID(cfg);
-+			iova |= ARM_SMMU_CB_ASID(smmu, cfg);
- 			do {
- 				writel_relaxed(iova, reg);
- 				iova += granule;
-@@ -609,7 +616,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
- #ifdef CONFIG_64BIT
- 		} else {
- 			iova >>= 12;
--			iova |= (u64)ARM_SMMU_CB_ASID(cfg) << 48;
-+			iova |= (u64)ARM_SMMU_CB_ASID(smmu, cfg) << 48;
- 			do {
- 				writeq_relaxed(iova, reg);
- 				iova += granule >> 12;
-@@ -629,7 +636,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
- #endif
- 	} else {
- 		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
--		writel_relaxed(ARM_SMMU_CB_VMID(cfg), reg);
-+		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg), reg);
- 	}
- }
-
-@@ -738,7 +745,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- #endif
- 		/* if 16bit VMID supported set VMID in CBA2R */
- 		if (smmu->features & ARM_SMMU_FEAT_VMID16)
--			reg |= ARM_SMMU_CB_VMID(cfg) << CBA2R_VMID_SHIFT;
-+			reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBA2R_VMID_SHIFT;
-
- 		writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBA2R(cfg->cbndx));
- 	}
-@@ -757,7 +764,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
- 	} else if (!(smmu->features & ARM_SMMU_FEAT_VMID16)) {
- 		/*16 bit VMID is not supported set 8 bit VMID here */
--		reg |= ARM_SMMU_CB_VMID(cfg) << CBAR_VMID_SHIFT;
-+		reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBAR_VMID_SHIFT;
- 	}
- 	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
-
-@@ -765,11 +772,11 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 	if (stage1) {
- 		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-
--		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
-+		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
- 		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR0);
-
- 		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
--		reg64 |= ((u64)ARM_SMMU_CB_ASID(cfg)) << TTBRn_ASID_SHIFT;
-+		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
- 		smmu_writeq(reg64, cb_base + ARM_SMMU_CB_TTBR1);
- 	} else {
- 		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
-@@ -1717,6 +1724,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,mmu-400", .data = (void *)ARM_SMMU_V1 },
- 	{ .compatible = "arm,mmu-401", .data = (void *)ARM_SMMU_V1 },
- 	{ .compatible = "arm,mmu-500", .data = (void *)ARM_SMMU_V2 },
-+	{ .compatible = "cavium,smmu-v2", .data = (void *)ARM_SMMU_V2 },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
-@@ -1829,6 +1837,19 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
-
- 	INIT_LIST_HEAD(&smmu->list);
- 	spin_lock(&arm_smmu_devices_lock);
-+
-+	/*
-+	 * Due to Errata#27704 CN88xx SMMUv2,supports  only shared ASID and VMID
-+	 * namespaces; specifically within a given node SMMU0 and SMMU1 share,
-+	 * as does SMMU2 and SMMU3. see if this is a Cavium SMMU, if so
-+	 * set asid and vmid base such that each SMMU gets unique
-+	 * asid/vmid space.
-+	 */
-+	if (of_device_is_compatible(dev->of_node, "cavium,smmu-v2")) {
-+		smmu->cavium_id_base = cavium_smmu_context_count;
-+		cavium_smmu_context_count += smmu->num_context_banks;
-+	}
-+
- 	list_add(&smmu->list, &arm_smmu_devices);
- 	spin_unlock(&arm_smmu_devices_lock);
-
---
-2.1.0
+Thanks.
