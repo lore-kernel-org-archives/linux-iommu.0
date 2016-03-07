@@ -1,53 +1,118 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH V5 00/10] perf/amd/iommu: Enable multi-IOMMU support
-Date: Mon, 7 Mar 2016 08:44:59 +0700
-Message-ID: <56DCDD1B.5050708@amd.com>
-References: <1456236764-1569-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<20160225145429.GA18390@8bytes.org>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH v4 6/8] dmaengine: rcar-dmac: add iommu support for slave
+ transfers
+Date: Mon, 7 Mar 2016 11:33:49 +0530
+Message-ID: <20160307060349.GE11154@localhost>
+References: <1455655184-14478-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+ <1455655184-14478-7-git-send-email-niklas.soderlund+renesas@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160225145429.GA18390-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1455655184-14478-7-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+Sender: linux-arch-owner@vger.kernel.org
+To: Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas@ragnatech.se>
+Cc: linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, robin.murphy@arm.com, laurent.pinchart@ideasonboard.com, geert+renesas@glider.be, linus.walleij@linaro.org, dan.j.williams@intel.com, arnd@arndb.de, linux-arch@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On Tue, Feb 16, 2016 at 09:39:42PM +0100, Niklas S=F6derlund wrote:
+> Enable slave transfers to devices behind IPMMU:s by mapping the slave
 
-On 2/25/16 21:54, Joerg Roedel wrote:
-> Hi Suravee,
->
-> On Tue, Feb 23, 2016 at 08:12:34AM -0600, Suravee Suthikulpanit wrote:
->> This is a two-part patch series:
->>
->> Part1: 1-4 :
->> Introduce a workaround for the current AMD IOMMU perf initialization issue
->> in some existing KV and CZ platforms, where it fails to write to IOMMU
->> perf counter as reported by Andreas Hartmann here
->> (http://comments.gmane.org/gmane.linux.kernel.pci/49147).
->
-> Okay, these 4 patches fix the issue, but they also refactor the code and
-> so a lot more. They are not suitable for stable kernels, so to just fix
-> the issue I take the small patch I extracted from yours and posted
-> previously. I retains your authorship, hope that is fine with you.
->
-> You can rebase these patches on-top of that minimal fix.
->
->
-> 	Joerg
->
+IPMMU:s ?
 
-I'll do that and send out V6.
+> addresses using the dma-mapping API.
+>=20
+> Signed-off-by: Niklas S=F6derlund <niklas.soderlund+renesas@ragnatech=
+=2Ese>
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> ---
+>  drivers/dma/sh/rcar-dmac.c | 52 ++++++++++++++++++++++++++++++++++++=
++++++-----
+>  1 file changed, 47 insertions(+), 5 deletions(-)
+>=20
+> diff --git a/drivers/dma/sh/rcar-dmac.c b/drivers/dma/sh/rcar-dmac.c
+> index 743873c..6a24847 100644
+> --- a/drivers/dma/sh/rcar-dmac.c
+> +++ b/drivers/dma/sh/rcar-dmac.c
+> @@ -1106,21 +1106,63 @@ rcar_dmac_prep_dma_cyclic(struct dma_chan *ch=
+an, dma_addr_t buf_addr,
+>  	return desc;
+>  }
+> =20
+> +static int rcar_dmac_set_slave_addr(struct dma_chan *chan,
+> +				     struct rcar_dmac_chan_slave *slave,
+> +				     phys_addr_t addr, size_t size)
+> +{
+> +	enum dma_data_direction dir;
+> +
+> +	/*
+> +	 * We can't know the direction at this time, see documentation for
+> +	 * 'direction' in struct dma_slave_config.
+> +	 */
 
-Thanks,
-Suravee
+Okay so we are mapping on the device config, which doesn't seem intutiv=
+e.
+Why is this not done during prepare calls?
+
+> +	dir =3D DMA_BIDIRECTIONAL;
+> +
+> +	if (slave->xfer_size) {
+> +		dma_unmap_resource(chan->device->dev, slave->slave_addr,
+> +				   slave->xfer_size, dir, NULL);
+> +		slave->slave_addr =3D 0;
+> +		slave->xfer_size =3D 0;
+> +	}
+> +
+> +	if (size) {
+> +		slave->slave_addr =3D dma_map_resource(chan->device->dev, addr,
+> +				size, dir, NULL);
+> +
+> +		if (dma_mapping_error(chan->device->dev, slave->slave_addr)) {
+> +			struct rcar_dmac_chan *rchan =3D to_rcar_dmac_chan(chan);
+> +
+> +			dev_err(chan->device->dev,
+> +				"chan%u: failed to map %zx@%pap", rchan->index,
+> +				size, &addr);
+> +			return -EIO;
+> +		}
+> +
+> +		slave->xfer_size =3D size;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static int rcar_dmac_device_config(struct dma_chan *chan,
+>  				   struct dma_slave_config *cfg)
+>  {
+>  	struct rcar_dmac_chan *rchan =3D to_rcar_dmac_chan(chan);
+> +	int ret;
+> =20
+>  	/*
+>  	 * We could lock this, but you shouldn't be configuring the
+>  	 * channel, while using it...
+>  	 */
+> -	rchan->src.slave_addr =3D cfg->src_addr;
+> -	rchan->dst.slave_addr =3D cfg->dst_addr;
+> -	rchan->src.xfer_size =3D cfg->src_addr_width;
+> -	rchan->dst.xfer_size =3D cfg->dst_addr_width;
+> =20
+> -	return 0;
+> +	ret =3D rcar_dmac_set_slave_addr(chan, &rchan->src, cfg->src_addr,
+> +				       cfg->src_addr_width);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret =3D rcar_dmac_set_slave_addr(chan, &rchan->dst, cfg->dst_addr,
+> +				       cfg->dst_addr_width);
+> +	return ret;
+>  }
+> =20
+>  static int rcar_dmac_chan_terminate_all(struct dma_chan *chan)
+> --=20
+> 2.7.1
+>=20
+
+--=20
+~Vinod
