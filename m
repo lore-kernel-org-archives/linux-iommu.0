@@ -1,120 +1,155 @@
-From: Yangbo Lu <yangbo.lu@nxp.com>
-Subject: [v6, 5/5] mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
-Date: Wed, 9 Mar 2016 18:08:51 +0800
-Message-ID: <1457518131-11339-6-git-send-email-yangbo.lu@nxp.com>
-References: <1457518131-11339-1-git-send-email-yangbo.lu@nxp.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 2/3] iommu/dma: Use correct offset in map_sg
+Date: Wed, 9 Mar 2016 15:00:19 +0000
+Message-ID: <56E03A83.9050909@arm.com>
+References: <9a84191ed813c23db7901f8c73f514d081495bdf.1450457730.git.robin.murphy@arm.com>
+	<4812a34857b081e45c36d7e887840f3675da74dc.1450457730.git.robin.murphy@arm.com>
+	<CANqRtoSHa1fzQge4ntK9Jt_XFiL0AKWtUti93-cwS-aOkJQcjg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-mmc-owner@vger.kernel.org>
-In-Reply-To: <1457518131-11339-1-git-send-email-yangbo.lu@nxp.com>
-Sender: linux-mmc-owner@vger.kernel.org
-To: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, linux-mmc@vger.kernel.org
-Cc: Rob Herring <robh+dt@kernel.org>, scott.wood@nxp.com, Russell King <linux@arm.linux.org.uk>, Jochen Friedrich <jochen@scram.de>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, ulf.hansson@linaro.org, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Zhao Qiang <qiang.zhao@freescale.com>, Kumar Gala <galak@codeaurora.org>, Santosh Shilimkar <ssantosh@kernel.org>, leoyang.li@nxp.com, xiaobo.xie@nxp.com, Yangbo Lu <yangbo.lu@nxp.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CANqRtoSHa1fzQge4ntK9Jt_XFiL0AKWtUti93-cwS-aOkJQcjg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The eSDHC of T4240-R1.0-R2.0 has incorrect vender version and spec version.
-Acturally the right version numbers should be VVN=0x13 and SVN = 0x1.
-This patch adds the GUTS driver support for eSDHC driver to get SVR(System
-version register). And fix host version to avoid that incorrect version
-numbers break down the ADMA data transfer.
+Hi Magnus,
 
-Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
----
-Changes for v2:
-	- Got SVR through iomap instead of dts
-Changes for v3:
-	- Managed GUTS through syscon instead of iomap in eSDHC driver
-Changes for v4:
-	- Got SVR by GUTS driver instead of SYSCON
-Changes for v5:
-	- Changed to get SVR through API fsl_guts_get_svr()
-	- Combined patch 4, patch 5 and patch 6 into one
-Changes for v6:
-	- Added 'Acked-by: Ulf Hansson'
----
- drivers/mmc/host/Kconfig          |  1 +
- drivers/mmc/host/sdhci-of-esdhc.c | 23 +++++++++++++++++++++++
- 2 files changed, 24 insertions(+)
+Thanks for bringing this up...
 
-diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
-index 04feea8..5743b05 100644
---- a/drivers/mmc/host/Kconfig
-+++ b/drivers/mmc/host/Kconfig
-@@ -142,6 +142,7 @@ config MMC_SDHCI_OF_ESDHC
- 	depends on MMC_SDHCI_PLTFM
- 	depends on PPC || ARCH_MXC || ARCH_LAYERSCAPE
- 	select MMC_SDHCI_IO_ACCESSORS
-+	select FSL_GUTS
- 	help
- 	  This selects the Freescale eSDHC controller support.
- 
-diff --git a/drivers/mmc/host/sdhci-of-esdhc.c b/drivers/mmc/host/sdhci-of-esdhc.c
-index 3f34d35..68cc020 100644
---- a/drivers/mmc/host/sdhci-of-esdhc.c
-+++ b/drivers/mmc/host/sdhci-of-esdhc.c
-@@ -18,6 +18,8 @@
- #include <linux/of.h>
- #include <linux/delay.h>
- #include <linux/module.h>
-+#include <linux/fsl/svr.h>
-+#include <linux/fsl/guts.h>
- #include <linux/mmc/host.h>
- #include "sdhci-pltfm.h"
- #include "sdhci-esdhc.h"
-@@ -28,6 +30,8 @@
- struct sdhci_esdhc {
- 	u8 vendor_ver;
- 	u8 spec_ver;
-+	u32 soc_ver;
-+	u8 soc_rev;
- };
- 
- /**
-@@ -73,6 +77,8 @@ static u32 esdhc_readl_fixup(struct sdhci_host *host,
- static u16 esdhc_readw_fixup(struct sdhci_host *host,
- 				     int spec_reg, u32 value)
- {
-+	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-+	struct sdhci_esdhc *esdhc = sdhci_pltfm_priv(pltfm_host);
- 	u16 ret;
- 	int shift = (spec_reg & 0x2) * 8;
- 
-@@ -80,6 +86,13 @@ static u16 esdhc_readw_fixup(struct sdhci_host *host,
- 		ret = value & 0xffff;
- 	else
- 		ret = (value >> shift) & 0xffff;
-+
-+	/* Workaround for T4240-R1.0-R2.0 eSDHC which has incorrect
-+	 * vendor version and spec version information.
-+	 */
-+	if ((spec_reg == SDHCI_HOST_VERSION) &&
-+	    (esdhc->soc_ver == SVR_T4240) && (esdhc->soc_rev <= 0x20))
-+		ret = (VENDOR_V_23 << SDHCI_VENDOR_VER_SHIFT) | SDHCI_SPEC_200;
- 	return ret;
- }
- 
-@@ -567,10 +580,20 @@ static void esdhc_init(struct platform_device *pdev, struct sdhci_host *host)
- 	struct sdhci_pltfm_host *pltfm_host;
- 	struct sdhci_esdhc *esdhc;
- 	u16 host_ver;
-+	u32 svr;
- 
- 	pltfm_host = sdhci_priv(host);
- 	esdhc = sdhci_pltfm_priv(pltfm_host);
- 
-+	fsl_guts_init();
-+	svr = fsl_guts_get_svr();
-+	if (svr) {
-+		esdhc->soc_ver = SVR_SOC_VER(svr);
-+		esdhc->soc_rev = SVR_REV(svr);
-+	} else {
-+		dev_err(&pdev->dev, "Failed to get SVR value!\n");
-+	}
-+
- 	host_ver = sdhci_readw(host, SDHCI_HOST_VERSION);
- 	esdhc->vendor_ver = (host_ver & SDHCI_VENDOR_VER_MASK) >>
- 			     SDHCI_VENDOR_VER_SHIFT;
--- 
-2.1.0.27.g96db324
+On 09/03/16 07:50, Magnus Damm wrote:
+> On Sat, Dec 19, 2015 at 2:01 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>> When mapping a non-page-aligned scatterlist entry, we copy the original
+>> offset to the output DMA address before aligning it to hand off to
+>> iommu_map_sg(), then later adding the IOVA page address portion to get
+>> the final mapped address. However, when the IOVA page size is smaller
+>> than the CPU page size, it is the offset within the IOVA page we want,
+>> not that within the CPU page, which can easily be larger than an IOVA
+>> page and thus result in an incorrect final address.
+>>
+>> Fix the bug by taking only the IOVA-aligned part of the offset as the
+>> basis of the DMA address, not the whole thing.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>   drivers/iommu/dma-iommu.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index 982e716..03811e3 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -458,7 +458,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+>>                  size_t s_length = s->length;
+>>                  size_t pad_len = (mask - iova_len + 1) & mask;
+>>
+>> -               sg_dma_address(s) = s->offset;
+>> +               sg_dma_address(s) = s_offset;
+>>                  sg_dma_len(s) = s_length;
+>>                  s->offset -= s_offset;
+>>                  s_length = iova_align(iovad, s_length + s_offset);
+>> --
+>> 1.9.1
+>
+> Hi Robin,
+>
+> Thanks a lot for your fix! While I don't have any doubt that your
+> patch fixes a real issue I wonder if another update is needed.
+> Depending on what is expected perhaps just the comment above the code
+> wants an update or maybe the "un-swizzling" needs more work. With this
+> patch applied the code looks semi-complete to me at this point.
+>
+> Currently the comment just above the hunk says:
+>
+>      /*
+>       * Work out how much IOVA space we need, and align the segments to
+>       * IOVA granules for the IOMMU driver to handle. With some clever
+>       * trickery we can modify the list in-place, but reversibly, by
+>       * hiding the original data in the as-yet-unused DMA fields.
+>       */
+>
+> With your fix the "original data" is no longer stored in the unused
+> DMA fields.
 
+OK, so we're now  moving some of the data rather than taking a literal 
+copy, but the point remains that we're not throwing any information away 
+- we can move the remainder back again if necessary. As far as I'm 
+concerned the comment is still valid, but if it's open to 
+misinterpretation I can try rephrasing it.
+
+> Instead the s_offset value is stored as modified in
+> sg_dma_address() which in turn will make the iommu_dma_map_sg()
+> function return with modified sg->s_offset both on success and
+> failure.
+>
+> Perhaps this is intentional design, or maybe __invalidate_sg() and
+> __finalize_sg() both need to support roll back? Any ideas?
+
+What's missing is that some idiot forgot about the hard-to-exercise 
+failure path and didn't update __invalidate_sg() to match. I'll get 
+right on that...
+
+Robin.
+
+> Thanks,
+>
+> / magnus
+>
+> My untested hack to support roll back on top of next-20160308 does
+> something like this...
+>
+> --- 0001/drivers/iommu/dma-iommu.c
+> +++ work/drivers/iommu/dma-iommu.c    2016-03-09 16:33:21.250513000 +0900
+> @@ -392,7 +392,7 @@ void iommu_dma_unmap_page(struct device
+>    * Handling IOVA concatenation can come later, if needed
+>    */
+>   static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
+> -        dma_addr_t dma_addr)
+> +             dma_addr_t dma_addr, struct iova_domain *iovad)
+>   {
+>       struct scatterlist *s;
+>       int i;
+> @@ -405,7 +405,7 @@ static int __finalise_sg(struct device *
+>
+>           s->offset = s_offset;
+>           s->length = s_length;
+> -        sg_dma_address(s) = dma_addr + s_offset;
+> +        sg_dma_address(s) = dma_addr + iova_offset(iovad, s_offset);
+>           dma_addr += s_dma_len;
+>       }
+>       return i;
+> @@ -455,11 +455,13 @@ int iommu_dma_map_sg(struct device *dev,
+>        * hiding the original data in the as-yet-unused DMA fields.
+>        */
+>       for_each_sg(sg, s, nents, i) {
+> -        size_t s_offset = iova_offset(iovad, s->offset);
+> +        size_t s_offset = s->offset;
+>           size_t s_length = s->length;
+>
+>           sg_dma_address(s) = s_offset;
+>           sg_dma_len(s) = s_length;
+> +
+> +        s_offset = iova_offset(iovad, s_offset);
+>           s->offset -= s_offset;
+>           s_length = iova_align(iovad, s_length + s_offset);
+>           s->length = s_length;
+> @@ -494,7 +496,7 @@ int iommu_dma_map_sg(struct device *dev,
+>       if (iommu_map_sg(domain, dma_addr, sg, nents, prot) < iova_len)
+>           goto out_free_iova;
+>
+> -    return __finalise_sg(dev, sg, nents, dma_addr);
+> +    return __finalise_sg(dev, sg, nents, dma_addr, iovad);
+>
+>   out_free_iova:
+>       __free_iova(iovad, iova);
+>
