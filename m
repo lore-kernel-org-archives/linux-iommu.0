@@ -1,16 +1,15 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 2/3] iommu/dma: Use correct offset in map_sg
-Date: Thu, 10 Mar 2016 16:47:14 +0900
-Message-ID: <CANqRtoQJcYaUXDrA8aDzaEEfVr6dh=guvUWQqjPcuuC8VKxxXg@mail.gmail.com>
-References: <9a84191ed813c23db7901f8c73f514d081495bdf.1450457730.git.robin.murphy@arm.com>
-	<4812a34857b081e45c36d7e887840f3675da74dc.1450457730.git.robin.murphy@arm.com>
-	<CANqRtoSHa1fzQge4ntK9Jt_XFiL0AKWtUti93-cwS-aOkJQcjg@mail.gmail.com>
-	<56E03A83.9050909@arm.com>
+From: Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC v5 06/17] dma-reserved-iommu: iommu_get/put_single_reserved
+Date: Thu, 10 Mar 2016 11:52:54 +0000
+Message-ID: <20160310115253.GA14609@e106794-lin.cambridge.arm.com>
+References: <1456856877-4817-1-git-send-email-eric.auger@linaro.org>
+	<1456856877-4817-7-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <56E03A83.9050909-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1456856877-4817-7-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,105 +19,100 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hi Eric,
 
-On Thu, Mar 10, 2016 at 12:00 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> Hi Magnus,
->
-> Thanks for bringing this up...
+On Tue, Mar 01, 2016 at 06:27:46PM +0000, Eric Auger wrote:
+>[...]
+> +
+> +int iommu_get_single_reserved(struct iommu_domain *domain,
+> +			      phys_addr_t addr, int prot,
+> +			      dma_addr_t *iova)
+> +{
+> +	unsigned long order = __ffs(domain->ops->pgsize_bitmap);
+> +	size_t page_size = 1 << order;
+> +	phys_addr_t mask = page_size - 1;
+> +	phys_addr_t aligned_addr = addr & ~mask;
+> +	phys_addr_t offset  = addr - aligned_addr;
+> +	struct iommu_reserved_binding *b;
+> +	struct iova *p_iova;
+> +	struct iova_domain *iovad =
+> +		(struct iova_domain *)domain->reserved_iova_cookie;
+> +	int ret;
+> +
+> +	if (!iovad)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&domain->reserved_mutex);
 
-No worries!
+I believe this function could get called from the chunk of __setup_irq
+that is executed atomically:
 
-> On 09/03/16 07:50, Magnus Damm wrote:
->>
->> On Sat, Dec 19, 2015 at 2:01 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> wrote:
->>>
->>> When mapping a non-page-aligned scatterlist entry, we copy the original
->>> offset to the output DMA address before aligning it to hand off to
->>> iommu_map_sg(), then later adding the IOVA page address portion to get
->>> the final mapped address. However, when the IOVA page size is smaller
->>> than the CPU page size, it is the offset within the IOVA page we want,
->>> not that within the CPU page, which can easily be larger than an IOVA
->>> page and thus result in an incorrect final address.
->>>
->>> Fix the bug by taking only the IOVA-aligned part of the offset as the
->>> basis of the DMA address, not the whole thing.
->>>
->>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->>> ---
->>>   drivers/iommu/dma-iommu.c | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->>> index 982e716..03811e3 100644
->>> --- a/drivers/iommu/dma-iommu.c
->>> +++ b/drivers/iommu/dma-iommu.c
->>> @@ -458,7 +458,7 @@ int iommu_dma_map_sg(struct device *dev, struct
->>> scatterlist *sg,
->>>                  size_t s_length = s->length;
->>>                  size_t pad_len = (mask - iova_len + 1) & mask;
->>>
->>> -               sg_dma_address(s) = s->offset;
->>> +               sg_dma_address(s) = s_offset;
->>>                  sg_dma_len(s) = s_length;
->>>                  s->offset -= s_offset;
->>>                  s_length = iova_align(iovad, s_length + s_offset);
->>> --
->>> 1.9.1
->>
->>
->> Hi Robin,
->>
->> Thanks a lot for your fix! While I don't have any doubt that your
->> patch fixes a real issue I wonder if another update is needed.
->> Depending on what is expected perhaps just the comment above the code
->> wants an update or maybe the "un-swizzling" needs more work. With this
->> patch applied the code looks semi-complete to me at this point.
->>
->> Currently the comment just above the hunk says:
->>
->>      /*
->>       * Work out how much IOVA space we need, and align the segments to
->>       * IOVA granules for the IOMMU driver to handle. With some clever
->>       * trickery we can modify the list in-place, but reversibly, by
->>       * hiding the original data in the as-yet-unused DMA fields.
->>       */
->>
->> With your fix the "original data" is no longer stored in the unused
->> DMA fields.
->
->
-> OK, so we're now  moving some of the data rather than taking a literal copy,
-> but the point remains that we're not throwing any information away - we can
-> move the remainder back again if necessary. As far as I'm concerned the
-> comment is still valid, but if it's open to misinterpretation I can try
-> rephrasing it.
+    * request_threaded_irq
+    * __setup_irq
+    * irq_startup
+    * irq_domain_activate_irq
+    * msi_domain_activate
+    * msi_compose
+    * iommu_get_single_reserved
 
-Thanks, I agree with you about the comment! As long as the fields can
-be restored everything is fine.
+If this is the case, we should probably use a spinlock to protect the
+iova_domain...
 
->> Instead the s_offset value is stored as modified in
->> sg_dma_address() which in turn will make the iommu_dma_map_sg()
->> function return with modified sg->s_offset both on success and
->> failure.
->>
->> Perhaps this is intentional design, or maybe __invalidate_sg() and
->> __finalize_sg() both need to support roll back? Any ideas?
->
->
-> What's missing is that some idiot forgot about the hard-to-exercise failure
-> path and didn't update __invalidate_sg() to match. I'll get right on that...
+> +
+> +	b = find_reserved_binding(domain, aligned_addr, page_size);
+> +	if (b) {
+> +		*iova = b->iova + offset;
+> +		kref_get(&b->kref);
+> +		ret = 0;
+> +		goto unlock;
+> +	}
+> +
+> +	/* there is no existing reserved iova for this pa */
+> +	p_iova = alloc_iova(iovad, 1, iovad->dma_32bit_pfn, true);
+> +	if (!p_iova) {
+> +		ret = -ENOMEM;
+> +		goto unlock;
+> +	}
+> +	*iova = p_iova->pfn_lo << order;
+> +
+> +	b = kzalloc(sizeof(*b), GFP_KERNEL);
 
-Oh well. Fixing the error case sounds good. I don't have any special
-test case to trigger anything, so testing is a bit difficult for me.
-Apart from that I'm happy to help - let me know if you can think of
-something.
+... and GFP_ATOMIC here.
 
-Cheers,
+Thanks,
+Jean-Philippe
 
-/ magnus
+> +	if (!b) {
+> +		ret = -ENOMEM;
+> +		goto free_iova_unlock;
+> +	}
+> +
+> +	ret = iommu_map(domain, *iova, aligned_addr, page_size, prot);
+> +	if (ret)
+> +		goto free_binding_iova_unlock;
+> +
+> +	kref_init(&b->kref);
+> +	kref_get(&b->kref);
+> +	b->domain = domain;
+> +	b->addr = aligned_addr;
+> +	b->iova = *iova;
+> +	b->size = page_size;
+> +
+> +	link_reserved_binding(domain, b);
+> +
+> +	*iova += offset;
+> +	goto unlock;
+> +
+> +free_binding_iova_unlock:
+> +	kfree(b);
+> +free_iova_unlock:
+> +	free_iova(iovad, *iova >> order);
+> +unlock:
+> +	mutex_unlock(&domain->reserved_mutex);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_get_single_reserved);
