@@ -1,118 +1,79 @@
-From: Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC v5 06/17] dma-reserved-iommu: iommu_get/put_single_reserved
-Date: Thu, 10 Mar 2016 11:52:54 +0000
-Message-ID: <20160310115253.GA14609@e106794-lin.cambridge.arm.com>
-References: <1456856877-4817-1-git-send-email-eric.auger@linaro.org>
-	<1456856877-4817-7-git-send-email-eric.auger@linaro.org>
+From: Yingjoe Chen <yingjoe.chen@mediatek.com>
+Subject: Re: [PATCH 1/2] iommu/io-pgtable: Add MTK 4GB mode in
+ Short-descriptor
+Date: Thu, 10 Mar 2016 22:18:28 +0800
+Message-ID: <1457619508.14539.40.camel@mtksdaap41>
+References: <1456268552-16635-1-git-send-email-yong.wu@mediatek.com>
+	 <1456268552-16635-2-git-send-email-yong.wu@mediatek.com>
+	 <56D6DD2E.4030207@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1456856877-4817-7-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <56D6DD2E.4030207@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, pebolle@tiscali.nl, arnd@arndb.de, srv_heupstream@mediatek.com, Catalin Marinas <catalin.marinas@arm.com>, linux-kernel@vger.kernel.org, milton.chiang@mediatek.com, Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, Daniel Kurtz <djkurtz@google.com>, Sasha Hauer <kernel@pengutronix.de>, linux-mediatek@lists.infradead.org, youhua.li@mediatek.com, mitchelh@codeaurora.org, linux-arm-kernel@lists.infradead.org, Lucas Stach <l.stach@pengutronix.de>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Eric,
+On Wed, 2016-03-02 at 12:31 +0000, Robin Murphy wrote:
+> Hi Yong,
+> 
+> On 23/02/16 23:02, Yong Wu wrote:
+> > Mediatek extend bit9 in the lvl1 and lvl2 pgtable descriptor of the
+> > Short-descriptor as the 4GB mode in which the dram size will be
+> > over 4GB.
+> >
+> > We add a special quirk for this MTK-4GB mode, And in the standard
+> > spec, Bit9 in the lvl1 is "IMPLEMENTATION DEFINED", while it's AP[2]
+> > in the lvl2, therefore if this quirk is enabled, NO_PERMS is also
+> > expected.
+> 
+> Would you be able to explain exactly what this "4GB mode" actually is? 
+> I've been trying to make sense of it from the original M4U patches and 
+> the patch for the I2C driver, but it has me completely baffled.
+> 
+> Is it simply used as an extra physical address bit (although surely that 
+> would make it "8GB mode"?), or does it do something crazier like 
+> toggling an interconnect remap that shifts the output addresses up by 
+> 1GB to be relative to the base of DRAM, like a dma_pfn_offset?
 
-On Tue, Mar 01, 2016 at 06:27:46PM +0000, Eric Auger wrote:
->[...]
-> +
-> +int iommu_get_single_reserved(struct iommu_domain *domain,
-> +			      phys_addr_t addr, int prot,
-> +			      dma_addr_t *iova)
-> +{
-> +	unsigned long order = __ffs(domain->ops->pgsize_bitmap);
-> +	size_t page_size = 1 << order;
-> +	phys_addr_t mask = page_size - 1;
-> +	phys_addr_t aligned_addr = addr & ~mask;
-> +	phys_addr_t offset  = addr - aligned_addr;
-> +	struct iommu_reserved_binding *b;
-> +	struct iova *p_iova;
-> +	struct iova_domain *iovad =
-> +		(struct iova_domain *)domain->reserved_iova_cookie;
-> +	int ret;
-> +
-> +	if (!iovad)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&domain->reserved_mutex);
+Unfortunately, it is somewhat more crazier than that. Let me have a
+short brief on what we got.
 
-I believe this function could get called from the chunk of __setup_irq
-that is executed atomically:
+Normally, mt8173 memory map looks like this:
 
-    * request_threaded_irq
-    * __setup_irq
-    * irq_startup
-    * irq_domain_activate_irq
-    * msi_domain_activate
-    * msi_compose
-    * iommu_get_single_reserved
+Physical addr
+---------
+| 1st GB |    ->  HW SRAM and Regs
+|--------
+| 2nd GB |    ->  DRAM 1st GB
+|--------
+| 3rd GB |    ->  DRAM 2nd GB
+|--------
+| 4th GB |    ->  DRAM 3rd GB
+|--------
 
-If this is the case, we should probably use a spinlock to protect the
-iova_domain...
+On mt8173, we have a "DRAM 4GB mode" toggle bit. If it is enabled, from
+CPU's point of view, the dram will be shifted to start from PA
+0x1_00000000. The PA 0x40000000~0xffffffff will become an alias to
+0x1_40000000~0x1_ffffffff.
 
-> +
-> +	b = find_reserved_binding(domain, aligned_addr, page_size);
-> +	if (b) {
-> +		*iova = b->iova + offset;
-> +		kref_get(&b->kref);
-> +		ret = 0;
-> +		goto unlock;
-> +	}
-> +
-> +	/* there is no existing reserved iova for this pa */
-> +	p_iova = alloc_iova(iovad, 1, iovad->dma_32bit_pfn, true);
-> +	if (!p_iova) {
-> +		ret = -ENOMEM;
-> +		goto unlock;
-> +	}
-> +	*iova = p_iova->pfn_lo << order;
-> +
-> +	b = kzalloc(sizeof(*b), GFP_KERNEL);
+Many HW only support 32bits physical address, the 33bit will be added to
+PA when 4GB mode is enabled. This looks like dma_pfn_offset you
+mentioned.
 
-... and GFP_ATOMIC here.
+Some others, like i2c or audio, support 33bits physical address, mostly
+because they support DMA to/from SRAM with the same SW interface. When
+4GB mode is enabled, these HW can still access DRAM with aliased dram
+address (0x40000000 ~ 0xffffffff)
 
-Thanks,
-Jean-Philippe
+The MTK M4U(iommu) is another case. It did add 33 bits to page table
+entries and registers. Unfortunately, when 4GB mode is enabled, 33bit
+must be 1. It treats all PA < 0x1_0000_0000 as invalid address. That's
+why we always set the 33bit when 4GB mode is enabled in this patch.
 
-> +	if (!b) {
-> +		ret = -ENOMEM;
-> +		goto free_iova_unlock;
-> +	}
-> +
-> +	ret = iommu_map(domain, *iova, aligned_addr, page_size, prot);
-> +	if (ret)
-> +		goto free_binding_iova_unlock;
-> +
-> +	kref_init(&b->kref);
-> +	kref_get(&b->kref);
-> +	b->domain = domain;
-> +	b->addr = aligned_addr;
-> +	b->iova = *iova;
-> +	b->size = page_size;
-> +
-> +	link_reserved_binding(domain, b);
-> +
-> +	*iova += offset;
-> +	goto unlock;
-> +
-> +free_binding_iova_unlock:
-> +	kfree(b);
-> +free_iova_unlock:
-> +	free_iova(iovad, *iova >> order);
-> +unlock:
-> +	mutex_unlock(&domain->reserved_mutex);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_get_single_reserved);
+And there are other HWs with even crazier remap rule, but that's another
+story...
+
+Joe.C
