@@ -1,49 +1,59 @@
-From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH V5 02/10] perf/amd/iommu: Consolidate and move
-	perf_event_amd_iommu header
-Date: Sat, 12 Mar 2016 14:22:24 +0100
-Message-ID: <20160312132224.GI6344@twins.programming.kicks-ass.net>
-References: <1456236764-1569-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1456236764-1569-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+From: Wolfram Sang <wsa@the-dreams.de>
+Subject: Re: [v6, 4/5] powerpc/fsl: move mpc85xx.h to include/linux/fsl
+Date: Sat, 12 Mar 2016 16:52:54 +0100
+Message-ID: <20160312155254.GJ1661@katana>
+References: <1457518131-11339-1-git-send-email-yangbo.lu@nxp.com>
+ <1457518131-11339-5-git-send-email-yangbo.lu@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="AXxEqdD4tcVTjWte"
+Return-path: <linux-clk-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1456236764-1569-3-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+In-Reply-To: <1457518131-11339-5-git-send-email-yangbo.lu@nxp.com>
+Sender: linux-clk-owner@vger.kernel.org
+To: Yangbo Lu <yangbo.lu@nxp.com>
+Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, linux-mmc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, scott.wood@nxp.com, Russell King <linux@arm.linux.org.uk>, Jochen Friedrich <jochen@scram.de>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, ulf.hansson@linaro.org, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Zhao Qiang <qiang.zhao@freescale.com>, Kumar Gala <galak@codeaurora.org>, Santosh Shilimkar <ssantosh@kernel.org>, leoyang.li@nxp.com, xiaobo.xie@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 23, 2016 at 08:12:36AM -0600, Suravee Suthikulpanit wrote:
-> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-> 
-> First, this patch move arch/x86/events/amd/iommu.h to
-> arch/x86/include/asm/perf/amd/iommu.h so that we easily include
-> it in both perf-amd-iommu and amd-iommu drivers.
-> 
-> Then, we consolidate declaration of AMD IOMMU performance counter
-> APIs into one file.
 
-These seem two independent thingies; should this therefore not be 2
-patches?
+--AXxEqdD4tcVTjWte
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-> ---
->  arch/x86/events/amd/iommu.c           |  2 +-
->  arch/x86/events/amd/iommu.h           | 40 ---------------------------------
->  arch/x86/include/asm/perf/amd/iommu.h | 42 +++++++++++++++++++++++++++++++++++
+On Wed, Mar 09, 2016 at 06:08:50PM +0800, Yangbo Lu wrote:
+> Move mpc85xx.h to include/linux/fsl and rename it to svr.h as
+> a common header file. It has been used for mpc85xx and it will
+> be used for ARM-based SoC as well.
+>=20
+> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
 
-That seems somewhat excessive. Not only do you create
-arch/x86/include/asm/perf/ you then put another directory on top of
-that.
+=46rom a glimpse, looks like proper refactoring. Thanks!
+
+For the I2C part:
+
+Acked-by: Wolfram Sang <wsa@the-dreams.de>
+
+
+--AXxEqdD4tcVTjWte
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJW5DtWAAoJEBQN5MwUoCm2N8wP/A+9PzzjAh69NdEWEYwAmYNQ
+O+VKHOPKJS8+cx+LgBtRcfEPQFa1Yjhbc67iLD3iCZmflpMTPkTxJaCXtCpX7spT
+czvjtG2dnaW57mkuuu1M1n6g2Pk8AqFScH7fgJ8/T0PsLo9n/+uZQOqsahYLYBA6
+eHz4NL7vhXW0X8K1v2VnPI8PzEc3jxz72ZsGo4JdKrrSNjs20rHpjXm4/c6L/IxY
+ww6eMTeOY+aXfNEHyWX67bwVX0j+9puiQ0RWdnQEo/3n9XMdketiEwpClO/fzAmb
+YGg7ChK0pVFqt54gk5Kj6eA9hCDiNsOK9LSeVNX5qsqmIcr1enxD9WNOV0zjPTfP
+pF1mR52ygaACR5KU8LQSZVyZBjar9lMq60Fw6KCRunwCMjpnkUxLWHFH8TrH5NAG
+bcVaO158C7FW7Ixk+d0uaZpqIMg2co62nUXXLxUvMSVbDNxuzvo6gCosZt5z3oKr
+9oEVkaqTk7QhX8szHB+BYKjoBVK+oi4UsgvQ3LnTCCt5r9vGGwGGnNEluOKHzB5o
+hEdKZ7/Ubd8yuCAkVzZHW4s0i248RxUY+a45u2adw6Zp5L7Dvw4JWPo0YD6qT4UN
+AMUJnu+dAf/WgL1wn1Nb1AKsbnN3dz8paP0kdGXTtfO51B1FeFrs7x9io1wvUFyn
+4zIuW6V0i4oZlV+/XynJ
+=VEQJ
+-----END PGP SIGNATURE-----
+
+--AXxEqdD4tcVTjWte--
