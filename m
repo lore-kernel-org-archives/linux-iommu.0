@@ -1,59 +1,102 @@
-From: Wolfram Sang <wsa@the-dreams.de>
-Subject: Re: [v6, 4/5] powerpc/fsl: move mpc85xx.h to include/linux/fsl
-Date: Sat, 12 Mar 2016 16:52:54 +0100
-Message-ID: <20160312155254.GJ1661@katana>
-References: <1457518131-11339-1-git-send-email-yangbo.lu@nxp.com>
- <1457518131-11339-5-git-send-email-yangbo.lu@nxp.com>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="AXxEqdD4tcVTjWte"
-Return-path: <linux-clk-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1457518131-11339-5-git-send-email-yangbo.lu@nxp.com>
-Sender: linux-clk-owner@vger.kernel.org
-To: Yangbo Lu <yangbo.lu@nxp.com>
-Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, linux-mmc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>, scott.wood@nxp.com, Russell King <linux@arm.linux.org.uk>, Jochen Friedrich <jochen@scram.de>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, ulf.hansson@linaro.org, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Zhao Qiang <qiang.zhao@freescale.com>, Kumar Gala <galak@codeaurora.org>, Santosh Shilimkar <ssantosh@kernel.org>, leoyang.li@nxp.com, xiaobo.xie@nxp.com
+From: Wei Yang <richard.weiyang@gmail.com>
+Subject: [PATCH 1/2] iommu/vt-d: replace *hdr with hdr[0] in struct dmar_drhd_unit
+Date: Sat, 12 Mar 2016 21:57:38 +0000
+Message-ID: <1457819859-28668-1-git-send-email-richard.weiyang@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org, jiang.liu@linux.intel.com, tglx@linutronix.de
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Wei Yang <richard.weiyang@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
+hdr in struct dmar_drhd_unit is used to point the DMAR hardware unit copied
+at the end of struct dmar_drhd_unit. One zero-sized array may be more
+elegant for this purpose.
 
---AXxEqdD4tcVTjWte
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch replace *hdr with hdr[0] in struct dmar_drhd_unit.
 
-On Wed, Mar 09, 2016 at 06:08:50PM +0800, Yangbo Lu wrote:
-> Move mpc85xx.h to include/linux/fsl and rename it to svr.h as
-> a common header file. It has been used for mpc85xx and it will
-> be used for ARM-based SoC as well.
->=20
-> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+Besides this, this patch includes other two changes:
+1. remove unnecessary type cast in dmar_table_detect()
+2. type cast from acpi_dmar_header to acpi_dmar_hardware_unit directly
 
-=46rom a glimpse, looks like proper refactoring. Thanks!
+Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
+---
+ drivers/iommu/dmar.c | 15 ++++-----------
+ include/linux/dmar.h |  2 +-
+ 2 files changed, 5 insertions(+), 12 deletions(-)
 
-For the I2C part:
-
-Acked-by: Wolfram Sang <wsa@the-dreams.de>
-
-
---AXxEqdD4tcVTjWte
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJW5DtWAAoJEBQN5MwUoCm2N8wP/A+9PzzjAh69NdEWEYwAmYNQ
-O+VKHOPKJS8+cx+LgBtRcfEPQFa1Yjhbc67iLD3iCZmflpMTPkTxJaCXtCpX7spT
-czvjtG2dnaW57mkuuu1M1n6g2Pk8AqFScH7fgJ8/T0PsLo9n/+uZQOqsahYLYBA6
-eHz4NL7vhXW0X8K1v2VnPI8PzEc3jxz72ZsGo4JdKrrSNjs20rHpjXm4/c6L/IxY
-ww6eMTeOY+aXfNEHyWX67bwVX0j+9puiQ0RWdnQEo/3n9XMdketiEwpClO/fzAmb
-YGg7ChK0pVFqt54gk5Kj6eA9hCDiNsOK9LSeVNX5qsqmIcr1enxD9WNOV0zjPTfP
-pF1mR52ygaACR5KU8LQSZVyZBjar9lMq60Fw6KCRunwCMjpnkUxLWHFH8TrH5NAG
-bcVaO158C7FW7Ixk+d0uaZpqIMg2co62nUXXLxUvMSVbDNxuzvo6gCosZt5z3oKr
-9oEVkaqTk7QhX8szHB+BYKjoBVK+oi4UsgvQ3LnTCCt5r9vGGwGGnNEluOKHzB5o
-hEdKZ7/Ubd8yuCAkVzZHW4s0i248RxUY+a45u2adw6Zp5L7Dvw4JWPo0YD6qT4UN
-AMUJnu+dAf/WgL1wn1Nb1AKsbnN3dz8paP0kdGXTtfO51B1FeFrs7x9io1wvUFyn
-4zIuW6V0i4oZlV+/XynJ
-=VEQJ
------END PGP SIGNATURE-----
-
---AXxEqdD4tcVTjWte--
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 80e3c17..d6dd23f 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -292,8 +292,7 @@ static int dmar_pci_bus_add_dev(struct dmar_pci_notify_info *info)
+ 		if (dmaru->include_all)
+ 			continue;
+ 
+-		drhd = container_of(dmaru->hdr,
+-				    struct acpi_dmar_hardware_unit, header);
++		drhd = (struct acpi_dmar_hardware_unit *)dmaru->hdr;
+ 		ret = dmar_insert_dev_scope(info, (void *)(drhd + 1),
+ 				((void *)drhd) + drhd->header.length,
+ 				dmaru->segment,
+@@ -390,7 +389,6 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
+ 	 * If header is allocated from slab by ACPI _DSM method, we need to
+ 	 * copy the content because the memory buffer will be freed on return.
+ 	 */
+-	dmaru->hdr = (void *)(dmaru + 1);
+ 	memcpy(dmaru->hdr, header, header->length);
+ 	dmaru->reg_base_addr = drhd->address;
+ 	dmaru->segment = drhd->segment;
+@@ -529,8 +527,7 @@ static int __init dmar_table_detect(void)
+ 
+ 	/* if we could find DMAR table, then there are DMAR devices */
+ 	status = acpi_get_table_with_size(ACPI_SIG_DMAR, 0,
+-				(struct acpi_table_header **)&dmar_tbl,
+-				&dmar_tbl_size);
++				&dmar_tbl, &dmar_tbl_size);
+ 
+ 	if (ACPI_SUCCESS(status) && !dmar_tbl) {
+ 		pr_warn("Unable to map DMAR\n");
+@@ -663,9 +660,7 @@ dmar_find_matched_drhd_unit(struct pci_dev *dev)
+ 
+ 	rcu_read_lock();
+ 	for_each_drhd_unit(dmaru) {
+-		drhd = container_of(dmaru->hdr,
+-				    struct acpi_dmar_hardware_unit,
+-				    header);
++		drhd = (struct acpi_dmar_hardware_unit *)dmaru->hdr;
+ 
+ 		if (dmaru->include_all &&
+ 		    drhd->segment == pci_domain_nr(dev->bus))
+@@ -693,9 +688,7 @@ static void __init dmar_acpi_insert_dev_scope(u8 device_number,
+ 	struct acpi_dmar_pci_path *path;
+ 
+ 	for_each_drhd_unit(dmaru) {
+-		drhd = container_of(dmaru->hdr,
+-				    struct acpi_dmar_hardware_unit,
+-				    header);
++		drhd = (struct acpi_dmar_hardware_unit *)dmaru->hdr;
+ 
+ 		for (scope = (void *)(drhd + 1);
+ 		     (unsigned long)scope < ((unsigned long)drhd) + drhd->header.length;
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index e9bc929..5f6da7e 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -52,7 +52,6 @@ struct dmar_dev_scope {
+ extern struct acpi_table_header *dmar_tbl;
+ struct dmar_drhd_unit {
+ 	struct list_head list;		/* list of drhd units	*/
+-	struct  acpi_dmar_header *hdr;	/* ACPI header		*/
+ 	u64	reg_base_addr;		/* register base address*/
+ 	struct	dmar_dev_scope *devices;/* target device array	*/
+ 	int	devices_cnt;		/* target device count	*/
+@@ -60,6 +59,7 @@ struct dmar_drhd_unit {
+ 	u8	ignored:1; 		/* ignore drhd		*/
+ 	u8	include_all:1;
+ 	struct intel_iommu *iommu;
++	struct  acpi_dmar_header hdr[0];/* ACPI header		*/
+ };
+ 
+ struct dmar_pci_path {
+-- 
+2.5.0
