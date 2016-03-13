@@ -1,16 +1,11 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH V5 02/10] perf/amd/iommu: Consolidate and move
-	perf_event_amd_iommu header
-Date: Mon, 14 Mar 2016 12:26:00 +0700
-Message-ID: <56E64B68.3090505@amd.com>
-References: <1456236764-1569-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1456236764-1569-3-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<20160312132224.GI6344@twins.programming.kicks-ass.net>
+From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v2 0/2] MT8173 IOMMU 4GB MODE SUPPORT
+Date: Mon, 14 Mar 2016 06:01:09 +0800
+Message-ID: <1457906471-31549-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160312132224.GI6344-ndre7Fmf5hadTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,46 +15,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, milton.chiang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Sasha Hauer <kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, youhua.li-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+This patch-set add MTK 4GB mode support on the Short-Descriptor.
 
-On 03/12/2016 08:22 PM, Peter Zijlstra wrote:
-> On Tue, Feb 23, 2016 at 08:12:36AM -0600, Suravee Suthikulpanit wrote:
->> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->>
->> First, this patch move arch/x86/events/amd/iommu.h to
->> arch/x86/include/asm/perf/amd/iommu.h so that we easily include
->> it in both perf-amd-iommu and amd-iommu drivers.
->>
->> Then, we consolidate declaration of AMD IOMMU performance counter
->> APIs into one file.
->
-> These seem two independent thingies; should this therefore not be 2
-> patches?
->
->> Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
->> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->> ---
->>   arch/x86/events/amd/iommu.c           |  2 +-
->>   arch/x86/events/amd/iommu.h           | 40 ---------------------------------
->>   arch/x86/include/asm/perf/amd/iommu.h | 42 +++++++++++++++++++++++++++++++++++
->
-> That seems somewhat excessive. Not only do you create
-> arch/x86/include/asm/perf/ you then put another directory on top of
-> that.
->
+Normally, the memory map in mt8173 looks like below:
 
-The original header files (arch/x86/events/amd/iommu.h and 
-drivers/iommu/amd_iommu_proto.h) has duplicate function declarations. 
-So, with the new header file being in the 
-arch/x86/include/asm/perf/amd/iommu.h, we can just have one function 
-declaration.
+Physical addr
+| 1st GB |    ->  HW SRAM and Regs
+|--------
+| 2nd GB |    ->  Dram 1st GB
+|--------
+| 3rd GB |    ->  Dram 2nd GB
+|--------
+| 4th GB |    ->  Dram 3rd GB
+|--------
 
-So, you just want to separate the file moving part and the part that 
-removes of the duplication?
+Then if the dram size is 4GB, we have to add bit33 in the physical
+address. We have a "DRAM 4GB mode" toggle bit for this.
+If it is enabled, from CPU's point of view, the dram will
+be shifted to start from PA 0x1_00000000. Then the dram PA is from
+0x1_00000000~0x1_ffffffff.
 
-Thanks,
-Suravee
+MTK extend the bit9 of the standard pgtable descriptor as the 4GB mode.
+we add a special quirk for this.
+
+v2:
+- Rebase on next-20160310.
+- Rename IO_PGTABLE_QUIRK_MTK_4GB_EXT to IO_PGTABLE_QUIRK_ARM_MTK_4GB.
+- Improve the comment of this "4GB mode".
+
+Yong Wu (2):
+  iommu/io-pgtable: Add MTK 4GB mode in Short-descriptor
+  iommu/mediatek: Add 4GB mode support
+
+ drivers/iommu/io-pgtable-arm-v7s.c | 13 ++++++++++++-
+ drivers/iommu/io-pgtable.h         |  6 ++++++
+ drivers/iommu/mtk_iommu.c          | 14 +++++++++++---
+ 3 files changed, 29 insertions(+), 4 deletions(-)
+
+-- 
+1.8.1.1.dirty
