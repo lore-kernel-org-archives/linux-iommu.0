@@ -1,33 +1,40 @@
-From: Cosmin-Gabriel Samoila <gabrielcsmo@gmail.com>
-Subject: [PATCH] iommu: io-pgtable: fixed a brace coding style issue.
-Date: Sun, 13 Mar 2016 02:17:27 +0200
-Message-ID: <1457828247-24366-1-git-send-email-gabrielcsmo@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Cosmin-Gabriel Samoila <gabrielcsmo@gmail.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [v6, 5/5] mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
+Date: Sun, 13 Mar 2016 23:26:28 +0100
+Message-ID: <4947024.WeMycs2fID@wuerfel>
+References: <1457518131-11339-1-git-send-email-yangbo.lu@nxp.com> <1457518131-11339-6-git-send-email-yangbo.lu@nxp.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-clk-owner@vger.kernel.org>
+In-Reply-To: <1457518131-11339-6-git-send-email-yangbo.lu@nxp.com>
+Sender: linux-clk-owner@vger.kernel.org
+To: linuxppc-dev@lists.ozlabs.org
+Cc: Yangbo Lu <yangbo.lu@nxp.com>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, linux-mmc@vger.kernel.org, ulf.hansson@linaro.org, Zhao Qiang <qiang.zhao@freescale.com>, Russell King <linux@arm.linux.org.uk>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Joerg Roedel <joro@8bytes.org>, Santosh Shilimkar <ssantosh@kernel.org>, scott.wood@nxp.com, Rob Herring <robh+dt@kernel.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, Kumar Gala <galak@codeaurora.org>, leoyang.li@nxp.com, xiaobo.xie@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
-Fixed a coding style issue.
+On Wednesday 09 March 2016 18:08:51 Yangbo Lu wrote:
+> @@ -567,10 +580,20 @@ static void esdhc_init(struct platform_device *pdev, struct sdhci_host *host)
+>         struct sdhci_pltfm_host *pltfm_host;
+>         struct sdhci_esdhc *esdhc;
+>         u16 host_ver;
+> +       u32 svr;
+>  
+>         pltfm_host = sdhci_priv(host);
+>         esdhc = sdhci_pltfm_priv(pltfm_host);
+>  
+> +       fsl_guts_init();
+> +       svr = fsl_guts_get_svr();
+> +       if (svr) {
+> +               esdhc->soc_ver = SVR_SOC_VER(svr);
+> +               esdhc->soc_rev = SVR_REV(svr);
+> +       } else {
+> +               dev_err(&pdev->dev, "Failed to get SVR value!\n");
+> +       }
+> +
 
-Signed-off-by: Cosmin-Gabriel Samoila <gabrielcsmo@gmail.com>
----
- drivers/iommu/io-pgtable.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+This makes the driver non-portable. Better identify the specific workarounds
+based on the compatible string for this device, or add a boolean DT property
+for the quirk.
 
-diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
-index 6f2e319..a4a9a42 100644
---- a/drivers/iommu/io-pgtable.c
-+++ b/drivers/iommu/io-pgtable.c
-@@ -25,8 +25,7 @@
- #include "io-pgtable.h"
- 
- static const struct io_pgtable_init_fns *
--io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] =
--{
-+io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
- #ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE
- 	[ARM_32_LPAE_S1] = &io_pgtable_arm_32_lpae_s1_init_fns,
- 	[ARM_32_LPAE_S2] = &io_pgtable_arm_32_lpae_s2_init_fns,
--- 
-1.9.1
+	Arnd
