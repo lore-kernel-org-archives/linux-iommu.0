@@ -1,17 +1,18 @@
-From: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [v6, 5/5] mmc: sdhci-of-esdhc: fix host version for
-	T4240-R1.0-R2.0
-Date: Mon, 14 Mar 2016 07:29:26 +0000
-Message-ID: <HE1PR04MB0889CE4742B92461A925B9C4F8880@HE1PR04MB0889.eurprd04.prod.outlook.com>
-References: <1457518131-11339-1-git-send-email-yangbo.lu@nxp.com>
-	<1457518131-11339-6-git-send-email-yangbo.lu@nxp.com>
-	<4947024.WeMycs2fID@wuerfel>
+From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH V5 02/10] perf/amd/iommu: Consolidate and move
+	perf_event_amd_iommu header
+Date: Mon, 14 Mar 2016 10:58:56 +0100
+Message-ID: <20160314095856.GL6344@twins.programming.kicks-ass.net>
+References: <1456236764-1569-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1456236764-1569-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<20160312132224.GI6344@twins.programming.kicks-ass.net>
+	<56E64B68.3090505@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4947024.WeMycs2fID@wuerfel>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <56E64B68.3090505-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,57 +22,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Zhao Qiang <qiang.zhao-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Scott Wood <scott.wood-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Yang-Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, Xiaobo Xie <xiaobo.xie-3arQi8VN3Tc@public.gmane.org>, "linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWOunwaRDDq4rA@public.gmane.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> -----Original Message-----
-> From: Arnd Bergmann [mailto:arnd-r2nGTMty4D4@public.gmane.org]
-> Sent: Monday, March 14, 2016 6:26 AM
-> To: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-> Cc: Yangbo Lu; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-arm-
-> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
-> clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> foundation.org; netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; Zhao Qiang; Russell King; Bhupesh Sharma; Joerg
-> Roedel; Santosh Shilimkar; Scott Wood; Rob Herring; Claudiu Manoil; Kumar
-> Gala; Yang-Leo Li; Xiaobo Xie
-> Subject: Re: [v6, 5/5] mmc: sdhci-of-esdhc: fix host version for T4240-
-> R1.0-R2.0
+On Mon, Mar 14, 2016 at 12:26:00PM +0700, Suravee Suthikulpanit wrote:
+> Hi,
 > 
-> On Wednesday 09 March 2016 18:08:51 Yangbo Lu wrote:
-> > @@ -567,10 +580,20 @@ static void esdhc_init(struct platform_device
-> *pdev, struct sdhci_host *host)
-> >         struct sdhci_pltfm_host *pltfm_host;
-> >         struct sdhci_esdhc *esdhc;
-> >         u16 host_ver;
-> > +       u32 svr;
+> On 03/12/2016 08:22 PM, Peter Zijlstra wrote:
+> >On Tue, Feb 23, 2016 at 08:12:36AM -0600, Suravee Suthikulpanit wrote:
+> >>From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> >>
+> >>First, this patch move arch/x86/events/amd/iommu.h to
+> >>arch/x86/include/asm/perf/amd/iommu.h so that we easily include
+> >>it in both perf-amd-iommu and amd-iommu drivers.
+> >>
+> >>Then, we consolidate declaration of AMD IOMMU performance counter
+> >>APIs into one file.
 > >
-> >         pltfm_host = sdhci_priv(host);
-> >         esdhc = sdhci_pltfm_priv(pltfm_host);
+> >These seem two independent thingies; should this therefore not be 2
+> >patches?
 > >
-> > +       fsl_guts_init();
-> > +       svr = fsl_guts_get_svr();
-> > +       if (svr) {
-> > +               esdhc->soc_ver = SVR_SOC_VER(svr);
-> > +               esdhc->soc_rev = SVR_REV(svr);
-> > +       } else {
-> > +               dev_err(&pdev->dev, "Failed to get SVR value!\n");
-> > +       }
-> > +
+> >>Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> >>Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> >>---
+> >>  arch/x86/events/amd/iommu.c           |  2 +-
+> >>  arch/x86/events/amd/iommu.h           | 40 ---------------------------------
+> >>  arch/x86/include/asm/perf/amd/iommu.h | 42 +++++++++++++++++++++++++++++++++++
+> >
+> >That seems somewhat excessive. Not only do you create
+> >arch/x86/include/asm/perf/ you then put another directory on top of
+> >that.
+> >
 > 
-> This makes the driver non-portable. Better identify the specific
-> workarounds based on the compatible string for this device, or add a
-> boolean DT property for the quirk.
+> The original header files (arch/x86/events/amd/iommu.h and
+> drivers/iommu/amd_iommu_proto.h) has duplicate function declarations. So,
+> with the new header file being in the arch/x86/include/asm/perf/amd/iommu.h,
+> we can just have one function declaration.
 > 
-> 	Arnd
+> So, you just want to separate the file moving part and the part that removes
+> of the duplication?
 
-[Lu Yangbo-B47093] Hi Arnd, we did have a discussion about using DTS in v1 before.
-https://patchwork.kernel.org/patch/6834221/
-
-We don't have a separate DTS file for each revision of an SOC and if we did, we'd constantly have people using the wrong one.
-In addition, the device tree is stable ABI and errata are often discovered after device tree are deployed.
-See the link for details.
-
-So we decide to read SVR from the device-config/guts MMIO block other than using DTS.
-Thanks.
+I'm fine with a new header, it just seems putting it in a two deep
+direcotry hierarchy of its own that seems excessive.
