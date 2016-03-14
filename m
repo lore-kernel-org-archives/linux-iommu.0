@@ -1,40 +1,65 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [v6, 5/5] mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
-Date: Sun, 13 Mar 2016 23:26:28 +0100
-Message-ID: <4947024.WeMycs2fID@wuerfel>
-References: <1457518131-11339-1-git-send-email-yangbo.lu@nxp.com> <1457518131-11339-6-git-send-email-yangbo.lu@nxp.com>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH V5 02/10] perf/amd/iommu: Consolidate and move
+	perf_event_amd_iommu header
+Date: Mon, 14 Mar 2016 12:26:00 +0700
+Message-ID: <56E64B68.3090505@amd.com>
+References: <1456236764-1569-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1456236764-1569-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<20160312132224.GI6344@twins.programming.kicks-ass.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-clk-owner@vger.kernel.org>
-In-Reply-To: <1457518131-11339-6-git-send-email-yangbo.lu@nxp.com>
-Sender: linux-clk-owner@vger.kernel.org
-To: linuxppc-dev@lists.ozlabs.org
-Cc: Yangbo Lu <yangbo.lu@nxp.com>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, linux-mmc@vger.kernel.org, ulf.hansson@linaro.org, Zhao Qiang <qiang.zhao@freescale.com>, Russell King <linux@arm.linux.org.uk>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Joerg Roedel <joro@8bytes.org>, Santosh Shilimkar <ssantosh@kernel.org>, scott.wood@nxp.com, Rob Herring <robh+dt@kernel.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, Kumar Gala <galak@codeaurora.org>, leoyang.li@nxp.com, xiaobo.xie@nxp.com
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160312132224.GI6344-ndre7Fmf5hadTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday 09 March 2016 18:08:51 Yangbo Lu wrote:
-> @@ -567,10 +580,20 @@ static void esdhc_init(struct platform_device *pdev, struct sdhci_host *host)
->         struct sdhci_pltfm_host *pltfm_host;
->         struct sdhci_esdhc *esdhc;
->         u16 host_ver;
-> +       u32 svr;
->  
->         pltfm_host = sdhci_priv(host);
->         esdhc = sdhci_pltfm_priv(pltfm_host);
->  
-> +       fsl_guts_init();
-> +       svr = fsl_guts_get_svr();
-> +       if (svr) {
-> +               esdhc->soc_ver = SVR_SOC_VER(svr);
-> +               esdhc->soc_rev = SVR_REV(svr);
-> +       } else {
-> +               dev_err(&pdev->dev, "Failed to get SVR value!\n");
-> +       }
-> +
+Hi,
 
-This makes the driver non-portable. Better identify the specific workarounds
-based on the compatible string for this device, or add a boolean DT property
-for the quirk.
+On 03/12/2016 08:22 PM, Peter Zijlstra wrote:
+> On Tue, Feb 23, 2016 at 08:12:36AM -0600, Suravee Suthikulpanit wrote:
+>> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+>>
+>> First, this patch move arch/x86/events/amd/iommu.h to
+>> arch/x86/include/asm/perf/amd/iommu.h so that we easily include
+>> it in both perf-amd-iommu and amd-iommu drivers.
+>>
+>> Then, we consolidate declaration of AMD IOMMU performance counter
+>> APIs into one file.
+>
+> These seem two independent thingies; should this therefore not be 2
+> patches?
+>
+>> Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+>> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+>> ---
+>>   arch/x86/events/amd/iommu.c           |  2 +-
+>>   arch/x86/events/amd/iommu.h           | 40 ---------------------------------
+>>   arch/x86/include/asm/perf/amd/iommu.h | 42 +++++++++++++++++++++++++++++++++++
+>
+> That seems somewhat excessive. Not only do you create
+> arch/x86/include/asm/perf/ you then put another directory on top of
+> that.
+>
 
-	Arnd
+The original header files (arch/x86/events/amd/iommu.h and 
+drivers/iommu/amd_iommu_proto.h) has duplicate function declarations. 
+So, with the new header file being in the 
+arch/x86/include/asm/perf/amd/iommu.h, we can just have one function 
+declaration.
+
+So, you just want to separate the file moving part and the part that 
+removes of the duplication?
+
+Thanks,
+Suravee
