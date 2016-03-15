@@ -1,47 +1,54 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 00/04] iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
-Date: Wed, 16 Mar 2016 02:04:31 +0900
-Message-ID: <20160315170431.20615.30333.sendpatchset@little-apple>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: [PATCH 01/04] iommu/ipmmu-vmsa: 32-bit ARM may have CONFIG_IOMMU_DMA=y
+Date: Wed, 16 Mar 2016 02:04:41 +0900
+Message-ID: <20160315170441.20615.78167.sendpatchset@little-apple>
+References: <20160315170431.20615.30333.sendpatchset@little-apple>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160315170431.20615.30333.sendpatchset@little-apple>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, joro@8bytes.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>, robin.murphy@arm.com, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
+From: Magnus Damm <damm+renesas@opensource.se>
 
-[PATCH 01/04] iommu/ipmmu-vmsa: 32-bit ARM may have CONFIG_IOMMU_DMA=y
-[PATCH 02/04] iommu/ipmmu-vmsa: Break out utlb parsing code
-[PATCH 03/04] iommu/ipmmu-vmsa: Break out domain allocation code
-[PATCH 04/04] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
+Instead of assuming that CONFIG_ARM=y also means CONFIG_IOMMU_DMA=n,
+convert the #ifdefs to take CONFIG_IOMMU_DMA into consideration
+so 32-bit ARM can make use of CONFIG_IOMMU_DMA=y as well once those
+bits are in place.
 
-This series updates the IPMMU driver with CONFIG_IOMMU_DMA=y support
-which is present in mainline for 64-bit ARM while experimental support
-has been posted for 32-bit ARM thanks to Marek Szyprowski:
-
-[RFC 0/3] Unify IOMMU-based DMA-mapping code for ARM and ARM64
-
-Most of the patches in this series based on code earlier included in
-the series below but has been reworked to also fit on 32-bit ARM:
-
-[PATCH/RFC 00/10] iommu/ipmmu-vmsa: Experimental r8a7795 support
-
-Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 ---
 
- Built on top of next-20160315
- Depends on [PATCH v2 00/04] iommu/ipmmu-vmsa: IPMMU multi-arch update V2
+ drivers/iommu/ipmmu-vmsa.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
- drivers/iommu/ipmmu-vmsa.c |  238 ++++++++++++++++++++++++++++++++------------
- 1 file changed, 174 insertions(+), 64 deletions(-)
+--- 0007/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-03-15 21:05:40.590513000 +0900
+@@ -22,7 +22,7 @@
+ #include <linux/sizes.h>
+ #include <linux/slab.h>
+ 
+-#ifdef CONFIG_ARM
++#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
+ #include <asm/dma-iommu.h>
+ #include <asm/pgalloc.h>
+ #endif
+@@ -40,7 +40,7 @@ struct ipmmu_vmsa_device {
+ 	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
+ 	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
+ 
+-#ifdef CONFIG_ARM
++#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
+ 	struct dma_iommu_mapping *mapping;
+ #endif
+ };
+@@ -619,7 +619,7 @@ static int ipmmu_find_utlbs(struct ipmmu
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_ARM
++#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
+ static int ipmmu_map_attach(struct device *dev, struct ipmmu_vmsa_device *mmu)
+ {
+ 	int ret;
