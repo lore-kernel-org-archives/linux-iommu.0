@@ -1,44 +1,59 @@
-From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH V5 02/10] perf/amd/iommu: Consolidate and move
-	perf_event_amd_iommu header
-Date: Tue, 15 Mar 2016 11:53:18 +0100
-Message-ID: <20160315105318.GU6344@twins.programming.kicks-ass.net>
-References: <1456236764-1569-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1456236764-1569-3-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<20160312132224.GI6344@twins.programming.kicks-ass.net>
-	<56E64B68.3090505@amd.com>
-	<20160314095856.GL6344@twins.programming.kicks-ass.net>
-	<56E6BE7E.8010807@amd.com> <20160314141945.GE15800@pd.tnic>
-	<20160314163913.GO6344@twins.programming.kicks-ass.net>
-	<56E759C3.5040707@amd.com> <20160315104017.GA4559@pd.tnic>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: Re: [RFC 3/3] iommu: dma-iommu: use common implementation also on ARM
+ architecture
+Date: Tue, 15 Mar 2016 20:18:06 +0900
+Message-ID: <CANqRtoRiZOPhCBo38zVLL6tQB2aBLy3uWWbqJJypxEFDXJwF1Q@mail.gmail.com>
+References: <1455870164-25337-1-git-send-email-m.szyprowski@samsung.com>
+ <1455870164-25337-4-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160315104017.GA4559-fF5Pk5pvG8Y@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1455870164-25337-4-git-send-email-m.szyprowski@samsung.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: linaro-mm-sig@lists.linaro.org, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Arnd Bergmann <arnd@arndb.de>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-kernel <linux-kernel@vger.kernel.org>, dri-devel@lists.freedesktop.org, Tomasz Figa <tfiga@chromium.org>, iommu@lists.linux-foundation.org, Sakari Ailus <sakari.ailus@iki.fi>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Robin Murphy <robin.murphy@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Mar 15, 2016 at 11:40:17AM +0100, Borislav Petkov wrote:
-> On Tue, Mar 15, 2016 at 07:39:31AM +0700, Suravee Suthikulpanit wrote:
-> > What if I just merge the newly introduced arch/x86/include/perf/amd/iommu.h
-> > into the include/linux/amd-iommu.h? I do not see the point of having to
-> > separate things out into two files.
-> 
-> Except that this header has x86-specific stuff and include/linux/ is
-> arch-agnostic.
-
-Which would suggest that header is placed wrong, because I would expect
-the amd-iommu to really be rather x86 specific. Or is AMD making ARM
-parts for which this is useful too?
+SGkgTWFyZWssCgpPbiBGcmksIEZlYiAxOSwgMjAxNiBhdCA1OjIyIFBNLCBNYXJlayBTenlwcm93
+c2tpCjxtLnN6eXByb3dza2lAc2Ftc3VuZy5jb20+IHdyb3RlOgo+IFRoaXMgcGF0Y2ggcmVwbGFj
+ZXMgQVJNLXNwZWNpZmljIElPTU1VLWJhc2VkIERNQS1tYXBwaW5nIGltcGxlbWVudGF0aW9uCj4g
+d2l0aCBnZW5lcmljIElPTU1VIERNQS1tYXBwaW5nIGNvZGUgc2hhcmVkIHdpdGggQVJNNjQgYXJj
+aGl0ZWN0dXJlLiBUaGUKPiBzaWRlLWVmZmVjdCBvZiB0aGlzIGNoYW5nZSBpcyBhIHN3aXRjaCBm
+cm9tIGJpdG1hcC1iYXNlZCBJTyBhZGRyZXNzIHNwYWNlCj4gbWFuYWdlbWVudCB0byB0cmVlLWJh
+c2VkIGNvZGUuIFRoZXJlIHNob3VsZCBiZSBubyBmdW5jdGlvbmFsIGNoYW5nZXMKPiBmb3IgZHJp
+dmVycywgd2hpY2ggcmVseSBvbiBpbml0aWFsaXphdGlvbiBmcm9tIGdlbmVyaWMgYXJjaF9zZXR1
+cF9kbmFfb3BzKCkKPiBpbnRlcmZhY2UuIENvZGUsIHdoaWNoIHVzZWQgb2xkIGFybV9pb21tdV8q
+IGZ1bmN0aW9ucyBtdXN0IGJlIHVwZGF0ZWQgdG8KPiBuZXcgaW50ZXJmYWNlLgo+Cj4gU2lnbmVk
+LW9mZi1ieTogTWFyZWsgU3p5cHJvd3NraSA8bS5zenlwcm93c2tpQHNhbXN1bmcuY29tPgo+IC0t
+LQoKVGhhbmtzIGZvciB5b3VyIGVmZm9ydHMgYW5kIG15IGFwb2xvZ2llcyBmb3IgbGF0ZSBjb21t
+ZW50cy4gSnVzdCBGWUkKSSdsbCB0cnkgeW91ciBwYXRjaCAoYW5kIHRoaXMgc2VyaWVzKSB3aXRo
+IHRoZSBpcG1tdS12bXNhLmMgZHJpdmVyIG9uCjMyLWJpdCBBUk0gYW5kIHNlZSBob3cgaXQgZ29l
+cy4gTmljZSBub3QgdG8gaGF2ZSB0byBzdXBwb3J0IG11bHRpcGxlCmludGVyZmFjZXMgZGVwZW5k
+aW5nIG9uIGFyY2hpdGVjdHVyZSEKCk9uZSBxdWVzdGlvbiB0aGF0IGNvbWVzIHRvIG1pbmQgaXMg
+aG93IHRvIGhhbmRsZSBmZWF0dXJlcy4KCkZvciBpbnN0YW5jZSwgdGhlIDMyLWJpdCBBUk0gY29k
+ZSBzdXBwb3J0cyBETUFfQVRUUl9GT1JDRV9DT05USUdVT1VTCndoaWxlIHRoZSBzaGFyZWQgY29k
+ZSBpbiBkcml2ZXJzL2lvbW11L2RtYS1pb21tdS5jIGRvZXMgbm90LiBJIGFzc3VtZQpleGlzdGlu
+ZyB1c2VycyBtYXkgcmVseSBvbiBzdWNoIGZlYXR1cmVzIHNvIGZyb20gbXkgcG9pbnQgb2Ygdmll
+dyBpdApwcm9iYWJseSBtYWtlcyBzZW5zZSB0byBjYXJyeSBvdmVyIGZlYXR1cmVzIGZyb20gdGhl
+IDMyLWJpdCBBUk0gY29kZQppbnRvIHRoZSBzaGFyZWQgY29kZSBiZWZvcmUgcHVsbGluZyB0aGUg
+cGx1Zy4KCkkgYWxzbyB3b25kZXIgaWYgaXQgaXMgcG9zc2libGUgdG8gZG8gYSBzdGVwLWJ5LXN0
+ZXAgbWlncmF0aW9uIGFuZApzdXBwb3J0IGJvdGggb2xkIGFuZCBuZXcgaW50ZXJmYWNlcyBpbiB0
+aGUgc2FtZSBiaW5hcnk/IFRoYXQgbWF5IG1ha2UKdGhpbmdzIGVhc2llciBmb3IgbXVsdGlwbGF0
+Zm9ybSBlbmFibGVtZW50LiBTbyBmYXIgSSd2ZSBtYW5hZ2VkIHRvCm1ha2Ugb25lIElPTU1VIGRy
+aXZlciBzdXBwb3J0IGJvdGggMzItYml0IEFSTSBhbmQgNjQtYml0IEFSTSB3aXRoIHNvbWUKdWds
+eSBtYWdpYywgc28gYWRqdXN0aW5nIDMyLWJpdCBBUk0gZG1hLW1hcHBpbmcgY29kZSB0byBjb2V4
+aXN0IHdpdGgKdGhlIHNoYXJlZCBjb2RlIGluIGRyaXZlcnMvaW9tbXUvZG1hLWlvbW11LmMgbWF5
+IGFsc28gYmUgcG9zc2libGUuIEFuZApwcm9iYWJseSBpbnZvbHZpbmcgZXZlbiBtb3JlIHVnbHkg
+bWFnaWMuID0pCgpDaGVlcnMsCgovIG1hZ251cwpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0
+cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9kcmktZGV2ZWwK
