@@ -1,32 +1,39 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH v5 3/9] dma-mapping: add dma_{map,unmap}_resource
-Date: Tue, 15 Mar 2016 01:22:54 -0700
-Message-ID: <20160315082254.GE9136@infradead.org>
-References: <1457404974-1800-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
- <1457404974-1800-4-git-send-email-niklas.soderlund+renesas@ragnatech.se>
- <20160308073847.GA15520@infradead.org>
- <20160310160522.GB1111@bigcity.dyn.berto.se>
- <CAPcyv4gO4EZnBuVKXT8+gsMhbHJzuK7sfr0uRcjVdJP-nUUz4A@mail.gmail.com>
- <20160311111522.GA3450@infradead.org>
- <20160311125846.GF1111@bigcity.dyn.berto.se>
+From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH V5 02/10] perf/amd/iommu: Consolidate and move
+	perf_event_amd_iommu header
+Date: Tue, 15 Mar 2016 09:44:10 +0100
+Message-ID: <20160315084410.GS6344@twins.programming.kicks-ass.net>
+References: <1456236764-1569-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1456236764-1569-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<20160312132224.GI6344@twins.programming.kicks-ass.net>
+	<56E64B68.3090505@amd.com>
+	<20160314095856.GL6344@twins.programming.kicks-ass.net>
+	<56E6BE7E.8010807@amd.com> <20160314141945.GE15800@pd.tnic>
+	<20160314163913.GO6344@twins.programming.kicks-ass.net>
+	<56E759C3.5040707@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20160311125846.GF1111@bigcity.dyn.berto.se>
-Sender: linux-arch-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, linux-renesas-soc@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, iommu@lists.linux-foundation.org, robin.murphy@arm.com, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, geert+renesas@glider.be, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org
+In-Reply-To: <56E759C3.5040707-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 11, 2016 at 01:58:46PM +0100, Niklas S?derlund wrote:
-> Without an IOMMU this is easy since the phys_addr_t and dma_addr_t are 
-> the same and no special care is needed. However if you have a IOMMU you 
-> need to map the DMA slave phys_addr_t to a dma_addr_t using something 
-> like this. Is it not very similar to dma_map_single() where one maps 
-> processor virtual memory (instead if MMIO) so that it can be used with 
-> DMA slaves?
+On Tue, Mar 15, 2016 at 07:39:31AM +0700, Suravee Suthikulpanit wrote:
+> What if I just merge the newly introduced arch/x86/include/perf/amd/iommu.h
+> into the include/linux/amd-iommu.h? I do not see the point of having to
+> separate things out into two files.
+> 
 
-It's similar, but I don't think this actually works as a general case
-as there are quite a few places that expect to be able to have a
-struct page for a physical address.  We'd at least need a very careful
-audit for that case.
+Works for me. Thanks!
