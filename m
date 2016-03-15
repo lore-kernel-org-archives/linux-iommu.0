@@ -1,57 +1,32 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 04/04] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
-Date: Tue, 15 Mar 2016 13:22:13 +0900
-Message-ID: <20160315042213.22103.15860.sendpatchset@little-apple>
-References: <20160315042136.22103.26570.sendpatchset@little-apple>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH v5 3/9] dma-mapping: add dma_{map,unmap}_resource
+Date: Tue, 15 Mar 2016 01:22:54 -0700
+Message-ID: <20160315082254.GE9136@infradead.org>
+References: <1457404974-1800-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+ <1457404974-1800-4-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+ <20160308073847.GA15520@infradead.org>
+ <20160310160522.GB1111@bigcity.dyn.berto.se>
+ <CAPcyv4gO4EZnBuVKXT8+gsMhbHJzuK7sfr0uRcjVdJP-nUUz4A@mail.gmail.com>
+ <20160311111522.GA3450@infradead.org>
+ <20160311125846.GF1111@bigcity.dyn.berto.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160315042136.22103.26570.sendpatchset@little-apple>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160311125846.GF1111@bigcity.dyn.berto.se>
+Sender: linux-arch-owner@vger.kernel.org
+To: Christoph Hellwig <hch@infradead.org>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, linux-renesas-soc@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, iommu@lists.linux-foundation.org, robin.murphy@arm.com, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, geert+renesas@glider.be, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+On Fri, Mar 11, 2016 at 01:58:46PM +0100, Niklas S?derlund wrote:
+> Without an IOMMU this is easy since the phys_addr_t and dma_addr_t are 
+> the same and no special care is needed. However if you have a IOMMU you 
+> need to map the DMA slave phys_addr_t to a dma_addr_t using something 
+> like this. Is it not very similar to dma_map_single() where one maps 
+> processor virtual memory (instead if MMIO) so that it can be used with 
+> DMA slaves?
 
-Neither the ARM page table code enabled by IOMMU_IO_PGTABLE_LPAE
-nor the IPMMU_VMSA driver actually depends on ARM_LPAE, so get
-rid of the dependency.
-
-Tested with ipmmu-vmsa on r8a7794 ALT and a kernel config using:
- # CONFIG_ARM_LPAE is not set
-
-Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
----
-
- Changes since V1:
- - Rebased on top of ARCH_RENESAS change
- - Added Acked-by from Laurent
-
- This time the result also compiles on x86. Need to be
- applied as last patch in the following series:
- [PATCH v2 00/04] iommu/ipmmu-vmsa: IPMMU multi-arch update V2
- 
- drivers/iommu/Kconfig |    1 -
- 1 file changed, 1 deletion(-)
-
---- 0001/drivers/iommu/Kconfig
-+++ work/drivers/iommu/Kconfig	2016-03-15 12:28:45.210513000 +0900
-@@ -284,7 +284,6 @@ config EXYNOS_IOMMU_DEBUG
- 
- config IPMMU_VMSA
- 	bool "Renesas VMSA-compatible IPMMU"
--	depends on ARM_LPAE
- 	depends on ARCH_RENESAS || COMPILE_TEST
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
+It's similar, but I don't think this actually works as a general case
+as there are quite a few places that expect to be able to have a
+struct page for a physical address.  We'd at least need a very careful
+audit for that case.
