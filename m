@@ -1,115 +1,76 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC 3/3] iommu: dma-iommu: use common implementation also on ARM
- architecture
-Date: Tue, 15 Mar 2016 12:33:03 +0000
-Message-ID: <56E800FF.6050705@arm.com>
-References: <1455870164-25337-1-git-send-email-m.szyprowski@samsung.com>
- <1455870164-25337-4-git-send-email-m.szyprowski@samsung.com>
- <2724572.qtPjgumFDJ@wuerfel>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH] iommu/vt-d: Ratelimit fault handler
+Date: Tue, 15 Mar 2016 10:35:20 -0600
+Message-ID: <20160315163503.2875.49980.stgit@gimli.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <2724572.qtPjgumFDJ@wuerfel>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Arnd Bergmann <arnd@arndb.de>, Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: linaro-mm-sig@lists.linaro.org, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Russell King - ARM Linux <linux@arm.linux.org.uk>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org, Sakari Ailus <sakari.ailus@iki.fi>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgTWFyZWssIEFybmQsCgpPbiAxOS8wMi8xNiAxMDozMCwgQXJuZCBCZXJnbWFubiB3cm90ZToK
-PiBPbiBGcmlkYXkgMTkgRmVicnVhcnkgMjAxNiAwOToyMjo0NCBNYXJlayBTenlwcm93c2tpIHdy
-b3RlOgo+PiBUaGlzIHBhdGNoIHJlcGxhY2VzIEFSTS1zcGVjaWZpYyBJT01NVS1iYXNlZCBETUEt
-bWFwcGluZyBpbXBsZW1lbnRhdGlvbgo+PiB3aXRoIGdlbmVyaWMgSU9NTVUgRE1BLW1hcHBpbmcg
-Y29kZSBzaGFyZWQgd2l0aCBBUk02NCBhcmNoaXRlY3R1cmUuIFRoZQo+PiBzaWRlLWVmZmVjdCBv
-ZiB0aGlzIGNoYW5nZSBpcyBhIHN3aXRjaCBmcm9tIGJpdG1hcC1iYXNlZCBJTyBhZGRyZXNzIHNw
-YWNlCj4+IG1hbmFnZW1lbnQgdG8gdHJlZS1iYXNlZCBjb2RlLiBUaGVyZSBzaG91bGQgYmUgbm8g
-ZnVuY3Rpb25hbCBjaGFuZ2VzCj4+IGZvciBkcml2ZXJzLCB3aGljaCByZWx5IG9uIGluaXRpYWxp
-emF0aW9uIGZyb20gZ2VuZXJpYyBhcmNoX3NldHVwX2RuYV9vcHMoKQo+PiBpbnRlcmZhY2UuIENv
-ZGUsIHdoaWNoIHVzZWQgb2xkIGFybV9pb21tdV8qIGZ1bmN0aW9ucyBtdXN0IGJlIHVwZGF0ZWQg
-dG8KPj4gbmV3IGludGVyZmFjZS4KPj4KPj4gU2lnbmVkLW9mZi1ieTogTWFyZWsgU3p5cHJvd3Nr
-aSA8bS5zenlwcm93c2tpQHNhbXN1bmcuY29tPgo+Cj4gSSBsaWtlIHRoZSBvdmVyYWxsIGlkZWEu
-IEhvd2V2ZXIsIHRoaXMgaW50ZXJmYWNlIGZyb20gdGhlIGlvbW11Cj4gc3Vic3lzdGVtIGludG8g
-YXJjaGl0ZWN0dXJlIHNwZWNpZmljIGNvZGU6Cj4KPj4gKy8qCj4+ICsgKiBUaGUgRE1BIEFQSSBp
-cyBidWlsdCB1cG9uIHRoZSBub3Rpb24gb2YgImJ1ZmZlciBvd25lcnNoaXAiLiAgQSBidWZmZXIK
-Pj4gKyAqIGlzIGVpdGhlciBleGNsdXNpdmVseSBvd25lZCBieSB0aGUgQ1BVIChhbmQgdGhlcmVm
-b3JlIG1heSBiZSBhY2Nlc3NlZAo+PiArICogYnkgaXQpIG9yIGV4Y2x1c2l2ZWx5IG93bmVkIGJ5
-IHRoZSBETUEgZGV2aWNlLiAgVGhlc2UgaGVscGVyIGZ1bmN0aW9ucwo+PiArICogcmVwcmVzZW50
-IHRoZSB0cmFuc2l0aW9ucyBiZXR3ZWVuIHRoZXNlIHR3byBvd25lcnNoaXAgc3RhdGVzLgo+PiAr
-ICoKPj4gKyAqIE5vdGUsIGhvd2V2ZXIsIHRoYXQgb24gbGF0ZXIgQVJNcywgdGhpcyBub3Rpb24g
-ZG9lcyBub3Qgd29yayBkdWUgdG8KPj4gKyAqIHNwZWN1bGF0aXZlIHByZWZldGNoZXMuICBXZSBt
-b2RlbCBvdXIgYXBwcm9hY2ggb24gdGhlIGFzc3VtcHRpb24gdGhhdAo+PiArICogdGhlIENQVSBk
-b2VzIGRvIHNwZWN1bGF0aXZlIHByZWZldGNoZXMsIHdoaWNoIG1lYW5zIHdlIGNsZWFuIGNhY2hl
-cwo+PiArICogYmVmb3JlIHRyYW5zZmVycyBhbmQgZGVsYXkgY2FjaGUgaW52YWxpZGF0aW9uIHVu
-dGlsIHRyYW5zZmVyIGNvbXBsZXRpb24uCj4+ICsgKgo+PiArICovCj4+ICtleHRlcm4gdm9pZCBf
-X2RtYV9wYWdlX2NwdV90b19kZXYoc3RydWN0IHBhZ2UgKiwgdW5zaWduZWQgbG9uZywgc2l6ZV90
-LAo+PiArCQkJCSAgZW51bSBkbWFfZGF0YV9kaXJlY3Rpb24pOwo+PiArZXh0ZXJuIHZvaWQgX19k
-bWFfcGFnZV9kZXZfdG9fY3B1KHN0cnVjdCBwYWdlICosIHVuc2lnbmVkIGxvbmcsIHNpemVfdCwK
-Pj4gKwkJCQkgIGVudW0gZG1hX2RhdGFfZGlyZWN0aW9uKTsKPj4gKwo+PiArc3RhdGljIGlubGlu
-ZSB2b2lkIGFyY2hfZmx1c2hfcGFnZShzdHJ1Y3QgZGV2aWNlICpkZXYsIGNvbnN0IHZvaWQgKnZp
-cnQsCj4+ICsJCQkgICAgcGh5c19hZGRyX3QgcGh5cykKPj4gK3sKPj4gKwlkbWFjX2ZsdXNoX3Jh
-bmdlKHZpcnQsIHZpcnQgKyBQQUdFX1NJWkUpOwo+PiArCW91dGVyX2ZsdXNoX3JhbmdlKHBoeXMs
-IHBoeXMgKyBQQUdFX1NJWkUpOwo+PiArfQo+PiArCj4+ICtzdGF0aWMgaW5saW5lIHZvaWQgYXJj
-aF9kbWFfbWFwX2FyZWEocGh5c19hZGRyX3QgcGh5cywgc2l6ZV90IHNpemUsCj4+ICsJCQkJICAg
-ICBlbnVtIGRtYV9kYXRhX2RpcmVjdGlvbiBkaXIpCj4+ICt7Cj4+ICsJdW5zaWduZWQgaW50IG9m
-ZnNldCA9IHBoeXMgJiB+UEFHRV9NQVNLOwo+PiArCV9fZG1hX3BhZ2VfY3B1X3RvX2RldihwaHlz
-X3RvX3BhZ2UocGh5cyAmIFBBR0VfTUFTSyksIG9mZnNldCwgc2l6ZSwgZGlyKTsKPj4gK30KPj4g
-Kwo+PiArc3RhdGljIGlubGluZSB2b2lkIGFyY2hfZG1hX3VubWFwX2FyZWEocGh5c19hZGRyX3Qg
-cGh5cywgc2l6ZV90IHNpemUsCj4+ICsJCQkJICAgICAgIGVudW0gZG1hX2RhdGFfZGlyZWN0aW9u
-IGRpcikKPj4gK3sKPj4gKwl1bnNpZ25lZCBpbnQgb2Zmc2V0ID0gcGh5cyAmIH5QQUdFX01BU0s7
-Cj4+ICsJX19kbWFfcGFnZV9kZXZfdG9fY3B1KHBoeXNfdG9fcGFnZShwaHlzICYgUEFHRV9NQVNL
-KSwgb2Zmc2V0LCBzaXplLCBkaXIpOwo+PiArfQo+PiArCj4+ICtzdGF0aWMgaW5saW5lIHBncHJv
-dF90IGFyY2hfZ2V0X2RtYV9wZ3Byb3Qoc3RydWN0IGRtYV9hdHRycyAqYXR0cnMsCj4+ICsJCQkJ
-CXBncHJvdF90IHByb3QsIGJvb2wgY29oZXJlbnQpCj4+ICt7Cj4+ICsJaWYgKGNvaGVyZW50KQo+
-PiArCQlyZXR1cm4gcHJvdDsKPj4gKwo+PiArCXByb3QgPSBkbWFfZ2V0X2F0dHIoRE1BX0FUVFJf
-V1JJVEVfQ09NQklORSwgYXR0cnMpID8KPj4gKwkJCSAgICBwZ3Byb3Rfd3JpdGVjb21iaW5lKHBy
-b3QpIDoKPj4gKwkJCSAgICBwZ3Byb3RfZG1hY29oZXJlbnQocHJvdCk7Cj4+ICsJcmV0dXJuIHBy
-b3Q7Cj4+ICt9Cj4+ICsKPj4gK2V4dGVybiB2b2lkICphcmNoX2FsbG9jX2Zyb21fYXRvbWljX3Bv
-b2woc2l6ZV90IHNpemUsIHN0cnVjdCBwYWdlICoqcmV0X3BhZ2UsCj4+ICsJCQkJCSBnZnBfdCBm
-bGFncyk7Cj4+ICtleHRlcm4gYm9vbCBhcmNoX2luX2F0b21pY19wb29sKHZvaWQgKnN0YXJ0LCBz
-aXplX3Qgc2l6ZSk7Cj4+ICtleHRlcm4gaW50IGFyY2hfZnJlZV9mcm9tX2F0b21pY19wb29sKHZv
-aWQgKnN0YXJ0LCBzaXplX3Qgc2l6ZSk7Cj4+ICsKPj4gKwo+Cj4gZG9lc24ndCBmZWVsIGNvbXBs
-ZXRlbHkgcmlnaHQgeWV0LiBJbiBwYXJ0aWN1bGFyIHRoZSBhcmNoX2ZsdXNoX3BhZ2UoKQo+IGlu
-dGVyZmFjZSBpcyBwcm9iYWJseSBzdGlsbCB0b28gc3BlY2lmaWMgdG8gQVJNL0FSTTY0IGFuZCB3
-b24ndCB3b3JrCj4gdGhhdCB3YXkgb24gb3RoZXIgYXJjaGl0ZWN0dXJlcy4KPgo+IEkgdGhpbmsg
-aXQgd291bGQgYmUgYmV0dGVyIHRvIGRvIHRoaXMgZWl0aGVyIG1vcmUgZ2VuZXJpYywgb3IgbGVz
-cyBnZW5lcmljOgo+Cj4gYSkgbGVhdmUgdGhlIGlvbW11X2RtYV9tYXBfb3BzIGRlZmluaXRpb24g
-aW4gdGhlIGFyY2hpdGVjdHVyZSBzcGVjaWZpYwo+ICAgICBjb2RlLCBidXQgbWFrZSBpdCBjYWxs
-IGhlbHBlciBmdW5jdGlvbnMgaW4gdGhlIGRyaXZlcnMvaW9tbXUgdG8gZG8gYWxsCj4gICAgIG9m
-IHRoZSByZWFsbHkgZ2VuZXJpYyBwYXJ0cy4KClRoaXMgd2FzIGNlcnRhaW5seSB0aGUgb3JpZ2lu
-YWwgaW50ZW50IG9mIHRoZSBhcm02NCBjb2RlLiBUaGUgZGl2aXNpb24gCm9mIHJlc3BvbnNpYmls
-aXR5IHRoZXJlIGlzIGEgY29uc2Npb3VzIGRlY2lzaW9uIC0gSU9NTVUtQVBJLXdyYW5nbGluZyAK
-Z29lcyBpbiB0aGUgY29tbW9uIGNvZGUsIGNhY2hlIG1haW50ZW5hbmNlIGFuZCBhY3R1YWwgZG1h
-X21hcF9vcHMgc3RheSAKaGlkZGVuIGluIGFyY2hpdGVjdHVyZS1wcml2YXRlIGNvZGUsIHNhZmUg
-ZnJvbSBhYnVzZS4gSXQncyB2ZXJ5IG11Y2ggCm1vZGVsbGVkIG9uIFNXSU9UTEIuCgpHaXZlbiBh
-bGwgdGhlIHdvcmsgUnVzc2VsbCBkaWQgbGFzdCB5ZWFyIGdldHRpbmcgcmlkIG9mIGRpcmVjdCB1
-c2VzIG9mIAp0aGUgZG1hY18qIGNhY2hlIG1haW50ZW5hbmNlIGZ1bmN0aW9ucyBieSBBUk0gZHJp
-dmVycywgSSBkb24ndCB0aGluayAKYnJpbmdpbmcgYWxsIG9mIHRoYXQgYmFjayBpcyBhIGdvb2Qg
-d2F5IHRvIGdvIC0gUGVyc29uYWxseSBJJ2QgbXVjaCAKcmF0aGVyIHNlZSBzZXZlcmFsIGRvemVu
-IGxpbmVzIG9mIHZlcnkgc2ltaWxhciBsb29raW5nIChvdGhlciB0aGFuIApoaWdobWVtIGFuZCBv
-dXRlciBjYWNoZSBzdHVmZikgYXJjaC1wcml2YXRlIGNvZGUgaWYgaXQgbWFpbnRhaW5zIGEgCnJv
-YnVzdCBhbmQgY2xlYXJseS1kZWZpbmVkIGFic3RyYWN0aW9uIChhbmQgYXZvaWRzIHlldCBhbm90
-aGVyIGxldmVsIG9mIAppbmRpcmVjdGlvbikuIEl0IGRvZXMgYWxzbyBzZWVtIGEgbGl0dGxlIG9k
-ZCB0byBmYWN0b3Igb3V0IG9ubHkgaGFsZiB0aGUgCmZpbGUgb24gdGhlIGdyb3VuZHMgb2YgYXJj
-aGl0ZWN0dXJhbCBzaW1pbGFyaXR5LCB3aGVuIHRoYXQgYXJndW1lbnQgCmFwcGxpZXMgZXF1YWxs
-eSB0byB0aGUgb3RoZXIgKG5vbi1JT01NVSkgaGFsZiB0b28uIEkgdGhpbmsgdGhlIHJlY2VudCAK
-dHJlZS13aWRlIGNvbnZlcnNpb24gdG8gZ2VuZXJpYyBkbWFfbWFwX29wcyB3YXMgaW4gcGFydCBt
-b3RpdmF0ZWQgYnkgdGhlIAp0aG91Z2h0IG9mIGNvbW1vbiBpbXBsZW1lbnRhdGlvbnMsIHNvIEkn
-bSBzdXJlIHRoYXQncyBzb21ldGhpbmcgd2UgY2FuIApyZXZpc2l0IGluIGR1ZSBjb3Vyc2UuCgpS
-b2Jpbi4KCj4KPiBiKSBjbGFyaWZ5IHRoYXQgdGhpcyBpcyBvbmx5IGFwcGxpY2FibGUgdG8gYXJj
-aC9hcm0gYW5kIGFyY2gvYXJtNjQsIGFuZAo+ICAgICB1bmlmeSB0aGluZ3MgZnVydGhlciBiZXR3
-ZWVuIHRoZXNlIHR3bywgYXMgdGhleSBoYXZlIHZlcnkgc2ltaWxhcgo+ICAgICByZXF1aXJlbWVu
-dHMgaW4gdGhlIENQVSBhcmNoaXRlY3R1cmUuCj4KPiAJQXJuZAo+IF9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gaW9tbXUgbWFpbGluZyBsaXN0Cj4gaW9t
-bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKPiBodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
-dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQo+CgpfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwgbWFpbGluZyBsaXN0CmRyaS1kZXZl
-bEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFp
-bG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
+Fault rates can easily overwhelm the console and make the system
+unresponsive.  Ratelimit to allow an opportunity for maintenance.
+
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/dmar.c |   28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 8ffd756..628987e 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1579,19 +1579,20 @@ static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
+ 	reason = dmar_get_fault_reason(fault_reason, &fault_type);
+ 
+ 	if (fault_type == INTR_REMAP)
+-		pr_err("INTR-REMAP: Request device [[%02x:%02x.%d] "
+-		       "fault index %llx\n"
+-			"INTR-REMAP:[fault reason %02d] %s\n",
+-			(source_id >> 8), PCI_SLOT(source_id & 0xFF),
+-			PCI_FUNC(source_id & 0xFF), addr >> 48,
+-			fault_reason, reason);
++		pr_err_ratelimited("INTR-REMAP: Request device [[%02x:%02x.%d] "
++				   "fault index %llx\n"
++				   "INTR-REMAP:[fault reason %02d] %s\n",
++				   (source_id >> 8), PCI_SLOT(source_id & 0xFF),
++				   PCI_FUNC(source_id & 0xFF), addr >> 48,
++				   fault_reason, reason);
+ 	else
+-		pr_err("DMAR:[%s] Request device [%02x:%02x.%d] "
+-		       "fault addr %llx \n"
+-		       "DMAR:[fault reason %02d] %s\n",
+-		       (type ? "DMA Read" : "DMA Write"),
+-		       (source_id >> 8), PCI_SLOT(source_id & 0xFF),
+-		       PCI_FUNC(source_id & 0xFF), addr, fault_reason, reason);
++		pr_err_ratelimited("DMAR:[%s] Request device [%02x:%02x.%d] "
++				   "fault addr %llx \n"
++				   "DMAR:[fault reason %02d] %s\n",
++				   (type ? "DMA Read" : "DMA Write"),
++				   (source_id >> 8), PCI_SLOT(source_id & 0xFF),
++				   PCI_FUNC(source_id & 0xFF), addr,
++				   fault_reason, reason);
+ 	return 0;
+ }
+ 
+@@ -1606,7 +1607,8 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
+ 	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
+ 	if (fault_status)
+-		pr_err("DRHD: handling fault status reg %x\n", fault_status);
++		pr_err_ratelimited("DRHD: handling fault status reg %x\n",
++				   fault_status);
+ 
+ 	/* TBD: ignore advanced fault log currently */
+ 	if (!(fault_status & DMA_FSTS_PPF))
