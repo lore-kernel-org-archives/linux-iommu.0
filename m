@@ -1,7 +1,7 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH] iommu/vt-d: Ratelimit fault handler
-Date: Tue, 15 Mar 2016 10:35:20 -0600
-Message-ID: <20160315163503.2875.49980.stgit@gimli.home>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 00/04] iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
+Date: Wed, 16 Mar 2016 02:04:31 +0900
+Message-ID: <20160315170431.20615.30333.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -15,62 +15,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Fault rates can easily overwhelm the console and make the system
-unresponsive.  Ratelimit to allow an opportunity for maintenance.
+iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+[PATCH 01/04] iommu/ipmmu-vmsa: 32-bit ARM may have CONFIG_IOMMU_DMA=y
+[PATCH 02/04] iommu/ipmmu-vmsa: Break out utlb parsing code
+[PATCH 03/04] iommu/ipmmu-vmsa: Break out domain allocation code
+[PATCH 04/04] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
+
+This series updates the IPMMU driver with CONFIG_IOMMU_DMA=y support
+which is present in mainline for 64-bit ARM while experimental support
+has been posted for 32-bit ARM thanks to Marek Szyprowski:
+
+[RFC 0/3] Unify IOMMU-based DMA-mapping code for ARM and ARM64
+
+Most of the patches in this series based on code earlier included in
+the series below but has been reworked to also fit on 32-bit ARM:
+
+[PATCH/RFC 00/10] iommu/ipmmu-vmsa: Experimental r8a7795 support
+
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
- drivers/iommu/dmar.c |   28 +++++++++++++++-------------
- 1 file changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 8ffd756..628987e 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1579,19 +1579,20 @@ static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
- 	reason = dmar_get_fault_reason(fault_reason, &fault_type);
- 
- 	if (fault_type == INTR_REMAP)
--		pr_err("INTR-REMAP: Request device [[%02x:%02x.%d] "
--		       "fault index %llx\n"
--			"INTR-REMAP:[fault reason %02d] %s\n",
--			(source_id >> 8), PCI_SLOT(source_id & 0xFF),
--			PCI_FUNC(source_id & 0xFF), addr >> 48,
--			fault_reason, reason);
-+		pr_err_ratelimited("INTR-REMAP: Request device [[%02x:%02x.%d] "
-+				   "fault index %llx\n"
-+				   "INTR-REMAP:[fault reason %02d] %s\n",
-+				   (source_id >> 8), PCI_SLOT(source_id & 0xFF),
-+				   PCI_FUNC(source_id & 0xFF), addr >> 48,
-+				   fault_reason, reason);
- 	else
--		pr_err("DMAR:[%s] Request device [%02x:%02x.%d] "
--		       "fault addr %llx \n"
--		       "DMAR:[fault reason %02d] %s\n",
--		       (type ? "DMA Read" : "DMA Write"),
--		       (source_id >> 8), PCI_SLOT(source_id & 0xFF),
--		       PCI_FUNC(source_id & 0xFF), addr, fault_reason, reason);
-+		pr_err_ratelimited("DMAR:[%s] Request device [%02x:%02x.%d] "
-+				   "fault addr %llx \n"
-+				   "DMAR:[fault reason %02d] %s\n",
-+				   (type ? "DMA Read" : "DMA Write"),
-+				   (source_id >> 8), PCI_SLOT(source_id & 0xFF),
-+				   PCI_FUNC(source_id & 0xFF), addr,
-+				   fault_reason, reason);
- 	return 0;
- }
- 
-@@ -1606,7 +1607,8 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
- 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
- 	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
- 	if (fault_status)
--		pr_err("DRHD: handling fault status reg %x\n", fault_status);
-+		pr_err_ratelimited("DRHD: handling fault status reg %x\n",
-+				   fault_status);
- 
- 	/* TBD: ignore advanced fault log currently */
- 	if (!(fault_status & DMA_FSTS_PPF))
+ Built on top of next-20160315
+ Depends on [PATCH v2 00/04] iommu/ipmmu-vmsa: IPMMU multi-arch update V2
+
+ drivers/iommu/ipmmu-vmsa.c |  238 ++++++++++++++++++++++++++++++++------------
+ 1 file changed, 174 insertions(+), 64 deletions(-)
