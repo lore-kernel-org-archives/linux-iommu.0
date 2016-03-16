@@ -1,39 +1,47 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFT] iommu/amd: use subsys_initcall() on amdv2 iommu
-Date: Wed, 16 Mar 2016 18:17:19 +0100
-Message-ID: <20160316171719.GE2195@8bytes.org>
-References: <1458079926-18716-1-git-send-email-mcgrof@kernel.org>
-	<CAFCwf13RT9VyzhJ4AhAGd1ndd8f=Cd0TRnnRcDwBGHbOzyc5BQ@mail.gmail.com>
-	<20160316101457.GC2195@8bytes.org>
-	<CAFCwf13LM+snV1Hi+hE4yHHRKRTzoySNHNesM+2vxAKFYzvqVg@mail.gmail.com>
-	<20160316161736.GL1990@wotan.suse.de>
-	<20160316163900.GD2195@8bytes.org>
-	<20160316165747.GN1990@wotan.suse.de>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: DMAR error messages after 'shutdown -r'.
+Date: Wed, 16 Mar 2016 18:46:08 +0100
+Message-ID: <20160316174608.GF2195@8bytes.org>
+References: <38172.1455047940@turing-police.cc.vt.edu>
+ <20160216164745.GZ18805@8bytes.org>
+ <22265.1457386917@turing-police.cc.vt.edu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-ide-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160316165747.GN1990-B4tOwbsTzaBolqkO4TVVkw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <22265.1457386917@turing-police.cc.vt.edu>
+Sender: linux-ide-owner@vger.kernel.org
+To: Valdis.Kletnieks@vt.edu
+Cc: Hans de Goede <hdegoede@redhat.com>, Tejun Heo <tj@kernel.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 16, 2016 at 05:57:47PM +0100, Luis R. Rodriguez wrote:
-> I'm afraid I am not sure where that hack is, can someone construct a patch to
-> revert that so this is a proper RFT series ?
+On Mon, Mar 07, 2016 at 04:41:57PM -0500, Valdis.Kletnieks@vt.edu wrote:
+> 
+> lspci says:
+> 00:1f.2 SATA controller: Intel Corporation 7 Series Chipset Family 6-port SATA Controller [AHCI mode] (rev 04)
+> 
+> Not sure why I only see it on reboots - that means that when powering up, the kernel
+> gets handed a device config it likes, but when rebooting, something is leaving the
+> device in a config the kernel doesn't want to see.
 
-Oded mentioned 1bacc894c227fad8a727eb99728df708eba57654, which reverts
-fine here on v4.5.
+Okay, so the BIOS defines one RMRR entry:
+
+	DMAR: RMRR base: 0x000000cdb11000 end: 0x000000cdb30fff
+
+But the device-scope doesn't seem to match any existing devices in your
+system. At least no device gets the RMRR mappings later on.
+
+That doesn't really matter, as the the fault-address of 0xcdacd000 is
+outside of the defined RMRR range anyway.
+
+Looking at the fault-address as system physical, is would be in this
+range of system memory:
+
+	BIOS-e820: [mem 0x00000000cd99b000-0x00000000ce3a0fff] reserved
+
+Which is reserved for BIOS use. This looks very much like a missing RMRR
+entry for that range, that has the sata controler in its device scope.
 
 
 	Joerg
+
