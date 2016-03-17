@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 07/10] iommu/ipmmu-vmsa: Write IMCTR twice
-Date: Fri, 18 Mar 2016 01:30:14 +0900
-Message-ID: <20160317163014.24104.93912.sendpatchset@little-apple>
+Subject: [PATCH 08/10] iommu/ipmmu-vmsa: Make IMBUSCTR setup optional
+Date: Fri, 18 Mar 2016 01:30:23 +0900
+Message-ID: <20160317163023.24104.41969.sendpatchset@little-apple>
 References: <20160317162909.24104.31682.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,58 +23,45 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Write IMCTR both in the root device and the leaf node.
+Allow certain DT compat strings to opt-out of setting up
+IMBUSCR. The default case is unchanged.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
- drivers/iommu/ipmmu-vmsa.c |   17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- 0021/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-03-18 00:31:24.250513000 +0900
-@@ -256,6 +256,16 @@ static void ipmmu_ctx_write(struct ipmmu
- 	ipmmu_write(domain->root, domain->context_id * IM_CTX_SIZE + reg, data);
- }
+--- 0023/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-03-18 00:32:45.550513000 +0900
+@@ -36,6 +36,7 @@
+ struct ipmmu_features {
+ 	bool use_ns_alias_offset;
+ 	bool has_cache_leaf_nodes;
++	bool setup_imbuscr;
+ };
  
-+static void ipmmu_ctx_write2(struct ipmmu_vmsa_domain *domain, unsigned int reg,
-+			     u32 data)
-+{
-+	if (domain->mmu != domain->root)
-+		ipmmu_write(domain->mmu,
-+			    domain->context_id * IM_CTX_SIZE + reg, data);
-+
-+	ipmmu_write(domain->root, domain->context_id * IM_CTX_SIZE + reg, data);
-+}
-+
- /* -----------------------------------------------------------------------------
-  * TLB and microTLB Management
-  */
-@@ -282,7 +292,7 @@ static void ipmmu_tlb_invalidate(struct
+ struct ipmmu_vmsa_device {
+@@ -415,10 +416,10 @@ static int ipmmu_domain_init_context(str
+ 	ipmmu_ctx_write(domain, IMMAIR0, domain->cfg.arm_lpae_s1_cfg.mair[0]);
  
- 	reg = ipmmu_ctx_read(domain, IMCTR);
- 	reg |= IMCTR_FLUSH;
--	ipmmu_ctx_write(domain, IMCTR, reg);
-+	ipmmu_ctx_write2(domain, IMCTR, reg);
+ 	/* IMBUSCR */
+-	ipmmu_ctx_write(domain, IMBUSCR,
+-			ipmmu_ctx_read(domain, IMBUSCR) &
+-			~(IMBUSCR_DVM | IMBUSCR_BUSSEL_MASK));
+-
++	if (domain->root->features->setup_imbuscr)
++		ipmmu_ctx_write(domain, IMBUSCR,
++				ipmmu_ctx_read(domain, IMBUSCR) &
++				~(IMBUSCR_DVM | IMBUSCR_BUSSEL_MASK));
+ 	/*
+ 	 * IMSTR
+ 	 * Clear all interrupt flags.
+@@ -992,6 +993,7 @@ static void ipmmu_device_reset(struct ip
+ static const struct ipmmu_features ipmmu_features_default = {
+ 	.use_ns_alias_offset = true,
+ 	.has_cache_leaf_nodes = false,
++	.setup_imbuscr = true,
+ };
  
- 	ipmmu_tlb_sync(domain);
- }
-@@ -422,7 +432,8 @@ static int ipmmu_domain_init_context(str
- 	 * software management as we have no use for it. Flush the TLB as
- 	 * required when modifying the context registers.
- 	 */
--	ipmmu_ctx_write(domain, IMCTR, IMCTR_INTEN | IMCTR_FLUSH | IMCTR_MMUEN);
-+	ipmmu_ctx_write2(domain, IMCTR,
-+			 IMCTR_INTEN | IMCTR_FLUSH | IMCTR_MMUEN);
- 
- 	return 0;
- }
-@@ -437,7 +448,7 @@ static void ipmmu_domain_destroy_context
- 	 *
- 	 * TODO: Is TLB flush really needed ?
- 	 */
--	ipmmu_ctx_write(domain, IMCTR, IMCTR_FLUSH);
-+	ipmmu_ctx_write2(domain, IMCTR, IMCTR_FLUSH);
- 	ipmmu_tlb_sync(domain);
- }
- 
+ static const struct of_device_id ipmmu_of_ids[] = {
