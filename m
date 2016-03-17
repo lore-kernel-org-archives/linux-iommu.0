@@ -1,14 +1,14 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 04/04] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
-Date: Thu, 17 Mar 2016 10:35 +0200
-Message-ID: <2373321.32gyXlL3CK@avalon>
-References: <20160315170431.20615.30333.sendpatchset@little-apple>
-	<20160315170510.20615.16557.sendpatchset@little-apple>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Ratelimit fault handler
+Date: Thu, 17 Mar 2016 10:53:06 -0600
+Message-ID: <20160317105306.03e400c3@t450s.home>
+References: <20160315163503.2875.49980.stgit@gimli.home>
+	<1458071276.78634.124.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160315170510.20615.16557.sendpatchset@little-apple>
+In-Reply-To: <1458071276.78634.124.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,176 +18,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Magnus,
-
-Thank you for the patch.
-
-On Wednesday 16 March 2016 02:05:10 Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-> 
-> Introduce a new set of iommu_ops suitable for 64-bit ARM
-> as well as 32-bit ARM when CONFIG_IOMMU_DMA=y. The ->of_xlate()
-> callback is needed by the code exported by of_iommu.h and
-> it is wrapped in #ifdefs to also compile of x86_64.
-> 
-> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-
-Nice work, thanks a lot. With the two comments below addressed,
-
-Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-
-> ---
-> 
->  drivers/iommu/ipmmu-vmsa.c |   94 ++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 92 insertions(+), 2 deletions(-)
-> 
-> --- 0011/drivers/iommu/ipmmu-vmsa.c
-> +++ work/drivers/iommu/ipmmu-vmsa.c	2016-03-16 01:35:06.990513000 +0900
-> @@ -10,6 +10,7 @@
-> 
->  #include <linux/bitmap.h>
->  #include <linux/delay.h>
-> +#include <linux/dma-iommu.h>
->  #include <linux/dma-mapping.h>
->  #include <linux/err.h>
->  #include <linux/export.h>
-> @@ -804,7 +805,7 @@ static void ipmmu_remove_device(struct d
->  	dev->archdata.iommu = NULL;
->  }
-> 
-> -static const struct iommu_ops ipmmu_ops = {
-> +static const struct iommu_ops __maybe_unused ipmmu_ops = {
->  	.domain_alloc = ipmmu_domain_alloc,
->  	.domain_free = ipmmu_domain_free,
->  	.attach_dev = ipmmu_attach_device,
-> @@ -818,6 +819,92 @@ static const struct iommu_ops ipmmu_ops
->  	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
->  };
-> 
-> +static struct iommu_domain *ipmmu_domain_alloc_dma(unsigned type)
-> +{
-> +	struct iommu_domain *io_domain;
-> +
-> +	if (type != IOMMU_DOMAIN_DMA)
-> +		return NULL;
-> +
-> +	io_domain = __ipmmu_domain_alloc(type);
-> +	if (io_domain)
-> +		iommu_get_dma_cookie(io_domain);
-> +
-> +	return io_domain;
-> +}
-> +
-> +static void ipmmu_domain_free_dma(struct iommu_domain *io_domain)
-> +{
-> +	iommu_put_dma_cookie(io_domain);
-> +	ipmmu_domain_free(io_domain);
-> +}
-> +
-> +static int ipmmu_add_device_dma(struct device *dev)
-> +{
-> +	struct iommu_group *group;
-> +
-> +	/* only accept devices with iommus property */
-
-Nitpicking, the driver capitalizes the first letter of the sentence in 
-comments and includes a period at the end. Could you please follow the same 
-style for consistency ?
-
-> +	if (of_count_phandle_with_args(dev->of_node, "iommus",
-> +				       "#iommu-cells") < 0)
-> +		return -ENODEV;
-
-Given that the iommu_group_get_for_dev() call will call the .device_group() 
-operation that ends up calling ipmmu_init_platform_device(), do we need this 
-check here ?
-
-> +	group = iommu_group_get_for_dev(dev);
-> +	if (IS_ERR(group))
-> +		return PTR_ERR(group);
-> +
-> +	return 0;
-> +}
-> +
-> +static void ipmmu_remove_device_dma(struct device *dev)
-> +{
-> +	iommu_group_remove_device(dev);
-> +}
-> +
-> +static struct iommu_group *ipmmu_device_group_dma(struct device *dev)
-> +{
-> +	struct iommu_group *group;
-> +	int ret;
-> +
-> +	group = generic_device_group(dev);
-> +	if (IS_ERR(group))
-> +		return group;
-> +
-> +	ret = ipmmu_init_platform_device(dev, group);
-> +	if (ret) {
-> +		iommu_group_put(group);
-> +		group = ERR_PTR(ret);
-> +	}
-> +
-> +	return group;
-> +}
-> +
-> +#ifdef CONFIG_OF_IOMMU
-> +static int ipmmu_of_xlate_dma(struct device *dev,
-> +			      struct of_phandle_args *spec)
-> +{
-> +	/* dummy callback to satisfy of_iommu_configure() */
-> +	return 0;
-> +}
-> +#endif
-> +
-> +static const struct iommu_ops __maybe_unused ipmmu_ops_dma = {
-> +	.domain_alloc = ipmmu_domain_alloc_dma,
-> +	.domain_free = ipmmu_domain_free_dma,
-> +	.attach_dev = ipmmu_attach_device,
-> +	.detach_dev = ipmmu_detach_device,
-> +	.map = ipmmu_map,
-> +	.unmap = ipmmu_unmap,
-> +	.map_sg = default_iommu_map_sg,
-> +	.iova_to_phys = ipmmu_iova_to_phys,
-> +	.add_device = ipmmu_add_device_dma,
-> +	.remove_device = ipmmu_remove_device_dma,
-> +	.device_group = ipmmu_device_group_dma,
-> +	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
-> +#ifdef CONFIG_OF_IOMMU
-> +	.of_xlate = ipmmu_of_xlate_dma,
-> +#endif
-> +};
-> +
->  /*
-> ---------------------------------------------------------------------------
-> -- * Probe/remove and init
->   */
-> @@ -929,14 +1016,17 @@ static struct platform_driver ipmmu_driv
-> 
->  static int __init ipmmu_init(void)
->  {
-> +	const struct iommu_ops *ops;
->  	int ret;
-> 
->  	ret = platform_driver_register(&ipmmu_driver);
->  	if (ret < 0)
->  		return ret;
-> 
-> +	ops = IS_ENABLED(CONFIG_IOMMU_DMA) ? &ipmmu_ops_dma : &ipmmu_ops;
-> +
->  	if (!iommu_present(&platform_bus_type))
-> -		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
-> +		bus_set_iommu(&platform_bus_type, ops);
-> 
->  	return 0;
->  }
-
--- 
-Regards,
-
-Laurent Pinchart
+T24gVHVlLCAxNSBNYXIgMjAxNiAxOTo0Nzo1NiArMDAwMApEYXZpZCBXb29kaG91c2UgPGR3bXcy
+QGluZnJhZGVhZC5vcmc+IHdyb3RlOgoKPiBPbiBUdWUsIDIwMTYtMDMtMTUgYXQgMTA6MzUgLTA2
+MDAsIEFsZXggV2lsbGlhbXNvbiB3cm90ZToKPiA+IEZhdWx0IHJhdGVzIGNhbiBlYXNpbHkgb3Zl
+cndoZWxtIHRoZSBjb25zb2xlIGFuZCBtYWtlIHRoZSBzeXN0ZW0KPiA+IHVucmVzcG9uc2l2ZS7C
+oCBSYXRlbGltaXQgdG8gYWxsb3cgYW4gb3Bwb3J0dW5pdHkgZm9yIG1haW50ZW5hbmNlLgo+ID4g
+Cj4gPiBTaWduZWQtb2ZmLWJ5OiBBbGV4IFdpbGxpYW1zb24gPGFsZXgud2lsbGlhbXNvbkByZWRo
+YXQuY29tPiAgCj4gCj4gUmF0aGVyIHRoYW4ganVzdCByYXRlLWxpbWl0aW5nIHRoZSBwcmludGss
+IEknZCBwcmVmZXIgdG8gaGFuZGxlIHRoaXMKPiBleHBsaWNpdGx5LiBUaGVyZSdzIGEgYml0IGlu
+IHRoZSBjb250ZXh0LWVudHJ5IHdoaWNoIGNhbiB0ZWxsIHRoZSBJT01NVQo+IG5vdCB0byBib3Ro
+ZXIgcmFpc2luZyBhbiBpbnRlcnJ1cHQgYXQgYWxsLiBBbmQgdGhlbiB3ZSBjYW4gcmUtZW5hYmxl
+IGl0Cj4gaWYvd2hlbiB0aGUgZHJpdmVyIHJlY292ZXJzIHRoZSBkZXZpY2UuIChPciBwZXJoYXBz
+IGp1c3Qgd2hlbiBpdCBuZXh0Cj4gZG9lcyBhIG1hcHBpbmcpLgoKU2VlbXMgbGlrZSB3ZSBuZWVk
+IHRvIGtlZXAgc3RhdGlzdGljcyBwZXIgY29udGV4dCBlbnRyeSBmb3IgdGhhdCwgYXJlCnlvdSBw
+cmVwYXJlZCBmb3IgdGhhdCBzb3J0IG9mIG92ZXJoZWFkPyAgSU1FLCBhIGRldmljZSB0aGF0J3Mg
+c3Bld2luZwpmYXVsdHMgYXQgdGhpcyByYXRlIGlzIGJyb2tlbiB0byB0aGUgcG9pbnQgd2hlcmUg
+aXQgbmVlZHMgdG8gYmUgcmVtb3ZlZApmcm9tIHRoZSBzeXN0ZW0gb3IgaXMgYWN0aXZlbHkgYmVp
+bmcgdGVzdGVkIGFuZCBkZWJ1Z2dlZCBmb3IgZHJpdmVyIG9yCmFzc2lnbm1lbnQgd29yay4gIElu
+IHRob3NlIGNhc2UsIEkgdGhpbmsgd2Ugd2FudCB0byBrZWVwIHJlbWluZGluZyB0aGUKdXNlciB0
+aGF0IHNvbWV0aGluZyBpcyB2ZXJ5IHdyb25nIGFuZCBpdCBwcm9iYWJseSBleHBsYWlucyB3aHkg
+dGhlCmRldmljZSBpc24ndCB3b3JraW5nIHByb3Blcmx5LiAgSWYgdGhlIGRldmljZSBpcyB1c2lu
+ZyB0aGUgRE1BIEFQSSwKbWF5YmUgY2xlYXJpbmcgRlBEIG9uIGVhY2ggbWFwcGluZyBldmVudCBp
+cyBhIHdheSB0byBkbyB0aGF0LCBidXQgYW4KSU9NTVUgQVBJIG1hbmFnZWQgZGV2aWNlIG1pZ2h0
+IGhhdmUgdmVyeSBsb25nIGxpdmVkIG1hcHBpbmcgZW50cmllcy4KSXQgc2VlbXMgaW1wcmFjdGlj
+YWwgdG8gc2V0dXAgc3RhdGlzdGljcyBwZXIgY29udGV4dCBlbnRyeSBhbmQgdGltZXJzCnRvIGNo
+ZWNrIGJhY2sgb24gdGhlbSBmb3IgdGhpbmdzIHRoYXQgcmVhbGx5IG91Z2h0IHRvIGJlIHJhcmUg
+ZXZlbnRzLgpNeSBnb2FsIHdhcyBvbmx5IHRvIHJlZHVjZSB0aGUgb3ZlcmFsbCBpbXBhY3Qgb24g
+dGhlIHN5c3RlbSBzbyB0aGF0Cml0J3MgdXNhYmxlIHdoZW4gdGhpcyBvY2N1cnMuCgo+IFdlIHJl
+YWxseSBvdWdodCB0byBiZSByZXBvcnRpbmcgZmF1bHRzIHRvIGRyaXZlcnMgdG9vLCBGV0lXLiBJ
+IGtlZXAKPiBtZWFuaW5nIHRvIHRha2UgYSBsb29rIGF0IHRoYXQuCgpZZXMsIHRoYXQgcGF0aCBo
+YXMgYmVlbiBhYnNlbnQgZm9yIGZhciB0b28gbG9uZy4gIFRoYW5rcywKCkFsZXgKCl9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlz
+dAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91
+bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
