@@ -1,53 +1,70 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 1/2] iommu/vt-d: Ratelimit fault handler
-Date: Thu, 17 Mar 2016 14:46:39 -0600
-Message-ID: <20160317144639.7e0d8dd4@t450s.home>
-References: <20160317200557.29049.32879.stgit@gimli.home>
-	<20160317201225.29049.43163.stgit@gimli.home>
-	<1458246810.9556.22.camel@perches.com>
+From: Leo Li <pku.leo@gmail.com>
+Subject: Re: [v6, 3/5] dt: move guts devicetree doc out of powerpc directory
+Date: Thu, 17 Mar 2016 16:33:35 -0500
+Message-ID: <CADRPPNRPP0cxrJT13OR+dAWuw8m0mr0=VJLY+JyTO=QsB_vVUw@mail.gmail.com>
+References: <1457518131-11339-1-git-send-email-yangbo.lu@nxp.com>
+	<1457518131-11339-4-git-send-email-yangbo.lu@nxp.com>
+	<20160317170640.GB21009@rob-hp-laptop>
+	<4107975.rId64mooHz@wuerfel>
+	<CAL_JsqL8NkEQx2NoVHSUGYhtNsybCo-yfBCde+_OuMmfwbhYEw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1458246810.9556.22.camel-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <CAL_JsqL8NkEQx2NoVHSUGYhtNsybCo-yfBCde+_OuMmfwbhYEw@mail.gmail.com>
+Sender: netdev-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Ulf Hansson <ulf.hansson@linaro.org>, Zhao Qiang <qiang.zhao@freescale.com>, xiaobo.xie@nxp.com, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, linux-clk <linux-clk@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Joerg Roedel <joro@8bytes.org>, scott.wood@nxp.com, Claudiu Manoil <claudiu.manoil@freescale.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Yangbo Lu <yangbo.lu@nxp.com>, Santosh Shilimkar <ssantosh@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, netdev <netdev@vger.kernel.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Li Yang <leoyang.li@nxp.com>, Linux IOMMU <iommu@lists.linux-foundation.org>, Kumar Gala <galak@codeauro>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCAxNyBNYXIgMjAxNiAxMzozMzozMCAtMDcwMApKb2UgUGVyY2hlcyA8am9lQHBlcmNo
-ZXMuY29tPiB3cm90ZToKCj4gT24gVGh1LCAyMDE2LTAzLTE3IGF0IDE0OjEyIC0wNjAwLCBBbGV4
-IFdpbGxpYW1zb24gd3JvdGU6Cj4gPiBGYXVsdCByYXRlcyBjYW4gZWFzaWx5IG92ZXJ3aGVsbSB0
-aGUgY29uc29sZSBhbmQgbWFrZSB0aGUgc3lzdGVtCj4gPiB1bnJlc3BvbnNpdmUuwqDCoFJhdGVs
-aW1pdCB0byBhbGxvdyBhbiBvcHBvcnR1bml0eSBmb3IgbWFpbnRlbmFuY2UuICAKPiBbXQo+ID4g
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvZG1hci5jIGIvZHJpdmVycy9pb21tdS9kbWFyLmMg
-IAo+IFtdCj4gPiBAQCAtMTYwMiwxMCArMTYwMiwxNyBAQCBpcnFyZXR1cm5fdCBkbWFyX2ZhdWx0
-KGludCBpcnEsIHZvaWQgKmRldl9pZCkKPiA+IMKgCWludCByZWcsIGZhdWx0X2luZGV4Owo+ID4g
-wqAJdTMyIGZhdWx0X3N0YXR1czsKPiA+IMKgCXVuc2lnbmVkIGxvbmcgZmxhZzsKPiA+ICsJYm9v
-bCByYXRlbGltaXRlZDsKPiA+ICsJc3RhdGljIERFRklORV9SQVRFTElNSVRfU1RBVEUocnMsCj4g
-PiArCQkJCcKgwqDCoMKgwqDCoERFRkFVTFRfUkFURUxJTUlUX0lOVEVSVkFMLAo+ID4gKwkJCQnC
-oMKgwqDCoMKgwqBERUZBVUxUX1JBVEVMSU1JVF9CVVJTVCk7ICAKPiAKPiBBcmUgdGhlc2UgdGhl
-IGFwcHJvcHJpYXRlIGxpbWl0cyBmb3IgZG1hcj8KPiAKPiBpbmNsdWRlL2xpbnV4L3JhdGVsaW1p
-dC5oOiNkZWZpbmUgREVGQVVMVF9SQVRFTElNSVRfSU5URVJWQUzCoMKgwqDCoCg1ICogSFopCj4g
-aW5jbHVkZS9saW51eC9yYXRlbGltaXQuaDojZGVmaW5lIERFRkFVTFRfUkFURUxJTUlUX0JVUlNU
-wqDCoMKgwqDCoMKgwqAxMAoKVGhleSBzZWVtIE9LIHRvIG1lLCBJJ3ZlIGdvdCBhIHRlc3QgcnVu
-bmluZyB0aGF0IGNvbnRpbnVvdXNseSBnZW5lcmF0ZXMKRE1BIHJlYWQgZmF1bHRzIGFuZCBJIGdl
-dCAyMCBsaW5lcyBvZiBsb2cgZXZlcnkgNSBzZWNvbmRzLiAgVGhhdCBzZWVtcwpsaWtlIGVub3Vn
-aCB0byBrbm93IHRoZXJlJ3MgYW4gaXNzdWUsIGl0J3Mgb25nb2luZywgYW5kIG1heWJlIHNlZSBz
-b21lCnBhdHRlcm5zIGluIHRoZSBmYXVsdCBhZGRyZXNzZXMuICBJIGV4cGVjdCB3ZSBjb3VsZCB0
-dXJuIHVwIHRoZSBidXJzdAp2YWx1ZSBidXQgZ2VuZXJhbGx5IHdoZW4gSSdtIGxvb2tpbmcgYXQg
-dGhlIGxvZ3MgSSdtIG9ubHkgbG9va2luZyBmb3IKdGhpbmdzIGxpa2UgaXMgaXQgYSBzaW5nbGUg
-dGFyZ2V0IGFkZHJlc3MsIGlzIGl0IGEgc2VxdWVudGlhbCBhZGRyZXNzLApvciB3aGF0J3MgdGhl
-IGdlbmVyYWwgYWRkcmVzcyBzcGFjZSB0byBrbm93IGlmIGl0IHNob3VsZCBvciBzaG91bGQgbm90
-CmJlIGEgdmFsaWQgZmF1bHQgYWRkcmVzcy4gIFRoYW5rcywKCkFsZXgKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
-QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Thu, Mar 17, 2016 at 12:57 PM, Rob Herring <robh@kernel.org> wrote:
+> On Thu, Mar 17, 2016 at 12:11 PM, Arnd Bergmann <arnd@arndb.de> wrote:
+>> On Thursday 17 March 2016 12:06:40 Rob Herring wrote:
+>>> > diff --git a/Documentation/devicetree/bindings/powerpc/fsl/guts.txt b/Documentation/devicetree/bindings/soc/fsl/guts.txt
+>>> > similarity index 91%
+>>> > rename from Documentation/devicetree/bindings/powerpc/fsl/guts.txt
+>>> > rename to Documentation/devicetree/bindings/soc/fsl/guts.txt
+>>> > index b71b203..07adca9 100644
+>>> > --- a/Documentation/devicetree/bindings/powerpc/fsl/guts.txt
+>>> > +++ b/Documentation/devicetree/bindings/soc/fsl/guts.txt
+>>> > @@ -25,6 +25,9 @@ Recommended properties:
+>>> >   - fsl,liodn-bits : Indicates the number of defined bits in the LIODN
+>>> >     registers, for those SOCs that have a PAMU device.
+>>> >
+>>> > + - little-endian : Indicates that the global utilities block is little
+>>> > +   endian. The default is big endian.
+>>>
+>>> The default is "the native endianness of the system".
+>>
+>> This may be what is currently documented, but not what we are doing
+>> in practice, as there is no "native endianess" for either PowerPC or
+>> ARM -- both allow running big-endian or little-endian kernels and the
+>> device registers are fixed.
+>
+> Notice I said system, not architecture. The way the device registers
+> are fixed is what I mean by native endianness.
+
+I think sometimes it's also hard to define the native endianess of the
+system too.  For whatever reason, we have hardware that having
+big-endian registers on some on-chip devices but using little-endian
+registers on other devices.  Even if all the devices on certain
+hardware use registers of the same endianess, it is also hard for the
+device driver to know what the native endianess really is.
+
+>
+> If the purpose of adding this property now is to support GUTS on the
+> ARM SoCs, then I'd argue using this property is probably wrong. If the
+> PPC systems are designed with BE device registers and ARM systems with
+> LE, then this property is not needed.
+>
+>> I think the property here is fine.
+>
+> Unless you have studied the FSL ARM based SoCs, then there is not
+> enough information here to tell.
+
+Recent FSL ARM SoCs seems to have more weird endianess issue. :( The
+same IP could have registers of different endianess on different ARM
+SoCs.  That why we need to define the endianess explicitly in device
+tree.
+
+Regards,
+Leo
