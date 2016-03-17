@@ -1,38 +1,85 @@
 From: Alex Williamson <alex.williamson@redhat.com>
-Subject: [PATCH v2 0/2] iommu/vt-d: Fault logging improvements
-Date: Thu, 17 Mar 2016 14:12:19 -0600
-Message-ID: <20160317200557.29049.32879.stgit@gimli.home>
+Subject: [PATCH v2 1/2] iommu/vt-d: Ratelimit fault handler
+Date: Thu, 17 Mar 2016 14:12:25 -0600
+Message-ID: <20160317201225.29049.43163.stgit@gimli.home>
+References: <20160317200557.29049.32879.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160317200557.29049.32879.stgit@gimli.home>
 Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org, dwmw2@infradead.org
 Cc: joe@perches.com, joro@8bytes.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Ratelimit and improve formatting.
+Fault rates can easily overwhelm the console and make the system
+unresponsive.  Ratelimit to allow an opportunity for maintenance.
 
-v2:
-
- - Use a single ratelimit state as suggested by Joe Perches, except
-   I chose to move it up to dmar_fault() so that it includes the
-   "handling fault status reg" pr_err and we can avoid collecting
-   entries for logging if we don't plan to print them.
- - Added reformatting changes suggested by Joe Perches.
- - While there is clearly more that could be done with disabling
-   fault handling for specific context entries on storm and sending
-   errors to drivers, this makes a marked improvement on its own.
-
-Thanks,
-Alex
-
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 ---
+ drivers/iommu/dmar.c |   33 ++++++++++++++++++++++-----------
+ 1 file changed, 22 insertions(+), 11 deletions(-)
 
-Alex Williamson (2):
-      iommu/vt-d: Ratelimit fault handler
-      iommu/vt-d: Improve fault handler error messages
-
-
- drivers/iommu/dmar.c |   47 +++++++++++++++++++++++++++--------------------
- 1 file changed, 27 insertions(+), 20 deletions(-)
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 8ffd756..8f8bfff 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1602,10 +1602,17 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
+ 	int reg, fault_index;
+ 	u32 fault_status;
+ 	unsigned long flag;
++	bool ratelimited;
++	static DEFINE_RATELIMIT_STATE(rs,
++				      DEFAULT_RATELIMIT_INTERVAL,
++				      DEFAULT_RATELIMIT_BURST);
++
++	/* Disable printing, simply clear the fault when ratelimited */
++	ratelimited = !__ratelimit(&rs);
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
+ 	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
+-	if (fault_status)
++	if (fault_status && !ratelimited)
+ 		pr_err("DRHD: handling fault status reg %x\n", fault_status);
+ 
+ 	/* TBD: ignore advanced fault log currently */
+@@ -1627,24 +1634,28 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
+ 		if (!(data & DMA_FRCD_F))
+ 			break;
+ 
+-		fault_reason = dma_frcd_fault_reason(data);
+-		type = dma_frcd_type(data);
++		if (!ratelimited) {
++			fault_reason = dma_frcd_fault_reason(data);
++			type = dma_frcd_type(data);
+ 
+-		data = readl(iommu->reg + reg +
+-				fault_index * PRIMARY_FAULT_REG_LEN + 8);
+-		source_id = dma_frcd_source_id(data);
++			data = readl(iommu->reg + reg +
++				     fault_index * PRIMARY_FAULT_REG_LEN + 8);
++			source_id = dma_frcd_source_id(data);
++
++			guest_addr = dmar_readq(iommu->reg + reg +
++					fault_index * PRIMARY_FAULT_REG_LEN);
++			guest_addr = dma_frcd_page_addr(guest_addr);
++		}
+ 
+-		guest_addr = dmar_readq(iommu->reg + reg +
+-				fault_index * PRIMARY_FAULT_REG_LEN);
+-		guest_addr = dma_frcd_page_addr(guest_addr);
+ 		/* clear the fault */
+ 		writel(DMA_FRCD_F, iommu->reg + reg +
+ 			fault_index * PRIMARY_FAULT_REG_LEN + 12);
+ 
+ 		raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+ 
+-		dmar_fault_do_one(iommu, type, fault_reason,
+-				source_id, guest_addr);
++		if (!ratelimited)
++			dmar_fault_do_one(iommu, type, fault_reason,
++					  source_id, guest_addr);
+ 
+ 		fault_index++;
+ 		if (fault_index >= cap_num_fault_regs(iommu->cap))
