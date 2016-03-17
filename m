@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 03/10] iommu/ipmmu-vmsa: Teach xlate() to skip disabled iommus
-Date: Fri, 18 Mar 2016 01:29:37 +0900
-Message-ID: <20160317162937.24104.40724.sendpatchset@little-apple>
+Subject: [PATCH 04/10] iommu/ipmmu-vmsa: IPMMU device is 64-bit bus master
+Date: Fri, 18 Mar 2016 01:29:46 +0900
+Message-ID: <20160317162946.24104.73567.sendpatchset@little-apple>
 References: <20160317162909.24104.31682.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,34 +23,22 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Right now the ->xlate() call gets invoked even though
-the iommu device has status = "disabled" in DT, so
-make sure we skip over disabled devices.
-
-In my mind it would make sense to have this at some
-shared level, but I guess some users may want to
-configure the iommu regardless of DT state.
+The r8a7795 IPMMU supports 64-bit bus mastering and
+coherency for page tables.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
- drivers/iommu/ipmmu-vmsa.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/iommu/ipmmu-vmsa.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- 0017/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-03-18 00:16:51.200513000 +0900
-@@ -890,7 +890,13 @@ static struct iommu_group *ipmmu_device_
- static int ipmmu_of_xlate_dma(struct device *dev,
- 			      struct of_phandle_args *spec)
- {
--	/* dummy callback to satisfy of_iommu_configure() */
-+	/* If the IPMMU device is disabled in DT then return error
-+	 * to make sure the of_iommu code does not install ops
-+	 * even though the iommu device is disabled
-+	 */
-+	if (!of_device_is_available(spec->np))
-+		return -ENODEV;
-+
- 	return 0;
- }
- #endif
+--- 0020/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-03-18 00:22:09.830513000 +0900
+@@ -948,6 +948,7 @@ static int ipmmu_probe(struct platform_d
+ 	mmu->dev = &pdev->dev;
+ 	mmu->num_utlbs = 32;
+ 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
++	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+ 
+ 	/* Map I/O memory and request IRQ. */
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
