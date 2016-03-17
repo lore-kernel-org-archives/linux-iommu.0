@@ -1,85 +1,59 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: [PATCH v2 1/2] iommu/vt-d: Ratelimit fault handler
-Date: Thu, 17 Mar 2016 14:12:25 -0600
-Message-ID: <20160317201225.29049.43163.stgit@gimli.home>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2 2/2] iommu/vt-d: Improve fault handler error messages
+Date: Thu, 17 Mar 2016 14:12:31 -0600
+Message-ID: <20160317201230.29049.33605.stgit@gimli.home>
 References: <20160317200557.29049.32879.stgit@gimli.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160317200557.29049.32879.stgit@gimli.home>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, dwmw2@infradead.org
-Cc: joe@perches.com, joro@8bytes.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160317200557.29049.32879.stgit-GCcqpEzw8uZBDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Fault rates can easily overwhelm the console and make the system
-unresponsive.  Ratelimit to allow an opportunity for maintenance.
+Remove new line in error logs, avoid duplicate and explicit pr_fmt.
 
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+Suggested-by: Joe Perches <joe-6d6DIl74uiNBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/dmar.c |   33 ++++++++++++++++++++++-----------
- 1 file changed, 22 insertions(+), 11 deletions(-)
+ drivers/iommu/dmar.c |   14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 8ffd756..8f8bfff 100644
+index 8f8bfff..6a86b5d 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -1602,10 +1602,17 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
- 	int reg, fault_index;
- 	u32 fault_status;
- 	unsigned long flag;
-+	bool ratelimited;
-+	static DEFINE_RATELIMIT_STATE(rs,
-+				      DEFAULT_RATELIMIT_INTERVAL,
-+				      DEFAULT_RATELIMIT_BURST);
-+
-+	/* Disable printing, simply clear the fault when ratelimited */
-+	ratelimited = !__ratelimit(&rs);
+@@ -1579,18 +1579,14 @@ static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
+ 	reason = dmar_get_fault_reason(fault_reason, &fault_type);
  
- 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
- 	fault_status = readl(iommu->reg + DMAR_FSTS_REG);
--	if (fault_status)
-+	if (fault_status && !ratelimited)
- 		pr_err("DRHD: handling fault status reg %x\n", fault_status);
- 
- 	/* TBD: ignore advanced fault log currently */
-@@ -1627,24 +1634,28 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
- 		if (!(data & DMA_FRCD_F))
- 			break;
- 
--		fault_reason = dma_frcd_fault_reason(data);
--		type = dma_frcd_type(data);
-+		if (!ratelimited) {
-+			fault_reason = dma_frcd_fault_reason(data);
-+			type = dma_frcd_type(data);
- 
--		data = readl(iommu->reg + reg +
--				fault_index * PRIMARY_FAULT_REG_LEN + 8);
--		source_id = dma_frcd_source_id(data);
-+			data = readl(iommu->reg + reg +
-+				     fault_index * PRIMARY_FAULT_REG_LEN + 8);
-+			source_id = dma_frcd_source_id(data);
-+
-+			guest_addr = dmar_readq(iommu->reg + reg +
-+					fault_index * PRIMARY_FAULT_REG_LEN);
-+			guest_addr = dma_frcd_page_addr(guest_addr);
-+		}
- 
--		guest_addr = dmar_readq(iommu->reg + reg +
--				fault_index * PRIMARY_FAULT_REG_LEN);
--		guest_addr = dma_frcd_page_addr(guest_addr);
- 		/* clear the fault */
- 		writel(DMA_FRCD_F, iommu->reg + reg +
- 			fault_index * PRIMARY_FAULT_REG_LEN + 12);
- 
- 		raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
- 
--		dmar_fault_do_one(iommu, type, fault_reason,
--				source_id, guest_addr);
-+		if (!ratelimited)
-+			dmar_fault_do_one(iommu, type, fault_reason,
-+					  source_id, guest_addr);
- 
- 		fault_index++;
- 		if (fault_index >= cap_num_fault_regs(iommu->cap))
+ 	if (fault_type == INTR_REMAP)
+-		pr_err("INTR-REMAP: Request device [[%02x:%02x.%d] "
+-		       "fault index %llx\n"
+-			"INTR-REMAP:[fault reason %02d] %s\n",
+-			(source_id >> 8), PCI_SLOT(source_id & 0xFF),
++		pr_err("[INTR-REMAP] Request device [%02x:%02x.%d] fault index %llx [fault reason %02d] %s\n",
++			source_id >> 8, PCI_SLOT(source_id & 0xFF),
+ 			PCI_FUNC(source_id & 0xFF), addr >> 48,
+ 			fault_reason, reason);
+ 	else
+-		pr_err("DMAR:[%s] Request device [%02x:%02x.%d] "
+-		       "fault addr %llx \n"
+-		       "DMAR:[fault reason %02d] %s\n",
+-		       (type ? "DMA Read" : "DMA Write"),
+-		       (source_id >> 8), PCI_SLOT(source_id & 0xFF),
++		pr_err("[%s] Request device [%02x:%02x.%d] fault addr %llx [fault reason %02d] %s\n",
++		       type ? "DMA Read" : "DMA Write",
++		       source_id >> 8, PCI_SLOT(source_id & 0xFF),
+ 		       PCI_FUNC(source_id & 0xFF), addr, fault_reason, reason);
+ 	return 0;
+ }
