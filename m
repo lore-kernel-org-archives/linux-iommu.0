@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 09/10] iommu/ipmmu-vmsa: Allow two bit SL0
-Date: Fri, 18 Mar 2016 01:30:32 +0900
-Message-ID: <20160317163032.24104.7820.sendpatchset@little-apple>
+Subject: [PATCH 10/10] iommu/ipmmu-vmsa: Hook up r8a7795 DT matching code
+Date: Fri, 18 Mar 2016 01:30:42 +0900
+Message-ID: <20160317163042.24104.62082.sendpatchset@little-apple>
 References: <20160317162909.24104.31682.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,66 +23,52 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Introduce support for two bit SL0 bitfield in IMTTBCR
-by using a separate feature flag.
+Tie in r8a7795 features and update the IOMMU_OF_DECLARE
+compat string to hook up the updated compat string.
+
+TODO:
+ - Go over init order once more
+ - Consider counting number of IPMMU devices from ->xlate()
+ - Experiment with delaying call to bus_set_iommu()
+ - Poke around with IPMMU-MP1 and the associated dma-controller
+ - 64-bit bus mastering and coherency may need per-device enablement
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
- drivers/iommu/ipmmu-vmsa.c |   15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ drivers/iommu/ipmmu-vmsa.c |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
---- 0025/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-03-18 00:33:36.500513000 +0900
-@@ -37,6 +37,7 @@ struct ipmmu_features {
- 	bool use_ns_alias_offset;
- 	bool has_cache_leaf_nodes;
- 	bool setup_imbuscr;
-+	bool twobit_imttbcr_sl0;
+--- 0027/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-03-18 00:34:36.510513000 +0900
+@@ -1009,11 +1009,21 @@ static const struct ipmmu_features ipmmu
+ 	.twobit_imttbcr_sl0 = false,
  };
  
- struct ipmmu_vmsa_device {
-@@ -141,6 +142,10 @@ static struct ipmmu_vmsa_domain *to_vmsa
- #define IMTTBCR_TSZ0_MASK		(7 << 0)
- #define IMTTBCR_TSZ0_SHIFT		O
- 
-+#define IMTTBCR_SL0_TWOBIT_LVL_3	(0 << 6)
-+#define IMTTBCR_SL0_TWOBIT_LVL_2	(1 << 6)
-+#define IMTTBCR_SL0_TWOBIT_LVL_1	(2 << 6)
++static const struct ipmmu_features ipmmu_features_r8a7795 = {
++	.use_ns_alias_offset = false,
++	.has_cache_leaf_nodes = true,
++	.setup_imbuscr = false,
++	.twobit_imttbcr_sl0 = true,
++};
 +
- #define IMBUSCR				0x000c
- #define IMBUSCR_DVM			(1 << 2)
- #define IMBUSCR_BUSSEL_SYS		(0 << 0)
-@@ -356,6 +361,7 @@ static struct iommu_gather_ops ipmmu_gat
- static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
- {
- 	u64 ttbr;
-+	u32 tmp;
- 	int ret;
- 
- 	/*
-@@ -408,9 +414,15 @@ static int ipmmu_domain_init_context(str
- 	 * We use long descriptors with inner-shareable WBWA tables and allocate
- 	 * the whole 32-bit VA space to TTBR0.
- 	 */
-+
-+	if (domain->root->features->twobit_imttbcr_sl0)
-+		tmp = IMTTBCR_SL0_TWOBIT_LVL_1;
-+	else
-+		tmp = IMTTBCR_SL0_LVL_1;
-+
- 	ipmmu_ctx_write(domain, IMTTBCR, IMTTBCR_EAE |
- 			IMTTBCR_SH0_INNER_SHAREABLE | IMTTBCR_ORGN0_WB_WA |
--			IMTTBCR_IRGN0_WB_WA | IMTTBCR_SL0_LVL_1);
-+			IMTTBCR_IRGN0_WB_WA | tmp);
- 
- 	/* MAIR0 */
- 	ipmmu_ctx_write(domain, IMMAIR0, domain->cfg.arm_lpae_s1_cfg.mair[0]);
-@@ -994,6 +1006,7 @@ static const struct ipmmu_features ipmmu
- 	.use_ns_alias_offset = true,
- 	.has_cache_leaf_nodes = false,
- 	.setup_imbuscr = true,
-+	.twobit_imttbcr_sl0 = false,
- };
- 
  static const struct of_device_id ipmmu_of_ids[] = {
+ 	{
+ 		.compatible = "renesas,ipmmu-vmsa",
+ 		.data = &ipmmu_features_default,
+ 	}, {
++		.compatible = "renesas,ipmmu-r8a7795",
++		.data = &ipmmu_features_r8a7795,
++	}, {
+ 		/* Terminator */
+ 	},
+ };
+@@ -1176,6 +1186,8 @@ static int __init ipmmu_vmsa_iommu_of_se
+ 
+ IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa",
+ 		 ipmmu_vmsa_iommu_of_setup);
++IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795",
++		 ipmmu_vmsa_iommu_of_setup);
+ #endif
+ 
+ MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
