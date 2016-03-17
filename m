@@ -1,13 +1,14 @@
 From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 00/04] iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
-Date: Thu, 17 Mar 2016 10:22:50 +0200
-Message-ID: <1563504.M3TNYUzKHf@avalon>
+Subject: Re: [PATCH 04/04] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
+Date: Thu, 17 Mar 2016 10:35 +0200
+Message-ID: <2373321.32gyXlL3CK@avalon>
 References: <20160315170431.20615.30333.sendpatchset@little-apple>
+	<20160315170510.20615.16557.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160315170431.20615.30333.sendpatchset@little-apple>
+In-Reply-To: <20160315170510.20615.16557.sendpatchset@little-apple>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,45 +24,168 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Magnus,
 
-Thank you for the patches.
+Thank you for the patch.
 
-On Wednesday 16 March 2016 02:04:31 Magnus Damm wrote:
-> iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
+On Wednesday 16 March 2016 02:05:10 Magnus Damm wrote:
+> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 > 
-> [PATCH 01/04] iommu/ipmmu-vmsa: 32-bit ARM may have CONFIG_IOMMU_DMA=y
-> [PATCH 02/04] iommu/ipmmu-vmsa: Break out utlb parsing code
-> [PATCH 03/04] iommu/ipmmu-vmsa: Break out domain allocation code
-> [PATCH 04/04] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
-> 
-> This series updates the IPMMU driver with CONFIG_IOMMU_DMA=y support
-> which is present in mainline for 64-bit ARM while experimental support
-> has been posted for 32-bit ARM thanks to Marek Szyprowski:
-> 
-> [RFC 0/3] Unify IOMMU-based DMA-mapping code for ARM and ARM64
-> 
-> Most of the patches in this series based on code earlier included in
-> the series below but has been reworked to also fit on 32-bit ARM:
-> 
-> [PATCH/RFC 00/10] iommu/ipmmu-vmsa: Experimental r8a7795 support
+> Introduce a new set of iommu_ops suitable for 64-bit ARM
+> as well as 32-bit ARM when CONFIG_IOMMU_DMA=y. The ->of_xlate()
+> callback is needed by the code exported by of_iommu.h and
+> it is wrapped in #ifdefs to also compile of x86_64.
 > 
 > Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Great ! Thanks a lot for the work, I'm really happy to see this being 
-addressed.
-
-For patches 1/4 to 3/4,
+Nice work, thanks a lot. With the two comments below addressed,
 
 Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
-For patch 4/4, please see my comments in the reply to the patch.
-
 > ---
 > 
->  Built on top of next-20160315
->  Depends on [PATCH v2 00/04] iommu/ipmmu-vmsa: IPMMU multi-arch update V2
+>  drivers/iommu/ipmmu-vmsa.c |   94 ++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 92 insertions(+), 2 deletions(-)
 > 
->  drivers/iommu/ipmmu-vmsa.c |  238 ++++++++++++++++++++++++++++++----------
->  1 file changed, 174 insertions(+), 64 deletions(-)
+> --- 0011/drivers/iommu/ipmmu-vmsa.c
+> +++ work/drivers/iommu/ipmmu-vmsa.c	2016-03-16 01:35:06.990513000 +0900
+> @@ -10,6 +10,7 @@
+> 
+>  #include <linux/bitmap.h>
+>  #include <linux/delay.h>
+> +#include <linux/dma-iommu.h>
+>  #include <linux/dma-mapping.h>
+>  #include <linux/err.h>
+>  #include <linux/export.h>
+> @@ -804,7 +805,7 @@ static void ipmmu_remove_device(struct d
+>  	dev->archdata.iommu = NULL;
+>  }
+> 
+> -static const struct iommu_ops ipmmu_ops = {
+> +static const struct iommu_ops __maybe_unused ipmmu_ops = {
+>  	.domain_alloc = ipmmu_domain_alloc,
+>  	.domain_free = ipmmu_domain_free,
+>  	.attach_dev = ipmmu_attach_device,
+> @@ -818,6 +819,92 @@ static const struct iommu_ops ipmmu_ops
+>  	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
+>  };
+> 
+> +static struct iommu_domain *ipmmu_domain_alloc_dma(unsigned type)
+> +{
+> +	struct iommu_domain *io_domain;
+> +
+> +	if (type != IOMMU_DOMAIN_DMA)
+> +		return NULL;
+> +
+> +	io_domain = __ipmmu_domain_alloc(type);
+> +	if (io_domain)
+> +		iommu_get_dma_cookie(io_domain);
+> +
+> +	return io_domain;
+> +}
+> +
+> +static void ipmmu_domain_free_dma(struct iommu_domain *io_domain)
+> +{
+> +	iommu_put_dma_cookie(io_domain);
+> +	ipmmu_domain_free(io_domain);
+> +}
+> +
+> +static int ipmmu_add_device_dma(struct device *dev)
+> +{
+> +	struct iommu_group *group;
+> +
+> +	/* only accept devices with iommus property */
+
+Nitpicking, the driver capitalizes the first letter of the sentence in 
+comments and includes a period at the end. Could you please follow the same 
+style for consistency ?
+
+> +	if (of_count_phandle_with_args(dev->of_node, "iommus",
+> +				       "#iommu-cells") < 0)
+> +		return -ENODEV;
+
+Given that the iommu_group_get_for_dev() call will call the .device_group() 
+operation that ends up calling ipmmu_init_platform_device(), do we need this 
+check here ?
+
+> +	group = iommu_group_get_for_dev(dev);
+> +	if (IS_ERR(group))
+> +		return PTR_ERR(group);
+> +
+> +	return 0;
+> +}
+> +
+> +static void ipmmu_remove_device_dma(struct device *dev)
+> +{
+> +	iommu_group_remove_device(dev);
+> +}
+> +
+> +static struct iommu_group *ipmmu_device_group_dma(struct device *dev)
+> +{
+> +	struct iommu_group *group;
+> +	int ret;
+> +
+> +	group = generic_device_group(dev);
+> +	if (IS_ERR(group))
+> +		return group;
+> +
+> +	ret = ipmmu_init_platform_device(dev, group);
+> +	if (ret) {
+> +		iommu_group_put(group);
+> +		group = ERR_PTR(ret);
+> +	}
+> +
+> +	return group;
+> +}
+> +
+> +#ifdef CONFIG_OF_IOMMU
+> +static int ipmmu_of_xlate_dma(struct device *dev,
+> +			      struct of_phandle_args *spec)
+> +{
+> +	/* dummy callback to satisfy of_iommu_configure() */
+> +	return 0;
+> +}
+> +#endif
+> +
+> +static const struct iommu_ops __maybe_unused ipmmu_ops_dma = {
+> +	.domain_alloc = ipmmu_domain_alloc_dma,
+> +	.domain_free = ipmmu_domain_free_dma,
+> +	.attach_dev = ipmmu_attach_device,
+> +	.detach_dev = ipmmu_detach_device,
+> +	.map = ipmmu_map,
+> +	.unmap = ipmmu_unmap,
+> +	.map_sg = default_iommu_map_sg,
+> +	.iova_to_phys = ipmmu_iova_to_phys,
+> +	.add_device = ipmmu_add_device_dma,
+> +	.remove_device = ipmmu_remove_device_dma,
+> +	.device_group = ipmmu_device_group_dma,
+> +	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
+> +#ifdef CONFIG_OF_IOMMU
+> +	.of_xlate = ipmmu_of_xlate_dma,
+> +#endif
+> +};
+> +
+>  /*
+> ---------------------------------------------------------------------------
+> -- * Probe/remove and init
+>   */
+> @@ -929,14 +1016,17 @@ static struct platform_driver ipmmu_driv
+> 
+>  static int __init ipmmu_init(void)
+>  {
+> +	const struct iommu_ops *ops;
+>  	int ret;
+> 
+>  	ret = platform_driver_register(&ipmmu_driver);
+>  	if (ret < 0)
+>  		return ret;
+> 
+> +	ops = IS_ENABLED(CONFIG_IOMMU_DMA) ? &ipmmu_ops_dma : &ipmmu_ops;
+> +
+>  	if (!iommu_present(&platform_bus_type))
+> -		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
+> +		bus_set_iommu(&platform_bus_type, ops);
+> 
+>  	return 0;
+>  }
 
 -- 
 Regards,
