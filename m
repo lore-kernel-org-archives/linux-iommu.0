@@ -1,13 +1,15 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 10/10] iommu/ipmmu-vmsa: Hook up r8a7795 DT matching code
-Date: Fri, 18 Mar 2016 01:30:42 +0900
-Message-ID: <20160317163042.24104.62082.sendpatchset@little-apple>
-References: <20160317162909.24104.31682.sendpatchset@little-apple>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH v5 3/9] dma-mapping: add dma_{map,unmap}_resource
+Date: Thu, 17 Mar 2016 13:33:51 +0200
+Message-ID: <3286525.zPAGiD4Xk2@avalon>
+References: <1457404974-1800-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+	<20160311125846.GF1111@bigcity.dyn.berto.se>
+	<20160315082254.GE9136@infradead.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160317162909.24104.31682.sendpatchset@little-apple>
+In-Reply-To: <20160315082254.GE9136-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,58 +19,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
+To: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Linus Walleij <linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Hello,
 
-Tie in r8a7795 features and update the IOMMU_OF_DECLARE
-compat string to hook up the updated compat string.
+On Tuesday 15 March 2016 01:22:54 Christoph Hellwig wrote:
+> On Fri, Mar 11, 2016 at 01:58:46PM +0100, Niklas S?derlund wrote:
+> > Without an IOMMU this is easy since the phys_addr_t and dma_addr_t are
+> > the same and no special care is needed. However if you have a IOMMU you
+> > need to map the DMA slave phys_addr_t to a dma_addr_t using something
+> > like this. Is it not very similar to dma_map_single() where one maps
+> > processor virtual memory (instead if MMIO) so that it can be used with
+> > DMA slaves?
+> 
+> It's similar, but I don't think this actually works as a general case
+> as there are quite a few places that expect to be able to have a
+> struct page for a physical address.  We'd at least need a very careful
+> audit for that case.
 
-TODO:
- - Go over init order once more
- - Consider counting number of IPMMU devices from ->xlate()
- - Experiment with delaying call to bus_set_iommu()
- - Poke around with IPMMU-MP1 and the associated dma-controller
- - 64-bit bus mastering and coherency may need per-device enablement
+The good news is that, given that no code uses this new API at the moment, 
+there isn't much to audit. The patch series implements the resource mapping 
+for arch/arm only, and makes use of it in the rcar-dmac driver only. Would you 
+like anything audited else than the arch/arm dma mapping implementation, the 
+rcar-dmac driver and the code that then deals with the dma addresses (I'm 
+thinking about the IOMMU subsystem and the ipmmu-vmsa driver in particular) ?
 
-Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
----
+-- 
+Regards,
 
- drivers/iommu/ipmmu-vmsa.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
---- 0027/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-03-18 00:34:36.510513000 +0900
-@@ -1009,11 +1009,21 @@ static const struct ipmmu_features ipmmu
- 	.twobit_imttbcr_sl0 = false,
- };
- 
-+static const struct ipmmu_features ipmmu_features_r8a7795 = {
-+	.use_ns_alias_offset = false,
-+	.has_cache_leaf_nodes = true,
-+	.setup_imbuscr = false,
-+	.twobit_imttbcr_sl0 = true,
-+};
-+
- static const struct of_device_id ipmmu_of_ids[] = {
- 	{
- 		.compatible = "renesas,ipmmu-vmsa",
- 		.data = &ipmmu_features_default,
- 	}, {
-+		.compatible = "renesas,ipmmu-r8a7795",
-+		.data = &ipmmu_features_r8a7795,
-+	}, {
- 		/* Terminator */
- 	},
- };
-@@ -1176,6 +1186,8 @@ static int __init ipmmu_vmsa_iommu_of_se
- 
- IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa",
- 		 ipmmu_vmsa_iommu_of_setup);
-+IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795",
-+		 ipmmu_vmsa_iommu_of_setup);
- #endif
- 
- MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
+Laurent Pinchart
