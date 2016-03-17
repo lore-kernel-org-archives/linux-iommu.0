@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 01/10] iommu/ipmmu-vmsa: Make use of IOMMU_OF_DECLARE()
-Date: Fri, 18 Mar 2016 01:29:18 +0900
-Message-ID: <20160317162918.24104.29242.sendpatchset@little-apple>
+Subject: [PATCH 02/10] iommu/ipmmu-vmsa: Enable multi context support
+Date: Fri, 18 Mar 2016 01:29:28 +0900
+Message-ID: <20160317162928.24104.46943.sendpatchset@little-apple>
 References: <20160317162909.24104.31682.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,75 +23,48 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Hook up IOMMU_OF_DECLARE() support in case CONFIG_IOMMU_DMA
-is enabled. The only current supported case for 32-bit ARM
-is disabled, however for 64-bit ARM this is required.
+Add support for up to 4 contexts. Each context is mapped
+to one domain. One domain is associated with each device,
+however one or more uTLBs for a single device are kept
+in the same domain.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
- drivers/iommu/ipmmu-vmsa.c |   31 +++++++++++++++++++++++++++----
- 1 file changed, 27 insertions(+), 4 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- 0014/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-03-18 00:12:22.950513000 +0900
-@@ -19,6 +19,7 @@
- #include <linux/iommu.h>
- #include <linux/module.h>
- #include <linux/of.h>
-+#include <linux/of_iommu.h>
- #include <linux/platform_device.h>
- #include <linux/sizes.h>
- #include <linux/slab.h>
-@@ -1016,18 +1017,22 @@ static struct platform_driver ipmmu_driv
+--- 0015/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-03-18 00:15:49.180513000 +0900
+@@ -31,7 +31,7 @@
  
- static int __init ipmmu_init(void)
- {
--	const struct iommu_ops *ops;
-+	static bool setup_done;
- 	int ret;
+ #include "io-pgtable.h"
  
-+	if (setup_done)
-+		return 0;
-+
- 	ret = platform_driver_register(&ipmmu_driver);
- 	if (ret < 0)
- 		return ret;
+-#define IPMMU_CTX_MAX 1
++#define IPMMU_CTX_MAX 4
  
--	ops = IS_ENABLED(CONFIG_IOMMU_DMA) ? &ipmmu_ops_dma : &ipmmu_ops;
--
-+#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
- 	if (!iommu_present(&platform_bus_type))
--		bus_set_iommu(&platform_bus_type, ops);
-+		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
-+#endif
+ struct ipmmu_vmsa_device {
+ 	struct device *dev;
+@@ -536,6 +536,13 @@ static int ipmmu_attach_device(struct io
+ 		/* The domain hasn't been used yet, initialize it. */
+ 		domain->mmu = mmu;
+ 		ret = ipmmu_domain_init_context(domain);
++		if (ret < 0) {
++			dev_err(dev, "Unable to initialize IPMMU context\n");
++			domain->mmu = NULL;
++		} else {
++			dev_info(dev, "Using IPMMU context %u\n",
++				 domain->context_id);
++		}
+ 	} else if (domain->mmu != mmu) {
+ 		/*
+ 		 * Something is wrong, we can't attach two devices using
+@@ -915,7 +922,7 @@ static void ipmmu_device_reset(struct ip
+ 	unsigned int i;
  
-+	setup_done = true;
- 	return 0;
+ 	/* Disable all contexts. */
+-	for (i = 0; i < 4; ++i)
++	for (i = 0; i < IPMMU_CTX_MAX; ++i)
+ 		ipmmu_write(mmu, i * IM_CTX_SIZE + IMCTR, 0);
  }
  
-@@ -1039,6 +1044,24 @@ static void __exit ipmmu_exit(void)
- subsys_initcall(ipmmu_init);
- module_exit(ipmmu_exit);
- 
-+#ifdef CONFIG_IOMMU_DMA
-+static int __init ipmmu_vmsa_iommu_of_setup(struct device_node *np)
-+{
-+	static const struct iommu_ops *ops = &ipmmu_ops_dma;
-+
-+	ipmmu_init();
-+
-+	of_iommu_set_ops(np, (struct iommu_ops *)ops);
-+	if (!iommu_present(&platform_bus_type))
-+		bus_set_iommu(&platform_bus_type, ops);
-+
-+	return 0;
-+}
-+
-+IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa",
-+		 ipmmu_vmsa_iommu_of_setup);
-+#endif
-+
- MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
- MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>");
- MODULE_LICENSE("GPL v2");
