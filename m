@@ -1,85 +1,79 @@
-From: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-Subject: Re: Can't boot new 4.4 kernel with IOMMU enabled
-Date: Fri, 18 Mar 2016 13:24:27 -0400
-Message-ID: <56EC39CB.2010909@compro.net>
-References: <569FCFC8.2000606@compro.net> <20160120182602.GJ18805@8bytes.org>
-	<56A0F03C.8010109@compro.net> <56A0F221.10502@compro.net>
-	<20160121223958.GL18805@8bytes.org> <56B0CFF7.80907@compro.net>
-	<20160216162455.GX18805@8bytes.org> <56C35D1A.9080307@compro.net>
-	<20160226162319.GH22747@8bytes.org> <56D0A565.8080406@compro.net>
-	<20160229174252.GN22747@8bytes.org> <56D48560.4010904@compro.net>
-Reply-To: markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org
+From: Scott Wood <scott.wood@nxp.com>
+Subject: Re: [v6, 3/5] dt: move guts devicetree doc out of powerpc directory
+Date: Fri, 18 Mar 2016 18:16:06 +0000
+Message-ID: <HE1PR0401MB1931444381E249E41C45C748918C0@HE1PR0401MB1931.eurprd04.prod.outlook.com>
+References: <1457518131-11339-1-git-send-email-yangbo.lu@nxp.com>
+ <1457518131-11339-4-git-send-email-yangbo.lu@nxp.com>
+ <20160317170640.GB21009@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <56D48560.4010904-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-clk-owner@vger.kernel.org>
+Content-Language: en-US
+Sender: linux-clk-owner@vger.kernel.org
+To: Rob Herring <robh@kernel.org>, Yangbo Lu <yangbo.lu@nxp.com>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Jochen Friedrich <jochen@scram.de>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Zhao Qiang <qiang.zhao@freescale.com>, Kumar Gala <galak@codeau>
 List-Id: iommu@lists.linux-foundation.org
 
-On 02/29/2016 12:52 PM, Mark Hounschell wrote:
-> On 02/29/2016 12:42 PM, Joerg Roedel wrote:
->> Hi Mark,
+On 03/17/2016 12:06 PM, Rob Herring wrote:
+> On Wed, Mar 09, 2016 at 06:08:49PM +0800, Yangbo Lu wrote:
+>> Move guts devicetree doc to Documentation/devicetree/bindings/soc/fsl/
+>> since it's used by not only PowerPC but also ARM. And add a specification
+>> for 'little-endian' property.
 >>
->> On Fri, Feb 26, 2016 at 02:20:05PM -0500, Mark Hounschell wrote:
->>> On 02/26/2016 11:23 AM, Joerg Roedel wrote:
->>>> Can you please boot a v4.5-rc5 kernel with iommu enabled and
->>>> 'amd_iommu_dump' on the kernel command line and send me dmesg after
->>>> boot again?
->>>>
->>>>
->>>
->>> Here ya go Joerg,
->>>
->>> See ata7 and ata8 failure messages. These are the 2 disks that don't
->>> come up. They are hanging off one of these two Marvell chips.
->>>
->>> 07:00.0 SATA controller: Marvell Technology Group Ltd. 88SE9172 SATA
->>> 6Gb/s Controller (rev 12)
->>> 13:00.0 SATA controller: Marvell Technology Group Ltd. 88SE9172 SATA
->>> 6Gb/s Controller (rev 12)
+>> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+>> ---
+>> Changes for v2:
+>> 	- None
+>> Changes for v3:
+>> 	- None
+>> Changes for v4:
+>> 	- Added this patch
+>> Changes for v5:
+>> 	- Modified the description for little-endian property
+>> Changes for v6:
+>> 	- None
+>> ---
+>>  Documentation/devicetree/bindings/{powerpc => soc}/fsl/guts.txt | 3 +++
+>>  1 file changed, 3 insertions(+)
+>>  rename Documentation/devicetree/bindings/{powerpc => soc}/fsl/guts.txt (91%)
 >>
->> Thanks for the dmesg. It does not contain IO_PAGE_FAULTs anymore, did it
->> in the past? If yes, which device-ids were the faults reported against?
->>
->
-> The original report from me at the top of this thread was that the
-> machine would not come up at all. Many IO_PAGE_FAULTs.
->
-> The patch by Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->
-> iommu/amd: Correct the wrong setting of alias DTE in do_attach
-> commit 9b1a12d29109234d2b9718d04d4d404b7da4e794 upstream
->
-> fixed that issue but left me with these 2 disk not coming up. If I
-> disable the iommu in the BIOS, all the disks work fine.
->
->
->> I can't really say yet why it does not work on your system. The IOMMU
->> core groups the devices 00:15.0-2 and 11-13:00.0 together. This means
->> that they all end up in the same iommu group.
->>
->> But according to the IVRS ACPI table on your system none of these
->> devices has an alias defined. So this doesn't explain why the commit
->> you bisected it down to causes the problem, because the commit is about
->> alias handling (which the devices in question don't need).
->>
->> Maybe I send you some debug patches to try out, but I stare at the code
->> a little bit more first.
->>
->
-> OK
+>> diff --git a/Documentation/devicetree/bindings/powerpc/fsl/guts.txt b/Documentation/devicetree/bindings/soc/fsl/guts.txt
+>> similarity index 91%
+>> rename from Documentation/devicetree/bindings/powerpc/fsl/guts.txt
+>> rename to Documentation/devicetree/bindings/soc/fsl/guts.txt
+>> index b71b203..07adca9 100644
+>> --- a/Documentation/devicetree/bindings/powerpc/fsl/guts.txt
+>> +++ b/Documentation/devicetree/bindings/soc/fsl/guts.txt
+>> @@ -25,6 +25,9 @@ Recommended properties:
+>>   - fsl,liodn-bits : Indicates the number of defined bits in the LIODN
+>>     registers, for those SOCs that have a PAMU device.
+>>  
+>> + - little-endian : Indicates that the global utilities block is little
+>> +   endian. The default is big endian.
+> 
+> The default is "the native endianness of the system". So absence on an 
+> ARM system would be LE.
 
-Should I submit a kernel bug report on this?
+No.  For this binding, the default is big-endian, because that's what
+existed for this device before an endian property was added.
 
-Mark
+"endianness of the system" is not a well-defined concept.
+
+> This property is valid for any simple-bus device, 
+
+Since when does simple-bus mean anything more than that the nodes
+underneath it can be used without bus-specific knowledge?
+
+> so it isn't really required to document per device. You can, but 
+> your description had better match the documented behaviour.
+
+Documented where?
+
+In fact, Documentation/devicetree/bindings/common-properties.txt
+explicitly says of the endian properties, "If a binding supports these
+properties, then the binding should also specify the default behavior if
+none of these properties are present."
+
+-Scott
+
