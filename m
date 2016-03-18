@@ -1,62 +1,49 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 03/10] iommu/ipmmu-vmsa: Teach xlate() to skip disabled iommus
-Date: Fri, 18 Mar 2016 10:46:51 +0100
-Message-ID: <CAMuHMdVYP4YtwE0eXiu49A4+p+siKPMEbMqoGFnagZ=RFnVDgg@mail.gmail.com>
-References: <20160317162909.24104.31682.sendpatchset@little-apple>
-	<20160317162937.24104.40724.sendpatchset@little-apple>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH V5 02/10] perf/amd/iommu: Consolidate and move
+	perf_event_amd_iommu header
+Date: Fri, 18 Mar 2016 17:06:23 +0700
+Message-ID: <56EBD31F.6050206@amd.com>
+References: <20160314095856.GL6344@twins.programming.kicks-ass.net>
+	<56E6BE7E.8010807@amd.com> <20160314141945.GE15800@pd.tnic>
+	<20160314163913.GO6344@twins.programming.kicks-ass.net>
+	<56E759C3.5040707@amd.com> <20160315104017.GA4559@pd.tnic>
+	<20160315105318.GU6344@twins.programming.kicks-ass.net>
+	<56EBA92D.7010906@amd.com> <20160318090441.GA7817@pd.tnic>
+	<56EBC5CD.7070701@amd.com> <20160318092910.GC7817@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <20160317162937.24104.40724.sendpatchset@little-apple>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <joro@8bytes.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-renesas-soc@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160318092910.GC7817-fF5Pk5pvG8Y@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, acme-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, andihartmann-KuiJ5kEpwI6ELgA04lAiVw@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 17, 2016 at 5:29 PM, Magnus Damm <magnus.damm@gmail.com> wrote:
-> From: Magnus Damm <damm+renesas@opensource.se>
+On 03/18/2016 04:29 PM, Borislav Petkov wrote:
+> On Fri, Mar 18, 2016 at 04:09:33PM +0700, Suravee Suthikulpanit wrote:
+>> But the whole point is that since we are moving it to consolidate these
+>> duplicated declarations, I think we should just put it in the most common
+>> place. The include/linux/amd-iommu.h file is already there. It's not like we
+>> have to create a brand new file, and then having to move it later.
 >
-> Right now the ->xlate() call gets invoked even though
-> the iommu device has status = "disabled" in DT, so
-> make sure we skip over disabled devices.
+> Strictly speaking, it was wrong to put it there in the first place as it
+> is x86-specific.
 >
-> In my mind it would make sense to have this at some
-> shared level, but I guess some users may want to
-> configure the iommu regardless of DT state.
->
-> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
-> ---
->
->  drivers/iommu/ipmmu-vmsa.c |    8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
->
-> --- 0017/drivers/iommu/ipmmu-vmsa.c
-> +++ work/drivers/iommu/ipmmu-vmsa.c     2016-03-18 00:16:51.200513000 +0900
-> @@ -890,7 +890,13 @@ static struct iommu_group *ipmmu_device_
->  static int ipmmu_of_xlate_dma(struct device *dev,
->                               struct of_phandle_args *spec)
->  {
-> -       /* dummy callback to satisfy of_iommu_configure() */
-> +       /* If the IPMMU device is disabled in DT then return error
-> +        * to make sure the of_iommu code does not install ops
-> +        * even though the iommu device is disabled
-> +        */
-> +       if (!of_device_is_available(spec->np))
-> +               return -ENODEV;
-> +
->         return 0;
 
-I think this should be handled in drivers/iommu/of_iommu.c:of_iommu_init()
-instead, cfr. commit 3e5dd6f6e690048d ("clk: Ignore disabled DT clock
-providers").
+If not here, where would you prefer? Consolidating it to 
+arch/x86/include/asm/amd-iommu.h)?
 
-Gr{oetje,eeting}s,
+And if that's the case, should I also move include/linux/amd-iommu.h as 
+well?
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks,
+Suravee
