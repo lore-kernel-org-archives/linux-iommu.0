@@ -1,8 +1,8 @@
 From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [Patch V2 1/4] iommu/vt-d: replace *hdr with hdr[0] in struct
-	dmar_drhd_unit
-Date: Sun, 20 Mar 2016 13:57:28 +0000
-Message-ID: <1458482251-7939-2-git-send-email-richard.weiyang@gmail.com>
+Subject: [Patch V2 3/4] iommu/vt-d: check Register Base Address at the
+	beginning of dmar_parse_one_drhd()
+Date: Sun, 20 Mar 2016 13:57:30 +0000
+Message-ID: <1458482251-7939-4-git-send-email-richard.weiyang@gmail.com>
 References: <1458482251-7939-1-git-send-email-richard.weiyang@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,95 +22,84 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-hdr in struct dmar_drhd_unit is used to point the DMAR hardware unit copied
-at the end of struct dmar_drhd_unit. One zero-sized array may be more
-elegant for this purpose.
+A NULL value of Register Base Address in a Hardware Unit Definition means
+it is an invalid dmar. Current implementation checks this value in
+alloc_iommu(), by when it has already allocated memory to store itself and
+device scope.
 
-This patch replace *hdr with hdr[0] in struct dmar_drhd_unit.
-
-Besides this, this patch includes other two changes:
-1. remove unnecessary type cast in dmar_table_detect()
-2. type cast from acpi_dmar_header to acpi_dmar_hardware_unit directly
+This patch moves the check at the beginning of dmar_parse_one_drhd(), so
+that it notices this is an invalid dmar and avoids related setup jobs.
 
 Signed-off-by: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/dmar.c |   15 ++++-----------
- include/linux/dmar.h |    2 +-
- 2 files changed, 5 insertions(+), 12 deletions(-)
+ drivers/iommu/dmar.c |   34 +++++++++++++++++-----------------
+ 1 file changed, 17 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 80e3c17..d6dd23f 100644
+index 04f199c..82f0b92 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -292,8 +292,7 @@ static int dmar_pci_bus_add_dev(struct dmar_pci_notify_info *info)
- 		if (dmaru->include_all)
- 			continue;
+@@ -363,6 +363,18 @@ dmar_find_dmaru(struct acpi_dmar_hardware_unit *drhd)
+ 	return NULL;
+ }
  
--		drhd = container_of(dmaru->hdr,
--				    struct acpi_dmar_hardware_unit, header);
-+		drhd = (struct acpi_dmar_hardware_unit *)dmaru->hdr;
- 		ret = dmar_insert_dev_scope(info, (void *)(drhd + 1),
- 				((void *)drhd) + drhd->header.length,
- 				dmaru->segment,
-@@ -390,7 +389,6 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
- 	 * If header is allocated from slab by ACPI _DSM method, we need to
- 	 * copy the content because the memory buffer will be freed on return.
- 	 */
--	dmaru->hdr = (void *)(dmaru + 1);
- 	memcpy(dmaru->hdr, header, header->length);
- 	dmaru->reg_base_addr = drhd->address;
- 	dmaru->segment = drhd->segment;
-@@ -529,8 +527,7 @@ static int __init dmar_table_detect(void)
++static void warn_invalid_dmar(u64 addr, const char *message)
++{
++	WARN_TAINT_ONCE(
++		1, TAINT_FIRMWARE_WORKAROUND,
++		"Your BIOS is broken; DMAR reported at address %llx%s!\n"
++		"BIOS vendor: %s; Ver: %s; Product Version: %s\n",
++		addr, message,
++		dmi_get_system_info(DMI_BIOS_VENDOR),
++		dmi_get_system_info(DMI_BIOS_VERSION),
++		dmi_get_system_info(DMI_PRODUCT_VERSION));
++}
++
+ /**
+  * dmar_parse_one_drhd - parses exactly one DMA remapping hardware definition
+  * structure which uniquely represent one DMA remapping hardware unit
+@@ -379,6 +391,11 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
+ 	if (dmaru)
+ 		goto out;
  
- 	/* if we could find DMAR table, then there are DMAR devices */
- 	status = acpi_get_table_with_size(ACPI_SIG_DMAR, 0,
--				(struct acpi_table_header **)&dmar_tbl,
--				&dmar_tbl_size);
-+				&dmar_tbl, &dmar_tbl_size);
++	if (!drhd->address) {
++		warn_invalid_dmar(0, "");
++		return -EINVAL;
++	}
++
+ 	dmaru = kzalloc(sizeof(*dmaru) + header->length, GFP_KERNEL);
+ 	if (!dmaru)
+ 		return -ENOMEM;
+@@ -808,18 +825,6 @@ int __init dmar_table_init(void)
+ 	return dmar_table_initialized < 0 ? dmar_table_initialized : 0;
+ }
  
- 	if (ACPI_SUCCESS(status) && !dmar_tbl) {
- 		pr_warn("Unable to map DMAR\n");
-@@ -663,9 +660,7 @@ dmar_find_matched_drhd_unit(struct pci_dev *dev)
+-static void warn_invalid_dmar(u64 addr, const char *message)
+-{
+-	WARN_TAINT_ONCE(
+-		1, TAINT_FIRMWARE_WORKAROUND,
+-		"Your BIOS is broken; DMAR reported at address %llx%s!\n"
+-		"BIOS vendor: %s; Ver: %s; Product Version: %s\n",
+-		addr, message,
+-		dmi_get_system_info(DMI_BIOS_VENDOR),
+-		dmi_get_system_info(DMI_BIOS_VERSION),
+-		dmi_get_system_info(DMI_PRODUCT_VERSION));
+-}
+-
+ static int __ref
+ dmar_validate_one_drhd(struct acpi_dmar_header *entry, void *arg)
+ {
+@@ -995,11 +1000,6 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	int msagaw = 0;
+ 	int err;
  
- 	rcu_read_lock();
- 	for_each_drhd_unit(dmaru) {
--		drhd = container_of(dmaru->hdr,
--				    struct acpi_dmar_hardware_unit,
--				    header);
-+		drhd = (struct acpi_dmar_hardware_unit *)dmaru->hdr;
- 
- 		if (dmaru->include_all &&
- 		    drhd->segment == pci_domain_nr(dev->bus))
-@@ -693,9 +688,7 @@ static void __init dmar_acpi_insert_dev_scope(u8 device_number,
- 	struct acpi_dmar_pci_path *path;
- 
- 	for_each_drhd_unit(dmaru) {
--		drhd = container_of(dmaru->hdr,
--				    struct acpi_dmar_hardware_unit,
--				    header);
-+		drhd = (struct acpi_dmar_hardware_unit *)dmaru->hdr;
- 
- 		for (scope = (void *)(drhd + 1);
- 		     (unsigned long)scope < ((unsigned long)drhd) + drhd->header.length;
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index e9bc929..5f6da7e 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -52,7 +52,6 @@ struct dmar_dev_scope {
- extern struct acpi_table_header *dmar_tbl;
- struct dmar_drhd_unit {
- 	struct list_head list;		/* list of drhd units	*/
--	struct  acpi_dmar_header *hdr;	/* ACPI header		*/
- 	u64	reg_base_addr;		/* register base address*/
- 	struct	dmar_dev_scope *devices;/* target device array	*/
- 	int	devices_cnt;		/* target device count	*/
-@@ -60,6 +59,7 @@ struct dmar_drhd_unit {
- 	u8	ignored:1; 		/* ignore drhd		*/
- 	u8	include_all:1;
- 	struct intel_iommu *iommu;
-+	struct  acpi_dmar_header hdr[0];/* ACPI header		*/
- };
- 
- struct dmar_pci_path {
+-	if (!drhd->reg_base_addr) {
+-		warn_invalid_dmar(0, "");
+-		return -EINVAL;
+-	}
+-
+ 	iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
+ 	if (!iommu)
+ 		return -ENOMEM;
 -- 
 1.7.9.5
