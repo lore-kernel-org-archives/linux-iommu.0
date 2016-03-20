@@ -1,8 +1,8 @@
 From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [Patch V2 3/4] iommu/vt-d: check Register Base Address at the
-	beginning of dmar_parse_one_drhd()
-Date: Sun, 20 Mar 2016 13:57:30 +0000
-Message-ID: <1458482251-7939-4-git-send-email-richard.weiyang@gmail.com>
+Subject: [Patch V2 4/4] iommu/vt-d: refine dmar_acpi_dev_scope_init() with
+	dmar_walk_dmar_table()
+Date: Sun, 20 Mar 2016 13:57:31 +0000
+Message-ID: <1458482251-7939-5-git-send-email-richard.weiyang@gmail.com>
 References: <1458482251-7939-1-git-send-email-richard.weiyang@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,84 +22,89 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-A NULL value of Register Base Address in a Hardware Unit Definition means
-it is an invalid dmar. Current implementation checks this value in
-alloc_iommu(), by when it has already allocated memory to store itself and
-device scope.
+dmar_acpi_dev_scope_init() iterates on the remapping structure and just do
+proper job for ANDD structure. This is the what dmar_walk_dmar_table()
+does.
 
-This patch moves the check at the beginning of dmar_parse_one_drhd(), so
-that it notices this is an invalid dmar and avoids related setup jobs.
+This patch improves the code with dmar_walk_dmar_table().
 
 Signed-off-by: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/dmar.c |   34 +++++++++++++++++-----------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
+ drivers/iommu/dmar.c |   56 ++++++++++++++++++++++++++++----------------------
+ 1 file changed, 32 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 04f199c..82f0b92 100644
+index 82f0b92..538e260 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -363,6 +363,18 @@ dmar_find_dmaru(struct acpi_dmar_hardware_unit *drhd)
- 	return NULL;
+@@ -733,36 +733,44 @@ static void __init dmar_acpi_insert_dev_scope(u8 device_number,
+ 		device_number, dev_name(&adev->dev));
  }
  
-+static void warn_invalid_dmar(u64 addr, const char *message)
-+{
-+	WARN_TAINT_ONCE(
-+		1, TAINT_FIRMWARE_WORKAROUND,
-+		"Your BIOS is broken; DMAR reported at address %llx%s!\n"
-+		"BIOS vendor: %s; Ver: %s; Product Version: %s\n",
-+		addr, message,
-+		dmi_get_system_info(DMI_BIOS_VENDOR),
-+		dmi_get_system_info(DMI_BIOS_VERSION),
-+		dmi_get_system_info(DMI_PRODUCT_VERSION));
+-static int __init dmar_acpi_dev_scope_init(void)
++static int __dmar_acpi_dev_scope_init(struct acpi_dmar_header *header,
++				      void *arg)
+ {
+ 	struct acpi_dmar_andd *andd;
++	acpi_handle h;
++	struct acpi_device *adev;
++
++	andd = (struct acpi_dmar_andd *)header;
++	if (!ACPI_SUCCESS(acpi_get_handle(ACPI_ROOT_OBJECT,
++					  andd->device_name,
++					  &h))) {
++		pr_err("Failed to find handle for ACPI object %s\n",
++		       andd->device_name);
++		return 0;
++	}
++	if (acpi_bus_get_device(h, &adev)) {
++		pr_err("Failed to get device for ACPI object %s\n",
++		       andd->device_name);
++		return 0;
++	}
++	dmar_acpi_insert_dev_scope(andd->device_number, adev);
++	return 0;
 +}
 +
- /**
-  * dmar_parse_one_drhd - parses exactly one DMA remapping hardware definition
-  * structure which uniquely represent one DMA remapping hardware unit
-@@ -379,6 +391,11 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
- 	if (dmaru)
- 		goto out;
++static int __init dmar_acpi_dev_scope_init(void)
++{
++	struct acpi_table_dmar *dmar;
++	struct dmar_res_callback cb = {
++		.print_entry = false,
++		.ignore_unhandled = true,
++		.cb[ACPI_DMAR_TYPE_NAMESPACE] = &__dmar_acpi_dev_scope_init,
++	};
  
-+	if (!drhd->address) {
-+		warn_invalid_dmar(0, "");
-+		return -EINVAL;
-+	}
-+
- 	dmaru = kzalloc(sizeof(*dmaru) + header->length, GFP_KERNEL);
- 	if (!dmaru)
- 		return -ENOMEM;
-@@ -808,18 +825,6 @@ int __init dmar_table_init(void)
- 	return dmar_table_initialized < 0 ? dmar_table_initialized : 0;
+ 	if (dmar_tbl == NULL)
+ 		return -ENODEV;
+ 
+-	for (andd = (void *)dmar_tbl + sizeof(struct acpi_table_dmar);
+-	     ((unsigned long)andd) < ((unsigned long)dmar_tbl) + dmar_tbl->length;
+-	     andd = ((void *)andd) + andd->header.length) {
+-		if (andd->header.type == ACPI_DMAR_TYPE_NAMESPACE) {
+-			acpi_handle h;
+-			struct acpi_device *adev;
+-
+-			if (!ACPI_SUCCESS(acpi_get_handle(ACPI_ROOT_OBJECT,
+-							  andd->device_name,
+-							  &h))) {
+-				pr_err("Failed to find handle for ACPI object %s\n",
+-				       andd->device_name);
+-				continue;
+-			}
+-			if (acpi_bus_get_device(h, &adev)) {
+-				pr_err("Failed to get device for ACPI object %s\n",
+-				       andd->device_name);
+-				continue;
+-			}
+-			dmar_acpi_insert_dev_scope(andd->device_number, adev);
+-		}
+-	}
+-	return 0;
++	dmar = (struct acpi_table_dmar *)dmar_tbl;
++	return dmar_walk_dmar_table(dmar, &cb);
  }
  
--static void warn_invalid_dmar(u64 addr, const char *message)
--{
--	WARN_TAINT_ONCE(
--		1, TAINT_FIRMWARE_WORKAROUND,
--		"Your BIOS is broken; DMAR reported at address %llx%s!\n"
--		"BIOS vendor: %s; Ver: %s; Product Version: %s\n",
--		addr, message,
--		dmi_get_system_info(DMI_BIOS_VENDOR),
--		dmi_get_system_info(DMI_BIOS_VERSION),
--		dmi_get_system_info(DMI_PRODUCT_VERSION));
--}
--
- static int __ref
- dmar_validate_one_drhd(struct acpi_dmar_header *entry, void *arg)
- {
-@@ -995,11 +1000,6 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 	int msagaw = 0;
- 	int err;
- 
--	if (!drhd->reg_base_addr) {
--		warn_invalid_dmar(0, "");
--		return -EINVAL;
--	}
--
- 	iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
- 	if (!iommu)
- 		return -ENOMEM;
+ int __init dmar_dev_scope_init(void)
 -- 
 1.7.9.5
