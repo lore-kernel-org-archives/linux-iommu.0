@@ -1,54 +1,33 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [Patch V2 1/4] iommu/vt-d: replace *hdr with hdr[0] in struct
-	dmar_drhd_unit
-Date: Sun, 20 Mar 2016 16:42:29 +0100 (CET)
-Message-ID: <alpine.DEB.2.11.1603201631280.3978@nanos>
-References: <1458482251-7939-1-git-send-email-richard.weiyang@gmail.com>
-	<1458482251-7939-2-git-send-email-richard.weiyang@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1458482251-7939-2-git-send-email-richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Subject: [PATCH] iommu/rockchip: Don't feed NULL res pointers to devres
+Date: Mon, 21 Mar 2016 12:00:23 +0100
+Message-ID: <1458558024-6922-1-git-send-email-tomeu.vizoso@collabora.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>, Joerg Roedel <joro@8bytes.org>, Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, 20 Mar 2016, Wei Yang wrote:
+If we do, devres prints a "invalid resource" string in the error
+loglevel.
 
-> hdr in struct dmar_drhd_unit is used to point the DMAR hardware unit copied
-> at the end of struct dmar_drhd_unit. One zero-sized array may be more
-> elegant for this purpose.
+Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+---
+ drivers/iommu/rockchip-iommu.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-You forget to tell why. 
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index a6f593a0a29e..0253ab35c33b 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -1049,6 +1049,8 @@ static int rk_iommu_probe(struct platform_device *pdev)
  
-> This patch replace *hdr with hdr[0] in struct dmar_drhd_unit.
-> 
-> Besides this, this patch includes other two changes:
-> 1. remove unnecessary type cast in dmar_table_detect()
-
-Again. Why is it not necessary?
-
-> 2. type cast from acpi_dmar_header to acpi_dmar_hardware_unit directly
-
-Don't even think about doing that. container_of() is there for a reason.
-
-Your change works today, because the embedded structure is the first one in
-the containing structure. If the containing structure gets reordered later,
-the whole thing will explode in hard to debug ways.
-
-Even if such a reordering is unlikely in that ACPI case, we just don't do
-that. It's bad and sloppy coding style. The generated code is the same.
-
-Thanks,
-
-	tglx
+ 	for (i = 0; i < pdev->num_resources; i++) {
+ 		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
++		if (!res)
++			continue;
+ 		iommu->bases[i] = devm_ioremap_resource(&pdev->dev, res);
+ 		if (IS_ERR(iommu->bases[i]))
+ 			continue;
+-- 
+2.5.0
