@@ -1,17 +1,14 @@
-From: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Subject: Re: [Patch V2 1/4] iommu/vt-d: replace *hdr with hdr[0] in struct
-	dmar_drhd_unit
-Date: Mon, 21 Mar 2016 17:53:15 +0100 (CET)
-Message-ID: <alpine.DEB.2.11.1603211747090.3978@nanos>
-References: <1458482251-7939-1-git-send-email-richard.weiyang@gmail.com>
-	<1458482251-7939-2-git-send-email-richard.weiyang@gmail.com>
-	<alpine.DEB.2.11.1603201631280.3978@nanos>
-	<20160321144646.GA12947@vultr.guest>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] arm64/dma-mapping: Add DMA_ATTR_ALLOC_SINGLE_PAGES support
+Date: Mon, 21 Mar 2016 18:01:47 +0000
+Message-ID: <20160321180147.GR23397@arm.com>
+References: <1456944866-15990-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160321144646.GA12947-yrDqe6+Pica9sAcnBtTtJQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1456944866-15990-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,93 +18,71 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 21 Mar 2016, Wei Yang wrote:
-> On Sun, Mar 20, 2016 at 04:42:29PM +0100, Thomas Gleixner wrote:
-> >On Sun, 20 Mar 2016, Wei Yang wrote:
-> >
-> >> hdr in struct dmar_drhd_unit is used to point the DMAR hardware unit copied
-> >> at the end of struct dmar_drhd_unit. One zero-sized array may be more
-> >> elegant for this purpose.
-> >
-> >You forget to tell why. 
-> > 
+On Thu, Mar 03, 2016 at 02:54:26AM +0800, Yong Wu wrote:
+> Sometimes it is not worth for the iommu allocating big chunks.
+> Here we enable DMA_ATTR_ALLOC_SINGLE_PAGES which could help avoid to
+> allocate big chunks while iommu allocating buffer.
 > 
-> One possible benefit is to save some space.
+> More information about this attribute, please check Doug's commit[1].
 > 
-> Before commit 6b1972493a84 "iommu/vt-d: Implement DMAR unit hotplug framework",
-> dmaru->hdr just points to the memory region of DMA remapping hardware
-> definition. In this case, it would have no difference to where we put hdr.
+> [1]: https://lkml.org/lkml/2016/1/11/720
 > 
-> After this commit, DMA remapping hardware definition is copied and
-> attach to the end of dmaru structure. By replacing a pointer with a zero-sized
-> array, that would save some space for this structure.
-
-Sure and exactly that explanation should be in the changelog. Not some
-handwaving "may be more elegant". We don't care about elegance, we care about
-correctness.
- 
-> >> This patch replace *hdr with hdr[0] in struct dmar_drhd_unit.
-> >> 
-> >> Besides this, this patch includes other two changes:
-> >> 1. remove unnecessary type cast in dmar_table_detect()
-> >
-> >Again. Why is it not necessary?
-> >
+> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Suggested-by: Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> ---
 > 
-> The second parameter's type of function acpi_get_table_with_size() is "struct
-> acpi_table_header **", and type of dmar_tbl is "struct acpi_table_header *".
+> Our video drivers may soon use this.
 > 
-> So without the type cast, the type of parameter and the function definition
-> matches.
-
-That's the information which a changelog wants to have, because otherwise a
-reviewer is forced to lookup the prototypes ....
-
-So a simple:
-
-   "Remove redundant type case to same type"
-
-would have told me what you are doing.
- 
-> >> 2. type cast from acpi_dmar_header to acpi_dmar_hardware_unit directly
-> >
-> >Don't even think about doing that. container_of() is there for a reason.
-> >
-> >Your change works today, because the embedded structure is the first one in
-> >the containing structure. If the containing structure gets reordered later,
-> >the whole thing will explode in hard to debug ways.
-> >
-> >Even if such a reordering is unlikely in that ACPI case, we just don't do
-> >that. It's bad and sloppy coding style. The generated code is the same.
-> >
+>  arch/arm64/mm/dma-mapping.c |  4 ++--
+>  drivers/iommu/dma-iommu.c   | 14 ++++++++++----
+>  include/linux/dma-iommu.h   |  4 ++--
+>  3 files changed, 14 insertions(+), 8 deletions(-)
 > 
-> Yes, I agree with you that make this change should be very careful, while I
-> think the original usage of container_of() is not necessary.
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index 331c4ca..3225e3ca 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -562,8 +562,8 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+>  		struct page **pages;
+>  		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
+>  
+> -		pages = iommu_dma_alloc(dev, iosize, gfp, ioprot, handle,
+> -					flush_page);
+> +		pages = iommu_dma_alloc(dev, iosize, gfp, ioprot, attrs,
+> +					handle, flush_page);
+>  		if (!pages)
+>  			return NULL;
+>  
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 72d6182..3569cb6 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -190,7 +190,8 @@ static void __iommu_dma_free_pages(struct page **pages, int count)
+>  	kvfree(pages);
+>  }
+>  
+> -static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
+> +static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp,
+> +					     struct dma_attrs *attrs)
+>  {
+>  	struct page **pages;
+>  	unsigned int i = 0, array_size = count * sizeof(*pages);
+> @@ -203,6 +204,10 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
+>  	if (!pages)
+>  		return NULL;
+>  
+> +	/* Go straight to 4K chunks if caller says it's OK. */
+> +	if (dma_get_attr(DMA_ATTR_ALLOC_SINGLE_PAGES, attrs))
+> +		order = 0;
 
-It's not necessary, but it is correct. Removing it is just putting assumptions
-into the code, which is never a good idea.
+I have a slight snag with this, in that you don't consult the IOMMU
+pgsize_bitmap at any point, and assume that it can map pages at the
+same granularity as the CPU. The documentation for
+DMA_ATTR_ALLOC_SINGLE_PAGES seems to be weaker than that.
 
-> Literally, it converts "struct acpi_dmar_header" to "struct
-> acpi_dmar_hardware_unit", because the first one is an element "header" of the
-> second one. While let's look at how the dmaru->hdr is initialized in
-> dmar_parse_one_drhd(), we copy the memory of "struct acpi_dmar_hardware_unit"
-> to a region where dmaru->hdr points to. So the code itself implies "struct
-> acpi_dmar_header" is the first element of "struct acpi_dmar_hardware_unit".
-
-Which is wrong to begin with. Assumption of first elements are crap.
-
-> Otherwise, we can't do this memcpy in dmar_parse_one_drhd().
- 
-> BTW, I am thinking changing the type of dmaru->hdr from "struct
-> acpi_dmar_header *" to "struct acpi_dmar_hardware_unit *". By doing so the
-> code would be more self explain, and it doesn't need to cast back and forth.
-
-Yes, that makes sense.
-
-Thanks,
-
-	tglx
+Will
