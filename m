@@ -1,14 +1,11 @@
-From: Codrin Constantin Ciubotariu <codrin.ciubotariu-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [PATCH 0/7] PAMU driver update
-Date: Tue, 22 Mar 2016 13:59:56 +0000
-Message-ID: <VI1PR0401MB1792938B9AA394D7E3F2A1D7E9800@VI1PR0401MB1792.eurprd04.prod.outlook.com>
-References: <1457364863-18004-1-git-send-email-codrin.ciubotariu@nxp.com>
+From: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+Subject: [PATCH] iommu/rockchip: Only log stall errors when attaching
+Date: Tue, 22 Mar 2016 16:04:33 +0100
+Message-ID: <1458659073-13553-1-git-send-email-tomeu.vizoso@collabora.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1457364863-18004-1-git-send-email-codrin.ciubotariu-3arQi8VN3Tc@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,52 +15,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org" <Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Move the logging of timeouts when stalling the MMU to
+rk_iommu_attach_device, as it's expected that sometimes the MMU won't
+get stalled when detaching a device, and it's not a real problem that
+would need to be communicated to the user.
 
-Anyone has any comments on this patch-set? Please share your thoughts.
+Signed-off-by: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+---
+ drivers/iommu/rockchip-iommu.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-Thanks and best regards,
-Codrin
-
-> -----Original Message-----
-> From: Codrin Ciubotariu [mailto:codrin.ciubotariu-3arQi8VN3Tc@public.gmane.org]
-> Sent: Monday, 07 March, 2016 5:34 PM
-> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Cc: scottwood-KZfg59tc24xl57MIdRCFDg@public.gmane.org; Varun.Sethi-KZfg59tc24xl57MIdRCFDg@public.gmane.org; linuxppc-
-> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org; Codrin Constantin Ciubotariu
-> Subject: [PATCH 0/7] PAMU driver update
-> 
-> This patchset addresses a few issues found on PAMU IOMMU and small changes to
-> enable power management and to support the
-> L3 cache controller on some newer boards.
-> 
-> The series starts with a clean-up patch, followed by two errata fixes: A-007907
-> and A-005982. It continues with two fixes for PCIe support. The last two patches
-> add support for power management and compatible strings for new L3 controller
-> device-tree nodes.
-> 
-> Codrin Ciubotariu (2):
->   iommu/fsl: Fix most checkpatch warnings and typos
->   iommu/fsl: Work around erratum A-007907
-> 
-> Varun Sethi (5):
->   iommu/fsl: Enable OMT cache, before invalidating PAACT and SPAACT
->     cache
->   iommu/fsl: Factor out PCI specific code
->   iommu/fsl: Enable default DMA window for PCIe devices once detached
->     from domain
->   iommu/fsl: PAMU power management support
->   iommu/fsl: Added cache controller compatible strings for SOCs
-> 
->  drivers/iommu/fsl_pamu.c        | 322 ++++++++++++++++++++++++++++++++--------
->  drivers/iommu/fsl_pamu.h        |  30 ++--
->  drivers/iommu/fsl_pamu_domain.c | 160 +++++++++++++-------
->  drivers/iommu/fsl_pamu_domain.h |   2 +-
->  4 files changed, 381 insertions(+), 133 deletions(-)
-> 
-> --
-> 1.9.3
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 0253ab35c33b..65325b6742e6 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -346,13 +346,7 @@ static int rk_iommu_enable_stall(struct rk_iommu *iommu)
+ 
+ 	rk_iommu_command(iommu, RK_MMU_CMD_ENABLE_STALL);
+ 
+-	ret = rk_wait_for(rk_iommu_is_stall_active(iommu), 1);
+-	if (ret)
+-		for (i = 0; i < iommu->num_mmu; i++)
+-			dev_err(iommu->dev, "Enable stall request timed out, status: %#08x\n",
+-				rk_iommu_read(iommu->bases[i], RK_MMU_STATUS));
+-
+-	return ret;
++	return rk_wait_for(rk_iommu_is_stall_active(iommu), 1);
+ }
+ 
+ static int rk_iommu_disable_stall(struct rk_iommu *iommu)
+@@ -798,8 +792,12 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+ 		return 0;
+ 
+ 	ret = rk_iommu_enable_stall(iommu);
+-	if (ret)
++	if (ret) {
++		for (i = 0; i < iommu->num_mmu; i++)
++			dev_err(iommu->dev, "Enable stall request timed out, status: %#08x\n",
++				rk_iommu_read(iommu->bases[i], RK_MMU_STATUS));
+ 		return ret;
++	}
+ 
+ 	ret = rk_iommu_force_reset(iommu);
+ 	if (ret)
+-- 
+2.5.0
