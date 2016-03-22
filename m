@@ -1,14 +1,16 @@
-From: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH] arm64/dma-mapping: Add DMA_ATTR_ALLOC_SINGLE_PAGES support
-Date: Tue, 22 Mar 2016 10:37:14 -0700
-Message-ID: <CAD=FV=WL-OgE6D+8m3A8ZSJ8HgVZJw_+7uBce=qPh80LaxQKbg@mail.gmail.com>
-References: <1456944866-15990-1-git-send-email-yong.wu@mediatek.com>
-	<20160321180147.GR23397@arm.com>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH 1/2] of: Implement iterator for phandles
+Date: Tue, 22 Mar 2016 18:55:49 +0100
+Message-ID: <20160322175549.GC3529@suse.de>
+References: <1458146527-1133-1-git-send-email-joro@8bytes.org>
+	<1458146527-1133-2-git-send-email-joro@8bytes.org>
+	<CAL_JsqKjaB_YK3JY053BvcDpfr5pMg4-f53L4QYupuP=kQsLuw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160321180147.GR23397-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqKjaB_YK3JY053BvcDpfr5pMg4-f53L4QYupuP=kQsLuw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,97 +20,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Grant Likely <grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Will,
+Hi Rob,
 
-On Mon, Mar 21, 2016 at 11:01 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Thu, Mar 03, 2016 at 02:54:26AM +0800, Yong Wu wrote:
->> Sometimes it is not worth for the iommu allocating big chunks.
->> Here we enable DMA_ATTR_ALLOC_SINGLE_PAGES which could help avoid to
->> allocate big chunks while iommu allocating buffer.
->>
->> More information about this attribute, please check Doug's commit[1].
->>
->> [1]: https://lkml.org/lkml/2016/1/11/720
->>
->> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> Suggested-by: Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
->> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
->> ---
->>
->> Our video drivers may soon use this.
->>
->>  arch/arm64/mm/dma-mapping.c |  4 ++--
->>  drivers/iommu/dma-iommu.c   | 14 ++++++++++----
->>  include/linux/dma-iommu.h   |  4 ++--
->>  3 files changed, 14 insertions(+), 8 deletions(-)
->>
->> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
->> index 331c4ca..3225e3ca 100644
->> --- a/arch/arm64/mm/dma-mapping.c
->> +++ b/arch/arm64/mm/dma-mapping.c
->> @@ -562,8 +562,8 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
->>               struct page **pages;
->>               pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
->>
->> -             pages = iommu_dma_alloc(dev, iosize, gfp, ioprot, handle,
->> -                                     flush_page);
->> +             pages = iommu_dma_alloc(dev, iosize, gfp, ioprot, attrs,
->> +                                     handle, flush_page);
->>               if (!pages)
->>                       return NULL;
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index 72d6182..3569cb6 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -190,7 +190,8 @@ static void __iommu_dma_free_pages(struct page **pages, int count)
->>       kvfree(pages);
->>  }
->>
->> -static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
->> +static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp,
->> +                                          struct dma_attrs *attrs)
->>  {
->>       struct page **pages;
->>       unsigned int i = 0, array_size = count * sizeof(*pages);
->> @@ -203,6 +204,10 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
->>       if (!pages)
->>               return NULL;
->>
->> +     /* Go straight to 4K chunks if caller says it's OK. */
->> +     if (dma_get_attr(DMA_ATTR_ALLOC_SINGLE_PAGES, attrs))
->> +             order = 0;
->
-> I have a slight snag with this, in that you don't consult the IOMMU
-> pgsize_bitmap at any point, and assume that it can map pages at the
-> same granularity as the CPU. The documentation for
-> DMA_ATTR_ALLOC_SINGLE_PAGES seems to be weaker than that.
+On Fri, Mar 18, 2016 at 10:54:57AM -0500, Rob Herring wrote:
+> This mostly looks fine to me, but it is kind of a lot of functions
+> just for this one thing. For example, I think the caller can track the
+> index themselves if they care about it. I'd also like to see a more
+> standard style for_each type iterator define rather than open coded
+> while loops.
 
-Interesting.  Is that something that exists in the real world?  ...or
-something you think is coming soon?
+Thanks for your feedback. I think I worked everything into the patches
+and am about to send a new version.
 
-I'd argue that such a case existed in the real world then probably
-we're already broken.  Unless I'm misreading, existing code will
-already fall all the way back to order 0 allocations.  ...so while
-existing code might could work if it was called on a totally
-unfragmented system, it would already break once some fragmentation
-was introduced.
+> > +struct of_phandle_iterator {
+> > +       const struct device_node *np;
+> > +       const __be32 *list;
+> > +       const __be32 *list_end;
+> > +       const __be32 *phandle_end;
+> > +       phandle phandle;
+> > +       struct device_node *node;
+> 
+> np and node? If you need both, name them based on what they point to.
 
-I'm not saying that we shouldn't fix the code to handle this, I'm just
-saying that Yong Wu's patch doesn't appear to break any code that
-wasn't already broken.  That might be reason to land his code first,
-then debate the finer points of whether IOMMUs with less granularity
-are likely to exist and whether we need to add complexity to the code
-to handle them (or just detect this case and return an error).
+Yes, 'np' is the parent node, while 'node' is the current node the
+iterator points to. The parent node is needed for the error messages
+later.
 
->From looking at a WIP patch provided to me by Yong Wu, it looks as if
-he thinks several more functions need to change to handle this need
-for IOMMUs that can't handle small pages.  That seems to be further
-evidence that the work should be done in a separate patch.
+> > +static inline struct device_node *of_phandle_iterator_node(struct of_phandle_iterator *it)
+> > +{
+> > +       if (!it->node)
+> > +               it->node = of_find_node_by_phandle(it->phandle);
+> > +
+> > +       if (it->node)
+> > +               of_node_get(it->node);
+> 
+> The above function may have already done the get. Not sure offhand.
+
+Yes, it does. But when the iterator moves on the node will be put again.
+So when it is returned here we get an extra reference.
+
+But it doesn't matter anymore as I changed the code to unconditionally
+get the node in of_phandle_iterator_next now.
 
 
-Doug
+
+	Joerg
