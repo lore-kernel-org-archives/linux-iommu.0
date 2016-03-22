@@ -1,11 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 0/6] of: Implement iterator for phandles
-Date: Tue, 22 Mar 2016 18:58:23 +0100
-Message-ID: <1458669509-7178-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 3/6] of: Remove counting special case from
+	__of_parse_phandle_with_args()
+Date: Tue, 22 Mar 2016 18:58:26 +0100
+Message-ID: <1458669509-7178-4-git-send-email-joro@8bytes.org>
+References: <1458669509-7178-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1458669509-7178-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,62 +22,58 @@ To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, grant.likely-
 Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-here is an implementation of the iterator over phandles
-concept which Rob Herring suggested to me some time ago. My
-approach is a little bit different from what the diff showed
-back then, but it gets rid of the allocation and 'struct
-'struct of_phandle_args' misuse.
+The index = -1 case in __of_parse_phandle_with_args() is
+used to just return the number of phandles. That special
+case needs extra handling, so move it to the place where it
+is needed: of_count_phandle_with_args().
 
-I also converted the arm-smmu driver to make use of the
-iterator. The resulting kernel boots on my AMD Seattle
-system and fixes the warning triggered there. The patches
-now also pass all dt-unittests in my kvm environment.
+This allows to further simplify __of_parse_phandle_with_args()
+later on.
 
-Please review. Patches are based on v4.5.
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/of/base.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
-Thanks,
-
-	Joerg
-
-Changes since RFC post:
-
-* Reordered members of 'struct of_phandle_iterator' and did
-  some renaming
-
-* Removed index counting from the iterator
-
-* Split up iterator implementation into multiple patches
-
-* Fixed the code to survive all dt-unittests, tested with each
-  patch in this series
-
-* Re-added and updated some comments which got lost during the
-  conversion.
-
-* Added of_for_each_phandle macro for easier handling
-
-* Moved the counting special-case from __of_parse_phandle_with_args
-  directly to of_count_phandle_with_args for code
-  simplification
-
-* Removed some iterator helper functions
-
-* Formatting and style changes
-
-Joerg Roedel (6):
-  of: Introduce struct of_phandle_iterator
-  of: Move phandle walking to of_phandle_iterator_next()
-  of: Remove counting special case from __of_parse_phandle_with_args()
-  of: Introduce of_for_each_phandle() helper macro
-  of: Introduce of_phandle_iterator_args()
-  iommu/arm-smmu: Make use of phandle iterators in device-tree parsing
-
- drivers/iommu/arm-smmu.c |  28 +++++--
- drivers/of/base.c        | 206 ++++++++++++++++++++++++++++++-----------------
- include/linux/of.h       |  56 +++++++++++++
- 3 files changed, 211 insertions(+), 79 deletions(-)
-
+diff --git a/drivers/of/base.c b/drivers/of/base.c
+index 4036512..15593cd 100644
+--- a/drivers/of/base.c
++++ b/drivers/of/base.c
+@@ -1583,10 +1583,7 @@ static int __of_parse_phandle_with_args(const struct device_node *np,
+ 	 * Unlock node before returning result; will be one of:
+ 	 * -ENOENT : index is for empty phandle
+ 	 * -EINVAL : parsing error on data
+-	 * [1..n]  : Number of phandle (count mode; when index = -1)
+ 	 */
+-	if (rc == -ENOENT && index < 0)
+-		rc = cur_index;
+ 
+  err:
+ 	if (it.node)
+@@ -1722,8 +1719,20 @@ EXPORT_SYMBOL(of_parse_phandle_with_fixed_args);
+ int of_count_phandle_with_args(const struct device_node *np, const char *list_name,
+ 				const char *cells_name)
+ {
+-	return __of_parse_phandle_with_args(np, list_name, cells_name, 0, -1,
+-					    NULL);
++	struct of_phandle_iterator it;
++	int rc, cur_index = 0;
++
++	rc = of_phandle_iterator_init(&it, np, list_name, cells_name, 0);
++	if (rc)
++		return rc;
++
++	while ((rc = of_phandle_iterator_next(&it)) == 0)
++		cur_index += 1;
++
++	if (rc != -ENOENT)
++		return rc;
++
++	return cur_index;
+ }
+ EXPORT_SYMBOL(of_count_phandle_with_args);
+ 
 -- 
 1.9.1
