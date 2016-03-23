@@ -1,36 +1,52 @@
-From: Madalin-Cristian Bucur <madalin.bucur@nxp.com>
-Subject: Re: [v2] powerpc: Fix incorrect PPC32 PAMU dependency
-Date: Wed, 23 Mar 2016 09:59:08 +0000
-Message-ID: <AM4PR04MB16047A161F9CFDF7C65FCCC1EC810@AM4PR04MB1604.eurprd04.prod.outlook.com>
+From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [Patch V3 0/4] Code refine for Intel IOMMU
+Date: Wed, 23 Mar 2016 14:15:45 +0000
+Message-ID: <1458742549-28504-1-git-send-email-richard.weiyang@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: "joro@8bytes.org" <joro@8bytes.org>, Andy Fleming <afleming@gmail.com>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQo+IEZyb206IEFuZHkgRmxlbWluZyA8YWZsZW1p
-bmdAZ21haWwuY29tPgo+IFRvOiBqb3JvQDhieXRlcy5vcmcKPiBDYzogaW9tbXVAbGlzdHMubGlu
-dXgtZm91bmRhdGlvbi5vcmcsIGxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnCj4gU3ViamVj
-dDogW3YyXSBwb3dlcnBjOiBGaXggaW5jb3JyZWN0IFBQQzMyIFBBTVUgZGVwZW5kZW5jeQo+Cj4g
-VGhlIEZyZWVzY2FsZSBQQU1VIGNhbiBiZSBlbmFibGVkIG9uIGJvdGggMzIgYW5kIDY0LWJpdCBQ
-b3dlcgo+IGNoaXBzLiBDb21taXQgNDc3YWI3YTE5Y2VjODQwOWU0ZTJkZDEwZTczNDhlNGNhYzNj
-MDZlNQo+IChpb21tdTogTWFrZSBtb3JlIGRyaXZlcnMgZGVwZW5kIG9uIENPTVBJTEVfVEVTVCkK
-PiByZXN0cmljdGVkIFBBTVUgdG8gUFBDMzIuIFBQQyBjb3ZlcnMgYm90aC4KPgo+IFNpZ25lZC1v
-ZmYtYnk6IEFuZHkgRmxlbWluZyA8YWZsZW1pbmdAZ21haWwuY29tPgoKVGVzdGVkLWJ5OiBNYWRh
-bGluIEJ1Y3VyIDxtYWRhbGluLmJ1Y3VyQGZyZWVzY2FsZS5jb20+CgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpMaW51eHBwYy1kZXYgbWFpbGluZyBsaXN0
-CkxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnCmh0dHBzOi8vbGlzdHMub3psYWJzLm9yZy9s
-aXN0aW5mby9saW51eHBwYy1kZXY=
+These four patches try to refine the Intel IOMMU.                                                                                     
+                                                                                                                                      
+Patch 1/2 tries to make it more user friendly by add a zero-sized array in                                                            
+some dmar data structure.                                                                                                             
+Patch 3 move the ckeck of Register Base Address ahead to avoid cleanup when it                                                        
+is NULL.                                                                                                                              
+Patch 4 re-use dmar_walk_dmar_table() to make the code easy to understand.
+
+V3:
+  * change hdr to drhd from type acpi_dmar_header to acpi_dmar_hardware_unit 
+  * add reason in changelog for the change in Patch 1
+
+V2:
+  * add patch 3 and 4
+
+Wei Yang (4):
+  iommu/vt-d: replace *hdr with drhd[0] in struct dmar_drhd_unit
+  iommu/vt-d: use zero-sized array in DMAR related ACPI structures
+  iommu/vt-d: check Register Base Address at the beginning of
+    dmar_parse_one_drhd()
+  iommu/vt-d: refine dmar_acpi_dev_scope_init() with
+    dmar_walk_dmar_table()
+
+ drivers/iommu/dmar.c                |  129 +++++++++++++++++------------------
+ drivers/iommu/intel_irq_remapping.c |   10 ++-
+ include/acpi/actbl2.h               |   31 +++++----
+ include/linux/dmar.h                |    3 +-
+ 4 files changed, 87 insertions(+), 86 deletions(-)
+
+-- 
+1.7.9.5
