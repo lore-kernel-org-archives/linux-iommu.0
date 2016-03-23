@@ -1,8 +1,8 @@
 From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [Patch V3 1/4] iommu/vt-d: replace *hdr with drhd[0] in struct
-	dmar_drhd_unit
-Date: Wed, 23 Mar 2016 14:15:46 +0000
-Message-ID: <1458742549-28504-2-git-send-email-richard.weiyang@gmail.com>
+Subject: [Patch V3 2/4] iommu/vt-d: use zero-sized array in DMAR related ACPI
+	structures
+Date: Wed, 23 Mar 2016 14:15:47 +0000
+Message-ID: <1458742549-28504-3-git-send-email-richard.weiyang@gmail.com>
 References: <1458742549-28504-1-git-send-email-richard.weiyang@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,148 +22,170 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Before commit <6b1972493a84> ("iommu/vt-d: Implement DMAR unit hotplug
-framework"),dmaru->hdr just points to the memory region of DMA remapping
-hardware definition. In this case, it would have no difference to where we
-put hdr.
+1. DMAR table has variable number of remapping entries
+2. DMAR hardware unit has variable number of device scope
+3. DMAR device scope has variable number of pci path
 
-After this commit, DMA remapping hardware definition is copied and
-attach to the end of dmaru structure. By replacing a pointer with a
-zero-sized array, that would save some space for this structure.
+In current implementation, we use (head + 1) to access these variable
+number elements, which may not be obvious for audience. Zero-sized array is
+usually used for this purpose.
 
-This patch replace *hdr with drhd[0] in struct dmar_drhd_unit and change
-the type from acpi_dmar_header to acpi_dmar_hardware_unit. By doing so, it
-reflects the real data type contained in dmar_drhd_unit and avoid some type
-cast between them.
-
-Besides this, this patch includes another change:
-* remove redundant type cast to the same type in dmar_table_detect()
+This patch adds zero-sized array for variable elements in DMAR ACPI
+structures, which tries to make the code more audience friendly.
 
 Signed-off-by: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/dmar.c                |   17 +++++------------
- drivers/iommu/intel_irq_remapping.c |   10 ++++------
- include/linux/dmar.h                |    3 ++-
- 3 files changed, 11 insertions(+), 19 deletions(-)
+ drivers/iommu/dmar.c  |   22 ++++++++++------------
+ include/acpi/actbl2.h |   31 +++++++++++++++++--------------
+ 2 files changed, 27 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 80e3c17..80199b3 100644
+index 80199b3..6bff602 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -292,8 +292,7 @@ static int dmar_pci_bus_add_dev(struct dmar_pci_notify_info *info)
- 		if (dmaru->include_all)
+@@ -225,7 +225,6 @@ int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
+ 	int i, level;
+ 	struct device *tmp, *dev = &info->dev->dev;
+ 	struct acpi_dmar_device_scope *scope;
+-	struct acpi_dmar_pci_path *path;
+ 
+ 	if (segment != info->seg)
+ 		return 0;
+@@ -236,9 +235,8 @@ int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
+ 		    scope->entry_type != ACPI_DMAR_SCOPE_TYPE_BRIDGE)
  			continue;
  
--		drhd = container_of(dmaru->hdr,
--				    struct acpi_dmar_hardware_unit, header);
-+		drhd = dmaru->drhd;
- 		ret = dmar_insert_dev_scope(info, (void *)(drhd + 1),
- 				((void *)drhd) + drhd->header.length,
- 				dmaru->segment,
-@@ -390,8 +389,7 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
- 	 * If header is allocated from slab by ACPI _DSM method, we need to
- 	 * copy the content because the memory buffer will be freed on return.
- 	 */
--	dmaru->hdr = (void *)(dmaru + 1);
--	memcpy(dmaru->hdr, header, header->length);
-+	memcpy(dmaru->drhd, drhd, drhd->header.length);
+-		path = (struct acpi_dmar_pci_path *)(scope + 1);
+-		level = (scope->length - sizeof(*scope)) / sizeof(*path);
+-		if (!dmar_match_pci_path(info, scope->bus, path, level))
++		level = (scope->length - sizeof(*scope)) / sizeof(*scope->path);
++		if (!dmar_match_pci_path(info, scope->bus, scope->path, level))
+ 			continue;
+ 
+ 		if ((scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT) ^
+@@ -393,7 +391,7 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
  	dmaru->reg_base_addr = drhd->address;
  	dmaru->segment = drhd->segment;
  	dmaru->include_all = drhd->flags & 0x1; /* BIT0: INCLUDE_ALL */
-@@ -529,8 +527,7 @@ static int __init dmar_table_detect(void)
- 
- 	/* if we could find DMAR table, then there are DMAR devices */
- 	status = acpi_get_table_with_size(ACPI_SIG_DMAR, 0,
--				(struct acpi_table_header **)&dmar_tbl,
--				&dmar_tbl_size);
-+				&dmar_tbl, &dmar_tbl_size);
- 
- 	if (ACPI_SUCCESS(status) && !dmar_tbl) {
- 		pr_warn("Unable to map DMAR\n");
-@@ -663,9 +660,7 @@ dmar_find_matched_drhd_unit(struct pci_dev *dev)
- 
- 	rcu_read_lock();
- 	for_each_drhd_unit(dmaru) {
--		drhd = container_of(dmaru->hdr,
--				    struct acpi_dmar_hardware_unit,
--				    header);
-+		drhd = dmaru->drhd;
- 
- 		if (dmaru->include_all &&
- 		    drhd->segment == pci_domain_nr(dev->bus))
-@@ -693,9 +688,7 @@ static void __init dmar_acpi_insert_dev_scope(u8 device_number,
- 	struct acpi_dmar_pci_path *path;
- 
- 	for_each_drhd_unit(dmaru) {
--		drhd = container_of(dmaru->hdr,
--				    struct acpi_dmar_hardware_unit,
--				    header);
-+		drhd = dmaru->drhd;
- 
- 		for (scope = (void *)(drhd + 1);
- 		     (unsigned long)scope < ((unsigned long)drhd) + drhd->header.length;
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 1fae188..e35062e 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -886,17 +886,15 @@ static int ir_parse_one_ioapic_scope(struct acpi_dmar_device_scope *scope,
- 	return 0;
+-	dmaru->devices = dmar_alloc_dev_scope((void *)(drhd + 1),
++	dmaru->devices = dmar_alloc_dev_scope(drhd->dev_scope,
+ 					      ((void *)drhd) + drhd->header.length,
+ 					      &dmaru->devices_cnt);
+ 	if (dmaru->devices_cnt && dmaru->devices == NULL) {
+@@ -579,7 +577,7 @@ static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
+ static inline int dmar_walk_dmar_table(struct acpi_table_dmar *dmar,
+ 				       struct dmar_res_callback *cb)
+ {
+-	return dmar_walk_remapping_entries((void *)(dmar + 1),
++	return dmar_walk_remapping_entries(dmar->remapping_entries,
+ 			dmar->header.length - sizeof(*dmar), cb);
  }
  
--static int ir_parse_ioapic_hpet_scope(struct acpi_dmar_header *header,
-+static int ir_parse_ioapic_hpet_scope(struct acpi_dmar_hardware_unit *drhd,
- 				      struct intel_iommu *iommu)
- {
- 	int ret = 0;
--	struct acpi_dmar_hardware_unit *drhd;
+@@ -685,12 +683,11 @@ static void __init dmar_acpi_insert_dev_scope(u8 device_number,
  	struct acpi_dmar_device_scope *scope;
- 	void *start, *end;
+ 	struct device *tmp;
+ 	int i;
+-	struct acpi_dmar_pci_path *path;
  
--	drhd = (struct acpi_dmar_hardware_unit *)header;
- 	start = (void *)(drhd + 1);
--	end = ((void *)drhd) + header->length;
-+	end = ((void *)drhd) + drhd->header.length;
+ 	for_each_drhd_unit(dmaru) {
+ 		drhd = dmaru->drhd;
  
- 	while (start < end && ret == 0) {
- 		scope = start;
-@@ -940,7 +938,7 @@ static int __init parse_ioapics_under_ir(void)
- 		if (!ecap_ir_support(iommu->ecap))
- 			continue;
+-		for (scope = (void *)(drhd + 1);
++		for (scope = drhd->dev_scope;
+ 		     (unsigned long)scope < ((unsigned long)drhd) + drhd->header.length;
+ 		     scope = ((void *)scope) + scope->length) {
+ 			if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_NAMESPACE)
+@@ -698,15 +695,16 @@ static void __init dmar_acpi_insert_dev_scope(u8 device_number,
+ 			if (scope->enumeration_id != device_number)
+ 				continue;
  
--		ret = ir_parse_ioapic_hpet_scope(drhd->hdr, iommu);
-+		ret = ir_parse_ioapic_hpet_scope(drhd->drhd, iommu);
- 		if (ret)
- 			return ret;
+-			path = (void *)(scope + 1);
+ 			pr_info("ACPI device \"%s\" under DMAR at %llx as %02x:%02x.%d\n",
+ 				dev_name(&adev->dev), dmaru->reg_base_addr,
+-				scope->bus, path->device, path->function);
++				scope->bus, scope->path->device,
++				scope->path->function);
+ 			for_each_dev_scope(dmaru->devices, dmaru->devices_cnt, i, tmp)
+ 				if (tmp == NULL) {
+ 					dmaru->devices[i].bus = scope->bus;
+-					dmaru->devices[i].devfn = PCI_DEVFN(path->device,
+-									    path->function);
++					dmaru->devices[i].devfn =
++					  PCI_DEVFN(scope->path->device,
++						    scope->path->function);
+ 					rcu_assign_pointer(dmaru->devices[i].dev,
+ 							   get_device(&adev->dev));
+ 					return;
+diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
+index 6e28f54..fd5c615 100644
+--- a/include/acpi/actbl2.h
++++ b/include/acpi/actbl2.h
+@@ -403,17 +403,6 @@ struct acpi_table_dbgp {
+  *
+  ******************************************************************************/
  
-@@ -1420,7 +1418,7 @@ static int dmar_ir_add(struct dmar_drhd_unit *dmaru, struct intel_iommu *iommu)
- 		return -ENODEV;
- 	}
+-struct acpi_table_dmar {
+-	struct acpi_table_header header;	/* Common ACPI table header */
+-	u8 width;		/* Host Address Width */
+-	u8 flags;
+-	u8 reserved[10];
+-};
+-
+-/* Masks for Flags field above */
+-
+-#define ACPI_DMAR_INTR_REMAP        (1)
+-
+ /* DMAR subtable header */
  
--	if (ir_parse_ioapic_hpet_scope(dmaru->hdr, iommu)) {
-+	if (ir_parse_ioapic_hpet_scope(dmaru->drhd, iommu)) {
- 		pr_warn("DRHD %Lx: failed to parse managed IOAPIC/HPET\n",
- 			iommu->reg_phys);
- 		return -ENODEV;
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index e9bc929..70ef3cf 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -52,7 +52,6 @@ struct dmar_dev_scope {
- extern struct acpi_table_header *dmar_tbl;
- struct dmar_drhd_unit {
- 	struct list_head list;		/* list of drhd units	*/
--	struct  acpi_dmar_header *hdr;	/* ACPI header		*/
- 	u64	reg_base_addr;		/* register base address*/
- 	struct	dmar_dev_scope *devices;/* target device array	*/
- 	int	devices_cnt;		/* target device count	*/
-@@ -60,6 +59,8 @@ struct dmar_drhd_unit {
- 	u8	ignored:1; 		/* ignore drhd		*/
- 	u8	include_all:1;
- 	struct intel_iommu *iommu;
-+	struct  acpi_dmar_hardware_unit drhd[0];
-+					/* ACPI Hardware Unit Definition */
+ struct acpi_dmar_header {
+@@ -434,12 +423,18 @@ enum acpi_dmar_type {
+ 
+ /* DMAR Device Scope structure */
+ 
++struct acpi_dmar_pci_path {
++	u8 device;
++	u8 function;
++};
++
+ struct acpi_dmar_device_scope {
+ 	u8 entry_type;
+ 	u8 length;
+ 	u16 reserved;
+ 	u8 enumeration_id;
+ 	u8 bus;
++	struct acpi_dmar_pci_path path[0];
  };
  
- struct dmar_pci_path {
+ /* Values for entry_type in struct acpi_dmar_device_scope - device types */
+@@ -454,11 +449,18 @@ enum acpi_dmar_scope_type {
+ 	ACPI_DMAR_SCOPE_TYPE_RESERVED = 6	/* 6 and greater are reserved */
+ };
+ 
+-struct acpi_dmar_pci_path {
+-	u8 device;
+-	u8 function;
++struct acpi_table_dmar {
++	struct acpi_table_header header;	/* Common ACPI table header */
++	u8 width;		/* Host Address Width */
++	u8 flags;
++	u8 reserved[10];
++	struct acpi_dmar_header remapping_entries[0];
+ };
+ 
++/* Masks for Flags field above */
++
++#define ACPI_DMAR_INTR_REMAP        (1)
++
+ /*
+  * DMAR Subtables, correspond to Type in struct acpi_dmar_header
+  */
+@@ -471,6 +473,7 @@ struct acpi_dmar_hardware_unit {
+ 	u8 reserved;
+ 	u16 segment;
+ 	u64 address;		/* Register Base Address */
++	struct acpi_dmar_device_scope dev_scope[0];
+ };
+ 
+ /* Masks for Flags field above */
 -- 
 1.7.9.5
