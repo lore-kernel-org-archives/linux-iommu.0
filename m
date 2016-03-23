@@ -1,8 +1,7 @@
 From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [Patch V2 2/2] iommu: remove sysfs_link to device in
-	iommu_group/devices when failed
-Date: Wed, 23 Mar 2016 22:25:11 +0000
-Message-ID: <1458771911-30785-3-git-send-email-richard.weiyang@gmail.com>
+Subject: [Patch V2 1/2] iommu: remove the iommu_callback_data
+Date: Wed, 23 Mar 2016 22:25:10 +0000
+Message-ID: <1458771911-30785-2-git-send-email-richard.weiyang@gmail.com>
 References: <1458771911-30785-1-git-send-email-richard.weiyang@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,28 +21,94 @@ To: treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, alex.williamson-H+wXaHxf7aL
 Cc: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The original code forgets to remove the sysfs_link to a device in
-iommu_group/devices directory, when the creation fails or conflicts on the
-name.
+According to the code path, iommu_callback_data is passed in
+iommu_bus_init() and  just used in {add/remove}_iommu_group, by when the
+bus->iommu_ops is already set up properly.
 
-This patch tries to remove the sysfs_link on the failure.
+This patch removes the iommu_callback_data by retrieving iommu_ops from
+bus->iommu_ops directly.
 
 Signed-off-by: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/iommu.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/iommu.c |   21 ++++++---------------
+ 1 file changed, 6 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 2696a38..8f480ba 100644
+index 0e3b009..2696a38 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -403,6 +403,7 @@ rename:
- 	ret = sysfs_create_link_nowarn(group->devices_kobj,
- 				       &dev->kobj, device->name);
- 	if (ret) {
-+		sysfs_remove_link(group->devices_kobj, device->name);
- 		kfree(device->name);
- 		if (ret == -EEXIST && i >= 0) {
- 			/*
+@@ -37,10 +37,6 @@ static struct kset *iommu_group_kset;
+ static struct ida iommu_group_ida;
+ static struct mutex iommu_group_mutex;
+ 
+-struct iommu_callback_data {
+-	const struct iommu_ops *ops;
+-};
+-
+ struct iommu_group {
+ 	struct kobject kobj;
+ 	struct kobject *devices_kobj;
+@@ -867,8 +863,7 @@ struct iommu_domain *iommu_group_default_domain(struct iommu_group *group)
+ 
+ static int add_iommu_group(struct device *dev, void *data)
+ {
+-	struct iommu_callback_data *cb = data;
+-	const struct iommu_ops *ops = cb->ops;
++	const struct iommu_ops *ops = dev->bus->iommu_ops;
+ 	int ret;
+ 
+ 	if (!ops->add_device)
+@@ -891,8 +886,7 @@ static int add_iommu_group(struct device *dev, void *data)
+ 
+ static int remove_iommu_group(struct device *dev, void *data)
+ {
+-	struct iommu_callback_data *cb = data;
+-	const struct iommu_ops *ops = cb->ops;
++	const struct iommu_ops *ops = dev->bus->iommu_ops;
+ 
+ 	if (ops->remove_device && dev->iommu_group)
+ 		ops->remove_device(dev);
+@@ -953,13 +947,10 @@ static int iommu_bus_notifier(struct notifier_block *nb,
+ 	return 0;
+ }
+ 
+-static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
++static int iommu_bus_init(struct bus_type *bus)
+ {
+ 	int err;
+ 	struct notifier_block *nb;
+-	struct iommu_callback_data cb = {
+-		.ops = ops,
+-	};
+ 
+ 	nb = kzalloc(sizeof(struct notifier_block), GFP_KERNEL);
+ 	if (!nb)
+@@ -971,7 +962,7 @@ static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
+ 	if (err)
+ 		goto out_free;
+ 
+-	err = bus_for_each_dev(bus, NULL, &cb, add_iommu_group);
++	err = bus_for_each_dev(bus, NULL, NULL, add_iommu_group);
+ 	if (err)
+ 		goto out_err;
+ 
+@@ -980,7 +971,7 @@ static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
+ 
+ out_err:
+ 	/* Clean up */
+-	bus_for_each_dev(bus, NULL, &cb, remove_iommu_group);
++	bus_for_each_dev(bus, NULL, NULL, remove_iommu_group);
+ 	bus_unregister_notifier(bus, nb);
+ 
+ out_free:
+@@ -1012,7 +1003,7 @@ int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
+ 	bus->iommu_ops = ops;
+ 
+ 	/* Do IOMMU specific setup for this bus-type */
+-	err = iommu_bus_init(bus, ops);
++	err = iommu_bus_init(bus);
+ 	if (err)
+ 		bus->iommu_ops = NULL;
+ 
 -- 
 1.7.9.5
