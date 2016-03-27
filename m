@@ -1,70 +1,59 @@
-From: cn_wyl2003@126.com
-Subject: [PATCH] iommu: change generic_device_group function
-Date: Fri, 25 Mar 2016 20:06:51 +0800
-Message-ID: <1458907611-19694-1-git-send-email-cn_wyl2003@126.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org, will.deacon@arm.com, alex.williamson@redhat.com, renesas@opensource.se, yalin.wang2010@gmail.com, nicolas.iooss_linux@m4x.org, robin.murphy@arm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+From: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+Subject: [PATCH] drivers/iommu: don't select DEBUG_FS for AMD_IOMMU_STATS
+Date: Sat, 26 Mar 2016 21:18:44 -0400
+Message-ID: <1459041524-30929-1-git-send-email-paul.gortmaker@windriver.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Steven Rostedt (Red Hat)" <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: yalin wang <yalin.wang2010@gmail.com>
+We have at least one big banner telling people that they should
+not deploy production kernels with DEBUG options enabled, but
+at the same time, we make it hard for people to turn DEBUG_FS
+off when we select (vs. depend on) the CONFIG_DEBUG_FS option.
 
-change this function to return only iommu_group* pointer or
-PTR_ERR(), never return NULL when failed.
-The caller of this function only check IS_ERR() for its return value.
+Since we actively discourage people using debug-like features
+on any builds that are production oriented (see trace_printk
+banner for one example), so a generic sounding option should
+not select DEBUG_FS.
 
-Signed-off-by: yalin wang <yalin.wang2010@gmail.com>
+Since this is not a system critical option, convert it from a
+select to a depend -- this makes it nicer for us old school folk
+who edit .config and then run "make oldconfig" as a (bad?) habit.
+
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Steven Rostedt (Red Hat)" <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Signed-off-by: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 15 ---------------
- include/linux/iommu.h | 10 ++++++++--
- 2 files changed, 8 insertions(+), 17 deletions(-)
+ drivers/iommu/Kconfig | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index bfd4f7c..4984108 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -728,21 +728,6 @@ static int get_pci_alias_or_group(struct pci_dev *pdev, u16 alias, void *opaque)
- }
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index dd1dc39f84ff..959032bdbe12 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -126,8 +126,7 @@ config AMD_IOMMU
  
- /*
-- * Generic device_group call-back function. It just allocates one
-- * iommu-group per device.
-- */
--struct iommu_group *generic_device_group(struct device *dev)
--{
--	struct iommu_group *group;
--
--	group = iommu_group_alloc();
--	if (IS_ERR(group))
--		return NULL;
--
--	return group;
--}
--
--/*
-  * Use standard PCI bus topology, isolation features, and DMA alias quirks
-  * to find or create an IOMMU group for a device.
-  */
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a5c539f..462280b 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -327,8 +327,14 @@ static inline size_t iommu_map_sg(struct iommu_domain *domain,
- 
- /* PCI device grouping function */
- extern struct iommu_group *pci_device_group(struct device *dev);
--/* Generic device grouping function */
--extern struct iommu_group *generic_device_group(struct device *dev);
-+/*
-+ * Generic device_group call-back function. It just allocates one
-+ * iommu-group per device.
-+ */
-+static inline struct iommu_group *generic_device_group(struct device *dev)
-+{
-+	return iommu_group_alloc();
-+}
- 
- #else /* CONFIG_IOMMU_API */
- 
+ config AMD_IOMMU_STATS
+ 	bool "Export AMD IOMMU statistics to debugfs"
+-	depends on AMD_IOMMU
+-	select DEBUG_FS
++	depends on AMD_IOMMU && DEBUG_FS
+ 	---help---
+ 	  This option enables code in the AMD IOMMU driver to collect various
+ 	  statistics about whats happening in the driver and exports that
 -- 
-1.9.1
+2.6.1
