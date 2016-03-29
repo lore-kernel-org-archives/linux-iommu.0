@@ -1,73 +1,100 @@
-From: Radha Mohan <mohun106@gmail.com>
-Subject: Re: [PATCH V4] iommu/arm-smmu-v2: Workaround for ThunderX errata#27704
-Date: Mon, 28 Mar 2016 12:25:00 -0700
-Message-ID: <CAC8NTUXju1SMt_kUWNyOino8Y70DcAKW1buC+-s4qYoZi5NMtA@mail.gmail.com>
-References: <1457128569-13878-1-git-send-email-tchalamarla@caviumnetworks.com>
- <44D97D2C-5114-4FCD-AE3E-9404391FD449@caviumnetworks.com>
- <20160324175127.GA29365@arm.com>
- <4F6594C9-35E6-415B-B022-D78827C659C0@caviumnetworks.com>
- <CAC8NTUUXoW4mV7aFD90mbSpVaai=o6fxM+PLSUzu82qOjEJn2Q@mail.gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 1/2] dma/iommu: Add pgsize_bitmap confirmation in
+	__iommu_dma_alloc_pages
+Date: Tue, 29 Mar 2016 18:02:39 +0100
+Message-ID: <20160329170238.GK6745@arm.com>
+References: <1459146732-15620-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAC8NTUUXoW4mV7aFD90mbSpVaai=o6fxM+PLSUzu82qOjEJn2Q@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla@caviumnetworks.com>
-Cc: "mark.rutland@arm.com" <mark.rutland@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Akula,
- Geethasowjanya" <Geethasowjanya.Akula@caviumnetworks.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1459146732-15620-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Cc: srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Mar 28, 2016 at 11:57 AM, Radha Mohan <mohun106@gmail.com> wrote:
-> On Thu, Mar 24, 2016 at 11:29 AM, Chalamarla, Tirumalesh
-> <Tirumalesh.Chalamarla@caviumnetworks.com> wrote:
->> Thanks.
->>
->>
->>
->>
->> On 3/24/16, 10:51 AM, "Will Deacon" <will.deacon@arm.com> wrote:
->>
->>>On Thu, Mar 24, 2016 at 05:36:39PM +0000, Chalamarla, Tirumalesh wrote:
->>>> Do you want me to resend it with path version number change?
->>>
->>>Shouldn't be any need. I've queued this locally, and will push out when
->>>I update my repo after the merge window.
->>>
->
-> Minor change that affects the kernel compilation.
-> I think it makes sense to resubmit the patch.
->
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 6ed7c3e..4aca5c1 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -1834,8 +1834,8 @@ static int arm_smmu_device_dt_probe(struct
-> platform_device *pdev)
->          * asid/vmid space.
->          */
->         if (of_device_is_compatible(dev->of_node, "cavium,smmu-v2")) {
-> -               smmu->cavium_id_base = atomic_read(cavium_smmu_context_count);
-> -               atomic_add(smmu->num_context_banks, cavium_smmu_context_count);
-> +               smmu->cavium_id_base = atomic_read(&cavium_smmu_context_count);
-> +               atomic_add(smmu->num_context_banks, &cavium_smmu_context_count);
->         }
->
->         list_add(&smmu->list, &arm_smmu_devices);
->
+On Mon, Mar 28, 2016 at 02:32:11PM +0800, Yong Wu wrote:
+> Currently __iommu_dma_alloc_pages assumes that all the IOMMU support
+> the granule of PAGE_SIZE. It call alloc_page to try allocating memory
+> in the last time. Fortunately the mininum pagesize in all the
+> current IOMMU is SZ_4K, so this works well.
+> 
+> But there may be a case in which the mininum granule of IOMMU may be
+> larger than PAGE_SIZE, then it will abort as the IOMMU cann't map the
+> discontinuous memory within a granule. For example, the pgsize_bitmap
+> of the IOMMU only has SZ_16K while the PAGE_SIZE is SZ_4K, then we
+> have to prepare SZ_16K continuous memory at least for each a granule
+> iommu mapping.
 
-Ok, please ignore this, I missed the changes in between the thread :)
+Did you find a driver/platform that actually needs this? I certainly
+think it's possible, but we don't necessarily need to fix it if it's
+not broken yet! Just adding a comment would be enough.
 
->>>Will
->> _______________________________________________
->> linux-arm-kernel mailing list
->> linux-arm-kernel@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+Either way, a couple of review comments inline.
+
+> 
+> Signed-off-by: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> 
+> ---
+> v2:
+>  -rebase on v4.6-rc1.
+>  -add a new patch([1/2] add pgsize_bitmap) here.
+> 
+>  drivers/iommu/dma-iommu.c | 22 +++++++++++++---------
+>  1 file changed, 13 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 72d6182..75ce71e 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -190,11 +190,13 @@ static void __iommu_dma_free_pages(struct page **pages, int count)
+>  	kvfree(pages);
+>  }
+>  
+> -static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
+> +static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp,
+> +					     unsigned long pgsize_bitmap)
+>  {
+>  	struct page **pages;
+>  	unsigned int i = 0, array_size = count * sizeof(*pages);
+> -	unsigned int order = MAX_ORDER;
+> +	int min_order = get_order(1 << __ffs(pgsize_bitmap));
+
+1UL
+
+> +	int order = MAX_ORDER;
+>  
+>  	if (array_size <= PAGE_SIZE)
+>  		pages = kzalloc(array_size, GFP_KERNEL);
+> @@ -213,13 +215,16 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
+>  		/*
+>  		 * Higher-order allocations are a convenience rather
+>  		 * than a necessity, hence using __GFP_NORETRY until
+> -		 * falling back to single-page allocations.
+> +		 * falling back to min size allocations.
+>  		 */
+> -		for (order = min_t(unsigned int, order, __fls(count));
+> -		     order > 0; order--) {
+> -			page = alloc_pages(gfp | __GFP_NORETRY, order);
+> +		for (order = min_t(int, order, __fls(count));
+> +		     order >= min_order; order--) {
+> +			page = alloc_pages((order == min_order) ? gfp :
+> +					   gfp | __GFP_NORETRY, order);
+>  			if (!page)
+>  				continue;
+> +			if (!order)
+> +				break;
+
+Isn't this handled by the loop condition?
+
+Will
