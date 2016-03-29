@@ -1,45 +1,61 @@
-From: Eric Auger <eric.auger@linaro.org>
-Subject: Re: [RFC v5 03/17] iommu: introduce a reserved iova cookie
-Date: Tue, 29 Mar 2016 19:26:25 +0200
-Message-ID: <56FABAC1.1020506@linaro.org>
-References: <1456856877-4817-1-git-send-email-eric.auger@linaro.org>
- <1456856877-4817-4-git-send-email-eric.auger@linaro.org>
- <56D865B7.7000404@arm.com>
+From: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: [RFT v2] iommu/amd: use subsys_initcall() on amdv2 iommu
+Date: Tue, 29 Mar 2016 10:41:53 -0700
+Message-ID: <1459273313-5139-1-git-send-email-mcgrof@kernel.org>
+References: <20160316171719.GE2195@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <56D865B7.7000404@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Julien Grall <julien.grall@arm.com>, eric.auger@st.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org
-Cc: patches@linaro.org, Manish.Jaggi@caviumnetworks.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160316171719.GE2195-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, oded.gabbay-5C7GfCeVMHo@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Julien,
-On 03/03/2016 05:26 PM, Julien Grall wrote:
-> Hi Eric,
-> 
-> On 01/03/16 18:27, Eric Auger wrote:
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 0e3b009..7b2bb94 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -1072,6 +1072,7 @@ static struct iommu_domain
->> *__iommu_domain_alloc(struct bus_type *bus,
->>
->>       domain->ops  = bus->iommu_ops;
->>       domain->type = type;
->> +    mutex_init(&domain->reserved_mutex);
-> 
-> For consistency, the RB-tree reserved_binding_list should be initialized
-> too:
-> 
-> domain->reserved_binding_list = RB_ROOT;
-Sure
-
-Thank you
-
-Eric
-> 
-> Cheers,
-> 
+V2UgbmVlZCB0byBlbnN1cmUgYW1kIGlvbW11IHYyIGluaXRpYWxpemVzIGJlZm9yZQpkcml2ZXIg
+dXNlcyBzdWNoIGFzIGRyaXZlcnMvZ3B1L2RybS9hbWQvYW1ka2ZkL2tmZF9tb2R1bGUuYywKdG8g
+ZG8gdGhpcyBtYWtlIGl0cyBpbml0IHJvdXRpbmUgYSBzdWJzeXNfaW5pdGNhbGwoKSB3aGljaApl
+bnN1cmVzIGl0cyBsb2FkIGluaXQgaXMgY2FsbGVkIGZpcnN0IHRoYW4gbW9kdWxlcyB3aGVuCmJ1
+aWx0LWluLgoKVGhpcyByZXZlcnRzIHRoZSBvbGQgd29yayBhcm91bmQgaW1wbGVtZW50ZWQgdGhy
+b3VnaCBjb21taXQKMWJhY2M4OTRjMjI3ZmFkOGE3ICgiZHJpdmVyczogTW92ZSBpb21tdS8gYmVm
+b3JlIGdwdS8gaW4gTWFrZWZpbGUiKSwKaW5zdGVhZCBvZiBtYWtpbmcgdGhlIGRlcGVuZGVuY3kg
+aW1wbGljaXQgYnkgbGlua2VyIG9yZGVyIHRoaXMKbWFrZXMgdGhlIG9yZGVyaW5nIHJlcXVpcmVt
+ZW50IGV4cGxpY2l0IHRocm91Z2ggcHJvcGVyIGtlcm5lbApBUElzLgoKQ2M6IE9kZWQgR2FiYmF5
+IDxvZGVkLmdhYmJheUBhbWQuY29tPgpDYzogQ2hyaXN0aWFuIEvDtm5pZyA8Y2hyaXN0aWFuLmtv
+ZW5pZ0BhbWQuY29tPgpTaWduZWQtb2ZmLWJ5OiBMdWlzIFIuIFJvZHJpZ3VleiA8bWNncm9mQGtl
+cm5lbC5vcmc+Ci0tLQoKVGhpcyBnb2VzIGFsb25nIHdpdGggdGhlIHJldmVydCBpbmNsdWRlZC4g
+Q2FuIHNvbWVvbmUgcGxlYXNlIHRlc3Q/CgogZHJpdmVycy9NYWtlZmlsZSAgICAgICAgICAgICB8
+IDYgKystLS0tCiBkcml2ZXJzL2lvbW11L2FtZF9pb21tdV92Mi5jIHwgMiArLQogMiBmaWxlcyBj
+aGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDUgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJp
+dmVycy9NYWtlZmlsZSBiL2RyaXZlcnMvTWFrZWZpbGUKaW5kZXggOGY1ZDA3NmJhZWIwLi5jYzNj
+ZmJkZGMzNzYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvTWFrZWZpbGUKKysrIGIvZHJpdmVycy9NYWtl
+ZmlsZQpAQCAtNTAsMTAgKzUwLDcgQEAgb2JqLSQoQ09ORklHX1JFU0VUX0NPTlRST0xMRVIpCSs9
+IHJlc2V0Lwogb2JqLXkJCQkJKz0gdHR5Lwogb2JqLXkJCQkJKz0gY2hhci8KIAotIyBpb21tdS8g
+Y29tZXMgYmVmb3JlIGdwdSBhcyBncHUgYXJlIHVzaW5nIGlvbW11IGNvbnRyb2xsZXJzCi1vYmot
+JChDT05GSUdfSU9NTVVfU1VQUE9SVCkJKz0gaW9tbXUvCi0KLSMgZ3B1LyBjb21lcyBhZnRlciBj
+aGFyIGZvciBBR1AgdnMgRFJNIHN0YXJ0dXAgYW5kIGFmdGVyIGlvbW11CisjIGdwdS8gY29tZXMg
+YWZ0ZXIgY2hhciBmb3IgQUdQIHZzIERSTSBzdGFydHVwCiBvYmoteQkJCQkrPSBncHUvCiAKIG9i
+ai0kKENPTkZJR19DT05ORUNUT1IpCQkrPSBjb25uZWN0b3IvCkBAIC0xNDYsNiArMTQzLDcgQEAg
+b2JqLXkJCQkJKz0gY2xrLwogCiBvYmotJChDT05GSUdfTUFJTEJPWCkJCSs9IG1haWxib3gvCiBv
+YmotJChDT05GSUdfSFdTUElOTE9DSykJKz0gaHdzcGlubG9jay8KK29iai0kKENPTkZJR19JT01N
+VV9TVVBQT1JUKQkrPSBpb21tdS8KIG9iai0kKENPTkZJR19SRU1PVEVQUk9DKQkrPSByZW1vdGVw
+cm9jLwogb2JqLSQoQ09ORklHX1JQTVNHKQkJKz0gcnBtc2cvCiAKZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvaW9tbXUvYW1kX2lvbW11X3YyLmMgYi9kcml2ZXJzL2lvbW11L2FtZF9pb21tdV92Mi5jCmlu
+ZGV4IDU2OTk5ZDJmYWMwNy4uNjBkZjY0NWI5OTI3IDEwMDY0NAotLS0gYS9kcml2ZXJzL2lvbW11
+L2FtZF9pb21tdV92Mi5jCisrKyBiL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11X3YyLmMKQEAgLTEw
+MDQsNSArMTAwNCw1IEBAIHN0YXRpYyB2b2lkIF9fZXhpdCBhbWRfaW9tbXVfdjJfZXhpdCh2b2lk
+KQogCWRlc3Ryb3lfd29ya3F1ZXVlKGlvbW11X3dxKTsKIH0KIAotbW9kdWxlX2luaXQoYW1kX2lv
+bW11X3YyX2luaXQpOworc3Vic3lzX2luaXRjYWxsKGFtZF9pb21tdV92Ml9pbml0KTsKIG1vZHVs
+ZV9leGl0KGFtZF9pb21tdV92Ml9leGl0KTsKLS0gCjIuNy4yCgpfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlz
+dHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3Jn
+L21haWxtYW4vbGlzdGluZm8vaW9tbXU=
