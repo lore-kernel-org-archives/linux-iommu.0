@@ -1,61 +1,77 @@
-From: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: [RFT v2] iommu/amd: use subsys_initcall() on amdv2 iommu
-Date: Tue, 29 Mar 2016 10:41:53 -0700
-Message-ID: <1459273313-5139-1-git-send-email-mcgrof@kernel.org>
-References: <20160316171719.GE2195@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160316171719.GE2195-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, oded.gabbay-5C7GfCeVMHo@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+From: Boris Brezillon <boris.brezillon@free-electrons.com>
+Subject: [PATCH 0/4] scatterlist: sg_table from virtual pointer
+Date: Thu, 31 Mar 2016 14:29:40 +0200
+Message-ID: <1459427384-21374-1-git-send-email-boris.brezillon@free-electrons.com>
+Return-path: <owner-linux-mm@kvack.org>
+Sender: owner-linux-mm@kvack.org
+To: David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, linux-mtd@lists.infradead.org, Andrew Morton <akpm@linux-foundation.org>, Dave Gordon <david.s.gordon@intel.com>
+Cc: Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, Mauro Carvalho Chehab <m.chehab@samsung.com>, Hans Verkuil <hans.verkuil@cisco.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-media@vger.kernel.org, Boris Brezillon <boris.brezillon@free-electrons.com>, Richard Weinberger <richard@nod.at>, Herbert Xu <herbert@gondor.apana.org.au>, "David S. Miller" <davem@davemloft.net>, linux-crypto@vger.kernel.org, Vignesh R <vigneshr@ti.com>, linux-mm@kvack.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-V2UgbmVlZCB0byBlbnN1cmUgYW1kIGlvbW11IHYyIGluaXRpYWxpemVzIGJlZm9yZQpkcml2ZXIg
-dXNlcyBzdWNoIGFzIGRyaXZlcnMvZ3B1L2RybS9hbWQvYW1ka2ZkL2tmZF9tb2R1bGUuYywKdG8g
-ZG8gdGhpcyBtYWtlIGl0cyBpbml0IHJvdXRpbmUgYSBzdWJzeXNfaW5pdGNhbGwoKSB3aGljaApl
-bnN1cmVzIGl0cyBsb2FkIGluaXQgaXMgY2FsbGVkIGZpcnN0IHRoYW4gbW9kdWxlcyB3aGVuCmJ1
-aWx0LWluLgoKVGhpcyByZXZlcnRzIHRoZSBvbGQgd29yayBhcm91bmQgaW1wbGVtZW50ZWQgdGhy
-b3VnaCBjb21taXQKMWJhY2M4OTRjMjI3ZmFkOGE3ICgiZHJpdmVyczogTW92ZSBpb21tdS8gYmVm
-b3JlIGdwdS8gaW4gTWFrZWZpbGUiKSwKaW5zdGVhZCBvZiBtYWtpbmcgdGhlIGRlcGVuZGVuY3kg
-aW1wbGljaXQgYnkgbGlua2VyIG9yZGVyIHRoaXMKbWFrZXMgdGhlIG9yZGVyaW5nIHJlcXVpcmVt
-ZW50IGV4cGxpY2l0IHRocm91Z2ggcHJvcGVyIGtlcm5lbApBUElzLgoKQ2M6IE9kZWQgR2FiYmF5
-IDxvZGVkLmdhYmJheUBhbWQuY29tPgpDYzogQ2hyaXN0aWFuIEvDtm5pZyA8Y2hyaXN0aWFuLmtv
-ZW5pZ0BhbWQuY29tPgpTaWduZWQtb2ZmLWJ5OiBMdWlzIFIuIFJvZHJpZ3VleiA8bWNncm9mQGtl
-cm5lbC5vcmc+Ci0tLQoKVGhpcyBnb2VzIGFsb25nIHdpdGggdGhlIHJldmVydCBpbmNsdWRlZC4g
-Q2FuIHNvbWVvbmUgcGxlYXNlIHRlc3Q/CgogZHJpdmVycy9NYWtlZmlsZSAgICAgICAgICAgICB8
-IDYgKystLS0tCiBkcml2ZXJzL2lvbW11L2FtZF9pb21tdV92Mi5jIHwgMiArLQogMiBmaWxlcyBj
-aGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDUgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9NYWtlZmlsZSBiL2RyaXZlcnMvTWFrZWZpbGUKaW5kZXggOGY1ZDA3NmJhZWIwLi5jYzNj
-ZmJkZGMzNzYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvTWFrZWZpbGUKKysrIGIvZHJpdmVycy9NYWtl
-ZmlsZQpAQCAtNTAsMTAgKzUwLDcgQEAgb2JqLSQoQ09ORklHX1JFU0VUX0NPTlRST0xMRVIpCSs9
-IHJlc2V0Lwogb2JqLXkJCQkJKz0gdHR5Lwogb2JqLXkJCQkJKz0gY2hhci8KIAotIyBpb21tdS8g
-Y29tZXMgYmVmb3JlIGdwdSBhcyBncHUgYXJlIHVzaW5nIGlvbW11IGNvbnRyb2xsZXJzCi1vYmot
-JChDT05GSUdfSU9NTVVfU1VQUE9SVCkJKz0gaW9tbXUvCi0KLSMgZ3B1LyBjb21lcyBhZnRlciBj
-aGFyIGZvciBBR1AgdnMgRFJNIHN0YXJ0dXAgYW5kIGFmdGVyIGlvbW11CisjIGdwdS8gY29tZXMg
-YWZ0ZXIgY2hhciBmb3IgQUdQIHZzIERSTSBzdGFydHVwCiBvYmoteQkJCQkrPSBncHUvCiAKIG9i
-ai0kKENPTkZJR19DT05ORUNUT1IpCQkrPSBjb25uZWN0b3IvCkBAIC0xNDYsNiArMTQzLDcgQEAg
-b2JqLXkJCQkJKz0gY2xrLwogCiBvYmotJChDT05GSUdfTUFJTEJPWCkJCSs9IG1haWxib3gvCiBv
-YmotJChDT05GSUdfSFdTUElOTE9DSykJKz0gaHdzcGlubG9jay8KK29iai0kKENPTkZJR19JT01N
-VV9TVVBQT1JUKQkrPSBpb21tdS8KIG9iai0kKENPTkZJR19SRU1PVEVQUk9DKQkrPSByZW1vdGVw
-cm9jLwogb2JqLSQoQ09ORklHX1JQTVNHKQkJKz0gcnBtc2cvCiAKZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvaW9tbXUvYW1kX2lvbW11X3YyLmMgYi9kcml2ZXJzL2lvbW11L2FtZF9pb21tdV92Mi5jCmlu
-ZGV4IDU2OTk5ZDJmYWMwNy4uNjBkZjY0NWI5OTI3IDEwMDY0NAotLS0gYS9kcml2ZXJzL2lvbW11
-L2FtZF9pb21tdV92Mi5jCisrKyBiL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11X3YyLmMKQEAgLTEw
-MDQsNSArMTAwNCw1IEBAIHN0YXRpYyB2b2lkIF9fZXhpdCBhbWRfaW9tbXVfdjJfZXhpdCh2b2lk
-KQogCWRlc3Ryb3lfd29ya3F1ZXVlKGlvbW11X3dxKTsKIH0KIAotbW9kdWxlX2luaXQoYW1kX2lv
-bW11X3YyX2luaXQpOworc3Vic3lzX2luaXRjYWxsKGFtZF9pb21tdV92Ml9pbml0KTsKIG1vZHVs
-ZV9leGl0KGFtZF9pb21tdV92Ml9leGl0KTsKLS0gCjIuNy4yCgpfX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlz
-dHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3Jn
-L21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Hello,
+
+This series has been extracted from another series [1] adding support
+for DMA operations in a NAND driver.
+
+The reason I decided to post those patches separately is because they
+are touching core stuff, and I'd like to have feedback on these specific
+aspects.
+
+The idea is to provide a generic function creating an sg_table from
+a virtual pointer and a length. This operation is complicated by
+the different memory regions exposed in kernel space. For example,
+you have the lowmem region, which guarantees that buffers are
+physically contiguous, while the vmalloc region does not.
+
+sg_alloc_table_from_buf() detects in which memory region your buffer
+reside, and takes the appropriate precautions when creating the
+sg_table. This function also takes an extract parameter, allowing
+one to specify extra constraints, like the maximum DMA segment size,
+the required and the preferred alignment.
+
+Patch 1 and 2 are implementing sg_alloc_table_from_buf() (patch 1
+is needed to properly detect buffers residing in the highmem/kmap
+area).
+
+Patch 3 is making use of sg_alloc_table_from_buf() in the spi_map_buf()
+function (hopefully, other subsystems/drivers will be able to easily
+switch to this function too).
+
+Patch 4 is implementing what I really need: generic functions
+to map/unmap a virtual buffer passed through mtd->_read/_write().
+
+I'm not exactly a DMA or MM experts, so that would be great to have
+feedbacks on this approach. That's why I added so many people in Cc
+even if they're not directly impacted by those patches. Let me know if
+you want me to drop/add people from/to the recipient list.
+
+Thanks.
+
+Best Regards,
+
+Boris
+
+[1]http://www.spinics.net/lists/arm-kernel/msg493552.html
+
+Boris Brezillon (4):
+  mm: add is_highmem_addr() helper
+  scatterlist: add sg_alloc_table_from_buf() helper
+  spi: use sg_alloc_table_from_buf()
+  mtd: provide helper to prepare buffers for DMA operations
+
+ drivers/mtd/mtdcore.c       |  66 ++++++++++++++++
+ drivers/spi/spi.c           |  45 ++---------
+ include/linux/highmem.h     |  13 ++++
+ include/linux/mtd/mtd.h     |  25 ++++++
+ include/linux/scatterlist.h |  24 ++++++
+ lib/scatterlist.c           | 183 ++++++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 316 insertions(+), 40 deletions(-)
+
+-- 
+2.5.0
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
