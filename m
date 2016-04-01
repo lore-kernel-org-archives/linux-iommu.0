@@ -1,8 +1,7 @@
 From: Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V3 6/9] iommu/amd: Make call-sites of get_device_id aware of
-	its return value
-Date: Fri, 1 Apr 2016 09:06:02 -0400
-Message-ID: <1459515965-2865-7-git-send-email-vincent.wan@amd.com>
+Subject: [PATCH V3 5/9] iommu/amd: Introduces ivrs_acpihid kernel parameter
+Date: Fri, 1 Apr 2016 09:06:01 -0400
+Message-ID: <1459515965-2865-6-git-send-email-vincent.wan@amd.com>
 References: <1459515965-2865-1-git-send-email-vincent.wan@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,173 +21,84 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwB
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>, Ray Huang <ray.huang-5C7GfCeVMHo@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-This patch is to make the call-sites of get_device_id aware of its
-return value.
+This patch introduces a new kernel parameter, ivrs_acpihid.
+This is used to override existing ACPI-HID IVHD device entry,
+or add an entry in case it is missing in the IVHD.
 
 Signed-off-by: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
+Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 51 +++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 41 insertions(+), 10 deletions(-)
+ Documentation/kernel-parameters.txt |  7 +++++++
+ drivers/iommu/amd_iommu_init.c      | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 40 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index d8e59a8..400867f 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -279,9 +279,11 @@ static void init_unity_mappings_for_device(struct device *dev,
- 					   struct dma_ops_domain *dma_dom)
- {
- 	struct unity_map_entry *e;
--	u16 devid;
-+	int devid;
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index ecc74fa..8c881a5 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -1767,6 +1767,13 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 			PCI device 00:14.0 write the parameter as:
+ 				ivrs_hpet[0]=00:14.0
  
- 	devid = get_device_id(dev);
-+	if (IS_ERR_VALUE(devid))
-+		return;
- 
- 	list_for_each_entry(e, &amd_iommu_unity_map, list) {
- 		if (!(devid >= e->devid_start && devid <= e->devid_end))
-@@ -296,7 +298,7 @@ static void init_unity_mappings_for_device(struct device *dev,
-  */
- static bool check_device(struct device *dev)
- {
--	u16 devid;
-+	int devid;
- 
- 	if (!dev || !dev->dma_mask)
- 		return false;
-@@ -306,6 +308,8 @@ static bool check_device(struct device *dev)
- 		return false;
- 
- 	devid = get_device_id(dev);
-+	if (IS_ERR_VALUE(devid))
-+		return false;
- 
- 	/* Out of our scope? */
- 	if (devid > amd_iommu_last_bdf)
-@@ -342,11 +346,16 @@ static int iommu_init_device(struct device *dev)
- {
- 	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct iommu_dev_data *dev_data;
-+	int devid;
- 
- 	if (dev->archdata.iommu)
- 		return 0;
- 
--	dev_data = find_dev_data(get_device_id(dev));
-+	devid = get_device_id(dev);
-+	if (IS_ERR_VALUE(devid))
-+		return devid;
++	ivrs_acpihid	[HW,X86_64]
++			Provide an override to the ACPI-HID:UID<->DEVICE-ID
++			mapping provided in the IVRS ACPI table. For
++			example, to map UART-HID:UID AMD0020:0 to
++			PCI device 00:14.5 write the parameter as:
++				ivrs_acpihid[00:14.5]=AMD0020:0
 +
-+	dev_data = find_dev_data(devid);
- 	if (!dev_data)
- 		return -ENOMEM;
+ 	js=		[HW,JOY] Analog joystick
+ 			See Documentation/input/joystick.txt.
  
-@@ -367,9 +376,13 @@ static int iommu_init_device(struct device *dev)
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index e7ebfa2..9e00341 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -2477,10 +2477,43 @@ static int __init parse_ivrs_hpet(char *str)
+ 	return 1;
+ }
  
- static void iommu_ignore_device(struct device *dev)
- {
--	u16 devid, alias;
-+	u16 alias;
-+	int devid;
- 
- 	devid = get_device_id(dev);
-+	if (IS_ERR_VALUE(devid))
-+		return;
++static int __init parse_ivrs_acpihid(char *str)
++{
++	u32 bus, dev, fn;
++	char *hid, *uid, *p;
++	char acpiid[ACPIHID_UID_LEN + ACPIHID_HID_LEN] = {0};
++	int ret, i;
 +
- 	alias = amd_iommu_alias_table[devid];
- 
- 	memset(&amd_iommu_dev_table[devid], 0, sizeof(struct dev_table_entry));
-@@ -381,8 +394,14 @@ static void iommu_ignore_device(struct device *dev)
- 
- static void iommu_uninit_device(struct device *dev)
- {
--	struct iommu_dev_data *dev_data = search_dev_data(get_device_id(dev));
-+	int devid;
-+	struct iommu_dev_data *dev_data;
++	ret = sscanf(str, "[%x:%x.%x]=%s", &bus, &dev, &fn, acpiid);
++	if (ret != 4) {
++		pr_err("AMD-Vi: Invalid command line: ivrs_acpihid(%s)\n", str);
++		return 1;
++	}
 +
-+	devid = get_device_id(dev);
-+	if (IS_ERR_VALUE(devid))
-+		return;
- 
-+	dev_data = search_dev_data(devid);
- 	if (!dev_data)
- 		return;
- 
-@@ -2314,13 +2333,15 @@ static int amd_iommu_add_device(struct device *dev)
- 	struct iommu_dev_data *dev_data;
- 	struct iommu_domain *domain;
- 	struct amd_iommu *iommu;
--	u16 devid;
--	int ret;
-+	int ret, devid;
- 
- 	if (!check_device(dev) || get_dev_data(dev))
- 		return 0;
- 
- 	devid = get_device_id(dev);
-+	if (IS_ERR_VALUE(devid))
-+		return devid;
++	p = acpiid;
++	hid = strsep(&p, ":");
++	uid = p;
 +
- 	iommu = amd_iommu_rlookup_table[devid];
- 
- 	ret = iommu_init_device(dev);
-@@ -2358,12 +2379,15 @@ out:
- static void amd_iommu_remove_device(struct device *dev)
- {
- 	struct amd_iommu *iommu;
--	u16 devid;
-+	int devid;
- 
- 	if (!check_device(dev))
- 		return;
- 
- 	devid = get_device_id(dev);
-+	if (IS_ERR_VALUE(devid))
-+		return;
++	if (!hid || !(*hid) || !uid) {
++		pr_err("AMD-Vi: Invalid command line: hid or uid\n");
++		return 1;
++	}
 +
- 	iommu = amd_iommu_rlookup_table[devid];
- 
- 	iommu_uninit_device(dev);
-@@ -3035,12 +3059,14 @@ static void amd_iommu_detach_device(struct iommu_domain *dom,
- {
- 	struct iommu_dev_data *dev_data = dev->archdata.iommu;
- 	struct amd_iommu *iommu;
--	u16 devid;
-+	int devid;
- 
- 	if (!check_device(dev))
- 		return;
- 
- 	devid = get_device_id(dev);
-+	if (IS_ERR_VALUE(devid))
-+		return;
- 
- 	if (dev_data->domain != NULL)
- 		detach_device(dev);
-@@ -3158,9 +3184,11 @@ static void amd_iommu_get_dm_regions(struct device *dev,
- 				     struct list_head *head)
- {
- 	struct unity_map_entry *entry;
--	u16 devid;
-+	int devid;
- 
- 	devid = get_device_id(dev);
-+	if (IS_ERR_VALUE(devid))
-+		return;
- 
- 	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
- 		struct iommu_dm_region *region;
-@@ -3862,6 +3890,9 @@ static struct irq_domain *get_irq_domain(struct irq_alloc_info *info)
- 	case X86_IRQ_ALLOC_TYPE_MSI:
- 	case X86_IRQ_ALLOC_TYPE_MSIX:
- 		devid = get_device_id(&info->msi_dev->dev);
-+		if (IS_ERR_VALUE(devid))
-+			return NULL;
++	i = early_acpihid_map_size++;
++	memcpy(early_acpihid_map[i].hid, hid, strlen(hid));
++	memcpy(early_acpihid_map[i].uid, uid, strlen(uid));
++	early_acpihid_map[i].devid =
++		((bus & 0xff) << 8) | ((dev & 0x1f) << 3) | (fn & 0x7);
++	early_acpihid_map[i].cmd_line	= true;
 +
- 		iommu = amd_iommu_rlookup_table[devid];
- 		if (iommu)
- 			return iommu->msi_domain;
++	return 1;
++}
++
+ __setup("amd_iommu_dump",	parse_amd_iommu_dump);
+ __setup("amd_iommu=",		parse_amd_iommu_options);
+ __setup("ivrs_ioapic",		parse_ivrs_ioapic);
+ __setup("ivrs_hpet",		parse_ivrs_hpet);
++__setup("ivrs_acpihid",		parse_ivrs_acpihid);
+ 
+ IOMMU_INIT_FINISH(amd_iommu_detect,
+ 		  gart_iommu_hole_init,
 -- 
 1.9.1
