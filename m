@@ -1,8 +1,8 @@
 From: Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V3 1/9] iommu/amd: Adding Extended Feature Register check for
-	PC support
-Date: Fri, 1 Apr 2016 09:05:57 -0400
-Message-ID: <1459515965-2865-2-git-send-email-vincent.wan@amd.com>
+Subject: [PATCH V3 2/9] iommu/amd: Modify ivhd_header structure to support
+	type 11h and 40h
+Date: Fri, 1 Apr 2016 09:05:58 -0400
+Message-ID: <1459515965-2865-3-git-send-email-vincent.wan@amd.com>
 References: <1459515965-2865-1-git-send-email-vincent.wan@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,73 +24,84 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-The IVHD header type 11h and 40h introduce the PCSup bit in
-the EFR Register Image bit fileds. This should be used to
-determine the IOMMU performance support instead of relying
-on the PNCounters and PNBanks.
+This patch modifies the existing struct ivhd_header,
+which currently only support IVHD type 0x10, to add
+new fields from IVHD type 11h and 40h.
 
-Note also that the PNCouters and PNBanks bits in the IOMMU
-attributes field of IVHD headers type 11h are incorrectly
-programmed on some systems.
-
-So, we should not rely on it to determine the performance
-counter/banks size. Instead, these values should be read
-from the MMIO Offset 0030h IOMMU Extended Feature Register.
+It also modifies the pointer calculation to allow
+support for IVHD type 11h and 40h
 
 Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 32 ++++++++++++++++++++++++--------
- 1 file changed, 24 insertions(+), 8 deletions(-)
+ drivers/iommu/amd_iommu_init.c | 35 +++++++++++++++++++++++++++++++++--
+ 1 file changed, 33 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index bf4959f..dff1e01 100644
+index dff1e01..22e078b 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -99,7 +99,11 @@ struct ivhd_header {
- 	u64 mmio_phys;
- 	u16 pci_seg;
- 	u16 info;
--	u32 efr;
-+	u32 efr_attr;
+@@ -398,6 +398,22 @@ static void __init iommu_unmap_mmio_space(struct amd_iommu *iommu)
+ 	release_mem_region(iommu->mmio_phys, iommu->mmio_phys_end);
+ }
+ 
++static inline u32 get_ivhd_header_size(struct ivhd_header *h)
++{
++	u32 size = 0;
 +
-+	/* Following only valid on IVHD type 11h and 40h */
-+	u64 efr_reg; /* Exact copy of MMIO_EXT_FEATURES */
-+	u64 res;
- } __attribute__((packed));
- 
- /*
-@@ -1078,13 +1082,25 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 	iommu->pci_seg = h->pci_seg;
- 	iommu->mmio_phys = h->mmio_phys;
- 
--	/* Check if IVHD EFR contains proper max banks/counters */
--	if ((h->efr != 0) &&
--	    ((h->efr & (0xF << 13)) != 0) &&
--	    ((h->efr & (0x3F << 17)) != 0)) {
--		iommu->mmio_phys_end = MMIO_REG_END_OFFSET;
--	} else {
--		iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
 +	switch (h->type) {
 +	case 0x10:
-+		/* Check if IVHD EFR contains proper max banks/counters */
-+		if ((h->efr_attr != 0) &&
-+		    ((h->efr_attr & (0xF << 13)) != 0) &&
-+		    ((h->efr_attr & (0x3F << 17)) != 0))
-+			iommu->mmio_phys_end = MMIO_REG_END_OFFSET;
-+		else
-+			iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
++		size = 24;
 +		break;
 +	case 0x11:
 +	case 0x40:
-+		if (h->efr_reg & (1 << 9))
-+			iommu->mmio_phys_end = MMIO_REG_END_OFFSET;
-+		else
-+			iommu->mmio_phys_end = MMIO_CNTR_CONF_OFFSET;
++		size = 40;
 +		break;
-+	default:
-+		return -EINVAL;
- 	}
++	}
++	return size;
++}
++
+ /****************************************************************************
+  *
+  * The functions below belong to the first pass of AMD IOMMU ACPI table
+@@ -424,7 +440,14 @@ static int __init find_last_devid_from_ivhd(struct ivhd_header *h)
+ 	u8 *p = (void *)h, *end = (void *)h;
+ 	struct ivhd_entry *dev;
  
- 	iommu->mmio_base = iommu_map_mmio_space(iommu->mmio_phys,
+-	p += sizeof(*h);
++	u32 ivhd_size = get_ivhd_header_size(h);
++
++	if (!ivhd_size) {
++		pr_err("AMD-Vi: Unsupported IVHD type %#x\n", h->type);
++		return -EINVAL;
++	}
++
++	p += ivhd_size;
+ 	end += h->length;
+ 
+ 	while (p < end) {
+@@ -789,6 +812,7 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
+ 	u32 dev_i, ext_flags = 0;
+ 	bool alias = false;
+ 	struct ivhd_entry *e;
++	u32 ivhd_size;
+ 	int ret;
+ 
+ 
+@@ -804,7 +828,14 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
+ 	/*
+ 	 * Done. Now parse the device entries
+ 	 */
+-	p += sizeof(struct ivhd_header);
++	ivhd_size = get_ivhd_header_size(h);
++	if (!ivhd_size) {
++		pr_err("AMD-Vi: Unsupported IVHD type %#x\n", h->type);
++		return -EINVAL;
++	}
++
++	p += ivhd_size;
++
+ 	end += h->length;
+ 
+ 
 -- 
 1.9.1
