@@ -1,7 +1,7 @@
 From: Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V3 8/9] iommu/amd: Manage iommu_group for ACPI HID devices
-Date: Fri, 1 Apr 2016 09:06:04 -0400
-Message-ID: <1459515965-2865-9-git-send-email-vincent.wan@amd.com>
+Subject: [PATCH V3 9/9] iommu/amd: Set AMD iommu callbacks for amba bus
+Date: Fri, 1 Apr 2016 09:06:05 -0400
+Message-ID: <1459515965-2865-10-git-send-email-vincent.wan@amd.com>
 References: <1459515965-2865-1-git-send-email-vincent.wan@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,74 +23,46 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
 
-This patch creates a new function for finding or creating an IOMMU
-group for acpihid(ACPI Hardware ID) device.
+AMD Uart DMA belongs to ACPI HID type device, and its driver
+is basing on AMBA Bus, need also IOMMU support.
 
-The acpihid devices with the same devid will be put into same group and
-there will have the same domain id and share the same page table.
+This patch is just to set the AMD iommu callbacks for amba bus.
 
 Signed-off-by: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 33 ++++++++++++++++++++++++++++++++-
- 1 file changed, 32 insertions(+), 1 deletion(-)
+ drivers/iommu/amd_iommu.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 0df651a3..713e7ea 100644
+index 713e7ea..c430c10 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -276,6 +276,29 @@ static struct iommu_dev_data *get_dev_data(struct device *dev)
- 	return dev->archdata.iommu;
- }
+@@ -20,6 +20,7 @@
+ #include <linux/ratelimit.h>
+ #include <linux/pci.h>
+ #include <linux/acpi.h>
++#include <linux/amba/bus.h>
+ #include <linux/pci-ats.h>
+ #include <linux/bitmap.h>
+ #include <linux/slab.h>
+@@ -2969,7 +2970,17 @@ static struct dma_map_ops amd_iommu_dma_ops = {
  
-+/*
-+* Find or create an IOMMU group for a acpihid device.
-+*/
-+static struct iommu_group *acpihid_device_group(struct device *dev)
-+{
-+	struct acpihid_map_entry *p, *entry = NULL;
-+	u16 devid;
-+
-+	devid = get_acpihid_device_id(dev, &entry);
-+	if (devid < 0)
-+		return ERR_PTR(devid);
-+
-+	list_for_each_entry(p, &acpihid_map, list) {
-+		if ((devid == p->devid) && p->group)
-+			entry->group = p->group;
-+	}
-+
-+	if (!entry->group)
-+		entry->group = generic_device_group(dev);
-+
-+	return entry->group;
-+}
-+
- static bool pci_iommuv2_capable(struct pci_dev *pdev)
+ int __init amd_iommu_init_api(void)
  {
- 	static const int caps[] = {
-@@ -2445,6 +2468,14 @@ static void amd_iommu_remove_device(struct device *dev)
- 	iommu_completion_wait(iommu);
+-	return bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
++	int err = 0;
++
++	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
++	if (err)
++		return err;
++#ifdef CONFIG_ARM_AMBA
++	err = bus_set_iommu(&amba_bustype, &amd_iommu_ops);
++	if (err)
++		return err;
++#endif
++	return 0;
  }
  
-+static struct iommu_group *amd_iommu_device_group(struct device *dev)
-+{
-+	if (dev_is_pci(dev))
-+		return pci_device_group(dev);
-+
-+	return acpihid_device_group(dev);
-+}
-+
- /*****************************************************************************
-  *
-  * The next functions belong to the dma_ops mapping/unmapping code.
-@@ -3286,7 +3317,7 @@ static const struct iommu_ops amd_iommu_ops = {
- 	.iova_to_phys = amd_iommu_iova_to_phys,
- 	.add_device = amd_iommu_add_device,
- 	.remove_device = amd_iommu_remove_device,
--	.device_group = pci_device_group,
-+	.device_group = amd_iommu_device_group,
- 	.get_dm_regions = amd_iommu_get_dm_regions,
- 	.put_dm_regions = amd_iommu_put_dm_regions,
- 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
+ int __init amd_iommu_init_dma_ops(void)
 -- 
 1.9.1
