@@ -1,256 +1,246 @@
-From: Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V3 4/9] iommu/amd: Add new map for storing IVHD dev entry type
-	HID
-Date: Fri, 1 Apr 2016 09:06:00 -0400
-Message-ID: <1459515965-2865-5-git-send-email-vincent.wan@amd.com>
+From: Wan Zongshun <vincent.wan@amd.com>
+Subject: [PATCH V3 3/9] iommu/amd: Use the most comprehensive IVHD type that the driver can support
+Date: Fri, 1 Apr 2016 09:05:59 -0400
+Message-ID: <1459515965-2865-4-git-send-email-vincent.wan@amd.com>
 References: <1459515965-2865-1-git-send-email-vincent.wan@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1459515965-2865-1-git-send-email-vincent.wan-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>, Ray Huang <ray.huang-5C7GfCeVMHo@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1459515965-2865-1-git-send-email-vincent.wan@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
+Cc: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>, Borislav Petkov <bp@suse.de>, Ray Huang <ray.huang@amd.com>, vw@iommu.org, mcuos.com@gmail.com, linux-kernel@vger.kernel.org, Wan Zongshun <vincent.wan@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 
-This patch introduces acpihid_map, which is used to store
-the new IVHD device entry extracted from BIOS IVRS table.
+The IVRS in more recent AMD system usually contains multiple
+IVHD block types (e.g. 0x10, 0x11, and 0x40) for each IOMMU.
+The newer IVHD types provide more information (e.g. new features
+specified in the IOMMU spec), while maintain compatibility with
+the older IVHD type.
 
-It also provides a utility function add_acpi_hid_device(),
-to add this types of devices to the map.
+Having multiple IVHD type allows older IOMMU drivers to still function
+(e.g. using the older IVHD type 0x10) while the newer IOMMU driver can use
+the newer IVHD types (e.g. 0x11 and 0x40). Therefore, the IOMMU driver
+should only make use of the newest IVHD type that it can support.
 
-Signed-off-by: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
-Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+This patch adds new logic to determine the highest level of IVHD type
+it can support, and use it throughout the to initialize the driver.
+This requires adding another pass to the IVRS parsing to determine
+appropriate IVHD type (see function get_highest_supported_ivhd_type())
+before parsing the contents.
+
+[Vincent: fix the build error of IVHD_DEV_ACPI_HID flag not found]
+
+Signed-off-by: Wan Zongshun <vincent.wan@amd.com>
+Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 ---
- drivers/iommu/amd_iommu.c       |   1 +
- drivers/iommu/amd_iommu_init.c  | 122 ++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/amd_iommu_types.h |  14 +++++
- 3 files changed, 137 insertions(+)
+ drivers/iommu/amd_iommu_init.c | 107 ++++++++++++++++++++++++++++++-----------
+ 1 file changed, 78 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 374c129..d8e59a8 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -72,6 +72,7 @@ static DEFINE_SPINLOCK(dev_data_list_lock);
- 
- LIST_HEAD(ioapic_map);
- LIST_HEAD(hpet_map);
-+LIST_HEAD(acpihid_map);
- 
- /*
-  * Domain for untranslated devices - only allocated
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 8f49612..e7ebfa2 100644
+index 22e078b..8f49612 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -60,6 +60,10 @@
- #define IVHD_DEV_SPECIAL		0x48
- #define IVHD_DEV_ACPI_HID		0xf0
+@@ -44,7 +44,7 @@
+  */
+ #define IVRS_HEADER_LENGTH 48
  
-+#define UID_NOT_PRESENT                 0
-+#define UID_IS_INTEGER                  1
-+#define UID_IS_CHARACTER                2
-+
+-#define ACPI_IVHD_TYPE                  0x10
++#define ACPI_IVHD_TYPE_MAX_SUPPORTED	0x40
+ #define ACPI_IVMD_TYPE_ALL              0x20
+ #define ACPI_IVMD_TYPE                  0x21
+ #define ACPI_IVMD_TYPE_RANGE            0x22
+@@ -58,6 +58,7 @@
+ #define IVHD_DEV_EXT_SELECT             0x46
+ #define IVHD_DEV_EXT_SELECT_RANGE       0x47
+ #define IVHD_DEV_SPECIAL		0x48
++#define IVHD_DEV_ACPI_HID		0xf0
+ 
  #define IVHD_SPECIAL_IOAPIC		1
  #define IVHD_SPECIAL_HPET		2
+@@ -137,6 +138,7 @@ bool amd_iommu_irq_remap __read_mostly;
  
-@@ -116,6 +120,11 @@ struct ivhd_entry {
- 	u16 devid;
- 	u8 flags;
- 	u32 ext;
-+	u32 hidh;
-+	u64 cid;
-+	u8 uidf;
-+	u8 uidl;
-+	u8 uid;
- } __attribute__((packed));
+ static bool amd_iommu_detected;
+ static bool __initdata amd_iommu_disabled;
++static int amd_iommu_target_ivhd_type;
+ 
+ u16 amd_iommu_last_bdf;			/* largest PCI device id we have
+ 					   to handle */
+@@ -428,7 +430,15 @@ static inline u32 get_ivhd_header_size(struct ivhd_header *h)
+  */
+ static inline int ivhd_entry_length(u8 *ivhd)
+ {
+-	return 0x04 << (*ivhd >> 6);
++	u32 type = ((struct ivhd_entry *)ivhd)->type;
++
++	if (type < 0x80) {
++		return 0x04 << (*ivhd >> 6);
++	} else if (type == IVHD_DEV_ACPI_HID) {
++		/* For ACPI_HID, offset 21 is uid len */
++		return *((u8 *)ivhd + 21) + 22;
++	}
++	return 0;
+ }
  
  /*
-@@ -224,8 +233,12 @@ enum iommu_init_state {
- #define EARLY_MAP_SIZE		4
- static struct devid_map __initdata early_ioapic_map[EARLY_MAP_SIZE];
- static struct devid_map __initdata early_hpet_map[EARLY_MAP_SIZE];
-+static struct acpihid_map_entry __initdata early_acpihid_map[EARLY_MAP_SIZE];
-+
- static int __initdata early_ioapic_map_size;
- static int __initdata early_hpet_map_size;
-+static int __initdata early_acpihid_map_size;
-+
- static bool __initdata cmdline_maps;
- 
- static enum iommu_init_state init_state = IOMMU_START_STATE;
-@@ -765,6 +778,42 @@ static int __init add_special_device(u8 type, u8 id, u16 *devid, bool cmd_line)
+@@ -475,6 +485,22 @@ static int __init find_last_devid_from_ivhd(struct ivhd_header *h)
  	return 0;
  }
  
-+static int __init add_acpi_hid_device(u8 *hid, u8 *uid, u16 *devid,
-+				      bool cmd_line)
++static int __init check_ivrs_checksum(struct acpi_table_header *table)
 +{
-+	struct acpihid_map_entry *entry;
-+	struct list_head *list = &acpihid_map;
++	int i;
++	u8 checksum = 0, *p = (u8 *)table;
 +
-+	list_for_each_entry(entry, list, list) {
-+		if (strcmp(entry->hid, hid) ||
-+		    (*uid && *entry->uid && strcmp(entry->uid, uid)) ||
-+		    !entry->cmd_line)
-+			continue;
-+
-+		pr_info("AMD-Vi: Command-line override for hid:%s uid:%s\n",
-+			hid, uid);
-+		*devid = entry->devid;
-+		return 0;
++	for (i = 0; i < table->length; ++i)
++		checksum += p[i];
++	if (checksum != 0) {
++		/* ACPI table corrupt */
++		pr_err(FW_BUG "AMD-Vi: IVRS invalid checksum\n");
++		return -ENODEV;
 +	}
 +
-+	entry = kzalloc(sizeof(*entry), GFP_KERNEL);
-+	if (!entry)
-+		return -ENOMEM;
-+
-+	memcpy(entry->uid, uid, strlen(uid));
-+	memcpy(entry->hid, hid, strlen(hid));
-+	entry->devid = *devid;
-+	entry->cmd_line	= cmd_line;
-+	entry->root_devid = (entry->devid & (~0x7));
-+
-+	pr_info("AMD-Vi:%s, add hid:%s, uid:%s, rdevid:%d\n",
-+		entry->cmd_line ? "cmd" : "ivrs",
-+		entry->hid, entry->uid, entry->root_devid);
-+
-+	list_add_tail(&entry->list, list);
 +	return 0;
 +}
 +
- static int __init add_early_maps(void)
+ /*
+  * Iterate over all IVHD entries in the ACPI table and find the highest device
+  * id which we need to handle. This is the first of three functions which parse
+@@ -482,31 +508,19 @@ static int __init find_last_devid_from_ivhd(struct ivhd_header *h)
+  */
+ static int __init find_last_devid_acpi(struct acpi_table_header *table)
  {
- 	int i, ret;
-@@ -787,6 +836,15 @@ static int __init add_early_maps(void)
- 			return ret;
- 	}
+-	int i;
+-	u8 checksum = 0, *p = (u8 *)table, *end = (u8 *)table;
++	u8 *p = (u8 *)table, *end = (u8 *)table;
+ 	struct ivhd_header *h;
  
-+	for (i = 0; i < early_acpihid_map_size; ++i) {
-+		ret = add_acpi_hid_device(early_acpihid_map[i].hid,
-+					  early_acpihid_map[i].uid,
-+					  &early_acpihid_map[i].devid,
-+					  early_acpihid_map[i].cmd_line);
-+		if (ret)
-+			return ret;
-+	}
+-	/*
+-	 * Validate checksum here so we don't need to do it when
+-	 * we actually parse the table
+-	 */
+-	for (i = 0; i < table->length; ++i)
+-		checksum += p[i];
+-	if (checksum != 0)
+-		/* ACPI table corrupt */
+-		return -ENODEV;
+-
+ 	p += IVRS_HEADER_LENGTH;
+ 
+ 	end += table->length;
+ 	while (p < end) {
+ 		h = (struct ivhd_header *)p;
+-		switch (h->type) {
+-		case ACPI_IVHD_TYPE:
+-			find_last_devid_from_ivhd(h);
+-			break;
+-		default:
+-			break;
++		if (h->type == amd_iommu_target_ivhd_type) {
++			int ret = find_last_devid_from_ivhd(h);
 +
++			if (ret)
++				return ret;
+ 		}
+ 		p += h->length;
+ 	}
+@@ -1164,6 +1178,32 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
  	return 0;
  }
  
-@@ -1007,6 +1065,70 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 
- 			break;
- 		}
-+		case IVHD_DEV_ACPI_HID: {
-+			u16 devid;
-+			u8 hid[ACPIHID_HID_LEN] = {0};
-+			u8 uid[ACPIHID_UID_LEN] = {0};
-+			int ret;
++/**
++ * get_highest_supported_ivhd_type - Look up the appropriate IVHD type
++ * @ivrs          Pointer to the IVRS header
++ *
++ * This function search through all IVDB of the maximum supported IVHD
++ */
++static u8 get_highest_supported_ivhd_type(struct acpi_table_header *ivrs)
++{
++	u8 *base = (u8 *)ivrs;
++	struct ivhd_header *ivhd = (struct ivhd_header *)
++					(base + IVRS_HEADER_LENGTH);
++	u8 last_type = ivhd->type;
++	u16 devid = ivhd->devid;
 +
-+			if (h->type != 0x40) {
-+				pr_err(FW_BUG "Invalid IVHD device type %#x\n",
-+				       e->type);
-+				break;
-+			}
++	while (((u8 *)ivhd - base < ivrs->length) &&
++	       (ivhd->type <= ACPI_IVHD_TYPE_MAX_SUPPORTED)) {
++		u8 *p = (u8 *) ivhd;
 +
-+			memcpy(hid, (u8 *)(&e->ext), ACPIHID_HID_LEN - 1);
-+			hid[ACPIHID_HID_LEN - 1] = '\0';
++		if (ivhd->devid == devid)
++			last_type = ivhd->type;
++		ivhd = (struct ivhd_header *)(p + ivhd->length);
++	}
 +
-+			if (!(*hid)) {
-+				pr_err(FW_BUG "Invalid HID.\n");
-+				break;
-+			}
++	return last_type;
++}
 +
-+			switch (e->uidf) {
-+			case UID_NOT_PRESENT:
-+
-+				if (e->uidl != 0)
-+					pr_warn(FW_BUG "Invalid UID length.\n");
-+
-+				break;
-+			case UID_IS_INTEGER:
-+
-+				sprintf(uid, "%d", e->uid);
-+
-+				break;
-+			case UID_IS_CHARACTER:
-+
-+				memcpy(uid, (u8 *)(&e->uid), ACPIHID_UID_LEN - 1);
-+				uid[ACPIHID_UID_LEN - 1] = '\0';
-+
-+				break;
-+			default:
-+				break;
-+			}
-+
-+			DUMP_printk("  DEV_ACPI_HID(%s[%s])\t\tdevid: %02x:%02x.%x\n",
-+				    hid, uid,
-+				    PCI_BUS_NUM(devid),
-+				    PCI_SLOT(devid),
-+				    PCI_FUNC(devid));
-+
-+			devid  = e->devid;
-+			flags = e->flags;
-+
-+			ret = add_acpi_hid_device(hid, uid, &devid, false);
-+			if (ret)
-+				return ret;
-+
-+			/*
-+			 * add_special_device might update the devid in case a
-+			 * command-line override is present. So call
-+			 * set_dev_entry_from_acpi after add_special_device.
-+			 */
-+			set_dev_entry_from_acpi(iommu, devid, e->flags, 0);
-+
-+			break;
-+		}
- 		default:
- 			break;
- 		}
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 9d32b20..b6b14d2 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -527,6 +527,19 @@ struct amd_iommu {
- #endif
- };
- 
-+#define ACPIHID_UID_LEN 256
-+#define ACPIHID_HID_LEN 9
-+
-+struct acpihid_map_entry {
-+	struct list_head list;
-+	u8 uid[ACPIHID_UID_LEN];
-+	u8 hid[ACPIHID_HID_LEN];
-+	u16 devid;
-+	u16 root_devid;
-+	bool cmd_line;
-+	struct iommu_group *group;
-+};
-+
- struct devid_map {
- 	struct list_head list;
- 	u8 id;
-@@ -537,6 +550,7 @@ struct devid_map {
- /* Map HPET and IOAPIC ids to the devid used by the IOMMU */
- extern struct list_head ioapic_map;
- extern struct list_head hpet_map;
-+extern struct list_head acpihid_map;
- 
  /*
-  * List with all IOMMUs in the system. This list is not locked because it is
+  * Iterates over all IOMMU entries in the ACPI table, allocates the
+  * IOMMU structure and initializes it with init_iommu_one()
+@@ -1180,8 +1220,7 @@ static int __init init_iommu_all(struct acpi_table_header *table)
+ 
+ 	while (p < end) {
+ 		h = (struct ivhd_header *)p;
+-		switch (*p) {
+-		case ACPI_IVHD_TYPE:
++		if (*p == amd_iommu_target_ivhd_type) {
+ 
+ 			DUMP_printk("device: %02x:%02x.%01x cap: %04x "
+ 				    "seg: %d flags: %01x info %04x\n",
+@@ -1198,9 +1237,6 @@ static int __init init_iommu_all(struct acpi_table_header *table)
+ 			ret = init_iommu_one(iommu, h);
+ 			if (ret)
+ 				return ret;
+-			break;
+-		default:
+-			break;
+ 		}
+ 		p += h->length;
+ 
+@@ -1865,18 +1901,20 @@ static void __init free_dma_resources(void)
+  * remapping setup code.
+  *
+  * This function basically parses the ACPI table for AMD IOMMU (IVRS)
+- * three times:
++ * four times:
+  *
+- *	1 pass) Find the highest PCI device id the driver has to handle.
++ *	1 pass) Discover the most comprehensive IVHD type to use.
++ *
++ *	2 pass) Find the highest PCI device id the driver has to handle.
+  *		Upon this information the size of the data structures is
+  *		determined that needs to be allocated.
+  *
+- *	2 pass) Initialize the data structures just allocated with the
++ *	3 pass) Initialize the data structures just allocated with the
+  *		information in the ACPI table about available AMD IOMMUs
+  *		in the system. It also maps the PCI devices in the
+  *		system to specific IOMMUs
+  *
+- *	3 pass) After the basic data structures are allocated and
++ *	4 pass) After the basic data structures are allocated and
+  *		initialized we update them with information about memory
+  *		remapping requirements parsed out of the ACPI table in
+  *		this last pass.
+@@ -1904,6 +1942,17 @@ static int __init early_amd_iommu_init(void)
+ 	}
+ 
+ 	/*
++	 * Validate checksum here so we don't need to do it when
++	 * we actually parse the table
++	 */
++	ret = check_ivrs_checksum(ivrs_base);
++	if (ret)
++		return ret;
++
++	amd_iommu_target_ivhd_type = get_highest_supported_ivhd_type(ivrs_base);
++	DUMP_printk("Using IVHD type %#x\n", amd_iommu_target_ivhd_type);
++
++	/*
+ 	 * First parse ACPI tables to find the largest Bus/Dev/Func
+ 	 * we need to handle. Upon this information the shared data
+ 	 * structures for the IOMMUs in the system will be allocated
 -- 
 1.9.1
