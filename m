@@ -1,7 +1,7 @@
 From: Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V3 5/9] iommu/amd: Introduces ivrs_acpihid kernel parameter
-Date: Fri, 1 Apr 2016 09:06:01 -0400
-Message-ID: <1459515965-2865-6-git-send-email-vincent.wan@amd.com>
+Subject: [PATCH V3 7/9] iommu/amd: Add iommu support for ACPI HID devices
+Date: Fri, 1 Apr 2016 09:06:03 -0400
+Message-ID: <1459515965-2865-8-git-send-email-vincent.wan@amd.com>
 References: <1459515965-2865-1-git-send-email-vincent.wan@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,84 +21,161 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwB
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>, Ray Huang <ray.huang-5C7GfCeVMHo@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+From: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
 
-This patch introduces a new kernel parameter, ivrs_acpihid.
-This is used to override existing ACPI-HID IVHD device entry,
-or add an entry in case it is missing in the IVHD.
+Current IOMMU driver make assumption that the downstream devices are PCI.
+With the newly added ACPI-HID IVHD device entry support, this is no
+longer true. This patch is to add dev type check and to distinguish the
+pci and acpihid device code path.
 
 Signed-off-by: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
 Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- Documentation/kernel-parameters.txt |  7 +++++++
- drivers/iommu/amd_iommu_init.c      | 33 +++++++++++++++++++++++++++++++++
- 2 files changed, 40 insertions(+)
+ drivers/iommu/amd_iommu.c | 69 ++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 60 insertions(+), 9 deletions(-)
 
-diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-index ecc74fa..8c881a5 100644
---- a/Documentation/kernel-parameters.txt
-+++ b/Documentation/kernel-parameters.txt
-@@ -1767,6 +1767,13 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
- 			PCI device 00:14.0 write the parameter as:
- 				ivrs_hpet[0]=00:14.0
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 400867f..0df651a3 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -19,6 +19,7 @@
  
-+	ivrs_acpihid	[HW,X86_64]
-+			Provide an override to the ACPI-HID:UID<->DEVICE-ID
-+			mapping provided in the IVRS ACPI table. For
-+			example, to map UART-HID:UID AMD0020:0 to
-+			PCI device 00:14.5 write the parameter as:
-+				ivrs_acpihid[00:14.5]=AMD0020:0
-+
- 	js=		[HW,JOY] Analog joystick
- 			See Documentation/input/joystick.txt.
- 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index e7ebfa2..9e00341 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2477,10 +2477,43 @@ static int __init parse_ivrs_hpet(char *str)
- 	return 1;
+ #include <linux/ratelimit.h>
+ #include <linux/pci.h>
++#include <linux/acpi.h>
+ #include <linux/pci-ats.h>
+ #include <linux/bitmap.h>
+ #include <linux/slab.h>
+@@ -216,13 +217,60 @@ static struct iommu_dev_data *find_dev_data(u16 devid)
+ 	return dev_data;
  }
  
-+static int __init parse_ivrs_acpihid(char *str)
+-static inline u16 get_device_id(struct device *dev)
++static inline int match_hid_uid(struct device *dev,
++				struct acpihid_map_entry *entry)
 +{
-+	u32 bus, dev, fn;
-+	char *hid, *uid, *p;
-+	char acpiid[ACPIHID_UID_LEN + ACPIHID_HID_LEN] = {0};
-+	int ret, i;
++	const char *hid, *uid;
 +
-+	ret = sscanf(str, "[%x:%x.%x]=%s", &bus, &dev, &fn, acpiid);
-+	if (ret != 4) {
-+		pr_err("AMD-Vi: Invalid command line: ivrs_acpihid(%s)\n", str);
-+		return 1;
-+	}
++	hid = acpi_device_hid(ACPI_COMPANION(dev));
++	uid = acpi_device_uid(ACPI_COMPANION(dev));
 +
-+	p = acpiid;
-+	hid = strsep(&p, ":");
-+	uid = p;
++	if (!hid || !(*hid))
++		return -ENODEV;
 +
-+	if (!hid || !(*hid) || !uid) {
-+		pr_err("AMD-Vi: Invalid command line: hid or uid\n");
-+		return 1;
-+	}
++	if (!uid || !(*uid))
++		return strcmp(hid, entry->hid);
 +
-+	i = early_acpihid_map_size++;
-+	memcpy(early_acpihid_map[i].hid, hid, strlen(hid));
-+	memcpy(early_acpihid_map[i].uid, uid, strlen(uid));
-+	early_acpihid_map[i].devid =
-+		((bus & 0xff) << 8) | ((dev & 0x1f) << 3) | (fn & 0x7);
-+	early_acpihid_map[i].cmd_line	= true;
++	if (!(*entry->uid))
++		return strcmp(hid, entry->hid);
 +
-+	return 1;
++	return (strcmp(hid, entry->hid) || strcmp(uid, entry->uid));
 +}
 +
- __setup("amd_iommu_dump",	parse_amd_iommu_dump);
- __setup("amd_iommu=",		parse_amd_iommu_options);
- __setup("ivrs_ioapic",		parse_ivrs_ioapic);
- __setup("ivrs_hpet",		parse_ivrs_hpet);
-+__setup("ivrs_acpihid",		parse_ivrs_acpihid);
++static inline u16 get_pci_device_id(struct device *dev)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev);
  
- IOMMU_INIT_FINISH(amd_iommu_detect,
- 		  gart_iommu_hole_init,
+ 	return PCI_DEVID(pdev->bus->number, pdev->devfn);
+ }
+ 
++static inline int get_acpihid_device_id(struct device *dev,
++					struct acpihid_map_entry **entry)
++{
++	struct acpihid_map_entry *p;
++
++	list_for_each_entry(p, &acpihid_map, list) {
++		if (!match_hid_uid(dev, p)) {
++			if (entry)
++				*entry = p;
++			return p->devid;
++		}
++	}
++	return -EINVAL;
++}
++
++static inline int get_device_id(struct device *dev)
++{
++	int devid;
++
++	if (dev_is_pci(dev))
++		devid = get_pci_device_id(dev);
++	else
++		devid = get_acpihid_device_id(dev, NULL);
++
++	return devid;
++}
++
+ static struct iommu_dev_data *get_dev_data(struct device *dev)
+ {
+ 	return dev->archdata.iommu;
+@@ -303,10 +351,6 @@ static bool check_device(struct device *dev)
+ 	if (!dev || !dev->dma_mask)
+ 		return false;
+ 
+-	/* No PCI device */
+-	if (!dev_is_pci(dev))
+-		return false;
+-
+ 	devid = get_device_id(dev);
+ 	if (IS_ERR_VALUE(devid))
+ 		return false;
+@@ -344,7 +388,6 @@ out:
+ 
+ static int iommu_init_device(struct device *dev)
+ {
+-	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct iommu_dev_data *dev_data;
+ 	int devid;
+ 
+@@ -359,10 +402,10 @@ static int iommu_init_device(struct device *dev)
+ 	if (!dev_data)
+ 		return -ENOMEM;
+ 
+-	if (pci_iommuv2_capable(pdev)) {
++	if (dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev))) {
+ 		struct amd_iommu *iommu;
+ 
+-		iommu              = amd_iommu_rlookup_table[dev_data->devid];
++		iommu = amd_iommu_rlookup_table[dev_data->devid];
+ 		dev_data->iommu_v2 = iommu->is_iommu_v2;
+ 	}
+ 
+@@ -2239,13 +2282,17 @@ static bool pci_pri_tlp_required(struct pci_dev *pdev)
+ static int attach_device(struct device *dev,
+ 			 struct protection_domain *domain)
+ {
+-	struct pci_dev *pdev = to_pci_dev(dev);
++	struct pci_dev *pdev;
+ 	struct iommu_dev_data *dev_data;
+ 	unsigned long flags;
+ 	int ret;
+ 
+ 	dev_data = get_dev_data(dev);
+ 
++	if (!dev_is_pci(dev))
++		goto skip_ats_check;
++
++	pdev = to_pci_dev(dev);
+ 	if (domain->flags & PD_IOMMUV2_MASK) {
+ 		if (!dev_data->passthrough)
+ 			return -EINVAL;
+@@ -2264,6 +2311,7 @@ static int attach_device(struct device *dev,
+ 		dev_data->ats.qdep    = pci_ats_queue_depth(pdev);
+ 	}
+ 
++skip_ats_check:
+ 	write_lock_irqsave(&amd_iommu_devtable_lock, flags);
+ 	ret = __attach_device(dev_data, domain);
+ 	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
+@@ -2320,6 +2368,9 @@ static void detach_device(struct device *dev)
+ 	__detach_device(dev_data);
+ 	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
+ 
++	if (!dev_is_pci(dev))
++		return;
++
+ 	if (domain->flags & PD_IOMMUV2_MASK && dev_data->iommu_v2)
+ 		pdev_iommuv2_disable(to_pci_dev(dev));
+ 	else if (dev_data->ats.enabled)
 -- 
 1.9.1
