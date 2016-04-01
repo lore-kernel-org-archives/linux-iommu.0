@@ -1,7 +1,7 @@
 From: Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V3 7/9] iommu/amd: Add iommu support for ACPI HID devices
-Date: Fri, 1 Apr 2016 09:06:03 -0400
-Message-ID: <1459515965-2865-8-git-send-email-vincent.wan@amd.com>
+Subject: [PATCH V3 8/9] iommu/amd: Manage iommu_group for ACPI HID devices
+Date: Fri, 1 Apr 2016 09:06:04 -0400
+Message-ID: <1459515965-2865-9-git-send-email-vincent.wan@amd.com>
 References: <1459515965-2865-1-git-send-email-vincent.wan@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,159 +23,74 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
 
-Current IOMMU driver make assumption that the downstream devices are PCI.
-With the newly added ACPI-HID IVHD device entry support, this is no
-longer true. This patch is to add dev type check and to distinguish the
-pci and acpihid device code path.
+This patch creates a new function for finding or creating an IOMMU
+group for acpihid(ACPI Hardware ID) device.
+
+The acpihid devices with the same devid will be put into same group and
+there will have the same domain id and share the same page table.
 
 Signed-off-by: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
-Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 69 ++++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 60 insertions(+), 9 deletions(-)
+ drivers/iommu/amd_iommu.c | 33 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 400867f..0df651a3 100644
+index 0df651a3..713e7ea 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -19,6 +19,7 @@
- 
- #include <linux/ratelimit.h>
- #include <linux/pci.h>
-+#include <linux/acpi.h>
- #include <linux/pci-ats.h>
- #include <linux/bitmap.h>
- #include <linux/slab.h>
-@@ -216,13 +217,60 @@ static struct iommu_dev_data *find_dev_data(u16 devid)
- 	return dev_data;
+@@ -276,6 +276,29 @@ static struct iommu_dev_data *get_dev_data(struct device *dev)
+ 	return dev->archdata.iommu;
  }
  
--static inline u16 get_device_id(struct device *dev)
-+static inline int match_hid_uid(struct device *dev,
-+				struct acpihid_map_entry *entry)
++/*
++* Find or create an IOMMU group for a acpihid device.
++*/
++static struct iommu_group *acpihid_device_group(struct device *dev)
 +{
-+	const char *hid, *uid;
++	struct acpihid_map_entry *p, *entry = NULL;
++	u16 devid;
 +
-+	hid = acpi_device_hid(ACPI_COMPANION(dev));
-+	uid = acpi_device_uid(ACPI_COMPANION(dev));
-+
-+	if (!hid || !(*hid))
-+		return -ENODEV;
-+
-+	if (!uid || !(*uid))
-+		return strcmp(hid, entry->hid);
-+
-+	if (!(*entry->uid))
-+		return strcmp(hid, entry->hid);
-+
-+	return (strcmp(hid, entry->hid) || strcmp(uid, entry->uid));
-+}
-+
-+static inline u16 get_pci_device_id(struct device *dev)
- {
- 	struct pci_dev *pdev = to_pci_dev(dev);
- 
- 	return PCI_DEVID(pdev->bus->number, pdev->devfn);
- }
- 
-+static inline int get_acpihid_device_id(struct device *dev,
-+					struct acpihid_map_entry **entry)
-+{
-+	struct acpihid_map_entry *p;
++	devid = get_acpihid_device_id(dev, &entry);
++	if (devid < 0)
++		return ERR_PTR(devid);
 +
 +	list_for_each_entry(p, &acpihid_map, list) {
-+		if (!match_hid_uid(dev, p)) {
-+			if (entry)
-+				*entry = p;
-+			return p->devid;
-+		}
++		if ((devid == p->devid) && p->group)
++			entry->group = p->group;
 +	}
-+	return -EINVAL;
++
++	if (!entry->group)
++		entry->group = generic_device_group(dev);
++
++	return entry->group;
 +}
 +
-+static inline int get_device_id(struct device *dev)
+ static bool pci_iommuv2_capable(struct pci_dev *pdev)
+ {
+ 	static const int caps[] = {
+@@ -2445,6 +2468,14 @@ static void amd_iommu_remove_device(struct device *dev)
+ 	iommu_completion_wait(iommu);
+ }
+ 
++static struct iommu_group *amd_iommu_device_group(struct device *dev)
 +{
-+	int devid;
-+
 +	if (dev_is_pci(dev))
-+		devid = get_pci_device_id(dev);
-+	else
-+		devid = get_acpihid_device_id(dev, NULL);
++		return pci_device_group(dev);
 +
-+	return devid;
++	return acpihid_device_group(dev);
 +}
 +
- static struct iommu_dev_data *get_dev_data(struct device *dev)
- {
- 	return dev->archdata.iommu;
-@@ -303,10 +351,6 @@ static bool check_device(struct device *dev)
- 	if (!dev || !dev->dma_mask)
- 		return false;
- 
--	/* No PCI device */
--	if (!dev_is_pci(dev))
--		return false;
--
- 	devid = get_device_id(dev);
- 	if (IS_ERR_VALUE(devid))
- 		return false;
-@@ -344,7 +388,6 @@ out:
- 
- static int iommu_init_device(struct device *dev)
- {
--	struct pci_dev *pdev = to_pci_dev(dev);
- 	struct iommu_dev_data *dev_data;
- 	int devid;
- 
-@@ -359,10 +402,10 @@ static int iommu_init_device(struct device *dev)
- 	if (!dev_data)
- 		return -ENOMEM;
- 
--	if (pci_iommuv2_capable(pdev)) {
-+	if (dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev))) {
- 		struct amd_iommu *iommu;
- 
--		iommu              = amd_iommu_rlookup_table[dev_data->devid];
-+		iommu = amd_iommu_rlookup_table[dev_data->devid];
- 		dev_data->iommu_v2 = iommu->is_iommu_v2;
- 	}
- 
-@@ -2239,13 +2282,17 @@ static bool pci_pri_tlp_required(struct pci_dev *pdev)
- static int attach_device(struct device *dev,
- 			 struct protection_domain *domain)
- {
--	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct pci_dev *pdev;
- 	struct iommu_dev_data *dev_data;
- 	unsigned long flags;
- 	int ret;
- 
- 	dev_data = get_dev_data(dev);
- 
-+	if (!dev_is_pci(dev))
-+		goto skip_ats_check;
-+
-+	pdev = to_pci_dev(dev);
- 	if (domain->flags & PD_IOMMUV2_MASK) {
- 		if (!dev_data->passthrough)
- 			return -EINVAL;
-@@ -2264,6 +2311,7 @@ static int attach_device(struct device *dev,
- 		dev_data->ats.qdep    = pci_ats_queue_depth(pdev);
- 	}
- 
-+skip_ats_check:
- 	write_lock_irqsave(&amd_iommu_devtable_lock, flags);
- 	ret = __attach_device(dev_data, domain);
- 	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
-@@ -2320,6 +2368,9 @@ static void detach_device(struct device *dev)
- 	__detach_device(dev_data);
- 	write_unlock_irqrestore(&amd_iommu_devtable_lock, flags);
- 
-+	if (!dev_is_pci(dev))
-+		return;
-+
- 	if (domain->flags & PD_IOMMUV2_MASK && dev_data->iommu_v2)
- 		pdev_iommuv2_disable(to_pci_dev(dev));
- 	else if (dev_data->ats.enabled)
+ /*****************************************************************************
+  *
+  * The next functions belong to the dma_ops mapping/unmapping code.
+@@ -3286,7 +3317,7 @@ static const struct iommu_ops amd_iommu_ops = {
+ 	.iova_to_phys = amd_iommu_iova_to_phys,
+ 	.add_device = amd_iommu_add_device,
+ 	.remove_device = amd_iommu_remove_device,
+-	.device_group = pci_device_group,
++	.device_group = amd_iommu_device_group,
+ 	.get_dm_regions = amd_iommu_get_dm_regions,
+ 	.put_dm_regions = amd_iommu_put_dm_regions,
+ 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
 -- 
 1.9.1
