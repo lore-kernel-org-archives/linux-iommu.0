@@ -1,14 +1,14 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Fix stream-match conflict with
-	IOMMU_DOMAIN_DMA
-Date: Mon, 4 Apr 2016 11:40:29 +0200
-Message-ID: <5702368D.6060706@linaro.org>
-References: <1459527597-10740-1-git-send-email-will.deacon@arm.com>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: AMD-Vi regression with PCIe/PCI bridges in 4.4
+Date: Mon, 4 Apr 2016 12:51:46 +0200
+Message-ID: <20160404105146.GD24141@suse.de>
+References: <5700BF69.2080102@ladisch.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1459527597-10740-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <5700BF69.2080102-P6GI/4k7KOmELgA04lAiVw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,73 +18,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Clemens Ladisch <clemens-P6GI/4k7KOmELgA04lAiVw@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
-On 04/01/2016 06:19 PM, Will Deacon wrote:
-> Commit cbf8277ef456 ("iommu/arm-smmu: Treat IOMMU_DOMAIN_DMA as bypass
-> for now") ignores requests to attach a device to the default domain
-> since, without IOMMU-basked DMA ops available everywhere, the default
-> domain will just lead to unexpected transaction faults being reported.
-> 
-> Unfortunately, the way this was implemented on SMMUv2 causes a
-> regression with VFIO PCI device passthrough under KVM on AMD Seattle.
-> On this system, the host controller device is associated with both a
-> pci_dev *and* a platform_device, and can therefore end up with duplicate
-> SMR entries, resulting in a stream-match conflict at runtime.
-> 
-> This patch amends the original fix so that attaching to IOMMU_DOMAIN_DMA
-> is rejected even before configuring the SMRs. This restores the old
-> behaviour for now, but we'll need to look at handing host controllers
-> specially when we come to supporting the default domain fully.
+Hi Clemens,
 
-This works fine for me, before and after PCIe assignment. However before
-giving my T-b I would like to investigate another regression I observe
-wrt SRIOV assignment. Assigning the 1st VF works fine. However assigning
-a second VF does not work anymore (it used to in the past). I get
--ENOSPC from arm_smmu_master_configure_smrs
+On Sun, Apr 03, 2016 at 08:59:53AM +0200, Clemens Ladisch wrote:
+> there are several reports of Xonar PCIe sound cards failing to work in
+> kernel 4.4 (including 4.4.5):
+> 
+> https://bugzilla.redhat.com/show_bug.cgi?id=1313790
+> https://bugzilla.kernel.org/show_bug.cgi?id=111711
+> https://bbs.archlinux.org/viewtopic.php?pid=1601338#p1601338
+> 
+> They show error messages like this:
+> 
+>   AMD-Vi: Event logged [IO_PAGE_FAULT device=03:00.0 domain=0x0000 address=0x000000000020cf00 flags=0x0070]
+> 
+> All these cards use a PCI chip, with different PCIe bridges (ASM1083,
+> PEX8112, PEX8111).a
+> 
+> It probably matters that "03" is the PCI bus, but that device "00" does
+> not exist.
 
-Best Regards
+I have seen that before, can you please boot with 'amd_iommu_dump' on
+the kernel command line and send me dmesg after boot?
 
-Eric
-> 
-> Reported-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu.c | 14 ++++++++------
->  1 file changed, 8 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index e933679a3266..2f186d22477f 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -1098,18 +1098,20 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
->  	struct arm_smmu_device *smmu = smmu_domain->smmu;
->  	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
->  
-> -	/* Devices in an IOMMU group may already be configured */
-> -	ret = arm_smmu_master_configure_smrs(smmu, cfg);
-> -	if (ret)
-> -		return ret == -EEXIST ? 0 : ret;
-> -
->  	/*
->  	 * FIXME: This won't be needed once we have IOMMU-backed DMA ops
-> -	 * for all devices behind the SMMU.
-> +	 * for all devices behind the SMMU. Note that we need to take
-> +	 * care configuring SMRs for devices both a platform_device and
-> +	 * and a PCI device (i.e. a PCI host controller)
->  	 */
->  	if (smmu_domain->domain.type == IOMMU_DOMAIN_DMA)
->  		return 0;
->  
-> +	/* Devices in an IOMMU group may already be configured */
-> +	ret = arm_smmu_master_configure_smrs(smmu, cfg);
-> +	if (ret)
-> +		return ret == -EEXIST ? 0 : ret;
-> +
->  	for (i = 0; i < cfg->num_streamids; ++i) {
->  		u32 idx, s2cr;
->  
-> 
+
+Thanks a lot,
+
+
+       Joerg
