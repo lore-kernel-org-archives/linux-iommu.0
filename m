@@ -1,54 +1,55 @@
-From: Vignesh R <vigneshr@ti.com>
-Subject: Re: [PATCH 1/4] mm: add is_highmem_addr() helper
-Date: Mon, 4 Apr 2016 13:44:11 +0530
-Message-ID: <57022253.70400@ti.com>
-References: <1459427384-21374-1-git-send-email-boris.brezillon@free-electrons.com>
- <1459427384-21374-2-git-send-email-boris.brezillon@free-electrons.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v6 1/4] msi: Add a new MSI_FLAG_IRQ_REMAPPING flag
+Date: Mon,  4 Apr 2016 08:19:29 +0000
+Message-ID: <1459757972-2814-2-git-send-email-eric.auger@linaro.org>
+References: <1459757972-2814-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <1459427384-21374-2-git-send-email-boris.brezillon@free-electrons.com>
-Sender: owner-linux-mm@kvack.org
-To: Boris Brezillon <boris.brezillon@free-electrons.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, linux-mtd@lists.infradead.org, Andrew Morton <akpm@linux-foundation.org>, Dave Gordon <david.s.gordon@intel.com>
-Cc: Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, Mauro Carvalho Chehab <m.chehab@samsung.com>, Hans Verkuil <hans.verkuil@cisco.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-media@vger.kernel.org, Richard Weinberger <richard@nod.at>, Herbert Xu <herbert@gondor.apana.org.au>, "David S. Miller" <davem@davemloft.net>, linux-crypto@vger.kernel.org, linux-mm@kvack.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1459757972-2814-1-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Let's introduce a new msi_domain_info flag value, MSI_FLAG_IRQ_REMAPPING
+meant to tell the domain supports IRQ REMAPPING, also known as Interrupt
+Translation Service. On Intel HW this IRQ remapping capability is
+abstracted on IOMMU side while on ARM it is abstracted on MSI controller
+side. This flag will be used to know whether the MSI passthrough is
+safe.
 
-On 03/31/2016 05:59 PM, Boris Brezillon wrote:
-> Add an helper to check if a virtual address is in the highmem region.
-> 
-> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
-> ---
->  include/linux/highmem.h | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
-> 
-> diff --git a/include/linux/highmem.h b/include/linux/highmem.h
-> index bb3f329..13dff37 100644
-> --- a/include/linux/highmem.h
-> +++ b/include/linux/highmem.h
-> @@ -41,6 +41,14 @@ void kmap_flush_unused(void);
->  
->  struct page *kmap_to_page(void *addr);
->  
-> +static inline bool is_highmem_addr(const void *x)
-> +{
-> +	unsigned long vaddr = (unsigned long)x;
-> +
-> +	return vaddr >=  PKMAP_BASE &&
-> +	       vaddr < ((PKMAP_BASE + LAST_PKMAP) * PAGE_SIZE);
+Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
+---
 
-Shouldn't this be:
-		vaddr < (PKMAP_BASE + (LAST_PKMAP * PAGE_SIZE)) ?
+v4 -> v5:
+- seperate flag introduction from first user addition (ITS)
+---
+ include/linux/msi.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/include/linux/msi.h b/include/linux/msi.h
+index 8b425c6..08441b1 100644
+--- a/include/linux/msi.h
++++ b/include/linux/msi.h
+@@ -270,6 +270,8 @@ enum {
+ 	MSI_FLAG_MULTI_PCI_MSI		= (1 << 3),
+ 	/* Support PCI MSIX interrupts */
+ 	MSI_FLAG_PCI_MSIX		= (1 << 4),
++	/* Support MSI IRQ remapping service */
++	MSI_FLAG_IRQ_REMAPPING		= (1 << 5),
+ };
+ 
+ int msi_domain_set_affinity(struct irq_data *data, const struct cpumask *mask,
 -- 
-Regards
-Vignesh
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+1.9.1
