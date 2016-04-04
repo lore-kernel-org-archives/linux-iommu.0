@@ -1,52 +1,47 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: AMD-Vi regression with PCIe/PCI bridges in 4.4
-Date: Mon, 4 Apr 2016 12:51:46 +0200
-Message-ID: <20160404105146.GD24141@suse.de>
-References: <5700BF69.2080102@ladisch.de>
+From: Joerg Roedel <jroedel@suse.de>
+Subject: Re: [PATCH 6/6] iommu/arm-smmu: Make use of phandle iterators in
+ device-tree parsing
+Date: Mon, 4 Apr 2016 16:24:10 +0200
+Message-ID: <20160404142410.GG24141@suse.de>
+References: <1458669509-7178-1-git-send-email-joro@8bytes.org>
+ <1458669509-7178-7-git-send-email-joro@8bytes.org>
+ <20160329172216.GM6745@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <5700BF69.2080102-P6GI/4k7KOmELgA04lAiVw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Clemens Ladisch <clemens-P6GI/4k7KOmELgA04lAiVw@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+In-Reply-To: <20160329172216.GM6745@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, grant.likely@linaro.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Clemens,
+Hi Will,
 
-On Sun, Apr 03, 2016 at 08:59:53AM +0200, Clemens Ladisch wrote:
-> there are several reports of Xonar PCIe sound cards failing to work in
-> kernel 4.4 (including 4.4.5):
+On Tue, Mar 29, 2016 at 06:22:16PM +0100, Will Deacon wrote:
+> > +
+> > +	if (i == 0)
+> > +		goto out_put_masters;
 > 
-> https://bugzilla.redhat.com/show_bug.cgi?id=1313790
-> https://bugzilla.kernel.org/show_bug.cgi?id=111711
-> https://bbs.archlinux.org/viewtopic.php?pid=1601338#p1601338
-> 
-> They show error messages like this:
-> 
->   AMD-Vi: Event logged [IO_PAGE_FAULT device=03:00.0 domain=0x0000 address=0x000000000020cf00 flags=0x0070]
-> 
-> All these cards use a PCI chip, with different PCIe bridges (ASM1083,
-> PEX8112, PEX8111).a
-> 
-> It probably matters that "03" is the PCI bus, but that device "00" does
-> not exist.
+> I'm confused by this hunk. If i == 0, then we shouldn't have registered
+> any masters and therefore out_put_masters won't have anything to do.
 
-I have seen that before, can you please boot with 'amd_iommu_dump' on
-the kernel command line and send me dmesg after boot?
+The idea was that there is nothing more to do in the function when it
+didn't find any masters and so it can safely skip the rest of the
+function.
+
+But the original code doesn't do this either, so it certainly doesn't
+belong into this patch. I remove it for the next post.
+
+> In fact, I'm not completely clear on how the of_node refcounting interacts
+> with your iterators. Does the iterator put the node after you call the
+> "next" function, or does it increment each thing exactly once?
+
+The iterator will put the current node at the following _next call, so
+when you want to use each node, you need your own reference.
+
+It works like the pci_dev iterators, so if you break out of the loop you
+have to manually put the last node it returned.
 
 
-Thanks a lot,
-
-
-       Joerg
+	Joerg
