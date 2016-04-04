@@ -1,11 +1,15 @@
-From: Clemens Ladisch <clemens-P6GI/4k7KOmELgA04lAiVw@public.gmane.org>
-Subject: AMD-Vi regression with PCIe/PCI bridges in 4.4
-Date: Sun, 3 Apr 2016 08:59:53 +0200
-Message-ID: <5700BF69.2080102@ladisch.de>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [v7, 3/5] dt: move guts devicetree doc out of powerpc directory
+Date: Mon, 4 Apr 2016 00:15:52 -0500
+Message-ID: <20160404051552.GG17806@rob-hp-laptop>
+References: <1459480051-3701-1-git-send-email-yangbo.lu@nxp.com>
+	<1459480051-3701-4-git-send-email-yangbo.lu@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1459480051-3701-4-git-send-email-yangbo.lu-3arQi8VN3Tc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,29 +19,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Zhao Qiang <qiang.zhao-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, scott.wood-3arQi8VN3Tc@public.gmane.org, xiaobo.xie-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, leoyang.li-3arQi8VN3Tc@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On Fri, Apr 01, 2016 at 11:07:29AM +0800, Yangbo Lu wrote:
+> Move guts devicetree doc to Documentation/devicetree/bindings/soc/fsl/
+> since it's used by not only PowerPC but also ARM. And add a specification
+> for 'little-endian' property.
+> 
+> Signed-off-by: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
+> ---
+> Changes for v2:
+> 	- None
+> Changes for v3:
+> 	- None
+> Changes for v4:
+> 	- Added this patch
+> Changes for v5:
+> 	- Modified the description for little-endian property
+> Changes for v6:
+> 	- None
+> Changes for v7:
+> 	- None
+> ---
+>  Documentation/devicetree/bindings/{powerpc => soc}/fsl/guts.txt | 3 +++
+>  1 file changed, 3 insertions(+)
+>  rename Documentation/devicetree/bindings/{powerpc => soc}/fsl/guts.txt (91%)
 
-there are several reports of Xonar PCIe sound cards failing to work in
-kernel 4.4 (including 4.4.5):
-
-https://bugzilla.redhat.com/show_bug.cgi?id=1313790
-https://bugzilla.kernel.org/show_bug.cgi?id=111711
-https://bbs.archlinux.org/viewtopic.php?pid=1601338#p1601338
-
-They show error messages like this:
-
-  AMD-Vi: Event logged [IO_PAGE_FAULT device=03:00.0 domain=0x0000 address=0x000000000020cf00 flags=0x0070]
-
-All these cards use a PCI chip, with different PCIe bridges (ASM1083,
-PEX8112, PEX8111).
-
-It probably matters that "03" is the PCI bus, but that device "00" does
-not exist.
-
-
-Regards,
-Clemens
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
