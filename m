@@ -1,50 +1,63 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [v7, 3/5] dt: move guts devicetree doc out of powerpc directory
-Date: Mon, 4 Apr 2016 00:15:52 -0500
-Message-ID: <20160404051552.GG17806@rob-hp-laptop>
-References: <1459480051-3701-1-git-send-email-yangbo.lu@nxp.com>
-	<1459480051-3701-4-git-send-email-yangbo.lu@nxp.com>
+From: Eric Auger <eric.auger@linaro.org>
+Subject: [PATCH v6 1/7] iommu: Add DOMAIN_ATTR_MSI_MAPPING attribute
+Date: Mon,  4 Apr 2016 08:06:56 +0000
+Message-ID: <1459757222-2668-2-git-send-email-eric.auger@linaro.org>
+References: <1459757222-2668-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1459480051-3701-4-git-send-email-yangbo.lu-3arQi8VN3Tc@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Zhao Qiang <qiang.zhao-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, scott.wood-3arQi8VN3Tc@public.gmane.org, xiaobo.xie-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, leoyang.li-3arQi8VN3Tc@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-Reply-To: <1459757222-2668-1-git-send-email-eric.auger@linaro.org>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: eric.auger@st.com, eric.auger@linaro.org, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org
+Cc: patches@linaro.org, Manish.Jaggi@caviumnetworks.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 01, 2016 at 11:07:29AM +0800, Yangbo Lu wrote:
-> Move guts devicetree doc to Documentation/devicetree/bindings/soc/fsl/
-> since it's used by not only PowerPC but also ARM. And add a specification
-> for 'little-endian' property.
-> 
-> Signed-off-by: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
-> ---
-> Changes for v2:
-> 	- None
-> Changes for v3:
-> 	- None
-> Changes for v4:
-> 	- Added this patch
-> Changes for v5:
-> 	- Modified the description for little-endian property
-> Changes for v6:
-> 	- None
-> Changes for v7:
-> 	- None
-> ---
->  Documentation/devicetree/bindings/{powerpc => soc}/fsl/guts.txt | 3 +++
->  1 file changed, 3 insertions(+)
->  rename Documentation/devicetree/bindings/{powerpc => soc}/fsl/guts.txt (91%)
+Introduce a new DOMAIN_ATTR_MSI_MAPPING domain attribute. If supported,
+this means the MSI addresses need to be mapped in the IOMMU.
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+x86 IOMMUs typically don't expose the attribute since on x86, MSI write
+transaction addresses always are within the 1MB PA region [FEE0_0000h -
+FEF0_000h] window which directly targets the APIC configuration space and
+hence bypass the sMMU. On ARM and PowerPC however MSI transactions are
+conveyed through the IOMMU.
+
+Signed-off-by: Bharat Bhushan <Bharat.Bhushan@freescale.com>
+Signed-off-by: Eric Auger <eric.auger@linaro.org>
+
+---
+
+v4 -> v5:
+- introduce the user in the next patch
+
+RFC v1 -> v1:
+- the data field is not used
+- for this attribute domain_get_attr simply returns 0 if the MSI_MAPPING
+  capability if needed or <0 if not.
+- removed struct iommu_domain_msi_maps
+---
+ include/linux/iommu.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index a5c539f..a4fe04a 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -112,6 +112,7 @@ enum iommu_attr {
+ 	DOMAIN_ATTR_FSL_PAMU_ENABLE,
+ 	DOMAIN_ATTR_FSL_PAMUV1,
+ 	DOMAIN_ATTR_NESTING,	/* two stages of translation */
++	DOMAIN_ATTR_MSI_MAPPING, /* Require MSIs mapping in iommu */
+ 	DOMAIN_ATTR_MAX,
+ };
+ 
+-- 
+1.9.1
