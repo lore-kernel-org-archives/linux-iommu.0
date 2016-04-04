@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 6/6] iommu/arm-smmu: Make use of phandle iterators in
-	device-tree parsing
-Date: Mon,  4 Apr 2016 17:49:22 +0200
-Message-ID: <1459784962-9808-7-git-send-email-joro@8bytes.org>
+Subject: [PATCH 2/6] of: Move phandle walking to of_phandle_iterator_next()
+Date: Mon,  4 Apr 2016 17:49:18 +0200
+Message-ID: <1459784962-9808-3-git-send-email-joro@8bytes.org>
 References: <1459784962-9808-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,100 +23,204 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Remove the usage of of_parse_phandle_with_args() and replace
-it by the phandle-iterator implementation so that we can
-parse out all of the potentially present 128 stream-ids.
+Move the code to walk over the phandles out of the loop in
+__of_parse_phandle_with_args() to a separate function that
+just works with the iterator handle: of_phandle_iterator_next().
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 38 ++++++++++++++++++++++++++++++--------
- 1 file changed, 30 insertions(+), 8 deletions(-)
+ drivers/of/base.c  | 130 ++++++++++++++++++++++++++++++-----------------------
+ include/linux/of.h |   7 +++
+ 2 files changed, 81 insertions(+), 56 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 2409e3b..a1c965c 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -49,7 +49,7 @@
- #include "io-pgtable.h"
+diff --git a/drivers/of/base.c b/drivers/of/base.c
+index 1c6f43b..69286ec 100644
+--- a/drivers/of/base.c
++++ b/drivers/of/base.c
+@@ -1465,6 +1465,75 @@ int of_phandle_iterator_init(struct of_phandle_iterator *it,
+ 	return 0;
+ }
  
- /* Maximum number of stream IDs assigned to a single device */
--#define MAX_MASTER_STREAMIDS		MAX_PHANDLE_ARGS
-+#define MAX_MASTER_STREAMIDS		128
- 
- /* Maximum number of context banks per SMMU */
- #define ARM_SMMU_MAX_CBS		128
-@@ -357,6 +357,12 @@ struct arm_smmu_domain {
- 	struct iommu_domain		domain;
- };
- 
-+struct arm_smmu_phandle_args {
-+	struct device_node *np;
-+	int args_count;
-+	uint32_t args[MAX_MASTER_STREAMIDS];
-+};
++int of_phandle_iterator_next(struct of_phandle_iterator *it)
++{
++	uint32_t count = 0;
 +
- static struct iommu_ops arm_smmu_ops;
- 
- static DEFINE_SPINLOCK(arm_smmu_devices_lock);
-@@ -466,7 +472,7 @@ static int insert_smmu_master(struct arm_smmu_device *smmu,
- 
- static int register_smmu_master(struct arm_smmu_device *smmu,
- 				struct device *dev,
--				struct of_phandle_args *masterspec)
-+				struct arm_smmu_phandle_args *masterspec)
- {
- 	int i;
- 	struct arm_smmu_master *master;
-@@ -1737,7 +1743,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	struct arm_smmu_device *smmu;
- 	struct device *dev = &pdev->dev;
- 	struct rb_node *node;
--	struct of_phandle_args masterspec;
-+	struct of_phandle_iterator it;
-+	struct arm_smmu_phandle_args *masterspec;
- 	int num_irqs, i, err;
- 
- 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
-@@ -1798,20 +1805,35 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 
- 	i = 0;
- 	smmu->masters = RB_ROOT;
--	while (!of_parse_phandle_with_args(dev->of_node, "mmu-masters",
--					   "#stream-id-cells", i,
--					   &masterspec)) {
--		err = register_smmu_master(smmu, dev, &masterspec);
++	if (it->node) {
++		of_node_put(it->node);
++		it->node = NULL;
++	}
 +
-+	err = -ENOMEM;
-+	/* No need to zero the memory for masterspec */
-+	masterspec = kmalloc(sizeof(*masterspec), GFP_KERNEL);
-+	if (!masterspec)
-+		goto out_put_masters;
++	if (!it->cur || it->phandle_end >= it->list_end)
++		return -ENOENT;
 +
-+	of_for_each_phandle(&it, err, dev->of_node,
-+			    "mmu-masters", "#stream-id-cells", 0) {
-+		int count = of_phandle_iterator_args(&it, masterspec->args,
-+						     MAX_MASTER_STREAMIDS);
-+		masterspec->np		= of_node_get(it.node);
-+		masterspec->args_count	= count;
++	it->cur = it->phandle_end;
 +
-+		err = register_smmu_master(smmu, dev, masterspec);
- 		if (err) {
- 			dev_err(dev, "failed to add master %s\n",
--				masterspec.np->name);
-+				masterspec->np->name);
-+			kfree(masterspec);
- 			goto out_put_masters;
++	/* If phandle is 0, then it is an empty entry with no arguments. */
++	it->phandle = be32_to_cpup(it->cur++);
++
++	if (it->phandle) {
++
++		/*
++		 * Find the provider node and parse the #*-cells property to
++		 * determine the argument length.
++		 */
++		it->node = of_find_node_by_phandle(it->phandle);
++
++		if (it->cells_name) {
++			if (!it->node) {
++				pr_err("%s: could not find phandle\n",
++				       it->parent->full_name);
++				goto err;
++			}
++
++			if (of_property_read_u32(it->node, it->cells_name,
++						 &count)) {
++				pr_err("%s: could not get %s for %s\n",
++				       it->parent->full_name,
++				       it->cells_name,
++				       it->node->full_name);
++				goto err;
++			}
++		} else {
++			count = it->cell_count;
++		}
++
++		/*
++		 * Make sure that the arguments actually fit in the remaining
++		 * property data length
++		 */
++		if (it->cur + count > it->list_end) {
++			pr_err("%s: arguments longer than property\n",
++			       it->parent->full_name);
++			goto err;
++		}
++	}
++
++	it->phandle_end = it->cur + count;
++	it->cur_count = count;
++
++	return 0;
++
++err:
++	if (it->node) {
++		of_node_put(it->node);
++		it->node = NULL;
++	}
++
++	return -EINVAL;
++}
++
+ static int __of_parse_phandle_with_args(const struct device_node *np,
+ 					const char *list_name,
+ 					const char *cells_name,
+@@ -1480,59 +1549,9 @@ static int __of_parse_phandle_with_args(const struct device_node *np,
+ 		return rc;
+ 
+ 	/* Loop over the phandles until all the requested entry is found */
+-	while (it.cur < it.list_end) {
+-		rc = -EINVAL;
+-		it.cur_count = 0;
+-
+-		/*
+-		 * If phandle is 0, then it is an empty entry with no
+-		 * arguments.  Skip forward to the next entry.
+-		 */
+-		it.phandle = be32_to_cpup(it.cur++);
+-		if (it.phandle) {
+-			/*
+-			 * Find the provider node and parse the #*-cells
+-			 * property to determine the argument length.
+-			 *
+-			 * This is not needed if the cell count is hard-coded
+-			 * (i.e. cells_name not set, but cell_count is set),
+-			 * except when we're going to return the found node
+-			 * below.
+-			 */
+-			if (it.cells_name || cur_index == index) {
+-				it.node = of_find_node_by_phandle(it.phandle);
+-				if (!it.node) {
+-					pr_err("%s: could not find phandle\n",
+-						it.parent->full_name);
+-					goto err;
+-				}
+-			}
+-
+-			if (it.cells_name) {
+-				if (of_property_read_u32(it.node, it.cells_name,
+-							 &it.cur_count)) {
+-					pr_err("%s: could not get %s for %s\n",
+-						it.parent->full_name, it.cells_name,
+-						it.node->full_name);
+-					goto err;
+-				}
+-			} else {
+-				it.cur_count = it.cell_count;
+-			}
+-
+-			/*
+-			 * Make sure that the arguments actually fit in the
+-			 * remaining property data length
+-			 */
+-			if (it.cur + it.cur_count > it.list_end) {
+-				pr_err("%s: arguments longer than property\n",
+-					 it.parent->full_name);
+-				goto err;
+-			}
+-		}
+-
++	while ((rc = of_phandle_iterator_next(&it)) == 0) {
+ 		/*
+-		 * All of the error cases above bail out of the loop, so at
++		 * All of the error cases bail out of the loop, so at
+ 		 * this point, the parsing is successful. If the requested
+ 		 * index matches, then fill the out_args structure and return,
+ 		 * or return -ENOENT for an empty entry.
+@@ -1558,9 +1577,6 @@ static int __of_parse_phandle_with_args(const struct device_node *np,
+ 			return 0;
  		}
  
- 		i++;
+-		of_node_put(it.node);
+-		it.node = NULL;
+-		it.cur += it.cur_count;
+ 		cur_index++;
  	}
-+
- 	dev_notice(dev, "registered %d master devices\n", i);
  
-+	kfree(masterspec);
+@@ -1570,7 +1586,9 @@ static int __of_parse_phandle_with_args(const struct device_node *np,
+ 	 * -EINVAL : parsing error on data
+ 	 * [1..n]  : Number of phandle (count mode; when index = -1)
+ 	 */
+-	rc = index < 0 ? cur_index : -ENOENT;
++	if (rc == -ENOENT && index < 0)
++		rc = cur_index;
 +
- 	parse_driver_options(smmu);
+  err:
+ 	if (it.node)
+ 		of_node_put(it.node);
+diff --git a/include/linux/of.h b/include/linux/of.h
+index 0f187db..1f5e108 100644
+--- a/include/linux/of.h
++++ b/include/linux/of.h
+@@ -358,6 +358,8 @@ extern int of_phandle_iterator_init(struct of_phandle_iterator *it,
+ 				    const char *cells_name,
+ 				    int cell_count);
  
- 	if (smmu->version > ARM_SMMU_V1 &&
++extern int of_phandle_iterator_next(struct of_phandle_iterator *it);
++
+ extern void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align));
+ extern int of_alias_get_id(struct device_node *np, const char *stem);
+ extern int of_alias_get_highest_id(const char *stem);
+@@ -641,6 +643,11 @@ static inline int of_phandle_iterator_init(struct of_phandle_iterator *it,
+ 	return -ENOSYS;
+ }
+ 
++static inline int of_phandle_iterator_next(struct of_phandle_iterator *it)
++{
++	return -ENOSYS;
++}
++
+ static inline int of_alias_get_id(struct device_node *np, const char *stem)
+ {
+ 	return -ENOSYS;
 -- 
 1.9.1
