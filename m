@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 5/6] of: Introduce of_phandle_iterator_args()
-Date: Mon,  4 Apr 2016 17:49:21 +0200
-Message-ID: <1459784962-9808-6-git-send-email-joro@8bytes.org>
+Subject: [PATCH 6/6] iommu/arm-smmu: Make use of phandle iterators in
+	device-tree parsing
+Date: Mon,  4 Apr 2016 17:49:22 +0200
+Message-ID: <1459784962-9808-7-git-send-email-joro@8bytes.org>
 References: <1459784962-9808-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,91 +24,100 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This helper function can be used to copy the arguments of a
-phandle to an array.
+Remove the usage of of_parse_phandle_with_args() and replace
+it by the phandle-iterator implementation so that we can
+parse out all of the potentially present 128 stream-ids.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 ---
- drivers/of/base.c  | 29 +++++++++++++++++++++++------
- include/linux/of.h | 10 ++++++++++
- 2 files changed, 33 insertions(+), 6 deletions(-)
+ drivers/iommu/arm-smmu.c | 38 ++++++++++++++++++++++++++++++--------
+ 1 file changed, 30 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/of/base.c b/drivers/of/base.c
-index ea5a13d..e87e21d 100644
---- a/drivers/of/base.c
-+++ b/drivers/of/base.c
-@@ -1534,6 +1534,23 @@ err:
- 	return -EINVAL;
- }
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 2409e3b..a1c965c 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -49,7 +49,7 @@
+ #include "io-pgtable.h"
  
-+int of_phandle_iterator_args(struct of_phandle_iterator *it,
-+			     uint32_t *args,
-+			     int size)
-+{
-+	int i, count;
-+
-+	count = it->cur_count;
-+
-+	if (WARN_ON(size < count))
-+		count = size;
-+
-+	for (i = 0; i < count; i++)
-+		args[i] = be32_to_cpup(it->cur++);
-+
-+	return count;
-+}
-+
- static int __of_parse_phandle_with_args(const struct device_node *np,
- 					const char *list_name,
- 					const char *cells_name,
-@@ -1557,13 +1574,13 @@ static int __of_parse_phandle_with_args(const struct device_node *np,
- 				goto err;
+ /* Maximum number of stream IDs assigned to a single device */
+-#define MAX_MASTER_STREAMIDS		MAX_PHANDLE_ARGS
++#define MAX_MASTER_STREAMIDS		128
  
- 			if (out_args) {
--				int i;
--				if (WARN_ON(it.cur_count > MAX_PHANDLE_ARGS))
--					it.cur_count = MAX_PHANDLE_ARGS;
-+				int c;
+ /* Maximum number of context banks per SMMU */
+ #define ARM_SMMU_MAX_CBS		128
+@@ -357,6 +357,12 @@ struct arm_smmu_domain {
+ 	struct iommu_domain		domain;
+ };
+ 
++struct arm_smmu_phandle_args {
++	struct device_node *np;
++	int args_count;
++	uint32_t args[MAX_MASTER_STREAMIDS];
++};
 +
-+				c = of_phandle_iterator_args(&it,
-+							     out_args->args,
-+							     MAX_PHANDLE_ARGS);
- 				out_args->np = it.node;
--				out_args->args_count = it.cur_count;
--				for (i = 0; i < it.cur_count; i++)
--					out_args->args[i] = be32_to_cpup(it.cur++);
-+				out_args->args_count = c;
- 			} else {
- 				of_node_put(it.node);
- 			}
-diff --git a/include/linux/of.h b/include/linux/of.h
-index b0b8071..71e1c35 100644
---- a/include/linux/of.h
-+++ b/include/linux/of.h
-@@ -359,6 +359,9 @@ extern int of_phandle_iterator_init(struct of_phandle_iterator *it,
- 				    int cell_count);
+ static struct iommu_ops arm_smmu_ops;
  
- extern int of_phandle_iterator_next(struct of_phandle_iterator *it);
-+extern int of_phandle_iterator_args(struct of_phandle_iterator *it,
-+				    uint32_t *args,
-+				    int size);
+ static DEFINE_SPINLOCK(arm_smmu_devices_lock);
+@@ -466,7 +472,7 @@ static int insert_smmu_master(struct arm_smmu_device *smmu,
  
- extern void of_alias_scan(void * (*dt_alloc)(u64 size, u64 align));
- extern int of_alias_get_id(struct device_node *np, const char *stem);
-@@ -648,6 +651,13 @@ static inline int of_phandle_iterator_next(struct of_phandle_iterator *it)
- 	return -ENOSYS;
- }
- 
-+static inline int of_phandle_iterator_args(struct of_phandle_iterator *it,
-+					   uint32_t *args,
-+					   int size)
-+{
-+	return 0;
-+}
-+
- static inline int of_alias_get_id(struct device_node *np, const char *stem)
+ static int register_smmu_master(struct arm_smmu_device *smmu,
+ 				struct device *dev,
+-				struct of_phandle_args *masterspec)
++				struct arm_smmu_phandle_args *masterspec)
  {
- 	return -ENOSYS;
+ 	int i;
+ 	struct arm_smmu_master *master;
+@@ -1737,7 +1743,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	struct arm_smmu_device *smmu;
+ 	struct device *dev = &pdev->dev;
+ 	struct rb_node *node;
+-	struct of_phandle_args masterspec;
++	struct of_phandle_iterator it;
++	struct arm_smmu_phandle_args *masterspec;
+ 	int num_irqs, i, err;
+ 
+ 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+@@ -1798,20 +1805,35 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 
+ 	i = 0;
+ 	smmu->masters = RB_ROOT;
+-	while (!of_parse_phandle_with_args(dev->of_node, "mmu-masters",
+-					   "#stream-id-cells", i,
+-					   &masterspec)) {
+-		err = register_smmu_master(smmu, dev, &masterspec);
++
++	err = -ENOMEM;
++	/* No need to zero the memory for masterspec */
++	masterspec = kmalloc(sizeof(*masterspec), GFP_KERNEL);
++	if (!masterspec)
++		goto out_put_masters;
++
++	of_for_each_phandle(&it, err, dev->of_node,
++			    "mmu-masters", "#stream-id-cells", 0) {
++		int count = of_phandle_iterator_args(&it, masterspec->args,
++						     MAX_MASTER_STREAMIDS);
++		masterspec->np		= of_node_get(it.node);
++		masterspec->args_count	= count;
++
++		err = register_smmu_master(smmu, dev, masterspec);
+ 		if (err) {
+ 			dev_err(dev, "failed to add master %s\n",
+-				masterspec.np->name);
++				masterspec->np->name);
++			kfree(masterspec);
+ 			goto out_put_masters;
+ 		}
+ 
+ 		i++;
+ 	}
++
+ 	dev_notice(dev, "registered %d master devices\n", i);
+ 
++	kfree(masterspec);
++
+ 	parse_driver_options(smmu);
+ 
+ 	if (smmu->version > ARM_SMMU_V1 &&
 -- 
 1.9.1
