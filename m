@@ -1,14 +1,13 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 3/6] of: Remove counting special case from
-	__of_parse_phandle_with_args()
-Date: Mon,  4 Apr 2016 17:49:19 +0200
-Message-ID: <1459784962-9808-4-git-send-email-joro@8bytes.org>
-References: <1459784962-9808-1-git-send-email-joro@8bytes.org>
+From: Tom Wimmenhove <tom.wimmenhove-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: Regression since 4.1
+Date: Mon, 4 Apr 2016 17:06:11 +0000 (UTC)
+Message-ID: <loom.20160404T185813-468@post.gmane.org>
+References: <5418503.92eb9JWhCR@t400> <1449688068.15753.461.camel@redhat.com>
+	<6847091.8HQyRDvvTU@pc> <20151228164918.GN18805@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1459784962-9808-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,63 +17,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, grant.likely-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Joerg Roedel <joro@...> writes:
 
-The index = -1 case in __of_parse_phandle_with_args() is
-used to just return the number of phandles. That special
-case needs extra handling, so move it to the place where it
-is needed: of_count_phandle_with_args().
+> 
+> Hi Tobias,
+> 
+> On Thu, Dec 10, 2015 at 12:07:57AM +0100, Tobias Geiger wrote:
+> > It all comes down to kernel > 4.1 && iommu=on = not working here
+> > 
+> > Hardware is:
+> > Intel DX58SO, Intel CPU i7 920... all pretty solid running for years 
+now, 
+> > always with iommo=on.
+> > 
+> > I'd love to debug this further, just dont know how...
+> 
+> Sounds like only bisecting the issue will help here. You can find an
+> introduction on bisecting here:
+> 
+> 	https://git-scm.com/book/en/v2/Git-Tools-Debugging-with-Git
+> 
+> Would be great if you can find the time to bisect the issue.
+> 
+> 	Joerg
+> 
+> 
 
-This allows to further simplify __of_parse_phandle_with_args()
-later on.
-
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
----
- drivers/of/base.c | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/of/base.c b/drivers/of/base.c
-index 69286ec..fcff2b6 100644
---- a/drivers/of/base.c
-+++ b/drivers/of/base.c
-@@ -1584,10 +1584,7 @@ static int __of_parse_phandle_with_args(const struct device_node *np,
- 	 * Unlock node before returning result; will be one of:
- 	 * -ENOENT : index is for empty phandle
- 	 * -EINVAL : parsing error on data
--	 * [1..n]  : Number of phandle (count mode; when index = -1)
- 	 */
--	if (rc == -ENOENT && index < 0)
--		rc = cur_index;
- 
-  err:
- 	if (it.node)
-@@ -1723,8 +1720,20 @@ EXPORT_SYMBOL(of_parse_phandle_with_fixed_args);
- int of_count_phandle_with_args(const struct device_node *np, const char *list_name,
- 				const char *cells_name)
- {
--	return __of_parse_phandle_with_args(np, list_name, cells_name, 0, -1,
--					    NULL);
-+	struct of_phandle_iterator it;
-+	int rc, cur_index = 0;
-+
-+	rc = of_phandle_iterator_init(&it, np, list_name, cells_name, 0);
-+	if (rc)
-+		return rc;
-+
-+	while ((rc = of_phandle_iterator_next(&it)) == 0)
-+		cur_index += 1;
-+
-+	if (rc != -ENOENT)
-+		return rc;
-+
-+	return cur_index;
- }
- EXPORT_SYMBOL(of_count_phandle_with_args);
- 
--- 
-1.9.1
+I can confirm this bug with kernel "4.2.0-16-generic #19-Ubuntu" on an 
+Intel DX58SO board with a W3520 Xeon CPU.
+Before I was running 3.16.0 which did not lock up at boot but did have 
+occasional DMAR issues with GPU passthrough while running a Windows 7 gues 
+in Qemu. I don't know if the two are related.
