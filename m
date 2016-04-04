@@ -1,131 +1,54 @@
-From: Eric Auger <eric.auger@linaro.org>
-Subject: [PATCH v6 7/7] dma-reserved-iommu: iommu_unmap_reserved
-Date: Mon,  4 Apr 2016 08:07:02 +0000
-Message-ID: <1459757222-2668-8-git-send-email-eric.auger@linaro.org>
-References: <1459757222-2668-1-git-send-email-eric.auger@linaro.org>
+From: Vignesh R <vigneshr@ti.com>
+Subject: Re: [PATCH 1/4] mm: add is_highmem_addr() helper
+Date: Mon, 4 Apr 2016 13:44:11 +0530
+Message-ID: <57022253.70400@ti.com>
+References: <1459427384-21374-1-git-send-email-boris.brezillon@free-electrons.com>
+ <1459427384-21374-2-git-send-email-boris.brezillon@free-electrons.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <1459757222-2668-1-git-send-email-eric.auger@linaro.org>
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: eric.auger@st.com, eric.auger@linaro.org, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org
-Cc: patches@linaro.org, Manish.Jaggi@caviumnetworks.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <1459427384-21374-2-git-send-email-boris.brezillon@free-electrons.com>
+Sender: owner-linux-mm@kvack.org
+To: Boris Brezillon <boris.brezillon@free-electrons.com>, David Woodhouse <dwmw2@infradead.org>, Brian Norris <computersforpeace@gmail.com>, linux-mtd@lists.infradead.org, Andrew Morton <akpm@linux-foundation.org>, Dave Gordon <david.s.gordon@intel.com>
+Cc: Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Vinod Koul <vinod.koul@intel.com>, Dan Williams <dan.j.williams@intel.com>, dmaengine@vger.kernel.org, Mauro Carvalho Chehab <m.chehab@samsung.com>, Hans Verkuil <hans.verkuil@cisco.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-media@vger.kernel.org, Richard Weinberger <richard@nod.at>, Herbert Xu <herbert@gondor.apana.org.au>, "David S. Miller" <davem@davemloft.net>, linux-crypto@vger.kernel.org, linux-mm@kvack.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce a new function whose role is to unmap all allocated
-reserved IOVAs and free the reserved iova domain
+Hi,
 
-Signed-off-by: Eric Auger <eric.auger@linaro.org>
+On 03/31/2016 05:59 PM, Boris Brezillon wrote:
+> Add an helper to check if a virtual address is in the highmem region.
+> 
+> Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+> ---
+>  include/linux/highmem.h | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+> 
+> diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+> index bb3f329..13dff37 100644
+> --- a/include/linux/highmem.h
+> +++ b/include/linux/highmem.h
+> @@ -41,6 +41,14 @@ void kmap_flush_unused(void);
+>  
+>  struct page *kmap_to_page(void *addr);
+>  
+> +static inline bool is_highmem_addr(const void *x)
+> +{
+> +	unsigned long vaddr = (unsigned long)x;
+> +
+> +	return vaddr >=  PKMAP_BASE &&
+> +	       vaddr < ((PKMAP_BASE + LAST_PKMAP) * PAGE_SIZE);
 
----
-v5 -> v6:
-- use spin_lock instead of mutex
 
-v3 -> v4:
-- previously "iommu/arm-smmu: relinquish reserved resources on
-  domain deletion"
----
- drivers/iommu/dma-reserved-iommu.c | 45 ++++++++++++++++++++++++++++++++++----
- include/linux/dma-reserved-iommu.h |  7 ++++++
- 2 files changed, 48 insertions(+), 4 deletions(-)
+Shouldn't this be:
+		vaddr < (PKMAP_BASE + (LAST_PKMAP * PAGE_SIZE)) ?
 
-diff --git a/drivers/iommu/dma-reserved-iommu.c b/drivers/iommu/dma-reserved-iommu.c
-index 3c759d9..c06c39e 100644
---- a/drivers/iommu/dma-reserved-iommu.c
-+++ b/drivers/iommu/dma-reserved-iommu.c
-@@ -119,20 +119,24 @@ unlock:
- }
- EXPORT_SYMBOL_GPL(iommu_alloc_reserved_iova_domain);
- 
--void iommu_free_reserved_iova_domain(struct iommu_domain *domain)
-+void __iommu_free_reserved_iova_domain(struct iommu_domain *domain)
- {
- 	struct iova_domain *iovad =
- 		(struct iova_domain *)domain->reserved_iova_cookie;
--	unsigned long flags;
- 
- 	if (!iovad)
- 		return;
- 
--	spin_lock_irqsave(&domain->reserved_lock, flags);
--
- 	put_iova_domain(iovad);
- 	kfree(iovad);
-+}
-+
-+void iommu_free_reserved_iova_domain(struct iommu_domain *domain)
-+{
-+	unsigned long flags;
- 
-+	spin_lock_irqsave(&domain->reserved_lock, flags);
-+	__iommu_free_reserved_iova_domain(domain);
- 	spin_unlock_irqrestore(&domain->reserved_lock, flags);
- }
- EXPORT_SYMBOL_GPL(iommu_free_reserved_iova_domain);
-@@ -281,4 +285,37 @@ unlock:
- EXPORT_SYMBOL_GPL(iommu_put_reserved_iova);
- 
- 
-+static void reserved_binding_release(struct kref *kref)
-+{
-+	struct iommu_reserved_binding *b =
-+		container_of(kref, struct iommu_reserved_binding, kref);
-+	struct iommu_domain *d = b->domain;
-+
-+	delete_reserved_binding(d, b);
-+}
-+
-+void iommu_unmap_reserved(struct iommu_domain *domain)
-+{
-+	struct rb_node *node;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&domain->reserved_lock, flags);
-+	while ((node = rb_first(&domain->reserved_binding_list))) {
-+		struct iommu_reserved_binding *b =
-+			rb_entry(node, struct iommu_reserved_binding, node);
-+
-+		unlink_reserved_binding(domain, b);
-+		spin_unlock_irqrestore(&domain->reserved_lock, flags);
-+
-+		while (!kref_put(&b->kref, reserved_binding_release))
-+			;
-+		spin_lock_irqsave(&domain->reserved_lock, flags);
-+	}
-+	domain->reserved_binding_list = RB_ROOT;
-+	__iommu_free_reserved_iova_domain(domain);
-+	spin_unlock_irqrestore(&domain->reserved_lock, flags);
-+}
-+EXPORT_SYMBOL_GPL(iommu_unmap_reserved);
-+
-+
- 
-diff --git a/include/linux/dma-reserved-iommu.h b/include/linux/dma-reserved-iommu.h
-index dedea56..9fba930 100644
---- a/include/linux/dma-reserved-iommu.h
-+++ b/include/linux/dma-reserved-iommu.h
-@@ -68,6 +68,13 @@ int iommu_get_reserved_iova(struct iommu_domain *domain,
-  */
- void iommu_put_reserved_iova(struct iommu_domain *domain, dma_addr_t iova);
- 
-+/**
-+ * iommu_unmap_reserved: unmap & destroy the reserved iova bindings
-+ *
-+ * @domain: iommu domain handle
-+ */
-+void iommu_unmap_reserved(struct iommu_domain *domain);
-+
- #endif	/* CONFIG_IOMMU_DMA_RESERVED */
- #endif	/* __KERNEL__ */
- #endif	/* __DMA_RESERVED_IOMMU_H */
 -- 
-1.9.1
+Regards
+Vignesh
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
