@@ -1,14 +1,14 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v6 2/5] vfio: allow the user to register reserved iova
-	range for MSI mapping
-Date: Mon, 4 Apr 2016 11:35:09 +0200
-Message-ID: <5702354D.7000101@linaro.org>
-References: <201604041755.NOuQMtNK%fengguang.wu@intel.com>
+Subject: Re: [PATCH] iommu/arm-smmu: Fix stream-match conflict with
+	IOMMU_DOMAIN_DMA
+Date: Mon, 4 Apr 2016 11:40:29 +0200
+Message-ID: <5702368D.6060706@linaro.org>
+References: <1459527597-10740-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <201604041755.NOuQMtNK%fengguang.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1459527597-10740-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,53 +18,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: kbuild test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: eric.auger-qxv4g6HH51o@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, julien.grall-5wv7dgnIgG8@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kbuild-all-JC7UmRfGjtg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/04/2016 11:30 AM, kbuild test robot wrote:
-> Hi Eric,
+Hi Will,
+On 04/01/2016 06:19 PM, Will Deacon wrote:
+> Commit cbf8277ef456 ("iommu/arm-smmu: Treat IOMMU_DOMAIN_DMA as bypass
+> for now") ignores requests to attach a device to the default domain
+> since, without IOMMU-basked DMA ops available everywhere, the default
+> domain will just lead to unexpected transaction faults being reported.
 > 
-> [auto build test ERROR on iommu/next]
-> [also build test ERROR on v4.6-rc2 next-20160404]
-> [if your patch is applied to the wrong git tree, please drop us a note to help improving the system]
+> Unfortunately, the way this was implemented on SMMUv2 causes a
+> regression with VFIO PCI device passthrough under KVM on AMD Seattle.
+> On this system, the host controller device is associated with both a
+> pci_dev *and* a platform_device, and can therefore end up with duplicate
+> SMR entries, resulting in a stream-match conflict at runtime.
 > 
-> url:    https://github.com/0day-ci/linux/commits/Eric-Auger/KVM-PCIe-MSI-passthrough-on-ARM-ARM64-kernel-part-3-3-vfio-changes/20160404-163335
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
-> config: x86_64-randconfig-s1-04041632 (attached as .config)
-> reproduce:
->         # save the attached .config to linux build tree
->         make ARCH=x86_64 
-This series needs to be applied on top of
-- part 2: [PATCH v6 0/4] KVM PCIe/MSI passthrough on ARM/ARM64: kernel
-part 2/3: msi changes, https://lkml.org/lkml/2016/4/4/104
-- part 1 ([PATCH v6 0/7] KVM PCIe/MSI passthrough on ARM/ARM64: kernel
-part 1/3: iommu changes, https://lkml.org/lkml/2016/4/4/90)
+> This patch amends the original fix so that attaching to IOMMU_DOMAIN_DMA
+> is rejected even before configuring the SMRs. This restores the old
+> behaviour for now, but we'll need to look at handing host controllers
+> specially when we come to supporting the default domain fully.
 
+This works fine for me, before and after PCIe assignment. However before
+giving my T-b I would like to investigate another regression I observe
+wrt SRIOV assignment. Assigning the 1st VF works fine. However assigning
+a second VF does not work anymore (it used to in the past). I get
+-ENOSPC from arm_smmu_master_configure_smrs
 
 Best Regards
 
 Eric
 > 
-> All errors (new ones prefixed by >>):
-> 
->>> drivers/vfio/vfio_iommu_type1.c:39:38: fatal error: linux/dma-reserved-iommu.h: No such file or directory
->    compilation terminated.
-> 
-> vim +39 drivers/vfio/vfio_iommu_type1.c
-> 
->     33	#include <linux/rbtree.h>
->     34	#include <linux/sched.h>
->     35	#include <linux/slab.h>
->     36	#include <linux/uaccess.h>
->     37	#include <linux/vfio.h>
->     38	#include <linux/workqueue.h>
->   > 39	#include <linux/dma-reserved-iommu.h>
->     40	
->     41	#define DRIVER_VERSION  "0.2"
->     42	#define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
-> 
+> Reported-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 > ---
-> 0-DAY kernel test infrastructure                Open Source Technology Center
-> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+>  drivers/iommu/arm-smmu.c | 14 ++++++++------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index e933679a3266..2f186d22477f 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1098,18 +1098,20 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+>  	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>  	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+>  
+> -	/* Devices in an IOMMU group may already be configured */
+> -	ret = arm_smmu_master_configure_smrs(smmu, cfg);
+> -	if (ret)
+> -		return ret == -EEXIST ? 0 : ret;
+> -
+>  	/*
+>  	 * FIXME: This won't be needed once we have IOMMU-backed DMA ops
+> -	 * for all devices behind the SMMU.
+> +	 * for all devices behind the SMMU. Note that we need to take
+> +	 * care configuring SMRs for devices both a platform_device and
+> +	 * and a PCI device (i.e. a PCI host controller)
+>  	 */
+>  	if (smmu_domain->domain.type == IOMMU_DOMAIN_DMA)
+>  		return 0;
+>  
+> +	/* Devices in an IOMMU group may already be configured */
+> +	ret = arm_smmu_master_configure_smrs(smmu, cfg);
+> +	if (ret)
+> +		return ret == -EEXIST ? 0 : ret;
+> +
+>  	for (i = 0; i < cfg->num_streamids; ++i) {
+>  		u32 idx, s2cr;
+>  
 > 
