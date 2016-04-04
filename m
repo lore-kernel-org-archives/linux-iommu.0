@@ -1,11 +1,13 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 0/6 v2] of: Implement iterator for phandles
-Date: Mon,  4 Apr 2016 17:49:16 +0200
-Message-ID: <1459784962-9808-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 4/6] of: Introduce of_for_each_phandle() helper macro
+Date: Mon,  4 Apr 2016 17:49:20 +0200
+Message-ID: <1459784962-9808-5-git-send-email-joro@8bytes.org>
+References: <1459784962-9808-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1459784962-9808-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,70 +21,58 @@ To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, grant.likely-
 Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-here is a new version of the implementation of the iterator
-over phandles concept which Rob Herring suggested to me some
-time ago. My approach is a little bit different from what
-the diff showed back then, but it gets rid of the allocation
-and 'struct of_phandle_args' misuse.
+With this macro any user can easily iterate over a list of
+phandles. The patch also converts __of_parse_phandle_with_args()
+to make use of the macro.
 
-I also converted the arm-smmu driver to make use of the
-iterator. The resulting kernel boots on my AMD Seattle
-system and fixes the warning triggered there. The patches
-now also pass all dt-unittests in my kvm environment.
+The of_count_phandle_with_args() function is not converted,
+because the macro hides the return value of of_phandle_iterator_init(),
+which is needed in there.
 
-Patches are based on v4.6-rc2
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+---
+ drivers/of/base.c  | 7 +------
+ include/linux/of.h | 6 ++++++
+ 2 files changed, 7 insertions(+), 6 deletions(-)
 
-Thanks,
-
-	Joerg
-
-Changes since v1:
-
-* Rebased to v4.6-rc2
-
-* Removed the 'if (i == 0)...' hunk from the last patch
-
-* Tested again with DT unit-tests and on the seattle system
-
-Changes since RFC post:
-
-* Reordered members of 'struct of_phandle_iterator' and did
-  some renaming
-
-* Removed index counting from the iterator
-
-* Split up iterator implementation into multiple patches
-
-* Fixed the code to survive all dt-unittests, tested with each
-  patch in this series
-
-* Re-added and updated some comments which got lost during the
-  conversion.
-
-* Added of_for_each_phandle macro for easier handling
-
-* Moved the counting special-case from __of_parse_phandle_with_args
-  directly to of_count_phandle_with_args for code
-  simplification
-
-* Removed some iterator helper functions
-
-* Formatting and style changes
-
-Joerg Roedel (6):
-  of: Introduce struct of_phandle_iterator
-  of: Move phandle walking to of_phandle_iterator_next()
-  of: Remove counting special case from __of_parse_phandle_with_args()
-  of: Introduce of_for_each_phandle() helper macro
-  of: Introduce of_phandle_iterator_args()
-  iommu/arm-smmu: Make use of phandle iterators in device-tree parsing
-
- drivers/iommu/arm-smmu.c |  38 +++++++--
- drivers/of/base.c        | 206 ++++++++++++++++++++++++++++++-----------------
- include/linux/of.h       |  56 +++++++++++++
- 3 files changed, 219 insertions(+), 81 deletions(-)
-
+diff --git a/drivers/of/base.c b/drivers/of/base.c
+index fcff2b6..ea5a13d 100644
+--- a/drivers/of/base.c
++++ b/drivers/of/base.c
+@@ -1543,13 +1543,8 @@ static int __of_parse_phandle_with_args(const struct device_node *np,
+ 	struct of_phandle_iterator it;
+ 	int rc, cur_index = 0;
+ 
+-	rc = of_phandle_iterator_init(&it, np, list_name,
+-				      cells_name, cell_count);
+-	if (rc)
+-		return rc;
+-
+ 	/* Loop over the phandles until all the requested entry is found */
+-	while ((rc = of_phandle_iterator_next(&it)) == 0) {
++	of_for_each_phandle(&it, rc, np, list_name, cells_name, cell_count) {
+ 		/*
+ 		 * All of the error cases bail out of the loop, so at
+ 		 * this point, the parsing is successful. If the requested
+diff --git a/include/linux/of.h b/include/linux/of.h
+index 1f5e108..b0b8071 100644
+--- a/include/linux/of.h
++++ b/include/linux/of.h
+@@ -908,6 +908,12 @@ static inline int of_property_read_s32(const struct device_node *np,
+ 	return of_property_read_u32(np, propname, (u32*) out_value);
+ }
+ 
++#define of_for_each_phandle(it, err, np, ln, cn, cc)			\
++	for (of_phandle_iterator_init((it), (np), (ln), (cn), (cc)),	\
++	     err = of_phandle_iterator_next(it);			\
++	     err == 0;							\
++	     err = of_phandle_iterator_next(it))
++
+ #define of_property_for_each_u32(np, propname, prop, p, u)	\
+ 	for (prop = of_find_property(np, propname, NULL),	\
+ 		p = of_prop_next_u32(prop, NULL, &u);		\
 -- 
 1.9.1
