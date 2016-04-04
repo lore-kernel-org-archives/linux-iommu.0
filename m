@@ -1,47 +1,42 @@
 From: Joerg Roedel <jroedel@suse.de>
-Subject: Re: [PATCH 6/6] iommu/arm-smmu: Make use of phandle iterators in
- device-tree parsing
-Date: Mon, 4 Apr 2016 16:24:10 +0200
-Message-ID: <20160404142410.GG24141@suse.de>
-References: <1458669509-7178-1-git-send-email-joro@8bytes.org>
- <1458669509-7178-7-git-send-email-joro@8bytes.org>
- <20160329172216.GM6745@arm.com>
+Subject: Re: [PATCH v2] iommu/arm-smmu: Make use of phandle iterators in
+ device-tree device-tree parsing
+Date: Mon, 4 Apr 2016 16:25:14 +0200
+Message-ID: <20160404142514.GH24141@suse.de>
+References: <20160323114707.GA17838@8bytes.org>
+ <201603232325.ah8fLwoH%fengguang.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160329172216.GM6745@arm.com>
+In-Reply-To: <201603232325.ah8fLwoH%fengguang.wu@intel.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, grant.likely@linaro.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+To: kbuild test robot <lkp@intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, kbuild-all@01.org, Rob Herring <robh+dt@kernel.org>, Grant Likely <grant.likely@linaro.org>, Will Deacon <will.deacon@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+On Wed, Mar 23, 2016 at 11:18:25PM +0800, kbuild test robot wrote:
+>    drivers/iommu/arm-smmu.c: In function 'arm_smmu_device_dt_probe':
+>    drivers/iommu/arm-smmu.c:1746:29: error: storage size of 'it' isn't known
+>      struct of_phandle_iterator it;
+>                                 ^
+> >> drivers/iommu/arm-smmu.c:1815:2: error: implicit declaration of function 'of_for_each_phandle' [-Werror=implicit-function-declaration]
+>      of_for_each_phandle(&it, err, dev->of_node,
+>      ^
+> >> drivers/iommu/arm-smmu.c:1816:46: error: expected ';' before '{' token
+>            "mmu-masters", "#stream-id-cells", 0) {
+>                                                  ^
+>    drivers/iommu/arm-smmu.c:1746:29: warning: unused variable 'it' [-Wunused-variable]
+>      struct of_phandle_iterator it;
+>                                 ^
+>    drivers/iommu/arm-smmu.c: At top level:
+>    drivers/iommu/arm-smmu.c:473:12: warning: 'register_smmu_master' defined but not used [-Wunused-function]
+>     static int register_smmu_master(struct arm_smmu_device *smmu,
+>                ^
+>    cc1: some warnings being treated as errors
 
-On Tue, Mar 29, 2016 at 06:22:16PM +0100, Will Deacon wrote:
-> > +
-> > +	if (i == 0)
-> > +		goto out_put_masters;
-> 
-> I'm confused by this hunk. If i == 0, then we shouldn't have registered
-> any masters and therefore out_put_masters won't have anything to do.
-
-The idea was that there is nothing more to do in the function when it
-didn't find any masters and so it can safely skip the rest of the
-function.
-
-But the original code doesn't do this either, so it certainly doesn't
-belong into this patch. I remove it for the next post.
-
-> In fact, I'm not completely clear on how the of_node refcounting interacts
-> with your iterators. Does the iterator put the node after you call the
-> "next" function, or does it increment each thing exactly once?
-
-The iterator will put the current node at the following _next call, so
-when you want to use each node, you need your own reference.
-
-It works like the pci_dev iterators, so if you break out of the loop you
-have to manually put the last node it returned.
+Looks like this patch got compiled without the other patch in this set,
+right? Because the config builds perfectly fine here for me.
 
 
 	Joerg
