@@ -1,14 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu: change generic_device_group function
-Date: Tue, 5 Apr 2016 17:04:08 +0200
-Message-ID: <20160405150408.GF11519@8bytes.org>
-References: <1458907611-19694-1-git-send-email-cn_wyl2003@126.com>
+Subject: Re: [PATCH] drivers/iommu: don't select DEBUG_FS for AMD_IOMMU_STATS
+Date: Tue, 5 Apr 2016 17:19:51 +0200
+Message-ID: <20160405151951.GG11519@8bytes.org>
+References: <1459041524-30929-1-git-send-email-paul.gortmaker@windriver.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1458907611-19694-1-git-send-email-cn_wyl2003-KN7UnAbNpbg@public.gmane.org>
+In-Reply-To: <1459041524-30929-1-git-send-email-paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,22 +18,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: cn_wyl2003-KN7UnAbNpbg@public.gmane.org
-Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, yalin.wang2010-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, nicolas.iooss_linux-oWGTIYur0i8@public.gmane.org, renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org
+To: Paul Gortmaker <paul.gortmaker-CWA4WttNNZF54TAoqtyWWQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Steven Rostedt (Red Hat)" <rostedt-nx8X9YLhiw1AfugRpC6u6w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 25, 2016 at 08:06:51PM +0800, cn_wyl2003-KN7UnAbNpbg@public.gmane.org wrote:
-> From: yalin wang <yalin.wang2010-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+On Sat, Mar 26, 2016 at 09:18:44PM -0400, Paul Gortmaker wrote:
+> We have at least one big banner telling people that they should
+> not deploy production kernels with DEBUG options enabled, but
+> at the same time, we make it hard for people to turn DEBUG_FS
+> off when we select (vs. depend on) the CONFIG_DEBUG_FS option.
 > 
-> change this function to return only iommu_group* pointer or
-> PTR_ERR(), never return NULL when failed.
-> The caller of this function only check IS_ERR() for its return value.
-> 
-> Signed-off-by: yalin wang <yalin.wang2010-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Since we actively discourage people using debug-like features
+> on any builds that are production oriented (see trace_printk
+> banner for one example), so a generic sounding option should
+> not select DEBUG_FS.
 
-You are right, thanks for catching this. But please leave the
-generic_device_group function in iommu.c. It is assigned to a function
-pointer by drivers, so inlining it doesn't make sense anyway.
+That reasoning sounds a bit odd, as most production kernels have
+DEBUG_FS enabled anyway, and I see no problem with that.
+
+Disabling all debug features in 'production kernels' is a bit overkill.
+Only if the feature has any runtime impact (performance, memory
+consumption, security, ...) it makes sense to disable it for production
+kernels.
+
+Other features could stay enabled, and DEBUG_FS is one of them. For some
+debug features we even don't offer a way to disable them, see BUG_ON,
+WARN_ON and friends.
 
 
 	Joerg
