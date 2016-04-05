@@ -1,13 +1,13 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/dma: Restore scatterlist offsets correctly
-Date: Tue, 5 Apr 2016 12:16:10 +0100
-Message-ID: <57039E7A.3090709@arm.com>
-References: <c14a93373a34633f6db89214ca2ddf69b0eaa1c3.1457637385.git.robin.murphy@arm.com>
+From: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [v7, 0/5] Fix eSDHC host version register bug
+Date: Tue, 5 Apr 2016 13:27:58 +0200
+Message-ID: <CAPDyKFqgMCvbqMYZ-uM-rTnVvfJkCYbhv2kucCRyNyc9FWoR=Q@mail.gmail.com>
+References: <1459480051-3701-1-git-send-email-yangbo.lu@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <c14a93373a34633f6db89214ca2ddf69b0eaa1c3.1457637385.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1459480051-3701-1-git-send-email-yangbo.lu-3arQi8VN3Tc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,51 +17,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org
+To: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Zhao Qiang <qiang.zhao-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mmc <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, scott.wood-3arQi8VN3Tc@public.gmane.org, xiaobo.xie-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, leoyang.li-3arQi8VN3Tc@public.gmane.org, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/03/16 19:28, Robin Murphy wrote:
-> With the change to stashing just the IOVA-page-aligned remainder of the
-> CPU-page offset rather than the whole thing, the failure path in
-> __invalidate_sg() also needs tweaking to account for that in the case of
-> differing page sizes where the two offsets may not be equivalent.
-> Similarly in __finalise_sg(), lest the architecture-specific wrappers
-> later get the wrong address for cache maintenance on sync or unmap.
+On 1 April 2016 at 05:07, Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org> wrote:
+> This patchset is used to fix a host version register bug in the T4240-R1.0-R2.0
+> eSDHC controller. To get the SoC version and revision, it's needed to add the
+> GUTS driver to access the global utilities registers.
 >
-> Fixes: 164afb1d85b8 ("iommu/dma: Use correct offset in map_sg")
-> Reported-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->   drivers/iommu/dma-iommu.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
+> So, the first three patches are to add the GUTS driver.
+> The following two patches are to enable GUTS driver support to get SVR in eSDHC
+> driver and fix host version for T4240.
 >
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 72d6182..58f2fe6 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -403,7 +403,7 @@ static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
->   		unsigned int s_length = sg_dma_len(s);
->   		unsigned int s_dma_len = s->length;
+> Yangbo Lu (5):
+>   ARM64: dts: ls2080a: add device configuration node
+>   soc: fsl: add GUTS driver for QorIQ platforms
+>   dt: move guts devicetree doc out of powerpc directory
+>   powerpc/fsl: move mpc85xx.h to include/linux/fsl
+>   mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
 >
-> -		s->offset = s_offset;
-> +		s->offset += s_offset;
->   		s->length = s_length;
->   		sg_dma_address(s) = dma_addr + s_offset;
->   		dma_addr += s_dma_len;
-> @@ -422,7 +422,7 @@ static void __invalidate_sg(struct scatterlist *sg, int nents)
+>  .../bindings/{powerpc => soc}/fsl/guts.txt         |   3 +
+>  arch/arm64/boot/dts/freescale/fsl-ls2080a.dtsi     |   6 ++
+>  arch/powerpc/kernel/cpu_setup_fsl_booke.S          |   2 +-
+>  drivers/clk/clk-qoriq.c                            |   3 +-
+>  drivers/i2c/busses/i2c-mpc.c                       |   2 +-
+>  drivers/iommu/fsl_pamu.c                           |   3 +-
+>  drivers/mmc/host/Kconfig                           |   1 +
+>  drivers/mmc/host/sdhci-of-esdhc.c                  |  23 ++++
+>  drivers/net/ethernet/freescale/gianfar.c           |   2 +-
+>  drivers/soc/Kconfig                                |   2 +-
+>  drivers/soc/fsl/Kconfig                            |   8 ++
+>  drivers/soc/fsl/Makefile                           |   1 +
+>  drivers/soc/fsl/guts.c                             | 119 +++++++++++++++++++++
+>  include/linux/fsl/guts.h                           |  98 ++++++++---------
+>  .../asm/mpc85xx.h => include/linux/fsl/svr.h       |   4 +-
+>  15 files changed, 219 insertions(+), 58 deletions(-)
+>  rename Documentation/devicetree/bindings/{powerpc => soc}/fsl/guts.txt (91%)
+>  create mode 100644 drivers/soc/fsl/Kconfig
+>  create mode 100644 drivers/soc/fsl/guts.c
+>  rename arch/powerpc/include/asm/mpc85xx.h => include/linux/fsl/svr.h (97%)
 >
->   	for_each_sg(sg, s, nents, i) {
->   		if (sg_dma_address(s) != DMA_ERROR_CODE)
-> -			s->offset = sg_dma_address(s);
-> +			s->offset += sg_dma_address(s);
->   		if (sg_dma_len(s))
->   			s->length = sg_dma_len(s);
->   		sg_dma_address(s) = DMA_ERROR_CODE;
+> --
+> 2.1.0.27.g96db324
 >
 
-Any comments on these patches? Now that the dust has settled this fix 
-really wants to get into 4.6, and folks have been wanting patch 2 for 
-ages so it would be nice to get it queued for 4.7.
+I was about to queue this for next, when I noticed that checkpatch is
+complaining/warning lots about these patches. Can you please a round
+of checkpatch and fix what makes sense.
 
-Robin.
+Kind regards
+Uffe
