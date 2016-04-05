@@ -1,14 +1,15 @@
-From: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] intel-iommu: fix up comment
-Date: Tue, 5 Apr 2016 11:38:27 +0300
-Message-ID: <20160405113819-mutt-send-email-mst@redhat.com>
-References: <1458757421-4058-1-git-send-email-mst@redhat.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 0/7] Intel IOMMU scalability improvements
+Date: Tue, 5 Apr 2016 11:22:49 +0200
+Message-ID: <20160405092249.GE17838@8bytes.org>
+References: <20151228161421.GA27829@cs.technion.ac.il>
+	<CAN+hb0Xt21CMmM7uE0rzjf5p9w-W+5y8at4v1J8+pYd8tamLpQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1458757421-4058-1-git-send-email-mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <CAN+hb0Xt21CMmM7uE0rzjf5p9w-W+5y8at4v1J8+pYd8tamLpQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,37 +19,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Benjamin Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Dan Tsafrir <dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 23, 2016 at 08:34:19PM +0200, Michael S. Tsirkin wrote:
-> dma_pte_free_pagetable no longer depends on
-> last level ptes being clear, it clears them itself.
-> Fix up the comment to match.
-> 
-> Cc: Jiang Liu <jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> Suggested-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: Michael S. Tsirkin <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+On Tue, Mar 15, 2016 at 11:00:34AM -0700, Benjamin Serebrin via iommu wrote:
+> There are nice.=A0 Thanks very much for doing this work!
+> =
 
-Anyone?
+> We have some preliminary results, looking at scaling to high core counts.=
+=A0 We
+> tested the patches on a 2-socket high core count SNB-EP server with a Bro=
+adcomm
+> NIC.=A0 Our benchmark uses 200 threads of TCP_RR.=A0 We see similar perfo=
+rmance for
+> IOMMU disabled as we do for IOMMU enabled with this patchset, which is go=
+od
+> news.=A0 We're working on getting a lab setup with Haswell servers so we =
+can
+> further test the scalability of the code.
+> =
 
-> ---
->  drivers/iommu/intel-iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index a2e1b7f..0100553 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -1143,7 +1143,7 @@ next:
->  	} while (!first_pte_in_page(++pte) && pfn <= last_pfn);
->  }
->  
-> -/* free page table pages. last level pte should already be cleared */
-> +/* clear last level (leaf) ptes and free page table pages. */
->  static void dma_pte_free_pagetable(struct dmar_domain *domain,
->  				   unsigned long start_pfn,
->  				   unsigned long last_pfn)
-> -- 
-> MST
+> We owe the scaling results and of course actual code reviews.
+
+This sounds very promising. Could you guys rebase the patches to a
+recent upstream kernel and repost together with your performance
+results? I'd really like to see that merged.
+
+
+	Joerg
