@@ -1,14 +1,12 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/3] iommu/io-pgtable-arm: Support IOMMU_MMIO flag
-Date: Wed, 6 Apr 2016 17:58:19 +0200
-Message-ID: <5705321B.3040200@linaro.org>
-References: <d80a42ceae3a39ef7c593a5181a1742a84c65533.1459854346.git.robin.murphy@arm.com>
-	<1e6ddedc0bb08b6581f6e0e80710c2ed03830647.1459854346.git.robin.murphy@arm.com>
+From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: [patch] iommu/vt-d: silence an uninitialized variable warning
+Date: Wed, 6 Apr 2016 21:38:56 +0300
+Message-ID: <20160406183856.GB9593@mwanda>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1e6ddedc0bb08b6581f6e0e80710c2ed03830647.1459854346.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,53 +16,26 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-On 04/05/2016 01:39 PM, Robin Murphy wrote:
-> Teach the LPAE format to create Device mappings when asked.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-don't know if it helps in any way but I tested that with my KVM PCIe/MSI
-passthrough series for mapping the GICv2m doorbell.
+My static checker complains that "dma_alias" is uninitialized unless we
+are dealing with a pci device.  This is true but harmless.  Anyway, we
+can flip the condition around to silence the warning.
 
-Tested-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Signed-off-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
 
-Best Regards
-
-Eric
-
-> ---
->  drivers/iommu/io-pgtable-arm.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index f433b51..a1ed1b7 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -355,7 +355,10 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
->  		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
->  			pte |= ARM_LPAE_PTE_AP_RDONLY;
->  
-> -		if (prot & IOMMU_CACHE)
-> +		if (prot & IOMMU_MMIO)
-> +			pte |= (ARM_LPAE_MAIR_ATTR_IDX_DEV
-> +				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
-> +		else if (prot & IOMMU_CACHE)
->  			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
->  				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
->  	} else {
-> @@ -364,7 +367,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
->  			pte |= ARM_LPAE_PTE_HAP_READ;
->  		if (prot & IOMMU_WRITE)
->  			pte |= ARM_LPAE_PTE_HAP_WRITE;
-> -		if (prot & IOMMU_CACHE)
-> +		if (prot & IOMMU_MMIO)
-> +			pte |= ARM_LPAE_PTE_MEMATTR_DEV;
-> +		else if (prot & IOMMU_CACHE)
->  			pte |= ARM_LPAE_PTE_MEMATTR_OIWB;
->  		else
->  			pte |= ARM_LPAE_PTE_MEMATTR_NC;
-> 
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a2e1b7f..e1852e8 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2458,7 +2458,7 @@ static struct dmar_domain *get_domain_for_dev(struct device *dev, int gaw)
+ 	}
+ 
+ 	/* register PCI DMA alias device */
+-	if (req_id != dma_alias && dev_is_pci(dev)) {
++	if (dev_is_pci(dev) && req_id != dma_alias) {
+ 		tmp = dmar_insert_one_dev_info(iommu, PCI_BUS_NUM(dma_alias),
+ 					       dma_alias & 0xff, NULL, domain);
+ 
