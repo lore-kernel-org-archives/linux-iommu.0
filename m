@@ -1,16 +1,14 @@
-From: Tomasz Golinski <tomaszg-FRiIMV821htubak7+UBa2Q@public.gmane.org>
-Subject: Re: AMD-Vi regression with PCIe/PCI bridges in 4.4
-Date: Wed, 6 Apr 2016 17:52:57 +0200
-Message-ID: <570530D9.6010109@math.uwb.edu.pl>
-References: <5700BF69.2080102@ladisch.de> <57038D1F.7040205@ladisch.de>
-	<20160405101530.GA4203@suse.de> <5703AEE6.4010304@ladisch.de>
-	<5703B1F3.6000505@math.uwb.edu.pl> <5703BA5E.3060005@ladisch.de>
-	<1459926391.2346.6.camel@gmail.com> <20160406154729.GD4203@suse.de>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 2/3] iommu/io-pgtable-arm: Support IOMMU_MMIO flag
+Date: Wed, 6 Apr 2016 17:58:19 +0200
+Message-ID: <5705321B.3040200@linaro.org>
+References: <d80a42ceae3a39ef7c593a5181a1742a84c65533.1459854346.git.robin.murphy@arm.com>
+	<1e6ddedc0bb08b6581f6e0e80710c2ed03830647.1459854346.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160406154729.GD4203-l3A5Bk7waGM@public.gmane.org>
+In-Reply-To: <1e6ddedc0bb08b6581f6e0e80710c2ed03830647.1459854346.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,16 +18,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Martin Haiden <haiden.tracking-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: bellamorte42-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Clemens Ladisch <clemens-P6GI/4k7KOmELgA04lAiVw@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-> Can you guys send me some more detailed information about
-> the sound cards that cause the problems? Vendor and exact product name
-> would be helpful.
+Hi Robin,
+On 04/05/2016 01:39 PM, Robin Murphy wrote:
+> Teach the LPAE format to create Device mappings when asked.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+don't know if it helps in any way but I tested that with my KVM PCIe/MSI
+passthrough series for mapping the GICv2m doorbell.
 
-I'm using Asus Xonar DX card: https://www.asus.com/Sound-Cards/Xonar_DX/
+Tested-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
-Let me add that I also did no BIOS upgrade in the meantime and I use no
-other proprietary drivers other than Nvidia (which I already checked not
-to be the source of the problem).
+Best Regards
+
+Eric
+
+> ---
+>  drivers/iommu/io-pgtable-arm.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index f433b51..a1ed1b7 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -355,7 +355,10 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+>  		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
+>  			pte |= ARM_LPAE_PTE_AP_RDONLY;
+>  
+> -		if (prot & IOMMU_CACHE)
+> +		if (prot & IOMMU_MMIO)
+> +			pte |= (ARM_LPAE_MAIR_ATTR_IDX_DEV
+> +				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+> +		else if (prot & IOMMU_CACHE)
+>  			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
+>  				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
+>  	} else {
+> @@ -364,7 +367,9 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+>  			pte |= ARM_LPAE_PTE_HAP_READ;
+>  		if (prot & IOMMU_WRITE)
+>  			pte |= ARM_LPAE_PTE_HAP_WRITE;
+> -		if (prot & IOMMU_CACHE)
+> +		if (prot & IOMMU_MMIO)
+> +			pte |= ARM_LPAE_PTE_MEMATTR_DEV;
+> +		else if (prot & IOMMU_CACHE)
+>  			pte |= ARM_LPAE_PTE_MEMATTR_OIWB;
+>  		else
+>  			pte |= ARM_LPAE_PTE_MEMATTR_NC;
+> 
