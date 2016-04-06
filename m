@@ -1,15 +1,15 @@
-From: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/rockchip: Fix "is stall active" check
-Date: Wed, 6 Apr 2016 09:45:46 +0200
-Message-ID: <CAAObsKC9d17jh1xOfGGSo6ULesYFAENYSNEFrr4ee4h_JgahYw@mail.gmail.com>
-References: <1459865146-25308-1-git-send-email-john@metanate.com>
-	<5389576.zuTxjFsmO4@phil> <20160405182858.382ea465.john@metanate.com>
-	<9799340.GJHE2cZK7r@phil>
+From: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [v7, 0/5] Fix eSDHC host version register bug
+Date: Wed, 6 Apr 2016 10:14:36 +0200
+Message-ID: <CAPDyKFp8GDzSkpbTKoRL=rwiBrsWmsgN95zB-QJwfZTnq4M8BA@mail.gmail.com>
+References: <1459480051-3701-1-git-send-email-yangbo.lu@nxp.com>
+	<CAPDyKFqgMCvbqMYZ-uM-rTnVvfJkCYbhv2kucCRyNyc9FWoR=Q@mail.gmail.com>
+	<HE1PR04MB0889D75DC56E180D3508E7A1F89F0@HE1PR04MB0889.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <9799340.GJHE2cZK7r@phil>
+In-Reply-To: <HE1PR04MB0889D75DC56E180D3508E7A1F89F0-6LN7OEpIatX1kPMWxTxe+c9NdZoXdze2vxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,101 +19,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, John Keeping <john-HooS5bfzL4hWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>, Scott Wood <scott.wood-3arQi8VN3Tc@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Zhao Qiang <qiang.zhao-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-mmc <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, Xiaobo Xie <xiaobo.xie-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Yang-Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM1dQTEkxZZdg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 5 April 2016 at 21:10, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org> wrote:
-> Am Dienstag, 5. April 2016, 18:28:58 schrieb John Keeping:
->> On Tue, 05 Apr 2016 10:21:27 -0700, Heiko Stuebner wrote:
->> > Am Dienstag, 5. April 2016, 15:05:46 schrieb John Keeping:
->> > > Since commit cd6438c5f844 ("iommu/rockchip: Reconstruct to support
->> > > multi
->> > > slaves") rk_iommu_is_stall_active() always returns false because the
->> > > bitwise AND operates on the boolean flag promoted to an integer and a
->> > > value that is either zero or BIT(2).
->> > >
->> > > Explicitly convert the right-hand value to a boolean so that both
->> > > sides
->> > > are guaranteed to be either zero or one.
->> > >
->> > > rk_iommu_is_paging_enabled() does not suffer from the same problem
->> > > since
->> > > RK_MMU_STATUS_PAGING_ENABLED is BIT(0), but let's apply the same
->> > > change
->> > > for consistency and to make it clear that it's correct without needing
->> > > to lookup the value.
->> > >
->> > > Fixes: cd6438c5f844 ("iommu/rockchip: Reconstruct to support multi
->> > > slaves") Signed-off-by: John Keeping <john-HooS5bfzL4hWk0Htik3J/w@public.gmane.org>
->> >
->> > Nice catch, thanks.
->> >
->> > Reviewed-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
->> >
->> > John, out of curiosity, how did you find that problem? Excess stall
->> > error
->> > messages or something else?
 >>
->> I was testing the drm iommu patches I posted today [1] and noticed an
->> "Enable stall request timed out" error when unbinding the
->> display-subsystem, but the RK_MMU_STATUS value printed in the error
->> message indicated that stall active was set.
+>> I was about to queue this for next, when I noticed that checkpatch is
+>> complaining/warning lots about these patches. Can you please a round of
+>> checkpatch and fix what makes sense.
 >>
->> [1] http://article.gmane.org/gmane.comp.video.dri.devel/150721
+>> Kind regards
+>> Uffe
 >
-> So it seems both you and Tomeu were working to resolve the same issue [2].
->
-> And John's patch seems to actually fix the underlying problem.
+> [Lu Yangbo-B47093] Sorry about this, Uffe...
 
-Indeed, I don't get spurious messages any more with this patch.
+No worries!
 
-Tested-by: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>
+> Should I ignore the warnings that update MAINTAINERS?
 
-Thanks,
+drivers/soc/fsl/guts.c isn't part of the MAINTAINERS file, it should be.
 
-Tomeu
+I also realize that the FREESCALE QUICC ENGINE LIBRARY section
+drivers/soc/fsl/qe/* also need an active maintainer, as it's currently
+orphan.
+
+Perhaps we should have create a new section for drivers/soc/fsl/*
+instead that covers all of the above? Maybe you or Scott are
+interested to pick it up?
+
+I also noted that, "include/linux/fsl/" isn't present in MAINTAINERS,
+please add that as well.
+
+> Regarding the 'undocumented' warning, I will added a patch updates doc before all the patches, Ok?
+
+Yes, good!
 
 >
-> [2] https://lkml.org/lkml/2016/3/22/493
+> Thanks a lot :)
 >
->
->> > > ---
->> > >
->> > >  drivers/iommu/rockchip-iommu.c | 8 ++++----
->> > >  1 file changed, 4 insertions(+), 4 deletions(-)
->> > >
->> > > diff --git a/drivers/iommu/rockchip-iommu.c
->> > > b/drivers/iommu/rockchip-iommu.c index a6f593a0a29e..5710a06c3049
->> > > 100644
->> > > --- a/drivers/iommu/rockchip-iommu.c
->> > > +++ b/drivers/iommu/rockchip-iommu.c
->> > > @@ -315,8 +315,8 @@ static bool rk_iommu_is_stall_active(struct
->> > > rk_iommu
->> > > *iommu) int i;
->> > >
->> > >   for (i = 0; i < iommu->num_mmu; i++)
->> > >
->> > > -         active &= rk_iommu_read(iommu->bases[i], RK_MMU_STATUS) &
->> > > -                                 RK_MMU_STATUS_STALL_ACTIVE;
->> > > +         active &= !!(rk_iommu_read(iommu->bases[i], RK_MMU_STATUS) &
->> > > +                                    RK_MMU_STATUS_STALL_ACTIVE);
->> > >
->> > >   return active;
->> > >
->> > >  }
->> > >
->> > > @@ -327,8 +327,8 @@ static bool rk_iommu_is_paging_enabled(struct
->> > > rk_iommu *iommu) int i;
->> > >
->> > >   for (i = 0; i < iommu->num_mmu; i++)
->> > >
->> > > -         enable &= rk_iommu_read(iommu->bases[i], RK_MMU_STATUS) &
->> > > -                                 RK_MMU_STATUS_PAGING_ENABLED;
->> > > +         enable &= !!(rk_iommu_read(iommu->bases[i], RK_MMU_STATUS) &
->> > > +                                    RK_MMU_STATUS_PAGING_ENABLED);
->> > >
->> > >   return enable;
->> > >
->> > >  }
->
+
+Kind regards
+Uffe
