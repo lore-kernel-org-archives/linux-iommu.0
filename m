@@ -1,13 +1,11 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 1/5] iommu: remove unused priv field from struct iommu_ops
-Date: Thu,  7 Apr 2016 18:42:04 +0100
-Message-ID: <8ff9d80f39489b283f168afbf92971631788ae0c.1460048991.git.robin.murphy@arm.com>
-References: <cover.1460048991.git.robin.murphy@arm.com>
+Subject: [PATCH 0/5] Introduce per-domain page sizes
+Date: Thu,  7 Apr 2016 18:42:03 +0100
+Message-ID: <cover.1460048991.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1460048991.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,37 +19,96 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public
 Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Hi all,
 
-The priv field from iommu_ops is a hangover from the of_dma_configure
-series and isn't actually used. Remove it before it has chance to
-spread.
+Since this area seems to be in vogue at the moment, here's what I was
+working on when the related patches[1][2] popped up, which happens to
+be more or less the intersection of both. As I recycled some of Will's
+old series as a starting point, I've retained the cleanup patches from
+that with their original acks - hope that's OK.
 
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
----
- include/linux/iommu.h | 2 --
- 1 file changed, 2 deletions(-)
+Fortunately, this already looks rather like parts of Joerg's plan[3],
+so I hope it's a suitable first step. Below is a quick hacked-up example
+of the kind of caller-controlled special use-case alluded to, using the
+SMMU/HDLCD combo on Juno - for a 'real' implementation of this we'd want
+the group-based domain allocation call so the driver could throw the
+device at that and get its own non-default DMA ops domain to play with.
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 62a5eae..45b055d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -157,7 +157,6 @@ struct iommu_dm_region {
-  * @domain_get_windows: Return the number of windows for a domain
-  * @of_xlate: add OF master IDs to iommu grouping
-  * @pgsize_bitmap: bitmap of supported page sizes
-- * @priv: per-instance data private to the iommu driver
-  */
- struct iommu_ops {
- 	bool (*capable)(enum iommu_cap);
-@@ -199,7 +198,6 @@ struct iommu_ops {
- 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
+Robin.
+
+[1]:http://thread.gmane.org/gmane.linux.kernel.iommu/12774
+[2]:http://thread.gmane.org/gmane.linux.kernel.iommu/12901
+[3]:http://article.gmane.org/gmane.linux.kernel.iommu/12937
+
+Robin Murphy (4):
+  iommu: of: enforce const-ness of struct iommu_ops
+  iommu: Allow selecting page sizes per domain
+  iommu/dma: Finish optimising higher-order allocations
+  iommu/arm-smmu: Use per-domain page sizes.
+
+Will Deacon (1):
+  iommu: remove unused priv field from struct iommu_ops
+
+ arch/arm/include/asm/dma-mapping.h   |  2 +-
+ arch/arm/mm/dma-mapping.c            |  6 +++---
+ arch/arm64/include/asm/dma-mapping.h |  2 +-
+ arch/arm64/mm/dma-mapping.c          |  8 ++++----
+ drivers/iommu/arm-smmu-v3.c          | 19 +++++++++---------
+ drivers/iommu/arm-smmu.c             | 26 +++++++++++++-----------
+ drivers/iommu/dma-iommu.c            | 39 +++++++++++++++++++++++++++---------
+ drivers/iommu/iommu.c                | 22 +++++++++++---------
+ drivers/iommu/mtk_iommu.c            |  2 +-
+ drivers/iommu/of_iommu.c             | 14 ++++++-------
+ drivers/of/device.c                  |  2 +-
+ drivers/vfio/vfio_iommu_type1.c      |  2 +-
+ include/linux/dma-iommu.h            |  4 ++--
+ include/linux/dma-mapping.h          |  2 +-
+ include/linux/iommu.h                |  5 ++---
+ include/linux/of_iommu.h             |  8 ++++----
+ 16 files changed, 93 insertions(+), 70 deletions(-)
+
+--->8---
+diff --git a/drivers/gpu/drm/arm/hdlcd_drv.c b/drivers/gpu/drm/arm/hdlcd_drv.c
+index 56b829f..0da0f4b 100644
+--- a/drivers/gpu/drm/arm/hdlcd_drv.c
++++ b/drivers/gpu/drm/arm/hdlcd_drv.c
+@@ -13,6 +13,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/clk.h>
+ #include <linux/component.h>
++#include <linux/iommu.h>
+ #include <linux/list.h>
+ #include <linux/of_graph.h>
+ #include <linux/of_reserved_mem.h>
+@@ -34,6 +35,7 @@ static int hdlcd_load(struct drm_device *drm, unsigned long flags)
+ {
+ 	struct hdlcd_drm_private *hdlcd = drm->dev_private;
+ 	struct platform_device *pdev = to_platform_device(drm->dev);
++	struct iommu_domain *dom;
+ 	struct resource *res;
+ 	u32 version;
+ 	int ret;
+@@ -79,6 +81,21 @@ static int hdlcd_load(struct drm_device *drm, unsigned long flags)
+ 	if (ret)
+ 		goto setup_fail;
  
- 	unsigned long pgsize_bitmap;
--	void *priv;
- };
- 
- #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
++	/*
++	 * EXAMPLE: Let's say that if we're using an SMMU, we'd rather waste
++	 * a little memory by forcing DMA allocation and mapping to section
++	 * granularity so the whole buffer fits in the TLBs, than waste power
++	 * by having the SMMU constantly walking page tables all the time we're
++	 * scanning out. In this case we know our default domain isn't shared
++	 * with any other devices, so we can cheat and mangle that directly.
++	 */
++	dom = iommu_get_domain_for_dev(drm->dev);
++	if (dom) {
++		dom->pgsize_bitmap &= ~(SZ_1M - 1);
++		if (!dom->pgsize_bitmap)
++			goto setup_fail;
++	}
++
+ 	ret = hdlcd_setup_crtc(drm);
+ 	if (ret < 0) {
+ 		DRM_ERROR("failed to create crtc\n");
 -- 
 2.7.3.dirty
