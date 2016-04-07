@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 2/5] iommu: of: enforce const-ness of struct iommu_ops
-Date: Thu,  7 Apr 2016 18:42:05 +0100
-Message-ID: <b3a7636ef956ab0f335142e4de0946836687920b.1460048991.git.robin.murphy@arm.com>
+Subject: [PATCH 4/5] iommu/dma: Finish optimising higher-order allocations
+Date: Thu,  7 Apr 2016 18:42:07 +0100
+Message-ID: <89763f6b1ac684c3d8712e38760bec55b7885e3b.1460048991.git.robin.murphy@arm.com>
 References: <cover.1460048991.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,208 +21,144 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public
 Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
+Now that we know exactly which page sizes our caller wants to use in the
+given domain, we can restrict higher-order allocation attempts to just
+those sizes, if any, and avoid wasting any time or effort on other sizes
+which offer no benefit. In the same vein, this also lets us accommodate
+a minimum order greater than 0 for special cases.
 
-As a set of driver-provided callbacks and static data, there is no
-compelling reason for struct iommu_ops to be mutable in core code, so
-enforce const-ness throughout.
-
-Acked-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- arch/arm/include/asm/dma-mapping.h   |  2 +-
- arch/arm/mm/dma-mapping.c            |  6 +++---
- arch/arm64/include/asm/dma-mapping.h |  2 +-
- arch/arm64/mm/dma-mapping.c          |  4 ++--
- drivers/iommu/of_iommu.c             | 14 +++++++-------
- drivers/of/device.c                  |  2 +-
- include/linux/dma-mapping.h          |  2 +-
- include/linux/of_iommu.h             |  8 ++++----
- 8 files changed, 20 insertions(+), 20 deletions(-)
+ arch/arm64/mm/dma-mapping.c |  4 ++--
+ drivers/iommu/dma-iommu.c   | 37 ++++++++++++++++++++++++++++---------
+ include/linux/dma-iommu.h   |  4 ++--
+ 3 files changed, 32 insertions(+), 13 deletions(-)
 
-diff --git a/arch/arm/include/asm/dma-mapping.h b/arch/arm/include/asm/dma-mapping.h
-index 6ad1ced..02283eb 100644
---- a/arch/arm/include/asm/dma-mapping.h
-+++ b/arch/arm/include/asm/dma-mapping.h
-@@ -118,7 +118,7 @@ static inline unsigned long dma_max_pfn(struct device *dev)
- 
- #define arch_setup_dma_ops arch_setup_dma_ops
- extern void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
--			       struct iommu_ops *iommu, bool coherent);
-+			       const struct iommu_ops *iommu, bool coherent);
- 
- #define arch_teardown_dma_ops arch_teardown_dma_ops
- extern void arch_teardown_dma_ops(struct device *dev);
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index deac58d..617b0cf 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -2214,7 +2214,7 @@ static struct dma_map_ops *arm_get_iommu_dma_map_ops(bool coherent)
- }
- 
- static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
--				    struct iommu_ops *iommu)
-+				    const struct iommu_ops *iommu)
- {
- 	struct dma_iommu_mapping *mapping;
- 
-@@ -2252,7 +2252,7 @@ static void arm_teardown_iommu_dma_ops(struct device *dev)
- #else
- 
- static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
--				    struct iommu_ops *iommu)
-+				    const struct iommu_ops *iommu)
- {
- 	return false;
- }
-@@ -2269,7 +2269,7 @@ static struct dma_map_ops *arm_get_dma_map_ops(bool coherent)
- }
- 
- void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
--			struct iommu_ops *iommu, bool coherent)
-+			const struct iommu_ops *iommu, bool coherent)
- {
- 	struct dma_map_ops *dma_ops;
- 
-diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
-index ba437f0..7dbea6c 100644
---- a/arch/arm64/include/asm/dma-mapping.h
-+++ b/arch/arm64/include/asm/dma-mapping.h
-@@ -48,7 +48,7 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
- }
- 
- void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
--			struct iommu_ops *iommu, bool coherent);
-+			const struct iommu_ops *iommu, bool coherent);
- #define arch_setup_dma_ops	arch_setup_dma_ops
- 
- #ifdef CONFIG_IOMMU_DMA
 diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index a6e757c..5d36907 100644
+index 5d36907..41d19a0 100644
 --- a/arch/arm64/mm/dma-mapping.c
 +++ b/arch/arm64/mm/dma-mapping.c
-@@ -979,13 +979,13 @@ void arch_teardown_dma_ops(struct device *dev)
- #else
+@@ -562,8 +562,8 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+ 		struct page **pages;
+ 		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
  
- static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
--				  struct iommu_ops *iommu)
-+				  const struct iommu_ops *iommu)
- { }
+-		pages = iommu_dma_alloc(dev, iosize, gfp, ioprot, handle,
+-					flush_page);
++		pages = iommu_dma_alloc(dev, iosize, gfp, attrs, ioprot,
++					handle, flush_page);
+ 		if (!pages)
+ 			return NULL;
  
- #endif  /* CONFIG_IOMMU_DMA */
- 
- void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
--			struct iommu_ops *iommu, bool coherent)
-+			const struct iommu_ops *iommu, bool coherent)
- {
- 	if (!dev->archdata.dma_ops)
- 		dev->archdata.dma_ops = &swiotlb_dma_ops;
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 5fea665..af499ae 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -98,12 +98,12 @@ EXPORT_SYMBOL_GPL(of_get_dma_window);
- struct of_iommu_node {
- 	struct list_head list;
- 	struct device_node *np;
--	struct iommu_ops *ops;
-+	const struct iommu_ops *ops;
- };
- static LIST_HEAD(of_iommu_list);
- static DEFINE_SPINLOCK(of_iommu_lock);
- 
--void of_iommu_set_ops(struct device_node *np, struct iommu_ops *ops)
-+void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops)
- {
- 	struct of_iommu_node *iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
- 
-@@ -119,10 +119,10 @@ void of_iommu_set_ops(struct device_node *np, struct iommu_ops *ops)
- 	spin_unlock(&of_iommu_lock);
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 6edc852..6dc8dfc 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -190,11 +190,16 @@ static void __iommu_dma_free_pages(struct page **pages, int count)
+ 	kvfree(pages);
  }
  
--struct iommu_ops *of_iommu_get_ops(struct device_node *np)
-+const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+-static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
++static struct page **__iommu_dma_alloc_pages(unsigned int count,
++		unsigned long pgsize_orders, gfp_t gfp)
  {
- 	struct of_iommu_node *node;
--	struct iommu_ops *ops = NULL;
-+	const struct iommu_ops *ops = NULL;
+ 	struct page **pages;
+ 	unsigned int i = 0, array_size = count * sizeof(*pages);
+-	unsigned int order = MAX_ORDER;
++	unsigned int min_order = __ffs(pgsize_orders);
++
++	pgsize_orders &= (2U << MAX_ORDER) - 1;
++	if (!pgsize_orders)
++		return NULL;
  
- 	spin_lock(&of_iommu_lock);
- 	list_for_each_entry(node, &of_iommu_list, list)
-@@ -134,12 +134,12 @@ struct iommu_ops *of_iommu_get_ops(struct device_node *np)
- 	return ops;
- }
+ 	if (array_size <= PAGE_SIZE)
+ 		pages = kzalloc(array_size, GFP_KERNEL);
+@@ -208,6 +213,7 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
  
--struct iommu_ops *of_iommu_configure(struct device *dev,
--				     struct device_node *master_np)
-+const struct iommu_ops *of_iommu_configure(struct device *dev,
-+					   struct device_node *master_np)
+ 	while (count) {
+ 		struct page *page = NULL;
++		unsigned int order;
+ 		int j;
+ 
+ 		/*
+@@ -215,8 +221,9 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
+ 		 * than a necessity, hence using __GFP_NORETRY until
+ 		 * falling back to single-page allocations.
+ 		 */
+-		for (order = min_t(unsigned int, order, __fls(count));
+-		     order > 0; order--) {
++		for (pgsize_orders &= (2U << __fls(count)) - 1;
++		     (order = __fls(pgsize_orders)) > min_order;
++		     pgsize_orders &= (1U << order) - 1) {
+ 			page = alloc_pages(gfp | __GFP_NORETRY, order);
+ 			if (!page)
+ 				continue;
+@@ -230,7 +237,7 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
+ 			}
+ 		}
+ 		if (!page)
+-			page = alloc_page(gfp);
++			page = alloc_pages(gfp, order);
+ 		if (!page) {
+ 			__iommu_dma_free_pages(pages, i);
+ 			return NULL;
+@@ -267,6 +274,7 @@ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
+  *	 attached to an iommu_dma_domain
+  * @size: Size of buffer in bytes
+  * @gfp: Allocation flags
++ * @attrs: DMA attributes for this allocation
+  * @prot: IOMMU mapping flags
+  * @handle: Out argument for allocated DMA handle
+  * @flush_page: Arch callback which must ensure PAGE_SIZE bytes from the
+@@ -278,8 +286,8 @@ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
+  * Return: Array of struct page pointers describing the buffer,
+  *	   or NULL on failure.
+  */
+-struct page **iommu_dma_alloc(struct device *dev, size_t size,
+-		gfp_t gfp, int prot, dma_addr_t *handle,
++struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
++		struct dma_attrs *attrs, int prot, dma_addr_t *handle,
+ 		void (*flush_page)(struct device *, const void *, phys_addr_t))
  {
- 	struct of_phandle_args iommu_spec;
- 	struct device_node *np;
--	struct iommu_ops *ops = NULL;
-+	const struct iommu_ops *ops = NULL;
- 	int idx = 0;
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+@@ -288,11 +296,22 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size,
+ 	struct page **pages;
+ 	struct sg_table sgt;
+ 	dma_addr_t dma_addr;
+-	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
++	unsigned int count, min_pgsize, pgsizes = domain->pgsize_bitmap;
  
- 	/*
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index e5f47ce..fd5cfad 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -88,7 +88,7 @@ void of_dma_configure(struct device *dev, struct device_node *np)
- 	int ret;
- 	bool coherent;
- 	unsigned long offset;
--	struct iommu_ops *iommu;
-+	const struct iommu_ops *iommu;
+ 	*handle = DMA_ERROR_CODE;
  
- 	/*
- 	 * Set default coherent_dma_mask to 32 bit.  Drivers are expected to
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 9ea9aba..71c1b21 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -514,7 +514,7 @@ extern u64 dma_get_required_mask(struct device *dev);
+-	pages = __iommu_dma_alloc_pages(count, gfp);
++	if (pgsizes & (PAGE_SIZE - 1)) {
++		pgsizes &= PAGE_MASK;
++		pgsizes |= PAGE_SIZE;
++	}
++
++	min_pgsize = pgsizes ^ (pgsizes & (pgsizes - 1));
++	if (dma_get_attr(DMA_ATTR_ALLOC_SINGLE_PAGES, attrs))
++		pgsizes = min_pgsize;
++
++	size = ALIGN(size, min_pgsize);
++	count = size >> PAGE_SHIFT;
++	pages = __iommu_dma_alloc_pages(count, pgsizes >> PAGE_SHIFT, gfp);
+ 	if (!pages)
+ 		return NULL;
  
- #ifndef arch_setup_dma_ops
- static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
--				      u64 size, struct iommu_ops *iommu,
-+				      u64 size, const struct iommu_ops *iommu,
- 				      bool coherent) { }
- #endif
- 
-diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-index ffbe470..bd02b44 100644
---- a/include/linux/of_iommu.h
-+++ b/include/linux/of_iommu.h
-@@ -12,7 +12,7 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
- 			     size_t *size);
- 
- extern void of_iommu_init(void);
--extern struct iommu_ops *of_iommu_configure(struct device *dev,
-+extern const struct iommu_ops *of_iommu_configure(struct device *dev,
- 					struct device_node *master_np);
- 
- #else
-@@ -25,7 +25,7 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
- }
- 
- static inline void of_iommu_init(void) { }
--static inline struct iommu_ops *of_iommu_configure(struct device *dev,
-+static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
- 					 struct device_node *master_np)
- {
- 	return NULL;
-@@ -33,8 +33,8 @@ static inline struct iommu_ops *of_iommu_configure(struct device *dev,
- 
- #endif	/* CONFIG_OF_IOMMU */
- 
--void of_iommu_set_ops(struct device_node *np, struct iommu_ops *ops);
--struct iommu_ops *of_iommu_get_ops(struct device_node *np);
-+void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops);
-+const struct iommu_ops *of_iommu_get_ops(struct device_node *np);
- 
- extern struct of_device_id __iommu_of_table;
- 
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index fc48103..8443bbb 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -38,8 +38,8 @@ int dma_direction_to_prot(enum dma_data_direction dir, bool coherent);
+  * These implement the bulk of the relevant DMA mapping callbacks, but require
+  * the arch code to take care of attributes and cache maintenance
+  */
+-struct page **iommu_dma_alloc(struct device *dev, size_t size,
+-		gfp_t gfp, int prot, dma_addr_t *handle,
++struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
++		struct dma_attrs *attrs, int prot, dma_addr_t *handle,
+ 		void (*flush_page)(struct device *, const void *, phys_addr_t));
+ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
+ 		dma_addr_t *handle);
 -- 
 2.7.3.dirty
