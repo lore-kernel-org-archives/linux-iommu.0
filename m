@@ -1,29 +1,24 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/rockchip: Fix "is stall active" check
-Date: Thu, 7 Apr 2016 14:50:54 +0200
-Message-ID: <20160407125054.GB31146@8bytes.org>
-References: <1459865146-25308-1-git-send-email-john@metanate.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [patch] iommu/vt-d: silence an uninitialized variable warning
+Date: Thu, 7 Apr 2016 14:52:24 +0200
+Message-ID: <20160407125224.GC31146@8bytes.org>
+References: <20160406183856.GB9593@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <kernel-janitors-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1459865146-25308-1-git-send-email-john-HooS5bfzL4hWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: John Keeping <john-HooS5bfzL4hWk0Htik3J/w@public.gmane.org>
-Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20160406183856.GB9593@mwanda>
+Sender: kernel-janitors-owner@vger.kernel.org
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 05, 2016 at 03:05:46PM +0100, John Keeping wrote:
->  drivers/iommu/rockchip-iommu.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+On Wed, Apr 06, 2016 at 09:38:56PM +0300, Dan Carpenter wrote:
+> My static checker complains that "dma_alias" is uninitialized unless we
+> are dealing with a pci device.  This is true but harmless.  Anyway, we
+> can flip the condition around to silence the warning.
+> 
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Applied to iommu/fixes. Thanks.
+Applied, thanks.
+
