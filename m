@@ -1,42 +1,37 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] iommu: Don't overwrite domain pointer when there is no default_domain
-Date: Thu,  7 Apr 2016 14:40:39 +0200
-Message-ID: <1460032852-1936-1-git-send-email-joro@8bytes.org>
-Return-path: <stable-owner@vger.kernel.org>
-Sender: stable-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, stable@vger.kernel.org
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2] powerpc: Fix incorrect PPC32 PAMU dependency
+Date: Thu, 7 Apr 2016 14:46:34 +0200
+Message-ID: <20160407124634.GA31146@8bytes.org>
+References: <1458188144-10331-1-git-send-email-afleming@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1458188144-10331-1-git-send-email-afleming-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andy Fleming <afleming-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+On Wed, Mar 16, 2016 at 11:15:44PM -0500, Andy Fleming wrote:
+> The Freescale PAMU can be enabled on both 32 and 64-bit Power
+> chips. Commit 477ab7a19cec8409e4e2dd10e7348e4cac3c06e5
+> (iommu: Make more drivers depend on COMPILE_TEST)
+> restricted PAMU to PPC32. PPC covers both.
+> 
+> Signed-off-by: Andy Fleming <afleming-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> ---
+> 
+> v2: Implemented Michael Ellerman's suggestion to clean up the
+>     dependency chain
 
-IOMMU drivers that do not support default domains, but make
-use of the the group->domain pointer can get that pointer
-overwritten with NULL on device add/remove.
-
-Make sure this can't happen by only overwriting the domain
-pointer when it is NULL.
-
-Cc: stable@vger.kernel.org #v4.4+
-Fixes: 1228236de5f9 ('iommu: Move default domain allocation to iommu_group_get_for_dev()')
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/iommu/iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index bfd4f7c..b9df141 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -848,7 +848,8 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
- 	if (!group->default_domain) {
- 		group->default_domain = __iommu_domain_alloc(dev->bus,
- 							     IOMMU_DOMAIN_DMA);
--		group->domain = group->default_domain;
-+		if (!group->domain)
-+			group->domain = group->default_domain;
- 	}
- 
- 	ret = iommu_group_add_device(group, dev);
--- 
-1.8.4.5
+Applied, thanks.
