@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 5/5] iommu/arm-smmu: Use per-domain page sizes.
-Date: Thu,  7 Apr 2016 18:42:08 +0100
-Message-ID: <ea520b8c72b5a72a1731bd35f6e3e50872fe6764.1460048991.git.robin.murphy@arm.com>
+Subject: [PATCH 2/5] iommu: of: enforce const-ness of struct iommu_ops
+Date: Thu,  7 Apr 2016 18:42:05 +0100
+Message-ID: <b3a7636ef956ab0f335142e4de0946836687920b.1460048991.git.robin.murphy@arm.com>
 References: <cover.1460048991.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,163 +21,208 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public
 Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now that we can accurately reflect the context format we choose for each
-domain, do that instead of imposing the global lowest-common-denominator
-restriction and potentially ending up with nothing. We currently have a
-strict 1:1 correspondence between domains and context banks, so we don't
-need to entertain the possibility of multiple formats _within_ a domain.
+From: Robin Murphy <Robin.Murphy-5wv7dgnIgG8@public.gmane.org>
 
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-[rm: split from original patch, added SMMUv3]
+As a set of driver-provided callbacks and static data, there is no
+compelling reason for struct iommu_ops to be mutable in core code, so
+enforce const-ness throughout.
+
+Acked-by: Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 19 ++++++++++---------
- drivers/iommu/arm-smmu.c    | 26 ++++++++++++++------------
- 2 files changed, 24 insertions(+), 21 deletions(-)
+ arch/arm/include/asm/dma-mapping.h   |  2 +-
+ arch/arm/mm/dma-mapping.c            |  6 +++---
+ arch/arm64/include/asm/dma-mapping.h |  2 +-
+ arch/arm64/mm/dma-mapping.c          |  4 ++--
+ drivers/iommu/of_iommu.c             | 14 +++++++-------
+ drivers/of/device.c                  |  2 +-
+ include/linux/dma-mapping.h          |  2 +-
+ include/linux/of_iommu.h             |  8 ++++----
+ 8 files changed, 20 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4ff73ff..ebab33e 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -590,6 +590,7 @@ struct arm_smmu_device {
+diff --git a/arch/arm/include/asm/dma-mapping.h b/arch/arm/include/asm/dma-mapping.h
+index 6ad1ced..02283eb 100644
+--- a/arch/arm/include/asm/dma-mapping.h
++++ b/arch/arm/include/asm/dma-mapping.h
+@@ -118,7 +118,7 @@ static inline unsigned long dma_max_pfn(struct device *dev)
  
- 	unsigned long			ias; /* IPA */
- 	unsigned long			oas; /* PA */
-+	unsigned long			pgsize_bitmap;
+ #define arch_setup_dma_ops arch_setup_dma_ops
+ extern void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+-			       struct iommu_ops *iommu, bool coherent);
++			       const struct iommu_ops *iommu, bool coherent);
  
- #define ARM_SMMU_MAX_ASIDS		(1 << 16)
- 	unsigned int			asid_bits;
-@@ -1516,8 +1517,6 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_domain *smmu_domain,
- 	return 0;
+ #define arch_teardown_dma_ops arch_teardown_dma_ops
+ extern void arch_teardown_dma_ops(struct device *dev);
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index deac58d..617b0cf 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -2214,7 +2214,7 @@ static struct dma_map_ops *arm_get_iommu_dma_map_ops(bool coherent)
  }
  
--static struct iommu_ops arm_smmu_ops;
--
- static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+ static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
+-				    struct iommu_ops *iommu)
++				    const struct iommu_ops *iommu)
  {
- 	int ret;
-@@ -1555,7 +1554,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
- 	}
+ 	struct dma_iommu_mapping *mapping;
  
- 	pgtbl_cfg = (struct io_pgtable_cfg) {
--		.pgsize_bitmap	= arm_smmu_ops.pgsize_bitmap,
-+		.pgsize_bitmap	= smmu->pgsize_bitmap,
- 		.ias		= ias,
- 		.oas		= oas,
- 		.tlb		= &arm_smmu_gather_ops,
-@@ -1566,7 +1565,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
- 	if (!pgtbl_ops)
- 		return -ENOMEM;
+@@ -2252,7 +2252,7 @@ static void arm_teardown_iommu_dma_ops(struct device *dev)
+ #else
  
--	arm_smmu_ops.pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
-+	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
- 	smmu_domain->pgtbl_ops = pgtbl_ops;
- 
- 	ret = finalise_stage_fn(smmu_domain, &pgtbl_cfg);
-@@ -2410,7 +2409,6 @@ static int arm_smmu_device_probe(struct arm_smmu_device *smmu)
+ static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
+-				    struct iommu_ops *iommu)
++				    const struct iommu_ops *iommu)
  {
- 	u32 reg;
- 	bool coherent;
--	unsigned long pgsize_bitmap = 0;
+ 	return false;
+ }
+@@ -2269,7 +2269,7 @@ static struct dma_map_ops *arm_get_dma_map_ops(bool coherent)
+ }
  
- 	/* IDR0 */
- 	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR0);
-@@ -2541,13 +2539,16 @@ static int arm_smmu_device_probe(struct arm_smmu_device *smmu)
+ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+-			struct iommu_ops *iommu, bool coherent)
++			const struct iommu_ops *iommu, bool coherent)
+ {
+ 	struct dma_map_ops *dma_ops;
  
- 	/* Page sizes */
- 	if (reg & IDR5_GRAN64K)
--		pgsize_bitmap |= SZ_64K | SZ_512M;
-+		smmu->pgsize_bitmap |= SZ_64K | SZ_512M;
- 	if (reg & IDR5_GRAN16K)
--		pgsize_bitmap |= SZ_16K | SZ_32M;
-+		smmu->pgsize_bitmap |= SZ_16K | SZ_32M;
- 	if (reg & IDR5_GRAN4K)
--		pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
-+		smmu->pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
+diff --git a/arch/arm64/include/asm/dma-mapping.h b/arch/arm64/include/asm/dma-mapping.h
+index ba437f0..7dbea6c 100644
+--- a/arch/arm64/include/asm/dma-mapping.h
++++ b/arch/arm64/include/asm/dma-mapping.h
+@@ -48,7 +48,7 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+ }
  
--	arm_smmu_ops.pgsize_bitmap &= pgsize_bitmap;
-+	if (arm_smmu_ops.pgsize_bitmap == -1UL)
-+		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
-+	else
-+		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
+ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+-			struct iommu_ops *iommu, bool coherent);
++			const struct iommu_ops *iommu, bool coherent);
+ #define arch_setup_dma_ops	arch_setup_dma_ops
  
- 	/* Output address size */
- 	switch (reg & IDR5_OAS_MASK << IDR5_OAS_SHIFT) {
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 2409e3b..e9535f0 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -322,6 +322,7 @@ struct arm_smmu_device {
- 	unsigned long			va_size;
- 	unsigned long			ipa_size;
- 	unsigned long			pa_size;
-+	unsigned long			pgsize_bitmap;
+ #ifdef CONFIG_IOMMU_DMA
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index a6e757c..5d36907 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -979,13 +979,13 @@ void arch_teardown_dma_ops(struct device *dev)
+ #else
  
- 	u32				num_global_irqs;
- 	u32				num_context_irqs;
-@@ -357,8 +358,6 @@ struct arm_smmu_domain {
- 	struct iommu_domain		domain;
+ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+-				  struct iommu_ops *iommu)
++				  const struct iommu_ops *iommu)
+ { }
+ 
+ #endif  /* CONFIG_IOMMU_DMA */
+ 
+ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+-			struct iommu_ops *iommu, bool coherent)
++			const struct iommu_ops *iommu, bool coherent)
+ {
+ 	if (!dev->archdata.dma_ops)
+ 		dev->archdata.dma_ops = &swiotlb_dma_ops;
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 5fea665..af499ae 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -98,12 +98,12 @@ EXPORT_SYMBOL_GPL(of_get_dma_window);
+ struct of_iommu_node {
+ 	struct list_head list;
+ 	struct device_node *np;
+-	struct iommu_ops *ops;
++	const struct iommu_ops *ops;
  };
+ static LIST_HEAD(of_iommu_list);
+ static DEFINE_SPINLOCK(of_iommu_lock);
  
--static struct iommu_ops arm_smmu_ops;
--
- static DEFINE_SPINLOCK(arm_smmu_devices_lock);
- static LIST_HEAD(arm_smmu_devices);
+-void of_iommu_set_ops(struct device_node *np, struct iommu_ops *ops)
++void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops)
+ {
+ 	struct of_iommu_node *iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
  
-@@ -894,7 +893,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	}
+@@ -119,10 +119,10 @@ void of_iommu_set_ops(struct device_node *np, struct iommu_ops *ops)
+ 	spin_unlock(&of_iommu_lock);
+ }
  
- 	pgtbl_cfg = (struct io_pgtable_cfg) {
--		.pgsize_bitmap	= arm_smmu_ops.pgsize_bitmap,
-+		.pgsize_bitmap	= smmu->pgsize_bitmap,
- 		.ias		= ias,
- 		.oas		= oas,
- 		.tlb		= &arm_smmu_gather_ops,
-@@ -908,8 +907,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		goto out_clear_smmu;
- 	}
+-struct iommu_ops *of_iommu_get_ops(struct device_node *np)
++const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+ {
+ 	struct of_iommu_node *node;
+-	struct iommu_ops *ops = NULL;
++	const struct iommu_ops *ops = NULL;
  
--	/* Update our support page sizes to reflect the page table format */
--	arm_smmu_ops.pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
-+	/* Update the domain's page sizes to reflect the page table format */
-+	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
+ 	spin_lock(&of_iommu_lock);
+ 	list_for_each_entry(node, &of_iommu_list, list)
+@@ -134,12 +134,12 @@ struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+ 	return ops;
+ }
  
- 	/* Initialise the context bank with our page table cfg */
- 	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
-@@ -1690,24 +1689,27 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+-struct iommu_ops *of_iommu_configure(struct device *dev,
+-				     struct device_node *master_np)
++const struct iommu_ops *of_iommu_configure(struct device *dev,
++					   struct device_node *master_np)
+ {
+ 	struct of_phandle_args iommu_spec;
+ 	struct device_node *np;
+-	struct iommu_ops *ops = NULL;
++	const struct iommu_ops *ops = NULL;
+ 	int idx = 0;
  
- 	if (smmu->version == ARM_SMMU_V1) {
- 		smmu->va_size = smmu->ipa_size;
--		size = SZ_4K | SZ_2M | SZ_1G;
-+		smmu->pgsize_bitmap = SZ_4K | SZ_2M | SZ_1G;
- 	} else {
- 		size = (id >> ID2_UBS_SHIFT) & ID2_UBS_MASK;
- 		smmu->va_size = arm_smmu_id_size_to_bits(size);
- #ifndef CONFIG_64BIT
- 		smmu->va_size = min(32UL, smmu->va_size);
+ 	/*
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index e5f47ce..fd5cfad 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -88,7 +88,7 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+ 	int ret;
+ 	bool coherent;
+ 	unsigned long offset;
+-	struct iommu_ops *iommu;
++	const struct iommu_ops *iommu;
+ 
+ 	/*
+ 	 * Set default coherent_dma_mask to 32 bit.  Drivers are expected to
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 9ea9aba..71c1b21 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -514,7 +514,7 @@ extern u64 dma_get_required_mask(struct device *dev);
+ 
+ #ifndef arch_setup_dma_ops
+ static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
+-				      u64 size, struct iommu_ops *iommu,
++				      u64 size, const struct iommu_ops *iommu,
+ 				      bool coherent) { }
  #endif
--		size = 0;
- 		if (id & ID2_PTFS_4K)
--			size |= SZ_4K | SZ_2M | SZ_1G;
-+			smmu->pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
- 		if (id & ID2_PTFS_16K)
--			size |= SZ_16K | SZ_32M;
-+			smmu->pgsize_bitmap |= SZ_16K | SZ_32M;
- 		if (id & ID2_PTFS_64K)
--			size |= SZ_64K | SZ_512M;
-+			smmu->pgsize_bitmap |= SZ_64K | SZ_512M;
- 	}
  
--	arm_smmu_ops.pgsize_bitmap &= size;
--	dev_notice(smmu->dev, "\tSupported page sizes: 0x%08lx\n", size);
-+	if (arm_smmu_ops.pgsize_bitmap == -1UL)
-+		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
-+	else
-+		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
-+	dev_notice(smmu->dev, "\tSupported page sizes: 0x%08lx\n",
-+		   smmu->pgsize_bitmap);
+diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+index ffbe470..bd02b44 100644
+--- a/include/linux/of_iommu.h
++++ b/include/linux/of_iommu.h
+@@ -12,7 +12,7 @@ extern int of_get_dma_window(struct device_node *dn, const char *prefix,
+ 			     size_t *size);
  
- 	if (smmu->features & ARM_SMMU_FEAT_TRANS_S1)
- 		dev_notice(smmu->dev, "\tStage-1: %lu-bit VA -> %lu-bit IPA\n",
+ extern void of_iommu_init(void);
+-extern struct iommu_ops *of_iommu_configure(struct device *dev,
++extern const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 					struct device_node *master_np);
+ 
+ #else
+@@ -25,7 +25,7 @@ static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
+ }
+ 
+ static inline void of_iommu_init(void) { }
+-static inline struct iommu_ops *of_iommu_configure(struct device *dev,
++static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 					 struct device_node *master_np)
+ {
+ 	return NULL;
+@@ -33,8 +33,8 @@ static inline struct iommu_ops *of_iommu_configure(struct device *dev,
+ 
+ #endif	/* CONFIG_OF_IOMMU */
+ 
+-void of_iommu_set_ops(struct device_node *np, struct iommu_ops *ops);
+-struct iommu_ops *of_iommu_get_ops(struct device_node *np);
++void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops);
++const struct iommu_ops *of_iommu_get_ops(struct device_node *np);
+ 
+ extern struct of_device_id __iommu_of_table;
+ 
 -- 
 2.7.3.dirty
