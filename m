@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 3/5] iommu: Allow selecting page sizes per domain
-Date: Thu,  7 Apr 2016 18:42:06 +0100
-Message-ID: <9592488039a26b52df4ff36254928ad64e2c6aa4.1460048991.git.robin.murphy@arm.com>
+Subject: [PATCH 5/5] iommu/arm-smmu: Use per-domain page sizes.
+Date: Thu,  7 Apr 2016 18:42:08 +0100
+Message-ID: <ea520b8c72b5a72a1731bd35f6e3e50872fe6764.1460048991.git.robin.murphy@arm.com>
 References: <cover.1460048991.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,177 +21,163 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public
 Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Many IOMMUs support multiple page table formats, meaning that any given
-domain may only support a subset of the hardware page sizes presented in
-iommu_ops->pgsize_bitmap. There are also certain use-cases where the
-creator of a domain may want to control which page sizes are used, for
-example to force the use of hugepage mappings to reduce pagetable walk
-depth.
-
-To this end, add a per-domain pgsize_bitmap to represent the subset of
-page sizes actually in use, to make it possible for domains with
-different requirements to coexist.
+Now that we can accurately reflect the context format we choose for each
+domain, do that instead of imposing the global lowest-common-denominator
+restriction and potentially ending up with nothing. We currently have a
+strict 1:1 correspondence between domains and context banks, so we don't
+need to entertain the possibility of multiple formats _within_ a domain.
 
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-[rm: hijacked and rebased original patch with new commit message]
+[rm: split from original patch, added SMMUv3]
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/dma-iommu.c       |  2 +-
- drivers/iommu/iommu.c           | 22 ++++++++++++----------
- drivers/iommu/mtk_iommu.c       |  2 +-
- drivers/vfio/vfio_iommu_type1.c |  2 +-
- include/linux/iommu.h           |  3 ++-
- 5 files changed, 17 insertions(+), 14 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 19 ++++++++++---------
+ drivers/iommu/arm-smmu.c    | 26 ++++++++++++++------------
+ 2 files changed, 24 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 58f2fe6..6edc852 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -94,7 +94,7 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size
- 		return -ENODEV;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 4ff73ff..ebab33e 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -590,6 +590,7 @@ struct arm_smmu_device {
  
- 	/* Use the smallest supported page size for IOVA granularity */
--	order = __ffs(domain->ops->pgsize_bitmap);
-+	order = __ffs(domain->pgsize_bitmap);
- 	base_pfn = max_t(unsigned long, 1, base >> order);
- 	end_pfn = (base + size - 1) >> order;
+ 	unsigned long			ias; /* IPA */
+ 	unsigned long			oas; /* PA */
++	unsigned long			pgsize_bitmap;
  
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index b9df141..ab4d014 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -337,9 +337,9 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
- 	if (!domain || domain->type != IOMMU_DOMAIN_DMA)
- 		return 0;
- 
--	BUG_ON(!domain->ops->pgsize_bitmap);
-+	BUG_ON(!domain->pgsize_bitmap);
- 
--	pg_size = 1UL << __ffs(domain->ops->pgsize_bitmap);
-+	pg_size = 1UL << __ffs(domain->pgsize_bitmap);
- 	INIT_LIST_HEAD(&mappings);
- 
- 	iommu_get_dm_regions(dev, &mappings);
-@@ -1073,6 +1073,8 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
- 
- 	domain->ops  = bus->iommu_ops;
- 	domain->type = type;
-+	/* Assume all sizes by default; the driver may override this later */
-+	domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
- 
- 	return domain;
+ #define ARM_SMMU_MAX_ASIDS		(1 << 16)
+ 	unsigned int			asid_bits;
+@@ -1516,8 +1517,6 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_domain *smmu_domain,
+ 	return 0;
  }
-@@ -1297,7 +1299,7 @@ static size_t iommu_pgsize(struct iommu_domain *domain,
- 	pgsize = (1UL << (pgsize_idx + 1)) - 1;
  
- 	/* throw away page sizes not supported by the hardware */
--	pgsize &= domain->ops->pgsize_bitmap;
-+	pgsize &= domain->pgsize_bitmap;
- 
- 	/* make sure we're still sane */
- 	BUG_ON(!pgsize);
-@@ -1319,14 +1321,14 @@ int iommu_map(struct iommu_domain *domain, unsigned long iova,
- 	int ret = 0;
- 
- 	if (unlikely(domain->ops->map == NULL ||
--		     domain->ops->pgsize_bitmap == 0UL))
-+		     domain->pgsize_bitmap == 0UL))
- 		return -ENODEV;
- 
- 	if (unlikely(!(domain->type & __IOMMU_DOMAIN_PAGING)))
- 		return -EINVAL;
- 
- 	/* find out the minimum page size supported */
--	min_pagesz = 1 << __ffs(domain->ops->pgsize_bitmap);
-+	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
- 
- 	/*
- 	 * both the virtual address and the physical one, as well as
-@@ -1373,14 +1375,14 @@ size_t iommu_unmap(struct iommu_domain *domain, unsigned long iova, size_t size)
- 	unsigned long orig_iova = iova;
- 
- 	if (unlikely(domain->ops->unmap == NULL ||
--		     domain->ops->pgsize_bitmap == 0UL))
-+		     domain->pgsize_bitmap == 0UL))
- 		return -ENODEV;
- 
- 	if (unlikely(!(domain->type & __IOMMU_DOMAIN_PAGING)))
- 		return -EINVAL;
- 
- 	/* find out the minimum page size supported */
--	min_pagesz = 1 << __ffs(domain->ops->pgsize_bitmap);
-+	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
- 
- 	/*
- 	 * The virtual address, as well as the size of the mapping, must be
-@@ -1426,10 +1428,10 @@ size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
- 	unsigned int i, min_pagesz;
+-static struct iommu_ops arm_smmu_ops;
+-
+ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+ {
  	int ret;
- 
--	if (unlikely(domain->ops->pgsize_bitmap == 0UL))
-+	if (unlikely(domain->pgsize_bitmap == 0UL))
- 		return 0;
- 
--	min_pagesz = 1 << __ffs(domain->ops->pgsize_bitmap);
-+	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
- 
- 	for_each_sg(sg, s, nents, i) {
- 		phys_addr_t phys = page_to_phys(sg_page(s)) + s->offset;
-@@ -1510,7 +1512,7 @@ int iommu_domain_get_attr(struct iommu_domain *domain,
- 		break;
- 	case DOMAIN_ATTR_PAGING:
- 		paging  = data;
--		*paging = (domain->ops->pgsize_bitmap != 0UL);
-+		*paging = (domain->pgsize_bitmap != 0UL);
- 		break;
- 	case DOMAIN_ATTR_WINDOWS:
- 		count = data;
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index db74553..c3043d8 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -269,7 +269,7 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_data *data)
+@@ -1555,7 +1554,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
  	}
  
- 	/* Update our support page sizes bitmap */
--	mtk_iommu_ops.pgsize_bitmap = dom->cfg.pgsize_bitmap;
-+	dom->domain.pgsize_bitmap = dom->cfg.pgsize_bitmap;
+ 	pgtbl_cfg = (struct io_pgtable_cfg) {
+-		.pgsize_bitmap	= arm_smmu_ops.pgsize_bitmap,
++		.pgsize_bitmap	= smmu->pgsize_bitmap,
+ 		.ias		= ias,
+ 		.oas		= oas,
+ 		.tlb		= &arm_smmu_gather_ops,
+@@ -1566,7 +1565,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+ 	if (!pgtbl_ops)
+ 		return -ENOMEM;
  
- 	writel(data->m4u_dom->cfg.arm_v7s_cfg.ttbr[0],
- 	       data->base + REG_MMU_PT_BASE_ADDR);
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 75b24e9..15a6582 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -407,7 +407,7 @@ static unsigned long vfio_pgsize_bitmap(struct vfio_iommu *iommu)
+-	arm_smmu_ops.pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
++	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
+ 	smmu_domain->pgtbl_ops = pgtbl_ops;
  
- 	mutex_lock(&iommu->lock);
- 	list_for_each_entry(domain, &iommu->domain_list, next)
--		bitmap &= domain->domain->ops->pgsize_bitmap;
-+		bitmap &= domain->domain->pgsize_bitmap;
- 	mutex_unlock(&iommu->lock);
+ 	ret = finalise_stage_fn(smmu_domain, &pgtbl_cfg);
+@@ -2410,7 +2409,6 @@ static int arm_smmu_device_probe(struct arm_smmu_device *smmu)
+ {
+ 	u32 reg;
+ 	bool coherent;
+-	unsigned long pgsize_bitmap = 0;
  
- 	/*
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 45b055d..664683a 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -79,6 +79,7 @@ struct iommu_domain_geometry {
- struct iommu_domain {
- 	unsigned type;
- 	const struct iommu_ops *ops;
-+	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
- 	iommu_fault_handler_t handler;
- 	void *handler_token;
- 	struct iommu_domain_geometry geometry;
-@@ -156,7 +157,7 @@ struct iommu_dm_region {
-  * @domain_set_windows: Set the number of windows for a domain
-  * @domain_get_windows: Return the number of windows for a domain
-  * @of_xlate: add OF master IDs to iommu grouping
-- * @pgsize_bitmap: bitmap of supported page sizes
-+ * @pgsize_bitmap: bitmap of all possible supported page sizes
-  */
- struct iommu_ops {
- 	bool (*capable)(enum iommu_cap);
+ 	/* IDR0 */
+ 	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR0);
+@@ -2541,13 +2539,16 @@ static int arm_smmu_device_probe(struct arm_smmu_device *smmu)
+ 
+ 	/* Page sizes */
+ 	if (reg & IDR5_GRAN64K)
+-		pgsize_bitmap |= SZ_64K | SZ_512M;
++		smmu->pgsize_bitmap |= SZ_64K | SZ_512M;
+ 	if (reg & IDR5_GRAN16K)
+-		pgsize_bitmap |= SZ_16K | SZ_32M;
++		smmu->pgsize_bitmap |= SZ_16K | SZ_32M;
+ 	if (reg & IDR5_GRAN4K)
+-		pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
++		smmu->pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
+ 
+-	arm_smmu_ops.pgsize_bitmap &= pgsize_bitmap;
++	if (arm_smmu_ops.pgsize_bitmap == -1UL)
++		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
++	else
++		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
+ 
+ 	/* Output address size */
+ 	switch (reg & IDR5_OAS_MASK << IDR5_OAS_SHIFT) {
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 2409e3b..e9535f0 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -322,6 +322,7 @@ struct arm_smmu_device {
+ 	unsigned long			va_size;
+ 	unsigned long			ipa_size;
+ 	unsigned long			pa_size;
++	unsigned long			pgsize_bitmap;
+ 
+ 	u32				num_global_irqs;
+ 	u32				num_context_irqs;
+@@ -357,8 +358,6 @@ struct arm_smmu_domain {
+ 	struct iommu_domain		domain;
+ };
+ 
+-static struct iommu_ops arm_smmu_ops;
+-
+ static DEFINE_SPINLOCK(arm_smmu_devices_lock);
+ static LIST_HEAD(arm_smmu_devices);
+ 
+@@ -894,7 +893,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	}
+ 
+ 	pgtbl_cfg = (struct io_pgtable_cfg) {
+-		.pgsize_bitmap	= arm_smmu_ops.pgsize_bitmap,
++		.pgsize_bitmap	= smmu->pgsize_bitmap,
+ 		.ias		= ias,
+ 		.oas		= oas,
+ 		.tlb		= &arm_smmu_gather_ops,
+@@ -908,8 +907,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 		goto out_clear_smmu;
+ 	}
+ 
+-	/* Update our support page sizes to reflect the page table format */
+-	arm_smmu_ops.pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
++	/* Update the domain's page sizes to reflect the page table format */
++	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
+ 
+ 	/* Initialise the context bank with our page table cfg */
+ 	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
+@@ -1690,24 +1689,27 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 
+ 	if (smmu->version == ARM_SMMU_V1) {
+ 		smmu->va_size = smmu->ipa_size;
+-		size = SZ_4K | SZ_2M | SZ_1G;
++		smmu->pgsize_bitmap = SZ_4K | SZ_2M | SZ_1G;
+ 	} else {
+ 		size = (id >> ID2_UBS_SHIFT) & ID2_UBS_MASK;
+ 		smmu->va_size = arm_smmu_id_size_to_bits(size);
+ #ifndef CONFIG_64BIT
+ 		smmu->va_size = min(32UL, smmu->va_size);
+ #endif
+-		size = 0;
+ 		if (id & ID2_PTFS_4K)
+-			size |= SZ_4K | SZ_2M | SZ_1G;
++			smmu->pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
+ 		if (id & ID2_PTFS_16K)
+-			size |= SZ_16K | SZ_32M;
++			smmu->pgsize_bitmap |= SZ_16K | SZ_32M;
+ 		if (id & ID2_PTFS_64K)
+-			size |= SZ_64K | SZ_512M;
++			smmu->pgsize_bitmap |= SZ_64K | SZ_512M;
+ 	}
+ 
+-	arm_smmu_ops.pgsize_bitmap &= size;
+-	dev_notice(smmu->dev, "\tSupported page sizes: 0x%08lx\n", size);
++	if (arm_smmu_ops.pgsize_bitmap == -1UL)
++		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
++	else
++		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
++	dev_notice(smmu->dev, "\tSupported page sizes: 0x%08lx\n",
++		   smmu->pgsize_bitmap);
+ 
+ 	if (smmu->features & ARM_SMMU_FEAT_TRANS_S1)
+ 		dev_notice(smmu->dev, "\tStage-1: %lu-bit VA -> %lu-bit IPA\n",
 -- 
 2.7.3.dirty
