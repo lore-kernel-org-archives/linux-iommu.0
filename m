@@ -1,16 +1,10 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v6 0/7] KVM PCIe/MSI passthrough on ARM/ARM64: kernel part
-	1/3: iommu changes
-Date: Fri, 8 Apr 2016 15:31:49 +0200
-Message-ID: <5707B2C5.5050008@linaro.org>
-References: <1459757222-2668-1-git-send-email-eric.auger@linaro.org>
-	<20160406171534.794c6824@t450s.home> <5706528B.2010906@linaro.org>
-	<20160407115001.25de7d1e@t450s.home>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.6-rc2
+Date: Fri, 8 Apr 2016 16:24:24 +0200
+Message-ID: <20160408142414.GA12001@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============2144137847779996917=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160407115001.25de7d1e-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,54 +14,105 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Alex,
-On 04/07/2016 07:50 PM, Alex Williamson wrote:
-> On Thu, 7 Apr 2016 14:28:59 +0200
-> Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-> 
->> Hi Alex,
->> On 04/07/2016 01:15 AM, Alex Williamson wrote:
->>> On Mon,  4 Apr 2016 08:06:55 +0000
->>> Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
->>>   
->>>> This series introduces the dma-reserved-iommu api used to:
->>>> - create/destroy an iova domain dedicated to reserved iova bindings
->>>> - map/unmap physical addresses onto reserved IOVAs.
->>>> - unmap and destroy all IOVA reserved bindings  
->>>
->>> Why are we making the decision to have an unbalanced map vs unmap, we
->>> can create individual mappings, but only unmap the whole thing and
->>> start over?  That's a strange interface.  Thanks,  
->> The "individual" balanced unmap also exists (iommu_put_reserved_iova)
->> and this is the "normal" path. This happens on msi_domain_deactivate
->> (and possibly on msi_domain_set_affinity).
->>
->> I added iommu_unmap_reserved to handle the case where the userspace
->> registers a reserved iova domain and fails to unregister it. In that
->> case one need to handle the cleanup on kernel-side and I chose to
->> implement this on vfio_iommu_type1 release. All the reserved IOMMU
->> bindings get destroyed on that event.
->>
->> Any advice to handle this situation?
-> 
-> If we want to model it similar to regular iommu domains, then
-> iommu_free_reserved_iova_domain() should release all the mappings and
-> destroy the iova domain.
-Yes this sounds obvious now.
-  Additionally, since the reserved iova domain
-> is just a construct on top of an iommu domain, it should be sufficient
-> to call iommu_domain_free() to also remove the reserved iova domain if
-> one exists.  Thanks,
-Yes. For dma cookie (iommu_put_dma_cookie) I see this is done from the
-iommu driver domain_free callback.
 
-Thanks
+--===============2144137847779996917==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="X1bOJ3K7DJ5YkBrT"
+Content-Disposition: inline
 
-Eric
-> 
-> Alex
-> 
+
+--X1bOJ3K7DJ5YkBrT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit 9735a22799b9214d17d3c231fe377fc852f042e9:
+
+  Linux 4.6-rc2 (2016-04-03 09:09:40 -0500)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.6-rc2
+
+for you to fetch changes up to 0b74ecdfbea893ae585bc694136a3f50f5856cfe:
+
+  iommu/vt-d: Silence an uninitialized variable warning (2016-04-07 14:51:47 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.6-rc2 with:
+
+ - Compile-time fixes (warnings and failures)
+
+ - A bug in iommu core code which could cause the group->domain pointer
+   to be falsly cleared
+
+ - Fix in scatterlist handling of the ARM common DMA-API code
+
+ - Stall detection fix for the Rockchip IOMMU driver
+
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      iommu: provide of_xlate pointer unconditionally
+
+Dan Carpenter (1):
+      iommu/vt-d: Silence an uninitialized variable warning
+
+Joerg Roedel (1):
+      iommu: Don't overwrite domain pointer when there is no default_domain
+
+John Keeping (1):
+      iommu/rockchip: Fix "is stall active" check
+
+Robin Murphy (1):
+      iommu/dma: Restore scatterlist offsets correctly
+
+ drivers/iommu/dma-iommu.c      | 4 ++--
+ drivers/iommu/intel-iommu.c    | 2 +-
+ drivers/iommu/iommu.c          | 3 ++-
+ drivers/iommu/rockchip-iommu.c | 8 ++++----
+ include/linux/iommu.h          | 2 --
+ 5 files changed, 9 insertions(+), 10 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--X1bOJ3K7DJ5YkBrT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJXB78OAAoJECvwRC2XARrjZPUP/3y8MgCcdpbwoHTkGrLlbucx
+WxgzEhV0Uj64VySBK4ftsu2Mm49pGtJlPr8LWtFNv/Jjp3jt6r/7sKrgTCQgcxg/
+a5pdGTE+8FwzTqvd2jqC6vd/jp/VEe8X6xOyGUFSD8c9jEyrDCt8FVanQ3yZ0FxA
+hwgbG+zihWb/jPg318opy7Ev5ur1vzfiR5SUCW58nenlsScctnWuoF9ZRwECILE3
+XJwRqvxvSMarY8usJuLMvpNyWUI2JJyBIqeLALfs3XUE0/McQWHPYGnPhzYj2ioz
+so60WTCGL6z/gcxC6MGRz0JBcw/Q0JLfXxQbJ1mUG+5FGUwHc272ScjaWA+z/Z0J
+3tWNuWZ6ODZXqpsDXIqjAYDTLfMmJvFce+kgTG/oW9A4i0GSqRALr6wrbA5QGgzW
+HgUr2SdKfutfCrcCzS5d4TkV/PCU4qX2vJs8RZdsnPVpngZDcoTZml9taEtwqWTu
+9vAPHaKnkxTFKErEi83Y/hnnH/pEE/9TrY3+1aSiTZrcl+VABOG+zYSk4LRiIfD8
+7vegrg/I2qtGzRh3VT8gw2E23SiQOYIp6QrtdnHzHlOg3PH3I0SZnPYGRvHenE5g
+hjDqpFgtuaII1LdgXgcp1CjIkgZ5LlnYXMa04ByXHUzRsKq6i9fNPrDKYet5P+Dp
+bI8HSJ4jf6sd5Zv1u3lS
+=KtzD
+-----END PGP SIGNATURE-----
+
+--X1bOJ3K7DJ5YkBrT--
+
+--===============2144137847779996917==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============2144137847779996917==--
