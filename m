@@ -1,52 +1,59 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH 4/5] iommu/dma: Finish optimising higher-order allocations
-Date: Fri, 8 Apr 2016 13:32:48 +0800
-Message-ID: <1460093568.18911.6.camel@mhfsdcap03>
-References: <cover.1460048991.git.robin.murphy@arm.com>
-	<89763f6b1ac684c3d8712e38760bec55b7885e3b.1460048991.git.robin.murphy@arm.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v2 1/2] dma/iommu: Add pgsize_bitmap confirmation in
+ __iommu_dma_alloc_pages
+Date: Fri, 8 Apr 2016 14:07:33 +0100
+Message-ID: <20160408130733.GD23750@arm.com>
+References: <1459146732-15620-1-git-send-email-yong.wu@mediatek.com>
+ <20160329170238.GK6745@arm.com>
+ <CAD=FV=XdZwg8usj3bjM6W=A0Yk1AFqKFRadpiS-LGLwxVNxp7A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <89763f6b1ac684c3d8712e38760bec55b7885e3b.1460048991.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAD=FV=XdZwg8usj3bjM6W=A0Yk1AFqKFRadpiS-LGLwxVNxp7A@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Doug Anderson <dianders@chromium.org>
+Cc: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Daniel Kurtz <djkurtz@google.com>, Tomasz Figa <tfiga@google.com>, Arnd Bergmann <arnd@arndb.de>, Lucas Stach <l.stach@pengutronix.de>, Marek Szyprowski <m.szyprowski@samsung.com>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>, srv_heupstream@mediatek.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2016-04-07 at 18:42 +0100, Robin Murphy wrote:
->  		/*
-> @@ -215,8 +221,9 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
->  		 * than a necessity, hence using __GFP_NORETRY until
->  		 * falling back to single-page allocations.
->  		 */
-> -		for (order = min_t(unsigned int, order, __fls(count));
-> -		     order > 0; order--) {
-> +		for (pgsize_orders &= (2U << __fls(count)) - 1;
-> +		     (order = __fls(pgsize_orders)) > min_order;
-> +		     pgsize_orders &= (1U << order) - 1) {
->  			page = alloc_pages(gfp | __GFP_NORETRY, order);
->  			if (!page)
->  				continue;
-> @@ -230,7 +237,7 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
->  			}
->  		}
->  		if (!page)
-> -			page = alloc_page(gfp);
-> +			page = alloc_pages(gfp, order);
+On Tue, Apr 05, 2016 at 10:03:32AM -0700, Doug Anderson wrote:
+> On Tue, Mar 29, 2016 at 10:02 AM, Will Deacon <will.deacon@arm.com> wrote:
+> > On Mon, Mar 28, 2016 at 02:32:11PM +0800, Yong Wu wrote:
+> >> @@ -213,13 +215,16 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count, gfp_t gfp)
+> >>               /*
+> >>                * Higher-order allocations are a convenience rather
+> >>                * than a necessity, hence using __GFP_NORETRY until
+> >> -              * falling back to single-page allocations.
+> >> +              * falling back to min size allocations.
+> >>                */
+> >> -             for (order = min_t(unsigned int, order, __fls(count));
+> >> -                  order > 0; order--) {
+> >> -                     page = alloc_pages(gfp | __GFP_NORETRY, order);
+> >> +             for (order = min_t(int, order, __fls(count));
+> >> +                  order >= min_order; order--) {
+> >> +                     page = alloc_pages((order == min_order) ? gfp :
+> >> +                                        gfp | __GFP_NORETRY, order);
+> >>                       if (!page)
+> >>                               continue;
+> >> +                     if (!order)
+> >> +                             break;
+> >
+> > Isn't this handled by the loop condition?
+> 
+> He changed the loop condition to be ">= min_order" instead of "> 0",
+> so now we can get here with an order == 0.  This makes sense because
+> when min_order is not 0 you still want to run the code to split the
+> pages and it is sane not to duplicate that below.
+> 
+> Maybe I'm misunderstanding, though.  Perhaps you can explain how you
+> think this code should look?
 
-A small question: Do we need split it too if order != 0 here?
+My reading of the code was that we require order >= min_order to enter
+the loop. Given that order doesn't change between the loop header and the
+if (!order) check, then that must mean we can enter the loop body with
+order == 0 and order >= min_order, which means that min_order is allowed
+to be negative. That feels weird.
 
+Am I barking up the wrong tree?
 
->  		if (!page) {
->  			__iommu_dma_free_pages(pages, i);
->  			return NULL;
-[...]
+Will
