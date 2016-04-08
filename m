@@ -1,67 +1,70 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v4 4/6] PCI: Rename dma_alias_is_enabled() to
- pci_devs_are_dma_aliases()
-Date: Fri, 8 Apr 2016 14:19:25 -0600
-Message-ID: <20160408141925.44e43efe@t450s.home>
-References: <20160224193926.7585.10833.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-	<20160224194415.7585.37290.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 5/6] PCI: Add DMA alias quirk for mic_x200_dma
+Date: Fri, 8 Apr 2016 14:19:36 -0600
+Message-ID: <20160408141936.36df3dc7@t450s.home>
+References: <20160224194423.7585.46582.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+	<1457016800-11903-1-git-send-email-jacek.lawrynowicz@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20160224194415.7585.37290.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>, linux-pci@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1457016800-11903-1-git-send-email-jacek.lawrynowicz-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jacek Lawrynowicz <jacek.lawrynowicz-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 24 Feb 2016 13:44:15 -0600
-Bjorn Helgaas <bhelgaas@google.com> wrote:
+On Thu,  3 Mar 2016 15:53:20 +0100
+Jacek Lawrynowicz <jacek.lawrynowicz-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
 
-> This should be folded into the previous patch.  I left it separate to show
-> the interface difference more clearly.
+> MIC x200 NTB forwards PCIe traffic using multiple alien RID. They have to
+> be added as aliases to the DMA device in order to allow buffer access
+> when IOMMU is enabled.
 > 
-> Also, pci_devs_are_dma_aliases() uses PCI internals (dma_alias_mask), so I
-> think it should be in PCI code instead of in IOMMU code.  That would mean
-> both it and pci_add_dma_alias() should probably be declared in
-> include/linux/pci.h (but not exported to modules with EXPORT_SYMBOL()).
+> Signed-off-by: Jacek Lawrynowicz <jacek.lawrynowicz-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Acked-by: David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 > ---
->  drivers/iommu/iommu.c |   11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
 
-Needs a Sign-off.
+Reviewed-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
-Reviewed-by: Alex Williamson <alex.williamson@redhat.com>
 
+>  Updated quirk comment with requirement that aliases have to be matching
+>  values programmed in the EEPROM. The LUT table on x200 is static so there
+>  is no need to program it from the driver.
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index a214e19..031d06b 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -659,10 +659,12 @@ static struct iommu_group *get_pci_function_alias_group(struct pci_dev *pdev,
->  	return NULL;
->  }
->  
-> -static bool dma_alias_is_enabled(struct pci_dev *dev, u8 devfn)
-> +static bool pci_devs_are_dma_aliases(struct pci_dev *pdev1, struct pci_dev *pdev2)
->  {
-> -	return dev->dma_alias_mask &&
-> -	       test_bit(devfn, dev->dma_alias_mask);
-> +	return (pdev1->dma_alias_mask &&
-> +		test_bit(pdev2->devfn, pdev1->dma_alias_mask)) ||
-> +	       (pdev2->dma_alias_mask &&
-> +		test_bit(pdev1->devfn, pdev2->dma_alias_mask));
->  }
+>  drivers/pci/quirks.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> index 51927a5..e66f09d 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -3696,6 +3696,20 @@ DECLARE_PCI_FIXUP_HEADER(0x1283, 0x8892, quirk_use_pcie_bridge_dma_alias);
+>  DECLARE_PCI_FIXUP_HEADER(0x8086, 0x244e, quirk_use_pcie_bridge_dma_alias);
 >  
 >  /*
-> @@ -692,8 +694,7 @@ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
->  			continue;
->  
->  		/* We alias them or they alias us */
-> -		if (dma_alias_is_enabled(pdev, tmp->devfn) ||
-> -		    dma_alias_is_enabled(tmp, pdev->devfn)) {
-> +		if (pci_devs_are_dma_aliases(pdev, tmp)) {
->  			group = get_pci_alias_group(tmp, devfns);
->  			if (group) {
->  				pci_dev_put(tmp);
-> 
+> + * MIC x200 NTB forwards PCIe traffic using multiple alien RIDs. They have to
+> + * be added as aliases to the DMA device in order to allow buffer access
+> + * when IOMMU is enabled. Following devfns have to match RIT-LUT table
+> + * programmed in the EEPROM.
+> + */
+> +static void quirk_mic_x200_dma_alias(struct pci_dev *pdev)
+> +{
+> +	pci_add_dma_alias(pdev, PCI_DEVFN(0x10, 0x0));
+> +	pci_add_dma_alias(pdev, PCI_DEVFN(0x11, 0x0));
+> +	pci_add_dma_alias(pdev, PCI_DEVFN(0x12, 0x3));
+> +}
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2264, quirk_mic_x200_dma_alias);
+> +
+> +/*
+>   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
+>   * class code.  Fix it.
+>   */
