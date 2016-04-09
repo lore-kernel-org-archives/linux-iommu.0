@@ -1,61 +1,41 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v4 6/6] PCI: Squash pci_dev_flags to remove holes
-Date: Fri, 8 Apr 2016 14:19:44 -0600
-Message-ID: <20160408141944.220fe2b4@t450s.home>
-References: <20160224193926.7585.10833.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-	<20160224194431.7585.78791.stgit@bhelgaas-glaptop2.roam.corp.google.com>
+From: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFT v2] iommu/amd: use subsys_initcall() on amdv2 iommu
+Date: Fri, 8 Apr 2016 17:25:49 -0700
+Message-ID: <CAB=NE6XCmMk4sraQo34XQJfjWu_yRc1rar_eQRSET8Q7VR9EOw@mail.gmail.com>
+References: <20160316171719.GE2195@8bytes.org>
+	<1459273313-5139-1-git-send-email-mcgrof@kernel.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20160224194431.7585.78791.stgit@bhelgaas-glaptop2.roam.corp.google.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>, linux-pci@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1459273313-5139-1-git-send-email-mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, christian.koenig-5C7GfCeVMHo@public.gmane.org, oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 24 Feb 2016 13:44:31 -0600
-Bjorn Helgaas <bhelgaas@google.com> wrote:
-
-> From: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
-> 
-> After removing PCI_DEV_FLAGS_DMA_ALIAS_DEVFN, the (1 << 4) value was
-> unused.  Squash the other values so all the bits are adjacent.  No
-> functional change intended.
-> 
-> (I'm not sure this is worth doing.  We have 16 flag bits and we're not
-> even close to exhausting them.  But if we do squash them, it should be
-> in a separate patch so we don't clutter up the main patches.)
-> ---
-
-Needs a Sign-off
-
-Reviewed-by: Alex Williamson <alex.williamson@redhat.com>
-
-
->  include/linux/pci.h |    8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index d9e0c84..4e36024 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -173,13 +173,13 @@ enum pci_dev_flags {
->  	/* Flag for quirk use to store if quirk-specific ACS is enabled */
->  	PCI_DEV_FLAGS_ACS_ENABLED_QUIRK = (__force pci_dev_flags_t) (1 << 3),
->  	/* Use a PCIe-to-PCI bridge alias even if !pci_is_pcie */
-> -	PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS = (__force pci_dev_flags_t) (1 << 5),
-> +	PCI_DEV_FLAG_PCIE_BRIDGE_ALIAS = (__force pci_dev_flags_t) (1 << 4),
->  	/* Do not use bus resets for device */
-> -	PCI_DEV_FLAGS_NO_BUS_RESET = (__force pci_dev_flags_t) (1 << 6),
-> +	PCI_DEV_FLAGS_NO_BUS_RESET = (__force pci_dev_flags_t) (1 << 5),
->  	/* Do not use PM reset even if device advertises NoSoftRst- */
-> -	PCI_DEV_FLAGS_NO_PM_RESET = (__force pci_dev_flags_t) (1 << 7),
-> +	PCI_DEV_FLAGS_NO_PM_RESET = (__force pci_dev_flags_t) (1 << 6),
->  	/* Get VPD from function 0 VPD */
-> -	PCI_DEV_FLAGS_VPD_REF_F0 = (__force pci_dev_flags_t) (1 << 8),
-> +	PCI_DEV_FLAGS_VPD_REF_F0 = (__force pci_dev_flags_t) (1 << 7),
->  };
->  
->  enum pci_irq_reroute_variant {
-> 
+T24gVHVlLCBNYXIgMjksIDIwMTYgYXQgMTA6NDEgQU0sIEx1aXMgUi4gUm9kcmlndWV6IDxtY2dy
+b2ZAa2VybmVsLm9yZz4gd3JvdGU6Cj4gV2UgbmVlZCB0byBlbnN1cmUgYW1kIGlvbW11IHYyIGlu
+aXRpYWxpemVzIGJlZm9yZQo+IGRyaXZlciB1c2VzIHN1Y2ggYXMgZHJpdmVycy9ncHUvZHJtL2Ft
+ZC9hbWRrZmQva2ZkX21vZHVsZS5jLAo+IHRvIGRvIHRoaXMgbWFrZSBpdHMgaW5pdCByb3V0aW5l
+IGEgc3Vic3lzX2luaXRjYWxsKCkgd2hpY2gKPiBlbnN1cmVzIGl0cyBsb2FkIGluaXQgaXMgY2Fs
+bGVkIGZpcnN0IHRoYW4gbW9kdWxlcyB3aGVuCj4gYnVpbHQtaW4uCj4KPiBUaGlzIHJldmVydHMg
+dGhlIG9sZCB3b3JrIGFyb3VuZCBpbXBsZW1lbnRlZCB0aHJvdWdoIGNvbW1pdAo+IDFiYWNjODk0
+YzIyN2ZhZDhhNyAoImRyaXZlcnM6IE1vdmUgaW9tbXUvIGJlZm9yZSBncHUvIGluIE1ha2VmaWxl
+IiksCj4gaW5zdGVhZCBvZiBtYWtpbmcgdGhlIGRlcGVuZGVuY3kgaW1wbGljaXQgYnkgbGlua2Vy
+IG9yZGVyIHRoaXMKPiBtYWtlcyB0aGUgb3JkZXJpbmcgcmVxdWlyZW1lbnQgZXhwbGljaXQgdGhy
+b3VnaCBwcm9wZXIga2VybmVsCj4gQVBJcy4KPgo+IENjOiBPZGVkIEdhYmJheSA8b2RlZC5nYWJi
+YXlAYW1kLmNvbT4KPiBDYzogQ2hyaXN0aWFuIEvDtm5pZyA8Y2hyaXN0aWFuLmtvZW5pZ0BhbWQu
+Y29tPgo+IFNpZ25lZC1vZmYtYnk6IEx1aXMgUi4gUm9kcmlndWV6IDxtY2dyb2ZAa2VybmVsLm9y
+Zz4KCipwb2tlKgoKIEx1aXMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
+bW11
