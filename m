@@ -1,11 +1,15 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH RESEND] iommu/dma: Implement scatterlist segment merging
-Date: Mon, 11 Apr 2016 12:32:31 +0100
-Message-ID: <b87bf47e79febb3ca904140db09cf095238b2817.1460373907.git.robin.murphy@arm.com>
+From: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [RFT v2] iommu/amd: use subsys_initcall() on amdv2 iommu
+Date: Mon, 11 Apr 2016 15:28:52 +0200
+Message-ID: <570BA694.8040900@amd.com>
+References: <20160316171719.GE2195@8bytes.org>
+	<1459273313-5139-1-git-send-email-mcgrof@kernel.org>
+	<CAB=NE6XCmMk4sraQo34XQJfjWu_yRc1rar_eQRSET8Q7VR9EOw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAB=NE6XCmMk4sraQo34XQJfjWu_yRc1rar_eQRSET8Q7VR9EOw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,153 +19,28 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Stop wasting IOVA space by over-aligning scatterlist segments for a
-theoretical worst-case segment boundary mask, and instead take the real
-limits into account to merge consecutive segments wherever appropriate,
-so our callers can benefit from getting back nicely simplified lists.
-
-This also represents the last piece of functionality wanted by users of
-the current arch/arm implementation, thus brings us a small step closer
-to converting that over to the common code.
-
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
-
-As requested, reposting rebased onto -rc3.
-
- drivers/iommu/dma-iommu.c | 84 ++++++++++++++++++++++++++++++++++-------------
- 1 file changed, 61 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 58f2fe6..886cb3a 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -389,26 +389,58 @@ void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
- 
- /*
-  * Prepare a successfully-mapped scatterlist to give back to the caller.
-- * Handling IOVA concatenation can come later, if needed
-+ *
-+ * At this point the segments are already laid out by iommu_dma_map_sg() to
-+ * avoid individually crossing any boundaries, so we merely need to check a
-+ * segment's start address to avoid concatenating across one.
-  */
- static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
- 		dma_addr_t dma_addr)
- {
--	struct scatterlist *s;
--	int i;
-+	struct scatterlist *s, *cur = sg;
-+	unsigned long seg_mask = dma_get_seg_boundary(dev);
-+	unsigned int cur_len = 0, max_len = dma_get_max_seg_size(dev);
-+	int i, count = 0;
- 
- 	for_each_sg(sg, s, nents, i) {
--		/* Un-swizzling the fields here, hence the naming mismatch */
--		unsigned int s_offset = sg_dma_address(s);
-+		/* Restore this segment's original unaligned fields first */
-+		unsigned int s_iova_off = sg_dma_address(s);
- 		unsigned int s_length = sg_dma_len(s);
--		unsigned int s_dma_len = s->length;
-+		unsigned int s_iova_len = s->length;
- 
--		s->offset += s_offset;
-+		s->offset += s_iova_off;
- 		s->length = s_length;
--		sg_dma_address(s) = dma_addr + s_offset;
--		dma_addr += s_dma_len;
-+		sg_dma_address(s) = DMA_ERROR_CODE;
-+		sg_dma_len(s) = 0;
-+
-+		/*
-+		 * Now fill in the real DMA data. If...
-+		 * - there is a valid output segment to append to
-+		 * - and this segment starts on an IOVA page boundary
-+		 * - but doesn't fall at a segment boundary
-+		 * - and wouldn't make the resulting output segment too long
-+		 */
-+		if (cur_len && !s_iova_off && (dma_addr & seg_mask) &&
-+		    (cur_len + s_length <= max_len)) {
-+			/* ...then concatenate it with the previous one */
-+			cur_len += s_length;
-+		} else {
-+			/* Otherwise start the next output segment */
-+			if (i > 0)
-+				cur = sg_next(cur);
-+			cur_len = s_length;
-+			count++;
-+
-+			sg_dma_address(cur) = dma_addr + s_iova_off;
-+		}
-+
-+		sg_dma_len(cur) = cur_len;
-+		dma_addr += s_iova_len;
-+
-+		if (s_length + s_iova_off < s_iova_len)
-+			cur_len = 0;
- 	}
--	return i;
-+	return count;
- }
- 
- /*
-@@ -446,34 +478,40 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 	struct scatterlist *s, *prev = NULL;
- 	dma_addr_t dma_addr;
- 	size_t iova_len = 0;
-+	unsigned long mask = dma_get_seg_boundary(dev);
- 	int i;
- 
- 	/*
- 	 * Work out how much IOVA space we need, and align the segments to
- 	 * IOVA granules for the IOMMU driver to handle. With some clever
- 	 * trickery we can modify the list in-place, but reversibly, by
--	 * hiding the original data in the as-yet-unused DMA fields.
-+	 * stashing the unaligned parts in the as-yet-unused DMA fields.
- 	 */
- 	for_each_sg(sg, s, nents, i) {
--		size_t s_offset = iova_offset(iovad, s->offset);
-+		size_t s_iova_off = iova_offset(iovad, s->offset);
- 		size_t s_length = s->length;
-+		size_t pad_len = (mask - iova_len + 1) & mask;
- 
--		sg_dma_address(s) = s_offset;
-+		sg_dma_address(s) = s_iova_off;
- 		sg_dma_len(s) = s_length;
--		s->offset -= s_offset;
--		s_length = iova_align(iovad, s_length + s_offset);
-+		s->offset -= s_iova_off;
-+		s_length = iova_align(iovad, s_length + s_iova_off);
- 		s->length = s_length;
- 
- 		/*
--		 * The simple way to avoid the rare case of a segment
--		 * crossing the boundary mask is to pad the previous one
--		 * to end at a naturally-aligned IOVA for this one's size,
--		 * at the cost of potentially over-allocating a little.
-+		 * Due to the alignment of our single IOVA allocation, we can
-+		 * depend on these assumptions about the segment boundary mask:
-+		 * - If mask size >= IOVA size, then the IOVA range cannot
-+		 *   possibly fall across a boundary, so we don't care.
-+		 * - If mask size < IOVA size, then the IOVA range must start
-+		 *   exactly on a boundary, therefore we can lay things out
-+		 *   based purely on segment lengths without needing to know
-+		 *   the actual addresses beforehand.
-+		 * - The mask must be a power of 2, so pad_len == 0 if
-+		 *   iova_len == 0, thus we cannot dereference prev the first
-+		 *   time through here (i.e. before it has a meaningful value).
- 		 */
--		if (prev) {
--			size_t pad_len = roundup_pow_of_two(s_length);
--
--			pad_len = (pad_len - iova_len) & (pad_len - 1);
-+		if (pad_len && pad_len < s_length - 1) {
- 			prev->length += pad_len;
- 			iova_len += pad_len;
- 		}
--- 
-2.7.3.dirty
+QW0gMDkuMDQuMjAxNiB1bSAwMjoyNSBzY2hyaWViIEx1aXMgUi4gUm9kcmlndWV6Ogo+IE9uIFR1
+ZSwgTWFyIDI5LCAyMDE2IGF0IDEwOjQxIEFNLCBMdWlzIFIuIFJvZHJpZ3VleiA8bWNncm9mQGtl
+cm5lbC5vcmc+IHdyb3RlOgo+PiBXZSBuZWVkIHRvIGVuc3VyZSBhbWQgaW9tbXUgdjIgaW5pdGlh
+bGl6ZXMgYmVmb3JlCj4+IGRyaXZlciB1c2VzIHN1Y2ggYXMgZHJpdmVycy9ncHUvZHJtL2FtZC9h
+bWRrZmQva2ZkX21vZHVsZS5jLAo+PiB0byBkbyB0aGlzIG1ha2UgaXRzIGluaXQgcm91dGluZSBh
+IHN1YnN5c19pbml0Y2FsbCgpIHdoaWNoCj4+IGVuc3VyZXMgaXRzIGxvYWQgaW5pdCBpcyBjYWxs
+ZWQgZmlyc3QgdGhhbiBtb2R1bGVzIHdoZW4KPj4gYnVpbHQtaW4uCj4+Cj4+IFRoaXMgcmV2ZXJ0
+cyB0aGUgb2xkIHdvcmsgYXJvdW5kIGltcGxlbWVudGVkIHRocm91Z2ggY29tbWl0Cj4+IDFiYWNj
+ODk0YzIyN2ZhZDhhNyAoImRyaXZlcnM6IE1vdmUgaW9tbXUvIGJlZm9yZSBncHUvIGluIE1ha2Vm
+aWxlIiksCj4+IGluc3RlYWQgb2YgbWFraW5nIHRoZSBkZXBlbmRlbmN5IGltcGxpY2l0IGJ5IGxp
+bmtlciBvcmRlciB0aGlzCj4+IG1ha2VzIHRoZSBvcmRlcmluZyByZXF1aXJlbWVudCBleHBsaWNp
+dCB0aHJvdWdoIHByb3BlciBrZXJuZWwKPj4gQVBJcy4KPj4KPj4gQ2M6IE9kZWQgR2FiYmF5IDxv
+ZGVkLmdhYmJheUBhbWQuY29tPgo+PiBDYzogQ2hyaXN0aWFuIEvDtm5pZyA8Y2hyaXN0aWFuLmtv
+ZW5pZ0BhbWQuY29tPgo+PiBTaWduZWQtb2ZmLWJ5OiBMdWlzIFIuIFJvZHJpZ3VleiA8bWNncm9m
+QGtlcm5lbC5vcmc+CgpTb3JyeSBmb3Igbm90IHJlc3BvbmRpbmcgZWFybGllci4gSnVzdCBjb21p
+bmcgYmFjayB0byBhbGwgdGhlIHN0dWZmIG9uIApteSBUT0RPIGxpc3QuCgpQYXRjaCBpcyBBY2tl
+ZC1ieTogQ2hyaXN0aWFuIEvDtm5pZyA8Y2hyaXN0aWFuLmtvZW5pZ0BhbWQuY29tPgoKUmVnYXJk
+cywKQ2hyaXN0aWFuLgoKPiAqcG9rZSoKPgo+ICAgTHVpcwoKX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3Rz
+LmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9t
+YWlsbWFuL2xpc3RpbmZvL2lvbW11
