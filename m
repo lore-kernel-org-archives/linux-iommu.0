@@ -1,20 +1,11 @@
-From: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v2 1/2] dma/iommu: Add pgsize_bitmap confirmation in
-	__iommu_dma_alloc_pages
-Date: Mon, 11 Apr 2016 15:40:10 +0800
-Message-ID: <1460360410.18251.10.camel@mhfsdcap03>
-References: <1459146732-15620-1-git-send-email-yong.wu@mediatek.com>
-	<20160329170238.GK6745@arm.com>
-	<CAD=FV=XdZwg8usj3bjM6W=A0Yk1AFqKFRadpiS-LGLwxVNxp7A@mail.gmail.com>
-	<20160408130733.GD23750@arm.com>
-	<CAD=FV=VbekVUHW3=d0icSgUO1M-1cccwCAZ+s=YSzOtEveCQag@mail.gmail.com>
-	<20160408173002.GJ23750@arm.com>
-	<CAD=FV=XbL6gbdmX62Q3QJQ6R-rC7cCd44RLPgK3kvhAC49BJjA@mail.gmail.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH RESEND] iommu/dma: Implement scatterlist segment merging
+Date: Mon, 11 Apr 2016 12:32:31 +0100
+Message-ID: <b87bf47e79febb3ca904140db09cf095238b2817.1460373907.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAD=FV=XbL6gbdmX62Q3QJQ6R-rC7cCd44RLPgK3kvhAC49BJjA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,51 +15,153 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "moderated list:ARM/Mediatek SoC support" <linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2016-04-08 at 10:34 -0700, Doug Anderson wrote:
-> Hi,
-> 
-> On Fri, Apr 8, 2016 at 10:30 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> >> > Am I barking up the wrong tree?
-> >>
-> >> I don't think min_order can be negative.  Certainly we could enter the
-> >> loop with order == 0 and min_order == 0, though.
-> >
-> > ... and in that case, PageCompound will be false, and we'll call split_page
-> > which won't do anything, so we break out.
-> >
-> >>
-> >> Some examples:
-> >>
-> >> order = 0, min_order = 0
-> >> -> Want alloc_pages _without_ __GFP_NORETRY.  OK
-> >> -> If alloc_pages fails, return NULL.  OK
-> >> -> If alloc pages succeeds, don't need splitting since single page.  OK
-> >
-> > [...]
-> >
-> >> I think those are all right.  Did I mess up?  You could certainly
-> >> structure the loop in a different way but you need to make sure you
-> >> handle all of those cases.  If you have an alternate structure that
-> >> handles all those, let's consider it.
-> >
-> > Right, I don't think the code is broken, I just think the !order check is
-> > confusing and not needed.
-> 
-> Ah ha!  Got it.  I didn't dig into split_page() to see that it was a
-> no-op when "order == 0".  I just know that the old code didn't call
-> split_page() with order == 0 so I assumed that was wise to keep.  If
-> we don't need to keep that then agreed that the "if" test can simply
-> be removed.  :)
-> 
-> -Doug
+Stop wasting IOVA space by over-aligning scatterlist segments for a
+theoretical worst-case segment boundary mask, and instead take the real
+limits into account to merge consecutive segments wherever appropriate,
+so our callers can benefit from getting back nicely simplified lists.
 
-Hi Will, Doug,
+This also represents the last piece of functionality wanted by users of
+the current arch/arm implementation, thus brings us a small step closer
+to converting that over to the common code.
 
-Thanks very much for review this patch, and Thanks Robin's work,
-Currently this one is obsoleted since it's included in [1].
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
 
-[1]:http://lists.linuxfoundation.org/pipermail/iommu/2016-April/016402.html
+As requested, reposting rebased onto -rc3.
+
+ drivers/iommu/dma-iommu.c | 84 ++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 61 insertions(+), 23 deletions(-)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 58f2fe6..886cb3a 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -389,26 +389,58 @@ void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
+ 
+ /*
+  * Prepare a successfully-mapped scatterlist to give back to the caller.
+- * Handling IOVA concatenation can come later, if needed
++ *
++ * At this point the segments are already laid out by iommu_dma_map_sg() to
++ * avoid individually crossing any boundaries, so we merely need to check a
++ * segment's start address to avoid concatenating across one.
+  */
+ static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
+ 		dma_addr_t dma_addr)
+ {
+-	struct scatterlist *s;
+-	int i;
++	struct scatterlist *s, *cur = sg;
++	unsigned long seg_mask = dma_get_seg_boundary(dev);
++	unsigned int cur_len = 0, max_len = dma_get_max_seg_size(dev);
++	int i, count = 0;
+ 
+ 	for_each_sg(sg, s, nents, i) {
+-		/* Un-swizzling the fields here, hence the naming mismatch */
+-		unsigned int s_offset = sg_dma_address(s);
++		/* Restore this segment's original unaligned fields first */
++		unsigned int s_iova_off = sg_dma_address(s);
+ 		unsigned int s_length = sg_dma_len(s);
+-		unsigned int s_dma_len = s->length;
++		unsigned int s_iova_len = s->length;
+ 
+-		s->offset += s_offset;
++		s->offset += s_iova_off;
+ 		s->length = s_length;
+-		sg_dma_address(s) = dma_addr + s_offset;
+-		dma_addr += s_dma_len;
++		sg_dma_address(s) = DMA_ERROR_CODE;
++		sg_dma_len(s) = 0;
++
++		/*
++		 * Now fill in the real DMA data. If...
++		 * - there is a valid output segment to append to
++		 * - and this segment starts on an IOVA page boundary
++		 * - but doesn't fall at a segment boundary
++		 * - and wouldn't make the resulting output segment too long
++		 */
++		if (cur_len && !s_iova_off && (dma_addr & seg_mask) &&
++		    (cur_len + s_length <= max_len)) {
++			/* ...then concatenate it with the previous one */
++			cur_len += s_length;
++		} else {
++			/* Otherwise start the next output segment */
++			if (i > 0)
++				cur = sg_next(cur);
++			cur_len = s_length;
++			count++;
++
++			sg_dma_address(cur) = dma_addr + s_iova_off;
++		}
++
++		sg_dma_len(cur) = cur_len;
++		dma_addr += s_iova_len;
++
++		if (s_length + s_iova_off < s_iova_len)
++			cur_len = 0;
+ 	}
+-	return i;
++	return count;
+ }
+ 
+ /*
+@@ -446,34 +478,40 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 	struct scatterlist *s, *prev = NULL;
+ 	dma_addr_t dma_addr;
+ 	size_t iova_len = 0;
++	unsigned long mask = dma_get_seg_boundary(dev);
+ 	int i;
+ 
+ 	/*
+ 	 * Work out how much IOVA space we need, and align the segments to
+ 	 * IOVA granules for the IOMMU driver to handle. With some clever
+ 	 * trickery we can modify the list in-place, but reversibly, by
+-	 * hiding the original data in the as-yet-unused DMA fields.
++	 * stashing the unaligned parts in the as-yet-unused DMA fields.
+ 	 */
+ 	for_each_sg(sg, s, nents, i) {
+-		size_t s_offset = iova_offset(iovad, s->offset);
++		size_t s_iova_off = iova_offset(iovad, s->offset);
+ 		size_t s_length = s->length;
++		size_t pad_len = (mask - iova_len + 1) & mask;
+ 
+-		sg_dma_address(s) = s_offset;
++		sg_dma_address(s) = s_iova_off;
+ 		sg_dma_len(s) = s_length;
+-		s->offset -= s_offset;
+-		s_length = iova_align(iovad, s_length + s_offset);
++		s->offset -= s_iova_off;
++		s_length = iova_align(iovad, s_length + s_iova_off);
+ 		s->length = s_length;
+ 
+ 		/*
+-		 * The simple way to avoid the rare case of a segment
+-		 * crossing the boundary mask is to pad the previous one
+-		 * to end at a naturally-aligned IOVA for this one's size,
+-		 * at the cost of potentially over-allocating a little.
++		 * Due to the alignment of our single IOVA allocation, we can
++		 * depend on these assumptions about the segment boundary mask:
++		 * - If mask size >= IOVA size, then the IOVA range cannot
++		 *   possibly fall across a boundary, so we don't care.
++		 * - If mask size < IOVA size, then the IOVA range must start
++		 *   exactly on a boundary, therefore we can lay things out
++		 *   based purely on segment lengths without needing to know
++		 *   the actual addresses beforehand.
++		 * - The mask must be a power of 2, so pad_len == 0 if
++		 *   iova_len == 0, thus we cannot dereference prev the first
++		 *   time through here (i.e. before it has a meaningful value).
+ 		 */
+-		if (prev) {
+-			size_t pad_len = roundup_pow_of_two(s_length);
+-
+-			pad_len = (pad_len - iova_len) & (pad_len - 1);
++		if (pad_len && pad_len < s_length - 1) {
+ 			prev->length += pad_len;
+ 			iova_len += pad_len;
+ 		}
+-- 
+2.7.3.dirty
