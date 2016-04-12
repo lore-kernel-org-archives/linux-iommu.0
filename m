@@ -1,16 +1,19 @@
-From: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
-Subject: Re: [PATCH 6/7] iommu: change intel-iommu to use IOVA frame numbers
-Date: Tue, 12 Apr 2016 23:13:58 +0300
-Message-ID: <CAHMfzJk=-MENPnO-0-F_nab2yEVj=LxNfbzN_z3bwB3cguUiog@mail.gmail.com>
-References: <20151228161724.GA27916@cs.technion.ac.il>
-	<570CD405.7010403@arm.com>
-	<CAHMfzJkqrtPT3QvG-myZchp8jUZ3E5X_CDa3yaYPpAQ+BR4LNQ@mail.gmail.com>
-	<570D1DF0.6050309@arm.com>
+From: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFT v2] iommu/amd: use subsys_initcall() on amdv2 iommu
+Date: Wed, 13 Apr 2016 00:07:15 +0200
+Message-ID: <20160412220715.GL1990@wotan.suse.de>
+References: <20160316171719.GE2195@8bytes.org>
+	<1459273313-5139-1-git-send-email-mcgrof@kernel.org>
+	<CAB=NE6XCmMk4sraQo34XQJfjWu_yRc1rar_eQRSET8Q7VR9EOw@mail.gmail.com>
+	<570BA694.8040900@amd.com>
+	<CAFCwf10oD9c3MOW3+J8A5MVjVkX0nNRGCEE2pWcQxOy7mjUsBw@mail.gmail.com>
+	<570BAC2B.4090508@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <570D1DF0.6050309-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <570BAC2B.4090508-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,54 +23,59 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Benjamin Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Dan Tsafrir <dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
+To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Cc: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 12, 2016 at 7:10 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+On Mon, Apr 11, 2016 at 03:52:43PM +0200, Christian K=F6nig wrote:
+> Am 11.04.2016 um 15:39 schrieb Oded Gabbay:
+> >On Mon, Apr 11, 2016 at 4:28 PM, Christian K=F6nig
+> ><christian.koenig-5C7GfCeVMHo@public.gmane.org> wrote:
+> >>Am 09.04.2016 um 02:25 schrieb Luis R. Rodriguez:
+> >>>On Tue, Mar 29, 2016 at 10:41 AM, Luis R. Rodriguez <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org=
+> wrote:
+> >>>>We need to ensure amd iommu v2 initializes before
+> >>>>driver uses such as drivers/gpu/drm/amd/amdkfd/kfd_module.c,
+> >>>>to do this make its init routine a subsys_initcall() which
+> >>>>ensures its load init is called first than modules when
+> >>>>built-in.
+> >>>>
+> >>>>This reverts the old work around implemented through commit
+> >>>>1bacc894c227fad8a7 ("drivers: Move iommu/ before gpu/ in Makefile"),
+> >>>>instead of making the dependency implicit by linker order this
+> >>>>makes the ordering requirement explicit through proper kernel
+> >>>>APIs.
+> >>>>
+> >>>>Cc: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
+> >>>>Cc: Christian K=F6nig <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+> >>>>Signed-off-by: Luis R. Rodriguez <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> >>
+> >>Sorry for not responding earlier. Just coming back to all the stuff on =
+my TODO list.
+> >>
+> >>Patch is Acked-by: Christian K=F6nig <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+> >
+> >Christian,
+> >Just wanted to be sure if you tested this patch-set or not.
+> =
 
->>> Making the internals more efficient is no bad thing, but changing the
->>> external interface to the IOVA library like this breaks at least
->>> dma-iommu.c, thus stops arm64 from building.
->>
->>
->> Good point.  I will add new versions of alloc_iova() and free_iova()
->> for this functionality and make intel-iommu uses them, so as to not
->> break other users.
->
->
-> I wonder if it might be worth going for the intermediate compromise of
-> splitting up the structure thus:
->
-> struct iova {
->         unsigned long   pfn_hi;
->         unsigned long   pfn_lo;
-> };
->
-> /* internal to iova.c */
-> struct iova_private {
->         struct rb_node  node;
->         struct iova     iova;
-> };
->
-> then externally passing the pfn-only struct iovas by value everywhere we
-> currently pass a struct iova *. AFAICS, that ought to require minimal
-> changes in the users, and they shouldn't need to know or care whether any
-> given iova is backed by the tree or the rcache, because they're simple to
-> fake up:
->
->         unsigned long iova_pfn =
->                 iova_rcache_get(&iovad->rcaches[log_size]);
->         if (iova_pfn)
->                 return { iova_pfn + log_size, iova_pfn };
->
-> What do you reckon?
+> I did NOT tested it. If AMD IOMMU requires something which will now
+> initialize after the IOMMU module we will obviously run into trouble
+> again.
+> =
 
-We'd still need to change free_iova() or extend the IOVA API, because
-when using the rcache we want the unmap flow to not go through
-find_iova(), as it acquires the rbtree spinlock.  So the added churn
-in dma-iommu.c will not be buying much, I think.
+> I assumed that the creator of the patch did some testing.
 
-By only extending the API, I can avoid any changes to other users, and
-they can convert to using the rcache with its PFN-based API if the
-need arises.
+Nope, hence [RTF] Request For Testing.
+
+> >I don't think it should be merged without testing. If you already
+> >tested it than fine. If not, I think I can do it in the next week or
+> >so (just came back from PTO).
+> =
+
+> Yeah, agree totally.
+
+Agreed, please let me know if someone is able to test and confirm
+this works. It should work.
+
+  Luis
