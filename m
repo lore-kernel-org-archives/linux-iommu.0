@@ -1,91 +1,73 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v4 0/6] PCI: Support multiple DMA aliases
-Date: Tue, 12 Apr 2016 13:10:31 -0500
-Message-ID: <20160412181031.GA13093@localhost>
-References: <20160224193926.7585.10833.stgit@bhelgaas-glaptop2.roam.corp.google.com>
- <20160412043828.GA11361@localhost>
+From: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
+Subject: Re: [PATCH 6/7] iommu: change intel-iommu to use IOVA frame numbers
+Date: Tue, 12 Apr 2016 23:13:58 +0300
+Message-ID: <CAHMfzJk=-MENPnO-0-F_nab2yEVj=LxNfbzN_z3bwB3cguUiog@mail.gmail.com>
+References: <20151228161724.GA27916@cs.technion.ac.il>
+	<570CD405.7010403@arm.com>
+	<CAHMfzJkqrtPT3QvG-myZchp8jUZ3E5X_CDa3yaYPpAQ+BR4LNQ@mail.gmail.com>
+	<570D1DF0.6050309@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160412043828.GA11361@localhost>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>, linux-pci@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>, Joerg Roedel <jroedel@suse.de>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <570D1DF0.6050309-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Benjamin Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Dan Tsafrir <dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 11, 2016 at 11:38:28PM -0500, Bjorn Helgaas wrote:
-> On Wed, Feb 24, 2016 at 01:43:32PM -0600, Bjorn Helgaas wrote:
-> > This is a revision of Jacek's v3 posting:
-> > http://lkml.kernel.org/r/1454152012-46337-1-git-send-email-jacek.lawrynowicz@intel.com
-> > 
-> > The changes from v3 are:
-> > 
-> >   - Split into smaller patches for reviewability
-> >   - Move printk when adding DMA alias
-> >   - Change dma_alias_is_enabled() interface to take two pci_devs
-> >   - Rename dma_alias_is_enabled() to indicate PCI context
-> > 
-> > The only remaining thing I want to sort out is the dma_alias_is_enabled()
-> > vs pci_for_each_dma_alias() question Alex raised.  I'll respond to the
-> > relevant part of the patch in this series with my specific questions.
-> > 
-> > ---
-> > 
-> > Bjorn Helgaas (1):
-> >       PCI: Rename dma_alias_is_enabled() to pci_devs_are_dma_aliases()
-> > 
-> > Jacek Lawrynowicz (5):
-> >       PCI: Add pci_add_dma_alias() to abstract implementation
-> >       PCI: Move informational printk to pci_add_dma_alias()
-> >       PCI: Add support for multiple DMA aliases
-> >       pci: Add DMA alias quirk for mic_x200_dma
-> >       PCI: Squash pci_dev_flags to remove holes
-> 
-> I applied this series to pci/ntb for v4.7.
+On Tue, Apr 12, 2016 at 7:10 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
 
-Jacek sent another patch to add a second PCI ID.  I don't see it on the
-list, probably because it's got too much fancy encoding.  I applied it, so
-the last patch now looks like this:
+>>> Making the internals more efficient is no bad thing, but changing the
+>>> external interface to the IOVA library like this breaks at least
+>>> dma-iommu.c, thus stops arm64 from building.
+>>
+>>
+>> Good point.  I will add new versions of alloc_iova() and free_iova()
+>> for this functionality and make intel-iommu uses them, so as to not
+>> break other users.
+>
+>
+> I wonder if it might be worth going for the intermediate compromise of
+> splitting up the structure thus:
+>
+> struct iova {
+>         unsigned long   pfn_hi;
+>         unsigned long   pfn_lo;
+> };
+>
+> /* internal to iova.c */
+> struct iova_private {
+>         struct rb_node  node;
+>         struct iova     iova;
+> };
+>
+> then externally passing the pfn-only struct iovas by value everywhere we
+> currently pass a struct iova *. AFAICS, that ought to require minimal
+> changes in the users, and they shouldn't need to know or care whether any
+> given iova is backed by the tree or the rcache, because they're simple to
+> fake up:
+>
+>         unsigned long iova_pfn =
+>                 iova_rcache_get(&iovad->rcaches[log_size]);
+>         if (iova_pfn)
+>                 return { iova_pfn + log_size, iova_pfn };
+>
+> What do you reckon?
 
-commit b1a928cdb477037fb7c10fbf94c47f65f2bcce77
-Author: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
-Date:   Thu Mar 3 15:53:20 2016 +0100
+We'd still need to change free_iova() or extend the IOVA API, because
+when using the rcache we want the unmap flow to not go through
+find_iova(), as it acquires the rbtree spinlock.  So the added churn
+in dma-iommu.c will not be buying much, I think.
 
-    PCI: Add DMA alias quirk for mic_x200_dma
-    
-    The MIC x200 NTB forwards DMA transactions upstream using multiple alien
-    RIDs.  These RIDs have to be added as aliases to the DMA device to allow
-    buffer access when the IOMMU is enabled.
-    
-    Signed-off-by: Jacek Lawrynowicz <jacek.lawrynowicz@intel.com>
-    Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-    Reviewed-by: Alex Williamson <alex.williamson@redhat.com>
-    Acked-by: David Woodhouse <David.Woodhouse@intel.com>
-
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 7559e40..8889ac4 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3725,6 +3725,21 @@ DECLARE_PCI_FIXUP_HEADER(0x1283, 0x8892, quirk_use_pcie_bridge_dma_alias);
- DECLARE_PCI_FIXUP_HEADER(0x8086, 0x244e, quirk_use_pcie_bridge_dma_alias);
- 
- /*
-+ * MIC x200 NTB forwards PCIe traffic using multiple alien RIDs. They have to
-+ * be added as aliases to the DMA device in order to allow buffer access
-+ * when IOMMU is enabled. Following devfns have to match RIT-LUT table
-+ * programmed in the EEPROM.
-+ */
-+static void quirk_mic_x200_dma_alias(struct pci_dev *pdev)
-+{
-+	pci_add_dma_alias(pdev, PCI_DEVFN(0x10, 0x0));
-+	pci_add_dma_alias(pdev, PCI_DEVFN(0x11, 0x0));
-+	pci_add_dma_alias(pdev, PCI_DEVFN(0x12, 0x3));
-+}
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2260, quirk_mic_x200_dma_alias);
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2264, quirk_mic_x200_dma_alias);
-+
-+/*
-  * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
-  * class code.  Fix it.
-  */
+By only extending the API, I can avoid any changes to other users, and
+they can convert to using the rcache with its PFN-based API if the
+need arises.
