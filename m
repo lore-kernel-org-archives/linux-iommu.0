@@ -1,14 +1,14 @@
 From: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
-Subject: Re: [PATCH 4/7] iommu: only unmap mapped entries
-Date: Tue, 12 Apr 2016 18:08:29 +0300
-Message-ID: <CAHMfzJmVpNun72V0Zv07N00EA6zL_5rMBbV-Q4sj65BiB=y=XA@mail.gmail.com>
-References: <20151228161647.GA27885@cs.technion.ac.il>
-	<CAN+hb0W1MQHD5+rmRS6v4x2q9RrnmsXSad=YDxUaOPDUYO4M8w@mail.gmail.com>
+Subject: Re: [PATCH 6/7] iommu: change intel-iommu to use IOVA frame numbers
+Date: Tue, 12 Apr 2016 18:12:24 +0300
+Message-ID: <CAHMfzJkqrtPT3QvG-myZchp8jUZ3E5X_CDa3yaYPpAQ+BR4LNQ@mail.gmail.com>
+References: <20151228161724.GA27916@cs.technion.ac.il>
+	<570CD405.7010403@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAN+hb0W1MQHD5+rmRS6v4x2q9RrnmsXSad=YDxUaOPDUYO4M8w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <570CD405.7010403-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,44 +18,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Benjamin Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Dan Tsafrir <dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Benjamin Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Dan Tsafrir <dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 11, 2016 at 11:15 PM, Benjamin Serebrin via iommu
-<iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org> wrote:
+On Tue, Apr 12, 2016 at 1:55 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
 
-> @@ -3542,6 +3543,7 @@ static void flush_unmaps(struct
-> deferred_flush_data *flush_data)
->   struct deferred_flush_entry *entry =
->   &flush_table->entries[j];
->   struct iova *iova = entry->iova;
-> + unsigned long nrpages = entry->nrpages;
+>> Make intel-iommu map/unmap/invalidate work with IOVA pfns instead of
+>> pointers to "struct iova". This avoids using the iova struct from the IOVA
+>> red-black tree and the resulting explicit find_iova() on unmap.
+
+[...]
+
+>> diff --git a/include/linux/iova.h b/include/linux/iova.h
+>> index 92f7177..efecee0 100644
+>> --- a/include/linux/iova.h
+>> +++ b/include/linux/iova.h
+>> @@ -75,7 +75,7 @@ struct iova *alloc_iova_mem(void);
+>>   void free_iova_mem(struct iova *iova);
+>>   void free_iova(struct iova_domain *iovad, unsigned long pfn);
+>>   void __free_iova(struct iova_domain *iovad, struct iova *iova);
+>> -struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
+>> +unsigned long alloc_iova(struct iova_domain *iovad, unsigned long size,
+>>         unsigned long limit_pfn,
+>>         bool size_aligned);
+>>   struct iova *reserve_iova(struct iova_domain *iovad, unsigned long
+>> pfn_lo,
 >
-> Is this always correct, if dev_addr isn't page aligned? If dev_addr is
-> page aligned and size = 4096?  I think there's a deeper bug in the
-> aligned_nrpages() function that we should address outside this patch.
-
-I think it's correct.  aligned_nrpages() masks off the PFN and then
-aligns up to the MM page size, and this works for both these examples.
-
-> @@ -3644,7 +3649,16 @@ static void intel_unmap_sg(struct device *dev,
-> struct scatterlist *sglist,
->                            int nelems, enum dma_data_direction dir,
->                            struct dma_attrs *attrs)
->  {
-> -       intel_unmap(dev, sglist[0].dma_address);
-> +       unsigned long nrpages = 0;
-> +       dma_addr_t startaddr = sglist[0].dma_address - sglist[0].offset;
-> +       struct scatterlist *sg;
-> +       int i;
-> +
-> +       for_each_sg(sglist, sg, nelems, i) {
-> +               nrpages += aligned_nrpages(sg->offset, sg->length);
-> +       }
-> +
-> +       intel_unmap(dev, startaddr, nrpages << VTD_PAGE_SHIFT);
 >
-> Does this need math to adjust if startaddr isn't page aligned?
+> Making the internals more efficient is no bad thing, but changing the
+> external interface to the IOVA library like this breaks at least
+> dma-iommu.c, thus stops arm64 from building.
 
-Don't think so.  It just reverses the intel_map_sg() flow.
+Good point.  I will add new versions of alloc_iova() and free_iova()
+for this functionality and make intel-iommu uses them, so as to not
+break other users.
