@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 3/7] iommu/arm-smmu: Work around MMU-500 prefetch errata
-Date: Wed, 13 Apr 2016 18:12:59 +0100
-Message-ID: <0484444b6257bfb6adb68405a72c64fc4fc98142.1460391217.git.robin.murphy@arm.com>
+Subject: [PATCH 6/7] iommu/arm-smmu: Decouple context format from kernel config
+Date: Wed, 13 Apr 2016 18:13:02 +0100
+Message-ID: <173006777218859d1671ae517c70592c6c02f630.1460391217.git.robin.murphy@arm.com>
 References: <cover.1460391217.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,100 +18,235 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-MMU-500 erratum #841119 is tickled by a particular set of circumstances
-interacting with the next-page prefetcher. Since said prefetcher is
-quite dumb and actually detrimental to performance in some cases (by
-causing unwanted TLB evictions for non-sequential access patterns), we
-lose very little by turning it off, and what we gain is a guarantee that
-the erratum is never hit.
+The way the driver currently forces an AArch32 or AArch64 context format
+based on the kernel config and SMMU architecture version is suboptimal,
+in that it makes it very hard to support oddball mix-and-match cases
+like the SMMUv1 64KB supplement, or situations where the reduced table
+depth of an AArch32 short descriptor context may be desirable under an
+AArch64 kernel. It also only happens to work on current implementations
+which do support all the relevant formats.
 
-As a bonus, the same workaround will also prevent erratum #826419 once
-v7 short descriptor support is implemented.
+Introduce an explicit notion of context format, so we can manage that
+independently and get rid of the inflexible #ifdeffery.
 
-CC: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-CC: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- Documentation/arm64/silicon-errata.txt |  1 +
- drivers/iommu/arm-smmu.c               | 16 +++++++++++++++-
- 2 files changed, 16 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu.c | 98 +++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 80 insertions(+), 18 deletions(-)
 
-diff --git a/Documentation/arm64/silicon-errata.txt b/Documentation/arm64/silicon-errata.txt
-index 806f91c..c6938e5 100644
---- a/Documentation/arm64/silicon-errata.txt
-+++ b/Documentation/arm64/silicon-errata.txt
-@@ -53,6 +53,7 @@ stable kernels.
- | ARM            | Cortex-A57      | #832075         | ARM64_ERRATUM_832075    |
- | ARM            | Cortex-A57      | #852523         | N/A                     |
- | ARM            | Cortex-A57      | #834220         | ARM64_ERRATUM_834220    |
-+| ARM            | MMU-500         | #841119,#826419 | N/A                     |
- |                |                 |                 |                         |
- | Cavium         | ThunderX ITS    | #22375, #24313  | CAVIUM_ERRATUM_22375    |
- | Cavium         | ThunderX GICv3  | #23154          | CAVIUM_ERRATUM_23154    |
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index d8bc20a..085fc8d 100644
+index acff332..1d4285f 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -203,6 +203,7 @@
- #define ARM_SMMU_CB(smmu, n)		((n) * (1 << (smmu)->pgshift))
+@@ -117,6 +117,8 @@
+ #define ID0_NTS				(1 << 28)
+ #define ID0_SMS				(1 << 27)
+ #define ID0_ATOSNS			(1 << 26)
++#define ID0_PTFS_NO_AARCH32		(1 << 25)
++#define ID0_PTFS_NO_AARCH32S		(1 << 24)
+ #define ID0_CTTW			(1 << 14)
+ #define ID0_NUMIRPT_SHIFT		16
+ #define ID0_NUMIRPT_MASK		0xff
+@@ -317,6 +319,11 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
+ #define ARM_SMMU_FEAT_TRANS_OPS		(1 << 5)
+ #define ARM_SMMU_FEAT_VMID16		(1 << 6)
++#define ARM_SMMU_FEAT_FMT_AARCH64_4K	(1 << 7)
++#define ARM_SMMU_FEAT_FMT_AARCH64_16K	(1 << 8)
++#define ARM_SMMU_FEAT_FMT_AARCH64_64K	(1 << 9)
++#define ARM_SMMU_FEAT_FMT_AARCH32_L	(1 << 10)
++#define ARM_SMMU_FEAT_FMT_AARCH32_S	(1 << 11)
+ 	u32				features;
  
- #define ARM_SMMU_CB_SCTLR		0x0
-+#define ARM_SMMU_CB_ACTLR		0x4
- #define ARM_SMMU_CB_RESUME		0x8
- #define ARM_SMMU_CB_TTBCR2		0x10
- #define ARM_SMMU_CB_TTBR0		0x20
-@@ -234,6 +235,8 @@
- #define SCTLR_M				(1 << 0)
- #define SCTLR_EAE_SBOP			(SCTLR_AFE | SCTLR_TRE)
- 
-+#define ARM_MMU500_ACTLR_CPRE		(1 << 1)
-+
- #define CB_PAR_F			(1 << 0)
- 
- #define ATSR_ACTIVE			(1 << 0)
-@@ -280,6 +283,7 @@ enum arm_smmu_arch_version {
- 
- enum arm_smmu_implementation {
- 	GENERIC_SMMU,
-+	ARM_MMU500,
- 	CAVIUM_SMMUV2,
+ #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
+@@ -346,10 +353,18 @@ struct arm_smmu_device {
+ 	u32				cavium_id_base; /* Specific to Cavium */
  };
  
-@@ -1517,6 +1521,15 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 		cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, i);
- 		writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
- 		writel_relaxed(FSR_FAULT, cb_base + ARM_SMMU_CB_FSR);
-+		/*
-+		 * Disable MMU-500's not-particularly-beneficial next-page
-+		 * prefetcher for the sake of errata #841119 and #826419.
-+		 */
-+		if (smmu->model == ARM_MMU500) {
-+			reg = readl_relaxed(cb_base + ARM_SMMU_CB_ACTLR);
-+			reg &= ~ARM_MMU500_ACTLR_CPRE;
-+			writel_relaxed(reg, cb_base + ARM_SMMU_CB_ACTLR);
++enum arm_smmu_context_fmt {
++	ARM_SMMU_CTX_FMT_NONE,
++	ARM_SMMU_CTX_FMT_AARCH64,
++	ARM_SMMU_CTX_FMT_AARCH32_L,
++	ARM_SMMU_CTX_FMT_AARCH32_S,
++};
++
+ struct arm_smmu_cfg {
+ 	u8				cbndx;
+ 	u8				irptndx;
+ 	u32				cbar;
++	enum arm_smmu_context_fmt	fmt;
+ };
+ #define INVALID_IRPTNDX			0xff
+ 
+@@ -619,14 +634,13 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 		reg = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+ 		reg += leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
+ 
+-		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
++		if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
+ 			iova &= ~12UL;
+ 			iova |= ARM_SMMU_CB_ASID(smmu, cfg);
+ 			do {
+ 				writel_relaxed(iova, reg);
+ 				iova += granule;
+ 			} while (size -= granule);
+-#ifdef CONFIG_64BIT
+ 		} else {
+ 			iova >>= 12;
+ 			iova |= (u64)ARM_SMMU_CB_ASID(smmu, cfg) << 48;
+@@ -634,9 +648,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 				writeq_relaxed(iova, reg);
+ 				iova += granule >> 12;
+ 			} while (size -= granule);
+-#endif
+ 		}
+-#ifdef CONFIG_64BIT
+ 	} else if (smmu->version == ARM_SMMU_V2) {
+ 		reg = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+ 		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
+@@ -646,7 +658,6 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 			smmu_write_atomic_lq(iova, reg);
+ 			iova += granule >> 12;
+ 		} while (size -= granule);
+-#endif
+ 	} else {
+ 		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
+ 		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg), reg);
+@@ -745,11 +756,10 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+ 
+ 	if (smmu->version > ARM_SMMU_V1) {
+-#ifdef CONFIG_64BIT
+-		reg = CBA2R_RW64_64BIT;
+-#else
+-		reg = CBA2R_RW64_32BIT;
+-#endif
++		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
++			reg = CBA2R_RW64_64BIT;
++		else
++			reg = CBA2R_RW64_32BIT;
+ 		/* 16-bit VMIDs live in CBA2R */
+ 		if (smmu->features & ARM_SMMU_FEAT_VMID16)
+ 			reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBA2R_VMID_SHIFT;
+@@ -860,16 +870,48 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
+ 		smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+ 
++	/*
++	 * Choosing a suitable context format is even more fiddly. Until we
++	 * grow some way for the caller to express a preference, just aim for
++	 * the closest match to the CPU format out of what we might have.
++	 */
++	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_L)
++		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH32_L;
++	if (IS_ENABLED(CONFIG_64BIT) || cfg->fmt == ARM_SMMU_CTX_FMT_NONE) {
++		switch (PAGE_SIZE) {
++		case SZ_64K:
++			if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_64K) {
++				cfg->fmt = ARM_SMMU_CTX_FMT_AARCH64;
++				break;
++			} /* else fall through */
++		case SZ_16K:
++			if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_16K) {
++				cfg->fmt = ARM_SMMU_CTX_FMT_AARCH64;
++				break;
++			} /* else fall through */
++		case SZ_4K:
++			if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_4K)
++				cfg->fmt = ARM_SMMU_CTX_FMT_AARCH64;
 +		}
++	}
++	if (cfg->fmt == ARM_SMMU_CTX_FMT_NONE) {
++		ret = -EINVAL;
++		goto out_unlock;
++	}
++
+ 	switch (smmu_domain->stage) {
+ 	case ARM_SMMU_DOMAIN_S1:
+ 		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
+ 		start = smmu->num_s2_context_banks;
+ 		ias = smmu->va_size;
+ 		oas = smmu->ipa_size;
+-		if (IS_ENABLED(CONFIG_64BIT))
++		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
+ 			fmt = ARM_64_LPAE_S1;
+-		else
++		} else {
+ 			fmt = ARM_32_LPAE_S1;
++			ias = min(ias, 32UL);
++			oas = min(oas, 40UL);
++		}
+ 		break;
+ 	case ARM_SMMU_DOMAIN_NESTED:
+ 		/*
+@@ -881,10 +923,13 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 		start = 0;
+ 		ias = smmu->ipa_size;
+ 		oas = smmu->pa_size;
+-		if (IS_ENABLED(CONFIG_64BIT))
++		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
+ 			fmt = ARM_64_LPAE_S2;
+-		else
++		} else {
+ 			fmt = ARM_32_LPAE_S2;
++			ias = min(ias, 40UL);
++			oas = min(oas, 40UL);
++		}
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+@@ -1670,6 +1715,12 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 					   ID0_NUMSIDB_MASK;
  	}
  
- 	/* Invalidate the TLB, just in case */
-@@ -1762,6 +1775,7 @@ static struct arm_smmu_match_data name = { .version = ver, .model = imp }
++	if (smmu->version < ARM_SMMU_V2 || !(id & ID0_PTFS_NO_AARCH32)) {
++		smmu->features |= ARM_SMMU_FEAT_FMT_AARCH32_L;
++		if (!(id & ID0_PTFS_NO_AARCH32S))
++			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH32_S;
++	}
++
+ 	/* ID1 */
+ 	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID1);
+ 	smmu->pgshift = (id & ID1_PAGESIZE) ? 16 : 12;
+@@ -1725,7 +1776,6 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
  
- ARM_SMMU_MATCH_DATA(smmu_generic_v1, ARM_SMMU_V1, GENERIC_SMMU);
- ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
-+ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
- ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
+ 	if (smmu->version == ARM_SMMU_V1) {
+ 		smmu->va_size = smmu->ipa_size;
+-		size = SZ_4K | SZ_2M | SZ_1G;
+ 	} else {
+ 		size = (id >> ID2_UBS_SHIFT) & ID2_UBS_MASK;
+ 		smmu->va_size = arm_smmu_id_size_to_bits(size);
+@@ -1734,13 +1784,25 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ #endif
+ 		size = 0;
+ 		if (id & ID2_PTFS_4K)
+-			size |= SZ_4K | SZ_2M | SZ_1G;
++			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_4K;
+ 		if (id & ID2_PTFS_16K)
+-			size |= SZ_16K | SZ_32M;
++			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_16K;
+ 		if (id & ID2_PTFS_64K)
+-			size |= SZ_64K | SZ_512M;
++			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_64K;
+ 	}
  
- static const struct of_device_id arm_smmu_of_match[] = {
-@@ -1769,7 +1783,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,smmu-v2", .data = &smmu_generic_v2 },
- 	{ .compatible = "arm,mmu-400", .data = &smmu_generic_v1 },
- 	{ .compatible = "arm,mmu-401", .data = &smmu_generic_v1 },
--	{ .compatible = "arm,mmu-500", .data = &smmu_generic_v2 },
-+	{ .compatible = "arm,mmu-500", .data = &arm_mmu500 },
- 	{ .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
- 	{ },
- };
++	/* Now we've corralled the various formats, what'll it do? */
++	size = 0;
++	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_S)
++		size |= SZ_4K | SZ_64K | SZ_1M | SZ_16M;
++	if (smmu->features &
++	    (ARM_SMMU_FEAT_FMT_AARCH32_L | ARM_SMMU_FEAT_FMT_AARCH64_4K))
++		size |= SZ_4K | SZ_2M | SZ_1G;
++	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_16K)
++		size |= SZ_16K | SZ_32M;
++	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_64K)
++		size |= SZ_64K | SZ_512M;
++
+ 	arm_smmu_ops.pgsize_bitmap &= size;
+ 	dev_notice(smmu->dev, "\tSupported page sizes: 0x%08lx\n", size);
+ 
 -- 
 2.7.3.dirty
