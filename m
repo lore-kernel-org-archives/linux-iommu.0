@@ -1,12 +1,14 @@
 From: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
-Subject: [PATCH v2 0/7] Intel IOMMU scalability improvements
-Date: Wed, 13 Apr 2016 21:50:49 +0300
-Message-ID: <cover.1460548546.git.mad@cs.technion.ac.il>
+Subject: [PATCH v2 1/7] iommu: refactoring of deferred flush entries
+Date: Wed, 13 Apr 2016 21:51:11 +0300
+Message-ID: <351b32f8a0f8a477c0f89e8537580d120707bde8.1460548546.git.mad@cs.technion.ac.il>
+References: <cover.1460548546.git.mad@cs.technion.ac.il>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
+In-Reply-To: <cover.1460548546.git.mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,66 +22,121 @@ To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@p
 Cc: serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org, omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org, shli-b10kYP2dOMg@public.gmane.org, gvdl-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, Kernel-team-b10kYP2dOMg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patchset improves the scalability of the Intel IOMMU code by
-resolving two spinlock bottlenecks, yielding up to ~5x performance
-improvement and approaching iommu=off performance.
+From: Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
 
-For example, here's the throughput obtained by 16 memcached instances
-running on a 16-core Sandy Bridge system, accessed using memslap on
-another machine that has iommu=off, using the default memslap config
-(64-byte keys, 1024-byte values, and 10%/90% SET/GET ops):
+Currently, deferred flushes' info is striped between several lists in
+the flush tables. Instead, move all information about a specific flush
+to a single entry in this table.
 
-    stock iommu=off:
-       990,803 memcached transactions/sec (=100%, median of 10 runs).
-    stock iommu=on:
-       221,416 memcached transactions/sec (=22%).
-       [61.70%    0.63%  memcached       [kernel.kallsyms]      [k] _raw_spin_lock_irqsave]
-    patched iommu=on:
-       963,457 memcached transactions/sec (=97%).
-       [1.04%     0.94%  memcached       [kernel.kallsyms]      [k] _raw_spin_lock_irqsave]
+This patch does not introduce any functional change.
 
-The two resolved spinlocks:
+Signed-off-by: Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
+[mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org: rebased and reworded the commit message]
+Signed-off-by: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c | 48 +++++++++++++++++++++++++++------------------
+ 1 file changed, 29 insertions(+), 19 deletions(-)
 
- - Deferred IOTLB invalidations are batched in a global data structure
-   and serialized under a spinlock (add_unmap() & flush_unmaps()); this
-   patchset batches IOTLB invalidations in a per-CPU data structure.
-
- - IOVA management (alloc_iova() & __free_iova()) is serialized under
-   the rbtree spinlock; this patchset adds per-CPU caches of allocated
-   IOVAs so that the rbtree doesn't get accessed frequently. (Adding a
-   cache above the existing IOVA allocator is less intrusive than dynamic
-   identity mapping and helps keep IOMMU page table usage low; see
-   Patch 7.)
-
-The paper "Utilizing the IOMMU Scalably" (presented at the 2015 USENIX
-Annual Technical Conference) contains many more details and experiments:
-
-  https://www.usenix.org/system/files/conference/atc15/atc15-paper-peleg.pdf
-
-v2:
-
- * Extend IOVA API instead of modifying it, to not break the API's other 
-   non-Intel callers.
- * Invalidate all per-cpu invalidations if one CPU hits its per-cpu limit,
-   so that we don't defer invalidations more than before.
- * Smaller cap on per-CPU cache size, to consume less of the IOVA space.
- * Free resources and perform IOTLB invalidations when a CPU is hot-unplugged.
-
-
-Omer Peleg (7):
-  iommu: refactoring of deferred flush entries
-  iommu: per-cpu deferred invalidation queues
-  iommu: correct flush_unmaps pfn usage
-  iommu: only unmap mapped entries
-  iommu: avoid dev iotlb logic in intel-iommu for domains with no dev
-    iotlbs
-  iommu: change intel-iommu to use IOVA frame numbers
-  iommu: introduce per-cpu caching to iova allocation
-
- drivers/iommu/intel-iommu.c | 318 ++++++++++++++++++++++++++-----------
- drivers/iommu/iova.c        | 372 +++++++++++++++++++++++++++++++++++++++++---
- include/linux/iova.h        |  23 ++-
- 3 files changed, 593 insertions(+), 120 deletions(-)
-
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index b2bfb95..f66a45a 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -458,15 +458,19 @@ static void flush_unmaps_timeout(unsigned long data);
+ 
+ static DEFINE_TIMER(unmap_timer,  flush_unmaps_timeout, 0, 0);
+ 
++struct deferred_flush_entry {
++	struct iova *iova;
++	struct dmar_domain *domain;
++	struct page *freelist;
++};
++
+ #define HIGH_WATER_MARK 250
+-struct deferred_flush_tables {
++struct deferred_flush_table {
+ 	int next;
+-	struct iova *iova[HIGH_WATER_MARK];
+-	struct dmar_domain *domain[HIGH_WATER_MARK];
+-	struct page *freelist[HIGH_WATER_MARK];
++	struct deferred_flush_entry entries[HIGH_WATER_MARK];
+ };
+ 
+-static struct deferred_flush_tables *deferred_flush;
++static struct deferred_flush_table *deferred_flush;
+ 
+ /* bitmap for indexing intel_iommus */
+ static int g_num_of_iommus;
+@@ -3111,7 +3115,7 @@ static int __init init_dmars(void)
+ 	}
+ 
+ 	deferred_flush = kzalloc(g_num_of_iommus *
+-		sizeof(struct deferred_flush_tables), GFP_KERNEL);
++		sizeof(struct deferred_flush_table), GFP_KERNEL);
+ 	if (!deferred_flush) {
+ 		ret = -ENOMEM;
+ 		goto free_g_iommus;
+@@ -3518,22 +3522,25 @@ static void flush_unmaps(void)
+ 					 DMA_TLB_GLOBAL_FLUSH);
+ 		for (j = 0; j < deferred_flush[i].next; j++) {
+ 			unsigned long mask;
+-			struct iova *iova = deferred_flush[i].iova[j];
+-			struct dmar_domain *domain = deferred_flush[i].domain[j];
++			struct deferred_flush_entry *entry =
++						&deferred_flush->entries[j];
++			struct iova *iova = entry->iova;
++			struct dmar_domain *domain = entry->domain;
++			struct page *freelist = entry->freelist;
+ 
+ 			/* On real hardware multiple invalidations are expensive */
+ 			if (cap_caching_mode(iommu->cap))
+ 				iommu_flush_iotlb_psi(iommu, domain,
+ 					iova->pfn_lo, iova_size(iova),
+-					!deferred_flush[i].freelist[j], 0);
++					!freelist, 0);
+ 			else {
+ 				mask = ilog2(mm_to_dma_pfn(iova_size(iova)));
+-				iommu_flush_dev_iotlb(deferred_flush[i].domain[j],
++				iommu_flush_dev_iotlb(domain,
+ 						(uint64_t)iova->pfn_lo << PAGE_SHIFT, mask);
+ 			}
+-			__free_iova(&deferred_flush[i].domain[j]->iovad, iova);
+-			if (deferred_flush[i].freelist[j])
+-				dma_free_pagelist(deferred_flush[i].freelist[j]);
++			__free_iova(&domain->iovad, iova);
++			if (freelist)
++				dma_free_pagelist(freelist);
+ 		}
+ 		deferred_flush[i].next = 0;
+ 	}
+@@ -3553,8 +3560,9 @@ static void flush_unmaps_timeout(unsigned long data)
+ static void add_unmap(struct dmar_domain *dom, struct iova *iova, struct page *freelist)
+ {
+ 	unsigned long flags;
+-	int next, iommu_id;
++	int entry_id, iommu_id;
+ 	struct intel_iommu *iommu;
++	struct deferred_flush_entry *entry;
+ 
+ 	spin_lock_irqsave(&async_umap_flush_lock, flags);
+ 	if (list_size == HIGH_WATER_MARK)
+@@ -3563,11 +3571,13 @@ static void add_unmap(struct dmar_domain *dom, struct iova *iova, struct page *f
+ 	iommu = domain_get_iommu(dom);
+ 	iommu_id = iommu->seq_id;
+ 
+-	next = deferred_flush[iommu_id].next;
+-	deferred_flush[iommu_id].domain[next] = dom;
+-	deferred_flush[iommu_id].iova[next] = iova;
+-	deferred_flush[iommu_id].freelist[next] = freelist;
+-	deferred_flush[iommu_id].next++;
++	entry_id = deferred_flush[iommu_id].next;
++	++(deferred_flush[iommu_id].next);
++
++	entry = &deferred_flush[iommu_id].entries[entry_id];
++	entry->domain = dom;
++	entry->iova = iova;
++	entry->freelist = freelist;
+ 
+ 	if (!timer_on) {
+ 		mod_timer(&unmap_timer, jiffies + msecs_to_jiffies(10));
 -- 
 1.9.1
