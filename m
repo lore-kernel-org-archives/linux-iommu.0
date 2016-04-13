@@ -1,14 +1,14 @@
 From: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
-Subject: Re: [PATCH 2/7] iommu: per-cpu deferred invalidation queues
-Date: Wed, 13 Apr 2016 14:32:38 +0300
-Message-ID: <CAHMfzJnfw_cAJHxxPS0dF1qboGcjU_ZAvEotGmd+xnRXgWNmfA@mail.gmail.com>
-References: <20151228161603.GA27859@cs.technion.ac.il>
-	<CAN+hb0Wrzfyp7b9iE-FqcMhR+kP+Aq=OJDF8LkVKJb_jOGVaBQ@mail.gmail.com>
+Subject: Re: [PATCH 7/7] iommu: introduce per-cpu caching to iova allocation
+Date: Wed, 13 Apr 2016 14:38:19 +0300
+Message-ID: <CAHMfzJmn4WMe+6t8-0hNUHr0agxAcVW4aUzmo5uw_h1v=kA-xw@mail.gmail.com>
+References: <20151228161743.GA27929@cs.technion.ac.il>
+	<CAN+hb0W=jo00enS_GY7fxHQLD5hrJjP77yf7NyREK_wY90yixw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAN+hb0Wrzfyp7b9iE-FqcMhR+kP+Aq=OJDF8LkVKJb_jOGVaBQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAN+hb0W=jo00enS_GY7fxHQLD5hrJjP77yf7NyREK_wY90yixw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,13 +22,31 @@ To: Benjamin Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Dan Tsafrir <dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 11, 2016 at 11:10 PM, Benjamin Serebrin via iommu
+On Tue, Apr 12, 2016 at 12:54 AM, Benjamin Serebrin via iommu
 <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org> wrote:
-> Reviewed-by: Ben Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
->
-> Commit message nit: s/defererred/deferred/
->
-> intel-iommu.c Line 3615: I'd suggest making the 10ms into a #defined constant.
 
-This should probably be done in an independent patch for cleanups.  I
-don't like "sneaking in" cleanups when making functional changes.
+>> +/*
+>> + * Magazine caches for IOVA ranges.  For an introduction to magazines,
+>> + * see the USENIX 2001 paper "Magazines and Vmem: Extending the Slab
+>> + * Allocator to Many CPUs and Arbitrary Resources" by Bonwick and Adams.
+>
+> My colleague gvdl@google suggests: It'd be nice to insert some
+> comments on the ways the code here diverges from the paper.  (For
+> example, the magazines aren't pre-populated.)
+
+I'll describe any such changes.  But I don't think the paper says
+magazine are pre-populated: "We never allocate full magazines
+explicitly [...] it suffices to create empty magazines and let full
+ones emerge as a side effect of normal allocation/free traffic"
+(Section 3.3).
+
+>> + */
+>> +
+>> +#define IOVA_MAG_SIZE 128
+>
+> Does this belong in iova.h?
+
+It's an implementation detail and not part of the public interface, so
+I'd rather keep it here.
+
+Thanks for all the reviews!
