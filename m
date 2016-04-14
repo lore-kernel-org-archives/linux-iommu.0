@@ -1,8 +1,8 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 02/11] drivers: acpi: iort: add support for IOMMU
-	registration
-Date: Thu, 14 Apr 2016 18:25:34 +0100
-Message-ID: <1460654743-7896-3-git-send-email-lorenzo.pieralisi@arm.com>
+Subject: [RFC PATCH 01/11] drivers: acpi: iort: fix struct pci_dev compiler
+	warnings
+Date: Thu, 14 Apr 2016 18:25:33 +0100
+Message-ID: <1460654743-7896-2-git-send-email-lorenzo.pieralisi@arm.com>
 References: <1460654743-7896-1-git-send-email-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,101 +19,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The ACPI IORT table provide entries for IOMMU (aka SMMU in ARM world)
-components that allow creating the kernel data structures required to
-probe and initialize the IOMMU devices.
+When the kernel is configured with no IORT support the compilation
+issues the following warnings:
 
-This patch provides support in the IORT kernel code to register IOMMU
-components.
+In file included from drivers/irqchip/irq-gic-v3-its-pci-msi.c:19:0:
+include/linux/iort.h:28:33: warning: 'struct pci_dev' declared inside
+parameter list
+ u32 iort_pci_get_msi_rid(struct pci_dev *pdev, u32 req_id);
+                                 ^
+include/linux/iort.h:28:33: warning: its scope is only this definition
+or declaration, which is probably not what you want
+include/linux/iort.h:29:50: warning: 'struct pci_dev' declared inside
+parameter list
+ struct fwnode_handle *iort_pci_get_domain(struct pci_dev *pdev, u32
+req_id);
+
+This patch fixes the warnings with a struct pci_dev forward declaration
+in the IORT header file.
 
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
 ---
- drivers/acpi/iort.c  | 42 ++++++++++++++++++++++++++++++++++++++++++
- include/linux/iort.h |  2 ++
- 2 files changed, 44 insertions(+)
+ include/linux/iort.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/acpi/iort.c b/drivers/acpi/iort.c
-index 3119683..98db580 100644
---- a/drivers/acpi/iort.c
-+++ b/drivers/acpi/iort.c
-@@ -19,10 +19,13 @@
- #define pr_fmt(fmt)	"ACPI: IORT: " fmt
- 
- #include <linux/export.h>
-+#include <linux/iommu.h>
- #include <linux/iort.h>
- #include <linux/irqdomain.h>
- #include <linux/kernel.h>
-+#include <linux/list.h>
- #include <linux/pci.h>
-+#include <linux/slab.h>
- 
- struct iort_its_msi_chip {
- 	struct list_head	list;
-@@ -30,6 +33,45 @@ struct iort_its_msi_chip {
- 	u32			translation_id;
- };
- 
-+struct iort_iommu_node {
-+	struct list_head list;
-+	struct iommu_ops *ops;
-+	struct acpi_iort_node *node;
-+	struct fwnode_handle	*fwnode;
-+};
-+static LIST_HEAD(iort_iommu_list);
-+static DEFINE_SPINLOCK(iort_iommu_lock);
-+
-+/**
-+ * iort_iommu_set_node - Create iort_mmu_node and use it to register
-+ *			 iommu structures on iort_iommu_list.
-+ *
-+ * @ops: IOMMU operations
-+ * @node: IORT table node associated with the IOMMU
-+ * @fwnode: fwnode_handle associated with the IOMMU
-+ *
-+ * Returns: 0 on success
-+ *          -ENOMEM on failure
-+ */
-+int iort_iommu_set_node(struct iommu_ops *ops, struct acpi_iort_node *node,
-+			struct fwnode_handle *fwnode)
-+{
-+	struct iort_iommu_node *iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
-+
-+	if (WARN_ON(!iommu))
-+		return -ENOMEM;
-+
-+	INIT_LIST_HEAD(&iommu->list);
-+	iommu->ops = ops;
-+	iommu->node = node;
-+	iommu->fwnode = fwnode;
-+	spin_lock(&iort_iommu_lock);
-+	list_add_tail(&iommu->list, &iort_iommu_list);
-+	spin_unlock(&iort_iommu_lock);
-+
-+	return 0;
-+}
-+
- typedef acpi_status (*iort_find_node_callback)
- 	(struct acpi_iort_node *node, void *context);
- 
 diff --git a/include/linux/iort.h b/include/linux/iort.h
-index b15fe1a..148d9a1 100644
+index 7441941..b15fe1a 100644
 --- a/include/linux/iort.h
 +++ b/include/linux/iort.h
-@@ -28,5 +28,7 @@ void iort_deregister_domain_token(int trans_id);
- struct fwnode_handle *iort_its_find_domain_token(int trans_id);
- u32 iort_pci_get_msi_rid(struct pci_dev *pdev, u32 req_id);
- struct fwnode_handle *iort_pci_get_domain(struct pci_dev *pdev, u32 req_id);
-+int iort_iommu_set_node(struct iommu_ops *ops, struct acpi_iort_node *node,
-+			struct fwnode_handle *fwnode);
+@@ -21,6 +21,7 @@
  
- #endif /* __IORT_H__ */
+ #include <linux/acpi.h>
+ 
++struct pci_dev;
+ struct fwnode_handle;
+ int iort_register_domain_token(int trans_id, struct fwnode_handle *fw_node);
+ void iort_deregister_domain_token(int trans_id);
 -- 
 2.6.4
