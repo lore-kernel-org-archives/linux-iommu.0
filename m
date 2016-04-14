@@ -1,8 +1,8 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 05/11] drivers: iommu: arm-smmu: split probe functions
-	into DT/generic portions
-Date: Thu, 14 Apr 2016 18:25:37 +0100
-Message-ID: <1460654743-7896-6-git-send-email-lorenzo.pieralisi@arm.com>
+Subject: [RFC PATCH 06/11] drivers: iommu: make of_xlate() interface DT
+	agnostic
+Date: Thu, 14 Apr 2016 18:25:38 +0100
+Message-ID: <1460654743-7896-7-git-send-email-lorenzo.pieralisi@arm.com>
 References: <1460654743-7896-1-git-send-email-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,172 +19,260 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Current ARM SMMU probe functions intermingle HW and DT probing
-in the initialization functions to detect and programme the ARM SMMU
-driver features. In order to allow probing the ARM SMMU with other
-firmwares than DT, this patch splits the ARM SMMU init functions into
-DT and HW specific portions so that other FW interfaces (ie ACPI) can
-reuse the HW probing functions and skip the DT portion accordingly.
+On systems booting with ACPI, the IOMMU drivers require the same
+kind of id mapping carried out with a DT tree through the of_xlate()
+API in order to map devices identifiers to IOMMU ones.
 
-This patch implements no functional change, only code reshuffling.
+On ACPI systems, since DT nodes are not present (ie struct
+device.of_node == NULL), to identify the device requiring the translation
+the struct device_node (and the structure used to pass translation
+information - struct of_phandle_args - that contains a struct device_node)
+cannot be used, so a generic translation structure to be used for IOMMU
+mapping should be defined, based on the firmware agnostic fwnode_handle
+type.
+
+This patch mechanically refactors/renames the of_xlate API to make
+it DT agnostic, by declaring a new type (struct iommu_fwspec), that
+allows the kernel to pass a device identifier (fwnode - which can
+represent either a DT node or an IOMMU FW node) and by changing the
+of_xlate signature so that it does not take anymore the DT specific
+of_phandle_args argument and replaces it with the DT agnostic
+iommu_fwspec one.
 
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 80 +++++++++++++++++++++++++++++++-----------------
- 1 file changed, 52 insertions(+), 28 deletions(-)
+ drivers/iommu/arm-smmu.c     | 12 +++++++-----
+ drivers/iommu/exynos-iommu.c | 11 +++++++----
+ drivers/iommu/mtk_iommu.c    | 13 ++++++++-----
+ drivers/iommu/of_iommu.c     | 20 ++++++++++++++++++--
+ include/linux/iommu.h        | 24 ++++++++++++++++++++----
+ 5 files changed, 60 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 2d65de4..6c42770 100644
+index 6c42770..84bcff7 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -1551,7 +1551,7 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 	unsigned long size;
- 	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
- 	u32 id;
--	bool cttw_dt, cttw_reg;
-+	bool cttw_reg, cttw_fw = smmu->features & ARM_SMMU_FEAT_COHERENT_WALK;
- 
- 	dev_notice(smmu->dev, "probing hardware configuration...\n");
- 	dev_notice(smmu->dev, "SMMUv%d with:\n", smmu->version);
-@@ -1593,20 +1593,18 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 
- 	/*
- 	 * In order for DMA API calls to work properly, we must defer to what
--	 * the DT says about coherency, regardless of what the hardware claims.
-+	 * the FW says about coherency, regardless of what the hardware
-+	 * claims.
- 	 * Fortunately, this also opens up a workaround for systems where the
- 	 * ID register value has ended up configured incorrectly.
- 	 */
--	cttw_dt = of_dma_is_coherent(smmu->dev->of_node);
- 	cttw_reg = !!(id & ID0_CTTW);
--	if (cttw_dt)
--		smmu->features |= ARM_SMMU_FEAT_COHERENT_WALK;
--	if (cttw_dt || cttw_reg)
-+	if (cttw_fw || cttw_reg)
- 		dev_notice(smmu->dev, "\t%scoherent table walk\n",
--			   cttw_dt ? "" : "non-");
--	if (cttw_dt != cttw_reg)
-+			   cttw_fw ? "" : "non-");
-+	if (cttw_fw != cttw_reg)
- 		dev_notice(smmu->dev,
--			   "\t(IDR0.CTTW overridden by dma-coherent property)\n");
-+			   "\t(IDR0.CTTW overridden by FW configuration)\n");
- 
- 	if (id & ID0_SMS) {
- 		u32 smr, sid, mask;
-@@ -1827,30 +1825,17 @@ static int arm_smmu_probe_mmu_masters(struct arm_smmu_device *smmu)
- 	return err;
+@@ -1440,18 +1440,20 @@ out_unlock:
+ 	return ret;
  }
  
--static int arm_smmu_device_dt_probe(struct platform_device *pdev)
-+static int arm_smmu_dt_probe(struct platform_device *pdev,
-+			     struct arm_smmu_device *smmu)
+-static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
++static int arm_smmu_fw_xlate(struct device *dev, struct iommu_fwspec *args)
  {
- 	const struct of_device_id *of_id;
- 	struct resource *res;
--	struct arm_smmu_device *smmu;
- 	struct device *dev = &pdev->dev;
- 	int num_irqs, i, err;
+ 	struct arm_smmu_device *smmu;
+-	struct platform_device *smmu_pdev;
++	struct platform_device *smmu_pdev = NULL;
++
++	if (is_of_node(args->fwnode))
++		smmu_pdev = of_find_device_by_node(to_of_node(args->fwnode));
  
--	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
--	if (!smmu) {
--		dev_err(dev, "failed to allocate arm_smmu_device\n");
--		return -ENOMEM;
--	}
--	smmu->dev = dev;
--
- 	of_id = of_match_node(arm_smmu_of_match, dev->of_node);
- 	smmu->version = (enum arm_smmu_arch_version)of_id->data;
+-	smmu_pdev = of_find_device_by_node(args->np);
+ 	if (!smmu_pdev)
+ 		return -ENODEV;
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	smmu->base = devm_ioremap_resource(dev, res);
--	if (IS_ERR(smmu->base))
--		return PTR_ERR(smmu->base);
--	smmu->size = resource_size(res);
--
- 	if (of_property_read_u32(dev->of_node, "#global-interrupts",
- 				 &smmu->num_global_irqs)) {
- 		dev_err(dev, "missing #global-interrupts property\n");
-@@ -1887,12 +1872,54 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 		smmu->irqs[i] = irq;
- 	}
+ 	smmu = platform_get_drvdata(smmu_pdev);
  
-+	/*
-+	 * In order for DMA API calls to work properly, we must defer to what
-+	 * the DT says about coherency, regardless of what the hardware detect
-+	 * through probing in arm_smmu_device_cfg_probe(). Check the DT dma
-+	 * coherent property and initialize the corresponding SMMU feature
-+	 * so that arm_smmu_device_cfg_probe() can check the FW reported value.
-+	 */
-+	if (of_dma_is_coherent(smmu->dev->of_node))
-+		smmu->features |= ARM_SMMU_FEAT_COHERENT_WALK;
-+
- 	err = arm_smmu_device_cfg_probe(smmu);
- 	if (err)
- 		return err;
+-	return arm_smmu_add_dev_streamid(smmu, dev, args->args[0]);
++	return arm_smmu_add_dev_streamid(smmu, dev, args->param[0]);
+ }
  
- 	parse_driver_options(smmu);
- 
-+	/* Check first to avoid of_parse_phandle_with_args complaining */
-+	if (of_property_read_bool(dev->of_node, "mmu-masters"))
-+		arm_smmu_probe_mmu_masters(smmu);
-+
-+	return 0;
-+}
-+
-+static int arm_smmu_device_probe(struct platform_device *pdev)
-+{
-+	struct resource *res;
-+	struct arm_smmu_device *smmu;
-+	struct device *dev = &pdev->dev;
-+	int i, err;
-+
-+	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
-+	if (!smmu) {
-+		dev_err(dev, "failed to allocate arm_smmu_device\n");
-+		return -ENOMEM;
-+	}
-+	smmu->dev = dev;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	smmu->base = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(smmu->base))
-+		return PTR_ERR(smmu->base);
-+	smmu->size = resource_size(res);
-+
-+	err = arm_smmu_dt_probe(pdev, smmu);
-+
-+	if (err)
-+		return err;
-+
- 	if (smmu->version > ARM_SMMU_V1 &&
- 	    smmu->num_context_banks != smmu->num_context_irqs) {
- 		dev_err(dev,
-@@ -1915,9 +1942,6 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	}
- 
- 	platform_set_drvdata(pdev, smmu);
--	/* Check first to avoid of_parse_phandle_with_args complaining */
--	if (of_property_read_bool(dev->of_node, "mmu-masters"))
--		arm_smmu_probe_mmu_masters(smmu);
- 	arm_smmu_device_reset(smmu);
- 	return 0;
- 
-@@ -1953,7 +1977,7 @@ static struct platform_driver arm_smmu_driver = {
- 		.name		= "arm-smmu",
- 		.of_match_table	= of_match_ptr(arm_smmu_of_match),
- 	},
--	.probe	= arm_smmu_device_dt_probe,
-+	.probe	= arm_smmu_device_probe,
- 	.remove	= arm_smmu_device_remove,
+ static struct iommu_ops arm_smmu_ops = {
+@@ -1468,7 +1470,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.device_group		= arm_smmu_device_group,
+ 	.domain_get_attr	= arm_smmu_domain_get_attr,
+ 	.domain_set_attr	= arm_smmu_domain_set_attr,
+-	.of_xlate		= arm_smmu_of_xlate,
++	.fw_xlate		= arm_smmu_fw_xlate,
+ 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
  };
  
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 5ecc86c..84ff5bb 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1250,13 +1250,16 @@ static void exynos_iommu_remove_device(struct device *dev)
+ 	iommu_group_remove_device(dev);
+ }
+ 
+-static int exynos_iommu_of_xlate(struct device *dev,
+-				 struct of_phandle_args *spec)
++static int exynos_iommu_fw_xlate(struct device *dev,
++				 struct iommu_fwspec *args)
+ {
+ 	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+-	struct platform_device *sysmmu = of_find_device_by_node(spec->np);
++	struct platform_device *sysmmu = NULL;
+ 	struct sysmmu_drvdata *data;
+ 
++	if (is_of_node(args->fwnode))
++		sysmmu = of_find_device_by_node(to_of_node(args->fwnode));
++
+ 	if (!sysmmu)
+ 		return -ENODEV;
+ 
+@@ -1290,7 +1293,7 @@ static struct iommu_ops exynos_iommu_ops = {
+ 	.add_device = exynos_iommu_add_device,
+ 	.remove_device = exynos_iommu_remove_device,
+ 	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
+-	.of_xlate = exynos_iommu_of_xlate,
++	.fw_xlate = exynos_iommu_fw_xlate,
+ };
+ 
+ static bool init_done;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 929a66a..e08dc0a 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -436,20 +436,23 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
+ 	return data->m4u_group;
+ }
+ 
+-static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
++static int mtk_iommu_fw_xlate(struct device *dev, struct iommu_fwspec *args)
+ {
+ 	struct mtk_iommu_client_priv *head, *priv, *next;
+ 	struct platform_device *m4updev;
+ 
+-	if (args->args_count != 1) {
++	if (!is_of_node(args->fwnode))
++		return -ENODEV;
++
++	if (args->param_count != 1) {
+ 		dev_err(dev, "invalid #iommu-cells(%d) property for IOMMU\n",
+-			args->args_count);
++			args->param_count);
+ 		return -EINVAL;
+ 	}
+ 
+ 	if (!dev->archdata.iommu) {
+ 		/* Get the m4u device */
+-		m4updev = of_find_device_by_node(args->np);
++		m4updev = of_find_device_by_node(to_of_node(args->fwnode));
+ 		of_node_put(args->np);
+ 		if (WARN_ON(!m4updev))
+ 			return -EINVAL;
+@@ -469,7 +472,7 @@ static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ 	if (!priv)
+ 		goto err_free_mem;
+ 
+-	priv->mtk_m4u_id = args->args[0];
++	priv->mtk_m4u_id = args->param[0];
+ 	list_add_tail(&priv->client, &head->client);
+ 
+ 	return 0;
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 910826c..331dd78 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -135,6 +135,18 @@ struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+ 	return ops;
+ }
+ 
++static void of_phandle_args_to_fwspec(struct of_phandle_args *iommu_data,
++				      struct iommu_fwspec *fwspec)
++{
++	int i;
++
++	fwspec->fwnode = iommu_data->np ? &iommu_data->np->fwnode : NULL;
++	fwspec->param_count = iommu_data->args_count;
++
++	for (i = 0; i < iommu_data->args_count; i++)
++		fwspec->param[i] = iommu_data->args[i];
++}
++
+ static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+ {
+ 	struct of_phandle_args *iommu_spec = data;
+@@ -148,6 +160,7 @@ struct iommu_ops *of_iommu_configure(struct device *dev,
+ 				     struct device_node *master_np)
+ {
+ 	struct of_phandle_args iommu_spec;
++	struct iommu_fwspec fwspec;
+ 	struct device_node *np = NULL;
+ 	struct iommu_ops *ops = NULL;
+ 	int idx = 0;
+@@ -170,8 +183,9 @@ struct iommu_ops *of_iommu_configure(struct device *dev,
+ 
+ 		iommu_spec.np = np;
+ 		iommu_spec.args_count = 1;
++		of_phandle_args_to_fwspec(&iommu_spec, &fwspec);
+ 		ops = of_iommu_get_ops(np);
+-		if (!ops || !ops->of_xlate || ops->of_xlate(dev, &iommu_spec))
++		if (!ops || !ops->fw_xlate || ops->fw_xlate(dev, &fwspec))
+ 			goto err_put_node;
+ 
+ 		of_node_put(np);
+@@ -189,7 +203,9 @@ struct iommu_ops *of_iommu_configure(struct device *dev,
+ 		np = iommu_spec.np;
+ 		ops = of_iommu_get_ops(np);
+ 
+-		if (!ops || !ops->of_xlate || ops->of_xlate(dev, &iommu_spec))
++		of_phandle_args_to_fwspec(&iommu_spec, &fwspec);
++
++		if (!ops || !ops->fw_xlate || ops->fw_xlate(dev, &fwspec))
+ 			goto err_put_node;
+ 
+ 		of_node_put(np);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 0bba25e..5184d81 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -85,6 +85,24 @@ struct iommu_domain {
+ 	void *iova_cookie;
+ };
+ 
++#define IOMMU_MAP_SPEC_PARAMS 16
++
++/**
++ * struct iommu_fwspec - generic IOMMU specifier structure
++ *
++ * @fwnode:		Pointer to a firmware-specific descriptor
++ * @param_count:	Number of device-specific parameters
++ * @param:		Device-specific parameters
++ *
++ * This structure, directly modeled after of_phandle_args, is used to
++ * pass a device-specific description of an IOMMU mapping.
++ */
++struct iommu_fwspec {
++	struct fwnode_handle *fwnode;
++	int param_count;
++	u32 param[IOMMU_MAP_SPEC_PARAMS];
++};
++
+ enum iommu_cap {
+ 	IOMMU_CAP_CACHE_COHERENCY,	/* IOMMU can enforce cache coherent DMA
+ 					   transactions */
+@@ -155,7 +173,7 @@ struct iommu_dm_region {
+  * @domain_window_disable: Disable a particular window for a domain
+  * @domain_set_windows: Set the number of windows for a domain
+  * @domain_get_windows: Return the number of windows for a domain
+- * @of_xlate: add OF master IDs to iommu grouping
++ * @fw_xlate: add FW master IDs to iommu grouping
+  * @pgsize_bitmap: bitmap of supported page sizes
+  * @priv: per-instance data private to the iommu driver
+  */
+@@ -196,9 +214,7 @@ struct iommu_ops {
+ 	/* Get the number of windows per domain */
+ 	u32 (*domain_get_windows)(struct iommu_domain *domain);
+ 
+-#ifdef CONFIG_OF_IOMMU
+-	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
+-#endif
++	int (*fw_xlate)(struct device *dev, struct iommu_fwspec *args);
+ 
+ 	unsigned long pgsize_bitmap;
+ 	void *priv;
 -- 
 2.6.4
