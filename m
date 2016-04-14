@@ -1,11 +1,14 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 00/11] ACPI IORT ARM SMMU support
-Date: Thu, 14 Apr 2016 18:25:32 +0100
-Message-ID: <1460654743-7896-1-git-send-email-lorenzo.pieralisi@arm.com>
+Subject: [RFC PATCH 02/11] drivers: acpi: iort: add support for IOMMU
+	registration
+Date: Thu, 14 Apr 2016 18:25:34 +0100
+Message-ID: <1460654743-7896-3-git-send-email-lorenzo.pieralisi@arm.com>
+References: <1460654743-7896-1-git-send-email-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1460654743-7896-1-git-send-email-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,138 +19,101 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The ACPI IORT table provides information that allows instantiating
-ARM SMMU devices and carrying out id mappings between components on
-ARM based systems (devices, IOMMUs, interrupt controllers).
+The ACPI IORT table provide entries for IOMMU (aka SMMU in ARM world)
+components that allow creating the kernel data structures required to
+probe and initialize the IOMMU devices.
 
-http://infocenter.arm.com/help/topic/com.arm.doc.den0049b/DEN0049B_IO_Remapping_Table.pdf
+This patch provides support in the IORT kernel code to register IOMMU
+components.
 
-Building on basic IORT support, available through this posting:
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+---
+ drivers/acpi/iort.c  | 42 ++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iort.h |  2 ++
+ 2 files changed, 44 insertions(+)
 
-https://marc.info/?l=linux-acpi&m=145976009630179&w=2
-
-this patchset enables ARM SMMU support on ACPI systems.
-
-Most of the code is aimed at building the required generic ACPI
-infrastructure to create and enable IOMMU components and to bring
-the IOMMU infrastructure for ACPI on par with DT, which is going to
-make ARM SMMUv3 and future IOMMU components easier to integrate.
-
-PATCH [1] fixes a warning caused by a missing forward structure
-          declaration.
-
-PATCH [2] provides IORT support for registering IOMMU components.
-
-PATCH [3] adds a FWNODE_IOMMU type to the struct fwnode_handle type.
-          It is required to attach a fwnode identifier to platform
-          devices allocated/detected through IORT tables entries;
-          IOMMU devices have to have an identifier to look them up
-          eg IOMMU core layer carrying out id translation. This can be
-          done through a fwnode_handle (ie IOMMU platform devices created
-          out of IORT tables are not ACPI devices hence they can't be
-          allocated as such, otherwise they would have a fwnode_handle of
-          type FWNODE_ACPI). This patch requires discussion and it is key
-          to the RFC.
-
-PATCH [4] makes use of the ACPI early probing API to add a linker script
-          section for probing devices via IORT ACPI kernel code.
-
-PATCH [5] refactors the ARM SMMU driver so that the init functions are
-          split in a way that groups together code that probes through DT
-          and code that carries out HW registers FW agnostic probing, in
-          preparation for adding the ACPI probing path.
-
-PATCH [6] makes the of_xlate() interface for IOMMUs DT agnostic by
-          changing its API and making it work on ACPI systems too
-          through the introduction of a generic IOMMU FW translation
-          specifier.
-
-PATCH [7] implements ARM SMMU streamid mapping based on the previously
-          introduced infrastructure.
-
-PATCH [8] enhances IORT kernel code to implement the full set of mappings
-          allowed through the ACPI IORT table.
-
-PATCH [9] implements the of_dma_configure() API in ACPI world -
-          acpi_dma_configure() - and patches PCI and ACPI core code to start
-          making use of it.
-
-PATCH [10] implements and enables code for probing the ARM SMMU with ACPI,
-           building on top of the previously introduced generic infrastructure.
-
-PATCH [11] is a mechanical conversion of IRQ domain infrastructure to
-           generalize its translation capabilities for other kernel
-           subsystems, and it is there to prove that the approach taken
-           to implement IOMMU translation in a DT agnostic way would lead
-           to structure data duplication that may be deemed unnecessary
-           and can therefore be avoided.
-
-This patchset is built on top and depends on these two patch series:
-
-R.Murphy "Generic DT bindings for PCI and ARM SMMU"
-https://marc.info/?l=linux-arm-kernel&m=145675372917701&w=2
-
-T.Nowicki "Introduce ACPI world to ITS irqchip"
-https://marc.info/?l=linux-acpi&m=145976009630179&w=2
-
-Tested on Juno-r2 board with both DT and ACPI probing paths.
-
-Lorenzo Pieralisi (11):
-  drivers: acpi: iort: fix struct pci_dev compiler warnings
-  drivers: acpi: iort: add support for IOMMU registration
-  drivers: iommu: add FWNODE_IOMMU fwnode type
-  drivers: acpi: iort: introduce linker section for IORT entries probing
-  drivers: iommu: arm-smmu: split probe functions into DT/generic
-    portions
-  drivers: iommu: make of_xlate() interface DT agnostic
-  drivers: iommu: arm-smmu: allow ACPI based streamid translation
-  drivers: acpi: iort: enhance mapping API
-  drivers: acpi: implement acpi_dma_configure
-  drivers: iommu: arm-smmu: implement ACPI probing
-  drivers: irqchip: make struct irq_fwspec generic
-
- Documentation/IRQ-domain.txt         |   2 +-
- arch/arm/mach-exynos/suspend.c       |   6 +-
- arch/arm/mach-imx/gpc.c              |   6 +-
- arch/arm/mach-omap2/omap-wakeupgen.c |   6 +-
- drivers/acpi/glue.c                  |   4 +-
- drivers/acpi/gsi.c                   |   2 +-
- drivers/acpi/iort.c                  | 188 ++++++++++++++++++-
- drivers/acpi/scan.c                  |  29 +++
- drivers/gpio/gpio-xgene-sb.c         |   8 +-
- drivers/iommu/arm-smmu.c             | 346 ++++++++++++++++++++++++++++++-----
- drivers/iommu/exynos-iommu.c         |  11 +-
- drivers/iommu/mtk_iommu.c            |  13 +-
- drivers/iommu/of_iommu.c             |   8 +-
- drivers/irqchip/irq-alpine-msi.c     |   2 +-
- drivers/irqchip/irq-crossbar.c       |   6 +-
- drivers/irqchip/irq-gic-v2m.c        |   2 +-
- drivers/irqchip/irq-gic-v3-its.c     |   2 +-
- drivers/irqchip/irq-gic-v3.c         |   4 +-
- drivers/irqchip/irq-gic.c            |   4 +-
- drivers/irqchip/irq-imx-gpcv2.c      |   6 +-
- drivers/irqchip/irq-mbigen.c         |   4 +-
- drivers/irqchip/irq-mips-gic.c       |   2 +-
- drivers/irqchip/irq-mtk-sysirq.c     |   6 +-
- drivers/irqchip/irq-mvebu-odmi.c     |   2 +-
- drivers/irqchip/irq-nvic.c           |   4 +-
- drivers/irqchip/irq-tegra.c          |   6 +-
- drivers/irqchip/irq-vf610-mscm-ir.c  |   6 +-
- drivers/of/base.c                    |  24 +++
- drivers/pci/probe.c                  |   3 +-
- include/acpi/acpi_bus.h              |   2 +
- include/asm-generic/vmlinux.lds.h    |   1 +
- include/linux/acpi.h                 |   5 +
- include/linux/fwnode.h               |  21 +++
- include/linux/iommu.h                |  31 +++-
- include/linux/iort.h                 |  18 ++
- include/linux/irqdomain.h            |  22 +--
- include/linux/of.h                   |   7 +
- kernel/irq/irqdomain.c               |  17 +-
- 38 files changed, 692 insertions(+), 144 deletions(-)
-
+diff --git a/drivers/acpi/iort.c b/drivers/acpi/iort.c
+index 3119683..98db580 100644
+--- a/drivers/acpi/iort.c
++++ b/drivers/acpi/iort.c
+@@ -19,10 +19,13 @@
+ #define pr_fmt(fmt)	"ACPI: IORT: " fmt
+ 
+ #include <linux/export.h>
++#include <linux/iommu.h>
+ #include <linux/iort.h>
+ #include <linux/irqdomain.h>
+ #include <linux/kernel.h>
++#include <linux/list.h>
+ #include <linux/pci.h>
++#include <linux/slab.h>
+ 
+ struct iort_its_msi_chip {
+ 	struct list_head	list;
+@@ -30,6 +33,45 @@ struct iort_its_msi_chip {
+ 	u32			translation_id;
+ };
+ 
++struct iort_iommu_node {
++	struct list_head list;
++	struct iommu_ops *ops;
++	struct acpi_iort_node *node;
++	struct fwnode_handle	*fwnode;
++};
++static LIST_HEAD(iort_iommu_list);
++static DEFINE_SPINLOCK(iort_iommu_lock);
++
++/**
++ * iort_iommu_set_node - Create iort_mmu_node and use it to register
++ *			 iommu structures on iort_iommu_list.
++ *
++ * @ops: IOMMU operations
++ * @node: IORT table node associated with the IOMMU
++ * @fwnode: fwnode_handle associated with the IOMMU
++ *
++ * Returns: 0 on success
++ *          -ENOMEM on failure
++ */
++int iort_iommu_set_node(struct iommu_ops *ops, struct acpi_iort_node *node,
++			struct fwnode_handle *fwnode)
++{
++	struct iort_iommu_node *iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
++
++	if (WARN_ON(!iommu))
++		return -ENOMEM;
++
++	INIT_LIST_HEAD(&iommu->list);
++	iommu->ops = ops;
++	iommu->node = node;
++	iommu->fwnode = fwnode;
++	spin_lock(&iort_iommu_lock);
++	list_add_tail(&iommu->list, &iort_iommu_list);
++	spin_unlock(&iort_iommu_lock);
++
++	return 0;
++}
++
+ typedef acpi_status (*iort_find_node_callback)
+ 	(struct acpi_iort_node *node, void *context);
+ 
+diff --git a/include/linux/iort.h b/include/linux/iort.h
+index b15fe1a..148d9a1 100644
+--- a/include/linux/iort.h
++++ b/include/linux/iort.h
+@@ -28,5 +28,7 @@ void iort_deregister_domain_token(int trans_id);
+ struct fwnode_handle *iort_its_find_domain_token(int trans_id);
+ u32 iort_pci_get_msi_rid(struct pci_dev *pdev, u32 req_id);
+ struct fwnode_handle *iort_pci_get_domain(struct pci_dev *pdev, u32 req_id);
++int iort_iommu_set_node(struct iommu_ops *ops, struct acpi_iort_node *node,
++			struct fwnode_handle *fwnode);
+ 
+ #endif /* __IORT_H__ */
 -- 
 2.6.4
