@@ -1,15 +1,20 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 09/11] drivers: acpi: implement acpi_dma_configure
-Date: Fri, 15 Apr 2016 17:31:58 +0100
-Message-ID: <5711177E.2000509@arm.com>
-References: <1460654743-7896-1-git-send-email-lorenzo.pieralisi@arm.com>
-	<1460654743-7896-10-git-send-email-lorenzo.pieralisi@arm.com>
-	<20160415161400.GC7973@localhost>
+From: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
+Subject: Re: [PATCH v2 7/7] iommu: introduce per-cpu caching to iova allocation
+Date: Fri, 15 Apr 2016 10:55:34 -0700
+Message-ID: <20160415175520.GA2644484@devbig084.prn1.facebook.com>
+References: <cover.1460548546.git.mad@cs.technion.ac.il>
+	<b208a304d83088aae7ecac10a3062dc57c0a2f79.1460548546.git.mad@cs.technion.ac.il>
+	<CAN+hb0W=+tuQp3cm_VKoU=LKiVQDPMtGrZGq=59rcaWsy2S-+A@mail.gmail.com>
+	<CAHMfzJmjZWeUpmTVb-Z7NMJUp0N84ZK4zwUWdAKHv4sd4TXPMg@mail.gmail.com>
+	<CAN+hb0WOaokFYc6C+mR6rdj4WwmMUSzDHDZngfUvy-5cEve_-g@mail.gmail.com>
+	<20160414213326.GA474260@devbig084.prn1.facebook.com>
+	<CAN+hb0WRDYCpY8xoUvvGu4SSD83F9VTMW=9W=xfjYtJV-dijmQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160415161400.GC7973@localhost>
+Content-Disposition: inline
+In-Reply-To: <CAN+hb0WRDYCpY8xoUvvGu4SSD83F9VTMW=9W=xfjYtJV-dijmQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,121 +24,81 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Benjamin Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Dan Tsafrir <dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, Godfrey van der Linden <gvdl-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Kernel-team-b10kYP2dOMg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bjorn,
+On Thu, Apr 14, 2016 at 09:59:39PM -0700, Benjamin Serebrin wrote:
+> On Thu, Apr 14, 2016 at 2:33 PM, Shaohua Li <shli-b10kYP2dOMg@public.gmane.org> wrote:
+> 
+> > On Thu, Apr 14, 2016 at 02:18:32PM -0700, Benjamin Serebrin wrote:
+> > > On Thu, Apr 14, 2016 at 2:05 PM, Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
+> > wrote:
+> > > > On Thu, Apr 14, 2016 at 9:26 PM, Benjamin Serebrin via iommu
+> > > > <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org> wrote:
+> > > >
+> > > >> It was pointed out that DMA_32 or _24 (or anything other non-64 size)
+> > > >> could be starved if the magazines on all cores are full and the depot
+> > > >> is empty.  (This gets more probable with increased core count.)  You
+> > > >> could try one more time: call free_iova_rcaches() and try alloc_iova
+> > > >> again before giving up
+> > > >
+> > > > That's not safe, unfortunately.  free_iova_rcaches() is meant to be
+> > > > called only when the domain is dying and the CPUs won't access the
+> > > > rcaches.
+> > >
+> > > Fair enough.  Is it possible to make this safe, cleanly and without
+> > > too much locking during the normal case?
+> > >
+> > > > It's tempting to make the rcaches work only for DMA_64 allocations.
+> > > > This would also solve the problem of respecting the pfn_limit when
+> > > > allocating, which Shaohua Li pointed out.  Sadly, intel-iommu.c
+> > > > converts DMA_64 to DMA_32 by default, apparently to avoid dual address
+> > > > cycles on the PCI bus.  I wonder about the importance of this, though,
+> > > > as it doesn't seem that anything equivalent happens when iommu=off.
+> > >
+> > > I agree.  It's tempting to make all DMA_64 allocations grow up from
+> > > 4G, leaving the entire 32 bit space free for small allocations.  I'd
+> > > be willing to argue that that should be the default, with some
+> > > override for anyone who finds it objectionable.
+> > >
+> > > Dual address cycle is really "4 more bytes in the TLP header" on PCIe;
+> > > a 32-bit address takes 3 doublewords (12 bytes) while a 64-bit address
+> > > takes 4 DW (16 bytes).  What's 25% of a read request between friends?
+> > > And every read request has a read response 3DW TLP plus its data, so
+> > > the aggregate bandwidth consumed is getting uninteresting.  Similarly
+> > > for writes, the additional address bytes don't cost a large
+> > > percentage.
+> > >
+> > > That being said, it's a rare device that needs more than 4GB of active
+> > > address space, and it's a rare system that needs to mix a
+> > > performance-critical DMA_32 (or 24) and _64 device in the same page
+> > > table.
+> >
+> > I'm not sure about the TLP overhead. IOMMU is not only for pcie device.
+> > there are pcie-to-pcix/pci bridge, any pci device can reside behind it.
+> > The device might not handle DMA_64. DAC has overhead for pcix device
+> > iirc, which somebody might care about. So let's not break such devices.
+> >
+> > Thanks,
+> > Shaohua
+> >
+> 
+> Thanks, Shaohua.
+> 
+> As Adam mentioned, in iommu=off cases, there's no enforcement that keeps
+> any PCIe address below 4GB.  If you have a system with DRAM addresses above
+> 4GB and you're using any of the iommu disabled or 1:1 settings, you'll
+> encounter this.  So the change in allocation policy would not add any new
+> failure mode; we're already going to encounter it today.
 
-On 15/04/16 17:14, Bjorn Helgaas wrote:
-> On Thu, Apr 14, 2016 at 06:25:41PM +0100, Lorenzo Pieralisi wrote:
->> On DT based systems, the of_dma_configure() API implements DMA configuration
->> for a given device. On ACPI systems an API equivalent to of_dma_configure()
->> is missing which implies that it is currently not possible to set-up DMA
->> operations for devices through the ACPI generic kernel layer.
->>
->> This patch fills the gap by introducing acpi_dma_configure/deconfigure()
->> calls, that carry out IOMMU configuration through IORT (on systems where
->> it is present) and call arch_setup_dma_ops(...) with the retrieved
->> parameters.
->>
->> The DMA range size passed to arch_setup_dma_ops() is sized according
->> to the device coherent_dma_mask (starting at address 0x0), mirroring the
->> DT probing path behaviour when a dma-ranges property is not provided
->> for the device being probed; this changes the current arch_setup_dma_ops()
->> call parameters in the ACPI probing case, but since arch_setup_dma_ops()
->> is a NOP on all architectures but ARM/ARM64 this patch does not change
->> the current kernel behaviour on them.
->>
->> This patch updates ACPI and PCI core code to use the newly introduced
->> acpi_dma_configure function, providing the same functionality
->> as of_dma_configure on ARM systems and leaving behaviour unchanged
->> for all other arches.
->>
->> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
->> Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
->> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
->> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
->> Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
->
-> There's only a tiny PCI change in this series, so I assume somebody
-> else will merge all this.  Here's my ack for the PCI part:
->
-> Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>	# for drivers/pci/probe.c change
->
-> One question on use of pci_for_each_dma_alias() below.
->
->> +static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
->> +{
->> +	u32 *rid = data;
->> +
->> +	*rid = alias;
->> +	return 0;
->> +}
->> +
->> +/**
->> + * iort_iommu_configure - Set-up IOMMU configuration for a device.
->> + *
->> + * @dev: device that requires IOMMU set-up
->> + *
->> + * Returns: iommu_ops pointer on configuration success
->> + *          NULL on configuration failure
->> + */
->> +struct iommu_ops *iort_iommu_configure(struct device *dev)
->> +{
->> +	struct acpi_iort_node *node, *parent;
->> +	struct iommu_ops *ops = NULL;
->> +	struct iommu_fwspec fwspec;
->> +	struct iort_iommu_node *iommu_node;
->> +	u32 rid = 0, devid = 0;
->> +
->> +	if (dev_is_pci(dev)) {
->> +		struct pci_bus *bus = to_pci_dev(dev)->bus;
->> +
->> +		pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid,
->> +				       &rid);
->
-> You end up with only the last DMA alias in "rid".  Is it really true
-> that you only need to call iort_dev_map_rid() for one of the aliases?
+Fair enough, it makes sense to ignore the DAC overhead. My point is the
+cache case should respect the limit, since devices might not be able to
+handle DMA64. Even without IOMMU, we use GFP_DMA32 or swiotlb to
+guarantee DMA address is in range. For the 'force DMA32' logic in
+intel-iommu, it's in the code in day one, but I can't remember the
+reason. My guess is it's to workaround driver/device bugs. I'd suggest
+just deleting the logic and let cache only handle DMA64.
 
-Indeed - all we care about is what things look like by the time they 
-come out of the root complex on their way to the the IOMMU, so whatever 
-intermediate aliasing _within_ the PCI bus might happen along the way 
-doesn't actually matter.
-
-Robin.
-
->> +		node = iort_scan_node(ACPI_IORT_NODE_PCI_ROOT_COMPLEX,
->> +				      iort_find_dev_callback, &bus->dev);
->> +	} else
->> +		node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
->> +				      iort_find_dev_callback, dev);
->> +
->> +	if (!node)
->> +		return NULL;
->> +
->> +	iort_dev_map_rid(node, rid, &devid, ACPI_IORT_NODE_SMMU);
->> +
->> +	parent = iort_find_parent_node(node, ACPI_IORT_NODE_SMMU);
->> +
->> +	if (!parent)
->> +		return NULL;
->> +
->> +	iommu_node = iort_iommu_get_node(parent);
->> +	ops = iommu_node->ops;
->> +
->> +	fwspec.fwnode = iommu_node->fwnode;
->> +	fwspec.param_count = 1;
->> +	fwspec.param[0] = devid;
->> +
->> +	if (!ops || !ops->fw_xlate || ops->fw_xlate(dev, &fwspec))
->> +		return NULL;
->> +
->> +	return ops;
->> +}
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->
+Thanks,
+Shaohua
