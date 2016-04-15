@@ -1,102 +1,55 @@
-From: "Shi, Yang" <yang.shi@linaro.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Fix stream-match conflict with
- IOMMU_DOMAIN_DMA
-Date: Fri, 15 Apr 2016 10:53:47 -0700
-Message-ID: <57112AAB.6050209@linaro.org>
-References: <1459527597-10740-1-git-send-email-will.deacon@arm.com>
- <5711043C.5040308@linaro.org>
+From: Timur Tabi <timur@codeaurora.org>
+Subject: Re: [RFC PATCH 09/11] drivers: acpi: implement acpi_dma_configure
+Date: Fri, 15 Apr 2016 13:29:14 -0500
+Message-ID: <CAOZdJXXtZq6uyE+5sseX7M_6Kq8wFG+37qd5TNSusKj=0gd8zA@mail.gmail.com>
+References: <1460654743-7896-1-git-send-email-lorenzo.pieralisi@arm.com>
+	<1460654743-7896-10-git-send-email-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <5711043C.5040308@linaro.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Eric Auger <eric.auger@linaro.org>, Will Deacon <will.deacon@arm.com>, joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1460654743-7896-10-git-send-email-lorenzo.pieralisi@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: iommu@lists.linux-foundation.org, Marc Zyngier <marc.zyngier@arm.com>, Tomasz Nowicki <tn@semihalf.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, lkml <linux-kernel@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, Sinan Kaya <okaya@codeaurora.org>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, Hanjun Guo <hanjun.guo@linaro.org>, Jon Masters <jcm@redhat.com>, Bjorn Helgaas <bhelgaas@google.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, vikrams@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 4/15/2016 8:09 AM, Eric Auger wrote:
-> Hi Will,
-> On 04/01/2016 06:19 PM, Will Deacon wrote:
->> Commit cbf8277ef456 ("iommu/arm-smmu: Treat IOMMU_DOMAIN_DMA as bypass
->> for now") ignores requests to attach a device to the default domain
->> since, without IOMMU-basked DMA ops available everywhere, the default
->> domain will just lead to unexpected transaction faults being reported.
->>
->> Unfortunately, the way this was implemented on SMMUv2 causes a
->> regression with VFIO PCI device passthrough under KVM on AMD Seattle.
->> On this system, the host controller device is associated with both a
->> pci_dev *and* a platform_device, and can therefore end up with duplicate
->> SMR entries, resulting in a stream-match conflict at runtime.
->>
->> This patch amends the original fix so that attaching to IOMMU_DOMAIN_DMA
->> is rejected even before configuring the SMRs. This restores the old
->> behaviour for now, but we'll need to look at handing host controllers
->> specially when we come to supporting the default domain fully.
->>
-> Tested-by: Eric Auger <eric.auger@linaro.org>
+On Thu, Apr 14, 2016 at 12:25 PM, Lorenzo Pieralisi
+<lorenzo.pieralisi@arm.com> wrote:
+> +void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
+> +{
+> +       struct iommu_ops *iommu;
+> +
+> +       iommu = iort_iommu_configure(dev);
+> +
+> +       /*
+> +        * Assume dma valid range starts at 0 and covers the whole
+> +        * coherent_dma_mask.
+> +        */
+> +       arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
+> +                          attr == DEV_DMA_COHERENT);
+> +}
 
-Tested on my LS2085A board too.
+I have a network driver that is impacted by this code, so thank you
+for posting this. (See
+https://www.mail-archive.com/netdev@vger.kernel.org/msg106249.html).
 
-Tested-by: Yang Shi <yang.shi@linaro.org>
+One one SOC, the driver needs to set the mask to 32 bits.  On another
+SOC, it needs to set it to 64 bits.  On device tree, the driver will
+use dma-ranges.
 
-Regards,
-Yang
+In your patches, where is coherent_dma_mask initialized?  I found this
+code in add_smmu_platform_device(), but I think this is setting the
+mask for the IOMMU driver, not the individual devices.  Either way, I
+don't understand where the correct value is going to be overridden.
 
->
-> Best Regards
->
-> Eric
->> Reported-by: Eric Auger <eric.auger@linaro.org>
->> Signed-off-by: Will Deacon <will.deacon@arm.com>
->> ---
->>   drivers/iommu/arm-smmu.c | 14 ++++++++------
->>   1 file changed, 8 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index e933679a3266..2f186d22477f 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -1098,18 +1098,20 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
->>   	struct arm_smmu_device *smmu = smmu_domain->smmu;
->>   	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
->>
->> -	/* Devices in an IOMMU group may already be configured */
->> -	ret = arm_smmu_master_configure_smrs(smmu, cfg);
->> -	if (ret)
->> -		return ret == -EEXIST ? 0 : ret;
->> -
->>   	/*
->>   	 * FIXME: This won't be needed once we have IOMMU-backed DMA ops
->> -	 * for all devices behind the SMMU.
->> +	 * for all devices behind the SMMU. Note that we need to take
->> +	 * care configuring SMRs for devices both a platform_device and
->> +	 * and a PCI device (i.e. a PCI host controller)
->>   	 */
->>   	if (smmu_domain->domain.type == IOMMU_DOMAIN_DMA)
->>   		return 0;
->>
->> +	/* Devices in an IOMMU group may already be configured */
->> +	ret = arm_smmu_master_configure_smrs(smmu, cfg);
->> +	if (ret)
->> +		return ret == -EEXIST ? 0 : ret;
->> +
->>   	for (i = 0; i < cfg->num_streamids; ++i) {
->>   		u32 idx, s2cr;
->>
->>
->
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
->
++       /*
++        * Set default dma mask value for the table walker,
++        * to be overridden on probing with correct value.
++        */
++       *pdev->dev.dma_mask = DMA_BIT_MASK(32);
++       pdev->dev.coherent_dma_mask = *pdev->dev.dma_mask;
+
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project.
