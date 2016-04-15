@@ -1,104 +1,102 @@
-From: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
-Subject: Re: [PATCH v2 7/7] iommu: introduce per-cpu caching to iova allocation
-Date: Fri, 15 Apr 2016 10:55:34 -0700
-Message-ID: <20160415175520.GA2644484@devbig084.prn1.facebook.com>
-References: <cover.1460548546.git.mad@cs.technion.ac.il>
-	<b208a304d83088aae7ecac10a3062dc57c0a2f79.1460548546.git.mad@cs.technion.ac.il>
-	<CAN+hb0W=+tuQp3cm_VKoU=LKiVQDPMtGrZGq=59rcaWsy2S-+A@mail.gmail.com>
-	<CAHMfzJmjZWeUpmTVb-Z7NMJUp0N84ZK4zwUWdAKHv4sd4TXPMg@mail.gmail.com>
-	<CAN+hb0WOaokFYc6C+mR6rdj4WwmMUSzDHDZngfUvy-5cEve_-g@mail.gmail.com>
-	<20160414213326.GA474260@devbig084.prn1.facebook.com>
-	<CAN+hb0WRDYCpY8xoUvvGu4SSD83F9VTMW=9W=xfjYtJV-dijmQ@mail.gmail.com>
+From: "Shi, Yang" <yang.shi@linaro.org>
+Subject: Re: [PATCH] iommu/arm-smmu: Fix stream-match conflict with
+ IOMMU_DOMAIN_DMA
+Date: Fri, 15 Apr 2016 10:53:47 -0700
+Message-ID: <57112AAB.6050209@linaro.org>
+References: <1459527597-10740-1-git-send-email-will.deacon@arm.com>
+ <5711043C.5040308@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAN+hb0WRDYCpY8xoUvvGu4SSD83F9VTMW=9W=xfjYtJV-dijmQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Benjamin Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: Dan Tsafrir <dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, Godfrey van der Linden <gvdl-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Kernel-team-b10kYP2dOMg@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <5711043C.5040308@linaro.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Eric Auger <eric.auger@linaro.org>, Will Deacon <will.deacon@arm.com>, joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 14, 2016 at 09:59:39PM -0700, Benjamin Serebrin wrote:
-> On Thu, Apr 14, 2016 at 2:33 PM, Shaohua Li <shli-b10kYP2dOMg@public.gmane.org> wrote:
-> 
-> > On Thu, Apr 14, 2016 at 02:18:32PM -0700, Benjamin Serebrin wrote:
-> > > On Thu, Apr 14, 2016 at 2:05 PM, Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
-> > wrote:
-> > > > On Thu, Apr 14, 2016 at 9:26 PM, Benjamin Serebrin via iommu
-> > > > <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org> wrote:
-> > > >
-> > > >> It was pointed out that DMA_32 or _24 (or anything other non-64 size)
-> > > >> could be starved if the magazines on all cores are full and the depot
-> > > >> is empty.  (This gets more probable with increased core count.)  You
-> > > >> could try one more time: call free_iova_rcaches() and try alloc_iova
-> > > >> again before giving up
-> > > >
-> > > > That's not safe, unfortunately.  free_iova_rcaches() is meant to be
-> > > > called only when the domain is dying and the CPUs won't access the
-> > > > rcaches.
-> > >
-> > > Fair enough.  Is it possible to make this safe, cleanly and without
-> > > too much locking during the normal case?
-> > >
-> > > > It's tempting to make the rcaches work only for DMA_64 allocations.
-> > > > This would also solve the problem of respecting the pfn_limit when
-> > > > allocating, which Shaohua Li pointed out.  Sadly, intel-iommu.c
-> > > > converts DMA_64 to DMA_32 by default, apparently to avoid dual address
-> > > > cycles on the PCI bus.  I wonder about the importance of this, though,
-> > > > as it doesn't seem that anything equivalent happens when iommu=off.
-> > >
-> > > I agree.  It's tempting to make all DMA_64 allocations grow up from
-> > > 4G, leaving the entire 32 bit space free for small allocations.  I'd
-> > > be willing to argue that that should be the default, with some
-> > > override for anyone who finds it objectionable.
-> > >
-> > > Dual address cycle is really "4 more bytes in the TLP header" on PCIe;
-> > > a 32-bit address takes 3 doublewords (12 bytes) while a 64-bit address
-> > > takes 4 DW (16 bytes).  What's 25% of a read request between friends?
-> > > And every read request has a read response 3DW TLP plus its data, so
-> > > the aggregate bandwidth consumed is getting uninteresting.  Similarly
-> > > for writes, the additional address bytes don't cost a large
-> > > percentage.
-> > >
-> > > That being said, it's a rare device that needs more than 4GB of active
-> > > address space, and it's a rare system that needs to mix a
-> > > performance-critical DMA_32 (or 24) and _64 device in the same page
-> > > table.
-> >
-> > I'm not sure about the TLP overhead. IOMMU is not only for pcie device.
-> > there are pcie-to-pcix/pci bridge, any pci device can reside behind it.
-> > The device might not handle DMA_64. DAC has overhead for pcix device
-> > iirc, which somebody might care about. So let's not break such devices.
-> >
-> > Thanks,
-> > Shaohua
-> >
-> 
-> Thanks, Shaohua.
-> 
-> As Adam mentioned, in iommu=off cases, there's no enforcement that keeps
-> any PCIe address below 4GB.  If you have a system with DRAM addresses above
-> 4GB and you're using any of the iommu disabled or 1:1 settings, you'll
-> encounter this.  So the change in allocation policy would not add any new
-> failure mode; we're already going to encounter it today.
+On 4/15/2016 8:09 AM, Eric Auger wrote:
+> Hi Will,
+> On 04/01/2016 06:19 PM, Will Deacon wrote:
+>> Commit cbf8277ef456 ("iommu/arm-smmu: Treat IOMMU_DOMAIN_DMA as bypass
+>> for now") ignores requests to attach a device to the default domain
+>> since, without IOMMU-basked DMA ops available everywhere, the default
+>> domain will just lead to unexpected transaction faults being reported.
+>>
+>> Unfortunately, the way this was implemented on SMMUv2 causes a
+>> regression with VFIO PCI device passthrough under KVM on AMD Seattle.
+>> On this system, the host controller device is associated with both a
+>> pci_dev *and* a platform_device, and can therefore end up with duplicate
+>> SMR entries, resulting in a stream-match conflict at runtime.
+>>
+>> This patch amends the original fix so that attaching to IOMMU_DOMAIN_DMA
+>> is rejected even before configuring the SMRs. This restores the old
+>> behaviour for now, but we'll need to look at handing host controllers
+>> specially when we come to supporting the default domain fully.
+>>
+> Tested-by: Eric Auger <eric.auger@linaro.org>
 
-Fair enough, it makes sense to ignore the DAC overhead. My point is the
-cache case should respect the limit, since devices might not be able to
-handle DMA64. Even without IOMMU, we use GFP_DMA32 or swiotlb to
-guarantee DMA address is in range. For the 'force DMA32' logic in
-intel-iommu, it's in the code in day one, but I can't remember the
-reason. My guess is it's to workaround driver/device bugs. I'd suggest
-just deleting the logic and let cache only handle DMA64.
+Tested on my LS2085A board too.
 
-Thanks,
-Shaohua
+Tested-by: Yang Shi <yang.shi@linaro.org>
+
+Regards,
+Yang
+
+>
+> Best Regards
+>
+> Eric
+>> Reported-by: Eric Auger <eric.auger@linaro.org>
+>> Signed-off-by: Will Deacon <will.deacon@arm.com>
+>> ---
+>>   drivers/iommu/arm-smmu.c | 14 ++++++++------
+>>   1 file changed, 8 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index e933679a3266..2f186d22477f 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -1098,18 +1098,20 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+>>   	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>   	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+>>
+>> -	/* Devices in an IOMMU group may already be configured */
+>> -	ret = arm_smmu_master_configure_smrs(smmu, cfg);
+>> -	if (ret)
+>> -		return ret == -EEXIST ? 0 : ret;
+>> -
+>>   	/*
+>>   	 * FIXME: This won't be needed once we have IOMMU-backed DMA ops
+>> -	 * for all devices behind the SMMU.
+>> +	 * for all devices behind the SMMU. Note that we need to take
+>> +	 * care configuring SMRs for devices both a platform_device and
+>> +	 * and a PCI device (i.e. a PCI host controller)
+>>   	 */
+>>   	if (smmu_domain->domain.type == IOMMU_DOMAIN_DMA)
+>>   		return 0;
+>>
+>> +	/* Devices in an IOMMU group may already be configured */
+>> +	ret = arm_smmu_master_configure_smrs(smmu, cfg);
+>> +	if (ret)
+>> +		return ret == -EEXIST ? 0 : ret;
+>> +
+>>   	for (i = 0; i < cfg->num_streamids; ++i) {
+>>   		u32 idx, s2cr;
+>>
+>>
+>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>
