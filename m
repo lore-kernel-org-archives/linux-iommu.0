@@ -1,14 +1,17 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Fix stream-match conflict with
-	IOMMU_DOMAIN_DMA
-Date: Fri, 15 Apr 2016 17:09:48 +0200
-Message-ID: <5711043C.5040308@linaro.org>
+Subject: Re: [PATCH] iommu/arm-smmu: Don't allocate resources for bypass
+	domains
+Date: Fri, 15 Apr 2016 17:11:28 +0200
+Message-ID: <571104A0.5020902@linaro.org>
 References: <1459527597-10740-1-git-send-email-will.deacon@arm.com>
+	<570397F4.8080504@arm.com> <5703A289.30308@linaro.org>
+	<491c885f61c509d959b04cfb63676bd07e481dea.1460558667.git.robin.murphy@arm.com>
+	<20160415130520.GH22906@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1459527597-10740-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20160415130520.GH22906-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,68 +21,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Will,
-On 04/01/2016 06:19 PM, Will Deacon wrote:
-> Commit cbf8277ef456 ("iommu/arm-smmu: Treat IOMMU_DOMAIN_DMA as bypass
-> for now") ignores requests to attach a device to the default domain
-> since, without IOMMU-basked DMA ops available everywhere, the default
-> domain will just lead to unexpected transaction faults being reported.
+On 04/15/2016 03:05 PM, Will Deacon wrote:
+> On Wed, Apr 13, 2016 at 03:46:57PM +0100, Robin Murphy wrote:
+>> Until we get fully plumbed into of_iommu_configure, our default
+>> IOMMU_DOMAIN_DMA domains just bypass translation. Since we achieve that
+>> by leaving the stream table entries set to bypass instead of pointing at
+>> a translation context, the context bank we allocate for the domain is
+>> completely wasted. Context banks are typically a rather limited
+>> resource, so don't hog ones we don't need.
 > 
-> Unfortunately, the way this was implemented on SMMUv2 causes a
-> regression with VFIO PCI device passthrough under KVM on AMD Seattle.
-> On this system, the host controller device is associated with both a
-> pci_dev *and* a platform_device, and can therefore end up with duplicate
-> SMR entries, resulting in a stream-match conflict at runtime.
-> 
-> This patch amends the original fix so that attaching to IOMMU_DOMAIN_DMA
-> is rejected even before configuring the SMRs. This restores the old
-> behaviour for now, but we'll need to look at handing host controllers
-> specially when we come to supporting the default domain fully.
-> 
-Tested-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Eric, does this resolve your remaining passthrough regressions when applied
+> on top of my patch?
+
+Yes it does. Thank you for the fixes.
 
 Best Regards
 
 Eric
-> Reported-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu.c | 14 ++++++++------
->  1 file changed, 8 insertions(+), 6 deletions(-)
 > 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index e933679a3266..2f186d22477f 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -1098,18 +1098,20 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
->  	struct arm_smmu_device *smmu = smmu_domain->smmu;
->  	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
->  
-> -	/* Devices in an IOMMU group may already be configured */
-> -	ret = arm_smmu_master_configure_smrs(smmu, cfg);
-> -	if (ret)
-> -		return ret == -EEXIST ? 0 : ret;
-> -
->  	/*
->  	 * FIXME: This won't be needed once we have IOMMU-backed DMA ops
-> -	 * for all devices behind the SMMU.
-> +	 * for all devices behind the SMMU. Note that we need to take
-> +	 * care configuring SMRs for devices both a platform_device and
-> +	 * and a PCI device (i.e. a PCI host controller)
->  	 */
->  	if (smmu_domain->domain.type == IOMMU_DOMAIN_DMA)
->  		return 0;
->  
-> +	/* Devices in an IOMMU group may already be configured */
-> +	ret = arm_smmu_master_configure_smrs(smmu, cfg);
-> +	if (ret)
-> +		return ret == -EEXIST ? 0 : ret;
-> +
->  	for (i = 0; i < cfg->num_streamids; ++i) {
->  		u32 idx, s2cr;
->  
+> Will
 > 
+>> Reported-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>  drivers/iommu/arm-smmu.c | 8 +++++++-
+>>  1 file changed, 7 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index 5158feb..7c39ac4 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -826,6 +826,12 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>>  	if (smmu_domain->smmu)
+>>  		goto out_unlock;
+>>  
+>> +	/* We're bypassing these SIDs, so don't allocate an actual context */
+>> +	if (domain->type == IOMMU_DOMAIN_DMA) {
+>> +		smmu_domain->smmu = smmu;
+>> +		goto out_unlock;
+>> +	}
+>> +
+>>  	/*
+>>  	 * Mapping the requested stage onto what we support is surprisingly
+>>  	 * complicated, mainly because the spec allows S1+S2 SMMUs without
+>> @@ -948,7 +954,7 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+>>  	void __iomem *cb_base;
+>>  	int irq;
+>>  
+>> -	if (!smmu)
+>> +	if (!smmu || domain->type == IOMMU_DOMAIN_DMA)
+>>  		return;
+>>  
+>>  	/*
+>> -- 
+>> 2.7.3.dirty
+>>
