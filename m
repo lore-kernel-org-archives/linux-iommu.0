@@ -1,80 +1,82 @@
-From: Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFT v2] iommu/amd: use subsys_initcall() on amdv2 iommu
-Date: Mon, 18 Apr 2016 10:02:24 +0300
-Message-ID: <CAFCwf12B6TQ5kYEG4+hYoWriv2rnTcngQLX_Cvtbz=64fo35Qg@mail.gmail.com>
-References: <20160316171719.GE2195@8bytes.org>
-	<1459273313-5139-1-git-send-email-mcgrof@kernel.org>
-	<CAB=NE6XCmMk4sraQo34XQJfjWu_yRc1rar_eQRSET8Q7VR9EOw@mail.gmail.com>
-	<570BA694.8040900@amd.com>
-	<CAFCwf10oD9c3MOW3+J8A5MVjVkX0nNRGCEE2pWcQxOy7mjUsBw@mail.gmail.com>
-	<570BAC2B.4090508@amd.com> <20160412220715.GL1990@wotan.suse.de>
-	<CAFCwf12SJ-dTv6PC0_KfHbtC9951xb_4v8wu5uSjXO-V3TgdkA@mail.gmail.com>
-	<CAB=NE6WL7j_azrFxQUG3bybXtu67ew51CyzYvkBct6tCdARKDg@mail.gmail.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [RFC PATCH 09/11] drivers: acpi: implement acpi_dma_configure
+Date: Mon, 18 Apr 2016 11:30:07 +0100
+Message-ID: <20160418103007.GC2427@red-moon>
+References: <1460654743-7896-1-git-send-email-lorenzo.pieralisi@arm.com>
+ <1460654743-7896-10-git-send-email-lorenzo.pieralisi@arm.com>
+ <CAOZdJXXtZq6uyE+5sseX7M_6Kq8wFG+37qd5TNSusKj=0gd8zA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAB=NE6WL7j_azrFxQUG3bybXtu67ew51CyzYvkBct6tCdARKDg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAOZdJXXtZq6uyE+5sseX7M_6Kq8wFG+37qd5TNSusKj=0gd8zA@mail.gmail.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Timur Tabi <timur@codeaurora.org>
+Cc: iommu@lists.linux-foundation.org, Marc Zyngier <marc.zyngier@arm.com>, Tomasz Nowicki <tn@semihalf.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, lkml <linux-kernel@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, Sinan Kaya <okaya@codeaurora.org>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, Hanjun Guo <hanjun.guo@linaro.org>, Jon Masters <jcm@redhat.com>, Bjorn Helgaas <bhelgaas@google.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, vikrams@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gTW9uLCBBcHIgMTgsIDIwMTYgYXQgOTo1NSBBTSwgTHVpcyBSLiBSb2RyaWd1ZXogPG1jZ3Jv
-ZkBrZXJuZWwub3JnPiB3cm90ZToKPgo+IE9uIEFwciAxOCwgMjAxNiA3OjQ4IEFNLCAiT2RlZCBH
-YWJiYXkiIDxvZGVkLmdhYmJheUBnbWFpbC5jb20+IHdyb3RlOgo+Pgo+PiBPbiBXZWQsIEFwciAx
-MywgMjAxNiBhdCAxOjA3IEFNLCBMdWlzIFIuIFJvZHJpZ3VleiA8bWNncm9mQGtlcm5lbC5vcmc+
-Cj4+IHdyb3RlOgo+PiA+IE9uIE1vbiwgQXByIDExLCAyMDE2IGF0IDAzOjUyOjQzUE0gKzAyMDAs
-IENocmlzdGlhbiBLw7ZuaWcgd3JvdGU6Cj4+ID4+IEFtIDExLjA0LjIwMTYgdW0gMTU6Mzkgc2No
-cmllYiBPZGVkIEdhYmJheToKPj4gPj4gPk9uIE1vbiwgQXByIDExLCAyMDE2IGF0IDQ6MjggUE0s
-IENocmlzdGlhbiBLw7ZuaWcKPj4gPj4gPjxjaHJpc3RpYW4ua29lbmlnQGFtZC5jb20+IHdyb3Rl
-Ogo+PiA+PiA+PkFtIDA5LjA0LjIwMTYgdW0gMDI6MjUgc2NocmllYiBMdWlzIFIuIFJvZHJpZ3Vl
-ejoKPj4gPj4gPj4+T24gVHVlLCBNYXIgMjksIDIwMTYgYXQgMTA6NDEgQU0sIEx1aXMgUi4gUm9k
-cmlndWV6Cj4+ID4+ID4+PiA8bWNncm9mQGtlcm5lbC5vcmc+IHdyb3RlOgo+PiA+PiA+Pj4+V2Ug
-bmVlZCB0byBlbnN1cmUgYW1kIGlvbW11IHYyIGluaXRpYWxpemVzIGJlZm9yZQo+PiA+PiA+Pj4+
-ZHJpdmVyIHVzZXMgc3VjaCBhcyBkcml2ZXJzL2dwdS9kcm0vYW1kL2FtZGtmZC9rZmRfbW9kdWxl
-LmMsCj4+ID4+ID4+Pj50byBkbyB0aGlzIG1ha2UgaXRzIGluaXQgcm91dGluZSBhIHN1YnN5c19p
-bml0Y2FsbCgpIHdoaWNoCj4+ID4+ID4+Pj5lbnN1cmVzIGl0cyBsb2FkIGluaXQgaXMgY2FsbGVk
-IGZpcnN0IHRoYW4gbW9kdWxlcyB3aGVuCj4+ID4+ID4+Pj5idWlsdC1pbi4KPj4gPj4gPj4+Pgo+
-PiA+PiA+Pj4+VGhpcyByZXZlcnRzIHRoZSBvbGQgd29yayBhcm91bmQgaW1wbGVtZW50ZWQgdGhy
-b3VnaCBjb21taXQKPj4gPj4gPj4+PjFiYWNjODk0YzIyN2ZhZDhhNyAoImRyaXZlcnM6IE1vdmUg
-aW9tbXUvIGJlZm9yZSBncHUvIGluCj4+ID4+ID4+Pj4gTWFrZWZpbGUiKSwKPj4gPj4gPj4+Pmlu
-c3RlYWQgb2YgbWFraW5nIHRoZSBkZXBlbmRlbmN5IGltcGxpY2l0IGJ5IGxpbmtlciBvcmRlciB0
-aGlzCj4+ID4+ID4+Pj5tYWtlcyB0aGUgb3JkZXJpbmcgcmVxdWlyZW1lbnQgZXhwbGljaXQgdGhy
-b3VnaCBwcm9wZXIga2VybmVsCj4+ID4+ID4+Pj5BUElzLgo+PiA+PiA+Pj4+Cj4+ID4+ID4+Pj5D
-YzogT2RlZCBHYWJiYXkgPG9kZWQuZ2FiYmF5QGFtZC5jb20+Cj4+ID4+ID4+Pj5DYzogQ2hyaXN0
-aWFuIEvDtm5pZyA8Y2hyaXN0aWFuLmtvZW5pZ0BhbWQuY29tPgo+PiA+PiA+Pj4+U2lnbmVkLW9m
-Zi1ieTogTHVpcyBSLiBSb2RyaWd1ZXogPG1jZ3JvZkBrZXJuZWwub3JnPgo+PiA+PiA+Pgo+PiA+
-PiA+PlNvcnJ5IGZvciBub3QgcmVzcG9uZGluZyBlYXJsaWVyLiBKdXN0IGNvbWluZyBiYWNrIHRv
-IGFsbCB0aGUgc3R1ZmYKPj4gPj4gPj4gb24gbXkgVE9ETyBsaXN0Lgo+PiA+PiA+Pgo+PiA+PiA+
-PlBhdGNoIGlzIEFja2VkLWJ5OiBDaHJpc3RpYW4gS8O2bmlnIDxjaHJpc3RpYW4ua29lbmlnQGFt
-ZC5jb20+Cj4+ID4+ID4KPj4gPj4gPkNocmlzdGlhbiwKPj4gPj4gPkp1c3Qgd2FudGVkIHRvIGJl
-IHN1cmUgaWYgeW91IHRlc3RlZCB0aGlzIHBhdGNoLXNldCBvciBub3QuCj4+ID4+Cj4+ID4+IEkg
-ZGlkIE5PVCB0ZXN0ZWQgaXQuIElmIEFNRCBJT01NVSByZXF1aXJlcyBzb21ldGhpbmcgd2hpY2gg
-d2lsbCBub3cKPj4gPj4gaW5pdGlhbGl6ZSBhZnRlciB0aGUgSU9NTVUgbW9kdWxlIHdlIHdpbGwg
-b2J2aW91c2x5IHJ1biBpbnRvIHRyb3VibGUKPj4gPj4gYWdhaW4uCj4+ID4+Cj4+ID4+IEkgYXNz
-dW1lZCB0aGF0IHRoZSBjcmVhdG9yIG9mIHRoZSBwYXRjaCBkaWQgc29tZSB0ZXN0aW5nLgo+PiA+
-Cj4+ID4gTm9wZSwgaGVuY2UgW1JURl0gUmVxdWVzdCBGb3IgVGVzdGluZy4KPj4gPgo+PiA+PiA+
-SSBkb24ndCB0aGluayBpdCBzaG91bGQgYmUgbWVyZ2VkIHdpdGhvdXQgdGVzdGluZy4gSWYgeW91
-IGFscmVhZHkKPj4gPj4gPnRlc3RlZCBpdCB0aGFuIGZpbmUuIElmIG5vdCwgSSB0aGluayBJIGNh
-biBkbyBpdCBpbiB0aGUgbmV4dCB3ZWVrIG9yCj4+ID4+ID5zbyAoanVzdCBjYW1lIGJhY2sgZnJv
-bSBQVE8pLgo+PiA+Pgo+PiA+PiBZZWFoLCBhZ3JlZSB0b3RhbGx5Lgo+PiA+Cj4+ID4gQWdyZWVk
-LCBwbGVhc2UgbGV0IG1lIGtub3cgaWYgc29tZW9uZSBpcyBhYmxlIHRvIHRlc3QgYW5kIGNvbmZp
-cm0KPj4gPiB0aGlzIHdvcmtzLiBJdCBzaG91bGQgd29yay4KPj4gPgo+PiA+ICAgTHVpcwo+Pgo+
-PiBIaSwKPj4gU28gSSBmaW5hbGx5IGdvdCB0byB0ZXN0IHRoaXMgcGF0Y2ggYW5kIGl0J3Mgbm90
-IHdvcmtpbmcuCj4+IFRoZSByZWFzb24gaXMgdGhhdCBBTUQgSU9NTVV2MiBnZXRzIGluaXRpYWxp
-emVkICpiZWZvcmUqIEFNRCBJT01NVXYxCj4+IGRyaXZlciAhCj4KPiBUaGFua3MgY2FuIHlvdSB0
-cnkgdXNpbmcgbGF0ZV9pbml0Y2FsbCgpIGluc3RlYWQgdGhlbj8KPgo+ICAgTHVpcwoKVGhhdCB3
-aWxsIG1ha2UgaXQgaW5pdGlhbGl6ZSAqYWZ0ZXIqIGRybSBzdWJzeXN0ZW0sIHdoaWNoIHdpbGwg
-Y2F1c2UKYW5vdGhlciBidWcuCgpPZGVkCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
-ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
-aW5mby9pb21tdQ==
+On Fri, Apr 15, 2016 at 01:29:14PM -0500, Timur Tabi wrote:
+> On Thu, Apr 14, 2016 at 12:25 PM, Lorenzo Pieralisi
+> <lorenzo.pieralisi@arm.com> wrote:
+> > +void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
+> > +{
+> > +       struct iommu_ops *iommu;
+> > +
+> > +       iommu = iort_iommu_configure(dev);
+> > +
+> > +       /*
+> > +        * Assume dma valid range starts at 0 and covers the whole
+> > +        * coherent_dma_mask.
+> > +        */
+> > +       arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
+> > +                          attr == DEV_DMA_COHERENT);
+> > +}
+> 
+> I have a network driver that is impacted by this code, so thank you
+> for posting this. (See
+> https://www.mail-archive.com/netdev@vger.kernel.org/msg106249.html).
+> 
+> One one SOC, the driver needs to set the mask to 32 bits.  On another
+> SOC, it needs to set it to 64 bits.  On device tree, the driver will
+> use dma-ranges.
+
+First off I think we agree this patch does not change current behaviour
+as far as the devices default dma_mask are concerned. They are
+initialized in PCI/ACPI core code:
+
+- pci_setup_device()
+- acpi_create_platform_device()
+
+As for ACPI DT-dma-ranges equivalent I have to check if I can use
+the _DMA method for that so that we can put in place the same
+mechanism as DT to override the default masks, other than that it is
+up to the drivers to set-up the dma mask accordingly, that's not
+something this patchset is changing anyway.
+
+> In your patches, where is coherent_dma_mask initialized?  I found this
+> code in add_smmu_platform_device(), but I think this is setting the
+> mask for the IOMMU driver, not the individual devices.  Either way, I
+> don't understand where the correct value is going to be overridden.
+
+For the ARM SMMU table walker:
+
+arm_smmu_device_cfg_probe() - dma_set_mask_and_coherent()
+
+For other devices see above.
+
+Thanks,
+Lorenzo
+
+> 
+> +       /*
+> +        * Set default dma mask value for the table walker,
+> +        * to be overridden on probing with correct value.
+> +        */
+> +       *pdev->dev.dma_mask = DMA_BIT_MASK(32);
+> +       pdev->dev.coherent_dma_mask = *pdev->dev.dma_mask;
+> 
+> -- 
+> Qualcomm Innovation Center, Inc.
+> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+> a Linux Foundation Collaborative Project.
+> 
