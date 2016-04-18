@@ -1,98 +1,67 @@
 From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: [RFC v6 08/10] PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI controller supports IRQ remapping
-Date: Mon, 18 Apr 2016 19:04:01 +0800
-Message-ID: <1460977443-29405-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+Subject: [RFC v6 10/10] vfio-pci: Allow to mmap MSI-X table if interrupt remapping is supported
+Date: Mon, 18 Apr 2016 19:04:03 +0800
+Message-ID: <1460977443-29405-3-git-send-email-xyjxie@linux.vnet.ibm.com>
+References: <1460977443-29405-1-git-send-email-xyjxie@linux.vnet.ibm.com>
 Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <1460977443-29405-1-git-send-email-xyjxie@linux.vnet.ibm.com>
 Sender: kvm-owner@vger.kernel.org
 To: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org
 Cc: alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, Yongji Xie <xyjxie@linux.vnet.ibm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On ARM HW the capability of IRQ remapping is abstracted on
-MSI controller side. MSI_FLAG_IRQ_REMAPPING is used to advertise
-this [1].
+This patch enables mmapping MSI-X tables if hardware supports
+interrupt remapping which can ensure that a given pci device
+can only shoot the MSIs assigned for it.
 
-To have a universal flag to test this capability for different
-archs on PCI side, we set PCI_BUS_FLAGS_MSI_REMAP for PCI buses
-when MSI_FLAG_IRQ_REMAPPING is set.
-
-[1] http://www.spinics.net/lists/kvm/msg130256.html
+With MSI-X table mmapped, we also need to expose the
+read/write interface which will be used to access MSI-X table.
 
 Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
 ---
- drivers/pci/msi.c   |   12 ++++++++++++
- drivers/pci/probe.c |    3 +++
- include/linux/msi.h |    6 +++++-
- 3 files changed, 20 insertions(+), 1 deletion(-)
+ drivers/vfio/pci/vfio_pci.c      |    7 +++++--
+ drivers/vfio/pci/vfio_pci_rdwr.c |    3 ++-
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-index a080f44..1661cdf 100644
---- a/drivers/pci/msi.c
-+++ b/drivers/pci/msi.c
-@@ -1134,6 +1134,18 @@ void *msi_desc_to_pci_sysdata(struct msi_desc *desc)
- }
- EXPORT_SYMBOL_GPL(msi_desc_to_pci_sysdata);
+diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+index dc1779c..b08abe0 100644
+--- a/drivers/vfio/pci/vfio_pci.c
++++ b/drivers/vfio/pci/vfio_pci.c
+@@ -635,7 +635,9 @@ static long vfio_pci_ioctl(void *device_data,
+ 				     VFIO_REGION_INFO_FLAG_WRITE;
+ 			if (vdev->bar_mmap_supported[info.index]) {
+ 				info.flags |= VFIO_REGION_INFO_FLAG_MMAP;
+-				if (info.index == vdev->msix_bar) {
++				if (info.index == vdev->msix_bar &&
++					!(pdev->bus->bus_flags &
++					PCI_BUS_FLAGS_MSI_REMAP)) {
+ 					ret = msix_sparse_mmap_cap(vdev, &caps);
+ 					if (ret)
+ 						return ret;
+@@ -1067,7 +1069,8 @@ static int vfio_pci_mmap(void *device_data, struct vm_area_struct *vma)
+ 	if (req_start + req_len > phys_len)
+ 		return -EINVAL;
  
-+void pci_bus_check_msi_remapping(struct pci_bus *bus,
-+				 struct irq_domain *domain)
-+{
-+#ifdef CONFIG_PCI_MSI_IRQ_DOMAIN
-+	struct msi_domain_info *info;
-+
-+	info = msi_get_domain_info(domain);
-+	if (info->flags & MSI_FLAG_IRQ_REMAPPING)
-+		bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
-+#endif
-+}
-+
- #ifdef CONFIG_PCI_MSI_IRQ_DOMAIN
- /**
-  * pci_msi_domain_write_msg - Helper to write MSI message to PCI config space
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 6d7ab9b..25cf1b1 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -696,6 +696,9 @@ static void pci_set_bus_msi_domain(struct pci_bus *bus)
- 	if (!d)
- 		d = pci_host_bridge_msi_domain(b);
+-	if (index == vdev->msix_bar) {
++	if (index == vdev->msix_bar &&
++		!(pdev->bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP)) {
+ 		/*
+ 		 * Disallow mmaps overlapping the MSI-X table; users don't
+ 		 * get to touch this directly.  We could find somewhere
+diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
+index 5ffd1d9..dbf9cd0 100644
+--- a/drivers/vfio/pci/vfio_pci_rdwr.c
++++ b/drivers/vfio/pci/vfio_pci_rdwr.c
+@@ -164,7 +164,8 @@ ssize_t vfio_pci_bar_rw(struct vfio_pci_device *vdev, char __user *buf,
+ 	} else
+ 		io = vdev->barmap[bar];
  
-+	if (d && b == bus)
-+		pci_bus_check_msi_remapping(bus, d);
-+
- 	dev_set_msi_domain(&bus->dev, d);
- }
- 
-diff --git a/include/linux/msi.h b/include/linux/msi.h
-index 03eda72..b4c649e 100644
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -15,6 +15,8 @@ extern int pci_msi_ignore_mask;
- struct irq_data;
- struct msi_desc;
- struct pci_dev;
-+struct pci_bus;
-+struct irq_domain;
- struct platform_msi_priv_data;
- void __get_cached_msi_msg(struct msi_desc *entry, struct msi_msg *msg);
- void get_cached_msi_msg(unsigned int irq, struct msi_msg *msg);
-@@ -155,6 +157,9 @@ void arch_restore_msi_irqs(struct pci_dev *dev);
- void default_teardown_msi_irqs(struct pci_dev *dev);
- void default_restore_msi_irqs(struct pci_dev *dev);
- 
-+void pci_bus_check_msi_remapping(struct pci_bus *bus,
-+				 struct irq_domain *domain);
-+
- struct msi_controller {
- 	struct module *owner;
- 	struct device *dev;
-@@ -173,7 +178,6 @@ struct msi_controller {
- #include <linux/irqhandler.h>
- #include <asm/msi.h>
- 
--struct irq_domain;
- struct irq_domain_ops;
- struct irq_chip;
- struct device_node;
+-	if (bar == vdev->msix_bar) {
++	if (bar == vdev->msix_bar &&
++		!(pdev->bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP)) {
+ 		x_start = vdev->msix_offset;
+ 		x_end = vdev->msix_offset + vdev->msix_size;
+ 	}
 -- 
 1.7.9.5
 
