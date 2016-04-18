@@ -1,67 +1,51 @@
-From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: [RFC v6 10/10] vfio-pci: Allow to mmap MSI-X table if interrupt remapping is supported
-Date: Mon, 18 Apr 2016 19:04:03 +0800
-Message-ID: <1460977443-29405-3-git-send-email-xyjxie@linux.vnet.ibm.com>
-References: <1460977443-29405-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <1460977443-29405-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Sender: kvm-owner@vger.kernel.org
-To: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org
-Cc: alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, Yongji Xie <xyjxie@linux.vnet.ibm.com>
+From: David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>
+Subject: RE: [RFC v6 06/10] PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
+Date: Mon, 18 Apr 2016 11:30:07 +0000
+Message-ID: <063D6719AE5E284EB5DD2968C1650D6D5F4A45A8@AcuExch.aculab.com>
+References: <1460977120-29367-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1460977120-29367-1-git-send-email-xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Yongji Xie' <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: "nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org" <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, "alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org" <alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org" <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, "warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch enables mmapping MSI-X tables if hardware supports
-interrupt remapping which can ensure that a given pci device
-can only shoot the MSIs assigned for it.
+From: Yongji Xie
+> Sent: 18 April 2016 11:59
+> We introduce a new pci_bus_flags, PCI_BUS_FLAGS_MSI_REMAP
+> which indicates all devices on the bus are protected by the
+> hardware which supports IRQ remapping(intel naming).
+> 
+> This flag will be used to know whether it's safe to expose
+> MSI-X tables of PCI BARs to userspace. Because the capability
+> of IRQ remapping can guarantee the PCI device cannot trigger
+> MSIs that correspond to interrupt IDs of other devices.
 
-With MSI-X table mmapped, we also need to expose the
-read/write interface which will be used to access MSI-X table.
+I'm worried that this entire series is going to break drivers
+for existing hardware.
 
-Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
----
- drivers/vfio/pci/vfio_pci.c      |    7 +++++--
- drivers/vfio/pci/vfio_pci_rdwr.c |    3 ++-
- 2 files changed, 7 insertions(+), 3 deletions(-)
+I understand some of the reasoning for 'vm pass through' configurations,
+but there will be PCIe devices out there that have the MSI-X tables
+in the same BAR as other device registers.
+If you are lucky nothing else is in the same 4k area, but I wouldn't
+assume it.
 
-diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
-index dc1779c..b08abe0 100644
---- a/drivers/vfio/pci/vfio_pci.c
-+++ b/drivers/vfio/pci/vfio_pci.c
-@@ -635,7 +635,9 @@ static long vfio_pci_ioctl(void *device_data,
- 				     VFIO_REGION_INFO_FLAG_WRITE;
- 			if (vdev->bar_mmap_supported[info.index]) {
- 				info.flags |= VFIO_REGION_INFO_FLAG_MMAP;
--				if (info.index == vdev->msix_bar) {
-+				if (info.index == vdev->msix_bar &&
-+					!(pdev->bus->bus_flags &
-+					PCI_BUS_FLAGS_MSI_REMAP)) {
- 					ret = msix_sparse_mmap_cap(vdev, &caps);
- 					if (ret)
- 						return ret;
-@@ -1067,7 +1069,8 @@ static int vfio_pci_mmap(void *device_data, struct vm_area_struct *vma)
- 	if (req_start + req_len > phys_len)
- 		return -EINVAL;
- 
--	if (index == vdev->msix_bar) {
-+	if (index == vdev->msix_bar &&
-+		!(pdev->bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP)) {
- 		/*
- 		 * Disallow mmaps overlapping the MSI-X table; users don't
- 		 * get to touch this directly.  We could find somewhere
-diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
-index 5ffd1d9..dbf9cd0 100644
---- a/drivers/vfio/pci/vfio_pci_rdwr.c
-+++ b/drivers/vfio/pci/vfio_pci_rdwr.c
-@@ -164,7 +164,8 @@ ssize_t vfio_pci_bar_rw(struct vfio_pci_device *vdev, char __user *buf,
- 	} else
- 		io = vdev->barmap[bar];
- 
--	if (bar == vdev->msix_bar) {
-+	if (bar == vdev->msix_bar &&
-+		!(pdev->bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP)) {
- 		x_start = vdev->msix_offset;
- 		x_end = vdev->msix_offset + vdev->msix_size;
- 	}
--- 
-1.7.9.5
+In any case, if the hardware can't police the card's master transfers
+there is nothing to stop a different bus master block on the card
+from raising MSI-X interrupts - they are just a PCIe write.
+So all you are doing is raising the bar slightly and giving a very false
+sense of security.
 
+	David
