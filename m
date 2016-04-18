@@ -1,18 +1,18 @@
-From: Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Subject: Re: [RFT v2] iommu/amd: use subsys_initcall() on amdv2 iommu
-Date: Mon, 18 Apr 2016 09:48:11 +0300
-Message-ID: <CAFCwf12SJ-dTv6PC0_KfHbtC9951xb_4v8wu5uSjXO-V3TgdkA@mail.gmail.com>
+Date: Sun, 17 Apr 2016 23:55:45 -0700
+Message-ID: <CAB=NE6WL7j_azrFxQUG3bybXtu67ew51CyzYvkBct6tCdARKDg@mail.gmail.com>
 References: <20160316171719.GE2195@8bytes.org>
 	<1459273313-5139-1-git-send-email-mcgrof@kernel.org>
 	<CAB=NE6XCmMk4sraQo34XQJfjWu_yRc1rar_eQRSET8Q7VR9EOw@mail.gmail.com>
 	<570BA694.8040900@amd.com>
 	<CAFCwf10oD9c3MOW3+J8A5MVjVkX0nNRGCEE2pWcQxOy7mjUsBw@mail.gmail.com>
 	<570BAC2B.4090508@amd.com> <20160412220715.GL1990@wotan.suse.de>
+	<CAFCwf12SJ-dTv6PC0_KfHbtC9951xb_4v8wu5uSjXO-V3TgdkA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: multipart/mixed; boundary="===============1907045455101721765=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160412220715.GL1990-B4tOwbsTzaBolqkO4TVVkw@public.gmane.org>
+In-Reply-To: <CAFCwf12SJ-dTv6PC0_KfHbtC9951xb_4v8wu5uSjXO-V3TgdkA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,121 +22,176 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, christian.koenig-5C7GfCeVMHo@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gV2VkLCBBcHIgMTMsIDIwMTYgYXQgMTowNyBBTSwgTHVpcyBSLiBSb2RyaWd1ZXogPG1jZ3Jv
-ZkBrZXJuZWwub3JnPiB3cm90ZToKPiBPbiBNb24sIEFwciAxMSwgMjAxNiBhdCAwMzo1Mjo0M1BN
-ICswMjAwLCBDaHJpc3RpYW4gS8O2bmlnIHdyb3RlOgo+PiBBbSAxMS4wNC4yMDE2IHVtIDE1OjM5
-IHNjaHJpZWIgT2RlZCBHYWJiYXk6Cj4+ID5PbiBNb24sIEFwciAxMSwgMjAxNiBhdCA0OjI4IFBN
-LCBDaHJpc3RpYW4gS8O2bmlnCj4+ID48Y2hyaXN0aWFuLmtvZW5pZ0BhbWQuY29tPiB3cm90ZToK
-Pj4gPj5BbSAwOS4wNC4yMDE2IHVtIDAyOjI1IHNjaHJpZWIgTHVpcyBSLiBSb2RyaWd1ZXo6Cj4+
-ID4+Pk9uIFR1ZSwgTWFyIDI5LCAyMDE2IGF0IDEwOjQxIEFNLCBMdWlzIFIuIFJvZHJpZ3VleiA8
-bWNncm9mQGtlcm5lbC5vcmc+IHdyb3RlOgo+PiA+Pj4+V2UgbmVlZCB0byBlbnN1cmUgYW1kIGlv
-bW11IHYyIGluaXRpYWxpemVzIGJlZm9yZQo+PiA+Pj4+ZHJpdmVyIHVzZXMgc3VjaCBhcyBkcml2
-ZXJzL2dwdS9kcm0vYW1kL2FtZGtmZC9rZmRfbW9kdWxlLmMsCj4+ID4+Pj50byBkbyB0aGlzIG1h
-a2UgaXRzIGluaXQgcm91dGluZSBhIHN1YnN5c19pbml0Y2FsbCgpIHdoaWNoCj4+ID4+Pj5lbnN1
-cmVzIGl0cyBsb2FkIGluaXQgaXMgY2FsbGVkIGZpcnN0IHRoYW4gbW9kdWxlcyB3aGVuCj4+ID4+
-Pj5idWlsdC1pbi4KPj4gPj4+Pgo+PiA+Pj4+VGhpcyByZXZlcnRzIHRoZSBvbGQgd29yayBhcm91
-bmQgaW1wbGVtZW50ZWQgdGhyb3VnaCBjb21taXQKPj4gPj4+PjFiYWNjODk0YzIyN2ZhZDhhNyAo
-ImRyaXZlcnM6IE1vdmUgaW9tbXUvIGJlZm9yZSBncHUvIGluIE1ha2VmaWxlIiksCj4+ID4+Pj5p
-bnN0ZWFkIG9mIG1ha2luZyB0aGUgZGVwZW5kZW5jeSBpbXBsaWNpdCBieSBsaW5rZXIgb3JkZXIg
-dGhpcwo+PiA+Pj4+bWFrZXMgdGhlIG9yZGVyaW5nIHJlcXVpcmVtZW50IGV4cGxpY2l0IHRocm91
-Z2ggcHJvcGVyIGtlcm5lbAo+PiA+Pj4+QVBJcy4KPj4gPj4+Pgo+PiA+Pj4+Q2M6IE9kZWQgR2Fi
-YmF5IDxvZGVkLmdhYmJheUBhbWQuY29tPgo+PiA+Pj4+Q2M6IENocmlzdGlhbiBLw7ZuaWcgPGNo
-cmlzdGlhbi5rb2VuaWdAYW1kLmNvbT4KPj4gPj4+PlNpZ25lZC1vZmYtYnk6IEx1aXMgUi4gUm9k
-cmlndWV6IDxtY2dyb2ZAa2VybmVsLm9yZz4KPj4gPj4KPj4gPj5Tb3JyeSBmb3Igbm90IHJlc3Bv
-bmRpbmcgZWFybGllci4gSnVzdCBjb21pbmcgYmFjayB0byBhbGwgdGhlIHN0dWZmIG9uIG15IFRP
-RE8gbGlzdC4KPj4gPj4KPj4gPj5QYXRjaCBpcyBBY2tlZC1ieTogQ2hyaXN0aWFuIEvDtm5pZyA8
-Y2hyaXN0aWFuLmtvZW5pZ0BhbWQuY29tPgo+PiA+Cj4+ID5DaHJpc3RpYW4sCj4+ID5KdXN0IHdh
-bnRlZCB0byBiZSBzdXJlIGlmIHlvdSB0ZXN0ZWQgdGhpcyBwYXRjaC1zZXQgb3Igbm90Lgo+Pgo+
-PiBJIGRpZCBOT1QgdGVzdGVkIGl0LiBJZiBBTUQgSU9NTVUgcmVxdWlyZXMgc29tZXRoaW5nIHdo
-aWNoIHdpbGwgbm93Cj4+IGluaXRpYWxpemUgYWZ0ZXIgdGhlIElPTU1VIG1vZHVsZSB3ZSB3aWxs
-IG9idmlvdXNseSBydW4gaW50byB0cm91YmxlCj4+IGFnYWluLgo+Pgo+PiBJIGFzc3VtZWQgdGhh
-dCB0aGUgY3JlYXRvciBvZiB0aGUgcGF0Y2ggZGlkIHNvbWUgdGVzdGluZy4KPgo+IE5vcGUsIGhl
-bmNlIFtSVEZdIFJlcXVlc3QgRm9yIFRlc3RpbmcuCj4KPj4gPkkgZG9uJ3QgdGhpbmsgaXQgc2hv
-dWxkIGJlIG1lcmdlZCB3aXRob3V0IHRlc3RpbmcuIElmIHlvdSBhbHJlYWR5Cj4+ID50ZXN0ZWQg
-aXQgdGhhbiBmaW5lLiBJZiBub3QsIEkgdGhpbmsgSSBjYW4gZG8gaXQgaW4gdGhlIG5leHQgd2Vl
-ayBvcgo+PiA+c28gKGp1c3QgY2FtZSBiYWNrIGZyb20gUFRPKS4KPj4KPj4gWWVhaCwgYWdyZWUg
-dG90YWxseS4KPgo+IEFncmVlZCwgcGxlYXNlIGxldCBtZSBrbm93IGlmIHNvbWVvbmUgaXMgYWJs
-ZSB0byB0ZXN0IGFuZCBjb25maXJtCj4gdGhpcyB3b3Jrcy4gSXQgc2hvdWxkIHdvcmsuCj4KPiAg
-IEx1aXMKCkhpLApTbyBJIGZpbmFsbHkgZ290IHRvIHRlc3QgdGhpcyBwYXRjaCBhbmQgaXQncyBu
-b3Qgd29ya2luZy4KVGhlIHJlYXNvbiBpcyB0aGF0IEFNRCBJT01NVXYyIGdldHMgaW5pdGlhbGl6
-ZWQgKmJlZm9yZSogQU1EIElPTU1VdjEgZHJpdmVyICEKU28sIHdlIGdldCB0aGlzIGZyb20gZG1l
-c2c6CgpbICAgIDAuNDM5NjEyXSBBTUQgSU9NTVV2MiBkcml2ZXIgYnkgSm9lcmcgUm9lZGVsIDxq
-cm9lZGVsQHN1c2UuZGU+ClsgICAgMC40Mzk2MTRdIEFNRCBJT01NVXYyIGZ1bmN0aW9uYWxpdHkg
-bm90IGF2YWlsYWJsZSBvbiB0aGlzIHN5c3RlbQoKbGF0ZXIgd2UgZ2V0OgpbICAgIDEuMDg0NzQ5
-XSBBTUQtVmk6IEZvdW5kIElPTU1VIGF0IDAwMDA6MDA6MDAuMiBjYXAgMHg0MApbICAgIDEuMDg0
-NzUwXSBBTUQtVmk6ICBFeHRlbmRlZCBmZWF0dXJlczogIFBQUiBHVCBJQSBQQwpbICAgIDEuMDg0
-NzU0XSBBTUQtVmk6IEludGVycnVwdCByZW1hcHBpbmcgZW5hYmxlZApbICAgIDEuMDg1MTI1XSBB
-TUQtVmk6IExhenkgSU8vVExCIGZsdXNoaW5nIGVuYWJsZWQKCgpBbmQgd2hlbiBJIHJ1biBzb21l
-IEhTQSBzYW1wbGVzLCBhdCB0aGUgdGVhci1kb3duIHByb2Nlc3Mgc3RhZ2Ugd2UgZ2V0IHRoaXM6
-CgpbIDc5MzcuNzQwMzA2XSBCVUc6IHVuYWJsZSB0byBoYW5kbGUga2VybmVsIE5VTEwgcG9pbnRl
-ciBkZXJlZmVyZW5jZQphdCAwMDAwMDAwMDAwMDAwMDIwClsgNzkzNy43NDA5MzJdIElQOiBbPGZm
-ZmZmZmZmODE5NjYxYzI+XSBtdXRleF9sb2NrKzB4MTIvMHgzMApbIDc5MzcuNzQxNTM0XSBQR0Qg
-NTVhNTcwNjcgUFVEIDU1YTU2MDY3IFBNRCAwClsgNzkzNy43NDIxMjddIE9vcHM6IDAwMDIgWyMx
-XSBTTVAKWyA3OTM3Ljc0MjcwOV0gTW9kdWxlcyBsaW5rZWQgaW46IHh0X0NIRUNLU1VNIGlwdGFi
-bGVfbWFuZ2xlCmlwdF9NQVNRVUVSQURFIG5mX25hdF9tYXNxdWVyYWRlX2lwdjQgaXB0YWJsZV9u
-YXQgbmZfbmF0X2lwdjQgbmZfbmF0Cm5mX2Nvbm50cmFja19pcHY0IG5mX2RlZnJhZ19pcHY0IHh0
-X2Nvbm50cmFjayBuZl9jb25udHJhY2sgdHVuIGJyaWRnZQpzdHAgbGxjIGVidGFibGVfZmlsdGVy
-IGVidGFibGVzIGlwNnRhYmxlX2ZpbHRlciBpcDZfdGFibGVzCnNuZF9oZGFfY29kZWNfcmVhbHRl
-ayBzbmRfaGRhX2NvZGVjX2dlbmVyaWMgc25kX2hkYV9jb2RlY19oZG1pCnNuZF9oZGFfaW50ZWwg
-c25kX2hkYV9jb2RlYyBrdm1fYW1kIGt2bSBzbmRfaGRhX2NvcmUgc25kX2h3ZGVwIHNuZF9zZXEK
-ZWRhY19tY2VfYW1kIGVkYWNfY29yZSBzbmRfc2VxX2RldmljZSBpcnFieXBhc3MgY3JjdDEwZGlm
-X3BjbG11bApjcmMzMl9wY2xtdWwgcHBkZXYgcGNzcGtyIGNyYzMyY19pbnRlbCBzbmRfcGNtIGZ1
-c2UKZ2hhc2hfY2xtdWxuaV9pbnRlbCBzcDUxMDBfdGNvIGFjcGlfY3B1ZnJlcSBwYXJwb3J0X3Bj
-IGkyY19waWl4NApzbmRfdGltZXIgZmFtMTVoX3Bvd2VyIGsxMHRlbXAgdmlkZW8gdHBtX2luZmlu
-ZW9uIHRwbV90aXMgcGFycG9ydApzaHBjaHAgc25kIHRwbSBzb3VuZGNvcmUgbmZzZCBhdXRoX3Jw
-Y2dzcyBuZnNfYWNsIGxvY2tkIGdyYWNlIHN1bnJwYwpzZXJpb19yYXcgdWFzIHVzYl9zdG9yYWdl
-IHI4MTY5IG1paSBmamVzClsgNzkzNy43NDY4NjddIENQVTogMiBQSUQ6IDIyNjAgQ29tbToga2Zk
-dGVzdCBOb3QgdGFpbnRlZCA0LjYuMC1yYzMgIzUKWyA3OTM3Ljc0NzYwMF0gSGFyZHdhcmUgbmFt
-ZTogR2lnYWJ5dGUgVGVjaG5vbG9neSBDby4sIEx0ZC4gVG8gYmUKZmlsbGVkIGJ5IE8uRS5NLi9G
-MkE4OFhNLUQzSCwgQklPUyBGNSAwMS8wOS8yMDE0ClsgNzkzNy43NDgzNjNdIHRhc2s6IGZmZmY4
-ODAwNjk0NGQ4ODAgdGk6IGZmZmY4ODAwNWI3MzQwMDAgdGFzay50aToKZmZmZjg4MDA1YjczNDAw
-MApbIDc5MzcuNzQ5MTM2XSBSSVA6IDAwMTA6WzxmZmZmZmZmZjgxOTY2MWMyPl0gIFs8ZmZmZmZm
-ZmY4MTk2NjFjMj5dCm11dGV4X2xvY2srMHgxMi8weDMwClsgNzkzNy43NDk5MThdIFJTUDogMDAx
-ODpmZmZmODgwMDViNzM3Y2M4ICBFRkxBR1M6IDAwMDEwMjQ2ClsgNzkzNy43NTA2OTVdIFJBWDog
-MDAwMDAwMDAwMDAwMDAwMCBSQlg6IDAwMDAwMDAwMDAwMDAwMjAgUkNYOiAwMDAwMDAwMDAwMDAw
-MDAwClsgNzkzNy43NTE0OTFdIFJEWDogMDAwMDAwMDA4MDAwMDAwMCBSU0k6IGZmZmY4ODAwMDAw
-MDAwMDAgUkRJOiAwMDAwMDAwMDAwMDAwMDIwClsgNzkzNy43NTIyODZdIFJCUDogZmZmZjg4MDA1
-YjczN2NkMCBSMDg6IDAwMDAwMDAwMDAwMDAwMDIgUjA5OiBmZmZmZmZmZjgxNTMyMWUyClsgNzkz
-Ny43NTMwODRdIFIxMDogZmZmZmVhMDAwMTZmNzFjMCBSMTE6IDAwMDAwMDAwMDAwMDAyNDYgUjEy
-OiBmZmZmODgwMDM1MjM5NjgwClsgNzkzNy43NTM4ODRdIFIxMzogMDAwMDAwMDAwMDAwMDAwMCBS
-MTQ6IDAwMDAwMDAwMDAwMDAwMDEgUjE1OiBmZmZmODgwMDViNzM3ZDEwClsgNzkzNy43NTQ2ODRd
-IEZTOiAgMDAwMDdmZTBiYzY4YTc0MCgwMDAwKSBHUzpmZmZmODgwMDZkNTAwMDAwKDAwMDApCmtu
-bEdTOjAwMDAwMDAwMDAwMDAwMDAKWyA3OTM3Ljc1NTUwNF0gQ1M6ICAwMDEwIERTOiAwMDAwIEVT
-OiAwMDAwIENSMDogMDAwMDAwMDA4MDA1MDAzMwpbIDc5MzcuNzU2MzI4XSBDUjI6IDAwMDAwMDAw
-MDAwMDAwMjAgQ1IzOiAwMDAwMDAwMDU3MTk4MDAwIENSNDogMDAwMDAwMDAwMDA0MDZlMApbIDc5
-MzcuNzU3MTY4XSBTdGFjazoKWyA3OTM3Ljc1ODAwNF0gIDAwMDAwMDAwMDAwMDAwMDAgZmZmZjg4
-MDA1YjczN2Q4MCBmZmZmZmZmZjgxMGJhZTJjCmZmZmY4ODAwNWI3MzdkNDgKWyA3OTM3Ljc1ODg3
-Ml0gIDAwMDAwMDAwMDAwMDAwMjAgZmZmZjg4MDAwMDAwMDAwMCAwMDAwMDAwMDAwMDAwMDAwCmZm
-ZmY4ODAwNWI3MzdkMzgKWyA3OTM3Ljc1OTczN10gIGZmZmY4ODAwNWI3MzdkMzggZmZmZjg4MDA1
-YjczN2QxMCBmZmZmODgwMDViNzM3ZDEwCmZmZmY4ODAwZmZmZmZmZmYKWyA3OTM3Ljc2MDYwNl0g
-Q2FsbCBUcmFjZToKWyA3OTM3Ljc2MTQ3NF0gIFs8ZmZmZmZmZmY4MTBiYWUyYz5dIGZsdXNoX3dv
-cmtxdWV1ZSsweDljLzB4NTMwClsgNzkzNy43NjIzNDhdICBbPGZmZmZmZmZmODE4MTA3YTQ+XSA/
-IGFtZF9pb21tdV9kb21haW5fY2xlYXJfZ2NyMysweDg0LzB4YTAKWyA3OTM3Ljc2MzIyNV0gIFs8
-ZmZmZmZmZmY4MTgxNTdkMD5dIG1uX3JlbGVhc2UrMHg2MC8weDcwClsgNzkzNy43NjQxMDddICBb
-PGZmZmZmZmZmODEyMTBjNjQ+XSBfX21tdV9ub3RpZmllcl9yZWxlYXNlKzB4NDQvMHhjMApbIDc5
-MzcuNzY0OTk4XSAgWzxmZmZmZmZmZjgxMWVmYmNhPl0gZXhpdF9tbWFwKzB4MTVhLzB4MTcwClsg
-NzkzNy43NjU4ODldICBbPGZmZmZmZmZmODExZThiMzM+XSA/IGhhbmRsZV9tbV9mYXVsdCsweDE0
-ZTMvMHgxZDUwClsgNzkzNy43NjY3ODRdICBbPGZmZmZmZmZmODE0YjA2ZDA+XSA/IG5fdHR5X29w
-ZW4rMHhkMC8weGQwClsgNzkzNy43Njc2NzddICBbPGZmZmZmZmZmODExMjRjYWM+XSA/IGV4aXRf
-cm9idXN0X2xpc3QrMHg1Yy8weDExMApbIDc5MzcuNzY4NTczXSAgWzxmZmZmZmZmZjgxMGExOTli
-Pl0gbW1wdXQrMHg1Yi8weDEwMApbIDc5MzcuNzY5NDYzXSAgWzxmZmZmZmZmZjgxMGE4NTY2Pl0g
-ZG9fZXhpdCsweDI3Ni8weGIzMApbIDc5MzcuNzcwMzQ5XSAgWzxmZmZmZmZmZjgxMDY4NGE1Pl0g
-PyBfX2RvX3BhZ2VfZmF1bHQrMHgyMDUvMHg0ZDAKWyA3OTM3Ljc3MTIyNl0gIFs8ZmZmZmZmZmY4
-MTBhOGVhNz5dIGRvX2dyb3VwX2V4aXQrMHg0Ny8weGIwClsgNzkzNy43NzIwOTBdICBbPGZmZmZm
-ZmZmODEwYThmMjQ+XSBTeVNfZXhpdF9ncm91cCsweDE0LzB4MjAKWyA3OTM3Ljc3Mjk0MV0gIFs8
-ZmZmZmZmZmY4MTk2ODRmMj5dIGVudHJ5X1NZU0NBTExfNjRfZmFzdHBhdGgrMHgxYS8weGE0Clsg
-NzkzNy43NzM4MDFdIENvZGU6IDgzIGY4IDAxIDBmIDg1IDZkIGZmIGZmIGZmIGViIGRiIGU4IGY5
-IGU0IDczIGZmCjY2IDBmIDFmIDg0IDAwIDAwIDAwIDAwIDAwIDBmIDFmIDQ0IDAwIDAwIDU1IDQ4
-IDg5IGU1IDUzIDQ4IDg5IGZiIGU4CjFlIGU0IGZmIGZmIDxmMD4gZmYgMGIgNzkgMDggNDggODkg
-ZGYgZTggYzEgZmUgZmYgZmYgNjUgNDggOGIgMDQgMjUgYzAKZDIgMDAKWyA3OTM3Ljc3NTY3MV0g
-UklQICBbPGZmZmZmZmZmODE5NjYxYzI+XSBtdXRleF9sb2NrKzB4MTIvMHgzMApbIDc5MzcuNzc2
-NTg4XSAgUlNQIDxmZmZmODgwMDViNzM3Y2M4PgpbIDc5MzcuNzc3NDk5XSBDUjI6IDAwMDAwMDAw
-MDAwMDAwMjAKWyA3OTM3Ljc4MTc0Nl0gLS0tWyBlbmQgdHJhY2UgNDZhZWIzMWY3MzhjMDdmZiBd
-LS0tClsgNzkzNy43ODE3NDhdIEZpeGluZyByZWN1cnNpdmUgZmF1bHQgYnV0IHJlYm9vdCBpcyBu
-ZWVkZWQhCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlv
-bW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczov
-L2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+--===============1907045455101721765==
+Content-Type: multipart/alternative; boundary=001a1149039093a1670530bcd9dc
+
+--001a1149039093a1670530bcd9dc
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+On Apr 18, 2016 7:48 AM, "Oded Gabbay" <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>
+> On Wed, Apr 13, 2016 at 1:07 AM, Luis R. Rodriguez <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+wrote:
+> > On Mon, Apr 11, 2016 at 03:52:43PM +0200, Christian K=C3=B6nig wrote:
+> >> Am 11.04.2016 um 15:39 schrieb Oded Gabbay:
+> >> >On Mon, Apr 11, 2016 at 4:28 PM, Christian K=C3=B6nig
+> >> ><christian.koenig-5C7GfCeVMHo@public.gmane.org> wrote:
+> >> >>Am 09.04.2016 um 02:25 schrieb Luis R. Rodriguez:
+> >> >>>On Tue, Mar 29, 2016 at 10:41 AM, Luis R. Rodriguez <
+mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+> >> >>>>We need to ensure amd iommu v2 initializes before
+> >> >>>>driver uses such as drivers/gpu/drm/amd/amdkfd/kfd_module.c,
+> >> >>>>to do this make its init routine a subsys_initcall() which
+> >> >>>>ensures its load init is called first than modules when
+> >> >>>>built-in.
+> >> >>>>
+> >> >>>>This reverts the old work around implemented through commit
+> >> >>>>1bacc894c227fad8a7 ("drivers: Move iommu/ before gpu/ in
+Makefile"),
+> >> >>>>instead of making the dependency implicit by linker order this
+> >> >>>>makes the ordering requirement explicit through proper kernel
+> >> >>>>APIs.
+> >> >>>>
+> >> >>>>Cc: Oded Gabbay <oded.gabbay-5C7GfCeVMHo@public.gmane.org>
+> >> >>>>Cc: Christian K=C3=B6nig <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+> >> >>>>Signed-off-by: Luis R. Rodriguez <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> >> >>
+> >> >>Sorry for not responding earlier. Just coming back to all the stuff
+on my TODO list.
+> >> >>
+> >> >>Patch is Acked-by: Christian K=C3=B6nig <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+> >> >
+> >> >Christian,
+> >> >Just wanted to be sure if you tested this patch-set or not.
+> >>
+> >> I did NOT tested it. If AMD IOMMU requires something which will now
+> >> initialize after the IOMMU module we will obviously run into trouble
+> >> again.
+> >>
+> >> I assumed that the creator of the patch did some testing.
+> >
+> > Nope, hence [RTF] Request For Testing.
+> >
+> >> >I don't think it should be merged without testing. If you already
+> >> >tested it than fine. If not, I think I can do it in the next week or
+> >> >so (just came back from PTO).
+> >>
+> >> Yeah, agree totally.
+> >
+> > Agreed, please let me know if someone is able to test and confirm
+> > this works. It should work.
+> >
+> >   Luis
+>
+> Hi,
+> So I finally got to test this patch and it's not working.
+> The reason is that AMD IOMMUv2 gets initialized *before* AMD IOMMUv1
+driver !
+
+Thanks can you try using late_initcall() instead then?
+
+  Luis
+
+--001a1149039093a1670530bcd9dc
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<p dir=3D"ltr"><br>
+On Apr 18, 2016 7:48 AM, &quot;Oded Gabbay&quot; &lt;<a href=3D"mailto:oded=
+.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org">oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org</a>&gt; wrote:<br>
+&gt;<br>
+&gt; On Wed, Apr 13, 2016 at 1:07 AM, Luis R. Rodriguez &lt;<a href=3D"mail=
+to:mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org">mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org</a>&gt; wrote:<br>
+&gt; &gt; On Mon, Apr 11, 2016 at 03:52:43PM +0200, Christian K=C3=B6nig wr=
+ote:<br>
+&gt; &gt;&gt; Am 11.04.2016 um 15:39 schrieb Oded Gabbay:<br>
+&gt; &gt;&gt; &gt;On Mon, Apr 11, 2016 at 4:28 PM, Christian K=C3=B6nig<br>
+&gt; &gt;&gt; &gt;&lt;<a href=3D"mailto:christian.koenig-5C7GfCeVMHo@public.gmane.org">christian=
+.koenig-5C7GfCeVMHo@public.gmane.org</a>&gt; wrote:<br>
+&gt; &gt;&gt; &gt;&gt;Am 09.04.2016 um 02:25 schrieb Luis R. Rodriguez:<br>
+&gt; &gt;&gt; &gt;&gt;&gt;On Tue, Mar 29, 2016 at 10:41 AM, Luis R. Rodrigu=
+ez &lt;<a href=3D"mailto:mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org">mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org</a>&gt; wrote=
+:<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;We need to ensure amd iommu v2 initializes be=
+fore<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;driver uses such as drivers/gpu/drm/amd/amdkf=
+d/kfd_module.c,<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;to do this make its init routine a subsys_ini=
+tcall() which<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;ensures its load init is called first than mo=
+dules when<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;built-in.<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;This reverts the old work around implemented =
+through commit<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;1bacc894c227fad8a7 (&quot;drivers: Move iommu=
+/ before gpu/ in Makefile&quot;),<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;instead of making the dependency implicit by =
+linker order this<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;makes the ordering requirement explicit throu=
+gh proper kernel<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;APIs.<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;Cc: Oded Gabbay &lt;<a href=3D"mailto:oded.ga=
+bbay-5C7GfCeVMHo@public.gmane.org">oded.gabbay-5C7GfCeVMHo@public.gmane.org</a>&gt;<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;Cc: Christian K=C3=B6nig &lt;<a href=3D"mailt=
+o:christian.koenig-5C7GfCeVMHo@public.gmane.org">christian.koenig-5C7GfCeVMHo@public.gmane.org</a>&gt;<br>
+&gt; &gt;&gt; &gt;&gt;&gt;&gt;Signed-off-by: Luis R. Rodriguez &lt;<a href=
+=3D"mailto:mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org">mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org</a>&gt;<br>
+&gt; &gt;&gt; &gt;&gt;<br>
+&gt; &gt;&gt; &gt;&gt;Sorry for not responding earlier. Just coming back to=
+ all the stuff on my TODO list.<br>
+&gt; &gt;&gt; &gt;&gt;<br>
+&gt; &gt;&gt; &gt;&gt;Patch is Acked-by: Christian K=C3=B6nig &lt;<a href=
+=3D"mailto:christian.koenig-5C7GfCeVMHo@public.gmane.org">christian.koenig-5C7GfCeVMHo@public.gmane.org</a>&gt;<br>
+&gt; &gt;&gt; &gt;<br>
+&gt; &gt;&gt; &gt;Christian,<br>
+&gt; &gt;&gt; &gt;Just wanted to be sure if you tested this patch-set or no=
+t.<br>
+&gt; &gt;&gt;<br>
+&gt; &gt;&gt; I did NOT tested it. If AMD IOMMU requires something which wi=
+ll now<br>
+&gt; &gt;&gt; initialize after the IOMMU module we will obviously run into =
+trouble<br>
+&gt; &gt;&gt; again.<br>
+&gt; &gt;&gt;<br>
+&gt; &gt;&gt; I assumed that the creator of the patch did some testing.<br>
+&gt; &gt;<br>
+&gt; &gt; Nope, hence [RTF] Request For Testing.<br>
+&gt; &gt;<br>
+&gt; &gt;&gt; &gt;I don&#39;t think it should be merged without testing. If=
+ you already<br>
+&gt; &gt;&gt; &gt;tested it than fine. If not, I think I can do it in the n=
+ext week or<br>
+&gt; &gt;&gt; &gt;so (just came back from PTO).<br>
+&gt; &gt;&gt;<br>
+&gt; &gt;&gt; Yeah, agree totally.<br>
+&gt; &gt;<br>
+&gt; &gt; Agreed, please let me know if someone is able to test and confirm=
+<br>
+&gt; &gt; this works. It should work.<br>
+&gt; &gt;<br>
+&gt; &gt;=C2=A0 =C2=A0Luis<br>
+&gt;<br>
+&gt; Hi,<br>
+&gt; So I finally got to test this patch and it&#39;s not working.<br>
+&gt; The reason is that AMD IOMMUv2 gets initialized *before* AMD IOMMUv1 d=
+river !</p>
+<p dir=3D"ltr">Thanks can you try using late_initcall() instead then?</p>
+<p dir=3D"ltr">=C2=A0 Luis</p>
+
+--001a1149039093a1670530bcd9dc--
+
+--===============1907045455101721765==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1907045455101721765==--
