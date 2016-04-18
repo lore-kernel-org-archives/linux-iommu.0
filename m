@@ -1,66 +1,49 @@
 From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: [RFC v6 07/10] iommu: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have capability of IRQ remapping
-Date: Mon, 18 Apr 2016 18:58:37 +0800
-Message-ID: <1460977120-29367-2-git-send-email-xyjxie@linux.vnet.ibm.com>
-References: <1460977120-29367-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1460977120-29367-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Sender: linux-pci-owner@vger.kernel.org
+Subject: [RFC v6 09/10] pci-ioda: Set PCI_BUS_FLAGS_MSI_REMAP for IODA host bridge
+Date: Mon, 18 Apr 2016 19:04:02 +0800
+Message-ID: <1460977443-29405-2-git-send-email-xyjxie@linux.vnet.ibm.com>
+References: <1460977443-29405-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1460977443-29405-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org
 Cc: alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, Yongji Xie <xyjxie@linux.vnet.ibm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The capability of IRQ remapping is abstracted on IOMMU side on
-some archs. There is a existing flag IOMMU_CAP_INTR_REMAP for this.
-
-To have a universal flag to test this capability for different
-archs on PCI side, we set PCI_BUS_FLAGS_MSI_REMAP for PCI buses
-when IOMMU_CAP_INTR_REMAP is set.
+Any IODA host bridge have the capability of IRQ remapping.
+So we set PCI_BUS_FLAGS_MSI_REMAP when this kind of host birdge
+is detected.
 
 Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
 ---
- drivers/iommu/iommu.c |   15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ arch/powerpc/platforms/powernv/pci-ioda.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 0e3b009..5d2b6f6 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -813,6 +813,16 @@ struct iommu_group *pci_device_group(struct device *dev)
- 	return group;
+diff --git a/arch/powerpc/platforms/powernv/pci-ioda.c b/arch/powerpc/platforms/powernv/pci-ioda.c
+index f90dc04..9557638 100644
+--- a/arch/powerpc/platforms/powernv/pci-ioda.c
++++ b/arch/powerpc/platforms/powernv/pci-ioda.c
+@@ -3080,6 +3080,12 @@ static void pnv_pci_ioda_fixup(void)
+ 	pnv_npu_ioda_fixup();
  }
  
-+static void pci_check_msi_remapping(struct pci_dev *pdev,
-+					const struct iommu_ops *ops)
++int pnv_pci_ioda_root_bridge_prepare(struct pci_host_bridge *bridge)
 +{
-+	struct pci_bus *bus = pdev->bus;
-+
-+	if (ops->capable(IOMMU_CAP_INTR_REMAP) &&
-+		!(bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP))
-+		bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
++	bridge->bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
++	return 0;
 +}
 +
- /**
-  * iommu_group_get_for_dev - Find or create the IOMMU group for a device
-  * @dev: target device
-@@ -871,6 +881,9 @@ static int add_iommu_group(struct device *dev, void *data)
- 	const struct iommu_ops *ops = cb->ops;
- 	int ret;
- 
-+	if (dev_is_pci(dev) && ops->capable)
-+		pci_check_msi_remapping(to_pci_dev(dev), ops);
-+
- 	if (!ops->add_device)
- 		return 0;
- 
-@@ -913,6 +926,8 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 	 * result in ADD/DEL notifiers to group->notifier
+ /*
+  * Returns the alignment for I/O or memory windows for P2P
+  * bridges. That actually depends on how PEs are segmented.
+@@ -3364,6 +3370,8 @@ static void __init pnv_pci_init_ioda_phb(struct device_node *np,
  	 */
- 	if (action == BUS_NOTIFY_ADD_DEVICE) {
-+		if (dev_is_pci(dev) && ops->capable)
-+			pci_check_msi_remapping(to_pci_dev(dev), ops);
- 		if (ops->add_device)
- 			return ops->add_device(dev);
- 	} else if (action == BUS_NOTIFY_REMOVED_DEVICE) {
+ 	ppc_md.pcibios_fixup = pnv_pci_ioda_fixup;
+ 
++	ppc_md.pcibios_root_bridge_prepare = pnv_pci_ioda_root_bridge_prepare;
++
+ 	if (phb->type == PNV_PHB_NPU)
+ 		hose->controller_ops = pnv_npu_ioda_controller_ops;
+ 	else
 -- 
 1.7.9.5
