@@ -1,177 +1,63 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v7 7/8] genirq/msi: map/unmap the MSI doorbells on
-	msi_domain_alloc/free_irqs
-Date: Tue, 19 Apr 2016 17:13:09 +0000
-Message-ID: <1461085990-2547-8-git-send-email-eric.auger@linaro.org>
+From: Eric Auger <eric.auger@linaro.org>
+Subject: [PATCH v7 8/8] genirq/msi: use the MSI doorbell's IOVA when requested
+Date: Tue, 19 Apr 2016 17:13:10 +0000
+Message-ID: <1461085990-2547-9-git-send-email-eric.auger@linaro.org>
 References: <1461085990-2547-1-git-send-email-eric.auger@linaro.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1461085990-2547-1-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1461085990-2547-1-git-send-email-eric.auger@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: eric.auger@st.com, eric.auger@linaro.org, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org
+Cc: patches@linaro.org, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-This patch handles the iommu mapping of MSI doorbells that require to
-be mapped in an iommu domain. This happens on msi_domain_alloc/free_irqs
-since this is called in code that can sleep (pci_enable/disable_msi):
-iommu_map/unmap is not stated as atomic. On msi_domain_(de)activate and
-msi_domain_set_affinity, which must be atomic, we just lookup for this
-pre-allocated/mapped IOVA.
+On MSI message composition we now use the MSI doorbell's IOVA in
+place of the doorbell's PA in case the device is upstream to an
+IOMMU that requires MSI addresses to be mapped. The doorbell's
+allocation and mapping happened on an early stage (pci_enable_msi).
 
-Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Signed-off-by: Eric Auger <eric.auger@linaro.org>
 
 ---
+v6 -> v7:
+- allocation/mapping is done at an earlier stage. We now just perform
+  the iova lookup. So it is safe now to be called in a code that cannot
+  sleep. iommu_msi_set_doorbell_iova is moved in the dma-reserved-iommu
+  API: I think it cleans things up with respect to various #ifdef CONFIGS.
 
-v7: creation
+v5:
+- use macros to increase the readability
+- add comments
+- fix a typo that caused a compilation error if CONFIG_IOMMU_API
+  is not set
 ---
- kernel/irq/msi.c | 94 ++++++++++++++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 85 insertions(+), 9 deletions(-)
+ kernel/irq/msi.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-index 72bf4d6..e45907e 100644
+index e45907e..0ebb2d8 100644
 --- a/kernel/irq/msi.c
 +++ b/kernel/irq/msi.c
-@@ -14,6 +14,8 @@
- #include <linux/irq.h>
- #include <linux/irqdomain.h>
- #include <linux/msi.h>
-+#include <linux/dma-reserved-iommu.h>
-+#include <linux/iommu.h>
+@@ -19,6 +19,7 @@
  
  /* Temparory solution for building, will be removed later */
  #include <linux/pci.h>
-@@ -322,6 +324,59 @@ int msi_domain_populate_irqs(struct irq_domain *domain, struct device *dev,
- }
++#include <linux/dma-reserved-iommu.h>
  
- /**
-+ * msi_handle_doorbell_mapping: in case the irq data corresponds to an
-+ * MSI that requires iommu mapping, traverse the irq domain hierarchy
-+ * to retrieve the doorbells to handle and iommu_map/unmap them according
-+ * to @map boolean.
-+ *
-+ * @data: irq data handle
-+ * @map: mapping if true, unmapping if false
-+ */
-+static int msi_handle_doorbell_mappings(struct irq_data *data, bool map)
-+{
-+
-+	for (; data; data = data->parent_data) {
-+		const struct irq_chip_msi_doorbell_info *dbinfo;
-+		struct iommu_domain *domain;
-+		struct msi_desc *desc;
-+		struct irq_chip *chip;
-+		dma_addr_t iova;
-+		int ret = 0, i;
-+
-+		chip = irq_data_get_irq_chip(data);
-+		desc = irq_data_get_msi_desc(data);
-+
-+		domain = iommu_msi_mapping_desc_to_domain(desc);
-+		if (!domain)
-+			continue;
-+
-+		if (!chip->msi_doorbell_info)
-+			continue;
-+
-+		dbinfo = chip->msi_doorbell_info(data);
-+		if (!dbinfo)
-+			return -EINVAL;
-+
-+		for (i = 0; i < dbinfo->nb_doorbells; i++) {
-+			struct irq_chip_msi_doorbell __percpu *db;
-+
-+			db = per_cpu_ptr(dbinfo->percpu_doorbells, i);
-+			if (map) {
-+				ret = iommu_get_reserved_iova(domain,
-+							      db->base,
-+							      db->size,
-+							      db->prot,
-+							      &iova);
-+				if (ret)
-+					return ret;
-+			} else
-+				iommu_put_reserved_iova(domain, db->base);
-+		}
+ struct msi_desc *alloc_msi_entry(struct device *dev)
+ {
+@@ -64,8 +65,12 @@ static int msi_compose(struct irq_data *irq_data,
+ 
+ 	if (erase)
+ 		memset(msg, 0, sizeof(*msg));
+-	else
++	else {
+ 		ret = irq_chip_compose_msi_msg(irq_data, msg);
++		if (ret)
++			return ret;
++		iommu_msi_mapping_translate_msg(irq_data, msg);
 +	}
-+	return 0;
-+}
-+
-+/**
-  * msi_domain_alloc_irqs - Allocate interrupts from a MSI interrupt domain
-  * @domain:	The domain to allocate from
-  * @dev:	Pointer to device struct of the device for which the interrupts
-@@ -352,17 +407,25 @@ int msi_domain_alloc_irqs(struct irq_domain *domain, struct device *dev,
  
- 		virq = __irq_domain_alloc_irqs(domain, virq, desc->nvec_used,
- 					       dev_to_node(dev), &arg, false);
--		if (virq < 0) {
--			ret = -ENOSPC;
--			if (ops->handle_error)
--				ret = ops->handle_error(domain, desc, ret);
--			if (ops->msi_finish)
--				ops->msi_finish(&arg, ret);
--			return ret;
--		}
-+		if (virq < 0)
-+			goto error;
- 
--		for (i = 0; i < desc->nvec_used; i++)
-+		for (i = 0; i < desc->nvec_used; i++) {
- 			irq_set_msi_desc_off(virq, i, desc);
-+			ret = msi_handle_doorbell_mappings(
-+				irq_get_irq_data(virq + i), true);
-+			if (ret)
-+				break;
-+		}
-+
-+		if (ret) {
-+			for (; i >= 0; i--) {
-+				ret = msi_handle_doorbell_mappings(
-+					irq_get_irq_data(virq + i), false);
-+				irq_set_msi_desc_off(virq, i, NULL);
-+			}
-+			goto error;
-+		}
- 	}
- 
- 	if (ops->msi_finish)
-@@ -377,6 +440,13 @@ int msi_domain_alloc_irqs(struct irq_domain *domain, struct device *dev,
- 	}
- 
- 	return 0;
-+error:
-+	ret = -ENOSPC;
-+	if (ops->handle_error)
-+		ret = ops->handle_error(domain, desc, ret);
-+	if (ops->msi_finish)
-+		ops->msi_finish(&arg, ret);
-+	return ret;
+ 	return ret;
  }
- 
- /**
-@@ -396,6 +466,12 @@ void msi_domain_free_irqs(struct irq_domain *domain, struct device *dev)
- 		 * entry. If that's the case, don't do anything.
- 		 */
- 		if (desc->irq) {
-+			int ret;
-+
-+			ret = msi_handle_doorbell_mappings(
-+				irq_get_irq_data(desc->irq),
-+				false);
-+			WARN_ON(ret);
- 			irq_domain_free_irqs(desc->irq, desc->nvec_used);
- 			desc->irq = 0;
- 		}
 -- 
 1.9.1
