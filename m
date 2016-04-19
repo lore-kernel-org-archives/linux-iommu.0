@@ -1,8 +1,8 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v7 08/10] iommu/dma-reserved_iommu:
-	iommu_msi_mapping_desc_to_domain
-Date: Tue, 19 Apr 2016 16:56:32 +0000
-Message-ID: <1461084994-2355-9-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v7 05/10] iommu/dma-reserved-iommu: reserved binding rb-tree
+	and helpers
+Date: Tue, 19 Apr 2016 16:56:29 +0000
+Message-ID: <1461084994-2355-6-git-send-email-eric.auger@linaro.org>
 References: <1461084994-2355-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,94 +22,100 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This function checks whether
-- the device emitting the MSI belongs to a non default iommu domain
-- the iommu domain requires the MSI address to be mapped.
+we will need to track which host physical addresses are mapped to
+reserved IOVA. In that prospect we introduce a new RB tree indexed
+by physical address. This RB tree only is used for reserved IOVA
+bindings.
 
-If those conditions are met, the function returns the iommu domain
-to be used for mapping the MSI doorbell; else it returns NULL.
+It is expected this RB tree will contain very few bindings. Those
+generally correspond to single page mapping one MSI frame (GICv2m
+frame or ITS GITS_TRANSLATER frame).
 
 Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+
 ---
- drivers/iommu/dma-reserved-iommu.c | 19 +++++++++++++++++++
- include/linux/dma-reserved-iommu.h | 18 ++++++++++++++++++
- 2 files changed, 37 insertions(+)
+v5 -> v6:
+- add comment about @d->reserved_lock to be held
+
+v3 -> v4:
+- that code was formerly in "iommu/arm-smmu: add a reserved binding RB tree"
+---
+ drivers/iommu/dma-reserved-iommu.c | 63 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 63 insertions(+)
 
 diff --git a/drivers/iommu/dma-reserved-iommu.c b/drivers/iommu/dma-reserved-iommu.c
-index 2522235..907a17f 100644
+index 2562af0..f6fa18e 100644
 --- a/drivers/iommu/dma-reserved-iommu.c
 +++ b/drivers/iommu/dma-reserved-iommu.c
-@@ -17,6 +17,7 @@
+@@ -23,6 +23,69 @@ struct reserved_iova_domain {
+ 	int prot; /* iommu protection attributes to be obeyed */
+ };
  
- #include <linux/iommu.h>
- #include <linux/iova.h>
-+#include <linux/msi.h>
- 
- struct reserved_iova_domain {
- 	struct iova_domain *iovad;
-@@ -332,3 +333,21 @@ unlock:
- }
- EXPORT_SYMBOL_GPL(iommu_put_reserved_iova);
- 
-+struct iommu_domain *iommu_msi_mapping_desc_to_domain(struct msi_desc *desc)
++struct iommu_reserved_binding {
++	struct kref		kref;
++	struct rb_node		node;
++	struct iommu_domain	*domain;
++	phys_addr_t		addr;
++	dma_addr_t		iova;
++	size_t			size;
++};
++
++/* Reserved binding RB-tree manipulation */
++
++/* @d->reserved_lock must be held */
++static struct iommu_reserved_binding *find_reserved_binding(
++				    struct iommu_domain *d,
++				    phys_addr_t start, size_t size)
 +{
-+	struct device *dev;
-+	struct iommu_domain *d;
++	struct rb_node *node = d->reserved_binding_list.rb_node;
 +
-+	dev = msi_desc_to_dev(desc);
++	while (node) {
++		struct iommu_reserved_binding *binding =
++			rb_entry(node, struct iommu_reserved_binding, node);
 +
-+	d = iommu_get_domain_for_dev(dev);
++		if (start + size <= binding->addr)
++			node = node->rb_left;
++		else if (start >= binding->addr + binding->size)
++			node = node->rb_right;
++		else
++			return binding;
++	}
 +
-+	if (!d || (d->type == IOMMU_DOMAIN_DMA))
-+		return NULL;
-+
-+	if (iommu_domain_get_attr(d, DOMAIN_ATTR_MSI_MAPPING, NULL))
-+		return NULL;
-+
-+	return d;
-+}
-+EXPORT_SYMBOL_GPL(iommu_msi_mapping_desc_to_domain);
-diff --git a/include/linux/dma-reserved-iommu.h b/include/linux/dma-reserved-iommu.h
-index 8722131..8373929 100644
---- a/include/linux/dma-reserved-iommu.h
-+++ b/include/linux/dma-reserved-iommu.h
-@@ -19,6 +19,7 @@
- #include <linux/kernel.h>
- 
- struct iommu_domain;
-+struct msi_desc;
- 
- #ifdef CONFIG_IOMMU_DMA_RESERVED
- 
-@@ -70,6 +71,17 @@ int iommu_get_reserved_iova(struct iommu_domain *domain,
-  * if the binding ref count is null, destroy the reserved mapping
-  */
- void iommu_put_reserved_iova(struct iommu_domain *domain, phys_addr_t addr);
-+
-+/**
-+ * iommu_msi_mapping_desc_to_domain: in case the MSI originates from a device
-+ * upstream to an IOMMU and this IOMMU translates the MSI transaction,
-+ * this function returns the iommu domain the MSI doorbell address must be
-+ * mapped in. Else it returns NULL.
-+ *
-+ * @desc: msi desc handle
-+ */
-+struct iommu_domain *iommu_msi_mapping_desc_to_domain(struct msi_desc *desc);
-+
- #else
- 
- static inline int
-@@ -93,5 +105,11 @@ static inline int iommu_get_reserved_iova(struct iommu_domain *domain,
- static inline void iommu_put_reserved_iova(struct iommu_domain *domain,
- 					   phys_addr_t addr) {}
- 
-+static inline struct iommu_domain *
-+iommu_msi_mapping_desc_to_domain(struct msi_desc *desc)
-+{
 +	return NULL;
 +}
 +
- #endif	/* CONFIG_IOMMU_DMA_RESERVED */
- #endif	/* __DMA_RESERVED_IOMMU_H */
++/* @d->reserved_lock must be held */
++static void link_reserved_binding(struct iommu_domain *d,
++				  struct iommu_reserved_binding *new)
++{
++	struct rb_node **link = &d->reserved_binding_list.rb_node;
++	struct rb_node *parent = NULL;
++	struct iommu_reserved_binding *binding;
++
++	while (*link) {
++		parent = *link;
++		binding = rb_entry(parent, struct iommu_reserved_binding,
++				   node);
++
++		if (new->addr + new->size <= binding->addr)
++			link = &(*link)->rb_left;
++		else
++			link = &(*link)->rb_right;
++	}
++
++	rb_link_node(&new->node, parent, link);
++	rb_insert_color(&new->node, &d->reserved_binding_list);
++}
++
++/* @d->reserved_lock must be held */
++static void unlink_reserved_binding(struct iommu_domain *d,
++				    struct iommu_reserved_binding *old)
++{
++	rb_erase(&old->node, &d->reserved_binding_list);
++}
++
+ int iommu_alloc_reserved_iova_domain(struct iommu_domain *domain,
+ 				     dma_addr_t iova, size_t size, int prot,
+ 				     unsigned long order)
 -- 
 1.9.1
