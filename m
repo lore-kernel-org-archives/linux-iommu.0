@@ -1,22 +1,15 @@
-From: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
-Subject: Re: [RFT v2] iommu/amd: use subsys_initcall() on amdv2 iommu
-Date: Tue, 19 Apr 2016 10:02:52 +0800
-Message-ID: <571591CC.40700@iommu.org>
-References: <20160316171719.GE2195@8bytes.org>
-	<1459273313-5139-1-git-send-email-mcgrof@kernel.org>
-	<CAB=NE6XCmMk4sraQo34XQJfjWu_yRc1rar_eQRSET8Q7VR9EOw@mail.gmail.com>
-	<570BA694.8040900@amd.com>
-	<CAFCwf10oD9c3MOW3+J8A5MVjVkX0nNRGCEE2pWcQxOy7mjUsBw@mail.gmail.com>
-	<570BAC2B.4090508@amd.com> <20160412220715.GL1990@wotan.suse.de>
-	<CAFCwf12SJ-dTv6PC0_KfHbtC9951xb_4v8wu5uSjXO-V3TgdkA@mail.gmail.com>
-	<CAB=NE6WL7j_azrFxQUG3bybXtu67ew51CyzYvkBct6tCdARKDg@mail.gmail.com>
-	<CAFCwf12B6TQ5kYEG4+hYoWriv2rnTcngQLX_Cvtbz=64fo35Qg@mail.gmail.com>
-	<20160418120350.GE1990@wotan.suse.de>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [RFC PATCH 06/11] drivers: iommu: make of_xlate() interface DT
+	agnostic
+Date: Tue, 19 Apr 2016 10:28:02 +0200
+Message-ID: <5715EC12.2000009@samsung.com>
+References: <1460654743-7896-1-git-send-email-lorenzo.pieralisi@arm.com>
+	<1460654743-7896-7-git-send-email-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160418120350.GE1990-B4tOwbsTzaBolqkO4TVVkw@public.gmane.org>
+In-reply-to: <1460654743-7896-7-git-send-email-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,108 +19,276 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-CgotLS0tLS0tLSBPcmlnaW5hbCBNZXNzYWdlIC0tLS0tLS0tCj4gT24gTW9uLCBBcHIgMTgsIDIw
-MTYgYXQgMTA6MDI6MjRBTSArMDMwMCwgT2RlZCBHYWJiYXkgd3JvdGU6Cj4+IE9uIE1vbiwgQXBy
-IDE4LCAyMDE2IGF0IDk6NTUgQU0sIEx1aXMgUi4gUm9kcmlndWV6IDxtY2dyb2ZAa2VybmVsLm9y
-Zz4gd3JvdGU6Cj4+Pgo+Pj4gT24gQXByIDE4LCAyMDE2IDc6NDggQU0sICJPZGVkIEdhYmJheSIg
-PG9kZWQuZ2FiYmF5QGdtYWlsLmNvbT4gd3JvdGU6Cj4+Pj4KPj4+PiBPbiBXZWQsIEFwciAxMywg
-MjAxNiBhdCAxOjA3IEFNLCBMdWlzIFIuIFJvZHJpZ3VleiA8bWNncm9mQGtlcm5lbC5vcmc+Cj4+
-Pj4gd3JvdGU6Cj4+Pj4+IE9uIE1vbiwgQXByIDExLCAyMDE2IGF0IDAzOjUyOjQzUE0gKzAyMDAs
-IENocmlzdGlhbiBLw7ZuaWcgd3JvdGU6Cj4+Pj4+PiBBbSAxMS4wNC4yMDE2IHVtIDE1OjM5IHNj
-aHJpZWIgT2RlZCBHYWJiYXk6Cj4+Pj4+Pj4gT24gTW9uLCBBcHIgMTEsIDIwMTYgYXQgNDoyOCBQ
-TSwgQ2hyaXN0aWFuIEvDtm5pZwo+Pj4+Pj4+IDxjaHJpc3RpYW4ua29lbmlnQGFtZC5jb20+IHdy
-b3RlOgo+Pj4+Pj4+PiBBbSAwOS4wNC4yMDE2IHVtIDAyOjI1IHNjaHJpZWIgTHVpcyBSLiBSb2Ry
-aWd1ZXo6Cj4+Pj4+Pj4+PiBPbiBUdWUsIE1hciAyOSwgMjAxNiBhdCAxMDo0MSBBTSwgTHVpcyBS
-LiBSb2RyaWd1ZXoKPj4+Pj4+Pj4+IDxtY2dyb2ZAa2VybmVsLm9yZz4gd3JvdGU6Cj4+Pj4+Pj4+
-Pj4gV2UgbmVlZCB0byBlbnN1cmUgYW1kIGlvbW11IHYyIGluaXRpYWxpemVzIGJlZm9yZQo+Pj4+
-Pj4+Pj4+IGRyaXZlciB1c2VzIHN1Y2ggYXMgZHJpdmVycy9ncHUvZHJtL2FtZC9hbWRrZmQva2Zk
-X21vZHVsZS5jLAo+Pj4+Pj4+Pj4+IHRvIGRvIHRoaXMgbWFrZSBpdHMgaW5pdCByb3V0aW5lIGEg
-c3Vic3lzX2luaXRjYWxsKCkgd2hpY2gKPj4+Pj4+Pj4+PiBlbnN1cmVzIGl0cyBsb2FkIGluaXQg
-aXMgY2FsbGVkIGZpcnN0IHRoYW4gbW9kdWxlcyB3aGVuCj4+Pj4+Pj4+Pj4gYnVpbHQtaW4uCj4+
-Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiBUaGlzIHJldmVydHMgdGhlIG9sZCB3b3JrIGFyb3VuZCBpbXBs
-ZW1lbnRlZCB0aHJvdWdoIGNvbW1pdAo+Pj4+Pj4+Pj4+IDFiYWNjODk0YzIyN2ZhZDhhNyAoImRy
-aXZlcnM6IE1vdmUgaW9tbXUvIGJlZm9yZSBncHUvIGluCj4+Pj4+Pj4+Pj4gTWFrZWZpbGUiKSwK
-Pj4+Pj4+Pj4+PiBpbnN0ZWFkIG9mIG1ha2luZyB0aGUgZGVwZW5kZW5jeSBpbXBsaWNpdCBieSBs
-aW5rZXIgb3JkZXIgdGhpcwo+Pj4+Pj4+Pj4+IG1ha2VzIHRoZSBvcmRlcmluZyByZXF1aXJlbWVu
-dCBleHBsaWNpdCB0aHJvdWdoIHByb3BlciBrZXJuZWwKPj4+Pj4+Pj4+PiBBUElzLgo+Pj4+Pj4+
-Pj4+Cj4+Pj4+Pj4+Pj4gQ2M6IE9kZWQgR2FiYmF5IDxvZGVkLmdhYmJheUBhbWQuY29tPgo+Pj4+
-Pj4+Pj4+IENjOiBDaHJpc3RpYW4gS8O2bmlnIDxjaHJpc3RpYW4ua29lbmlnQGFtZC5jb20+Cj4+
-Pj4+Pj4+Pj4gU2lnbmVkLW9mZi1ieTogTHVpcyBSLiBSb2RyaWd1ZXogPG1jZ3JvZkBrZXJuZWwu
-b3JnPgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBTb3JyeSBmb3Igbm90IHJlc3BvbmRpbmcgZWFybGllci4g
-SnVzdCBjb21pbmcgYmFjayB0byBhbGwgdGhlIHN0dWZmCj4+Pj4+Pj4+IG9uIG15IFRPRE8gbGlz
-dC4KPj4+Pj4+Pj4KPj4+Pj4+Pj4gUGF0Y2ggaXMgQWNrZWQtYnk6IENocmlzdGlhbiBLw7ZuaWcg
-PGNocmlzdGlhbi5rb2VuaWdAYW1kLmNvbT4KPj4+Pj4+Pgo+Pj4+Pj4+IENocmlzdGlhbiwKPj4+
-Pj4+PiBKdXN0IHdhbnRlZCB0byBiZSBzdXJlIGlmIHlvdSB0ZXN0ZWQgdGhpcyBwYXRjaC1zZXQg
-b3Igbm90Lgo+Pj4+Pj4KPj4+Pj4+IEkgZGlkIE5PVCB0ZXN0ZWQgaXQuIElmIEFNRCBJT01NVSBy
-ZXF1aXJlcyBzb21ldGhpbmcgd2hpY2ggd2lsbCBub3cKPj4+Pj4+IGluaXRpYWxpemUgYWZ0ZXIg
-dGhlIElPTU1VIG1vZHVsZSB3ZSB3aWxsIG9idmlvdXNseSBydW4gaW50byB0cm91YmxlCj4+Pj4+
-PiBhZ2Fpbi4KPj4+Pj4+Cj4+Pj4+PiBJIGFzc3VtZWQgdGhhdCB0aGUgY3JlYXRvciBvZiB0aGUg
-cGF0Y2ggZGlkIHNvbWUgdGVzdGluZy4KPj4+Pj4KPj4+Pj4gTm9wZSwgaGVuY2UgW1JURl0gUmVx
-dWVzdCBGb3IgVGVzdGluZy4KPj4+Pj4KPj4+Pj4+PiBJIGRvbid0IHRoaW5rIGl0IHNob3VsZCBi
-ZSBtZXJnZWQgd2l0aG91dCB0ZXN0aW5nLiBJZiB5b3UgYWxyZWFkeQo+Pj4+Pj4+IHRlc3RlZCBp
-dCB0aGFuIGZpbmUuIElmIG5vdCwgSSB0aGluayBJIGNhbiBkbyBpdCBpbiB0aGUgbmV4dCB3ZWVr
-IG9yCj4+Pj4+Pj4gc28gKGp1c3QgY2FtZSBiYWNrIGZyb20gUFRPKS4KPj4+Pj4+Cj4+Pj4+PiBZ
-ZWFoLCBhZ3JlZSB0b3RhbGx5Lgo+Pj4+Pgo+Pj4+PiBBZ3JlZWQsIHBsZWFzZSBsZXQgbWUga25v
-dyBpZiBzb21lb25lIGlzIGFibGUgdG8gdGVzdCBhbmQgY29uZmlybQo+Pj4+PiB0aGlzIHdvcmtz
-LiBJdCBzaG91bGQgd29yay4KPj4+Pj4KPj4+Pj4gICAgTHVpcwo+Pj4+Cj4+Pj4gSGksCj4+Pj4g
-U28gSSBmaW5hbGx5IGdvdCB0byB0ZXN0IHRoaXMgcGF0Y2ggYW5kIGl0J3Mgbm90IHdvcmtpbmcu
-Cj4+Pj4gVGhlIHJlYXNvbiBpcyB0aGF0IEFNRCBJT01NVXYyIGdldHMgaW5pdGlhbGl6ZWQgKmJl
-Zm9yZSogQU1EIElPTU1VdjEKPj4+PiBkcml2ZXIgIQo+Pj4KPj4+IFRoYW5rcyBjYW4geW91IHRy
-eSB1c2luZyBsYXRlX2luaXRjYWxsKCkgaW5zdGVhZCB0aGVuPwo+Pj4KPj4+ICAgIEx1aXMKPj4K
-Pj4gVGhhdCB3aWxsIG1ha2UgaXQgaW5pdGlhbGl6ZSAqYWZ0ZXIqIGRybSBzdWJzeXN0ZW0sIHdo
-aWNoIHdpbGwgY2F1c2UKPj4gYW5vdGhlciBidWcuCj4KPiBIb2xkIHVwLCBJIHRob3VnaHQgdGhh
-dCB3ZSBuZWVkZWQgQU1EIElPTU1VdjIgdG8gZ2V0IGluaXRpYWxpemVkCj4gYmVmb3JlIEFNRCBJ
-T01NVXYxID8gVGhhdCdzIHdoYXQgdGhlIHBhdGNoIGRpZC4gQ2FuIHNvbWVvbmUgY2xhcmlmeQo+
-IHRoZSByZXF1aXJlbWVudHMgdGhlbj8KCldlIG11c3Qga2VlcCBBTUQgSU9NTVV2MiB0byBnZXQg
-aW5pdGlhbGl6ZWQgYWZ0ZXIgQU1EIElPTU1VdjHvvIwgU28geW91ciAKcGF0Y2ggbWFrZSB0aGUg
-c2VxdWVuY2UgcmV2ZXJzZS4KCj4KPiBJJ2xsIHByb3ZpZGUgc29tZSByZXZpZXcgb2YgdGhlIGN1
-cnJlbnQgc3RhdGUgb2YgYWZmYWlycyBmaXJzdCwgd2l0aG91dCB0aGUKPiBwYXRjaC4gQU1EIElP
-TU1VdjEgdXNlcyB4ODZfaW5pdC5pb21tdS5pb21tdV9pbml0IGFuZCB0aGF0IGhhcyBpdHMgb3du
-IGluaXQKPiBzZW1hbnRpY3MuIFNwZWNpZmljYWxseSB0aGF0IGdldHMgY2FsbGVkIHZpYSBwY2lf
-aW9tbXVfaW5pdCgpIHdoaWNoIGlzIHBlZ2dlZAo+IG9uIHRoZSBpbml0IG9yZGVyIHZpYSByb290
-ZnNfaW5pdGNhbGwocGNpX2lvbW11X2luaXQpOwo+Cj4gVGhlbiBBTUQgSU9NTVV2MiB1c2VzIG1v
-ZHVsZV9pbml0KCkgYW5kIHRoYXQgd2hlbiBpcyBidWlsdC1pbiBmYWxscyBvbiB0bwo+IF9faW5p
-dGNhbGwoKSB3aGljaCBpcyBkZXZpY2VfaW5pdGNhbGwoKS4KCkV4YWN0bHksIGl0IGlzIGFtZCBp
-b21tdSB2MSB2MiBjYWxsIHNlcXVlbmNlLgo+Cj4gVGhlIG9yZGVyIGlzOgo+Cj4gI2RlZmluZSBw
-dXJlX2luaXRjYWxsKGZuKSAgICAgICAgICAgICAgIF9fZGVmaW5lX2luaXRjYWxsKGZuLCAwKQo+
-Cj4gI2RlZmluZSBjb3JlX2luaXRjYWxsKGZuKSAgICAgICAgICAgICAgIF9fZGVmaW5lX2luaXRj
-YWxsKGZuLCAxKQo+ICNkZWZpbmUgY29yZV9pbml0Y2FsbF9zeW5jKGZuKSAgICAgICAgICBfX2Rl
-ZmluZV9pbml0Y2FsbChmbiwgMXMpCj4gI2RlZmluZSBwb3N0Y29yZV9pbml0Y2FsbChmbikgICAg
-ICAgICAgIF9fZGVmaW5lX2luaXRjYWxsKGZuLCAyKQo+ICNkZWZpbmUgcG9zdGNvcmVfaW5pdGNh
-bGxfc3luYyhmbikgICAgICBfX2RlZmluZV9pbml0Y2FsbChmbiwgMnMpCj4gI2RlZmluZSBhcmNo
-X2luaXRjYWxsKGZuKSAgICAgICAgICAgICAgIF9fZGVmaW5lX2luaXRjYWxsKGZuLCAzKQo+ICNk
-ZWZpbmUgYXJjaF9pbml0Y2FsbF9zeW5jKGZuKSAgICAgICAgICBfX2RlZmluZV9pbml0Y2FsbChm
-biwgM3MpCj4gI2RlZmluZSBzdWJzeXNfaW5pdGNhbGwoZm4pICAgICAgICAgICAgIF9fZGVmaW5l
-X2luaXRjYWxsKGZuLCA0KQo+ICNkZWZpbmUgc3Vic3lzX2luaXRjYWxsX3N5bmMoZm4pICAgICAg
-ICBfX2RlZmluZV9pbml0Y2FsbChmbiwgNHMpCj4gI2RlZmluZSBmc19pbml0Y2FsbChmbikgICAg
-ICAgICAgICAgICAgIF9fZGVmaW5lX2luaXRjYWxsKGZuLCA1KQo+ICNkZWZpbmUgZnNfaW5pdGNh
-bGxfc3luYyhmbikgICAgICAgICAgICBfX2RlZmluZV9pbml0Y2FsbChmbiwgNXMpCj4gI2RlZmlu
-ZSByb290ZnNfaW5pdGNhbGwoZm4pICAgICAgICAgICAgIF9fZGVmaW5lX2luaXRjYWxsKGZuLCBy
-b290ZnMpCj4gI2RlZmluZSBkZXZpY2VfaW5pdGNhbGwoZm4pICAgICAgICAgICAgIF9fZGVmaW5l
-X2luaXRjYWxsKGZuLCA2KQo+ICNkZWZpbmUgZGV2aWNlX2luaXRjYWxsX3N5bmMoZm4pICAgICAg
-ICBfX2RlZmluZV9pbml0Y2FsbChmbiwgNnMpCj4gI2RlZmluZSBsYXRlX2luaXRjYWxsKGZuKSAg
-ICAgICAgICAgICAgIF9fZGVmaW5lX2luaXRjYWxsKGZuLCA3KQo+ICNkZWZpbmUgbGF0ZV9pbml0
-Y2FsbF9zeW5jKGZuKSAgICAgICAgICBfX2RlZmluZV9pbml0Y2FsbChmbiwgN3MpCj4KPiBTbyB0
-ZWNobmljYWxseSByb290ZnNfaW5pdGNhbGwoKSAodjEgYW1kKSBzaG91bGQgYmUgYmVpbmcgY2Fs
-bGVkCj4gZmlyc3QgYWxyZWFkeSwgYW5kIGFmdGVyIHRoYXQgQU1EIElPTU1VdjIgZ2V0cyBjYWxs
-ZWQgbmV4dC4KPgo+IFlvdSBzYWlkIHRoYXQgd2l0aCBteSBwYXRjaCB5b3Ugc2F3IEFNRCBJT01N
-VXYyIGtpY2sgb2ZmIGZpcnN0LAo+IHRoYXQgd2FzIGludGVudGlvbmFsIGFzIEkgdGhvdWdodCB0
-aGF0J3Mgd2hhdCB5b3UgbmVlZGVkLiBDYW4KPiBzb21lb25lIHBsZWFzZSBkZXNjcmliZSB0aGUg
-cmVxdWlyZW1lbnRzPwo+Cj4gQWxzbyB3aGF0IGRvZXMgZHJtIHVzZSB0aGF0IHlvdSBzYXkgaGFz
-IGEgY29uZmxpY3QgYWxyZWFkeT8gV2hhdAo+IGRybSBjb2RlIGFyZSB3ZSB0YWxraW5nIGFib3V0
-IGV4YWN0bHkgPwoKWW91IGhhdmUgdG8gdGFrZSBjYXJlZnVsbHkgdG8gYXJyYW5nZSB0aGUgY2Fs
-bGluZyBzZXF1ZW5jZSBmb3IgaW9tbXV2MSwgCmlvbW11djIsIGtmZCBtb2R1bGUsIGFuZCBkcm0g
-bGlrZSB0aGUgZm9sbG93aW5nIHNlcXVlbmNlIDogdjEgLT52Mi0+a2ZkLCAKZHJtLgoKaW9tbXV2
-MSAtLSByb290ZnNfaW5pdGNhbGwoZm4pCklPTU1VVjIgLS0gZGV2aWNlX2luaXRjYWxsKGZuKQpr
-ZmQgbW9kdWxlIC0tIGxhdGVfaW5pdGNhbGwoZm4pCmRybSAtLSBsYXRlX2luaXRjYWxsKGZuKQoK
-VGhhbmtzIQpXYW4gWm9uZ3NodW4uCgo+Cj4gICAgTHVpcwo+IF9fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gaW9tbXUgbWFpbGluZyBsaXN0Cj4gaW9tbXVA
-bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKPiBodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlv
-bi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQo+Cl9fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51
-eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1h
-bi9saXN0aW5mby9pb21tdQ==
+Hello,
+
+On 2016-04-14 19:25, Lorenzo Pieralisi wrote:
+> On systems booting with ACPI, the IOMMU drivers require the same
+> kind of id mapping carried out with a DT tree through the of_xlate()
+> API in order to map devices identifiers to IOMMU ones.
+>
+> On ACPI systems, since DT nodes are not present (ie struct
+> device.of_node == NULL), to identify the device requiring the translation
+> the struct device_node (and the structure used to pass translation
+> information - struct of_phandle_args - that contains a struct device_node)
+> cannot be used, so a generic translation structure to be used for IOMMU
+> mapping should be defined, based on the firmware agnostic fwnode_handle
+> type.
+>
+> This patch mechanically refactors/renames the of_xlate API to make
+> it DT agnostic, by declaring a new type (struct iommu_fwspec), that
+> allows the kernel to pass a device identifier (fwnode - which can
+> represent either a DT node or an IOMMU FW node) and by changing the
+> of_xlate signature so that it does not take anymore the DT specific
+> of_phandle_args argument and replaces it with the DT agnostic
+> iommu_fwspec one.
+>
+> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+> Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+> Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+
+I'm not sure if this is the right approach, although I have not enough
+knowledge on ACPI firmware. Do you plan to rewrite all subsystems to the
+new "fwspec" based interface? Right now of_xlate is rather common
+interface used by various subsystems. Maybe it will be much easier to
+just add acpi_xlate callback and plumb it to the generic code? Maybe later
+when similar code will be in other subsystems and drivers, it can be
+unified, having much more real use cases?
+
+> ---
+>   drivers/iommu/arm-smmu.c     | 12 +++++++-----
+>   drivers/iommu/exynos-iommu.c | 11 +++++++----
+>   drivers/iommu/mtk_iommu.c    | 13 ++++++++-----
+>   drivers/iommu/of_iommu.c     | 20 ++++++++++++++++++--
+>   include/linux/iommu.h        | 24 ++++++++++++++++++++----
+>   5 files changed, 60 insertions(+), 20 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 6c42770..84bcff7 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1440,18 +1440,20 @@ out_unlock:
+>   	return ret;
+>   }
+>   
+> -static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+> +static int arm_smmu_fw_xlate(struct device *dev, struct iommu_fwspec *args)
+>   {
+>   	struct arm_smmu_device *smmu;
+> -	struct platform_device *smmu_pdev;
+> +	struct platform_device *smmu_pdev = NULL;
+> +
+> +	if (is_of_node(args->fwnode))
+> +		smmu_pdev = of_find_device_by_node(to_of_node(args->fwnode));
+>   
+> -	smmu_pdev = of_find_device_by_node(args->np);
+>   	if (!smmu_pdev)
+>   		return -ENODEV;
+>   
+>   	smmu = platform_get_drvdata(smmu_pdev);
+>   
+> -	return arm_smmu_add_dev_streamid(smmu, dev, args->args[0]);
+> +	return arm_smmu_add_dev_streamid(smmu, dev, args->param[0]);
+>   }
+>   
+>   static struct iommu_ops arm_smmu_ops = {
+> @@ -1468,7 +1470,7 @@ static struct iommu_ops arm_smmu_ops = {
+>   	.device_group		= arm_smmu_device_group,
+>   	.domain_get_attr	= arm_smmu_domain_get_attr,
+>   	.domain_set_attr	= arm_smmu_domain_set_attr,
+> -	.of_xlate		= arm_smmu_of_xlate,
+> +	.fw_xlate		= arm_smmu_fw_xlate,
+>   	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+>   };
+>   
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 5ecc86c..84ff5bb 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -1250,13 +1250,16 @@ static void exynos_iommu_remove_device(struct device *dev)
+>   	iommu_group_remove_device(dev);
+>   }
+>   
+> -static int exynos_iommu_of_xlate(struct device *dev,
+> -				 struct of_phandle_args *spec)
+> +static int exynos_iommu_fw_xlate(struct device *dev,
+> +				 struct iommu_fwspec *args)
+>   {
+>   	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+> -	struct platform_device *sysmmu = of_find_device_by_node(spec->np);
+> +	struct platform_device *sysmmu = NULL;
+>   	struct sysmmu_drvdata *data;
+>   
+> +	if (is_of_node(args->fwnode))
+> +		sysmmu = of_find_device_by_node(to_of_node(args->fwnode));
+> +
+>   	if (!sysmmu)
+>   		return -ENODEV;
+>   
+> @@ -1290,7 +1293,7 @@ static struct iommu_ops exynos_iommu_ops = {
+>   	.add_device = exynos_iommu_add_device,
+>   	.remove_device = exynos_iommu_remove_device,
+>   	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
+> -	.of_xlate = exynos_iommu_of_xlate,
+> +	.fw_xlate = exynos_iommu_fw_xlate,
+>   };
+>   
+>   static bool init_done;
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 929a66a..e08dc0a 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -436,20 +436,23 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
+>   	return data->m4u_group;
+>   }
+>   
+> -static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+> +static int mtk_iommu_fw_xlate(struct device *dev, struct iommu_fwspec *args)
+>   {
+>   	struct mtk_iommu_client_priv *head, *priv, *next;
+>   	struct platform_device *m4updev;
+>   
+> -	if (args->args_count != 1) {
+> +	if (!is_of_node(args->fwnode))
+> +		return -ENODEV;
+> +
+> +	if (args->param_count != 1) {
+>   		dev_err(dev, "invalid #iommu-cells(%d) property for IOMMU\n",
+> -			args->args_count);
+> +			args->param_count);
+>   		return -EINVAL;
+>   	}
+>   
+>   	if (!dev->archdata.iommu) {
+>   		/* Get the m4u device */
+> -		m4updev = of_find_device_by_node(args->np);
+> +		m4updev = of_find_device_by_node(to_of_node(args->fwnode));
+>   		of_node_put(args->np);
+>   		if (WARN_ON(!m4updev))
+>   			return -EINVAL;
+> @@ -469,7 +472,7 @@ static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+>   	if (!priv)
+>   		goto err_free_mem;
+>   
+> -	priv->mtk_m4u_id = args->args[0];
+> +	priv->mtk_m4u_id = args->param[0];
+>   	list_add_tail(&priv->client, &head->client);
+>   
+>   	return 0;
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 910826c..331dd78 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -135,6 +135,18 @@ struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+>   	return ops;
+>   }
+>   
+> +static void of_phandle_args_to_fwspec(struct of_phandle_args *iommu_data,
+> +				      struct iommu_fwspec *fwspec)
+> +{
+> +	int i;
+> +
+> +	fwspec->fwnode = iommu_data->np ? &iommu_data->np->fwnode : NULL;
+> +	fwspec->param_count = iommu_data->args_count;
+> +
+> +	for (i = 0; i < iommu_data->args_count; i++)
+> +		fwspec->param[i] = iommu_data->args[i];
+> +}
+> +
+>   static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+>   {
+>   	struct of_phandle_args *iommu_spec = data;
+> @@ -148,6 +160,7 @@ struct iommu_ops *of_iommu_configure(struct device *dev,
+>   				     struct device_node *master_np)
+>   {
+>   	struct of_phandle_args iommu_spec;
+> +	struct iommu_fwspec fwspec;
+>   	struct device_node *np = NULL;
+>   	struct iommu_ops *ops = NULL;
+>   	int idx = 0;
+> @@ -170,8 +183,9 @@ struct iommu_ops *of_iommu_configure(struct device *dev,
+>   
+>   		iommu_spec.np = np;
+>   		iommu_spec.args_count = 1;
+> +		of_phandle_args_to_fwspec(&iommu_spec, &fwspec);
+>   		ops = of_iommu_get_ops(np);
+> -		if (!ops || !ops->of_xlate || ops->of_xlate(dev, &iommu_spec))
+> +		if (!ops || !ops->fw_xlate || ops->fw_xlate(dev, &fwspec))
+>   			goto err_put_node;
+>   
+>   		of_node_put(np);
+> @@ -189,7 +203,9 @@ struct iommu_ops *of_iommu_configure(struct device *dev,
+>   		np = iommu_spec.np;
+>   		ops = of_iommu_get_ops(np);
+>   
+> -		if (!ops || !ops->of_xlate || ops->of_xlate(dev, &iommu_spec))
+> +		of_phandle_args_to_fwspec(&iommu_spec, &fwspec);
+> +
+> +		if (!ops || !ops->fw_xlate || ops->fw_xlate(dev, &fwspec))
+>   			goto err_put_node;
+>   
+>   		of_node_put(np);
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 0bba25e..5184d81 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -85,6 +85,24 @@ struct iommu_domain {
+>   	void *iova_cookie;
+>   };
+>   
+> +#define IOMMU_MAP_SPEC_PARAMS 16
+> +
+> +/**
+> + * struct iommu_fwspec - generic IOMMU specifier structure
+> + *
+> + * @fwnode:		Pointer to a firmware-specific descriptor
+> + * @param_count:	Number of device-specific parameters
+> + * @param:		Device-specific parameters
+> + *
+> + * This structure, directly modeled after of_phandle_args, is used to
+> + * pass a device-specific description of an IOMMU mapping.
+> + */
+> +struct iommu_fwspec {
+> +	struct fwnode_handle *fwnode;
+> +	int param_count;
+> +	u32 param[IOMMU_MAP_SPEC_PARAMS];
+> +};
+> +
+>   enum iommu_cap {
+>   	IOMMU_CAP_CACHE_COHERENCY,	/* IOMMU can enforce cache coherent DMA
+>   					   transactions */
+> @@ -155,7 +173,7 @@ struct iommu_dm_region {
+>    * @domain_window_disable: Disable a particular window for a domain
+>    * @domain_set_windows: Set the number of windows for a domain
+>    * @domain_get_windows: Return the number of windows for a domain
+> - * @of_xlate: add OF master IDs to iommu grouping
+> + * @fw_xlate: add FW master IDs to iommu grouping
+>    * @pgsize_bitmap: bitmap of supported page sizes
+>    * @priv: per-instance data private to the iommu driver
+>    */
+> @@ -196,9 +214,7 @@ struct iommu_ops {
+>   	/* Get the number of windows per domain */
+>   	u32 (*domain_get_windows)(struct iommu_domain *domain);
+>   
+> -#ifdef CONFIG_OF_IOMMU
+> -	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
+> -#endif
+> +	int (*fw_xlate)(struct device *dev, struct iommu_fwspec *args);
+>   
+>   	unsigned long pgsize_bitmap;
+>   	void *priv;
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
