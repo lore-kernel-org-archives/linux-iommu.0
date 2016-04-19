@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v7 1/8] genirq/msi: Add a new MSI_FLAG_IRQ_REMAPPING flag
-Date: Tue, 19 Apr 2016 17:13:03 +0000
-Message-ID: <1461085990-2547-2-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v7 3/8] genirq/msi: export msi_get_domain_info
+Date: Tue, 19 Apr 2016 17:13:05 +0000
+Message-ID: <1461085990-2547-4-git-send-email-eric.auger@linaro.org>
 References: <1461085990-2547-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,35 +21,28 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Let's introduce a new msi_domain_info flag value, MSI_FLAG_IRQ_REMAPPING
-meant to tell the domain supports IRQ REMAPPING, also known as Interrupt
-Translation Service. On Intel HW this IRQ remapping capability is
-abstracted on IOMMU side while on ARM it is abstracted on MSI controller
-side. This flag will be used to know whether the MSI passthrough is
-safe.
+We plan to use msi_get_domain_info in VFIO module so let's export it.
 
 Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 ---
 
-v4 -> v5:
-- seperate flag introduction from first user addition (ITS)
+v2 -> v3:
+- remove static implementation in case CONFIG_PCI_MSI_IRQ_DOMAIN is not set
 ---
- include/linux/msi.h | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/irq/msi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/msi.h b/include/linux/msi.h
-index 8b425c6..08441b1 100644
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -270,6 +270,8 @@ enum {
- 	MSI_FLAG_MULTI_PCI_MSI		= (1 << 3),
- 	/* Support PCI MSIX interrupts */
- 	MSI_FLAG_PCI_MSIX		= (1 << 4),
-+	/* Support MSI IRQ remapping service */
-+	MSI_FLAG_IRQ_REMAPPING		= (1 << 5),
- };
+diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+index 38e89ce..9b0ba4a 100644
+--- a/kernel/irq/msi.c
++++ b/kernel/irq/msi.c
+@@ -400,5 +400,6 @@ struct msi_domain_info *msi_get_domain_info(struct irq_domain *domain)
+ {
+ 	return (struct msi_domain_info *)domain->host_data;
+ }
++EXPORT_SYMBOL_GPL(msi_get_domain_info);
  
- int msi_domain_set_affinity(struct irq_data *data, const struct cpumask *mask,
+ #endif /* CONFIG_GENERIC_MSI_IRQ_DOMAIN */
 -- 
 1.9.1
