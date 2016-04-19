@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v7 04/10] iommu/dma-reserved-iommu:
-	alloc/free_reserved_iova_domain
-Date: Tue, 19 Apr 2016 16:56:28 +0000
-Message-ID: <1461084994-2355-5-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v7 03/10] iommu: introduce a reserved iova cookie
+Date: Tue, 19 Apr 2016 16:56:27 +0000
+Message-ID: <1461084994-2355-4-git-send-email-eric.auger@linaro.org>
 References: <1461084994-2355-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,262 +21,72 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce alloc/free_reserved_iova_domain in the IOMMU API.
-alloc_reserved_iova_domain initializes an iova domain at a given
-iova base address and with a given size. This iova domain will
-be used to allocate iova within that window. Those IOVAs will be reserved
-for special purpose, typically MSI frame binding. Allocation function
-within the reserved iova domain will be introduced in subsequent patches.
+This patch introduces some new fields in the iommu_domain struct,
+dedicated to reserved iova management.
 
-Those functions are fully implemented if CONFIG_IOMMU_DMA_RESERVED
-is set.
+In a similar way as DMA mapping IOVA window, we need to store
+information related to a reserved IOVA window.
+
+The reserved_iova_cookie will store the reserved iova_domain
+handle. An RB tree indexed by physical address is introduced to
+store the host physical addresses bound to reserved IOVAs.
+
+Those physical addresses will correspond to MSI frame base
+addresses, also referred to as doorbells. Their number should be
+quite limited per domain.
+
+Also a spin_lock is introduced to protect accesses to the iova_domain
+and RB tree. The choice of a spin_lock is driven by the fact the RB
+tree will need to be accessed in MSI controller code not allowed to
+sleep.
 
 Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 ---
-v7:
-- fix locking
-- add iova_cache_get/put
-- static inline functions when CONFIG_IOMMU_DMA_RESERVED is not set
-- introduce struct reserved_iova_domain to encapsulate prot info &
-  add prot parameter in alloc_reserved_iova_domain
-
 v5 -> v6:
-- use spin lock instead of mutex
-
-v3 -> v4:
-- formerly in "iommu/arm-smmu: implement alloc/free_reserved_iova_domain" &
-  "iommu: add alloc/free_reserved_iova_domain"
-
-v2 -> v3:
-- remove iommu_alloc_reserved_iova_domain & iommu_free_reserved_iova_domain
-  static implementation in case CONFIG_IOMMU_API is not set
-
-v1 -> v2:
-- moved from vfio API to IOMMU API
+- initialize reserved_binding_list
+- use a spinlock instead of a mutex
 ---
- drivers/iommu/Kconfig              |  8 +++
- drivers/iommu/Makefile             |  1 +
- drivers/iommu/dma-reserved-iommu.c | 99 ++++++++++++++++++++++++++++++++++++++
- include/linux/dma-reserved-iommu.h | 59 +++++++++++++++++++++++
- 4 files changed, 167 insertions(+)
- create mode 100644 drivers/iommu/dma-reserved-iommu.c
- create mode 100644 include/linux/dma-reserved-iommu.h
+ drivers/iommu/iommu.c | 2 ++
+ include/linux/iommu.h | 6 ++++++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index dd1dc39..a5a1530 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -74,6 +74,12 @@ config IOMMU_DMA
- 	select IOMMU_IOVA
- 	select NEED_SG_DMA_LENGTH
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index b9df141..f70ef3b 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1073,6 +1073,8 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
  
-+# IOMMU reserved IOVA mapping (MSI doorbell)
-+config IOMMU_DMA_RESERVED
-+	bool
-+	select IOMMU_API
-+	select IOMMU_IOVA
-+
- config FSL_PAMU
- 	bool "Freescale IOMMU support"
- 	depends on PPC32
-@@ -307,6 +313,7 @@ config SPAPR_TCE_IOMMU
- config ARM_SMMU
- 	bool "ARM Ltd. System MMU (SMMU) Support"
- 	depends on (ARM64 || ARM) && MMU
-+	select IOMMU_DMA_RESERVED
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU if ARM
-@@ -320,6 +327,7 @@ config ARM_SMMU
- config ARM_SMMU_V3
- 	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
- 	depends on ARM64 && PCI
-+	select IOMMU_DMA_RESERVED
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select GENERIC_MSI_IRQ_DOMAIN
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index c6edb31..6c9ae99 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -2,6 +2,7 @@ obj-$(CONFIG_IOMMU_API) += iommu.o
- obj-$(CONFIG_IOMMU_API) += iommu-traces.o
- obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
- obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
-+obj-$(CONFIG_IOMMU_DMA_RESERVED) += dma-reserved-iommu.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
-diff --git a/drivers/iommu/dma-reserved-iommu.c b/drivers/iommu/dma-reserved-iommu.c
-new file mode 100644
-index 0000000..2562af0
---- /dev/null
-+++ b/drivers/iommu/dma-reserved-iommu.c
-@@ -0,0 +1,99 @@
-+/*
-+ * Reserved IOVA Management
-+ *
-+ * Copyright (c) 2015 Linaro Ltd.
-+ *              www.linaro.org
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/iommu.h>
-+#include <linux/iova.h>
-+
-+struct reserved_iova_domain {
-+	struct iova_domain *iovad;
-+	int prot; /* iommu protection attributes to be obeyed */
-+};
-+
-+int iommu_alloc_reserved_iova_domain(struct iommu_domain *domain,
-+				     dma_addr_t iova, size_t size, int prot,
-+				     unsigned long order)
-+{
-+	unsigned long granule, mask, flags;
-+	struct reserved_iova_domain *rid;
-+	int ret = 0;
-+
-+	granule = 1UL << order;
-+	mask = granule - 1;
-+	if (iova & mask || (!size) || (size & mask))
-+		return -EINVAL;
-+
-+	rid = kzalloc(sizeof(struct reserved_iova_domain), GFP_KERNEL);
-+	if (!rid)
-+		return -ENOMEM;
-+
-+	rid->iovad = kzalloc(sizeof(struct iova_domain), GFP_KERNEL);
-+	if (!rid->iovad) {
-+		kfree(rid);
-+		return -ENOMEM;
-+	}
-+
-+	iova_cache_get();
-+
-+	init_iova_domain(rid->iovad, granule,
-+			 iova >> order, (iova + size - 1) >> order);
-+
-+	spin_lock_irqsave(&domain->reserved_lock, flags);
-+
-+	if (domain->reserved_iova_cookie) {
-+		ret = -EEXIST;
-+		goto unlock;
-+	}
-+
-+	domain->reserved_iova_cookie = rid;
-+
-+unlock:
-+	spin_unlock_irqrestore(&domain->reserved_lock, flags);
-+	if (ret) {
-+		put_iova_domain(rid->iovad);
-+		kfree(rid->iovad);
-+		kfree(rid);
-+		iova_cache_put();
-+	}
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_alloc_reserved_iova_domain);
-+
-+void iommu_free_reserved_iova_domain(struct iommu_domain *domain)
-+{
-+	struct reserved_iova_domain *rid;
-+	unsigned long flags;
-+	int ret = 0;
-+
-+	spin_lock_irqsave(&domain->reserved_lock, flags);
-+
-+	rid = (struct reserved_iova_domain *)domain->reserved_iova_cookie;
-+	if (!rid) {
-+		ret = -EINVAL;
-+		goto unlock;
-+	}
-+
-+	domain->reserved_iova_cookie = NULL;
-+unlock:
-+	spin_unlock_irqrestore(&domain->reserved_lock, flags);
-+	if (!ret) {
-+		put_iova_domain(rid->iovad);
-+		kfree(rid->iovad);
-+		kfree(rid);
-+		iova_cache_put();
-+	}
-+}
-+EXPORT_SYMBOL_GPL(iommu_free_reserved_iova_domain);
-diff --git a/include/linux/dma-reserved-iommu.h b/include/linux/dma-reserved-iommu.h
-new file mode 100644
-index 0000000..01ec385
---- /dev/null
-+++ b/include/linux/dma-reserved-iommu.h
-@@ -0,0 +1,59 @@
-+/*
-+ * Copyright (c) 2015 Linaro Ltd.
-+ *              www.linaro.org
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+#ifndef __DMA_RESERVED_IOMMU_H
-+#define __DMA_RESERVED_IOMMU_H
-+
-+#include <linux/types.h>
-+#include <linux/kernel.h>
-+
-+struct iommu_domain;
-+
-+#ifdef CONFIG_IOMMU_DMA_RESERVED
-+
-+/**
-+ * iommu_alloc_reserved_iova_domain: allocate the reserved iova domain
-+ *
-+ * @domain: iommu domain handle
-+ * @iova: base iova address
-+ * @size: iova window size
-+ * @prot: protection attribute flags
-+ * @order: page order
-+ */
-+int iommu_alloc_reserved_iova_domain(struct iommu_domain *domain,
-+				     dma_addr_t iova, size_t size, int prot,
-+				     unsigned long order);
-+
-+/**
-+ * iommu_free_reserved_iova_domain: free the reserved iova domain
-+ *
-+ * @domain: iommu domain handle
-+ */
-+void iommu_free_reserved_iova_domain(struct iommu_domain *domain);
-+
-+#else
-+
-+static inline int
-+iommu_alloc_reserved_iova_domain(struct iommu_domain *domain,
-+				 dma_addr_t iova, size_t size, int prot,
-+				 unsigned long order)
-+{
-+	return -ENOENT;
-+}
-+
-+static inline void
-+iommu_free_reserved_iova_domain(struct iommu_domain *domain) {}
-+
-+#endif	/* CONFIG_IOMMU_DMA_RESERVED */
-+#endif	/* __DMA_RESERVED_IOMMU_H */
+ 	domain->ops  = bus->iommu_ops;
+ 	domain->type = type;
++	spin_lock_init(&domain->reserved_lock);
++	domain->reserved_binding_list = RB_ROOT;
+ 
+ 	return domain;
+ }
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index b3e8c5b..60999db 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -24,6 +24,7 @@
+ #include <linux/of.h>
+ #include <linux/types.h>
+ #include <linux/scatterlist.h>
++#include <linux/spinlock.h>
+ #include <trace/events/iommu.h>
+ 
+ #define IOMMU_READ	(1 << 0)
+@@ -83,6 +84,11 @@ struct iommu_domain {
+ 	void *handler_token;
+ 	struct iommu_domain_geometry geometry;
+ 	void *iova_cookie;
++	void *reserved_iova_cookie;
++	/* rb tree indexed by PA, for reserved bindings only */
++	struct rb_root reserved_binding_list;
++	/* protects reserved cookie and rbtree manipulation */
++	spinlock_t reserved_lock;
+ };
+ 
+ enum iommu_cap {
 -- 
 1.9.1
