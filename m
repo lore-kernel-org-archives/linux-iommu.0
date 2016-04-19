@@ -1,63 +1,150 @@
-From: Eric Auger <eric.auger@linaro.org>
-Subject: [PATCH v7 8/8] genirq/msi: use the MSI doorbell's IOVA when requested
-Date: Tue, 19 Apr 2016 17:13:10 +0000
-Message-ID: <1461085990-2547-9-git-send-email-eric.auger@linaro.org>
-References: <1461085990-2547-1-git-send-email-eric.auger@linaro.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1461085990-2547-1-git-send-email-eric.auger@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: eric.auger@st.com, eric.auger@linaro.org, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org
-Cc: patches@linaro.org, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v7 0/7] KVM PCIe/MSI passthrough on ARM/ARM64: kernel part
+	3/3: vfio changes
+Date: Tue, 19 Apr 2016 17:24:40 +0000
+Message-ID: <1461086687-2658-1-git-send-email-eric.auger@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On MSI message composition we now use the MSI doorbell's IOVA in
-place of the doorbell's PA in case the device is upstream to an
-IOMMU that requires MSI addresses to be mapped. The doorbell's
-allocation and mapping happened on an early stage (pci_enable_msi).
+This series allows the user-space to register a reserved IOVA domain.
+This completes the kernel integration of the whole functionality on top
+of part 1 & 2.
 
-Signed-off-by: Eric Auger <eric.auger@linaro.org>
+We reuse the VFIO DMA MAP ioctl with a new flag to bridge to the
+dma-reserved-iommu API. The number of IOVA pages to provision for MSI
+binding is reported through the VFIO_IOMMU_GET_INFO iotcl.
 
----
+vfio_iommu_type1 checks if the MSI mapping is safe when attaching the
+vfio group to the container (allow_unsafe_interrupts modality).
+
+On ARM/ARM64, the IOMMU does not astract IRQ remapping. the modality is
+abstracted on MSI controller side. The GICv3 ITS is the first controller
+advertising the modality.
+
+More details & context can be found at:
+http://www.linaro.org/blog/core-dump/kvm-pciemsi-passthrough-armarm64/
+
+Best Regards
+
+Eric
+
+Testing:
+- functional on ARM64 AMD Overdrive HW (single GICv2m frame) with
+  Intel X540-T2 (SR-IOV capable)
+- Not tested: ARM GICv3 ITS
+
+References:
+[1] [RFC 0/2] VFIO: Add virtual MSI doorbell support
+    (https://lkml.org/lkml/2015/7/24/135)
+[2] [RFC PATCH 0/6] vfio: Add interface to map MSI pages
+    (https://lists.cs.columbia.edu/pipermail/kvmarm/2015-September/016607.html)
+[3] [PATCH v2 0/3] Introduce MSI hardware mapping for VFIO
+    (http://permalink.gmane.org/gmane.comp.emulators.kvm.arm.devel/3858)
+
+Git: complete series available at
+https://git.linaro.org/people/eric.auger/linux.git/shortlog/refs/heads/v4.6-rc4-pcie-passthrough-v7
+
+previous version at
+https://git.linaro.org/people/eric.auger/linux.git/shortlog/refs/heads/v4.6-rc1-pcie-passthrough-v6
+
+QEMU Integration:
+[RFC v2 0/8] KVM PCI/MSI passthrough with mach-virt
+(http://lists.gnu.org/archive/html/qemu-arm/2016-01/msg00444.html)
+https://git.linaro.org/people/eric.auger/qemu.git/shortlog/refs/heads/v2.5.0-pci-passthrough-rfc-v2
+
+History:
+
 v6 -> v7:
-- allocation/mapping is done at an earlier stage. We now just perform
-  the iova lookup. So it is safe now to be called in a code that cannot
-  sleep. iommu_msi_set_doorbell_iova is moved in the dma-reserved-iommu
-  API: I think it cleans things up with respect to various #ifdef CONFIGS.
+- vfio_find_dma now accepts a dma_type argument.
+- should have recovered the capability to unmap the whole user IOVA range
+- remove computation of nb IOVA pages -> will post a separate RFC for that
+  while respinning the QEMU part
 
-v5:
-- use macros to increase the readability
-- add comments
-- fix a typo that caused a compilation error if CONFIG_IOMMU_API
-  is not set
----
- kernel/irq/msi.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+RFC v5 -> patch v6:
+- split to ease the review process
 
-diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-index e45907e..0ebb2d8 100644
---- a/kernel/irq/msi.c
-+++ b/kernel/irq/msi.c
-@@ -19,6 +19,7 @@
- 
- /* Temparory solution for building, will be removed later */
- #include <linux/pci.h>
-+#include <linux/dma-reserved-iommu.h>
- 
- struct msi_desc *alloc_msi_entry(struct device *dev)
- {
-@@ -64,8 +65,12 @@ static int msi_compose(struct irq_data *irq_data,
- 
- 	if (erase)
- 		memset(msg, 0, sizeof(*msg));
--	else
-+	else {
- 		ret = irq_chip_compose_msi_msg(irq_data, msg);
-+		if (ret)
-+			return ret;
-+		iommu_msi_mapping_translate_msg(irq_data, msg);
-+	}
- 
- 	return ret;
- }
+RFC v4 -> RFC v5:
+- take into account Thomas' comments on MSI related patches
+  - split "msi: IOMMU map the doorbell address when needed"
+  - increase readability and add comments
+  - fix style issues
+ - split "iommu: Add DOMAIN_ATTR_MSI_MAPPING attribute"
+ - platform ITS now advertises IOMMU_CAP_INTR_REMAP
+ - fix compilation issue with CONFIG_IOMMU API unset
+ - arm-smmu-v3 now advertises DOMAIN_ATTR_MSI_MAPPING
+
+RFC v3 -> v4:
+- Move doorbell mapping/unmapping in msi.c
+- fix ref count issue on set_affinity: in case of a change in the address
+  the previous address is decremented
+- doorbell map/unmap now is done on msi composition. Should allow the use
+  case for platform MSI controllers
+- create dma-reserved-iommu.h/c exposing/implementing a new API dedicated
+  to reserved IOVA management (looking like dma-iommu glue)
+- series reordering to ease the review:
+  - first part is related to IOMMU
+  - second related to MSI sub-system
+  - third related to VFIO (except arm-smmu IOMMU_CAP_INTR_REMAP removal)
+- expose the number of requested IOVA pages through VFIO_IOMMU_GET_INFO
+  [this partially addresses Marc's comments on iommu_get/put_single_reserved
+   size/alignment problematic - which I did not ignore - but I don't know
+   how much I can do at the moment]
+
+RFC v2 -> RFC v3:
+- should fix wrong handling of some CONFIG combinations:
+  CONFIG_IOVA, CONFIG_IOMMU_API, CONFIG_PCI_MSI_IRQ_DOMAIN
+- fix MSI_FLAG_IRQ_REMAPPING setting in GICv3 ITS (although not tested)
+
+PATCH v1 -> RFC v2:
+- reverted to RFC since it looks more reasonable ;-) the code is split
+  between VFIO, IOMMU, MSI controller and I am not sure I did the right
+  choices. Also API need to be further discussed.
+- iova API usage in arm-smmu.c.
+- MSI controller natively programs the MSI addr with either the PA or IOVA.
+  This is not done anymore in vfio-pci driver as suggested by Alex.
+- check irq remapping capability of the group
+
+RFC v1 [2] -> PATCH v1:
+- use the existing dma map/unmap ioctl interface with a flag to register a
+  reserved IOVA range. Use the legacy Rb to store this special vfio_dma.
+- a single reserved IOVA contiguous region now is allowed
+- use of an RB tree indexed by PA to store allocated reserved slots
+- use of a vfio_domain iova_domain to manage iova allocation within the
+  window provided by the userspace
+- vfio alloc_map/unmap_free take a vfio_group handle
+- vfio_group handle is cached in vfio_pci_device
+- add ref counting to bindings
+- user modality enabled at the end of the series
+
+
+Eric Auger (7):
+  vfio: introduce a vfio_dma type field
+  vfio/type1: vfio_find_dma accepting a type argument
+  vfio/type1: specialize remove_dma and replay according to type
+  vfio: allow reserved iova registration
+  vfio/type1: also check IRQ remapping capability at msi domain
+  iommu/arm-smmu: do not advertise IOMMU_CAP_INTR_REMAP
+  vfio/type1: return MSI mapping requirements with VFIO_IOMMU_GET_INFO
+
+ drivers/iommu/arm-smmu-v3.c     |   3 +-
+ drivers/iommu/arm-smmu.c        |   3 +-
+ drivers/vfio/vfio_iommu_type1.c | 297 ++++++++++++++++++++++++++++++++++++++--
+ include/uapi/linux/vfio.h       |  12 +-
+ 4 files changed, 298 insertions(+), 17 deletions(-)
+
 -- 
 1.9.1
