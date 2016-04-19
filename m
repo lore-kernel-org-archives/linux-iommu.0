@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v7 02/10] iommu/arm-smmu: advertise DOMAIN_ATTR_MSI_MAPPING
-	attribute
-Date: Tue, 19 Apr 2016 16:56:26 +0000
-Message-ID: <1461084994-2355-3-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v7 01/10] iommu: Add DOMAIN_ATTR_MSI_MAPPING attribute
+Date: Tue, 19 Apr 2016 16:56:25 +0000
+Message-ID: <1461084994-2355-2-git-send-email-eric.auger@linaro.org>
 References: <1461084994-2355-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,49 +21,43 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On ARM, MSI write transactions from device upstream to the smmu
-are conveyed through the iommu. Therefore target physical addresses
-must be mapped and DOMAIN_ATTR_MSI_MAPPING is set to advertise
-this requirement on arm-smmu and arm-smmu-v3.
+Introduce a new DOMAIN_ATTR_MSI_MAPPING domain attribute. If supported,
+this means the MSI addresses need to be mapped in the IOMMU.
 
-Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+x86 IOMMUs typically don't expose the attribute since on x86, MSI write
+transaction addresses always are within the 1MB PA region [FEE0_0000h -
+FEF0_000h] window which directly targets the APIC configuration space and
+hence bypass the sMMU. On ARM and PowerPC however MSI transactions are
+conveyed through the IOMMU.
+
 Signed-off-by: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 ---
 
 v4 -> v5:
-- don't handle fsl_pamu_domain anymore
-- handle arm-smmu-v3
----
- drivers/iommu/arm-smmu-v3.c | 2 ++
- drivers/iommu/arm-smmu.c    | 2 ++
- 2 files changed, 4 insertions(+)
+- introduce the user in the next patch
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4ff73ff..a077a35 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1900,6 +1900,8 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- 	case DOMAIN_ATTR_NESTING:
- 		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
- 		return 0;
-+	case DOMAIN_ATTR_MSI_MAPPING:
-+		return 0;
- 	default:
- 		return -ENODEV;
- 	}
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7c39ac4..8cd7b8a 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1435,6 +1435,8 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- 	case DOMAIN_ATTR_NESTING:
- 		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
- 		return 0;
-+	case DOMAIN_ATTR_MSI_MAPPING:
-+		return 0;
- 	default:
- 		return -ENODEV;
- 	}
+RFC v1 -> v1:
+- the data field is not used
+- for this attribute domain_get_attr simply returns 0 if the MSI_MAPPING
+  capability if needed or <0 if not.
+- removed struct iommu_domain_msi_maps
+---
+ include/linux/iommu.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 62a5eae..b3e8c5b 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -113,6 +113,7 @@ enum iommu_attr {
+ 	DOMAIN_ATTR_FSL_PAMU_ENABLE,
+ 	DOMAIN_ATTR_FSL_PAMUV1,
+ 	DOMAIN_ATTR_NESTING,	/* two stages of translation */
++	DOMAIN_ATTR_MSI_MAPPING, /* Require MSIs mapping in iommu */
+ 	DOMAIN_ATTR_MAX,
+ };
+ 
 -- 
 1.9.1
