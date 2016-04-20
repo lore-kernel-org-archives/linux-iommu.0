@@ -1,17 +1,14 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v7 6/8] irqchip/gicv2m: implement msi_doorbell_info
-	callback
-Date: Wed, 20 Apr 2016 20:16:37 +0200
-Message-ID: <5717C785.9050809@linaro.org>
-References: <1461085990-2547-1-git-send-email-eric.auger@linaro.org>
-	<1461085990-2547-7-git-send-email-eric.auger@linaro.org>
-	<57174B8E.9050803@arm.com> <5717770D.6090005@linaro.org>
-	<20160420185648.5982deb7@arm.com>
+From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH v4 7/7] iommu/vt-d: introduce per-cpu caching to iova
+	allocation
+Date: Wed, 20 Apr 2016 15:21:33 -0400
+Message-ID: <1461180093.25115.28.camel@infradead.org>
+References: <cover.1461135861.git.mad@cs.technion.ac.il>
+	<3d87d1ef7c5ae3e07e2d7c105c2fe2bb9a82cb46.1461135861.git.mad@cs.technion.ac.il>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============0490735450020324020=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160420185648.5982deb7-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <3d87d1ef7c5ae3e07e2d7c105c2fe2bb9a82cb46.1461135861.git.mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,153 +18,162 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org, omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org, shli-b10kYP2dOMg@public.gmane.org, gvdl-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, Kernel-team-b10kYP2dOMg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Marc,
-On 04/20/2016 07:56 PM, Marc Zyngier wrote:
-> On Wed, 20 Apr 2016 14:33:17 +0200
-> Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-> 
->> Marc,
->> On 04/20/2016 11:27 AM, Marc Zyngier wrote:
->>> On 19/04/16 18:13, Eric Auger wrote:
->>>> This patch implements the msi_doorbell_info callback in the
->>>> gicv2m driver.
->>>>
->>>> The driver now is able to return its doorbell characteristics
->>>> (base, size, prot). A single doorbell is exposed.
->>>>
->>>> This will allow the msi layer to iommu_map this doorbell when
->>>> requested.
->>>>
->>>> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->>>>
->>>> ---
->>>>
->>>> v7: creation
->>>> ---
->>>>  drivers/irqchip/irq-gic-v2m.c | 32 +++++++++++++++++++++++++++++++-
->>>>  1 file changed, 31 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/irqchip/irq-gic-v2m.c b/drivers/irqchip/irq-gic-v2m.c
->>>> index 28f047c..54690b9 100644
->>>> --- a/drivers/irqchip/irq-gic-v2m.c
->>>> +++ b/drivers/irqchip/irq-gic-v2m.c
->>>> @@ -24,6 +24,8 @@
->>>>  #include <linux/of_pci.h>
->>>>  #include <linux/slab.h>
->>>>  #include <linux/spinlock.h>
->>>> +#include <linux/percpu.h>
->>>> +#include <linux/iommu.h>
->>>>  
->>>>  /*
->>>>  * MSI_TYPER:
->>>> @@ -64,6 +66,7 @@ struct v2m_data {
->>>>  	u32 nr_spis;		/* The number of SPIs for MSIs */
->>>>  	unsigned long *bm;	/* MSI vector bitmap */
->>>>  	u32 flags;		/* v2m flags for specific implementation */
->>>> +	struct irq_chip_msi_doorbell_info doorbell_info;
->>>>  };
->>>>  
->>>>  static void gicv2m_mask_msi_irq(struct irq_data *d)
->>>> @@ -105,6 +108,16 @@ static void gicv2m_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
->>>>  		msg->data -= v2m->spi_start;
->>>>  }
->>>>  
->>>> +static const struct irq_chip_msi_doorbell_info *
->>>> +gicv2m_msi_doorbell_info(struct irq_data *data)
->>>> +{
->>>> +	struct v2m_data *v2m = irq_data_get_irq_chip_data(data);
->>>> +
->>>> +	if (!v2m)
->>>> +		return NULL;
->>>
->>> How can this ever be NULL? I think you can drop that test.
->> OK
->>>
->>>> +	return (const struct irq_chip_msi_doorbell_info *)(&v2m->doorbell_info);
->>>
->>> Please don't do that. Use "const" in the functions that are using
->>> irq_chip_msi_doorbell_info, but do not make this "const" here.
->> It definitively compiles without casting so obviously this is not needed
->> but is there any other wrong thing I don't see?
->> we still want this function to return a pointer to a const?
-> 
-> I don't think we can return a const pointer, because it is obviously
-> not (the memory has been kmalloc'ed, and you've written to it, so it is
-> not really "read-only").
-I see what you are afraid of now and I will remove it; will ask some
-compiler guys ;-)
 
-Have a nice evening
+--===============0490735450020324020==
+Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
+	boundary="=-Nz4eYU7tAixsohZ7G3Lo"
 
-Eric
 
-> 
-> Maybe I'm being overly zealous, but I've seen compilers taking amazing
-> shortcuts when offered a const qualifier...
-> 
->>>
->>>> +}
->>>> +
->>>>  static struct irq_chip gicv2m_irq_chip = {
->>>>  	.name			= "GICv2m",
->>>>  	.irq_mask		= irq_chip_mask_parent,
->>>> @@ -112,6 +125,7 @@ static struct irq_chip gicv2m_irq_chip = {
->>>>  	.irq_eoi		= irq_chip_eoi_parent,
->>>>  	.irq_set_affinity	= irq_chip_set_affinity_parent,
->>>>  	.irq_compose_msi_msg	= gicv2m_compose_msi_msg,
->>>> +	.msi_doorbell_info	= gicv2m_msi_doorbell_info,
->>>>  };
->>>>  
->>>>  static int gicv2m_irq_gic_domain_alloc(struct irq_domain *domain,
->>>> @@ -247,6 +261,7 @@ static void gicv2m_teardown(void)
->>>>  
->>>>  	list_for_each_entry_safe(v2m, tmp, &v2m_nodes, entry) {
->>>>  		list_del(&v2m->entry);
->>>> +		free_percpu(v2m->doorbell_info.percpu_doorbells);
->>>>  		kfree(v2m->bm);
->>>>  		iounmap(v2m->base);
->>>>  		of_node_put(to_of_node(v2m->fwnode));
->>>> @@ -299,6 +314,7 @@ static int __init gicv2m_init_one(struct fwnode_handle *fwnode,
->>>>  {
->>>>  	int ret;
->>>>  	struct v2m_data *v2m;
->>>> +	struct irq_chip_msi_doorbell __percpu *doorbell;
->>>>  
->>>>  	v2m = kzalloc(sizeof(struct v2m_data), GFP_KERNEL);
->>>>  	if (!v2m) {
->>>> @@ -311,11 +327,23 @@ static int __init gicv2m_init_one(struct fwnode_handle *fwnode,
->>>>  
->>>>  	memcpy(&v2m->res, res, sizeof(struct resource));
->>>>  
->>>> +	v2m->doorbell_info.percpu_doorbells =
->>>> +		alloc_percpu(struct irq_chip_msi_doorbell);
->>>> +	if (WARN_ON(!v2m->doorbell_info.percpu_doorbells)) {
->>>> +		ret = -ENOMEM;
->>>> +		goto err_free_v2m;
->>>> +	}
->>>> +	doorbell = per_cpu_ptr(v2m->doorbell_info.percpu_doorbells, 0);
->>>> +	doorbell->base = v2m->res.start;
->>>> +	doorbell->size = 4;
->>>> +	doorbell->prot = IOMMU_WRITE;
->>>
->>> You probably need to also have something that says IOMMU_DEVICE or
->>> something similar, because I'm afraid you're getting a memory mapping
->>> here. I've had a quick look at the two other series, but couldn't find
->>> anything that would force the memory attributes.
->> Yes you're right I currently just enforce the direction (which is
->> checked against what VFIO user registered). Do you refer to IOMMU_MMIO,
->> latterly proposed on the ML. In the positive, yes I intend to add it
->> once it gets upstreamed.
-> 
-> Yeah, Robin's patches should become a dependency here, because there is
-> absolutely no guarantee that the device write to the doorbell won't be
-> treated a normal cacheable memory, with disastrous effects.
-> 
-> Thanks,
-> 
-> 	M.
-> 
+--=-Nz4eYU7tAixsohZ7G3Lo
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+T24gV2VkLCAyMDE2LTA0LTIwIGF0IDExOjM0ICswMzAwLCBBZGFtIE1vcnJpc29uIHdyb3RlOgo+
+ICtzdGF0aWMgdm9pZCBpbml0X2lvdmFfcmNhY2hlcyhzdHJ1Y3QgaW92YV9kb21haW4gKmlvdmFk
+KQo+ICt7Ci4uLgo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBmb3JfZWFjaF9wb3Nz
+aWJsZV9jcHUoY3B1KSB7Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqBjcHVfcmNhY2hlID0gcGVyX2NwdV9wdHIocmNhY2hlLT5jcHVfcmNhY2hlcywgY3B1
+KTsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHNwaW5f
+bG9ja19pbml0KCZjcHVfcmNhY2hlLT5sb2NrKTsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoGNwdV9yY2FjaGUtPmxvYWRlZCA9IGlvdmFfbWFnYXppbmVf
+YWxsb2MoR0ZQX0tFUk5FTCk7Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqBjcHVfcmNhY2hlLT5wcmV2ID0gaW92YV9tYWdhemluZV9hbGxvYyhHRlBfS0VS
+TkVMKTsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgfQoKSG0sIGlzIHRoYXQgYWxs
+b2NhdGlvbiBleGNlc3NpdmU/IFdlIGFsbG9jYXRlIHRoZSBtYWdhemluZXMgZm9yIGV2ZXJ5Cipw
+b3NzaWJsZSogQ1BVLCBldmVuIHRob3NlIHdoaWNoIG1heSBuZXZlciBhY3R1YWxseSBleGlzdCBp
+biB0aGUKc3lzdGVtPwoKRG9lcyBpdCBtYWtlIHNlbnNlIHRvIGRvIHRoYXQgYWxsb2NhdGlvbiBv
+bmx5IHRoZSBmaXJzdCB0aW1lIGl0J3MKYWN0dWFsbHkgdXNlZCBvbiBhIGdpdmVuIENQVT8gQW5k
+IGVpdGhlciB3YXksIHNvbWUgY29tbWVudCB0byB0aGUKZWZmZWN0IG9mICJpdCdzIE9LIGZvciBh
+bGxvY2F0aW9uIGZhaWx1cmUgdG8gbGVhdmUgdGhlc2UgYXMgTlVMTApiZWNhdXNlLi4uLiIgKGZp
+bGwgaW4geW91ciByZWFzb25pbmcgaGVyZSkgcHJvYmFibHkgd2FudHMgdG8gYmUgYWRkZWQKdG8g
+dGhlIGFib3ZlIHNuaXBwZXQgb2YgY29kZS4KCk5vdyB0aGF0IHlvdSd2ZSBtYWRlIHRoaXMgYW4g
+ZXh0ZW5zaW9uIG9mIHRoZSBJT1ZBIEFQSSByYXRoZXIgdGhhbiBhbgppbmNvbXBhdGlibGUgY2hh
+bmdlLCB0aGlzIHBhdGNoIHByb2JhYmx5IGFsc28gd2FudHMgdG8gYmUgc3BsaXQgb3V0CmludG8g
+dHdvIOKAlCBjaGFuZ2luZyBpbnRlbC1pb21tdSBvbmx5IGluIHRoZSBzZWNvbmQgcGF0Y2guCgoK
+LS0gCkRhdmlkIFdvb2Rob3VzZSAgICAgICAgICAgICAgICAgICAgICAgICAgICBPcGVuIFNvdXJj
+ZSBUZWNobm9sb2d5IENlbnRyZQpEYXZpZC5Xb29kaG91c2VAaW50ZWwuY29tICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgSW50ZWwgQ29ycG9yYXRpb24KCg==
+
+
+--=-Nz4eYU7tAixsohZ7G3Lo
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIISjjCCBicw
+ggUPoAMCAQICAw3vNzANBgkqhkiG9w0BAQUFADCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
+YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
+ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
+MB4XDTE1MDUwNTA5NDM0MVoXDTE2MDUwNTA5NTMzNlowQjEcMBoGA1UEAwwTZHdtdzJAaW5mcmFk
+ZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBAMkbm9kPbx1j/X4RVyf/pPKSYwelcco69TvnQQbKM8m8xkWjXJI1
+jpJ1jMaGUZGFToINMSZi7lZawUozudWbXSKy1SikENSTJHffsdRAIlsp+hR8vWvjsKUry6sEdqPG
+doa5RY7+N4WRusWZDYW/RRWE6i9EL9qV86CVPYqw22UBOUw4/j/HVGCV6TSB8yE5iEwhk/hUuzRr
+FZm1MJMR7mCS7BCR8Lr5jFY61lWpBiXNXIxLZCvDc26KR5L5tYX43iUVO3fzES1GRVoYnxxk2tmz
+fcsZG5vK+Trc9L8OZJfkYrEHH3+Iw41MQ0w/djVtYr1+HYldx0QmYXAtnhIj+UMCAwEAAaOCAtkw
+ggLVMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgSwMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcD
+BDAdBgNVHQ4EFgQUszC96C3w5/2+d+atSr0IpT26YI4wHwYDVR0jBBgwFoAUU3Ltkpzg2ssBXHx+
+ljVO8tS4UYIwHgYDVR0RBBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzCCAUwGA1UdIASCAUMwggE/
+MIIBOwYLKwYBBAGBtTcBAgMwggEqMC4GCCsGAQUFBwIBFiJodHRwOi8vd3d3LnN0YXJ0c3NsLmNv
+bS9wb2xpY3kucGRmMIH3BggrBgEFBQcCAjCB6jAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1
+dGhvcml0eTADAgEBGoG+VGhpcyBjZXJ0aWZpY2F0ZSB3YXMgaXNzdWVkIGFjY29yZGluZyB0byB0
+aGUgQ2xhc3MgMSBWYWxpZGF0aW9uIHJlcXVpcmVtZW50cyBvZiB0aGUgU3RhcnRDb20gQ0EgcG9s
+aWN5LCByZWxpYW5jZSBvbmx5IGZvciB0aGUgaW50ZW5kZWQgcHVycG9zZSBpbiBjb21wbGlhbmNl
+IG9mIHRoZSByZWx5aW5nIHBhcnR5IG9ibGlnYXRpb25zLjA2BgNVHR8ELzAtMCugKaAnhiVodHRw
+Oi8vY3JsLnN0YXJ0c3NsLmNvbS9jcnR1MS1jcmwuY3JsMIGOBggrBgEFBQcBAQSBgTB/MDkGCCsG
+AQUFBzABhi1odHRwOi8vb2NzcC5zdGFydHNzbC5jb20vc3ViL2NsYXNzMS9jbGllbnQvY2EwQgYI
+KwYBBQUHMAKGNmh0dHA6Ly9haWEuc3RhcnRzc2wuY29tL2NlcnRzL3N1Yi5jbGFzczEuY2xpZW50
+LmNhLmNydDAjBgNVHRIEHDAahhhodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS8wDQYJKoZIhvcNAQEF
+BQADggEBAHMQmxHHodpS85X8HRyxhvfkys7r+taCNOaNU9cxQu/cZ/6k5nS2qGNMzZ6jb7ueY/V7
+7p+4DW/9ZWODDTf4Fz00mh5SSVc20Bz7t+hhxwHd62PZgENh5i76Qq2tw48U8AsYo5damHby1epf
+neZafLpUkLLO7AGBJIiRVTevdvyXQ0qnixOmKMWyvrhSNGuVIKVdeqLP+102Dwf+dpFyw+j1hz28
+jEEKpHa+NR1b2kXuSPi/rMGhexwlJOh4tK8KQ6Ryr0rIN//NSbOgbyYZrzc/ZUWX9V5OA84ChFb2
+vkFl0OcYrttp/rhDBLITwffPxSZeoBh9H7zYzkbCXKL3BUIwggYnMIIFD6ADAgECAgMN7zcwDQYJ
+KoZIhvcNAQEFBQAwgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYD
+VQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFydENv
+bSBDbGFzcyAxIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTAeFw0xNTA1MDUwOTQzNDFa
+Fw0xNjA1MDUwOTUzMzZaMEIxHDAaBgNVBAMME2R3bXcyQGluZnJhZGVhZC5vcmcxIjAgBgkqhkiG
+9w0BCQEWE2R3bXcyQGluZnJhZGVhZC5vcmcwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+AQDJG5vZD28dY/1+EVcn/6TykmMHpXHKOvU750EGyjPJvMZFo1ySNY6SdYzGhlGRhU6CDTEmYu5W
+WsFKM7nVm10istUopBDUkyR337HUQCJbKfoUfL1r47ClK8urBHajxnaGuUWO/jeFkbrFmQ2Fv0UV
+hOovRC/alfOglT2KsNtlATlMOP4/x1Rglek0gfMhOYhMIZP4VLs0axWZtTCTEe5gkuwQkfC6+YxW
+OtZVqQYlzVyMS2Qrw3NuikeS+bWF+N4lFTt38xEtRkVaGJ8cZNrZs33LGRubyvk63PS/DmSX5GKx
+Bx9/iMONTENMP3Y1bWK9fh2JXcdEJmFwLZ4SI/lDAgMBAAGjggLZMIIC1TAJBgNVHRMEAjAAMAsG
+A1UdDwQEAwIEsDAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwHQYDVR0OBBYEFLMwvegt
+8Of9vnfmrUq9CKU9umCOMB8GA1UdIwQYMBaAFFNy7ZKc4NrLAVx8fpY1TvLUuFGCMB4GA1UdEQQX
+MBWBE2R3bXcyQGluZnJhZGVhZC5vcmcwggFMBgNVHSAEggFDMIIBPzCCATsGCysGAQQBgbU3AQID
+MIIBKjAuBggrBgEFBQcCARYiaHR0cDovL3d3dy5zdGFydHNzbC5jb20vcG9saWN5LnBkZjCB9wYI
+KwYBBQUHAgIwgeowJxYgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwAwIBARqBvlRo
+aXMgY2VydGlmaWNhdGUgd2FzIGlzc3VlZCBhY2NvcmRpbmcgdG8gdGhlIENsYXNzIDEgVmFsaWRh
+dGlvbiByZXF1aXJlbWVudHMgb2YgdGhlIFN0YXJ0Q29tIENBIHBvbGljeSwgcmVsaWFuY2Ugb25s
+eSBmb3IgdGhlIGludGVuZGVkIHB1cnBvc2UgaW4gY29tcGxpYW5jZSBvZiB0aGUgcmVseWluZyBw
+YXJ0eSBvYmxpZ2F0aW9ucy4wNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5zdGFydHNzbC5j
+b20vY3J0dTEtY3JsLmNybDCBjgYIKwYBBQUHAQEEgYEwfzA5BggrBgEFBQcwAYYtaHR0cDovL29j
+c3Auc3RhcnRzc2wuY29tL3N1Yi9jbGFzczEvY2xpZW50L2NhMEIGCCsGAQUFBzAChjZodHRwOi8v
+YWlhLnN0YXJ0c3NsLmNvbS9jZXJ0cy9zdWIuY2xhc3MxLmNsaWVudC5jYS5jcnQwIwYDVR0SBBww
+GoYYaHR0cDovL3d3dy5zdGFydHNzbC5jb20vMA0GCSqGSIb3DQEBBQUAA4IBAQBzEJsRx6HaUvOV
+/B0csYb35MrO6/rWgjTmjVPXMULv3Gf+pOZ0tqhjTM2eo2+7nmP1e+6fuA1v/WVjgw03+Bc9NJoe
+UklXNtAc+7foYccB3etj2YBDYeYu+kKtrcOPFPALGKOXWph28tXqX53mWny6VJCyzuwBgSSIkVU3
+r3b8l0NKp4sTpijFsr64UjRrlSClXXqiz/tdNg8H/naRcsPo9Yc9vIxBCqR2vjUdW9pF7kj4v6zB
+oXscJSToeLSvCkOkcq9KyDf/zUmzoG8mGa83P2VFl/VeTgPOAoRW9r5BZdDnGK7baf64QwSyE8H3
+z8UmXqAYfR+82M5Gwlyi9wVCMIIGNDCCBBygAwIBAgIBHjANBgkqhkiG9w0BAQUFADB9MQswCQYD
+VQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwg
+Q2VydGlmaWNhdGUgU2lnbmluZzEpMCcGA1UEAxMgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRo
+b3JpdHkwHhcNMDcxMDI0MjEwMTU1WhcNMTcxMDI0MjEwMTU1WjCBjDELMAkGA1UEBhMCSUwxFjAU
+BgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRl
+IFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUg
+Q2xpZW50IENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxwmDzM4t2BqxKaQuE6uW
+vooyg4ymiEGWVUet1G8SD+rqvyNH4QrvnEIaFHxOhESip7vMz39ScLpNLbL1QpOlPW/tFIzNHS3q
+d2XRNYG5Sv9RcGE+T4qbLtsjjJbi6sL7Ls/f/X9ftTyhxvxWkf8KW37iKrueKsxw2HqolH7GM6FX
+5UfNAwAu4ZifkpmZzU1slBhyWwaQPEPPZRsWoTb7q8hmgv6Nv3Hg9rmA1/VPBIOQ6SKRkHXG0Hhm
+q1dOFoAFI411+a/9nWm5rcVjGcIWZ2v/43Yksq60jExipA4l5uv9/+Hm33mbgmCszdj/Dthf13tg
+Av2O83hLJ0exTqfrlwIDAQABo4IBrTCCAakwDwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMC
+AQYwHQYDVR0OBBYEFFNy7ZKc4NrLAVx8fpY1TvLUuFGCMB8GA1UdIwQYMBaAFE4L7xqkQFulF2mH
+MMo0aEPQQa7yMGYGCCsGAQUFBwEBBFowWDAnBggrBgEFBQcwAYYbaHR0cDovL29jc3Auc3RhcnRz
+c2wuY29tL2NhMC0GCCsGAQUFBzAChiFodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS9zZnNjYS5jcnQw
+WwYDVR0fBFQwUjAnoCWgI4YhaHR0cDovL3d3dy5zdGFydHNzbC5jb20vc2ZzY2EuY3JsMCegJaAj
+hiFodHRwOi8vY3JsLnN0YXJ0c3NsLmNvbS9zZnNjYS5jcmwwgYAGA1UdIAR5MHcwdQYLKwYBBAGB
+tTcBAgEwZjAuBggrBgEFBQcCARYiaHR0cDovL3d3dy5zdGFydHNzbC5jb20vcG9saWN5LnBkZjA0
+BggrBgEFBQcCARYoaHR0cDovL3d3dy5zdGFydHNzbC5jb20vaW50ZXJtZWRpYXRlLnBkZjANBgkq
+hkiG9w0BAQUFAAOCAgEACoMIfXirLAZcuGOMXq4cuSN3TaFx2H2GvD5VSy/6rV55BYHbWNaPeQn3
+oBSU8KgQZn/Kck1JxbLpAxVCNtsxeW1R87ifhsYZ0qjdrA9anrW2MAWCtosmAOT4OxK9QPoSjCMx
+M3HbkZCDJgnlE8jMopH21BbyAYr7b5EfGRQJNtgWcvqSXwKHnTutR08+Kkn0KAkXCzeQNLeA5LlY
+UzFyM7kPAp8pIRMQ+seHunmyG642S2+y/qHEdMuGIwpfz3eDF1PdctL04qYK/zu+Qg1Bw0RwgigV
+Zs/0c5HP2/e9DBHh7eSwtzYlk4AUr6yxLlcwSjOfOmKEQ/Q8tzh0IFiNu9IPuTGAPBn4CPxD0+Ru
+8T2wg8/s43R/PT3kd1OEqOJUl7q+h+r6fpvU0Fzxd2tC8Ga6fDEPme+1Nbi+03pVjuZQKbGwKJ66
+gEn06WqaxVZC+J8hh/jR0k9mST1iAZPNYulcNJ8tKmVtjYsv0L1TSm2+NwON58tO+pIVzu3DWwSE
+XSf+qkDavQam+QtEOZxLBXI++aMUEapSn+k3Lxm48ZCYfAWLb/Xj7F5JQMbZvCexglAbYR0kIHqW
+5DnsYSdMD/IplJMojx0NBrxJ3fN9dvX2Y6BIXRsF1du4qESm4/3CKuyUV7p9DW3mPlHTGLvYxnyK
+Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
+YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
+ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
+AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
+CQUxDxcNMTYwNDIwMTkyMTMzWjAjBgkqhkiG9w0BCQQxFgQUSUZ7zIlRTPC6YBEQOxjeT4JozMww
+gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
+ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
+L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
+CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
+LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
+U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
+hkiG9w0BAQEFAASCAQBa2cyLHfRlOMUpL+crlNlSReBULTX2MApgsL+BRZ5BIzA7ZGa0aGVdJ/7F
+cG1hWm+gAhtLLy7WCRR9Qi9krJjC7CSCnKZPe9k2jXlmc7p+BVgPsichnPf6zHRzCVkG2e/ney82
+tE+N3/JuTruqANSfZ2vj7s9MKAfpNgY3VPocUysZsaLbkI65lFQq0SOejfS8hpEjRxkjkoXR9VWs
+1q2Hs+s5seJL95WPABj0xZR2v3UDKMQk86laKIurSYQ6VjJdsHCjxWxWWDnAaDJvy+euUlWTCI0e
+ZuRjfQPAZMsKEsDExeJ/UmqTBEPB4K/xJX+lrxXSrVZW5dBu8vvSPtH3AAAAAAAA
+
+
+--=-Nz4eYU7tAixsohZ7G3Lo--
+
+
+--===============0490735450020324020==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============0490735450020324020==--
