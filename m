@@ -1,14 +1,16 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v7 7/8] genirq/msi: map/unmap the MSI doorbells on
-	msi_domain_alloc/free_irqs
-Date: Wed, 20 Apr 2016 09:47:19 +0200
-Message-ID: <57173407.9040401@linaro.org>
-References: <201604200215.XNyvZSsl%fengguang.wu@intel.com>
+From: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
+Subject: Re: [PATCH v3 5/7] iommu: avoid dev iotlb logic in intel-iommu for
+	domains with no dev iotlbs
+Date: Wed, 20 Apr 2016 11:21:55 +0300
+Message-ID: <CAHMfzJ=vNE8JHfnXSKW0LRcaeH=u3tS0SwGfhnHRzc8Z0rodoA@mail.gmail.com>
+References: <cover.1460733778.git.mad@cs.technion.ac.il>
+	<20d0571ab8dda05bd3980b18df0a810fb26480e4.1460733778.git.mad@cs.technion.ac.il>
+	<1461092967.25115.7.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <201604200215.XNyvZSsl%fengguang.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1461092967.25115.7.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,62 +20,40 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: kbuild test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, julien.grall-5wv7dgnIgG8@public.gmane.org, eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kbuild-all-JC7UmRfGjtg@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Benjamin Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Tsafrir <dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>, Godfrey van der Linden <gvdl-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Kernel-team-b10kYP2dOMg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-Both reported errors related to this series are due to the fact part n
-has dependency on part n-1.
-
-Does anyone know how to let the 0-day CI robot know about such
-dependency between series?
-
-If it is an inconvenience I can put all the patches back into the same
-big series, specifying tentative patch split according to sub-systems in
-the cover-letter?
-
-Thank you in advance
-
-Best Regards
-
-Eric
-
-04/19/2016 08:04 PM, kbuild test robot wrote:
-> Hi,
-> 
-> [auto build test ERROR on tip/irq/core]
-> [also build test ERROR on v4.6-rc4 next-20160419]
-> [if your patch is applied to the wrong git tree, please drop us a note to help improving the system]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Eric-Auger/KVM-PCIe-MSI-passthrough-on-ARM-ARM64-kernel-part-2-3-msi-changes/20160420-011957
-> config: x86_64-lkp (attached as .config)
-> reproduce:
->         # save the attached .config to linux build tree
->         make ARCH=x86_64 
-> 
-> All errors (new ones prefixed by >>):
-> 
->>> kernel/irq/msi.c:17:38: fatal error: linux/dma-reserved-iommu.h: No such file or directory
->     #include <linux/dma-reserved-iommu.h>
->                                          ^
->    compilation terminated.
-> 
-> vim +17 kernel/irq/msi.c
-> 
->     11	 */
->     12	#include <linux/types.h>
->     13	#include <linux/device.h>
->     14	#include <linux/irq.h>
->     15	#include <linux/irqdomain.h>
->     16	#include <linux/msi.h>
->   > 17	#include <linux/dma-reserved-iommu.h>
->     18	#include <linux/iommu.h>
->     19	
->     20	/* Temparory solution for building, will be removed later */
-> 
-> ---
-> 0-DAY kernel test infrastructure                Open Source Technology Center
-> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
-> 
+T24gVHVlLCBBcHIgMTksIDIwMTYgYXQgMTA6MDkgUE0sIERhdmlkIFdvb2Rob3VzZSA8ZHdtdzJA
+aW5mcmFkZWFkLm9yZz4gd3JvdGU6Cgo+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11
+LmMKPj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+IEBAIC0zOTIsNiArMzky
+LDcgQEAgc3RydWN0IGRtYXJfZG9tYWluIHsKPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgKiB0byBWVC1kIHNwZWMsIHNlY3Rpb24gOS4zICovCj4+Cj4+ICAgICAgIHN0
+cnVjdCBsaXN0X2hlYWQgZGV2aWNlczsgICAgICAgLyogYWxsIGRldmljZXMnIGxpc3QgKi8KPj4g
+KyAgICAgYm9vbCBoYXNfaW90bGJfZGV2aWNlOwo+Cj4gSWYgeW91IHB1dCB0aGF0ICpiZWZvcmUq
+IHRoZSAnZGV2aWNlcycgZmllbGQgdGhlbiB0aGUgYXJyYXkgd2lsbCBwYWNrCj4gYmV0dGVyLgoK
+V2lsbCBkby4KCj4+IEBAIC0xNTIzLDYgKzE1NTMsOSBAQCBzdGF0aWMgdm9pZCBpb21tdV9mbHVz
+aF9kZXZfaW90bGIoc3RydWN0IGRtYXJfZG9tYWluICpkb21haW4sCj4+ICAgICAgIHVuc2lnbmVk
+IGxvbmcgZmxhZ3M7Cj4+ICAgICAgIHN0cnVjdCBkZXZpY2VfZG9tYWluX2luZm8gKmluZm87Cj4+
+Cj4+ICsgICAgIGlmICghZG9tYWluLT5oYXNfaW90bGJfZGV2aWNlKQo+PiArICAgICAgICAgICAg
+IHJldHVybjsKPj4gKwo+PiAgICAgICBzcGluX2xvY2tfaXJxc2F2ZSgmZGV2aWNlX2RvbWFpbl9s
+b2NrLCBmbGFncyk7Cj4+ICAgICAgIGxpc3RfZm9yX2VhY2hfZW50cnkoaW5mbywgJmRvbWFpbi0+
+ZGV2aWNlcywgbGluaykgewo+PiAgICAgICAgICAgICAgIGlmICghaW5mby0+YXRzX2VuYWJsZWQp
+Cj4+Cj4KPiBIbSwgSSB3b25kZXIgaWYgaXQgd291bGQgYmUgbmljZXIgdG8gY2hlY2sgdGhpcyBp
+biB0aGUgY2FsbGVyIChib3RoIG9mCj4gdGhlbSkuIEFzIHRoaW5ncyBzdGFuZCwgaW4gZmx1c2hf
+dW5tYXBzKCkgd2UnbGwgbm93IGJlIGNhbGN1bGF0aW5nCj4gaWxvZzIobnJwYWdlcykgZm9yIChw
+b3NzaWJseSkgbm8gcmVhc29uIGJlZm9yZSBjYWxsaW5nIHRoaXMgZnVuY3Rpb24uCgpJIHRlbmQg
+dG8gbGVhdmUgaXQgYXMgaXMsIHNpbmNlIEknbSBub3Qgc2VlaW5nIHRoaXMgaWxvZzIoKSBpbiB0
+aGUgcHJvZmlsZXMuCgo+IE90aGVyIHRoYW4gdGhhdCwgdGhpcyBhbGwgbG9va3MgZXhjZWxsZW50
+OyB0aGFua3MuIEknbGwgYXBwbHkgaXQgd2hlbiBJCj4gZ2V0IGhvbWUgZnJvbSBMU0YvTU0gbGF0
+ZXIgdGhpcyB3ZWVrIG9yIG5leHQuCj4KPiBPbmx5IGEgZmV3IGNvc21ldGljIHRoaW5ncyB0byBj
+aGFuZ2Ug4oCUIHBsZWFzZSB1c2UgJ2lvbW11L3Z0LWQ6JyBhcyB0aGUKPiBwcmVmaXggb24gZWFj
+aCBjb21taXQsIGFuZCBzcGVsbCAnTWlCJyBhbmQgJ0tpQicgY29ycmVjdGx5IGluIHRoZSBmaW5h
+bAo+IHBhdGNoIGluIHRoZSBzZXJpZXMuIChBbmQgSSdtIG5vdCBzdXJlIEkgcXVpdGUgdW5kZXJz
+dGFuZCAnYSBDUFUgY2FuCj4gY2FjaGUgYXQgbW9zdCAzMiBNaUIgYW5kIHRoZSBnbG9iYWwgY2Fj
+aGUgaXMgYm91bmRlZCBieSA0IE1pQi4nIGVpdGhlcgo+IHdheS4uLikKCkdyZWF0LCB0aGFua3Mh
+ICBJJ2xsIHJlcG9ydCBhIHY0IGFkZHJlc3NpbmcgdGhlc2UgaXNzdWVzIChhbmQgY2xhcmlmeQp0
+aGUgZXhwbGFuYXRpb24gYWJvdXQgdGhlIGNhY2hlcykuCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5s
+aW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFp
+bG1hbi9saXN0aW5mby9pb21tdQ==
