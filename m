@@ -1,16 +1,12 @@
 From: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
-Subject: Re: [PATCH v3 5/7] iommu: avoid dev iotlb logic in intel-iommu for
-	domains with no dev iotlbs
-Date: Wed, 20 Apr 2016 11:21:55 +0300
-Message-ID: <CAHMfzJ=vNE8JHfnXSKW0LRcaeH=u3tS0SwGfhnHRzc8Z0rodoA@mail.gmail.com>
-References: <cover.1460733778.git.mad@cs.technion.ac.il>
-	<20d0571ab8dda05bd3980b18df0a810fb26480e4.1460733778.git.mad@cs.technion.ac.il>
-	<1461092967.25115.7.camel@infradead.org>
+Subject: [PATCH v4 0/7] Intel IOMMU scalability improvements
+Date: Wed, 20 Apr 2016 11:31:06 +0300
+Message-ID: <cover.1461135861.git.mad@cs.technion.ac.il>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1461092967.25115.7.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,40 +16,98 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Benjamin Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Tsafrir <dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>, Godfrey van der Linden <gvdl-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Kernel-team-b10kYP2dOMg@public.gmane.org
+To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org, omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org, shli-b10kYP2dOMg@public.gmane.org, gvdl-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, Kernel-team-b10kYP2dOMg@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBBcHIgMTksIDIwMTYgYXQgMTA6MDkgUE0sIERhdmlkIFdvb2Rob3VzZSA8ZHdtdzJA
-aW5mcmFkZWFkLm9yZz4gd3JvdGU6Cgo+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11
-LmMKPj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+IEBAIC0zOTIsNiArMzky
-LDcgQEAgc3RydWN0IGRtYXJfZG9tYWluIHsKPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgKiB0byBWVC1kIHNwZWMsIHNlY3Rpb24gOS4zICovCj4+Cj4+ICAgICAgIHN0
-cnVjdCBsaXN0X2hlYWQgZGV2aWNlczsgICAgICAgLyogYWxsIGRldmljZXMnIGxpc3QgKi8KPj4g
-KyAgICAgYm9vbCBoYXNfaW90bGJfZGV2aWNlOwo+Cj4gSWYgeW91IHB1dCB0aGF0ICpiZWZvcmUq
-IHRoZSAnZGV2aWNlcycgZmllbGQgdGhlbiB0aGUgYXJyYXkgd2lsbCBwYWNrCj4gYmV0dGVyLgoK
-V2lsbCBkby4KCj4+IEBAIC0xNTIzLDYgKzE1NTMsOSBAQCBzdGF0aWMgdm9pZCBpb21tdV9mbHVz
-aF9kZXZfaW90bGIoc3RydWN0IGRtYXJfZG9tYWluICpkb21haW4sCj4+ICAgICAgIHVuc2lnbmVk
-IGxvbmcgZmxhZ3M7Cj4+ICAgICAgIHN0cnVjdCBkZXZpY2VfZG9tYWluX2luZm8gKmluZm87Cj4+
-Cj4+ICsgICAgIGlmICghZG9tYWluLT5oYXNfaW90bGJfZGV2aWNlKQo+PiArICAgICAgICAgICAg
-IHJldHVybjsKPj4gKwo+PiAgICAgICBzcGluX2xvY2tfaXJxc2F2ZSgmZGV2aWNlX2RvbWFpbl9s
-b2NrLCBmbGFncyk7Cj4+ICAgICAgIGxpc3RfZm9yX2VhY2hfZW50cnkoaW5mbywgJmRvbWFpbi0+
-ZGV2aWNlcywgbGluaykgewo+PiAgICAgICAgICAgICAgIGlmICghaW5mby0+YXRzX2VuYWJsZWQp
-Cj4+Cj4KPiBIbSwgSSB3b25kZXIgaWYgaXQgd291bGQgYmUgbmljZXIgdG8gY2hlY2sgdGhpcyBp
-biB0aGUgY2FsbGVyIChib3RoIG9mCj4gdGhlbSkuIEFzIHRoaW5ncyBzdGFuZCwgaW4gZmx1c2hf
-dW5tYXBzKCkgd2UnbGwgbm93IGJlIGNhbGN1bGF0aW5nCj4gaWxvZzIobnJwYWdlcykgZm9yIChw
-b3NzaWJseSkgbm8gcmVhc29uIGJlZm9yZSBjYWxsaW5nIHRoaXMgZnVuY3Rpb24uCgpJIHRlbmQg
-dG8gbGVhdmUgaXQgYXMgaXMsIHNpbmNlIEknbSBub3Qgc2VlaW5nIHRoaXMgaWxvZzIoKSBpbiB0
-aGUgcHJvZmlsZXMuCgo+IE90aGVyIHRoYW4gdGhhdCwgdGhpcyBhbGwgbG9va3MgZXhjZWxsZW50
-OyB0aGFua3MuIEknbGwgYXBwbHkgaXQgd2hlbiBJCj4gZ2V0IGhvbWUgZnJvbSBMU0YvTU0gbGF0
-ZXIgdGhpcyB3ZWVrIG9yIG5leHQuCj4KPiBPbmx5IGEgZmV3IGNvc21ldGljIHRoaW5ncyB0byBj
-aGFuZ2Ug4oCUIHBsZWFzZSB1c2UgJ2lvbW11L3Z0LWQ6JyBhcyB0aGUKPiBwcmVmaXggb24gZWFj
-aCBjb21taXQsIGFuZCBzcGVsbCAnTWlCJyBhbmQgJ0tpQicgY29ycmVjdGx5IGluIHRoZSBmaW5h
-bAo+IHBhdGNoIGluIHRoZSBzZXJpZXMuIChBbmQgSSdtIG5vdCBzdXJlIEkgcXVpdGUgdW5kZXJz
-dGFuZCAnYSBDUFUgY2FuCj4gY2FjaGUgYXQgbW9zdCAzMiBNaUIgYW5kIHRoZSBnbG9iYWwgY2Fj
-aGUgaXMgYm91bmRlZCBieSA0IE1pQi4nIGVpdGhlcgo+IHdheS4uLikKCkdyZWF0LCB0aGFua3Mh
-ICBJJ2xsIHJlcG9ydCBhIHY0IGFkZHJlc3NpbmcgdGhlc2UgaXNzdWVzIChhbmQgY2xhcmlmeQp0
-aGUgZXhwbGFuYXRpb24gYWJvdXQgdGhlIGNhY2hlcykuCl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5s
-aW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFp
-bG1hbi9saXN0aW5mby9pb21tdQ==
+This patchset improves the scalability of the Intel IOMMU code by
+resolving two spinlock bottlenecks and eliminating the linearity of
+the IOVA allocator,, yielding up to ~5x performance improvement and
+approaching iommu=off performance.
+
+For example, here's the throughput obtained by 16 memcached instances
+running on a 16-core Sandy Bridge system, accessed using memslap on
+another machine that has iommu=off, using the default memslap config
+(64-byte keys, 1024-byte values, and 10%/90% SET/GET ops):
+
+    stock iommu=off:
+       990,803 memcached transactions/sec (=100%, median of 10 runs).
+    stock iommu=on:
+       221,416 memcached transactions/sec (=22%).
+       [61.70%    0.63%  memcached       [kernel.kallsyms]      [k] _raw_spin_lock_irqsave]
+    patched iommu=on:
+       963,159 memcached transactions/sec (=97%).
+       [1.29%     1.10%  memcached       [kernel.kallsyms]      [k] _raw_spin_lock_irqsave]
+
+The two resolved spinlocks:
+
+ - Deferred IOTLB invalidations are batched in a global data structure
+   and serialized under a spinlock (add_unmap() & flush_unmaps()); this
+   patchset batches IOTLB invalidations in a per-CPU data structure.
+
+ - IOVA management (alloc_iova() & __free_iova()) is serialized under
+   the rbtree spinlock; this patchset adds per-CPU caches of allocated
+   IOVAs so that the rbtree doesn't get accessed frequently. (Adding a
+   cache above the existing IOVA allocator is less intrusive than dynamic
+   identity mapping and helps keep IOMMU page table usage low; see
+   Patch 7.)
+
+The paper "Utilizing the IOMMU Scalably" (presented at the 2015 USENIX
+Annual Technical Conference) contains many more details and
+experiments highlighting the resolved lock contention:
+
+  https://www.usenix.org/conference/atc15/technical-session/presentation/peleg
+
+The resolved linearity of IOVA allocation:
+
+ - The rbtree IOVA allocator (called by alloc_iova()) periodically traverses
+   all previously allocated IOVAs in search for (the highest) unallocated
+   IOVA; with the new IOVA cache, this code is usually bypassed as 
+   allocations are satisfied from the cache in constant time.
+
+The paper "Efficient intra-operating system protection against harmful
+DMAs" (presented at the 2015 USENIX Conference on File and Storage
+Technologies) contains details about the linearity of IOVA allocation:
+
+  https://www.usenix.org/conference/fast15/technical-sessions/presentation/malka
+
+
+v4:
+ * Patch 7/7: Improve commit message and comment about iova_rcache_get().
+ * Patch 5/7: Change placement of "has_iotlb_device" struct field.
+
+v3:
+ * Patch 7/7: Respect the caller-passed limit IOVA when satisfying an IOVA
+   allocation from the cache.
+ * Patch 7/7: Flush the IOVA cache if an rbtree IOVA allocation fails, and
+   then retry the allocation.  This addresses the possibility that all
+   desired IOVA ranges were in other CPUs' caches.
+ * Patch 4/7: Clean up intel_unmap_sg() to use sg accessors. 
+
+v2:
+
+ * Extend IOVA API instead of modifying it, to not break the API's other 
+   non-Intel callers.
+ * Invalidate all per-cpu invalidations if one CPU hits its per-cpu limit,
+   so that we don't defer invalidations more than before.
+ * Smaller cap on per-CPU cache size, to consume less of the IOVA space.
+ * Free resources and perform IOTLB invalidations when a CPU is hot-unplugged.
+
+
+Omer Peleg (7):
+  iommu/vt-d: refactoring of deferred flush entries
+  iommu/vt-d: per-cpu deferred invalidation queues
+  iommu/vt-d: correct flush_unmaps pfn usage
+  iommu/vt-d: only unmap mapped entries
+  iommu/vt-d: avoid dev iotlb logic in intel-iommu for domains with no dev
+    iotlbs
+  iommu/vt-d: change intel-iommu to use IOVA frame numbers
+  iommu/vt-d: introduce per-cpu caching to iova allocation
+
+ drivers/iommu/intel-iommu.c | 318 +++++++++++++++++++++++----------
+ drivers/iommu/iova.c        | 417 +++++++++++++++++++++++++++++++++++++++++---
+ include/linux/iova.h        |  23 ++-
+ 3 files changed, 638 insertions(+), 120 deletions(-)
+
+-- 
+1.9.1
