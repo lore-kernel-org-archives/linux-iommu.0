@@ -1,75 +1,174 @@
-From: Marc Zyngier <marc.zyngier@arm.com>
-Subject: Re: [PATCH v7 8/8] genirq/msi: use the MSI doorbell's IOVA when
- requested
-Date: Wed, 20 Apr 2016 10:44:29 +0100
-Message-ID: <57174F7D.4090501@arm.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v7 6/8] irqchip/gicv2m: implement msi_doorbell_info
+	callback
+Date: Wed, 20 Apr 2016 14:33:17 +0200
+Message-ID: <5717770D.6090005@linaro.org>
 References: <1461085990-2547-1-git-send-email-eric.auger@linaro.org>
- <1461085990-2547-9-git-send-email-eric.auger@linaro.org>
+	<1461085990-2547-7-git-send-email-eric.auger@linaro.org>
+	<57174B8E.9050803@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1461085990-2547-9-git-send-email-eric.auger@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Eric Auger <eric.auger@linaro.org>, eric.auger@st.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org
-Cc: patches@linaro.org, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <57174B8E.9050803-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 19/04/16 18:13, Eric Auger wrote:
-> On MSI message composition we now use the MSI doorbell's IOVA in
-> place of the doorbell's PA in case the device is upstream to an
-> IOMMU that requires MSI addresses to be mapped. The doorbell's
-> allocation and mapping happened on an early stage (pci_enable_msi).
+Marc,
+On 04/20/2016 11:27 AM, Marc Zyngier wrote:
+> On 19/04/16 18:13, Eric Auger wrote:
+>> This patch implements the msi_doorbell_info callback in the
+>> gicv2m driver.
+>>
+>> The driver now is able to return its doorbell characteristics
+>> (base, size, prot). A single doorbell is exposed.
+>>
+>> This will allow the msi layer to iommu_map this doorbell when
+>> requested.
+>>
+>> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>>
+>> ---
+>>
+>> v7: creation
+>> ---
+>>  drivers/irqchip/irq-gic-v2m.c | 32 +++++++++++++++++++++++++++++++-
+>>  1 file changed, 31 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/irqchip/irq-gic-v2m.c b/drivers/irqchip/irq-gic-v2m.c
+>> index 28f047c..54690b9 100644
+>> --- a/drivers/irqchip/irq-gic-v2m.c
+>> +++ b/drivers/irqchip/irq-gic-v2m.c
+>> @@ -24,6 +24,8 @@
+>>  #include <linux/of_pci.h>
+>>  #include <linux/slab.h>
+>>  #include <linux/spinlock.h>
+>> +#include <linux/percpu.h>
+>> +#include <linux/iommu.h>
+>>  
+>>  /*
+>>  * MSI_TYPER:
+>> @@ -64,6 +66,7 @@ struct v2m_data {
+>>  	u32 nr_spis;		/* The number of SPIs for MSIs */
+>>  	unsigned long *bm;	/* MSI vector bitmap */
+>>  	u32 flags;		/* v2m flags for specific implementation */
+>> +	struct irq_chip_msi_doorbell_info doorbell_info;
+>>  };
+>>  
+>>  static void gicv2m_mask_msi_irq(struct irq_data *d)
+>> @@ -105,6 +108,16 @@ static void gicv2m_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+>>  		msg->data -= v2m->spi_start;
+>>  }
+>>  
+>> +static const struct irq_chip_msi_doorbell_info *
+>> +gicv2m_msi_doorbell_info(struct irq_data *data)
+>> +{
+>> +	struct v2m_data *v2m = irq_data_get_irq_chip_data(data);
+>> +
+>> +	if (!v2m)
+>> +		return NULL;
 > 
-> Signed-off-by: Eric Auger <eric.auger@linaro.org>
+> How can this ever be NULL? I think you can drop that test.
+OK
 > 
-> ---
-> v6 -> v7:
-> - allocation/mapping is done at an earlier stage. We now just perform
->   the iova lookup. So it is safe now to be called in a code that cannot
->   sleep. iommu_msi_set_doorbell_iova is moved in the dma-reserved-iommu
->   API: I think it cleans things up with respect to various #ifdef CONFIGS.
+>> +	return (const struct irq_chip_msi_doorbell_info *)(&v2m->doorbell_info);
 > 
-> v5:
-> - use macros to increase the readability
-> - add comments
-> - fix a typo that caused a compilation error if CONFIG_IOMMU_API
->   is not set
-> ---
->  kernel/irq/msi.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
+> Please don't do that. Use "const" in the functions that are using
+> irq_chip_msi_doorbell_info, but do not make this "const" here.
+It definitively compiles without casting so obviously this is not needed
+but is there any other wrong thing I don't see?
+we still want this function to return a pointer to a const?
 > 
-> diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-> index e45907e..0ebb2d8 100644
-> --- a/kernel/irq/msi.c
-> +++ b/kernel/irq/msi.c
-> @@ -19,6 +19,7 @@
->  
->  /* Temparory solution for building, will be removed later */
->  #include <linux/pci.h>
-> +#include <linux/dma-reserved-iommu.h>
->  
->  struct msi_desc *alloc_msi_entry(struct device *dev)
->  {
-> @@ -64,8 +65,12 @@ static int msi_compose(struct irq_data *irq_data,
->  
->  	if (erase)
->  		memset(msg, 0, sizeof(*msg));
-> -	else
-> +	else {
->  		ret = irq_chip_compose_msi_msg(irq_data, msg);
-> +		if (ret)
-> +			return ret;
-> +		iommu_msi_mapping_translate_msg(irq_data, msg);
+>> +}
+>> +
+>>  static struct irq_chip gicv2m_irq_chip = {
+>>  	.name			= "GICv2m",
+>>  	.irq_mask		= irq_chip_mask_parent,
+>> @@ -112,6 +125,7 @@ static struct irq_chip gicv2m_irq_chip = {
+>>  	.irq_eoi		= irq_chip_eoi_parent,
+>>  	.irq_set_affinity	= irq_chip_set_affinity_parent,
+>>  	.irq_compose_msi_msg	= gicv2m_compose_msi_msg,
+>> +	.msi_doorbell_info	= gicv2m_msi_doorbell_info,
+>>  };
+>>  
+>>  static int gicv2m_irq_gic_domain_alloc(struct irq_domain *domain,
+>> @@ -247,6 +261,7 @@ static void gicv2m_teardown(void)
+>>  
+>>  	list_for_each_entry_safe(v2m, tmp, &v2m_nodes, entry) {
+>>  		list_del(&v2m->entry);
+>> +		free_percpu(v2m->doorbell_info.percpu_doorbells);
+>>  		kfree(v2m->bm);
+>>  		iounmap(v2m->base);
+>>  		of_node_put(to_of_node(v2m->fwnode));
+>> @@ -299,6 +314,7 @@ static int __init gicv2m_init_one(struct fwnode_handle *fwnode,
+>>  {
+>>  	int ret;
+>>  	struct v2m_data *v2m;
+>> +	struct irq_chip_msi_doorbell __percpu *doorbell;
+>>  
+>>  	v2m = kzalloc(sizeof(struct v2m_data), GFP_KERNEL);
+>>  	if (!v2m) {
+>> @@ -311,11 +327,23 @@ static int __init gicv2m_init_one(struct fwnode_handle *fwnode,
+>>  
+>>  	memcpy(&v2m->res, res, sizeof(struct resource));
+>>  
+>> +	v2m->doorbell_info.percpu_doorbells =
+>> +		alloc_percpu(struct irq_chip_msi_doorbell);
+>> +	if (WARN_ON(!v2m->doorbell_info.percpu_doorbells)) {
+>> +		ret = -ENOMEM;
+>> +		goto err_free_v2m;
+>> +	}
+>> +	doorbell = per_cpu_ptr(v2m->doorbell_info.percpu_doorbells, 0);
+>> +	doorbell->base = v2m->res.start;
+>> +	doorbell->size = 4;
+>> +	doorbell->prot = IOMMU_WRITE;
+> 
+> You probably need to also have something that says IOMMU_DEVICE or
+> something similar, because I'm afraid you're getting a memory mapping
+> here. I've had a quick look at the two other series, but couldn't find
+> anything that would force the memory attributes.
+Yes you're right I currently just enforce the direction (which is
+checked against what VFIO user registered). Do you refer to IOMMU_MMIO,
+latterly proposed on the ML. In the positive, yes I intend to add it
+once it gets upstreamed.
 
-I've just commented on this function in its respective series. I really
-think it deals with the wrong data structure. Id rather see something like:
+Thanks
 
-struct device *dev = msi_desc_to_dev(irq_data_get_msi_desc(irq_data));
-iommu_msi_msg_pa_to_va(dev, msg);
-
-Thanks,
-
-	M.
--- 
-Jazz is not dead. It just smells funny...
+Eric
+> 
+>> +	v2m->doorbell_info.nb_doorbells = 1;
+>> +
+>>  	v2m->base = ioremap(v2m->res.start, resource_size(&v2m->res));
+>>  	if (!v2m->base) {
+>>  		pr_err("Failed to map GICv2m resource\n");
+>>  		ret = -ENOMEM;
+>> -		goto err_free_v2m;
+>> +		goto err_free_v2m_doorbells;
+>>  	}
+>>  
+>>  	if (spi_start && nr_spis) {
+>> @@ -359,6 +387,8 @@ static int __init gicv2m_init_one(struct fwnode_handle *fwnode,
+>>  
+>>  err_iounmap:
+>>  	iounmap(v2m->base);
+>> +err_free_v2m_doorbells:
+>> +	free_percpu(v2m->doorbell_info.percpu_doorbells);
+>>  err_free_v2m:
+>>  	kfree(v2m);
+>>  	return ret;
+>>
+> 
+> Thanks,
+> 
+> 	M.
+> 
