@@ -1,14 +1,15 @@
 From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Subject: Re: [PATCH v4 7/7] iommu/vt-d: introduce per-cpu caching to iova
 	allocation
-Date: Wed, 20 Apr 2016 15:21:33 -0400
-Message-ID: <1461180093.25115.28.camel@infradead.org>
+Date: Wed, 20 Apr 2016 15:54:03 -0400
+Message-ID: <1461182043.25115.31.camel@infradead.org>
 References: <cover.1461135861.git.mad@cs.technion.ac.il>
 	<3d87d1ef7c5ae3e07e2d7c105c2fe2bb9a82cb46.1461135861.git.mad@cs.technion.ac.il>
+	<1461180093.25115.28.camel@infradead.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============0490735450020324020=="
+Content-Type: multipart/mixed; boundary="===============1341112341737978812=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3d87d1ef7c5ae3e07e2d7c105c2fe2bb9a82cb46.1461135861.git.mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
+In-Reply-To: <1461180093.25115.28.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,43 +24,36 @@ Cc: serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dan-FrESSTt7Abv7r6psnUbsSm
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============0490735450020324020==
+--===============1341112341737978812==
 Content-Type: multipart/signed; micalg="sha-1"; protocol="application/x-pkcs7-signature";
-	boundary="=-Nz4eYU7tAixsohZ7G3Lo"
+	boundary="=-nGFLKKnTcL62dH1p3HIL"
 
 
---=-Nz4eYU7tAixsohZ7G3Lo
+--=-nGFLKKnTcL62dH1p3HIL
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: quoted-printable
 
-T24gV2VkLCAyMDE2LTA0LTIwIGF0IDExOjM0ICswMzAwLCBBZGFtIE1vcnJpc29uIHdyb3RlOgo+
-ICtzdGF0aWMgdm9pZCBpbml0X2lvdmFfcmNhY2hlcyhzdHJ1Y3QgaW92YV9kb21haW4gKmlvdmFk
-KQo+ICt7Ci4uLgo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBmb3JfZWFjaF9wb3Nz
-aWJsZV9jcHUoY3B1KSB7Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqBjcHVfcmNhY2hlID0gcGVyX2NwdV9wdHIocmNhY2hlLT5jcHVfcmNhY2hlcywgY3B1
-KTsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHNwaW5f
-bG9ja19pbml0KCZjcHVfcmNhY2hlLT5sb2NrKTsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoGNwdV9yY2FjaGUtPmxvYWRlZCA9IGlvdmFfbWFnYXppbmVf
-YWxsb2MoR0ZQX0tFUk5FTCk7Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqBjcHVfcmNhY2hlLT5wcmV2ID0gaW92YV9tYWdhemluZV9hbGxvYyhHRlBfS0VS
-TkVMKTsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgfQoKSG0sIGlzIHRoYXQgYWxs
-b2NhdGlvbiBleGNlc3NpdmU/IFdlIGFsbG9jYXRlIHRoZSBtYWdhemluZXMgZm9yIGV2ZXJ5Cipw
-b3NzaWJsZSogQ1BVLCBldmVuIHRob3NlIHdoaWNoIG1heSBuZXZlciBhY3R1YWxseSBleGlzdCBp
-biB0aGUKc3lzdGVtPwoKRG9lcyBpdCBtYWtlIHNlbnNlIHRvIGRvIHRoYXQgYWxsb2NhdGlvbiBv
-bmx5IHRoZSBmaXJzdCB0aW1lIGl0J3MKYWN0dWFsbHkgdXNlZCBvbiBhIGdpdmVuIENQVT8gQW5k
-IGVpdGhlciB3YXksIHNvbWUgY29tbWVudCB0byB0aGUKZWZmZWN0IG9mICJpdCdzIE9LIGZvciBh
-bGxvY2F0aW9uIGZhaWx1cmUgdG8gbGVhdmUgdGhlc2UgYXMgTlVMTApiZWNhdXNlLi4uLiIgKGZp
-bGwgaW4geW91ciByZWFzb25pbmcgaGVyZSkgcHJvYmFibHkgd2FudHMgdG8gYmUgYWRkZWQKdG8g
-dGhlIGFib3ZlIHNuaXBwZXQgb2YgY29kZS4KCk5vdyB0aGF0IHlvdSd2ZSBtYWRlIHRoaXMgYW4g
-ZXh0ZW5zaW9uIG9mIHRoZSBJT1ZBIEFQSSByYXRoZXIgdGhhbiBhbgppbmNvbXBhdGlibGUgY2hh
-bmdlLCB0aGlzIHBhdGNoIHByb2JhYmx5IGFsc28gd2FudHMgdG8gYmUgc3BsaXQgb3V0CmludG8g
-dHdvIOKAlCBjaGFuZ2luZyBpbnRlbC1pb21tdSBvbmx5IGluIHRoZSBzZWNvbmQgcGF0Y2guCgoK
-LS0gCkRhdmlkIFdvb2Rob3VzZSAgICAgICAgICAgICAgICAgICAgICAgICAgICBPcGVuIFNvdXJj
-ZSBUZWNobm9sb2d5IENlbnRyZQpEYXZpZC5Xb29kaG91c2VAaW50ZWwuY29tICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgSW50ZWwgQ29ycG9yYXRpb24KCg==
+On Wed, 2016-04-20 at 15:21 -0400, David Woodhouse wrote:
+>=20
+> Now that you've made this an extension of the IOVA API rather than an
+> incompatible change, this patch probably also wants to be split out
+> into two =E2=80=94 changing intel-iommu only in the second patch.
+
+I've done that, corrected a tiny slip in the comment of patch 3 (x86_64
+has VTD_PAGE_SIZE =3D=3D PAGE_SIZE but IA64 doesn't), and pushed it out to
+the intel-iommu.git tree.
+
+We can optimise the for_each_possible_cpu magazine allocations later,
+if we need to.
+
+Thanks again.
+
+--=20
+David Woodhouse                            Open Source Technology Centre
+David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org                              Intel Corporation
 
 
---=-Nz4eYU7tAixsohZ7G3Lo
+--=-nGFLKKnTcL62dH1p3HIL
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -152,28 +146,28 @@ Qy7VFBkoLINszBrOUeIxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcx
 ODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENB
 AgMN7zcwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0B
-CQUxDxcNMTYwNDIwMTkyMTMzWjAjBgkqhkiG9w0BCQQxFgQUSUZ7zIlRTPC6YBEQOxjeT4JozMww
+CQUxDxcNMTYwNDIwMTk1NDAzWjAjBgkqhkiG9w0BCQQxFgQUc+LFJEpSUxuZr0rXbTYGj4zAQtAw
 gaUGCSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0
 ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMT
 L1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMN7zcwgacG
 CyqGSIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRk
 LjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMv
 U3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAw3vNzANBgkq
-hkiG9w0BAQEFAASCAQBa2cyLHfRlOMUpL+crlNlSReBULTX2MApgsL+BRZ5BIzA7ZGa0aGVdJ/7F
-cG1hWm+gAhtLLy7WCRR9Qi9krJjC7CSCnKZPe9k2jXlmc7p+BVgPsichnPf6zHRzCVkG2e/ney82
-tE+N3/JuTruqANSfZ2vj7s9MKAfpNgY3VPocUysZsaLbkI65lFQq0SOejfS8hpEjRxkjkoXR9VWs
-1q2Hs+s5seJL95WPABj0xZR2v3UDKMQk86laKIurSYQ6VjJdsHCjxWxWWDnAaDJvy+euUlWTCI0e
-ZuRjfQPAZMsKEsDExeJ/UmqTBEPB4K/xJX+lrxXSrVZW5dBu8vvSPtH3AAAAAAAA
+hkiG9w0BAQEFAASCAQCry67HKjtlLRkErPf9qrNscxyMKwWkmhJpgwCzN/+LsjODfI0r6CR0KI6B
+9JFyHHGLlQS2vWtctapDySHrnVePalxyVRfLePV9NEy0WTZ2Kotk8SBspyXOwuL4WqRx+ebWSj3z
+HeNlp78tCbaYmmFwnrl4nHHFryrjPRbXXTQWbvJPVNwjZ8Um91iOq2SFq2CORR/1MF3EM2pWrrbU
+KHUcSU0rZjN781kD3ys+ItKL9dkVWK7mp5RZ9Xp/ewffmV0K7Wxc0xuMmy00KMoO6JgFaNdD/17X
+eGec4EUZ/qnlqwl8vb+Srgk1rpbGxISLeLRcbgYWzEZ0dpK/KDICLjm7AAAAAAAA
 
 
---=-Nz4eYU7tAixsohZ7G3Lo--
+--=-nGFLKKnTcL62dH1p3HIL--
 
 
---===============0490735450020324020==
+--===============1341112341737978812==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---===============0490735450020324020==--
+--===============1341112341737978812==--
