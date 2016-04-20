@@ -1,185 +1,72 @@
 From: Marc Zyngier <marc.zyngier@arm.com>
-Subject: Re: [PATCH v7 09/10] iommu/dma-reserved-iommu:
- iommu_msi_mapping_translate_msg
-Date: Wed, 20 Apr 2016 10:38:30 +0100
-Message-ID: <57174E16.1050004@arm.com>
-References: <1461084994-2355-1-git-send-email-eric.auger@linaro.org>
- <1461084994-2355-10-git-send-email-eric.auger@linaro.org>
+Subject: Re: [PATCH v7 8/8] genirq/msi: use the MSI doorbell's IOVA when
+ requested
+Date: Wed, 20 Apr 2016 10:44:29 +0100
+Message-ID: <57174F7D.4090501@arm.com>
+References: <1461085990-2547-1-git-send-email-eric.auger@linaro.org>
+ <1461085990-2547-9-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1461084994-2355-10-git-send-email-eric.auger@linaro.org>
+In-Reply-To: <1461085990-2547-9-git-send-email-eric.auger@linaro.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Eric Auger <eric.auger@linaro.org>, eric.auger@st.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org
 Cc: patches@linaro.org, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 19/04/16 17:56, Eric Auger wrote:
-> Introduce iommu_msi_mapping_translate_msg whose role consists in
-> detecting whether the device's MSIs must to be mapped into an IOMMU.
-> It case it must, the function overrides the MSI msg originally composed
-> and replaces the doorbell's PA by a pre-allocated and pre-mapped reserved
-> IOVA. In case the corresponding PA region is not found, the function
-> returns an error.
-> 
-> This function is likely to be called in some code that cannot sleep. This
-> is the reason why the allocation/mapping is done separately.
+On 19/04/16 18:13, Eric Auger wrote:
+> On MSI message composition we now use the MSI doorbell's IOVA in
+> place of the doorbell's PA in case the device is upstream to an
+> IOMMU that requires MSI addresses to be mapped. The doorbell's
+> allocation and mapping happened on an early stage (pci_enable_msi).
 > 
 > Signed-off-by: Eric Auger <eric.auger@linaro.org>
 > 
 > ---
+> v6 -> v7:
+> - allocation/mapping is done at an earlier stage. We now just perform
+>   the iova lookup. So it is safe now to be called in a code that cannot
+>   sleep. iommu_msi_set_doorbell_iova is moved in the dma-reserved-iommu
+>   API: I think it cleans things up with respect to various #ifdef CONFIGS.
 > 
-> v7: creation
+> v5:
+> - use macros to increase the readability
+> - add comments
+> - fix a typo that caused a compilation error if CONFIG_IOMMU_API
+>   is not set
 > ---
->  drivers/iommu/dma-reserved-iommu.c | 69 ++++++++++++++++++++++++++++++++++++++
->  include/linux/dma-reserved-iommu.h | 27 +++++++++++++++
->  2 files changed, 96 insertions(+)
+>  kernel/irq/msi.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iommu/dma-reserved-iommu.c b/drivers/iommu/dma-reserved-iommu.c
-> index 907a17f..603ee45 100644
-> --- a/drivers/iommu/dma-reserved-iommu.c
-> +++ b/drivers/iommu/dma-reserved-iommu.c
-> @@ -18,6 +18,14 @@
->  #include <linux/iommu.h>
->  #include <linux/iova.h>
->  #include <linux/msi.h>
-> +#include <linux/irq.h>
-> +
-> +#ifdef CONFIG_PHYS_ADDR_T_64BIT
-> +#define msg_to_phys_addr(msg) \
-> +	(((phys_addr_t)((msg)->address_hi) << 32) | (msg)->address_lo)
-> +#else
-> +#define msg_to_phys_addr(msg)	((msg)->address_lo)
-> +#endif
+> diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+> index e45907e..0ebb2d8 100644
+> --- a/kernel/irq/msi.c
+> +++ b/kernel/irq/msi.c
+> @@ -19,6 +19,7 @@
 >  
->  struct reserved_iova_domain {
->  	struct iova_domain *iovad;
-> @@ -351,3 +359,64 @@ struct iommu_domain *iommu_msi_mapping_desc_to_domain(struct msi_desc *desc)
->  	return d;
->  }
->  EXPORT_SYMBOL_GPL(iommu_msi_mapping_desc_to_domain);
-> +
-> +static dma_addr_t iommu_find_reserved_iova(struct iommu_domain *domain,
-> +				    phys_addr_t addr, size_t size)
-> +{
-> +	unsigned long  base_pfn, end_pfn, nb_iommu_pages, order, flags;
-> +	size_t iommu_page_size, binding_size;
-> +	struct iommu_reserved_binding *b;
-> +	phys_addr_t aligned_base, offset;
-> +	dma_addr_t iova = DMA_ERROR_CODE;
-> +	struct iova_domain *iovad;
-> +
-> +	spin_lock_irqsave(&domain->reserved_lock, flags);
-> +
-> +	iovad = (struct iova_domain *)domain->reserved_iova_cookie;
-> +
-> +	if (!iovad)
-> +		goto unlock;
-> +
-> +	order = iova_shift(iovad);
-> +	base_pfn = addr >> order;
-> +	end_pfn = (addr + size - 1) >> order;
-> +	aligned_base = base_pfn << order;
-> +	offset = addr - aligned_base;
-> +	nb_iommu_pages = end_pfn - base_pfn + 1;
-> +	iommu_page_size = 1 << order;
-> +	binding_size = nb_iommu_pages * iommu_page_size;
-> +
-> +	b = find_reserved_binding(domain, aligned_base, binding_size);
-> +	if (b && (b->addr <= aligned_base) &&
-> +		(aligned_base + binding_size <=  b->addr + b->size))
-> +		iova = b->iova + offset + aligned_base - b->addr;
-> +unlock:
-> +	spin_unlock_irqrestore(&domain->reserved_lock, flags);
-> +	return iova;
-> +}
-> +
-> +int iommu_msi_mapping_translate_msg(struct irq_data *data, struct msi_msg *msg)
-> +{
+>  /* Temparory solution for building, will be removed later */
+>  #include <linux/pci.h>
+> +#include <linux/dma-reserved-iommu.h>
+>  
+>  struct msi_desc *alloc_msi_entry(struct device *dev)
+>  {
+> @@ -64,8 +65,12 @@ static int msi_compose(struct irq_data *irq_data,
+>  
+>  	if (erase)
+>  		memset(msg, 0, sizeof(*msg));
+> -	else
+> +	else {
+>  		ret = irq_chip_compose_msi_msg(irq_data, msg);
+> +		if (ret)
+> +			return ret;
+> +		iommu_msi_mapping_translate_msg(irq_data, msg);
 
-I'm really not keen on passing a full irq_data to something that doesn't
-really care about it. What this really needs is the device that
-generates the MSIs, which makes a lot more sense (you get the device and
-the address from the msi_msg).
+I've just commented on this function in its respective series. I really
+think it deals with the wrong data structure. Id rather see something like:
 
-Or am I getting it wrong?
-
-> +	struct iommu_domain *d;
-> +	struct msi_desc *desc;
-> +	dma_addr_t iova;
-> +
-> +	desc = irq_data_get_msi_desc(data);
-> +	if (!desc)
-> +		return -EINVAL;
-> +
-> +	d = iommu_msi_mapping_desc_to_domain(desc);
-> +	if (!d)
-> +		return 0;
-> +
-> +	iova = iommu_find_reserved_iova(d, msg_to_phys_addr(msg),
-> +					sizeof(phys_addr_t));
-> +
-> +	if (iova == DMA_ERROR_CODE)
-> +		return -EINVAL;
-> +
-> +	msg->address_lo = lower_32_bits(iova);
-> +	msg->address_hi = upper_32_bits(iova);
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_msi_mapping_translate_msg);
-> diff --git a/include/linux/dma-reserved-iommu.h b/include/linux/dma-reserved-iommu.h
-> index 8373929..04e1912f 100644
-> --- a/include/linux/dma-reserved-iommu.h
-> +++ b/include/linux/dma-reserved-iommu.h
-> @@ -20,6 +20,8 @@
->  
->  struct iommu_domain;
->  struct msi_desc;
-> +struct irq_data;
-> +struct msi_msg;
->  
->  #ifdef CONFIG_IOMMU_DMA_RESERVED
->  
-> @@ -82,6 +84,25 @@ void iommu_put_reserved_iova(struct iommu_domain *domain, phys_addr_t addr);
->   */
->  struct iommu_domain *iommu_msi_mapping_desc_to_domain(struct msi_desc *desc);
->  
-> +/**
-> + * iommu_msi_mapping_translate_msg: in case the MSI transaction is translated
-> + * by an IOMMU, the msg address must be an IOVA instead of a physical address.
-> + * This function overwrites the original MSI message containing the doorbell
-> + * physical address, result of the primary composition, with the doorbell IOVA.
-> + *
-> + * The doorbell physical address must be bound previously to an IOVA using
-> + * iommu_get_reserved_iova
-> + *
-> + * @data: irq data handle
-> + * @msg: original msi message containing the PA to be overwritten with
-> + * the IOVA
-> + *
-> + * return 0 if the MSI does not need to be mapped or when the PA/IOVA
-> + * were successfully swapped; return -EINVAL if the addresses need
-> + * to be swapped but not IOMMU binding is found
-> + */
-> +int iommu_msi_mapping_translate_msg(struct irq_data *data, struct msi_msg *msg);
-> +
->  #else
->  
->  static inline int
-> @@ -111,5 +132,11 @@ iommu_msi_mapping_desc_to_domain(struct msi_desc *desc)
->  	return NULL;
->  }
->  
-> +static inline int iommu_msi_mapping_translate_msg(struct irq_data *data,
-> +						  struct msi_msg *msg)
-> +{
-> +	return 0;
-> +}
-> +
->  #endif	/* CONFIG_IOMMU_DMA_RESERVED */
->  #endif	/* __DMA_RESERVED_IOMMU_H */
-> 
+struct device *dev = msi_desc_to_dev(irq_data_get_msi_desc(irq_data));
+iommu_msi_msg_pa_to_va(dev, msg);
 
 Thanks,
 
