@@ -1,16 +1,15 @@
-From: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
-Subject: [PATCH v4 5/7] iommu/vt-d: avoid dev iotlb logic in intel-iommu for
-	domains with no dev iotlbs
-Date: Wed, 20 Apr 2016 19:03:35 +0300
-Message-ID: <20160420160333.GA30258@cs.technion.ac.il>
-References: <cover.1461135861.git.mad@cs.technion.ac.il>
-	<3780bc5682714a48a8d90ee0adf621dbd3529283.1461135861.git.mad@cs.technion.ac.il>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v7 03/10] iommu: introduce a reserved iova cookie
+Date: Wed, 20 Apr 2016 18:14:01 +0200
+Message-ID: <5717AAC9.10505@linaro.org>
+References: <1461084994-2355-1-git-send-email-eric.auger@linaro.org>
+	<1461084994-2355-4-git-send-email-eric.auger@linaro.org>
+	<57177C31.9090004@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <3780bc5682714a48a8d90ee0adf621dbd3529283.1461135861.git.mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
+In-Reply-To: <57177C31.9090004-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,116 +19,125 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, dan-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org, omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org, shli-b10kYP2dOMg@public.gmane.org, gvdl-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, Kernel-team-b10kYP2dOMg@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
+Hi Robin,
+On 04/20/2016 02:55 PM, Robin Murphy wrote:
+> On 19/04/16 17:56, Eric Auger wrote:
+>> This patch introduces some new fields in the iommu_domain struct,
+>> dedicated to reserved iova management.
+>>
+>> In a similar way as DMA mapping IOVA window, we need to store
+>> information related to a reserved IOVA window.
+>>
+>> The reserved_iova_cookie will store the reserved iova_domain
+>> handle. An RB tree indexed by physical address is introduced to
+>> store the host physical addresses bound to reserved IOVAs.
+>>
+>> Those physical addresses will correspond to MSI frame base
+>> addresses, also referred to as doorbells. Their number should be
+>> quite limited per domain.
+>>
+>> Also a spin_lock is introduced to protect accesses to the iova_domain
+>> and RB tree. The choice of a spin_lock is driven by the fact the RB
+>> tree will need to be accessed in MSI controller code not allowed to
+>> sleep.
+>>
+>> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>>
+>> ---
+>> v5 -> v6:
+>> - initialize reserved_binding_list
+>> - use a spinlock instead of a mutex
+>> ---
+>>   drivers/iommu/iommu.c | 2 ++
+>>   include/linux/iommu.h | 6 ++++++
+>>   2 files changed, 8 insertions(+)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index b9df141..f70ef3b 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -1073,6 +1073,8 @@ static struct iommu_domain
+>> *__iommu_domain_alloc(struct bus_type *bus,
+>>
+>>       domain->ops  = bus->iommu_ops;
+>>       domain->type = type;
+>> +    spin_lock_init(&domain->reserved_lock);
+>> +    domain->reserved_binding_list = RB_ROOT;
+>>
+>>       return domain;
+>>   }
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index b3e8c5b..60999db 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -24,6 +24,7 @@
+>>   #include <linux/of.h>
+>>   #include <linux/types.h>
+>>   #include <linux/scatterlist.h>
+>> +#include <linux/spinlock.h>
+>>   #include <trace/events/iommu.h>
+>>
+>>   #define IOMMU_READ    (1 << 0)
+>> @@ -83,6 +84,11 @@ struct iommu_domain {
+>>       void *handler_token;
+>>       struct iommu_domain_geometry geometry;
+>>       void *iova_cookie;
+>> +    void *reserved_iova_cookie;
+> 
+> Why exactly do we need this? From your description, it's for the user of
+> the domain to keep track of IOVA allocations in, but then that's
+> precisely what the iova_cookie exists for.
 
-This patch avoids taking the device_domain_lock in iommu_flush_dev_iotlb()
-for domains with no dev iotlb devices.
+I was not sure whether both APIs could not be used concurrently, hence a
+separate cookie. If we only consider MSI mapping use case I guess we are
+either with a DMA domain or with a domain for VFIO and I would agree
+with you, ie. we can reuse the same cookie.
+> 
+>> +    /* rb tree indexed by PA, for reserved bindings only */
+>> +    struct rb_root reserved_binding_list;
+> 
+> Nit: that's more puzzling than helpful - "reserved binding" is
+> particularly vague and nondescript, and makes me think of anything but
+> MSI descriptors.
+my heart is torn between advised genericity and MSI use case. My natural
+short-sighted inclination would head me for an MSI mapping dedicated API
+but I am following advices. As discussed with Alex there are
+implementation details pretty related to MSI problematics I think (the
+fact we store the "bindings" in an rb-tree/list, locking)
 
-Signed-off-by: Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
-[gvdl-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org: fixed locking issues]
-Signed-off-by: Godfrey van der Linden <gvdl-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-[mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org: rebased and reworded the commit message]
-Signed-off-by: Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>
-Reviewed-by: Shaohua Li <shli-b10kYP2dOMg@public.gmane.org>
-Reviewed-by: Ben Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/intel-iommu.c | 34 ++++++++++++++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
+If Marc & Alex I can retarget this API to be less generic.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index be6d885..e9f7086 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -391,6 +391,7 @@ struct dmar_domain {
- 					 * domain ids are 16 bit wide according
- 					 * to VT-d spec, section 9.3 */
- 
-+	bool has_iotlb_device;
- 	struct list_head devices;	/* all devices' list */
- 	struct iova_domain iovad;	/* iova's that belong to this domain */
- 
-@@ -1464,10 +1465,35 @@ iommu_support_dev_iotlb (struct dmar_domain *domain, struct intel_iommu *iommu,
- 	return NULL;
- }
- 
-+static void domain_update_iotlb(struct dmar_domain *domain)
-+{
-+	struct device_domain_info *info;
-+	bool has_iotlb_device = false;
-+
-+	assert_spin_locked(&device_domain_lock);
-+
-+	list_for_each_entry(info, &domain->devices, link) {
-+		struct pci_dev *pdev;
-+
-+		if (!info->dev || !dev_is_pci(info->dev))
-+			continue;
-+
-+		pdev = to_pci_dev(info->dev);
-+		if (pdev->ats_enabled) {
-+			has_iotlb_device = true;
-+			break;
-+		}
-+	}
-+
-+	domain->has_iotlb_device = has_iotlb_device;
-+}
-+
- static void iommu_enable_dev_iotlb(struct device_domain_info *info)
- {
- 	struct pci_dev *pdev;
- 
-+	assert_spin_locked(&device_domain_lock);
-+
- 	if (!info || !dev_is_pci(info->dev))
- 		return;
- 
-@@ -1487,6 +1513,7 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
- #endif
- 	if (info->ats_supported && !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
- 		info->ats_enabled = 1;
-+		domain_update_iotlb(info->domain);
- 		info->ats_qdep = pci_ats_queue_depth(pdev);
- 	}
- }
-@@ -1495,6 +1522,8 @@ static void iommu_disable_dev_iotlb(struct device_domain_info *info)
- {
- 	struct pci_dev *pdev;
- 
-+	assert_spin_locked(&device_domain_lock);
-+
- 	if (!dev_is_pci(info->dev))
- 		return;
- 
-@@ -1503,6 +1532,7 @@ static void iommu_disable_dev_iotlb(struct device_domain_info *info)
- 	if (info->ats_enabled) {
- 		pci_disable_ats(pdev);
- 		info->ats_enabled = 0;
-+		domain_update_iotlb(info->domain);
- 	}
- #ifdef CONFIG_INTEL_IOMMU_SVM
- 	if (info->pri_enabled) {
-@@ -1523,6 +1553,9 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- 	unsigned long flags;
- 	struct device_domain_info *info;
- 
-+	if (!domain->has_iotlb_device)
-+		return;
-+
- 	spin_lock_irqsave(&device_domain_lock, flags);
- 	list_for_each_entry(info, &domain->devices, link) {
- 		if (!info->ats_enabled)
-@@ -1740,6 +1773,7 @@ static struct dmar_domain *alloc_domain(int flags)
- 	memset(domain, 0, sizeof(*domain));
- 	domain->nid = -1;
- 	domain->flags = flags;
-+	domain->has_iotlb_device = false;
- 	INIT_LIST_HEAD(&domain->devices);
- 
- 	return domain;
--- 
-1.9.1
+ Plus it's called a list but isn't a list (that said,
+> given that we'd typically only expect a handful of entries, and lookups
+> are hardly going to be a performance-critical bottleneck, would a simple
+> list not suffice?)
+I fully agree on that point. An rb-tree is overkill today for MSI use
+case. Again if we were to use this API for anything else, this may
+change the decision. But sure we can refactor afterwards upon needs. TBH
+the rb-tree is inherited from vfio_iommu_type1 dma tree where that code
+was originally located.
+> 
+>> +    /* protects reserved cookie and rbtree manipulation */
+>> +    spinlock_t reserved_lock;
+> 
+> A cookie is an opaque structure, so any locking it needs would normally
+> be hidden within. If on the other hand it's not meant to be opaque at
+> this level, then it should probably be something more specific than a
+> void * (if at all, as above).
+agreed
+
+Thanks
+
+Eric
+> 
+> Robin.
+> 
+>>   };
+>>
+>>   enum iommu_cap {
+>>
+> 
