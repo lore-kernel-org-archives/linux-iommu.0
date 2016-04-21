@@ -1,28 +1,38 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH v5 3/9] dma-mapping: add dma_{map,unmap}_resource
-Date: Thu, 21 Apr 2016 06:49:42 -0700
-Message-ID: <20160421134942.GA3325@infradead.org>
-References: <1457404974-1800-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
- <20160311125846.GF1111@bigcity.dyn.berto.se>
- <20160315082254.GE9136@infradead.org>
- <3286525.zPAGiD4Xk2@avalon>
- <20160321152601.GA11674@infradead.org>
- <20160413132916.GC19650@bigcity.dyn.berto.se>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH 0/2] iommu/arm-smmu: Fixed for 4.6
+Date: Thu, 21 Apr 2016 16:51:12 +0200
+Message-ID: <20160421145112.GL3886@suse.de>
+References: <1461160413-15403-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20160413132916.GC19650@bigcity.dyn.berto.se>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, linux-renesas-soc@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, iommu@lists.linux-foundation.org, robin.murphy@arm.com, geert+renesas@glider.be, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org
+In-Reply-To: <1461160413-15403-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: yang.shi-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 13, 2016 at 03:29:17PM +0200, Niklas S?derlund wrote:
-> > Yes, it would be good to do an audit of all the ARM dma_ops as well
-> > as generic code like drivers/base/dma-*.c, lib/dma-debug.c and
-> > include/linux/dma-*.h
+On Wed, Apr 20, 2016 at 02:53:31PM +0100, Will Deacon wrote:
+> Hi Joerg,
+> 
+> Please can you take these two related arm-smmu fixes for 4.6? They
+> address a regression seem by both Eric and Yang following the partial
+> support for default domains that we added during the merge window.
+> 
+> I can send a pull request if you prefer, but it doesn't seem necessary
+> to me.
 
-What about things like the phys_addr() helper in lib/dma-debug.c?  That
-was in fact what prompted my question for an audit, and it seems
-to not even feature on your list.  What patterns / symbols did you look
-for?
+Sure, applied both. Thanks Will.
+
+
+	Joerg
