@@ -1,398 +1,107 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v7 06/10] iommu/dma-reserved-iommu:
-	iommu_get/put_reserved_iova
-Date: Thu, 21 Apr 2016 10:43:06 +0200
-Message-ID: <5718929A.5050703@linaro.org>
-References: <1461084994-2355-1-git-send-email-eric.auger@linaro.org>
-	<1461084994-2355-7-git-send-email-eric.auger@linaro.org>
-	<5717B541.7090003@arm.com>
+From: Niklas =?iso-8859-1?Q?S=F6derlund?=
+	<niklas.soderlund@ragnatech.se>
+Subject: Re: [PATCH v5 3/9] dma-mapping: add dma_{map,unmap}_resource
+Date: Thu, 21 Apr 2016 11:48:20 +0200
+Message-ID: <20160421094820.GM19650@bigcity.dyn.berto.se>
+References: <1457404974-1800-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+ <20160311125846.GF1111@bigcity.dyn.berto.se>
+ <20160315082254.GE9136@infradead.org>
+ <3286525.zPAGiD4Xk2@avalon>
+ <20160321152601.GA11674@infradead.org>
+ <20160413132916.GC19650@bigcity.dyn.berto.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5717B541.7090003-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160413132916.GC19650@bigcity.dyn.berto.se>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Christoph Hellwig <hch@infradead.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, linux-renesas-soc@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, iommu@lists.linux-foundation.org, robin.murphy@arm.com, geert+renesas@glider.be, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-On 04/20/2016 06:58 PM, Robin Murphy wrote:
-> On 19/04/16 17:56, Eric Auger wrote:
->> This patch introduces iommu_get/put_reserved_iova.
->>
->> iommu_get_reserved_iova allows to iommu map a contiguous physical region
->> onto a reserved contiguous IOVA region. The physical region base address
->> does not need to be iommu page size aligned. iova pages are allocated and
->> mapped so that they cover all the physical region. This mapping is
->> tracked as a whole (and cannot be split) in an RB tree indexed by PA.
->>
->> In case a mapping already exists for the physical pages, the IOVA mapped
->> to the PA base is directly returned.
->>
->> Each time the get succeeds a binding ref count is incremented.
->>
->> iommu_put_reserved_iova decrements the ref count and when this latter
->> is null, the mapping is destroyed and the iovas are released.
->>
->> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->>
->> ---
->> v7:
->> - change title and rework commit message with new name of the functions
->>    and size parameter
->> - fix locking
->> - rework header doc comments
->> - put now takes a phys_addr_t
->> - check prot argument against reserved_iova_domain prot flags
->>
->> v5 -> v6:
->> - revisit locking with spin_lock instead of mutex
->> - do not kref_get on 1st get
->> - add size parameter to the get function following Marc's request
->> - use the iova domain shift instead of using the smallest supported
->> page size
->>
->> v3 -> v4:
->> - formerly in iommu: iommu_get/put_single_reserved &
->>    iommu/arm-smmu: implement iommu_get/put_single_reserved
->> - Attempted to address Marc's doubts about missing size/alignment
->>    at VFIO level (user-space knows the IOMMU page size and the number
->>    of IOVA pages to provision)
->>
->> v2 -> v3:
->> - remove static implementation of iommu_get_single_reserved &
->>    iommu_put_single_reserved when CONFIG_IOMMU_API is not set
->>
->> v1 -> v2:
->> - previously a VFIO API, named vfio_alloc_map/unmap_free_reserved_iova
->> ---
->>   drivers/iommu/dma-reserved-iommu.c | 150
->> +++++++++++++++++++++++++++++++++++++
->>   include/linux/dma-reserved-iommu.h |  38 ++++++++++
->>   2 files changed, 188 insertions(+)
->>
->> diff --git a/drivers/iommu/dma-reserved-iommu.c
->> b/drivers/iommu/dma-reserved-iommu.c
->> index f6fa18e..426d339 100644
->> --- a/drivers/iommu/dma-reserved-iommu.c
->> +++ b/drivers/iommu/dma-reserved-iommu.c
->> @@ -135,6 +135,22 @@ unlock:
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_alloc_reserved_iova_domain);
->>
->> +/* called with domain's reserved_lock held */
->> +static void reserved_binding_release(struct kref *kref)
->> +{
->> +    struct iommu_reserved_binding *b =
->> +        container_of(kref, struct iommu_reserved_binding, kref);
->> +    struct iommu_domain *d = b->domain;
->> +    struct reserved_iova_domain *rid =
->> +        (struct reserved_iova_domain *)d->reserved_iova_cookie;
-> 
-> Either it's a void *, in which case you don't need to cast it, or it
-> should be the appropriate type as I mentioned earlier, in which case you
-> still wouldn't need to cast it.
-ok
-> 
->> +    unsigned long order;
->> +
->> +    order = iova_shift(rid->iovad);
->> +    free_iova(rid->iovad, b->iova >> order);
-> 
-> iova_pfn() ?
-ok
-> 
->> +    unlink_reserved_binding(d, b);
->> +    kfree(b);
->> +}
->> +
->>   void iommu_free_reserved_iova_domain(struct iommu_domain *domain)
->>   {
->>       struct reserved_iova_domain *rid;
->> @@ -160,3 +176,137 @@ unlock:
->>       }
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_free_reserved_iova_domain);
->> +
->> +int iommu_get_reserved_iova(struct iommu_domain *domain,
->> +                  phys_addr_t addr, size_t size, int prot,
->> +                  dma_addr_t *iova)
->> +{
->> +    unsigned long base_pfn, end_pfn, nb_iommu_pages, order, flags;
->> +    struct iommu_reserved_binding *b, *newb;
->> +    size_t iommu_page_size, binding_size;
->> +    phys_addr_t aligned_base, offset;
->> +    struct reserved_iova_domain *rid;
->> +    struct iova_domain *iovad;
->> +    struct iova *p_iova;
->> +    int ret = -EINVAL;
->> +
->> +    newb = kzalloc(sizeof(*newb), GFP_KERNEL);
->> +    if (!newb)
->> +        return -ENOMEM;
->> +
->> +    spin_lock_irqsave(&domain->reserved_lock, flags);
->> +
->> +    rid = (struct reserved_iova_domain *)domain->reserved_iova_cookie;
->> +    if (!rid)
->> +        goto free_newb;
->> +
->> +    if ((prot & IOMMU_READ & !(rid->prot & IOMMU_READ)) ||
->> +        (prot & IOMMU_WRITE & !(rid->prot & IOMMU_WRITE)))
-> 
-> Are devices wanting to read from MSI doorbells really a thing?
-the rationale is Alex asked for propagating the VFIO DMA MAP prot flag
-downto this API (genericity context). This later is stored in rid->prot
-and I was just checking the iova was mapped according to the direction
-the userspace expected.
-> 
->> +        goto free_newb;
->> +
->> +    iovad = rid->iovad;
->> +    order = iova_shift(iovad);
->> +    base_pfn = addr >> order;
->> +    end_pfn = (addr + size - 1) >> order;
->> +    aligned_base = base_pfn << order;
->> +    offset = addr - aligned_base;
->> +    nb_iommu_pages = end_pfn - base_pfn + 1;
->> +    iommu_page_size = 1 << order;
->> +    binding_size = nb_iommu_pages * iommu_page_size;
-> 
-> offset = iova_offset(iovad, addr);
-> aligned_base = addr - offset;
-> binding_size = iova_align(iovad, size + offset);
-> 
-> Am I right?
-Looks so. Will further test it. Thanks
-> 
->> +
->> +    b = find_reserved_binding(domain, aligned_base, binding_size);
->> +    if (b) {
->> +        *iova = b->iova + offset + aligned_base - b->addr;
->> +        kref_get(&b->kref);
->> +        ret = 0;
->> +        goto free_newb;
->> +    }
->> +
->> +    p_iova = alloc_iova(iovad, nb_iommu_pages,
->> +                iovad->dma_32bit_pfn, true);
->> +    if (!p_iova) {
->> +        ret = -ENOMEM;
->> +        goto free_newb;
->> +    }
->> +
->> +    *iova = iova_dma_addr(iovad, p_iova);
->> +
->> +    /* unlock to call iommu_map which is not guaranteed to be atomic */
-> 
-> Hmm, that's concerning, because the ARM DMA mapping code, and
-> consequently the iommu-dma layer, has always relied on it being so. On
-> brief inspection, it looks to be only the AMD IOMMU doing something
-> obviously non-atomic (taking a mutex) in its map callback, but then that
-> has a separate DMA ops implementation. It doesn't look like it would be
-> too intrusive to change, either, but that's an idea for its own thread.
-yes. Making no hypothesis on the atomicity of iommu_map/unmap ops
-brought some extra complexity here. Also it obliged to separate the
-alloc/map from the iommu "binding" lookup. But now it is done I think it
-brings some added value. Typically the fact we introduced an irq-chip
-ops to retrieve the doorbells characteristics is valuable to enumerate
-their number.
-> 
->> +    spin_unlock_irqrestore(&domain->reserved_lock, flags);
->> +
->> +    ret = iommu_map(domain, *iova, aligned_base, binding_size, prot);
->> +
->> +    spin_lock_irqsave(&domain->reserved_lock, flags);
->> +
->> +    rid = (struct reserved_iova_domain *) domain->reserved_iova_cookie;
->> +    if (!rid || (rid->iovad != iovad)) {
->> +        /* reserved iova domain was destroyed in our back */
-> 
-> That that could happen at all is terrifying! Surely the reserved domain
-> should be set up immediately after iommu_domain_alloc() and torn down
-> immediately before iommu_domain_free(). Things going missing while a
-> domain is live smacks of horrible brokenness.
-The VFIO user client creates the "reserved iova domain" using the vfio
-VFIO_IOMMU_MAP_DMA ioctl. This can happen anytime after the iommu domain
-creation (on VFIO_SET_IOMMU ioctl). The user-space is currently allowed
-to unregister this iova domain at any time too. I think this is wrong: I
-should have 2 reserved iova domain destroy functions, one used by
-user-space and one used by kernel. In the user-space implementation I
-should reject any attempt to destroy the reserved iova domain until
-there are existing bindings.
+Hi Christoph,
 
-> 
->> +        ret = -EBUSY;
->> +        goto free_newb; /* iova already released */
->> +    }
->> +
->> +    /* no change in iova reserved domain but iommu_map failed */
->> +    if (ret)
->> +        goto free_iova;
->> +
->> +    /* everything is fine, add in the new node in the rb tree */
->> +    kref_init(&newb->kref);
->> +    newb->domain = domain;
->> +    newb->addr = aligned_base;
->> +    newb->iova = *iova;
->> +    newb->size = binding_size;
->> +
->> +    link_reserved_binding(domain, newb);
->> +
->> +    *iova += offset;
->> +    goto unlock;
->> +
->> +free_iova:
->> +    free_iova(rid->iovad, p_iova->pfn_lo);
->> +free_newb:
->> +    kfree(newb);
->> +unlock:
->> +    spin_unlock_irqrestore(&domain->reserved_lock, flags);
->> +    return ret;
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_get_reserved_iova);
->> +
->> +void iommu_put_reserved_iova(struct iommu_domain *domain, phys_addr_t
->> addr)
->> +{
->> +    phys_addr_t aligned_addr, page_size, mask;
->> +    struct iommu_reserved_binding *b;
->> +    struct reserved_iova_domain *rid;
->> +    unsigned long order, flags;
->> +    struct iommu_domain *d;
->> +    dma_addr_t iova;
->> +    size_t size;
->> +    int ret = 0;
->> +
->> +    spin_lock_irqsave(&domain->reserved_lock, flags);
->> +
->> +    rid = (struct reserved_iova_domain *)domain->reserved_iova_cookie;
->> +    if (!rid)
->> +        goto unlock;
->> +
->> +    order = iova_shift(rid->iovad);
->> +    page_size = (uint64_t)1 << order;
->> +    mask = page_size - 1;
->> +    aligned_addr = addr & ~mask;
-> 
-> addr & ~iova_mask(rid->iovad)
-OK
-> 
->> +
->> +    b = find_reserved_binding(domain, aligned_addr, page_size);
->> +    if (!b)
->> +        goto unlock;
->> +
->> +    iova = b->iova;
->> +    size = b->size;
->> +    d = b->domain;
->> +
->> +    ret = kref_put(&b->kref, reserved_binding_release);
->> +
->> +unlock:
->> +    spin_unlock_irqrestore(&domain->reserved_lock, flags);
->> +    if (ret)
->> +        iommu_unmap(d, iova, size);
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_put_reserved_iova);
->> +
->> diff --git a/include/linux/dma-reserved-iommu.h
->> b/include/linux/dma-reserved-iommu.h
->> index 01ec385..8722131 100644
->> --- a/include/linux/dma-reserved-iommu.h
->> +++ b/include/linux/dma-reserved-iommu.h
->> @@ -42,6 +42,34 @@ int iommu_alloc_reserved_iova_domain(struct
->> iommu_domain *domain,
->>    */
->>   void iommu_free_reserved_iova_domain(struct iommu_domain *domain);
->>
->> +/**
->> + * iommu_get_reserved_iova: allocate a contiguous set of iova pages and
->> + * map them to the physical range defined by @addr and @size.
->> + *
->> + * @domain: iommu domain handle
->> + * @addr: physical address to bind
->> + * @size: size of the binding
->> + * @prot: mapping protection attribute
->> + * @iova: returned iova
->> + *
->> + * Mapped physical pfns are within [@addr >> order, (@addr + size -1)
->> >> order]
->> + * where order corresponds to the reserved iova domain order.
->> + * This mapping is tracked and reference counted with the minimal
->> granularity
->> + * of @size.
->> + */
->> +int iommu_get_reserved_iova(struct iommu_domain *domain,
->> +                phys_addr_t addr, size_t size, int prot,
->> +                dma_addr_t *iova);
->> +
->> +/**
->> + * iommu_put_reserved_iova: decrement a ref count of the reserved
->> mapping
->> + *
->> + * @domain: iommu domain handle
->> + * @addr: physical address whose binding ref count is decremented
->> + *
->> + * if the binding ref count is null, destroy the reserved mapping
->> + */
->> +void iommu_put_reserved_iova(struct iommu_domain *domain, phys_addr_t
->> addr);
->>   #else
->>
->>   static inline int
->> @@ -55,5 +83,15 @@ iommu_alloc_reserved_iova_domain(struct
->> iommu_domain *domain,
->>   static inline void
->>   iommu_free_reserved_iova_domain(struct iommu_domain *domain) {}
->>
->> +static inline int iommu_get_reserved_iova(struct iommu_domain *domain,
->> +                      phys_addr_t addr, size_t size,
->> +                      int prot, dma_addr_t *iova)
->> +{
->> +    return -ENOENT;
->> +}
->> +
->> +static inline void iommu_put_reserved_iova(struct iommu_domain *domain,
->> +                       phys_addr_t addr) {}
->> +
->>   #endif    /* CONFIG_IOMMU_DMA_RESERVED */
->>   #endif    /* __DMA_RESERVED_IOMMU_H */
->>
-> 
-> I worry that this all falls into the trap of trying too hard to abstract
-> something which doesn't need abstracting. AFAICS all we need is
-> something for VFIO to keep track of its own IOVA usage vs. userspace's,
-> plus a list of MSI descriptors (with IOVAs) wrapped in refcounts hanging
-> off the iommu_domain, with a handful of functions to manage them. The
-> former is as good as solved already - stick an iova_domain or even just
-> a bitmap in the iova_cookie and use it directly - and the latter would
-> actually be reusable elsewhere (e.g. for iommu-dma domains). What I'm
-> seeing here is layers upon layers of complexity with no immediate
-> justification, that's 'generic' enough to not directly solve the problem
-> at hand, but in a way that still makes it more or less unusable for
-> solving equivalent problems elsewhere.
-> 
-> Since I don't like that everything I have to say about this series so
-> far seems negative, I'll plan to spend some time next week having a go
-> at hardening my 50-line proof-of-concept for stage 1 MSIs, and see if I
-> can offer code instead of criticism :)
-No worries. I really appreciate the time you've already spent reading
-this code ;-) I aknowledge it is a lot of trouble for mapping a single
-page - in my case - ! Anyway I will take into account your comments and
-simplify things accordingly. Let's see how we can converge...
+Have you had time to look at the audit? Is there anything else I can do=
+=20
+make progress on this?
 
-Best Regards
+On 2016-04-13 15:29:16 +0200, Niklas S=F6derlund wrote:
+> Hi Christoph,
+>=20
+> On 2016-03-21 08:26:01 -0700, Christoph Hellwig wrote:
+> > On Thu, Mar 17, 2016 at 01:33:51PM +0200, Laurent Pinchart wrote:
+> > > The good news is that, given that no code uses this new API at th=
+e moment,=20
+> > > there isn't much to audit. The patch series implements the resour=
+ce mapping=20
+> > > for arch/arm only, and makes use of it in the rcar-dmac driver on=
+ly. Would you=20
+> > > like anything audited else than the arch/arm dma mapping implemen=
+tation, the=20
+> > > rcar-dmac driver and the code that then deals with the dma addres=
+ses (I'm=20
+> > > thinking about the IOMMU subsystem and the ipmmu-vmsa driver in p=
+articular) ?
+> >=20
+> > Yes, it would be good to do an audit of all the ARM dma_ops as well
+> > as generic code like drivers/base/dma-*.c, lib/dma-debug.c and
+> > include/linux/dma-*.h
+>=20
+> I have now done an audit to the best of my abilities, thanks to Laure=
+nt=20
+> for pointing me in the right direction. And from what I can tell we a=
+re=20
+> good.
+>=20
+> * drivers/dma/sh/rcar-dmac.c
+>   Once the phys_addr_t is mapped to a dma_addr_t using=20
+>   dma_map_resource() it is only used to check that the transfere do n=
+ot=20
+>   cross 4GB boundaries and then only directly written to HW registers=
+=2E
+>=20
+> * drivers/iommu/iommu.c
+>   - iommu_map()
+>     Check that it's align to min page size or return -EINVAL then cal=
+ls
+>     domain->ops->map()
+>=20
+> * drivers/iommu/ipmmu-vmsa.c
+>   - ipmmu_map()
+>     No logic only calls domain->ops->map()
+>=20
+> * drivers/iommu/io-pgtable-arm.c
+>   - arm_lpae_map()
+>     No logic only calls __arm_lpae_map()
+>   - __arm_lpae_map()
+>     No logic only calls arm_lpae_init_pte()
+>   - arm_lpae_init_pte()
+>     Used to get a pte:
+>       pte |=3D pfn_to_iopte(paddr >> data->pg_shift, data);
+>=20
+> * drivers/iommu/io-pgtable-arm-v7s.c
+>   - arm_v7s_map()
+>     No logic only calls __arm_v7s_map()
+>   - __arm_v7s_map()
+>     No logic only calls arm_v7s_init_pte()
+>   - arm_v7s_init_pte
+>     Used to get a pte:
+>       pte |=3D paddr & ARM_V7S_LVL_MASK(lvl);
+>=20
+> * ARM dma-mapping
+>   - dma_unmap_*
+>     Only valid unmap is dma_unmap_resource() all others are an invali=
+d=20
+>     use case.
+>   - dma_sync_single_*
+>     Invalid use case, memmory that is mapped is device memmory
+>   - dma_common_mmap() and dma_mmap_attrs()
+>     Invalid use case
+>   - dma_common_get_sgtable() and dma_get_sgtable_attrs()
+>     Invalid use case, only for dma_alloc_* allocated memory,
+>   - dma_mapping_error()
+>     OK
 
-Eric
-> 
-> Robin.
+--=20
+Regards,
+Niklas S=F6derlund
