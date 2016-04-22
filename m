@@ -1,111 +1,177 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.6-rc3
-Date: Fri, 22 Apr 2016 11:56:18 +0200
-Message-ID: <20160422095609.GA18272@8bytes.org>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [RFC PATCH 09/11] drivers: acpi: implement acpi_dma_configure
+Date: Fri, 22 Apr 2016 11:57:52 +0100
+Message-ID: <20160422105752.GA23100@red-moon>
+References: <1460654743-7896-1-git-send-email-lorenzo.pieralisi@arm.com>
+ <1460654743-7896-10-git-send-email-lorenzo.pieralisi@arm.com>
+ <CAHp75VesfEDSnyjKunPzyJ1qUrdi8qE8Q2sOYpwo7h39ePjdow@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============7793747332937527516=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAHp75VesfEDSnyjKunPzyJ1qUrdi8qE8Q2sOYpwo7h39ePjdow@mail.gmail.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: iommu@lists.linux-foundation.org, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Tomasz Nowicki <tn@semihalf.com>, Joerg Roedel <joro@8bytes.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Jon Masters <jcm@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Andy,
 
---===============7793747332937527516==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="J/dobhs11T7y2rNN"
-Content-Disposition: inline
+On Fri, Apr 22, 2016 at 01:45:38AM +0300, Andy Shevchenko wrote:
+> On Thu, Apr 14, 2016 at 8:25 PM, Lorenzo Pieralisi
+> <lorenzo.pieralisi@arm.com> wrote:
+> > On DT based systems, the of_dma_configure() API implements DMA configuration
+> > for a given device. On ACPI systems an API equivalent to of_dma_configure()
+> > is missing which implies that it is currently not possible to set-up DMA
+> > operations for devices through the ACPI generic kernel layer.
+> >
+> > This patch fills the gap by introducing acpi_dma_configure/deconfigure()
+> > calls, that carry out IOMMU configuration through IORT (on systems where
+> > it is present) and call arch_setup_dma_ops(...) with the retrieved
+> > parameters.
+> >
+> > The DMA range size passed to arch_setup_dma_ops() is sized according
+> > to the device coherent_dma_mask (starting at address 0x0), mirroring the
+> > DT probing path behaviour when a dma-ranges property is not provided
+> > for the device being probed; this changes the current arch_setup_dma_ops()
+> > call parameters in the ACPI probing case, but since arch_setup_dma_ops()
+> > is a NOP on all architectures but ARM/ARM64 this patch does not change
+> > the current kernel behaviour on them.
+> >
+> > This patch updates ACPI and PCI core code to use the newly introduced
+> > acpi_dma_configure function, providing the same functionality
+> > as of_dma_configure on ARM systems and leaving behaviour unchanged
+> > for all other arches.
+> >
+> 
+> Nitpicks below.
 
+Thanks for having a look.
 
---J/dobhs11T7y2rNN
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> > --- a/drivers/acpi/iort.c
+> > +++ b/drivers/acpi/iort.c
+> > @@ -72,6 +72,31 @@ int iort_iommu_set_node(struct iommu_ops *ops, struct acpi_iort_node *node,
+> >         return 0;
+> >  }
+> >
+> > +/**
+> > + * iort_iommu_get_node - Retrieve iort_iommu_node associated with an IORT node.
+> > + *
+> > + * @node: IORT table node to be looked-up
+> > + *
+> > + * Returns: iort_iommu_node pointer on success
+> > + *          NULL on failure
+> > + */
+> > +static struct iort_iommu_node *iort_iommu_get_node(struct acpi_iort_node *node)
+> > +{
+> > +       struct iort_iommu_node *iommu_node;
+> > +
+> > +       spin_lock(&iort_iommu_lock);
+> > +       list_for_each_entry(iommu_node, &iort_iommu_list, list) {
+> > +               if (iommu_node->node == node)
+> > +                       goto found;
+> > +       }
+> > +
+> > +       iommu_node = NULL;
+> > +found:
+> > +       spin_unlock(&iort_iommu_lock);
+> > +
+> > +       return iommu_node;
+> 
+> Ouch, and why not to
+> 
+> strut iommu_node = NULL;
+> 
+> lock
+> list for each() {
+>  if ()
+>   break;
+> }
+> unlock
+> 
+> return iommu_node;
 
-Hi Linus,
+To make sure iommu_node is NULL if no node is found, but this list handling
+function needs updating anyway (both locking and list handling), so I will
+rework it and take your suggestion into account, I agree it is not that
+readable (or safe to begin with).
 
-The following changes since commit bf16200689118d19de1b8d2a3c314fc21f5dc7bb:
+> ?
+> 
+> > +}
+> 
+> 
+> > +/**
+> > + * iort_iommu_configure - Set-up IOMMU configuration for a device.
+> > + *
+> > + * @dev: device that requires IOMMU set-up
+> > + *
+> > + * Returns: iommu_ops pointer on configuration success
+> > + *          NULL on configuration failure
+> > + */
+> > +struct iommu_ops *iort_iommu_configure(struct device *dev)
+> > +{
+> > +       struct acpi_iort_node *node, *parent;
+> > +       struct iommu_ops *ops = NULL;
+> > +       struct iommu_fwspec fwspec;
+> > +       struct iort_iommu_node *iommu_node;
+> > +       u32 rid = 0, devid = 0;
+> > +
+> > +       if (dev_is_pci(dev)) {
+> > +               struct pci_bus *bus = to_pci_dev(dev)->bus;
+> > +
+> > +               pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid,
+> > +                                      &rid);
+> > +
+> > +               node = iort_scan_node(ACPI_IORT_NODE_PCI_ROOT_COMPLEX,
+> > +                                     iort_find_dev_callback, &bus->dev);
+> 
+> > +       } else
+> 
+> checkpatch.pl ?
 
-  Linux 4.6-rc3 (2016-04-10 17:58:30 -0700)
+checkpatch.pl --strict does not even barf at it. I will add the braces
+and go check why checkpatch.pl is quiet :)
 
-are available in the git repository at:
+> > +               node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
+> > +                                     iort_find_dev_callback, dev);
+> > +
+> > +       if (!node)
+> > +               return NULL;
+> > +
+> > +       iort_dev_map_rid(node, rid, &devid, ACPI_IORT_NODE_SMMU);
+> > +
+> > +       parent = iort_find_parent_node(node, ACPI_IORT_NODE_SMMU);
+> 
+> > +
+> 
+> Redundant.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.6-rc4
-
-for you to fetch changes up to 9800699c645952da6a7399194d3e762b84cde3cd:
-
-  iommu/arm-smmu: Don't allocate resources for bypass domains (2016-04-21 16:47:32 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v4.6-rc4
-
-The fixes include:
-
-	* Two patches to revert the use of default domains in the ARM
-	  SMMU driver. Enabling this caused regressions which need more
-	  thorough fixing. So the regressions are fixed for now by
-	  disabling the use of default domains.
-
-	* A fix for a v4.4 regression in the AMD IOMMU driver which
-	  broke devices behind invisible PCIe-to-PCI bridges with IOMMU
-	  enabled.
-
-----------------------------------------------------------------
-Joerg Roedel (1):
-      iommu/amd: Fix checking of pci dma aliases
-
-Robin Murphy (1):
-      iommu/arm-smmu: Don't allocate resources for bypass domains
-
-Will Deacon (1):
-      iommu/arm-smmu: Fix stream-match conflict with IOMMU_DOMAIN_DMA
-
- drivers/iommu/amd_iommu.c | 87 +++++++++++++++++++++++++++++++++++++++++------
- drivers/iommu/arm-smmu.c  | 22 ++++++++----
- 2 files changed, 91 insertions(+), 18 deletions(-)
-
-Please pull.
+Ok.
 
 Thanks,
+Lorenzo
 
-	Joerg
+> 
 
---J/dobhs11T7y2rNN
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJXGfU5AAoJECvwRC2XARrjWvcP/RtQE4s4GM0BEU8E/m8up3RU
-dVYlunexOS8e8YromHa5nQL0gOhj/YEQxolICFuzYLUxES7akbSnr1YEAqPVpdjl
-fdMeYfWWeuC8AeNLrB4okURkWWz4z2CTHCUgV93uTvM6y6chB+9ocViRX7co6RlD
-G60gl5wwTQMXrKwrmpV3lr79BMKQzL9eIgK0Gb0qdm03Q/sQAGU9py3yht5uSqtJ
-+TUBw84MvKz0XnSgdqYg4ii5xTaZtWjI55fIFUj2A1G8dfP8mRRaCxEq9BfJUNNO
-Oj3EADYvKnP+JBT0w8cJ1+FLoscb8VPXcAP/29aU0d1Coi7oAtYErdG/oZ/8s+DV
-qwzjCUnkoxGhZgfl5Ip9yY7EBbLPSSlkDiERq8fBHzXTnBmaeM+fc22QUYUlwdQ9
-Ei+t4N1OROHDvUhk7UUXMPKlLVOh3WYcqa0yUOBosQ8sPiKJ2k+agNzDAfWgfYPM
-03/Gj9RA7ry11TY7F0p0Ls3oc1WWdgKuyiqoOvGnOygEzukHjv7gA+5iPPemJx64
-hXngPeetU+9vCf86CqcrkJq5UtO1ixs/nMVbI8BrOtq2QzKmTROQ34mWmEhgW76Y
-p2eOEYVHkpIAo4GCac943NKriDyb6CP7Nl1oG+Daj0sfkiWJmFCC8jbgjKL7kenR
-4Ubhif5lJ43ujzeu5OiS
-=xowM
------END PGP SIGNATURE-----
-
---J/dobhs11T7y2rNN--
-
---===============7793747332937527516==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============7793747332937527516==--
+> > +       if (!parent)
+> > +               return NULL;
+> > +
+> > +       iommu_node = iort_iommu_get_node(parent);
+> > +       ops = iommu_node->ops;
+> > +
+> > +       fwspec.fwnode = iommu_node->fwnode;
+> > +       fwspec.param_count = 1;
+> > +       fwspec.param[0] = devid;
+> > +
+> > +       if (!ops || !ops->fw_xlate || ops->fw_xlate(dev, &fwspec))
+> > +               return NULL;
+> > +
+> > +       return ops;
+> > +}
+> > +
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
