@@ -1,16 +1,11 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v7 00/10] KVM PCIe/MSI passthrough on ARM/ARM64: kernel
-	part 1/3: iommu changes
-Date: Fri, 22 Apr 2016 13:07:28 -0600
-Message-ID: <20160422130728.62afe3a0@t450s.home>
-References: <1461084994-2355-1-git-send-email-eric.auger@linaro.org>
-	<5718C501.20906@linaro.org> <20160421133222.76e45596@t450s.home>
-	<571A1996.5010009@linaro.org>
+From: Dheeraj CVR <cvr.dheeraj-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [BUGREPORT] Intel X58 Boards don't boot after "iommu/vt-d: Make root
+	entry visible for hardware right after allocation"
+Date: Sat, 23 Apr 2016 00:35:51 +0400
+Message-ID: <CAH-=PyRpjuKf0XJNyzkVLpggaaYq163AfA84SZ5=DQH2Ys5Lkw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============3472504637934138200=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <571A1996.5010009-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,84 +15,101 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 22 Apr 2016 14:31:18 +0200
-Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+--===============3472504637934138200==
+Content-Type: multipart/alternative; boundary=001a113f998cd2831f053118c5e2
 
-> Hi Alex,
-> On 04/21/2016 09:32 PM, Alex Williamson wrote:
-> > On Thu, 21 Apr 2016 14:18:09 +0200
-> > Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-> >   
-> >> Hi Alex, Robin,
-> >> On 04/19/2016 06:56 PM, Eric Auger wrote:  
-> >>> This series introduces the dma-reserved-iommu api used to:
-> >>>
-> >>> - create/destroy an iova domain dedicated to reserved iova bindings
-> >>> - map/unmap physical addresses onto reserved IOVAs.
-> >>> - search for an existing reserved iova mapping matching a PA window
-> >>> - determine whether an msi needs to be iommu mapped
-> >>> - translate an msi_msg PA address into its IOVA counterpart    
-> >>
-> >> Following Robin's review, I understand one important point we have to
-> >> clarify is how much this API has to be generic.
-> >>
-> >> I agree with Robin on the fact there is quite a lot of duplication
-> >> between this dma-reserved-iommu implementation and dma-iommu
-> >> implementation. Maybe we could consider an msi-mapping API
-> >> implementation upon dma-iommu.c. This implementation would add MSI
-> >> doorbell binding list management, including, ref counting and locking.
-> >>
-> >> We would need to add a map/unmap function taking an iova/pa/size as
-> >> parameters in current dma-iommu.c
-> >>
-> >> An important assumption is that the dma-mapping API and the msi-mapping
-> >> API must not be used concurrently (be would be trying to use the same
-> >> cookie to store a different iova_domain).
-> >>
-> >> Any thought/suggestion?  
-> > 
-> > Hi Eric,
-> > 
-> > I'm not attached to a generic interface, the important part for me is
-> > that if we have an iommu domain with space reserved for MSI, the MSI
-> > setup and allocation code should handle that so we don't need to play
-> > the remapping tricks between vfio-pci and a vfio iommu driver that we
-> > saw in early drafts of this.  My first inclination is always to try to
-> > make a generic, re-usable interface, but I apologize if that's led us
-> > astray here and we really do want the more simple, MSI specific
-> > interface.
-> > 
-> > For the IOMMU API, rather than just a DOMAIN_ATTR_MSI_MAPPING flag,
-> > what about DOMAIN_ATTR_MSI_GEOMETRY with both a get and set attribute?
-> > Maybe something like:
-> > 
-> > struct iommu_domain_msi_geometry {
-> > 	dma_addr_t	aperture_start;
-> > 	dma_addr_t	aperture_end;
-> > 	bool		fixed; /* or 'programmable' depending on your polarity preference */
-> > };
-> > 
-> > Calling \get\ on arm would return { 0, 0, false }, indicating it's
-> > programmable, \set\ would allocate the iovad as specified.  That would
-> > make it very easy to expand the API to x86 with reporting of the fixed
-> > MSI range and it operates within the existing IOMMU API interfaces.
-> > Thanks,  
-> Yes I would be happy to handle this x86 query requirement. I would be
-> more inclined to define it at "MSI mapping API" level since the IOMMU
-> API implementation does not handle iova allocation, as Robin argued as
-> the beginning. When "MSI MAPPING API" CONFIG is unset I would return
-> default x86 aperture.
-> 
-> Does it make sense?
+--001a113f998cd2831f053118c5e2
+Content-Type: text/plain; charset=UTF-8
 
-It's not entirely clear to me if x86 would be participating in this MSI
-mapping API given the implicit handling within iommu/irq-remapping.
-It might make sense if x86 iommus simply left a gap in their existing
-geometry reporting through the iommu api.  I guess we'll see in your
-next draft ;)  Thanks,
+I am currently running the following 2 setups.
 
-Alex
+Intel Xeon X5670
+Intel DX58SO (x58)
+
+Intel I7 980
+MSI Big Bang X-Power (x58)
+
+I am using IOMMU along with VFIO to passthrough a VGA card on both of my
+setups. Everything worked fine till kernel 4.1, but after the introduction
+of "iommu/vt-d: Make root entry visible for hardware right after
+allocation", both the boards no longer boot with "intel_iommu=on"
+commandline parameter.
+
+The logs show the following:
+DMAR: RMRR base: 0x000000bf7e8000 end: 0x000000bf7fffff
+DMAR: ATSR flags: 0x0
+DMAR: dmar0: Using Queued invalidation
+------------[ cut here ]------------
+WARNING: CPU: 4: PID: 1 at /home/dhiru1602/linux-git/kernel/watchdog.c:311
+watchdog_overflow_callback+0x79/0xa0()
+Watchdog detected hard LOCKUP on cpu 4
+Modules Linked in:
+CPU: 4 PID: 1 Comm: swapper/0 Tainted: G              I
+4.2.0-iommu-test
+
+The kernel panic occurs very early in the boot process and I was not able
+to grab the full kernel panic log.
+
+I have reverted the patch and recompiled the kernel. I was able to boot
+fine on both the boards with intel_iommu=on and I was able to see the IOMMU
+groups.
+
+On a sidenote, Both the boards have broken interrupt remapping and the
+vendors have not provided BIOS updates to fix this problem. There was a
+report for the Intel board made on the Intel Community Forums here:
+https://communities.intel.com/thread/44752 but there hasn't been an updated
+BIOS released by Intel to fix this issue.
+
+Please let me know if more information is needed to diagnose this issue.
+-- 
+Regards,
+Dheeraj CVR.
+
+--001a113f998cd2831f053118c5e2
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">I am currently running the following 2 setups.<div><br></d=
+iv><div><div>Intel Xeon X5670<br></div><div>Intel DX58SO (x58)</div></div><=
+div><br></div><div>Intel I7 980</div><div>MSI Big Bang X-Power (x58)</div><=
+div><br clear=3D"all"><div>I am using IOMMU along with VFIO to passthrough =
+a VGA card on both of my setups. Everything worked fine till kernel 4.1, bu=
+t after the introduction of &quot;iommu/vt-d: Make root entry visible for h=
+ardware right after allocation&quot;, both the boards no longer boot with &=
+quot;intel_iommu=3Don&quot; commandline parameter.</div><div><br></div><div=
+>The logs show the following:</div><div>DMAR: RMRR base: 0x000000bf7e8000 e=
+nd: 0x000000bf7fffff</div><div>DMAR: ATSR flags: 0x0</div><div>DMAR: dmar0:=
+ Using Queued invalidation</div><div>------------[ cut here ]------------</=
+div><div>WARNING: CPU: 4: PID: 1 at /home/dhiru1602/linux-git/kernel/watchd=
+og.c:311 watchdog_overflow_callback+0x79/0xa0()</div><div>Watchdog detected=
+ hard LOCKUP on cpu 4</div><div>Modules Linked in:</div><div>CPU: 4 PID: 1 =
+Comm: swapper/0 Tainted: G =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+I =C2=A0 =C2=A0 =C2=A0 4.2.0-iommu-test</div><div><br></div><div>The kernel=
+ panic occurs very early in the boot process and I was not able to grab the=
+ full kernel panic log.=C2=A0</div><div><br></div><div>I have reverted the =
+patch and recompiled the kernel. I was able to boot fine on both the boards=
+ with intel_iommu=3Don and I was able to see the IOMMU groups.</div><div><b=
+r></div><div>On a sidenote, Both the boards have broken interrupt remapping=
+ and the vendors have not provided BIOS updates to fix this problem. There =
+was a report for the Intel board made on the Intel Community Forums here:=
+=C2=A0<a href=3D"https://communities.intel.com/thread/44752">https://commun=
+ities.intel.com/thread/44752</a> but there hasn&#39;t been an updated BIOS =
+released by Intel to fix this issue.</div><div><br></div><div>Please let me=
+ know if more information is needed to diagnose this issue.</div>-- <br><di=
+v class=3D"gmail_signature"><div dir=3D"ltr">Regards,<br>Dheeraj CVR.<br></=
+div></div>
+</div></div>
+
+--001a113f998cd2831f053118c5e2--
+
+--===============3472504637934138200==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3472504637934138200==--
