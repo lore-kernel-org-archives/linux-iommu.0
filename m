@@ -1,160 +1,60 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v7 05/10] iommu/dma-reserved-iommu: reserved binding
-	rb-tree and helpers
-Date: Fri, 22 Apr 2016 14:05:10 +0100
-Message-ID: <571A2186.1050004@arm.com>
-References: <1461084994-2355-1-git-send-email-eric.auger@linaro.org>
-	<1461084994-2355-6-git-send-email-eric.auger@linaro.org>
-	<5717805A.3070602@arm.com> <5717ABF2.1030204@linaro.org>
+From: Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [v8, 1/7] Documentation: DT: update Freescale DCFG compatible
+Date: Fri, 22 Apr 2016 14:11:51 +0100
+Message-ID: <20160422131151.GJ10606@leverpostej>
+References: <1461306464-19521-1-git-send-email-yangbo.lu@nxp.com>
+ <1461306464-19521-2-git-send-email-yangbo.lu@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5717ABF2.1030204-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <netdev-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1461306464-19521-2-git-send-email-yangbo.lu@nxp.com>
+Sender: netdev-owner@vger.kernel.org
+To: Yangbo Lu <yangbo.lu@nxp.com>
+Cc: linux-mmc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, ulf.hansson@linaro.org, scott.wood@nxp.com, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Jochen Friedrich <jochen@scram.de>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Zhao Qiang <qiang.zhao@freescale.com>, Kumar Gala <galak@codeaurora.org>, Santosh Shilimkar <ssantosh@kernel.org>, leoyang.li@nxp.com, xiaobo.xie@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 20/04/16 17:18, Eric Auger wrote:
-> Robin,
-> On 04/20/2016 03:12 PM, Robin Murphy wrote:
->> On 19/04/16 17:56, Eric Auger wrote:
->>> we will need to track which host physical addresses are mapped to
->>> reserved IOVA. In that prospect we introduce a new RB tree indexed
->>> by physical address. This RB tree only is used for reserved IOVA
->>> bindings.
->>>
->>> It is expected this RB tree will contain very few bindings.
->>
->> Sounds like a good reason in favour of using a list, and thus having
->> rather less code here ;)
->
-> OK will move to a simple list.
->>
->>>   Those
->>> generally correspond to single page mapping one MSI frame (GICv2m
->>> frame or ITS GITS_TRANSLATER frame).
->>>
->>> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->>>
->>> ---
->>> v5 -> v6:
->>> - add comment about @d->reserved_lock to be held
->>>
->>> v3 -> v4:
->>> - that code was formerly in "iommu/arm-smmu: add a reserved binding RB
->>> tree"
->>> ---
->>>    drivers/iommu/dma-reserved-iommu.c | 63
->>> ++++++++++++++++++++++++++++++++++++++
->>>    1 file changed, 63 insertions(+)
->>>
->>> diff --git a/drivers/iommu/dma-reserved-iommu.c
->>> b/drivers/iommu/dma-reserved-iommu.c
->>> index 2562af0..f6fa18e 100644
->>> --- a/drivers/iommu/dma-reserved-iommu.c
->>> +++ b/drivers/iommu/dma-reserved-iommu.c
->>> @@ -23,6 +23,69 @@ struct reserved_iova_domain {
->>>        int prot; /* iommu protection attributes to be obeyed */
->>>    };
->>>
->>> +struct iommu_reserved_binding {
->>> +    struct kref        kref;
->>> +    struct rb_node        node;
->>> +    struct iommu_domain    *domain;
->>
->> Hang on, the tree these are in is already embedded in a domain. Ergo we
->> can't look them up without first knowing the domain they belong to, so
->> what purpose does this guy serve?
-> this is used on the kref_put. The release function takes a kref; then we
-> get the container to retrieve the binding and storing the domain here
-> enables to unlink the node.
+On Fri, Apr 22, 2016 at 02:27:38PM +0800, Yangbo Lu wrote:
+> Update Freescale DCFG compatible with 'fsl,<chip>-dcfg' instead
+> of 'fsl,ls1021a-dcfg' to include more chips.
+> 
+> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+> ---
+> Changes for v8:
+> 	- Added this patch
+> ---
+>  Documentation/devicetree/bindings/arm/fsl.txt | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/fsl.txt b/Documentation/devicetree/bindings/arm/fsl.txt
+> index 752a685..1d5f512 100644
+> --- a/Documentation/devicetree/bindings/arm/fsl.txt
+> +++ b/Documentation/devicetree/bindings/arm/fsl.txt
+> @@ -119,7 +119,7 @@ Freescale DCFG
+>  configuration and status for the device. Such as setting the secondary
+>  core start address and release the secondary core from holdoff and startup.
+>    Required properties:
+> -  - compatible: should be "fsl,ls1021a-dcfg"
+> +  - compatible: should be "fsl,<chip>-dcfg"
 
-Ah yes, I see now - that's annoyingly awkward. I think it could possibly 
-be avoided in the list case (if the kref_put callback just did 
-list_del_init(), the entry could then be checked for an empty list and 
-disposed of outside the lock), but I'm not sure whether that's really 
-worth the fuss. Oh well.
+Please list specific values expected for <chip>, while jusy saying
+<chip> may be more generic, it makes it practically impossible to search
+for the correct binding given a compatible string, and it's vague as to
+exaclty what <chip> should be.
 
-Robin.
+Thanks,
+Mark.
 
-> Best Regards
->
-> Eric
->>
->> Robin.
->>
->>> +    phys_addr_t        addr;
->>> +    dma_addr_t        iova;
->>> +    size_t            size;
->>> +};
->>> +
->>> +/* Reserved binding RB-tree manipulation */
->>> +
->>> +/* @d->reserved_lock must be held */
->>> +static struct iommu_reserved_binding *find_reserved_binding(
->>> +                    struct iommu_domain *d,
->>> +                    phys_addr_t start, size_t size)
->>> +{
->>> +    struct rb_node *node = d->reserved_binding_list.rb_node;
->>> +
->>> +    while (node) {
->>> +        struct iommu_reserved_binding *binding =
->>> +            rb_entry(node, struct iommu_reserved_binding, node);
->>> +
->>> +        if (start + size <= binding->addr)
->>> +            node = node->rb_left;
->>> +        else if (start >= binding->addr + binding->size)
->>> +            node = node->rb_right;
->>> +        else
->>> +            return binding;
->>> +    }
->>> +
->>> +    return NULL;
->>> +}
->>> +
->>> +/* @d->reserved_lock must be held */
->>> +static void link_reserved_binding(struct iommu_domain *d,
->>> +                  struct iommu_reserved_binding *new)
->>> +{
->>> +    struct rb_node **link = &d->reserved_binding_list.rb_node;
->>> +    struct rb_node *parent = NULL;
->>> +    struct iommu_reserved_binding *binding;
->>> +
->>> +    while (*link) {
->>> +        parent = *link;
->>> +        binding = rb_entry(parent, struct iommu_reserved_binding,
->>> +                   node);
->>> +
->>> +        if (new->addr + new->size <= binding->addr)
->>> +            link = &(*link)->rb_left;
->>> +        else
->>> +            link = &(*link)->rb_right;
->>> +    }
->>> +
->>> +    rb_link_node(&new->node, parent, link);
->>> +    rb_insert_color(&new->node, &d->reserved_binding_list);
->>> +}
->>> +
->>> +/* @d->reserved_lock must be held */
->>> +static void unlink_reserved_binding(struct iommu_domain *d,
->>> +                    struct iommu_reserved_binding *old)
->>> +{
->>> +    rb_erase(&old->node, &d->reserved_binding_list);
->>> +}
->>> +
->>>    int iommu_alloc_reserved_iova_domain(struct iommu_domain *domain,
->>>                         dma_addr_t iova, size_t size, int prot,
->>>                         unsigned long order)
->>>
->>
->
+
+
+>    - reg : should contain base address and length of DCFG memory-mapped registers
+>  
+>  Example:
+> -- 
+> 2.1.0.27.g96db324
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
