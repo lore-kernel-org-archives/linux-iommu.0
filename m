@@ -1,15 +1,15 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v7 1/8] genirq/msi: Add a new MSI_FLAG_IRQ_REMAPPING flag
-Date: Fri, 22 Apr 2016 14:25:57 +0200
-Message-ID: <571A1855.5020008@linaro.org>
-References: <1461085990-2547-1-git-send-email-eric.auger@linaro.org>
-	<1461085990-2547-2-git-send-email-eric.auger@linaro.org>
-	<571A04A9.1010104@arm.com>
+Subject: Re: [PATCH v7 00/10] KVM PCIe/MSI passthrough on ARM/ARM64: kernel
+	part 1/3: iommu changes
+Date: Fri, 22 Apr 2016 14:31:18 +0200
+Message-ID: <571A1996.5010009@linaro.org>
+References: <1461084994-2355-1-git-send-email-eric.auger@linaro.org>
+	<5718C501.20906@linaro.org> <20160421133222.76e45596@t450s.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <571A04A9.1010104-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20160421133222.76e45596-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,65 +19,80 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Robin,
-On 04/22/2016 01:02 PM, Robin Murphy wrote:
+Hi Alex,
+On 04/21/2016 09:32 PM, Alex Williamson wrote:
+> On Thu, 21 Apr 2016 14:18:09 +0200
+> Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+> 
+>> Hi Alex, Robin,
+>> On 04/19/2016 06:56 PM, Eric Auger wrote:
+>>> This series introduces the dma-reserved-iommu api used to:
+>>>
+>>> - create/destroy an iova domain dedicated to reserved iova bindings
+>>> - map/unmap physical addresses onto reserved IOVAs.
+>>> - search for an existing reserved iova mapping matching a PA window
+>>> - determine whether an msi needs to be iommu mapped
+>>> - translate an msi_msg PA address into its IOVA counterpart  
+>>
+>> Following Robin's review, I understand one important point we have to
+>> clarify is how much this API has to be generic.
+>>
+>> I agree with Robin on the fact there is quite a lot of duplication
+>> between this dma-reserved-iommu implementation and dma-iommu
+>> implementation. Maybe we could consider an msi-mapping API
+>> implementation upon dma-iommu.c. This implementation would add MSI
+>> doorbell binding list management, including, ref counting and locking.
+>>
+>> We would need to add a map/unmap function taking an iova/pa/size as
+>> parameters in current dma-iommu.c
+>>
+>> An important assumption is that the dma-mapping API and the msi-mapping
+>> API must not be used concurrently (be would be trying to use the same
+>> cookie to store a different iova_domain).
+>>
+>> Any thought/suggestion?
+> 
 > Hi Eric,
 > 
-> On 19/04/16 18:13, Eric Auger wrote:
->> Let's introduce a new msi_domain_info flag value, MSI_FLAG_IRQ_REMAPPING
->> meant to tell the domain supports IRQ REMAPPING, also known as Interrupt
->> Translation Service. On Intel HW this IRQ remapping capability is
->> abstracted on IOMMU side while on ARM it is abstracted on MSI controller
->> side. This flag will be used to know whether the MSI passthrough is
->> safe.
+> I'm not attached to a generic interface, the important part for me is
+> that if we have an iommu domain with space reserved for MSI, the MSI
+> setup and allocation code should handle that so we don't need to play
+> the remapping tricks between vfio-pci and a vfio iommu driver that we
+> saw in early drafts of this.  My first inclination is always to try to
+> make a generic, re-usable interface, but I apologize if that's led us
+> astray here and we really do want the more simple, MSI specific
+> interface.
 > 
-> Perhaps a nitpick, but given the earlier confusion about what the IOMMU
-> flag actually meant this prompts me to wonder if it's worth adjusting
-> the general terminology before we propagate it further. What I think we
-> actually care about is that one thing or the other "provides MSI
-> isolation" rather than "supports MSI remapping", since the latter is all
-> to easy to misinterpret the way we did in the SMMU drivers.
+> For the IOMMU API, rather than just a DOMAIN_ATTR_MSI_MAPPING flag,
+> what about DOMAIN_ATTR_MSI_GEOMETRY with both a get and set attribute?
+> Maybe something like:
+> 
+> struct iommu_domain_msi_geometry {
+> 	dma_addr_t	aperture_start;
+> 	dma_addr_t	aperture_end;
+> 	bool		fixed; /* or 'programmable' depending on your polarity preference */
+> };
+> 
+> Calling \get\ on arm would return { 0, 0, false }, indicating it's
+> programmable, \set\ would allocate the iovad as specified.  That would
+> make it very easy to expand the API to x86 with reporting of the fixed
+> MSI range and it operates within the existing IOMMU API interfaces.
+> Thanks,
+Yes I would be happy to handle this x86 query requirement. I would be
+more inclined to define it at "MSI mapping API" level since the IOMMU
+API implementation does not handle iova allocation, as Robin argued as
+the beginning. When "MSI MAPPING API" CONFIG is unset I would return
+default x86 aperture.
 
-The only concern I have is https://lkml.org/lkml/2016/4/18/283 attempts
-to define a PCI bus flag dubbed PCI_BUS_FLAGS_MSI_REMAP combining the
-iommu & msi layer info. In that sense x86 people may not be keen of
-having different terminaologies. Anyway I will follow the consensus, if any.
+Does it make sense?
 
 Best Regards
 
 Eric
-
-
 > 
-> Robin.
-> 
->> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->>
->> ---
->>
->> v4 -> v5:
->> - seperate flag introduction from first user addition (ITS)
->> ---
->>   include/linux/msi.h | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/include/linux/msi.h b/include/linux/msi.h
->> index 8b425c6..08441b1 100644
->> --- a/include/linux/msi.h
->> +++ b/include/linux/msi.h
->> @@ -270,6 +270,8 @@ enum {
->>       MSI_FLAG_MULTI_PCI_MSI        = (1 << 3),
->>       /* Support PCI MSIX interrupts */
->>       MSI_FLAG_PCI_MSIX        = (1 << 4),
->> +    /* Support MSI IRQ remapping service */
->> +    MSI_FLAG_IRQ_REMAPPING        = (1 << 5),
->>   };
->>
->>   int msi_domain_set_affinity(struct irq_data *data, const struct
->> cpumask *mask,
->>
+> Alex
 > 
