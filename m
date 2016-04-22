@@ -1,154 +1,63 @@
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [RFC PATCH 09/11] drivers: acpi: implement acpi_dma_configure
-Date: Fri, 22 Apr 2016 01:45:38 +0300
-Message-ID: <CAHp75VesfEDSnyjKunPzyJ1qUrdi8qE8Q2sOYpwo7h39ePjdow@mail.gmail.com>
-References: <1460654743-7896-1-git-send-email-lorenzo.pieralisi@arm.com>
-	<1460654743-7896-10-git-send-email-lorenzo.pieralisi@arm.com>
+From: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
+Subject: [v8, 0/7] Fix eSDHC host version register bug
+Date: Fri, 22 Apr 2016 14:27:37 +0800
+Message-ID: <1461306464-19521-1-git-send-email-yangbo.lu@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1460654743-7896-10-git-send-email-lorenzo.pieralisi@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: iommu@lists.linux-foundation.org, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Tomasz Nowicki <tn@semihalf.com>, Joerg Roedel <joro@8bytes.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Jon Masters <jcm@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Zhao Qiang <qiang.zhao-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, scott.wood-3arQi8VN3Tc@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, leoyang.li-3arQi8VN3Tc@public.gmane.org, xiaobo.xie-3arQi8VN3Tc@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 14, 2016 at 8:25 PM, Lorenzo Pieralisi
-<lorenzo.pieralisi@arm.com> wrote:
-> On DT based systems, the of_dma_configure() API implements DMA configuration
-> for a given device. On ACPI systems an API equivalent to of_dma_configure()
-> is missing which implies that it is currently not possible to set-up DMA
-> operations for devices through the ACPI generic kernel layer.
->
-> This patch fills the gap by introducing acpi_dma_configure/deconfigure()
-> calls, that carry out IOMMU configuration through IORT (on systems where
-> it is present) and call arch_setup_dma_ops(...) with the retrieved
-> parameters.
->
-> The DMA range size passed to arch_setup_dma_ops() is sized according
-> to the device coherent_dma_mask (starting at address 0x0), mirroring the
-> DT probing path behaviour when a dma-ranges property is not provided
-> for the device being probed; this changes the current arch_setup_dma_ops()
-> call parameters in the ACPI probing case, but since arch_setup_dma_ops()
-> is a NOP on all architectures but ARM/ARM64 this patch does not change
-> the current kernel behaviour on them.
->
-> This patch updates ACPI and PCI core code to use the newly introduced
-> acpi_dma_configure function, providing the same functionality
-> as of_dma_configure on ARM systems and leaving behaviour unchanged
-> for all other arches.
->
+This patchset is used to fix a host version register bug in the T4240-R1.0-R2.0
+eSDHC controller. To get the SoC version and revision, it's needed to add the
+GUTS driver to access the global utilities registers.
 
-Nitpicks below.
+So, the first four patches are to add the GUTS driver.
+The following patches except the updating MAINTAINERS patch are to enable
+GUTS driver support to get SVR in eSDHC driver and fix host version for T4240.
 
-> --- a/drivers/acpi/iort.c
-> +++ b/drivers/acpi/iort.c
-> @@ -72,6 +72,31 @@ int iort_iommu_set_node(struct iommu_ops *ops, struct acpi_iort_node *node,
->         return 0;
->  }
->
-> +/**
-> + * iort_iommu_get_node - Retrieve iort_iommu_node associated with an IORT node.
-> + *
-> + * @node: IORT table node to be looked-up
-> + *
-> + * Returns: iort_iommu_node pointer on success
-> + *          NULL on failure
-> + */
-> +static struct iort_iommu_node *iort_iommu_get_node(struct acpi_iort_node *node)
-> +{
-> +       struct iort_iommu_node *iommu_node;
-> +
-> +       spin_lock(&iort_iommu_lock);
-> +       list_for_each_entry(iommu_node, &iort_iommu_list, list) {
-> +               if (iommu_node->node == node)
-> +                       goto found;
-> +       }
-> +
-> +       iommu_node = NULL;
-> +found:
-> +       spin_unlock(&iort_iommu_lock);
-> +
-> +       return iommu_node;
+Yangbo Lu (7):
+  Documentation: DT: update Freescale DCFG compatible
+  ARM64: dts: ls2080a: add device configuration node
+  soc: fsl: add GUTS driver for QorIQ platforms
+  dt: move guts devicetree doc out of powerpc directory
+  powerpc/fsl: move mpc85xx.h to include/linux/fsl
+  MAINTAINERS: add entry for Freescale SoC specific driver
+  mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
 
-Ouch, and why not to
-
-strut iommu_node = NULL;
-
-lock
-list for each() {
- if ()
-  break;
-}
-unlock
-
-return iommu_node;
-
-?
-
-> +}
-
-
-> +/**
-> + * iort_iommu_configure - Set-up IOMMU configuration for a device.
-> + *
-> + * @dev: device that requires IOMMU set-up
-> + *
-> + * Returns: iommu_ops pointer on configuration success
-> + *          NULL on configuration failure
-> + */
-> +struct iommu_ops *iort_iommu_configure(struct device *dev)
-> +{
-> +       struct acpi_iort_node *node, *parent;
-> +       struct iommu_ops *ops = NULL;
-> +       struct iommu_fwspec fwspec;
-> +       struct iort_iommu_node *iommu_node;
-> +       u32 rid = 0, devid = 0;
-> +
-> +       if (dev_is_pci(dev)) {
-> +               struct pci_bus *bus = to_pci_dev(dev)->bus;
-> +
-> +               pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid,
-> +                                      &rid);
-> +
-> +               node = iort_scan_node(ACPI_IORT_NODE_PCI_ROOT_COMPLEX,
-> +                                     iort_find_dev_callback, &bus->dev);
-
-> +       } else
-
-checkpatch.pl ?
-
-> +               node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
-> +                                     iort_find_dev_callback, dev);
-> +
-> +       if (!node)
-> +               return NULL;
-> +
-> +       iort_dev_map_rid(node, rid, &devid, ACPI_IORT_NODE_SMMU);
-> +
-> +       parent = iort_find_parent_node(node, ACPI_IORT_NODE_SMMU);
-
-> +
-
-Redundant.
-
-> +       if (!parent)
-> +               return NULL;
-> +
-> +       iommu_node = iort_iommu_get_node(parent);
-> +       ops = iommu_node->ops;
-> +
-> +       fwspec.fwnode = iommu_node->fwnode;
-> +       fwspec.param_count = 1;
-> +       fwspec.param[0] = devid;
-> +
-> +       if (!ops || !ops->fw_xlate || ops->fw_xlate(dev, &fwspec))
-> +               return NULL;
-> +
-> +       return ops;
-> +}
-> +
+ Documentation/devicetree/bindings/arm/fsl.txt      |   2 +-
+ .../bindings/{powerpc => soc}/fsl/guts.txt         |   3 +
+ MAINTAINERS                                        |  16 ++-
+ arch/arm64/boot/dts/freescale/fsl-ls2080a.dtsi     |   6 +
+ arch/powerpc/kernel/cpu_setup_fsl_booke.S          |   2 +-
+ drivers/clk/clk-qoriq.c                            |   3 +-
+ drivers/i2c/busses/i2c-mpc.c                       |   2 +-
+ drivers/iommu/fsl_pamu.c                           |   3 +-
+ drivers/mmc/host/Kconfig                           |   1 +
+ drivers/mmc/host/sdhci-of-esdhc.c                  |  23 ++++
+ drivers/net/ethernet/freescale/gianfar.c           |   2 +-
+ drivers/soc/Kconfig                                |   2 +-
+ drivers/soc/fsl/Kconfig                            |   8 ++
+ drivers/soc/fsl/Makefile                           |   1 +
+ drivers/soc/fsl/guts.c                             | 119 +++++++++++++++++++
+ include/linux/fsl/guts.h                           | 126 +++++++++++++--------
+ .../asm/mpc85xx.h => include/linux/fsl/svr.h       |   4 +-
+ 17 files changed, 263 insertions(+), 60 deletions(-)
+ rename Documentation/devicetree/bindings/{powerpc => soc}/fsl/guts.txt (91%)
+ create mode 100644 drivers/soc/fsl/Kconfig
+ create mode 100644 drivers/soc/fsl/guts.c
+ rename arch/powerpc/include/asm/mpc85xx.h => include/linux/fsl/svr.h (97%)
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.1.0.27.g96db324
