@@ -1,13 +1,10 @@
-From: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
-Subject: [v8, 7/7] mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
-Date: Fri, 22 Apr 2016 14:27:44 +0800
-Message-ID: <1461306464-19521-8-git-send-email-yangbo.lu@nxp.com>
-References: <1461306464-19521-1-git-send-email-yangbo.lu@nxp.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.6-rc3
+Date: Fri, 22 Apr 2016 11:56:18 +0200
+Message-ID: <20160422095609.GA18272@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============7793747332937527516=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1461306464-19521-1-git-send-email-yangbo.lu-3arQi8VN3Tc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,117 +14,98 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Zhao Qiang <qiang.zhao-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, scott.wood-3arQi8VN3Tc@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, leoyang.li-3arQi8VN3Tc@public.gmane.org, xiaobo.xie-3arQi8VN3Tc@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The eSDHC of T4240-R1.0-R2.0 has incorrect vender version and spec version.
-Acturally the right version numbers should be VVN=0x13 and SVN = 0x1.
-This patch adds the GUTS driver support for eSDHC driver to get SVR(System
-version register). And fix host version to avoid that incorrect version
-numbers break down the ADMA data transfer.
 
-Signed-off-by: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
-Acked-by: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Acked-by: Scott Wood <oss-fOR+EgIDQEHk1uMJSBkQmQ@public.gmane.org>
----
-Changes for v2:
-	- Got SVR through iomap instead of dts
-Changes for v3:
-	- Managed GUTS through syscon instead of iomap in eSDHC driver
-Changes for v4:
-	- Got SVR by GUTS driver instead of SYSCON
-Changes for v5:
-	- Changed to get SVR through API fsl_guts_get_svr()
-	- Combined patch 4, patch 5 and patch 6 into one
-Changes for v6:
-	- Added 'Acked-by: Ulf Hansson'
-Changes for v7:
-	- None
-Changes for v8:
-	- Added 'Acked-by: Scott Wood'
----
- drivers/mmc/host/Kconfig          |  1 +
- drivers/mmc/host/sdhci-of-esdhc.c | 23 +++++++++++++++++++++++
- 2 files changed, 24 insertions(+)
+--===============7793747332937527516==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="J/dobhs11T7y2rNN"
+Content-Disposition: inline
 
-diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
-index e657af0..d480742 100644
---- a/drivers/mmc/host/Kconfig
-+++ b/drivers/mmc/host/Kconfig
-@@ -143,6 +143,7 @@ config MMC_SDHCI_OF_ESDHC
- 	depends on MMC_SDHCI_PLTFM
- 	depends on PPC || ARCH_MXC || ARCH_LAYERSCAPE
- 	select MMC_SDHCI_IO_ACCESSORS
-+	select FSL_GUTS
- 	help
- 	  This selects the Freescale eSDHC controller support.
- 
-diff --git a/drivers/mmc/host/sdhci-of-esdhc.c b/drivers/mmc/host/sdhci-of-esdhc.c
-index 3f34d35..68cc020 100644
---- a/drivers/mmc/host/sdhci-of-esdhc.c
-+++ b/drivers/mmc/host/sdhci-of-esdhc.c
-@@ -18,6 +18,8 @@
- #include <linux/of.h>
- #include <linux/delay.h>
- #include <linux/module.h>
-+#include <linux/fsl/svr.h>
-+#include <linux/fsl/guts.h>
- #include <linux/mmc/host.h>
- #include "sdhci-pltfm.h"
- #include "sdhci-esdhc.h"
-@@ -28,6 +30,8 @@
- struct sdhci_esdhc {
- 	u8 vendor_ver;
- 	u8 spec_ver;
-+	u32 soc_ver;
-+	u8 soc_rev;
- };
- 
- /**
-@@ -73,6 +77,8 @@ static u32 esdhc_readl_fixup(struct sdhci_host *host,
- static u16 esdhc_readw_fixup(struct sdhci_host *host,
- 				     int spec_reg, u32 value)
- {
-+	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
-+	struct sdhci_esdhc *esdhc = sdhci_pltfm_priv(pltfm_host);
- 	u16 ret;
- 	int shift = (spec_reg & 0x2) * 8;
- 
-@@ -80,6 +86,13 @@ static u16 esdhc_readw_fixup(struct sdhci_host *host,
- 		ret = value & 0xffff;
- 	else
- 		ret = (value >> shift) & 0xffff;
-+
-+	/* Workaround for T4240-R1.0-R2.0 eSDHC which has incorrect
-+	 * vendor version and spec version information.
-+	 */
-+	if ((spec_reg == SDHCI_HOST_VERSION) &&
-+	    (esdhc->soc_ver == SVR_T4240) && (esdhc->soc_rev <= 0x20))
-+		ret = (VENDOR_V_23 << SDHCI_VENDOR_VER_SHIFT) | SDHCI_SPEC_200;
- 	return ret;
- }
- 
-@@ -567,10 +580,20 @@ static void esdhc_init(struct platform_device *pdev, struct sdhci_host *host)
- 	struct sdhci_pltfm_host *pltfm_host;
- 	struct sdhci_esdhc *esdhc;
- 	u16 host_ver;
-+	u32 svr;
- 
- 	pltfm_host = sdhci_priv(host);
- 	esdhc = sdhci_pltfm_priv(pltfm_host);
- 
-+	fsl_guts_init();
-+	svr = fsl_guts_get_svr();
-+	if (svr) {
-+		esdhc->soc_ver = SVR_SOC_VER(svr);
-+		esdhc->soc_rev = SVR_REV(svr);
-+	} else {
-+		dev_err(&pdev->dev, "Failed to get SVR value!\n");
-+	}
-+
- 	host_ver = sdhci_readw(host, SDHCI_HOST_VERSION);
- 	esdhc->vendor_ver = (host_ver & SDHCI_VENDOR_VER_MASK) >>
- 			     SDHCI_VENDOR_VER_SHIFT;
--- 
-2.1.0.27.g96db324
+
+--J/dobhs11T7y2rNN
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit bf16200689118d19de1b8d2a3c314fc21f5dc7bb:
+
+  Linux 4.6-rc3 (2016-04-10 17:58:30 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.6-rc4
+
+for you to fetch changes up to 9800699c645952da6a7399194d3e762b84cde3cd:
+
+  iommu/arm-smmu: Don't allocate resources for bypass domains (2016-04-21 16:47:32 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.6-rc4
+
+The fixes include:
+
+	* Two patches to revert the use of default domains in the ARM
+	  SMMU driver. Enabling this caused regressions which need more
+	  thorough fixing. So the regressions are fixed for now by
+	  disabling the use of default domains.
+
+	* A fix for a v4.4 regression in the AMD IOMMU driver which
+	  broke devices behind invisible PCIe-to-PCI bridges with IOMMU
+	  enabled.
+
+----------------------------------------------------------------
+Joerg Roedel (1):
+      iommu/amd: Fix checking of pci dma aliases
+
+Robin Murphy (1):
+      iommu/arm-smmu: Don't allocate resources for bypass domains
+
+Will Deacon (1):
+      iommu/arm-smmu: Fix stream-match conflict with IOMMU_DOMAIN_DMA
+
+ drivers/iommu/amd_iommu.c | 87 +++++++++++++++++++++++++++++++++++++++++------
+ drivers/iommu/arm-smmu.c  | 22 ++++++++----
+ 2 files changed, 91 insertions(+), 18 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--J/dobhs11T7y2rNN
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJXGfU5AAoJECvwRC2XARrjWvcP/RtQE4s4GM0BEU8E/m8up3RU
+dVYlunexOS8e8YromHa5nQL0gOhj/YEQxolICFuzYLUxES7akbSnr1YEAqPVpdjl
+fdMeYfWWeuC8AeNLrB4okURkWWz4z2CTHCUgV93uTvM6y6chB+9ocViRX7co6RlD
+G60gl5wwTQMXrKwrmpV3lr79BMKQzL9eIgK0Gb0qdm03Q/sQAGU9py3yht5uSqtJ
++TUBw84MvKz0XnSgdqYg4ii5xTaZtWjI55fIFUj2A1G8dfP8mRRaCxEq9BfJUNNO
+Oj3EADYvKnP+JBT0w8cJ1+FLoscb8VPXcAP/29aU0d1Coi7oAtYErdG/oZ/8s+DV
+qwzjCUnkoxGhZgfl5Ip9yY7EBbLPSSlkDiERq8fBHzXTnBmaeM+fc22QUYUlwdQ9
+Ei+t4N1OROHDvUhk7UUXMPKlLVOh3WYcqa0yUOBosQ8sPiKJ2k+agNzDAfWgfYPM
+03/Gj9RA7ry11TY7F0p0Ls3oc1WWdgKuyiqoOvGnOygEzukHjv7gA+5iPPemJx64
+hXngPeetU+9vCf86CqcrkJq5UtO1ixs/nMVbI8BrOtq2QzKmTROQ34mWmEhgW76Y
+p2eOEYVHkpIAo4GCac943NKriDyb6CP7Nl1oG+Daj0sfkiWJmFCC8jbgjKL7kenR
+4Ubhif5lJ43ujzeu5OiS
+=xowM
+-----END PGP SIGNATURE-----
+
+--J/dobhs11T7y2rNN--
+
+--===============7793747332937527516==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7793747332937527516==--
