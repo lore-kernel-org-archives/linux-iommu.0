@@ -1,16 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v7 01/10] iommu: Add DOMAIN_ATTR_MSI_MAPPING attribute
-Date: Fri, 22 Apr 2016 15:49:52 +0100
-Message-ID: <571A3A10.70601@arm.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v7 03/10] iommu: introduce a reserved iova cookie
+Date: Fri, 22 Apr 2016 16:53:25 +0200
+Message-ID: <571A3AE5.8080507@linaro.org>
 References: <1461084994-2355-1-git-send-email-eric.auger@linaro.org>
-	<1461084994-2355-2-git-send-email-eric.auger@linaro.org>
-	<57177A4E.4090804@arm.com> <5717A738.9090904@linaro.org>
-	<571A0B78.6070509@arm.com> <571A1273.9060808@linaro.org>
+	<1461084994-2355-4-git-send-email-eric.auger@linaro.org>
+	<57177C31.9090004@arm.com> <5717AAC9.10505@linaro.org>
+	<571A1AC5.9030905@arm.com> <571A20C9.9010508@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <571A1273.9060808-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+In-Reply-To: <571A20C9.9010508-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,139 +20,188 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 22/04/16 13:00, Eric Auger wrote:
+Hi Robin,
+On 04/22/2016 03:02 PM, Eric Auger wrote:
 > Hi Robin,
-> On 04/22/2016 01:31 PM, Robin Murphy wrote:
->> On 20/04/16 16:58, Eric Auger wrote:
+> On 04/22/2016 02:36 PM, Robin Murphy wrote:
+>> On 20/04/16 17:14, Eric Auger wrote:
 >>> Hi Robin,
->>> On 04/20/2016 02:47 PM, Robin Murphy wrote:
->>>> Hi Eric,
->>>>
+>>> On 04/20/2016 02:55 PM, Robin Murphy wrote:
 >>>> On 19/04/16 17:56, Eric Auger wrote:
->>>>> Introduce a new DOMAIN_ATTR_MSI_MAPPING domain attribute. If supported,
->>>>> this means the MSI addresses need to be mapped in the IOMMU.
+>>>>> This patch introduces some new fields in the iommu_domain struct,
+>>>>> dedicated to reserved iova management.
 >>>>>
->>>>> x86 IOMMUs typically don't expose the attribute since on x86, MSI write
->>>>> transaction addresses always are within the 1MB PA region [FEE0_0000h -
->>>>> FEF0_000h] window which directly targets the APIC configuration
->>>>> space and
->>>>> hence bypass the sMMU. On ARM and PowerPC however MSI transactions are
->>>>> conveyed through the IOMMU.
+>>>>> In a similar way as DMA mapping IOVA window, we need to store
+>>>>> information related to a reserved IOVA window.
+>>>>>
+>>>>> The reserved_iova_cookie will store the reserved iova_domain
+>>>>> handle. An RB tree indexed by physical address is introduced to
+>>>>> store the host physical addresses bound to reserved IOVAs.
+>>>>>
+>>>>> Those physical addresses will correspond to MSI frame base
+>>>>> addresses, also referred to as doorbells. Their number should be
+>>>>> quite limited per domain.
+>>>>>
+>>>>> Also a spin_lock is introduced to protect accesses to the iova_domain
+>>>>> and RB tree. The choice of a spin_lock is driven by the fact the RB
+>>>>> tree will need to be accessed in MSI controller code not allowed to
+>>>>> sleep.
+>>>>>
+>>>>> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>>>>>
+>>>>> ---
+>>>>> v5 -> v6:
+>>>>> - initialize reserved_binding_list
+>>>>> - use a spinlock instead of a mutex
+>>>>> ---
+>>>>>    drivers/iommu/iommu.c | 2 ++
+>>>>>    include/linux/iommu.h | 6 ++++++
+>>>>>    2 files changed, 8 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>>>> index b9df141..f70ef3b 100644
+>>>>> --- a/drivers/iommu/iommu.c
+>>>>> +++ b/drivers/iommu/iommu.c
+>>>>> @@ -1073,6 +1073,8 @@ static struct iommu_domain
+>>>>> *__iommu_domain_alloc(struct bus_type *bus,
+>>>>>
+>>>>>        domain->ops  = bus->iommu_ops;
+>>>>>        domain->type = type;
+>>>>> +    spin_lock_init(&domain->reserved_lock);
+>>>>> +    domain->reserved_binding_list = RB_ROOT;
+>>>>>
+>>>>>        return domain;
+>>>>>    }
+>>>>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>>>>> index b3e8c5b..60999db 100644
+>>>>> --- a/include/linux/iommu.h
+>>>>> +++ b/include/linux/iommu.h
+>>>>> @@ -24,6 +24,7 @@
+>>>>>    #include <linux/of.h>
+>>>>>    #include <linux/types.h>
+>>>>>    #include <linux/scatterlist.h>
+>>>>> +#include <linux/spinlock.h>
+>>>>>    #include <trace/events/iommu.h>
+>>>>>
+>>>>>    #define IOMMU_READ    (1 << 0)
+>>>>> @@ -83,6 +84,11 @@ struct iommu_domain {
+>>>>>        void *handler_token;
+>>>>>        struct iommu_domain_geometry geometry;
+>>>>>        void *iova_cookie;
+>>>>> +    void *reserved_iova_cookie;
 >>>>
->>>> What's stopping us from simply inferring this from the domain's IOMMU
->>>> not advertising interrupt remapping capabilities?
->>> My current understanding is it is not possible:
->>> on x86 CAP_INTR_REMAP is not systematically exposed (the feature can be
->>> disabled) and MSIs are never mapped in the IOMMU I think.
+>>>> Why exactly do we need this? From your description, it's for the user of
+>>>> the domain to keep track of IOVA allocations in, but then that's
+>>>> precisely what the iova_cookie exists for.
+>>>
+>>> I was not sure whether both APIs could not be used concurrently, hence a
+>>> separate cookie. If we only consider MSI mapping use case I guess we are
+>>> either with a DMA domain or with a domain for VFIO and I would agree
+>>> with you, ie. we can reuse the same cookie.
 >>
->> Not sure I follow - if the feature is disabled such that the IOMMU
->> doesn't isolate MSIs, then it's no different a situation from the SMMU, no?
->
-> sorry I understood you wanted to use IOMMU_CAP_INTR_REMAP as the sole
-> criteria to detect whether MSI mapping was requested.
+>> Unless somebody cooks up some paravirtualised monstrosity where the
+>> guest driver somehow uses the host kernel's DMA mapping ops (thankfully,
+>> I'm not sure how that would even be possible), then they should always
+>> be mutually exclusive.
+> 
+> OK thanks
 >>
->> My point was that this logic:
+>> (That said, I should probably add a sanity check to
+>> iommu_dma_put_cookie() to ensure it only touches the cookies of
+>> IOMMU_DOMAIN_DMA domains...)
 >>
->>      if (IOMMU_CAP_INTR_REMAP)
->>          we're good
->>      else if (DOMAIN_ATTR_MSI_MAPPING)
->>          if (acquire_msi_remapping_resources(domain))
->>              we're good
->>          else
->>              oh no!
->>      else
->>          oh no!
+>>>>> +    /* rb tree indexed by PA, for reserved bindings only */
+>>>>> +    struct rb_root reserved_binding_list;
+>>>>
+>>>> Nit: that's more puzzling than helpful - "reserved binding" is
+>>>> particularly vague and nondescript, and makes me think of anything but
+>>>> MSI descriptors.
+>>> my heart is torn between advised genericity and MSI use case. My natural
+>>> short-sighted inclination would head me for an MSI mapping dedicated API
+>>> but I am following advices. As discussed with Alex there are
+>>> implementation details pretty related to MSI problematics I think (the
+>>> fact we store the "bindings" in an rb-tree/list, locking)
+>>>
+>>> If Marc & Alex I can retarget this API to be less generic.
+>>>
+>>>   Plus it's called a list but isn't a list (that said,
+>>>> given that we'd typically only expect a handful of entries, and lookups
+>>>> are hardly going to be a performance-critical bottleneck, would a simple
+>>>> list not suffice?)
+>>> I fully agree on that point. An rb-tree is overkill today for MSI use
+>>> case. Again if we were to use this API for anything else, this may
+>>> change the decision. But sure we can refactor afterwards upon needs. TBH
+>>> the rb-tree is inherited from vfio_iommu_type1 dma tree where that code
+>>> was originally located.
 >>
->> should be easily reducible to this:
->>
->>      if (IOMMU_CAP_INTR_REMAP)
->>          we're good
->>      else if (acquire_msi_remapping_resources(domain))
->
-> But Can't we imagine a mix of smmus on the same platform, some
-> requesting MSI mapping and some which don't. As soon as an smmu requires
-> MSI mapping, CONFIG_IOMMU_DMA_RESERVED is set and
-> acquire_msi_remapping_resources(domain) will be implemented & succeed.
-> Doesn't it lead to a wrong decision. Do I miss something, or do you
-> consider this situation as far-fetched?
+>> Thinking some more, how feasible would it be to handle the IOVA
+>> management aspect within the existing tree, i.e. extend struct vfio_dma
+>> so an entry can represent different types of thing - DMA pages, MSI
+>> pages, arbitrary reservations - and link to more implementation-specific
+>> data (e.g. a refcounted MSI descriptor stored elsewhere in the domain)
+>> as necessary?
+> it is feasible and  was approximately done there at the early ages of
+> the series:
+> https://lkml.org/lkml/2016/1/28/803 &
+> https://lists.cs.columbia.edu/pipermail/kvmarm/2015-September/016607.html
 
-Sorry, what was implicit there was that the imaginary 
-acquire_msi_remapping_resources(*IOMMU* domian) call still involves 
-going all the way down to check for MSI_FLAG_IRQ_REMAPPING in the 
-relevant place.
+Forgot to mention that locking mechanism currently used in
+vfio_iommu_type1 is based on mutex. Hence it is not compatible with MSI
+layer requirements where msi_domain_(de)activate and msi_set_affinity
+must be atomic.
 
-Either way, now that I consider it further, a flag on the IOMMU domain 
-is not just unnecessary, I think it's actually fundamentally incorrect: 
-picture a system which for some crazy reason has both a GICv3 ITS plus 
-some other dumb v2m-like MMIO-SPI bridge - whether a device's MSI domain 
-targets the (safe) ITS or the (unsafe) bridge isn't a property of the 
-IOMMU domain it's trying to attach to; if you can't rely on the IOMMU 
-itself to isolate MSIs, then you can only know whether to allow or 
-reject any given group by inspecting every device in that group to make 
-sure they all have isolation provided by their MSI domains and that the 
-IOMMU domain has all the relevant doorbell mappings ready.
+in msi case I think an rcu list might be quite appropriate.
 
-I guess the allow_unsafe_interrupts case might complicate matters beyond 
-the logic I sketched out, because then we might actually care about the 
-difference between "is isolation provided?" and "are sufficient 
-IOVA/descriptor resources available?", but the main point still stands.
+Best Regards
 
-Robin.
-
-> Thanks
->
+Eric
+> 
+> Then with the intent of doing something reusable the trend was to put it
+> in the iommu instead of vfio_iommu_typeX.
+> 
+> I am currently trying to make the "msi-iommu api" implemented upon the
+> dma-iommu api based on the simplifications that we discussed:
+> - reuse iova_cookie for iova domain
+> - add an opaque msi_cookie that hides the msi doorbell list + its spinlock
+> - simplify locking by making sure the msi domain cannot disappear before
+> the iommu domain destruction
+> 
+> If you agree I would suggest to wait and see the outcome of this new
+> design and make a shared decision based on that code? Should be
+> available next week.
+> 
+> Best Regards
+> 
 > Eric
->
->>          we're good
->>      else
->>          oh no!    // Don't care whether the domain ran out of
->>              // resources or simply doesn't support it,
->>              // either way we can't proceed.
+> 
 >>
 >> Robin.
 >>
->>> Best Regards
+>>>>
+>>>>> +    /* protects reserved cookie and rbtree manipulation */
+>>>>> +    spinlock_t reserved_lock;
+>>>>
+>>>> A cookie is an opaque structure, so any locking it needs would normally
+>>>> be hidden within. If on the other hand it's not meant to be opaque at
+>>>> this level, then it should probably be something more specific than a
+>>>> void * (if at all, as above).
+>>> agreed
+>>>
+>>> Thanks
 >>>
 >>> Eric
 >>>>
 >>>> Robin.
 >>>>
->>>>> Signed-off-by: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
->>>>> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>>>>>    };
 >>>>>
->>>>> ---
->>>>>
->>>>> v4 -> v5:
->>>>> - introduce the user in the next patch
->>>>>
->>>>> RFC v1 -> v1:
->>>>> - the data field is not used
->>>>> - for this attribute domain_get_attr simply returns 0 if the
->>>>> MSI_MAPPING
->>>>>      capability if needed or <0 if not.
->>>>> - removed struct iommu_domain_msi_maps
->>>>> ---
->>>>>     include/linux/iommu.h | 1 +
->>>>>     1 file changed, 1 insertion(+)
->>>>>
->>>>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->>>>> index 62a5eae..b3e8c5b 100644
->>>>> --- a/include/linux/iommu.h
->>>>> +++ b/include/linux/iommu.h
->>>>> @@ -113,6 +113,7 @@ enum iommu_attr {
->>>>>         DOMAIN_ATTR_FSL_PAMU_ENABLE,
->>>>>         DOMAIN_ATTR_FSL_PAMUV1,
->>>>>         DOMAIN_ATTR_NESTING,    /* two stages of translation */
->>>>> +    DOMAIN_ATTR_MSI_MAPPING, /* Require MSIs mapping in iommu */
->>>>>         DOMAIN_ATTR_MAX,
->>>>>     };
->>>>>
+>>>>>    enum iommu_cap {
 >>>>>
 >>>>
 >>>
 >>
->
+> 
