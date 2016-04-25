@@ -1,16 +1,18 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 4/7] io-64-nonatomic: Add relaxed accessor variants
-Date: Mon, 25 Apr 2016 14:32:42 +0100
-Message-ID: <20160425133242.GC30830@arm.com>
+Subject: Re: [PATCH 6/7] iommu/arm-smmu: Decouple context format from kernel
+	config
+Date: Mon, 25 Apr 2016 14:41:08 +0100
+Message-ID: <20160425134108.GD30830@arm.com>
 References: <cover.1460391217.git.robin.murphy@arm.com>
-	<44173fd4e8efd27d670cadc6b30e215243a14099.1460391217.git.robin.murphy@arm.com>
-	<20160421161859.GK929@arm.com> <571A5A9E.7040305@arm.com>
+	<173006777218859d1671ae517c70592c6c02f630.1460391217.git.robin.murphy@arm.com>
+	<20160421163019.GL929@arm.com> <571A617C.3020102@arm.com>
+	<20160425110219.GH16065@arm.com> <571E1851.2030400@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <571A5A9E.7040305-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <571E1851.2030400-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,69 +23,61 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Hitoshi Mitake <mitake.hitoshi-Zyj7fXuS5i5L9jVzuh4AOg@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Darren Hart <dvhart-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 22, 2016 at 06:08:46PM +0100, Robin Murphy wrote:
-> On 21/04/16 17:18, Will Deacon wrote:
-> >On Wed, Apr 13, 2016 at 06:13:00PM +0100, Robin Murphy wrote:
-> >>Whilst commit 9439eb3ab9d1 ("asm-generic: io: implement relaxed
-> >>accessor macros as conditional wrappers") makes the *_relaxed forms of
-> >>I/O accessors universally available to drivers, in cases where writeq()
-> >>is implemented via the io-64-nonatomic helpers, writeq_relaxed() will
-> >>end up falling back to writel() regardless of whether writel_relaxed()
-> >>is available (identically for s/write/read/).
-> >>
-> >>Add corresponding relaxed forms of the nonatomic helpers to delegate
-> >>to the equivalent 32-bit accessors as appropriate.
-> >>
-> >>CC: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-> >>CC: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-> >>CC: Darren Hart <dvhart-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> >>CC: Hitoshi Mitake <mitake.hitoshi-Zyj7fXuS5i5L9jVzuh4AOg@public.gmane.org>
-> >>Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> >>---
-> >>  include/linux/io-64-nonatomic-hi-lo.h | 25 +++++++++++++++++++++++++
-> >>  include/linux/io-64-nonatomic-lo-hi.h | 25 +++++++++++++++++++++++++
-> >>  2 files changed, 50 insertions(+)
-> >>
-> >>diff --git a/include/linux/io-64-nonatomic-hi-lo.h b/include/linux/io-64-nonatomic-hi-lo.h
-> >>index 11d7e84..1a85566 100644
-> >>--- a/include/linux/io-64-nonatomic-hi-lo.h
-> >>+++ b/include/linux/io-64-nonatomic-hi-lo.h
-> >>@@ -21,6 +21,23 @@ static inline void hi_lo_writeq(__u64 val, volatile void __iomem *addr)
-> >>  	writel(val, addr);
-> >>  }
-> >>
-> >>+static inline __u64 hi_lo_readq_relaxed(const volatile void __iomem *addr)
-> >>+{
-> >>+	const volatile u32 __iomem *p = addr;
-> >>+	u32 low, high;
-> >>+
-> >>+	high = readl_relaxed(p + 1);
-> >>+	low = readl_relaxed(p);
-> >>+
-> >>+	return low + ((u64)high << 32);
-> >>+}
-> >>+
-> >>+static inline void hi_lo_writeq_relaxed(__u64 val, volatile void __iomem *addr)
-> >>+{
-> >>+	writel_relaxed(val >> 32, addr + 4);
-> >>+	writel_relaxed(val, addr);
-> >>+}
-> >
-> >Could we not generate the _relaxed variants with some macro magic?
+On Mon, Apr 25, 2016 at 02:14:57PM +0100, Robin Murphy wrote:
+> On 25/04/16 12:02, Will Deacon wrote:
+> >In what case would you not have a viable AArch64 granule, but the option
+> >of falling back to AArch32 makes things work?
 > 
-> We _could_ - indeed I started doing that, but then decided that the
-> obfuscation of horrible macro-templated functions wasn't worth saving a
-> couple of hundred bytes in some code that isn't exactly difficult to
-> maintain and has needed touching once in 4 years.
-> 
-> If you did want to go down the macro route, I may as well also generate both
-> lo-hi and hi-lo headers all from a single template, it'd be really clever...
-> <alarm bells> ;)
+> A 4KB page kernel with MMU-401, whose only supported AArch64 granule is
+> supposedly 64KB.
 
-I certainly wasn't suggesting any more than the obvious macroisation,
-but I'll leave it up to Arnd, as I think this falls on his lap.
+That doesn't sound right at all!
+
+> >>Plus we'd have to remove the LPAE page sizes
+> >>from the bitmap beforehand in the case we don't support AARCH64_4K lest we
+> >>end up with a phantom format the hardware doesn't actually do, and it all
+> >>starts getting rather horrible...
+> >
+> >I'm not following. The io-pgtable code shouldn't give you back a phanton
+> >format.
+> 
+> If you call alloc_io_pgtable_ops() with ARM_64_LPAE_S2 and an unmolested
+> MMU-401 pgsize_bitmap, you get back a 4K granule v8 pagetable, which per a
+> strict reading of the TRM isn't supported (although does appear to work in
+> practice...)
+
+I suspect that's a badly worded/incorrect TRM. In reality, I'd be happy
+to assume that a given granule is supported across all formats (in as
+much as it can be) if it's supported by one of them, but acknowledge
+that's not guaranteed by the architecture.
+
+> Consider also a stage 1 SMMU supporting all formats but only with 4K
+> granules: with a 64K page arm64 kernel, the presence of AARCH64_4K support
+> would lead us into arm_64_lpae_alloc_pgtable_s1(), which would be tricked
+> into giving us back a 64K granule v8 format by the short descriptor large
+> page size matching PAGE_SIZE, and things would definitely go downhill from
+> there.
+
+We could improve this by having a separate pgsize_bitmap per format, and
+passing the relevant one to the relevant page table constructor.
+
+> Given that, I think the only truly safe thing to do is to pass an explicit
+> granule in the io_pgtable_cfg and just get rid of the bitmap-based guessing
+> in arm_lpae_restrict_pgsizes() - otherwise, we'd still have to pre-restrict
+> the bitmap, making it pretty much redundant anyway. I'll have a hack at that
+
+Actually, I think I prefer to go the other way. Let's try moving more of
+this common logic into the io-pgtable code. For example, an IOMMU driver
+could say "I support these formats, and these options (page sizes, quirks,
+etc) for each format" and the io-pgtable code can choose the most
+appropriate thing.
+
+> - in the meantime please feel free to queue patches 1-3 if you're happy with
+> them, as that part is still feature-complete without all this context stuff.
+
+Queued those, thanks!
 
 Will
