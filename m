@@ -1,16 +1,14 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 Subject: Re: [PATCH 4/7] io-64-nonatomic: Add relaxed accessor variants
-Date: Mon, 25 Apr 2016 17:11:01 +0100
-Message-ID: <20160425161101.GC2122@arm.com>
+Date: Mon, 25 Apr 2016 18:11:55 +0200
+Message-ID: <6110512.c3CSTNRIy3@wuerfel>
 References: <cover.1460391217.git.robin.murphy@arm.com>
-	<5485134.l18Z1dlVmn@wuerfel> <571E3781.3070609@arm.com>
-	<4658440.AyDy7GFvoa@wuerfel>
+	<44173fd4e8efd27d670cadc6b30e215243a14099.1460391217.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <4658440.AyDy7GFvoa@wuerfel>
+In-Reply-To: <44173fd4e8efd27d670cadc6b30e215243a14099.1460391217.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,36 +18,27 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Hitoshi Mitake <mitake.hitoshi-Zyj7fXuS5i5L9jVzuh4AOg@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Darren Hart <dvhart-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Hitoshi Mitake <mitake.hitoshi-Zyj7fXuS5i5L9jVzuh4AOg@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Darren Hart <dvhart-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 25, 2016 at 05:41:21PM +0200, Arnd Bergmann wrote:
-> On Monday 25 April 2016 16:28:01 Robin Murphy wrote:
-> > >>>
-> > >>> We _could_ - indeed I started doing that, but then decided that the
-> > >>> obfuscation of horrible macro-templated functions wasn't worth saving a
-> > >>> couple of hundred bytes in some code that isn't exactly difficult to
-> > >>> maintain and has needed touching once in 4 years.
-> > >>>
-> > >>> If you did want to go down the macro route, I may as well also generate both
-> > >>> lo-hi and hi-lo headers all from a single template, it'd be really clever...
-> > >>> <alarm bells>
-> > >>
-> > >> I certainly wasn't suggesting any more than the obvious macroisation,
-> > >> but I'll leave it up to Arnd, as I think this falls on his lap.
-> > >
-> > > I'd prefer the open-coded variant as well.
-> > 
-> > By that, do you mean sticking with the smmu_writeq() implementation in 
-> > the driver and dropping this patch, or merging this patch as-is without 
-> > further macro-magic?
-> > 
+On Wednesday 13 April 2016 18:13:00 Robin Murphy wrote:
+> Whilst commit 9439eb3ab9d1 ("asm-generic: io: implement relaxed
+> accessor macros as conditional wrappers") makes the *_relaxed forms of
+> I/O accessors universally available to drivers, in cases where writeq()
+> is implemented via the io-64-nonatomic helpers, writeq_relaxed() will
+> end up falling back to writel() regardless of whether writel_relaxed()
+> is available (identically for s/write/read/).
 > 
-> Sorry, that was really ambiguous on my end. I meant leaving patch 4/7
-> as it is in the version you posted.
+> Add corresponding relaxed forms of the nonatomic helpers to delegate
+> to the equivalent 32-bit accessors as appropriate.
+> 
+> CC: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+> CC: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
+> CC: Darren Hart <dvhart-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+> CC: Hitoshi Mitake <mitake.hitoshi-Zyj7fXuS5i5L9jVzuh4AOg@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+> 
 
-I'm happy with that. Could I have your ack, so that I can queue it with
-the related SMMU patches, please?
-
-Will
+Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
