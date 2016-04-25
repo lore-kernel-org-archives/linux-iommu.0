@@ -1,11 +1,14 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [RFC 0/9] IOMMU probe deferral support
-Date: Mon, 25 Apr 2016 21:28:05 +0530
-Message-ID: <1461599894-1969-1-git-send-email-sricharan@codeaurora.org>
+Subject: [RFC 1/9] arm: dma-mapping: Don't override dma_ops in
+	arch_setup_dma_ops()
+Date: Mon, 25 Apr 2016 21:28:06 +0530
+Message-ID: <1461599894-1969-2-git-send-email-sricharan@codeaurora.org>
+References: <1461599894-1969-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1461599894-1969-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,54 +22,50 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gm
 Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This is mostly a repost of the probe deferral series from
-Laurent Pinchart [1]. Added a check to fix boot with ACPI.
-Adapted arm-smmu driver to work with deferred probing and added
-a new api for the below reason. This is based on the generic iommu binding
-series from Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>.
+From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
-Now associating a group with an master has become mandatory and happens
-when the master is added to the bus using BUS_ADD_DEVICE from iommu core.
-But the iommu has to be ready before this using early iommu registration
-and also master should have been added to the iommu using xlate. So, when
-trying to get rid of the early registration and using late probing for iommu
-devices to sort out the probing order, the newly added api is meant to be
-called during the late probing to add the master to the iommu. add_iommu_group
-could be modified to do the same though.
+The arch_setup_dma_ops() function is in charge of setting dma_ops with a
+call to set_dma_ops(). set_dma_ops() is also called from
 
-The one issue here is the DRIVER_BIND notifier from iommu core
-might be called at a wrong point since the addition of a group to the device
-happens after this.
+- highbank and mvebu bus notifiers
+- dmabounce (to be replaced with swiotlb)
+- arm_iommu_attach_device
 
-Will be good to know the right direction to proceed on this fully.
+(arm_iommu_attach_device is itself called from IOMMU and bus master
+device drivers)
 
-[1] http://lists.linuxfoundation.org/pipermail/iommu/2015-May/013016.html
+To allow the arch_setup_dma_ops() call to be moved from device add time
+to device probe time we must ensure that dma_ops already setup by any of
+the above callers will not be overriden.
 
-Laurent Pinchart (6):
-  arm: dma-mapping: Don't override dma_ops in arch_setup_dma_ops()
-  of: dma: Move range size workaround to of_dma_get_range()
-  of: dma: Make of_dma_deconfigure() public
-  of: dma: Split of_configure_dma() into mask and ops configuration
-  drivers: platform: Configure dma operations at probe time
-  iommu: of: Handle IOMMU lookup failure with deferred probing or error
+Aftering replacing dmabounce with swiotlb, converting IOMMU drivers to
+of_xlate and taking care of highbank and mvebu, the workaround should be
+removed.
 
-Sricharan R (3):
-  drivers: iommu: Add a new add device api
-  drivers: of: call iommu_bus_add_dev after iommu_configure_ops
-  drivers: iommu: arm-smmu: Set iommu_ops in probe
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+---
+ arch/arm/mm/dma-mapping.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
- arch/arm/mm/dma-mapping.c |  9 ++++++
- drivers/base/platform.c   | 13 ++++++++
- drivers/iommu/arm-smmu.c  | 34 ++------------------
- drivers/iommu/iommu.c     | 12 +++++++
- drivers/iommu/of_iommu.c  | 16 ++++++++--
- drivers/of/address.c      | 20 ++++++++++--
- drivers/of/device.c       | 81 +++++++++++++++++++++++++++++++----------------
- drivers/of/platform.c     | 16 ++++------
- drivers/pci/probe.c       |  3 +-
- include/linux/iommu.h     |  1 +
- include/linux/of_device.h | 14 ++++++--
- 11 files changed, 141 insertions(+), 78 deletions(-)
-
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index 0eca381..ccf60a2 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -2126,6 +2126,15 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ 	struct dma_map_ops *dma_ops;
+ 
+ 	dev->archdata.dma_coherent = coherent;
++
++	/*
++	 * Don't override the dma_ops if they have already been set. Ideally
++	 * this should be the only location where dma_ops are set, remove this
++	 * check when all other callers of set_dma_ops will have disappeared.
++	 */
++	if (dev->archdata.dma_ops)
++		return;
++
+ 	if (arm_setup_iommu_dma_ops(dev, dma_base, size, iommu))
+ 		dma_ops = arm_get_iommu_dma_map_ops(coherent);
+ 	else
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
