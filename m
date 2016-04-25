@@ -1,7 +1,7 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [RFC 7/9] drivers: iommu: Add a new add device api
-Date: Mon, 25 Apr 2016 21:28:12 +0530
-Message-ID: <1461599894-1969-8-git-send-email-sricharan@codeaurora.org>
+Subject: [RFC 9/9] drivers: iommu: arm-smmu: Set iommu_ops in probe
+Date: Mon, 25 Apr 2016 21:28:14 +0530
+Message-ID: <1461599894-1969-10-git-send-email-sricharan@codeaurora.org>
 References: <1461599894-1969-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,54 +21,81 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gm
 Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Associating a master with an group happens when the master is added to the bus,
-notified with BUS_ADD_DEVICE. But the iommu has to be ready before this
-using early iommu registration and also master should have been added to the
-iommu using xlate. So, when trying to get rid of the early registration and
-using late probing for iommu devices to sort out the probing order, the newly
-added api is meant to be called during the late probing to add the master
-to iommu.
+iommu_ops should be set after the iommu is probed.
+This ensures that the iommu is really ready when master's
+iommu ops are set during their probe or else deferred.
 
 Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 12 ++++++++++++
- include/linux/iommu.h |  1 +
- 2 files changed, 13 insertions(+)
+ drivers/iommu/arm-smmu.c | 34 ++--------------------------------
+ 1 file changed, 2 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index bfd4f7c..a0dd01f 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -900,6 +900,18 @@ static int remove_iommu_group(struct device *dev, void *data)
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 2d65de4..f103d35 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1919,6 +1919,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	if (of_property_read_bool(dev->of_node, "mmu-masters"))
+ 		arm_smmu_probe_mmu_masters(smmu);
+ 	arm_smmu_device_reset(smmu);
++	of_iommu_set_ops(dev->of_node, &arm_smmu_ops);
  	return 0;
- }
  
-+int iommu_bus_add_dev(struct device *dev)
-+{
-+	const struct iommu_ops *ops = dev->bus->iommu_ops;
-+	int ret = -ENODEV;
-+
-+	if (ops->add_device)
-+		ret = ops->add_device(dev);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_bus_add_dev);
-+
- static int iommu_bus_notifier(struct notifier_block *nb,
- 			      unsigned long action, void *data)
+ out_free_irqs:
+@@ -1957,24 +1958,13 @@ static struct platform_driver arm_smmu_driver = {
+ 	.remove	= arm_smmu_device_remove,
+ };
+ 
+-static int __init arm_smmu_init(void)
++static int __init arm_smmu_of_init(struct device_node *np)
  {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a5c539f..018cfc8 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -271,6 +271,7 @@ struct device *iommu_device_create(struct device *parent, void *drvdata,
- void iommu_device_destroy(struct device *dev);
- int iommu_device_link(struct device *dev, struct device *link);
- void iommu_device_unlink(struct device *dev, struct device *link);
-+int iommu_bus_add_dev(struct device *dev);
+-	struct device_node *np;
+ 	static bool done;
+ 	int ret;
  
- /* Window handling function prototypes */
- extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
+ 	if (done)
+ 		return 0;
+-	/*
+-	 * Play nice with systems that don't have an ARM SMMU by checking that
+-	 * an ARM SMMU exists in the system before proceeding with the driver
+-	 * and IOMMU bus operation registration.
+-	 */
+-	np = of_find_matching_node(NULL, arm_smmu_of_match);
+-	if (!np)
+-		return 0;
+-
+-	of_node_put(np);
+ 
+ 	ret = platform_driver_register(&arm_smmu_driver);
+ 	if (ret)
+@@ -2002,28 +1992,8 @@ static void __exit arm_smmu_exit(void)
+ {
+ 	return platform_driver_unregister(&arm_smmu_driver);
+ }
+-
+-subsys_initcall(arm_smmu_init);
+ module_exit(arm_smmu_exit);
+ 
+-static int __init arm_smmu_of_init(struct device_node *np)
+-{
+-	struct arm_smmu_device *smmu;
+-	struct platform_device *pdev;
+-	int ret = arm_smmu_init();
+-
+-	if (ret)
+-		return ret;
+-
+-	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
+-	if (!pdev)
+-		return -ENODEV;
+-
+-	smmu = platform_get_drvdata(pdev);
+-	of_iommu_set_ops(np, &arm_smmu_ops);
+-
+-	return 0;
+-}
+ IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1", arm_smmu_of_init);
+ IOMMU_OF_DECLARE(arm_smmuv2, "arm,smmu-v2", arm_smmu_of_init);
+ IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400", arm_smmu_of_init);
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
