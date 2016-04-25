@@ -1,14 +1,11 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Subject: Re: [PATCH 4/7] io-64-nonatomic: Add relaxed accessor variants
-Date: Mon, 25 Apr 2016 17:41:21 +0200
-Message-ID: <4658440.AyDy7GFvoa@wuerfel>
-References: <cover.1460391217.git.robin.murphy@arm.com>
-	<5485134.l18Z1dlVmn@wuerfel> <571E3781.3070609@arm.com>
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [RFC 0/9] IOMMU probe deferral support
+Date: Mon, 25 Apr 2016 21:28:05 +0530
+Message-ID: <1461599894-1969-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <571E3781.3070609-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,35 +15,58 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Hitoshi Mitake <mitake.hitoshi-Zyj7fXuS5i5L9jVzuh4AOg@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Darren Hart <dvhart-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
+Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Monday 25 April 2016 16:28:01 Robin Murphy wrote:
-> >>>
-> >>> We _could_ - indeed I started doing that, but then decided that the
-> >>> obfuscation of horrible macro-templated functions wasn't worth saving a
-> >>> couple of hundred bytes in some code that isn't exactly difficult to
-> >>> maintain and has needed touching once in 4 years.
-> >>>
-> >>> If you did want to go down the macro route, I may as well also generate both
-> >>> lo-hi and hi-lo headers all from a single template, it'd be really clever...
-> >>> <alarm bells>
-> >>
-> >> I certainly wasn't suggesting any more than the obvious macroisation,
-> >> but I'll leave it up to Arnd, as I think this falls on his lap.
-> >
-> > I'd prefer the open-coded variant as well.
-> 
-> By that, do you mean sticking with the smmu_writeq() implementation in 
-> the driver and dropping this patch, or merging this patch as-is without 
-> further macro-magic?
-> 
+This is mostly a repost of the probe deferral series from
+Laurent Pinchart [1]. Added a check to fix boot with ACPI.
+Adapted arm-smmu driver to work with deferred probing and added
+a new api for the below reason. This is based on the generic iommu binding
+series from Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>.
 
-Sorry, that was really ambiguous on my end. I meant leaving patch 4/7
-as it is in the version you posted.
+Now associating a group with an master has become mandatory and happens
+when the master is added to the bus using BUS_ADD_DEVICE from iommu core.
+But the iommu has to be ready before this using early iommu registration
+and also master should have been added to the iommu using xlate. So, when
+trying to get rid of the early registration and using late probing for iommu
+devices to sort out the probing order, the newly added api is meant to be
+called during the late probing to add the master to the iommu. add_iommu_group
+could be modified to do the same though.
 
-However, leaving the open-coded writel_relaxed() in the driver or just
-using the non-relaxed hi_lo_readq() would be totally fine too.
+The one issue here is the DRIVER_BIND notifier from iommu core
+might be called at a wrong point since the addition of a group to the device
+happens after this.
 
-	Arnd
+Will be good to know the right direction to proceed on this fully.
+
+[1] http://lists.linuxfoundation.org/pipermail/iommu/2015-May/013016.html
+
+Laurent Pinchart (6):
+  arm: dma-mapping: Don't override dma_ops in arch_setup_dma_ops()
+  of: dma: Move range size workaround to of_dma_get_range()
+  of: dma: Make of_dma_deconfigure() public
+  of: dma: Split of_configure_dma() into mask and ops configuration
+  drivers: platform: Configure dma operations at probe time
+  iommu: of: Handle IOMMU lookup failure with deferred probing or error
+
+Sricharan R (3):
+  drivers: iommu: Add a new add device api
+  drivers: of: call iommu_bus_add_dev after iommu_configure_ops
+  drivers: iommu: arm-smmu: Set iommu_ops in probe
+
+ arch/arm/mm/dma-mapping.c |  9 ++++++
+ drivers/base/platform.c   | 13 ++++++++
+ drivers/iommu/arm-smmu.c  | 34 ++------------------
+ drivers/iommu/iommu.c     | 12 +++++++
+ drivers/iommu/of_iommu.c  | 16 ++++++++--
+ drivers/of/address.c      | 20 ++++++++++--
+ drivers/of/device.c       | 81 +++++++++++++++++++++++++++++++----------------
+ drivers/of/platform.c     | 16 ++++------
+ drivers/pci/probe.c       |  3 +-
+ include/linux/iommu.h     |  1 +
+ include/linux/of_device.h | 14 ++++++--
+ 11 files changed, 141 insertions(+), 78 deletions(-)
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
