@@ -1,7 +1,8 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [RFC 5/9] drivers: platform: Configure dma operations at probe time
-Date: Mon, 25 Apr 2016 21:28:10 +0530
-Message-ID: <1461599894-1969-6-git-send-email-sricharan@codeaurora.org>
+Subject: [RFC 6/9] iommu: of: Handle IOMMU lookup failure with deferred
+	probing or error
+Date: Mon, 25 Apr 2016 21:28:11 +0530
+Message-ID: <1461599894-1969-7-git-send-email-sricharan@codeaurora.org>
 References: <1461599894-1969-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,83 +24,88 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
-Configuring DMA ops at probe time will allow deferring device probe when
-the IOMMU isn't available yet.
+Failures to look up an IOMMU when parsing the DT iommus property need to
+be handled separately from the .of_xlate() failures to support deferred
+probing.
+
+The lack of a registered IOMMU can be caused by the lack of a driver for
+the IOMMU, the IOMMU device probe not having been performed yet, having
+been deferred, or having failed.
+
+The first case occurs when the device tree describes the bus master and
+IOMMU topology correctly but no device driver exists for the IOMMU yet
+or the device driver has not been compiled in. Return NULL, the caller
+will configure the device without an IOMMU.
+
+The second and third cases are handled by deferring the probe of the bus
+master device which will eventually get reprobed after the IOMMU.
+
+The last case is currently handled by deferring the probe of the bus
+master device as well. A mechanism to either configure the bus master
+device without an IOMMU or to fail the bus master device probe depending
+on whether the IOMMU is optional or mandatory would be a good
+enhancement.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 ---
- drivers/base/platform.c | 13 +++++++++++++
- drivers/of/platform.c   |  7 +++----
- 2 files changed, 16 insertions(+), 4 deletions(-)
+ drivers/iommu/of_iommu.c | 16 +++++++++++++---
+ drivers/of/device.c      |  2 ++
+ 2 files changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index f437afa..17e64a4 100644
---- a/drivers/base/platform.c
-+++ b/drivers/base/platform.c
-@@ -557,6 +557,12 @@ static int platform_drv_probe(struct device *_dev)
- 	if (ret < 0)
- 		return ret;
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 910826c..f722f55 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -189,8 +189,18 @@ struct iommu_ops *of_iommu_configure(struct device *dev,
+ 		np = iommu_spec.np;
+ 		ops = of_iommu_get_ops(np);
  
-+	if (of_have_populated_dt()) {
-+		ret = of_dma_configure_ops(_dev, _dev->of_node);
-+		if (ret < 0)
-+			goto done;
-+	}
+-		if (!ops || !ops->of_xlate || ops->of_xlate(dev, &iommu_spec))
++		if (!ops) {
++			const struct of_device_id *oid;
 +
- 	ret = dev_pm_domain_attach(_dev, true);
- 	if (ret != -EPROBE_DEFER) {
- 		if (drv->probe) {
-@@ -569,6 +575,11 @@ static int platform_drv_probe(struct device *_dev)
- 		}
- 	}
++			oid = of_match_node(&__iommu_of_table, np);
++			ops = oid ? ERR_PTR(-EPROBE_DEFER) : NULL;
+ 			goto err_put_node;
++		}
++
++		if (!ops->of_xlate || ops->of_xlate(dev, &iommu_spec)) {
++			ops = NULL;
++			goto err_put_node;
++		}
  
-+	if (of_have_populated_dt()) {
-+		if (ret)
-+			of_dma_deconfigure(_dev);
-+	}
-+done:
- 	if (drv->prevent_deferred_probe && ret == -EPROBE_DEFER) {
- 		dev_warn(_dev, "probe deferral not supported\n");
- 		ret = -ENXIO;
-@@ -591,6 +602,8 @@ static int platform_drv_remove(struct device *_dev)
- 	if (drv->remove)
- 		ret = drv->remove(dev);
- 	dev_pm_domain_detach(_dev, true);
-+	if (of_have_populated_dt())
-+		of_dma_deconfigure(_dev);
+ 		of_node_put(np);
+ 		idx++;
+@@ -200,7 +210,7 @@ struct iommu_ops *of_iommu_configure(struct device *dev,
  
- 	return ret;
+ err_put_node:
+ 	of_node_put(np);
+-	return NULL;
++	return ops;
  }
-diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-index 17ee8d5..12bbc8e1 100644
---- a/drivers/of/platform.c
-+++ b/drivers/of/platform.c
-@@ -180,11 +180,9 @@ static struct platform_device *of_platform_device_create_pdata(
- 	dev->dev.bus = &platform_bus_type;
- 	dev->dev.platform_data = platform_data;
- 	of_dma_configure_masks(&dev->dev, dev->dev.of_node);
--	of_dma_configure_ops(&dev->dev, dev->dev.of_node);
- 	of_msi_configure(&dev->dev, dev->dev.of_node);
  
- 	if (of_device_add(dev) != 0) {
--		of_dma_deconfigure(&dev->dev);
- 		platform_device_put(dev);
- 		goto err_clear_flag;
+ void __init of_iommu_init(void)
+@@ -211,7 +221,7 @@ void __init of_iommu_init(void)
+ 	for_each_matching_node_and_match(np, matches, &match) {
+ 		const of_iommu_init_fn init_fn = match->data;
+ 
+-		if (init_fn(np))
++		if (init_fn && init_fn(np))
+ 			pr_err("Failed to initialise IOMMU %s\n",
+ 				of_node_full_name(np));
  	}
-@@ -481,11 +479,12 @@ static int of_platform_device_destroy(struct device *dev, void *data)
- 	if (dev->bus == &platform_bus_type)
- 		platform_device_unregister(to_platform_device(dev));
- #ifdef CONFIG_ARM_AMBA
--	else if (dev->bus == &amba_bustype)
-+	else if (dev->bus == &amba_bustype) {
- 		amba_device_unregister(to_amba_device(dev));
-+		of_dma_deconfigure(dev);
-+	}
- #endif
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index 494cdbe..57a5f2d 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -149,6 +149,8 @@ int of_dma_configure_ops(struct device *dev, struct device_node *np)
+ 		coherent ? " " : " not ");
  
--	of_dma_deconfigure(dev);
- 	of_node_clear_flag(dev->of_node, OF_POPULATED);
- 	of_node_clear_flag(dev->of_node, OF_POPULATED_BUS);
- 	return 0;
+ 	iommu = of_iommu_configure(dev, np);
++	if (IS_ERR(iommu))
++		return PTR_ERR(iommu);
+ 	dev_dbg(dev, "device is%sbehind an iommu\n",
+ 		iommu ? " " : " not ");
+ 
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
