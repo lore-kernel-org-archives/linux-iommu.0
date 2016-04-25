@@ -1,14 +1,15 @@
-From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH 4/7] io-64-nonatomic: Add relaxed accessor variants
-Date: Mon, 25 Apr 2016 17:21:34 +0200
-Message-ID: <5485134.l18Z1dlVmn@wuerfel>
+Date: Mon, 25 Apr 2016 16:28:01 +0100
+Message-ID: <571E3781.3070609@arm.com>
 References: <cover.1460391217.git.robin.murphy@arm.com>
 	<571A5A9E.7040305@arm.com> <20160425133242.GC30830@arm.com>
+	<5485134.l18Z1dlVmn@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160425133242.GC30830-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <5485134.l18Z1dlVmn@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,43 +19,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Hitoshi Mitake <mitake.hitoshi-Zyj7fXuS5i5L9jVzuh4AOg@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Darren Hart <dvhart-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Monday 25 April 2016 14:32:42 Will Deacon wrote:
-> > >>
-> > >>+static inline __u64 hi_lo_readq_relaxed(const volatile void __iomem *addr)
-> > >>+{
-> > >>+   const volatile u32 __iomem *p = addr;
-> > >>+   u32 low, high;
-> > >>+
-> > >>+   high = readl_relaxed(p + 1);
-> > >>+   low = readl_relaxed(p);
-> > >>+
-> > >>+   return low + ((u64)high << 32);
-> > >>+}
-> > >>+
-> > >>+static inline void hi_lo_writeq_relaxed(__u64 val, volatile void __iomem *addr)
-> > >>+{
-> > >>+   writel_relaxed(val >> 32, addr + 4);
-> > >>+   writel_relaxed(val, addr);
-> > >>+}
-> > >
-> > >Could we not generate the _relaxed variants with some macro magic?
-> > 
-> > We _could_ - indeed I started doing that, but then decided that the
-> > obfuscation of horrible macro-templated functions wasn't worth saving a
-> > couple of hundred bytes in some code that isn't exactly difficult to
-> > maintain and has needed touching once in 4 years.
-> > 
-> > If you did want to go down the macro route, I may as well also generate both
-> > lo-hi and hi-lo headers all from a single template, it'd be really clever...
-> > <alarm bells> 
-> 
-> I certainly wasn't suggesting any more than the obvious macroisation,
-> but I'll leave it up to Arnd, as I think this falls on his lap.
+Hi Arnd,
 
-I'd prefer the open-coded variant as well.
+On 25/04/16 16:21, Arnd Bergmann wrote:
+> On Monday 25 April 2016 14:32:42 Will Deacon wrote:
+>>>>>
+>>>>> +static inline __u64 hi_lo_readq_relaxed(const volatile void __iomem *addr)
+>>>>> +{
+>>>>> +   const volatile u32 __iomem *p = addr;
+>>>>> +   u32 low, high;
+>>>>> +
+>>>>> +   high = readl_relaxed(p + 1);
+>>>>> +   low = readl_relaxed(p);
+>>>>> +
+>>>>> +   return low + ((u64)high << 32);
+>>>>> +}
+>>>>> +
+>>>>> +static inline void hi_lo_writeq_relaxed(__u64 val, volatile void __iomem *addr)
+>>>>> +{
+>>>>> +   writel_relaxed(val >> 32, addr + 4);
+>>>>> +   writel_relaxed(val, addr);
+>>>>> +}
+>>>>
+>>>> Could we not generate the _relaxed variants with some macro magic?
+>>>
+>>> We _could_ - indeed I started doing that, but then decided that the
+>>> obfuscation of horrible macro-templated functions wasn't worth saving a
+>>> couple of hundred bytes in some code that isn't exactly difficult to
+>>> maintain and has needed touching once in 4 years.
+>>>
+>>> If you did want to go down the macro route, I may as well also generate both
+>>> lo-hi and hi-lo headers all from a single template, it'd be really clever...
+>>> <alarm bells>
+>>
+>> I certainly wasn't suggesting any more than the obvious macroisation,
+>> but I'll leave it up to Arnd, as I think this falls on his lap.
+>
+> I'd prefer the open-coded variant as well.
 
-	Arnd
+By that, do you mean sticking with the smmu_writeq() implementation in 
+the driver and dropping this patch, or merging this patch as-is without 
+further macro-magic?
+
+Thanks,
+Robin.
+
+>
+> 	Arnd
+>
