@@ -1,60 +1,60 @@
-From: Niklas =?iso-8859-1?Q?S=F6derlund?= <niso@kth.se>
-Subject: Re: [PATCH v5 3/9] dma-mapping: add dma_{map,unmap}_resource
-Date: Mon, 25 Apr 2016 16:26:19 +0200
-Message-ID: <20160425142619.GJ28777@bigcity.dyn.berto.se>
-References: <1457404974-1800-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
- <20160311125846.GF1111@bigcity.dyn.berto.se>
- <20160315082254.GE9136@infradead.org>
- <3286525.zPAGiD4Xk2@avalon>
- <20160321152601.GA11674@infradead.org>
- <20160413132916.GC19650@bigcity.dyn.berto.se>
- <20160421134942.GA3325@infradead.org>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH 4/7] io-64-nonatomic: Add relaxed accessor variants
+Date: Mon, 25 Apr 2016 17:21:34 +0200
+Message-ID: <5485134.l18Z1dlVmn@wuerfel>
+References: <cover.1460391217.git.robin.murphy@arm.com>
+	<571A5A9E.7040305@arm.com> <20160425133242.GC30830@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160421134942.GA3325@infradead.org>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Christoph Hellwig <hch@infradead.org>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, linux-renesas-soc@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, iommu@lists.linux-foundation.org, robin.murphy@arm.com, geert+renesas@glider.be, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160425133242.GC30830-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Hitoshi Mitake <mitake.hitoshi-Zyj7fXuS5i5L9jVzuh4AOg@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Darren Hart <dvhart-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Christoph,
+On Monday 25 April 2016 14:32:42 Will Deacon wrote:
+> > >>
+> > >>+static inline __u64 hi_lo_readq_relaxed(const volatile void __iomem *addr)
+> > >>+{
+> > >>+   const volatile u32 __iomem *p = addr;
+> > >>+   u32 low, high;
+> > >>+
+> > >>+   high = readl_relaxed(p + 1);
+> > >>+   low = readl_relaxed(p);
+> > >>+
+> > >>+   return low + ((u64)high << 32);
+> > >>+}
+> > >>+
+> > >>+static inline void hi_lo_writeq_relaxed(__u64 val, volatile void __iomem *addr)
+> > >>+{
+> > >>+   writel_relaxed(val >> 32, addr + 4);
+> > >>+   writel_relaxed(val, addr);
+> > >>+}
+> > >
+> > >Could we not generate the _relaxed variants with some macro magic?
+> > 
+> > We _could_ - indeed I started doing that, but then decided that the
+> > obfuscation of horrible macro-templated functions wasn't worth saving a
+> > couple of hundred bytes in some code that isn't exactly difficult to
+> > maintain and has needed touching once in 4 years.
+> > 
+> > If you did want to go down the macro route, I may as well also generate both
+> > lo-hi and hi-lo headers all from a single template, it'd be really clever...
+> > <alarm bells> 
+> 
+> I certainly wasn't suggesting any more than the obvious macroisation,
+> but I'll leave it up to Arnd, as I think this falls on his lap.
 
-On 2016-04-21 06:49:42 -0700, Christoph Hellwig wrote:
-> On Wed, Apr 13, 2016 at 03:29:17PM +0200, Niklas S?derlund wrote:
-> > > Yes, it would be good to do an audit of all the ARM dma_ops as we=
-ll
-> > > as generic code like drivers/base/dma-*.c, lib/dma-debug.c and
-> > > include/linux/dma-*.h
->=20
-> What about things like the phys_addr() helper in lib/dma-debug.c?  Th=
-at
-> was in fact what prompted my question for an audit, and it seems
-> to not even feature on your list.  What patterns / symbols did you lo=
-ok
-> for?
+I'd prefer the open-coded variant as well.
 
-
-I have followed the call path from the usage in=20
-drivers/dma/sh/rcar-dmac.c and made sure the dma_addr_t is not used in =
-a=20
-bad way.
-
-I also looked at the dma-mapping API and ruled out that the only=20
-function that make sens to use with a dma_addr_t from dma_map_resource(=
-)=20
-are dma_unmap_resource() and dma_mapping_error(). With that I can't see=
-=20
-how a dma_addr_t would end up in lib/dma-debug.c. But I might be missin=
-g=20
-something?
-
-In the big picture do you feel the approach I have is the correct way t=
-o=20
-solve my problem? Provided we can work out this issues ofc?
-
---=20
-Regards,
-Niklas S=F6derlund
+	Arnd
