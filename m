@@ -1,83 +1,60 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 6/7] iommu/arm-smmu: Decouple context format from kernel
-	config
-Date: Mon, 25 Apr 2016 14:41:08 +0100
-Message-ID: <20160425134108.GD30830@arm.com>
-References: <cover.1460391217.git.robin.murphy@arm.com>
-	<173006777218859d1671ae517c70592c6c02f630.1460391217.git.robin.murphy@arm.com>
-	<20160421163019.GL929@arm.com> <571A617C.3020102@arm.com>
-	<20160425110219.GH16065@arm.com> <571E1851.2030400@arm.com>
+From: Niklas =?iso-8859-1?Q?S=F6derlund?= <niso@kth.se>
+Subject: Re: [PATCH v5 3/9] dma-mapping: add dma_{map,unmap}_resource
+Date: Mon, 25 Apr 2016 16:26:19 +0200
+Message-ID: <20160425142619.GJ28777@bigcity.dyn.berto.se>
+References: <1457404974-1800-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+ <20160311125846.GF1111@bigcity.dyn.berto.se>
+ <20160315082254.GE9136@infradead.org>
+ <3286525.zPAGiD4Xk2@avalon>
+ <20160321152601.GA11674@infradead.org>
+ <20160413132916.GC19650@bigcity.dyn.berto.se>
+ <20160421134942.GA3325@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <571E1851.2030400-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <20160421134942.GA3325@infradead.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Dan Williams <dan.j.williams@intel.com>, Vinod Koul <vinod.koul@intel.com>, linux-renesas-soc@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>, iommu@lists.linux-foundation.org, robin.murphy@arm.com, geert+renesas@glider.be, Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 25, 2016 at 02:14:57PM +0100, Robin Murphy wrote:
-> On 25/04/16 12:02, Will Deacon wrote:
-> >In what case would you not have a viable AArch64 granule, but the option
-> >of falling back to AArch32 makes things work?
-> 
-> A 4KB page kernel with MMU-401, whose only supported AArch64 granule is
-> supposedly 64KB.
+Hi Christoph,
 
-That doesn't sound right at all!
+On 2016-04-21 06:49:42 -0700, Christoph Hellwig wrote:
+> On Wed, Apr 13, 2016 at 03:29:17PM +0200, Niklas S?derlund wrote:
+> > > Yes, it would be good to do an audit of all the ARM dma_ops as we=
+ll
+> > > as generic code like drivers/base/dma-*.c, lib/dma-debug.c and
+> > > include/linux/dma-*.h
+>=20
+> What about things like the phys_addr() helper in lib/dma-debug.c?  Th=
+at
+> was in fact what prompted my question for an audit, and it seems
+> to not even feature on your list.  What patterns / symbols did you lo=
+ok
+> for?
 
-> >>Plus we'd have to remove the LPAE page sizes
-> >>from the bitmap beforehand in the case we don't support AARCH64_4K lest we
-> >>end up with a phantom format the hardware doesn't actually do, and it all
-> >>starts getting rather horrible...
-> >
-> >I'm not following. The io-pgtable code shouldn't give you back a phanton
-> >format.
-> 
-> If you call alloc_io_pgtable_ops() with ARM_64_LPAE_S2 and an unmolested
-> MMU-401 pgsize_bitmap, you get back a 4K granule v8 pagetable, which per a
-> strict reading of the TRM isn't supported (although does appear to work in
-> practice...)
 
-I suspect that's a badly worded/incorrect TRM. In reality, I'd be happy
-to assume that a given granule is supported across all formats (in as
-much as it can be) if it's supported by one of them, but acknowledge
-that's not guaranteed by the architecture.
+I have followed the call path from the usage in=20
+drivers/dma/sh/rcar-dmac.c and made sure the dma_addr_t is not used in =
+a=20
+bad way.
 
-> Consider also a stage 1 SMMU supporting all formats but only with 4K
-> granules: with a 64K page arm64 kernel, the presence of AARCH64_4K support
-> would lead us into arm_64_lpae_alloc_pgtable_s1(), which would be tricked
-> into giving us back a 64K granule v8 format by the short descriptor large
-> page size matching PAGE_SIZE, and things would definitely go downhill from
-> there.
+I also looked at the dma-mapping API and ruled out that the only=20
+function that make sens to use with a dma_addr_t from dma_map_resource(=
+)=20
+are dma_unmap_resource() and dma_mapping_error(). With that I can't see=
+=20
+how a dma_addr_t would end up in lib/dma-debug.c. But I might be missin=
+g=20
+something?
 
-We could improve this by having a separate pgsize_bitmap per format, and
-passing the relevant one to the relevant page table constructor.
+In the big picture do you feel the approach I have is the correct way t=
+o=20
+solve my problem? Provided we can work out this issues ofc?
 
-> Given that, I think the only truly safe thing to do is to pass an explicit
-> granule in the io_pgtable_cfg and just get rid of the bitmap-based guessing
-> in arm_lpae_restrict_pgsizes() - otherwise, we'd still have to pre-restrict
-> the bitmap, making it pretty much redundant anyway. I'll have a hack at that
-
-Actually, I think I prefer to go the other way. Let's try moving more of
-this common logic into the io-pgtable code. For example, an IOMMU driver
-could say "I support these formats, and these options (page sizes, quirks,
-etc) for each format" and the io-pgtable code can choose the most
-appropriate thing.
-
-> - in the meantime please feel free to queue patches 1-3 if you're happy with
-> them, as that part is still feature-complete without all this context stuff.
-
-Queued those, thanks!
-
-Will
+--=20
+Regards,
+Niklas S=F6derlund
