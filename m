@@ -1,8 +1,7 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [RFC 8/9] drivers: of: call iommu_bus_add_dev after
-	iommu_configure_ops
-Date: Mon, 25 Apr 2016 21:28:13 +0530
-Message-ID: <1461599894-1969-9-git-send-email-sricharan@codeaurora.org>
+Subject: [RFC 7/9] drivers: iommu: Add a new add device api
+Date: Mon, 25 Apr 2016 21:28:12 +0530
+Message-ID: <1461599894-1969-8-git-send-email-sricharan@codeaurora.org>
 References: <1461599894-1969-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,35 +21,54 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gm
 Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now that the device's iommu ops are configured at probe time,
-the device has to be added to the iommu late.
+Associating a master with an group happens when the master is added to the bus,
+notified with BUS_ADD_DEVICE. But the iommu has to be ready before this
+using early iommu registration and also master should have been added to the
+iommu using xlate. So, when trying to get rid of the early registration and
+using late probing for iommu devices to sort out the probing order, the newly
+added api is meant to be called during the late probing to add the master
+to iommu.
 
 Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- drivers/of/device.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iommu/iommu.c | 12 ++++++++++++
+ include/linux/iommu.h |  1 +
+ 2 files changed, 13 insertions(+)
 
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index 57a5f2d..722115c 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -6,6 +6,7 @@
- #include <linux/of_iommu.h>
- #include <linux/dma-mapping.h>
- #include <linux/init.h>
-+#include <linux/iommu.h>
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
- #include <linux/slab.h>
-@@ -154,6 +155,9 @@ int of_dma_configure_ops(struct device *dev, struct device_node *np)
- 	dev_dbg(dev, "device is%sbehind an iommu\n",
- 		iommu ? " " : " not ");
- 
-+	if (iommu)
-+		iommu_bus_add_dev(dev);
-+
- 	arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
- 
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index bfd4f7c..a0dd01f 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -900,6 +900,18 @@ static int remove_iommu_group(struct device *dev, void *data)
  	return 0;
+ }
+ 
++int iommu_bus_add_dev(struct device *dev)
++{
++	const struct iommu_ops *ops = dev->bus->iommu_ops;
++	int ret = -ENODEV;
++
++	if (ops->add_device)
++		ret = ops->add_device(dev);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iommu_bus_add_dev);
++
+ static int iommu_bus_notifier(struct notifier_block *nb,
+ 			      unsigned long action, void *data)
+ {
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index a5c539f..018cfc8 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -271,6 +271,7 @@ struct device *iommu_device_create(struct device *parent, void *drvdata,
+ void iommu_device_destroy(struct device *dev);
+ int iommu_device_link(struct device *dev, struct device *link);
+ void iommu_device_unlink(struct device *dev, struct device *link);
++int iommu_bus_add_dev(struct device *dev);
+ 
+ /* Window handling function prototypes */
+ extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
