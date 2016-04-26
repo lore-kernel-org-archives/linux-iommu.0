@@ -1,122 +1,94 @@
-From: Ye Xiaolong <xiaolong.ye@intel.com>
-Subject: Re: [lkp] [PATCH v7 7/8] genirq/msi: map/unmap the MSI doorbells on
- msi_domain_alloc/free_irqs
-Date: Tue, 26 Apr 2016 09:24:13 +0800
-Message-ID: <20160426012413.GC11960@yexl-desktop>
-References: <201604200215.XNyvZSsl%fengguang.wu@intel.com>
- <57173407.9040401@linaro.org>
+From: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
+Subject: RE: [v8, 1/7] Documentation: DT: update Freescale DCFG compatible
+Date: Tue, 26 Apr 2016 02:43:10 +0000
+Message-ID: <HE1PR04MB0889A68C6D275D3102382D8BF8630@HE1PR04MB0889.eurprd04.prod.outlook.com>
+References: <1461306464-19521-1-git-send-email-yangbo.lu@nxp.com>
+	<1461306464-19521-2-git-send-email-yangbo.lu@nxp.com>
+	<20160422131151.GJ10606@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <57173407.9040401@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Eric Auger <eric.auger@linaro.org>
-Cc: kbuild test robot <lkp@intel.com>, kbuild-all@01.org, eric.auger@st.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org, patches@linaro.org, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160422131151.GJ10606@leverpostej>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: "ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Zhao Qiang <qiang.zhao-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Xiaobo Xie <xiaobo.xie-3arQi8VN3Tc@public.gmane.org>, "linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, Scott Wood <scott.wood-3arQi8VN3Tc@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yang-Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEmw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 20, 2016 at 09:47:19AM +0200, Eric Auger wrote:
->Hi,
->
-Hi, Eric
->Both reported errors related to this series are due to the fact part n
->has dependency on part n-1.
->
-
-If I understand correctly, what you meant is that you send patch series
-(let's say B), and B has its dependency patch series A which is in-flight
-and hasn't been merged, so the commit history is like:
-
-        ---P---A---B
-
-where P is the well-known commit in public linux tree. In this case,
-0day just applied B based on P without A, thus caused the build error.
-
->Does anyone know how to let the 0-day CI robot know about such
->dependency between series?
->
-
-Currently, we have proposed to add a new '--base' option for git-format-patch
-to git community[1], developers could use this option to record the base tree
-information which could help 0day to identify the state the patch series
-applies to, thus 0day could avoid false report like this case.
-
-For example, imagine that on top of the public commit P, you applied well-known
-patches X, Y and Z from somebody else or yourself, and then built your
-three-patch series A, B, C, the history would be like:
-
-................................................
----P---X---Y---Z---A---B---C
-................................................
-
-With `git format-patch --base=P -3 C` (or variants thereof, e.g. with
-`--cover-letter` of using `Z..C` instead of `-3 C` to specify the
-range), the base tree information block is shown at the end of the
-first message the command outputs (either the first patch, or the
-cover letter), like this:
-
-------------
-base-commit: P
-prerequisite-patch-id: X
-prerequisite-patch-id: Y
-prerequisite-patch-id: Z
-------------
-
-Now this feature is still under review in git community[2], hope it could be
-merged in next git release.
+Hi Mark,
 
 
-[1] http://thread.gmane.org/gmane.comp.version-control.git/286873
-[2] http://thread.gmane.org/gmane.comp.version-control.git/292168
+> -----Original Message-----
+> From: Mark Rutland [mailto:mark.rutland-5wv7dgnIgG8@public.gmane.org]
+> Sent: Friday, April 22, 2016 9:12 PM
+> To: Yangbo Lu
+> Cc: linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org;
+> devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-
+> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
+> i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; Scott Wood; Rob Herring;
+> Russell King; Jochen Friedrich; Joerg Roedel; Claudiu Manoil; Bhupesh
+> Sharma; Zhao Qiang; Kumar Gala; Santosh Shilimkar; Yang-Leo Li; Xiaobo
+> Xie
+> Subject: Re: [v8, 1/7] Documentation: DT: update Freescale DCFG
+> compatible
+> 
+> On Fri, Apr 22, 2016 at 02:27:38PM +0800, Yangbo Lu wrote:
+> > Update Freescale DCFG compatible with 'fsl,<chip>-dcfg' instead of
+> > 'fsl,ls1021a-dcfg' to include more chips.
+> >
+> > Signed-off-by: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
+> > ---
+> > Changes for v8:
+> > 	- Added this patch
+> > ---
+> >  Documentation/devicetree/bindings/arm/fsl.txt | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/arm/fsl.txt
+> > b/Documentation/devicetree/bindings/arm/fsl.txt
+> > index 752a685..1d5f512 100644
+> > --- a/Documentation/devicetree/bindings/arm/fsl.txt
+> > +++ b/Documentation/devicetree/bindings/arm/fsl.txt
+> > @@ -119,7 +119,7 @@ Freescale DCFG
+> >  configuration and status for the device. Such as setting the
+> > secondary  core start address and release the secondary core from
+> holdoff and startup.
+> >    Required properties:
+> > -  - compatible: should be "fsl,ls1021a-dcfg"
+> > +  - compatible: should be "fsl,<chip>-dcfg"
+> 
+> Please list specific values expected for <chip>, while jusy saying <chip>
+> may be more generic, it makes it practically impossible to search for the
+> correct binding given a compatible string, and it's vague as to exaclty
+> what <chip> should be.
 
-Thanks,
-Xiaolong
+[Lu Yangbo-B47093] Thanks for your comment. I will list the possible chips.
 
->If it is an inconvenience I can put all the patches back into the same
->big series, specifying tentative patch split according to sub-systems in
->the cover-letter?
->
->Thank you in advance
->
->Best Regards
->
->Eric
->
->04/19/2016 08:04 PM, kbuild test robot wrote:
->> Hi,
->> 
->> [auto build test ERROR on tip/irq/core]
->> [also build test ERROR on v4.6-rc4 next-20160419]
->> [if your patch is applied to the wrong git tree, please drop us a note to help improving the system]
->> 
->> url:    https://github.com/0day-ci/linux/commits/Eric-Auger/KVM-PCIe-MSI-passthrough-on-ARM-ARM64-kernel-part-2-3-msi-changes/20160420-011957
->> config: x86_64-lkp (attached as .config)
->> reproduce:
->>         # save the attached .config to linux build tree
->>         make ARCH=x86_64 
->> 
->> All errors (new ones prefixed by >>):
->> 
->>>> kernel/irq/msi.c:17:38: fatal error: linux/dma-reserved-iommu.h: No such file or directory
->>     #include <linux/dma-reserved-iommu.h>
->>                                          ^
->>    compilation terminated.
->> 
->> vim +17 kernel/irq/msi.c
->> 
->>     11	 */
->>     12	#include <linux/types.h>
->>     13	#include <linux/device.h>
->>     14	#include <linux/irq.h>
->>     15	#include <linux/irqdomain.h>
->>     16	#include <linux/msi.h>
->>   > 17	#include <linux/dma-reserved-iommu.h>
->>     18	#include <linux/iommu.h>
->>     19	
->>     20	/* Temparory solution for building, will be removed later */
->> 
->> ---
->> 0-DAY kernel test infrastructure                Open Source Technology Center
->> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
->> 
->
+> 
+> Thanks,
+> Mark.
+> 
+> 
+> 
+> >    - reg : should contain base address and length of DCFG
+> > memory-mapped registers
+> >
+> >  Example:
+> > --
+> > 2.1.0.27.g96db324
+> >
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe devicetree"
+> > in the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org More majordomo
+> > info at  http://vger.kernel.org/majordomo-info.html
+> >
