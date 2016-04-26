@@ -1,158 +1,141 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [RFC v6 00/10] vfio-pci: Allow to mmap sub-page MMIO BARs and
- MSI-X table
-Date: Tue, 26 Apr 2016 10:40:58 -0600
-Message-ID: <20160426104058.250c7e61@t450s.home>
-References: <1460976816-29294-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-	<571DEC01.5040802@linux.vnet.ibm.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [lkp] [PATCH v7 7/8] genirq/msi: map/unmap the MSI doorbells on
+	msi_domain_alloc/free_irqs
+Date: Tue, 26 Apr 2016 18:43:38 +0200
+Message-ID: <571F9ABA.8020307@linaro.org>
+References: <201604200215.XNyvZSsl%fengguang.wu@intel.com>
+	<57173407.9040401@linaro.org> <20160426012413.GC11960@yexl-desktop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <571DEC01.5040802@linux.vnet.ibm.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, corbet@lwn.net, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160426012413.GC11960@yexl-desktop>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Ye Xiaolong <xiaolong.ye-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, julien.grall-5wv7dgnIgG8@public.gmane.org, eric.auger-qxv4g6HH51o@public.gmane.org, kbuild test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, kbuild-all-JC7UmRfGjtg@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 25 Apr 2016 18:05:53 +0800
-Yongji Xie <xyjxie@linux.vnet.ibm.com> wrote:
-
-> Hi Alex,
+Hi Xiaolong
+On 04/26/2016 03:24 AM, Ye Xiaolong wrote:
+> On Wed, Apr 20, 2016 at 09:47:19AM +0200, Eric Auger wrote:
+>> Hi,
+>>
+> Hi, Eric
+>> Both reported errors related to this series are due to the fact part n
+>> has dependency on part n-1.
+>>
 > 
-> Any comment?
-
-TBH, I shuffled this to the bottom of the review pile because you're
-depending on a patch series for ARM MSI mapping that's still very much
-in flux.  You've really got 3 or 4 separate patch series here that
-should be separated so they can be sent as non-RFC and you can start
-making progress.  For instance, patches 1-4 are PCI-core enabling
-PAGE_SIZE aligned BARs, patch 5 discovers PAGE_SIZE aligned BARs and
-enables mmapping them through vfio.  Now that you're using shadow
-resources to attempt to reserve the remainder of the page in patch 5,
-doesn't that make it independent of patches 1-4?  These could be sent
-as separate series in parallel.  Patches 6-9 are another separate
-series, but here you start to depend on the changes happening with ARM
-MSI mapping to determine whether we have real interrupt isolation. Once
-that gets settled, patch 10 becomes a much less controversial follow-on
-patch.  Thanks,
-
-Alex
-
-> On 2016/4/18 18:53, Yongji Xie wrote:
-> > Current vfio-pci implementation disallows to mmap
-> > sub-page(size < PAGE_SIZE) MMIO BARs and MSI-X table. This is because
-> > sub-page BARs' mmio page may be shared with other BARs and MSI-X table
-> > should not be accessed directly from the guest for security reasons.
-> >
-> > But it will easily cause some performance issues for mmio accesses
-> > in guest when vfio passthrough sub-page BARs or BARs containing MSI-X
-> > table on PPC64 platform. This is because PAGE_SIZE is 64KB by default
-> > on PPC64 platform and the big page may easily hit the sub-page MMIO
-> > BARs' unmmapping and cause the unmmaping of the mmio page which
-> > MSI-X table locate in, which lead to mmio emulation in host.
-> >
-> > For sub-page MMIO BARs' unmmapping, this patchset modifies
-> > resource_alignment kernel parameter to enforce the alignment of all
-> > MMIO BARs to be at least PAGE_SZIE so that sub-page BAR's mmio page
-> > will not be shared with other BARs. And we also add shadow resources
-> > to the vfio device and put them into the holes of mmio pages in case
-> > that hot-add device's BARs are assigned into the holes. Then we can
-> > mmap sub-page MMIO BARs safely.
-> >
-> > For MSI-X table's unmmapping, we think MSI-X table is safe to access
-> > directly from userspace if hardware supports the capability of
-> > interrupt remapping which can ensure that a given pci device can
-> > only shoot the MSIs assigned for it. But the implenmentation of
-> > this capability is arch-independent. To have a universal way
-> > to test this capability on PCI side for different archs, we introduce
-> > a new bus_flags PCI_BUS_FLAGS_MSI_REMAP.
-> >
-> > With this patchset applied, we can get almost 100% improvement on
-> > performance for small block 4k random read when we passthrough a FC
-> > HBA containing sub-page BARs and MSI-X BARs to guest on PPC64 in
-> > our test.
-> >
-> > The patch 8 are based on the proposed patchset[2].
-> >
-> > Changelog v6:
-> > - Rebase on vfio/next with patchset[2] applied
-> > - Fix some bugs of v5
-> > - Add three patches to make PCI_BUS_FLAGS_MSI_REMAP as
-> >    a universal flag to test IRQ remapping
-> >
-> > Changelog v5:
-> > - Rebase on vfio/next
-> > - Change the order of patch 1,2,3
-> > - Move the warning "resource_alignment will not work with
-> >    PCI_PROBE_ONLY set" from documentation to kernel log
-> > - Remove IORESOURCE_WINDOW
-> > - Add description for parameter "resize"
-> > - Add PCIBIOS_MIN_ALIGNMENT to force all MMIO BARs to
-> >    get minimum alignment
-> > - Add shadow resources to make sure sub-page BAR's mmio
-> >    page will not be shared with hot-add BARs.
-> > - Add a new bit to pci_bus_flags to indicate the capbility
-> >    of interrupt remapping on PPC64
-> > - Remove IOMMU_CAP_INTR_REMAP on PPC64
-> > - Add a property msi_remap to vfio_pci_device to cache the
-> >    capbility of interrupt remapping
-> >
-> > Changelog v4:
-> > - Rebase on v4.5-rc6 with patchset[1] applied.
-> > - Remove resource_page_aligned kernel parameter
-> > - Fix some problems with resource_alignment kernel parameter
-> > - Modify resource_alignment kernel parameter to support multiple
-> >    devices.
-> > - Remove host bridge attribute: msi_filtered
-> > - Use IOMMU_CAP_INTR_REMAP to check if MSI-X table can be mmapped
-> > - Add IOMMU_CAP_INTR_REMAP for IODA host bridge on PPC64 platform
-> >
-> > Changelog v3:
-> > - Rebase on new linux kernel mainline with the patchset[1] applied.
-> > - Add a function to check whether PCI BARs'mmio page is shared with
-> >    other BARs.
-> > - Add a host bridge attribute to indicate PCI host bridge support
-> >    filtering of MSIs.
-> > - Use the new host bridge attribute to check if MSI-X table can
-> >    be mmapped instead of CONFIG_EEH.
-> > - Remove Kconfig option VFIO_PCI_MMAP_MSIX
-> >
-> > Changelog v2:
-> > - Rebase on v4.4-rc6 with the patchset[1] applied.
-> > - Use kernel parameter to enforce all MMIO BARs to be page aligned
-> >    on PCI core code instead of doing it on PPC64 arch code.
-> > - Remove flags: VFIO_DEVICE_FLAGS_PCI_PAGE_ALIGNED
-> >
-> > [1] http://www.spinics.net/lists/kvm/msg127812.html
-> > [2] http://www.spinics.net/lists/kvm/msg130256.html
-> >
-> > Yongji Xie (10):
-> >    PCI: Ignore resource_alignment if PCI_PROBE_ONLY was set
-> >    PCI: Do not Use IORESOURCE_STARTALIGN to identify bridge resources
-> >    PCI: Add a new option for resource_alignment to reassign alignment
-> >    PCI: Add support for enforcing all MMIO BARs to be page aligned
-> >    vfio-pci: Allow to mmap sub-page MMIO BARs if the mmio page is exclusive
-> >    PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
-> >    iommu: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have capability of IRQ remapping
-> >    PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI controller supports IRQ remapping
-> >    pci-ioda: Set PCI_BUS_FLAGS_MSI_REMAP for IODA host bridge
-> >    vfio-pci: Allow to mmap MSI-X table if interrupt remapping is supported
-> >
-> >   Documentation/kernel-parameters.txt       |    7 +-
-> >   arch/powerpc/include/asm/pci.h            |    2 +
-> >   arch/powerpc/platforms/powernv/pci-ioda.c |    8 +++
-> >   drivers/iommu/iommu.c                     |   15 +++++
-> >   drivers/pci/msi.c                         |   12 ++++
-> >   drivers/pci/pci.c                         |  105 +++++++++++++++++++++++------
-> >   drivers/pci/probe.c                       |    3 +
-> >   drivers/pci/setup-bus.c                   |    9 ++-
-> >   drivers/vfio/pci/vfio_pci.c               |   65 +++++++++++++++---
-> >   drivers/vfio/pci/vfio_pci_private.h       |    8 +++
-> >   drivers/vfio/pci/vfio_pci_rdwr.c          |    3 +-
-> >   include/linux/msi.h                       |    6 +-
-> >   include/linux/pci.h                       |    1 +
-> >   13 files changed, 208 insertions(+), 36 deletions(-)
-> >  
+> If I understand correctly, what you meant is that you send patch series
+> (let's say B), and B has its dependency patch series A which is in-flight
+> and hasn't been merged, so the commit history is like:
 > 
+>         ---P---A---B
+> 
+> where P is the well-known commit in public linux tree. In this case,
+> 0day just applied B based on P without A, thus caused the build error.
 
+yes that's it.
+> 
+>> Does anyone know how to let the 0-day CI robot know about such
+>> dependency between series?
+>>
+> 
+> Currently, we have proposed to add a new '--base' option for git-format-patch
+> to git community[1], developers could use this option to record the base tree
+> information which could help 0day to identify the state the patch series
+> applies to, thus 0day could avoid false report like this case.
+> 
+> For example, imagine that on top of the public commit P, you applied well-known
+> patches X, Y and Z from somebody else or yourself, and then built your
+> three-patch series A, B, C, the history would be like:
+> 
+> ................................................
+> ---P---X---Y---Z---A---B---C
+> ................................................
+> 
+> With `git format-patch --base=P -3 C` (or variants thereof, e.g. with
+> `--cover-letter` of using `Z..C` instead of `-3 C` to specify the
+> range), the base tree information block is shown at the end of the
+> first message the command outputs (either the first patch, or the
+> cover letter), like this:
+> 
+> ------------
+> base-commit: P
+> prerequisite-patch-id: X
+> prerequisite-patch-id: Y
+> prerequisite-patch-id: Z
+> ------------
+> 
+> Now this feature is still under review in git community[2], hope it could be
+> merged in next git release.
+
+OK. That's good to know. Thank you very much for the info. I will follow
+the progress then.
+
+Best Regards
+
+Eric
+> 
+> 
+> [1] http://thread.gmane.org/gmane.comp.version-control.git/286873
+> [2] http://thread.gmane.org/gmane.comp.version-control.git/292168
+> 
+> Thanks,
+> Xiaolong
+> 
+>> If it is an inconvenience I can put all the patches back into the same
+>> big series, specifying tentative patch split according to sub-systems in
+>> the cover-letter?
+>>
+>> Thank you in advance
+>>
+>> Best Regards
+>>
+>> Eric
+>>
+>> 04/19/2016 08:04 PM, kbuild test robot wrote:
+>>> Hi,
+>>>
+>>> [auto build test ERROR on tip/irq/core]
+>>> [also build test ERROR on v4.6-rc4 next-20160419]
+>>> [if your patch is applied to the wrong git tree, please drop us a note to help improving the system]
+>>>
+>>> url:    https://github.com/0day-ci/linux/commits/Eric-Auger/KVM-PCIe-MSI-passthrough-on-ARM-ARM64-kernel-part-2-3-msi-changes/20160420-011957
+>>> config: x86_64-lkp (attached as .config)
+>>> reproduce:
+>>>         # save the attached .config to linux build tree
+>>>         make ARCH=x86_64 
+>>>
+>>> All errors (new ones prefixed by >>):
+>>>
+>>>>> kernel/irq/msi.c:17:38: fatal error: linux/dma-reserved-iommu.h: No such file or directory
+>>>     #include <linux/dma-reserved-iommu.h>
+>>>                                          ^
+>>>    compilation terminated.
+>>>
+>>> vim +17 kernel/irq/msi.c
+>>>
+>>>     11	 */
+>>>     12	#include <linux/types.h>
+>>>     13	#include <linux/device.h>
+>>>     14	#include <linux/irq.h>
+>>>     15	#include <linux/irqdomain.h>
+>>>     16	#include <linux/msi.h>
+>>>   > 17	#include <linux/dma-reserved-iommu.h>
+>>>     18	#include <linux/iommu.h>
+>>>     19	
+>>>     20	/* Temparory solution for building, will be removed later */
+>>>
+>>> ---
+>>> 0-DAY kernel test infrastructure                Open Source Technology Center
+>>> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+>>>
+>>
