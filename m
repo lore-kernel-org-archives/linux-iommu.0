@@ -1,61 +1,148 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v9 12/18] vfio: Register/unregister irq_bypass_producer
-Date: Tue, 26 Apr 2016 14:08:16 -0600
-Message-ID: <20160426140816.67b8b37c@t450s.home>
-References: <1442586596-5920-1-git-send-email-feng.wu@intel.com>
-	<1442586596-5920-13-git-send-email-feng.wu@intel.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: [RFC PATCH v1 00/18] x86: Secure Memory Encryption (AMD)
+Date: Tue, 26 Apr 2016 17:45:08 -0500
+Message-ID: <20160426224508.13079.90373.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1442586596-5920-13-git-send-email-feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Return-path: <owner-linux-mm@kvack.org>
+Sender: owner-linux-mm@kvack.org
+To: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org
+Cc: Radim =?utf-8?b?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek
+ Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo
+ Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander
+ Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry
+ Vyukov <dvyukov@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 18 Sep 2015 22:29:50 +0800
-Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+This RFC patch series provides support for AMD's new Secure Memory
+Encryption (SME) feature.
 
- @@ -360,6 +361,14 @@ static int vfio_msi_set_vector_signal(struct
- vfio_pci_device *vdev,
->  		return ret;
->  	}
->  
-> +	vdev->ctx[vector].producer.token = trigger;
-> +	vdev->ctx[vector].producer.irq = irq;
-> +	ret = irq_bypass_register_producer(&vdev->ctx[vector].producer);
-> +	if (unlikely(ret))
-> +		dev_info(&pdev->dev,
-> +		"irq bypass producer (token %p) registeration fails: %d\n",
-> +		vdev->ctx[vector].producer.token, ret);
-> +
->  	vdev->ctx[vector].trigger = trigger;
->  
->  	return 0;
+SME can be used to mark individual pages of memory as encrypted through the
+page tables. A page of memory that is marked encrypted will be automatically
+decrypted when read from DRAM and will be automatically encrypted when
+written to DRAM. Details on SME can found in the links below.
 
-Digging back into the IRQ producer/consumer thing, I'm not sure how we
-should be handling a failure here, but it turns out that what we have
-is pretty sub-optimal.  Any sort of testing on AMD hits this dev_info
-because kvm_arch_irq_bypass_add_producer() returns -EINVAL without
-kvm_x86_ops->update_pi_irte which is only implemented for vmx.  Clearly
-we don't want to spew confusing error messages for a feature that does
-not exist.
+The SME feature is identified through a CPUID function and enabled through
+the SYSCFG MSR. Once enabled, page table entries will determine how the
+memory is accessed. If a page table entry has the memory encryption mask set,
+then that memory will be accessed as encrypted memory. The memory encryption
+mask (as well as other related information) is determined from settings
+returned through the same CPUID function that identifies the presence of the
+feature.
 
-The easiest option is to simply make this error silent, but should
-registering a producer/consumer really fail due to a mismatch on the
-other end or should the __connect sequence fail silently, which both
-ends would know about (if they care) due to the add/del handshake
-between them?  Perhaps for now we simply need a stable suitable fix to
-silence the dev_info above, but longer term, registration shouldn't
-fail for mismatches like this.  Thoughts?  Thanks,
+The approach that this patch series takes is to encrypt everything possible
+starting early in the boot where the kernel is encrypted. Using the page
+table macros the encryption mask can be incorporated into all page table
+entries and page allocations. By updating the protection map, userspace
+allocations are also marked encrypted. Certain data must be accounted for
+as having been placed in memory before SME was enabled (EFI, initrd, etc.)
+and accessed accordingly.
 
-Alex
+This patch series is a pre-cursor to another AMD processor feature called
+Secure Encrypted Virtualization (SEV). The support for SEV will build upon
+the SME support and will be submitted later. Details on SEV can be found
+in the links below.
+
+The following links provide additional detail:
+
+AMD Memory Encryption whitepaper:
+   http://amd-dev.wpengine.netdna-cdn.com/wordpress/media/2013/12/AMD_Memory_Encryption_Whitepaper_v7-Public.pdf
+
+AMD64 Architecture Programmer's Manual:
+   http://support.amd.com/TechDocs/24593.pdf
+   SME is section 7.10
+   SEV is section 15.34
+
+This patch series is based off of the master branch of tip.
+  Commit 8d54fcebd9b3 ("Merge branch 'x86/urgent'")
+
+---
+
+Tom Lendacky (18):
+      x86: Set the write-protect cache mode for AMD processors
+      x86: Secure Memory Encryption (SME) build enablement
+      x86: Secure Memory Encryption (SME) support
+      x86: Add the Secure Memory Encryption cpu feature
+      x86: Handle reduction in physical address size with SME
+      x86: Provide general kernel support for memory encryption
+      x86: Extend the early_memmap support with additional attrs
+      x86: Add support for early encryption/decryption of memory
+      x86: Insure that memory areas are encrypted when possible
+      x86/efi: Access EFI related tables in the clear
+      x86: Decrypt trampoline area if memory encryption is active
+      x86: Access device tree in the clear
+      x86: DMA support for memory encryption
+      iommu/amd: AMD IOMMU support for memory encryption
+      x86: Enable memory encryption on the APs
+      x86: Do not specify encrypted memory for VGA mapping
+      x86/kvm: Enable Secure Memory Encryption of nested page tables
+      x86: Add support to turn on Secure Memory Encryption
+
+
+ Documentation/kernel-parameters.txt  |    3 
+ arch/x86/Kconfig                     |    9 +
+ arch/x86/include/asm/cacheflush.h    |    3 
+ arch/x86/include/asm/cpufeature.h    |    1 
+ arch/x86/include/asm/cpufeatures.h   |    5 
+ arch/x86/include/asm/dma-mapping.h   |    5 
+ arch/x86/include/asm/fixmap.h        |   16 ++
+ arch/x86/include/asm/kvm_host.h      |    2 
+ arch/x86/include/asm/mem_encrypt.h   |   99 ++++++++++
+ arch/x86/include/asm/msr-index.h     |    2 
+ arch/x86/include/asm/pgtable_types.h |   49 +++--
+ arch/x86/include/asm/processor.h     |    3 
+ arch/x86/include/asm/realmode.h      |   12 +
+ arch/x86/include/asm/vga.h           |   13 +
+ arch/x86/kernel/Makefile             |    2 
+ arch/x86/kernel/asm-offsets.c        |    2 
+ arch/x86/kernel/cpu/common.c         |    2 
+ arch/x86/kernel/cpu/scattered.c      |    1 
+ arch/x86/kernel/devicetree.c         |    6 -
+ arch/x86/kernel/espfix_64.c          |    2 
+ arch/x86/kernel/head64.c             |  100 +++++++++-
+ arch/x86/kernel/head_64.S            |   42 +++-
+ arch/x86/kernel/machine_kexec_64.c   |    2 
+ arch/x86/kernel/mem_encrypt.S        |  343 ++++++++++++++++++++++++++++++++++
+ arch/x86/kernel/pci-dma.c            |   11 +
+ arch/x86/kernel/pci-nommu.c          |    2 
+ arch/x86/kernel/pci-swiotlb.c        |    8 +
+ arch/x86/kernel/setup.c              |   14 +
+ arch/x86/kernel/x8664_ksyms_64.c     |    6 +
+ arch/x86/kvm/mmu.c                   |    7 -
+ arch/x86/kvm/vmx.c                   |    2 
+ arch/x86/kvm/x86.c                   |    3 
+ arch/x86/mm/Makefile                 |    1 
+ arch/x86/mm/fault.c                  |    5 
+ arch/x86/mm/ioremap.c                |   31 +++
+ arch/x86/mm/kasan_init_64.c          |    4 
+ arch/x86/mm/mem_encrypt.c            |  201 ++++++++++++++++++++
+ arch/x86/mm/pageattr.c               |   78 ++++++++
+ arch/x86/mm/pat.c                    |   11 +
+ arch/x86/platform/efi/efi.c          |   26 +--
+ arch/x86/platform/efi/efi_64.c       |    9 +
+ arch/x86/platform/efi/quirks.c       |   12 +
+ arch/x86/realmode/init.c             |   13 +
+ arch/x86/realmode/rm/trampoline_64.S |   14 +
+ drivers/firmware/efi/efi.c           |   18 +-
+ drivers/firmware/efi/esrt.c          |   12 +
+ drivers/iommu/amd_iommu.c            |   10 +
+ include/asm-generic/early_ioremap.h  |    2 
+ include/linux/efi.h                  |    3 
+ include/linux/swiotlb.h              |    1 
+ init/main.c                          |    6 +
+ lib/swiotlb.c                        |   64 ++++++
+ mm/early_ioremap.c                   |   15 +
+ 53 files changed, 1217 insertions(+), 96 deletions(-)
+ create mode 100644 arch/x86/include/asm/mem_encrypt.h
+ create mode 100644 arch/x86/kernel/mem_encrypt.S
+ create mode 100644 arch/x86/mm/mem_encrypt.c
+
+-- 
+Tom Lendacky
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
