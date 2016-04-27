@@ -1,64 +1,60 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [RFC PATCH v1 03/18] x86: Secure Memory Encryption (SME) support
-Date: Tue, 22 Mar 2016 14:03:54 +0100
-Message-ID: <20160322130354.GC16528@xo-6d-61-c0.localdomain>
-References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
- <20160426225626.13567.72425.stgit@tlendack-t1.amdoffice.net>
+From: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH 0/5] vfio-pci: Add support for mmapping MSI-X table
+Date: Wed, 27 Apr 2016 20:43:25 +0800
+Message-ID: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-doc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160426225626.13567.72425.stgit@tlendack-t1.amdoffice.net>
-Sender: linux-doc-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org, nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue 2016-04-26 17:56:26, Tom Lendacky wrote:
-> Provide support for Secure Memory Encryption (SME). This initial support
-> defines the memory encryption mask as a variable for quick access and an
-> accessor for retrieving the number of physical addressing bits lost if
-> SME is enabled.
-> 
-> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-> ---
->  arch/x86/include/asm/mem_encrypt.h |   37 ++++++++++++++++++++++++++++++++++++
->  arch/x86/kernel/Makefile           |    2 ++
->  arch/x86/kernel/mem_encrypt.S      |   29 ++++++++++++++++++++++++++++
->  arch/x86/kernel/x8664_ksyms_64.c   |    6 ++++++
->  4 files changed, 74 insertions(+)
->  create mode 100644 arch/x86/include/asm/mem_encrypt.h
->  create mode 100644 arch/x86/kernel/mem_encrypt.S
-> 
-> index 0000000..ef7f325
-> --- /dev/null
-> +++ b/arch/x86/kernel/mem_encrypt.S
-> @@ -0,0 +1,29 @@
-> +/*
-> + * AMD Memory Encryption Support
-> + *
-> + * Copyright (C) 2016 Advanced Micro Devices, Inc.
-> + *
-> + * Author: Tom Lendacky <thomas.lendacky@amd.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + */
-> +
-> +#include <linux/linkage.h>
-> +
-> +	.text
-> +	.code64
-> +ENTRY(sme_get_me_loss)
-> +	xor	%rax, %rax
-> +	mov	sme_me_loss(%rip), %al
-> +	ret
-> +ENDPROC(sme_get_me_loss)
+Current vfio-pci implementation disallows to mmap the page 
+containing MSI-X table in case that users can write to MSI-X
+table and generate an incorrect MSIs.
 
-Does this really need to be implemented in assembly?
+However, this will cause some performance issue when there
+are some critical device registers in the same page as the 
+MSI-X table. We have to handle the mmio access to these 
+registers in QEMU emulation rather than in guest.
 
+To solve this issue, this series allows to mmap MSI-X table 
+when hardware supports the capability of interrupt remapping 
+which can ensure that a given pci device can only shoot the 
+MSIs assigned for it. And we introduce a new bus_flags 
+PCI_BUS_FLAGS_MSI_REMAP to test this capability on PCI side 
+for different archs.
+
+The patch 3 are based on the proposed patchset[1].
+
+[1] http://www.spinics.net/lists/kvm/msg130256.html
+
+Yongji Xie (5):
+  PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
+  iommu: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have capability of IRQ remapping
+  PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI controller supports IRQ remapping
+  pci-ioda: Set PCI_BUS_FLAGS_MSI_REMAP for IODA host bridge
+  vfio-pci: Allow to mmap MSI-X table if interrupt remapping is supported
+
+ arch/powerpc/platforms/powernv/pci-ioda.c |    8 ++++++++
+ drivers/iommu/iommu.c                     |   15 +++++++++++++++
+ drivers/pci/msi.c                         |   12 ++++++++++++
+ drivers/pci/probe.c                       |    3 +++
+ drivers/vfio/pci/vfio_pci.c               |    7 +++++--
+ drivers/vfio/pci/vfio_pci_rdwr.c          |    3 ++-
+ include/linux/msi.h                       |    6 +++++-
+ include/linux/pci.h                       |    1 +
+ 8 files changed, 51 insertions(+), 4 deletions(-)
 
 -- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+1.7.9.5
