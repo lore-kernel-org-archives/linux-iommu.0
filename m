@@ -1,37 +1,96 @@
-From: Andy Lutomirski <luto@amacapital.net>
-Subject: Re: [RFC PATCH v1 01/18] x86: Set the write-protect cache mode for
- AMD processors
-Date: Wed, 27 Apr 2016 07:47:44 -0700
-Message-ID: <CALCETrV+JzPZjrrqkhWSVfvKQt62Aq8NSW=ZvfdiAi8XKoLi8A@mail.gmail.com>
-References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
- <20160426225604.13567.55443.stgit@tlendack-t1.amdoffice.net>
- <CALCETrU9ozp1mBKG-P88cKRJRY5bifn2Ab__AZcn5b33n3j2cg@mail.gmail.com> <5720D066.7080409@amd.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH V2 RFC] fixup! virtio: convert to use DMA
+ api
+Date: Wed, 27 Apr 2016 17:54:57 +0300
+Message-ID: <20160427175031-mutt-send-email-mst@redhat.com>
+References: <1461245745-6710-1-git-send-email-mst@redhat.com>
+	<20160421135416.GE11775@citrix.com>
+	<1461759501.118304.149.camel@infradead.org>
+	<20160427153345-mutt-send-email-mst@redhat.com>
+	<20160427142331.GH17926@8bytes.org>
+	<CALCETrVkSSJbjoK8i7pLsSYR0o=Wy1UP-mrmn2uxYUd81g18dg@mail.gmail.com>
+	<20160427173603-mutt-send-email-mst@redhat.com>
+	<CALCETrUnXSLApj--ypOHnLWLqVSHLpSa922F2C2OCrvA1B585A@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <5720D066.7080409@amd.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch <linux-arch@vger.kernel.org>, "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>, kvm list <kvm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, X86 ML <x86@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, kasan-dev <kasan-dev@googlegroups.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@li>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <qemu-block-bounces+gceqb-qemu-block=m.gmane.org@nongnu.org>
+Content-Disposition: inline
+In-Reply-To: <CALCETrUnXSLApj--ypOHnLWLqVSHLpSa922F2C2OCrvA1B585A@mail.gmail.com>
+List-Unsubscribe: <https://lists.nongnu.org/mailman/options/qemu-block>,
+	<mailto:qemu-block-request@nongnu.org?subject=unsubscribe>
+List-Archive: <http://lists.nongnu.org/archive/html/qemu-block/>
+List-Post: <mailto:qemu-block@nongnu.org>
+List-Help: <mailto:qemu-block-request@nongnu.org?subject=help>
+List-Subscribe: <https://lists.nongnu.org/mailman/listinfo/qemu-block>,
+	<mailto:qemu-block-request@nongnu.org?subject=subscribe>
+Errors-To: qemu-block-bounces+gceqb-qemu-block=m.gmane.org@nongnu.org
+Sender: "Qemu-block"
+	<qemu-block-bounces+gceqb-qemu-block=m.gmane.org@nongnu.org>
+To: Andy Lutomirski <luto@amacapital.net>
+Cc: Kevin Wolf <kwolf@redhat.com>, Anthony PERARD <anthony.perard@citrix.com>, Cornelia Huck <cornelia.huck@de.ibm.com>, Wei Liu <wei.liu2@citrix.com>, Stefan Hajnoczi <stefanha@redhat.com>, qemu-block@nongnu.org, Stefano Stabellini <stefano.stabellini@eu.citrix.com>, Joerg Roedel <joro@8bytes.org>, "qemu-devel@nongnu.org Developers" <qemu-devel@nongnu.org>, peterx@redhat.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Christian Borntraeger <borntraeger@de.ibm.com>, iommu@lists.linux-foundation.org, Andy Lutomirski <luto@kernel.org>, kvm list <kvm@vger.kernel.org>, Amit Shah <amit.shah@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, Linux Virtualization <virtualization@lists.linux-foundation.org>, David Woodhouse <dwmw2@infradead.org>, Jason Wang <jasowang@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 27, 2016 at 7:44 AM, Tom Lendacky <thomas.lendacky@amd.com> wrote:
-> On 04/27/2016 09:33 AM, Andy Lutomirski wrote:
->> On Tue, Apr 26, 2016 at 3:56 PM, Tom Lendacky <thomas.lendacky@amd.com> wrote:
->>> For AMD processors that support PAT, set the write-protect cache mode
->>> (_PAGE_CACHE_MODE_WP) entry to the actual write-protect value (x05).
->>
->> What's the purpose of using the WP memory type?
->
-> The WP memory type is used for encrypting or decrypting data "in place".
-> The use of the WP on the source data will prevent any of the source
-> data from being cached.  Refer to section 7.10.8 "Encrypt-in-Place" in
-> the AMD64 APM link provided in the cover letter.
->
-> This memory type will be used in subsequent patches for this purpose.
+On Wed, Apr 27, 2016 at 07:43:07AM -0700, Andy Lutomirski wrote:
+> On Wed, Apr 27, 2016 at 7:38 AM, Michael S. Tsirkin <mst@redhat.com> wrote:
+> > On Wed, Apr 27, 2016 at 07:31:43AM -0700, Andy Lutomirski wrote:
+> >> On Wed, Apr 27, 2016 at 7:23 AM, Joerg Roedel <joro@8bytes.org> wrote:
+> >> > On Wed, Apr 27, 2016 at 04:37:04PM +0300, Michael S. Tsirkin wrote:
+> >> >> One correction: it's a feature of the device in the system.
+> >> >> There could be a mix of devices bypassing and not
+> >> >> bypassing the IOMMU.
+> >> >
+> >> > No, it really is not. A device can't chose to bypass the IOMMU. But the
+> >> > IOMMU can chose to let the device bypass. So any fix here belongs
+> >> > into the platform/iommu code too and not into some driver.
+> >> >
+> >> >> Sounds good. And a way to detect appropriate devices could
+> >> >> be by looking at the feature flag, perhaps?
+> >> >
+> >> > Again, no! The way to detect that is to look into the iommu description
+> >> > structures provided by the firmware. They provide everything necessary
+> >> > to tell the iommu code which devices are not translated.
+> >> >
+> >>
+> >> Except on PPC and SPARC.  As far as I know, those are the only
+> >> problematic platforms.
+> >>
+> >> Is it too late to *disable* QEMU's q35-iommu thingy until it can be
+> >> fixed to report correct data in the DMAR tables?
+> >>
+> >> --Andy
+> >
+> > Meaning virtio or assigned devices?
+> > For virtio - it's way too late since these are working configurations.
+> > For assigned devices - they don't work on x86 so it doesn't have
+> > to be disabled, it's safe to ignore.
+> 
+> I mean actually prevent QEMU from running in q35-iommu mode with any
+> virtio devices attached or maybe even turn off q35-iommu mode entirely
+> [1].  Doesn't it require that the user literally pass the word
+> "experimental" into QEMU right now?  It did at some point IIRC.
+> 
+> The reason I'm asking is that, other than q35-iommu, QEMU's virtio
+> devices *don't* bypass the IOMMU except on PPC and SPARC, simply
+> because there is no other configuration AFAICT that has virtio and and
+> IOMMU.  So maybe the right solution is to fix q35-iommu to use DMAR
+> correctly (thus breaking q35-iommu users with older guest kernels,
+> which hopefully don't actually exist) and to come up with a PPC- and
+> SPARC-specific solution, or maybe OpenFirmware-specific solution, to
+> handle PPC and SPARC down the road.
+> 
+> [1] I'm pretty sure I emailed the QEMU list before q35-iommu ever
+> showed up in a release asking the QEMU team to please not do that
+> until this issue was resolved.  Sadly, that email was ignored :(
+> 
+> --Andy
 
-OK.
+Sorry, I didn't make myself clear.
+Point is, QEMU is not the only virtio implementation out there.
+So we can't know no virtio implementations have an IOMMU as long as
+linux supports this IOMMU.
+virtio always used physical addresses since it was born and if it
+changes that it must do this in a way that does not break existing
+users.
 
-Why AMD-only?  I thought Intel supported WP, too.
-
---Andy
+-- 
+MST
