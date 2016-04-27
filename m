@@ -1,51 +1,39 @@
-From: Pavel Machek <pavel-+ZI9xUNit7I@public.gmane.org>
-Subject: Re: [RFC PATCH v1 00/18] x86: Secure Memory Encryption (AMD)
-Date: Wed, 27 Apr 2016 16:58:01 +0200
-Message-ID: <20160427145801.GA5895@amd>
-References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
-	<20160322130058.GA16528@xo-6d-61-c0.localdomain>
-	<20160427140520.GG21011@pd.tnic> <20160427143045.GA4718@amd>
-	<20160427143951.GH21011@pd.tnic>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH V2 RFC] fixup! virtio: convert to use DMA api
+Date: Wed, 27 Apr 2016 16:58:51 +0200
+Message-ID: <20160427145851.GJ17926@8bytes.org>
+References: <1461245745-6710-1-git-send-email-mst@redhat.com>
+ <20160421135416.GE11775@citrix.com>
+ <1461759501.118304.149.camel@infradead.org>
+ <20160427153345-mutt-send-email-mst@redhat.com>
+ <20160427142331.GH17926@8bytes.org>
+ <CALCETrVkSSJbjoK8i7pLsSYR0o=Wy1UP-mrmn2uxYUd81g18dg@mail.gmail.com>
+ <20160427173603-mutt-send-email-mst@redhat.com>
+ <CALCETrUnXSLApj--ypOHnLWLqVSHLpSa922F2C2OCrvA1B585A@mail.gmail.com>
+ <20160427175031-mutt-send-email-mst@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160427143951.GH21011-fF5Pk5pvG8Y@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20160427175031-mutt-send-email-mst@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Andy Lutomirski <luto@amacapital.net>, David Woodhouse <dwmw2@infradead.org>, Kevin Wolf <kwolf@redhat.com>, Wei Liu <wei.liu2@citrix.com>, Andy Lutomirski <luto@kernel.org>, qemu-block@nongnu.org, Christian Borntraeger <borntraeger@de.ibm.com>, Jason Wang <jasowang@redhat.com>, Stefano Stabellini <stefano.stabellini@eu.citrix.com>, "qemu-devel@nongnu.org Developers" <qemu-devel@nongnu.org>, peterx@redhat.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Amit Shah <amit.shah@redhat.com>, iommu@lists.linux-foundation.org, Stefan Hajnoczi <stefanha@redhat.com>, kvm list <kvm@vger.kernel.org>, Cornelia Huck <cornelia.huck@de.ibm.com>, Paolo Bonzini <pbonzini@redhat.com>, Linux Virtualization <virtualization@lists.linux-foundation.org>, Anthony PERARD <anthony.perard@citrix.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed 2016-04-27 16:39:51, Borislav Petkov wrote:
-> On Wed, Apr 27, 2016 at 04:30:45PM +0200, Pavel Machek wrote:
-> > That does not answer the question. "Why would I want SME on my
-> > system?".
-> 
-> Because your question wasn't formulated properly. Here's some text from
-> the 0th mail which you could've found on your own:
+On Wed, Apr 27, 2016 at 05:54:57PM +0300, Michael S. Tsirkin wrote:
+> Point is, QEMU is not the only virtio implementation out there.
+> So we can't know no virtio implementations have an IOMMU as long as
+> linux supports this IOMMU.
+> virtio always used physical addresses since it was born and if it
+> changes that it must do this in a way that does not break existing
+> users.
 
-> "The following links provide additional detail:
-> 
-> AMD Memory Encryption whitepaper:
->    http://amd-dev.wpengine.netdna-cdn.com/wordpress/media/2013/12/AMD_Memory_Encryption_Whitepaper_v7-Public.pdf
-> "
-> 
-> > And that answer should go to Documentation/.
-> 
-> It will.
+FWIW, virtio in qemu can continue to just use physical addresses. But
+qemu needs to advertise that fact correctly to the OS in the DMAR table.
+This way old kernels (where virtio does not use DMA-API) will also
+continue to work on the fixed qemu.
 
-Yeah? So why not include it in reply instead of flaming me?
 
-									Pavel
--- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+
+	Joerg
