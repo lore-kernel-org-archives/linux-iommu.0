@@ -1,75 +1,46 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [RFC PATCH v1 00/18] x86: Secure Memory Encryption (AMD)
-Date: Wed, 27 Apr 2016 09:21:27 -0500
-Message-ID: <5720CAE7.10005@amd.com>
-References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
- <20160322130058.GA16528@xo-6d-61-c0.localdomain>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH V2 RFC] fixup! virtio: convert to use DMA api
+Date: Wed, 27 Apr 2016 16:23:32 +0200
+Message-ID: <20160427142331.GH17926@8bytes.org>
+References: <1461245745-6710-1-git-send-email-mst@redhat.com>
+	<20160421135416.GE11775@citrix.com>
+	<1461759501.118304.149.camel@infradead.org>
+	<20160427153345-mutt-send-email-mst@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-Reply-To: <20160322130058.GA16528@xo-6d-61-c0.localdomain>
-Sender: linux-doc-owner@vger.kernel.org
-To: Pavel Machek <pavel@ucw.cz>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20160427153345-mutt-send-email-mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Kevin Wolf <kwolf-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Anthony PERARD <anthony.perard-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, cornelia.huck-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org, Wei Liu <wei.liu2-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, Stefan Hajnoczi <stefanha-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, qemu-block-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, Stefano Stabellini <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, Jason Wang <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Christian Borntraeger <borntraeger-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Amit Shah <amit.shah-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/22/2016 08:00 AM, Pavel Machek wrote:
-> Hi!
-> 
->> This RFC patch series provides support for AMD's new Secure Memory
->> Encryption (SME) feature.
->>
->> SME can be used to mark individual pages of memory as encrypted through the
->> page tables. A page of memory that is marked encrypted will be automatically
->> decrypted when read from DRAM and will be automatically encrypted when
->> written to DRAM. Details on SME can found in the links below.
-> 
-> Well, actually brief summary should go to changelog and probably to the documentation,
-> too...
-> 
-> Why would I want SME on my system? My system seems to work without it.
+On Wed, Apr 27, 2016 at 04:37:04PM +0300, Michael S. Tsirkin wrote:
+> One correction: it's a feature of the device in the system.
+> There could be a mix of devices bypassing and not
+> bypassing the IOMMU.
 
-The whitepaper explains the technologies and the value they provide.
-It's up to you to decide if you'd want to use it.
+No, it really is not. A device can't chose to bypass the IOMMU. But the
+IOMMU can chose to let the device bypass. So any fix here belongs
+into the platform/iommu code too and not into some driver.
 
-> 
-> Does it protect against cold boot attacks? Rowhammer (I guess not?)
+> Sounds good. And a way to detect appropriate devices could
+> be by looking at the feature flag, perhaps?
 
-It does protect well against cold boot attacks. It might offer some
-protection against Rowhammer since if a bit got flipped the entire
-16B chunk would be decrypted differently.
+Again, no! The way to detect that is to look into the iommu description
+structures provided by the firmware. They provide everything necessary
+to tell the iommu code which devices are not translated.
 
-> 
-> Does it cost some performance?
 
-The whitepaper talks about this a little, but it has a minimal impact
-on system performance when accessing an encrypted page.
 
-> 
-> Does it break debugging over JTAG?
-> 
->> The approach that this patch series takes is to encrypt everything possible
->> starting early in the boot where the kernel is encrypted. Using the page
->> table macros the encryption mask can be incorporated into all page table
->> entries and page allocations. By updating the protection map, userspace
->> allocations are also marked encrypted. Certain data must be accounted for
->> as having been placed in memory before SME was enabled (EFI, initrd, etc.)
->> and accessed accordingly.
-> 
-> Do you also need to do something special for device DMA?
-
-DMA should function normally unless the device does not support the
-addressing requirements when SME is active. When the encryption mask is
-applied (bit 47 of the physical address in this case), if the device
-doesn't support 48 bit or higher DMA then swiotlb bounce buffers will
-be used.
-
-Thanks,
-Tom
-
-> 
-> Thanks,
-> 
-> 									Pavel
-> 
+	Joerg
