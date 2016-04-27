@@ -1,38 +1,52 @@
-From: Pavel Machek <pavel@ucw.cz>
-Subject: Re: [RFC PATCH v1 00/18] x86: Secure Memory Encryption (AMD)
-Date: Wed, 27 Apr 2016 16:30:45 +0200
-Message-ID: <20160427143045.GA4718@amd>
-References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
- <20160322130058.GA16528@xo-6d-61-c0.localdomain>
- <20160427140520.GG21011@pd.tnic>
+From: Andy Lutomirski <luto@amacapital.net>
+Subject: Re: [PATCH V2 RFC] fixup! virtio: convert to use DMA api
+Date: Wed, 27 Apr 2016 07:31:43 -0700
+Message-ID: <CALCETrVkSSJbjoK8i7pLsSYR0o=Wy1UP-mrmn2uxYUd81g18dg@mail.gmail.com>
+References: <1461245745-6710-1-git-send-email-mst@redhat.com>
+	<20160421135416.GE11775@citrix.com>
+	<1461759501.118304.149.camel@infradead.org>
+	<20160427153345-mutt-send-email-mst@redhat.com>
+	<20160427142331.GH17926@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <20160427140520.GG21011@pd.tnic>
-Sender: owner-linux-mm@kvack.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <virtualization-bounces@lists.linux-foundation.org>
+In-Reply-To: <20160427142331.GH17926@8bytes.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
+List-Post: <mailto:virtualization@lists.linux-foundation.org>
+List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
+	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
+Sender: virtualization-bounces@lists.linux-foundation.org
+Errors-To: virtualization-bounces@lists.linux-foundation.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Anthony PERARD <anthony.perard@citrix.com>, Wei Liu <wei.liu2@citrix.com>, Stefan Hajnoczi <stefanha@redhat.com>, qemu-block@nongnu.org, "Michael S. Tsirkin" <mst@redhat.com>, Stefano Stabellini <stefano.stabellini@eu.citrix.com>, "qemu-devel@nongnu.org Developers" <qemu-devel@nongnu.org>, peterx@redhat.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Christian Borntraeger <borntraeger@de.ibm.com>, iommu@lists.linux-foundation.org, Andy Lutomirski <luto@kernel.org>, kvm list <kvm@vger.kernel.org>, Amit Shah <amit.shah@redhat.com>, Paolo Bonzini <pbonzini@redhat.com>, Linux Virtualization <virtualization@lists.linux-foundation.org>, David Woodhouse <dwmw2@infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed 2016-04-27 16:05:20, Borislav Petkov wrote:
-> On Tue, Mar 22, 2016 at 02:00:58PM +0100, Pavel Machek wrote:
-> > Why would I want SME on my system? My system seems to work without it.
-> 
-> Your system doesn't have it and SME is default off.
+On Wed, Apr 27, 2016 at 7:23 AM, Joerg Roedel <joro@8bytes.org> wrote:
+> On Wed, Apr 27, 2016 at 04:37:04PM +0300, Michael S. Tsirkin wrote:
+>> One correction: it's a feature of the device in the system.
+>> There could be a mix of devices bypassing and not
+>> bypassing the IOMMU.
+>
+> No, it really is not. A device can't chose to bypass the IOMMU. But the
+> IOMMU can chose to let the device bypass. So any fix here belongs
+> into the platform/iommu code too and not into some driver.
+>
+>> Sounds good. And a way to detect appropriate devices could
+>> be by looking at the feature flag, perhaps?
+>
+> Again, no! The way to detect that is to look into the iommu description
+> structures provided by the firmware. They provide everything necessary
+> to tell the iommu code which devices are not translated.
+>
 
-That does not answer the question. "Why would I want SME on my
-system?".
+Except on PPC and SPARC.  As far as I know, those are the only
+problematic platforms.
 
-And that answer should go to Documentation/.
+Is it too late to *disable* QEMU's q35-iommu thingy until it can be
+fixed to report correct data in the DMAR tables?
 
-									Pavel
--- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+--Andy
