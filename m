@@ -1,81 +1,168 @@
-From: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH v9 12/18] vfio: Register/unregister irq_bypass_producer
-Date: Wed, 27 Apr 2016 01:32:32 +0000
-Message-ID: <E959C4978C3B6342920538CF579893F00C3D3D29@SHSMSX103.ccr.corp.intel.com>
-References: <1442586596-5920-1-git-send-email-feng.wu@intel.com>
-	<1442586596-5920-13-git-send-email-feng.wu@intel.com>
-	<20160426140816.67b8b37c@t450s.home>
+From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
+Subject: Re: [RFC v6 00/10] vfio-pci: Allow to mmap sub-page MMIO BARs and
+ MSI-X table
+Date: Wed, 27 Apr 2016 10:27:04 +0800
+Message-ID: <faccadb1-7d64-05f6-29e5-498275e31ba4@linux.vnet.ibm.com>
+References: <1460976816-29294-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+ <571DEC01.5040802@linux.vnet.ibm.com> <20160426104058.250c7e61@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160426140816.67b8b37c-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20160426104058.250c7e61@t450s.home>
+Sender: linux-doc-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, corbet@lwn.net, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc
 List-Id: iommu@lists.linux-foundation.org
 
+On 2016/4/27 0:40, Alex Williamson wrote:
 
-
-> -----Original Message-----
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Wednesday, April 27, 2016 4:08 AM
-> To: Wu, Feng <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Cc: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> foundation.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Subject: Re: [PATCH v9 12/18] vfio: Register/unregister irq_bypass_producer
-> 
-> On Fri, 18 Sep 2015 22:29:50 +0800
-> Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
-> 
->  @@ -360,6 +361,14 @@ static int vfio_msi_set_vector_signal(struct
->  vfio_pci_device *vdev,
-> >  		return ret;
-> >  	}
-> >
-> > +	vdev->ctx[vector].producer.token = trigger;
-> > +	vdev->ctx[vector].producer.irq = irq;
-> > +	ret = irq_bypass_register_producer(&vdev->ctx[vector].producer);
-> > +	if (unlikely(ret))
-> > +		dev_info(&pdev->dev,
-> > +		"irq bypass producer (token %p) registeration fails: %d\n",
-> > +		vdev->ctx[vector].producer.token, ret);
-> > +
-> >  	vdev->ctx[vector].trigger = trigger;
-> >
-> >  	return 0;
-> 
-> Digging back into the IRQ producer/consumer thing, I'm not sure how we
-> should be handling a failure here, but it turns out that what we have
-> is pretty sub-optimal.  Any sort of testing on AMD hits this dev_info
-> because kvm_arch_irq_bypass_add_producer() returns -EINVAL without
-> kvm_x86_ops->update_pi_irte which is only implemented for vmx.  Clearly
-> we don't want to spew confusing error messages for a feature that does
-> not exist.
-> 
-> The easiest option is to simply make this error silent, but should
-> registering a producer/consumer really fail due to a mismatch on the
-> other end or should the __connect sequence fail silently, which both
-> ends would know about (if they care) due to the add/del handshake
-> between them?  Perhaps for now we simply need a stable suitable fix to
-> silence the dev_info above, but longer term, registration shouldn't
-> fail for mismatches like this.  Thoughts?  Thanks,
-
-Can we just return 0 when kvm_x86_ops->update_pi_irte is NULL in
-kvm_arch_irq_bypass_add_producer?
-
-Thanks,
-Feng
-
-> 
+> On Mon, 25 Apr 2016 18:05:53 +0800
+> Yongji Xie <xyjxie@linux.vnet.ibm.com> wrote:
+>
+>> Hi Alex,
+>>
+>> Any comment?
+> TBH, I shuffled this to the bottom of the review pile because you're
+> depending on a patch series for ARM MSI mapping that's still very much
+> in flux.  You've really got 3 or 4 separate patch series here that
+> should be separated so they can be sent as non-RFC and you can start
+> making progress.  For instance, patches 1-4 are PCI-core enabling
+> PAGE_SIZE aligned BARs, patch 5 discovers PAGE_SIZE aligned BARs and
+> enables mmapping them through vfio.  Now that you're using shadow
+> resources to attempt to reserve the remainder of the page in patch 5,
+> doesn't that make it independent of patches 1-4?  These could be sent
+> as separate series in parallel.  Patches 6-9 are another separate
+> series, but here you start to depend on the changes happening with ARM
+> MSI mapping to determine whether we have real interrupt isolation. Once
+> that gets settled, patch 10 becomes a much less controversial follow-on
+> patch.  Thanks,
+>
 > Alex
+
+That's a really good idea! Thank you!
+
+Regards,
+Yongji
+
+>> On 2016/4/18 18:53, Yongji Xie wrote:
+>>> Current vfio-pci implementation disallows to mmap
+>>> sub-page(size < PAGE_SIZE) MMIO BARs and MSI-X table. This is because
+>>> sub-page BARs' mmio page may be shared with other BARs and MSI-X table
+>>> should not be accessed directly from the guest for security reasons.
+>>>
+>>> But it will easily cause some performance issues for mmio accesses
+>>> in guest when vfio passthrough sub-page BARs or BARs containing MSI-X
+>>> table on PPC64 platform. This is because PAGE_SIZE is 64KB by default
+>>> on PPC64 platform and the big page may easily hit the sub-page MMIO
+>>> BARs' unmmapping and cause the unmmaping of the mmio page which
+>>> MSI-X table locate in, which lead to mmio emulation in host.
+>>>
+>>> For sub-page MMIO BARs' unmmapping, this patchset modifies
+>>> resource_alignment kernel parameter to enforce the alignment of all
+>>> MMIO BARs to be at least PAGE_SZIE so that sub-page BAR's mmio page
+>>> will not be shared with other BARs. And we also add shadow resources
+>>> to the vfio device and put them into the holes of mmio pages in case
+>>> that hot-add device's BARs are assigned into the holes. Then we can
+>>> mmap sub-page MMIO BARs safely.
+>>>
+>>> For MSI-X table's unmmapping, we think MSI-X table is safe to access
+>>> directly from userspace if hardware supports the capability of
+>>> interrupt remapping which can ensure that a given pci device can
+>>> only shoot the MSIs assigned for it. But the implenmentation of
+>>> this capability is arch-independent. To have a universal way
+>>> to test this capability on PCI side for different archs, we introduce
+>>> a new bus_flags PCI_BUS_FLAGS_MSI_REMAP.
+>>>
+>>> With this patchset applied, we can get almost 100% improvement on
+>>> performance for small block 4k random read when we passthrough a FC
+>>> HBA containing sub-page BARs and MSI-X BARs to guest on PPC64 in
+>>> our test.
+>>>
+>>> The patch 8 are based on the proposed patchset[2].
+>>>
+>>> Changelog v6:
+>>> - Rebase on vfio/next with patchset[2] applied
+>>> - Fix some bugs of v5
+>>> - Add three patches to make PCI_BUS_FLAGS_MSI_REMAP as
+>>>     a universal flag to test IRQ remapping
+>>>
+>>> Changelog v5:
+>>> - Rebase on vfio/next
+>>> - Change the order of patch 1,2,3
+>>> - Move the warning "resource_alignment will not work with
+>>>     PCI_PROBE_ONLY set" from documentation to kernel log
+>>> - Remove IORESOURCE_WINDOW
+>>> - Add description for parameter "resize"
+>>> - Add PCIBIOS_MIN_ALIGNMENT to force all MMIO BARs to
+>>>     get minimum alignment
+>>> - Add shadow resources to make sure sub-page BAR's mmio
+>>>     page will not be shared with hot-add BARs.
+>>> - Add a new bit to pci_bus_flags to indicate the capbility
+>>>     of interrupt remapping on PPC64
+>>> - Remove IOMMU_CAP_INTR_REMAP on PPC64
+>>> - Add a property msi_remap to vfio_pci_device to cache the
+>>>     capbility of interrupt remapping
+>>>
+>>> Changelog v4:
+>>> - Rebase on v4.5-rc6 with patchset[1] applied.
+>>> - Remove resource_page_aligned kernel parameter
+>>> - Fix some problems with resource_alignment kernel parameter
+>>> - Modify resource_alignment kernel parameter to support multiple
+>>>     devices.
+>>> - Remove host bridge attribute: msi_filtered
+>>> - Use IOMMU_CAP_INTR_REMAP to check if MSI-X table can be mmapped
+>>> - Add IOMMU_CAP_INTR_REMAP for IODA host bridge on PPC64 platform
+>>>
+>>> Changelog v3:
+>>> - Rebase on new linux kernel mainline with the patchset[1] applied.
+>>> - Add a function to check whether PCI BARs'mmio page is shared with
+>>>     other BARs.
+>>> - Add a host bridge attribute to indicate PCI host bridge support
+>>>     filtering of MSIs.
+>>> - Use the new host bridge attribute to check if MSI-X table can
+>>>     be mmapped instead of CONFIG_EEH.
+>>> - Remove Kconfig option VFIO_PCI_MMAP_MSIX
+>>>
+>>> Changelog v2:
+>>> - Rebase on v4.4-rc6 with the patchset[1] applied.
+>>> - Use kernel parameter to enforce all MMIO BARs to be page aligned
+>>>     on PCI core code instead of doing it on PPC64 arch code.
+>>> - Remove flags: VFIO_DEVICE_FLAGS_PCI_PAGE_ALIGNED
+>>>
+>>> [1] http://www.spinics.net/lists/kvm/msg127812.html
+>>> [2] http://www.spinics.net/lists/kvm/msg130256.html
+>>>
+>>> Yongji Xie (10):
+>>>     PCI: Ignore resource_alignment if PCI_PROBE_ONLY was set
+>>>     PCI: Do not Use IORESOURCE_STARTALIGN to identify bridge resources
+>>>     PCI: Add a new option for resource_alignment to reassign alignment
+>>>     PCI: Add support for enforcing all MMIO BARs to be page aligned
+>>>     vfio-pci: Allow to mmap sub-page MMIO BARs if the mmio page is exclusive
+>>>     PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
+>>>     iommu: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have capability of IRQ remapping
+>>>     PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI controller supports IRQ remapping
+>>>     pci-ioda: Set PCI_BUS_FLAGS_MSI_REMAP for IODA host bridge
+>>>     vfio-pci: Allow to mmap MSI-X table if interrupt remapping is supported
+>>>
+>>>    Documentation/kernel-parameters.txt       |    7 +-
+>>>    arch/powerpc/include/asm/pci.h            |    2 +
+>>>    arch/powerpc/platforms/powernv/pci-ioda.c |    8 +++
+>>>    drivers/iommu/iommu.c                     |   15 +++++
+>>>    drivers/pci/msi.c                         |   12 ++++
+>>>    drivers/pci/pci.c                         |  105 +++++++++++++++++++++++------
+>>>    drivers/pci/probe.c                       |    3 +
+>>>    drivers/pci/setup-bus.c                   |    9 ++-
+>>>    drivers/vfio/pci/vfio_pci.c               |   65 +++++++++++++++---
+>>>    drivers/vfio/pci/vfio_pci_private.h       |    8 +++
+>>>    drivers/vfio/pci/vfio_pci_rdwr.c          |    3 +-
+>>>    include/linux/msi.h                       |    6 +-
+>>>    include/linux/pci.h                       |    1 +
+>>>    13 files changed, 208 insertions(+), 36 deletions(-)
+>>>   
+> --
+> To unsubscribe from this list: send the line "unsubscribe kvm" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+
