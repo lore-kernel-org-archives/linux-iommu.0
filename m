@@ -1,15 +1,23 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v9 12/18] vfio: Register/unregister irq_bypass_producer
-Date: Thu, 28 Apr 2016 17:35:12 +0200
-Message-ID: <57222DB0.7080205@linaro.org>
-References: <1442586596-5920-1-git-send-email-feng.wu@intel.com>
-	<1442586596-5920-13-git-send-email-feng.wu@intel.com>
-	<20160426140816.67b8b37c@t450s.home>
+From: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH V2 RFC] fixup! virtio: convert to use DMA api
+Date: Thu, 28 Apr 2016 18:37:59 +0300
+Message-ID: <20160428182341-mutt-send-email-mst@redhat.com>
+References: <20160427153345-mutt-send-email-mst@redhat.com>
+	<20160427142331.GH17926@8bytes.org>
+	<20160427172630-mutt-send-email-mst@redhat.com>
+	<20160427145632.GI17926@8bytes.org>
+	<20160427180007-mutt-send-email-mst@redhat.com>
+	<1461770135.118304.152.camel@infradead.org>
+	<20160427211635-mutt-send-email-mst@redhat.com>
+	<1461784617.118304.181.camel@infradead.org>
+	<20160428172039-mutt-send-email-mst@redhat.com>
+	<1461856314.33870.98.camel@infradead.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160426140816.67b8b37c-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1461856314.33870.98.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,56 +27,89 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Kevin Wolf <kwolf-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, cornelia.huck-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org, Wei Liu <wei.liu2-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, Stefan Hajnoczi <stefanha-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, qemu-block-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, Stefano Stabellini <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Christian Borntraeger <borntraeger-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Amit Shah <amit.shah-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Anthony PERARD <anthony.perard-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, Jason Wang <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Alex,
-On 04/26/2016 10:08 PM, Alex Williamson wrote:
-> On Fri, 18 Sep 2015 22:29:50 +0800
-> Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+On Thu, Apr 28, 2016 at 04:11:54PM +0100, David Woodhouse wrote:
+> On Thu, 2016-04-28 at 17:34 +0300, Michael S. Tsirkin wrote:
+> > I see work-arounds for broken IOMMUs but not for
+> > individual devices. Could you point me to a more specific
+> > example?
 > 
->  @@ -360,6 +361,14 @@ static int vfio_msi_set_vector_signal(struct
->  vfio_pci_device *vdev,
->>  		return ret;
->>  	}
->>  
->> +	vdev->ctx[vector].producer.token = trigger;
->> +	vdev->ctx[vector].producer.irq = irq;
->> +	ret = irq_bypass_register_producer(&vdev->ctx[vector].producer);
->> +	if (unlikely(ret))
->> +		dev_info(&pdev->dev,
->> +		"irq bypass producer (token %p) registeration fails: %d\n",
->> +		vdev->ctx[vector].producer.token, ret);
->> +
->>  	vdev->ctx[vector].trigger = trigger;
->>  
->>  	return 0;
-> 
-> Digging back into the IRQ producer/consumer thing, I'm not sure how we
-> should be handling a failure here, but it turns out that what we have
-> is pretty sub-optimal.  Any sort of testing on AMD hits this dev_info
-> because kvm_arch_irq_bypass_add_producer() returns -EINVAL without
-> kvm_x86_ops->update_pi_irte which is only implemented for vmx.  Clearly
-> we don't want to spew confusing error messages for a feature that does
-> not exist.
-> 
-> The easiest option is to simply make this error silent, but should
-> registering a producer/consumer really fail due to a mismatch on the
-> other end or should the __connect sequence fail silently, which both
-> ends would know about (if they care) due to the add/del handshake
-> between them?  Perhaps for now we simply need a stable suitable fix to
-> silence the dev_info above, but longer term, registration shouldn't
-> fail for mismatches like this.  Thoughts?  Thanks,
+> I think the closest example is probably quirk_ioat_snb_local_iommu().
 
-Regarding the ARM IRQ forwarding use case, I think it is OK to fail
-silently. We would fall back to the irqfd standard mechanism. Anyway
-this series still is waiting for ARM new-vgic dependency to be resolved,
-as discussed with Christoffer and Marc.
+OK, so for intel, it seems that it's enough to set
+	pdev->dev.archdata.iommu = DUMMY_DEVICE_DOMAIN_INFO;
+for the device.
 
-Best Regards
+Do I have to poke at each iommu implementation to find
+a way to do this, or is there some way to do it
+portably?
 
-Eric
+> If we see this particular device, we *know* what the topology actually
+> looks like. We check the hardware setup, and if we're *not* being told
+> the truth, then we stick it in bypass mode because we know it *isn't*
+> actually being translated.
 > 
-> Alex
+> Actually, that's almost *identical* to what we want, isn't it?
+> 
+> Except instead of checking undocumented chipset registers, it wants to
+> be checking "am I on a version of qemu known to lie about virtio being
+> translated?"
+
+Not exactly - I think that future versions of qemu might lie
+about some devices but not others.
+
+> > > We don't actually *need* it for the Intel IOMMU; all we need is for
+> > > QEMU to stop lying in its DMAR tables.
+> > We need it for legacy QEMU anyway, and it's not easy for QEMU to stop
+> > lying about virtio, so we'll need it for a while.
+> > I think it's easy for QEMU to stop lying about assigned devices,
+> > so we don't need it for non-virtio devices.
+> 
+> Why is it easier for QEMU to tell the truth about assigned devices,
+> than it is for virtio? Assuming they both remain actually untranslated
+> for now, why's it easier to fix the DMAR table for one and not the
+> other?
+> 
+> (Implementing translation of assigned devices is on my list, but it's a
+> long way off).
+
+DMAR is unfortunately not a good match for what people do with QEMU.
+
+There is a patchset on list fixing translation of assigned
+devices. So the fix for these will simply be to do translation for all
+assigned devices. It's harder for virtio as it isn't always
+processed in QEMU - there's vhost in kernel and an out of process
+vhost-user plugin. So we can end up e.g. with modern QEMU which
+does translate in-process virtio but not out of process one.
+
+> > I don't see why how fwcfg can work here. It's a static thing,
+> > devices can come and go with hotplug.
+> 
+> This touches on something you said elsewhere, that it's
+> painful/impossible to hot-unplug a translated device and hot-plug an
+> untranslated device in the same slot (and vice versa).
+> 
+> So let's assume for now that a given slot is indeed static, and either
+> translated or untranslated. Like the DMAR table, the fwcfg can just
+> give a list of slot which are (or aren't) translated.
+> 
+> And then you can *only* add a translated device to a translated slot,
+> or an untranslated device to an untranslated slot.
+> 
+> All the internally-emulated devices *can* be either translated or
+> untranslated. That's just a matter of software. Surely, you currently
+> *can't* have translated assigned devices (until someone implements the
+> whole VT-d page table shadowing or whatever), so you'll be barred from
+> assigning a device to a slot which *previously* had an untranslated
+> device. But so what? Put it in a different slot instead.
+
+Unfortunately people got used to be able to put any device
+in any slot, and built external tools around that ability.
+It's rather painful to break this assumption.
+
+> -- 
+> dwmw2
 > 
