@@ -1,216 +1,257 @@
-From: David Woodhouse <dwmw2@infradead.org>
-Subject: Re: [PATCH V2 RFC] fixup! virtio: convert to use DMA
- api
-Date: Thu, 28 Apr 2016 16:48:25 +0100
-Message-ID: <1461858505.33870.108.camel@infradead.org>
-References: <20160427153345-mutt-send-email-mst@redhat.com>
-	<20160427142331.GH17926@8bytes.org>
-	<20160427172630-mutt-send-email-mst@redhat.com>
-	<20160427145632.GI17926@8bytes.org>
-	<20160427180007-mutt-send-email-mst@redhat.com>
-	<1461770135.118304.152.camel@infradead.org>
-	<20160427211635-mutt-send-email-mst@redhat.com>
-	<1461784617.118304.181.camel@infradead.org>
-	<20160428172039-mutt-send-email-mst@redhat.com>
-	<1461856314.33870.98.camel@infradead.org>
-	<20160428182341-mutt-send-email-mst@redhat.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v2] iommu/arm-smmu: Decouple context format from kernel config
+Date: Thu, 28 Apr 2016 17:12:09 +0100
+Message-ID: <395a76625458d198d3264b9ef91d4b619a3a14e0.1461858185.git.robin.murphy@arm.com>
+References: <cover.1460391217.git.robin.murphy@arm.com>
+	<173006777218859d1671ae517c70592c6c02f630.1460391217.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="sha-256";
-	protocol="application/x-pkcs7-signature";
-	boundary="=-Y6WOj0Zcn0U/DV5cUGSq"
-Return-path: <qemu-block-bounces+gceqb-qemu-block=m.gmane.org@nongnu.org>
-In-Reply-To: <20160428182341-mutt-send-email-mst@redhat.com>
-List-Unsubscribe: <https://lists.nongnu.org/mailman/options/qemu-block>,
-	<mailto:qemu-block-request@nongnu.org?subject=unsubscribe>
-List-Archive: <http://lists.nongnu.org/archive/html/qemu-block/>
-List-Post: <mailto:qemu-block@nongnu.org>
-List-Help: <mailto:qemu-block-request@nongnu.org?subject=help>
-List-Subscribe: <https://lists.nongnu.org/mailman/listinfo/qemu-block>,
-	<mailto:qemu-block-request@nongnu.org?subject=subscribe>
-Errors-To: qemu-block-bounces+gceqb-qemu-block=m.gmane.org@nongnu.org
-Sender: "Qemu-block"
-	<qemu-block-bounces+gceqb-qemu-block=m.gmane.org@nongnu.org>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Kevin Wolf <kwolf@redhat.com>, cornelia.huck@de.ibm.com, Wei Liu <wei.liu2@citrix.com>, Stefan Hajnoczi <stefanha@redhat.com>, qemu-block@nongnu.org, Stefano Stabellini <stefano.stabellini@eu.citrix.com>, Joerg Roedel <joro@8bytes.org>, qemu-devel@nongnu.org, peterx@redhat.com, linux-kernel@vger.kernel.org, Christian Borntraeger <borntraeger@de.ibm.com>, iommu@lists.linux-foundation.org, Andy Lutomirski <luto@kernel.org>, kvm@vger.kernel.org, Amit Shah <amit.shah@redhat.com>, pbonzini@redhat.com, virtualization@lists.linux-foundation.org, Anthony PERARD <anthony.perard@citrix.com>, Jason Wang <jasowang@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <173006777218859d1671ae517c70592c6c02f630.1460391217.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+The way the driver currently forces an AArch32 or AArch64 context format
+based on the kernel config and SMMU architecture version is suboptimal,
+in that it makes it very hard to support oddball mix-and-match cases
+like the SMMUv1 64KB supplement, or situations where the reduced table
+depth of an AArch32 short descriptor context may be desirable under an
+AArch64 kernel. It also only happens to work on current implementations
+which do support all the relevant formats.
 
---=-Y6WOj0Zcn0U/DV5cUGSq
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Introduce an explicit notion of context format, so we can manage that
+independently and get rid of the inflexible #ifdeffery.
 
-On Thu, 2016-04-28 at 18:37 +0300, Michael S. Tsirkin wrote:
-> OK, so for intel, it seems that it's enough to set
-> 	pdev->dev.archdata.iommu =3D DUMMY_DEVICE_DOMAIN_INFO;
-> for the device.
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
 
-Yes, currently. Although that's vile. In fact what we *want* to happen
-is for the intel-iommu code simply to decline to provide DMA ops for
-this device, and let it fall back to the swiotlb or no-op DMA ops, as
-appropriate.
+Changes since v1:
+- Simplify the format decision to let the io-pgtable code pick AArch64
+  granules itself, since (pl330 shenanigans aside) MMU-401 actually
+  works better than it claims to. I'll look into abstracting this away
+  completely into io-pgtable so it can be shared with SMMUv3 and others.
+- Remove a couple more now-dead lines from arm_smmu_device_cfg_probe()
+  which I missed first time around.
 
-As it is, we have the intel-iommu DMA ops *unconditionally, and they
-have a hack to manually fall back to calling swiotlb. It's all just
-horrid, which is why I want to clean it up with nice per-device DMA ops
-and discovery thereof :)
+Robin.
 
-> Do I have to poke at each iommu implementation to find
-> a way to do this, or is there some way to do it
-> portably?
+ drivers/iommu/arm-smmu.c | 94 ++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 72 insertions(+), 22 deletions(-)
 
-There *will* be.... Christoph has already done some of the cleanup in
-this space, and I need to take stock of what he's already done, and
-finish off the parts I want to build on top of it.
-
-> Not exactly - I think that future versions of qemu might lie
-> about some devices but not others.
-
-Can we keep this simple?
-
-QEMU currently lies about some devices. Let's implement a heuristic for
-the guest OS to know about that, and react accordingly.
-
-Then let's fix QEMU to tell the truth. All the time, unconditionally.
-Even on POWER/ARM where there's no obvious *way* for it to tell the
-truth (because you don't have the flexibility that DMAR tables do), and
-we need to devise a way to put it in the device-tree or fwcfg or
-something else.
-
-And only once QEMU consistently tells the *truth*, then we can start to
-do new stuff and let it actually change its behaviour.
-
-> DMAR is unfortunately not a good match for what people do with QEMU.
->=20
-> There is a patchset on list fixing translation of assigned
-> devices. So the fix for these will simply be to do translation for
-> all assigned devices. It's harder for virtio as it isn't always
-> processed in QEMU - there's vhost in kernel and an out of process
-> vhost-user plugin. So we can end up e.g. with modern QEMU which
-> does translate in-process virtio but not out of process one.
-
-Right... just stop. Fix QEMU to tell the truth first, and *then* once
-we can trust it, we can start to change its behaviour. :)
-
-> Unfortunately people got used to be able to put any device
-> in any slot, and built external tools around that ability.
-> It's rather painful to break this assumption.
-
-Well, if you just said you have a patch set which allows translation of
-assigned devices then you are most of the way there, aren't you? We
-just need to fix the out-of-process virtio case, and everything can be
-either translated or untranslated?
-
---=20
-dwmw2
-
-
---=-Y6WOj0Zcn0U/DV5cUGSq
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCEeAw
-ggXiMIIDyqADAgECAhBrp4p9CteI1lEK+Vnk57ThMA0GCSqGSIb3DQEBCwUAMH0xCzAJBgNVBAYT
-AklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYDVQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0
-aWZpY2F0ZSBTaWduaW5nMSkwJwYDVQQDEyBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0
-eTAeFw0xNTEyMTYwMTAwMDVaFw0zMDEyMTYwMTAwMDVaMHUxCzAJBgNVBAYTAklMMRYwFAYDVQQK
-Ew1TdGFydENvbSBMdGQuMSkwJwYDVQQLEyBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0
-eTEjMCEGA1UEAxMaU3RhcnRDb20gQ2xhc3MgMSBDbGllbnQgQ0EwggEiMA0GCSqGSIb3DQEBAQUA
-A4IBDwAwggEKAoIBAQC9fdr3w6J9g/Zbgv3bW1+uHht1wLUZr5gkrLtXedg17AkefMyUGwrQdvwO
-bhajcVmnKVxhrUwkZPXRAwZZosRHfEIi5FH7x6SV/8Sp5lZEuiMnvMFG2MzLA84J6Ws5T4NfXZ0q
-n4TPgnr3X2vPVS51M7Ua9nIJgn8jvTra4eyyQzxvuA/GZwKg7VQfDCmCS+kICslYYWgXOMt2xlsS
-slxLce0CGWRsT8EpMyt1iDflSjXZIsE7m1uTyHaKZspMLyIyz6mySu8j8BWWHpChNNeTrFuhVfrO
-AyDPFJVUvKZCLKBhibTLloyy+LatoWELrjdI4a8StZY8+dIR9t4APXGzAgMBAAGjggFkMIIBYDAO
-BgNVHQ8BAf8EBAMCAQYwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQI
-MAYBAf8CAQAwMgYDVR0fBCswKTAnoCWgI4YhaHR0cDovL2NybC5zdGFydHNzbC5jb20vc2ZzY2Eu
-Y3JsMGYGCCsGAQUFBwEBBFowWDAkBggrBgEFBQcwAYYYaHR0cDovL29jc3Auc3RhcnRzc2wuY29t
-MDAGCCsGAQUFBzAChiRodHRwOi8vYWlhLnN0YXJ0c3NsLmNvbS9jZXJ0cy9jYS5jcnQwHQYDVR0O
-BBYEFCSBbDlhvkkPj7cbRivJKLUnSG1oMB8GA1UdIwQYMBaAFE4L7xqkQFulF2mHMMo0aEPQQa7y
-MD8GA1UdIAQ4MDYwNAYEVR0gADAsMCoGCCsGAQUFBwIBFh5odHRwOi8vd3d3LnN0YXJ0c3NsLmNv
-bS9wb2xpY3kwDQYJKoZIhvcNAQELBQADggIBAIvj94fsAYuErQ8BAluc4SMnIwS9NPBwAm5SH9uh
-2NCXTq7im61g7F1LIiNI/+wq37fUuaMbz4g7VarKQTgf8ubs0p7NZWcIe7Bvem2AWaXBsxsaRTYw
-5kG3DN8pd1hSEUuFoTa7DmNeFe8tiK1BrL3rbA/m48jp4AiFXgvxprJrW7izsyetOrRHPbkW4Y07
-v29MdhaPv3u1JELyszXqOzjIYo4sWlC8iDQXwgSW/ntvWy2n4LuiaozlCfXl149tKeqvwlvrla2Y
-klue/quWp9j9ou4T/OY0CXMuY+B8wNK0ohd2D4ShgFlMSjzAFRoHGKF81snTr2d1A7Ew02oF6UQy
-CkC2aNNsK5cWOojBar5c7HplX9aHYUCZouxIeU28SONJAxnATgR4cJ2jrpmYSz/kliUJ46S6UpVD
-o/ebn9c6PaM/XtDYCCaM/7XX6wc3s++sbQ7CtCn1Ax7df6ufQbwyO0V+oFa9H0KAsjHMzcwk3EV2
-B2NLatidKE/m7G+rB9m+FlVgIiSp0mGlg43QO9Kh1+JqvTCIzv2bJJkmPMLQJNuKKwHNL8F4GGp6
-jbAV+WL+LDeGfVcq8DHS3LrD+xyYEXQBiqZEdiPVOMxLDSUCXsDO0uCWpaNQ8j6y6S9p0xE/Ga0p
-eVLadVHhqf9nXqKaxnr358VgfrxzUIrvOaOjMIIF+TCCBOGgAwIBAgIQaRjuleoVgt0XsPAUByve
-JDANBgkqhkiG9w0BAQsFADB1MQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEp
-MCcGA1UECxMgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkxIzAhBgNVBAMTGlN0YXJ0
-Q29tIENsYXNzIDEgQ2xpZW50IENBMB4XDTE2MDMxMjE2MjEyNVoXDTE3MDMxMjE2MjEyNVowQjEc
-MBoGA1UEAwwTZHdtdzJAaW5mcmFkZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFk
-ZWFkLm9yZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANBDAiGnoeOIQJ/Aolutct4z
-x6Yt3dOUI5d0YnydAMNOiyVLXzHuuuVjUpk/6nRxg1FN3e0i3TWe5MjSTD98760qWoAuF2g5BGU+
-tN/GUsyws26ZWOt82w7xhn4dcI8EhmASUtwDTZs5ZXPQzSkuNs6uX5SY0eKPlBNHkAtMf39hNc4m
-liy6WRDKApZxA1vCbiHsJQZdNEBYO35022bu8PZBe6LSAFKoncoGMHl1xNEkN6kfOJFYnLqBYeXO
-2mDA8KZ4h15EnQyyHGSghN92OUTc9stAWEt9a+q6TCtyW5zNgYTaaOtE41t5x2xDAgsnNU7sVM8f
-wSR3tYeW9IqTgU6eDUllb1a9FK7es3+j9UDg7OxNv9rnXIda6TdXlGWYfFltujF7FMwTofq3UG7t
-w68Ugk0MMfpZadhPhjYLI/qXiEDgQi8Xr+eWSo5P0ygaLvAz8OPcWAt8RG5Y8Id9hpb5neW1HTAR
-Q+k8lbpkx2wDPHZEft0ITROOupf76f9CNF4jYcyCKZNnjSsKeJv69VX1TsVaeqT1LJUEudXLa/BK
-FSb7x5M1KF4z46yImJrnagI19Nk/ufWn1usBXqXh8pY8cVN/I7C+TDPBY5SqIceTq7DaHZp19JQU
-IIWlyRsm2d4UoVcgIdTjX57Odap4Pjzrfp2RmC6hvkW2hQ5EreIPAgMBAAGjggG2MIIBsjAOBgNV
-HQ8BAf8EBAMCBLAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMAkGA1UdEwQCMAAwHQYD
-VR0OBBYEFBDmK2IjZJ7MKmBK0A7J/tKaSIdoMB8GA1UdIwQYMBaAFCSBbDlhvkkPj7cbRivJKLUn
-SG1oMG8GCCsGAQUFBwEBBGMwYTAkBggrBgEFBQcwAYYYaHR0cDovL29jc3Auc3RhcnRzc2wuY29t
-MDkGCCsGAQUFBzAChi1odHRwOi8vYWlhLnN0YXJ0c3NsLmNvbS9jZXJ0cy9zY2EuY2xpZW50MS5j
-cnQwOAYDVR0fBDEwLzAtoCugKYYnaHR0cDovL2NybC5zdGFydHNzbC5jb20vc2NhLWNsaWVudDEu
-Y3JsMB4GA1UdEQQXMBWBE2R3bXcyQGluZnJhZGVhZC5vcmcwIwYDVR0SBBwwGoYYaHR0cDovL3d3
-dy5zdGFydHNzbC5jb20vMEYGA1UdIAQ/MD0wOwYLKwYBBAGBtTcBAgQwLDAqBggrBgEFBQcCARYe
-aHR0cDovL3d3dy5zdGFydHNzbC5jb20vcG9saWN5MA0GCSqGSIb3DQEBCwUAA4IBAQAn5wvdgC0V
-kS226sFKAbqPnmVhc9jgrbsiXUcpdtYEzv6EZonARIeRC1UlIzK7jzZFRe95W5y4/qlcPQDoAeZL
-cSsbpW3AYPFFWdRgVp/eIR3iy9C5KEcAbkJES2lRUZWyRqAceW1Gur9kfvjM5H0kM6BBwJfCtoqo
-WragTXfsIXGNsF0F+60mUYYsKFPZzPmyz9J0Dr0xx9Lcp4fbD6UckDWCNJt2AJAiEPt/vPiiBzU8
-edaRzkYhzxd9f3pZAzhlzIf2CgTrGtKSL2X1bS/b3siREjQLhVrlGw4qxqllqER3APrDzyijLFuc
-CWpS8hxjTmYcNZSibv+3Oy6uU+wqMIIF+TCCBOGgAwIBAgIQaRjuleoVgt0XsPAUByveJDANBgkq
-hkiG9w0BAQsFADB1MQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEpMCcGA1UE
-CxMgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkxIzAhBgNVBAMTGlN0YXJ0Q29tIENs
-YXNzIDEgQ2xpZW50IENBMB4XDTE2MDMxMjE2MjEyNVoXDTE3MDMxMjE2MjEyNVowQjEcMBoGA1UE
-AwwTZHdtdzJAaW5mcmFkZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9y
-ZzCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANBDAiGnoeOIQJ/Aolutct4zx6Yt3dOU
-I5d0YnydAMNOiyVLXzHuuuVjUpk/6nRxg1FN3e0i3TWe5MjSTD98760qWoAuF2g5BGU+tN/GUsyw
-s26ZWOt82w7xhn4dcI8EhmASUtwDTZs5ZXPQzSkuNs6uX5SY0eKPlBNHkAtMf39hNc4mliy6WRDK
-ApZxA1vCbiHsJQZdNEBYO35022bu8PZBe6LSAFKoncoGMHl1xNEkN6kfOJFYnLqBYeXO2mDA8KZ4
-h15EnQyyHGSghN92OUTc9stAWEt9a+q6TCtyW5zNgYTaaOtE41t5x2xDAgsnNU7sVM8fwSR3tYeW
-9IqTgU6eDUllb1a9FK7es3+j9UDg7OxNv9rnXIda6TdXlGWYfFltujF7FMwTofq3UG7tw68Ugk0M
-MfpZadhPhjYLI/qXiEDgQi8Xr+eWSo5P0ygaLvAz8OPcWAt8RG5Y8Id9hpb5neW1HTARQ+k8lbpk
-x2wDPHZEft0ITROOupf76f9CNF4jYcyCKZNnjSsKeJv69VX1TsVaeqT1LJUEudXLa/BKFSb7x5M1
-KF4z46yImJrnagI19Nk/ufWn1usBXqXh8pY8cVN/I7C+TDPBY5SqIceTq7DaHZp19JQUIIWlyRsm
-2d4UoVcgIdTjX57Odap4Pjzrfp2RmC6hvkW2hQ5EreIPAgMBAAGjggG2MIIBsjAOBgNVHQ8BAf8E
-BAMCBLAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMAkGA1UdEwQCMAAwHQYDVR0OBBYE
-FBDmK2IjZJ7MKmBK0A7J/tKaSIdoMB8GA1UdIwQYMBaAFCSBbDlhvkkPj7cbRivJKLUnSG1oMG8G
-CCsGAQUFBwEBBGMwYTAkBggrBgEFBQcwAYYYaHR0cDovL29jc3Auc3RhcnRzc2wuY29tMDkGCCsG
-AQUFBzAChi1odHRwOi8vYWlhLnN0YXJ0c3NsLmNvbS9jZXJ0cy9zY2EuY2xpZW50MS5jcnQwOAYD
-VR0fBDEwLzAtoCugKYYnaHR0cDovL2NybC5zdGFydHNzbC5jb20vc2NhLWNsaWVudDEuY3JsMB4G
-A1UdEQQXMBWBE2R3bXcyQGluZnJhZGVhZC5vcmcwIwYDVR0SBBwwGoYYaHR0cDovL3d3dy5zdGFy
-dHNzbC5jb20vMEYGA1UdIAQ/MD0wOwYLKwYBBAGBtTcBAgQwLDAqBggrBgEFBQcCARYeaHR0cDov
-L3d3dy5zdGFydHNzbC5jb20vcG9saWN5MA0GCSqGSIb3DQEBCwUAA4IBAQAn5wvdgC0VkS226sFK
-AbqPnmVhc9jgrbsiXUcpdtYEzv6EZonARIeRC1UlIzK7jzZFRe95W5y4/qlcPQDoAeZLcSsbpW3A
-YPFFWdRgVp/eIR3iy9C5KEcAbkJES2lRUZWyRqAceW1Gur9kfvjM5H0kM6BBwJfCtoqoWragTXfs
-IXGNsF0F+60mUYYsKFPZzPmyz9J0Dr0xx9Lcp4fbD6UckDWCNJt2AJAiEPt/vPiiBzU8edaRzkYh
-zxd9f3pZAzhlzIf2CgTrGtKSL2X1bS/b3siREjQLhVrlGw4qxqllqER3APrDzyijLFucCWpS8hxj
-TmYcNZSibv+3Oy6uU+wqMYIEXjCCBFoCAQEwgYkwdTELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
-YXJ0Q29tIEx0ZC4xKTAnBgNVBAsTIFN0YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MSMw
-IQYDVQQDExpTdGFydENvbSBDbGFzcyAxIENsaWVudCBDQQIQaRjuleoVgt0XsPAUByveJDANBglg
-hkgBZQMEAgEFAKCCAaUwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcN
-MTYwNDI4MTU0ODI1WjAvBgkqhkiG9w0BCQQxIgQgEElg4ihidY/UH3jzxoBGyoxGFRBrdrzg+bP5
-PR5dTs0wgZoGCSsGAQQBgjcQBDGBjDCBiTB1MQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRD
-b20gTHRkLjEpMCcGA1UECxMgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkxIzAhBgNV
-BAMTGlN0YXJ0Q29tIENsYXNzIDEgQ2xpZW50IENBAhBpGO6V6hWC3Rew8BQHK94kMIGcBgsqhkiG
-9w0BCRACCzGBjKCBiTB1MQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEpMCcG
-A1UECxMgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkxIzAhBgNVBAMTGlN0YXJ0Q29t
-IENsYXNzIDEgQ2xpZW50IENBAhBpGO6V6hWC3Rew8BQHK94kMA0GCSqGSIb3DQEBAQUABIICAJpu
-sHsEiZkt5eYT0gm8bnz9dLCsgygLgQpf9QybHrLZHG8GHG6MFR1wi85Pv/o2R3e2xs7ssd+x3aOS
-aQR8Aytanc55O3dTKqotqD110bodM/xo+5d/O6Pth2oRua5nAyYxfezRnYBs3/cON+w65CO/oW7o
-BVyiXItyDBoeDave9n0jhoTcHK21R7hE2WtqXxLlCKpku72eatyN9bO2Aci9aH0FAzEDFHgKyz6k
-S6qn2jlXD25BRsuwukK2JbwmHXYythcfDGveJ/MZuF+d2Td5xWYQ0TW51Utg7218mBSIKJGf8f9i
-xDpSrBksHNxhLZsxxFof5upx6y2kTJxl0On3AiVFalqWDW9Z+dSxVDagUMtgQhJ1grm83MOhp0O6
-j2GEAaNA2BHBzNO6V2jofj970zemi8e53gQISctGui4UvCsGDkkCYx6W70Rt8oXURJ2lb9Kxw1Hh
-USuVpFCiGM+gv1vskS8G6RQxGHIVhQUSErDcrHKYiIayJFD1MMTy8s8/iv3zrr8h66PaJMNhoZ2k
-6NNEvn7njYyuXvTJS8Qt+N0XNAD1Ugx9gy6A7Q999wgRhrJLXmgCFMC8f+tLK9oWLq0avcEFqC7H
-N/ecFVXl0bnz2Was8NNq28K044ETXKQ/b7h7M7c8mhMg2JTQul2oUSzqubNQ8+cKChczqLLZAAAA
-AAAA
-
-
---=-Y6WOj0Zcn0U/DV5cUGSq--
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index acff3326f818..625348431c5e 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -117,6 +117,8 @@
+ #define ID0_NTS				(1 << 28)
+ #define ID0_SMS				(1 << 27)
+ #define ID0_ATOSNS			(1 << 26)
++#define ID0_PTFS_NO_AARCH32		(1 << 25)
++#define ID0_PTFS_NO_AARCH32S		(1 << 24)
+ #define ID0_CTTW			(1 << 14)
+ #define ID0_NUMIRPT_SHIFT		16
+ #define ID0_NUMIRPT_MASK		0xff
+@@ -317,6 +319,11 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
+ #define ARM_SMMU_FEAT_TRANS_OPS		(1 << 5)
+ #define ARM_SMMU_FEAT_VMID16		(1 << 6)
++#define ARM_SMMU_FEAT_FMT_AARCH64_4K	(1 << 7)
++#define ARM_SMMU_FEAT_FMT_AARCH64_16K	(1 << 8)
++#define ARM_SMMU_FEAT_FMT_AARCH64_64K	(1 << 9)
++#define ARM_SMMU_FEAT_FMT_AARCH32_L	(1 << 10)
++#define ARM_SMMU_FEAT_FMT_AARCH32_S	(1 << 11)
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
+@@ -346,10 +353,18 @@ struct arm_smmu_device {
+ 	u32				cavium_id_base; /* Specific to Cavium */
+ };
+ 
++enum arm_smmu_context_fmt {
++	ARM_SMMU_CTX_FMT_NONE,
++	ARM_SMMU_CTX_FMT_AARCH64,
++	ARM_SMMU_CTX_FMT_AARCH32_L,
++	ARM_SMMU_CTX_FMT_AARCH32_S,
++};
++
+ struct arm_smmu_cfg {
+ 	u8				cbndx;
+ 	u8				irptndx;
+ 	u32				cbar;
++	enum arm_smmu_context_fmt	fmt;
+ };
+ #define INVALID_IRPTNDX			0xff
+ 
+@@ -619,14 +634,13 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 		reg = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+ 		reg += leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
+ 
+-		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
++		if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
+ 			iova &= ~12UL;
+ 			iova |= ARM_SMMU_CB_ASID(smmu, cfg);
+ 			do {
+ 				writel_relaxed(iova, reg);
+ 				iova += granule;
+ 			} while (size -= granule);
+-#ifdef CONFIG_64BIT
+ 		} else {
+ 			iova >>= 12;
+ 			iova |= (u64)ARM_SMMU_CB_ASID(smmu, cfg) << 48;
+@@ -634,9 +648,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 				writeq_relaxed(iova, reg);
+ 				iova += granule >> 12;
+ 			} while (size -= granule);
+-#endif
+ 		}
+-#ifdef CONFIG_64BIT
+ 	} else if (smmu->version == ARM_SMMU_V2) {
+ 		reg = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+ 		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
+@@ -646,7 +658,6 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 			smmu_write_atomic_lq(iova, reg);
+ 			iova += granule >> 12;
+ 		} while (size -= granule);
+-#endif
+ 	} else {
+ 		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
+ 		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg), reg);
+@@ -745,11 +756,10 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+ 
+ 	if (smmu->version > ARM_SMMU_V1) {
+-#ifdef CONFIG_64BIT
+-		reg = CBA2R_RW64_64BIT;
+-#else
+-		reg = CBA2R_RW64_32BIT;
+-#endif
++		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
++			reg = CBA2R_RW64_64BIT;
++		else
++			reg = CBA2R_RW64_32BIT;
+ 		/* 16-bit VMIDs live in CBA2R */
+ 		if (smmu->features & ARM_SMMU_FEAT_VMID16)
+ 			reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBA2R_VMID_SHIFT;
+@@ -860,16 +870,40 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
+ 		smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+ 
++	/*
++	 * Choosing a suitable context format is even more fiddly. Until we
++	 * grow some way for the caller to express a preference, and/or move
++	 * the decision into the io-pgtable code where it arguably belongs,
++	 * just aim for the closest thing to the rest of the system, and hope
++	 * that the hardware isn't mental enough that we can't assume AArch64
++	 * support to be a superset of AArch32 support...
++	 */
++	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_L)
++		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH32_L;
++	if ((IS_ENABLED(CONFIG_64BIT) || cfg->fmt == ARM_SMMU_CTX_FMT_NONE) &&
++	    (smmu->features & (ARM_SMMU_FEAT_FMT_AARCH64_64K |
++			       ARM_SMMU_FEAT_FMT_AARCH64_16K |
++			       ARM_SMMU_FEAT_FMT_AARCH64_4K)))
++		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH64;
++
++	if (cfg->fmt == ARM_SMMU_CTX_FMT_NONE) {
++		ret = -EINVAL;
++		goto out_unlock;
++	}
++
+ 	switch (smmu_domain->stage) {
+ 	case ARM_SMMU_DOMAIN_S1:
+ 		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
+ 		start = smmu->num_s2_context_banks;
+ 		ias = smmu->va_size;
+ 		oas = smmu->ipa_size;
+-		if (IS_ENABLED(CONFIG_64BIT))
++		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
+ 			fmt = ARM_64_LPAE_S1;
+-		else
++		} else {
+ 			fmt = ARM_32_LPAE_S1;
++			ias = min(ias, 32UL);
++			oas = min(oas, 40UL);
++		}
+ 		break;
+ 	case ARM_SMMU_DOMAIN_NESTED:
+ 		/*
+@@ -881,10 +915,13 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 		start = 0;
+ 		ias = smmu->ipa_size;
+ 		oas = smmu->pa_size;
+-		if (IS_ENABLED(CONFIG_64BIT))
++		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
+ 			fmt = ARM_64_LPAE_S2;
+-		else
++		} else {
+ 			fmt = ARM_32_LPAE_S2;
++			ias = min(ias, 40UL);
++			oas = min(oas, 40UL);
++		}
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+@@ -1670,6 +1707,12 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 					   ID0_NUMSIDB_MASK;
+ 	}
+ 
++	if (smmu->version < ARM_SMMU_V2 || !(id & ID0_PTFS_NO_AARCH32)) {
++		smmu->features |= ARM_SMMU_FEAT_FMT_AARCH32_L;
++		if (!(id & ID0_PTFS_NO_AARCH32S))
++			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH32_S;
++	}
++
+ 	/* ID1 */
+ 	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID1);
+ 	smmu->pgshift = (id & ID1_PAGESIZE) ? 16 : 12;
+@@ -1725,22 +1768,29 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 
+ 	if (smmu->version == ARM_SMMU_V1) {
+ 		smmu->va_size = smmu->ipa_size;
+-		size = SZ_4K | SZ_2M | SZ_1G;
+ 	} else {
+ 		size = (id >> ID2_UBS_SHIFT) & ID2_UBS_MASK;
+ 		smmu->va_size = arm_smmu_id_size_to_bits(size);
+-#ifndef CONFIG_64BIT
+-		smmu->va_size = min(32UL, smmu->va_size);
+-#endif
+-		size = 0;
+ 		if (id & ID2_PTFS_4K)
+-			size |= SZ_4K | SZ_2M | SZ_1G;
++			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_4K;
+ 		if (id & ID2_PTFS_16K)
+-			size |= SZ_16K | SZ_32M;
++			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_16K;
+ 		if (id & ID2_PTFS_64K)
+-			size |= SZ_64K | SZ_512M;
++			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_64K;
+ 	}
+ 
++	/* Now we've corralled the various formats, what'll it do? */
++	size = 0;
++	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_S)
++		size |= SZ_4K | SZ_64K | SZ_1M | SZ_16M;
++	if (smmu->features &
++	    (ARM_SMMU_FEAT_FMT_AARCH32_L | ARM_SMMU_FEAT_FMT_AARCH64_4K))
++		size |= SZ_4K | SZ_2M | SZ_1G;
++	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_16K)
++		size |= SZ_16K | SZ_32M;
++	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_64K)
++		size |= SZ_64K | SZ_512M;
++
+ 	arm_smmu_ops.pgsize_bitmap &= size;
+ 	dev_notice(smmu->dev, "\tSupported page sizes: 0x%08lx\n", size);
+ 
+-- 
+2.8.1.dirty
