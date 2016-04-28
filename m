@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v8 5/8] genirq/irq: introduce msi_doorbell_info
-Date: Thu, 28 Apr 2016 08:22:07 +0000
-Message-ID: <1461831730-5575-6-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v8 4/8] genirq/msi: msi_compose wrapper
+Date: Thu, 28 Apr 2016 08:22:06 +0000
+Message-ID: <1461831730-5575-5-git-send-email-eric.auger@linaro.org>
 References: <1461831730-5575-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,73 +21,88 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The purpose is to be able to retrieve the MSI doorbells of an irqchip.
-This is now needed since on some platforms those doorbells must be
-iommu mapped (in case the MSIs transit through an IOMMU that do not
-bypass those transactions).
+Currently the MSI message is composed by directly calling
+irq_chip_compose_msi_msg and erased by setting the memory to zero.
 
-The assumption is there is a maximum of one doorbell region per cpu.
+On some platforms, we will need to complexify this composition to
+properly handle MSI emission through IOMMU. Also we will need to track
+when the MSI message is erased.
 
-A doorbell region is characterized by its physical address base, size and
-IOMMU protection flag. Those 2 last characteristics are shared among all
-doorbells.
-
-irq_chip msi_doorbell_info callback enables to retrieve the doorbells of
-the irqchip.
+We propose to introduce a common wrapper for actual composition and
+erasure, msi_compose.
 
 Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 ---
-v7 -> v8:
-- size and prot now are shared among all doorbells
-- doorbells now directly points to a percpu phys_addr_t
+v4 -> v5:
+- just introduce the msi-compose wrapper without adding new
+  functionalities
 
-v7: creation
+v3 -> v4:
+- that code was formely in irq-gic-common.c
+  "irqchip/gicv2m/v3-its-pci-msi: IOMMU map the MSI frame when needed"
+  also the [un]mapping was done in irq_write_msi_msg; now done on compose
+
+v2 -> v3:
+- protect iova/addr manipulation with CONFIG_ARCH_DMA_ADDR_T_64BIT and
+  CONFIG_PHYS_ADDR_T_64BIT
+- only expose gic_pci_msi_domain_write_msg in case CONFIG_IOMMU_API &
+  CONFIG_PCI_MSI_IRQ_DOMAIN are set.
+- gic_set/unset_msi_addr duly become static
 ---
- include/linux/irq.h | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ kernel/irq/msi.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/irq.h b/include/linux/irq.h
-index c4de623..5dbb26d 100644
---- a/include/linux/irq.h
-+++ b/include/linux/irq.h
-@@ -312,6 +312,19 @@ static inline irq_hw_number_t irqd_to_hwirq(struct irq_data *d)
- 	return d->hwirq;
+diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+index 9b0ba4a..72bf4d6 100644
+--- a/kernel/irq/msi.c
++++ b/kernel/irq/msi.c
+@@ -55,6 +55,19 @@ static inline void irq_chip_write_msi_msg(struct irq_data *data,
+ 	data->chip->irq_write_msi_msg(data, msg);
  }
  
-+/*
-+ * Describe all the MSI doorbell regions for an irqchip.
-+ * A single doorbell region per cpu is assumed.
-+ * In case a single doorbell is supported for the whole irqchip,
-+ * the region is described in as cpu #0's one
-+ */
-+struct irq_chip_msi_doorbell_info {
-+	phys_addr_t __percpu *percpu_doorbells; /* per cpu base address */
-+	size_t size;				/* size of a each doorbell */
-+	int prot;				/* iommu protection flag */
-+	int nb_doorbells;
-+};
++static int msi_compose(struct irq_data *irq_data,
++		       struct msi_msg *msg, bool erase)
++{
++	int ret = 0;
++
++	if (erase)
++		memset(msg, 0, sizeof(*msg));
++	else
++		ret = irq_chip_compose_msi_msg(irq_data, msg);
++
++	return ret;
++}
 +
  /**
-  * struct irq_chip - hardware interrupt chip descriptor
-  *
-@@ -349,6 +362,7 @@ static inline irq_hw_number_t irqd_to_hwirq(struct irq_data *d)
-  * @irq_get_irqchip_state:	return the internal state of an interrupt
-  * @irq_set_irqchip_state:	set the internal state of a interrupt
-  * @irq_set_vcpu_affinity:	optional to target a vCPU in a virtual machine
-+ * @msi_doorbell_info:	return the MSI doorbell info
-  * @ipi_send_single:	send a single IPI to destination cpus
-  * @ipi_send_mask:	send an IPI to destination cpus in cpumask
-  * @flags:		chip specific flags
-@@ -394,7 +408,8 @@ struct irq_chip {
- 	int		(*irq_set_irqchip_state)(struct irq_data *data, enum irqchip_irq_state which, bool state);
+  * msi_domain_set_affinity - Generic affinity setter function for MSI domains
+  * @irq_data:	The irq data associated to the interrupt
+@@ -73,7 +86,7 @@ int msi_domain_set_affinity(struct irq_data *irq_data,
  
- 	int		(*irq_set_vcpu_affinity)(struct irq_data *data, void *vcpu_info);
--
-+	struct irq_chip_msi_doorbell_info *(*msi_doorbell_info)(
-+							struct irq_data *data);
- 	void		(*ipi_send_single)(struct irq_data *data, unsigned int cpu);
- 	void		(*ipi_send_mask)(struct irq_data *data, const struct cpumask *dest);
+ 	ret = parent->chip->irq_set_affinity(parent, mask, force);
+ 	if (ret >= 0 && ret != IRQ_SET_MASK_OK_DONE) {
+-		BUG_ON(irq_chip_compose_msi_msg(irq_data, &msg));
++		BUG_ON(msi_compose(irq_data, &msg, false));
+ 		irq_chip_write_msi_msg(irq_data, &msg);
+ 	}
+ 
+@@ -85,7 +98,7 @@ static void msi_domain_activate(struct irq_domain *domain,
+ {
+ 	struct msi_msg msg;
+ 
+-	BUG_ON(irq_chip_compose_msi_msg(irq_data, &msg));
++	BUG_ON(msi_compose(irq_data, &msg, false));
+ 	irq_chip_write_msi_msg(irq_data, &msg);
+ }
+ 
+@@ -94,7 +107,7 @@ static void msi_domain_deactivate(struct irq_domain *domain,
+ {
+ 	struct msi_msg msg;
+ 
+-	memset(&msg, 0, sizeof(msg));
++	msi_compose(irq_data, &msg, true);
+ 	irq_chip_write_msi_msg(irq_data, &msg);
+ }
  
 -- 
 1.9.1
