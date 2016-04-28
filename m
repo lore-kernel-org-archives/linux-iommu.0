@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v8 3/8] genirq/msi: export msi_get_domain_info
-Date: Thu, 28 Apr 2016 08:22:05 +0000
-Message-ID: <1461831730-5575-4-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v8 5/8] genirq/irq: introduce msi_doorbell_info
+Date: Thu, 28 Apr 2016 08:22:07 +0000
+Message-ID: <1461831730-5575-6-git-send-email-eric.auger@linaro.org>
 References: <1461831730-5575-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,28 +21,73 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We plan to use msi_get_domain_info in VFIO module so let's export it.
+The purpose is to be able to retrieve the MSI doorbells of an irqchip.
+This is now needed since on some platforms those doorbells must be
+iommu mapped (in case the MSIs transit through an IOMMU that do not
+bypass those transactions).
+
+The assumption is there is a maximum of one doorbell region per cpu.
+
+A doorbell region is characterized by its physical address base, size and
+IOMMU protection flag. Those 2 last characteristics are shared among all
+doorbells.
+
+irq_chip msi_doorbell_info callback enables to retrieve the doorbells of
+the irqchip.
 
 Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 ---
+v7 -> v8:
+- size and prot now are shared among all doorbells
+- doorbells now directly points to a percpu phys_addr_t
 
-v2 -> v3:
-- remove static implementation in case CONFIG_PCI_MSI_IRQ_DOMAIN is not set
+v7: creation
 ---
- kernel/irq/msi.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/irq.h | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-index 38e89ce..9b0ba4a 100644
---- a/kernel/irq/msi.c
-+++ b/kernel/irq/msi.c
-@@ -400,5 +400,6 @@ struct msi_domain_info *msi_get_domain_info(struct irq_domain *domain)
- {
- 	return (struct msi_domain_info *)domain->host_data;
+diff --git a/include/linux/irq.h b/include/linux/irq.h
+index c4de623..5dbb26d 100644
+--- a/include/linux/irq.h
++++ b/include/linux/irq.h
+@@ -312,6 +312,19 @@ static inline irq_hw_number_t irqd_to_hwirq(struct irq_data *d)
+ 	return d->hwirq;
  }
-+EXPORT_SYMBOL_GPL(msi_get_domain_info);
  
- #endif /* CONFIG_GENERIC_MSI_IRQ_DOMAIN */
++/*
++ * Describe all the MSI doorbell regions for an irqchip.
++ * A single doorbell region per cpu is assumed.
++ * In case a single doorbell is supported for the whole irqchip,
++ * the region is described in as cpu #0's one
++ */
++struct irq_chip_msi_doorbell_info {
++	phys_addr_t __percpu *percpu_doorbells; /* per cpu base address */
++	size_t size;				/* size of a each doorbell */
++	int prot;				/* iommu protection flag */
++	int nb_doorbells;
++};
++
+ /**
+  * struct irq_chip - hardware interrupt chip descriptor
+  *
+@@ -349,6 +362,7 @@ static inline irq_hw_number_t irqd_to_hwirq(struct irq_data *d)
+  * @irq_get_irqchip_state:	return the internal state of an interrupt
+  * @irq_set_irqchip_state:	set the internal state of a interrupt
+  * @irq_set_vcpu_affinity:	optional to target a vCPU in a virtual machine
++ * @msi_doorbell_info:	return the MSI doorbell info
+  * @ipi_send_single:	send a single IPI to destination cpus
+  * @ipi_send_mask:	send an IPI to destination cpus in cpumask
+  * @flags:		chip specific flags
+@@ -394,7 +408,8 @@ struct irq_chip {
+ 	int		(*irq_set_irqchip_state)(struct irq_data *data, enum irqchip_irq_state which, bool state);
+ 
+ 	int		(*irq_set_vcpu_affinity)(struct irq_data *data, void *vcpu_info);
+-
++	struct irq_chip_msi_doorbell_info *(*msi_doorbell_info)(
++							struct irq_data *data);
+ 	void		(*ipi_send_single)(struct irq_data *data, unsigned int cpu);
+ 	void		(*ipi_send_mask)(struct irq_data *data, const struct cpumask *dest);
+ 
 -- 
 1.9.1
