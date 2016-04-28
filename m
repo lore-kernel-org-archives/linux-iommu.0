@@ -1,13 +1,12 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v8 8/8] iommu/arm-smmu: get/put the msi cookie
-Date: Thu, 28 Apr 2016 08:15:23 +0000
-Message-ID: <1461831323-5480-9-git-send-email-eric.auger@linaro.org>
-References: <1461831323-5480-1-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v8 0/8] KVM PCIe/MSI passthrough on ARM/ARM64: kernel part
+	2/3: msi changes
+Date: Thu, 28 Apr 2016 08:22:02 +0000
+Message-ID: <1461831730-5575-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1461831323-5480-1-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,108 +20,129 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-For IOMMU_DOMAIN_UNMANAGED type we now also get the msi
-cookie in both arm-smmu and arm-smmu-v3. This initializes
-resources for MSI doorbell mapping.
+This series implements the MSI address mapping/unmapping in the MSI layer.
+IOMMU binding happens on pci_enable_msi since this function can sleep and
+return errors. On msi_domain_set_affinity, msi_domain_(de)activate, which
+are not allowed to sleep, we simply look for the already existing binding.
 
-Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 16 ++++++++++++----
- drivers/iommu/arm-smmu.c    | 15 +++++++++++----
- 2 files changed, 23 insertions(+), 8 deletions(-)
+A new MSI domain info flag value is introduced to report whether the msi
+domain implements IRQ remapping. GIC v3 ITS is the first MSI controller
+advertising it. This flag value will be used by VFIO subsystem to
+determine whether MSI forwarding is safe.
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index bf222b5..b5d9826 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -22,6 +22,7 @@
- 
- #include <linux/delay.h>
- #include <linux/dma-iommu.h>
-+#include <linux/msi-iommu.h>
- #include <linux/err.h>
- #include <linux/interrupt.h>
- #include <linux/iommu.h>
-@@ -1411,15 +1412,21 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 		return NULL;
- 
- 	if (type == IOMMU_DOMAIN_DMA &&
--	    iommu_get_dma_cookie(&smmu_domain->domain)) {
--		kfree(smmu_domain);
--		return NULL;
--	}
-+	    iommu_get_dma_cookie(&smmu_domain->domain))
-+		goto err;
-+
-+	if (type == IOMMU_DOMAIN_UNMANAGED &&
-+		iommu_get_msi_cookie(&smmu_domain->domain))
-+		goto err;
-+
- 	smmu_domain->domain.msi_geometry = msi_geometry;
- 
- 	mutex_init(&smmu_domain->init_mutex);
- 	spin_lock_init(&smmu_domain->pgtbl_lock);
- 	return &smmu_domain->domain;
-+err:
-+	kfree(smmu_domain);
-+	return NULL;
- }
- 
- static int arm_smmu_bitmap_alloc(unsigned long *map, int span)
-@@ -1445,6 +1452,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 
-+	iommu_put_msi_cookie(domain);
- 	iommu_put_dma_cookie(domain);
- 	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
- 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 55f429d..0908985 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -30,6 +30,7 @@
- 
- #include <linux/delay.h>
- #include <linux/dma-iommu.h>
-+#include <linux/msi-iommu.h>
- #include <linux/dma-mapping.h>
- #include <linux/err.h>
- #include <linux/interrupt.h>
-@@ -990,10 +991,12 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 		return NULL;
- 
- 	if (type == IOMMU_DOMAIN_DMA &&
--	    iommu_get_dma_cookie(&smmu_domain->domain)) {
--		kfree(smmu_domain);
--		return NULL;
--	}
-+	    iommu_get_dma_cookie(&smmu_domain->domain))
-+		goto err;
-+
-+	if (type == IOMMU_DOMAIN_UNMANAGED &&
-+		iommu_get_msi_cookie(&smmu_domain->domain))
-+		goto err;
- 
- 	smmu_domain->domain.msi_geometry = msi_geometry;
- 
-@@ -1001,6 +1004,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 	spin_lock_init(&smmu_domain->pgtbl_lock);
- 
- 	return &smmu_domain->domain;
-+err:
-+	kfree(smmu_domain);
-+	return NULL;
- }
- 
- static void arm_smmu_domain_free(struct iommu_domain *domain)
-@@ -1011,6 +1017,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
- 	 * Free the domain resources. We assume that all devices have
- 	 * already been detached.
- 	 */
-+	iommu_put_msi_cookie(domain);
- 	iommu_put_dma_cookie(domain);
- 	arm_smmu_destroy_domain_context(domain);
- 	kfree(smmu_domain);
+More details & context can be found at:
+http://www.linaro.org/blog/core-dump/kvm-pciemsi-passthrough-armarm64/
+
+Best Regards
+
+Eric
+
+Applies on top of PART 1/3. Also depends on
+[PATCH 1/3] iommu: Add MMIO mapping type,
+http://comments.gmane.org/gmane.linux.kernel.iommu/12869
+
+Git: complete series available at
+https://git.linaro.org/people/eric.auger/linux.git/shortlog/refs/heads/v4.6-rc5-pcie-passthrough-v8
+
+History:
+
+v7 -> v8:
+take into account Marc's comments:
+- use iommu_msi_msg_pa_to_va with new proto
+- change in irq_chip_msi_doorbell_info struct definition:
+  prot and size became shared between all doorbells and phys_addr_t __percpu
+- cleanups in v2m irqchip
+- eventually did not touch MSI_FLAG_IRQ_REMAPPING naming
+- On msi_handle_doorbell_mappings, stop on the first irqchip where doorbells
+  can be found
+- fix resource deallocation on mapping failure in msi_domain_alloc_irqs
+
+v6 -> v7:
+- do alloc/map handling on pci_enable_msi and search on msi_(de)domain_activate
+- add msi_doorbell_info callback in irq-chip to retrieve the characteristics
+  of doorbells
+
+RFC v5 -> patch v6:
+- split to ease the review process
+- rebase on default iommu domain code (irq_data_to_msi_mapping_domain
+  checks IOMMU_DOMAIN_DMA type)
+- fix unmap sequence on msi_domain_set_affinity (reported by Marc):
+  unmap the previous doorbell when the new one has been mapped & written to
+  the device, ie. irq_chip_write_msi_msg.
+- "msi: msi_compose wrapper removed" following change above
+- add size parameter to iommu_get_reserved_iova API following Marc's request
+
+RFC v4 -> RFC v5:
+- take into account Thomas' comments on MSI related patches
+  - split "msi: IOMMU map the doorbell address when needed"
+  - increase readability and add comments
+  - fix style issues
+ - split "iommu: Add DOMAIN_ATTR_MSI_MAPPING attribute"
+ - platform ITS now advertises IOMMU_CAP_INTR_REMAP
+ - fix compilation issue with CONFIG_IOMMU API unset
+ - arm-smmu-v3 now advertises DOMAIN_ATTR_MSI_MAPPING
+
+RFC v3 -> v4:
+- Move doorbell mapping/unmapping in msi.c
+- fix ref count issue on set_affinity: in case of a change in the address
+  the previous address is decremented
+- doorbell map/unmap now is done on msi composition. Should allow the use
+  case for platform MSI controllers
+- create dma-reserved-iommu.h/c exposing/implementing a new API dedicated
+  to reserved IOVA management (looking like dma-iommu glue)
+- series reordering to ease the review:
+  - first part is related to IOMMU
+  - second related to MSI sub-system
+  - third related to VFIO (except arm-smmu IOMMU_CAP_INTR_REMAP removal)
+- expose the number of requested IOVA pages through VFIO_IOMMU_GET_INFO
+  [this partially addresses Marc's comments on iommu_get/put_single_reserved
+   size/alignment problematic - which I did not ignore - but I don't know
+   how much I can do at the moment]
+
+RFC v2 -> RFC v3:
+- should fix wrong handling of some CONFIG combinations:
+  CONFIG_IOVA, CONFIG_IOMMU_API, CONFIG_PCI_MSI_IRQ_DOMAIN
+- fix MSI_FLAG_IRQ_REMAPPING setting in GICv3 ITS (although not tested)
+
+PATCH v1 -> RFC v2:
+- reverted to RFC since it looks more reasonable ;-) the code is split
+  between VFIO, IOMMU, MSI controller and I am not sure I did the right
+  choices. Also API need to be further discussed.
+- iova API usage in arm-smmu.c.
+- MSI controller natively programs the MSI addr with either the PA or IOVA.
+  This is not done anymore in vfio-pci driver as suggested by Alex.
+- check irq remapping capability of the group
+
+RFC v1 [2] -> PATCH v1:
+- use the existing dma map/unmap ioctl interface with a flag to register a
+  reserved IOVA range. Use the legacy Rb to store this special vfio_dma.
+- a single reserved IOVA contiguous region now is allowed
+- use of an RB tree indexed by PA to store allocated reserved slots
+- use of a vfio_domain iova_domain to manage iova allocation within the
+  window provided by the userspace
+- vfio alloc_map/unmap_free take a vfio_group handle
+- vfio_group handle is cached in vfio_pci_device
+- add ref counting to bindings
+- user modality enabled at the end of the series
+
+
+Eric Auger (8):
+  genirq/msi: Add a new MSI_FLAG_IRQ_REMAPPING flag
+  irqchip/gic-v3-its: ITS advertises MSI_FLAG_IRQ_REMAPPING
+  genirq/msi: export msi_get_domain_info
+  genirq/msi: msi_compose wrapper
+  genirq/irq: introduce msi_doorbell_info
+  irqchip/gicv2m: implement msi_doorbell_info callback
+  genirq/msi: map/unmap the MSI doorbells on msi_domain_alloc/free_irqs
+  genirq/msi: use the MSI doorbell's IOVA when requested
+
+ drivers/irqchip/irq-gic-v2m.c                 |  30 ++++++-
+ drivers/irqchip/irq-gic-v3-its-pci-msi.c      |   3 +-
+ drivers/irqchip/irq-gic-v3-its-platform-msi.c |   3 +-
+ include/linux/irq.h                           |  17 +++-
+ include/linux/msi.h                           |   2 +
+ kernel/irq/msi.c                              | 115 +++++++++++++++++++++++---
+ 6 files changed, 155 insertions(+), 15 deletions(-)
+
 -- 
 1.9.1
