@@ -1,14 +1,23 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v8 7/7] vfio/type1: return MSI mapping requirements with
-	VFIO_IOMMU_GET_INFO
-Date: Thu, 28 Apr 2016 08:28:38 +0000
-Message-ID: <1461832118-5668-8-git-send-email-eric.auger@linaro.org>
-References: <1461832118-5668-1-git-send-email-eric.auger@linaro.org>
+From: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH V2 RFC] fixup! virtio: convert to use DMA api
+Date: Thu, 28 Apr 2016 17:34:51 +0300
+Message-ID: <20160428172039-mutt-send-email-mst@redhat.com>
+References: <20160421135416.GE11775@citrix.com>
+	<1461759501.118304.149.camel@infradead.org>
+	<20160427153345-mutt-send-email-mst@redhat.com>
+	<20160427142331.GH17926@8bytes.org>
+	<20160427172630-mutt-send-email-mst@redhat.com>
+	<20160427145632.GI17926@8bytes.org>
+	<20160427180007-mutt-send-email-mst@redhat.com>
+	<1461770135.118304.152.camel@infradead.org>
+	<20160427211635-mutt-send-email-mst@redhat.com>
+	<1461784617.118304.181.camel@infradead.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1461832118-5668-1-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1461784617.118304.181.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,110 +27,59 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Kevin Wolf <kwolf-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, cornelia.huck-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org, Wei Liu <wei.liu2-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, Stefan Hajnoczi <stefanha-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, qemu-block-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, Stefano Stabellini <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Christian Borntraeger <borntraeger-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Amit Shah <amit.shah-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Anthony PERARD <anthony.perard-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, Jason Wang <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch allows the user-space to know whether MSI addresses need to
-be mapped in the IOMMU. The user-space uses VFIO_IOMMU_GET_INFO ioctl and
-IOMMU_INFO_REQUIRE_MSI_MAP gets set if they need to.
+On Wed, Apr 27, 2016 at 08:16:57PM +0100, David Woodhouse wrote:
+> On Wed, 2016-04-27 at 21:17 +0300, Michael S. Tsirkin wrote:
+> > 
+> > > Because it's a dirty hack in the *wrong* place.
+> > 
+> > No one came up with a better one so far :(
+> 
+> Seriously?
+> 
+> Take a look at drivers/iommu/intel-iommu.c. It has quirks for all kinds
+> of shitty devices that have to be put in passthrough mode or otherwise
+> excluded.
 
-The computation of the number of IOVA pages to be provided by the user
-space will be implemented in a separate patch using capability chains.
+I see work-arounds for broken IOMMUs but not for
+individual devices. Could you point me to a more specific
+example?
 
-Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
----
-v6 -> v7:
-- remove the computation of the number of IOVA pages to be provisionned.
-  This number depends on the domain/group/device topology which can
-  dynamically change. Let's rely instead rely on an arbitrary max depending
-  on the system
+> We don't actually *need* it for the Intel IOMMU; all we need is for
+> QEMU to stop lying in its DMAR tables.
 
-v4 -> v5:
-- move msi_info and ret declaration within the conditional code
+We need it for legacy QEMU anyway, and it's not easy for QEMU to stop
+lying about virtio, so we'll need it for a while.
+I think it's easy for QEMU to stop lying about assigned devices,
+so we don't need it for non-virtio devices.
 
-v3 -> v4:
-- replace former vfio_domains_require_msi_mapping by
-  more complex computation of MSI mapping requirements, especially the
-  number of pages to be provided by the user-space.
-- reword patch title
+> We *do* want the same kind of quirks in the relevant POWER and ARM
+> IOMMU code in the kernel. Do that (hell, a simple quirk for all virtio
+> devices will suffice, but NOT in the virtio driver
 
-RFC v1 -> v1:
-- derived from
-  [RFC PATCH 3/6] vfio: Extend iommu-info to return MSIs automap state
-- renamed allow_msi_reconfig into require_msi_mapping
-- fixed VFIO_IOMMU_GET_INFO
----
- drivers/vfio/vfio_iommu_type1.c | 26 ++++++++++++++++++++++++++
- include/uapi/linux/vfio.h       |  4 ++++
- 2 files changed, 30 insertions(+)
+Sure - that works. It does not have to be in the driver.
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 2fc8197..86d97d9 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -310,6 +310,29 @@ static int vaddr_get_pfn(unsigned long vaddr, int prot, unsigned long *pfn)
- }
- 
- /*
-+ * vfio_domains_require_msi_mapping: return whether MSI doorbells must be
-+ * iommu mapped
-+ *
-+ * returns true if msi mapping is requested
-+ */
-+static bool vfio_domains_require_msi_mapping(struct vfio_iommu *iommu)
-+{
-+	struct iommu_domain_msi_geometry msi_geometry;
-+	struct vfio_domain *d;
-+	bool flag;
-+
-+	mutex_lock(&iommu->lock);
-+	/* All domains have same require_msi_map property, pick first */
-+	d = list_first_entry(&iommu->domain_list, struct vfio_domain, next);
-+	iommu_domain_get_attr(d->domain, DOMAIN_ATTR_MSI_GEOMETRY,
-+			      &msi_geometry);
-+	flag = msi_geometry.programmable;
-+
-+	mutex_unlock(&iommu->lock);
-+
-+	return flag;
-+}
-+/*
-  * Attempt to pin pages.  We really don't want to track all the pfns and
-  * the iommu can only map chunks of consecutive pfns anyway, so get the
-  * first page and all consecutive pages with the same locking.
-@@ -1166,6 +1189,9 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
- 
- 		info.flags = VFIO_IOMMU_INFO_PGSIZES;
- 
-+		if (vfio_domains_require_msi_mapping(iommu))
-+			info.flags |= VFIO_IOMMU_INFO_REQUIRE_MSI_MAP;
-+
- 		info.iova_pgsizes = vfio_pgsize_bitmap(iommu);
- 
- 		return copy_to_user((void __user *)arg, &info, minsz) ?
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index 4a9dbc2..3e27263 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -488,6 +488,7 @@ struct vfio_iommu_type1_info {
- 	__u32	argsz;
- 	__u32	flags;
- #define VFIO_IOMMU_INFO_PGSIZES (1 << 0)	/* supported page sizes info */
-+#define VFIO_IOMMU_INFO_REQUIRE_MSI_MAP (1 << 1)/* MSI must be mapped */
- 	__u64	iova_pgsizes;		/* Bitmap of supported page sizes */
- };
- 
-@@ -503,6 +504,9 @@ struct vfio_iommu_type1_info {
-  * IOVA region that will be used on some platforms to map the host MSI frames.
-  * In that specific case, vaddr is ignored. Once registered, an MSI reserved
-  * IOVA region stays until the container is closed.
-+ * The requirement for provisioning such reserved IOVA range can be checked by
-+ * calling VFIO_IOMMU_GET_INFO and testing the VFIO_IOMMU_INFO_REQUIRE_MSI_MAP
-+ * flag.
-  */
- struct vfio_iommu_type1_dma_map {
- 	__u32	argsz;
--- 
-1.9.1
+>) at the same moment
+> you fix the virtio devices to use the DMA API. Job done.
+> 
+> Some time *later* we can work on *refining* that quirk, and a way for
+> QEMU to tell the guest (via something generic like fwcfg, maybe) that
+> some devices are and aren't translated.
+
+I don't see why how fwcfg can work here. It's a static thing,
+devices can come and go with hotplug.
+
+> Actually, I'm about to look at moving dma_ops into struct device and
+> cleaning up the way we detect which IOMMU is attached, at device
+> instantiation time. Perhaps I can shove the virtio-exception quirk in
+> there while I'm at it...
+
+Sounds good.
+
+> -- 
+> dwmw2
+> 
