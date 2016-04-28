@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v8 2/8] iommu/arm-smmu: sets the MSI geometry to programmable
-Date: Thu, 28 Apr 2016 08:15:17 +0000
-Message-ID: <1461831323-5480-3-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v8 6/8] iommu/msi-iommu: iommu_msi_domain
+Date: Thu, 28 Apr 2016 08:15:21 +0000
+Message-ID: <1461831323-5480-7-git-send-email-eric.auger@linaro.org>
 References: <1461831323-5480-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,65 +21,81 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On ARM, MSI write transactions from device upstream to the smmu
-are conveyed through the iommu. Therefore target physical addresses
-must be mapped and DOMAIN_ATTR_MSI_GEOMETRY advertises a programmable
-MSI IOVA region.
+This function checks whether
+- the device belongs to a non default iommu domain
+- this iommu domain requires the MSI address to be mapped.
+
+If those conditions are met, the function returns the iommu domain
+to be used for mapping the MSI doorbell; else it returns NULL.
 
 Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 ---
+
 v7 -> v8:
-- use DOMAIN_ATTR_MSI_GEOMETRY
-
-v4 -> v5:
-- don't handle fsl_pamu_domain anymore
-- handle arm-smmu-v3
+- renamed  iommu_msi_mapping_desc_to_domain to iommu_msi_domain
+- the function now takes a struct device *
+- use DOMAIN_ATTR_MSI_GEOMETRY attribute
 ---
- drivers/iommu/arm-smmu-v3.c | 2 ++
- drivers/iommu/arm-smmu.c    | 3 +++
- 2 files changed, 5 insertions(+)
+ drivers/iommu/msi-iommu.c | 17 +++++++++++++++++
+ include/linux/msi-iommu.h | 14 ++++++++++++++
+ 2 files changed, 31 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4ff73ff..bf222b5 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1396,6 +1396,7 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- {
- 	struct arm_smmu_domain *smmu_domain;
-+	struct iommu_domain_msi_geometry msi_geometry = {0, 0, true};
- 
- 	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
- 		return NULL;
-@@ -1414,6 +1415,7 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 		kfree(smmu_domain);
- 		return NULL;
+diff --git a/drivers/iommu/msi-iommu.c b/drivers/iommu/msi-iommu.c
+index 203e86e..023ff17 100644
+--- a/drivers/iommu/msi-iommu.c
++++ b/drivers/iommu/msi-iommu.c
+@@ -243,3 +243,20 @@ unlock:
  	}
-+	smmu_domain->domain.msi_geometry = msi_geometry;
- 
- 	mutex_init(&smmu_domain->init_mutex);
- 	spin_lock_init(&smmu_domain->pgtbl_lock);
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7c39ac4..55f429d 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -976,6 +976,7 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- {
- 	struct arm_smmu_domain *smmu_domain;
-+	struct iommu_domain_msi_geometry msi_geometry = {0, 0, true};
- 
- 	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
- 		return NULL;
-@@ -994,6 +995,8 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 		return NULL;
- 	}
- 
-+	smmu_domain->domain.msi_geometry = msi_geometry;
+ }
+ EXPORT_SYMBOL_GPL(iommu_msi_put_doorbell_iova);
 +
- 	mutex_init(&smmu_domain->init_mutex);
- 	spin_lock_init(&smmu_domain->pgtbl_lock);
++struct iommu_domain *iommu_msi_domain(struct device *dev)
++{
++	struct iommu_domain *d = iommu_get_domain_for_dev(dev);
++	struct iommu_domain_msi_geometry msi_geometry;
++
++	if (!d || (d->type == IOMMU_DOMAIN_DMA))
++		return NULL;
++
++	iommu_domain_get_attr(d, DOMAIN_ATTR_MSI_GEOMETRY, &msi_geometry);
++	if (!msi_geometry.programmable)
++		return NULL;
++
++	return d;
++}
++EXPORT_SYMBOL_GPL(iommu_msi_domain);
++
+diff --git a/include/linux/msi-iommu.h b/include/linux/msi-iommu.h
+index 1cd115f..114bd69 100644
+--- a/include/linux/msi-iommu.h
++++ b/include/linux/msi-iommu.h
+@@ -81,6 +81,15 @@ int iommu_msi_get_doorbell_iova(struct iommu_domain *domain,
+  */
+ void iommu_msi_put_doorbell_iova(struct iommu_domain *domain, phys_addr_t addr);
  
++/**
++ * iommu_msi_domain: in case the device is upstream to an IOMMU and this IOMMU
++ * translates the MSI transaction, returns the iommu domain the MSI doorbell
++ * address must be mapped in; else returns NULL.
++ *
++ * @dev: device handle
++ */
++struct iommu_domain *iommu_msi_domain(struct device *dev);
++
+ #else
+ 
+ static inline int
+@@ -100,5 +109,10 @@ static inline int iommu_msi_get_doorbell_iova(struct iommu_domain *domain,
+ static inline void iommu_msi_put_doorbell_iova(struct iommu_domain *domain,
+ 					       phys_addr_t addr) {}
+ 
++static inline struct iommu_domain *iommu_msi_domain(struct device *dev)
++{
++	return NULL;
++}
++
+ #endif	/* CONFIG_IOMMU_MSI */
+ #endif	/* __MSI_IOMMU_H */
 -- 
 1.9.1
