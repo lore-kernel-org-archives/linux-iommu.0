@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v8 7/8] iommu/msi-iommu: iommu_msi_msg_pa_to_va
-Date: Thu, 28 Apr 2016 08:15:22 +0000
-Message-ID: <1461831323-5480-8-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v8 8/8] iommu/arm-smmu: get/put the msi cookie
+Date: Thu, 28 Apr 2016 08:15:23 +0000
+Message-ID: <1461831323-5480-9-git-send-email-eric.auger@linaro.org>
 References: <1461831323-5480-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,148 +21,108 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce iommu_msi_msg_pa_to_va whose role consists in
-detecting whether the device's MSIs must to be mapped into an IOMMU.
-It case it must, the function overrides the MSI msg originally composed
-and replaces the doorbell's PA by a pre-allocated and pre-mapped reserved
-IOVA. In case the corresponding PA region is not found, the function
-returns an error.
-
-This function is likely to be called in some code that cannot sleep. This
-is the reason why the allocation/mapping is done separately.
+For IOMMU_DOMAIN_UNMANAGED type we now also get the msi
+cookie in both arm-smmu and arm-smmu-v3. This initializes
+resources for MSI doorbell mapping.
 
 Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-
 ---
-v7 -> v8:
-- renamed from iommu_msi_mapping_translate_msg to iommu_msi_msg_pa_to_va
-  and now takes a struct device * as parameter
+ drivers/iommu/arm-smmu-v3.c | 16 ++++++++++++----
+ drivers/iommu/arm-smmu.c    | 15 +++++++++++----
+ 2 files changed, 23 insertions(+), 8 deletions(-)
 
-v7: creation
----
- drivers/iommu/msi-iommu.c | 55 +++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/msi-iommu.h | 26 ++++++++++++++++++++++
- 2 files changed, 81 insertions(+)
-
-diff --git a/drivers/iommu/msi-iommu.c b/drivers/iommu/msi-iommu.c
-index 023ff17..fb3007f 100644
---- a/drivers/iommu/msi-iommu.c
-+++ b/drivers/iommu/msi-iommu.c
-@@ -20,6 +20,14 @@
- #include <linux/msi-iommu.h>
- #include <linux/spinlock.h>
- #include <linux/iova.h>
-+#include <linux/msi.h>
-+
-+#ifdef CONFIG_PHYS_ADDR_T_64BIT
-+#define msg_to_phys_addr(msg) \
-+	(((phys_addr_t)((msg)->address_hi) << 32) | (msg)->address_lo)
-+#else
-+#define msg_to_phys_addr(msg)	((msg)->address_lo)
-+#endif
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index bf222b5..b5d9826 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -22,6 +22,7 @@
  
- struct doorbell_mapping {
- 	struct kref		kref;
-@@ -260,3 +268,50 @@ struct iommu_domain *iommu_msi_domain(struct device *dev)
- }
- EXPORT_SYMBOL_GPL(iommu_msi_domain);
+ #include <linux/delay.h>
+ #include <linux/dma-iommu.h>
++#include <linux/msi-iommu.h>
+ #include <linux/err.h>
+ #include <linux/interrupt.h>
+ #include <linux/iommu.h>
+@@ -1411,15 +1412,21 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 		return NULL;
  
-+static dma_addr_t iommu_msi_find_iova(struct iommu_domain *domain,
-+				      phys_addr_t addr, size_t size)
-+{
-+	struct doorbell_mapping_info *dmi = domain->msi_cookie;
-+	struct iova_domain *iovad = domain->iova_cookie;
-+	struct doorbell_mapping *mapping;
-+	dma_addr_t iova = DMA_ERROR_CODE;
-+	phys_addr_t aligned_base, offset;
-+	size_t binding_size;
+ 	if (type == IOMMU_DOMAIN_DMA &&
+-	    iommu_get_dma_cookie(&smmu_domain->domain)) {
+-		kfree(smmu_domain);
+-		return NULL;
+-	}
++	    iommu_get_dma_cookie(&smmu_domain->domain))
++		goto err;
 +
-+	if (!iovad || !dmi)
-+		return iova;
++	if (type == IOMMU_DOMAIN_UNMANAGED &&
++		iommu_get_msi_cookie(&smmu_domain->domain))
++		goto err;
 +
-+	offset = iova_offset(iovad, addr);
-+	aligned_base = addr - offset;
-+	binding_size = iova_align(iovad, size + offset);
-+
-+	spin_lock(&dmi->lock);
-+
-+	mapping = search_msi_doorbell_mapping(dmi, addr, size);
-+	if (mapping)
-+		iova = mapping->iova + offset + aligned_base - mapping->addr;
-+
-+	spin_unlock(&dmi->lock);
-+	return iova;
-+}
-+
-+int iommu_msi_msg_pa_to_va(struct device *dev, struct msi_msg *msg)
-+{
-+	struct iommu_domain *d = iommu_msi_domain(dev);
-+	dma_addr_t iova;
-+
-+	if (!d)
-+		return 0;
-+
-+	iova = iommu_msi_find_iova(d, msg_to_phys_addr(msg),
-+				   sizeof(phys_addr_t));
-+
-+	if (iova == DMA_ERROR_CODE)
-+		return -EINVAL;
-+
-+	msg->address_lo = lower_32_bits(iova);
-+	msg->address_hi = upper_32_bits(iova);
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(iommu_msi_msg_pa_to_va);
-+
-diff --git a/include/linux/msi-iommu.h b/include/linux/msi-iommu.h
-index 114bd69..c1c9bd5 100644
---- a/include/linux/msi-iommu.h
-+++ b/include/linux/msi-iommu.h
-@@ -19,6 +19,7 @@
- #include <linux/kernel.h>
+ 	smmu_domain->domain.msi_geometry = msi_geometry;
  
- struct iommu_domain;
-+struct msi_msg;
- 
- #ifdef CONFIG_IOMMU_MSI
- 
-@@ -90,6 +91,25 @@ void iommu_msi_put_doorbell_iova(struct iommu_domain *domain, phys_addr_t addr);
-  */
- struct iommu_domain *iommu_msi_domain(struct device *dev);
- 
-+/**
-+ * iommu_msi_msg_pa_to_va: in case a device's MSI transaction is translated
-+ * by an IOMMU, the msg address must be an IOVA instead of a physical address.
-+ * This function overwrites the original MSI message containing the doorbell's
-+ * physical address with the doorbell's pre-allocated IOVA, if any.
-+ *
-+ * The doorbell physical address must be bound previously to an IOVA using
-+ * iommu_msi_get_doorbell_iova
-+ *
-+ * @dev: device emitting the MSI
-+ * @msg: original MSI message containing the PA to be overwritten with the IOVA
-+ *
-+ * return 0 if the MSI does not need to be mapped or when the PA/IOVA
-+ * were successfully swapped; return -EINVAL if the addresses need
-+ * to be swapped but not IOMMU binding is found
-+ */
-+int iommu_msi_msg_pa_to_va(struct device *dev, struct msi_msg *msg);
-+
-+
- #else
- 
- static inline int
-@@ -114,5 +134,11 @@ static inline struct iommu_domain *iommu_msi_domain(struct device *dev)
- 	return NULL;
+ 	mutex_init(&smmu_domain->init_mutex);
+ 	spin_lock_init(&smmu_domain->pgtbl_lock);
+ 	return &smmu_domain->domain;
++err:
++	kfree(smmu_domain);
++	return NULL;
  }
  
-+static inline int iommu_msi_msg_pa_to_va(struct device *dev,
-+					 struct msi_msg *msg)
-+{
-+	return 0;
-+}
+ static int arm_smmu_bitmap_alloc(unsigned long *map, int span)
+@@ -1445,6 +1452,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 
++	iommu_put_msi_cookie(domain);
+ 	iommu_put_dma_cookie(domain);
+ 	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
+ 
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 55f429d..0908985 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -30,6 +30,7 @@
+ 
+ #include <linux/delay.h>
+ #include <linux/dma-iommu.h>
++#include <linux/msi-iommu.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/err.h>
+ #include <linux/interrupt.h>
+@@ -990,10 +991,12 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 		return NULL;
+ 
+ 	if (type == IOMMU_DOMAIN_DMA &&
+-	    iommu_get_dma_cookie(&smmu_domain->domain)) {
+-		kfree(smmu_domain);
+-		return NULL;
+-	}
++	    iommu_get_dma_cookie(&smmu_domain->domain))
++		goto err;
 +
- #endif	/* CONFIG_IOMMU_MSI */
- #endif	/* __MSI_IOMMU_H */
++	if (type == IOMMU_DOMAIN_UNMANAGED &&
++		iommu_get_msi_cookie(&smmu_domain->domain))
++		goto err;
+ 
+ 	smmu_domain->domain.msi_geometry = msi_geometry;
+ 
+@@ -1001,6 +1004,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 	spin_lock_init(&smmu_domain->pgtbl_lock);
+ 
+ 	return &smmu_domain->domain;
++err:
++	kfree(smmu_domain);
++	return NULL;
+ }
+ 
+ static void arm_smmu_domain_free(struct iommu_domain *domain)
+@@ -1011,6 +1017,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+ 	 * Free the domain resources. We assume that all devices have
+ 	 * already been detached.
+ 	 */
++	iommu_put_msi_cookie(domain);
+ 	iommu_put_dma_cookie(domain);
+ 	arm_smmu_destroy_domain_context(domain);
+ 	kfree(smmu_domain);
 -- 
 1.9.1
