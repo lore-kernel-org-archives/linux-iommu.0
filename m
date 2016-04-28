@@ -1,13 +1,13 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v8 8/8] genirq/msi: use the MSI doorbell's IOVA when requested
-Date: Thu, 28 Apr 2016 08:22:10 +0000
-Message-ID: <1461831730-5575-9-git-send-email-eric.auger@linaro.org>
-References: <1461831730-5575-1-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v8 1/7] vfio: introduce a vfio_dma type field
+Date: Thu, 28 Apr 2016 08:28:32 +0000
+Message-ID: <1461832118-5668-2-git-send-email-eric.auger@linaro.org>
+References: <1461832118-5668-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1461831730-5575-1-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1461832118-5668-1-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,54 +21,51 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On MSI message composition we now use the MSI doorbell's IOVA in
-place of the doorbell's PA in case the device is upstream to an
-IOMMU that requires MSI addresses to be mapped. The doorbell's
-allocation and mapping happened on an early stage (pci_enable_msi).
+We introduce a vfio_dma type since we will need to discriminate
+different types of dma slots:
+- VFIO_IOVA_USER: IOVA region used to map user vaddr
+- VFIO_IOVA_RESERVED: IOVA region reserved to map host device PA such
+  as MSI doorbells
 
 Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 ---
-v7 -> v8:
-- use iommu_msi_msg_pa_to_va
-- add WARN_ON
 
 v6 -> v7:
-- allocation/mapping is done at an earlier stage. We now just perform
-  the iova lookup. So it is safe now to be called in a code that cannot
-  sleep. iommu_msi_set_doorbell_iova is moved in the dma-reserved-iommu
-  API: I think it cleans things up with respect to various #ifdef CONFIGS.
-
-v5:
-- use macros to increase the readability
-- add comments
-- fix a typo that caused a compilation error if CONFIG_IOMMU_API
-  is not set
+- add VFIO_IOVA_ANY
+- do not introduce yet any VFIO_IOVA_RESERVED handling
 ---
- kernel/irq/msi.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/vfio/vfio_iommu_type1.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-index d5f95e6..835938b 100644
---- a/kernel/irq/msi.c
-+++ b/kernel/irq/msi.c
-@@ -64,8 +64,16 @@ static int msi_compose(struct irq_data *irq_data,
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 75b24e9..aaf5a6c 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -53,6 +53,16 @@ module_param_named(disable_hugepages,
+ MODULE_PARM_DESC(disable_hugepages,
+ 		 "Disable VFIO IOMMU support for IOMMU hugepages.");
  
- 	if (erase)
- 		memset(msg, 0, sizeof(*msg));
--	else
-+	else {
-+		struct device *dev;
++enum vfio_iova_type {
++	VFIO_IOVA_USER = 0,	/* standard IOVA used to map user vaddr */
++	/*
++	 * IOVA reserved to map special host physical addresses,
++	 * MSI frames for instance
++	 */
++	VFIO_IOVA_RESERVED,
++	VFIO_IOVA_ANY,		/* matches any IOVA type */
++};
 +
- 		ret = irq_chip_compose_msi_msg(irq_data, msg);
-+		if (ret)
-+			return ret;
-+
-+		dev = msi_desc_to_dev(irq_data_get_msi_desc(irq_data));
-+		WARN_ON(iommu_msi_msg_pa_to_va(dev, msg));
-+	}
+ struct vfio_iommu {
+ 	struct list_head	domain_list;
+ 	struct mutex		lock;
+@@ -75,6 +85,7 @@ struct vfio_dma {
+ 	unsigned long		vaddr;		/* Process virtual addr */
+ 	size_t			size;		/* Map size (bytes) */
+ 	int			prot;		/* IOMMU_READ/WRITE */
++	enum vfio_iova_type	type;		/* type of IOVA */
+ };
  
- 	return ret;
- }
+ struct vfio_group {
 -- 
 1.9.1
