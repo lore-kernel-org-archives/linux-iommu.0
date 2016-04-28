@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v8 2/8] irqchip/gic-v3-its: ITS advertises
-	MSI_FLAG_IRQ_REMAPPING
-Date: Thu, 28 Apr 2016 08:22:04 +0000
-Message-ID: <1461831730-5575-3-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v8 3/8] genirq/msi: export msi_get_domain_info
+Date: Thu, 28 Apr 2016 08:22:05 +0000
+Message-ID: <1461831730-5575-4-git-send-email-eric.auger@linaro.org>
 References: <1461831730-5575-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,48 +21,28 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The ITS is the first ARM MSI controller advertising the new
-MSI_FLAG_IRQ_REMAPPING flag. It does so because it supports
-interrupt translation service. This HW support offers isolation
-of MSIs, feature used when using KVM device passthrough.
+We plan to use msi_get_domain_info in VFIO module so let's export it.
 
 Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 ---
 
-v5: new
+v2 -> v3:
+- remove static implementation in case CONFIG_PCI_MSI_IRQ_DOMAIN is not set
 ---
- drivers/irqchip/irq-gic-v3-its-pci-msi.c      | 3 ++-
- drivers/irqchip/irq-gic-v3-its-platform-msi.c | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ kernel/irq/msi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/irqchip/irq-gic-v3-its-pci-msi.c b/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-index aee60ed..8223765 100644
---- a/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-+++ b/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-@@ -96,7 +96,8 @@ static struct msi_domain_ops its_pci_msi_ops = {
+diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+index 38e89ce..9b0ba4a 100644
+--- a/kernel/irq/msi.c
++++ b/kernel/irq/msi.c
+@@ -400,5 +400,6 @@ struct msi_domain_info *msi_get_domain_info(struct irq_domain *domain)
+ {
+ 	return (struct msi_domain_info *)domain->host_data;
+ }
++EXPORT_SYMBOL_GPL(msi_get_domain_info);
  
- static struct msi_domain_info its_pci_msi_domain_info = {
- 	.flags	= (MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
--		   MSI_FLAG_MULTI_PCI_MSI | MSI_FLAG_PCI_MSIX),
-+		   MSI_FLAG_MULTI_PCI_MSI | MSI_FLAG_PCI_MSIX |
-+		   MSI_FLAG_IRQ_REMAPPING),
- 	.ops	= &its_pci_msi_ops,
- 	.chip	= &its_msi_irq_chip,
- };
-diff --git a/drivers/irqchip/irq-gic-v3-its-platform-msi.c b/drivers/irqchip/irq-gic-v3-its-platform-msi.c
-index 470b4aa..8c0d69d 100644
---- a/drivers/irqchip/irq-gic-v3-its-platform-msi.c
-+++ b/drivers/irqchip/irq-gic-v3-its-platform-msi.c
-@@ -63,7 +63,8 @@ static struct msi_domain_ops its_pmsi_ops = {
- };
- 
- static struct msi_domain_info its_pmsi_domain_info = {
--	.flags	= (MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS),
-+	.flags	= (MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
-+		   MSI_FLAG_IRQ_REMAPPING),
- 	.ops	= &its_pmsi_ops,
- 	.chip	= &its_pmsi_irq_chip,
- };
+ #endif /* CONFIG_GENERIC_MSI_IRQ_DOMAIN */
 -- 
 1.9.1
