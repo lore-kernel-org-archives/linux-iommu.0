@@ -1,12 +1,13 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v8 0/7] KVM PCIe/MSI passthrough on ARM/ARM64: kernel part
-	3/3: vfio changes
-Date: Thu, 28 Apr 2016 08:28:31 +0000
-Message-ID: <1461832118-5668-1-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v8 6/7] iommu/arm-smmu: do not advertise IOMMU_CAP_INTR_REMAP
+Date: Thu, 28 Apr 2016 08:28:37 +0000
+Message-ID: <1461832118-5668-7-git-send-email-eric.auger@linaro.org>
+References: <1461832118-5668-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1461832118-5668-1-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,138 +21,50 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This series allows the user-space to register a reserved IOVA domain.
-This completes the kernel integration of the whole functionality on top
-of part 1 & 2.
+Do not advertise IOMMU_CAP_INTR_REMAP for arm-smmu(-v3). Indeed the
+irq_remapping capability is abstracted on irqchip side for ARM as
+opposed to Intel IOMMU featuring IRQ remapping HW.
 
-It also depends on [PATCH 1/3] iommu: Add MMIO mapping type series,
-http://comments.gmane.org/gmane.linux.kernel.iommu/12869
+So to check IRQ remapping capability, the msi domain needs to be
+checked instead.
 
-We reuse the VFIO DMA MAP ioctl with a new flag to bridge to the
-msi-iommu API. The need for provisioning such MSI IOVA range is reported
-through the VFIO_IOMMU_GET_INFO iotcl.
+This commit needs to be applied after "vfio/type1: also check IRQ
+remapping capability at msi domain" else the legacy interrupt
+assignment gets broken with arm-smmu.
 
-vfio_iommu_type1 checks if the MSI mapping is safe when attaching the
-vfio group to the container (allow_unsafe_interrupts modality).
+Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 3 ++-
+ drivers/iommu/arm-smmu.c    | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-On ARM/ARM64, the IOMMU does not astract IRQ remapping. the modality is
-abstracted on MSI controller side. The GICv3 ITS is the first controller
-advertising the modality.
-
-More details & context can be found at:
-http://www.linaro.org/blog/core-dump/kvm-pciemsi-passthrough-armarm64/
-
-Best Regards
-
-Eric
-
-Testing:
-- functional on ARM64 AMD Overdrive HW (single GICv2m frame) with
-  Intel X540-T2 (SR-IOV capable)
-- Not tested: ARM GICv3 ITS
-
-References:
-[1] [RFC 0/2] VFIO: Add virtual MSI doorbell support
-    (https://lkml.org/lkml/2015/7/24/135)
-[2] [RFC PATCH 0/6] vfio: Add interface to map MSI pages
-    (https://lists.cs.columbia.edu/pipermail/kvmarm/2015-September/016607.html)
-[3] [PATCH v2 0/3] Introduce MSI hardware mapping for VFIO
-    (http://permalink.gmane.org/gmane.comp.emulators.kvm.arm.devel/3858)
-
-Git: complete series available at
-https://git.linaro.org/people/eric.auger/linux.git/shortlog/refs/heads/v4.6-rc5-pcie-passthrough-v8
-
-previous version at
-https://git.linaro.org/people/eric.auger/linux.git/shortlog/refs/heads/v4.6-rc4-pcie-passthrough-v7
-
-QEMU Integration:
-[RFC v2 0/8] KVM PCI/MSI passthrough with mach-virt
-(http://lists.gnu.org/archive/html/qemu-arm/2016-01/msg00444.html)
-https://git.linaro.org/people/eric.auger/qemu.git/shortlog/refs/heads/v2.5.0-pci-passthrough-rfc-v2
-
-History:
-v7 -> v8:
-- use renamed msi-iommu API
-- VFIO only responsible for setting the IOVA aperture
-- use new DOMAIN_ATTR_MSI_GEOMETRY iommu domain attribute
-
-v6 -> v7:
-- vfio_find_dma now accepts a dma_type argument.
-- should have recovered the capability to unmap the whole user IOVA range
-- remove computation of nb IOVA pages -> will post a separate RFC for that
-  while respinning the QEMU part
-
-RFC v5 -> patch v6:
-- split to ease the review process
-
-RFC v4 -> RFC v5:
-- take into account Thomas' comments on MSI related patches
-  - split "msi: IOMMU map the doorbell address when needed"
-  - increase readability and add comments
-  - fix style issues
- - split "iommu: Add DOMAIN_ATTR_MSI_MAPPING attribute"
- - platform ITS now advertises IOMMU_CAP_INTR_REMAP
- - fix compilation issue with CONFIG_IOMMU API unset
- - arm-smmu-v3 now advertises DOMAIN_ATTR_MSI_MAPPING
-
-RFC v3 -> v4:
-- Move doorbell mapping/unmapping in msi.c
-- fix ref count issue on set_affinity: in case of a change in the address
-  the previous address is decremented
-- doorbell map/unmap now is done on msi composition. Should allow the use
-  case for platform MSI controllers
-- create dma-reserved-iommu.h/c exposing/implementing a new API dedicated
-  to reserved IOVA management (looking like dma-iommu glue)
-- series reordering to ease the review:
-  - first part is related to IOMMU
-  - second related to MSI sub-system
-  - third related to VFIO (except arm-smmu IOMMU_CAP_INTR_REMAP removal)
-- expose the number of requested IOVA pages through VFIO_IOMMU_GET_INFO
-  [this partially addresses Marc's comments on iommu_get/put_single_reserved
-   size/alignment problematic - which I did not ignore - but I don't know
-   how much I can do at the moment]
-
-RFC v2 -> RFC v3:
-- should fix wrong handling of some CONFIG combinations:
-  CONFIG_IOVA, CONFIG_IOMMU_API, CONFIG_PCI_MSI_IRQ_DOMAIN
-- fix MSI_FLAG_IRQ_REMAPPING setting in GICv3 ITS (although not tested)
-
-PATCH v1 -> RFC v2:
-- reverted to RFC since it looks more reasonable ;-) the code is split
-  between VFIO, IOMMU, MSI controller and I am not sure I did the right
-  choices. Also API need to be further discussed.
-- iova API usage in arm-smmu.c.
-- MSI controller natively programs the MSI addr with either the PA or IOVA.
-  This is not done anymore in vfio-pci driver as suggested by Alex.
-- check irq remapping capability of the group
-
-RFC v1 [2] -> PATCH v1:
-- use the existing dma map/unmap ioctl interface with a flag to register a
-  reserved IOVA range. Use the legacy Rb to store this special vfio_dma.
-- a single reserved IOVA contiguous region now is allowed
-- use of an RB tree indexed by PA to store allocated reserved slots
-- use of a vfio_domain iova_domain to manage iova allocation within the
-  window provided by the userspace
-- vfio alloc_map/unmap_free take a vfio_group handle
-- vfio_group handle is cached in vfio_pci_device
-- add ref counting to bindings
-- user modality enabled at the end of the series
-
-
-Eric Auger (7):
-  vfio: introduce a vfio_dma type field
-  vfio/type1: vfio_find_dma accepting a type argument
-  vfio/type1: bypass unmap/unpin and replay for VFIO_IOVA_RESERVED slots
-  vfio: allow reserved msi iova registration
-  vfio/type1: also check IRQ remapping capability at msi domain
-  iommu/arm-smmu: do not advertise IOMMU_CAP_INTR_REMAP
-  vfio/type1: return MSI mapping requirements with VFIO_IOMMU_GET_INFO
-
- drivers/iommu/arm-smmu-v3.c     |   3 +-
- drivers/iommu/arm-smmu.c        |   3 +-
- drivers/vfio/vfio_iommu_type1.c | 227 +++++++++++++++++++++++++++++++++++++---
- include/uapi/linux/vfio.h       |  14 ++-
- 4 files changed, 230 insertions(+), 17 deletions(-)
-
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index b5d9826..778212c 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1386,7 +1386,8 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 	case IOMMU_CAP_CACHE_COHERENCY:
+ 		return true;
+ 	case IOMMU_CAP_INTR_REMAP:
+-		return true; /* MSIs are just memory writes */
++		/* interrupt translation handled at MSI controller level */
++		return false;
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 0908985..e7c9e89 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1320,7 +1320,8 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 		 */
+ 		return true;
+ 	case IOMMU_CAP_INTR_REMAP:
+-		return true; /* MSIs are just memory writes */
++		/* interrupt translation handled at MSI controller level */
++		return false;
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
 -- 
 1.9.1
