@@ -1,14 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2] iommu/arm-smmu: Decouple context format from kernel config
-Date: Thu, 28 Apr 2016 17:12:09 +0100
-Message-ID: <395a76625458d198d3264b9ef91d4b619a3a14e0.1461858185.git.robin.murphy@arm.com>
-References: <cover.1460391217.git.robin.murphy@arm.com>
-	<173006777218859d1671ae517c70592c6c02f630.1460391217.git.robin.murphy@arm.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v9 12/18] vfio: Register/unregister irq_bypass_producer
+Date: Thu, 28 Apr 2016 10:40:28 -0600
+Message-ID: <20160428104028.63ff2109@t450s.home>
+References: <1442586596-5920-1-git-send-email-feng.wu@intel.com>
+	<1442586596-5920-13-git-send-email-feng.wu@intel.com>
+	<20160426140816.67b8b37c@t450s.home>
+	<E959C4978C3B6342920538CF579893F00C3D3D29@SHSMSX103.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <173006777218859d1671ae517c70592c6c02f630.1460391217.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <E959C4978C3B6342920538CF579893F00C3D3D29-0J0gbvR4kTggGBtAFL8yw7fspsVTdybXVpNB7YpNyf8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,240 +20,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: "Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The way the driver currently forces an AArch32 or AArch64 context format
-based on the kernel config and SMMU architecture version is suboptimal,
-in that it makes it very hard to support oddball mix-and-match cases
-like the SMMUv1 64KB supplement, or situations where the reduced table
-depth of an AArch32 short descriptor context may be desirable under an
-AArch64 kernel. It also only happens to work on current implementations
-which do support all the relevant formats.
+On Wed, 27 Apr 2016 01:32:32 +0000
+"Wu, Feng" <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
 
-Introduce an explicit notion of context format, so we can manage that
-independently and get rid of the inflexible #ifdeffery.
+> > -----Original Message-----
+> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > Sent: Wednesday, April 27, 2016 4:08 AM
+> > To: Wu, Feng <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> > Cc: pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; mtosatti-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
+> > eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+> > foundation.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> > Subject: Re: [PATCH v9 12/18] vfio: Register/unregister irq_bypass_producer
+> > 
+> > On Fri, 18 Sep 2015 22:29:50 +0800
+> > Feng Wu <feng.wu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+> > 
+> >  @@ -360,6 +361,14 @@ static int vfio_msi_set_vector_signal(struct
+> >  vfio_pci_device *vdev,  
+> > >  		return ret;
+> > >  	}
+> > >
+> > > +	vdev->ctx[vector].producer.token = trigger;
+> > > +	vdev->ctx[vector].producer.irq = irq;
+> > > +	ret = irq_bypass_register_producer(&vdev->ctx[vector].producer);
+> > > +	if (unlikely(ret))
+> > > +		dev_info(&pdev->dev,
+> > > +		"irq bypass producer (token %p) registeration fails: %d\n",
+> > > +		vdev->ctx[vector].producer.token, ret);
+> > > +
+> > >  	vdev->ctx[vector].trigger = trigger;
+> > >
+> > >  	return 0;  
+> > 
+> > Digging back into the IRQ producer/consumer thing, I'm not sure how we
+> > should be handling a failure here, but it turns out that what we have
+> > is pretty sub-optimal.  Any sort of testing on AMD hits this dev_info
+> > because kvm_arch_irq_bypass_add_producer() returns -EINVAL without
+> > kvm_x86_ops->update_pi_irte which is only implemented for vmx.  Clearly
+> > we don't want to spew confusing error messages for a feature that does
+> > not exist.
+> > 
+> > The easiest option is to simply make this error silent, but should
+> > registering a producer/consumer really fail due to a mismatch on the
+> > other end or should the __connect sequence fail silently, which both
+> > ends would know about (if they care) due to the add/del handshake
+> > between them?  Perhaps for now we simply need a stable suitable fix to
+> > silence the dev_info above, but longer term, registration shouldn't
+> > fail for mismatches like this.  Thoughts?  Thanks,  
+> 
+> Can we just return 0 when kvm_x86_ops->update_pi_irte is NULL in
+> kvm_arch_irq_bypass_add_producer?
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+Yeah, that may be the best way to go, only return error for actual
+failures, not for simple lack of a bypass mechanism.  This is
+consistent with what update_pi_irte does when running on hardware
+or configurations without PI.  Thanks,
 
-Changes since v1:
-- Simplify the format decision to let the io-pgtable code pick AArch64
-  granules itself, since (pl330 shenanigans aside) MMU-401 actually
-  works better than it claims to. I'll look into abstracting this away
-  completely into io-pgtable so it can be shared with SMMUv3 and others.
-- Remove a couple more now-dead lines from arm_smmu_device_cfg_probe()
-  which I missed first time around.
-
-Robin.
-
- drivers/iommu/arm-smmu.c | 94 ++++++++++++++++++++++++++++++++++++------------
- 1 file changed, 72 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index acff3326f818..625348431c5e 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -117,6 +117,8 @@
- #define ID0_NTS				(1 << 28)
- #define ID0_SMS				(1 << 27)
- #define ID0_ATOSNS			(1 << 26)
-+#define ID0_PTFS_NO_AARCH32		(1 << 25)
-+#define ID0_PTFS_NO_AARCH32S		(1 << 24)
- #define ID0_CTTW			(1 << 14)
- #define ID0_NUMIRPT_SHIFT		16
- #define ID0_NUMIRPT_MASK		0xff
-@@ -317,6 +319,11 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_TRANS_NESTED	(1 << 4)
- #define ARM_SMMU_FEAT_TRANS_OPS		(1 << 5)
- #define ARM_SMMU_FEAT_VMID16		(1 << 6)
-+#define ARM_SMMU_FEAT_FMT_AARCH64_4K	(1 << 7)
-+#define ARM_SMMU_FEAT_FMT_AARCH64_16K	(1 << 8)
-+#define ARM_SMMU_FEAT_FMT_AARCH64_64K	(1 << 9)
-+#define ARM_SMMU_FEAT_FMT_AARCH32_L	(1 << 10)
-+#define ARM_SMMU_FEAT_FMT_AARCH32_S	(1 << 11)
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
-@@ -346,10 +353,18 @@ struct arm_smmu_device {
- 	u32				cavium_id_base; /* Specific to Cavium */
- };
- 
-+enum arm_smmu_context_fmt {
-+	ARM_SMMU_CTX_FMT_NONE,
-+	ARM_SMMU_CTX_FMT_AARCH64,
-+	ARM_SMMU_CTX_FMT_AARCH32_L,
-+	ARM_SMMU_CTX_FMT_AARCH32_S,
-+};
-+
- struct arm_smmu_cfg {
- 	u8				cbndx;
- 	u8				irptndx;
- 	u32				cbar;
-+	enum arm_smmu_context_fmt	fmt;
- };
- #define INVALID_IRPTNDX			0xff
- 
-@@ -619,14 +634,13 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
- 		reg = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
- 		reg += leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
- 
--		if (!IS_ENABLED(CONFIG_64BIT) || smmu->version == ARM_SMMU_V1) {
-+		if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
- 			iova &= ~12UL;
- 			iova |= ARM_SMMU_CB_ASID(smmu, cfg);
- 			do {
- 				writel_relaxed(iova, reg);
- 				iova += granule;
- 			} while (size -= granule);
--#ifdef CONFIG_64BIT
- 		} else {
- 			iova >>= 12;
- 			iova |= (u64)ARM_SMMU_CB_ASID(smmu, cfg) << 48;
-@@ -634,9 +648,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
- 				writeq_relaxed(iova, reg);
- 				iova += granule >> 12;
- 			} while (size -= granule);
--#endif
- 		}
--#ifdef CONFIG_64BIT
- 	} else if (smmu->version == ARM_SMMU_V2) {
- 		reg = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
- 		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
-@@ -646,7 +658,6 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
- 			smmu_write_atomic_lq(iova, reg);
- 			iova += granule >> 12;
- 		} while (size -= granule);
--#endif
- 	} else {
- 		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
- 		writel_relaxed(ARM_SMMU_CB_VMID(smmu, cfg), reg);
-@@ -745,11 +756,10 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
- 
- 	if (smmu->version > ARM_SMMU_V1) {
--#ifdef CONFIG_64BIT
--		reg = CBA2R_RW64_64BIT;
--#else
--		reg = CBA2R_RW64_32BIT;
--#endif
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
-+			reg = CBA2R_RW64_64BIT;
-+		else
-+			reg = CBA2R_RW64_32BIT;
- 		/* 16-bit VMIDs live in CBA2R */
- 		if (smmu->features & ARM_SMMU_FEAT_VMID16)
- 			reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBA2R_VMID_SHIFT;
-@@ -860,16 +870,40 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
- 		smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
- 
-+	/*
-+	 * Choosing a suitable context format is even more fiddly. Until we
-+	 * grow some way for the caller to express a preference, and/or move
-+	 * the decision into the io-pgtable code where it arguably belongs,
-+	 * just aim for the closest thing to the rest of the system, and hope
-+	 * that the hardware isn't mental enough that we can't assume AArch64
-+	 * support to be a superset of AArch32 support...
-+	 */
-+	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_L)
-+		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH32_L;
-+	if ((IS_ENABLED(CONFIG_64BIT) || cfg->fmt == ARM_SMMU_CTX_FMT_NONE) &&
-+	    (smmu->features & (ARM_SMMU_FEAT_FMT_AARCH64_64K |
-+			       ARM_SMMU_FEAT_FMT_AARCH64_16K |
-+			       ARM_SMMU_FEAT_FMT_AARCH64_4K)))
-+		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH64;
-+
-+	if (cfg->fmt == ARM_SMMU_CTX_FMT_NONE) {
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+
- 	switch (smmu_domain->stage) {
- 	case ARM_SMMU_DOMAIN_S1:
- 		cfg->cbar = CBAR_TYPE_S1_TRANS_S2_BYPASS;
- 		start = smmu->num_s2_context_banks;
- 		ias = smmu->va_size;
- 		oas = smmu->ipa_size;
--		if (IS_ENABLED(CONFIG_64BIT))
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
- 			fmt = ARM_64_LPAE_S1;
--		else
-+		} else {
- 			fmt = ARM_32_LPAE_S1;
-+			ias = min(ias, 32UL);
-+			oas = min(oas, 40UL);
-+		}
- 		break;
- 	case ARM_SMMU_DOMAIN_NESTED:
- 		/*
-@@ -881,10 +915,13 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		start = 0;
- 		ias = smmu->ipa_size;
- 		oas = smmu->pa_size;
--		if (IS_ENABLED(CONFIG_64BIT))
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
- 			fmt = ARM_64_LPAE_S2;
--		else
-+		} else {
- 			fmt = ARM_32_LPAE_S2;
-+			ias = min(ias, 40UL);
-+			oas = min(oas, 40UL);
-+		}
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -1670,6 +1707,12 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 					   ID0_NUMSIDB_MASK;
- 	}
- 
-+	if (smmu->version < ARM_SMMU_V2 || !(id & ID0_PTFS_NO_AARCH32)) {
-+		smmu->features |= ARM_SMMU_FEAT_FMT_AARCH32_L;
-+		if (!(id & ID0_PTFS_NO_AARCH32S))
-+			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH32_S;
-+	}
-+
- 	/* ID1 */
- 	id = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID1);
- 	smmu->pgshift = (id & ID1_PAGESIZE) ? 16 : 12;
-@@ -1725,22 +1768,29 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 
- 	if (smmu->version == ARM_SMMU_V1) {
- 		smmu->va_size = smmu->ipa_size;
--		size = SZ_4K | SZ_2M | SZ_1G;
- 	} else {
- 		size = (id >> ID2_UBS_SHIFT) & ID2_UBS_MASK;
- 		smmu->va_size = arm_smmu_id_size_to_bits(size);
--#ifndef CONFIG_64BIT
--		smmu->va_size = min(32UL, smmu->va_size);
--#endif
--		size = 0;
- 		if (id & ID2_PTFS_4K)
--			size |= SZ_4K | SZ_2M | SZ_1G;
-+			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_4K;
- 		if (id & ID2_PTFS_16K)
--			size |= SZ_16K | SZ_32M;
-+			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_16K;
- 		if (id & ID2_PTFS_64K)
--			size |= SZ_64K | SZ_512M;
-+			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_64K;
- 	}
- 
-+	/* Now we've corralled the various formats, what'll it do? */
-+	size = 0;
-+	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_S)
-+		size |= SZ_4K | SZ_64K | SZ_1M | SZ_16M;
-+	if (smmu->features &
-+	    (ARM_SMMU_FEAT_FMT_AARCH32_L | ARM_SMMU_FEAT_FMT_AARCH64_4K))
-+		size |= SZ_4K | SZ_2M | SZ_1G;
-+	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_16K)
-+		size |= SZ_16K | SZ_32M;
-+	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_64K)
-+		size |= SZ_64K | SZ_512M;
-+
- 	arm_smmu_ops.pgsize_bitmap &= size;
- 	dev_notice(smmu->dev, "\tSupported page sizes: 0x%08lx\n", size);
- 
--- 
-2.8.1.dirty
+Alex
