@@ -1,89 +1,107 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [RFC PATCH v1 00/18] x86: Secure Memory Encryption (AMD)
-Date: Wed, 27 Apr 2016 15:10:19 -0500
-Message-ID: <57211CAB.9040902@amd.com>
-References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
- <CALCETrUdrMAmE6Vgj6_PALdmRZVVKa3QDwJtO=YDTOQdox=rhQ@mail.gmail.com>
+From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v8 1/8] iommu: Add iommu_domain_msi_geometry and
+	DOMAIN_ATTR_MSI_GEOMETRY
+Date: Thu, 28 Apr 2016 08:15:16 +0000
+Message-ID: <1461831323-5480-2-git-send-email-eric.auger@linaro.org>
+References: <1461831323-5480-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <CALCETrUdrMAmE6Vgj6_PALdmRZVVKa3QDwJtO=YDTOQdox=rhQ@mail.gmail.com>
-Sender: owner-linux-mm@kvack.org
-To: Andy Lutomirski <luto@amacapital.net>
-Cc: linux-arch <linux-arch@vger.kernel.org>, "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>, kvm list <kvm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, X86 ML <x86@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, kasan-dev <kasan-dev@googlegroups.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo
- Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, Borislav
- Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas
- Gleixner <tglx@l>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1461831323-5480-1-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/27/2016 09:39 AM, Andy Lutomirski wrote:
-> On Tue, Apr 26, 2016 at 3:55 PM, Tom Lendacky <thomas.lendacky@amd.com> wrote:
->> This RFC patch series provides support for AMD's new Secure Memory
->> Encryption (SME) feature.
->>
->> SME can be used to mark individual pages of memory as encrypted through the
->> page tables. A page of memory that is marked encrypted will be automatically
->> decrypted when read from DRAM and will be automatically encrypted when
->> written to DRAM. Details on SME can found in the links below.
-> 
-> Having read through the docs briefly, some questions:
-> 
-> 1. How does the crypto work?  Is it straight AES-ECB?  Is it a
-> tweakable mode?  If so, what does into the tweak?  For example, if I
-> swap the ciphertext of two pages, does the plaintext of the pages get
-> swapped?  If not, why not?
+Introduce a new DOMAIN_ATTR_MSI_GEOMETRY domain attribute. It enables
+to query the IOVA window dedicated to MSIs and whether this window is
+programmable or fixed/reserved.
 
-The AES crypto uses a tweak such that two identical plaintexts at
-different locations will have different ciphertext. So swapping the
-ciphertext of two pages will not result in the plaintext being swapped.
+x86 IOMMUs will typically expose an MSI aperture matching the 1MB
+region [FEE0_0000h - FEF0_000h] corresponding to the the APIC
+configuration space and not programmable. On ARM we will report a
+programmable region and start/end will be set to 0.
 
-> 
-> 2. In SEV mode, how does the hypervisor relocate a physical backing
-> page?  Does it simple move it and update the 2nd-level page tables?
-> If so, is the result of decryption guaranteed to be garbage if it
-> relocates a page and re-inserts it at the wrong guest physical
-> address?
+In case the MSI IOVA aperture is programmable, the msi-iommu API needs
+to be used to set it.
 
-For SEV mode, relocating a physical backing page takes extra steps.
-There are APIs that are used to have the AMD Secure Processor create a
-transportable encrypted page that can then be moved to a new location
-in memory. After moving it to the new location the APIs are used to
-haves the AMD Secure Processor re-encrypt the page for use with the
-guests SEV key. Based on #1 above, just moving a page without invoking
-the necessary APIs will result in the decryption returning garbage.
+Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Suggested-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
-> 
-> 3. In SEV mode, does anything prevent the hypervisor from resuming a
-> guest with the wrong ASID, or is this all relying on the resulting
-> corruption of the guest code and data to cause a crash?
+---
 
-There is nothing that prevents resuming a guest with the wrong ASID.
-This relies on the resulting corruption of the guest code/data to
-cause a crash.
+v8: creation
+- deprecates DOMAIN_ATTR_MSI_MAPPING flag
+---
+ drivers/iommu/iommu.c | 5 +++++
+ include/linux/iommu.h | 9 +++++++++
+ 2 files changed, 14 insertions(+)
 
-> 
-> 4. As I understand it, the caches are all unencrypted, and they're
-> tagged with the physical address, *including* the SME bit (bit 47).
-> In SEV mode, are they also tagged with the ASID?  I.e. if I have a
-> page in cache for ASID 1 and I try to read it with ASID 2, will I get
-> a fresh copy decrypted with ASID 2's key?  If so, will the old ASID 1
-> copy be evicted, or will it stay in cache and be non-coherent?
-
-In SEV mode, the caches are tagged with the ASID. So if you try to read
-a cached page with a different ASID, it would result in a cache miss
-for that ASID and will instead fetch from memory and decrypt using
-the that ASID's key.
-
-Thanks,
-Tom
-
-> 
-> --Andy
-> 
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index b9df141..71ed58f 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1498,6 +1498,7 @@ int iommu_domain_get_attr(struct iommu_domain *domain,
+ 			  enum iommu_attr attr, void *data)
+ {
+ 	struct iommu_domain_geometry *geometry;
++	struct iommu_domain_msi_geometry *msi_geometry;
+ 	bool *paging;
+ 	int ret = 0;
+ 	u32 *count;
+@@ -1508,6 +1509,10 @@ int iommu_domain_get_attr(struct iommu_domain *domain,
+ 		*geometry = domain->geometry;
+ 
+ 		break;
++	case DOMAIN_ATTR_MSI_GEOMETRY:
++		msi_geometry  = data;
++		*msi_geometry = domain->msi_geometry;
++		break;
+ 	case DOMAIN_ATTR_PAGING:
+ 		paging  = data;
+ 		*paging = (domain->ops->pgsize_bitmap != 0UL);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 62a5eae..ea5d288 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -52,6 +52,13 @@ struct iommu_domain_geometry {
+ 	bool force_aperture;       /* DMA only allowed in mappable range? */
+ };
+ 
++struct iommu_domain_msi_geometry {
++	dma_addr_t aperture_start; /* First address used for MSI IOVA    */
++	dma_addr_t aperture_end;   /* Last address used for MSI IOVA     */
++	bool programmable;         /* Is the aperture programmable?	 */
++	/* In case the aperture is programmable, start/end are set to 0 */
++};
++
+ /* Domain feature flags */
+ #define __IOMMU_DOMAIN_PAGING	(1U << 0)  /* Support for iommu_map/unmap */
+ #define __IOMMU_DOMAIN_DMA_API	(1U << 1)  /* Domain for use in DMA-API
+@@ -82,6 +89,7 @@ struct iommu_domain {
+ 	iommu_fault_handler_t handler;
+ 	void *handler_token;
+ 	struct iommu_domain_geometry geometry;
++	struct iommu_domain_msi_geometry msi_geometry;
+ 	void *iova_cookie;
+ };
+ 
+@@ -107,6 +115,7 @@ enum iommu_cap {
+ 
+ enum iommu_attr {
+ 	DOMAIN_ATTR_GEOMETRY,
++	DOMAIN_ATTR_MSI_GEOMETRY,
+ 	DOMAIN_ATTR_PAGING,
+ 	DOMAIN_ATTR_WINDOWS,
+ 	DOMAIN_ATTR_FSL_PAMU_STASH,
+-- 
+1.9.1
