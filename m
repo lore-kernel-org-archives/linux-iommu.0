@@ -1,7 +1,8 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v8 4/8] genirq/msi: msi_compose wrapper
-Date: Thu, 28 Apr 2016 08:22:06 +0000
-Message-ID: <1461831730-5575-5-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v8 7/8] genirq/msi: map/unmap the MSI doorbells on
+	msi_domain_alloc/free_irqs
+Date: Thu, 28 Apr 2016 08:22:09 +0000
+Message-ID: <1461831730-5575-8-git-send-email-eric.auger@linaro.org>
 References: <1461831730-5575-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,88 +22,154 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently the MSI message is composed by directly calling
-irq_chip_compose_msi_msg and erased by setting the memory to zero.
-
-On some platforms, we will need to complexify this composition to
-properly handle MSI emission through IOMMU. Also we will need to track
-when the MSI message is erased.
-
-We propose to introduce a common wrapper for actual composition and
-erasure, msi_compose.
+This patch handles the iommu mapping of MSI doorbells that require to
+be mapped in an iommu domain. This happens on msi_domain_alloc/free_irqs
+since this is called in code that can sleep (pci_enable/disable_msi):
+iommu_map/unmap is not stated as atomic. On msi_domain_(de)activate and
+msi_domain_set_affinity, which must be atomic, we just lookup for this
+pre-allocated/mapped IOVA.
 
 Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 ---
-v4 -> v5:
-- just introduce the msi-compose wrapper without adding new
-  functionalities
+v7 -> v8:
+- new percpu pointer type
+- exit from the irq domain hierarchy parsing on first map/unmap success
+- reset desc->irq to 0 on mapping failure
 
-v3 -> v4:
-- that code was formely in irq-gic-common.c
-  "irqchip/gicv2m/v3-its-pci-msi: IOMMU map the MSI frame when needed"
-  also the [un]mapping was done in irq_write_msi_msg; now done on compose
-
-v2 -> v3:
-- protect iova/addr manipulation with CONFIG_ARCH_DMA_ADDR_T_64BIT and
-  CONFIG_PHYS_ADDR_T_64BIT
-- only expose gic_pci_msi_domain_write_msg in case CONFIG_IOMMU_API &
-  CONFIG_PCI_MSI_IRQ_DOMAIN are set.
-- gic_set/unset_msi_addr duly become static
+v7: creation
 ---
- kernel/irq/msi.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
+ kernel/irq/msi.c | 87 ++++++++++++++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 79 insertions(+), 8 deletions(-)
 
 diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-index 9b0ba4a..72bf4d6 100644
+index 72bf4d6..d5f95e6 100644
 --- a/kernel/irq/msi.c
 +++ b/kernel/irq/msi.c
-@@ -55,6 +55,19 @@ static inline void irq_chip_write_msi_msg(struct irq_data *data,
- 	data->chip->irq_write_msi_msg(data, msg);
+@@ -14,6 +14,8 @@
+ #include <linux/irq.h>
+ #include <linux/irqdomain.h>
+ #include <linux/msi.h>
++#include <linux/msi-iommu.h>
++#include <linux/iommu.h>
+ 
+ /* Temparory solution for building, will be removed later */
+ #include <linux/pci.h>
+@@ -322,6 +324,56 @@ int msi_domain_populate_irqs(struct irq_domain *domain, struct device *dev,
  }
  
-+static int msi_compose(struct irq_data *irq_data,
-+		       struct msi_msg *msg, bool erase)
+ /**
++ * msi_handle_doorbell_mappings: in case the irq data corresponds to an
++ * MSI that requires iommu mapping, traverse the irq domain hierarchy
++ * to retrieve the doorbells to handle and iommu_map/unmap them according
++ * to @map boolean.
++ *
++ * @data: irq data handle
++ * @map: mapping if true, unmapping if false
++ */
++static int msi_handle_doorbell_mappings(struct irq_data *data, bool map)
 +{
-+	int ret = 0;
++	for (; data; data = data->parent_data) {
++		struct device *dev =
++			msi_desc_to_dev(irq_data_get_msi_desc(data));
++		struct irq_chip *chip = irq_data_get_irq_chip(data);
++		const struct irq_chip_msi_doorbell_info *dbinfo;
++		struct iommu_domain *domain;
++		phys_addr_t __percpu *db_addr;
++		dma_addr_t iova;
++		int ret = 0, i;
 +
-+	if (erase)
-+		memset(msg, 0, sizeof(*msg));
-+	else
-+		ret = irq_chip_compose_msi_msg(irq_data, msg);
++		domain = iommu_msi_domain(dev);
++		if (!domain)
++			continue;
 +
-+	return ret;
++		if (!chip->msi_doorbell_info)
++			continue;
++
++		dbinfo = chip->msi_doorbell_info(data);
++		if (!dbinfo)
++			return -EINVAL;
++
++		for (i = 0; i < dbinfo->nb_doorbells; i++) {
++			db_addr = per_cpu_ptr(dbinfo->percpu_doorbells, i);
++			if (map) {
++				ret = iommu_msi_get_doorbell_iova(domain,
++								  *db_addr,
++								  dbinfo->size,
++								  dbinfo->prot,
++								  &iova);
++				if (ret)
++					return ret;
++			} else
++				iommu_msi_put_doorbell_iova(domain, *db_addr);
++		}
++		break;
++	}
++	return 0;
 +}
 +
- /**
-  * msi_domain_set_affinity - Generic affinity setter function for MSI domains
-  * @irq_data:	The irq data associated to the interrupt
-@@ -73,7 +86,7 @@ int msi_domain_set_affinity(struct irq_data *irq_data,
++/**
+  * msi_domain_alloc_irqs - Allocate interrupts from a MSI interrupt domain
+  * @domain:	The domain to allocate from
+  * @dev:	Pointer to device struct of the device for which the interrupts
+@@ -352,17 +404,26 @@ int msi_domain_alloc_irqs(struct irq_domain *domain, struct device *dev,
  
- 	ret = parent->chip->irq_set_affinity(parent, mask, force);
- 	if (ret >= 0 && ret != IRQ_SET_MASK_OK_DONE) {
--		BUG_ON(irq_chip_compose_msi_msg(irq_data, &msg));
-+		BUG_ON(msi_compose(irq_data, &msg, false));
- 		irq_chip_write_msi_msg(irq_data, &msg);
+ 		virq = __irq_domain_alloc_irqs(domain, virq, desc->nvec_used,
+ 					       dev_to_node(dev), &arg, false);
+-		if (virq < 0) {
+-			ret = -ENOSPC;
+-			if (ops->handle_error)
+-				ret = ops->handle_error(domain, desc, ret);
+-			if (ops->msi_finish)
+-				ops->msi_finish(&arg, ret);
+-			return ret;
+-		}
++		if (virq < 0)
++			goto error;
+ 
+ 		for (i = 0; i < desc->nvec_used; i++)
+ 			irq_set_msi_desc_off(virq, i, desc);
++
++		for (i = 0; i < desc->nvec_used; i++) {
++			ret = msi_handle_doorbell_mappings(
++				irq_get_irq_data(virq + i), true);
++			if (ret)
++				break;
++		}
++		if (ret) {
++			for (; i >= 0; i--)
++				msi_handle_doorbell_mappings(
++					irq_get_irq_data(virq + i), false);
++			irq_domain_free_irqs(virq, desc->nvec_used);
++			desc->irq = 0;
++			goto error;
++		}
  	}
  
-@@ -85,7 +98,7 @@ static void msi_domain_activate(struct irq_domain *domain,
- {
- 	struct msi_msg msg;
+ 	if (ops->msi_finish)
+@@ -377,6 +438,13 @@ int msi_domain_alloc_irqs(struct irq_domain *domain, struct device *dev,
+ 	}
  
--	BUG_ON(irq_chip_compose_msi_msg(irq_data, &msg));
-+	BUG_ON(msi_compose(irq_data, &msg, false));
- 	irq_chip_write_msi_msg(irq_data, &msg);
+ 	return 0;
++error:
++	ret = -ENOSPC;
++	if (ops->handle_error)
++		ret = ops->handle_error(domain, desc, ret);
++	if (ops->msi_finish)
++		ops->msi_finish(&arg, ret);
++	return ret;
  }
  
-@@ -94,7 +107,7 @@ static void msi_domain_deactivate(struct irq_domain *domain,
- {
- 	struct msi_msg msg;
- 
--	memset(&msg, 0, sizeof(msg));
-+	msi_compose(irq_data, &msg, true);
- 	irq_chip_write_msi_msg(irq_data, &msg);
- }
- 
+ /**
+@@ -396,6 +464,9 @@ void msi_domain_free_irqs(struct irq_domain *domain, struct device *dev)
+ 		 * entry. If that's the case, don't do anything.
+ 		 */
+ 		if (desc->irq) {
++			msi_handle_doorbell_mappings(
++				irq_get_irq_data(desc->irq),
++				false);
+ 			irq_domain_free_irqs(desc->irq, desc->nvec_used);
+ 			desc->irq = 0;
+ 		}
 -- 
 1.9.1
