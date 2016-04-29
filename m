@@ -1,125 +1,113 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v8 6/8] iommu/msi-iommu: iommu_msi_domain
-Date: Thu, 28 Apr 2016 16:27:40 -0600
-Message-ID: <20160428162740.28db4b8d@t450s.home>
-References: <1461831323-5480-1-git-send-email-eric.auger@linaro.org>
-	<1461831323-5480-7-git-send-email-eric.auger@linaro.org>
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Subject: Re: [RFC PATCH v1 13/18] x86: DMA support for memory encryption
+Date: Fri, 29 Apr 2016 03:17:43 -0400
+Message-ID: <20160429071743.GC11592@char.us.oracle.com>
+References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
+ <20160426225812.13567.91220.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1461831323-5480-7-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org
-Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <20160426225812.13567.91220.stgit@tlendack-t1.amdoffice.net>
+Sender: owner-linux-mm@kvack.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 28 Apr 2016 08:15:21 +0000
-Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+On Tue, Apr 26, 2016 at 05:58:12PM -0500, Tom Lendacky wrote:
+> Since DMA addresses will effectively look like 48-bit addresses when the
+> memory encryption mask is set, SWIOTLB is needed if the DMA mask of the
+> device performing the DMA does not support 48-bits. SWIOTLB will be
+> initialized to create un-encrypted bounce buffers for use by these devices.
+> 
 
-> This function checks whether
-> - the device belongs to a non default iommu domain
-> - this iommu domain requires the MSI address to be mapped.
-> 
-> If those conditions are met, the function returns the iommu domain
-> to be used for mapping the MSI doorbell; else it returns NULL.
-> 
-> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> 
-> ---
-> 
-> v7 -> v8:
-> - renamed  iommu_msi_mapping_desc_to_domain to iommu_msi_domain
-> - the function now takes a struct device *
-> - use DOMAIN_ATTR_MSI_GEOMETRY attribute
-> ---
->  drivers/iommu/msi-iommu.c | 17 +++++++++++++++++
->  include/linux/msi-iommu.h | 14 ++++++++++++++
->  2 files changed, 31 insertions(+)
-> 
-> diff --git a/drivers/iommu/msi-iommu.c b/drivers/iommu/msi-iommu.c
-> index 203e86e..023ff17 100644
-> --- a/drivers/iommu/msi-iommu.c
-> +++ b/drivers/iommu/msi-iommu.c
-> @@ -243,3 +243,20 @@ unlock:
->  	}
+
+I presume the sme_me_mask does not use the lower 48 bits?
+
+
+..snip..
+> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+> index 7d56d1b..594dc65 100644
+> --- a/arch/x86/mm/mem_encrypt.c
+> +++ b/arch/x86/mm/mem_encrypt.c
+> @@ -12,6 +12,8 @@
+>  
+>  #include <linux/init.h>
+>  #include <linux/mm.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/swiotlb.h>
+>  
+>  #include <asm/mem_encrypt.h>
+>  #include <asm/cacheflush.h>
+> @@ -168,6 +170,25 @@ void __init sme_early_init(void)
 >  }
->  EXPORT_SYMBOL_GPL(iommu_msi_put_doorbell_iova);
-> +
-> +struct iommu_domain *iommu_msi_domain(struct device *dev)
+>  
+>  /* Architecture __weak replacement functions */
+> +void __init mem_encrypt_init(void)
 > +{
-> +	struct iommu_domain *d = iommu_get_domain_for_dev(dev);
-> +	struct iommu_domain_msi_geometry msi_geometry;
+> +	if (!sme_me_mask)
+> +		return;
 > +
-> +	if (!d || (d->type == IOMMU_DOMAIN_DMA))
-> +		return NULL;
-> +
-> +	iommu_domain_get_attr(d, DOMAIN_ATTR_MSI_GEOMETRY, &msi_geometry);
-> +	if (!msi_geometry.programmable)
-
-It feels like we're conflating ideas with using the "programmable" flag
-in this way.  AIUI the IOMMU API consumer is supposed to see the
-invalid MSI geometry with the programmable feature set and know to call
-iommu_msi_set_aperture().  Looking for the msi_cookie would tell us if
-that had been done, but that doesn't tell us if it should have been
-done.  iommu_msi_msg_pa_to_va() handles this later, if we return
-NULL here that function returns success otherwise it goes on to fail if
-the iova or msi cookie is not set.  So really what we're trying to flag
-is that the MSI geometry participates in the IOMMU-MSI API you've
-created and we should pick a feature name that says that rather than
-something as vague a "programmable".  Perhaps simply iommu_msi_api
-rather than programmable.
-
-BTW, I don't see that you ever set aperture_start/end once
-iommu_msi_set_aperture() has been called.  It seems like doing so would
-add some consistency to that MSI geometry attribute.
-
-Nice series overall.  Thanks,
-
-Alex
-
-> +		return NULL;
-> +
-> +	return d;
+> +	/* Make SWIOTLB use an unencrypted DMA area */
+> +	swiotlb_clear_encryption();
 > +}
-> +EXPORT_SYMBOL_GPL(iommu_msi_domain);
 > +
-> diff --git a/include/linux/msi-iommu.h b/include/linux/msi-iommu.h
-> index 1cd115f..114bd69 100644
-> --- a/include/linux/msi-iommu.h
-> +++ b/include/linux/msi-iommu.h
-> @@ -81,6 +81,15 @@ int iommu_msi_get_doorbell_iova(struct iommu_domain *domain,
+> +unsigned long swiotlb_get_me_mask(void)
+> +{
+> +	return sme_me_mask;
+> +}
+> +
+> +void swiotlb_set_mem_dec(void *vaddr, unsigned long size)
+> +{
+> +	sme_set_mem_dec(vaddr, size);
+> +}
+> +
+>  void __init *efi_me_early_memremap(resource_size_t paddr,
+>  				   unsigned long size)
+>  {
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 017fced..121b9de 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -30,6 +30,7 @@ int swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose);
+>  extern unsigned long swiotlb_nr_tbl(void);
+>  unsigned long swiotlb_size_or_default(void);
+>  extern int swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs);
+> +extern void __init swiotlb_clear_encryption(void);
+>  
+>  /*
+>   * Enumeration for sync targets
+> diff --git a/init/main.c b/init/main.c
+> index b3c6e36..1013d1c 100644
+> --- a/init/main.c
+> +++ b/init/main.c
+> @@ -458,6 +458,10 @@ void __init __weak thread_info_cache_init(void)
+>  }
+>  #endif
+>  
+> +void __init __weak mem_encrypt_init(void)
+> +{
+> +}
+> +
+>  /*
+>   * Set up kernel memory allocators
 >   */
->  void iommu_msi_put_doorbell_iova(struct iommu_domain *domain, phys_addr_t addr);
+> @@ -597,6 +601,8 @@ asmlinkage __visible void __init start_kernel(void)
+>  	 */
+>  	locking_selftest();
 >  
-> +/**
-> + * iommu_msi_domain: in case the device is upstream to an IOMMU and this IOMMU
-> + * translates the MSI transaction, returns the iommu domain the MSI doorbell
-> + * address must be mapped in; else returns NULL.
-> + *
-> + * @dev: device handle
-> + */
-> +struct iommu_domain *iommu_msi_domain(struct device *dev);
+> +	mem_encrypt_init();
 > +
->  #else
->  
->  static inline int
-> @@ -100,5 +109,10 @@ static inline int iommu_msi_get_doorbell_iova(struct iommu_domain *domain,
->  static inline void iommu_msi_put_doorbell_iova(struct iommu_domain *domain,
->  					       phys_addr_t addr) {}
->  
-> +static inline struct iommu_domain *iommu_msi_domain(struct device *dev)
-> +{
-> +	return NULL;
-> +}
-> +
->  #endif	/* CONFIG_IOMMU_MSI */
->  #endif	/* __MSI_IOMMU_H */
+>  #ifdef CONFIG_BLK_DEV_INITRD
+>  	if (initrd_start && !initrd_below_start_ok &&
+>  	    page_to_pfn(virt_to_page((void *)initrd_start)) < min_low_pfn) {
+
+What happens if devices use the bounce buffer before mem_encrypt_init()?
+
+..snip..
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
