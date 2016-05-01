@@ -1,106 +1,70 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH V2 RFC] fixup! virtio: convert to use DMA api
-Date: Sun, 1 May 2016 13:37:49 +0300
-Message-ID: <20160501132934-mutt-send-email-mst@redhat.com>
-References: <20160427172630-mutt-send-email-mst@redhat.com>
-	<20160427145632.GI17926@8bytes.org>
-	<20160427180007-mutt-send-email-mst@redhat.com>
-	<1461770135.118304.152.camel@infradead.org>
-	<20160427211635-mutt-send-email-mst@redhat.com>
-	<1461784617.118304.181.camel@infradead.org>
-	<20160428172039-mutt-send-email-mst@redhat.com>
-	<1461856314.33870.98.camel@infradead.org>
-	<20160428182341-mutt-send-email-mst@redhat.com>
-	<1461858505.33870.108.camel@infradead.org>
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH V3 0/7] iommu/msm: Add DT adaptation and generic bindings
+	support
+Date: Mon,  2 May 2016 00:24:28 +0530
+Message-ID: <1462128875-20988-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <virtualization-bounces@lists.linux-foundation.org>
-Content-Disposition: inline
-In-Reply-To: <1461858505.33870.108.camel@infradead.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
-	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
-List-Post: <mailto:virtualization@lists.linux-foundation.org>
-List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
-	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
-Sender: virtualization-bounces@lists.linux-foundation.org
-Errors-To: virtualization-bounces@lists.linux-foundation.org
-To: David Woodhouse <dwmw2@infradead.org>
-Cc: Wei Liu <wei.liu2@citrix.com>, Stefan Hajnoczi <stefanha@redhat.com>, qemu-block@nongnu.org, Stefano Stabellini <stefano.stabellini@eu.citrix.com>, Joerg Roedel <joro@8bytes.org>, qemu-devel@nongnu.org, peterx@redhat.com, linux-kernel@vger.kernel.org, Christian Borntraeger <borntraeger@de.ibm.com>, iommu@lists.linux-foundation.org, Andy Lutomirski <luto@kernel.org>, kvm@vger.kernel.org, Amit Shah <amit.shah@redhat.com>, pbonzini@redhat.com, virtualization@lists.linux-foundation.org, Anthony PERARD <anthony.perard@citrix.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 28, 2016 at 04:48:25PM +0100, David Woodhouse wrote:
-> On Thu, 2016-04-28 at 18:37 +0300, Michael S. Tsirkin wrote:
-> > OK, so for intel, it seems that it's enough to set
-> > 	pdev->dev.archdata.iommu = DUMMY_DEVICE_DOMAIN_INFO;
-> > for the device.
-> 
-> Yes, currently. Although that's vile. In fact what we *want* to happen
-> is for the intel-iommu code simply to decline to provide DMA ops for
-> this device, and let it fall back to the swiotlb or no-op DMA ops, as
-> appropriate.
-> 
-> As it is, we have the intel-iommu DMA ops *unconditionally, and they
-> have a hack to manually fall back to calling swiotlb. It's all just
-> horrid, which is why I want to clean it up with nice per-device DMA ops
-> and discovery thereof :)
-> 
-> > Do I have to poke at each iommu implementation to find
-> > a way to do this, or is there some way to do it
-> > portably?
-> 
-> There *will* be.... Christoph has already done some of the cleanup in
-> this space, and I need to take stock of what he's already done, and
-> finish off the parts I want to build on top of it.
-> 
-> > Not exactly - I think that future versions of qemu might lie
-> > about some devices but not others.
-> 
-> Can we keep this simple?
-> 
-> QEMU currently lies about some devices. Let's implement a heuristic for
-> the guest OS to know about that, and react accordingly.
-> 
-> Then let's fix QEMU to tell the truth. All the time, unconditionally.
-> Even on POWER/ARM where there's no obvious *way* for it to tell the
-> truth (because you don't have the flexibility that DMAR tables do), and
-> we need to devise a way to put it in the device-tree or fwcfg or
-> something else.
+The msm_iommu.c driver currently works based on platform data.
+A single master device can be connected to more than one iommu and multiple
+contexts in each of the iommu. This association between master and iommus was
+represented from platform data using parent/child devices. The master drivers
+were responsible for attaching all of the iommus/context to a domain. Now the
+platform data support is removed and DT support is added. The master/iommus are
+added through generic iommu bindings.
 
-Right.  Unfortunately all these aren't easy to implement at all.
-So I'm inclined to go the "something else" route.
-It has the added benefit of giving us a heuristic for free.
+This is essentially rework of the patch posted earlier by
+Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>. This series folds the changes in to the
+existing driver with the addition of generic bindings.
 
-> And only once QEMU consistently tells the *truth*, then we can start to
-> do new stuff and let it actually change its behaviour.
-> 
-> > DMAR is unfortunately not a good match for what people do with QEMU.
-> > 
-> > There is a patchset on list fixing translation of assigned
-> > devices. So the fix for these will simply be to do translation for
-> > all assigned devices. It's harder for virtio as it isn't always
-> > processed in QEMU - there's vhost in kernel and an out of process
-> > vhost-user plugin. So we can end up e.g. with modern QEMU which
-> > does translate in-process virtio but not out of process one.
-> 
-> Right... just stop. Fix QEMU to tell the truth first, and *then* once
-> we can trust it, we can start to change its behaviour. :)
-> 
-> > Unfortunately people got used to be able to put any device
-> > in any slot, and built external tools around that ability.
-> > It's rather painful to break this assumption.
-> 
-> Well, if you just said you have a patch set which allows translation of
-> assigned devices then you are most of the way there, aren't you? We
-> just need to fix the out-of-process virtio case, and everything can be
-> either translated or untranslated?
+        http://www.spinics.net/lists/linux-arm-msm/msg10077.html
 
-Absolutely. But that "just" will take a while.  With out of process
-there's always a chance that remote doesn't implement translation. E.g.
-new QEMU running on an old host kernel.
+Tested this series on ifc6410 board.
 
-> -- 
-> dwmw2
-> 
+[V3] Addressed comments to correct the usage
+     of the #iommu-cells binding, improve the flush_iotlb_range function,
+     added a new patch to use writel_relaxed for register access and split
+     up the documentation patch.
+
+[V2] Adapted the driver to use generic ARMV7S short descriptor pagetable ops
+     and addressed comments.
+
+[V1]
+   https://lists.linuxfoundation.org/pipermail/iommu/2015-August/014074.html
+
+Sricharan R (7):
+  iommu/msm: Add DT adaptation
+  documentation: iommu: Add bindings for msm,iommu-v0 ip
+  iommu/msm: Move the contents from msm_iommu_dev.c to msm_iommu.c
+  iommu/msm: Add support for generic master bindings
+  iommu/msm: use generic ARMV7S short descriptor pagetable ops
+  iommu/msm: Use writel_relaxed and add a barrier
+  iommu/msm: Remove driver BROKEN
+
+ .../devicetree/bindings/iommu/msm,iommu-v0.txt     |  62 ++
+ drivers/iommu/Kconfig                              |   2 +-
+ drivers/iommu/Makefile                             |   2 +-
+ drivers/iommu/msm_iommu.c                          | 872 +++++++++++----------
+ drivers/iommu/msm_iommu.h                          |  73 +-
+ drivers/iommu/msm_iommu_dev.c                      | 381 ---------
+ drivers/iommu/msm_iommu_hw-8xxx.h                  |   7 +-
+ 7 files changed, 567 insertions(+), 832 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+ delete mode 100644 drivers/iommu/msm_iommu_dev.c
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
