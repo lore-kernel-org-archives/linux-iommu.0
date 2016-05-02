@@ -1,109 +1,128 @@
-From: Andy Lutomirski <luto@amacapital.net>
-Subject: Re: [RFC PATCH v1 00/18] x86: Secure Memory Encryption (AMD)
-Date: Mon, 2 May 2016 11:31:23 -0700
-Message-ID: <CALCETrWAP5hxQeVSwNx-XkO53-X3bX0LasjOuHxeRWCTob7JAA@mail.gmail.com>
-References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
- <CALCETrUdrMAmE6Vgj6_PALdmRZVVKa3QDwJtO=YDTOQdox=rhQ@mail.gmail.com> <57211CAB.9040902@amd.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v8 6/8] iommu/msi-iommu: iommu_msi_domain
+Date: Mon, 2 May 2016 14:23:28 -0600
+Message-ID: <20160502142328.2d97f7a4@t450s.home>
+References: <1461831323-5480-1-git-send-email-eric.auger@linaro.org>
+	<1461831323-5480-7-git-send-email-eric.auger@linaro.org>
+	<20160428162740.28db4b8d@t450s.home> <572776BD.2080503@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <57211CAB.9040902@amd.com>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch <linux-arch@vger.kernel.org>, "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>, kvm list <kvm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, X86 ML <x86@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, kasan-dev <kasan-dev@googlegroups.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@li>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <572776BD.2080503-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 27, 2016 at 1:10 PM, Tom Lendacky <thomas.lendacky@amd.com> wrote:
-> On 04/27/2016 09:39 AM, Andy Lutomirski wrote:
->> On Tue, Apr 26, 2016 at 3:55 PM, Tom Lendacky <thomas.lendacky@amd.com> wrote:
->>> This RFC patch series provides support for AMD's new Secure Memory
->>> Encryption (SME) feature.
->>>
->>> SME can be used to mark individual pages of memory as encrypted through the
->>> page tables. A page of memory that is marked encrypted will be automatically
->>> decrypted when read from DRAM and will be automatically encrypted when
->>> written to DRAM. Details on SME can found in the links below.
->>
->> Having read through the docs briefly, some questions:
->>
->> 1. How does the crypto work?  Is it straight AES-ECB?  Is it a
->> tweakable mode?  If so, what does into the tweak?  For example, if I
->> swap the ciphertext of two pages, does the plaintext of the pages get
->> swapped?  If not, why not?
->
-> The AES crypto uses a tweak such that two identical plaintexts at
-> different locations will have different ciphertext. So swapping the
-> ciphertext of two pages will not result in the plaintext being swapped.
+Hi Eric,
 
-OK, makes sense.
+On Mon, 2 May 2016 17:48:13 +0200
+Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
 
->
->>
->> 2. In SEV mode, how does the hypervisor relocate a physical backing
->> page?  Does it simple move it and update the 2nd-level page tables?
->> If so, is the result of decryption guaranteed to be garbage if it
->> relocates a page and re-inserts it at the wrong guest physical
->> address?
->
-> For SEV mode, relocating a physical backing page takes extra steps.
-> There are APIs that are used to have the AMD Secure Processor create a
-> transportable encrypted page that can then be moved to a new location
-> in memory. After moving it to the new location the APIs are used to
-> haves the AMD Secure Processor re-encrypt the page for use with the
-> guests SEV key. Based on #1 above, just moving a page without invoking
-> the necessary APIs will result in the decryption returning garbage.
->
->>
->> 3. In SEV mode, does anything prevent the hypervisor from resuming a
->> guest with the wrong ASID, or is this all relying on the resulting
->> corruption of the guest code and data to cause a crash?
->
-> There is nothing that prevents resuming a guest with the wrong ASID.
-> This relies on the resulting corruption of the guest code/data to
-> cause a crash.
+> Hi Alex,
+> On 04/29/2016 12:27 AM, Alex Williamson wrote:
+> > On Thu, 28 Apr 2016 08:15:21 +0000
+> > Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+> >   
+> >> This function checks whether
+> >> - the device belongs to a non default iommu domain
+> >> - this iommu domain requires the MSI address to be mapped.
+> >>
+> >> If those conditions are met, the function returns the iommu domain
+> >> to be used for mapping the MSI doorbell; else it returns NULL.
+> >>
+> >> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> >>
+> >> ---
+> >>
+> >> v7 -> v8:
+> >> - renamed  iommu_msi_mapping_desc_to_domain to iommu_msi_domain
+> >> - the function now takes a struct device *
+> >> - use DOMAIN_ATTR_MSI_GEOMETRY attribute
+> >> ---
+> >>  drivers/iommu/msi-iommu.c | 17 +++++++++++++++++
+> >>  include/linux/msi-iommu.h | 14 ++++++++++++++
+> >>  2 files changed, 31 insertions(+)
+> >>
+> >> diff --git a/drivers/iommu/msi-iommu.c b/drivers/iommu/msi-iommu.c
+> >> index 203e86e..023ff17 100644
+> >> --- a/drivers/iommu/msi-iommu.c
+> >> +++ b/drivers/iommu/msi-iommu.c
+> >> @@ -243,3 +243,20 @@ unlock:
+> >>  	}
+> >>  }
+> >>  EXPORT_SYMBOL_GPL(iommu_msi_put_doorbell_iova);
+> >> +
+> >> +struct iommu_domain *iommu_msi_domain(struct device *dev)
+> >> +{
+> >> +	struct iommu_domain *d = iommu_get_domain_for_dev(dev);
+> >> +	struct iommu_domain_msi_geometry msi_geometry;
+> >> +
+> >> +	if (!d || (d->type == IOMMU_DOMAIN_DMA))
+> >> +		return NULL;
+> >> +
+> >> +	iommu_domain_get_attr(d, DOMAIN_ATTR_MSI_GEOMETRY, &msi_geometry);
+> >> +	if (!msi_geometry.programmable)  
+> > 
+> > It feels like we're conflating ideas with using the "programmable" flag
+> > in this way.  AIUI the IOMMU API consumer is supposed to see the
+> > invalid MSI geometry with the programmable feature set and know to call
+> > iommu_msi_set_aperture().  Looking for the msi_cookie would tell us if
+> > that had been done, but that doesn't tell us if it should have been
+> > done.  iommu_msi_msg_pa_to_va() handles this later, if we return
+> > NULL here that function returns success otherwise it goes on to fail if
+> > the iova or msi cookie is not set.  So really what we're trying to flag
+> > is that the MSI geometry participates in the IOMMU-MSI API you've
+> > created and we should pick a feature name that says that rather than
+> > something as vague a "programmable".  Perhaps simply iommu_msi_api
+> > rather than programmable.  
+> Yes I had the same questioning too when I wrote this code. So if my
+> understanding is correct we would have
+> - programmable: tells whether the MSI range is fixed or pogrammable and,
+> - mapping_required (new boolean field): indicating whether MSIs need to
+> be mapped in the IOMMU
 
-This all seems somewhat useful, but I almost guarantee that if there
-is ever anything economically important (or important for national
-security reasons, or simply something that sounds fun for an
-enterprising kid to break) that it *will* be broken in many creative
-ways.
+Let's say we had a flag "iommu_msi_supported", doesn't that already
+tell us whether the MSI range is programmable and the API to use to do
+it?  Can't we figure out if mapping is required based on whether
+iommu_msi_supported is set and aperture_start and aperture_end indicate
+a valid range?  It seems like what we want on this code path is to
+simply know whether the IOMMU domain is relevant to the IOMMU MSI API,
+which would be abundantly clear with such a flag.
 
-Someone will break it by replaying old data through the VM, either to
-confuse control flow or to use some part of the VM code as an oracle
-with which to attack another part.
+> > 
+> > BTW, I don't see that you ever set aperture_start/end once
+> > iommu_msi_set_aperture() has been called.  It seems like doing so would
+> > add some consistency to that MSI geometry attribute.  
+> Indeed currently I mentionned:
+> /* In case the aperture is programmable, start/end are set to 0 */
 
-Someone else will break it by installing a #UD / #PF handler and using
-the resulting exceptions as an oracle.
+Which is confusing, if a user sets an aperture, I would think they'd
+like to see the MSI geometry updated to reflect that.
 
-A third clever person will break it by carefully constructing a
-scenario in which randomizing 16 bytes of data has a high probability
-of letting then pwn your system.  (For example, what if the secured VM
-creates an RSA key and you can carefully interrupt it right after
-generating p and q.  Replace 16 bytes from the middle of both p and q
-(32 bytes total) with random garbage.  With reasonably high
-probability, the resulting p and q will no longer be prime.)
+> If I set start/end in iommu_msi_set_aperture then I think I should also
+> return the actual values in iommu_domain_get_attr. I thought the extra
+> care to handle the possible race between the set_aperture (msi_iommu)
+> and the get_attr (iommu) was maybe not worth the benefits:
+> is_aperture_set is not visible to get_attr so I would be forced to
+> introduce a mutex at iommu_domain level or call an msi-iommu function
+> from iommu implementation. So I preferred to keep start/end as read-only
+> info initialized by the iommu driver.
 
-Depending on how strong your ASID protection is, a fourth clever
-person will break it by replacing a bunch of the VM out from under the
-target while leaving the sensitive data in place and then will use
-some existing exploit or design issue to gain code execution in the
-modified VM.
+Seems like a race between iommu_msi_set_aperture() and
+iommu_domain_get_attr() is the caller's problem.  We can always define
+that start >= end is invalid and set them in the right order that
+iommu_domain_get_attr() may get different versions of invalid, but it
+will always be invalid or valid.  A helper function could tell us if we
+have a valid range rather than using is_aperture_set.  Thanks,
 
-Also, I really hope that your tweakable cipher mode is at least CCA2
-secure, because attackers can absolutely hit it with adaptive chosen
-ciphertext attacks.  (Actually, attackers can alternate between
-adaptive chosen ciphertext and adaptive chosen plaintext.)
-
-And did the SEV implementation remember to encrypt the guest register
-state?  Because, if not, everything of importance will leak out
-through the VMCB and/or GPRs.
-
-But I guess it's better than nothing.
-
---Andy
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Alex
