@@ -1,15 +1,13 @@
-From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [RFC PATCH v1 15/18] x86: Enable memory encryption on the APs
-Date: Tue, 3 May 2016 10:59:51 -0500
-Message-ID: <5728CAF7.7000007@amd.com>
-References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
-	<20160426225833.13567.55695.stgit@tlendack-t1.amdoffice.net>
-	<f37dd7de-23ad-f70f-c32d-a32f116215ce@linux.intel.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH V2] iommu/arm-smmu: clear cache lock bit of ACR
+Date: Tue, 3 May 2016 17:50:19 +0100
+Message-ID: <5728D6CB.3010003@arm.com>
+References: <1462283430-9559-1-git-send-email-van.freenix@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <f37dd7de-23ad-f70f-c32d-a32f116215ce-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <1462283430-9559-1-git-send-email-van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,151 +17,105 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Huang, Kai" <kai.huang-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+To: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/01/2016 05:10 PM, Huang, Kai wrote:
-> 
-> 
-> On 4/27/2016 10:58 AM, Tom Lendacky wrote:
->> Add support to set the memory encryption enable flag on the APs during
->> realmode initialization. When an AP is started it checks this flag, and
->> if set, enables memory encryption on its core.
->>
->> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
->> ---
->>  arch/x86/include/asm/msr-index.h     |    2 ++
->>  arch/x86/include/asm/realmode.h      |   12 ++++++++++++
->>  arch/x86/realmode/init.c             |    4 ++++
->>  arch/x86/realmode/rm/trampoline_64.S |   14 ++++++++++++++
->>  4 files changed, 32 insertions(+)
->>
->> diff --git a/arch/x86/include/asm/msr-index.h
->> b/arch/x86/include/asm/msr-index.h
->> index 94555b4..b73182b 100644
->> --- a/arch/x86/include/asm/msr-index.h
->> +++ b/arch/x86/include/asm/msr-index.h
->> @@ -349,6 +349,8 @@
->>  #define MSR_K8_TOP_MEM1            0xc001001a
->>  #define MSR_K8_TOP_MEM2            0xc001001d
->>  #define MSR_K8_SYSCFG            0xc0010010
->> +#define MSR_K8_SYSCFG_MEM_ENCRYPT_BIT    23
->> +#define MSR_K8_SYSCFG_MEM_ENCRYPT    (1ULL <<
->> MSR_K8_SYSCFG_MEM_ENCRYPT_BIT)
->>  #define MSR_K8_INT_PENDING_MSG        0xc0010055
->>  /* C1E active bits in int pending message */
->>  #define K8_INTP_C1E_ACTIVE_MASK        0x18000000
->> diff --git a/arch/x86/include/asm/realmode.h
->> b/arch/x86/include/asm/realmode.h
->> index 9c6b890..e24d2ec 100644
->> --- a/arch/x86/include/asm/realmode.h
->> +++ b/arch/x86/include/asm/realmode.h
->> @@ -1,6 +1,15 @@
->>  #ifndef _ARCH_X86_REALMODE_H
->>  #define _ARCH_X86_REALMODE_H
->>
->> +/*
->> + * Flag bit definitions for use with the flags field of the
->> trampoline header
->> + * when configured for X86_64
->> + */
->> +#define TH_FLAGS_MEM_ENCRYPT_BIT    0
->> +#define TH_FLAGS_MEM_ENCRYPT        (1ULL << TH_FLAGS_MEM_ENCRYPT_BIT)
-> 
-> Would mind change it to a more vendor specific name, such as
-> AMD_MEM_ENCRYPT, or SME_MEM_ENCRYPT?
+On 03/05/16 14:50, Peng Fan wrote:
+> According MMU-500r2 TRM, section 3.7.1 Auxiliary Control registers,
+> You can modify ACTLR only when the ACR.CACHE_LOCK bit is 0.
+>
+> So before clearing ARM_MMU500_ACTLR_CPRE of each context bank,
+> need clear CACHE_LOCK bit of ACR register first.
+>
+> Since CACHE_LOCK bit is only present in MMU-500r2 onwards,
+> need to check the major number of IDR7.
+>
+> Signed-off-by: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>
+> V2:
+>   Following Robin's comments, need to check IDR7 before clearing
+>   CACHE_LOCK bit of ACR.
+>
+> V1:
+>   Patch based on iommu/devel
+>
+>   drivers/iommu/arm-smmu.c | 23 ++++++++++++++++++++++-
+>   1 file changed, 22 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index acff332..c7ad23e 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -98,6 +98,9 @@
+>   #define sCR0_BSU_SHIFT			14
+>   #define sCR0_BSU_MASK			0x3
+>
+> +/* Auxiliary Configuration register */
+> +#define ARM_SMMU_GR0_sACR		0x10
+> +
+>   /* Identification registers */
+>   #define ARM_SMMU_GR0_ID0		0x20
+>   #define ARM_SMMU_GR0_ID1		0x24
+> @@ -144,6 +147,9 @@
+>   #define ID2_PTFS_64K			(1 << 14)
+>   #define ID2_VMID16			(1 << 15)
+>
+> +#define ID7_MAJOR_SHIFT			4
+> +#define ID7_MAJOR_MASK			0xf
+> +
+>   /* Global TLB invalidation */
+>   #define ARM_SMMU_GR0_TLBIVMID		0x64
+>   #define ARM_SMMU_GR0_TLBIALLNSNH	0x68
+> @@ -235,6 +241,8 @@
+>
+>   #define ARM_MMU500_ACTLR_CPRE		(1 << 1)
+>
+> +#define ARM_MMU500_ACR_CACHE_LOCK	(1 << 26)
+> +
+>   #define CB_PAR_F			(1 << 0)
+>
+>   #define ATSR_ACTIVE			(1 << 0)
+> @@ -1493,7 +1501,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>   	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+>   	void __iomem *cb_base;
+>   	int i = 0;
+> -	u32 reg;
+> +	u32 reg, major;
+>
+>   	/* clear global FSR */
+>   	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
+> @@ -1506,6 +1514,19 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>   		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_S2CR(i));
+>   	}
+>
+> +	/*
+> +	 * Before clearing ARM_MMU500_ACTLR_CPRE, need to
+> +	 * clear CACHE_LOCK bit of ACR first. And, CACHE_LOCK
+> +	 * bit is only present in MMU-500r2 onwards.
+> +	 */
+> +	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID7);
+> +	major = (reg >> ID7_MAJOR_SHIFT) & ID7_MAJOR_MASK;
+> +	if ((smmu->model == ARM_MMU500) && (major >= 2)) {
+> +		reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sACR);
+> +		reg &= ~ARM_MMU500_ACR_CACHE_LOCK;
+> +		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_sACR);
+> +	}
+> +
 
-Yup, that can be done.
+I'd have been inclined to make the ID reg read conditional on ARM_MMU500 
+as well, but this way is marginally more compact, and it's not like 
+we're in a frequently-used hot path anyway.
 
-> 
->> +
->> +#ifndef __ASSEMBLY__
->> +
->>  #include <linux/types.h>
->>  #include <asm/io.h>
->>
->> @@ -38,6 +47,7 @@ struct trampoline_header {
->>      u64 start;
->>      u64 efer;
->>      u32 cr4;
->> +    u32 flags;
->>  #endif
->>  };
->>
->> @@ -61,4 +71,6 @@ extern unsigned char secondary_startup_64[];
->>  void reserve_real_mode(void);
->>  void setup_real_mode(void);
->>
->> +#endif /* __ASSEMBLY__ */
->> +
->>  #endif /* _ARCH_X86_REALMODE_H */
->> diff --git a/arch/x86/realmode/init.c b/arch/x86/realmode/init.c
->> index 85b145c..657532b 100644
->> --- a/arch/x86/realmode/init.c
->> +++ b/arch/x86/realmode/init.c
->> @@ -84,6 +84,10 @@ void __init setup_real_mode(void)
->>      trampoline_cr4_features = &trampoline_header->cr4;
->>      *trampoline_cr4_features = __read_cr4();
->>
->> +    trampoline_header->flags = 0;
->> +    if (sme_me_mask)
->> +        trampoline_header->flags |= TH_FLAGS_MEM_ENCRYPT;
->> +
->>      trampoline_pgd = (u64 *) __va(real_mode_header->trampoline_pgd);
->>      trampoline_pgd[0] = init_level4_pgt[pgd_index(__PAGE_OFFSET)].pgd;
->>      trampoline_pgd[511] = init_level4_pgt[511].pgd;
->> diff --git a/arch/x86/realmode/rm/trampoline_64.S
->> b/arch/x86/realmode/rm/trampoline_64.S
->> index dac7b20..8d84167 100644
->> --- a/arch/x86/realmode/rm/trampoline_64.S
->> +++ b/arch/x86/realmode/rm/trampoline_64.S
->> @@ -30,6 +30,7 @@
->>  #include <asm/msr.h>
->>  #include <asm/segment.h>
->>  #include <asm/processor-flags.h>
->> +#include <asm/realmode.h>
->>  #include "realmode.h"
->>
->>      .text
->> @@ -109,6 +110,18 @@ ENTRY(startup_32)
->>      movl    $(X86_CR0_PG | X86_CR0_WP | X86_CR0_PE), %eax
->>      movl    %eax, %cr0
->>
->> +    # Check for and enable memory encryption support
->> +    movl    pa_tr_flags, %eax
->> +    bt    $TH_FLAGS_MEM_ENCRYPT_BIT, pa_tr_flags
-> 
-> pa_tr_flags -> %eax ? Otherwise looks the previous line is useless.
-
-Yes, I overlooked that. I'll take care of it.
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
 Thanks,
-Tom
+Robin.
 
-> 
-> Thanks,
-> -Kai
-> 
->> +    jnc    .Ldone
->> +    movl    $MSR_K8_SYSCFG, %ecx
->> +    rdmsr
->> +    bt    $MSR_K8_SYSCFG_MEM_ENCRYPT_BIT, %eax
->> +    jc    .Ldone
->> +    bts    $MSR_K8_SYSCFG_MEM_ENCRYPT_BIT, %eax
->> +    wrmsr
->> +.Ldone:
->> +
->>      /*
->>       * At this point we're in long mode but in 32bit compatibility mode
->>       * with EFER.LME = 1, CS.L = 0, CS.D = 1 (and in turn
->> @@ -147,6 +160,7 @@ GLOBAL(trampoline_header)
->>      tr_start:        .space    8
->>      GLOBAL(tr_efer)        .space    8
->>      GLOBAL(tr_cr4)        .space    4
->> +    GLOBAL(tr_flags)    .space    4
->>  END(trampoline_header)
->>
->>  #include "trampoline_common.S"
->>
->>
+>   	/* Make sure all context banks are disabled and clear CB_FSR  */
+>   	for (i = 0; i < smmu->num_context_banks; ++i) {
+>   		cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, i);
+>
