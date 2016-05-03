@@ -1,11 +1,14 @@
-From: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH V2] iommu/arm-smmu: clear cache lock bit of ACR
-Date: Tue,  3 May 2016 21:50:30 +0800
-Message-ID: <1462283430-9559-1-git-send-email-van.freenix@gmail.com>
+From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [RFC PATCH v1 00/18] x86: Secure Memory Encryption (AMD)
+Date: Tue, 3 May 2016 10:55:13 -0500
+Message-ID: <5728C9E1.3050803@amd.com>
+References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
+	<94D0CD8314A33A4D9D801C0FE68B402963918FDA@G4W3296.americas.hpqcorp.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <94D0CD8314A33A4D9D801C0FE68B402963918FDA-wwDBVnaDRpYSZAcGdq5asR6epYMZPwEe5NbjCUgZEJk@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,95 +18,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: "Elliott, Robert (Persistent Memory)" <elliott-ZPxbGqLxI0U@public.gmane.org>, "linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org" <kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Cc: =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-According MMU-500r2 TRM, section 3.7.1 Auxiliary Control registers,
-You can modify ACTLR only when the ACR.CACHE_LOCK bit is 0.
+On 04/30/2016 01:13 AM, Elliott, Robert (Persistent Memory) wrote:
+>> -----Original Message-----
+>> From: linux-kernel-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org [mailto:linux-kernel-
+>> owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org] On Behalf Of Tom Lendacky
+>> Sent: Tuesday, April 26, 2016 5:56 PM
+>> Subject: [RFC PATCH v1 00/18] x86: Secure Memory Encryption (AMD)
+>>
+>> This RFC patch series provides support for AMD's new Secure Memory
+>> Encryption (SME) feature.
+>>
+>> SME can be used to mark individual pages of memory as encrypted through the
+>> page tables. A page of memory that is marked encrypted will be automatically
+>> decrypted when read from DRAM and will be automatically encrypted when
+>> written to DRAM. Details on SME can found in the links below.
+>>
+> ...
+>> ...  Certain data must be accounted for
+>> as having been placed in memory before SME was enabled (EFI, initrd, etc.)
+>> and accessed accordingly.
+>>
+> ...
+>>       x86/efi: Access EFI related tables in the clear
+>>       x86: Access device tree in the clear
+>>       x86: Do not specify encrypted memory for VGA mapping
+> 
+> If the SME encryption key "is created randomly each time a system is booted,"
+> data on NVDIMMs won't decrypt properly on the next boot.  You need to exclude
+> persistent memory regions (reported in the UEFI memory map as 
+> EfiReservedMemoryType with the NV attribute, or as EfiPersistentMemory).
 
-So before clearing ARM_MMU500_ACTLR_CPRE of each context bank,
-need clear CACHE_LOCK bit of ACR register first.
+The current plan is for the AMD Secure Processor to securely save the
+SME encryption key when NVDIMMs are installed on a system. The saved SME
+key will be restored if an NVDIMM restore event needs to be performed.
+If there isn't an NVDIMM restore event, then the randomly generated key
+will be used.
 
-Since CACHE_LOCK bit is only present in MMU-500r2 onwards,
-need to check the major number of IDR7.
+Thanks,
+Tom
 
-Signed-off-by: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
-
-V2:
- Following Robin's comments, need to check IDR7 before clearing
- CACHE_LOCK bit of ACR.
-
-V1:
- Patch based on iommu/devel
-
- drivers/iommu/arm-smmu.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index acff332..c7ad23e 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -98,6 +98,9 @@
- #define sCR0_BSU_SHIFT			14
- #define sCR0_BSU_MASK			0x3
- 
-+/* Auxiliary Configuration register */
-+#define ARM_SMMU_GR0_sACR		0x10
-+
- /* Identification registers */
- #define ARM_SMMU_GR0_ID0		0x20
- #define ARM_SMMU_GR0_ID1		0x24
-@@ -144,6 +147,9 @@
- #define ID2_PTFS_64K			(1 << 14)
- #define ID2_VMID16			(1 << 15)
- 
-+#define ID7_MAJOR_SHIFT			4
-+#define ID7_MAJOR_MASK			0xf
-+
- /* Global TLB invalidation */
- #define ARM_SMMU_GR0_TLBIVMID		0x64
- #define ARM_SMMU_GR0_TLBIALLNSNH	0x68
-@@ -235,6 +241,8 @@
- 
- #define ARM_MMU500_ACTLR_CPRE		(1 << 1)
- 
-+#define ARM_MMU500_ACR_CACHE_LOCK	(1 << 26)
-+
- #define CB_PAR_F			(1 << 0)
- 
- #define ATSR_ACTIVE			(1 << 0)
-@@ -1493,7 +1501,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
- 	void __iomem *cb_base;
- 	int i = 0;
--	u32 reg;
-+	u32 reg, major;
- 
- 	/* clear global FSR */
- 	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
-@@ -1506,6 +1514,19 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_S2CR(i));
- 	}
- 
-+	/*
-+	 * Before clearing ARM_MMU500_ACTLR_CPRE, need to
-+	 * clear CACHE_LOCK bit of ACR first. And, CACHE_LOCK
-+	 * bit is only present in MMU-500r2 onwards.
-+	 */
-+	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID7);
-+	major = (reg >> ID7_MAJOR_SHIFT) & ID7_MAJOR_MASK;
-+	if ((smmu->model == ARM_MMU500) && (major >= 2)) {
-+		reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sACR);
-+		reg &= ~ARM_MMU500_ACR_CACHE_LOCK;
-+		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_sACR);
-+	}
-+
- 	/* Make sure all context banks are disabled and clear CB_FSR  */
- 	for (i = 0; i < smmu->num_context_banks; ++i) {
- 		cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, i);
--- 
-2.6.2
+> 
+> Perhaps the SEV feature will allow key export/import that could work for
+> NVDIMMs.
+> 
+> ---
+> Robert Elliott, HPE Persistent Memory
+> 
+> 
