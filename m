@@ -1,16 +1,13 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v8 7/8] genirq/msi: map/unmap the MSI doorbells on
-	msi_domain_alloc/free_irqs
-Date: Wed, 4 May 2016 17:22:19 +0200
-Message-ID: <572A13AB.6000208@linaro.org>
-References: <1461831730-5575-1-git-send-email-eric.auger@linaro.org>
-	<1461831730-5575-8-git-send-email-eric.auger@linaro.org>
-	<5729F756.7060500@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH RESEND] iommu/dma: Implement scatterlist segment merging
+Date: Wed, 4 May 2016 16:33:11 +0100
+Message-ID: <572A1637.7000509@arm.com>
+References: <b87bf47e79febb3ca904140db09cf095238b2817.1460373907.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5729F756.7060500-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <b87bf47e79febb3ca904140db09cf095238b2817.1460373907.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,211 +17,162 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marc,
-On 05/04/2016 03:21 PM, Marc Zyngier wrote:
-> On 28/04/16 09:22, Eric Auger wrote:
->> This patch handles the iommu mapping of MSI doorbells that require to
->> be mapped in an iommu domain. This happens on msi_domain_alloc/free_irqs
->> since this is called in code that can sleep (pci_enable/disable_msi):
->> iommu_map/unmap is not stated as atomic. On msi_domain_(de)activate and
->> msi_domain_set_affinity, which must be atomic, we just lookup for this
->> pre-allocated/mapped IOVA.
->>
->> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->>
->> ---
->> v7 -> v8:
->> - new percpu pointer type
->> - exit from the irq domain hierarchy parsing on first map/unmap success
->> - reset desc->irq to 0 on mapping failure
->>
->> v7: creation
->> ---
->>  kernel/irq/msi.c | 87 ++++++++++++++++++++++++++++++++++++++++++++++++++------
->>  1 file changed, 79 insertions(+), 8 deletions(-)
->>
->> diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
->> index 72bf4d6..d5f95e6 100644
->> --- a/kernel/irq/msi.c
->> +++ b/kernel/irq/msi.c
->> @@ -14,6 +14,8 @@
->>  #include <linux/irq.h>
->>  #include <linux/irqdomain.h>
->>  #include <linux/msi.h>
->> +#include <linux/msi-iommu.h>
->> +#include <linux/iommu.h>
->>  
->>  /* Temparory solution for building, will be removed later */
->>  #include <linux/pci.h>
->> @@ -322,6 +324,56 @@ int msi_domain_populate_irqs(struct irq_domain *domain, struct device *dev,
->>  }
->>  
->>  /**
->> + * msi_handle_doorbell_mappings: in case the irq data corresponds to an
->> + * MSI that requires iommu mapping, traverse the irq domain hierarchy
->> + * to retrieve the doorbells to handle and iommu_map/unmap them according
->> + * to @map boolean.
->> + *
->> + * @data: irq data handle
->> + * @map: mapping if true, unmapping if false
->> + */
->> +static int msi_handle_doorbell_mappings(struct irq_data *data, bool map)
->> +{
->> +	for (; data; data = data->parent_data) {
->> +		struct device *dev =
->> +			msi_desc_to_dev(irq_data_get_msi_desc(data));
->> +		struct irq_chip *chip = irq_data_get_irq_chip(data);
->> +		const struct irq_chip_msi_doorbell_info *dbinfo;
->> +		struct iommu_domain *domain;
->> +		phys_addr_t __percpu *db_addr;
->> +		dma_addr_t iova;
->> +		int ret = 0, i;
->> +
->> +		domain = iommu_msi_domain(dev);
->> +		if (!domain)
->> +			continue;
->> +
->> +		if (!chip->msi_doorbell_info)
->> +			continue;
->> +
->> +		dbinfo = chip->msi_doorbell_info(data);
->> +		if (!dbinfo)
->> +			return -EINVAL;
->> +
->> +		for (i = 0; i < dbinfo->nb_doorbells; i++) {
->> +			db_addr = per_cpu_ptr(dbinfo->percpu_doorbells, i);
->> +			if (map) {
->> +				ret = iommu_msi_get_doorbell_iova(domain,
->> +								  *db_addr,
->> +								  dbinfo->size,
->> +								  dbinfo->prot,
->> +								  &iova);
->> +				if (ret)
->> +					return ret;
->> +			} else
->> +				iommu_msi_put_doorbell_iova(domain, *db_addr);
->> +		}
->> +		break;
->> +	}
->> +	return 0;
->> +}
-> 
-> I'm really not fond of this whole loop. Could you try to decouple the
-> irq_data parsing (looking for a msi_doorbell_info method) from the
-> actual mapping/unmapping? This would make it a lot more readable.
-> Something along the lines of:
-Just sent v9 where I addressed all your comments. Please let me know
-whether this looks better.
-> 
-> 	struct device *dev;
-> 	struct irq_chip *chip;
-> 	struct iommu_domain *domain;
-> 	const struct irq_chip_msi_doorbell_info *dbinfo;
-> 
-> 	while (data) {
-> 		dev = msi_desc_to_dev(irq_data_get_msi_desc(data));
-> 		domain = iommu_msi_domain(dev);
-> 		if (!domain)
-> 			continue;
-> 
-> 		chip = irq_data_get_irq_chip(data);
-> 		if (chip->msi_doorbell_info)
-> 			break;
-> 
-> 		data = data->parent;
-> 	}
-> 
-> 	if (!data)
-> 		return 0;
-> 
-> 	dbinfo = chip->msi_doorbell_info(data);
-> 	if (!dbinfo)
-> 		return -EINVAL;
-> 
-> 	[... handle mapping/unmapping here ...]
-> 
->> +
->> +/**
->>   * msi_domain_alloc_irqs - Allocate interrupts from a MSI interrupt domain
->>   * @domain:	The domain to allocate from
->>   * @dev:	Pointer to device struct of the device for which the interrupts
->> @@ -352,17 +404,26 @@ int msi_domain_alloc_irqs(struct irq_domain *domain, struct device *dev,
->>  
->>  		virq = __irq_domain_alloc_irqs(domain, virq, desc->nvec_used,
->>  					       dev_to_node(dev), &arg, false);
->> -		if (virq < 0) {
->> -			ret = -ENOSPC;
->> -			if (ops->handle_error)
->> -				ret = ops->handle_error(domain, desc, ret);
->> -			if (ops->msi_finish)
->> -				ops->msi_finish(&arg, ret);
->> -			return ret;
->> -		}
->> +		if (virq < 0)
->> +			goto error;
->>  
->>  		for (i = 0; i < desc->nvec_used; i++)
->>  			irq_set_msi_desc_off(virq, i, desc);
->> +
->> +		for (i = 0; i < desc->nvec_used; i++) {
->> +			ret = msi_handle_doorbell_mappings(
->> +				irq_get_irq_data(virq + i), true);
-> 
-> Do not be afraid of longer lines. Or if you are, create an intermediate
-> variable. But this kind of construct makes my brain work harder, and I
-> hate the feeling... ;-)
-Yes I am afraid of checkpatch and I do my utmost to abide by its law ;-)
-Well, let me know if the v9 is of any relief for your brain ;-)
+Hi Joerg,
 
-Thanks for your time!
+On 11/04/16 12:32, Robin Murphy wrote:
+> Stop wasting IOVA space by over-aligning scatterlist segments for a
+> theoretical worst-case segment boundary mask, and instead take the real
+> limits into account to merge consecutive segments wherever appropriate,
+> so our callers can benefit from getting back nicely simplified lists.
+>
+> This also represents the last piece of functionality wanted by users of
+> the current arch/arm implementation, thus brings us a small step closer
+> to converting that over to the common code.
+>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>
+> As requested, reposting rebased onto -rc3.
 
-Eric
-> 
->> +			if (ret)
->> +				break;
->> +		}
->> +		if (ret) {
->> +			for (; i >= 0; i--)
->> +				msi_handle_doorbell_mappings(
->> +					irq_get_irq_data(virq + i), false);
->> +			irq_domain_free_irqs(virq, desc->nvec_used);
->> +			desc->irq = 0;
->> +			goto error;
->> +		}
->>  	}
->>  
->>  	if (ops->msi_finish)
->> @@ -377,6 +438,13 @@ int msi_domain_alloc_irqs(struct irq_domain *domain, struct device *dev,
->>  	}
->>  
->>  	return 0;
->> +error:
->> +	ret = -ENOSPC;
->> +	if (ops->handle_error)
->> +		ret = ops->handle_error(domain, desc, ret);
->> +	if (ops->msi_finish)
->> +		ops->msi_finish(&arg, ret);
->> +	return ret;
->>  }
->>  
->>  /**
->> @@ -396,6 +464,9 @@ void msi_domain_free_irqs(struct irq_domain *domain, struct device *dev)
->>  		 * entry. If that's the case, don't do anything.
->>  		 */
->>  		if (desc->irq) {
->> +			msi_handle_doorbell_mappings(
->> +				irq_get_irq_data(desc->irq),
->> +				false);
->>  			irq_domain_free_irqs(desc->irq, desc->nvec_used);
->>  			desc->irq = 0;
->>  		}
->>
-> 
-> Thanks,
-> 
-> 	M.
-> 
+Just checking whether this has slipped through the cracks? It would be 
+nice to tick it off for 4.7 (even if the video folks seem to have gone 
+quiet lately).
+
+Thanks,
+Robin.
+
+>   drivers/iommu/dma-iommu.c | 84 ++++++++++++++++++++++++++++++++++-------------
+>   1 file changed, 61 insertions(+), 23 deletions(-)
+>
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 58f2fe6..886cb3a 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -389,26 +389,58 @@ void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
+>
+>   /*
+>    * Prepare a successfully-mapped scatterlist to give back to the caller.
+> - * Handling IOVA concatenation can come later, if needed
+> + *
+> + * At this point the segments are already laid out by iommu_dma_map_sg() to
+> + * avoid individually crossing any boundaries, so we merely need to check a
+> + * segment's start address to avoid concatenating across one.
+>    */
+>   static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
+>   		dma_addr_t dma_addr)
+>   {
+> -	struct scatterlist *s;
+> -	int i;
+> +	struct scatterlist *s, *cur = sg;
+> +	unsigned long seg_mask = dma_get_seg_boundary(dev);
+> +	unsigned int cur_len = 0, max_len = dma_get_max_seg_size(dev);
+> +	int i, count = 0;
+>
+>   	for_each_sg(sg, s, nents, i) {
+> -		/* Un-swizzling the fields here, hence the naming mismatch */
+> -		unsigned int s_offset = sg_dma_address(s);
+> +		/* Restore this segment's original unaligned fields first */
+> +		unsigned int s_iova_off = sg_dma_address(s);
+>   		unsigned int s_length = sg_dma_len(s);
+> -		unsigned int s_dma_len = s->length;
+> +		unsigned int s_iova_len = s->length;
+>
+> -		s->offset += s_offset;
+> +		s->offset += s_iova_off;
+>   		s->length = s_length;
+> -		sg_dma_address(s) = dma_addr + s_offset;
+> -		dma_addr += s_dma_len;
+> +		sg_dma_address(s) = DMA_ERROR_CODE;
+> +		sg_dma_len(s) = 0;
+> +
+> +		/*
+> +		 * Now fill in the real DMA data. If...
+> +		 * - there is a valid output segment to append to
+> +		 * - and this segment starts on an IOVA page boundary
+> +		 * - but doesn't fall at a segment boundary
+> +		 * - and wouldn't make the resulting output segment too long
+> +		 */
+> +		if (cur_len && !s_iova_off && (dma_addr & seg_mask) &&
+> +		    (cur_len + s_length <= max_len)) {
+> +			/* ...then concatenate it with the previous one */
+> +			cur_len += s_length;
+> +		} else {
+> +			/* Otherwise start the next output segment */
+> +			if (i > 0)
+> +				cur = sg_next(cur);
+> +			cur_len = s_length;
+> +			count++;
+> +
+> +			sg_dma_address(cur) = dma_addr + s_iova_off;
+> +		}
+> +
+> +		sg_dma_len(cur) = cur_len;
+> +		dma_addr += s_iova_len;
+> +
+> +		if (s_length + s_iova_off < s_iova_len)
+> +			cur_len = 0;
+>   	}
+> -	return i;
+> +	return count;
+>   }
+>
+>   /*
+> @@ -446,34 +478,40 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+>   	struct scatterlist *s, *prev = NULL;
+>   	dma_addr_t dma_addr;
+>   	size_t iova_len = 0;
+> +	unsigned long mask = dma_get_seg_boundary(dev);
+>   	int i;
+>
+>   	/*
+>   	 * Work out how much IOVA space we need, and align the segments to
+>   	 * IOVA granules for the IOMMU driver to handle. With some clever
+>   	 * trickery we can modify the list in-place, but reversibly, by
+> -	 * hiding the original data in the as-yet-unused DMA fields.
+> +	 * stashing the unaligned parts in the as-yet-unused DMA fields.
+>   	 */
+>   	for_each_sg(sg, s, nents, i) {
+> -		size_t s_offset = iova_offset(iovad, s->offset);
+> +		size_t s_iova_off = iova_offset(iovad, s->offset);
+>   		size_t s_length = s->length;
+> +		size_t pad_len = (mask - iova_len + 1) & mask;
+>
+> -		sg_dma_address(s) = s_offset;
+> +		sg_dma_address(s) = s_iova_off;
+>   		sg_dma_len(s) = s_length;
+> -		s->offset -= s_offset;
+> -		s_length = iova_align(iovad, s_length + s_offset);
+> +		s->offset -= s_iova_off;
+> +		s_length = iova_align(iovad, s_length + s_iova_off);
+>   		s->length = s_length;
+>
+>   		/*
+> -		 * The simple way to avoid the rare case of a segment
+> -		 * crossing the boundary mask is to pad the previous one
+> -		 * to end at a naturally-aligned IOVA for this one's size,
+> -		 * at the cost of potentially over-allocating a little.
+> +		 * Due to the alignment of our single IOVA allocation, we can
+> +		 * depend on these assumptions about the segment boundary mask:
+> +		 * - If mask size >= IOVA size, then the IOVA range cannot
+> +		 *   possibly fall across a boundary, so we don't care.
+> +		 * - If mask size < IOVA size, then the IOVA range must start
+> +		 *   exactly on a boundary, therefore we can lay things out
+> +		 *   based purely on segment lengths without needing to know
+> +		 *   the actual addresses beforehand.
+> +		 * - The mask must be a power of 2, so pad_len == 0 if
+> +		 *   iova_len == 0, thus we cannot dereference prev the first
+> +		 *   time through here (i.e. before it has a meaningful value).
+>   		 */
+> -		if (prev) {
+> -			size_t pad_len = roundup_pow_of_two(s_length);
+> -
+> -			pad_len = (pad_len - iova_len) & (pad_len - 1);
+> +		if (pad_len && pad_len < s_length - 1) {
+>   			prev->length += pad_len;
+>   			iova_len += pad_len;
+>   		}
+>
