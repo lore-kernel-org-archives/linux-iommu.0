@@ -1,13 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V2] iommu/arm-smmu: clear cache lock bit of ACR
-Date: Tue, 3 May 2016 17:50:19 +0100
-Message-ID: <5728D6CB.3010003@arm.com>
-References: <1462283430-9559-1-git-send-email-van.freenix@gmail.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH V3 2/7] documentation: iommu: Add bindings for
+	msm,iommu-v0 ip
+Date: Tue, 3 May 2016 21:24:37 -0500
+Message-ID: <20160504022437.GA4110@rob-hp-laptop>
+References: <1462128875-20988-1-git-send-email-sricharan@codeaurora.org>
+	<1462128875-20988-3-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1462283430-9559-1-git-send-email-van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1462128875-20988-3-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,105 +20,100 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/05/16 14:50, Peng Fan wrote:
-> According MMU-500r2 TRM, section 3.7.1 Auxiliary Control registers,
-> You can modify ACTLR only when the ACR.CACHE_LOCK bit is 0.
->
-> So before clearing ARM_MMU500_ACTLR_CPRE of each context bank,
-> need clear CACHE_LOCK bit of ACR register first.
->
-> Since CACHE_LOCK bit is only present in MMU-500r2 onwards,
-> need to check the major number of IDR7.
->
-> Signed-off-by: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+On Mon, May 02, 2016 at 12:24:30AM +0530, Sricharan R wrote:
+> The MSM IOMMU is an implementation compatible with the ARM VMSA short
+> descriptor page tables. It provides address translation for bus masters outside
+> of the CPU, each connected to the IOMMU through a port called micro-TLB.
+> Adding the DT bindings for the same.
+> 
+> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 > ---
->
-> V2:
->   Following Robin's comments, need to check IDR7 before clearing
->   CACHE_LOCK bit of ACR.
->
-> V1:
->   Patch based on iommu/devel
->
->   drivers/iommu/arm-smmu.c | 23 ++++++++++++++++++++++-
->   1 file changed, 22 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index acff332..c7ad23e 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -98,6 +98,9 @@
->   #define sCR0_BSU_SHIFT			14
->   #define sCR0_BSU_MASK			0x3
->
-> +/* Auxiliary Configuration register */
-> +#define ARM_SMMU_GR0_sACR		0x10
+>  .../devicetree/bindings/iommu/msm,iommu-v0.txt     | 62 ++++++++++++++++++++++
+>  1 file changed, 62 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+> new file mode 100644
+> index 0000000..63b4f96
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+> @@ -0,0 +1,62 @@
+> +* MSM IOMMU
 > +
->   /* Identification registers */
->   #define ARM_SMMU_GR0_ID0		0x20
->   #define ARM_SMMU_GR0_ID1		0x24
-> @@ -144,6 +147,9 @@
->   #define ID2_PTFS_64K			(1 << 14)
->   #define ID2_VMID16			(1 << 15)
->
-> +#define ID7_MAJOR_SHIFT			4
-> +#define ID7_MAJOR_MASK			0xf
+> +The MSM IOMMU is an implementation compatible with the ARM VMSA short
+> +descriptor page tables. It provides address translation for bus masters outside
+> +of the CPU, each connected to the IOMMU through a port called micro-TLB.
 > +
->   /* Global TLB invalidation */
->   #define ARM_SMMU_GR0_TLBIVMID		0x64
->   #define ARM_SMMU_GR0_TLBIALLNSNH	0x68
-> @@ -235,6 +241,8 @@
->
->   #define ARM_MMU500_ACTLR_CPRE		(1 << 1)
->
-> +#define ARM_MMU500_ACR_CACHE_LOCK	(1 << 26)
+> +Required Properties:
 > +
->   #define CB_PAR_F			(1 << 0)
->
->   #define ATSR_ACTIVE			(1 << 0)
-> @@ -1493,7 +1501,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
->   	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
->   	void __iomem *cb_base;
->   	int i = 0;
-> -	u32 reg;
-> +	u32 reg, major;
->
->   	/* clear global FSR */
->   	reg = readl_relaxed(ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sGFSR);
-> @@ -1506,6 +1514,19 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
->   		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_S2CR(i));
->   	}
->
-> +	/*
-> +	 * Before clearing ARM_MMU500_ACTLR_CPRE, need to
-> +	 * clear CACHE_LOCK bit of ACR first. And, CACHE_LOCK
-> +	 * bit is only present in MMU-500r2 onwards.
-> +	 */
-> +	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID7);
-> +	major = (reg >> ID7_MAJOR_SHIFT) & ID7_MAJOR_MASK;
-> +	if ((smmu->model == ARM_MMU500) && (major >= 2)) {
-> +		reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sACR);
-> +		reg &= ~ARM_MMU500_ACR_CACHE_LOCK;
-> +		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_sACR);
-> +	}
+> +  - compatible: Must contain "msm,iommu-v0".
+
+SOC specific compatible strings please.
+
+> +  - reg: Base address and size of the IOMMU registers.
+> +  - interrupts: Specifiers for the MMU fault interrupts. For instances that
+> +    support secure mode two interrupts must be specified, for non-secure and
+> +    secure mode, in that order. For instances that don't support secure mode a
+> +    single interrupt must be specified.
+> +  - #iommu-cells: The number of cells needed to specify the stream id. This
+> +		  is always 1.
+> +  - qcom,ncb:	  The total number of context banks in the IOMMU.
+> +  - clocks	: List of clocks to be used during SMMU register access. See
+> +		  Documentation/devicetree/bindings/clock/clock-bindings.txt
+> +		  for information about the format. For each clock specified
+> +		  here, there must be a corresponding entry in clock-names
+> +		  (see below).
 > +
+> +  - clock-names	: List of clock names corresponding to the clocks specified in
+> +		  the "clocks" property (above). See
+> +		  Documentation/devicetree/bindings/clock/clock-bindings.txt
+> +		  for more info.
 
-I'd have been inclined to make the ID reg read conditional on ARM_MMU500 
-as well, but this way is marginally more compact, and it's not like 
-we're in a frequently-used hot path anyway.
+You must define how many clocks, their order and their names.
 
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
-Thanks,
-Robin.
-
->   	/* Make sure all context banks are disabled and clear CB_FSR  */
->   	for (i = 0; i < smmu->num_context_banks; ++i) {
->   		cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, i);
->
+> +
+> +Each bus master connected to an IOMMU must reference the IOMMU in its device
+> +node with the following property:
+> +
+> +  - iommus: A reference to the IOMMU in multiple cells. The first cell is a
+> +	    phandle to the IOMMU and the second cell is the stream id.
+> +	    A single master device can be connected to more than one iommu
+> +	    and multiple contexts in each of the iommu. So multiple entries
+> +	    are required to list all the iommus and the stream ids that the
+> +	    master is connected to.
+> +
+> +Example: mdp iommu and its bus master
+> +
+> +                mdp_port0: iommu@7500000 {
+> +			compatible = "msm,iommu-v0";
+> +			#iommu-cells = <1>;
+> +			clock-names =
+> +			    "smmu_pclk",
+> +			    "iommu_clk";
+> +			clocks =
+> +			    <&mmcc SMMU_AHB_CLK>,
+> +			    <&mmcc MDP_AXI_CLK>;
+> +			reg = <0x07500000 0x100000>;
+> +			interrupts =
+> +			    <GIC_SPI 63 0>,
+> +			    <GIC_SPI 64 0>;
+> +			qcom,ncb = <2>;
+> +		};
+> +
+> +		mdp: qcom,mdp@5100000 {
+> +			compatible = "qcom,mdp";
+> +			...
+> +			iommus = <&mdp_port0 0
+> +				  &mdp_port0 2>;
+> +		};
+> -- 
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
