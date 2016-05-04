@@ -1,15 +1,12 @@
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v8 8/8] genirq/msi: use the MSI doorbell's IOVA when
-	requested
-Date: Wed, 4 May 2016 14:23:00 +0100
-Message-ID: <5729F7B4.7020401@arm.com>
-References: <1461831730-5575-1-git-send-email-eric.auger@linaro.org>
-	<1461831730-5575-9-git-send-email-eric.auger@linaro.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [GIT PULL] iommu/arm-smmu: Updates for 4.7
+Date: Wed, 4 May 2016 14:45:31 +0100
+Message-ID: <20160504134531.GA31744@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1461831730-5575-9-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,67 +16,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, eric.auger-qxv4g6HH51o@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: jroedel-l3A5Bk7waGM@public.gmane.org
+Cc: arnd-r2nGTMty4D4@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 28/04/16 09:22, Eric Auger wrote:
-> On MSI message composition we now use the MSI doorbell's IOVA in
-> place of the doorbell's PA in case the device is upstream to an
-> IOMMU that requires MSI addresses to be mapped. The doorbell's
-> allocation and mapping happened on an early stage (pci_enable_msi).
-> 
-> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> 
-> ---
-> v7 -> v8:
-> - use iommu_msi_msg_pa_to_va
-> - add WARN_ON
-> 
-> v6 -> v7:
-> - allocation/mapping is done at an earlier stage. We now just perform
->   the iova lookup. So it is safe now to be called in a code that cannot
->   sleep. iommu_msi_set_doorbell_iova is moved in the dma-reserved-iommu
->   API: I think it cleans things up with respect to various #ifdef CONFIGS.
-> 
-> v5:
-> - use macros to increase the readability
-> - add comments
-> - fix a typo that caused a compilation error if CONFIG_IOMMU_API
->   is not set
-> ---
->  kernel/irq/msi.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-> index d5f95e6..835938b 100644
-> --- a/kernel/irq/msi.c
-> +++ b/kernel/irq/msi.c
-> @@ -64,8 +64,16 @@ static int msi_compose(struct irq_data *irq_data,
->  
->  	if (erase)
->  		memset(msg, 0, sizeof(*msg));
-> -	else
+Hi Joerg,
 
-Nit: Braces on both sides of the 'else'.
+Please pull the following arm-smmu updates for 4.7. The highlights are:
 
-> +	else {
-> +		struct device *dev;
-> +
->  		ret = irq_chip_compose_msi_msg(irq_data, msg);
-> +		if (ret)
-> +			return ret;
-> +
-> +		dev = msi_desc_to_dev(irq_data_get_msi_desc(irq_data));
-> +		WARN_ON(iommu_msi_msg_pa_to_va(dev, msg));
-> +	}
->  
->  	return ret;
->  }
-> 
+  * Support for 64k pages with SMMUv1 implementations (e.g MMU-401)
+  * Remove open-coded 64-bit MMIO accessors
+  * Initial support for 16-bit VMIDs, as supported by some ThunderX
+    SMMU implementations
+  * A couple of errata workarounds for silicon in the field
+
+As a result of the MMIO accessor rework, there is an asm-generic change
+here, but it has been Acked-by Arnd.
 
 Thanks,
 
-	M.
--- 
-Jazz is not dead. It just smells funny...
+Will
+
+--->8
+
+The following changes since commit f55532a0c0b8bb6148f4e07853b876ef73bc69ca:
+
+  Linux 4.6-rc1 (2016-03-26 16:03:24 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+
+for you to fetch changes up to 3ca3712a42f9e632eb41da94ca4eab4f1fb06fcb:
+
+  iommu/arm-smmu: Clear cache lock bit of ACR (2016-05-03 18:23:04 +0100)
+
+----------------------------------------------------------------
+Peng Fan (1):
+      iommu/arm-smmu: Clear cache lock bit of ACR
+
+Robin Murphy (7):
+      iommu/arm-smmu: Differentiate specific implementations
+      iommu/arm-smmu: Convert ThunderX workaround to new method
+      iommu/arm-smmu: Work around MMU-500 prefetch errata
+      io-64-nonatomic: Add relaxed accessor variants
+      iommu/arm-smmu: Tidy up 64-bit/atomic I/O accesses
+      iommu/arm-smmu: Decouple context format from kernel config
+      iommu/arm-smmu: Support SMMUv1 64KB supplement
+
+Tirumalesh Chalamarla (2):
+      iommu/arm-smmu: Add support for 16 bit VMID
+      iommu/arm-smmu: Workaround for ThunderX erratum #27704
+
+ Documentation/arm64/silicon-errata.txt             |   2 +
+ .../devicetree/bindings/iommu/arm,smmu.txt         |   1 +
+ drivers/iommu/arm-smmu.c                           | 291 +++++++++++++++------
+ include/asm-generic/io.h                           |   4 +-
+ include/linux/io-64-nonatomic-hi-lo.h              |  25 ++
+ include/linux/io-64-nonatomic-lo-hi.h              |  25 ++
+ 6 files changed, 265 insertions(+), 83 deletions(-)
