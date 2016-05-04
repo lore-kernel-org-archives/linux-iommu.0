@@ -1,7 +1,8 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v9 1/7] vfio: introduce a vfio_dma type field
-Date: Wed,  4 May 2016 11:54:12 +0000
-Message-ID: <1462362858-2925-2-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v9 3/7] vfio/type1: bypass unmap/unpin and replay for
+	VFIO_IOVA_RESERVED slots
+Date: Wed,  4 May 2016 11:54:14 +0000
+Message-ID: <1462362858-2925-4-git-send-email-eric.auger@linaro.org>
 References: <1462362858-2925-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,51 +22,47 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We introduce a vfio_dma type since we will need to discriminate
-different types of dma slots:
-- VFIO_IOVA_USER: IOVA region used to map user vaddr
-- VFIO_IOVA_RESERVED: IOVA region reserved to map host device PA such
-  as MSI doorbells
+Before allowing the end-user to create VFIO_IOVA_RESERVED dma slots,
+let's implement the expected behavior for removal and replay. As opposed
+to user dma slots, IOVAs are not systematically bound to PAs and PAs are
+not pinned. VFIO just initializes the IOVA "aperture". IOVAs are allocated
+outside of the VFIO framework, typically the MSI layer which is
+responsible to free and unmap them. The MSI mapping resources are freeed
+by the IOMMU driver on domain destruction.
 
 Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 ---
 
-v6 -> v7:
-- add VFIO_IOVA_ANY
-- do not introduce yet any VFIO_IOVA_RESERVED handling
+v7 -> v8:
+- do no destroy anything anymore, just bypass unmap/unpin and iommu_map
+  on replay
 ---
- drivers/vfio/vfio_iommu_type1.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/vfio/vfio_iommu_type1.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 75b24e9..aaf5a6c 100644
+index 2d769d4..94a9916 100644
 --- a/drivers/vfio/vfio_iommu_type1.c
 +++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -53,6 +53,16 @@ module_param_named(disable_hugepages,
- MODULE_PARM_DESC(disable_hugepages,
- 		 "Disable VFIO IOMMU support for IOMMU hugepages.");
+@@ -391,7 +391,7 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
+ 	struct vfio_domain *domain, *d;
+ 	long unlocked = 0;
  
-+enum vfio_iova_type {
-+	VFIO_IOVA_USER = 0,	/* standard IOVA used to map user vaddr */
-+	/*
-+	 * IOVA reserved to map special host physical addresses,
-+	 * MSI frames for instance
-+	 */
-+	VFIO_IOVA_RESERVED,
-+	VFIO_IOVA_ANY,		/* matches any IOVA type */
-+};
+-	if (!dma->size)
++	if (!dma->size || dma->type != VFIO_IOVA_USER)
+ 		return;
+ 	/*
+ 	 * We use the IOMMU to track the physical addresses, otherwise we'd
+@@ -727,6 +727,9 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+ 		dma = rb_entry(n, struct vfio_dma, node);
+ 		iova = dma->iova;
+ 
++		if (dma->type == VFIO_IOVA_RESERVED)
++			continue;
 +
- struct vfio_iommu {
- 	struct list_head	domain_list;
- 	struct mutex		lock;
-@@ -75,6 +85,7 @@ struct vfio_dma {
- 	unsigned long		vaddr;		/* Process virtual addr */
- 	size_t			size;		/* Map size (bytes) */
- 	int			prot;		/* IOMMU_READ/WRITE */
-+	enum vfio_iova_type	type;		/* type of IOVA */
- };
- 
- struct vfio_group {
+ 		while (iova < dma->iova + dma->size) {
+ 			phys_addr_t phys = iommu_iova_to_phys(d->domain, iova);
+ 			size_t size;
 -- 
 1.9.1
