@@ -1,178 +1,67 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH RESEND] iommu/dma: Implement scatterlist segment merging
-Date: Wed, 4 May 2016 16:33:11 +0100
-Message-ID: <572A1637.7000509@arm.com>
-References: <b87bf47e79febb3ca904140db09cf095238b2817.1460373907.git.robin.murphy@arm.com>
+From: Scott Wood <oss@buserror.net>
+Subject: Re: [v9, 6/7] MAINTAINERS: add entry for Freescale SoC driver
+Date: Wed, 04 May 2016 12:35:08 -0500
+Message-ID: <1462383308.16584.43.camel@buserror.net>
+References: <1462332274-13744-1-git-send-email-yangbo.lu@nxp.com>
+	 <1462332274-13744-7-git-send-email-yangbo.lu@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <b87bf47e79febb3ca904140db09cf095238b2817.1460373907.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-mmc-owner@vger.kernel.org>
+In-Reply-To: <1462332274-13744-7-git-send-email-yangbo.lu@nxp.com>
+Sender: linux-mmc-owner@vger.kernel.org
+To: Yangbo Lu <yangbo.lu@nxp.com>, linux-mmc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc: ulf.hansson@linaro.org, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Jochen Friedrich <jochen@scram.de>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Qiang Zhao <qiang.zhao@nxp.com>, Kumar Gala <galak@codeaurora.org>, Santosh Shilimkar <ssantosh@kernel.org>, leoyang.li@nxp.com, xiaobo.xie@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-On 11/04/16 12:32, Robin Murphy wrote:
-> Stop wasting IOVA space by over-aligning scatterlist segments for a
-> theoretical worst-case segment boundary mask, and instead take the real
-> limits into account to merge consecutive segments wherever appropriate,
-> so our callers can benefit from getting back nicely simplified lists.
->
-> This also represents the last piece of functionality wanted by users of
-> the current arch/arm implementation, thus brings us a small step closer
-> to converting that over to the common code.
->
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+On Wed, 2016-05-04 at 11:24 +0800, Yangbo Lu wrote:
+> Add maintainer entry for Freescale SoC driver including
+> the QE library and the GUTS driver now. Also add maintainer
+> for QE library.
+> 
+> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
 > ---
->
-> As requested, reposting rebased onto -rc3.
+> Changes for v8:
+> 	- Added this patch
+> Changes for v9:
+> 	- Added linux-arm mail list
+> 	- Removed GUTS driver entry
+> ---
+>  MAINTAINERS | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 42e65d1..ce91db7 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -4622,9 +4622,18 @@ F:	drivers/net/ethernet/freescale/fec_ptp.c
+>  F:	drivers/net/ethernet/freescale/fec.h
+>  F:	Documentation/devicetree/bindings/net/fsl-fec.txt
+>  
+> +FREESCALE SOC DRIVER
+> +M:	Scott Wood <oss@buserror.net>
+> +L:	linuxppc-dev@lists.ozlabs.org
+> +L:	linux-arm-kernel@lists.infradead.org
+> +S:	Maintained
+> +F:	drivers/soc/fsl/
+> +F:	include/linux/fsl/
+> +
+>  FREESCALE QUICC ENGINE LIBRARY
+> +M:	Qiang Zhao <qiang.zhao@nxp.com>
+>  L:	linuxppc-dev@lists.ozlabs.org
+> -S:	Orphan
+> +S:	Maintained
+>  F:	drivers/soc/fsl/qe/
+>  F:	include/soc/fsl/*qe*.h
+>  F:	include/soc/fsl/*ucc*.h
 
-Just checking whether this has slipped through the cracks? It would be 
-nice to tick it off for 4.7 (even if the video folks seem to have gone 
-quiet lately).
+s/DRIVER/DRIVERS/
 
-Thanks,
-Robin.
+There's more than one.
 
->   drivers/iommu/dma-iommu.c | 84 ++++++++++++++++++++++++++++++++++-------------
->   1 file changed, 61 insertions(+), 23 deletions(-)
->
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 58f2fe6..886cb3a 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -389,26 +389,58 @@ void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
->
->   /*
->    * Prepare a successfully-mapped scatterlist to give back to the caller.
-> - * Handling IOVA concatenation can come later, if needed
-> + *
-> + * At this point the segments are already laid out by iommu_dma_map_sg() to
-> + * avoid individually crossing any boundaries, so we merely need to check a
-> + * segment's start address to avoid concatenating across one.
->    */
->   static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
->   		dma_addr_t dma_addr)
->   {
-> -	struct scatterlist *s;
-> -	int i;
-> +	struct scatterlist *s, *cur = sg;
-> +	unsigned long seg_mask = dma_get_seg_boundary(dev);
-> +	unsigned int cur_len = 0, max_len = dma_get_max_seg_size(dev);
-> +	int i, count = 0;
->
->   	for_each_sg(sg, s, nents, i) {
-> -		/* Un-swizzling the fields here, hence the naming mismatch */
-> -		unsigned int s_offset = sg_dma_address(s);
-> +		/* Restore this segment's original unaligned fields first */
-> +		unsigned int s_iova_off = sg_dma_address(s);
->   		unsigned int s_length = sg_dma_len(s);
-> -		unsigned int s_dma_len = s->length;
-> +		unsigned int s_iova_len = s->length;
->
-> -		s->offset += s_offset;
-> +		s->offset += s_iova_off;
->   		s->length = s_length;
-> -		sg_dma_address(s) = dma_addr + s_offset;
-> -		dma_addr += s_dma_len;
-> +		sg_dma_address(s) = DMA_ERROR_CODE;
-> +		sg_dma_len(s) = 0;
-> +
-> +		/*
-> +		 * Now fill in the real DMA data. If...
-> +		 * - there is a valid output segment to append to
-> +		 * - and this segment starts on an IOVA page boundary
-> +		 * - but doesn't fall at a segment boundary
-> +		 * - and wouldn't make the resulting output segment too long
-> +		 */
-> +		if (cur_len && !s_iova_off && (dma_addr & seg_mask) &&
-> +		    (cur_len + s_length <= max_len)) {
-> +			/* ...then concatenate it with the previous one */
-> +			cur_len += s_length;
-> +		} else {
-> +			/* Otherwise start the next output segment */
-> +			if (i > 0)
-> +				cur = sg_next(cur);
-> +			cur_len = s_length;
-> +			count++;
-> +
-> +			sg_dma_address(cur) = dma_addr + s_iova_off;
-> +		}
-> +
-> +		sg_dma_len(cur) = cur_len;
-> +		dma_addr += s_iova_len;
-> +
-> +		if (s_length + s_iova_off < s_iova_len)
-> +			cur_len = 0;
->   	}
-> -	return i;
-> +	return count;
->   }
->
->   /*
-> @@ -446,34 +478,40 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
->   	struct scatterlist *s, *prev = NULL;
->   	dma_addr_t dma_addr;
->   	size_t iova_len = 0;
-> +	unsigned long mask = dma_get_seg_boundary(dev);
->   	int i;
->
->   	/*
->   	 * Work out how much IOVA space we need, and align the segments to
->   	 * IOVA granules for the IOMMU driver to handle. With some clever
->   	 * trickery we can modify the list in-place, but reversibly, by
-> -	 * hiding the original data in the as-yet-unused DMA fields.
-> +	 * stashing the unaligned parts in the as-yet-unused DMA fields.
->   	 */
->   	for_each_sg(sg, s, nents, i) {
-> -		size_t s_offset = iova_offset(iovad, s->offset);
-> +		size_t s_iova_off = iova_offset(iovad, s->offset);
->   		size_t s_length = s->length;
-> +		size_t pad_len = (mask - iova_len + 1) & mask;
->
-> -		sg_dma_address(s) = s_offset;
-> +		sg_dma_address(s) = s_iova_off;
->   		sg_dma_len(s) = s_length;
-> -		s->offset -= s_offset;
-> -		s_length = iova_align(iovad, s_length + s_offset);
-> +		s->offset -= s_iova_off;
-> +		s_length = iova_align(iovad, s_length + s_iova_off);
->   		s->length = s_length;
->
->   		/*
-> -		 * The simple way to avoid the rare case of a segment
-> -		 * crossing the boundary mask is to pad the previous one
-> -		 * to end at a naturally-aligned IOVA for this one's size,
-> -		 * at the cost of potentially over-allocating a little.
-> +		 * Due to the alignment of our single IOVA allocation, we can
-> +		 * depend on these assumptions about the segment boundary mask:
-> +		 * - If mask size >= IOVA size, then the IOVA range cannot
-> +		 *   possibly fall across a boundary, so we don't care.
-> +		 * - If mask size < IOVA size, then the IOVA range must start
-> +		 *   exactly on a boundary, therefore we can lay things out
-> +		 *   based purely on segment lengths without needing to know
-> +		 *   the actual addresses beforehand.
-> +		 * - The mask must be a power of 2, so pad_len == 0 if
-> +		 *   iova_len == 0, thus we cannot dereference prev the first
-> +		 *   time through here (i.e. before it has a meaningful value).
->   		 */
-> -		if (prev) {
-> -			size_t pad_len = roundup_pow_of_two(s_length);
-> -
-> -			pad_len = (pad_len - iova_len) & (pad_len - 1);
-> +		if (pad_len && pad_len < s_length - 1) {
->   			prev->length += pad_len;
->   			iova_len += pad_len;
->   		}
->
+Otherwise:
+Acked-by: Scott Wood <oss@buserror.net>
+
+-Scott
+
+> 
