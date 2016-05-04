@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v9 2/8] irqchip/gic-v3-its: ITS advertises
-	MSI_FLAG_IRQ_REMAPPING
-Date: Wed,  4 May 2016 15:18:08 +0000
-Message-ID: <1462375094-2390-3-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v9 4/8] genirq/msi: msi_compose wrapper
+Date: Wed,  4 May 2016 15:18:10 +0000
+Message-ID: <1462375094-2390-5-git-send-email-eric.auger@linaro.org>
 References: <1462375094-2390-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,48 +21,88 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The ITS is the first ARM MSI controller advertising the new
-MSI_FLAG_IRQ_REMAPPING flag. It does so because it supports
-interrupt translation service. This HW support offers isolation
-of MSIs, feature used when using KVM device passthrough.
+Currently the MSI message is composed by directly calling
+irq_chip_compose_msi_msg and erased by setting the memory to zero.
+
+On some platforms, we will need to complexify this composition to
+properly handle MSI emission through IOMMU. Also we will need to track
+when the MSI message is erased.
+
+We propose to introduce a common wrapper for actual composition and
+erasure, msi_compose.
 
 Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 ---
+v4 -> v5:
+- just introduce the msi-compose wrapper without adding new
+  functionalities
 
-v5: new
+v3 -> v4:
+- that code was formely in irq-gic-common.c
+  "irqchip/gicv2m/v3-its-pci-msi: IOMMU map the MSI frame when needed"
+  also the [un]mapping was done in irq_write_msi_msg; now done on compose
+
+v2 -> v3:
+- protect iova/addr manipulation with CONFIG_ARCH_DMA_ADDR_T_64BIT and
+  CONFIG_PHYS_ADDR_T_64BIT
+- only expose gic_pci_msi_domain_write_msg in case CONFIG_IOMMU_API &
+  CONFIG_PCI_MSI_IRQ_DOMAIN are set.
+- gic_set/unset_msi_addr duly become static
 ---
- drivers/irqchip/irq-gic-v3-its-pci-msi.c      | 3 ++-
- drivers/irqchip/irq-gic-v3-its-platform-msi.c | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ kernel/irq/msi.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/irqchip/irq-gic-v3-its-pci-msi.c b/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-index aee60ed..8223765 100644
---- a/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-+++ b/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-@@ -96,7 +96,8 @@ static struct msi_domain_ops its_pci_msi_ops = {
+diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+index 9b0ba4a..72bf4d6 100644
+--- a/kernel/irq/msi.c
++++ b/kernel/irq/msi.c
+@@ -55,6 +55,19 @@ static inline void irq_chip_write_msi_msg(struct irq_data *data,
+ 	data->chip->irq_write_msi_msg(data, msg);
+ }
  
- static struct msi_domain_info its_pci_msi_domain_info = {
- 	.flags	= (MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
--		   MSI_FLAG_MULTI_PCI_MSI | MSI_FLAG_PCI_MSIX),
-+		   MSI_FLAG_MULTI_PCI_MSI | MSI_FLAG_PCI_MSIX |
-+		   MSI_FLAG_IRQ_REMAPPING),
- 	.ops	= &its_pci_msi_ops,
- 	.chip	= &its_msi_irq_chip,
- };
-diff --git a/drivers/irqchip/irq-gic-v3-its-platform-msi.c b/drivers/irqchip/irq-gic-v3-its-platform-msi.c
-index 470b4aa..8c0d69d 100644
---- a/drivers/irqchip/irq-gic-v3-its-platform-msi.c
-+++ b/drivers/irqchip/irq-gic-v3-its-platform-msi.c
-@@ -63,7 +63,8 @@ static struct msi_domain_ops its_pmsi_ops = {
- };
++static int msi_compose(struct irq_data *irq_data,
++		       struct msi_msg *msg, bool erase)
++{
++	int ret = 0;
++
++	if (erase)
++		memset(msg, 0, sizeof(*msg));
++	else
++		ret = irq_chip_compose_msi_msg(irq_data, msg);
++
++	return ret;
++}
++
+ /**
+  * msi_domain_set_affinity - Generic affinity setter function for MSI domains
+  * @irq_data:	The irq data associated to the interrupt
+@@ -73,7 +86,7 @@ int msi_domain_set_affinity(struct irq_data *irq_data,
  
- static struct msi_domain_info its_pmsi_domain_info = {
--	.flags	= (MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS),
-+	.flags	= (MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS |
-+		   MSI_FLAG_IRQ_REMAPPING),
- 	.ops	= &its_pmsi_ops,
- 	.chip	= &its_pmsi_irq_chip,
- };
+ 	ret = parent->chip->irq_set_affinity(parent, mask, force);
+ 	if (ret >= 0 && ret != IRQ_SET_MASK_OK_DONE) {
+-		BUG_ON(irq_chip_compose_msi_msg(irq_data, &msg));
++		BUG_ON(msi_compose(irq_data, &msg, false));
+ 		irq_chip_write_msi_msg(irq_data, &msg);
+ 	}
+ 
+@@ -85,7 +98,7 @@ static void msi_domain_activate(struct irq_domain *domain,
+ {
+ 	struct msi_msg msg;
+ 
+-	BUG_ON(irq_chip_compose_msi_msg(irq_data, &msg));
++	BUG_ON(msi_compose(irq_data, &msg, false));
+ 	irq_chip_write_msi_msg(irq_data, &msg);
+ }
+ 
+@@ -94,7 +107,7 @@ static void msi_domain_deactivate(struct irq_domain *domain,
+ {
+ 	struct msi_msg msg;
+ 
+-	memset(&msg, 0, sizeof(msg));
++	msi_compose(irq_data, &msg, true);
+ 	irq_chip_write_msi_msg(irq_data, &msg);
+ }
+ 
 -- 
 1.9.1
