@@ -1,13 +1,12 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v9 8/8] iommu/arm-smmu: get/put the msi cookie
-Date: Wed,  4 May 2016 11:40:07 +0000
-Message-ID: <1462362007-2753-9-git-send-email-eric.auger@linaro.org>
-References: <1462362007-2753-1-git-send-email-eric.auger@linaro.org>
+Subject: [PATCH v9 0/7] KVM PCIe/MSI passthrough on ARM/ARM64: kernel part
+	3/3: vfio changes
+Date: Wed,  4 May 2016 11:54:11 +0000
+Message-ID: <1462362858-2925-1-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1462362007-2753-1-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,108 +20,142 @@ To: eric.auger-qxv4g6HH51o@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@p
 Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-For IOMMU_DOMAIN_UNMANAGED type we now also get the msi
-cookie in both arm-smmu and arm-smmu-v3. This initializes
-resources for MSI doorbell mapping.
+This series allows the user-space to register a reserved IOVA domain.
+This completes the kernel integration of the whole functionality on top
+of part 1 (v9) & 2 (v8).
 
-Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 16 ++++++++++++----
- drivers/iommu/arm-smmu.c    | 15 +++++++++++----
- 2 files changed, 23 insertions(+), 8 deletions(-)
+It also depends on [PATCH 1/3] iommu: Add MMIO mapping type series,
+http://comments.gmane.org/gmane.linux.kernel.iommu/12869
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index bf222b5..b5d9826 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -22,6 +22,7 @@
- 
- #include <linux/delay.h>
- #include <linux/dma-iommu.h>
-+#include <linux/msi-iommu.h>
- #include <linux/err.h>
- #include <linux/interrupt.h>
- #include <linux/iommu.h>
-@@ -1411,15 +1412,21 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 		return NULL;
- 
- 	if (type == IOMMU_DOMAIN_DMA &&
--	    iommu_get_dma_cookie(&smmu_domain->domain)) {
--		kfree(smmu_domain);
--		return NULL;
--	}
-+	    iommu_get_dma_cookie(&smmu_domain->domain))
-+		goto err;
-+
-+	if (type == IOMMU_DOMAIN_UNMANAGED &&
-+		iommu_get_msi_cookie(&smmu_domain->domain))
-+		goto err;
-+
- 	smmu_domain->domain.msi_geometry = msi_geometry;
- 
- 	mutex_init(&smmu_domain->init_mutex);
- 	spin_lock_init(&smmu_domain->pgtbl_lock);
- 	return &smmu_domain->domain;
-+err:
-+	kfree(smmu_domain);
-+	return NULL;
- }
- 
- static int arm_smmu_bitmap_alloc(unsigned long *map, int span)
-@@ -1445,6 +1452,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 
-+	iommu_put_msi_cookie(domain);
- 	iommu_put_dma_cookie(domain);
- 	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
- 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 55f429d..0908985 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -30,6 +30,7 @@
- 
- #include <linux/delay.h>
- #include <linux/dma-iommu.h>
-+#include <linux/msi-iommu.h>
- #include <linux/dma-mapping.h>
- #include <linux/err.h>
- #include <linux/interrupt.h>
-@@ -990,10 +991,12 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 		return NULL;
- 
- 	if (type == IOMMU_DOMAIN_DMA &&
--	    iommu_get_dma_cookie(&smmu_domain->domain)) {
--		kfree(smmu_domain);
--		return NULL;
--	}
-+	    iommu_get_dma_cookie(&smmu_domain->domain))
-+		goto err;
-+
-+	if (type == IOMMU_DOMAIN_UNMANAGED &&
-+		iommu_get_msi_cookie(&smmu_domain->domain))
-+		goto err;
- 
- 	smmu_domain->domain.msi_geometry = msi_geometry;
- 
-@@ -1001,6 +1004,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 	spin_lock_init(&smmu_domain->pgtbl_lock);
- 
- 	return &smmu_domain->domain;
-+err:
-+	kfree(smmu_domain);
-+	return NULL;
- }
- 
- static void arm_smmu_domain_free(struct iommu_domain *domain)
-@@ -1011,6 +1017,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
- 	 * Free the domain resources. We assume that all devices have
- 	 * already been detached.
- 	 */
-+	iommu_put_msi_cookie(domain);
- 	iommu_put_dma_cookie(domain);
- 	arm_smmu_destroy_domain_context(domain);
- 	kfree(smmu_domain);
+We reuse the VFIO DMA MAP ioctl with a new flag to bridge to the
+msi-iommu API. The need for provisioning such MSI IOVA range is reported
+through capability chain, using VFIO_IOMMU_TYPE1_INFO_CAP_MSI_GEOMETRY.
+
+vfio_iommu_type1 checks if the MSI mapping is safe when attaching the
+vfio group to the container (allow_unsafe_interrupts modality).
+
+On ARM/ARM64, the IOMMU does not astract IRQ remapping. the modality is
+abstracted on MSI controller side. The GICv3 ITS is the first controller
+advertising the modality.
+
+More details & context can be found at:
+http://www.linaro.org/blog/core-dump/kvm-pciemsi-passthrough-armarm64/
+
+Best Regards
+
+Eric
+
+Testing:
+- functional on ARM64 AMD Overdrive HW (single GICv2m frame) with
+  Intel X540-T2 (SR-IOV capable)
+- also tested on Armada-7040 using an intel IXGBE (82599ES) by
+  Yehuda Yitschak (v8)
+- Not tested: ARM GICv3 ITS
+
+References:
+[1] [RFC 0/2] VFIO: Add virtual MSI doorbell support
+    (https://lkml.org/lkml/2015/7/24/135)
+[2] [RFC PATCH 0/6] vfio: Add interface to map MSI pages
+    (https://lists.cs.columbia.edu/pipermail/kvmarm/2015-September/016607.html)
+[3] [PATCH v2 0/3] Introduce MSI hardware mapping for VFIO
+    (http://permalink.gmane.org/gmane.comp.emulators.kvm.arm.devel/3858)
+
+Git: complete series available at
+https://git.linaro.org/people/eric.auger/linux.git/shortlog/refs/heads/v4.6-rc6-pcie-passthrough-v9
+
+previous version at
+https://git.linaro.org/people/eric.auger/linux.git/shortlog/refs/heads/v4.6-rc5-pcie-passthrough-v8
+
+History:
+v8 -> v9:
+- report MSI geometry through capability chain (last patch only);
+  with the current limitation that an arbitrary number of 16 page
+  requirement is reported. To be improved later on.
+
+
+v7 -> v8:
+- use renamed msi-iommu API
+- VFIO only responsible for setting the IOVA aperture
+- use new DOMAIN_ATTR_MSI_GEOMETRY iommu domain attribute
+
+v6 -> v7:
+- vfio_find_dma now accepts a dma_type argument.
+- should have recovered the capability to unmap the whole user IOVA range
+- remove computation of nb IOVA pages -> will post a separate RFC for that
+  while respinning the QEMU part
+
+RFC v5 -> patch v6:
+- split to ease the review process
+
+RFC v4 -> RFC v5:
+- take into account Thomas' comments on MSI related patches
+  - split "msi: IOMMU map the doorbell address when needed"
+  - increase readability and add comments
+  - fix style issues
+ - split "iommu: Add DOMAIN_ATTR_MSI_MAPPING attribute"
+ - platform ITS now advertises IOMMU_CAP_INTR_REMAP
+ - fix compilation issue with CONFIG_IOMMU API unset
+ - arm-smmu-v3 now advertises DOMAIN_ATTR_MSI_MAPPING
+
+RFC v3 -> v4:
+- Move doorbell mapping/unmapping in msi.c
+- fix ref count issue on set_affinity: in case of a change in the address
+  the previous address is decremented
+- doorbell map/unmap now is done on msi composition. Should allow the use
+  case for platform MSI controllers
+- create dma-reserved-iommu.h/c exposing/implementing a new API dedicated
+  to reserved IOVA management (looking like dma-iommu glue)
+- series reordering to ease the review:
+  - first part is related to IOMMU
+  - second related to MSI sub-system
+  - third related to VFIO (except arm-smmu IOMMU_CAP_INTR_REMAP removal)
+- expose the number of requested IOVA pages through VFIO_IOMMU_GET_INFO
+  [this partially addresses Marc's comments on iommu_get/put_single_reserved
+   size/alignment problematic - which I did not ignore - but I don't know
+   how much I can do at the moment]
+
+RFC v2 -> RFC v3:
+- should fix wrong handling of some CONFIG combinations:
+  CONFIG_IOVA, CONFIG_IOMMU_API, CONFIG_PCI_MSI_IRQ_DOMAIN
+- fix MSI_FLAG_IRQ_REMAPPING setting in GICv3 ITS (although not tested)
+
+PATCH v1 -> RFC v2:
+- reverted to RFC since it looks more reasonable ;-) the code is split
+  between VFIO, IOMMU, MSI controller and I am not sure I did the right
+  choices. Also API need to be further discussed.
+- iova API usage in arm-smmu.c.
+- MSI controller natively programs the MSI addr with either the PA or IOVA.
+  This is not done anymore in vfio-pci driver as suggested by Alex.
+- check irq remapping capability of the group
+
+RFC v1 [2] -> PATCH v1:
+- use the existing dma map/unmap ioctl interface with a flag to register a
+  reserved IOVA range. Use the legacy Rb to store this special vfio_dma.
+- a single reserved IOVA contiguous region now is allowed
+- use of an RB tree indexed by PA to store allocated reserved slots
+- use of a vfio_domain iova_domain to manage iova allocation within the
+  window provided by the userspace
+- vfio alloc_map/unmap_free take a vfio_group handle
+- vfio_group handle is cached in vfio_pci_device
+- add ref counting to bindings
+- user modality enabled at the end of the series
+
+
+Eric Auger (7):
+  vfio: introduce a vfio_dma type field
+  vfio/type1: vfio_find_dma accepting a type argument
+  vfio/type1: bypass unmap/unpin and replay for VFIO_IOVA_RESERVED slots
+  vfio: allow reserved msi iova registration
+  vfio/type1: also check IRQ remapping capability at msi domain
+  iommu/arm-smmu: do not advertise IOMMU_CAP_INTR_REMAP
+  vfio/type1: return MSI geometry through VFIO_IOMMU_GET_INFO capability
+    chains
+
+ drivers/iommu/arm-smmu-v3.c     |   3 +-
+ drivers/iommu/arm-smmu.c        |   3 +-
+ drivers/vfio/vfio_iommu_type1.c | 270 +++++++++++++++++++++++++++++++++++++---
+ include/uapi/linux/vfio.h       |  40 +++++-
+ 4 files changed, 298 insertions(+), 18 deletions(-)
+
 -- 
 1.9.1
