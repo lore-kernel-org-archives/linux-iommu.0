@@ -1,16 +1,11 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH V3 2/7] documentation: iommu: Add bindings for
-	msm,iommu-v0 ip
-Date: Tue, 3 May 2016 21:24:37 -0500
-Message-ID: <20160504022437.GA4110@rob-hp-laptop>
-References: <1462128875-20988-1-git-send-email-sricharan@codeaurora.org>
-	<1462128875-20988-3-git-send-email-sricharan@codeaurora.org>
+From: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
+Subject: [v9, 0/7] Fix eSDHC host version register bug
+Date: Wed, 4 May 2016 11:24:27 +0800
+Message-ID: <1462332274-13744-1-git-send-email-yangbo.lu@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1462128875-20988-3-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,100 +15,49 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+To: linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, leoyang.li-3arQi8VN3Tc@public.gmane.org, Scott Wood <oss-fOR+EgIDQEHk1uMJSBkQmQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, xiaobo.xie-3arQi8VN3Tc@public.gmane.org, Qiang Zhao <qiang.zhao-3arQi8VN3Tc@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 02, 2016 at 12:24:30AM +0530, Sricharan R wrote:
-> The MSM IOMMU is an implementation compatible with the ARM VMSA short
-> descriptor page tables. It provides address translation for bus masters outside
-> of the CPU, each connected to the IOMMU through a port called micro-TLB.
-> Adding the DT bindings for the same.
-> 
-> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
->  .../devicetree/bindings/iommu/msm,iommu-v0.txt     | 62 ++++++++++++++++++++++
->  1 file changed, 62 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
-> new file mode 100644
-> index 0000000..63b4f96
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
-> @@ -0,0 +1,62 @@
-> +* MSM IOMMU
-> +
-> +The MSM IOMMU is an implementation compatible with the ARM VMSA short
-> +descriptor page tables. It provides address translation for bus masters outside
-> +of the CPU, each connected to the IOMMU through a port called micro-TLB.
-> +
-> +Required Properties:
-> +
-> +  - compatible: Must contain "msm,iommu-v0".
+This patchset is used to fix a host version register bug in the T4240-R1.0-R2.0
+eSDHC controller. To get the SoC version and revision, it's needed to add the
+GUTS driver to access the global utilities registers.
 
-SOC specific compatible strings please.
+So, the first four patches are to add the GUTS driver.
+The following patches except the updating MAINTAINERS patch are to enable
+GUTS driver support to get SVR in eSDHC driver and fix host version for T4240.
 
-> +  - reg: Base address and size of the IOMMU registers.
-> +  - interrupts: Specifiers for the MMU fault interrupts. For instances that
-> +    support secure mode two interrupts must be specified, for non-secure and
-> +    secure mode, in that order. For instances that don't support secure mode a
-> +    single interrupt must be specified.
-> +  - #iommu-cells: The number of cells needed to specify the stream id. This
-> +		  is always 1.
-> +  - qcom,ncb:	  The total number of context banks in the IOMMU.
-> +  - clocks	: List of clocks to be used during SMMU register access. See
-> +		  Documentation/devicetree/bindings/clock/clock-bindings.txt
-> +		  for information about the format. For each clock specified
-> +		  here, there must be a corresponding entry in clock-names
-> +		  (see below).
-> +
-> +  - clock-names	: List of clock names corresponding to the clocks specified in
-> +		  the "clocks" property (above). See
-> +		  Documentation/devicetree/bindings/clock/clock-bindings.txt
-> +		  for more info.
+Yangbo Lu (7):
+  Documentation: DT: update Freescale DCFG compatible
+  ARM64: dts: ls2080a: add device configuration node
+  soc: fsl: add GUTS driver for QorIQ platforms
+  dt: move guts devicetree doc out of powerpc directory
+  powerpc/fsl: move mpc85xx.h to include/linux/fsl
+  MAINTAINERS: add entry for Freescale SoC driver
+  mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
 
-You must define how many clocks, their order and their names.
+ Documentation/devicetree/bindings/arm/fsl.txt      |   6 +-
+ .../bindings/{powerpc => soc}/fsl/guts.txt         |   3 +
+ MAINTAINERS                                        |  11 +-
+ arch/arm64/boot/dts/freescale/fsl-ls2080a.dtsi     |   6 +
+ arch/powerpc/kernel/cpu_setup_fsl_booke.S          |   2 +-
+ drivers/clk/clk-qoriq.c                            |   3 +-
+ drivers/i2c/busses/i2c-mpc.c                       |   2 +-
+ drivers/iommu/fsl_pamu.c                           |   3 +-
+ drivers/mmc/host/Kconfig                           |   1 +
+ drivers/mmc/host/sdhci-of-esdhc.c                  |  23 ++++
+ drivers/net/ethernet/freescale/gianfar.c           |   2 +-
+ drivers/soc/Kconfig                                |   2 +-
+ drivers/soc/fsl/Kconfig                            |   8 ++
+ drivers/soc/fsl/Makefile                           |   1 +
+ drivers/soc/fsl/guts.c                             | 119 +++++++++++++++++++
+ include/linux/fsl/guts.h                           | 126 +++++++++++++--------
+ .../asm/mpc85xx.h => include/linux/fsl/svr.h       |   4 +-
+ 17 files changed, 262 insertions(+), 60 deletions(-)
+ rename Documentation/devicetree/bindings/{powerpc => soc}/fsl/guts.txt (91%)
+ create mode 100644 drivers/soc/fsl/Kconfig
+ create mode 100644 drivers/soc/fsl/guts.c
+ rename arch/powerpc/include/asm/mpc85xx.h => include/linux/fsl/svr.h (97%)
 
-> +
-> +Each bus master connected to an IOMMU must reference the IOMMU in its device
-> +node with the following property:
-> +
-> +  - iommus: A reference to the IOMMU in multiple cells. The first cell is a
-> +	    phandle to the IOMMU and the second cell is the stream id.
-> +	    A single master device can be connected to more than one iommu
-> +	    and multiple contexts in each of the iommu. So multiple entries
-> +	    are required to list all the iommus and the stream ids that the
-> +	    master is connected to.
-> +
-> +Example: mdp iommu and its bus master
-> +
-> +                mdp_port0: iommu@7500000 {
-> +			compatible = "msm,iommu-v0";
-> +			#iommu-cells = <1>;
-> +			clock-names =
-> +			    "smmu_pclk",
-> +			    "iommu_clk";
-> +			clocks =
-> +			    <&mmcc SMMU_AHB_CLK>,
-> +			    <&mmcc MDP_AXI_CLK>;
-> +			reg = <0x07500000 0x100000>;
-> +			interrupts =
-> +			    <GIC_SPI 63 0>,
-> +			    <GIC_SPI 64 0>;
-> +			qcom,ncb = <2>;
-> +		};
-> +
-> +		mdp: qcom,mdp@5100000 {
-> +			compatible = "qcom,mdp";
-> +			...
-> +			iommus = <&mdp_port0 0
-> +				  &mdp_port0 2>;
-> +		};
-> -- 
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe devicetree" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+-- 
+2.1.0.27.g96db324
