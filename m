@@ -1,68 +1,74 @@
-From: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
 Subject: Re: [PATCH 5/5] vfio-pci: Allow to mmap MSI-X table if interrupt
-	remapping is supported
-Date: Thu, 5 May 2016 19:42:38 +0800
-Message-ID: <4be013bc-e81b-84c5-06d3-e1b3f46b3227@linux.vnet.ibm.com>
+ remapping is supported
+Date: Thu, 5 May 2016 19:44:08 +0800
+Message-ID: <7c8b4efd-9662-ff10-57bc-d908ac38a0bf@linux.vnet.ibm.com>
 References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-	<1461761010-5452-6-git-send-email-xyjxie@linux.vnet.ibm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F842512@SHSMSX101.ccr.corp.intel.com>
-	<f7d73ac3-470d-a0d2-0a97-05be630480dd@linux.vnet.ibm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F842653@SHSMSX101.ccr.corp.intel.com>
-	<e064a6a7-a8dc-f71f-1725-f31e03581b8d@linux.vnet.ibm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F847150@SHSMSX101.ccr.corp.intel.com>
-	<063D6719AE5E284EB5DD2968C1650D6D5F4B52B5@AcuExch.aculab.com>
+ <1461761010-5452-6-git-send-email-xyjxie@linux.vnet.ibm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D15F842512@SHSMSX101.ccr.corp.intel.com>
+ <f7d73ac3-470d-a0d2-0a97-05be630480dd@linux.vnet.ibm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D15F842653@SHSMSX101.ccr.corp.intel.com>
+ <e064a6a7-a8dc-f71f-1725-f31e03581b8d@linux.vnet.ibm.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D15F847150@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <063D6719AE5E284EB5DD2968C1650D6D5F4B52B5-VkEWCZq2GCInGFn1LkZF6NBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>, "'Tian, Kevin'" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org" <alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org>, "nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org" <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, "mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org" <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, "ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org" <ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org" <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D15F847150@SHSMSX101.ccr.corp.intel.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: "Tian, Kevin" <kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "aik@ozlabs.ru" <aik@ozlabs.ru>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "paulus@samba.org" <paulus@samba.org>, "mpe@ellerman.id.au" <mpe@ellerman.id.au>, "joro@8bytes.org" <joro@8bytes.org>, "warrier@linux.vnet.ibm.com" <warrier@linux.vnet.ibm.com>, "zhong@linux.vnet.ibm.com" <zhong@linux.vnet.ibm.com>, "nikunj@linux.vnet.ibm.com" <nikunj@linux.vnet.ibm.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "gwshan@linux.vnet.ibm.com" <gwshan@linux.vnet.ibm.com>, "David.Laight@ACULAB.COM" <David.Laight@ACULAB.COM>, "alistair@popple.id.au" <alistair@popple.id.au>, "ruscur@russell.cc" <ruscur@russell.cc>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi David and Kevin,
+On 2016/5/5 17:36, Tian, Kevin wrote:
 
-On 2016/5/5 17:54, David Laight wrote:
+>> From: Yongji Xie
+>> Sent: Tuesday, May 03, 2016 3:34 PM
+>>
+>> On 2016/5/3 14:22, Tian, Kevin wrote:
+>>
+>>>> From: Yongji Xie [mailto:xyjxie@linux.vnet.ibm.com]
+>>>> Sent: Tuesday, May 03, 2016 2:08 PM
+>>>>
+>>>> On 2016/5/3 13:34, Tian, Kevin wrote:
+>>>>
+>>>>>> From: Yongji Xie
+>>>>>> Sent: Wednesday, April 27, 2016 8:43 PM
+>>>>>>
+>>>>>> This patch enables mmapping MSI-X tables if hardware supports
+>>>>>> interrupt remapping which can ensure that a given pci device
+>>>>>> can only shoot the MSIs assigned for it.
+>>>>>>
+>>>>>> With MSI-X table mmapped, we also need to expose the
+>>>>>> read/write interface which will be used to access MSI-X table.
+>>>>>>
+>>>>>> Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
+>>>>> A curious question here. Does "allow to mmap MSI-X" essentially
+>>>>> mean that KVM guest can directly read/write physical MSI-X
+>>>>> structure then?
+>>>>>
+>>>>> Thanks
+>>>>> Kevin
+>>>>>
+>>>> Here we just allow to mmap MSI-X table in kernel. It doesn't
+>>>> mean all KVM guest can directly read/write physical MSI-X
+>>>> structure. This should be decided by QEMU. For PPC64
+>>>> platform, we would allow to passthrough the MSI-X table
+>>>> because we know guest kernel would not write physical
+>>>> MSI-X structure when enabling MSI.
+>>>>
+>>> A bit confused here. If guest kernel doesn't need to write
+>>> physical MSI-X structure, what's the point of passing through
+>>> the table then?
+>> We want to allow the MSI-X table because there may be
+>> some critical registers in the same page as the MSI-X table.
+>> We have to handle the mmio access to these register in QEMU
+>> rather than in guest if mmapping MSI-X table is disallowed.
+> So you mean critical registers in same MMIO BAR as MSI-X
+> table, instead of two MMIO BARs in same page (the latter I
+> suppose with your whole patchset it won't happen then)?
 
-> From: Tian, Kevin
->> Sent: 05 May 2016 10:37
-> ...
->>> Acutually, we are not aimed at accessing MSI-X table from
->>> guest. So I think it's safe to passthrough MSI-X table if we
->>> can make sure guest kernel would not touch MSI-X table in
->>> normal code path such as para-virtualized guest kernel on PPC64.
->>>
->> Then how do you prevent malicious guest kernel accessing it?
-> Or a malicious guest driver for an ethernet card setting up
-> the receive buffer ring to contain a single word entry that
-> contains the address associated with an MSI-X interrupt and
-> then using a loopback mode to cause a specific packet be
-> received that writes the required word through that address.
->
-> Remember the PCIe cycle for an interrupt is a normal memory write
-> cycle.
->
-> 	David
->
-
-If we have enough permission to load a malicious driver or
-kernel, we can easily break the guest without exposed
-MSI-X table.
-
-I think it should be safe to expose MSI-X table if we can
-make sure that malicious guest driver/kernel can't use
-the MSI-X table to break other guest or host. The
-capability of IRQ remapping could provide this
-kind of protection.
+Yes. That's what I mean!
 
 Thanks,
 Yongji
