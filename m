@@ -1,16 +1,16 @@
 From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v9 0/8] KVM PCIe/MSI passthrough on ARM/ARM64: kernel part
-	2/3: msi changes
-Date: Thu, 5 May 2016 17:44:24 +0000
-Message-ID: <9C17BA6B-7304-47CA-A287-77FB41D96AD3@caviumnetworks.com>
-References: <1462375094-2390-1-git-send-email-eric.auger@linaro.org>
+Subject: Re: [PATCH v9 4/7] vfio: allow reserved msi iova registration
+Date: Thu, 5 May 2016 19:22:20 +0000
+Message-ID: <F50F9BB4-1D62-4CAF-BC0E-BE97D222E5A0@caviumnetworks.com>
+References: <1462362858-2925-1-git-send-email-eric.auger@linaro.org>
+	<1462362858-2925-5-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1462375094-2390-1-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1462362858-2925-5-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Content-Language: en-US
-Content-ID: <93441A1EBFBD954BB1F9A3DD0CC377B2-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
+Content-ID: <09F7CC7C3F3C084EA4D6749DBE1486D1-Tk6F3M/euE6cE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,152 +24,210 @@ To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "eric.auger
 Cc: "yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org" <yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, "patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "julien.grall-5wv7dgnIgG8@public.gmane.org" <julien.grall-5wv7dgnIgG8@public.gmane.org>, "pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Eric,
-
-Does this series supports gicv3-its emulation?
-Do we have a tree with all the dependent patches
 
 
 
 
 
-Thanks,
-Tirumalesh. 
-On 5/4/16, 8:18 AM, "linux-arm-kernel on behalf of Eric Auger" <linux-arm-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org on behalf of eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+On 5/4/16, 4:54 AM, "linux-arm-kernel on behalf of Eric Auger" <linux-arm-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org on behalf of eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
 
->This series implements the MSI address mapping/unmapping in the MSI layer.
->IOMMU binding happens on pci_enable_msi since this function can sleep and
->return errors. On msi_domain_set_affinity, msi_domain_(de)activate, which
->are not allowed to sleep, we simply look for the already existing binding.
+>The user is allowed to register a reserved MSI IOVA range by using the
+>DMA MAP API and setting the new flag: VFIO_DMA_MAP_FLAG_MSI_RESERVED_IOVA.
+>This region is stored in the vfio_dma rb tree. At that point the iova
+>range is not mapped to any target address yet. The host kernel will use
+>those iova when needed, typically when MSIs are allocated.
 >
->A new MSI domain info flag value is introduced to report whether the msi
->domain implements IRQ remapping. GIC v3 ITS is the first MSI controller
->advertising it. This flag value will be used by VFIO subsystem to
->determine whether MSI forwarding is safe.
+>Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>Signed-off-by: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
 >
->More details & context can be found at:
->http://www.linaro.org/blog/core-dump/kvm-pciemsi-passthrough-armarm64/
->
->Best Regards
->
->Eric
->
->Applies on top of PART 1/3. Also depends on
->[PATCH 1/3] iommu: Add MMIO mapping type,
->http://comments.gmane.org/gmane.linux.kernel.iommu/12869
->
->Git: complete series available at
->https://git.linaro.org/people/eric.auger/linux.git/shortlog/refs/heads/v4.6-rc6-pcie-passthrough-v9-msi-v9
->
->This branch contains all parts in v9.
->
->History:
->
->v8 -> v9:
->- use a union in irq_chip_msi_doorbell_info + boolean telling whether the
->  doorbell is percpu
->- decouple irq_data parsing from the actual mapping/unmapping in
->  msi_handle_doorbell_mappings
->- fix misc style issues
->
+>---
 >v7 -> v8:
->take into account Marc's comments:
->- use iommu_msi_msg_pa_to_va with new proto
->- change in irq_chip_msi_doorbell_info struct definition:
->  prot and size became shared between all doorbells and phys_addr_t __percpu
->- cleanups in v2m irqchip
->- eventually did not touch MSI_FLAG_IRQ_REMAPPING naming
->- On msi_handle_doorbell_mappings, stop on the first irqchip where doorbells
->  can be found
->- fix resource deallocation on mapping failure in msi_domain_alloc_irqs
+>- use iommu_msi_set_aperture function. There is no notion of
+>  unregistration anymore since the reserved msi slot remains
+>  until the container gets closed.
 >
 >v6 -> v7:
->- do alloc/map handling on pci_enable_msi and search on msi_(de)domain_activate
->- add msi_doorbell_info callback in irq-chip to retrieve the characteristics
->  of doorbells
+>- use iommu_free_reserved_iova_domain
+>- convey prot attributes downto dma-reserved-iommu iova domain creation
+>- reserved bindings teardown now performed on iommu domain destruction
+>- rename VFIO_DMA_MAP_FLAG_MSI_RESERVED_IOVA into
+>         VFIO_DMA_MAP_FLAG_RESERVED_MSI_IOVA
+>- change title
+>- pass the protection attribute to dma-reserved-iommu API
 >
->RFC v5 -> patch v6:
->- split to ease the review process
->- rebase on default iommu domain code (irq_data_to_msi_mapping_domain
->  checks IOMMU_DOMAIN_DMA type)
->- fix unmap sequence on msi_domain_set_affinity (reported by Marc):
->  unmap the previous doorbell when the new one has been mapped & written to
->  the device, ie. irq_chip_write_msi_msg.
->- "msi: msi_compose wrapper removed" following change above
->- add size parameter to iommu_get_reserved_iova API following Marc's request
+>v3 -> v4:
+>- use iommu_alloc/free_reserved_iova_domain exported by dma-reserved-iommu
+>- protect vfio_register_reserved_iova_range implementation with
+>  CONFIG_IOMMU_DMA_RESERVED
+>- handle unregistration by user-space and on vfio_iommu_type1 release
 >
->RFC v4 -> RFC v5:
->- take into account Thomas' comments on MSI related patches
->  - split "msi: IOMMU map the doorbell address when needed"
->  - increase readability and add comments
->  - fix style issues
-> - split "iommu: Add DOMAIN_ATTR_MSI_MAPPING attribute"
-> - platform ITS now advertises IOMMU_CAP_INTR_REMAP
-> - fix compilation issue with CONFIG_IOMMU API unset
-> - arm-smmu-v3 now advertises DOMAIN_ATTR_MSI_MAPPING
+>v1 -> v2:
+>- set returned value according to alloc_reserved_iova_domain result
+>- free the iova domains in case any error occurs
 >
->RFC v3 -> v4:
->- Move doorbell mapping/unmapping in msi.c
->- fix ref count issue on set_affinity: in case of a change in the address
->  the previous address is decremented
->- doorbell map/unmap now is done on msi composition. Should allow the use
->  case for platform MSI controllers
->- create dma-reserved-iommu.h/c exposing/implementing a new API dedicated
->  to reserved IOVA management (looking like dma-iommu glue)
->- series reordering to ease the review:
->  - first part is related to IOMMU
->  - second related to MSI sub-system
->  - third related to VFIO (except arm-smmu IOMMU_CAP_INTR_REMAP removal)
->- expose the number of requested IOVA pages through VFIO_IOMMU_GET_INFO
->  [this partially addresses Marc's comments on iommu_get/put_single_reserved
->   size/alignment problematic - which I did not ignore - but I don't know
->   how much I can do at the moment]
+>RFC v1 -> v1:
+>- takes into account Alex comments, based on
+>  [RFC PATCH 1/6] vfio: Add interface for add/del reserved iova region:
+>- use the existing dma map/unmap ioctl interface with a flag to register
+>  a reserved IOVA range. A single reserved iova region is allowed.
+>---
+> drivers/vfio/vfio_iommu_type1.c | 78 ++++++++++++++++++++++++++++++++++++++++-
+> include/uapi/linux/vfio.h       | 10 +++++-
+> 2 files changed, 86 insertions(+), 2 deletions(-)
 >
->RFC v2 -> RFC v3:
->- should fix wrong handling of some CONFIG combinations:
->  CONFIG_IOVA, CONFIG_IOMMU_API, CONFIG_PCI_MSI_IRQ_DOMAIN
->- fix MSI_FLAG_IRQ_REMAPPING setting in GICv3 ITS (although not tested)
->
->PATCH v1 -> RFC v2:
->- reverted to RFC since it looks more reasonable ;-) the code is split
->  between VFIO, IOMMU, MSI controller and I am not sure I did the right
->  choices. Also API need to be further discussed.
->- iova API usage in arm-smmu.c.
->- MSI controller natively programs the MSI addr with either the PA or IOVA.
->  This is not done anymore in vfio-pci driver as suggested by Alex.
->- check irq remapping capability of the group
->
->RFC v1 [2] -> PATCH v1:
->- use the existing dma map/unmap ioctl interface with a flag to register a
->  reserved IOVA range. Use the legacy Rb to store this special vfio_dma.
->- a single reserved IOVA contiguous region now is allowed
->- use of an RB tree indexed by PA to store allocated reserved slots
->- use of a vfio_domain iova_domain to manage iova allocation within the
->  window provided by the userspace
->- vfio alloc_map/unmap_free take a vfio_group handle
->- vfio_group handle is cached in vfio_pci_device
->- add ref counting to bindings
->- user modality enabled at the end of the series
->
->
->Eric Auger (8):
->  genirq/msi: Add a new MSI_FLAG_IRQ_REMAPPING flag
->  irqchip/gic-v3-its: ITS advertises MSI_FLAG_IRQ_REMAPPING
->  genirq/msi: export msi_get_domain_info
->  genirq/msi: msi_compose wrapper
->  genirq/irq: introduce msi_doorbell_info
->  irqchip/gicv2m: implement msi_doorbell_info callback
->  genirq/msi: map/unmap the MSI doorbells on msi_domain_alloc/free_irqs
->  genirq/msi: use the MSI doorbell's IOVA when requested
->
-> drivers/irqchip/irq-gic-v2m.c                 |  16 +++
-> drivers/irqchip/irq-gic-v3-its-pci-msi.c      |   3 +-
-> drivers/irqchip/irq-gic-v3-its-platform-msi.c |   3 +-
-> include/linux/irq.h                           |  15 ++-
-> include/linux/msi.h                           |   2 +
-> kernel/irq/msi.c                              | 136 +++++++++++++++++++++++---
-> 6 files changed, 161 insertions(+), 14 deletions(-)
->
+>diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+>index 94a9916..4d3a6f1 100644
+>--- a/drivers/vfio/vfio_iommu_type1.c
+>+++ b/drivers/vfio/vfio_iommu_type1.c
+>@@ -36,6 +36,7 @@
+> #include <linux/uaccess.h>
+> #include <linux/vfio.h>
+> #include <linux/workqueue.h>
+>+#include <linux/msi-iommu.h>
+> 
+> #define DRIVER_VERSION  "0.2"
+> #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
+>@@ -445,6 +446,20 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
+> 	vfio_lock_acct(-unlocked);
+> }
+> 
+>+static int vfio_set_msi_aperture(struct vfio_iommu *iommu,
+>+				dma_addr_t iova, size_t size)
+>+{
+>+	struct vfio_domain *d;
+>+	int ret = 0;
+>+
+>+	list_for_each_entry(d, &iommu->domain_list, next) {
+>+		ret = iommu_msi_set_aperture(d->domain, iova, iova + size - 1);
+>+		if (ret)
+>+			break;
+>+	}
+>+	return ret;
+>+}
+>+
+> static void vfio_remove_dma(struct vfio_iommu *iommu, struct vfio_dma *dma)
+> {
+> 	vfio_unmap_unpin(iommu, dma);
+>@@ -693,6 +708,63 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+> 	return ret;
+> }
+> 
+>+static int vfio_register_msi_range(struct vfio_iommu *iommu,
+>+				   struct vfio_iommu_type1_dma_map *map)
+>+{
+>+	dma_addr_t iova = map->iova;
+>+	size_t size = map->size;
+>+	int ret = 0;
+>+	struct vfio_dma *dma;
+>+	unsigned long order;
+>+	uint64_t mask;
+>+
+>+	/* Verify that none of our __u64 fields overflow */
+>+	if (map->size != size || map->iova != iova)
+>+		return -EINVAL;
+>+
+>+	order =  __ffs(vfio_pgsize_bitmap(iommu));
+>+	mask = ((uint64_t)1 << order) - 1;
+>+
+>+	WARN_ON(mask & PAGE_MASK);
+>+
+>+	if (!size || (size | iova) & mask)
+>+		return -EINVAL;
+>+
+>+	/* Don't allow IOVA address wrap */
+>+	if (iova + size - 1 < iova)
+>+		return -EINVAL;
+>+
+>+	mutex_lock(&iommu->lock);
+>+
+>+	if (vfio_find_dma(iommu, iova, size, VFIO_IOVA_ANY)) {
+>+		ret =  -EEXIST;
+>+		goto unlock;
+>+	}
+>+
+>+	dma = kzalloc(sizeof(*dma), GFP_KERNEL);
+>+	if (!dma) {
+>+		ret = -ENOMEM;
+>+		goto unlock;
+>+	}
+>+
+>+	dma->iova = iova;
+>+	dma->size = size;
+>+	dma->type = VFIO_IOVA_RESERVED;
+>+
+>+	ret = vfio_set_msi_aperture(iommu, iova, size);
+>+	if (ret)
+>+		goto free_unlock;
+>+
+>+	vfio_link_dma(iommu, dma);
+>+	goto unlock;
+>+
+>+free_unlock:
+>+	kfree(dma);
+>+unlock:
+>+	mutex_unlock(&iommu->lock);
+>+	return ret;
+>+}
+>+
+> static int vfio_bus_type(struct device *dev, void *data)
+> {
+> 	struct bus_type **bus = data;
+>@@ -1062,7 +1134,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+> 	} else if (cmd == VFIO_IOMMU_MAP_DMA) {
+> 		struct vfio_iommu_type1_dma_map map;
+> 		uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
+>-				VFIO_DMA_MAP_FLAG_WRITE;
+>+				VFIO_DMA_MAP_FLAG_WRITE |
+>+				VFIO_DMA_MAP_FLAG_RESERVED_MSI_IOVA;
+> 
+> 		minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
+> 
+>@@ -1072,6 +1145,9 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+> 		if (map.argsz < minsz || map.flags & ~mask)
+> 			return -EINVAL;
+> 
+>+		if (map.flags & VFIO_DMA_MAP_FLAG_RESERVED_MSI_IOVA)
+>+			return vfio_register_msi_range(iommu, &map);
+>+
+
+How are we getting the PA and any validation needed?
+> 		return vfio_dma_do_map(iommu, &map);
+> 
+> 	} else if (cmd == VFIO_IOMMU_UNMAP_DMA) {
+>diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+>index 255a211..4a9dbc2 100644
+>--- a/include/uapi/linux/vfio.h
+>+++ b/include/uapi/linux/vfio.h
+>@@ -498,12 +498,19 @@ struct vfio_iommu_type1_info {
+>  *
+>  * Map process virtual addresses to IO virtual addresses using the
+>  * provided struct vfio_dma_map. Caller sets argsz. READ &/ WRITE required.
+>+ *
+>+ * In case RESERVED_MSI_IOVA flag is set, the API only aims at registering an
+>+ * IOVA region that will be used on some platforms to map the host MSI frames.
+>+ * In that specific case, vaddr is ignored. Once registered, an MSI reserved
+>+ * IOVA region stays until the container is closed.
+>  */
+> struct vfio_iommu_type1_dma_map {
+> 	__u32	argsz;
+> 	__u32	flags;
+> #define VFIO_DMA_MAP_FLAG_READ (1 << 0)		/* readable from device */
+> #define VFIO_DMA_MAP_FLAG_WRITE (1 << 1)	/* writable from device */
+>+/* reserved iova for MSI vectors*/
+>+#define VFIO_DMA_MAP_FLAG_RESERVED_MSI_IOVA (1 << 2)
+> 	__u64	vaddr;				/* Process virtual address */
+> 	__u64	iova;				/* IO virtual address */
+> 	__u64	size;				/* Size of mapping (bytes) */
+>@@ -519,7 +526,8 @@ struct vfio_iommu_type1_dma_map {
+>  * Caller sets argsz.  The actual unmapped size is returned in the size
+>  * field.  No guarantee is made to the user that arbitrary unmaps of iova
+>  * or size different from those used in the original mapping call will
+>- * succeed.
+>+ * succeed. Once registered, an MSI region cannot be unmapped and stays
+>+ * until the container is closed.
+>  */
+> struct vfio_iommu_type1_dma_unmap {
+> 	__u32	argsz;
 >-- 
 >1.9.1
 >
