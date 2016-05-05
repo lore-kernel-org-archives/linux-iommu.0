@@ -1,8 +1,8 @@
-From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: Re: [PATCH 5/5] vfio-pci: Allow to mmap MSI-X table if interrupt
+From: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: RE: [PATCH 5/5] vfio-pci: Allow to mmap MSI-X table if interrupt
  remapping is supported
-Date: Thu, 5 May 2016 19:44:08 +0800
-Message-ID: <7c8b4efd-9662-ff10-57bc-d908ac38a0bf@linux.vnet.ibm.com>
+Date: Thu, 5 May 2016 12:15:46 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D15F8474A4@SHSMSX101.ccr.corp.intel.com>
 References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
  <1461761010-5452-6-git-send-email-xyjxie@linux.vnet.ibm.com>
  <AADFC41AFE54684AB9EE6CBC0274A5D15F842512@SHSMSX101.ccr.corp.intel.com>
@@ -10,65 +10,55 @@ References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
  <AADFC41AFE54684AB9EE6CBC0274A5D15F842653@SHSMSX101.ccr.corp.intel.com>
  <e064a6a7-a8dc-f71f-1725-f31e03581b8d@linux.vnet.ibm.com>
  <AADFC41AFE54684AB9EE6CBC0274A5D15F847150@SHSMSX101.ccr.corp.intel.com>
+ <063D6719AE5E284EB5DD2968C1650D6D5F4B52B5@AcuExch.aculab.com>
+ <4be013bc-e81b-84c5-06d3-e1b3f46b3227@linux.vnet.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D15F847150@SHSMSX101.ccr.corp.intel.com>
+In-Reply-To: <4be013bc-e81b-84c5-06d3-e1b3f46b3227@linux.vnet.ibm.com>
+Content-Language: en-US
 Sender: linux-pci-owner@vger.kernel.org
-To: "Tian, Kevin" <kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "aik@ozlabs.ru" <aik@ozlabs.ru>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "paulus@samba.org" <paulus@samba.org>, "mpe@ellerman.id.au" <mpe@ellerman.id.au>, "joro@8bytes.org" <joro@8bytes.org>, "warrier@linux.vnet.ibm.com" <warrier@linux.vnet.ibm.com>, "zhong@linux.vnet.ibm.com" <zhong@linux.vnet.ibm.com>, "nikunj@linux.vnet.ibm.com" <nikunj@linux.vnet.ibm.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "gwshan@linux.vnet.ibm.com" <gwshan@linux.vnet.ibm.com>, "David.Laight@ACULAB.COM" <David.Laight@ACULAB.COM>, "alistair@popple.id.au" <alistair@popple.id.au>, "ruscur@russell.cc" <ruscur@russell.cc>
+To: Yongji Xie <xyjxie@linux.vnet.ibm.com>, David Laight <David.Laight@ACULAB.COM>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "bhelgaas@google.com" <bhelgaas@google.com>, "aik@ozlabs.ru" <aik@ozlabs.ru>, "benh@kernel.crashing.org" <benh@kernel.crashing.org>, "paulus@samba.org" <paulus@samba.org>, "mpe@ellerman.id.au" <mpe@ellerman.id.au>, "joro@8bytes.org" <joro@8bytes.org>, "warrier@linux.vnet.ibm.com" <warrier@linux.vnet.ibm.com>, "zhong@linux.vnet.ibm.com" <zhong@linux.vnet.ibm.com>, "nikunj@linux.vnet.ibm.com" <nikunj@linux.vnet.ibm.com>, "eric.auger@linaro.org" <eric.auger@linaro.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "gwshan@linux.vnet.ibm.com" <gwshan@linux.vnet.ibm.com>, "alistair@popple.id.au" <alistair@popple.id.au>, "ruscur@russell.cc" <ruscur@russell.cc>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2016/5/5 17:36, Tian, Kevin wrote:
-
->> From: Yongji Xie
->> Sent: Tuesday, May 03, 2016 3:34 PM
->>
->> On 2016/5/3 14:22, Tian, Kevin wrote:
->>
->>>> From: Yongji Xie [mailto:xyjxie@linux.vnet.ibm.com]
->>>> Sent: Tuesday, May 03, 2016 2:08 PM
->>>>
->>>> On 2016/5/3 13:34, Tian, Kevin wrote:
->>>>
->>>>>> From: Yongji Xie
->>>>>> Sent: Wednesday, April 27, 2016 8:43 PM
->>>>>>
->>>>>> This patch enables mmapping MSI-X tables if hardware supports
->>>>>> interrupt remapping which can ensure that a given pci device
->>>>>> can only shoot the MSIs assigned for it.
->>>>>>
->>>>>> With MSI-X table mmapped, we also need to expose the
->>>>>> read/write interface which will be used to access MSI-X table.
->>>>>>
->>>>>> Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
->>>>> A curious question here. Does "allow to mmap MSI-X" essentially
->>>>> mean that KVM guest can directly read/write physical MSI-X
->>>>> structure then?
->>>>>
->>>>> Thanks
->>>>> Kevin
->>>>>
->>>> Here we just allow to mmap MSI-X table in kernel. It doesn't
->>>> mean all KVM guest can directly read/write physical MSI-X
->>>> structure. This should be decided by QEMU. For PPC64
->>>> platform, we would allow to passthrough the MSI-X table
->>>> because we know guest kernel would not write physical
->>>> MSI-X structure when enabling MSI.
->>>>
->>> A bit confused here. If guest kernel doesn't need to write
->>> physical MSI-X structure, what's the point of passing through
->>> the table then?
->> We want to allow the MSI-X table because there may be
->> some critical registers in the same page as the MSI-X table.
->> We have to handle the mmio access to these register in QEMU
->> rather than in guest if mmapping MSI-X table is disallowed.
-> So you mean critical registers in same MMIO BAR as MSI-X
-> table, instead of two MMIO BARs in same page (the latter I
-> suppose with your whole patchset it won't happen then)?
-
-Yes. That's what I mean!
-
-Thanks,
-Yongji
+PiBGcm9tOiBZb25namkgWGllIFttYWlsdG86eHlqeGllQGxpbnV4LnZuZXQuaWJtLmNvbV0NCj4g
+U2VudDogVGh1cnNkYXksIE1heSAwNSwgMjAxNiA3OjQzIFBNDQo+IA0KPiBIaSBEYXZpZCBhbmQg
+S2V2aW4sDQo+IA0KPiBPbiAyMDE2LzUvNSAxNzo1NCwgRGF2aWQgTGFpZ2h0IHdyb3RlOg0KPiAN
+Cj4gPiBGcm9tOiBUaWFuLCBLZXZpbg0KPiA+PiBTZW50OiAwNSBNYXkgMjAxNiAxMDozNw0KPiA+
+IC4uLg0KPiA+Pj4gQWN1dHVhbGx5LCB3ZSBhcmUgbm90IGFpbWVkIGF0IGFjY2Vzc2luZyBNU0kt
+WCB0YWJsZSBmcm9tDQo+ID4+PiBndWVzdC4gU28gSSB0aGluayBpdCdzIHNhZmUgdG8gcGFzc3Ro
+cm91Z2ggTVNJLVggdGFibGUgaWYgd2UNCj4gPj4+IGNhbiBtYWtlIHN1cmUgZ3Vlc3Qga2VybmVs
+IHdvdWxkIG5vdCB0b3VjaCBNU0ktWCB0YWJsZSBpbg0KPiA+Pj4gbm9ybWFsIGNvZGUgcGF0aCBz
+dWNoIGFzIHBhcmEtdmlydHVhbGl6ZWQgZ3Vlc3Qga2VybmVsIG9uIFBQQzY0Lg0KPiA+Pj4NCj4g
+Pj4gVGhlbiBob3cgZG8geW91IHByZXZlbnQgbWFsaWNpb3VzIGd1ZXN0IGtlcm5lbCBhY2Nlc3Np
+bmcgaXQ/DQo+ID4gT3IgYSBtYWxpY2lvdXMgZ3Vlc3QgZHJpdmVyIGZvciBhbiBldGhlcm5ldCBj
+YXJkIHNldHRpbmcgdXANCj4gPiB0aGUgcmVjZWl2ZSBidWZmZXIgcmluZyB0byBjb250YWluIGEg
+c2luZ2xlIHdvcmQgZW50cnkgdGhhdA0KPiA+IGNvbnRhaW5zIHRoZSBhZGRyZXNzIGFzc29jaWF0
+ZWQgd2l0aCBhbiBNU0ktWCBpbnRlcnJ1cHQgYW5kDQo+ID4gdGhlbiB1c2luZyBhIGxvb3BiYWNr
+IG1vZGUgdG8gY2F1c2UgYSBzcGVjaWZpYyBwYWNrZXQgYmUNCj4gPiByZWNlaXZlZCB0aGF0IHdy
+aXRlcyB0aGUgcmVxdWlyZWQgd29yZCB0aHJvdWdoIHRoYXQgYWRkcmVzcy4NCj4gPg0KPiA+IFJl
+bWVtYmVyIHRoZSBQQ0llIGN5Y2xlIGZvciBhbiBpbnRlcnJ1cHQgaXMgYSBub3JtYWwgbWVtb3J5
+IHdyaXRlDQo+ID4gY3ljbGUuDQo+ID4NCj4gPiAJRGF2aWQNCj4gPg0KPiANCj4gSWYgd2UgaGF2
+ZSBlbm91Z2ggcGVybWlzc2lvbiB0byBsb2FkIGEgbWFsaWNpb3VzIGRyaXZlciBvcg0KPiBrZXJu
+ZWwsIHdlIGNhbiBlYXNpbHkgYnJlYWsgdGhlIGd1ZXN0IHdpdGhvdXQgZXhwb3NlZA0KPiBNU0kt
+WCB0YWJsZS4NCj4gDQo+IEkgdGhpbmsgaXQgc2hvdWxkIGJlIHNhZmUgdG8gZXhwb3NlIE1TSS1Y
+IHRhYmxlIGlmIHdlIGNhbg0KPiBtYWtlIHN1cmUgdGhhdCBtYWxpY2lvdXMgZ3Vlc3QgZHJpdmVy
+L2tlcm5lbCBjYW4ndCB1c2UNCj4gdGhlIE1TSS1YIHRhYmxlIHRvIGJyZWFrIG90aGVyIGd1ZXN0
+IG9yIGhvc3QuIFRoZQ0KPiBjYXBhYmlsaXR5IG9mIElSUSByZW1hcHBpbmcgY291bGQgcHJvdmlk
+ZSB0aGlzDQo+IGtpbmQgb2YgcHJvdGVjdGlvbi4NCj4gDQoNCldpdGggSVJRIHJlbWFwcGluZyBp
+dCBkb2Vzbid0IG1lYW4geW91IGNhbiBwYXNzIHRocm91Z2ggTVNJLVgNCnN0cnVjdHVyZSB0byBn
+dWVzdC4gSSBrbm93IGFjdHVhbCBJUlEgcmVtYXBwaW5nIG1pZ2h0IGJlIHBsYXRmb3JtDQpzcGVj
+aWZpYywgYnV0IGF0IGxlYXN0IGZvciBJbnRlbCBWVC1kIHNwZWNpZmljYXRpb24sIE1TSS1YIGVu
+dHJ5IG11c3QNCmJlIGNvbmZpZ3VyZWQgd2l0aCBhIHJlbWFwcGFibGUgZm9ybWF0IGJ5IGhvc3Qg
+a2VybmVsIHdoaWNoDQpjb250YWlucyBhbiBpbmRleCBpbnRvIElSUSByZW1hcHBpbmcgdGFibGUu
+IFRoZSBpbmRleCB3aWxsIGZpbmQgYQ0KSVJRIHJlbWFwcGluZyBlbnRyeSB3aGljaCBjb250cm9s
+cyBpbnRlcnJ1cHQgcm91dGluZyBmb3IgYSBzcGVjaWZpYw0KZGV2aWNlLiBJZiB5b3UgYWxsb3cg
+YSBtYWxpY2lvdXMgcHJvZ3JhbSByYW5kb20gaW5kZXggaW50byBNU0ktWCANCmVudHJ5IG9mIGFz
+c2lnbmVkIGRldmljZSwgdGhlIGhvbGUgaXMgb2J2aW91cy4uLg0KDQpBYm92ZSBtaWdodCBtYWtl
+IHNlbnNlIG9ubHkgZm9yIGEgSVJRIHJlbWFwcGluZyBpbXBsZW1lbnRhdGlvbiANCndoaWNoIGRv
+ZXNuJ3QgcmVseSBvbiBleHRlbmRlZCBNU0ktWCBmb3JtYXQgKGUuZy4gc2ltcGx5IGJhc2VkIG9u
+IA0KQkRGKS4gSWYgdGhhdCdzIHRoZSBjYXNlIGZvciBQUEMsIHRoZW4geW91IHNob3VsZCBidWls
+ZCBNU0ktWCANCnBhc3N0aHJvdWdoIGJhc2VkIG9uIHRoaXMgZmFjdCBpbnN0ZWFkIG9mIGdlbmVy
+YWwgSVJRIHJlbWFwcGluZyANCmVuYWJsZWQgb3Igbm90Lg0KDQpUaGFua3MNCktldmluDQo=
