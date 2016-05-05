@@ -1,89 +1,51 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH V3 2/7] documentation: iommu: Add bindings for msm,iommu-v0 ip
-Date: Thu, 5 May 2016 10:40:00 +0530
-Message-ID: <000001d1a68c$648e3a90$2daaafb0$@codeaurora.org>
-References: <1462128875-20988-1-git-send-email-sricharan@codeaurora.org> <1462128875-20988-3-git-send-email-sricharan@codeaurora.org> <20160504022437.GA4110@rob-hp-laptop>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [v10,
+	7/7] mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
+Date: Thu, 05 May 2016 10:31:36 +0200
+Message-ID: <4448030.Zs8fVnr3nm@wuerfel>
+References: <1462417950-46796-1-git-send-email-yangbo.lu@nxp.com>
+	<1462417950-46796-8-git-send-email-yangbo.lu@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <20160504022437.GA4110@rob-hp-laptop>
-Content-Language: en-us
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: 'Rob Herring' <robh@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, joro@8bytes.org, robdclark@gmail.com, iommu@lists.linux-foundation.org, srinivas.kandagatla@linaro.org, laurent.pinchart@ideasonboard.com, treding@nvidia.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, stepanm@codeaurora.org, architt@codeaurora.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1462417950-46796-8-git-send-email-yangbo.lu-3arQi8VN3Tc@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, xiaobo.xie-3arQi8VN3Tc@public.gmane.org, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Qiang Zhao <qiang.zhao-3arQi8VN3Tc@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Scott Wood <oss-fOR+EgIDQEHk1uMJSBkQmQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, leoyang.li-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-> > The MSM IOMMU is an implementation compatible with the ARM VMSA
-> short
-> > descriptor page tables. It provides address translation for bus
-> > masters outside of the CPU, each connected to the IOMMU through a port
-> called micro-TLB.
-> > Adding the DT bindings for the same.
-> >
-> > Signed-off-by: Sricharan R <sricharan@codeaurora.org>
-> > ---
-> >  .../devicetree/bindings/iommu/msm,iommu-v0.txt     | 62
-> ++++++++++++++++++++++
-> >  1 file changed, 62 insertions(+)
-> >  create mode 100644
-> > Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
-> >
-> > diff --git a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
-> > b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
-> > new file mode 100644
-> > index 0000000..63b4f96
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
-> > @@ -0,0 +1,62 @@
-> > +* MSM IOMMU
-> > +
-> > +The MSM IOMMU is an implementation compatible with the ARM VMSA
-> short
-> > +descriptor page tables. It provides address translation for bus
-> > +masters outside of the CPU, each connected to the IOMMU through a
-> port called micro-TLB.
-> > +
-> > +Required Properties:
-> > +
-> > +  - compatible: Must contain "msm,iommu-v0".
+On Thursday 05 May 2016 11:12:30 Yangbo Lu wrote:
 > 
-> SOC specific compatible strings please.
-  Ok sure. I think I missed being explicit here last time.
-
+> +       fsl_guts_init();
+> +       svr = fsl_guts_get_svr();
+> +       if (svr) {
+> +               esdhc->soc_ver = SVR_SOC_VER(svr);
+> +               esdhc->soc_rev = SVR_REV(svr);
+> +       } else {
+> +               dev_err(&pdev->dev, "Failed to get SVR value!\n");
+> +       }
+> +
 > 
-> > +  - reg: Base address and size of the IOMMU registers.
-> > +  - interrupts: Specifiers for the MMU fault interrupts. For instances
-that
-> > +    support secure mode two interrupts must be specified, for
-non-secure
-> and
-> > +    secure mode, in that order. For instances that don't support secure
-> mode a
-> > +    single interrupt must be specified.
-> > +  - #iommu-cells: The number of cells needed to specify the stream id.
-This
-> > +		  is always 1.
-> > +  - qcom,ncb:	  The total number of context banks in the IOMMU.
-> > +  - clocks	: List of clocks to be used during SMMU register access. See
-> > +		  Documentation/devicetree/bindings/clock/clock-
-> bindings.txt
-> > +		  for information about the format. For each clock specified
-> > +		  here, there must be a corresponding entry in clock-names
-> > +		  (see below).
-> > +
-> > +  - clock-names	: List of clock names corresponding to the clocks
-> specified in
-> > +		  the "clocks" property (above). See
-> > +		  Documentation/devicetree/bindings/clock/clock-
-> bindings.txt
-> > +		  for more info.
-> 
-> You must define how many clocks, their order and their names.
- Ok, will update this and repost
 
-Regards,
- Sricharan
+
+Sorry for jumping in again after not participating in the discussion for the
+past few versions.
+
+What happened to my suggestion of making this a platform-independent interface
+to avoid the link time dependency?
+
+Specifically, why not add an exported function to drivers/base/soc.c that
+uses glob_match() for comparing a string in the device driver to the ID
+of the SoC that is set by whatever SoC identifying driver the platform
+has?
+
+	Arnd
