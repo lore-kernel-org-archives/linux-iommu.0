@@ -1,77 +1,73 @@
 From: Jayachandran C <jchandra@broadcom.com>
-Subject: [PATCH v2 2/2] PCI: Handle Broadcom Vulcan DMA alias calculation quirk
-Date: Sun,  8 May 2016 15:03:21 +0530
-Message-ID: <1462700001-30086-2-git-send-email-jchandra@broadcom.com>
-References: <1462700001-30086-1-git-send-email-jchandra@broadcom.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1462700001-30086-1-git-send-email-jchandra@broadcom.com>
-In-Reply-To: <linux-pci@vger.kernel.org>
+Subject: [PATCH v2 1/2] PCI: Add PCI device flag PCI_DEV_FLAGS_DMA_ALIAS_ROOT
+Date: Sun,  8 May 2016 15:03:20 +0530
+Message-ID: <1462700001-30086-1-git-send-email-jchandra@broadcom.com>
 References: <linux-pci@vger.kernel.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <linux-pci@vger.kernel.org>
 Sender: linux-pci-owner@vger.kernel.org
 To: Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org
 Cc: Jayachandran C <jchandra@broadcom.com>, Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-The Broadcom Vulcan PCI topology is slightly unusual, for a multi-node
-system, it looks like:
+Add a new flag PCI_DEV_FLAGS_DMA_ALIAS_ROOT to limit the DMA alias
+search to go no further than the bridge where the IOMMU is attached.
 
- [bus 0]
-     |
-     +--[node 0 PCI bridge 0.0.0]
-     |           |
-     |        [bus 1]
-     |           +---[SoC PCI devices 1.4.x, 1.5.x] ........
-     |           +---[Glue bridges    1.a.x, 1.b.x]         \
-     |                    |                        .....{node 0 GIC ITS}
-     |                    |                       /
-     |                    +----[SoC PCIe controller root ports]
-     |                                |         \...... {SMMUv3 0..3}
-     |                                |
-     |                                +---- [external PCI devices]
-     +- [node 1 PCI bridge 0.0.1]
-     |           |
-     |        [bus n - similar to bus 1 above]
-     ...
+This has been added to support Broadcom's Vulcan which has the SMMUv3
+and GIC ITS associated with an intermediate bridge in the PCI topology.
+Traversing to buses above would hit internal glue bridges which will
+change the RID.
 
-The for_each_dma_alias call for external PCI devices should not go
-beyond the PCIe controllers where the SMMU and ITS is associated, going
-further above to the glue bridges or the node bridges will find aliases
-which are not valid. For internal devices, the association is at the
-node level bridge and the alias search should not go further.
-
-To handle this quirk, we mark the SoC PCIe bridges and node PCI bridge
-with flag PCI_DEV_FLAGS_DMA_ALIAS_ROOT so that the alias and RID
-calculations are correct.
+Update the function pci_for_each_dma_alias() to stop when it see a
+bridge with this flag set.
 
 Signed-off-by: Jayachandran C <jchandra@broadcom.com>
 ---
- drivers/pci/quirks.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 8e67802..62664b5 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3734,6 +3734,20 @@ DECLARE_PCI_FIXUP_HEADER(0x1283, 0x8892, quirk_use_pcie_bridge_dma_alias);
- DECLARE_PCI_FIXUP_HEADER(0x8086, 0x244e, quirk_use_pcie_bridge_dma_alias);
+Here is v2 of the patch, the previous discussion is at 
+http://lists.linuxfoundation.org/pipermail/iommu/2016-February/015668.html
+
+v1->v2 changes:
+ - dropped the BAR quirk (not needed)
+ - moved from using the 'skip' flag for some bridges to using
+   similar approach to stop the traversal at the bridge with
+   PCI_DEV_FLAGS_DMA_ALIAS_ROOT
+
+Comments and suggestions are welcome
+
+JC.
+
+ drivers/pci/search.c | 4 ++++
+ include/linux/pci.h  | 2 ++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+index a20ce7d..3ea9c27 100644
+--- a/drivers/pci/search.c
++++ b/drivers/pci/search.c
+@@ -56,6 +56,10 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
  
- /*
-+ * The IOMMU and interrupt controller of Broadcom vulcan are associated
-+ * not at the root bus, but at a bridge below. The DMA alias search should
-+ * not go above the bridge at which the association exists.
-+ */
-+static void quirk_bridge_brcm_vulcan_pcie_root(struct pci_dev *pdev)
-+{
-+	pdev->dev_flags |= PCI_DEV_FLAGS_DMA_ALIAS_ROOT;
-+}
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
-+				quirk_bridge_brcm_vulcan_pcie_root);
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
-+				quirk_bridge_brcm_vulcan_pcie_root);
+ 		tmp = bus->self;
+ 
++		/* stop at bridge where translation unit is associated */
++		if (tmp->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_ROOT)
++			return ret;
 +
-+/*
-  * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
-  * class code.  Fix it.
-  */
+ 		/*
+ 		 * PCIe-to-PCI/X bridges alias transactions from downstream
+ 		 * devices using the subordinate bus number (PCI Express to
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 932ec74..b6f832b 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -176,6 +176,8 @@ enum pci_dev_flags {
+ 	PCI_DEV_FLAGS_NO_PM_RESET = (__force pci_dev_flags_t) (1 << 7),
+ 	/* Get VPD from function 0 VPD */
+ 	PCI_DEV_FLAGS_VPD_REF_F0 = (__force pci_dev_flags_t) (1 << 8),
++	/* a non-root bridge where translation occurs, stop alias search here */
++	PCI_DEV_FLAGS_DMA_ALIAS_ROOT = (__force pci_dev_flags_t) (1 << 9),
+ };
+ 
+ enum pci_irq_reroute_variant {
 -- 
 1.9.1
