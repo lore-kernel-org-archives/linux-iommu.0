@@ -1,125 +1,77 @@
-From: David Kiarie <davidkiarie4-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: Possible bug
-Date: Sat, 7 May 2016 11:33:17 +0300
-Message-ID: <CABdVeACppacYRYw9rp+DzysE8c2g0kGb3SfJAG9ovp1KKRBCeA@mail.gmail.com>
-References: <CABdVeADF_cGz07noWVant4zC=be80Uwys_ndDznNG=q49FnxEg@mail.gmail.com>
-	<5d645be8-fbd0-0454-af00-baf34a2816a0@iommu.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5d645be8-fbd0-0454-af00-baf34a2816a0-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
-Cc: Jan Kiszka <jan.kiszka-S0/GAf8tV78@public.gmane.org>, Valentine Sinitsyn <valentine.sinitsyn-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+From: Jayachandran C <jchandra@broadcom.com>
+Subject: [PATCH v2 2/2] PCI: Handle Broadcom Vulcan DMA alias calculation quirk
+Date: Sun,  8 May 2016 15:03:21 +0530
+Message-ID: <1462700001-30086-2-git-send-email-jchandra@broadcom.com>
+References: <1462700001-30086-1-git-send-email-jchandra@broadcom.com>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1462700001-30086-1-git-send-email-jchandra@broadcom.com>
+In-Reply-To: <linux-pci@vger.kernel.org>
+References: <linux-pci@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org
+Cc: Jayachandran C <jchandra@broadcom.com>, Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Meh, I just noted that myself, it defaults to not setting any
-exclusion/unity-mapping regions since the IVHD/IVMD types do not
-match.
+The Broadcom Vulcan PCI topology is slightly unusual, for a multi-node
+system, it looks like:
 
+ [bus 0]
+     |
+     +--[node 0 PCI bridge 0.0.0]
+     |           |
+     |        [bus 1]
+     |           +---[SoC PCI devices 1.4.x, 1.5.x] ........
+     |           +---[Glue bridges    1.a.x, 1.b.x]         \
+     |                    |                        .....{node 0 GIC ITS}
+     |                    |                       /
+     |                    +----[SoC PCIe controller root ports]
+     |                                |         \...... {SMMUv3 0..3}
+     |                                |
+     |                                +---- [external PCI devices]
+     +- [node 1 PCI bridge 0.0.1]
+     |           |
+     |        [bus n - similar to bus 1 above]
+     ...
 
-On Sat, May 7, 2016 at 11:21 AM, Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org> wrote:
->
->
-> -------- Original Message --------
->>
->> Hello all,
->>
->> There seems to a problem with the parsing of IVMD blocks in IVRS in
->> linux kernel AMD IOMMU driver.
->>
->> The current code seems to assume that IVHD and IVMD blocks cannot
->> occur on the same IVRS table. From what I can see, ends up coming up
->> with IVMD blocks while none are specified in IVRS hence coming up with
->> fake unity mappings/exclusion regions. Here is the relevant code:
->>
->>     ret = init_iommu_all(ivrs_base);
->>     if (ret)
->>         goto out;
->>
->>     if (amd_iommu_irq_remap)
->>         amd_iommu_irq_remap = check_ioapic_information();
->>
->>     if (amd_iommu_irq_remap) {
->>         /*
->>          * Interrupt remapping enabled, create kmem_cache for the
->>          * remapping tables.
->>          */
->>         ret = -ENOMEM;
->>         amd_iommu_irq_cache = kmem_cache_create("irq_remap_cache",
->>                 MAX_IRQS_PER_TABLE * sizeof(u32),
->>                 IRQ_TABLE_ALIGNMENT,
->>                 0, NULL);
->>         if (!amd_iommu_irq_cache)
->>             goto out;
->>
->>         irq_lookup_table = (void *)__get_free_pages(
->>                 GFP_KERNEL | __GFP_ZERO,
->>                 get_order(rlookup_table_size));
->>         if (!irq_lookup_table)
->>             goto out;
->>     }
->>
->>     ret = init_memory_definitions(ivrs_base);
->>     if (ret)
->>         goto out;
->>
->>
->> And in 'init_memory_definitions', it's assumed there were no IVHD
->> entries in the IVRS by starting to parse for IVMD entries immediately
->> after the end of IVRS header.
->>
->>    /* iterates over all memory definitions we find in the ACPI table */
->> static int __init init_memory_definitions(struct acpi_table_header *table)
->> {
->>     u8 *p = (u8 *)table, *end = (u8 *)table;
->>     struct ivmd_header *m;
->>
->>     end += table->length;
->>     p += IVRS_HEADER_LENGTH;
->>
->>     while (p < end) {
->>         m = (struct ivmd_header *)p;
->>         if (m->flags & IVMD_FLAG_EXCL_RANGE)
->>             init_exclusion_range(m);
->>         else if (m->flags & IVMD_FLAG_UNITY_MAP)
->>             init_unity_map_range(m);
->>
->>         p += m->length;
->>     }
->
->
->
-> David,
->
-> it maybe not a bug.
->
-> This piece of code utilized a trick method to search the IVMD entry, if you
-> check AMD IOMMU spec, you can find there are same offsets in type, flag and
-> length fields of IVMD and IVHD header.
->
-> Even we met one IVHD entry here, we also can do nothing and exit normally in
-> 'init_exclusion_range' and 'init_unity_map_range', and then add a meaningful
-> 'm->length'(here, it points IVHD entry length) to find the next entry until
-> IVHD entry was found.
->
-> Vincent Wan.
->
->>
->>     return 0;
->> }
->> _______________________________________________
->> iommu mailing list
->> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->>
->
+The for_each_dma_alias call for external PCI devices should not go
+beyond the PCIe controllers where the SMMU and ITS is associated, going
+further above to the glue bridges or the node bridges will find aliases
+which are not valid. For internal devices, the association is at the
+node level bridge and the alias search should not go further.
+
+To handle this quirk, we mark the SoC PCIe bridges and node PCI bridge
+with flag PCI_DEV_FLAGS_DMA_ALIAS_ROOT so that the alias and RID
+calculations are correct.
+
+Signed-off-by: Jayachandran C <jchandra@broadcom.com>
+---
+ drivers/pci/quirks.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 8e67802..62664b5 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -3734,6 +3734,20 @@ DECLARE_PCI_FIXUP_HEADER(0x1283, 0x8892, quirk_use_pcie_bridge_dma_alias);
+ DECLARE_PCI_FIXUP_HEADER(0x8086, 0x244e, quirk_use_pcie_bridge_dma_alias);
+ 
+ /*
++ * The IOMMU and interrupt controller of Broadcom vulcan are associated
++ * not at the root bus, but at a bridge below. The DMA alias search should
++ * not go above the bridge at which the association exists.
++ */
++static void quirk_bridge_brcm_vulcan_pcie_root(struct pci_dev *pdev)
++{
++	pdev->dev_flags |= PCI_DEV_FLAGS_DMA_ALIAS_ROOT;
++}
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
++				quirk_bridge_brcm_vulcan_pcie_root);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
++				quirk_bridge_brcm_vulcan_pcie_root);
++
++/*
+  * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
+  * class code.  Fix it.
+  */
+-- 
+1.9.1
