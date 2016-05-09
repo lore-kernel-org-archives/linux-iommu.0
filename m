@@ -1,17 +1,14 @@
-From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH V4 0/4] Code refine for Intel IOMMU
-Date: Mon, 9 May 2016 22:20:59 +0000
-Message-ID: <20160509222059.GA21601@vultr.guest>
-References: <1460645710-22656-1-git-send-email-richard.weiyang@gmail.com>
-	<20160508132253.GA2708@vultr.guest>
-	<20160509112401.GC13275@8bytes.org>
-Reply-To: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v9 2/7] vfio/type1: vfio_find_dma accepting a type argument
+Date: Mon, 9 May 2016 16:49:28 -0600
+Message-ID: <20160509164928.518a05a8@t450s.home>
+References: <1462362858-2925-1-git-send-email-eric.auger@linaro.org>
+	<1462362858-2925-3-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160509112401.GC13275-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1462362858-2925-3-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,64 +18,135 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jiang.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 09, 2016 at 01:24:02PM +0200, Joerg Roedel wrote:
->On Sun, May 08, 2016 at 01:22:53PM +0000, Wei Yang wrote:
->> >Wei Yang (4):
->> >  iommu/vt-d: replace *hdr with {drhd/atsr}[0] in struct
->> >    dmar_{drhd/atsr}_unit
->> >  iommu/vt-d: use zero-sized array in DMAR related ACPI structures
->> >  iommu/vt-d: check Register Base Address at the beginning of
->> >    dmar_parse_one_drhd()
->> >  iommu/vt-d: refine dmar_acpi_dev_scope_init() with
->> >    dmar_walk_dmar_table()
->
->Okay, I've ignored this so far as I don't see where you are going with
->this refactoring. The patches as-is don't make much sense to me other
->than creating conflicts with other vt-d driver changes.
->
+On Wed,  4 May 2016 11:54:13 +0000
+Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
 
-Hi, Joerg
+> In our RB-tree we now have slots of different types (USER and RESERVED).
+> It becomes useful to be able to search for dma slots of a specific type or
+> any type. This patch proposes an implementation for that modality and also
+> changes the existing callers using the USER type.
+> 
+> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 63 ++++++++++++++++++++++++++++++++++-------
+>  1 file changed, 53 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index aaf5a6c..2d769d4 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -98,23 +98,64 @@ struct vfio_group {
+>   * into DMA'ble space using the IOMMU
+>   */
+>  
+> -static struct vfio_dma *vfio_find_dma(struct vfio_iommu *iommu,
+> -				      dma_addr_t start, size_t size)
+> +/**
+> + * vfio_find_dma_from_node: looks for a dma slot intersecting a window
+> + * from a given rb tree node
+> + * @top: top rb tree node where the search starts (including this node)
+> + * @start: window start
+> + * @size: window size
+> + * @type: window type
+> + */
+> +static struct vfio_dma *vfio_find_dma_from_node(struct rb_node *top,
+> +						dma_addr_t start, size_t size,
+> +						enum vfio_iova_type type)
+>  {
+> -	struct rb_node *node = iommu->dma_list.rb_node;
+> +	struct rb_node *node = top;
+> +	struct vfio_dma *dma;
+>  
+>  	while (node) {
+> -		struct vfio_dma *dma = rb_entry(node, struct vfio_dma, node);
+> -
+> +		dma = rb_entry(node, struct vfio_dma, node);
+>  		if (start + size <= dma->iova)
+>  			node = node->rb_left;
+>  		else if (start >= dma->iova + dma->size)
+>  			node = node->rb_right;
+>  		else
+> +			break;
+> +	}
+> +	if (!node)
+> +		return NULL;
+> +
+> +	/* a dma slot intersects our window, check the type also matches */
+> +	if (type == VFIO_IOVA_ANY || dma->type == type)
+> +		return dma;
+> +
+> +	/* restart 2 searches skipping the current node */
+> +	if (start < dma->iova) {
+> +		dma = vfio_find_dma_from_node(node->rb_left, start,
+> +					      size, type);
+> +		if (dma)
+>  			return dma;
+>  	}
+> +	if (start + size > dma->iova + dma->size)
+> +		dma = vfio_find_dma_from_node(node->rb_right, start,
+> +					      size, type);
 
-Thanks for your comments. 
+It might be nice to split this little bit of trickery out to a separate
+patch so that you can better explain what it does.  It's really not
+needed until we start creating user-type entries, so it shouldn't hurt
+bisection.
 
-Generally, the purpose of these patches is to make the code more audience
-friendly. Below is my thoughts for each patch.
-
-For Patch 1, the zero-sized drhd/atsr would save some space in
-dmar_{drhd/atsr}_unit. As in the change log explained, before commit
-<6b1972493a84> ("iommu/vt-d: Implement DMAR unit hotplug framework"), it is
-necessary to have a pointer. While after this commit, we just need a place
-holder.
-
-For Patch 2, I add a zero-sized array at the end of related structures to
-represent variable length elements. By doing so, our code could use this field
-to be a parameter for a function instead of casting and add 1. I think this
-would let audience understand the variable elements is used here instead of go
-through SPEC to check which part it means, which is not that reader friendly.
-
-For Patch 3, when you go through the code, Register Base Address will be
-checked to see whether this is a valid dmar. Since this is what we have to do,
-I move this step a little bit ahead, so that we can avoid related setups at
-the first place.
-
-For Patch 4, dmar_acpi_dev_scope_init() initialize dev_scope by iterate on the
-remapping structure. We can see this is just what dmar_walk_dmar_table() does.
-So I reuse the code in this place.
-
-In my mind, those changes are dmar internal changes, which will not be seen
-outside. Would you mind pointing me the conflicts you saw? Maybe I missed some
-thing :-)
-
-Thanks, have a good day.
-
->
->
->	Joerg
-
--- 
-Wei Yang
-Help you, Help me
+> +	return dma;
+> +}
+> +
+> +/**
+> + * vfio_find_dma: find a dma slot intersecting a given window
+> + * @iommu: vfio iommu handle
+> + * @start: window base iova
+> + * @size: window size
+> + * @type: window type
+> + */
+> +static struct vfio_dma *vfio_find_dma(struct vfio_iommu *iommu,
+> +				      dma_addr_t start, size_t size,
+> +				      enum vfio_iova_type type)
+> +{
+> +	struct rb_node *top_node = iommu->dma_list.rb_node;
+>  
+> -	return NULL;
+> +	return vfio_find_dma_from_node(top_node, start, size, type);
+>  }
+>  
+>  static void vfio_link_dma(struct vfio_iommu *iommu, struct vfio_dma *new)
+> @@ -488,19 +529,21 @@ static int vfio_dma_do_unmap(struct vfio_iommu *iommu,
+>  	 * mappings within the range.
+>  	 */
+>  	if (iommu->v2) {
+> -		dma = vfio_find_dma(iommu, unmap->iova, 0);
+> +		dma = vfio_find_dma(iommu, unmap->iova, 0, VFIO_IOVA_USER);
+>  		if (dma && dma->iova != unmap->iova) {
+>  			ret = -EINVAL;
+>  			goto unlock;
+>  		}
+> -		dma = vfio_find_dma(iommu, unmap->iova + unmap->size - 1, 0);
+> +		dma = vfio_find_dma(iommu, unmap->iova + unmap->size - 1, 0,
+> +				    VFIO_IOVA_USER);
+>  		if (dma && dma->iova + dma->size != unmap->iova + unmap->size) {
+>  			ret = -EINVAL;
+>  			goto unlock;
+>  		}
+>  	}
+>  
+> -	while ((dma = vfio_find_dma(iommu, unmap->iova, unmap->size))) {
+> +	while ((dma = vfio_find_dma(iommu, unmap->iova, unmap->size,
+> +				    VFIO_IOVA_USER))) {
+>  		if (!iommu->v2 && unmap->iova > dma->iova)
+>  			break;
+>  		unmapped += dma->size;
+> @@ -604,7 +647,7 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+>  
+>  	mutex_lock(&iommu->lock);
+>  
+> -	if (vfio_find_dma(iommu, iova, size)) {
+> +	if (vfio_find_dma(iommu, iova, size, VFIO_IOVA_ANY)) {
+>  		mutex_unlock(&iommu->lock);
+>  		return -EEXIST;
+>  	}
