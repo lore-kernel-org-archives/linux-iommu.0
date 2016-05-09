@@ -1,254 +1,217 @@
-From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v9 4/7] vfio: allow reserved msi iova registration
-Date: Mon, 9 May 2016 09:55:24 +0200
-Message-ID: <5730426C.4070306@linaro.org>
-References: <1462362858-2925-1-git-send-email-eric.auger@linaro.org>
-	<1462362858-2925-5-git-send-email-eric.auger@linaro.org>
-	<F50F9BB4-1D62-4CAF-BC0E-BE97D222E5A0@caviumnetworks.com>
+From: <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH 1/5] dt-bindings: mediatek: add descriptions for mediatek mt2701 iommu and smi
+Date: Mon, 9 May 2016 16:00:12 +0800
+Message-ID: <1462780816-5288-2-git-send-email-honghui.zhang@mediatek.com>
+References: <1462780816-5288-1-git-send-email-honghui.zhang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <F50F9BB4-1D62-4CAF-BC0E-BE97D222E5A0-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, "eric.auger-qxv4g6HH51o@public.gmane.org" <eric.auger-qxv4g6HH51o@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org" <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Cc: "yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org" <yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>, "patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "julien.grall-5wv7dgnIgG8@public.gmane.org" <julien.grall-5wv7dgnIgG8@public.gmane.org>, "pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Type: text/plain
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1462780816-5288-1-git-send-email-honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Chalamarla,
-On 05/05/2016 09:22 PM, Chalamarla, Tirumalesh wrote:
-> 
-> 
-> 
-> 
-> 
-> On 5/4/16, 4:54 AM, "linux-arm-kernel on behalf of Eric Auger" <linux-arm-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org on behalf of eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-> 
->> The user is allowed to register a reserved MSI IOVA range by using the
->> DMA MAP API and setting the new flag: VFIO_DMA_MAP_FLAG_MSI_RESERVED_IOVA.
->> This region is stored in the vfio_dma rb tree. At that point the iova
->> range is not mapped to any target address yet. The host kernel will use
->> those iova when needed, typically when MSIs are allocated.
->>
->> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->> Signed-off-by: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
->>
->> ---
->> v7 -> v8:
->> - use iommu_msi_set_aperture function. There is no notion of
->>  unregistration anymore since the reserved msi slot remains
->>  until the container gets closed.
->>
->> v6 -> v7:
->> - use iommu_free_reserved_iova_domain
->> - convey prot attributes downto dma-reserved-iommu iova domain creation
->> - reserved bindings teardown now performed on iommu domain destruction
->> - rename VFIO_DMA_MAP_FLAG_MSI_RESERVED_IOVA into
->>         VFIO_DMA_MAP_FLAG_RESERVED_MSI_IOVA
->> - change title
->> - pass the protection attribute to dma-reserved-iommu API
->>
->> v3 -> v4:
->> - use iommu_alloc/free_reserved_iova_domain exported by dma-reserved-iommu
->> - protect vfio_register_reserved_iova_range implementation with
->>  CONFIG_IOMMU_DMA_RESERVED
->> - handle unregistration by user-space and on vfio_iommu_type1 release
->>
->> v1 -> v2:
->> - set returned value according to alloc_reserved_iova_domain result
->> - free the iova domains in case any error occurs
->>
->> RFC v1 -> v1:
->> - takes into account Alex comments, based on
->>  [RFC PATCH 1/6] vfio: Add interface for add/del reserved iova region:
->> - use the existing dma map/unmap ioctl interface with a flag to register
->>  a reserved IOVA range. A single reserved iova region is allowed.
->> ---
->> drivers/vfio/vfio_iommu_type1.c | 78 ++++++++++++++++++++++++++++++++++++++++-
->> include/uapi/linux/vfio.h       | 10 +++++-
->> 2 files changed, 86 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> index 94a9916..4d3a6f1 100644
->> --- a/drivers/vfio/vfio_iommu_type1.c
->> +++ b/drivers/vfio/vfio_iommu_type1.c
->> @@ -36,6 +36,7 @@
->> #include <linux/uaccess.h>
->> #include <linux/vfio.h>
->> #include <linux/workqueue.h>
->> +#include <linux/msi-iommu.h>
->>
->> #define DRIVER_VERSION  "0.2"
->> #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
->> @@ -445,6 +446,20 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
->> 	vfio_lock_acct(-unlocked);
->> }
->>
->> +static int vfio_set_msi_aperture(struct vfio_iommu *iommu,
->> +				dma_addr_t iova, size_t size)
->> +{
->> +	struct vfio_domain *d;
->> +	int ret = 0;
->> +
->> +	list_for_each_entry(d, &iommu->domain_list, next) {
->> +		ret = iommu_msi_set_aperture(d->domain, iova, iova + size - 1);
->> +		if (ret)
->> +			break;
->> +	}
->> +	return ret;
->> +}
->> +
->> static void vfio_remove_dma(struct vfio_iommu *iommu, struct vfio_dma *dma)
->> {
->> 	vfio_unmap_unpin(iommu, dma);
->> @@ -693,6 +708,63 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
->> 	return ret;
->> }
->>
->> +static int vfio_register_msi_range(struct vfio_iommu *iommu,
->> +				   struct vfio_iommu_type1_dma_map *map)
->> +{
->> +	dma_addr_t iova = map->iova;
->> +	size_t size = map->size;
->> +	int ret = 0;
->> +	struct vfio_dma *dma;
->> +	unsigned long order;
->> +	uint64_t mask;
->> +
->> +	/* Verify that none of our __u64 fields overflow */
->> +	if (map->size != size || map->iova != iova)
->> +		return -EINVAL;
->> +
->> +	order =  __ffs(vfio_pgsize_bitmap(iommu));
->> +	mask = ((uint64_t)1 << order) - 1;
->> +
->> +	WARN_ON(mask & PAGE_MASK);
->> +
->> +	if (!size || (size | iova) & mask)
->> +		return -EINVAL;
->> +
->> +	/* Don't allow IOVA address wrap */
->> +	if (iova + size - 1 < iova)
->> +		return -EINVAL;
->> +
->> +	mutex_lock(&iommu->lock);
->> +
->> +	if (vfio_find_dma(iommu, iova, size, VFIO_IOVA_ANY)) {
->> +		ret =  -EEXIST;
->> +		goto unlock;
->> +	}
->> +
->> +	dma = kzalloc(sizeof(*dma), GFP_KERNEL);
->> +	if (!dma) {
->> +		ret = -ENOMEM;
->> +		goto unlock;
->> +	}
->> +
->> +	dma->iova = iova;
->> +	dma->size = size;
->> +	dma->type = VFIO_IOVA_RESERVED;
->> +
->> +	ret = vfio_set_msi_aperture(iommu, iova, size);
->> +	if (ret)
->> +		goto free_unlock;
->> +
->> +	vfio_link_dma(iommu, dma);
->> +	goto unlock;
->> +
->> +free_unlock:
->> +	kfree(dma);
->> +unlock:
->> +	mutex_unlock(&iommu->lock);
->> +	return ret;
->> +}
->> +
->> static int vfio_bus_type(struct device *dev, void *data)
->> {
->> 	struct bus_type **bus = data;
->> @@ -1062,7 +1134,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->> 	} else if (cmd == VFIO_IOMMU_MAP_DMA) {
->> 		struct vfio_iommu_type1_dma_map map;
->> 		uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
->> -				VFIO_DMA_MAP_FLAG_WRITE;
->> +				VFIO_DMA_MAP_FLAG_WRITE |
->> +				VFIO_DMA_MAP_FLAG_RESERVED_MSI_IOVA;
->>
->> 		minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
->>
->> @@ -1072,6 +1145,9 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->> 		if (map.argsz < minsz || map.flags & ~mask)
->> 			return -EINVAL;
->>
->> +		if (map.flags & VFIO_DMA_MAP_FLAG_RESERVED_MSI_IOVA)
->> +			return vfio_register_msi_range(iommu, &map);
->> +
-> 
-> How are we getting the PA and any validation needed?
-Sorry I am not sure I get your question? The principle is the userspace
-registers a spare Guest PA range that can be safely used by the kernel
-to map host MSI frames. In QEMU integration we use platform bus unmapped
-GPA to make things transparent for the virt machine.
+From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-Any validation: we currently make sure the registered GPA was not
-already registered as RAM regions. The kernel also checks it is properly
-aligned according to the IOMMU page size.
+This patch defines the local arbitor port IDs for mediatek SoC MT2701 and
+add descriptions of binding for mediatek generation one iommu and smi.
 
-Please let me know if I answered your question.
+Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+---
+ .../devicetree/bindings/iommu/mediatek,iommu.txt   | 13 +++-
+ .../memory-controllers/mediatek,smi-common.txt     | 21 +++++-
+ .../memory-controllers/mediatek,smi-larb.txt       |  4 +-
+ include/dt-bindings/memory/mt2701-larb-port.h      | 85 ++++++++++++++++++++++
+ 4 files changed, 115 insertions(+), 8 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mt2701-larb-port.h
 
-Best Regards
+diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+index cd1b1cd..9a4a5b5 100644
+--- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
++++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+@@ -1,7 +1,9 @@
+ * Mediatek IOMMU Architecture Implementation
+ 
+-  Some Mediatek SOCs contain a Multimedia Memory Management Unit (M4U) which
+-uses the ARM Short-Descriptor translation table format for address translation.
++  Some Mediatek SOCs contain a Multimedia Memory Management Unit (M4U), and
++this M4U have two generations of HW architecture. Generation one use flat
++pagetable, and only support 4K size page mapping. Generation two uses the
++ARM Short-Descriptor translation table format for address translation.
+ 
+   About the M4U Hardware Block Diagram, please check below:
+ 
+@@ -36,7 +38,9 @@ in each larb. Take a example, There are many ports like MC, PP, VLD in the
+ video decode local arbiter, all these ports are according to the video HW.
+ 
+ Required properties:
+-- compatible : must be "mediatek,mt8173-m4u".
++- compatible : must be one of the following string:
++	"mediatek,mt2701-m4u" for mt2701 which use generation one m4u HW.
++	"mediatek,mt8173-m4u" for mt8173 which use generation two m4u HW.
+ - reg : m4u register base and size.
+ - interrupts : the interrupt of m4u.
+ - clocks : must contain one entry for each clock-names.
+@@ -46,7 +50,8 @@ Required properties:
+ 	according to the local arbiter index, like larb0, larb1, larb2...
+ - iommu-cells : must be 1. This is the mtk_m4u_id according to the HW.
+ 	Specifies the mtk_m4u_id as defined in
+-	dt-binding/memory/mt8173-larb-port.h.
++	dt-binding/memory/mt2701-larb-port.h for mt2701 and
++	dt-binding/memory/mt8173-larb-port.h for mt8173
+ 
+ Example:
+ 	iommu: iommu@10205000 {
+diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
+index 06a83ce..80c0e22 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
+@@ -2,16 +2,31 @@ SMI (Smart Multimedia Interface) Common
+ 
+ The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
+ 
++Mediatek SMI have two generation HW architecture, mt8173 use the secondary
++generation of SMI HW while mt2701 use the first generation HW of SMI.
++
++There's slight differences between the two SMI, for generation 2, the
++register which control the iommu port is at each larb's register base. But
++for generation 1, the register is at smi ao base(smi always on register
++base). Besides that, the smi async clock should be prepare and enabled for
++SMI generation 1 to transform the smi clock into emi clock domain, but no
++needed for SMI generation 2.
++
+ Required properties:
+-- compatible : must be "mediatek,mt8173-smi-common"
++- compatible : must be one of :
++	"mediatek,mt2701-smi-common"
++	"mediatek,mt8173-smi-common"
+ - reg : the register and size of the SMI block.
+ - power-domains : a phandle to the power domain of this local arbiter.
+ - clocks : Must contain an entry for each entry in clock-names.
+-- clock-names : must contain 2 entries, as follows:
++- clock-names : must contain 3 entries for generation 1 smi HW and 2 entries
++  for generation 2 smi HW as follows:
+   - "apb" : Advanced Peripheral Bus clock, It's the clock for setting
+ 	    the register.
+   - "smi" : It's the clock for transfer data and command.
+-  They may be the same if both source clocks are the same.
++	    They may be the same if both source clocks are the same.
++  - "async" : asynchronous clock, it help transform the smi clock into the emi
++	      clock domain, this clock is only needed by generation 1 smi HW.
+ 
+ Example:
+ 	smi_common: smi@14022000 {
+diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
+index 55ff3b7..21277a5 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
+@@ -3,7 +3,9 @@ SMI (Smart Multimedia Interface) Local Arbiter
+ The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
+ 
+ Required properties:
+-- compatible : must be "mediatek,mt8173-smi-larb"
++- compatible : must be one of :
++		"mediatek,mt8173-smi-larb"
++		"mediatek,mt2701-smi-larb"
+ - reg : the register and size of this local arbiter.
+ - mediatek,smi : a phandle to the smi_common node.
+ - power-domains : a phandle to the power domain of this local arbiter.
+diff --git a/include/dt-bindings/memory/mt2701-larb-port.h b/include/dt-bindings/memory/mt2701-larb-port.h
+new file mode 100644
+index 0000000..bd5a418
+--- /dev/null
++++ b/include/dt-bindings/memory/mt2701-larb-port.h
+@@ -0,0 +1,85 @@
++/*
++ * Copyright (c) 2015 MediaTek Inc.
++ * Author: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef _MT2701_LARB_PORT_H_
++#define _MT2701_LARB_PORT_H_
++
++/*
++ * Mediatek m4u generation 1 such as mt2701 have flat m4u port numbers,
++ * the first port's id for larb[N] would be the last port's id of larb[N - 1]
++ * plus one while larb[0]'s first port number is 0. The definition of
++ * MT2701_M4U_ID_LARBx is following HW register REG_SMI_SECUR_CON_BASE spec.
++ * But m4u generation 2 like mt8173 have different port number, it use fixed
++ * offset for each larb, the first port's id for larb[N] would be (N * 32).
++ */
++#define LARB0_PORT_OFFSET		0
++#define LARB1_PORT_OFFSET		11
++#define LARB2_PORT_OFFSET		21
++#define LARB3_PORT_OFFSET		43
++
++#define MT2701_M4U_ID_LARB0(port)	((port) + LARB0_PORT_OFFSET)
++#define MT2701_M4U_ID_LARB1(port)	((port) + LARB1_PORT_OFFSET)
++#define MT2701_M4U_ID_LARB2(port)	((port) + LARB2_PORT_OFFSET)
++
++/* Port define for larb0 */
++#define MT2701_M4U_PORT_DISP_OVL_0		MT2701_M4U_ID_LARB0(0)
++#define MT2701_M4U_PORT_DISP_RDMA1		MT2701_M4U_ID_LARB0(1)
++#define MT2701_M4U_PORT_DISP_RDMA		MT2701_M4U_ID_LARB0(2)
++#define MT2701_M4U_PORT_DISP_WDMA		MT2701_M4U_ID_LARB0(3)
++#define MT2701_M4U_PORT_MM_CMDQ			MT2701_M4U_ID_LARB0(4)
++#define MT2701_M4U_PORT_MDP_RDMA		MT2701_M4U_ID_LARB0(5)
++#define MT2701_M4U_PORT_MDP_WDMA		MT2701_M4U_ID_LARB0(6)
++#define MT2701_M4U_PORT_MDP_ROTO		MT2701_M4U_ID_LARB0(7)
++#define MT2701_M4U_PORT_MDP_ROTCO		MT2701_M4U_ID_LARB0(8)
++#define MT2701_M4U_PORT_MDP_ROTVO		MT2701_M4U_ID_LARB0(9)
++#define MT2701_M4U_PORT_MDP_RDMA1		MT2701_M4U_ID_LARB0(10)
++
++/* Port define for larb1 */
++#define MT2701_M4U_PORT_VDEC_MC_EXT		MT2701_M4U_ID_LARB1(0)
++#define MT2701_M4U_PORT_VDEC_PP_EXT		MT2701_M4U_ID_LARB1(1)
++#define MT2701_M4U_PORT_VDEC_PPWRAP_EXT		MT2701_M4U_ID_LARB1(2)
++#define MT2701_M4U_PORT_VDEC_AVC_MV_EXT		MT2701_M4U_ID_LARB1(3)
++#define MT2701_M4U_PORT_VDEC_PRED_RD_EXT	MT2701_M4U_ID_LARB1(4)
++#define MT2701_M4U_PORT_VDEC_PRED_WR_EXT	MT2701_M4U_ID_LARB1(5)
++#define MT2701_M4U_PORT_VDEC_VLD_EXT		MT2701_M4U_ID_LARB1(6)
++#define MT2701_M4U_PORT_VDEC_VLD2_EXT		MT2701_M4U_ID_LARB1(7)
++#define MT2701_M4U_PORT_VDEC_TILE_EXT		MT2701_M4U_ID_LARB1(8)
++#define MT2701_M4U_PORT_VDEC_IMG_RESZ_EXT	MT2701_M4U_ID_LARB1(9)
++
++/* Port define for larb2 */
++#define MT2701_M4U_PORT_VENC_RCPU		MT2701_M4U_ID_LARB2(0)
++#define MT2701_M4U_PORT_VENC_REC_FRM		MT2701_M4U_ID_LARB2(1)
++#define MT2701_M4U_PORT_VENC_BSDMA		MT2701_M4U_ID_LARB2(2)
++#define MT2701_M4U_PORT_JPGENC_RDMA		MT2701_M4U_ID_LARB2(3)
++#define MT2701_M4U_PORT_VENC_LT_RCPU		MT2701_M4U_ID_LARB2(4)
++#define MT2701_M4U_PORT_VENC_LT_REC_FRM		MT2701_M4U_ID_LARB2(5)
++#define MT2701_M4U_PORT_VENC_LT_BSDMA		MT2701_M4U_ID_LARB2(6)
++#define MT2701_M4U_PORT_JPGDEC_BSDMA		MT2701_M4U_ID_LARB2(7)
++#define MT2701_M4U_PORT_VENC_SV_COMV		MT2701_M4U_ID_LARB2(8)
++#define MT2701_M4U_PORT_VENC_RD_COMV		MT2701_M4U_ID_LARB2(9)
++#define MT2701_M4U_PORT_JPGENC_BSDMA		MT2701_M4U_ID_LARB2(10)
++#define MT2701_M4U_PORT_VENC_CUR_LUMA		MT2701_M4U_ID_LARB2(11)
++#define MT2701_M4U_PORT_VENC_CUR_CHROMA		MT2701_M4U_ID_LARB2(12)
++#define MT2701_M4U_PORT_VENC_REF_LUMA		MT2701_M4U_ID_LARB2(13)
++#define MT2701_M4U_PORT_VENC_REF_CHROMA		MT2701_M4U_ID_LARB2(14)
++#define MT2701_M4U_PORT_IMG_RESZ		MT2701_M4U_ID_LARB2(15)
++#define MT2701_M4U_PORT_VENC_LT_SV_COMV		MT2701_M4U_ID_LARB2(16)
++#define MT2701_M4U_PORT_VENC_LT_RD_COMV		MT2701_M4U_ID_LARB2(17)
++#define MT2701_M4U_PORT_VENC_LT_CUR_LUMA	MT2701_M4U_ID_LARB2(18)
++#define MT2701_M4U_PORT_VENC_LT_CUR_CHROMA	MT2701_M4U_ID_LARB2(19)
++#define MT2701_M4U_PORT_VENC_LT_REF_LUMA	MT2701_M4U_ID_LARB2(20)
++#define MT2701_M4U_PORT_VENC_LT_REF_CHROMA	MT2701_M4U_ID_LARB2(21)
++#define MT2701_M4U_PORT_JPGDEC_WDMA		MT2701_M4U_ID_LARB2(22)
++
++#endif
+-- 
+1.8.1.1.dirty
 
-Eric
-
->> 		return vfio_dma_do_map(iommu, &map);
->>
->> 	} else if (cmd == VFIO_IOMMU_UNMAP_DMA) {
->> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
->> index 255a211..4a9dbc2 100644
->> --- a/include/uapi/linux/vfio.h
->> +++ b/include/uapi/linux/vfio.h
->> @@ -498,12 +498,19 @@ struct vfio_iommu_type1_info {
->>  *
->>  * Map process virtual addresses to IO virtual addresses using the
->>  * provided struct vfio_dma_map. Caller sets argsz. READ &/ WRITE required.
->> + *
->> + * In case RESERVED_MSI_IOVA flag is set, the API only aims at registering an
->> + * IOVA region that will be used on some platforms to map the host MSI frames.
->> + * In that specific case, vaddr is ignored. Once registered, an MSI reserved
->> + * IOVA region stays until the container is closed.
->>  */
->> struct vfio_iommu_type1_dma_map {
->> 	__u32	argsz;
->> 	__u32	flags;
->> #define VFIO_DMA_MAP_FLAG_READ (1 << 0)		/* readable from device */
->> #define VFIO_DMA_MAP_FLAG_WRITE (1 << 1)	/* writable from device */
->> +/* reserved iova for MSI vectors*/
->> +#define VFIO_DMA_MAP_FLAG_RESERVED_MSI_IOVA (1 << 2)
->> 	__u64	vaddr;				/* Process virtual address */
->> 	__u64	iova;				/* IO virtual address */
->> 	__u64	size;				/* Size of mapping (bytes) */
->> @@ -519,7 +526,8 @@ struct vfio_iommu_type1_dma_map {
->>  * Caller sets argsz.  The actual unmapped size is returned in the size
->>  * field.  No guarantee is made to the user that arbitrary unmaps of iova
->>  * or size different from those used in the original mapping call will
->> - * succeed.
->> + * succeed. Once registered, an MSI region cannot be unmapped and stays
->> + * until the container is closed.
->>  */
->> struct vfio_iommu_type1_dma_unmap {
->> 	__u32	argsz;
->> -- 
->> 1.9.1
->>
->>
->> _______________________________________________
->> linux-arm-kernel mailing list
->> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
->> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
