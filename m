@@ -1,50 +1,88 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [GIT PULL] iommu/arm-smmu: Updates for 4.7
-Date: Mon, 9 May 2016 12:06:15 +0200
-Message-ID: <20160509100615.GE9801@suse.de>
-References: <20160504134531.GA31744@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2 1/2] PCI: Add PCI device flag
+ PCI_DEV_FLAGS_DMA_ALIAS_ROOT
+Date: Mon, 9 May 2016 11:10:35 +0100
+Message-ID: <5730621B.2050503@arm.com>
+References: <linux-pci@vger.kernel.org>
+ <1462700001-30086-1-git-send-email-jchandra@broadcom.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160504134531.GA31744-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: arnd-r2nGTMty4D4@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1462700001-30086-1-git-send-email-jchandra@broadcom.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Jayachandran C <jchandra@broadcom.com>, Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org
+Cc: Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 04, 2016 at 02:45:31PM +0100, Will Deacon wrote:
-> Peng Fan (1):
->       iommu/arm-smmu: Clear cache lock bit of ACR
-> 
-> Robin Murphy (7):
->       iommu/arm-smmu: Differentiate specific implementations
->       iommu/arm-smmu: Convert ThunderX workaround to new method
->       iommu/arm-smmu: Work around MMU-500 prefetch errata
->       io-64-nonatomic: Add relaxed accessor variants
->       iommu/arm-smmu: Tidy up 64-bit/atomic I/O accesses
->       iommu/arm-smmu: Decouple context format from kernel config
->       iommu/arm-smmu: Support SMMUv1 64KB supplement
-> 
-> Tirumalesh Chalamarla (2):
->       iommu/arm-smmu: Add support for 16 bit VMID
->       iommu/arm-smmu: Workaround for ThunderX erratum #27704
-> 
->  Documentation/arm64/silicon-errata.txt             |   2 +
->  .../devicetree/bindings/iommu/arm,smmu.txt         |   1 +
->  drivers/iommu/arm-smmu.c                           | 291 +++++++++++++++------
->  include/asm-generic/io.h                           |   4 +-
->  include/linux/io-64-nonatomic-hi-lo.h              |  25 ++
->  include/linux/io-64-nonatomic-lo-hi.h              |  25 ++
->  6 files changed, 265 insertions(+), 83 deletions(-)
+On 08/05/16 10:33, Jayachandran C via iommu wrote:
+> Add a new flag PCI_DEV_FLAGS_DMA_ALIAS_ROOT to limit the DMA alias
+> search to go no further than the bridge where the IOMMU is attached.
+>
+> This has been added to support Broadcom's Vulcan which has the SMMUv3
+> and GIC ITS associated with an intermediate bridge in the PCI topology.
+> Traversing to buses above would hit internal glue bridges which will
+> change the RID.
 
-Pulled, thanks Will.
+Can you not just have the relevant callback function detect the relevant 
+node and terminate the walk of its own accord? That's what I was aiming 
+for in this patch for the IOMMU setup:
+
+http://article.gmane.org/gmane.linux.kernel.iommu/12456
+
+Is there some flaw in that approach I've missed?
+
+Robin.
+
+> Update the function pci_for_each_dma_alias() to stop when it see a
+> bridge with this flag set.
+>
+> Signed-off-by: Jayachandran C <jchandra@broadcom.com>
+> ---
+>
+> Here is v2 of the patch, the previous discussion is at
+> http://lists.linuxfoundation.org/pipermail/iommu/2016-February/015668.html
+>
+> v1->v2 changes:
+>   - dropped the BAR quirk (not needed)
+>   - moved from using the 'skip' flag for some bridges to using
+>     similar approach to stop the traversal at the bridge with
+>     PCI_DEV_FLAGS_DMA_ALIAS_ROOT
+>
+> Comments and suggestions are welcome
+>
+> JC.
+>
+>   drivers/pci/search.c | 4 ++++
+>   include/linux/pci.h  | 2 ++
+>   2 files changed, 6 insertions(+)
+>
+> diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+> index a20ce7d..3ea9c27 100644
+> --- a/drivers/pci/search.c
+> +++ b/drivers/pci/search.c
+> @@ -56,6 +56,10 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
+>
+>   		tmp = bus->self;
+>
+> +		/* stop at bridge where translation unit is associated */
+> +		if (tmp->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_ROOT)
+> +			return ret;
+> +
+>   		/*
+>   		 * PCIe-to-PCI/X bridges alias transactions from downstream
+>   		 * devices using the subordinate bus number (PCI Express to
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 932ec74..b6f832b 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -176,6 +176,8 @@ enum pci_dev_flags {
+>   	PCI_DEV_FLAGS_NO_PM_RESET = (__force pci_dev_flags_t) (1 << 7),
+>   	/* Get VPD from function 0 VPD */
+>   	PCI_DEV_FLAGS_VPD_REF_F0 = (__force pci_dev_flags_t) (1 << 8),
+> +	/* a non-root bridge where translation occurs, stop alias search here */
+> +	PCI_DEV_FLAGS_DMA_ALIAS_ROOT = (__force pci_dev_flags_t) (1 << 9),
+>   };
+>
+>   enum pci_irq_reroute_variant {
+>
