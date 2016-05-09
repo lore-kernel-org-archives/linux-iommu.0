@@ -1,294 +1,140 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v9 4/8] iommu/msi-iommu: initialization
-Date: Mon, 9 May 2016 14:57:39 -0600
-Message-ID: <20160509145739.41a19743@t450s.home>
-References: <1462362007-2753-1-git-send-email-eric.auger@linaro.org>
-	<1462362007-2753-5-git-send-email-eric.auger@linaro.org>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [RFC PATCH v1 00/18] x86: Secure Memory Encryption (AMD)
+Date: Mon, 9 May 2016 16:08:03 -0500
+Message-ID: <5730FC33.2060804@amd.com>
+References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
+ <CALCETrUdrMAmE6Vgj6_PALdmRZVVKa3QDwJtO=YDTOQdox=rhQ@mail.gmail.com>
+ <57211CAB.9040902@amd.com>
+ <CALCETrWAP5hxQeVSwNx-XkO53-X3bX0LasjOuHxeRWCTob7JAA@mail.gmail.com>
+ <5730A91E.6040601@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1462362007-2753-5-git-send-email-eric.auger@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Eric Auger <eric.auger@linaro.org>
-Cc: eric.auger@st.com, robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org, patches@linaro.org, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com, yehuday@marvell.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <5730A91E.6040601@redhat.com>
+Sender: owner-linux-mm@kvack.org
+To: Paolo Bonzini <pbonzini@redhat.com>, Andy Lutomirski <luto@amacapital.net>
+Cc: linux-arch <linux-arch@vger.kernel.org>, "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>, kvm list <kvm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, X86 ML <x86@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, kasan-dev <kasan-dev@googlegroups.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Ingo
+ Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander
+ Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry
+ Vyukov <dvyukov>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed,  4 May 2016 11:40:03 +0000
-Eric Auger <eric.auger@linaro.org> wrote:
+On 05/09/2016 10:13 AM, Paolo Bonzini wrote:
+>=20
+>=20
+> On 02/05/2016 20:31, Andy Lutomirski wrote:
+>> And did the SEV implementation remember to encrypt the guest register
+>> state?  Because, if not, everything of importance will leak out
+>> through the VMCB and/or GPRs.
+>=20
+> No, it doesn't.  And SEV is very limited unless you paravirtualize
+> everything.
+>=20
+> For example, the hypervisor needs to read some instruction bytes from
+> memory, and instruction bytes are always encrypted (15.34.5 in the APM)=
+.
+>  So you're pretty much restricted to IN/OUT operations (not even
+> INS/OUTS) on emulated (non-assigned) devices, paravirtualized MSRs, and
+> hypercalls.  These are the only operations that connect the guest and
+> the hypervisor, where the vmexit doesn't have the need to e.g. walk
+> guest page tables (also always encrypted).  It possibly can be made to
+> work once the guest boots, and a modern UEFI firmware probably can cope
+> with it too just like a kernel can, but you need to ensure that your
+> hardware has no memory BARs for example.  And I/O port space is not ver=
+y
+> abundant.
 
-> iommu_get/put_msi_cookie allocates/frees the resource used to store
-> and ref count the MSI doorbell mappings. iommu_msi_set_aperture
-> initializes the iova domain used for MSI IOVA allocation and sets the
-> iommu domain's msi geometry.
-> 
-> The implementation relies on dma-iommu API and iova API.
-> 
-> New msi functions are fully implemented if CONFIG_IOMMU_MSI is set.
-> 
-> Signed-off-by: Eric Auger <eric.auger@linaro.org>
-> 
-> ---
-> v9:
-> - remove is_aperture_set and use iommu_domain_msi_aperture_valid helper
->   instead
-> - set iommu domain's msi geometry
-> 
-> v8:
-> - new design where msi-iommu relies on dma-iommu
-> - remove the iommu_domain * from the doorbell_mapping struct
-> - added is_aperture_set
-> 
-> v7:
-> - fix locking
-> - add iova_cache_get/put
-> - static inline functions when CONFIG_IOMMU_DMA_RESERVED is not set
-> - introduce struct reserved_iova_domain to encapsulate prot info &
->   add prot parameter in alloc_reserved_iova_domain
-> 
-> v5 -> v6:
-> - use spin lock instead of mutex
-> 
-> v3 -> v4:
-> - formerly in "iommu/arm-smmu: implement alloc/free_reserved_iova_domain" &
->   "iommu: add alloc/free_reserved_iova_domain"
-> 
-> v2 -> v3:
-> - remove iommu_alloc_reserved_iova_domain & iommu_free_reserved_iova_domain
->   static implementation in case CONFIG_IOMMU_API is not set
-> 
-> v1 -> v2:
-> - moved from vfio API to IOMMU API
-> ---
->  drivers/iommu/Kconfig     |  7 ++++
->  drivers/iommu/Makefile    |  1 +
->  drivers/iommu/msi-iommu.c | 97 +++++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/msi-iommu.h | 65 +++++++++++++++++++++++++++++++
->  4 files changed, 170 insertions(+)
->  create mode 100644 drivers/iommu/msi-iommu.c
->  create mode 100644 include/linux/msi-iommu.h
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index dd1dc39..0078b72 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -74,6 +74,11 @@ config IOMMU_DMA
->  	select IOMMU_IOVA
->  	select NEED_SG_DMA_LENGTH
->  
-> +# IOMMU MSI mapping
-> +config IOMMU_MSI
-> +	bool
-> +	select IOMMU_DMA
-> +
->  config FSL_PAMU
->  	bool "Freescale IOMMU support"
->  	depends on PPC32
-> @@ -307,6 +312,7 @@ config SPAPR_TCE_IOMMU
->  config ARM_SMMU
->  	bool "ARM Ltd. System MMU (SMMU) Support"
->  	depends on (ARM64 || ARM) && MMU
-> +	select IOMMU_MSI
->  	select IOMMU_API
->  	select IOMMU_IO_PGTABLE_LPAE
->  	select ARM_DMA_USE_IOMMU if ARM
-> @@ -320,6 +326,7 @@ config ARM_SMMU
->  config ARM_SMMU_V3
->  	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
->  	depends on ARM64 && PCI
-> +	select IOMMU_MSI
->  	select IOMMU_API
->  	select IOMMU_IO_PGTABLE_LPAE
->  	select GENERIC_MSI_IRQ_DOMAIN
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index c6edb31..a381e66 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -2,6 +2,7 @@ obj-$(CONFIG_IOMMU_API) += iommu.o
->  obj-$(CONFIG_IOMMU_API) += iommu-traces.o
->  obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
->  obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
-> +obj-$(CONFIG_IOMMU_MSI) += msi-iommu.o
->  obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
->  obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
->  obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
-> diff --git a/drivers/iommu/msi-iommu.c b/drivers/iommu/msi-iommu.c
-> new file mode 100644
-> index 0000000..4292957
-> --- /dev/null
-> +++ b/drivers/iommu/msi-iommu.c
-> @@ -0,0 +1,97 @@
-> +/*
-> + * Reserved IOVA Management
-> + *
-> + * Copyright (c) 2015 Linaro Ltd.
-> + *              www.linaro.org
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + *
-> + */
-> +
-> +#include <linux/iommu.h>
-> +#include <linux/dma-iommu.h>
-> +#include <linux/msi-iommu.h>
-> +#include <linux/spinlock.h>
-> +#include <linux/iova.h>
-> +
-> +struct doorbell_mapping {
-> +	struct kref		kref;
-> +	struct list_head	next;
-> +	phys_addr_t		addr;
-> +	dma_addr_t		iova;
-> +	size_t			size;
-> +};
-> +
-> +struct doorbell_mapping_info {
-> +	struct list_head list; /* list of doorbell mapping entries */
-> +	spinlock_t lock;
-> +};
-> +
-> +int iommu_get_msi_cookie(struct iommu_domain *domain)
-> +{
-> +	struct doorbell_mapping_info *dmi;
-> +	int ret;
-> +
-> +	if (domain->msi_cookie || domain->iova_cookie)
-> +		return -EINVAL;
-> +
-> +	ret = iommu_get_dma_cookie(domain);
-> +	if (ret)
-> +		return ret;
-> +
-> +	dmi = kzalloc(sizeof(*dmi), GFP_KERNEL);
-> +
-> +	INIT_LIST_HEAD(&dmi->list);
-> +	spin_lock_init(&dmi->lock);
-> +	iova_cache_get();
-> +
-> +	domain->msi_cookie = dmi;
-> +
-> +	return dmi ? 0 : -ENOMEM;
-> +}
-> +EXPORT_SYMBOL(iommu_get_msi_cookie);
-> +
-> +void iommu_put_msi_cookie(struct iommu_domain *domain)
-> +{
-> +	struct doorbell_mapping_info *dmi = domain->msi_cookie;
-> +
-> +	if (!dmi)
-> +		return;
-> +
-> +	domain->msi_cookie = NULL;
-> +
-> +	WARN_ON(!list_empty(&dmi->list));
-> +
-> +	kfree(dmi);
-> +	iommu_put_dma_cookie(domain);
-> +	iova_cache_put();
-> +}
-> +EXPORT_SYMBOL(iommu_put_msi_cookie);
-> +
-> +int iommu_msi_set_aperture(struct iommu_domain *domain,
-> +			   dma_addr_t start, dma_addr_t end)
-> +{
-> +	struct doorbell_mapping_info *dmi = domain->msi_cookie;
-> +	int ret;
-> +
-> +	if (!dmi || iommu_domain_msi_aperture_valid(domain))
-> +		return -ENODEV;
+The instruction bytes stored in the VMCB at offset 0xd0 for a data
+side #NPF are stored un-encrypted (which is not clearly documented in
+the APM). This allows for the hypervisor to perform MMIO on emulated
+devices. Because the hardware provides enough information on VMEXIT
+events, such as exit codes, decode assist, etc., the hypervisor has
+the information it needs to perform the operation without having to
+read the guest pagetables and/or the guest instruction stream from
+guest memory. There are a few minor corner cases (e.g. rep ins) and
+there will be more info on those when the SEV patches are submitted.
 
+>=20
+> Even in order to emulate I/O ports or RDMSR/WRMSR or process hypercalls=
+,
+> the hypervisor needs to read the GPRs.  The VMCB doesn't store guest
+> GPRs, not even on SEV-enabled processors.  Accordingly, the hypervisor
+> has access to the guest GPRs on every exit.
 
-nit, the next patch splits to use different errnos for each issue,
-which seems preferable.
+In this initial version of SEV support the hardware does not encrypt
+the guest save state and the hypervisor does have access to the GPRs.
 
+>=20
+> In general, SEV provides mitigation only.  Even if the hypervisor canno=
+t
+> write known plaintext directly to memory, an accomplice virtual machine
+> can e.g. use the network to spray the attacked VM's memory.  At least
 
-> +
-> +	ret = iommu_dma_init_domain(domain, start, end - start + 1);
-> +
-> +	if (!ret) {
-> +		domain->msi_geometry.aperture_start = start;
-> +		domain->msi_geometry.aperture_end = end;
-> +	}
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_msi_set_aperture);
-> +
-> diff --git a/include/linux/msi-iommu.h b/include/linux/msi-iommu.h
-> new file mode 100644
-> index 0000000..392aa6f
-> --- /dev/null
-> +++ b/include/linux/msi-iommu.h
-> @@ -0,0 +1,65 @@
-> +/*
-> + * Copyright (c) 2015 Linaro Ltd.
-> + *              www.linaro.org
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + *
-> + */
-> +#ifndef __MSI_IOMMU_H
-> +#define __MSI_IOMMU_H
-> +
-> +#include <linux/types.h>
-> +#include <linux/kernel.h>
-> +
-> +struct iommu_domain;
-> +
-> +#ifdef CONFIG_IOMMU_MSI
-> +
-> +/**
-> + * iommu_get_msi_cookie - Acquire MSI mapping resources for a domain
-> + * @domain: IOMMU domain to prepare for MSI mapping
-> + *
-> + * IOMMU drivers which require MSI mapping should normally call this
-> + * from their domain_alloc callback when domain->type ==
-> + * IOMMU_DOMAIN_UNMANAGED.
-> + */
-> +int iommu_get_msi_cookie(struct iommu_domain *domain);
-> +
-> +/**
-> + * iommu_put_msi_cookie - Release a domain's MSI mapping resources
-> + * @domain: IOMMU domain previously prepared by iommu_get_msi_cookie()
-> + *
-> + * IOMMU drivers requesting MSI mapping should normally call this from
-> + * their domain_free callback.
-> + */
-> +void iommu_put_msi_cookie(struct iommu_domain *domain);
-> +
-> +/**
-> + * iommu_msi_set_aperture: allocate the msi iova domain
-> + * according to the specified start/end IOVAs
-> + *
-> + * @domain: iommu domain handle
-> + * @start: MSI iova start address
-> + * @end: MSI iova end address
-> + */
-> +int iommu_msi_set_aperture(struct iommu_domain *domain,
-> +			   dma_addr_t start, dma_addr_t end);
-> +
-> +#else
-> +
-> +static inline int
-> +iommu_msi_set_aperture(struct iommu_domain *domain,
-> +		       dma_addr_t start, dma_addr_t end)
-> +{
-> +	return -ENOENT;
-> +}
-> +
-> +#endif	/* CONFIG_IOMMU_MSI */
-> +#endif	/* __MSI_IOMMU_H */
+Can you elaborate further on this? The accomplice VM will not have
+access to the encryption key of the target VM and cannot accomplish
+any spraying that the hypervisor itself cannot do.
+
+> it's not as easy as "disable NX under the guest's feet and redirect RIP=
+"
+> (pte.nx is reserved if efer.nxe=3D0, all you get is a #PF).  But the
+> hypervisor can still disable SMEP and SMAP, it can use hardware
+> breakpoints to leak information through the registers, and it can do al=
+l
+> the other attacks you mentioned.  If AMD had rdrand/rdseed, it could
+> replace the output with not so random values, and so on.
+
+AMD added support for the rdrand in some of the later fam16h models.
+
+>=20
+> It's surely better than nothing, but "encryption that really is nothing
+> more than mitigation" is pretty weird.  I'm waiting for cloud vendors t=
+o
+> sell this as the best thing since sliced bread, when in reality it's
+> just mitigation.  I wonder how wise it is to merge SEV in its current
+> state---and since security is not my specialty I am definitely looking
+> for advice on this.
+>=20
+
+In this first generation of SEV, we are targeting a threat model very
+similar to the one used by SMEP and SMAP. Specifically, SEV protects a
+guest from a benign but vulnerable hypervisor, where a malicious guest
+or unprivileged process exploits a system/hypervisor interface in an
+attempt to read or modify the guest's memory.  But, like SMEP and SMAP,
+if an attacker has the ability to arbitrarily execute code in the
+kernel, he would be able to circumvent the control. AMD has a vision
+for this generation of SEV to be foundational to future generations
+that defend against stronger attacks.
+
+Thanks,
+Tom
+
+> Paolo
+>=20
+> ps: I'm now reminded of this patch:
+>=20
+>     commit dab429a798a8ab3377136e09dda55ea75a41648d
+>     Author: David Kaplan <David.Kaplan@amd.com>
+>     Date:   Mon Mar 2 13:43:37 2015 -0600
+>=20
+>     kvm: svm: make wbinvd faster
+>=20
+>     No need to re-decode WBINVD since we know what it is from the
+>     intercept.
+>=20
+>     Signed-off-by: David Kaplan <David.Kaplan@amd.com>
+>     [extracted from larger unlrelated patch, forward ported,
+>      tested,style cleanup]
+>     Signed-off-by: Joel Schopp <joel.schopp@amd.com>
+>     Reviewed-by: Radim Kr=C4=8Dm=C3=A1=C5=99 <rkrcmar@redhat.com>
+>     Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
+>=20
+> and I wonder if the larger unlrelated patch had anything to do with SEV=
+!
+>=20
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=3Dmailto:"dont@kvack.org"> email@kvack.org </a>
