@@ -1,14 +1,14 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2] iommu/arm-smmu: Use per-domain page sizes.
-Date: Mon,  9 May 2016 17:20:09 +0100
-Message-ID: <112fc0e5f9bbe08007778b8438b35025d8e876a4.1462810410.git.robin.murphy@arm.com>
-References: <ea520b8c72b5a72a1731bd35f6e3e50872fe6764.1460048991.git.robin.murphy@arm.com>
-	<cover.1460048991.git.robin.murphy@arm.com>
+From: =?UTF-8?q?Niklas=20S=C3=B6derlund?=
+	<niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+Subject: [PATCHv6 5/8] dmaengine: rcar-dmac: group slave configuration
+Date: Mon,  9 May 2016 18:44:04 +0200
+Message-ID: <1462812247-3414-6-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+References: <1462812247-3414-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <ea520b8c72b5a72a1731bd35f6e3e50872fe6764.1460048991.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1462812247-3414-1-git-send-email-niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,166 +18,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now that we can accurately reflect the context format we choose for each
-domain, do that instead of imposing the global lowest-common-denominator
-restriction and potentially ending up with nothing. We currently have a
-strict 1:1 correspondence between domains and context banks, so we don't
-need to entertain the possibility of multiple formats _within_ a domain.
-
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-[rm: split from original patch, added SMMUv3]
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
-
-Changes from v1: Rebased onto iommu/core to accommodate SMMUv2 changes.
-
- drivers/iommu/arm-smmu-v3.c | 19 ++++++++++---------
- drivers/iommu/arm-smmu.c    | 27 +++++++++++++++------------
- 2 files changed, 25 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4ff73ff64e49..ebab33e77d67 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -590,6 +590,7 @@ struct arm_smmu_device {
- 
- 	unsigned long			ias; /* IPA */
- 	unsigned long			oas; /* PA */
-+	unsigned long			pgsize_bitmap;
- 
- #define ARM_SMMU_MAX_ASIDS		(1 << 16)
- 	unsigned int			asid_bits;
-@@ -1516,8 +1517,6 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_domain *smmu_domain,
- 	return 0;
- }
- 
--static struct iommu_ops arm_smmu_ops;
--
- static int arm_smmu_domain_finalise(struct iommu_domain *domain)
- {
- 	int ret;
-@@ -1555,7 +1554,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
- 	}
- 
- 	pgtbl_cfg = (struct io_pgtable_cfg) {
--		.pgsize_bitmap	= arm_smmu_ops.pgsize_bitmap,
-+		.pgsize_bitmap	= smmu->pgsize_bitmap,
- 		.ias		= ias,
- 		.oas		= oas,
- 		.tlb		= &arm_smmu_gather_ops,
-@@ -1566,7 +1565,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
- 	if (!pgtbl_ops)
- 		return -ENOMEM;
- 
--	arm_smmu_ops.pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
-+	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
- 	smmu_domain->pgtbl_ops = pgtbl_ops;
- 
- 	ret = finalise_stage_fn(smmu_domain, &pgtbl_cfg);
-@@ -2410,7 +2409,6 @@ static int arm_smmu_device_probe(struct arm_smmu_device *smmu)
- {
- 	u32 reg;
- 	bool coherent;
--	unsigned long pgsize_bitmap = 0;
- 
- 	/* IDR0 */
- 	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR0);
-@@ -2541,13 +2539,16 @@ static int arm_smmu_device_probe(struct arm_smmu_device *smmu)
- 
- 	/* Page sizes */
- 	if (reg & IDR5_GRAN64K)
--		pgsize_bitmap |= SZ_64K | SZ_512M;
-+		smmu->pgsize_bitmap |= SZ_64K | SZ_512M;
- 	if (reg & IDR5_GRAN16K)
--		pgsize_bitmap |= SZ_16K | SZ_32M;
-+		smmu->pgsize_bitmap |= SZ_16K | SZ_32M;
- 	if (reg & IDR5_GRAN4K)
--		pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
-+		smmu->pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
- 
--	arm_smmu_ops.pgsize_bitmap &= pgsize_bitmap;
-+	if (arm_smmu_ops.pgsize_bitmap == -1UL)
-+		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
-+	else
-+		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
- 
- 	/* Output address size */
- 	switch (reg & IDR5_OAS_MASK << IDR5_OAS_SHIFT) {
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7cd4ad98904a..0360919a5737 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -351,6 +351,7 @@ struct arm_smmu_device {
- 	unsigned long			va_size;
- 	unsigned long			ipa_size;
- 	unsigned long			pa_size;
-+	unsigned long			pgsize_bitmap;
- 
- 	u32				num_global_irqs;
- 	u32				num_context_irqs;
-@@ -396,8 +397,6 @@ struct arm_smmu_domain {
- 	struct iommu_domain		domain;
- };
- 
--static struct iommu_ops arm_smmu_ops;
--
- static DEFINE_SPINLOCK(arm_smmu_devices_lock);
- static LIST_HEAD(arm_smmu_devices);
- 
-@@ -957,7 +956,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	}
- 
- 	pgtbl_cfg = (struct io_pgtable_cfg) {
--		.pgsize_bitmap	= arm_smmu_ops.pgsize_bitmap,
-+		.pgsize_bitmap	= smmu->pgsize_bitmap,
- 		.ias		= ias,
- 		.oas		= oas,
- 		.tlb		= &arm_smmu_gather_ops,
-@@ -971,8 +970,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		goto out_clear_smmu;
- 	}
- 
--	/* Update our support page sizes to reflect the page table format */
--	arm_smmu_ops.pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
-+	/* Update the domain's page sizes to reflect the page table format */
-+	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
- 
- 	/* Initialise the context bank with our page table cfg */
- 	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
-@@ -1814,19 +1813,23 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 	}
- 
- 	/* Now we've corralled the various formats, what'll it do? */
--	size = 0;
- 	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_S)
--		size |= SZ_4K | SZ_64K | SZ_1M | SZ_16M;
-+		smmu->pgsize_bitmap |= SZ_4K | SZ_64K | SZ_1M | SZ_16M;
- 	if (smmu->features &
- 	    (ARM_SMMU_FEAT_FMT_AARCH32_L | ARM_SMMU_FEAT_FMT_AARCH64_4K))
--		size |= SZ_4K | SZ_2M | SZ_1G;
-+		smmu->pgsize_bitmap |= SZ_4K | SZ_2M | SZ_1G;
- 	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_16K)
--		size |= SZ_16K | SZ_32M;
-+		smmu->pgsize_bitmap |= SZ_16K | SZ_32M;
- 	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH64_64K)
--		size |= SZ_64K | SZ_512M;
-+		smmu->pgsize_bitmap |= SZ_64K | SZ_512M;
-+
-+	if (arm_smmu_ops.pgsize_bitmap == -1UL)
-+		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
-+	else
-+		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
-+	dev_notice(smmu->dev, "\tSupported page sizes: 0x%08lx\n",
-+		   smmu->pgsize_bitmap);
- 
--	arm_smmu_ops.pgsize_bitmap &= size;
--	dev_notice(smmu->dev, "\tSupported page sizes: 0x%08lx\n", size);
- 
- 	if (smmu->features & ARM_SMMU_FEAT_TRANS_S1)
- 		dev_notice(smmu->dev, "\tStage-1: %lu-bit VA -> %lu-bit IPA\n",
--- 
-2.8.1.dirty
+R3JvdXAgc2xhdmUgYWRkcmVzcyBhbmQgdHJhbnNmZXIgc2l6ZSBpbiBvd24gc3RydWN0cyBmb3Ig
+c291cmNlIGFuZApkZXN0aW5hdGlvbi4gVGhpcyBpcyBpbiBwcmVwYXJhdGlvbiBmb3IgaG9va2lu
+ZyB1cCB0aGUgZG1hLW1hcHBpbmcgQVBJCnRvIHRoZSBzbGF2ZSBhZGRyZXNzZXMuCgpTaWduZWQt
+b2ZmLWJ5OiBOaWtsYXMgU8O2ZGVybHVuZCA8bmlrbGFzLnNvZGVybHVuZCtyZW5lc2FzQHJhZ25h
+dGVjaC5zZT4KUmV2aWV3ZWQtYnk6IExhdXJlbnQgUGluY2hhcnQgPGxhdXJlbnQucGluY2hhcnRA
+aWRlYXNvbmJvYXJkLmNvbT4KLS0tCiBkcml2ZXJzL2RtYS9zaC9yY2FyLWRtYWMuYyB8IDM4ICsr
+KysrKysrKysrKysrKysrKysrKystLS0tLS0tLS0tLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgMjIg
+aW5zZXJ0aW9ucygrKSwgMTYgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9kbWEv
+c2gvcmNhci1kbWFjLmMgYi9kcml2ZXJzL2RtYS9zaC9yY2FyLWRtYWMuYwppbmRleCBkZmIxNzky
+Li5iMGMzYmIyIDEwMDY0NAotLS0gYS9kcml2ZXJzL2RtYS9zaC9yY2FyLWRtYWMuYworKysgYi9k
+cml2ZXJzL2RtYS9zaC9yY2FyLWRtYWMuYwpAQCAtMTE4LDE0ICsxMTgsMjIgQEAgc3RydWN0IHJj
+YXJfZG1hY19kZXNjX3BhZ2UgewogCXNpemVvZihzdHJ1Y3QgcmNhcl9kbWFjX3hmZXJfY2h1bmsp
+KQogCiAvKgorICogc3RydWN0IHJjYXJfZG1hY19jaGFuX3NsYXZlIC0gU2xhdmUgY29uZmlndXJh
+dGlvbgorICogQHNsYXZlX2FkZHI6IHNsYXZlIG1lbW9yeSBhZGRyZXNzCisgKiBAeGZlcl9zaXpl
+OiBzaXplIChpbiBieXRlcykgb2YgaGFyZHdhcmUgdHJhbnNmZXJzCisgKi8KK3N0cnVjdCByY2Fy
+X2RtYWNfY2hhbl9zbGF2ZSB7CisJcGh5c19hZGRyX3Qgc2xhdmVfYWRkcjsKKwl1bnNpZ25lZCBp
+bnQgeGZlcl9zaXplOworfTsKKworLyoKICAqIHN0cnVjdCByY2FyX2RtYWNfY2hhbiAtIFItQ2Fy
+IEdlbjIgRE1BIENvbnRyb2xsZXIgQ2hhbm5lbAogICogQGNoYW46IGJhc2UgRE1BIGNoYW5uZWwg
+b2JqZWN0CiAgKiBAaW9tZW06IGNoYW5uZWwgSS9PIG1lbW9yeSBiYXNlCiAgKiBAaW5kZXg6IGlu
+ZGV4IG9mIHRoaXMgY2hhbm5lbCBpbiB0aGUgY29udHJvbGxlcgotICogQHNyY194ZmVyX3NpemU6
+IHNpemUgKGluIGJ5dGVzKSBvZiBoYXJkd2FyZSB0cmFuc2ZlcnMgb24gdGhlIHNvdXJjZSBzaWRl
+Ci0gKiBAZHN0X3hmZXJfc2l6ZTogc2l6ZSAoaW4gYnl0ZXMpIG9mIGhhcmR3YXJlIHRyYW5zZmVy
+cyBvbiB0aGUgZGVzdGluYXRpb24gc2lkZQotICogQHNyY19zbGF2ZV9hZGRyOiBzbGF2ZSBzb3Vy
+Y2UgbWVtb3J5IGFkZHJlc3MKLSAqIEBkc3Rfc2xhdmVfYWRkcjogc2xhdmUgZGVzdGluYXRpb24g
+bWVtb3J5IGFkZHJlc3MKKyAqIEBzcmM6IHNsYXZlIG1lbW9yeSBhZGRyZXNzIGFuZCBzaXplIG9u
+IHRoZSBzb3VyY2Ugc2lkZQorICogQGRzdDogc2xhdmUgbWVtb3J5IGFkZHJlc3MgYW5kIHNpemUg
+b24gdGhlIGRlc3RpbmF0aW9uIHNpZGUKICAqIEBtaWRfcmlkOiBoYXJkd2FyZSBNSUQvUklEIGZv
+ciB0aGUgRE1BIGNsaWVudCB1c2luZyB0aGlzIGNoYW5uZWwKICAqIEBsb2NrOiBwcm90ZWN0cyB0
+aGUgY2hhbm5lbCBDSENSIHJlZ2lzdGVyIGFuZCB0aGUgZGVzYyBtZW1iZXJzCiAgKiBAZGVzYy5m
+cmVlOiBsaXN0IG9mIGZyZWUgZGVzY3JpcHRvcnMKQEAgLTE0MiwxMCArMTUwLDggQEAgc3RydWN0
+IHJjYXJfZG1hY19jaGFuIHsKIAl2b2lkIF9faW9tZW0gKmlvbWVtOwogCXVuc2lnbmVkIGludCBp
+bmRleDsKIAotCXVuc2lnbmVkIGludCBzcmNfeGZlcl9zaXplOwotCXVuc2lnbmVkIGludCBkc3Rf
+eGZlcl9zaXplOwotCWRtYV9hZGRyX3Qgc3JjX3NsYXZlX2FkZHI7Ci0JZG1hX2FkZHJfdCBkc3Rf
+c2xhdmVfYWRkcjsKKwlzdHJ1Y3QgcmNhcl9kbWFjX2NoYW5fc2xhdmUgc3JjOworCXN0cnVjdCBy
+Y2FyX2RtYWNfY2hhbl9zbGF2ZSBkc3Q7CiAJaW50IG1pZF9yaWQ7CiAKIAlzcGlubG9ja190IGxv
+Y2s7CkBAIC03OTMsMTMgKzc5OSwxMyBAQCBzdGF0aWMgdm9pZCByY2FyX2RtYWNfY2hhbl9jb25m
+aWd1cmVfZGVzYyhzdHJ1Y3QgcmNhcl9kbWFjX2NoYW4gKmNoYW4sCiAJY2FzZSBETUFfREVWX1RP
+X01FTToKIAkJY2hjciA9IFJDQVJfRE1BQ0hDUl9ETV9JTkMgfCBSQ0FSX0RNQUNIQ1JfU01fRklY
+RUQKIAkJICAgICB8IFJDQVJfRE1BQ0hDUl9SU19ETUFSUzsKLQkJeGZlcl9zaXplID0gY2hhbi0+
+c3JjX3hmZXJfc2l6ZTsKKwkJeGZlcl9zaXplID0gY2hhbi0+c3JjLnhmZXJfc2l6ZTsKIAkJYnJl
+YWs7CiAKIAljYXNlIERNQV9NRU1fVE9fREVWOgogCQljaGNyID0gUkNBUl9ETUFDSENSX0RNX0ZJ
+WEVEIHwgUkNBUl9ETUFDSENSX1NNX0lOQwogCQkgICAgIHwgUkNBUl9ETUFDSENSX1JTX0RNQVJT
+OwotCQl4ZmVyX3NpemUgPSBjaGFuLT5kc3RfeGZlcl9zaXplOworCQl4ZmVyX3NpemUgPSBjaGFu
+LT5kc3QueGZlcl9zaXplOwogCQlicmVhazsKIAogCWNhc2UgRE1BX01FTV9UT19NRU06CkBAIC0x
+MDM4LDcgKzEwNDQsNyBAQCByY2FyX2RtYWNfcHJlcF9zbGF2ZV9zZyhzdHJ1Y3QgZG1hX2NoYW4g
+KmNoYW4sIHN0cnVjdCBzY2F0dGVybGlzdCAqc2dsLAogCX0KIAogCWRldl9hZGRyID0gZGlyID09
+IERNQV9ERVZfVE9fTUVNCi0JCSA/IHJjaGFuLT5zcmNfc2xhdmVfYWRkciA6IHJjaGFuLT5kc3Rf
+c2xhdmVfYWRkcjsKKwkJID8gcmNoYW4tPnNyYy5zbGF2ZV9hZGRyIDogcmNoYW4tPmRzdC5zbGF2
+ZV9hZGRyOwogCXJldHVybiByY2FyX2RtYWNfY2hhbl9wcmVwX3NnKHJjaGFuLCBzZ2wsIHNnX2xl
+biwgZGV2X2FkZHIsCiAJCQkJICAgICAgZGlyLCBmbGFncywgZmFsc2UpOwogfQpAQCAtMTA5Myw3
+ICsxMDk5LDcgQEAgcmNhcl9kbWFjX3ByZXBfZG1hX2N5Y2xpYyhzdHJ1Y3QgZG1hX2NoYW4gKmNo
+YW4sIGRtYV9hZGRyX3QgYnVmX2FkZHIsCiAJfQogCiAJZGV2X2FkZHIgPSBkaXIgPT0gRE1BX0RF
+Vl9UT19NRU0KLQkJID8gcmNoYW4tPnNyY19zbGF2ZV9hZGRyIDogcmNoYW4tPmRzdF9zbGF2ZV9h
+ZGRyOworCQkgPyByY2hhbi0+c3JjLnNsYXZlX2FkZHIgOiByY2hhbi0+ZHN0LnNsYXZlX2FkZHI7
+CiAJZGVzYyA9IHJjYXJfZG1hY19jaGFuX3ByZXBfc2cocmNoYW4sIHNnbCwgc2dfbGVuLCBkZXZf
+YWRkciwKIAkJCQkgICAgICBkaXIsIGZsYWdzLCB0cnVlKTsKIApAQCAtMTExMCwxMCArMTExNiwx
+MCBAQCBzdGF0aWMgaW50IHJjYXJfZG1hY19kZXZpY2VfY29uZmlnKHN0cnVjdCBkbWFfY2hhbiAq
+Y2hhbiwKIAkgKiBXZSBjb3VsZCBsb2NrIHRoaXMsIGJ1dCB5b3Ugc2hvdWxkbid0IGJlIGNvbmZp
+Z3VyaW5nIHRoZQogCSAqIGNoYW5uZWwsIHdoaWxlIHVzaW5nIGl0Li4uCiAJICovCi0JcmNoYW4t
+PnNyY19zbGF2ZV9hZGRyID0gY2ZnLT5zcmNfYWRkcjsKLQlyY2hhbi0+ZHN0X3NsYXZlX2FkZHIg
+PSBjZmctPmRzdF9hZGRyOwotCXJjaGFuLT5zcmNfeGZlcl9zaXplID0gY2ZnLT5zcmNfYWRkcl93
+aWR0aDsKLQlyY2hhbi0+ZHN0X3hmZXJfc2l6ZSA9IGNmZy0+ZHN0X2FkZHJfd2lkdGg7CisJcmNo
+YW4tPnNyYy5zbGF2ZV9hZGRyID0gY2ZnLT5zcmNfYWRkcjsKKwlyY2hhbi0+ZHN0LnNsYXZlX2Fk
+ZHIgPSBjZmctPmRzdF9hZGRyOworCXJjaGFuLT5zcmMueGZlcl9zaXplID0gY2ZnLT5zcmNfYWRk
+cl93aWR0aDsKKwlyY2hhbi0+ZHN0LnhmZXJfc2l6ZSA9IGNmZy0+ZHN0X2FkZHJfd2lkdGg7CiAK
+IAlyZXR1cm4gMDsKIH0KLS0gCjIuOC4yCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
+bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
+dGluZm8vaW9tbXU=
