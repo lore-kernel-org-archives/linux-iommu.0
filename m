@@ -1,40 +1,91 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 0/5] Introduce per-domain page sizes
-Date: Mon, 9 May 2016 16:51:57 +0200
-Message-ID: <20160509145157.GD13971@8bytes.org>
-References: <cover.1460048991.git.robin.murphy@arm.com>
-	<20160509112138.GB13275@8bytes.org> <57307863.1070706@arm.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [RFC PATCH v1 00/18] x86: Secure Memory Encryption (AMD)
+Date: Mon, 9 May 2016 17:13:34 +0200
+Message-ID: <5730A91E.6040601@redhat.com>
+References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
+ <CALCETrUdrMAmE6Vgj6_PALdmRZVVKa3QDwJtO=YDTOQdox=rhQ@mail.gmail.com>
+ <57211CAB.9040902@amd.com>
+ <CALCETrWAP5hxQeVSwNx-XkO53-X3bX0LasjOuHxeRWCTob7JAA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <57307863.1070706-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <CALCETrWAP5hxQeVSwNx-XkO53-X3bX0LasjOuHxeRWCTob7JAA@mail.gmail.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Andy Lutomirski <luto@amacapital.net>, Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch <linux-arch@vger.kernel.org>, "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>, kvm list <kvm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, X86 ML <x86@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, kasan-dev <kasan-dev@googlegroups.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, iommu@lists.linux-foundation.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 09, 2016 at 12:45:39PM +0100, Robin Murphy wrote:
-> Thanks a lot! I was expecting to pick this up again after the merge
-> window and post an updated version then; as you may already have
-> found, patch 5 conflicts somewhat with the SMMUv2 context format
-> changes in Will's updates branch. The correct resolution requires a
-> bit of rewriting, so below is what that patch looks like when
-> rebased on top of Will's branch. If you'd prefer it in actual merge
-> resolution format, shout and I'll give that a go.
-
-Okay, hmm, but the patch does not apply here, even after fixing the line
-breaks. I'll push my tree soon, can you rebase this patch on-top the
-core branch then? It should already contain patches 1-4.
 
 
-	Joerg
+On 02/05/2016 20:31, Andy Lutomirski wrote:
+> And did the SEV implementation remember to encrypt the guest register
+> state?  Because, if not, everything of importance will leak out
+> through the VMCB and/or GPRs.
+
+No, it doesn't.  And SEV is very limited unless you paravirtualize
+everything.
+
+=46or example, the hypervisor needs to read some instruction bytes from
+memory, and instruction bytes are always encrypted (15.34.5 in the APM)=
+=2E
+ So you're pretty much restricted to IN/OUT operations (not even
+INS/OUTS) on emulated (non-assigned) devices, paravirtualized MSRs, and
+hypercalls.  These are the only operations that connect the guest and
+the hypervisor, where the vmexit doesn't have the need to e.g. walk
+guest page tables (also always encrypted).  It possibly can be made to
+work once the guest boots, and a modern UEFI firmware probably can cope
+with it too just like a kernel can, but you need to ensure that your
+hardware has no memory BARs for example.  And I/O port space is not ver=
+y
+abundant.
+
+Even in order to emulate I/O ports or RDMSR/WRMSR or process hypercalls=
+,
+the hypervisor needs to read the GPRs.  The VMCB doesn't store guest
+GPRs, not even on SEV-enabled processors.  Accordingly, the hypervisor
+has access to the guest GPRs on every exit.
+
+In general, SEV provides mitigation only.  Even if the hypervisor canno=
+t
+write known plaintext directly to memory, an accomplice virtual machine
+can e.g. use the network to spray the attacked VM's memory.  At least
+it's not as easy as "disable NX under the guest's feet and redirect RIP=
+"
+(pte.nx is reserved if efer.nxe=3D0, all you get is a #PF).  But the
+hypervisor can still disable SMEP and SMAP, it can use hardware
+breakpoints to leak information through the registers, and it can do al=
+l
+the other attacks you mentioned.  If AMD had rdrand/rdseed, it could
+replace the output with not so random values, and so on.
+
+It's surely better than nothing, but "encryption that really is nothing
+more than mitigation" is pretty weird.  I'm waiting for cloud vendors t=
+o
+sell this as the best thing since sliced bread, when in reality it's
+just mitigation.  I wonder how wise it is to merge SEV in its current
+state---and since security is not my specialty I am definitely looking
+for advice on this.
+
+Paolo
+
+ps: I'm now reminded of this patch:
+
+    commit dab429a798a8ab3377136e09dda55ea75a41648d
+    Author: David Kaplan <David.Kaplan@amd.com>
+    Date:   Mon Mar 2 13:43:37 2015 -0600
+
+    kvm: svm: make wbinvd faster
+
+    No need to re-decode WBINVD since we know what it is from the
+    intercept.
+
+    Signed-off-by: David Kaplan <David.Kaplan@amd.com>
+    [extracted from larger unlrelated patch, forward ported,
+     tested,style cleanup]
+    Signed-off-by: Joel Schopp <joel.schopp@amd.com>
+    Reviewed-by: Radim Kr=C4=8Dm=C3=A1=C5=99 <rkrcmar@redhat.com>
+    Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
+
+and I wonder if the larger unlrelated patch had anything to do with SEV=
+!
