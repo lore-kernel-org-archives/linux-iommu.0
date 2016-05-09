@@ -1,23 +1,14 @@
-From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH V2 RFC] fixup! virtio: convert to use DMA api
-Date: Mon, 9 May 2016 13:09:24 +0200
-Message-ID: <57306FE4.4050006@redhat.com>
-References: <20160427153345-mutt-send-email-mst@redhat.com>
-	<20160427142331.GH17926@8bytes.org>
-	<20160427172630-mutt-send-email-mst@redhat.com>
-	<20160427145632.GI17926@8bytes.org>
-	<20160427180007-mutt-send-email-mst@redhat.com>
-	<1461770135.118304.152.camel@infradead.org>
-	<20160427211635-mutt-send-email-mst@redhat.com>
-	<1461784617.118304.181.camel@infradead.org>
-	<20160428172039-mutt-send-email-mst@redhat.com>
-	<1461856314.33870.98.camel@infradead.org>
-	<20160428182341-mutt-send-email-mst@redhat.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 0/5] Introduce per-domain page sizes
+Date: Mon, 9 May 2016 13:21:38 +0200
+Message-ID: <20160509112138.GB13275@8bytes.org>
+References: <cover.1460048991.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160428182341-mutt-send-email-mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <cover.1460048991.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,26 +18,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Kevin Wolf <kwolf-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, cornelia.huck-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org, Wei Liu <wei.liu2-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, Stefan Hajnoczi <stefanha-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, qemu-block-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, Stefano Stabellini <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Christian Borntraeger <borntraeger-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Amit Shah <amit.shah-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Anthony PERARD <anthony.perard-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, Jason Wang <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, brian.starkey-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-On 28/04/2016 17:37, Michael S. Tsirkin wrote:
-> > All the internally-emulated devices *can* be either translated or
-> > untranslated. That's just a matter of software. Surely, you currently
-> > *can't* have translated assigned devices (until someone implements the
-> > whole VT-d page table shadowing or whatever), so you'll be barred from
-> > assigning a device to a slot which *previously* had an untranslated
-> > device. But so what? Put it in a different slot instead.
+On Thu, Apr 07, 2016 at 06:42:03PM +0100, Robin Murphy wrote:
+> Hi all,
 > 
-> Unfortunately people got used to be able to put any device
-> in any slot, and built external tools around that ability.
-> It's rather painful to break this assumption.
+> Since this area seems to be in vogue at the moment, here's what I was
+> working on when the related patches[1][2] popped up, which happens to
+> be more or less the intersection of both. As I recycled some of Will's
+> old series as a starting point, I've retained the cleanup patches from
+> that with their original acks - hope that's OK.
+> 
+> Fortunately, this already looks rather like parts of Joerg's plan[3],
+> so I hope it's a suitable first step. Below is a quick hacked-up example
+> of the kind of caller-controlled special use-case alluded to, using the
+> SMMU/HDLCD combo on Juno - for a 'real' implementation of this we'd want
+> the group-based domain allocation call so the driver could throw the
+> device at that and get its own non-default DMA ops domain to play with.
+> 
+> Robin.
+> 
+> [1]:http://thread.gmane.org/gmane.linux.kernel.iommu/12774
+> [2]:http://thread.gmane.org/gmane.linux.kernel.iommu/12901
+> [3]:http://article.gmane.org/gmane.linux.kernel.iommu/12937
+> 
+> Robin Murphy (4):
+>   iommu: of: enforce const-ness of struct iommu_ops
+>   iommu: Allow selecting page sizes per domain
+>   iommu/dma: Finish optimising higher-order allocations
+>   iommu/arm-smmu: Use per-domain page sizes.
+> 
+> Will Deacon (1):
+>   iommu: remove unused priv field from struct iommu_ops
 
-Once you move to PCIe, a lot of things become more complicated.  This is
-just one of them; instead of needing half a dozen PCI bridges, you'll
-need half a dozen plus one.
+Okay, I am still no happy that this lifts the requirements of the
+iommu-api for the arm-smmu driver. But to get there we need more core
+changes and this code is a step in the right direction, so I applied it.
 
-Paolo
+Thanks,
+
+	Joerg
