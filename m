@@ -1,69 +1,146 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v9 3/7] vfio/type1: bypass unmap/unpin and replay for
- VFIO_IOVA_RESERVED slots
-Date: Mon, 9 May 2016 16:49:36 -0600
-Message-ID: <20160509164936.1a5ae402@t450s.home>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v9 5/7] vfio/type1: also check IRQ remapping capability
+	at msi domain
+Date: Mon, 9 May 2016 16:49:42 -0600
+Message-ID: <20160509164942.5af8b30d@t450s.home>
 References: <1462362858-2925-1-git-send-email-eric.auger@linaro.org>
-	<1462362858-2925-4-git-send-email-eric.auger@linaro.org>
+	<1462362858-2925-6-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1462362858-2925-4-git-send-email-eric.auger@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Eric Auger <eric.auger@linaro.org>
-Cc: eric.auger@st.com, robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org, patches@linaro.org, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com, yehuday@marvell.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1462362858-2925-6-git-send-email-eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed,  4 May 2016 11:54:14 +0000
-Eric Auger <eric.auger@linaro.org> wrote:
+On Wed,  4 May 2016 11:54:16 +0000
+Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
 
-> Before allowing the end-user to create VFIO_IOVA_RESERVED dma slots,
-> let's implement the expected behavior for removal and replay. As opposed
-> to user dma slots, IOVAs are not systematically bound to PAs and PAs are
-> not pinned. VFIO just initializes the IOVA "aperture". IOVAs are allocated
-> outside of the VFIO framework, typically the MSI layer which is
-> responsible to free and unmap them. The MSI mapping resources are freeed
-> by the IOMMU driver on domain destruction.
+> On x86 IRQ remapping is abstracted by the IOMMU. On ARM this is abstracted
+> by the msi controller. vfio_safe_irq_domain allows to check whether
+> interrupts are "safe" for a given device. They are if the device does
+> not use MSI
+
+Are we sure we're not opening a security hole here?  An MSI is simply a
+DMA write, so really whether or not a device uses MSI is irrelevant.
+If it can generate a DMA to the MSI doorbell then we need to be
+protected and I think we pretty much need to assume that devices are
+DMA capable.  Do the MSI domain checks cover this?
+
+> or if the device uses MSI and the msi-parent controller
+> supports IRQ remapping.
 > 
-> Signed-off-by: Eric Auger <eric.auger@linaro.org>
+> Then we check at group level if all devices have safe interrupts: if not,
+> we only allow the group to be attached if allow_unsafe_interrupts is set.
+> 
+> At this point ARM sMMU still advertises IOMMU_CAP_INTR_REMAP. This is
+> changed in next patch.
+> 
+> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 > 
 > ---
+> v3 -> v4:
+> - rename vfio_msi_parent_irq_remapping_capable into vfio_safe_irq_domain
+>   and irq_remapping into safe_irq_domains
 > 
-> v7 -> v8:
-> - do no destroy anything anymore, just bypass unmap/unpin and iommu_map
->   on replay
+> v2 -> v3:
+> - protect vfio_msi_parent_irq_remapping_capable with
+>   CONFIG_GENERIC_MSI_IRQ_DOMAIN
 > ---
->  drivers/vfio/vfio_iommu_type1.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+>  drivers/vfio/vfio_iommu_type1.c | 44 +++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 42 insertions(+), 2 deletions(-)
 > 
 > diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 2d769d4..94a9916 100644
+> index 4d3a6f1..2fc8197 100644
 > --- a/drivers/vfio/vfio_iommu_type1.c
 > +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -391,7 +391,7 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
->  	struct vfio_domain *domain, *d;
->  	long unlocked = 0;
+> @@ -37,6 +37,8 @@
+>  #include <linux/vfio.h>
+>  #include <linux/workqueue.h>
+>  #include <linux/msi-iommu.h>
+> +#include <linux/irqdomain.h>
+> +#include <linux/msi.h>
 >  
-> -	if (!dma->size)
-> +	if (!dma->size || dma->type != VFIO_IOVA_USER)
->  		return;
->  	/*
->  	 * We use the IOMMU to track the physical addresses, otherwise we'd
-> @@ -727,6 +727,9 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
->  		dma = rb_entry(n, struct vfio_dma, node);
->  		iova = dma->iova;
+>  #define DRIVER_VERSION  "0.2"
+>  #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
+> @@ -777,6 +779,33 @@ static int vfio_bus_type(struct device *dev, void *data)
+>  	return 0;
+>  }
 >  
-> +		if (dma->type == VFIO_IOVA_RESERVED)
-> +			continue;
+> +/**
+> + * vfio_safe_irq_domain: returns whether the irq domain
+> + * the device is attached to is safe with respect to MSI isolation.
+> + * If the irq domain is not an MSI domain, we return it is safe.
+> + *
+> + * @dev: device handle
+> + * @data: unused
+> + * returns 0 if the irq domain is safe, -1 if not.
+> + */
+> +static int vfio_safe_irq_domain(struct device *dev, void *data)
+> +{
+> +#ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
+> +	struct irq_domain *domain;
+> +	struct msi_domain_info *info;
 > +
-
-But you do still need some sort of replay mechanism, right?  Not to
-replay the IOVA to PA mapping, but to call iommu_msi_set_aperture() for
-the new domain.  How will you know that this entry is an MSI reserved
-range or something else?  Perhaps we can't have a generic "reserved"
-type here.
-
->  		while (iova < dma->iova + dma->size) {
->  			phys_addr_t phys = iommu_iova_to_phys(d->domain, iova);
->  			size_t size;
+> +	domain = dev_get_msi_domain(dev);
+> +	if (!domain)
+> +		return 0;
+> +
+> +	info = msi_get_domain_info(domain);
+> +
+> +	if (!(info->flags & MSI_FLAG_IRQ_REMAPPING))
+> +		return -1;
+> +#endif
+> +	return 0;
+> +}
+> +
+>  static int vfio_iommu_replay(struct vfio_iommu *iommu,
+>  			     struct vfio_domain *domain)
+>  {
+> @@ -870,7 +899,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  	struct vfio_group *group, *g;
+>  	struct vfio_domain *domain, *d;
+>  	struct bus_type *bus = NULL;
+> -	int ret;
+> +	int ret, safe_irq_domains;
+>  
+>  	mutex_lock(&iommu->lock);
+>  
+> @@ -893,6 +922,13 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  
+>  	group->iommu_group = iommu_group;
+>  
+> +	/*
+> +	 * Determine if all the devices of the group have a safe irq domain
+> +	 * with respect to MSI isolation
+> +	 */
+> +	safe_irq_domains = !iommu_group_for_each_dev(iommu_group, &bus,
+> +				       vfio_safe_irq_domain);
+> +
+>  	/* Determine bus_type in order to allocate a domain */
+>  	ret = iommu_group_for_each_dev(iommu_group, &bus, vfio_bus_type);
+>  	if (ret)
+> @@ -920,8 +956,12 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  	INIT_LIST_HEAD(&domain->group_list);
+>  	list_add(&group->next, &domain->group_list);
+>  
+> +	/*
+> +	 * to advertise safe interrupts either the IOMMU or the MSI controllers
+> +	 * must support IRQ remapping/interrupt translation
+> +	 */
+>  	if (!allow_unsafe_interrupts &&
+> -	    !iommu_capable(bus, IOMMU_CAP_INTR_REMAP)) {
+> +	    (!iommu_capable(bus, IOMMU_CAP_INTR_REMAP) && !safe_irq_domains)) {
+>  		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
+>  		       __func__);
+>  		ret = -EPERM;
