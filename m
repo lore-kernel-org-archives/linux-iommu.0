@@ -1,152 +1,294 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/5] dt-bindings: mediatek: add descriptions for mediatek
-	mt2701 iommu and smi
-Date: Mon, 9 May 2016 15:22:36 -0500
-Message-ID: <20160509202236.GA23951@rob-hp-laptop>
-References: <1462780816-5288-1-git-send-email-honghui.zhang@mediatek.com>
-	<1462780816-5288-2-git-send-email-honghui.zhang@mediatek.com>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v9 4/8] iommu/msi-iommu: initialization
+Date: Mon, 9 May 2016 14:57:39 -0600
+Message-ID: <20160509145739.41a19743@t450s.home>
+References: <1462362007-2753-1-git-send-email-eric.auger@linaro.org>
+	<1462362007-2753-5-git-send-email-eric.auger@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1462780816-5288-2-git-send-email-honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1462362007-2753-5-git-send-email-eric.auger@linaro.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Eric Auger <eric.auger@linaro.org>
+Cc: eric.auger@st.com, robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org, patches@linaro.org, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com, yehuday@marvell.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 09, 2016 at 04:00:12PM +0800, honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
-> From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+On Wed,  4 May 2016 11:40:03 +0000
+Eric Auger <eric.auger@linaro.org> wrote:
+
+> iommu_get/put_msi_cookie allocates/frees the resource used to store
+> and ref count the MSI doorbell mappings. iommu_msi_set_aperture
+> initializes the iova domain used for MSI IOVA allocation and sets the
+> iommu domain's msi geometry.
 > 
-> This patch defines the local arbitor port IDs for mediatek SoC MT2701 and
-> add descriptions of binding for mediatek generation one iommu and smi.
+> The implementation relies on dma-iommu API and iova API.
 > 
-> Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> New msi functions are fully implemented if CONFIG_IOMMU_MSI is set.
+> 
+> Signed-off-by: Eric Auger <eric.auger@linaro.org>
+> 
 > ---
->  .../devicetree/bindings/iommu/mediatek,iommu.txt   | 13 +++-
->  .../memory-controllers/mediatek,smi-common.txt     | 21 +++++-
->  .../memory-controllers/mediatek,smi-larb.txt       |  4 +-
->  include/dt-bindings/memory/mt2701-larb-port.h      | 85 ++++++++++++++++++++++
->  4 files changed, 115 insertions(+), 8 deletions(-)
->  create mode 100644 include/dt-bindings/memory/mt2701-larb-port.h
+> v9:
+> - remove is_aperture_set and use iommu_domain_msi_aperture_valid helper
+>   instead
+> - set iommu domain's msi geometry
 > 
-> diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-> index cd1b1cd..9a4a5b5 100644
-> --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-> @@ -1,7 +1,9 @@
->  * Mediatek IOMMU Architecture Implementation
+> v8:
+> - new design where msi-iommu relies on dma-iommu
+> - remove the iommu_domain * from the doorbell_mapping struct
+> - added is_aperture_set
+> 
+> v7:
+> - fix locking
+> - add iova_cache_get/put
+> - static inline functions when CONFIG_IOMMU_DMA_RESERVED is not set
+> - introduce struct reserved_iova_domain to encapsulate prot info &
+>   add prot parameter in alloc_reserved_iova_domain
+> 
+> v5 -> v6:
+> - use spin lock instead of mutex
+> 
+> v3 -> v4:
+> - formerly in "iommu/arm-smmu: implement alloc/free_reserved_iova_domain" &
+>   "iommu: add alloc/free_reserved_iova_domain"
+> 
+> v2 -> v3:
+> - remove iommu_alloc_reserved_iova_domain & iommu_free_reserved_iova_domain
+>   static implementation in case CONFIG_IOMMU_API is not set
+> 
+> v1 -> v2:
+> - moved from vfio API to IOMMU API
+> ---
+>  drivers/iommu/Kconfig     |  7 ++++
+>  drivers/iommu/Makefile    |  1 +
+>  drivers/iommu/msi-iommu.c | 97 +++++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/msi-iommu.h | 65 +++++++++++++++++++++++++++++++
+>  4 files changed, 170 insertions(+)
+>  create mode 100644 drivers/iommu/msi-iommu.c
+>  create mode 100644 include/linux/msi-iommu.h
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index dd1dc39..0078b72 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -74,6 +74,11 @@ config IOMMU_DMA
+>  	select IOMMU_IOVA
+>  	select NEED_SG_DMA_LENGTH
 >  
-> -  Some Mediatek SOCs contain a Multimedia Memory Management Unit (M4U) which
-> -uses the ARM Short-Descriptor translation table format for address translation.
-> +  Some Mediatek SOCs contain a Multimedia Memory Management Unit (M4U), and
-> +this M4U have two generations of HW architecture. Generation one use flat
+> +# IOMMU MSI mapping
+> +config IOMMU_MSI
+> +	bool
+> +	select IOMMU_DMA
+> +
+>  config FSL_PAMU
+>  	bool "Freescale IOMMU support"
+>  	depends on PPC32
+> @@ -307,6 +312,7 @@ config SPAPR_TCE_IOMMU
+>  config ARM_SMMU
+>  	bool "ARM Ltd. System MMU (SMMU) Support"
+>  	depends on (ARM64 || ARM) && MMU
+> +	select IOMMU_MSI
+>  	select IOMMU_API
+>  	select IOMMU_IO_PGTABLE_LPAE
+>  	select ARM_DMA_USE_IOMMU if ARM
+> @@ -320,6 +326,7 @@ config ARM_SMMU
+>  config ARM_SMMU_V3
+>  	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
+>  	depends on ARM64 && PCI
+> +	select IOMMU_MSI
+>  	select IOMMU_API
+>  	select IOMMU_IO_PGTABLE_LPAE
+>  	select GENERIC_MSI_IRQ_DOMAIN
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index c6edb31..a381e66 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -2,6 +2,7 @@ obj-$(CONFIG_IOMMU_API) += iommu.o
+>  obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+>  obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
+>  obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
+> +obj-$(CONFIG_IOMMU_MSI) += msi-iommu.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
+>  obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
+> diff --git a/drivers/iommu/msi-iommu.c b/drivers/iommu/msi-iommu.c
+> new file mode 100644
+> index 0000000..4292957
+> --- /dev/null
+> +++ b/drivers/iommu/msi-iommu.c
+> @@ -0,0 +1,97 @@
+> +/*
+> + * Reserved IOVA Management
+> + *
+> + * Copyright (c) 2015 Linaro Ltd.
+> + *              www.linaro.org
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + */
+> +
+> +#include <linux/iommu.h>
+> +#include <linux/dma-iommu.h>
+> +#include <linux/msi-iommu.h>
+> +#include <linux/spinlock.h>
+> +#include <linux/iova.h>
+> +
+> +struct doorbell_mapping {
+> +	struct kref		kref;
+> +	struct list_head	next;
+> +	phys_addr_t		addr;
+> +	dma_addr_t		iova;
+> +	size_t			size;
+> +};
+> +
+> +struct doorbell_mapping_info {
+> +	struct list_head list; /* list of doorbell mapping entries */
+> +	spinlock_t lock;
+> +};
+> +
+> +int iommu_get_msi_cookie(struct iommu_domain *domain)
+> +{
+> +	struct doorbell_mapping_info *dmi;
+> +	int ret;
+> +
+> +	if (domain->msi_cookie || domain->iova_cookie)
+> +		return -EINVAL;
+> +
+> +	ret = iommu_get_dma_cookie(domain);
+> +	if (ret)
+> +		return ret;
+> +
+> +	dmi = kzalloc(sizeof(*dmi), GFP_KERNEL);
+> +
+> +	INIT_LIST_HEAD(&dmi->list);
+> +	spin_lock_init(&dmi->lock);
+> +	iova_cache_get();
+> +
+> +	domain->msi_cookie = dmi;
+> +
+> +	return dmi ? 0 : -ENOMEM;
+> +}
+> +EXPORT_SYMBOL(iommu_get_msi_cookie);
+> +
+> +void iommu_put_msi_cookie(struct iommu_domain *domain)
+> +{
+> +	struct doorbell_mapping_info *dmi = domain->msi_cookie;
+> +
+> +	if (!dmi)
+> +		return;
+> +
+> +	domain->msi_cookie = NULL;
+> +
+> +	WARN_ON(!list_empty(&dmi->list));
+> +
+> +	kfree(dmi);
+> +	iommu_put_dma_cookie(domain);
+> +	iova_cache_put();
+> +}
+> +EXPORT_SYMBOL(iommu_put_msi_cookie);
+> +
+> +int iommu_msi_set_aperture(struct iommu_domain *domain,
+> +			   dma_addr_t start, dma_addr_t end)
+> +{
+> +	struct doorbell_mapping_info *dmi = domain->msi_cookie;
+> +	int ret;
+> +
+> +	if (!dmi || iommu_domain_msi_aperture_valid(domain))
+> +		return -ENODEV;
 
-s/use/uses/
 
-> +pagetable, and only support 4K size page mapping. Generation two uses the
+nit, the next patch splits to use different errnos for each issue,
+which seems preferable.
 
-s/support/supports/
-
-> +ARM Short-Descriptor translation table format for address translation.
->  
->    About the M4U Hardware Block Diagram, please check below:
->  
-> @@ -36,7 +38,9 @@ in each larb. Take a example, There are many ports like MC, PP, VLD in the
->  video decode local arbiter, all these ports are according to the video HW.
->  
->  Required properties:
-> -- compatible : must be "mediatek,mt8173-m4u".
-> +- compatible : must be one of the following string:
-> +	"mediatek,mt2701-m4u" for mt2701 which use generation one m4u HW.
-> +	"mediatek,mt8173-m4u" for mt8173 which use generation two m4u HW.
->  - reg : m4u register base and size.
->  - interrupts : the interrupt of m4u.
->  - clocks : must contain one entry for each clock-names.
-> @@ -46,7 +50,8 @@ Required properties:
->  	according to the local arbiter index, like larb0, larb1, larb2...
->  - iommu-cells : must be 1. This is the mtk_m4u_id according to the HW.
->  	Specifies the mtk_m4u_id as defined in
-> -	dt-binding/memory/mt8173-larb-port.h.
-> +	dt-binding/memory/mt2701-larb-port.h for mt2701 and
-> +	dt-binding/memory/mt8173-larb-port.h for mt8173
->  
->  Example:
->  	iommu: iommu@10205000 {
-> diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
-> index 06a83ce..80c0e22 100644
-> --- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
-> +++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
-> @@ -2,16 +2,31 @@ SMI (Smart Multimedia Interface) Common
->  
->  The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
->  
-> +Mediatek SMI have two generation HW architecture, mt8173 use the secondary
-
-s/generation/generations of/
-s/use/uses/
-s/secondary/second/
-
-> +generation of SMI HW while mt2701 use the first generation HW of SMI.
-
-s/use/uses/
 
 > +
-> +There's slight differences between the two SMI, for generation 2, the
-> +register which control the iommu port is at each larb's register base. But
-> +for generation 1, the register is at smi ao base(smi always on register
-> +base). Besides that, the smi async clock should be prepare and enabled for
-
-s/prepare/prepared/
-
-> +SMI generation 1 to transform the smi clock into emi clock domain, but no
-
-s/no/that is not/
-
-> +needed for SMI generation 2.
+> +	ret = iommu_dma_init_domain(domain, start, end - start + 1);
 > +
->  Required properties:
-> -- compatible : must be "mediatek,mt8173-smi-common"
-> +- compatible : must be one of :
-> +	"mediatek,mt2701-smi-common"
-> +	"mediatek,mt8173-smi-common"
->  - reg : the register and size of the SMI block.
->  - power-domains : a phandle to the power domain of this local arbiter.
->  - clocks : Must contain an entry for each entry in clock-names.
-> -- clock-names : must contain 2 entries, as follows:
-> +- clock-names : must contain 3 entries for generation 1 smi HW and 2 entries
-> +  for generation 2 smi HW as follows:
->    - "apb" : Advanced Peripheral Bus clock, It's the clock for setting
->  	    the register.
->    - "smi" : It's the clock for transfer data and command.
-> -  They may be the same if both source clocks are the same.
-> +	    They may be the same if both source clocks are the same.
-> +  - "async" : asynchronous clock, it help transform the smi clock into the emi
-> +	      clock domain, this clock is only needed by generation 1 smi HW.
->  
->  Example:
->  	smi_common: smi@14022000 {
-> diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
-> index 55ff3b7..21277a5 100644
-> --- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
-> +++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
-> @@ -3,7 +3,9 @@ SMI (Smart Multimedia Interface) Local Arbiter
->  The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
->  
->  Required properties:
-> -- compatible : must be "mediatek,mt8173-smi-larb"
-> +- compatible : must be one of :
-> +		"mediatek,mt8173-smi-larb"
-> +		"mediatek,mt2701-smi-larb"
->  - reg : the register and size of this local arbiter.
->  - mediatek,smi : a phandle to the smi_common node.
->  - power-domains : a phandle to the power domain of this local arbiter.
+> +	if (!ret) {
+> +		domain->msi_geometry.aperture_start = start;
+> +		domain->msi_geometry.aperture_end = end;
+> +	}
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_msi_set_aperture);
+> +
+> diff --git a/include/linux/msi-iommu.h b/include/linux/msi-iommu.h
+> new file mode 100644
+> index 0000000..392aa6f
+> --- /dev/null
+> +++ b/include/linux/msi-iommu.h
+> @@ -0,0 +1,65 @@
+> +/*
+> + * Copyright (c) 2015 Linaro Ltd.
+> + *              www.linaro.org
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + *
+> + */
+> +#ifndef __MSI_IOMMU_H
+> +#define __MSI_IOMMU_H
+> +
+> +#include <linux/types.h>
+> +#include <linux/kernel.h>
+> +
+> +struct iommu_domain;
+> +
+> +#ifdef CONFIG_IOMMU_MSI
+> +
+> +/**
+> + * iommu_get_msi_cookie - Acquire MSI mapping resources for a domain
+> + * @domain: IOMMU domain to prepare for MSI mapping
+> + *
+> + * IOMMU drivers which require MSI mapping should normally call this
+> + * from their domain_alloc callback when domain->type ==
+> + * IOMMU_DOMAIN_UNMANAGED.
+> + */
+> +int iommu_get_msi_cookie(struct iommu_domain *domain);
+> +
+> +/**
+> + * iommu_put_msi_cookie - Release a domain's MSI mapping resources
+> + * @domain: IOMMU domain previously prepared by iommu_get_msi_cookie()
+> + *
+> + * IOMMU drivers requesting MSI mapping should normally call this from
+> + * their domain_free callback.
+> + */
+> +void iommu_put_msi_cookie(struct iommu_domain *domain);
+> +
+> +/**
+> + * iommu_msi_set_aperture: allocate the msi iova domain
+> + * according to the specified start/end IOVAs
+> + *
+> + * @domain: iommu domain handle
+> + * @start: MSI iova start address
+> + * @end: MSI iova end address
+> + */
+> +int iommu_msi_set_aperture(struct iommu_domain *domain,
+> +			   dma_addr_t start, dma_addr_t end);
+> +
+> +#else
+> +
+> +static inline int
+> +iommu_msi_set_aperture(struct iommu_domain *domain,
+> +		       dma_addr_t start, dma_addr_t end)
+> +{
+> +	return -ENOENT;
+> +}
+> +
+> +#endif	/* CONFIG_IOMMU_MSI */
+> +#endif	/* __MSI_IOMMU_H */
