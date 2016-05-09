@@ -1,53 +1,52 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH] iommu/amd: Set AMD iommu callbacks for platform bus
- driver
-Date: Mon, 9 May 2016 12:20:41 +0200
-Message-ID: <20160509102041.GA13275@8bytes.org>
-References: <1460640533-3025-1-git-send-email-vincent.wan@amd.com>
+From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH V2 RFC] fixup! virtio: convert to use DMA api
+Date: Mon, 9 May 2016 13:09:24 +0200
+Message-ID: <57306FE4.4050006@redhat.com>
+References: <20160427153345-mutt-send-email-mst@redhat.com>
+	<20160427142331.GH17926@8bytes.org>
+	<20160427172630-mutt-send-email-mst@redhat.com>
+	<20160427145632.GI17926@8bytes.org>
+	<20160427180007-mutt-send-email-mst@redhat.com>
+	<1461770135.118304.152.camel@infradead.org>
+	<20160427211635-mutt-send-email-mst@redhat.com>
+	<1461784617.118304.181.camel@infradead.org>
+	<20160428172039-mutt-send-email-mst@redhat.com>
+	<1461856314.33870.98.camel@infradead.org>
+	<20160428182341-mutt-send-email-mst@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1460640533-3025-1-git-send-email-vincent.wan@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Wan Zongshun <vincent.wan@amd.com>
-Cc: iommu@lists.linux-foundation.org, vw@iommu.org, mcuos.com@gmail.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160428182341-mutt-send-email-mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Kevin Wolf <kwolf-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, cornelia.huck-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org, Wei Liu <wei.liu2-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, Stefan Hajnoczi <stefanha-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, qemu-block-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, Stefano Stabellini <stefano.stabellini-mvvWK6WmYclDPfheJLI6IQ@public.gmane.org>, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Christian Borntraeger <borntraeger-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Amit Shah <amit.shah-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Anthony PERARD <anthony.perard-Sxgqhf6Nn4DQT0dZR+AlfA@public.gmane.org>, Jason Wang <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Apr 14, 2016 at 09:28:53AM -0400, Wan Zongshun wrote:
-> From: Wan Zongshun <Vincent.Wan@amd.com>
+
+
+On 28/04/2016 17:37, Michael S. Tsirkin wrote:
+> > All the internally-emulated devices *can* be either translated or
+> > untranslated. That's just a matter of software. Surely, you currently
+> > *can't* have translated assigned devices (until someone implements the
+> > whole VT-d page table shadowing or whatever), so you'll be barred from
+> > assigning a device to a slot which *previously* had an untranslated
+> > device. But so what? Put it in a different slot instead.
 > 
-> AMD has more drivers will use ACPI to platform bus driver later,
-> all those devices need iommu support, such as eMMC acpi driver.
-> 
-> Signed-off-by: Wan Zongshun <Vincent.Wan@amd.com>
-> ---
->  drivers/iommu/amd_iommu.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index c430c10..547cdd4 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -21,6 +21,7 @@
->  #include <linux/pci.h>
->  #include <linux/acpi.h>
->  #include <linux/amba/bus.h>
-> +#include <linux/platform_device.h>
->  #include <linux/pci-ats.h>
->  #include <linux/bitmap.h>
->  #include <linux/slab.h>
-> @@ -2980,6 +2981,9 @@ int __init amd_iommu_init_api(void)
->  	if (err)
->  		return err;
->  #endif
-> +	err = bus_set_iommu(&platform_bus_type, &amd_iommu_ops);
-> +	if (err)
-> +		return err;
+> Unfortunately people got used to be able to put any device
+> in any slot, and built external tools around that ability.
+> It's rather painful to break this assumption.
 
-Is the platform_bus_type always defined or does this code needs to be
-guarded by another ifdef?
+Once you move to PCIe, a lot of things become more complicated.  This is
+just one of them; instead of needing half a dozen PCI bridges, you'll
+need half a dozen plus one.
 
-
-
-	Joerg
+Paolo
