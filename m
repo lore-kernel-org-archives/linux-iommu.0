@@ -1,16 +1,16 @@
 From: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v9 5/7] vfio/type1: also check IRQ remapping capability at
-	msi domain
-Date: Tue, 10 May 2016 18:10:43 +0200
-Message-ID: <57320803.8070506@linaro.org>
+Subject: Re: [PATCH v9 7/7] vfio/type1: return MSI geometry through
+	VFIO_IOMMU_GET_INFO capability chains
+Date: Tue, 10 May 2016 18:36:34 +0200
+Message-ID: <57320E12.9060804@linaro.org>
 References: <1462362858-2925-1-git-send-email-eric.auger@linaro.org>
-	<1462362858-2925-6-git-send-email-eric.auger@linaro.org>
-	<20160509164942.5af8b30d@t450s.home>
+	<1462362858-2925-8-git-send-email-eric.auger@linaro.org>
+	<20160509164950.0b1cf9c1@t450s.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160509164942.5af8b30d-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <20160509164950.0b1cf9c1-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,143 +26,233 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Alex,
 On 05/10/2016 12:49 AM, Alex Williamson wrote:
-> On Wed,  4 May 2016 11:54:16 +0000
+> On Wed,  4 May 2016 11:54:18 +0000
 > Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
 > 
->> On x86 IRQ remapping is abstracted by the IOMMU. On ARM this is abstracted
->> by the msi controller. vfio_safe_irq_domain allows to check whether
->> interrupts are "safe" for a given device. They are if the device does
->> not use MSI
-> 
-> Are we sure we're not opening a security hole here?  An MSI is simply a
-> DMA write, so really whether or not a device uses MSI is irrelevant.
-> If it can generate a DMA to the MSI doorbell then we need to be
-> protected and I think we pretty much need to assume that devices are
-> DMA capable.  Do the MSI domain checks cover this?
-Let me try to rephrase: we check the device is not attached to an MSI
-controller (I think this is the semantic of dev_get_msi_domain(dev)).
-
-If it is not, we don't have to care about MSI isolation: there will be
-no IOMMU binding between the device and any MSI doorbell. If it is we
-check the msi domain is backed by an MSI controller able to perform MSI
-isolation.
-
-So effectively "usage of MSIs" is improper - since it is decided after
-the group attachment anyway  - and the commit message should rather
-state "if the device is linked to an MSI controller" (dt msi-parent
-notion I think).
-
-Does it sound better?
-
-Regards
-
-Eric
-> 
->> or if the device uses MSI and the msi-parent controller
->> supports IRQ remapping.
+>> This patch allows the user-space to retrieve the MSI geometry. The
+>> implementation is based on capability chains, now also added to
+>> VFIO_IOMMU_GET_INFO.
 >>
->> Then we check at group level if all devices have safe interrupts: if not,
->> we only allow the group to be attached if allow_unsafe_interrupts is set.
+>> The returned info comprise:
+>> - whether the MSI IOVA are constrained to a reserved range (x86 case) and
+>>   in the positive, the start/end of the aperture,
+>> - or whether the IOVA aperture need to be set by the userspace. In that
+>>   case, the size and alignment of the IOVA region to be provided are
+>>   returned.
 >>
->> At this point ARM sMMU still advertises IOMMU_CAP_INTR_REMAP. This is
->> changed in next patch.
+>> In case the userspace must provide the IOVA range, we currently return
+>> an arbitrary number of IOVA pages (16), supposed to fulfill the needs of
+>> current ARM platforms. This may be deprecated by a more sophisticated
+>> computation later on.
 >>
 >> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 >>
 >> ---
->> v3 -> v4:
->> - rename vfio_msi_parent_irq_remapping_capable into vfio_safe_irq_domain
->>   and irq_remapping into safe_irq_domains
+>> v8 -> v9:
+>> - use iommu_msi_supported flag instead of programmable
+>> - replace IOMMU_INFO_REQUIRE_MSI_MAP flag by a more sophisticated
+>>   capability chain, reporting the MSI geometry
 >>
->> v2 -> v3:
->> - protect vfio_msi_parent_irq_remapping_capable with
->>   CONFIG_GENERIC_MSI_IRQ_DOMAIN
+>> v7 -> v8:
+>> - use iommu_domain_msi_geometry
+>>
+>> v6 -> v7:
+>> - remove the computation of the number of IOVA pages to be provisionned.
+>>   This number depends on the domain/group/device topology which can
+>>   dynamically change. Let's rely instead rely on an arbitrary max depending
+>>   on the system
+>>
+>> v4 -> v5:
+>> - move msi_info and ret declaration within the conditional code
+>>
+>> v3 -> v4:
+>> - replace former vfio_domains_require_msi_mapping by
+>>   more complex computation of MSI mapping requirements, especially the
+>>   number of pages to be provided by the user-space.
+>> - reword patch title
+>>
+>> RFC v1 -> v1:
+>> - derived from
+>>   [RFC PATCH 3/6] vfio: Extend iommu-info to return MSIs automap state
+>> - renamed allow_msi_reconfig into require_msi_mapping
+>> - fixed VFIO_IOMMU_GET_INFO
 >> ---
->>  drivers/vfio/vfio_iommu_type1.c | 44 +++++++++++++++++++++++++++++++++++++++--
->>  1 file changed, 42 insertions(+), 2 deletions(-)
+>>  drivers/vfio/vfio_iommu_type1.c | 69 +++++++++++++++++++++++++++++++++++++++++
+>>  include/uapi/linux/vfio.h       | 30 +++++++++++++++++-
+>>  2 files changed, 98 insertions(+), 1 deletion(-)
 >>
 >> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> index 4d3a6f1..2fc8197 100644
+>> index 2fc8197..841360b 100644
 >> --- a/drivers/vfio/vfio_iommu_type1.c
 >> +++ b/drivers/vfio/vfio_iommu_type1.c
->> @@ -37,6 +37,8 @@
->>  #include <linux/vfio.h>
->>  #include <linux/workqueue.h>
->>  #include <linux/msi-iommu.h>
->> +#include <linux/irqdomain.h>
->> +#include <linux/msi.h>
->>  
->>  #define DRIVER_VERSION  "0.2"
->>  #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
->> @@ -777,6 +779,33 @@ static int vfio_bus_type(struct device *dev, void *data)
->>  	return 0;
+>> @@ -1134,6 +1134,50 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
+>>  	return ret;
 >>  }
 >>  
->> +/**
->> + * vfio_safe_irq_domain: returns whether the irq domain
->> + * the device is attached to is safe with respect to MSI isolation.
->> + * If the irq domain is not an MSI domain, we return it is safe.
->> + *
->> + * @dev: device handle
->> + * @data: unused
->> + * returns 0 if the irq domain is safe, -1 if not.
->> + */
->> +static int vfio_safe_irq_domain(struct device *dev, void *data)
+>> +static int compute_msi_geometry_caps(struct vfio_iommu *iommu,
+>> +				     struct vfio_info_cap *caps)
 >> +{
->> +#ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
->> +	struct irq_domain *domain;
->> +	struct msi_domain_info *info;
+>> +	struct vfio_iommu_type1_info_cap_msi_geometry *vfio_msi_geometry;
+>> +	struct iommu_domain_msi_geometry msi_geometry;
+>> +	struct vfio_info_cap_header *header;
+>> +	struct vfio_domain *d;
+>> +	bool mapping_required;
+>> +	size_t size;
 >> +
->> +	domain = dev_get_msi_domain(dev);
->> +	if (!domain)
+>> +	mutex_lock(&iommu->lock);
+>> +	/* All domains have same require_msi_map property, pick first */
+>> +	d = list_first_entry(&iommu->domain_list, struct vfio_domain, next);
+>> +	iommu_domain_get_attr(d->domain, DOMAIN_ATTR_MSI_GEOMETRY,
+>> +			      &msi_geometry);
+>> +	mapping_required = msi_geometry.iommu_msi_supported;
+>> +
+>> +	mutex_unlock(&iommu->lock);
+>> +
+>> +	size = sizeof(*vfio_msi_geometry);
+>> +	header = vfio_info_cap_add(caps, size,
+>> +				   VFIO_IOMMU_TYPE1_INFO_CAP_MSI_GEOMETRY, 1);
+>> +
+>> +	if (IS_ERR(header))
+>> +		return PTR_ERR(header);
+>> +
+>> +	vfio_msi_geometry = container_of(header,
+>> +				struct vfio_iommu_type1_info_cap_msi_geometry,
+>> +				header);
+>> +
+>> +	vfio_msi_geometry->reserved = !mapping_required;
+>> +	if (vfio_msi_geometry->reserved) {
+>> +		vfio_msi_geometry->aperture_start = msi_geometry.aperture_start;
+>> +		vfio_msi_geometry->aperture_end = msi_geometry.aperture_end;
 >> +		return 0;
+>> +	}
 >> +
->> +	info = msi_get_domain_info(domain);
+>> +	vfio_msi_geometry->alignment = 1 << __ffs(vfio_pgsize_bitmap(iommu));
+>> +	/* we currently report the need for an arbitray number of 16 pages */
+>> +	vfio_msi_geometry->size = 16 * vfio_msi_geometry->alignment;
+> 
+> Hmm, that really is arbitrary.  How could we know a real value here?
+Yes I fully agree and this is aknowledged in the cover/commit msg. I
+dared to do that because this has the benefits to allow introducing the
+userspace API while refining this computation later on.
+
+I did not find yet an elegant solution to compute the platform max
+number/size of doorbells (besides what I did in the past which was
+dependent on the group/device current topology).
+
+Maybe an option would be to have the relevant MSI controllers
+registering their doorbells in a global list at probe time and then we
+would enumerate all of them. I was reluctant to add this new
+functionality in the series at this stage, hence the current simplification.
+> 
 >> +
->> +	if (!(info->flags & MSI_FLAG_IRQ_REMAPPING))
->> +		return -1;
->> +#endif
 >> +	return 0;
 >> +}
 >> +
->>  static int vfio_iommu_replay(struct vfio_iommu *iommu,
->>  			     struct vfio_domain *domain)
+>>  static long vfio_iommu_type1_ioctl(void *iommu_data,
+>>  				   unsigned int cmd, unsigned long arg)
 >>  {
->> @@ -870,7 +899,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>  	struct vfio_group *group, *g;
->>  	struct vfio_domain *domain, *d;
->>  	struct bus_type *bus = NULL;
->> -	int ret;
->> +	int ret, safe_irq_domains;
+>> @@ -1155,6 +1199,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+>>  		}
+>>  	} else if (cmd == VFIO_IOMMU_GET_INFO) {
+>>  		struct vfio_iommu_type1_info info;
+>> +		struct vfio_info_cap caps = { .buf = NULL, .size = 0 };
+>> +		int ret;
 >>  
->>  	mutex_lock(&iommu->lock);
+>>  		minsz = offsetofend(struct vfio_iommu_type1_info, iova_pgsizes);
 >>  
->> @@ -893,6 +922,13 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>> @@ -1168,6 +1214,29 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
 >>  
->>  	group->iommu_group = iommu_group;
+>>  		info.iova_pgsizes = vfio_pgsize_bitmap(iommu);
 >>  
->> +	/*
->> +	 * Determine if all the devices of the group have a safe irq domain
->> +	 * with respect to MSI isolation
->> +	 */
->> +	safe_irq_domains = !iommu_group_for_each_dev(iommu_group, &bus,
->> +				       vfio_safe_irq_domain);
+>> +		ret = compute_msi_geometry_caps(iommu, &caps);
+>> +		if (ret)
+>> +			return ret;
 >> +
->>  	/* Determine bus_type in order to allocate a domain */
->>  	ret = iommu_group_for_each_dev(iommu_group, &bus, vfio_bus_type);
->>  	if (ret)
->> @@ -920,8 +956,12 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>  	INIT_LIST_HEAD(&domain->group_list);
->>  	list_add(&group->next, &domain->group_list);
+>> +		if (caps.size) {
+>> +			info.flags |= VFIO_IOMMU_INFO_CAPS;
+>> +			if (info.argsz < sizeof(info) + caps.size) {
+>> +				info.argsz = sizeof(info) + caps.size;
+>> +				info.cap_offset = 0;
+>> +			} else {
+>> +				vfio_info_cap_shift(&caps, sizeof(info));
+>> +				if (copy_to_user((void __user *)arg +
+>> +						sizeof(info), caps.buf,
+>> +						caps.size)) {
+>> +					kfree(caps.buf);
+>> +					return -EFAULT;
+>> +				}
+>> +				info.cap_offset = sizeof(info);
+>> +			}
+>> +
+>> +			kfree(caps.buf);
+>> +		}
+>> +
+>>  		return copy_to_user((void __user *)arg, &info, minsz) ?
+>>  			-EFAULT : 0;
 >>  
->> +	/*
->> +	 * to advertise safe interrupts either the IOMMU or the MSI controllers
->> +	 * must support IRQ remapping/interrupt translation
->> +	 */
->>  	if (!allow_unsafe_interrupts &&
->> -	    !iommu_capable(bus, IOMMU_CAP_INTR_REMAP)) {
->> +	    (!iommu_capable(bus, IOMMU_CAP_INTR_REMAP) && !safe_irq_domains)) {
->>  		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
->>  		       __func__);
->>  		ret = -EPERM;
+>> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+>> index 4a9dbc2..0ff6a8d 100644
+>> --- a/include/uapi/linux/vfio.h
+>> +++ b/include/uapi/linux/vfio.h
+>> @@ -488,7 +488,33 @@ struct vfio_iommu_type1_info {
+>>  	__u32	argsz;
+>>  	__u32	flags;
+>>  #define VFIO_IOMMU_INFO_PGSIZES (1 << 0)	/* supported page sizes info */
+>> -	__u64	iova_pgsizes;		/* Bitmap of supported page sizes */
+>> +#define VFIO_IOMMU_INFO_CAPS	(1 << 1)	/* Info supports caps */
+>> +	__u32   cap_offset;	/* Offset within info struct of first cap */
+>> +	__u64	iova_pgsizes;	/* Bitmap of supported page sizes */
+> 
+> This would break existing users, we can't arbitrarily change the offset
+> of iova_pgsizes.  We can add cap_offset to the end and I think
+> everything would work about above if we do that.
+Hum yes, sorry for the lack of care.
+> 
+>> +};
+>> +
+>> +#define VFIO_IOMMU_TYPE1_INFO_CAP_MSI_GEOMETRY	1
+>> +
+>> +/*
+>> + * The MSI geometry capability allows to report the MSI IOVA geometry:
+>> + * - either the MSI IOVAs are constrained within a reserved IOVA aperture
+>> + *   whose boundaries are given by [@aperture_start, @aperture_end].
+>> + *   this is typically the case on x86 host. The userspace is not allowed
+>> + *   to map userspace memory at IOVAs intersecting this range using
+>> + *   VFIO_IOMMU_MAP_DMA.
+>> + * - or the MSI IOVAs are not requested to belong to any reserved range;
+>> + *   in that case the userspace must provide an IOVA window characterized by
+>> + *   @size and @alignment using VFIO_IOMMU_MAP_DMA with RESERVED_MSI_IOVA flag.
+>> + */
+>> +struct vfio_iommu_type1_info_cap_msi_geometry {
+>> +	struct vfio_info_cap_header header;
+>> +	bool reserved; /* Are MSI IOVAs within a reserved aperture? */
+> 
+> Do bools have a guaranteed user size?  Let's make this a __u32 and call
+> it flags with bit 0 defined as reserved.  I'm tempted to suggest we
+> could figure out how to make alignment fit in another __u32 so we have a
+> properly packed structure, otherwise we should make a reserved __u32.
+OK will rewrite & check that.
+
+Thanks
+
+Eric
+> 
+>> +	/* reserved */
+>> +	__u64 aperture_start;
+>> +	__u64 aperture_end;
+>> +	/* not reserved */
+>> +	__u64 size; /* IOVA aperture size in bytes the userspace must provide */
+>> +	__u64 alignment; /* alignment of the window, in bytes */
+>>  };
+>>  
+>>  #define VFIO_IOMMU_GET_INFO _IO(VFIO_TYPE, VFIO_BASE + 12)
+>> @@ -503,6 +529,8 @@ struct vfio_iommu_type1_info {
+>>   * IOVA region that will be used on some platforms to map the host MSI frames.
+>>   * In that specific case, vaddr is ignored. Once registered, an MSI reserved
+>>   * IOVA region stays until the container is closed.
+>> + * The requirement for provisioning such reserved IOVA range can be checked by
+>> + * checking the VFIO_IOMMU_TYPE1_INFO_CAP_MSI_GEOMETRY capability.
+>>   */
+>>  struct vfio_iommu_type1_dma_map {
+>>  	__u32	argsz;
 > 
