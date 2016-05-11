@@ -1,107 +1,128 @@
-From: Jayachandran C <jchandra@broadcom.com>
-Subject: Re: [PATCH v2 1/2] PCI: Add PCI device flag PCI_DEV_FLAGS_DMA_ALIAS_ROOT
-Date: Wed, 11 May 2016 11:58:24 +0530
-Message-ID: <CAKc_7PVAV6uAbEFLWHyh1hngLa1PdJxPzk7bPoppexU1oAJHnw@mail.gmail.com>
-References: <linux-pci@vger.kernel.org> <1462700001-30086-1-git-send-email-jchandra@broadcom.com>
- <5730621B.2050503@arm.com>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [PATCH 5/5] vfio-pci: Allow to mmap MSI-X table if interrupt
+	remapping is supported
+Date: Wed, 11 May 2016 06:29:06 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D15F84EEBA@SHSMSX101.ccr.corp.intel.com>
+References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+	<1461761010-5452-6-git-send-email-xyjxie@linux.vnet.ibm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D15F842512@SHSMSX101.ccr.corp.intel.com>
+	<f7d73ac3-470d-a0d2-0a97-05be630480dd@linux.vnet.ibm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D15F842653@SHSMSX101.ccr.corp.intel.com>
+	<e064a6a7-a8dc-f71f-1725-f31e03581b8d@linux.vnet.ibm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D15F847150@SHSMSX101.ccr.corp.intel.com>
+	<063D6719AE5E284EB5DD2968C1650D6D5F4B52B5@AcuExch.aculab.com>
+	<4be013bc-e81b-84c5-06d3-e1b3f46b3227@linux.vnet.ibm.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D15F8474A4@SHSMSX101.ccr.corp.intel.com>
+	<20160505090513.56886c12@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <5730621B.2050503@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160505090513.56886c12-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org" <alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org>, "nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org" <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org" <ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>, Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org" <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 9, 2016 at 3:40 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 08/05/16 10:33, Jayachandran C via iommu wrote:
->>
->> Add a new flag PCI_DEV_FLAGS_DMA_ALIAS_ROOT to limit the DMA alias
->> search to go no further than the bridge where the IOMMU is attached.
->>
->> This has been added to support Broadcom's Vulcan which has the SMMUv3
->> and GIC ITS associated with an intermediate bridge in the PCI topology.
->> Traversing to buses above would hit internal glue bridges which will
->> change the RID.
->
->
-> Can you not just have the relevant callback function detect the relevant
-> node and terminate the walk of its own accord? That's what I was aiming for
-> in this patch for the IOMMU setup:
->
-> http://article.gmane.org/gmane.linux.kernel.iommu/12456
->
-> Is there some flaw in that approach I've missed?
+> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> Sent: Thursday, May 05, 2016 11:05 PM
+> 
+> On Thu, 5 May 2016 12:15:46 +0000
+> "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+> 
+> > > From: Yongji Xie [mailto:xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org]
+> > > Sent: Thursday, May 05, 2016 7:43 PM
+> > >
+> > > Hi David and Kevin,
+> > >
+> > > On 2016/5/5 17:54, David Laight wrote:
+> > >
+> > > > From: Tian, Kevin
+> > > >> Sent: 05 May 2016 10:37
+> > > > ...
+> > > >>> Acutually, we are not aimed at accessing MSI-X table from
+> > > >>> guest. So I think it's safe to passthrough MSI-X table if we
+> > > >>> can make sure guest kernel would not touch MSI-X table in
+> > > >>> normal code path such as para-virtualized guest kernel on PPC64.
+> > > >>>
+> > > >> Then how do you prevent malicious guest kernel accessing it?
+> > > > Or a malicious guest driver for an ethernet card setting up
+> > > > the receive buffer ring to contain a single word entry that
+> > > > contains the address associated with an MSI-X interrupt and
+> > > > then using a loopback mode to cause a specific packet be
+> > > > received that writes the required word through that address.
+> > > >
+> > > > Remember the PCIe cycle for an interrupt is a normal memory write
+> > > > cycle.
+> > > >
+> > > > 	David
+> > > >
+> > >
+> > > If we have enough permission to load a malicious driver or
+> > > kernel, we can easily break the guest without exposed
+> > > MSI-X table.
+> > >
+> > > I think it should be safe to expose MSI-X table if we can
+> > > make sure that malicious guest driver/kernel can't use
+> > > the MSI-X table to break other guest or host. The
+> > > capability of IRQ remapping could provide this
+> > > kind of protection.
+> > >
+> >
+> > With IRQ remapping it doesn't mean you can pass through MSI-X
+> > structure to guest. I know actual IRQ remapping might be platform
+> > specific, but at least for Intel VT-d specification, MSI-X entry must
+> > be configured with a remappable format by host kernel which
+> > contains an index into IRQ remapping table. The index will find a
+> > IRQ remapping entry which controls interrupt routing for a specific
+> > device. If you allow a malicious program random index into MSI-X
+> > entry of assigned device, the hole is obvious...
+> >
+> > Above might make sense only for a IRQ remapping implementation
+> > which doesn't rely on extended MSI-X format (e.g. simply based on
+> > BDF). If that's the case for PPC, then you should build MSI-X
+> > passthrough based on this fact instead of general IRQ remapping
+> > enabled or not.
+> 
+> I don't think anyone is expecting that we can expose the MSI-X vector
+> table to the guest and the guest can make direct use of it.  The end
+> goal here is that the guest on a power system is already
+> paravirtualized to not program the device MSI-X by directly writing to
+> the MSI-X vector table.  They have hypercalls for this since they
+> always run virtualized.  Therefore a) they never intend to touch the
+> MSI-X vector table and b) they have sufficient isolation that a guest
+> can only hurt itself by doing so.
+> 
+> On x86 we don't have a), our method of programming the MSI-X vector
+> table is to directly write to it. Therefore we will always require QEMU
+> to place a MemoryRegion over the vector table to intercept those
+> accesses.  However with interrupt remapping, we do have b) on x86, which
+> means that we don't need to be so strict in disallowing user accesses
+> to the MSI-X vector table.  It's not useful for configuring MSI-X on
+> the device, but the user should only be able to hurt themselves by
+> writing it directly.  x86 doesn't really get anything out of this
+> change, but it helps this special case on power pretty significantly
+> aiui.  Thanks,
+> 
 
-Not flaw as such, but:
- -  We need to support OF as well as ACPI, so the firmware dependent
-   approach will not work. The ACPI code does not exist right now, but
-   there are patches for this in development.
- - GICv3 ITS also uses the RIDs. I need to replicate the same logic in
-   pci/msi.c and irqchip/irq-gic-v3-its-pci-msi.c for MSI. For IOMMU, I
-   have to update iommu/arm-smmu-v3.c and in other places in iommu
-   code  where pci_for_each_dma_alias is called.
- - since it is non-standard PCIe topology for the processor, a quirk seemed
-   to be the right way to handle it.
+Allowing guest direct write to MSI-x table has system-wide impact.
+As I explained earlier, hypervisor needs to control "interrupt_index"
+programmed in MSI-X entry, which is used to associate a specific
+IRQ remapping entry. Now if you expose whole MSI-x table to guest, 
+it can program random index into MSI-X entry to associate with 
+any IRQ remapping entry and then there won't be any isolation per se.
 
-I am still figuring out the right approach here, so comments are welcome.
+You can check "5.5.2 MSI and MSI-X Register Programming" in VT-d
+spec.
 
-JC.
-
->
->> Update the function pci_for_each_dma_alias() to stop when it see a
->> bridge with this flag set.
->>
->> Signed-off-by: Jayachandran C <jchandra@broadcom.com>
->> ---
->>
->> Here is v2 of the patch, the previous discussion is at
->> http://lists.linuxfoundation.org/pipermail/iommu/2016-February/015668.html
->>
->> v1->v2 changes:
->>   - dropped the BAR quirk (not needed)
->>   - moved from using the 'skip' flag for some bridges to using
->>     similar approach to stop the traversal at the bridge with
->>     PCI_DEV_FLAGS_DMA_ALIAS_ROOT
->>
->> Comments and suggestions are welcome
->>
->> JC.
->>
->>   drivers/pci/search.c | 4 ++++
->>   include/linux/pci.h  | 2 ++
->>   2 files changed, 6 insertions(+)
->>
->> diff --git a/drivers/pci/search.c b/drivers/pci/search.c
->> index a20ce7d..3ea9c27 100644
->> --- a/drivers/pci/search.c
->> +++ b/drivers/pci/search.c
->> @@ -56,6 +56,10 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
->>
->>                 tmp = bus->self;
->>
->> +               /* stop at bridge where translation unit is associated */
->> +               if (tmp->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_ROOT)
->> +                       return ret;
->> +
->>                 /*
->>                  * PCIe-to-PCI/X bridges alias transactions from
->> downstream
->>                  * devices using the subordinate bus number (PCI Express
->> to
->> diff --git a/include/linux/pci.h b/include/linux/pci.h
->> index 932ec74..b6f832b 100644
->> --- a/include/linux/pci.h
->> +++ b/include/linux/pci.h
->> @@ -176,6 +176,8 @@ enum pci_dev_flags {
->>         PCI_DEV_FLAGS_NO_PM_RESET = (__force pci_dev_flags_t) (1 << 7),
->>         /* Get VPD from function 0 VPD */
->>         PCI_DEV_FLAGS_VPD_REF_F0 = (__force pci_dev_flags_t) (1 << 8),
->> +       /* a non-root bridge where translation occurs, stop alias search
->> here */
->> +       PCI_DEV_FLAGS_DMA_ALIAS_ROOT = (__force pci_dev_flags_t) (1 << 9),
->>   };
->>
->>   enum pci_irq_reroute_variant {
->>
->
+Thanks
+Kevin
