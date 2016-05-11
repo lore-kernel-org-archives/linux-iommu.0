@@ -1,16 +1,17 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v9 5/7] vfio/type1: also check IRQ remapping capability at
-	msi domain
-Date: Tue, 10 May 2016 18:24:34 +0100
-Message-ID: <57321952.2020206@arm.com>
-References: <1462362858-2925-1-git-send-email-eric.auger@linaro.org>
-	<1462362858-2925-6-git-send-email-eric.auger@linaro.org>
-	<20160509164942.5af8b30d@t450s.home> <57320803.8070506@linaro.org>
+From: Scott Wood <oss-fOR+EgIDQEHk1uMJSBkQmQ@public.gmane.org>
+Subject: Re: [v10, 7/7] mmc: sdhci-of-esdhc: fix host version for
+	T4240-R1.0-R2.0
+Date: Tue, 10 May 2016 22:26:26 -0500
+Message-ID: <1462937186.16584.77.camel@buserror.net>
+References: <1462417950-46796-1-git-send-email-yangbo.lu@nxp.com>
+	<4448030.Zs8fVnr3nm@wuerfel>
+	<HE1PR04MB0889B52134A43C0E7A452B7BF87C0@HE1PR04MB0889.eurprd04.prod.outlook.com>
+	<5159406.HOFrj7pRfW@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <57320803.8070506-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+In-Reply-To: <5159406.HOFrj7pRfW@wuerfel>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,162 +21,123 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yang-Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Xi
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Eric,
+On Thu, 2016-05-05 at 13:10 +0200, Arnd Bergmann wrote:
+> On Thursday 05 May 2016 09:41:32 Yangbo Lu wrote:
+> > > -----Original Message-----
+> > > From: Arnd Bergmann [mailto:arnd-r2nGTMty4D4@public.gmane.org]
+> > > Sent: Thursday, May 05, 2016 4:32 PM
+> > > To: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+> > > Cc: Yangbo Lu; linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> > > linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+> > > linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+> > > foundation.org; netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Mark Rutland;
+> > > ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; Russell King; Bhupesh Sharma; Joerg Roedel;
+> > > Santosh Shilimkar; Yang-Leo Li; Scott Wood; Rob Herring; Claudiu Manoil;
+> > > Kumar Gala; Xiaobo Xie; Qiang Zhao
+> > > Subject: Re: [v10, 7/7] mmc: sdhci-of-esdhc: fix host version for T4240-
+> > > R1.0-R2.0
+> > > 
+> > > On Thursday 05 May 2016 11:12:30 Yangbo Lu wrote:
+> > > > IIRC, it is the same IP block as i.MX and Arnd's point is this won't
+> > > > even compile on !PPC. It is things like this that prevent sharing the
+> > > > driver.
+> > 
+> > The whole point of using the MMIO SVR instead of the PPC SPR is so that
+> > it will work on ARM...  The guts driver should build on any platform as
+> > long as OF is enabled, and if it doesn't find a node to bind to it will
+> > return 0 for SVR, and the eSDHC driver will continue (after printing an
+> > error that should be removed) without the ability to test for errata
+> > based on SVR.
+> 
+> It feels like a bad design to have to come up with a different
+> method for each SoC type here when they all do the same thing
+> and want to identify some variant of the chip to do device
+> specific quirks.
+> 
+> As far as I'm concerned, every driver in drivers/soc that needs to
+> export a symbol to be used by a device driver is an indication that
+> we don't have the right set of abstractions yet. There are cases
+> that are not worth abstracting because the functionality is rather
+> obscure and only a couple of drivers for one particular chip
+> ever need it.
+> 
+> Finding out the version of the SoC does not look like this case.
 
-On 10/05/16 17:10, Eric Auger wrote:
-> Hi Alex,
-> On 05/10/2016 12:49 AM, Alex Williamson wrote:
->> On Wed,  4 May 2016 11:54:16 +0000
->> Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
->>
->>> On x86 IRQ remapping is abstracted by the IOMMU. On ARM this is abstracted
->>> by the msi controller. vfio_safe_irq_domain allows to check whether
->>> interrupts are "safe" for a given device. They are if the device does
->>> not use MSI
->>
->> Are we sure we're not opening a security hole here?  An MSI is simply a
->> DMA write, so really whether or not a device uses MSI is irrelevant.
->> If it can generate a DMA to the MSI doorbell then we need to be
->> protected and I think we pretty much need to assume that devices are
->> DMA capable.  Do the MSI domain checks cover this?
-> Let me try to rephrase: we check the device is not attached to an MSI
-> controller (I think this is the semantic of dev_get_msi_domain(dev)).
->
-> If it is not, we don't have to care about MSI isolation: there will be
-> no IOMMU binding between the device and any MSI doorbell. If it is we
-> check the msi domain is backed by an MSI controller able to perform MSI
-> isolation.
- >
-> So effectively "usage of MSIs" is improper - since it is decided after
-> the group attachment anyway  - and the commit message should rather
-> state "if the device is linked to an MSI controller" (dt msi-parent
-> notion I think).
+I'm open to new ways of abstracting this, but can that please be discussed
+after these patches are merged?  This patchset is fixing a problem, the
+existing abstraction is unappealing and not widely adopted, a new abstraction
+is not ready, and we're only touching code for our hardware.
 
-Hmm, I think Alex has a point here - on a GICv2m I can happily fire 
-arbitrary MSIs from _a shell_ (using /dev/mem), and the CPUs definitely 
-aren't in an MSI domain, so I don't think it's valid to assume that a 
-device using only wired interrupts, therefore with no connection to any 
-MSI controller, isn't still capable of maliciously spewing DMA all over 
-any and every doorbell region in the system.
+Oh, and the existing abstraction isn't even "existing".  I don't see any
+examples where soc_device is being used like this -- or even any way for a
+driver (the one consuming the information, not the soc "driver") to get a
+reference to the soc_device that's been registered short of searching for the
+device object by name -- and you're asking for new functionality in
+drivers/base/soc.c.
 
-Robin.
+> > > I think the first four patches take care of building for ARM,
+> > > but the problem remains if you want to enable COMPILE_TEST as
+> > > we need for certain automated checking.
+> > 
+> > What specific problem is there with COMPILE_TEST?
+> 
+> COMPILE_TEST is solvable here and the way it is implemented in this
+> case (selecting FSL_GUTS from the driver) indeed looks like it works
+> correctly, but it's still awkward that this means building the
+> SoC specific ID stuff into the vmlinux binary for any driver that
+> uses something like that for a particular SoC.
 
-> Does it sound better?
->
-> Regards
->
-> Eric
->>
->>> or if the device uses MSI and the msi-parent controller
->>> supports IRQ remapping.
->>>
->>> Then we check at group level if all devices have safe interrupts: if not,
->>> we only allow the group to be attached if allow_unsafe_interrupts is set.
->>>
->>> At this point ARM sMMU still advertises IOMMU_CAP_INTR_REMAP. This is
->>> changed in next patch.
->>>
->>> Signed-off-by: Eric Auger <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
->>>
->>> ---
->>> v3 -> v4:
->>> - rename vfio_msi_parent_irq_remapping_capable into vfio_safe_irq_domain
->>>    and irq_remapping into safe_irq_domains
->>>
->>> v2 -> v3:
->>> - protect vfio_msi_parent_irq_remapping_capable with
->>>    CONFIG_GENERIC_MSI_IRQ_DOMAIN
->>> ---
->>>   drivers/vfio/vfio_iommu_type1.c | 44 +++++++++++++++++++++++++++++++++++++++--
->>>   1 file changed, 42 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->>> index 4d3a6f1..2fc8197 100644
->>> --- a/drivers/vfio/vfio_iommu_type1.c
->>> +++ b/drivers/vfio/vfio_iommu_type1.c
->>> @@ -37,6 +37,8 @@
->>>   #include <linux/vfio.h>
->>>   #include <linux/workqueue.h>
->>>   #include <linux/msi-iommu.h>
->>> +#include <linux/irqdomain.h>
->>> +#include <linux/msi.h>
->>>
->>>   #define DRIVER_VERSION  "0.2"
->>>   #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
->>> @@ -777,6 +779,33 @@ static int vfio_bus_type(struct device *dev, void *data)
->>>   	return 0;
->>>   }
->>>
->>> +/**
->>> + * vfio_safe_irq_domain: returns whether the irq domain
->>> + * the device is attached to is safe with respect to MSI isolation.
->>> + * If the irq domain is not an MSI domain, we return it is safe.
->>> + *
->>> + * @dev: device handle
->>> + * @data: unused
->>> + * returns 0 if the irq domain is safe, -1 if not.
->>> + */
->>> +static int vfio_safe_irq_domain(struct device *dev, void *data)
->>> +{
->>> +#ifdef CONFIG_GENERIC_MSI_IRQ_DOMAIN
->>> +	struct irq_domain *domain;
->>> +	struct msi_domain_info *info;
->>> +
->>> +	domain = dev_get_msi_domain(dev);
->>> +	if (!domain)
->>> +		return 0;
->>> +
->>> +	info = msi_get_domain_info(domain);
->>> +
->>> +	if (!(info->flags & MSI_FLAG_IRQ_REMAPPING))
->>> +		return -1;
->>> +#endif
->>> +	return 0;
->>> +}
->>> +
->>>   static int vfio_iommu_replay(struct vfio_iommu *iommu,
->>>   			     struct vfio_domain *domain)
->>>   {
->>> @@ -870,7 +899,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>>   	struct vfio_group *group, *g;
->>>   	struct vfio_domain *domain, *d;
->>>   	struct bus_type *bus = NULL;
->>> -	int ret;
->>> +	int ret, safe_irq_domains;
->>>
->>>   	mutex_lock(&iommu->lock);
->>>
->>> @@ -893,6 +922,13 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>>
->>>   	group->iommu_group = iommu_group;
->>>
->>> +	/*
->>> +	 * Determine if all the devices of the group have a safe irq domain
->>> +	 * with respect to MSI isolation
->>> +	 */
->>> +	safe_irq_domains = !iommu_group_for_each_dev(iommu_group, &bus,
->>> +				       vfio_safe_irq_domain);
->>> +
->>>   	/* Determine bus_type in order to allocate a domain */
->>>   	ret = iommu_group_for_each_dev(iommu_group, &bus, vfio_bus_type);
->>>   	if (ret)
->>> @@ -920,8 +956,12 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>>   	INIT_LIST_HEAD(&domain->group_list);
->>>   	list_add(&group->next, &domain->group_list);
->>>
->>> +	/*
->>> +	 * to advertise safe interrupts either the IOMMU or the MSI controllers
->>> +	 * must support IRQ remapping/interrupt translation
->>> +	 */
->>>   	if (!allow_unsafe_interrupts &&
->>> -	    !iommu_capable(bus, IOMMU_CAP_INTR_REMAP)) {
->>> +	    (!iommu_capable(bus, IOMMU_CAP_INTR_REMAP) && !safe_irq_domains)) {
->>>   		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
->>>   		       __func__);
->>>   		ret = -EPERM;
->>
->
+Please keep in mind that this is a Freescale-specific driver... it's not as if
+we're attaching this dependency to common SDHCI code.
+
+> 
+> > > > Dealing with Si revs is a common problem. We should have a
+> > > > common solution. There is soc_device for this purpose.
+> > > 
+> > > Exactly. The last time this came up, I think we agreed to implement a
+> > > helper using glob_match() on the soc_device strings. Unfortunately
+> > > this hasn't happened then, but I'd still prefer that over yet another
+> > > vendor-specific way of dealing with the generic issue.
+> > 
+> > soc_device would require encoding the SVR as a string and then decoding
+> > the string, which is more complicated and error prone than having
+> > platform-specific code test a platform-specific number. 
+> 
+> You already need to encode it as a string to register the soc_device,
+
+No we don't, because we don't already register a soc_device on arm64 or ppc
+(and it looks like whatever does get registered on at least some relevant
+arm32 chips is not particularly useful).
+
+> and the driver just needs to pass a glob string, so the only part that
+> is missing is the generic function that takes the string from the
+> driver and passes that to glob_match for the soc_device.
+
+"just"
+
+And what would the glob look like?
+
+I'd rather not write kernel code as if it were a shell/Perl script.
+
+> > And when would it get registered on arm64, which doesn't have
+> > platform code?
+> 
+> Whenever the soc driver is loaded, as is the case now. The match
+> function can return -EPROBE_DEFER if no SoC device is registered
+> yet.
+
+That's too late for some places where we need access to SVR, e.g. clock
+drivers (which use CLK_OF_DECLARE and are initialized very early, not as part
+of the driver model and thus can't defer).  Currently we have an #ifdef
+CONFIG_PPC for this in drivers/clk/clk-qoriq.c... Maybe we should have done
+that here as well, and saved some grief. :-)  At least until an erratum pops
+up on an ARM-based chip.
+
+And what happens if we're running on arm32, and thus the arch code already
+registered an soc_device with a different (and less useful) encoding?
+
+-Scott
