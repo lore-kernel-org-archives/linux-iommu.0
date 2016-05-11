@@ -1,143 +1,107 @@
-From: Scott Wood <oss-fOR+EgIDQEHk1uMJSBkQmQ@public.gmane.org>
-Subject: Re: [v10, 7/7] mmc: sdhci-of-esdhc: fix host version for
-	T4240-R1.0-R2.0
-Date: Tue, 10 May 2016 22:26:26 -0500
-Message-ID: <1462937186.16584.77.camel@buserror.net>
-References: <1462417950-46796-1-git-send-email-yangbo.lu@nxp.com>
-	<4448030.Zs8fVnr3nm@wuerfel>
-	<HE1PR04MB0889B52134A43C0E7A452B7BF87C0@HE1PR04MB0889.eurprd04.prod.outlook.com>
-	<5159406.HOFrj7pRfW@wuerfel>
+From: Jayachandran C <jchandra@broadcom.com>
+Subject: Re: [PATCH v2 1/2] PCI: Add PCI device flag PCI_DEV_FLAGS_DMA_ALIAS_ROOT
+Date: Wed, 11 May 2016 11:58:24 +0530
+Message-ID: <CAKc_7PVAV6uAbEFLWHyh1hngLa1PdJxPzk7bPoppexU1oAJHnw@mail.gmail.com>
+References: <linux-pci@vger.kernel.org> <1462700001-30086-1-git-send-email-jchandra@broadcom.com>
+ <5730621B.2050503@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5159406.HOFrj7pRfW@wuerfel>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Yang-Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Xi
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <5730621B.2050503@arm.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 2016-05-05 at 13:10 +0200, Arnd Bergmann wrote:
-> On Thursday 05 May 2016 09:41:32 Yangbo Lu wrote:
-> > > -----Original Message-----
-> > > From: Arnd Bergmann [mailto:arnd-r2nGTMty4D4@public.gmane.org]
-> > > Sent: Thursday, May 05, 2016 4:32 PM
-> > > To: linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-> > > Cc: Yangbo Lu; linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> > > linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> > > foundation.org; netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Mark Rutland;
-> > > ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; Russell King; Bhupesh Sharma; Joerg Roedel;
-> > > Santosh Shilimkar; Yang-Leo Li; Scott Wood; Rob Herring; Claudiu Manoil;
-> > > Kumar Gala; Xiaobo Xie; Qiang Zhao
-> > > Subject: Re: [v10, 7/7] mmc: sdhci-of-esdhc: fix host version for T4240-
-> > > R1.0-R2.0
-> > > 
-> > > On Thursday 05 May 2016 11:12:30 Yangbo Lu wrote:
-> > > > IIRC, it is the same IP block as i.MX and Arnd's point is this won't
-> > > > even compile on !PPC. It is things like this that prevent sharing the
-> > > > driver.
-> > 
-> > The whole point of using the MMIO SVR instead of the PPC SPR is so that
-> > it will work on ARM...  The guts driver should build on any platform as
-> > long as OF is enabled, and if it doesn't find a node to bind to it will
-> > return 0 for SVR, and the eSDHC driver will continue (after printing an
-> > error that should be removed) without the ability to test for errata
-> > based on SVR.
-> 
-> It feels like a bad design to have to come up with a different
-> method for each SoC type here when they all do the same thing
-> and want to identify some variant of the chip to do device
-> specific quirks.
-> 
-> As far as I'm concerned, every driver in drivers/soc that needs to
-> export a symbol to be used by a device driver is an indication that
-> we don't have the right set of abstractions yet. There are cases
-> that are not worth abstracting because the functionality is rather
-> obscure and only a couple of drivers for one particular chip
-> ever need it.
-> 
-> Finding out the version of the SoC does not look like this case.
+On Mon, May 9, 2016 at 3:40 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 08/05/16 10:33, Jayachandran C via iommu wrote:
+>>
+>> Add a new flag PCI_DEV_FLAGS_DMA_ALIAS_ROOT to limit the DMA alias
+>> search to go no further than the bridge where the IOMMU is attached.
+>>
+>> This has been added to support Broadcom's Vulcan which has the SMMUv3
+>> and GIC ITS associated with an intermediate bridge in the PCI topology.
+>> Traversing to buses above would hit internal glue bridges which will
+>> change the RID.
+>
+>
+> Can you not just have the relevant callback function detect the relevant
+> node and terminate the walk of its own accord? That's what I was aiming for
+> in this patch for the IOMMU setup:
+>
+> http://article.gmane.org/gmane.linux.kernel.iommu/12456
+>
+> Is there some flaw in that approach I've missed?
 
-I'm open to new ways of abstracting this, but can that please be discussed
-after these patches are merged?  This patchset is fixing a problem, the
-existing abstraction is unappealing and not widely adopted, a new abstraction
-is not ready, and we're only touching code for our hardware.
+Not flaw as such, but:
+ -  We need to support OF as well as ACPI, so the firmware dependent
+   approach will not work. The ACPI code does not exist right now, but
+   there are patches for this in development.
+ - GICv3 ITS also uses the RIDs. I need to replicate the same logic in
+   pci/msi.c and irqchip/irq-gic-v3-its-pci-msi.c for MSI. For IOMMU, I
+   have to update iommu/arm-smmu-v3.c and in other places in iommu
+   code  where pci_for_each_dma_alias is called.
+ - since it is non-standard PCIe topology for the processor, a quirk seemed
+   to be the right way to handle it.
 
-Oh, and the existing abstraction isn't even "existing".  I don't see any
-examples where soc_device is being used like this -- or even any way for a
-driver (the one consuming the information, not the soc "driver") to get a
-reference to the soc_device that's been registered short of searching for the
-device object by name -- and you're asking for new functionality in
-drivers/base/soc.c.
+I am still figuring out the right approach here, so comments are welcome.
 
-> > > I think the first four patches take care of building for ARM,
-> > > but the problem remains if you want to enable COMPILE_TEST as
-> > > we need for certain automated checking.
-> > 
-> > What specific problem is there with COMPILE_TEST?
-> 
-> COMPILE_TEST is solvable here and the way it is implemented in this
-> case (selecting FSL_GUTS from the driver) indeed looks like it works
-> correctly, but it's still awkward that this means building the
-> SoC specific ID stuff into the vmlinux binary for any driver that
-> uses something like that for a particular SoC.
+JC.
 
-Please keep in mind that this is a Freescale-specific driver... it's not as if
-we're attaching this dependency to common SDHCI code.
-
-> 
-> > > > Dealing with Si revs is a common problem. We should have a
-> > > > common solution. There is soc_device for this purpose.
-> > > 
-> > > Exactly. The last time this came up, I think we agreed to implement a
-> > > helper using glob_match() on the soc_device strings. Unfortunately
-> > > this hasn't happened then, but I'd still prefer that over yet another
-> > > vendor-specific way of dealing with the generic issue.
-> > 
-> > soc_device would require encoding the SVR as a string and then decoding
-> > the string, which is more complicated and error prone than having
-> > platform-specific code test a platform-specific number. 
-> 
-> You already need to encode it as a string to register the soc_device,
-
-No we don't, because we don't already register a soc_device on arm64 or ppc
-(and it looks like whatever does get registered on at least some relevant
-arm32 chips is not particularly useful).
-
-> and the driver just needs to pass a glob string, so the only part that
-> is missing is the generic function that takes the string from the
-> driver and passes that to glob_match for the soc_device.
-
-"just"
-
-And what would the glob look like?
-
-I'd rather not write kernel code as if it were a shell/Perl script.
-
-> > And when would it get registered on arm64, which doesn't have
-> > platform code?
-> 
-> Whenever the soc driver is loaded, as is the case now. The match
-> function can return -EPROBE_DEFER if no SoC device is registered
-> yet.
-
-That's too late for some places where we need access to SVR, e.g. clock
-drivers (which use CLK_OF_DECLARE and are initialized very early, not as part
-of the driver model and thus can't defer).  Currently we have an #ifdef
-CONFIG_PPC for this in drivers/clk/clk-qoriq.c... Maybe we should have done
-that here as well, and saved some grief. :-)  At least until an erratum pops
-up on an ARM-based chip.
-
-And what happens if we're running on arm32, and thus the arch code already
-registered an soc_device with a different (and less useful) encoding?
-
--Scott
+>
+>> Update the function pci_for_each_dma_alias() to stop when it see a
+>> bridge with this flag set.
+>>
+>> Signed-off-by: Jayachandran C <jchandra@broadcom.com>
+>> ---
+>>
+>> Here is v2 of the patch, the previous discussion is at
+>> http://lists.linuxfoundation.org/pipermail/iommu/2016-February/015668.html
+>>
+>> v1->v2 changes:
+>>   - dropped the BAR quirk (not needed)
+>>   - moved from using the 'skip' flag for some bridges to using
+>>     similar approach to stop the traversal at the bridge with
+>>     PCI_DEV_FLAGS_DMA_ALIAS_ROOT
+>>
+>> Comments and suggestions are welcome
+>>
+>> JC.
+>>
+>>   drivers/pci/search.c | 4 ++++
+>>   include/linux/pci.h  | 2 ++
+>>   2 files changed, 6 insertions(+)
+>>
+>> diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+>> index a20ce7d..3ea9c27 100644
+>> --- a/drivers/pci/search.c
+>> +++ b/drivers/pci/search.c
+>> @@ -56,6 +56,10 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
+>>
+>>                 tmp = bus->self;
+>>
+>> +               /* stop at bridge where translation unit is associated */
+>> +               if (tmp->dev_flags & PCI_DEV_FLAGS_DMA_ALIAS_ROOT)
+>> +                       return ret;
+>> +
+>>                 /*
+>>                  * PCIe-to-PCI/X bridges alias transactions from
+>> downstream
+>>                  * devices using the subordinate bus number (PCI Express
+>> to
+>> diff --git a/include/linux/pci.h b/include/linux/pci.h
+>> index 932ec74..b6f832b 100644
+>> --- a/include/linux/pci.h
+>> +++ b/include/linux/pci.h
+>> @@ -176,6 +176,8 @@ enum pci_dev_flags {
+>>         PCI_DEV_FLAGS_NO_PM_RESET = (__force pci_dev_flags_t) (1 << 7),
+>>         /* Get VPD from function 0 VPD */
+>>         PCI_DEV_FLAGS_VPD_REF_F0 = (__force pci_dev_flags_t) (1 << 8),
+>> +       /* a non-root bridge where translation occurs, stop alias search
+>> here */
+>> +       PCI_DEV_FLAGS_DMA_ALIAS_ROOT = (__force pci_dev_flags_t) (1 << 9),
+>>   };
+>>
+>>   enum pci_irq_reroute_variant {
+>>
+>
