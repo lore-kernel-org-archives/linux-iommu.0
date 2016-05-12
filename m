@@ -1,202 +1,176 @@
-From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: RE: [PATCH 5/5] vfio-pci: Allow to mmap MSI-X table if interrupt
-	remapping is supported
-Date: Thu, 12 May 2016 04:53:19 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D15F8507E8@SHSMSX101.ccr.corp.intel.com>
-References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-	<1461761010-5452-6-git-send-email-xyjxie@linux.vnet.ibm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F842512@SHSMSX101.ccr.corp.intel.com>
-	<f7d73ac3-470d-a0d2-0a97-05be630480dd@linux.vnet.ibm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F842653@SHSMSX101.ccr.corp.intel.com>
-	<e064a6a7-a8dc-f71f-1725-f31e03581b8d@linux.vnet.ibm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F847150@SHSMSX101.ccr.corp.intel.com>
-	<063D6719AE5E284EB5DD2968C1650D6D5F4B52B5@AcuExch.aculab.com>
-	<4be013bc-e81b-84c5-06d3-e1b3f46b3227@linux.vnet.ibm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F8474A4@SHSMSX101.ccr.corp.intel.com>
-	<20160505090513.56886c12@t450s.home>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F84EEBA@SHSMSX101.ccr.corp.intel.com>
-	<20160511095331.18436241@t450s.home>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F850046@SHSMSX101.ccr.corp.intel.com>
-	<20160511202042.77593861@t450s.home>
+From: =?UTF-8?B?SG9uZ2h1aSBaaGFuZyAo5byg5rSq6L6JKQ==?=
+	<honghui.zhang@mediatek.com>
+Subject: Re: [PATCH 4/5] iommu/mediatek: add support for mtk iommu generation
+ one HW
+Date: Thu, 12 May 2016 19:26:36 +0800
+Message-ID: <bf2077e7-da8f-ba27-4f75-999c007f36b4@mediatek.com>
+References: <1462780816-5288-1-git-send-email-honghui.zhang@mediatek.com>
+ <1462780816-5288-5-git-send-email-honghui.zhang@mediatek.com>
+ <5731B7D8.8040304@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160511202042.77593861-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: "alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org" <alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org>, "nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org" <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org" <ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>, Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org" <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <5731B7D8.8040304@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, treding@nvidia.com, mark.rutland@arm.com, matthias.bgg@gmail.com
+Cc: catalin.marinas@arm.com, will.deacon@arm.com, youlin.pei@mediatek.com, yingjoe.chen@mediatek.com, devicetree@vger.kernel.org, kendrick.hsu@mediatek.com, kernel@pengutronix.de, arnd@arndb.de, tfiga@google.com, robh+dt@kernel.org, linux-mediatek@lists.infradead.org, eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org, pebolle@tiscali.nl, srv_heupstream@mediatek.com, erin.lo@mediatek.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, djkurtz@google.com, p.zabel@pengutronix.de, l.stach@pengutronix.de
 List-Id: iommu@lists.linux-foundation.org
 
-> From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Thursday, May 12, 2016 10:21 AM
+hi, Robin, thanks very much for your comments.
+
+On 5/10/2016 6:28 PM, Robin Murphy wrote:
+> On 09/05/16 09:00, honghui.zhang@mediatek.com wrote:
+> [...]
+>> +static void *mtk_iommu_alloc_pgt(struct device *dev, size_t size, gfp_t gfp)
+>> +{
+>> +    dma_addr_t dma;
+>> +    void *pages = alloc_pages_exact(size, gfp | __GFP_ZERO);
+>> +
+>> +    if (!pages)
+>> +        return NULL;
+>> +
+>> +    dma = dma_map_single(dev, pages, size, DMA_TO_DEVICE);
+>> +    if (dma_mapping_error(dev, dma))
+>> +        goto out_free;
+>> +    /*
+>> +     * We depend on the IOMMU being able to work with any physical
+>> +     * address directly, so if the DMA layer suggests otherwise by
+>> +     * translating or truncating them, that bodes very badly...
+>> +     */
+>> +    if (dma != virt_to_phys(pages))
+>> +        goto out_unmap;
 > 
-> On Thu, 12 May 2016 01:19:44 +0000
-> "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
-> 
-> > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > Sent: Wednesday, May 11, 2016 11:54 PM
-> > >
-> > > On Wed, 11 May 2016 06:29:06 +0000
-> > > "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
-> > >
-> > > > > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > > > > Sent: Thursday, May 05, 2016 11:05 PM
-> > > > >
-> > > > > On Thu, 5 May 2016 12:15:46 +0000
-> > > > > "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
-> > > > >
-> > > > > > > From: Yongji Xie [mailto:xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org]
-> > > > > > > Sent: Thursday, May 05, 2016 7:43 PM
-> > > > > > >
-> > > > > > > Hi David and Kevin,
-> > > > > > >
-> > > > > > > On 2016/5/5 17:54, David Laight wrote:
-> > > > > > >
-> > > > > > > > From: Tian, Kevin
-> > > > > > > >> Sent: 05 May 2016 10:37
-> > > > > > > > ...
-> > > > > > > >>> Acutually, we are not aimed at accessing MSI-X table from
-> > > > > > > >>> guest. So I think it's safe to passthrough MSI-X table if we
-> > > > > > > >>> can make sure guest kernel would not touch MSI-X table in
-> > > > > > > >>> normal code path such as para-virtualized guest kernel on PPC64.
-> > > > > > > >>>
-> > > > > > > >> Then how do you prevent malicious guest kernel accessing it?
-> > > > > > > > Or a malicious guest driver for an ethernet card setting up
-> > > > > > > > the receive buffer ring to contain a single word entry that
-> > > > > > > > contains the address associated with an MSI-X interrupt and
-> > > > > > > > then using a loopback mode to cause a specific packet be
-> > > > > > > > received that writes the required word through that address.
-> > > > > > > >
-> > > > > > > > Remember the PCIe cycle for an interrupt is a normal memory write
-> > > > > > > > cycle.
-> > > > > > > >
-> > > > > > > > 	David
-> > > > > > > >
-> > > > > > >
-> > > > > > > If we have enough permission to load a malicious driver or
-> > > > > > > kernel, we can easily break the guest without exposed
-> > > > > > > MSI-X table.
-> > > > > > >
-> > > > > > > I think it should be safe to expose MSI-X table if we can
-> > > > > > > make sure that malicious guest driver/kernel can't use
-> > > > > > > the MSI-X table to break other guest or host. The
-> > > > > > > capability of IRQ remapping could provide this
-> > > > > > > kind of protection.
-> > > > > > >
-> > > > > >
-> > > > > > With IRQ remapping it doesn't mean you can pass through MSI-X
-> > > > > > structure to guest. I know actual IRQ remapping might be platform
-> > > > > > specific, but at least for Intel VT-d specification, MSI-X entry must
-> > > > > > be configured with a remappable format by host kernel which
-> > > > > > contains an index into IRQ remapping table. The index will find a
-> > > > > > IRQ remapping entry which controls interrupt routing for a specific
-> > > > > > device. If you allow a malicious program random index into MSI-X
-> > > > > > entry of assigned device, the hole is obvious...
-> > > > > >
-> > > > > > Above might make sense only for a IRQ remapping implementation
-> > > > > > which doesn't rely on extended MSI-X format (e.g. simply based on
-> > > > > > BDF). If that's the case for PPC, then you should build MSI-X
-> > > > > > passthrough based on this fact instead of general IRQ remapping
-> > > > > > enabled or not.
-> > > > >
-> > > > > I don't think anyone is expecting that we can expose the MSI-X vector
-> > > > > table to the guest and the guest can make direct use of it.  The end
-> > > > > goal here is that the guest on a power system is already
-> > > > > paravirtualized to not program the device MSI-X by directly writing to
-> > > > > the MSI-X vector table.  They have hypercalls for this since they
-> > > > > always run virtualized.  Therefore a) they never intend to touch the
-> > > > > MSI-X vector table and b) they have sufficient isolation that a guest
-> > > > > can only hurt itself by doing so.
-> > > > >
-> > > > > On x86 we don't have a), our method of programming the MSI-X vector
-> > > > > table is to directly write to it. Therefore we will always require QEMU
-> > > > > to place a MemoryRegion over the vector table to intercept those
-> > > > > accesses.  However with interrupt remapping, we do have b) on x86, which
-> > > > > means that we don't need to be so strict in disallowing user accesses
-> > > > > to the MSI-X vector table.  It's not useful for configuring MSI-X on
-> > > > > the device, but the user should only be able to hurt themselves by
-> > > > > writing it directly.  x86 doesn't really get anything out of this
-> > > > > change, but it helps this special case on power pretty significantly
-> > > > > aiui.  Thanks,
-> > > > >
-> > > >
-> > > > Allowing guest direct write to MSI-x table has system-wide impact.
-> > > > As I explained earlier, hypervisor needs to control "interrupt_index"
-> > > > programmed in MSI-X entry, which is used to associate a specific
-> > > > IRQ remapping entry. Now if you expose whole MSI-x table to guest,
-> > > > it can program random index into MSI-X entry to associate with
-> > > > any IRQ remapping entry and then there won't be any isolation per se.
-> > > >
-> > > > You can check "5.5.2 MSI and MSI-X Register Programming" in VT-d
-> > > > spec.
-> > >
-> > > I think you're extrapolating beyond the vfio interface.  The change
-> > > here is to remove the vfio protection of the MSI-X vector table when
-> > > the system provides interrupt isolation.  The argument is that this is
-> > > safe to do because the hardware protects the host from erroneous and
-> > > malicious user programming, but it is not meant to provide a means to
-> > > program MSI-X directly through the vector table.  This is effectively
-> >
-> > Sorry I didn't get this point. Once we allow userspace to mmap MSI-X
-> > table, isn't it equivalent to allowing userspace directly program vector
-> > table? Or is there other mechanism to prevent direct programming?
-> 
-> This would remove the mechanism that prevents direct programming.
-> Users can configure the device to perform DMA w/o setting up an IOMMU
-> mapping, which generates a fault.  Users can incorrectly manipulate the
-> MSI-X vector table instead of using the proper vfio programming
-> interface, which generates a fault.
-> 
-> > > the same as general DMA programming, if the vfio programming model is
-> > > not followed the device generates iommu faults.  I do have a concern
-> > > that userspace driver writers are going to more often presume they can
-> > > use the vector table directly because of this change, but I don't know
-> > > that that is sufficient reason to prevent such a change.  They'll
-> > > quickly discover the device generates faults on interrupt rather than
-> > > working as expected.
-> >
-> > If userspace can actually program vector table directly, there is not
-> > always fault triggered. As long as MSI-X table is fully under control
-> > of userspace, any interrupt index can be used here which may link
-> > to a IRQ remapping entry allocated for other devices.
-> 
-> Is not part of the vector lookup comparing the source ID of the DMA
-> write?  If not then VT-d interrupt remapping offers us no protection
-> from a malicious guest performing DMA to the same address.  Thanks,
+> Given that you've only got a single table to allocate, and at 4MB it has a fair chance of failing beyond early boot time, just use dma_alloc_coherent() - you don't need to care about the dma <-> phys relationship because you don't have multi-level tables to walk. That way, you can get rid of all the awkward streaming DMA stuff, and also benefit from CMA to avoid allocation failures.
 > 
 
-For x86 IRQ remapping doesn't rely on existing DMAR remapping table for
-DMA. Instead IRQ remapping table is a global table per VT-d engine, shared
-by all devices behind this VT-d engine. Each IRQ remapping table entry 
-(IRTE) can specify:
+thanks, use dma_alloc_coherent is good for me.
 
-- whether to validate source-id of the interrupt requests;
-- whether to verify the whole source id;
-- whether to verify some bits of the source id;
-...
-(section 9.10 Interrupt Remapping Table Entry (IRTE) in VT-d spec)
+>> +    kmemleak_ignore(pages);
+>> +    return pages;
+>> +
+>> +out_unmap:
+>> +    dev_err(dev, "Cannot accommodate DMA translation for IOMMU page tables\n");
+>> +    dma_unmap_single(dev, dma, size, DMA_TO_DEVICE);
+>> +out_free:
+>> +    free_pages_exact(pages, size);
+>> +    return NULL;
+>> +
+>> +}
+>> +
+>> +static void mtk_iommu_free_pgt(struct device *dev, void *pages, size_t size)
+>> +{
+>> +    dma_unmap_single(dev, (dma_addr_t)virt_to_phys(pages),
+>> +             size, DMA_TO_DEVICE);
+>> +    free_pages_exact(pages, size);
+>> +}
+>> +
+>> +static int mtk_iommu_domain_finalise(struct mtk_iommu_data *data)
+>> +{
+>> +    struct mtk_iommu_domain *dom = data->m4u_dom;
+>> +
+>> +    spin_lock_init(&dom->pgtlock);
+>> +
+>> +    dom->pgt_va = mtk_iommu_alloc_pgt(data->dev,
+>> +                dom->pgt_size, GFP_KERNEL);
+>> +    if (!dom->pgt_va)
+>> +        return -ENOMEM;
+>> +
+>> +    dom->pgt_pa = virt_to_phys(dom->pgt_va);
+>> +
+>> +    writel(dom->pgt_pa, data->base + REG_MMU_PT_BASE_ADDR);
+>> +
+>> +    dom->cookie = (void *)data;
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
+>> +{
+>> +    struct mtk_iommu_domain *dom;
+>> +
+>> +    if (type != IOMMU_DOMAIN_UNMANAGED)
+>> +        return NULL;
+>> +
+>> +    dom = kzalloc(sizeof(*dom), GFP_KERNEL);
+>> +    if (!dom)
+>> +        return NULL;
+>> +
+>> +    /*
+>> +     * MTK m4u support 4GB iova address space, and oly support 4K page
+>> +     * mapping. So the pagetable size should be exactly as 4M.
+>> +     */
+>> +    dom->pgt_size = SZ_4M;
+> 
+> If the table size is fixed, then why bother having a variable at all?
+> 
+>> +    return &dom->domain;
+>> +}
+>> +
+>> +static void mtk_iommu_domain_free(struct iommu_domain *domain)
+>> +{
+>> +    kfree(to_mtk_domain(domain));
+>> +}
+>> +
+> 
+> [...]
+> 
+>> +static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
+>> +             phys_addr_t paddr, size_t size, int prot)
+>> +{
+>> +    struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+>> +    struct mtk_iommu_data *data = dom->cookie;
+>> +    unsigned int page_num = size >> MTK_IOMMU_PAGE_SHIFT;
+> 
+> Since you only advertise a single page size, this will always be 1, so you could either get rid of the loop here...
+> 
 
-IRTE index is programmed into corresponding MSI-X entry of a device.
-When an interrupt message is triggered from that device, IRQ remapping
-hardware will use the index to find the IRTE entry.
+I would prefer your following advise to change the pgsize_bitmap. 
+I would follow your advise in the next version.
+Thanks very much.
 
-As long as host kernel has strict control of MSI-X table, it can choose to
-not validate source-id as long as IRTE index is trusted.
-
-That is why I concerned you cannot do this simply based on whether 
-IRQ remapping is available on x86. If such usage is really required,
-you'll need some more accurate indicator per iommu structure to tell
-whether safe to allow mmap MSI-X to user space.
-
-Thanks
-Kevin
+>> +    unsigned long flags;
+>> +    unsigned int i;
+>> +    u32 *pgt_base_iova;
+>> +    u32 pabase = (u32)paddr;
+>> +    int map_size = 0;
+>> +
+>> +    spin_lock_irqsave(&dom->pgtlock, flags);
+>> +    pgt_base_iova = dom->pgt_va + (iova  >> MTK_IOMMU_PAGE_SHIFT);
+>> +    for (i = 0; i < page_num; i++) {
+>> +        pgt_base_iova[i] = pabase | F_DESC_VALID | F_DESC_NONSEC;
+>> +        pabase += MTK_IOMMU_PAGE_SIZE;
+>> +        map_size += MTK_IOMMU_PAGE_SIZE;
+>> +    }
+>> +    dma_sync_single_for_device(data->dev,
+>> +            dom->pgt_pa + (iova >> MTK_IOMMU_PAGE_SHIFT),
+>> +            (size >> MTK_IOMMU_PAGE_SHIFT) * sizeof(u32),
+>> +            DMA_TO_DEVICE);
+>> +    spin_unlock_irqrestore(&dom->pgtlock, flags);
+>> +
+>> +    mtk_iommu_tlb_flush_range(data, iova, size);
+>> +
+>> +    return map_size;
+>> +}
+> 
+> [...]
+> 
+>> +static struct iommu_ops mtk_iommu_ops = {
+>> +    .domain_alloc    = mtk_iommu_domain_alloc,
+>> +    .domain_free    = mtk_iommu_domain_free,
+>> +    .attach_dev    = mtk_iommu_attach_device,
+>> +    .detach_dev    = mtk_iommu_detach_device,
+>> +    .map        = mtk_iommu_map,
+>> +    .unmap        = mtk_iommu_unmap,
+>> +    .map_sg        = default_iommu_map_sg,
+>> +    .iova_to_phys    = mtk_iommu_iova_to_phys,
+>> +    .add_device    = mtk_iommu_add_device,
+>> +    .remove_device    = mtk_iommu_remove_device,
+>> +    .device_group    = mtk_iommu_device_group,
+>> +    .pgsize_bitmap    = MTK_IOMMU_PAGE_SIZE,
+>> +};
+> 
+> ...or perhaps advertise .pgsize_bitmap = ~0UL << MTK_IOMMU_PAGE_SHIFT here, so you actually can handle multiple entries at once for larger mappings - given how simple the page table format is that doesn't seem too unreasonable, especially since it should give you a big efficiency win in terms of TLB maintenance.
+> 
+> Robin.
+> 
