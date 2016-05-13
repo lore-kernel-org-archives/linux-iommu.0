@@ -1,11 +1,9 @@
-From: David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>
-Subject: RE: [PATCH 5/5] vfio-pci: Allow to mmap MSI-X table if interrupt
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 5/5] vfio-pci: Allow to mmap MSI-X table if interrupt
 	remapping is supported
-Date: Fri, 13 May 2016 09:16:18 +0000
-Message-ID: <063D6719AE5E284EB5DD2968C1650D6D5F4BBEDD@AcuExch.aculab.com>
+Date: Fri, 13 May 2016 10:42:36 -0600
+Message-ID: <20160513104236.438a800a@t450s.home>
 References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-	<f7d73ac3-470d-a0d2-0a97-05be630480dd@linux.vnet.ibm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F842653@SHSMSX101.ccr.corp.intel.com>
 	<e064a6a7-a8dc-f71f-1725-f31e03581b8d@linux.vnet.ibm.com>
 	<AADFC41AFE54684AB9EE6CBC0274A5D15F847150@SHSMSX101.ccr.corp.intel.com>
 	<063D6719AE5E284EB5DD2968C1650D6D5F4B52B5@AcuExch.aculab.com>
@@ -20,12 +18,12 @@ References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
 	<20160512114735.7ec61bd3@t450s.home>
 	<AADFC41AFE54684AB9EE6CBC0274A5D15F853FA4@SHSMSX101.ccr.corp.intel.com>
 	<20160512233246.347b8b3c@t450s.home>
+	<AADFC41AFE54684AB9EE6CBC0274A5D15F854287@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160512233246.347b8b3c-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D15F854287-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -35,43 +33,105 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Alex Williamson' <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org" <alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org>, "nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org" <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org" <ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org" <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, paulus@samba.o
+To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org" <alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org>, "nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org" <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org" <ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>, Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org" <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: 13 May 2016 06:33
-...
-> Simply denying direct writes to the vector table or preventing mapping
-> of the vector table into the user address space does not provide any
-> tangible form of protection.  Many devices make use of window registers
-> that allow backdoors to arbitrary device registers.  Some drivers even
-> use this as the primary means for configuring MSI-X, which makes them
-> incompatible with device assignment without device specific quirks to
-> enable virtualization of these paths.
+On Fri, 13 May 2016 06:50:25 +0000
+"Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
 
-We have one fgpa based PCIe slave where the device driver has to read
-the MSI-X table and then write the value to other fpga registers so
-that the logic can generate the correct PCIe write cycle when an
-interrupt is requested.
-The MSI-X table itself is only as a PCIe slave.
+> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
+> > Sent: Friday, May 13, 2016 1:33 PM  
+> > > >
+> > > > As argued previously in this thread, there's nothing special about a
+> > > > DMA write to memory versus a DMA write to a special address that
+> > > > triggers an MSI vector.  If the device is DMA capable, which we assume
+> > > > all are, it can be fooled into generating those DMA writes regardless
+> > > > of whether we actively block access to the MSI-X vector table itself.  
+> > >
+> > > But with DMA remapping above can be blocked.  
+> > 
+> > How?  VT-d explicitly ignores DMA writes to 0xFEEx_xxxx, section 3.13:
+> > 
+> >   Write requests without PASID of DWORD length are treated as interrupt
+> >   requests. Interrupt requests are not subjected to DMA remapping[...]
+> >   Instead, remapping hardware can be enabled to subject such interrupt
+> >   requests to interrupt remapping.  
+> 
+> Thanks for catching this!
+> 
+> >   
+> > > > MSI-X vector table access w/o interrupt remapping is to avoid obvious
+> > > > collisions if it were to be programmed directly, it doesn't actually
+> > > > prevent an identical DMA transaction from being generated by other  
+> > >
+> > > Kernel can enable DMA remapping but disable IRQ remapping. In such
+> > > case identical DMA transaction can be prevented.  
+> > 
+> > Not according to the VT-d spec as quoted above.  If so, how?  
+> 
+> So my argument on this is wrong. sorry.
+> 
+> >   
+> > > Anyway my point is simple. Let's ignore how Linux kernel implements
+> > > IRQ remapping on x86 (which may change time to time), and just
+> > > focus on architectural possibility. Non-x86 platform may implement
+> > > IRQ remapping completely separate from device side, then checking
+> > > availability of IRQ remapping is enough to decide whether mmap
+> > > MSI-X table is safe. x86 with VT-d can be configured to a mode
+> > > requiring host control of both MSI-X entry and IRQ remapping hardware
+> > > (without source id check). In such case it's insufficient to make
+> > > decision simply based on IRQ remapping availability. We need a way
+> > > to query from IRQ remapping module whether it's actually safe to
+> > > mmap MSI-X.  
+> > 
+> > We're going in circles here.  This patch is attempting to remove
+> > protection from the MSI-X vector table that is really nothing more than
+> > security theater already.  That "protection" only actually prevents
+> > casual misuse of the API which is really only a problem when the
+> > platform offers no form of interrupt isolation, such as VT-d with DMA
+> > remapping but not interrupt remapping.  Disabling source-id checking in
+> > VT-d should be handled as the equivalent of disabling interrupt
+> > remapping altogether as far as the IOMMU API is concerned.  That's
+> > a trivial gap that should be fixed.  There is no such thing as a secure  
+> 
+> That is the main change I'm asking against original patch, which has:
+> 
+> +static void pci_check_msi_remapping(struct pci_dev *pdev,
+> +					const struct iommu_ops *ops)
+> +{
+> +	struct pci_bus *bus = pdev->bus;
+> +
+> +	if (ops->capable(IOMMU_CAP_INTR_REMAP) &&
+> +		!(bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP))
+> +		bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
+> +}
+> +
+> 
+> Above flag should be cleared when source-id checking is disabled on x86. 
+> Yes, VFIO is part of OS but any assumption we made about other parts
+> needs to be reflected accurately in the code.
 
-We also have host accessible DMA controllers that the device driver
-uses to copy data to kernel memory.
-These could easily be used to generate arbitrary MSI-X requests.
-As I've said earlier it is almost certainly possible to get any
-ethernet hardware to perform something similar.
+I would say this is an independent bug which should be fixed simply as:
 
-So without hardware that is able to limit the memory and MSI-X
-that each PCIe endpoint can access I believe that if a virtualisation
-system gives a guest kernel direct access to a PCIe devices it gives
-the guest kernel the ability to raise and MSI-X interrupt and read/write
-any physical memory.
-(I've not looked at the cpu virtualisation support, but do know what
-the PCIe devices can do.)
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index e1852e8..60d55c0 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4948,7 +4948,7 @@ static bool intel_iommu_capable(enum iommu_cap cap)
+        if (cap == IOMMU_CAP_CACHE_COHERENCY)
+                return domain_update_iommu_snooping(NULL) == 1;
+        if (cap == IOMMU_CAP_INTR_REMAP)
+-               return irq_remapping_enabled == 1;
++               return irq_remapping_enabled == 1 && !disable_sourceid_checking;
+ 
+        return false;
+ }
 
-More interestingly, probably the 'worst' thing (from a security point of view)
-that changing the MSI-X table lets you do is a write to an arbitrary
-physical memory address.
+I believe the intent of the IOMMU_CAP_INTR_REMAP flag is simply to
+indicate interrupt isolation is provided through the IOMMU.  Nobody
+cares about the interrupt remapping support beyond that.  If source-id
+checking is disabled, the remainder of interrupt remapping is
+irrelevant as far as this capability is concerned imho.  Thanks,
 
-	David
+Alex
