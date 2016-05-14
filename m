@@ -1,29 +1,13 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 5/5] vfio-pci: Allow to mmap MSI-X table if interrupt
-	remapping is supported
-Date: Fri, 13 May 2016 10:42:36 -0600
-Message-ID: <20160513104236.438a800a@t450s.home>
-References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-	<e064a6a7-a8dc-f71f-1725-f31e03581b8d@linux.vnet.ibm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F847150@SHSMSX101.ccr.corp.intel.com>
-	<063D6719AE5E284EB5DD2968C1650D6D5F4B52B5@AcuExch.aculab.com>
-	<4be013bc-e81b-84c5-06d3-e1b3f46b3227@linux.vnet.ibm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F8474A4@SHSMSX101.ccr.corp.intel.com>
-	<20160505090513.56886c12@t450s.home>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F84EEBA@SHSMSX101.ccr.corp.intel.com>
-	<20160511095331.18436241@t450s.home>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F850046@SHSMSX101.ccr.corp.intel.com>
-	<20160511202042.77593861@t450s.home>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F8507E8@SHSMSX101.ccr.corp.intel.com>
-	<20160512114735.7ec61bd3@t450s.home>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F853FA4@SHSMSX101.ccr.corp.intel.com>
-	<20160512233246.347b8b3c@t450s.home>
-	<AADFC41AFE54684AB9EE6CBC0274A5D15F854287@SHSMSX101.ccr.corp.intel.com>
+From: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH] iommu/rockchip: fix zap cache during device attach
+Date: Sat, 14 May 2016 22:19:43 +0200
+Message-ID: <11003810.ccjcAXkzhi@phil>
+References: <20160510155046.24515-1-john@metanate.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D15F854287-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+In-Reply-To: <20160510155046.24515-1-john-HooS5bfzL4hWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -33,105 +17,24 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org" <alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org>, "nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org" <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org" <ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org" <warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Laight <David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org>, Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>, "mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org" <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, "benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org" <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
+To: John Keeping <john-HooS5bfzL4hWk0Htik3J/w@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, ZhengShunQian <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 13 May 2016 06:50:25 +0000
-"Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> wrote:
+Am Dienstag, 10. Mai 2016, 16:50:46 schrieb John Keeping:
+> rk_iommu_command() takes a struct rk_iommu and iterates over the slave
+> MMUs, so this is doubly wrong in that we're passing in the wrong pointer
+> and talking to MMUs that we shouldn't be.
+> 
+> Fixes: cd6438c5f844 ("iommu/rockchip: Reconstruct to support multi
+> slaves") Signed-off-by: John Keeping <john-HooS5bfzL4hWk0Htik3J/w@public.gmane.org>
 
-> > From: Alex Williamson [mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> > Sent: Friday, May 13, 2016 1:33 PM  
-> > > >
-> > > > As argued previously in this thread, there's nothing special about a
-> > > > DMA write to memory versus a DMA write to a special address that
-> > > > triggers an MSI vector.  If the device is DMA capable, which we assume
-> > > > all are, it can be fooled into generating those DMA writes regardless
-> > > > of whether we actively block access to the MSI-X vector table itself.  
-> > >
-> > > But with DMA remapping above can be blocked.  
-> > 
-> > How?  VT-d explicitly ignores DMA writes to 0xFEEx_xxxx, section 3.13:
-> > 
-> >   Write requests without PASID of DWORD length are treated as interrupt
-> >   requests. Interrupt requests are not subjected to DMA remapping[...]
-> >   Instead, remapping hardware can be enabled to subject such interrupt
-> >   requests to interrupt remapping.  
-> 
-> Thanks for catching this!
-> 
-> >   
-> > > > MSI-X vector table access w/o interrupt remapping is to avoid obvious
-> > > > collisions if it were to be programmed directly, it doesn't actually
-> > > > prevent an identical DMA transaction from being generated by other  
-> > >
-> > > Kernel can enable DMA remapping but disable IRQ remapping. In such
-> > > case identical DMA transaction can be prevented.  
-> > 
-> > Not according to the VT-d spec as quoted above.  If so, how?  
-> 
-> So my argument on this is wrong. sorry.
-> 
-> >   
-> > > Anyway my point is simple. Let's ignore how Linux kernel implements
-> > > IRQ remapping on x86 (which may change time to time), and just
-> > > focus on architectural possibility. Non-x86 platform may implement
-> > > IRQ remapping completely separate from device side, then checking
-> > > availability of IRQ remapping is enough to decide whether mmap
-> > > MSI-X table is safe. x86 with VT-d can be configured to a mode
-> > > requiring host control of both MSI-X entry and IRQ remapping hardware
-> > > (without source id check). In such case it's insufficient to make
-> > > decision simply based on IRQ remapping availability. We need a way
-> > > to query from IRQ remapping module whether it's actually safe to
-> > > mmap MSI-X.  
-> > 
-> > We're going in circles here.  This patch is attempting to remove
-> > protection from the MSI-X vector table that is really nothing more than
-> > security theater already.  That "protection" only actually prevents
-> > casual misuse of the API which is really only a problem when the
-> > platform offers no form of interrupt isolation, such as VT-d with DMA
-> > remapping but not interrupt remapping.  Disabling source-id checking in
-> > VT-d should be handled as the equivalent of disabling interrupt
-> > remapping altogether as far as the IOMMU API is concerned.  That's
-> > a trivial gap that should be fixed.  There is no such thing as a secure  
-> 
-> That is the main change I'm asking against original patch, which has:
-> 
-> +static void pci_check_msi_remapping(struct pci_dev *pdev,
-> +					const struct iommu_ops *ops)
-> +{
-> +	struct pci_bus *bus = pdev->bus;
-> +
-> +	if (ops->capable(IOMMU_CAP_INTR_REMAP) &&
-> +		!(bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP))
-> +		bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
-> +}
-> +
-> 
-> Above flag should be cleared when source-id checking is disabled on x86. 
-> Yes, VFIO is part of OS but any assumption we made about other parts
-> needs to be reflected accurately in the code.
+on a rk3288-veyron
+Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
+Reviewed-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 
-I would say this is an independent bug which should be fixed simply as:
+I was wondering for a short time why this didn't spew warnings until I 
+realized that the iommu->bases[i] is of course a void* .
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index e1852e8..60d55c0 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4948,7 +4948,7 @@ static bool intel_iommu_capable(enum iommu_cap cap)
-        if (cap == IOMMU_CAP_CACHE_COHERENCY)
-                return domain_update_iommu_snooping(NULL) == 1;
-        if (cap == IOMMU_CAP_INTR_REMAP)
--               return irq_remapping_enabled == 1;
-+               return irq_remapping_enabled == 1 && !disable_sourceid_checking;
- 
-        return false;
- }
 
-I believe the intent of the IOMMU_CAP_INTR_REMAP flag is simply to
-indicate interrupt isolation is provided through the IOMMU.  Nobody
-cares about the interrupt remapping support beyond that.  If source-id
-checking is disabled, the remainder of interrupt remapping is
-irrelevant as far as this capability is concerned imho.  Thanks,
-
-Alex
+Heiko
