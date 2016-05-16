@@ -1,133 +1,69 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V4 6/7] iommu/msm: Use writel_relaxed and add a barrier
-Date: Mon, 16 May 2016 12:19:00 +0530
-Message-ID: <1463381341-30498-7-git-send-email-sricharan@codeaurora.org>
-References: <1463381341-30498-1-git-send-email-sricharan@codeaurora.org>
+From: Nikolay Borisov <kernel-6AxghH7DbtA@public.gmane.org>
+Subject: intel iommu causing performance drop in mlx4 ipoib
+Date: Mon, 16 May 2016 13:39:03 +0300
+Message-ID: <5739A347.20807@kyup.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1463381341-30498-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
-Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Return-path: <linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: linux-rdma-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: matanb-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org
+Cc: guysh-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, "linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, markb-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, erezsh-VPRAkNaXOzVWk0Htik3J/w@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-While using the generic pagetable ops the tlb maintenance
-operation gets completed in the sync callback. So use writel_relaxed
-for all register access and add a mb() at appropriate places.
+Hello, 
 
-Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/iommu/msm_iommu.c         | 11 ++++++++---
- drivers/iommu/msm_iommu_hw-8xxx.h |  7 ++++---
- 2 files changed, 12 insertions(+), 6 deletions(-)
+I've been testing various infiniband cards for performance and one of 
+them is the a ConnectX-3: Mellanox Technologies MT27500 Family [ConnectX-3]. 
 
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index f7b4c11..1240a5a 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -124,6 +124,7 @@ static void msm_iommu_reset(void __iomem *base, int ncb)
- 		SET_TLBLKCR(base, ctx, 0);
- 		SET_CONTEXTIDR(base, ctx, 0);
- 	}
-+	mb(); /* sync */
- }
- 
- static void __flush_iotlb(void *cookie)
-@@ -143,6 +144,7 @@ static void __flush_iotlb(void *cookie)
- 
- 		__disable_clocks(iommu);
- 	}
-+	mb(); /* sync */
- fail:
- 	return;
- }
-@@ -181,7 +183,7 @@ fail:
- 
- static void __flush_iotlb_sync(void *cookie)
- {
--	/* To avoid a null function pointer */
-+	mb(); /* sync */
- }
- 
- static const struct iommu_gather_ops msm_iommu_gather_ops = {
-@@ -235,6 +237,7 @@ static void config_mids(struct msm_iommu_dev *iommu,
- 		/* Set security bit override to be Non-secure */
- 		SET_NSCFG(iommu->base, mid, 3);
- 	}
-+	mb(); /* sync */
- }
- 
- static void __reset_context(void __iomem *base, int ctx)
-@@ -257,6 +260,7 @@ static void __reset_context(void __iomem *base, int ctx)
- 	SET_TLBFLPTER(base, ctx, 0);
- 	SET_TLBSLPTER(base, ctx, 0);
- 	SET_TLBLKCR(base, ctx, 0);
-+	mb(); /* sync */
- }
- 
- static void __program_context(void __iomem *base, int ctx,
-@@ -305,6 +309,7 @@ static void __program_context(void __iomem *base, int ctx,
- 
- 	/* Enable the MMU */
- 	SET_M(base, ctx, 1);
-+	mb(); /* sync */
- }
- 
- static struct iommu_domain *msm_iommu_domain_alloc(unsigned type)
-@@ -500,7 +505,7 @@ static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
- 	/* Invalidate context TLB */
- 	SET_CTX_TLBIALL(iommu->base, master->num, 0);
- 	SET_V2PPR(iommu->base, master->num, va & V2Pxx_VA);
--
-+	mb(); /* sync */
- 	par = GET_PAR(iommu->base, master->num);
- 
- 	/* We are dealing with a supersection */
-@@ -714,7 +719,7 @@ static int msm_iommu_probe(struct platform_device *pdev)
- 	par = GET_PAR(iommu->base, 0);
- 	SET_V2PCFG(iommu->base, 0, 0);
- 	SET_M(iommu->base, 0, 0);
--
-+	mb(); /* sync */
- 	if (!par) {
- 		pr_err("Invalid PAR value detected\n");
- 		ret = -ENODEV;
-diff --git a/drivers/iommu/msm_iommu_hw-8xxx.h b/drivers/iommu/msm_iommu_hw-8xxx.h
-index 84ba5739..161036c 100644
---- a/drivers/iommu/msm_iommu_hw-8xxx.h
-+++ b/drivers/iommu/msm_iommu_hw-8xxx.h
-@@ -24,10 +24,10 @@
- #define GET_CTX_REG(reg, base, ctx) \
- 				(readl((base) + (reg) + ((ctx) << CTX_SHIFT)))
- 
--#define SET_GLOBAL_REG(reg, base, val)	writel((val), ((base) + (reg)))
-+#define SET_GLOBAL_REG(reg, base, val)	writel_relaxed((val), ((base) + (reg)))
- 
- #define SET_CTX_REG(reg, base, ctx, val) \
--			writel((val), ((base) + (reg) + ((ctx) << CTX_SHIFT)))
-+		writel_relaxed((val), ((base) + (reg) + ((ctx) << CTX_SHIFT)))
- 
- /* Wrappers for numbered registers */
- #define SET_GLOBAL_REG_N(b, n, r, v) SET_GLOBAL_REG(b, ((r) + (n << 2)), (v))
-@@ -48,7 +48,8 @@
- #define SET_FIELD(addr, mask, shift, v) \
- do { \
- 	int t = readl(addr); \
--	writel((t & ~((mask) << (shift))) + (((v) & (mask)) << (shift)), addr);\
-+	writel_relaxed((t & ~((mask) << (shift))) + \
-+		       (((v) & (mask)) << (shift)), addr);\
- } while (0)
- 
- 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+I've observed a strange performance pathology with it when running ipoib 
+and using a naive iperf test. My setup has multiple machines with a mix 
+of qlogic/mellanox cards, connected via an QLogic 12300 switch. All of 
+the nodes are running on 4x 10Gbps. When I run  a performance test and 
+the mellanox card is a server i.e it is receiving data I get very bad 
+performance. By this I mean I cannot get more than 4 gigabits per 
+second - very low. 'perf top' clearly shows that the culprit is 
+intel_map_page which is being called form the receive path 
+of the mellanox adapter: 
+
+84.26%     0.04%  ksoftirqd/0  [kernel.kallsyms]  [k] intel_map_page                            
+            |
+            --- intel_map_page
+               |          
+               |--98.38%-- ipoib_cm_alloc_rx_skb
+               |          ipoib_cm_handle_rx_wc
+               |          ipoib_poll
+               |          net_rx_action
+               |          __do_softirq
+               |          run_ksoftirqd
+               |          smpboot_thread_fn
+               |          kthread
+               |          ret_from_fork
+
+
+When I disable intel_iommu support (By defualt the iommu is not 
+turned on, just compiled, with this performance profile I have 
+compiled out the code altogether) things look very differently:
+
+         86.76%     0.16%  ksoftirqd/0  [kernel.kallsyms]  [k] ipoib_poll                                
+            |
+            --- ipoib_poll
+                net_rx_action
+                __do_softirq
+
+
+
+Essentially the majority is spent in just receiving the packets and the 
+sustained rate is 26Gbps. So the question why does compiling in (but not 
+enabling intel_iommu=on kills performance) only on the receive side, e.g. if 
+the machine which exhibits poor performance with the mlx card is a client, 
+that is the mellanox driver is sending data the performance is not affected. 
+So far the only workaround is to remove intel iommu support in the kernel 
+altogether. 
+
+Regards, 
+Nikolay
+--
+To unsubscribe from this list: send the line "unsubscribe linux-rdma" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
