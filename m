@@ -1,73 +1,58 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V4 6/7] iommu/msm: Use writel_relaxed and add a barrier
-Date: Tue, 17 May 2016 15:52:17 +0200
-Message-ID: <3070591.xyl7SB8DB7@wuerfel>
-References: <1463381341-30498-1-git-send-email-sricharan@codeaurora.org> <1463381341-30498-7-git-send-email-sricharan@codeaurora.org>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCHv6 2/8] dma-debug: add support for resource mappings
+Date: Tue, 17 May 2016 10:50:02 -0400
+Message-ID: <20160517145002.GD4074@char.us.oracle.com>
+References: <1462812247-3414-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+	<1462812247-3414-3-git-send-email-niklas.soderlund+renesas@ragnatech.se>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1463381341-30498-7-git-send-email-sricharan@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Sricharan R <sricharan@codeaurora.org>
-Cc: devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, joro@8bytes.org, robdclark@gmail.com, iommu@lists.linux-foundation.org, srinivas.kandagatla@linaro.org, laurent.pinchart@ideasonboard.com, treding@nvidia.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, stepanm@codeaurora.org, architt@codeaurora.org, robh@kernel.org
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1462812247-3414-3-git-send-email-niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Monday 16 May 2016 12:19:00 Sricharan R wrote:
-> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-> index f7b4c11..1240a5a 100644
-> --- a/drivers/iommu/msm_iommu.c
-> +++ b/drivers/iommu/msm_iommu.c
-> @@ -124,6 +124,7 @@ static void msm_iommu_reset(void __iomem *base, int ncb)
->                 SET_TLBLKCR(base, ctx, 0);
->                 SET_CONTEXTIDR(base, ctx, 0);
->         }
-> +       mb(); /* sync */
->  }
->  
->  static void __flush_iotlb(void *cookie)
-> @@ -143,6 +144,7 @@ static void __flush_iotlb(void *cookie)
->  
->                 __disable_clocks(iommu);
->         }
-> +       mb(); /* sync */
->  fail:
->         return;
->  }
+> +void debug_dma_map_resource(struct device *dev, phys_addr_t addr, size_t size,
+> +			    int direction, dma_addr_t dma_addr)
+> +{
+> +	struct dma_debug_entry *entry;
+> +
+> +	if (unlikely(dma_debug_disabled()))
+> +		return;
+> +
+> +	entry = dma_entry_alloc();
+> +	if (!entry)
+> +		return;
+> +
+> +	entry->type		= dma_debug_resource;
+> +	entry->dev		= dev;
+> +	entry->pfn		= __phys_to_pfn(addr);
+> +	entry->offset		= addr - PHYS_PFN(entry->pfn);
 
-These comments are completely useless. What is the specific race
-that you are protecting against, and why are the implicit barriers
-not sufficient here? Please find a better way to document what
-is going on.
+Is that right? 
 
-> diff --git a/drivers/iommu/msm_iommu_hw-8xxx.h b/drivers/iommu/msm_iommu_hw-8xxx.h
-> index 84ba5739..161036c 100644
-> --- a/drivers/iommu/msm_iommu_hw-8xxx.h
-> +++ b/drivers/iommu/msm_iommu_hw-8xxx.h
-> @@ -24,10 +24,10 @@
->  #define GET_CTX_REG(reg, base, ctx) \
->                                 (readl((base) + (reg) + ((ctx) << CTX_SHIFT)))
->  
-> -#define SET_GLOBAL_REG(reg, base, val) writel((val), ((base) + (reg)))
-> +#define SET_GLOBAL_REG(reg, base, val) writel_relaxed((val), ((base) + (reg)))
->  
->  #define SET_CTX_REG(reg, base, ctx, val) \
-> -                       writel((val), ((base) + (reg) + ((ctx) << CTX_SHIFT)))
-> +               writel_relaxed((val), ((base) + (reg) + ((ctx) << CTX_SHIFT)))
->  
->  /* Wrappers for numbered registers */
->  #define SET_GLOBAL_REG_N(b, n, r, v) SET_GLOBAL_REG(b, ((r) + (n << 2)), (v))
-> @@ -48,7 +48,8 @@
->  #define SET_FIELD(addr, mask, shift, v) \
->  do { \
->         int t = readl(addr); \
-> -       writel((t & ~((mask) << (shift))) + (((v) & (mask)) << (shift)), addr);\
-> +       writel_relaxed((t & ~((mask) << (shift))) + \
-> +                      (((v) & (mask)) << (shift)), addr);\
->  } while (0)
+__phys_to_pfn(addr) is PHYS_PFN(addr), so what you get here is
 
-No, please add a new macro for the relaxed accessors and then add comments
-in the places where those are used, to document why you can take shortcuts
-in those places.
+addr - PHYS_PFN(PHYS_PFN(addr)) ?
 
-	Arnd
+
+> +	entry->size		= size;
+> +	entry->dev_addr		= dma_addr;
+> +	entry->direction	= direction;
+> +	entry->map_err_type	= MAP_ERR_NOT_CHECKED;
+> +
+> +	add_dma_entry(entry);
+> +}
+> +EXPORT_SYMBOL(debug_dma_map_resource);
+> +
