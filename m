@@ -1,99 +1,178 @@
-From: Jayachandran C <jchandra@broadcom.com>
-Subject: Re: [PATCH v2 1/2] PCI: Add PCI device flag PCI_DEV_FLAGS_DMA_ALIAS_ROOT
-Date: Tue, 17 May 2016 17:25:52 +0530
-Message-ID: <CAKc_7PUHvx0VCkVUXDVawDscyqAmNHzonoMWAHTQ=yWF7HVL=A@mail.gmail.com>
-References: <linux-pci@vger.kernel.org> <1462700001-30086-1-git-send-email-jchandra@broadcom.com>
- <5730621B.2050503@arm.com> <CAKc_7PVAV6uAbEFLWHyh1hngLa1PdJxPzk7bPoppexU1oAJHnw@mail.gmail.com>
- <573340F9.6050507@arm.com>
+From: Tomasz Nowicki <tn@semihalf.com>
+Subject: Re: [RFC PATCH 09/11] drivers: acpi: implement acpi_dma_configure
+Date: Tue, 17 May 2016 14:32:19 +0200
+Message-ID: <573B0F53.109@semihalf.com>
+References: <1460654743-7896-1-git-send-email-lorenzo.pieralisi@arm.com>
+ <1460654743-7896-10-git-send-email-lorenzo.pieralisi@arm.com>
+ <573AD142.6020107@semihalf.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <573340F9.6050507@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>, Linux PCI <linux-pci@vger.kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <573AD142.6020107@semihalf.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Jon Masters <jcm@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 11, 2016 at 7:56 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 11/05/16 07:28, Jayachandran C wrote:
->>
->> On Mon, May 9, 2016 at 3:40 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->>>
->>> On 08/05/16 10:33, Jayachandran C via iommu wrote:
->>>>
->>>>
->>>> Add a new flag PCI_DEV_FLAGS_DMA_ALIAS_ROOT to limit the DMA alias
->>>> search to go no further than the bridge where the IOMMU is attached.
->>>>
->>>> This has been added to support Broadcom's Vulcan which has the SMMUv3
->>>> and GIC ITS associated with an intermediate bridge in the PCI topology.
->>>> Traversing to buses above would hit internal glue bridges which will
->>>> change the RID.
->>>
->>>
->>>
->>> Can you not just have the relevant callback function detect the relevant
->>> node and terminate the walk of its own accord? That's what I was aiming
->>> for
->>> in this patch for the IOMMU setup:
->>>
->>> http://article.gmane.org/gmane.linux.kernel.iommu/12456
->>>
->>> Is there some flaw in that approach I've missed?
->>
->>
->> Not flaw as such, but:
->>   -  We need to support OF as well as ACPI, so the firmware dependent
->>     approach will not work. The ACPI code does not exist right now, but
->>     there are patches for this in development.
->>   - GICv3 ITS also uses the RIDs. I need to replicate the same logic in
->>     pci/msi.c and irqchip/irq-gic-v3-its-pci-msi.c for MSI. For IOMMU, I
->>     have to update iommu/arm-smmu-v3.c and in other places in iommu
->>     code  where pci_for_each_dma_alias is called.
->>   - since it is non-standard PCIe topology for the processor, a quirk
->> seemed
->>     to be the right way to handle it.
->>
->> I am still figuring out the right approach here, so comments are welcome.
->
->
-> Oh for sure, I didn't mean to imply that that code is a complete ready-made
-> solution, just that in general it seems a fairly straightforward thing to
-> handle without touching the PCI core:
->
-> - We already have to know whichever parent device has the
-> msi-map/iommu-map/IORT table.
-> - We're aware of that parent at the point we're doing the DMA/MSI
-> configuration.
-> - Therefore those operations already have everything they need for their
-> callback to be able to stop when it reaches the relevant parent device.
-> Doing it in a firmware-agnostic manner is merely an implementation detail.
->
-> Since we'll basically be funnelling both MSI and IOMMU RID translation
-> through a common code path, there should only need to be be one place to
-> handle the DMA alias walk - with that first cut of my PCI/generic IOMMU
-> bindings series I didn't try very hard to refactor things - v2 (probably
-> post-merge-window now) will be a bit more thorough, now that I have a better
-> idea of what thing should look like
->
-> Ignore what arm-smmu-v3.c does, because it's wrong anyway. I need to fix
-> that in the next version as well, even if it's just calling out directly to
-> of_pci_map_rid rather than a proper of_xlate implementation.
->
-> Now what I realise I *have* missed is the alias detection in
-> iommu_get_group_for_dev, to which the "known parent device" reasoning
-> doesn't apply, and phantom aliasing might well muck things up. Thinking
-> further, if these upstream bridges exist but don't affect the outgoing RID,
-> then might it make sense to quirk them as transparent? (I have no actual
-> objection to this patch, though, and at this point I'm just chucking ideas
-> about).
 
-I had an earlier patch that had a quirk which marked some bridges to
-be skipped https://patchwork.ozlabs.org/patch/582633/ which is similar
-to the transparent idea. The discussion on that patch seems to indicate
-that having a "root" flag may be better.
 
-> Robin.
-[...]
+On 17.05.2016 10:07, Tomasz Nowicki wrote:
+> Hi Lorenzo,
+>
+> On 14.04.2016 19:25, Lorenzo Pieralisi wrote:
+>> On DT based systems, the of_dma_configure() API implements DMA
+>> configuration
+>> for a given device. On ACPI systems an API equivalent to
+>> of_dma_configure()
+>> is missing which implies that it is currently not possible to set-up DMA
+>> operations for devices through the ACPI generic kernel layer.
+>>
+>> This patch fills the gap by introducing acpi_dma_configure/deconfigure()
+>> calls, that carry out IOMMU configuration through IORT (on systems where
+>> it is present) and call arch_setup_dma_ops(...) with the retrieved
+>> parameters.
+>>
+>> The DMA range size passed to arch_setup_dma_ops() is sized according
+>> to the device coherent_dma_mask (starting at address 0x0), mirroring the
+>> DT probing path behaviour when a dma-ranges property is not provided
+>> for the device being probed; this changes the current
+>> arch_setup_dma_ops()
+>> call parameters in the ACPI probing case, but since arch_setup_dma_ops()
+>> is a NOP on all architectures but ARM/ARM64 this patch does not change
+>> the current kernel behaviour on them.
+>>
+>> This patch updates ACPI and PCI core code to use the newly introduced
+>> acpi_dma_configure function, providing the same functionality
+>> as of_dma_configure on ARM systems and leaving behaviour unchanged
+>> for all other arches.
+>>
+>> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+>> Cc: Bjorn Helgaas <bhelgaas@google.com>
+>> Cc: Robin Murphy <robin.murphy@arm.com>
+>> Cc: Tomasz Nowicki <tn@semihalf.com>
+>> Cc: Joerg Roedel <joro@8bytes.org>
+>> Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+>> ---
+>>   drivers/acpi/glue.c     |  4 +--
+>>   drivers/acpi/iort.c     | 85
+>> +++++++++++++++++++++++++++++++++++++++++++++++++
+>>   drivers/acpi/scan.c     | 29 +++++++++++++++++
+>>   drivers/pci/probe.c     |  3 +-
+>>   include/acpi/acpi_bus.h |  2 ++
+>>   include/linux/acpi.h    |  5 +++
+>>   include/linux/iort.h    |  9 ++++++
+>>   7 files changed, 133 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/acpi/glue.c b/drivers/acpi/glue.c
+>> index 5ea5dc2..f8d6564 100644
+>> --- a/drivers/acpi/glue.c
+>> +++ b/drivers/acpi/glue.c
+>> @@ -227,8 +227,7 @@ int acpi_bind_one(struct device *dev, struct
+>> acpi_device *acpi_dev)
+>>
+>>       attr = acpi_get_dma_attr(acpi_dev);
+>>       if (attr != DEV_DMA_NOT_SUPPORTED)
+>> -        arch_setup_dma_ops(dev, 0, 0, NULL,
+>> -                   attr == DEV_DMA_COHERENT);
+>> +        acpi_dma_configure(dev, attr);
+>>
+>>       acpi_physnode_link_name(physical_node_name, node_id);
+>>       retval = sysfs_create_link(&acpi_dev->dev.kobj, &dev->kobj,
+>> @@ -251,6 +250,7 @@ int acpi_bind_one(struct device *dev, struct
+>> acpi_device *acpi_dev)
+>>       return 0;
+>>
+>>    err:
+>> +    acpi_dma_deconfigure(dev);
+>>       ACPI_COMPANION_SET(dev, NULL);
+>>       put_device(dev);
+>>       put_device(&acpi_dev->dev);
+>> diff --git a/drivers/acpi/iort.c b/drivers/acpi/iort.c
+>> index 2b5ce65..b1bb8fb 100644
+>> --- a/drivers/acpi/iort.c
+>> +++ b/drivers/acpi/iort.c
+>> @@ -72,6 +72,31 @@ int iort_iommu_set_node(struct iommu_ops *ops,
+>> struct acpi_iort_node *node,
+>>       return 0;
+>>   }
+>>
+>> +/**
+>> + * iort_iommu_get_node - Retrieve iort_iommu_node associated with an
+>> IORT node.
+>> + *
+>> + * @node: IORT table node to be looked-up
+>> + *
+>> + * Returns: iort_iommu_node pointer on success
+>> + *          NULL on failure
+>> + */
+>> +static struct iort_iommu_node *iort_iommu_get_node(struct
+>> acpi_iort_node *node)
+>> +{
+>> +    struct iort_iommu_node *iommu_node;
+>> +
+>> +    spin_lock(&iort_iommu_lock);
+>> +    list_for_each_entry(iommu_node, &iort_iommu_list, list) {
+>> +        if (iommu_node->node == node)
+>> +            goto found;
+>> +    }
+>> +
+>> +    iommu_node = NULL;
+>> +found:
+>> +    spin_unlock(&iort_iommu_lock);
+>> +
+>> +    return iommu_node;
+>> +}
+>> +
+>>   typedef acpi_status (*iort_find_node_callback)
+>>       (struct acpi_iort_node *node, void *context);
+>>
+>> @@ -405,6 +430,66 @@ iort_pci_get_domain(struct pci_dev *pdev, u32
+>> req_id)
+>>       return domain_handle;
+>>   }
+>>
+>> +static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+>> +{
+>> +    u32 *rid = data;
+>> +
+>> +    *rid = alias;
+>> +    return 0;
+>> +}
+>> +
+>> +/**
+>> + * iort_iommu_configure - Set-up IOMMU configuration for a device.
+>> + *
+>> + * @dev: device that requires IOMMU set-up
+>> + *
+>> + * Returns: iommu_ops pointer on configuration success
+>> + *          NULL on configuration failure
+>> + */
+>> +struct iommu_ops *iort_iommu_configure(struct device *dev)
+>> +{
+>> +    struct acpi_iort_node *node, *parent;
+>> +    struct iommu_ops *ops = NULL;
+>> +    struct iommu_fwspec fwspec;
+>> +    struct iort_iommu_node *iommu_node;
+>> +    u32 rid = 0, devid = 0;
+>> +
+>> +    if (dev_is_pci(dev)) {
+>> +        struct pci_bus *bus = to_pci_dev(dev)->bus;
+>> +
+>> +        pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid,
+>> +                       &rid);
+>> +
+>> +        node = iort_scan_node(ACPI_IORT_NODE_PCI_ROOT_COMPLEX,
+>> +                      iort_find_dev_callback, &bus->dev);
+>> +    } else
+>> +        node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
+>> +                      iort_find_dev_callback, dev);
+>
+> I think this will not work for finding host bridge stream ID. We still
+> need to use ACPI_IORT_NODE_PCI_ROOT_COMPLEX but 'dev' is not PCI device,
+> right?
 
-JC.
+After private conversation, I think this part is OK.
+
+Thanks,
+Tomasz
