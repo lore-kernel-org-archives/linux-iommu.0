@@ -1,54 +1,47 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH V4 2/7] documentation: iommu: Add bindings for msm,iommu-v0 ip
-Date: Wed, 18 May 2016 17:38:25 +0530
-Message-ID: <002e01d1b0fe$00488730$00d99590$@codeaurora.org>
-References: <1463381341-30498-1-git-send-email-sricharan@codeaurora.org> <1463381341-30498-3-git-send-email-sricharan@codeaurora.org> <20160516164414.GA25899@rob-hp-laptop>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH V4 6/7] iommu/msm: Use writel_relaxed and add a barrier
+Date: Wed, 18 May 2016 14:15:20 +0200
+Message-ID: <2638968.1a16UdaY62@wuerfel>
+References: <1463381341-30498-1-git-send-email-sricharan@codeaurora.org>
+	<3070591.xyl7SB8DB7@wuerfel>
+	<002c01d1b0fd$e4f3c350$aedb49f0$@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <20160516164414.GA25899@rob-hp-laptop>
-Content-Language: en-us
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: 'Rob Herring' <robh@kernel.org>
-Cc: devicetree@vger.kernel.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, joro@8bytes.org, iommu@lists.linux-foundation.org, robdclark@gmail.com, srinivas.kandagatla@linaro.org, laurent.pinchart@ideasonboard.com, treding@nvidia.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, stepanm@codeaurora.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <002c01d1b0fd$e4f3c350$aedb49f0$@codeaurora.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Rob,
+On Wednesday 18 May 2016 17:37:40 Sricharan wrote:
+> >
+> >These comments are completely useless. What is the specific race
+> >that you are protecting against, and why are the implicit barriers
+> >not sufficient here? Please find a better way to document what
+> >is going on.
+> >
+> 
+> The reason for doing this was, when the tlb maintenance ops are called
+> by  io-pgtable functions, it expects that the tlb_range ops is complete
+> only after the tlb_sync callback is called. Previously we were using
+> writel and the sync in that case was dummy. Also previously every register
+> configuration write was done using writel,  which was an overkill. So now
+> we do all the writes with writel_relaxed  and a barrier in the end. I will
+> change the documentation for this.
 
->> The MSM IOMMU is an implementation compatible with the ARM VMSA short
->> descriptor page tables. It provides address translation for bus masters outside
->> of the CPU, each connected to the IOMMU through a port called micro-TLB.
->> Adding the DT bindings for the same.
->>
->> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
->> ---
->>  .../devicetree/bindings/iommu/msm,iommu-v0.txt     | 64 ++++++++++++++++++++++
->>  1 file changed, 64 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
->>
->> diff --git a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
->b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
->> new file mode 100644
->> index 0000000..b22c607
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
->> @@ -0,0 +1,64 @@
->> +* QCOM IOMMU
->> +
->> +The MSM IOMMU is an implementation compatible with the ARM VMSA short
->> +descriptor page tables. It provides address translation for bus masters outside
->> +of the CPU, each connected to the IOMMU through a port called micro-TLB.
->> +
->> +Required Properties:
->> +
->> +  - compatible: Must contain "qcom,iommu-v0-apq8064".
->
->qcom,apq8064-iommu would be the preferred order and I think you can drop
->the v0.
+If you need the barrier after the write, it probably was already faulty
+before, because writel only implies a barrier before the store, not
+after. Of course all the barriers likely made the whole process so
+slow that you never hit that race in the end.
 
-Ok, will change this.
-
-Regards,
- Sricharan
+	Arnd
