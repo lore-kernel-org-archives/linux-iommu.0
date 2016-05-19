@@ -1,45 +1,73 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH V4 6/7] iommu/msm: Use writel_relaxed and add a barrier
-Date: Wed, 18 May 2016 18:03:51 +0530
-Message-ID: <003101d1b101$8ce470c0$a6ad5240$@codeaurora.org>
-References: <1463381341-30498-1-git-send-email-sricharan@codeaurora.org> <3070591.xyl7SB8DB7@wuerfel> <002c01d1b0fd$e4f3c350$aedb49f0$@codeaurora.org> <2638968.1a16UdaY62@wuerfel>
+From: "Niklas =?iso-8859-1?Q?S=F6derlund?=" <niklas.soderlund@ragnatech.se>
+Subject: Re: [PATCHv6 2/8] dma-debug: add support for resource mappings
+Date: Thu, 19 May 2016 13:21:22 +0200
+Message-ID: <20160519112122.GN29375@bigcity.dyn.berto.se>
+References: <1462812247-3414-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+ <1462812247-3414-3-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+ <20160517145002.GD4074@char.us.oracle.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <2638968.1a16UdaY62@wuerfel>
-Content-Language: en-us
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: 'Arnd Bergmann' <arnd@arndb.de>
-Cc: devicetree@vger.kernel.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, joro@8bytes.org, iommu@lists.linux-foundation.org, robdclark@gmail.com, srinivas.kandagatla@linaro.org, laurent.pinchart@ideasonboard.com, treding@nvidia.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, stepanm@codeaurora.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160517145002.GD4074@char.us.oracle.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: vinod.koul@intel.com, linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, hch@infradead.org, linux-arch@vger.kernel.org, geert+renesas@glider.be, arnd@arndb.de, linus.walleij@linaro.org, laurent.pinchart@ideasonboard.com, dan.j.williams@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Arnd,
->> >
->> >These comments are completely useless. What is the specific race
->> >that you are protecting against, and why are the implicit barriers
->> >not sufficient here? Please find a better way to document what
->> >is going on.
->> >
->>
->> The reason for doing this was, when the tlb maintenance ops are called
->> by  io-pgtable functions, it expects that the tlb_range ops is complete
->> only after the tlb_sync callback is called. Previously we were using
->> writel and the sync in that case was dummy. Also previously every register
->> configuration write was done using writel,  which was an overkill. So now
->> we do all the writes with writel_relaxed  and a barrier in the end. I will
->> change the documentation for this.
->
->If you need the barrier after the write, it probably was already faulty
->before, because writel only implies a barrier before the store, not
->after. Of course all the barriers likely made the whole process so
->slow that you never hit that race in the end.
+Hi Konrad,
 
-ya, it could have worked in this way and i never saw a race issue before this.
-The only reason for changing this was to optimise out the additonal barriers
-that were happening. I do not see any issue now as well, only that the writes would
-be faster.
+Thanks for your feedback.
 
+On 2016-05-17 10:50:02 -0400, Konrad Rzeszutek Wilk wrote:
+> > +void debug_dma_map_resource(struct device *dev, phys_addr_t addr, =
+size_t size,
+> > +			    int direction, dma_addr_t dma_addr)
+> > +{
+> > +	struct dma_debug_entry *entry;
+> > +
+> > +	if (unlikely(dma_debug_disabled()))
+> > +		return;
+> > +
+> > +	entry =3D dma_entry_alloc();
+> > +	if (!entry)
+> > +		return;
+> > +
+> > +	entry->type		=3D dma_debug_resource;
+> > +	entry->dev		=3D dev;
+> > +	entry->pfn		=3D __phys_to_pfn(addr);
+> > +	entry->offset		=3D addr - PHYS_PFN(entry->pfn);
+>=20
+> Is that right?=20
+
+You are correct that should be:
+
+   entry->offset =3D addr - PFN_PHYS(entry->pfn);
+
+Or even better:
+
+   entry->offset =3D addr - __pfn_to_phys(entry->pfn);
+
+I will address this and resend late next week, still hoping for some=20
+more feedback.
+
+>=20
+> __phys_to_pfn(addr) is PHYS_PFN(addr), so what you get here is
+>=20
+> addr - PHYS_PFN(PHYS_PFN(addr)) ?
+>=20
+>=20
+> > +	entry->size		=3D size;
+> > +	entry->dev_addr		=3D dma_addr;
+> > +	entry->direction	=3D direction;
+> > +	entry->map_err_type	=3D MAP_ERR_NOT_CHECKED;
+> > +
+> > +	add_dma_entry(entry);
+> > +}
+> > +EXPORT_SYMBOL(debug_dma_map_resource);
+> > +
+
+--=20
 Regards,
- Sricharan
+Niklas S=F6derlund
