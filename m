@@ -1,75 +1,86 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCHv6 2/8] dma-debug: add support for resource mappings
-Date: Thu, 19 May 2016 12:42:04 +0100
-Message-ID: <573DA68C.3060304@arm.com>
-References: <1462812247-3414-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
- <1462812247-3414-3-git-send-email-niklas.soderlund+renesas@ragnatech.se>
- <20160517145002.GD4074@char.us.oracle.com>
- <20160519112122.GN29375@bigcity.dyn.berto.se>
+From: <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v2 0/5] MT2701 iommu support
+Date: Thu, 19 May 2016 19:49:13 +0800
+Message-ID: <1463658558-567-1-git-send-email-honghui.zhang@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <20160519112122.GN29375@bigcity.dyn.berto.se>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, vinod.koul@intel.com, linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, hch@infradead.org, linux-arch@vger.kernel.org, geert+renesas@glider.be, arnd@arndb.de, linus.walleij@linaro.org, laurent.pinchart@ideasonboard.com, dan.j.williams@intel.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 19/05/16 12:21, Niklas S=F6derlund wrote:
-> Hi Konrad,
->
-> Thanks for your feedback.
->
-> On 2016-05-17 10:50:02 -0400, Konrad Rzeszutek Wilk wrote:
->>> +void debug_dma_map_resource(struct device *dev, phys_addr_t addr, =
-size_t size,
->>> +			    int direction, dma_addr_t dma_addr)
->>> +{
->>> +	struct dma_debug_entry *entry;
->>> +
->>> +	if (unlikely(dma_debug_disabled()))
->>> +		return;
->>> +
->>> +	entry =3D dma_entry_alloc();
->>> +	if (!entry)
->>> +		return;
->>> +
->>> +	entry->type		=3D dma_debug_resource;
->>> +	entry->dev		=3D dev;
->>> +	entry->pfn		=3D __phys_to_pfn(addr);
->>> +	entry->offset		=3D addr - PHYS_PFN(entry->pfn);
->>
->> Is that right?
->
-> You are correct that should be:
->
->     entry->offset =3D addr - PFN_PHYS(entry->pfn);
->
-> Or even better:
->
->     entry->offset =3D addr - __pfn_to_phys(entry->pfn);
+From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-Better still, simply offset_in_page(addr) (as per dma_map_single()).
+  Mediatek's m4u(Multimedia Memory Management Unit) and SMI(Smart
+Multimedia Interface)have two generations HW. They basically sharing the
+same hardware block diagram, but have some difference as below:
 
-Robin.
+  Generation one m4u only supports one layer, flat pagetable addressing,
+and only supports 4K size page mapping. While generation two m4u supports 2
+levels of pagetable which uses the ARM short-descriptor translation table
+format for address translation.
+They have slight different register base and register offset.
+They have very different HW ports defines.
 
-> I will address this and resend late next week, still hoping for some
-> more feedback.
->
->>
->> __phys_to_pfn(addr) is PHYS_PFN(addr), so what you get here is
->>
->> addr - PHYS_PFN(PHYS_PFN(addr)) ?
->>
->>
->>> +	entry->size		=3D size;
->>> +	entry->dev_addr		=3D dma_addr;
->>> +	entry->direction	=3D direction;
->>> +	entry->map_err_type	=3D MAP_ERR_NOT_CHECKED;
->>> +
->>> +	add_dma_entry(entry);
->>> +}
->>> +EXPORT_SYMBOL(debug_dma_map_resource);
->>> +
->
+  Generaion one SMI has additional "async" clock which transform the smi
+clock into emi clock domain, this clock should be prepared and enabled for
+SMI generation one HW.
+The register which control the iommu need to translation the address or not
+for a particular port is located at smi ao base(smi always on register
+base) for generation one SMI HW, but located at each larb's register base
+for generation two HW.
+
+This patch set add mt2701 iommu support, it's based on 4.6-rc1 and James
+Liao's "Add clock support for Mediatek MT2701 v8[1]" and "Mediatek MT2701
+SCPSYS power domain support v7[2]" patch.
+
+v2:
+-Fix syntax errors in dt-bindings.
+-Use dma_alloc/free_coherent to allocate pagetable memory and reduce the
+ streaming DMA stuff.
+-Make the mtk_iommu_ops.pgsize_bitmap as ~0UL << MT2701_IOMMU_PAGE_SHIFT.
+-Use macro instead of variable to indicate the pagetable size.
+-Change some macro name from MTK_XXX to MT2701_XXX.
+
+v1: http://lists.infradead.org/pipermail/linux-mediatek/2016-May/005301.html
+-initial version
+
+[1] http://lists.infradead.org/pipermail/linux-mediatek/2016-May/005439.html
+[2] http://lists.infradead.org/pipermail/linux-mediatek/2016-May/005429.html
+
+Honghui Zhang (5):
+  dt-bindings: mediatek: add descriptions for mediatek mt2701 iommu and
+    smi
+  iommu/mediatek: move the common struct into header file
+  memory/mediatek: add support for mt2701
+  iommu/mediatek: add support for mtk iommu generation one HW
+  ARM: dts: mt2701: add iommu/smi dtsi node for mt2701
+
+ .../devicetree/bindings/iommu/mediatek,iommu.txt   |  13 +-
+ .../memory-controllers/mediatek,smi-common.txt     |  21 +-
+ .../memory-controllers/mediatek,smi-larb.txt       |   4 +-
+ arch/arm/boot/dts/mt2701.dtsi                      |  51 ++
+ drivers/iommu/Kconfig                              |  19 +
+ drivers/iommu/Makefile                             |   1 +
+ drivers/iommu/mtk_iommu.c                          |  62 +-
+ drivers/iommu/mtk_iommu.h                          |  93 +++
+ drivers/iommu/mtk_iommu_v1.c                       | 742 +++++++++++++++++++++
+ drivers/memory/mtk-smi.c                           | 168 ++++-
+ include/dt-bindings/memory/mt2701-larb-port.h      |  85 +++
+ 11 files changed, 1171 insertions(+), 88 deletions(-)
+ create mode 100644 drivers/iommu/mtk_iommu.h
+ create mode 100644 drivers/iommu/mtk_iommu_v1.c
+ create mode 100644 include/dt-bindings/memory/mt2701-larb-port.h
+
+-- 
+1.8.1.1.dirty
