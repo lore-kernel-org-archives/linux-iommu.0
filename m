@@ -1,59 +1,75 @@
-From: "Niklas =?iso-8859-1?Q?S=F6derlund?=" <niklas.soderlund@ragnatech.se>
-Subject: Re: [PATCHv6 3/8] dma-mapping: add dma_{map,unmap}_resource
-Date: Thu, 19 May 2016 13:29:26 +0200
-Message-ID: <20160519112926.GO29375@bigcity.dyn.berto.se>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCHv6 2/8] dma-debug: add support for resource mappings
+Date: Thu, 19 May 2016 12:42:04 +0100
+Message-ID: <573DA68C.3060304@arm.com>
 References: <1462812247-3414-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
- <1462812247-3414-4-git-send-email-niklas.soderlund+renesas@ragnatech.se>
- <20160517145445.GE4074@char.us.oracle.com>
+ <1462812247-3414-3-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+ <20160517145002.GD4074@char.us.oracle.com>
+ <20160519112122.GN29375@bigcity.dyn.berto.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=windows-1252;
+	format=flowed
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160517145445.GE4074@char.us.oracle.com>
+In-Reply-To: <20160519112122.GN29375@bigcity.dyn.berto.se>
 Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: vinod.koul@intel.com, linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, hch@infradead.org, linux-arch@vger.kernel.org, geert+renesas@glider.be, arnd@arndb.de, linus.walleij@linaro.org, laurent.pinchart@ideasonboard.com, dan.j.williams@intel.com
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, vinod.koul@intel.com, linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, hch@infradead.org, linux-arch@vger.kernel.org, geert+renesas@glider.be, arnd@arndb.de, linus.walleij@linaro.org, laurent.pinchart@ideasonboard.com, dan.j.williams@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Konrad,
+On 19/05/16 12:21, Niklas S=F6derlund wrote:
+> Hi Konrad,
+>
+> Thanks for your feedback.
+>
+> On 2016-05-17 10:50:02 -0400, Konrad Rzeszutek Wilk wrote:
+>>> +void debug_dma_map_resource(struct device *dev, phys_addr_t addr, =
+size_t size,
+>>> +			    int direction, dma_addr_t dma_addr)
+>>> +{
+>>> +	struct dma_debug_entry *entry;
+>>> +
+>>> +	if (unlikely(dma_debug_disabled()))
+>>> +		return;
+>>> +
+>>> +	entry =3D dma_entry_alloc();
+>>> +	if (!entry)
+>>> +		return;
+>>> +
+>>> +	entry->type		=3D dma_debug_resource;
+>>> +	entry->dev		=3D dev;
+>>> +	entry->pfn		=3D __phys_to_pfn(addr);
+>>> +	entry->offset		=3D addr - PHYS_PFN(entry->pfn);
+>>
+>> Is that right?
+>
+> You are correct that should be:
+>
+>     entry->offset =3D addr - PFN_PHYS(entry->pfn);
+>
+> Or even better:
+>
+>     entry->offset =3D addr - __pfn_to_phys(entry->pfn);
 
-Thanks for your feedback.
+Better still, simply offset_in_page(addr) (as per dma_map_single()).
 
-On 2016-05-17 10:54:45 -0400, Konrad Rzeszutek Wilk wrote:
-> > =20
-> > -In some circumstances dma_map_single() and dma_map_page() will fai=
-l to create
-> > -a mapping. A driver can check for these errors by testing the retu=
-rned
-> > -DMA address with dma_mapping_error(). A non-zero return value mean=
-s the mapping
-> > -could not be created and the driver should take appropriate action=
- (e.g.
-> > -reduce current DMA mapping usage or delay and try again later).
-> > +In some circumstances dma_map_single(), dma_map_page() and dma_map=
-_resource()
-> > +will fail to create a mapping. A driver can check for these errors=
- by testing
-> > +the returned DMA address with dma_mapping_error(). A non-zero retu=
-rn value
-> > +means the mapping could not be created and the driver should take =
-appropriate
-> > +action (e.g. reduce current DMA mapping usage or delay and try aga=
-in later).
->=20
-> This looks like it belongs to another patch?
+Robin.
 
-No it is correct (at least intended to be in this patch). All it really=
-=20
-do is inject dma_map_resource() (which is added in this patch) as one o=
-f=20
-the calls which return dma_addr_t should be checked for error using=20
-dma_mapping_error().  But yes the change effect all lines in the=20
-paragraph due to line wrapping.
-
-Hum or maybe I'm misunderstanding your question.
-
---=20
-Regards,
-Niklas S=F6derlund
+> I will address this and resend late next week, still hoping for some
+> more feedback.
+>
+>>
+>> __phys_to_pfn(addr) is PHYS_PFN(addr), so what you get here is
+>>
+>> addr - PHYS_PFN(PHYS_PFN(addr)) ?
+>>
+>>
+>>> +	entry->size		=3D size;
+>>> +	entry->dev_addr		=3D dma_addr;
+>>> +	entry->direction	=3D direction;
+>>> +	entry->map_err_type	=3D MAP_ERR_NOT_CHECKED;
+>>> +
+>>> +	add_dma_entry(entry);
+>>> +}
+>>> +EXPORT_SYMBOL(debug_dma_map_resource);
+>>> +
+>
