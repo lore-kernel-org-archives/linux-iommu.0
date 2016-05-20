@@ -1,35 +1,37 @@
-From: Sricharan R <sricharan@codeaurora.org>
-Subject: [PATCH V5 7/7] iommu/msm: Remove driver BROKEN
-Date: Fri, 20 May 2016 16:24:54 +0530
-Message-ID: <1463741694-1735-8-git-send-email-sricharan@codeaurora.org>
-References: <1463741694-1735-1-git-send-email-sricharan@codeaurora.org>
+From: "Sricharan" <sricharan@codeaurora.org>
+Subject: RE: [PATCH V4 6/7] iommu/msm: Use writel_relaxed and add a barrier
+Date: Fri, 20 May 2016 16:48:26 +0530
+Message-ID: <001301d1b289$58e56f70$0ab04e50$@codeaurora.org>
+References: <1463381341-30498-1-git-send-email-sricharan@codeaurora.org> <3070591.xyl7SB8DB7@wuerfel> <002c01d1b0fd$e4f3c350$aedb49f0$@codeaurora.org> <2638968.1a16UdaY62@wuerfel>
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1463741694-1735-1-git-send-email-sricharan@codeaurora.org>
+In-Reply-To: 
+Content-Language: en-us
 Sender: linux-arm-msm-owner@vger.kernel.org
-To: devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, joro@8bytes.org, robdclark@gmail.com, iommu@lists.linux-foundation.org, srinivas.kandagatla@linaro.org, laurent.pinchart@ideasonboard.com, treding@nvidia.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, stepanm@codeaurora.org, architt@codeaurora.org, arnd@arndb.de
-Cc: sricharan@codeaurora.org
+To: 'Arnd Bergmann' <arnd@arndb.de>
+Cc: devicetree@vger.kernel.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, joro@8bytes.org, iommu@lists.linux-foundation.org, robdclark@gmail.com, srinivas.kandagatla@linaro.org, laurent.pinchart@ideasonboard.com, treding@nvidia.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, stepanm@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now that the driver is DT adapted, bus_set_iommu gets called only
-when on compatible matching. So the driver should not break multiplatform
-builds now. So remove the BROKEN config.
+Hi Arnd,
 
-Signed-off-by: Sricharan R <sricharan@codeaurora.org>
----
- drivers/iommu/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+>>
+>>If you need the barrier after the write, it probably was already faulty
+>>before, because writel only implies a barrier before the store, not
+>>after. Of course all the barriers likely made the whole process so
+>>slow that you never hit that race in the end.
+>
+>ya, it could have worked in this way and i never saw a race issue before this.
+>The only reason for changing this was to optimise out the additonal barriers
+>that were happening. I do not see any issue now as well, only that the writes would
+>be faster.
+>
+ I reposted a patch here [1] with comments, i had to delete the
+old accessors though as it became unused now.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 761be35..f3d9fd0 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -90,7 +90,6 @@ config MSM_IOMMU
- 	bool "MSM IOMMU Support"
- 	depends on ARM
- 	depends on ARCH_MSM8X60 || ARCH_MSM8960 || COMPILE_TEST
--	depends on BROKEN
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_ARMV7S
- 	help
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+http://www.spinics.net/lists/arm-kernel/msg505448.html
+
+Regards,
+ Sricharan
