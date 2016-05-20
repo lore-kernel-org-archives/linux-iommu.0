@@ -1,37 +1,63 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH V4 6/7] iommu/msm: Use writel_relaxed and add a barrier
-Date: Fri, 20 May 2016 16:48:26 +0530
-Message-ID: <001301d1b289$58e56f70$0ab04e50$@codeaurora.org>
-References: <1463381341-30498-1-git-send-email-sricharan@codeaurora.org> <3070591.xyl7SB8DB7@wuerfel> <002c01d1b0fd$e4f3c350$aedb49f0$@codeaurora.org> <2638968.1a16UdaY62@wuerfel>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [RFC 0/9] IOMMU probe deferral support
+Date: Fri, 20 May 2016 17:04:35 +0530
+Message-ID: <001701d1b28b$9941ce40$cbc56ac0$@codeaurora.org>
+References: <1461599894-1969-1-git-send-email-sricharan@codeaurora.org>
+	<f192d4a0-9e13-4ae2-d3da-058e2e092634@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: 
 Content-Language: en-us
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: 'Arnd Bergmann' <arnd@arndb.de>
-Cc: devicetree@vger.kernel.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, joro@8bytes.org, iommu@lists.linux-foundation.org, robdclark@gmail.com, srinivas.kandagatla@linaro.org, laurent.pinchart@ideasonboard.com, treding@nvidia.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, stepanm@codeaurora.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Marek Szyprowski' <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Arnd,
+Hi Robin/Laurent,
 
+>> -----Original Message-----
+>> From: linux-arm-kernel [mailto:linux-arm-kernel-
+>> bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org] On Behalf Of Marek Szyprowski
+>> Sent: Thursday, May 12, 2016 6:23 PM
+>> To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>; will.deacon-5wv7dgnIgG8@public.gmane.org;
+>> robin.murphy-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+>> foundation.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org;
+>> laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
+>> Subject: Re: [RFC 0/9] IOMMU probe deferral support
 >>
->>If you need the barrier after the write, it probably was already faulty
->>before, because writel only implies a barrier before the store, not
->>after. Of course all the barriers likely made the whole process so
->>slow that you never hit that race in the end.
->
->ya, it could have worked in this way and i never saw a race issue before this.
->The only reason for changing this was to optimise out the additonal barriers
->that were happening. I do not see any issue now as well, only that the writes would
->be faster.
->
- I reposted a patch here [1] with comments, i had to delete the
-old accessors though as it became unused now.
+>> Hello,
+>>
+>>
+>> On 2016-04-25 17:58, Sricharan R wrote:
+>> > This is mostly a repost of the probe deferral series from Laurent
+>> > Pinchart [1]. Added a check to fix boot with ACPI.
+>> > Adapted arm-smmu driver to work with deferred probing and added a new
+>> > api for the below reason. This is based on the generic iommu binding
+>> > series from Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>.
+>>
+>> Thanks for this patchset. I'm working on some serious rework in exynos
+>> power domains and clocks support code and it turned out that I need this
+>> feature to resolve probing order. It works fine on my internal tree, where
+>> some iommu controllers cannot get their clocks early enough.
+>>
+>> Tested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>>
+>   Thanks for testing. So the issue that I was facing also was the same where the iommu
+>   controllers cannot get clocks early. So waiting for some suggestions if this is right/
+>   or there is another way for doing this probe deferral?
 
-http://www.spinics.net/lists/arm-kernel/msg505448.html
+So wanted to ask what will be approach to have the probe deferral working.
+I remember that you mentioned last time that you were going to visit this. Hence thought
+of asking how to proceed on this ?
 
 Regards,
  Sricharan
