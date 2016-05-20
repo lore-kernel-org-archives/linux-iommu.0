@@ -1,475 +1,257 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V5 3/7] iommu/msm: Move the contents from msm_iommu_dev.c to
-	msm_iommu.c
-Date: Fri, 20 May 2016 16:24:50 +0530
-Message-ID: <1463741694-1735-4-git-send-email-sricharan@codeaurora.org>
+From: Sricharan R <sricharan@codeaurora.org>
+Subject: [PATCH V5 6/7] iommu/msm: Use writel_relaxed and add a barrier
+Date: Fri, 20 May 2016 16:24:53 +0530
+Message-ID: <1463741694-1735-7-git-send-email-sricharan@codeaurora.org>
 References: <1463741694-1735-1-git-send-email-sricharan@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1463741694-1735-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
-Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1463741694-1735-1-git-send-email-sricharan@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, joro@8bytes.org, robdclark@gmail.com, iommu@lists.linux-foundation.org, srinivas.kandagatla@linaro.org, laurent.pinchart@ideasonboard.com, treding@nvidia.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, stepanm@codeaurora.org, architt@codeaurora.org, arnd@arndb.de
+Cc: sricharan@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-There are only two functions left in msm_iommu_dev.c. Move it to
-msm_iommu.c and delete the file.
+While using the generic pagetable ops the tlb maintenance
+operation gets completed in the sync callback. So use writel_relaxed
+for all register access and add a mb() at appropriate places.
 
-Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Signed-off-by: Sricharan R <sricharan@codeaurora.org>
 ---
- drivers/iommu/Makefile        |   2 +-
- drivers/iommu/msm_iommu.c     | 182 ++++++++++++++++++++++++++++++++++++
- drivers/iommu/msm_iommu_dev.c | 212 ------------------------------------------
- 3 files changed, 183 insertions(+), 213 deletions(-)
- delete mode 100644 drivers/iommu/msm_iommu_dev.c
+ drivers/iommu/msm_iommu.c         |  24 +++++++--
+ drivers/iommu/msm_iommu_hw-8xxx.h | 109 ++++++++++++++++++++------------------
+ 2 files changed, 79 insertions(+), 54 deletions(-)
 
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index f7134f7..8695ead 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -7,7 +7,7 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
--obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o msm_iommu_dev.o
-+obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
- obj-$(CONFIG_QCOM_IOMMU_V1) += qcom/
- obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
- obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
 diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index bc1a4e3..792b352 100644
+index 0299a37..dfcaeef 100644
 --- a/drivers/iommu/msm_iommu.c
 +++ b/drivers/iommu/msm_iommu.c
-@@ -27,6 +27,7 @@
- #include <linux/slab.h>
- #include <linux/iommu.h>
- #include <linux/clk.h>
-+#include <linux/err.h>
- 
- #include <asm/cacheflush.h>
- #include <asm/sizes.h>
-@@ -85,6 +86,47 @@ static void __disable_clocks(struct msm_iommu_dev *iommu)
- 	clk_disable(iommu->pclk);
+@@ -124,6 +124,9 @@ static void msm_iommu_reset(void __iomem *base, int ncb)
+ 		SET_TLBLKCR(base, ctx, 0);
+ 		SET_CONTEXTIDR(base, ctx, 0);
+ 	}
++
++	/* Ensure completion of relaxed writes from the above SET macros */
++	mb();
  }
  
-+static void msm_iommu_reset(void __iomem *base, int ncb)
-+{
-+	int ctx;
-+
-+	SET_RPUE(base, 0);
-+	SET_RPUEIE(base, 0);
-+	SET_ESRRESTORE(base, 0);
-+	SET_TBE(base, 0);
-+	SET_CR(base, 0);
-+	SET_SPDMBE(base, 0);
-+	SET_TESTBUSCR(base, 0);
-+	SET_TLBRSW(base, 0);
-+	SET_GLOBAL_TLBIALL(base, 0);
-+	SET_RPU_ACR(base, 0);
-+	SET_TLBLKCRWE(base, 1);
-+
-+	for (ctx = 0; ctx < ncb; ctx++) {
-+		SET_BPRCOSH(base, ctx, 0);
-+		SET_BPRCISH(base, ctx, 0);
-+		SET_BPRCNSH(base, ctx, 0);
-+		SET_BPSHCFG(base, ctx, 0);
-+		SET_BPMTCFG(base, ctx, 0);
-+		SET_ACTLR(base, ctx, 0);
-+		SET_SCTLR(base, ctx, 0);
-+		SET_FSRRESTORE(base, ctx, 0);
-+		SET_TTBR0(base, ctx, 0);
-+		SET_TTBR1(base, ctx, 0);
-+		SET_TTBCR(base, ctx, 0);
-+		SET_BFBCR(base, ctx, 0);
-+		SET_PAR(base, ctx, 0);
-+		SET_FAR(base, ctx, 0);
-+		SET_CTX_TLBIALL(base, ctx, 0);
-+		SET_TLBFLPTER(base, ctx, 0);
-+		SET_TLBSLPTER(base, ctx, 0);
-+		SET_TLBLKCR(base, ctx, 0);
-+		SET_PRRR(base, ctx, 0);
-+		SET_NMRR(base, ctx, 0);
-+		SET_CONTEXTIDR(base, ctx, 0);
-+	}
-+}
-+
- static int __flush_iotlb(struct iommu_domain *domain)
- {
- 	struct msm_priv *priv = to_msm_priv(domain);
-@@ -708,6 +750,146 @@ static const struct iommu_ops msm_iommu_ops = {
- 	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
- };
+ static void __flush_iotlb(void *cookie)
+@@ -141,6 +144,9 @@ static void __flush_iotlb(void *cookie)
+ 		list_for_each_entry(master, &iommu->ctx_list, list)
+ 			SET_CTX_TLBIALL(iommu->base, master->num, 0);
  
-+static int msm_iommu_probe(struct platform_device *pdev)
-+{
-+	struct resource *r;
-+	struct msm_iommu_dev *iommu;
-+	int ret, par, val;
++		/* To ensure completion of TLBIALL above */
++		mb();
 +
-+	iommu = devm_kzalloc(&pdev->dev, sizeof(*iommu), GFP_KERNEL);
-+	if (!iommu)
-+		return -ENODEV;
-+
-+	iommu->dev = &pdev->dev;
-+	INIT_LIST_HEAD(&iommu->ctx_list);
-+
-+	iommu->pclk = devm_clk_get(iommu->dev, "smmu_pclk");
-+	if (IS_ERR(iommu->pclk)) {
-+		dev_err(iommu->dev, "could not get smmu_pclk\n");
-+		return PTR_ERR(iommu->pclk);
-+	}
-+
-+	ret = clk_prepare(iommu->pclk);
-+	if (ret) {
-+		dev_err(iommu->dev, "could not prepare smmu_pclk\n");
-+		return ret;
-+	}
-+
-+	iommu->clk = devm_clk_get(iommu->dev, "iommu_clk");
-+	if (IS_ERR(iommu->clk)) {
-+		dev_err(iommu->dev, "could not get iommu_clk\n");
-+		clk_unprepare(iommu->pclk);
-+		return PTR_ERR(iommu->clk);
-+	}
-+
-+	ret = clk_prepare(iommu->clk);
-+	if (ret) {
-+		dev_err(iommu->dev, "could not prepare iommu_clk\n");
-+		clk_unprepare(iommu->pclk);
-+		return ret;
-+	}
-+
-+	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	iommu->base = devm_ioremap_resource(iommu->dev, r);
-+	if (IS_ERR(iommu->base)) {
-+		dev_err(iommu->dev, "could not get iommu base\n");
-+		ret = PTR_ERR(iommu->base);
-+		goto fail;
-+	}
-+
-+	iommu->irq = platform_get_irq(pdev, 0);
-+	if (iommu->irq < 0) {
-+		dev_err(iommu->dev, "could not get iommu irq\n");
-+		ret = -ENODEV;
-+		goto fail;
-+	}
-+
-+	ret = of_property_read_u32(iommu->dev->of_node, "qcom,ncb", &val);
-+	if (ret) {
-+		dev_err(iommu->dev, "could not get ncb\n");
-+		goto fail;
-+	}
-+	iommu->ncb = val;
-+
-+	msm_iommu_reset(iommu->base, iommu->ncb);
-+	SET_M(iommu->base, 0, 1);
-+	SET_PAR(iommu->base, 0, 0);
-+	SET_V2PCFG(iommu->base, 0, 1);
-+	SET_V2PPR(iommu->base, 0, 0);
-+	par = GET_PAR(iommu->base, 0);
-+	SET_V2PCFG(iommu->base, 0, 0);
-+	SET_M(iommu->base, 0, 0);
-+
-+	if (!par) {
-+		pr_err("Invalid PAR value detected\n");
-+		ret = -ENODEV;
-+		goto fail;
-+	}
-+
-+	ret = devm_request_threaded_irq(iommu->dev, iommu->irq, NULL,
-+					msm_iommu_fault_handler,
-+					IRQF_ONESHOT | IRQF_SHARED,
-+					"msm_iommu_secure_irpt_handler",
-+					iommu);
-+	if (ret) {
-+		pr_err("Request IRQ %d failed with ret=%d\n", iommu->irq, ret);
-+		goto fail;
-+	}
-+
-+	list_add(&iommu->dev_node, &qcom_iommu_devices);
-+
-+	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
-+		iommu->base, iommu->irq, iommu->ncb);
-+
-+	return ret;
-+fail:
-+	clk_unprepare(iommu->clk);
-+	clk_unprepare(iommu->pclk);
-+	return ret;
-+}
-+
-+static const struct of_device_id msm_iommu_dt_match[] = {
-+	{ .compatible = "qcom,apq8064-iommu" },
-+	{}
-+};
-+
-+static int msm_iommu_remove(struct platform_device *pdev)
-+{
-+	struct msm_iommu_dev *iommu = platform_get_drvdata(pdev);
-+
-+	clk_unprepare(iommu->clk);
-+	clk_unprepare(iommu->pclk);
-+	return 0;
-+}
-+
-+static struct platform_driver msm_iommu_driver = {
-+	.driver = {
-+		.name	= "msm_iommu",
-+		.of_match_table = msm_iommu_dt_match,
-+	},
-+	.probe		= msm_iommu_probe,
-+	.remove		= msm_iommu_remove,
-+};
-+
-+static int __init msm_iommu_driver_init(void)
-+{
-+	int ret;
-+
-+	ret = platform_driver_register(&msm_iommu_driver);
-+	if (ret != 0)
-+		pr_err("Failed to register IOMMU driver\n");
-+
-+	return ret;
-+}
-+
-+static void __exit msm_iommu_driver_exit(void)
-+{
-+	platform_driver_unregister(&msm_iommu_driver);
-+}
-+
-+subsys_initcall(msm_iommu_driver_init);
-+module_exit(msm_iommu_driver_exit);
-+
- static int __init get_tex_class(int icp, int ocp, int mt, int nos)
+ 		__disable_clocks(iommu);
+ 	}
+ fail:
+@@ -181,7 +187,8 @@ fail:
+ 
+ static void __flush_iotlb_sync(void *cookie)
  {
- 	int i = 0;
-diff --git a/drivers/iommu/msm_iommu_dev.c b/drivers/iommu/msm_iommu_dev.c
-deleted file mode 100644
-index be01cc4..0000000
---- a/drivers/iommu/msm_iommu_dev.c
-+++ /dev/null
-@@ -1,212 +0,0 @@
--/* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License version 2 and
-- * only version 2 as published by the Free Software Foundation.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * You should have received a copy of the GNU General Public License
-- * along with this program; if not, write to the Free Software
-- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-- * 02110-1301, USA.
-- */
+-	/* To avoid a null function pointer */
++	/* To ensure completion of the TLBIVA in __flush_iotlb_range */
++	mb();
+ }
+ 
+ static const struct iommu_gather_ops msm_iommu_gather_ops = {
+@@ -235,6 +242,9 @@ static void config_mids(struct msm_iommu_dev *iommu,
+ 		/* Set security bit override to be Non-secure */
+ 		SET_NSCFG(iommu->base, mid, 3);
+ 	}
++
++	/* Ensure completion of relaxed writes from the above SET macros */
++	mb();
+ }
+ 
+ static void __reset_context(void __iomem *base, int ctx)
+@@ -257,6 +267,9 @@ static void __reset_context(void __iomem *base, int ctx)
+ 	SET_TLBFLPTER(base, ctx, 0);
+ 	SET_TLBSLPTER(base, ctx, 0);
+ 	SET_TLBLKCR(base, ctx, 0);
++
++	/* Ensure completion of relaxed writes from the above SET macros */
++	mb();
+ }
+ 
+ static void __program_context(void __iomem *base, int ctx,
+@@ -305,6 +318,9 @@ static void __program_context(void __iomem *base, int ctx,
+ 
+ 	/* Enable the MMU */
+ 	SET_M(base, ctx, 1);
++
++	/* Ensure completion of relaxed writes from the above SET macros */
++	mb();
+ }
+ 
+ static struct iommu_domain *msm_iommu_domain_alloc(unsigned type)
+@@ -500,7 +516,8 @@ static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	/* Invalidate context TLB */
+ 	SET_CTX_TLBIALL(iommu->base, master->num, 0);
+ 	SET_V2PPR(iommu->base, master->num, va & V2Pxx_VA);
 -
--#define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
++	/* Ensure completion of relaxed writes from the above SET macros */
++	mb();
+ 	par = GET_PAR(iommu->base, master->num);
+ 
+ 	/* We are dealing with a supersection */
+@@ -714,7 +731,8 @@ static int msm_iommu_probe(struct platform_device *pdev)
+ 	par = GET_PAR(iommu->base, 0);
+ 	SET_V2PCFG(iommu->base, 0, 0);
+ 	SET_M(iommu->base, 0, 0);
 -
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <linux/platform_device.h>
--#include <linux/io.h>
--#include <linux/clk.h>
--#include <linux/iommu.h>
--#include <linux/interrupt.h>
--#include <linux/err.h>
--#include <linux/slab.h>
--
--#include "msm_iommu_hw-8xxx.h"
--#include "msm_iommu.h"
--
--static void msm_iommu_reset(void __iomem *base, int ncb)
--{
--	int ctx;
--
--	SET_RPUE(base, 0);
--	SET_RPUEIE(base, 0);
--	SET_ESRRESTORE(base, 0);
--	SET_TBE(base, 0);
--	SET_CR(base, 0);
--	SET_SPDMBE(base, 0);
--	SET_TESTBUSCR(base, 0);
--	SET_TLBRSW(base, 0);
--	SET_GLOBAL_TLBIALL(base, 0);
--	SET_RPU_ACR(base, 0);
--	SET_TLBLKCRWE(base, 1);
--
--	for (ctx = 0; ctx < ncb; ctx++) {
--		SET_BPRCOSH(base, ctx, 0);
--		SET_BPRCISH(base, ctx, 0);
--		SET_BPRCNSH(base, ctx, 0);
--		SET_BPSHCFG(base, ctx, 0);
--		SET_BPMTCFG(base, ctx, 0);
--		SET_ACTLR(base, ctx, 0);
--		SET_SCTLR(base, ctx, 0);
--		SET_FSRRESTORE(base, ctx, 0);
--		SET_TTBR0(base, ctx, 0);
--		SET_TTBR1(base, ctx, 0);
--		SET_TTBCR(base, ctx, 0);
--		SET_BFBCR(base, ctx, 0);
--		SET_PAR(base, ctx, 0);
--		SET_FAR(base, ctx, 0);
--		SET_CTX_TLBIALL(base, ctx, 0);
--		SET_TLBFLPTER(base, ctx, 0);
--		SET_TLBSLPTER(base, ctx, 0);
--		SET_TLBLKCR(base, ctx, 0);
--		SET_PRRR(base, ctx, 0);
--		SET_NMRR(base, ctx, 0);
--		SET_CONTEXTIDR(base, ctx, 0);
--	}
--}
--
--static int msm_iommu_probe(struct platform_device *pdev)
--{
--	struct resource *r;
--	struct msm_iommu_dev *iommu;
--	int ret, par, val;
--
--	iommu = devm_kzalloc(&pdev->dev, sizeof(*iommu), GFP_KERNEL);
--	if (!iommu)
--		return -ENODEV;
--
--	iommu->dev = &pdev->dev;
--	INIT_LIST_HEAD(&iommu->ctx_list);
--
--	iommu->pclk = devm_clk_get(iommu->dev, "smmu_pclk");
--	if (IS_ERR(iommu->pclk)) {
--		dev_err(iommu->dev, "could not get smmu_pclk\n");
--		return PTR_ERR(iommu->pclk);
--	}
--
--	ret = clk_prepare(iommu->pclk);
--	if (ret) {
--		dev_err(iommu->dev, "could not prepare smmu_pclk\n");
--		return ret;
--	}
--
--	iommu->clk = devm_clk_get(iommu->dev, "iommu_clk");
--	if (IS_ERR(iommu->clk)) {
--		dev_err(iommu->dev, "could not get iommu_clk\n");
--		clk_unprepare(iommu->pclk);
--		return PTR_ERR(iommu->clk);
--	}
--
--	ret = clk_prepare(iommu->clk);
--	if (ret) {
--		dev_err(iommu->dev, "could not prepare iommu_clk\n");
--		clk_unprepare(iommu->pclk);
--		return ret;
--	}
--
--	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	iommu->base = devm_ioremap_resource(iommu->dev, r);
--	if (IS_ERR(iommu->base)) {
--		dev_err(iommu->dev, "could not get iommu base\n");
--		ret = PTR_ERR(iommu->base);
--		goto fail;
--	}
--
--	iommu->irq = platform_get_irq(pdev, 0);
--	if (iommu->irq < 0) {
--		dev_err(iommu->dev, "could not get iommu irq\n");
--		ret = -ENODEV;
--		goto fail;
--	}
--
--	ret = of_property_read_u32(iommu->dev->of_node, "ncb", &val);
--	if (ret) {
--		dev_err(iommu->dev, "could not get ncb\n");
--		goto fail;
--	}
--	iommu->ncb = val;
--
--	msm_iommu_reset(iommu->base, iommu->ncb);
--	SET_M(iommu->base, 0, 1);
--	SET_PAR(iommu->base, 0, 0);
--	SET_V2PCFG(iommu->base, 0, 1);
--	SET_V2PPR(iommu->base, 0, 0);
--	par = GET_PAR(iommu->base, 0);
--	SET_V2PCFG(iommu->base, 0, 0);
--	SET_M(iommu->base, 0, 0);
--
--	if (!par) {
--		pr_err("Invalid PAR value detected\n");
--		ret = -ENODEV;
--		goto fail;
--	}
--
--	ret = devm_request_threaded_irq(iommu->dev, iommu->irq, NULL,
--					msm_iommu_fault_handler,
--					IRQF_ONESHOT | IRQF_SHARED,
--					"msm_iommu_secure_irpt_handler",
--					iommu);
--	if (ret) {
--		pr_err("Request IRQ %d failed with ret=%d\n", iommu->irq, ret);
--		goto fail;
--	}
--
--	list_add(&iommu->dev_node, &qcom_iommu_devices);
--
--	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
--		iommu->base, iommu->irq, iommu->ncb);
--fail:
--	clk_unprepare(iommu->clk);
--	clk_unprepare(iommu->pclk);
--	return ret;
--}
--
--static const struct of_device_id msm_iommu_dt_match[] = {
--	{ .compatible = "qcom,apq8064-iommu" },
--	{}
--};
--
--static int msm_iommu_remove(struct platform_device *pdev)
--{
--	struct msm_iommu_dev *iommu = platform_get_drvdata(pdev);
--
--	clk_unprepare(iommu->clk);
--	clk_unprepare(iommu->pclk);
--	return 0;
--}
--
--static struct platform_driver msm_iommu_driver = {
--	.driver = {
--		.name	= "msm_iommu",
--		.of_match_table = msm_iommu_dt_match,
--	},
--	.probe		= msm_iommu_probe,
--	.remove		= msm_iommu_remove,
--};
--
--static struct platform_driver * const drivers[] = {
--	&msm_iommu_driver,
--	&msm_iommu_ctx_driver,
--};
--
--static int __init msm_iommu_driver_init(void)
--{
--	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
--}
--
--static void __exit msm_iommu_driver_exit(void)
--{
--	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
--}
--
--subsys_initcall(msm_iommu_driver_init);
--module_exit(msm_iommu_driver_exit);
--
--MODULE_LICENSE("GPL v2");
--MODULE_AUTHOR("Stepan Moskovchenko <stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>");
++	/* Ensure completion of relaxed writes from the above SET macros */
++	mb();
+ 	if (!par) {
+ 		pr_err("Invalid PAR value detected\n");
+ 		ret = -ENODEV;
+diff --git a/drivers/iommu/msm_iommu_hw-8xxx.h b/drivers/iommu/msm_iommu_hw-8xxx.h
+index fc16010..fe2c5ca 100644
+--- a/drivers/iommu/msm_iommu_hw-8xxx.h
++++ b/drivers/iommu/msm_iommu_hw-8xxx.h
+@@ -24,13 +24,19 @@
+ #define GET_CTX_REG(reg, base, ctx) \
+ 				(readl((base) + (reg) + ((ctx) << CTX_SHIFT)))
+ 
+-#define SET_GLOBAL_REG(reg, base, val)	writel((val), ((base) + (reg)))
++/*
++ * The writes to the global/context registers needs to be synced only after
++ * all the configuration writes are done. So use relaxed accessors and
++ * a barrier at the end.
++ */
++#define SET_GLOBAL_REG_RELAXED(reg, base, val) \
++			       writel_relaxed((val), ((base) + (reg)))
+ 
+-#define SET_CTX_REG(reg, base, ctx, val) \
+-			writel((val), ((base) + (reg) + ((ctx) << CTX_SHIFT)))
++#define SET_CTX_REG_RELAXED(reg, base, ctx, val) \
++		writel_relaxed((val), ((base) + (reg) + ((ctx) << CTX_SHIFT)))
+ 
+-/* Wrappers for numbered registers */
+-#define SET_GLOBAL_REG_N(b, n, r, v) SET_GLOBAL_REG(b, ((r) + (n << 2)), (v))
++ /* Wrappers for numbered registers */
++#define SET_GLOBAL_REG_N(b, n, r, v) SET_GLOBAL_REG_RELAXED(b, ((r) + (n << 2)), (v))
+ #define GET_GLOBAL_REG_N(b, n, r)    GET_GLOBAL_REG(b, ((r) + (n << 2)))
+ 
+ /* Field wrappers */
+@@ -39,16 +45,17 @@
+ 	GET_FIELD(((b) + (r) + ((c) << CTX_SHIFT)), F##_MASK, F##_SHIFT)
+ 
+ #define SET_GLOBAL_FIELD(b, r, F, v) \
+-	SET_FIELD(((b) + (r)), F##_MASK, F##_SHIFT, (v))
++	SET_FIELD_RELAXED(((b) + (r)), F##_MASK, F##_SHIFT, (v))
+ #define SET_CONTEXT_FIELD(b, c, r, F, v)	\
+-	SET_FIELD(((b) + (r) + ((c) << CTX_SHIFT)), F##_MASK, F##_SHIFT, (v))
++	SET_FIELD_RELAXED(((b) + (r) + ((c) << CTX_SHIFT)), F##_MASK, F##_SHIFT, (v))
+ 
+ #define GET_FIELD(addr, mask, shift)  ((readl(addr) >> (shift)) & (mask))
+ 
+-#define SET_FIELD(addr, mask, shift, v) \
++#define SET_FIELD_RELAXED(addr, mask, shift, v) \
+ do { \
+ 	int t = readl(addr); \
+-	writel((t & ~((mask) << (shift))) + (((v) & (mask)) << (shift)), addr);\
++	writel_relaxed((t & ~((mask) << (shift))) + \
++		       (((v) & (mask)) << (shift)), addr);\
+ } while (0)
+ 
+ 
+@@ -96,20 +103,20 @@ do { \
+ /* Global register setters / getters */
+ #define SET_M2VCBR_N(b, N, v)	 SET_GLOBAL_REG_N(M2VCBR_N, N, (b), (v))
+ #define SET_CBACR_N(b, N, v)	 SET_GLOBAL_REG_N(CBACR_N, N, (b), (v))
+-#define SET_TLBRSW(b, v)	 SET_GLOBAL_REG(TLBRSW, (b), (v))
+-#define SET_TLBTR0(b, v)	 SET_GLOBAL_REG(TLBTR0, (b), (v))
+-#define SET_TLBTR1(b, v)	 SET_GLOBAL_REG(TLBTR1, (b), (v))
+-#define SET_TLBTR2(b, v)	 SET_GLOBAL_REG(TLBTR2, (b), (v))
+-#define SET_TESTBUSCR(b, v)	 SET_GLOBAL_REG(TESTBUSCR, (b), (v))
+-#define SET_GLOBAL_TLBIALL(b, v) SET_GLOBAL_REG(GLOBAL_TLBIALL, (b), (v))
+-#define SET_TLBIVMID(b, v)	 SET_GLOBAL_REG(TLBIVMID, (b), (v))
+-#define SET_CR(b, v)		 SET_GLOBAL_REG(CR, (b), (v))
+-#define SET_EAR(b, v)		 SET_GLOBAL_REG(EAR, (b), (v))
+-#define SET_ESR(b, v)		 SET_GLOBAL_REG(ESR, (b), (v))
+-#define SET_ESRRESTORE(b, v)	 SET_GLOBAL_REG(ESRRESTORE, (b), (v))
+-#define SET_ESYNR0(b, v)	 SET_GLOBAL_REG(ESYNR0, (b), (v))
+-#define SET_ESYNR1(b, v)	 SET_GLOBAL_REG(ESYNR1, (b), (v))
+-#define SET_RPU_ACR(b, v)	 SET_GLOBAL_REG(RPU_ACR, (b), (v))
++#define SET_TLBRSW(b, v)	 SET_GLOBAL_REG_RELAXED(TLBRSW, (b), (v))
++#define SET_TLBTR0(b, v)	 SET_GLOBAL_REG_RELAXED(TLBTR0, (b), (v))
++#define SET_TLBTR1(b, v)	 SET_GLOBAL_REG_RELAXED(TLBTR1, (b), (v))
++#define SET_TLBTR2(b, v)	 SET_GLOBAL_REG_RELAXED(TLBTR2, (b), (v))
++#define SET_TESTBUSCR(b, v)	 SET_GLOBAL_REG_RELAXED(TESTBUSCR, (b), (v))
++#define SET_GLOBAL_TLBIALL(b, v) SET_GLOBAL_REG_RELAXED(GLOBAL_TLBIALL, (b), (v))
++#define SET_TLBIVMID(b, v)	 SET_GLOBAL_REG_RELAXED(TLBIVMID, (b), (v))
++#define SET_CR(b, v)		 SET_GLOBAL_REG_RELAXED(CR, (b), (v))
++#define SET_EAR(b, v)		 SET_GLOBAL_REG_RELAXED(EAR, (b), (v))
++#define SET_ESR(b, v)		 SET_GLOBAL_REG_RELAXED(ESR, (b), (v))
++#define SET_ESRRESTORE(b, v)	 SET_GLOBAL_REG_RELAXED(ESRRESTORE, (b), (v))
++#define SET_ESYNR0(b, v)	 SET_GLOBAL_REG_RELAXED(ESYNR0, (b), (v))
++#define SET_ESYNR1(b, v)	 SET_GLOBAL_REG_RELAXED(ESYNR1, (b), (v))
++#define SET_RPU_ACR(b, v)	 SET_GLOBAL_REG_RELAXED(RPU_ACR, (b), (v))
+ 
+ #define GET_M2VCBR_N(b, N)	 GET_GLOBAL_REG_N(M2VCBR_N, N, (b))
+ #define GET_CBACR_N(b, N)	 GET_GLOBAL_REG_N(CBACR_N, N, (b))
+@@ -131,34 +138,34 @@ do { \
+ 
+ 
+ /* Context register setters/getters */
+-#define SET_SCTLR(b, c, v)	 SET_CTX_REG(SCTLR, (b), (c), (v))
+-#define SET_ACTLR(b, c, v)	 SET_CTX_REG(ACTLR, (b), (c), (v))
+-#define SET_CONTEXTIDR(b, c, v)	 SET_CTX_REG(CONTEXTIDR, (b), (c), (v))
+-#define SET_TTBR0(b, c, v)	 SET_CTX_REG(TTBR0, (b), (c), (v))
+-#define SET_TTBR1(b, c, v)	 SET_CTX_REG(TTBR1, (b), (c), (v))
+-#define SET_TTBCR(b, c, v)	 SET_CTX_REG(TTBCR, (b), (c), (v))
+-#define SET_PAR(b, c, v)	 SET_CTX_REG(PAR, (b), (c), (v))
+-#define SET_FSR(b, c, v)	 SET_CTX_REG(FSR, (b), (c), (v))
+-#define SET_FSRRESTORE(b, c, v)	 SET_CTX_REG(FSRRESTORE, (b), (c), (v))
+-#define SET_FAR(b, c, v)	 SET_CTX_REG(FAR, (b), (c), (v))
+-#define SET_FSYNR0(b, c, v)	 SET_CTX_REG(FSYNR0, (b), (c), (v))
+-#define SET_FSYNR1(b, c, v)	 SET_CTX_REG(FSYNR1, (b), (c), (v))
+-#define SET_PRRR(b, c, v)	 SET_CTX_REG(PRRR, (b), (c), (v))
+-#define SET_NMRR(b, c, v)	 SET_CTX_REG(NMRR, (b), (c), (v))
+-#define SET_TLBLKCR(b, c, v)	 SET_CTX_REG(TLBLCKR, (b), (c), (v))
+-#define SET_V2PSR(b, c, v)	 SET_CTX_REG(V2PSR, (b), (c), (v))
+-#define SET_TLBFLPTER(b, c, v)	 SET_CTX_REG(TLBFLPTER, (b), (c), (v))
+-#define SET_TLBSLPTER(b, c, v)	 SET_CTX_REG(TLBSLPTER, (b), (c), (v))
+-#define SET_BFBCR(b, c, v)	 SET_CTX_REG(BFBCR, (b), (c), (v))
+-#define SET_CTX_TLBIALL(b, c, v) SET_CTX_REG(CTX_TLBIALL, (b), (c), (v))
+-#define SET_TLBIASID(b, c, v)	 SET_CTX_REG(TLBIASID, (b), (c), (v))
+-#define SET_TLBIVA(b, c, v)	 SET_CTX_REG(TLBIVA, (b), (c), (v))
+-#define SET_TLBIVAA(b, c, v)	 SET_CTX_REG(TLBIVAA, (b), (c), (v))
+-#define SET_V2PPR(b, c, v)	 SET_CTX_REG(V2PPR, (b), (c), (v))
+-#define SET_V2PPW(b, c, v)	 SET_CTX_REG(V2PPW, (b), (c), (v))
+-#define SET_V2PUR(b, c, v)	 SET_CTX_REG(V2PUR, (b), (c), (v))
+-#define SET_V2PUW(b, c, v)	 SET_CTX_REG(V2PUW, (b), (c), (v))
+-#define SET_RESUME(b, c, v)	 SET_CTX_REG(RESUME, (b), (c), (v))
++#define SET_SCTLR(b, c, v)	 SET_CTX_REG_RELAXED(SCTLR, (b), (c), (v))
++#define SET_ACTLR(b, c, v)	 SET_CTX_REG_RELAXED(ACTLR, (b), (c), (v))
++#define SET_CONTEXTIDR(b, c, v)	 SET_CTX_REG_RELAXED(CONTEXTIDR, (b), (c), (v))
++#define SET_TTBR0(b, c, v)	 SET_CTX_REG_RELAXED(TTBR0, (b), (c), (v))
++#define SET_TTBR1(b, c, v)	 SET_CTX_REG_RELAXED(TTBR1, (b), (c), (v))
++#define SET_TTBCR(b, c, v)	 SET_CTX_REG_RELAXED(TTBCR, (b), (c), (v))
++#define SET_PAR(b, c, v)	 SET_CTX_REG_RELAXED(PAR, (b), (c), (v))
++#define SET_FSR(b, c, v)	 SET_CTX_REG_RELAXED(FSR, (b), (c), (v))
++#define SET_FSRRESTORE(b, c, v)	 SET_CTX_REG_RELAXED(FSRRESTORE, (b), (c), (v))
++#define SET_FAR(b, c, v)	 SET_CTX_REG_RELAXED(FAR, (b), (c), (v))
++#define SET_FSYNR0(b, c, v)	 SET_CTX_REG_RELAXED(FSYNR0, (b), (c), (v))
++#define SET_FSYNR1(b, c, v)	 SET_CTX_REG_RELAXED(FSYNR1, (b), (c), (v))
++#define SET_PRRR(b, c, v)	 SET_CTX_REG_RELAXED(PRRR, (b), (c), (v))
++#define SET_NMRR(b, c, v)	 SET_CTX_REG_RELAXED(NMRR, (b), (c), (v))
++#define SET_TLBLKCR(b, c, v)	 SET_CTX_REG_RELAXED(TLBLCKR, (b), (c), (v))
++#define SET_V2PSR(b, c, v)	 SET_CTX_REG_RELAXED(V2PSR, (b), (c), (v))
++#define SET_TLBFLPTER(b, c, v)	 SET_CTX_REG_RELAXED(TLBFLPTER, (b), (c), (v))
++#define SET_TLBSLPTER(b, c, v)	 SET_CTX_REG_RELAXED(TLBSLPTER, (b), (c), (v))
++#define SET_BFBCR(b, c, v)	 SET_CTX_REG_RELAXED(BFBCR, (b), (c), (v))
++#define SET_CTX_TLBIALL(b, c, v) SET_CTX_REG_RELAXED(CTX_TLBIALL, (b), (c), (v))
++#define SET_TLBIASID(b, c, v)	 SET_CTX_REG_RELAXED(TLBIASID, (b), (c), (v))
++#define SET_TLBIVA(b, c, v)	 SET_CTX_REG_RELAXED(TLBIVA, (b), (c), (v))
++#define SET_TLBIVAA(b, c, v)	 SET_CTX_REG_RELAXED(TLBIVAA, (b), (c), (v))
++#define SET_V2PPR(b, c, v)	 SET_CTX_REG_RELAXED(V2PPR, (b), (c), (v))
++#define SET_V2PPW(b, c, v)	 SET_CTX_REG_RELAXED(V2PPW, (b), (c), (v))
++#define SET_V2PUR(b, c, v)	 SET_CTX_REG_RELAXED(V2PUR, (b), (c), (v))
++#define SET_V2PUW(b, c, v)	 SET_CTX_REG_RELAXED(V2PUW, (b), (c), (v))
++#define SET_RESUME(b, c, v)	 SET_CTX_REG_RELAXED(RESUME, (b), (c), (v))
+ 
+ #define GET_SCTLR(b, c)		 GET_CTX_REG(SCTLR, (b), (c))
+ #define GET_ACTLR(b, c)		 GET_CTX_REG(ACTLR, (b), (c))
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
