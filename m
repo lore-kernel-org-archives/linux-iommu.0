@@ -1,70 +1,35 @@
-From: Nadav Amit <namit-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH] iommu/vt-d: Avoid write-tearing on PTE clear
-Date: Sat, 21 May 2016 02:51:23 -0700
-Message-ID: <1463824283-1683-1-git-send-email-namit@vmware.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: Nadav Amit <namit-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+From: Jan Vesely <jan.vesely@rutgers.edu>
+Subject: [PATCH 1/2] iommu/amd: Remove entry from the list before freeing it
+Date: Sat, 21 May 2016 14:11:03 -0400
+Message-ID: <1463854264-26445-1-git-send-email-jan.vesely@rutgers.edu>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Jan Vesely <jan.vesely@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-When a PTE is cleared, the write may be teared or perform by multiple
-writes. In addition, in 32-bit kernel, writes are currently performed
-using a single 64-bit write, which does not guarantee order.
+From: Jan Vesely <jan.vesely@amd.com>
 
-The byte-code right now does not seem to cause a problem, but it may
-still occur in theory.
-
-Avoid this scenario by using WRITE_ONCE, and order the writes on
-32-bit kernels.
-
-Signed-off-by: Nadav Amit <namit-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Jan Vesely <jan.vesely@amd.com>
 ---
- drivers/iommu/intel-iommu.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ drivers/iommu/amd_iommu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index e1852e8..4f488a5 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -326,9 +326,26 @@ struct dma_pte {
- 	u64 val;
- };
- 
-+#ifndef CONFIG_64BIT
-+union split_dma_pte {
-+	struct {
-+		u32 val_low;
-+		u32 val_high;
-+	};
-+	u64 val;
-+};
-+#endif
-+
- static inline void dma_clear_pte(struct dma_pte *pte)
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 634f636..17c76f2 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3288,8 +3288,10 @@ static void amd_iommu_put_dm_regions(struct device *dev,
  {
--	pte->val = 0;
-+#ifdef CONFIG_64BIT
-+	WRITE_ONCE(pte->val, 0);
-+#else
-+	union split_dma_pte *sdma_pte = (union split_dma_pte *)pte;
-+
-+	WRITE_ONCE(sdma_pte->val_low, 0);
-+	sdma_pte->val_high = 0;
-+#endif
+ 	struct iommu_dm_region *entry, *next;
+ 
+-	list_for_each_entry_safe(entry, next, head, list)
++	list_for_each_entry_safe(entry, next, head, list) {
++		list_del(&entry->list);
+ 		kfree(entry);
++	}
  }
  
- static inline u64 dma_pte_addr(struct dma_pte *pte)
+ static const struct iommu_ops amd_iommu_ops = {
 -- 
-2.7.4
+2.5.5
