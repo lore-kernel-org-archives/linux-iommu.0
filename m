@@ -1,14 +1,15 @@
-From: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH V5 0/7] iommu/msm: Add DT adaptation and generic bindings
-	support
-Date: Mon, 23 May 2016 09:10:40 +0100
-Message-ID: <5742BB00.3040504@linaro.org>
-References: <1463741694-1735-1-git-send-email-sricharan@codeaurora.org>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [RFC 8/9] drivers: of: call iommu_bus_add_dev after
+	iommu_configure_ops
+Date: Mon, 23 May 2016 10:37:55 +0200
+Message-ID: <898fef51-39a0-09af-4eb9-9a6581ffbe77@samsung.com>
+References: <1461599894-1969-1-git-send-email-sricharan@codeaurora.org>
+	<1461599894-1969-9-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1463741694-1735-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-reply-to: <1461599894-1969-9-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,49 +19,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
+To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Sricharan,
+Hello,
 
-Thanks for the patchset,
 
-On 20/05/16 11:54, Sricharan R wrote:
-> The msm_iommu.c driver currently works based on platform data.
-> A single master device can be connected to more than one iommu and multiple
-> contexts in each of the iommu. This association between master and iommus was
-> represented from platform data using parent/child devices. The master drivers
-> were responsible for attaching all of the iommus/context to a domain. Now the
-> platform data support is removed and DT support is added. The master/iommus are
-> added through generic iommu bindings.
-...
-> [V1]
->     https://lists.linuxfoundation.org/pipermail/iommu/2015-August/014074.html
+On 2016-04-25 17:58, Sricharan R wrote:
+> Now that the device's iommu ops are configured at probe time,
+> the device has to be added to the iommu late.
 >
-> Sricharan R (7):
->    iommu/msm: Add DT adaptation
->    documentation: iommu: Add bindings for msm,iommu-v0 ip
->    iommu/msm: Move the contents from msm_iommu_dev.c to msm_iommu.c
->    iommu/msm: Add support for generic master bindings
->    iommu/msm: use generic ARMV7S short descriptor pagetable ops
->    iommu/msm: Use writel_relaxed and add a barrier
->    iommu/msm: Remove driver BROKEN
+> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ---
+>   drivers/of/device.c | 4 ++++
+>   1 file changed, 4 insertions(+)
 >
->   .../devicetree/bindings/iommu/msm,iommu-v0.txt     |  64 ++
->   drivers/iommu/Kconfig                              |   2 +-
->   drivers/iommu/Makefile                             |   2 +-
->   drivers/iommu/msm_iommu.c                          | 885 +++++++++++----------
->   drivers/iommu/msm_iommu.h                          |  73 +-
->   drivers/iommu/msm_iommu_dev.c                      | 381 ---------
->   drivers/iommu/msm_iommu_hw-8xxx.h                  | 109 +--
->   7 files changed, 636 insertions(+), 880 deletions(-)
->   create mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
->   delete mode 100644 drivers/iommu/msm_iommu_dev.c
+> diff --git a/drivers/of/device.c b/drivers/of/device.c
+> index 57a5f2d..722115c 100644
+> --- a/drivers/of/device.c
+> +++ b/drivers/of/device.c
+> @@ -6,6 +6,7 @@
+>   #include <linux/of_iommu.h>
+>   #include <linux/dma-mapping.h>
+>   #include <linux/init.h>
+> +#include <linux/iommu.h>
+>   #include <linux/module.h>
+>   #include <linux/mod_devicetable.h>
+>   #include <linux/slab.h>
+> @@ -154,6 +155,9 @@ int of_dma_configure_ops(struct device *dev, struct device_node *np)
+>   	dev_dbg(dev, "device is%sbehind an iommu\n",
+>   		iommu ? " " : " not ");
+>   
+> +	if (iommu)
+> +		iommu_bus_add_dev(dev);
+> +
 
+This causes build break when IOMMU subsystem is not enabled:
 
-Tested It on IFC6410 and DB600c.
+drivers/of/device.c: In function 'of_dma_configure_ops':
+drivers/of/device.c:159:3: error: implicit declaration of function 
+'iommu_bus_add_dev' [-Werror=implicit-function-declaration]
+    iommu_bus_add_dev(dev);
+    ^
 
-Tested-by: Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>   	arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
+>   
+>   	return 0;
 
-
---srini
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
