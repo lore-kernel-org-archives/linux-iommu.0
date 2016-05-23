@@ -1,72 +1,74 @@
-From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: RE: [RFC 8/9] drivers: of: call iommu_bus_add_dev after
-	iommu_configure_ops
-Date: Mon, 23 May 2016 14:17:01 +0530
-Message-ID: <000801d1b4cf$af951cb0$0ebf5610$@codeaurora.org>
-References: <1461599894-1969-1-git-send-email-sricharan@codeaurora.org>
-	<1461599894-1969-9-git-send-email-sricharan@codeaurora.org>
-	<898fef51-39a0-09af-4eb9-9a6581ffbe77@samsung.com>
+From: Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH 1/5] iommu/rockchip: fix devm_request_irq and devm_free_irq parameter
+Date: Mon, 23 May 2016 11:28:32 +0200
+Message-ID: <3963127.FSql0rTeZT@phil>
+References: <1463967439-13354-1-git-send-email-zhengsq@rock-chips.com> <1463967439-13354-2-git-send-email-zhengsq@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <898fef51-39a0-09af-4eb9-9a6581ffbe77-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Content-Language: en-us
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Marek Szyprowski' <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1463967439-13354-2-git-send-email-zhengsq@rock-chips.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Shunqian Zheng <zhengsq@rock-chips.com>
+Cc: joro@8bytes.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org, Simon <xxm@rock-chips.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek,
+Am Montag, 23. Mai 2016, 09:37:15 schrieb Shunqian Zheng:
+> From: Simon <xxm@rock-chips.com>
 
->On 2016-04-25 17:58, Sricharan R wrote:
->> Now that the device's iommu ops are configured at probe time,
->> the device has to be added to the iommu late.
->>
->> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> ---
->>   drivers/of/device.c | 4 ++++
->>   1 file changed, 4 insertions(+)
->>
->> diff --git a/drivers/of/device.c b/drivers/of/device.c
->> index 57a5f2d..722115c 100644
->> --- a/drivers/of/device.c
->> +++ b/drivers/of/device.c
->> @@ -6,6 +6,7 @@
->>   #include <linux/of_iommu.h>
->>   #include <linux/dma-mapping.h>
->>   #include <linux/init.h>
->> +#include <linux/iommu.h>
->>   #include <linux/module.h>
->>   #include <linux/mod_devicetable.h>
->>   #include <linux/slab.h>
->> @@ -154,6 +155,9 @@ int of_dma_configure_ops(struct device *dev, struct device_node *np)
->>   	dev_dbg(dev, "device is%sbehind an iommu\n",
->>   		iommu ? " " : " not ");
->>
->> +	if (iommu)
->> +		iommu_bus_add_dev(dev);
->> +
->
->This causes build break when IOMMU subsystem is not enabled:
->
->drivers/of/device.c: In function 'of_dma_configure_ops':
->drivers/of/device.c:159:3: error: implicit declaration of function
->'iommu_bus_add_dev' [-Werror=implicit-function-declaration]
->    iommu_bus_add_dev(dev);
->    ^
+generally a "firstname surename <mail>" is expected, so a first name is not 
+really enough.
 
-Ah ok. Thanks for pointing this out. I will repost, with this fixed.
-I also realised that PATCH 9, might cause a issue in NON-DT
-builds and needs a correction. But otherwise, i am waiting for
-suggestions/feedback on how to proceed with this series.
+> 
+> When rk_iommu_attach_device or rk_iommu_detach_device be called, the
+> second parameter "dev" represent the device who own the iommu, so it is
+> not resonable using "dev" for devm_request_irq's first parameter. To
+> avoid potential error, we must use iommu device itself "iommu->dev"
+> instead, the same as devm_free_irq.
+> 
+> Signed-off-by: Simon <xxm@rock-chips.com>
 
-Regards,
- Sricharan
+same here, and the person sending in the patch also needs a signed-off-by 
+line, so that should look like
+
+Signed-off-by: Simon <xxm@rock-chips.com>
+Signed-off-by: Shunqian Zheng <zhengsq@rock-chips.com>
+
+The same applies of course for all other affected patches of this series.
+
+
+After looking at the iommu code, I think the change itself looks sane, so
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+
+although I wonder what we need the devm_* for if we request and free the 
+irqs manually all the time anyway?
+
+
+Heiko
+
+> ---
+>  drivers/iommu/rockchip-iommu.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/rockchip-iommu.c
+> b/drivers/iommu/rockchip-iommu.c index c7d6156..ec0ce62 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -807,7 +807,7 @@ static int rk_iommu_attach_device(struct iommu_domain
+> *domain,
+> 
+>  	iommu->domain = domain;
+> 
+> -	ret = devm_request_irq(dev, iommu->irq, rk_iommu_irq,
+> +	ret = devm_request_irq(iommu->dev, iommu->irq, rk_iommu_irq,
+>  			       IRQF_SHARED, dev_name(dev), iommu);
+>  	if (ret)
+>  		return ret;
+> @@ -860,7 +860,7 @@ static void rk_iommu_detach_device(struct iommu_domain
+> *domain, }
+>  	rk_iommu_disable_stall(iommu);
+> 
+> -	devm_free_irq(dev, iommu->irq, iommu);
+> +	devm_free_irq(iommu->dev, iommu->irq, iommu);
+> 
+>  	iommu->domain = NULL;
