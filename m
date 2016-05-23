@@ -1,7 +1,7 @@
 From: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH 4/5] iommu/rockchip: add ARM64 cache flush operation for iommu
-Date: Mon, 23 May 2016 09:37:18 +0800
-Message-ID: <1463967439-13354-5-git-send-email-zhengsq@rock-chips.com>
+Subject: [PATCH 2/5] iommu/rockchip: add map_sg callback for rk_iommu_ops
+Date: Mon, 23 May 2016 09:37:16 +0800
+Message-ID: <1463967439-13354-3-git-send-email-zhengsq@rock-chips.com>
 References: <1463967439-13354-1-git-send-email-zhengsq@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,31 +23,26 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 
+The iommu_dma_alloc() in iommu/dma-iommu.c calls iommu_map_sg()
+that requires the callback iommu_ops .map_sg(). Adding the
+default_iommu_map_sg() to rockchip iommu accordingly.
+
 Signed-off-by: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 ---
- drivers/iommu/rockchip-iommu.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iommu/rockchip-iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 043d18c..1741b65 100644
+index ec0ce62..3c16ec3 100644
 --- a/drivers/iommu/rockchip-iommu.c
 +++ b/drivers/iommu/rockchip-iommu.c
-@@ -95,12 +95,16 @@ struct rk_iommu {
- 
- static inline void rk_table_flush(u32 *va, unsigned int count)
- {
-+#if defined(CONFIG_ARM)
- 	phys_addr_t pa_start = virt_to_phys(va);
- 	phys_addr_t pa_end = virt_to_phys(va + count);
- 	size_t size = pa_end - pa_start;
- 
- 	__cpuc_flush_dcache_area(va, size);
- 	outer_flush_range(pa_start, pa_end);
-+#elif defined(CONFIG_ARM64)
-+	__dma_flush_range(va, va + count);
-+#endif
- }
- 
- static struct rk_iommu_domain *to_rk_domain(struct iommu_domain *dom)
+@@ -1022,6 +1022,7 @@ static const struct iommu_ops rk_iommu_ops = {
+ 	.detach_dev = rk_iommu_detach_device,
+ 	.map = rk_iommu_map,
+ 	.unmap = rk_iommu_unmap,
++	.map_sg = default_iommu_map_sg,
+ 	.add_device = rk_iommu_add_device,
+ 	.remove_device = rk_iommu_remove_device,
+ 	.iova_to_phys = rk_iommu_iova_to_phys,
 -- 
 1.9.1
