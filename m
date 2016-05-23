@@ -1,7 +1,7 @@
 From: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH 3/5] iommu/rockchip: add sanity check for virtual device
-Date: Mon, 23 May 2016 09:37:17 +0800
-Message-ID: <1463967439-13354-4-git-send-email-zhengsq@rock-chips.com>
+Subject: [PATCH 4/5] iommu/rockchip: add ARM64 cache flush operation for iommu
+Date: Mon, 23 May 2016 09:37:18 +0800
+Message-ID: <1463967439-13354-5-git-send-email-zhengsq@rock-chips.com>
 References: <1463967439-13354-1-git-send-email-zhengsq@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,48 +23,31 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 
-We mark DRM as "virtual" device by checking it's group,
-which may no longer true with the new rockchip drm drv in
-https://patchwork.kernel.org/patch/8876331/.
-
-Checking the group->iommu_data for virtual device.
-
 Signed-off-by: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 ---
- drivers/iommu/rockchip-iommu.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/iommu/rockchip-iommu.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 3c16ec3..043d18c 100644
+index 043d18c..1741b65 100644
 --- a/drivers/iommu/rockchip-iommu.c
 +++ b/drivers/iommu/rockchip-iommu.c
-@@ -764,6 +764,7 @@ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
- 	return unmap_size;
+@@ -95,12 +95,16 @@ struct rk_iommu {
+ 
+ static inline void rk_table_flush(u32 *va, unsigned int count)
+ {
++#if defined(CONFIG_ARM)
+ 	phys_addr_t pa_start = virt_to_phys(va);
+ 	phys_addr_t pa_end = virt_to_phys(va + count);
+ 	size_t size = pa_end - pa_start;
+ 
+ 	__cpuc_flush_dcache_area(va, size);
+ 	outer_flush_range(pa_start, pa_end);
++#elif defined(CONFIG_ARM64)
++	__dma_flush_range(va, va + count);
++#endif
  }
  
-+/* Return NULL for a virtual device like DRM */
- static struct rk_iommu *rk_iommu_from_dev(struct device *dev)
- {
- 	struct iommu_group *group;
-@@ -774,6 +775,11 @@ static struct rk_iommu *rk_iommu_from_dev(struct device *dev)
- 	if (!group)
- 		return NULL;
- 	iommu_dev = iommu_group_get_iommudata(group);
-+	if (!iommu_dev) {
-+		dev_info(dev, "Possibly a virtual device\n");
-+		return NULL;
-+	}
-+
- 	rk_iommu = dev_get_drvdata(iommu_dev);
- 	iommu_group_put(group);
- 
-@@ -791,7 +797,6 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
- 
- 	/*
- 	 * Allow 'virtual devices' (e.g., drm) to attach to domain.
--	 * Such a device does not belong to an iommu group.
- 	 */
- 	iommu = rk_iommu_from_dev(dev);
- 	if (!iommu)
+ static struct rk_iommu_domain *to_rk_domain(struct iommu_domain *dom)
 -- 
 1.9.1
