@@ -1,7 +1,7 @@
 From: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH 2/5] iommu/rockchip: add map_sg callback for rk_iommu_ops
-Date: Mon, 23 May 2016 09:37:16 +0800
-Message-ID: <1463967439-13354-3-git-send-email-zhengsq@rock-chips.com>
+Subject: [PATCH 5/5] iommu/rockchip: enable rockchip iommu on ARM64 platform
+Date: Mon, 23 May 2016 09:37:19 +0800
+Message-ID: <1463967439-13354-6-git-send-email-zhengsq@rock-chips.com>
 References: <1463967439-13354-1-git-send-email-zhengsq@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,26 +23,23 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 
-The iommu_dma_alloc() in iommu/dma-iommu.c calls iommu_map_sg()
-that requires the callback iommu_ops .map_sg(). Adding the
-default_iommu_map_sg() to rockchip iommu accordingly.
-
 Signed-off-by: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 ---
- drivers/iommu/rockchip-iommu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index ec0ce62..3c16ec3 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1022,6 +1022,7 @@ static const struct iommu_ops rk_iommu_ops = {
- 	.detach_dev = rk_iommu_detach_device,
- 	.map = rk_iommu_map,
- 	.unmap = rk_iommu_unmap,
-+	.map_sg = default_iommu_map_sg,
- 	.add_device = rk_iommu_add_device,
- 	.remove_device = rk_iommu_remove_device,
- 	.iova_to_phys = rk_iommu_iova_to_phys,
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index ad08603..5572621 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -218,7 +218,7 @@ config OMAP_IOMMU_DEBUG
+ 
+ config ROCKCHIP_IOMMU
+ 	bool "Rockchip IOMMU Support"
+-	depends on ARM
++	depends on ARM || ARM64
+ 	depends on ARCH_ROCKCHIP || COMPILE_TEST
+ 	select IOMMU_API
+ 	select ARM_DMA_USE_IOMMU
 -- 
 1.9.1
