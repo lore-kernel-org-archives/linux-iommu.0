@@ -1,8 +1,7 @@
 From: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: [PATCH 1/5] iommu/rockchip: fix devm_request_irq and devm_free_irq
-	parameter
-Date: Mon, 23 May 2016 09:37:15 +0800
-Message-ID: <1463967439-13354-2-git-send-email-zhengsq@rock-chips.com>
+Subject: [PATCH 3/5] iommu/rockchip: add sanity check for virtual device
+Date: Mon, 23 May 2016 09:37:17 +0800
+Message-ID: <1463967439-13354-4-git-send-email-zhengsq@rock-chips.com>
 References: <1463967439-13354-1-git-send-email-zhengsq@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,37 +23,48 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 
-When rk_iommu_attach_device or rk_iommu_detach_device be called, the second
-parameter "dev" represent the device who own the iommu, so it is not resonable
-using "dev" for devm_request_irq's first parameter. To avoid potential error,
-we must use iommu device itself "iommu->dev" instead, the same as devm_free_irq.
+We mark DRM as "virtual" device by checking it's group,
+which may no longer true with the new rockchip drm drv in
+https://patchwork.kernel.org/patch/8876331/.
+
+Checking the group->iommu_data for virtual device.
 
 Signed-off-by: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 ---
- drivers/iommu/rockchip-iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/rockchip-iommu.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index c7d6156..ec0ce62 100644
+index 3c16ec3..043d18c 100644
 --- a/drivers/iommu/rockchip-iommu.c
 +++ b/drivers/iommu/rockchip-iommu.c
-@@ -807,7 +807,7 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+@@ -764,6 +764,7 @@ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
+ 	return unmap_size;
+ }
  
- 	iommu->domain = domain;
++/* Return NULL for a virtual device like DRM */
+ static struct rk_iommu *rk_iommu_from_dev(struct device *dev)
+ {
+ 	struct iommu_group *group;
+@@ -774,6 +775,11 @@ static struct rk_iommu *rk_iommu_from_dev(struct device *dev)
+ 	if (!group)
+ 		return NULL;
+ 	iommu_dev = iommu_group_get_iommudata(group);
++	if (!iommu_dev) {
++		dev_info(dev, "Possibly a virtual device\n");
++		return NULL;
++	}
++
+ 	rk_iommu = dev_get_drvdata(iommu_dev);
+ 	iommu_group_put(group);
  
--	ret = devm_request_irq(dev, iommu->irq, rk_iommu_irq,
-+	ret = devm_request_irq(iommu->dev, iommu->irq, rk_iommu_irq,
- 			       IRQF_SHARED, dev_name(dev), iommu);
- 	if (ret)
- 		return ret;
-@@ -860,7 +860,7 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
- 	}
- 	rk_iommu_disable_stall(iommu);
+@@ -791,7 +797,6 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
  
--	devm_free_irq(dev, iommu->irq, iommu);
-+	devm_free_irq(iommu->dev, iommu->irq, iommu);
- 
- 	iommu->domain = NULL;
- 
+ 	/*
+ 	 * Allow 'virtual devices' (e.g., drm) to attach to domain.
+-	 * Such a device does not belong to an iommu group.
+ 	 */
+ 	iommu = rk_iommu_from_dev(dev);
+ 	if (!iommu)
 -- 
 1.9.1
