@@ -1,15 +1,13 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 4/5] iommu/rockchip: add ARM64 cache flush operation for
-	iommu
-Date: Mon, 23 May 2016 11:44:14 +0100
-Message-ID: <5742DEFE.1040902@arm.com>
-References: <1463967439-13354-1-git-send-email-zhengsq@rock-chips.com>
-	<1463967439-13354-5-git-send-email-zhengsq@rock-chips.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH 4/3] iommu/exynos: Prepare for deferred probe support
+Date: Mon, 23 May 2016 13:01:27 +0200
+Message-ID: <1464001287-12748-1-git-send-email-m.szyprowski@samsung.com>
+References: <1463995809-26862-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1463967439-13354-5-git-send-email-zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+In-reply-to: <1463995809-26862-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,45 +17,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 23/05/16 02:37, Shunqian Zheng wrote:
-> From: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
->
-> Signed-off-by: Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-> ---
->   drivers/iommu/rockchip-iommu.c | 4 ++++
->   1 file changed, 4 insertions(+)
->
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index 043d18c..1741b65 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -95,12 +95,16 @@ struct rk_iommu {
->
->   static inline void rk_table_flush(u32 *va, unsigned int count)
->   {
-> +#if defined(CONFIG_ARM)
->   	phys_addr_t pa_start = virt_to_phys(va);
->   	phys_addr_t pa_end = virt_to_phys(va + count);
->   	size_t size = pa_end - pa_start;
->
->   	__cpuc_flush_dcache_area(va, size);
->   	outer_flush_range(pa_start, pa_end);
-> +#elif defined(CONFIG_ARM64)
-> +	__dma_flush_range(va, va + count);
-> +#endif
+Register iommu_ops at the end of successful probe instead of doing that
+unconditionally. This makes Exynos IOMMU driver ready for deferred probe
+caused by not-yet-available clocks.
 
-Ugh, please don't use arch-private cache maintenance functions directly 
-from a driver. Allocating/mapping page tables to be read by the IOMMU is 
-still DMA, so using the DMA APIs is the correct way to manage them, 
-*especially* if it needs to work across multiple architectures.
+Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+---
+I'm sorry for the confussing patch number. This patch got lost while
+rebasing, but it should belong to the "Exynos IOMMU: improve clock
+management" patchset.
 
-Robin.
+Best regards
+Marek Szyprowski
+Samsung R&D Institute Poland
+---
+ drivers/iommu/exynos-iommu.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
->   }
->
->   static struct rk_iommu_domain *to_rk_domain(struct iommu_domain *dom)
->
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index e0b834375f17..633e6d023c0d 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -581,6 +581,8 @@ static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
+ 	spin_unlock_irqrestore(&data->lock, flags);
+ }
+ 
++static struct iommu_ops exynos_iommu_ops;
++
+ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+ {
+ 	int irq, ret;
+@@ -654,6 +656,8 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+ 
+ 	pm_runtime_enable(dev);
+ 
++	of_iommu_set_ops(dev->of_node, &exynos_iommu_ops);
++
+ 	return 0;
+ }
+ 
+@@ -1347,7 +1351,6 @@ static int __init exynos_iommu_of_setup(struct device_node *np)
+ 	if (!dma_dev)
+ 		dma_dev = &pdev->dev;
+ 
+-	of_iommu_set_ops(np, &exynos_iommu_ops);
+ 	return 0;
+ }
+ 
+-- 
+1.9.2
