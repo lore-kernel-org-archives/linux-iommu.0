@@ -1,59 +1,151 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [RFC PATCH v1 10/18] x86/efi: Access EFI related tables in the
- clear
-Date: Tue, 24 May 2016 09:54:31 -0500
-Message-ID: <57446B27.20406@amd.com>
-References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
- <20160426225740.13567.85438.stgit@tlendack-t1.amdoffice.net>
- <20160510134358.GR2839@codeblueprint.co.uk> <20160510135758.GA16783@pd.tnic>
- <5734C97D.8060803@amd.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2 4/5] iommu/mediatek: add support for mtk iommu
+ generation one HW
+Date: Tue, 24 May 2016 16:36:45 +0100
+Message-ID: <5744750D.9080006@arm.com>
+References: <1463658558-567-1-git-send-email-honghui.zhang@mediatek.com>
+ <1463658558-567-5-git-send-email-honghui.zhang@mediatek.com>
+ <57435AA1.3090602@arm.com> <1464083839.30939.54.camel@mtksdaap41>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <5734C97D.8060803@amd.com>
+In-Reply-To: <1464083839.30939.54.camel@mtksdaap41>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Borislav Petkov <bp@alien8.de>, Matt Fleming <matt@codeblueprint.co.uk>, Leif Lindholm <leif.lindholm@linaro.org>, Mark Salter <msalter@redhat.com>, Daniel Kiper <daniel.kiper@oracle.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>
+To: Honghui Zhang <honghui.zhang@mediatek.com>
+Cc: joro@8bytes.org, treding@nvidia.com, mark.rutland@arm.com, matthias.bgg@gmail.com, robh@kernel.org, youlin.pei@mediatek.com, devicetree@vger.kernel.org, pebolle@tiscali.nl, kendrick.hsu@mediatek.com, arnd@arndb.de, srv_heupstream@mediatek.com, catalin.marinas@arm.com, erin.lo@mediatek.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, tfiga@google.com, iommu@lists.linux-foundation.org, robh+dt@kernel.org, djkurtz@google.com, p.zabel@pengutronix.de, yingjoe.chen@mediatek.com, linux-mediatek@lists.infradead.org, eddie.huang@mediatek.com, kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org, l.stach@pengutronix.de
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/12/2016 01:20 PM, Tom Lendacky wrote:
-> On 05/10/2016 08:57 AM, Borislav Petkov wrote:
->> On Tue, May 10, 2016 at 02:43:58PM +0100, Matt Fleming wrote:
->>> Is it not possible to maintain some kind of kernel virtual address
->>> mapping so memremap*() and friends can figure out when to twiddle the
->>> mapping attributes and map with/without encryption?
+On 24/05/16 10:57, Honghui Zhang wrote:
+[...]
+>>> @@ -48,6 +48,9 @@ struct mtk_iommu_domain {
+>>>    	struct io_pgtable_ops		*iop;
+>>>
+>>>    	struct iommu_domain		domain;
+>>> +	void				*pgt_va;
+>>> +	dma_addr_t			pgt_pa;
+>>> +	void				*cookie;
 >>
->> I guess we can move the sme_* specific stuff one indirection layer
->> below, i.e., in the *memremap() routines so that callers don't have to
->> care... That should keep the churn down...
+>> These are going to be mutually exclusive with the cfg and iop members,
+>> which implies it might be a good idea to use a union and not waste
+>> space. Or better, just forward-declare struct mtk_iommu_domain here and
+>> leave separate definitions private to each driver. The void *cookie is
+>> also an unnecessary level of abstraction, I think.
 >>
-> 
-> We could do that, but we'll have to generate that list of addresses so
-> that it can be checked against the range being mapped.  Since this is
-> part of early memmap support searching that list every time might not be
-> too bad. I'll have to look into that and see what that looks like.
+>
+> Do you mean declare struct mtk_iommu_domain here, and implement a new
+> struct in mtk_iommu_v1.c like
+> struct mtk_iommu_domain_v1 {
+> 	struct mtk_iommu_domain	domain;
+> 	u32			*pgt_va;
+> 	dma_addr_t		pgt_pa;
+> 	mtk_iommu_data		*data;
+> };
+> If this is acceptable I would implement it in the next version.
 
-I looked into this and this would be a large change also to parse tables
-and build lists.  It occurred to me that this could all be taken care of
-if the early_memremap calls were changed to early_ioremap calls. Looking
-in the git log I see that they were originally early_ioremap calls but
-were changed to early_memremap calls with this commit:
+Pretty much, except they both want to be called struct mtk_iommu_domain, 
+so that a *declaration* for the sake of the m4u_dom member of struct 
+mtk_iommu_data in the header file can remain common to both drivers - it 
+then just picks up whichever private *definition* from the .c file being 
+compiled.
 
-commit abc93f8eb6e4 ("efi: Use early_mem*() instead of early_io*()")
+>>>    };
+>>>
+>>>    struct mtk_iommu_data {
+>>> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+>>> new file mode 100644
+>>> index 0000000..55023e1
+>>> --- /dev/null
+>>> +++ b/drivers/iommu/mtk_iommu_v1.c
+>>> @@ -0,0 +1,742 @@
+>>> +/*
+>>> + * Copyright (c) 2015-2016 MediaTek Inc.
+>>> + * Author: Yong Wu <yong.wu@mediatek.com>
+>>
+>> Nit: is that in the sense that this patch should also have Yong's
+>> signed-off-by on it, or in that it's your work derived from his version
+>> in mtk_iommu.c?
+>
+> I write this driver based on Yong's version of mtk_iommu.c, should I add
+> his signed-off-by for this patch? Or should I put a comment about this?
+> Thanks.
 
-Looking at the early_memremap code and the early_ioremap code they both
-call __early_ioremap so I don't see how this change makes any
-difference (especially since FIXMAP_PAGE_NORMAL and FIXMAP_PAGE_IO are
-identical in this case).
+OK, in that case I think the appropriate attribution would be along the 
+lines of "Author: Honghui Zhang, based on mtk_iommu.c by Yong Wu" (if in 
+doubt, grepping for "Based on" gives a feel for how this is commonly 
+done). If the work that comprises this patch itself (i.e. the copying 
+and modification of the existing code) is all yours then your sign-off 
+alone is fine.
 
-Is it safe to change these back to early_ioremap calls (at least on
-x86)?
+[...]
+>>> +static int mtk_iommu_add_device(struct device *dev)
+>>> +{
+>>> +	struct iommu_group *group;
+>>> +	struct device_node *np;
+>>> +	struct of_phandle_args iommu_spec;
+>>> +	int idx = 0;
+>>> +
+>>> +	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
+>>> +				   "#iommu-cells", idx,
+>>> +				   &iommu_spec)) {
+>>
+>> Hang on, this doesn't seem right - why do you need to reimplement all
+>> this instead of using IOMMU_OF_DECLARE()?
+>
+> All the clients of mtk generation one iommu share the same iommu domain,
+> as a matter of fact, mtk generation one iommu only support one iommu
+> domain. ALl the clients share the same iova address and use the same
+> pagetable. That means all iommu clients needed to be attached to the
+> same dma_iommu_mapping.
 
-Thanks,
-Tom
+Ugh, right - I'd forgotten that the arch/arm DMA mapping code doesn't 
+respect IOMMU groups or default domains at all. That's the real root 
+cause of the issue here.
 
-> 
-> Thanks,
-> Tom
-> 
+> If use IOMMU_OF_DELCARE, we need to call of_iommu_set_ops to set the
+> iommu_ops, I do not want the iommu_ops be set since it would cause iommu
+> client device in different dma_iommu_mapping.
+>
+> When an iommu client device has been created, the following sequence is
+> called.
+>
+> of_platform_device_create
+> 	->of_dma_config
+> 		->arch_setup_dma_ops
+> 			->arch_setup_iommu_dma_ops
+> In this function of arch_setup_iommu_dma_ops would create a new
+> dma_iommu_mapping for each iommu client device and then attach the
+> device to this new dma_iommu_mapping. Since all the iommu clients share
+> the very same pagetable, this will not workable for our HW.
+> I could not release the dma_iommu_mapping in attach_device since the
+> to_dma_iommu_mapping was set after device_attached.
+> Any suggest for this?
+
+On a second look, you're doing more or less the same thing that the 
+Renesas IPMMU driver currently does, so it's probably OK as a workaround 
+for now. Fixing the arch/arm code is part of the bigger ongoing problem 
+of sorting out IOMMU probing and DMA configuration, and it doesn't seem 
+fair to force that on you for the sake of one driver ;)
+
+[...]
+>>> +static int __maybe_unused mtk_iommu_resume(struct device *dev)
+>>> +{
+>>> +	struct mtk_iommu_data *data = dev_get_drvdata(dev);
+>>> +	struct mtk_iommu_suspend_reg *reg = &data->reg;
+>>> +	void __iomem *base = data->base;
+>>> +
+>>> +	writel_relaxed(data->m4u_dom->pgt_pa, base + REG_MMU_PT_BASE_ADDR);
+>>
+>> Hmm, this looks like the only case where m4u_dom actually seems
+>> necessary - I'm pretty sure all the others could be fairly easily
+>> reworked to not use it (I might try having a quick hack at the existing
+>> M4U driver to see) - at which point we could just explicitly
+>> save/restore the base register here and get rid of m4u_dom entirely.
+>
+> Let me take a while to think about this.
+
+That was true in the context of arm64, but you're right that the current 
+state of the 32-bit code does make m4u_dom more necessary, so I guess we 
+may as well leave it as-is for now.
+
+Robin.
