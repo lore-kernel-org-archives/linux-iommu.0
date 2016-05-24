@@ -1,58 +1,69 @@
-From: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: Re: [PATCH 4/5] iommu/rockchip: add ARM64 cache flush operation for
- iommu
-Date: Tue, 24 May 2016 10:31:17 +0800
-Message-ID: <5743BCF5.8030607@rock-chips.com>
-References: <1463967439-13354-1-git-send-email-zhengsq@rock-chips.com>
- <1463967439-13354-5-git-send-email-zhengsq@rock-chips.com>
- <5742DEFE.1040902@arm.com>
- <20160523133500.GF4892@e104818-lin.cambridge.arm.com>
-Reply-To: zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org
+From: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH 0/4] dma-mapping: Constify dma_attrs
+Date: Tue, 24 May 2016 08:28:06 +0200
+Message-ID: <1464071290-15948-1-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-In-Reply-To: <20160523133500.GF4892-M2fw3Uu6cmfZROr8t4l/smS4ubULX0JqMm0uRHvK7Nw@public.gmane.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
-List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
- <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
-Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-To: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Stefano Stabellini <sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Q2F0YWxpbiwgUm9iaW4sCgpPbiAyMDE25bm0MDXmnIgyM+aXpSAyMTozNSwgQ2F0YWxpbiBNYXJp
-bmFzIHdyb3RlOgo+IE9uIE1vbiwgTWF5IDIzLCAyMDE2IGF0IDExOjQ0OjE0QU0gKzAxMDAsIFJv
-YmluIE11cnBoeSB3cm90ZToKPj4gT24gMjMvMDUvMTYgMDI6MzcsIFNodW5xaWFuIFpoZW5nIHdy
-b3RlOgo+Pj4gRnJvbTogU2ltb24gPHh4bUByb2NrLWNoaXBzLmNvbT4KPj4+Cj4+PiBTaWduZWQt
-b2ZmLWJ5OiBTaW1vbiA8eHhtQHJvY2stY2hpcHMuY29tPgo+Pj4gLS0tCj4+PiAgIGRyaXZlcnMv
-aW9tbXUvcm9ja2NoaXAtaW9tbXUuYyB8IDQgKysrKwo+Pj4gICAxIGZpbGUgY2hhbmdlZCwgNCBp
-bnNlcnRpb25zKCspCj4+Pgo+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvcm9ja2NoaXAt
-aW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvcm9ja2NoaXAtaW9tbXUuYwo+Pj4gaW5kZXggMDQzZDE4
-Yy4uMTc0MWI2NSAxMDA2NDQKPj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvcm9ja2NoaXAtaW9tbXUu
-Ywo+Pj4gKysrIGIvZHJpdmVycy9pb21tdS9yb2NrY2hpcC1pb21tdS5jCj4+PiBAQCAtOTUsMTIg
-Kzk1LDE2IEBAIHN0cnVjdCBya19pb21tdSB7Cj4+Pgo+Pj4gICBzdGF0aWMgaW5saW5lIHZvaWQg
-cmtfdGFibGVfZmx1c2godTMyICp2YSwgdW5zaWduZWQgaW50IGNvdW50KQo+Pj4gICB7Cj4+PiAr
-I2lmIGRlZmluZWQoQ09ORklHX0FSTSkKPj4+ICAgCXBoeXNfYWRkcl90IHBhX3N0YXJ0ID0gdmly
-dF90b19waHlzKHZhKTsKPj4+ICAgCXBoeXNfYWRkcl90IHBhX2VuZCA9IHZpcnRfdG9fcGh5cyh2
-YSArIGNvdW50KTsKPj4+ICAgCXNpemVfdCBzaXplID0gcGFfZW5kIC0gcGFfc3RhcnQ7Cj4+Pgo+
-Pj4gICAJX19jcHVjX2ZsdXNoX2RjYWNoZV9hcmVhKHZhLCBzaXplKTsKPj4+ICAgCW91dGVyX2Zs
-dXNoX3JhbmdlKHBhX3N0YXJ0LCBwYV9lbmQpOwo+Pj4gKyNlbGlmIGRlZmluZWQoQ09ORklHX0FS
-TTY0KQo+Pj4gKwlfX2RtYV9mbHVzaF9yYW5nZSh2YSwgdmEgKyBjb3VudCk7Cj4+PiArI2VuZGlm
-Cj4+IFVnaCwgcGxlYXNlIGRvbid0IHVzZSBhcmNoLXByaXZhdGUgY2FjaGUgbWFpbnRlbmFuY2Ug
-ZnVuY3Rpb25zIGRpcmVjdGx5IGZyb20KPj4gYSBkcml2ZXIuIEFsbG9jYXRpbmcvbWFwcGluZyBw
-YWdlIHRhYmxlcyB0byBiZSByZWFkIGJ5IHRoZSBJT01NVSBpcyBzdGlsbAo+PiBETUEsIHNvIHVz
-aW5nIHRoZSBETUEgQVBJcyBpcyB0aGUgY29ycmVjdCB3YXkgdG8gbWFuYWdlIHRoZW0sICplc3Bl
-Y2lhbGx5Kgo+PiBpZiBpdCBuZWVkcyB0byB3b3JrIGFjcm9zcyBtdWx0aXBsZSBhcmNoaXRlY3R1
-cmVzLgpJdCdzIGVhc2llciBmb3IgdXMgaWYgY2hhbmdpbmcgIHRoZSBfX2RtYV9mbHVzaF9yYW5n
-ZSgpIHRvIApfX2ZsdXNoX2RjYWNoZV9hcmVhKCkgaXMgYWNjZXB0YWJsZSBoZXJlPwoKVGhhbmsg
-eW91LAotIHNodW5xaWFuCj4gSSBmdWxseSBhZ3JlZSwgdGhlc2UgZnVuY3Rpb25zIHNob3VsZCBu
-b3QgYmUgdXNlZCBpbiBkcml2ZXJzLgoKCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwpMaW51eC1yb2NrY2hpcCBtYWlsaW5nIGxpc3QKTGludXgtcm9ja2No
-aXBAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5mcmFkZWFkLm9yZy9tYWlsbWFu
-L2xpc3RpbmZvL2xpbnV4LXJvY2tjaGlwCg==
+Hi,
+
+The patchset is divided into two parts:
+1. (patch 1-3): Constify dma_attrs passed to some of functions. The
+   first patch is a dependency for all other. This is not intrusive.
+
+2. patch 4: request for comments, constify dma_attrs everywhere (struct
+   dma_map_ops and implementations).
+   Constness may protect from certain coding bugs and, what is more
+   important, is a direct documentation of how the core deals
+   with passed data. Some of the dma-mapping users allocate attrs
+   on the stack so the ownership cannot be transferred. 'Const' here
+   means exactly that - the ownership stays with the caller.
+
+   Unfortunately this cannot be done separately per-implementation
+   without introducing build warnings so the patch touches multiple
+   subsystems. Maybe using some casts in intermediate steps might help
+   splitting it into separate patches?
+
+   This is not finished because there is no point of my effort if
+   I will hear short NACK soon. :)
+
+Comments are welcomed.
+
+Best regards,
+Krzysztof
+
+Krzysztof Kozlowski (4):
+  dma-mapping: Constify attrs passed to dma_get_attr
+  ARM: dma-mapping: Constify attrs passed to internal functions
+  arm64: dma-mapping: Constify attrs passed to internal functions
+  dma-mapping: Constify dma_attrs
+
+ arch/arm/include/asm/dma-mapping.h | 12 +++---
+ arch/arm/mm/dma-mapping.c          | 87 ++++++++++++++++++++------------------
+ arch/arm/xen/mm.c                  |  4 +-
+ arch/arm64/mm/dma-mapping.c        | 53 +++++++++++------------
+ drivers/iommu/dma-iommu.c          |  6 +--
+ include/linux/dma-attrs.h          |  3 +-
+ include/linux/dma-iommu.h          |  6 +--
+ include/linux/dma-mapping.h        | 34 ++++++++-------
+ include/linux/swiotlb.h            |  9 ++--
+ lib/dma-noop.c                     |  9 ++--
+ lib/swiotlb.c                      |  9 ++--
+ 11 files changed, 123 insertions(+), 109 deletions(-)
+
+-- 
+1.9.1
