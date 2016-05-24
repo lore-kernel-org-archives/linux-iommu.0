@@ -1,81 +1,77 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH 2/5] iommu: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have
- capability of IRQ remapping
-Date: Tue, 24 May 2016 16:11:49 -0500
-Message-ID: <20160524211149.GC16463@localhost>
-References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
- <1461761010-5452-3-git-send-email-xyjxie@linux.vnet.ibm.com>
+From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: reduce extra first level entry in
+	iommu->domains
+Date: Tue, 24 May 2016 23:06:55 +0000
+Message-ID: <20160524230655.GA28550@vultr.guest>
+References: <1463798511-4015-1-git-send-email-richard.weiyang@gmail.com>
+Reply-To: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1461761010-5452-3-git-send-email-xyjxie@linux.vnet.ibm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, David.Laight@ACULAB.COM, alistair@popple.id.au, ruscur@russell.cc
+In-Reply-To: <1463798511-4015-1-git-send-email-richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 27, 2016 at 08:43:27PM +0800, Yongji Xie wrote:
-> The capability of IRQ remapping is abstracted on IOMMU side on
-> some archs. There is a existing flag IOMMU_CAP_INTR_REMAP for this.
-> 
-> To have a universal flag to test this capability for different
-> archs on PCI side, we set PCI_BUS_FLAGS_MSI_REMAP for PCI buses
-> when IOMMU_CAP_INTR_REMAP is set.
-> 
-> Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-> ---
->  drivers/iommu/iommu.c |   15 +++++++++++++++
->  1 file changed, 15 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 0e3b009..5d2b6f6 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -813,6 +813,16 @@ struct iommu_group *pci_device_group(struct device *dev)
->  	return group;
->  }
->  
-> +static void pci_check_msi_remapping(struct pci_dev *pdev,
-> +					const struct iommu_ops *ops)
-> +{
-> +	struct pci_bus *bus = pdev->bus;
-> +
-> +	if (ops->capable(IOMMU_CAP_INTR_REMAP) &&
-> +		!(bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP))
-> +		bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
-> +}
+Hi, Joerg
 
-This looks an awful lot like the pci_bus_check_msi_remapping() you add
-elsewhere.  Why do we need both?
+Not sure whether you think this calculation is correct.
 
->  /**
->   * iommu_group_get_for_dev - Find or create the IOMMU group for a device
->   * @dev: target device
-> @@ -871,6 +881,9 @@ static int add_iommu_group(struct device *dev, void *data)
->  	const struct iommu_ops *ops = cb->ops;
->  	int ret;
->  
-> +	if (dev_is_pci(dev) && ops->capable)
-> +		pci_check_msi_remapping(to_pci_dev(dev), ops);
-> +
->  	if (!ops->add_device)
->  		return 0;
->  
-> @@ -913,6 +926,8 @@ static int iommu_bus_notifier(struct notifier_block *nb,
->  	 * result in ADD/DEL notifiers to group->notifier
->  	 */
->  	if (action == BUS_NOTIFY_ADD_DEVICE) {
-> +		if (dev_is_pci(dev) && ops->capable)
-> +			pci_check_msi_remapping(to_pci_dev(dev), ops);
+If I missed something for this " + 1" in your formula, I am glad to hear your
+explanation. So that I could learn something from you :-)
 
-These calls don't smell right either.  Why do we need dev_is_pci()
-checks here?  Can't this be done in the PCI probe path somehow, e.g.,
-in pci_set_bus_msi_domain() or something?
+Have a good day~
 
->  		if (ops->add_device)
->  			return ops->add_device(dev);
->  	} else if (action == BUS_NOTIFY_REMOVED_DEVICE) {
-> -- 
-> 1.7.9.5
+On Sat, May 21, 2016 at 02:41:51AM +0000, Wei Yang wrote:
+>In commit <8bf478163e69> ("iommu/vt-d: Split up iommu->domains array"), it
+>it splits iommu->domains in two levels. Each first level contains 256
+>entries of second level. In case of the ndomains is exact a multiple of
+>256, it would have one more extra first level entry for current
+>implementation.
+>
+>This patch refines this calculation to reduce the extra first level entry.
+>
+>Signed-off-by: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>---
+> drivers/iommu/intel-iommu.c |    4 ++--
+> 1 file changed, 2 insertions(+), 2 deletions(-)
+>
+>diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+>index e3061d3..2204ca4 100644
+>--- a/drivers/iommu/intel-iommu.c
+>+++ b/drivers/iommu/intel-iommu.c
+>@@ -1634,7 +1634,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
+> 		return -ENOMEM;
+> 	}
 > 
+>-	size = ((ndomains >> 8) + 1) * sizeof(struct dmar_domain **);
+>+	size = (ALIGN(ndomains, 256) >> 8) * sizeof(struct dmar_domain **);
+> 	iommu->domains = kzalloc(size, GFP_KERNEL);
+> 
+> 	if (iommu->domains) {
+>@@ -1699,7 +1699,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+> static void free_dmar_iommu(struct intel_iommu *iommu)
+> {
+> 	if ((iommu->domains) && (iommu->domain_ids)) {
+>-		int elems = (cap_ndoms(iommu->cap) >> 8) + 1;
+>+		int elems = ALIGN(cap_ndoms(iommu->cap), 256) >> 8;
+> 		int i;
+> 
+> 		for (i = 0; i < elems; i++)
+>-- 
+>1.7.9.5
+
+-- 
+Wei Yang
+Help you, Help me
