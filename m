@@ -1,72 +1,138 @@
-From: Catalin Marinas <catalin.marinas@arm.com>
-Subject: Re: [PATCH 4/5] iommu/rockchip: add ARM64 cache flush operation for
- iommu
-Date: Tue, 24 May 2016 10:59:27 +0100
-Message-ID: <20160524095927.GS4892@e104818-lin.cambridge.arm.com>
-References: <1463967439-13354-1-git-send-email-zhengsq@rock-chips.com>
- <1463967439-13354-5-git-send-email-zhengsq@rock-chips.com>
- <5742DEFE.1040902@arm.com>
- <20160523133500.GF4892@e104818-lin.cambridge.arm.com>
- <5743BCF5.8030607@rock-chips.com>
+From: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Subject: Re: [PATCH V5 6/7] iommu/msm: Use writel_relaxed and add a barrier
+Date: Tue, 24 May 2016 16:00:06 +0200
+Message-ID: <7555154.mU2oTAdECP@wuerfel>
+References: <1463741694-1735-1-git-send-email-sricharan@codeaurora.org> <3164695.VzCnHHyi7r@wuerfel> <000601d1b4b9$119c2410$34d46c30$@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5743BCF5.8030607@rock-chips.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Shunqian Zheng <zhengsq@rock-chips.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, heiko@sntech.de, Mark Rutland <mark.rutland@arm.com>, linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Simon <xxm@rock-chips.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <000601d1b4b9$119c2410$34d46c30$@codeaurora.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 24, 2016 at 10:31:17AM +0800, Shunqian Zheng wrote:
-> On 2016=E5=B9=B405=E6=9C=8823=E6=97=A5 21:35, Catalin Marinas wrote:
-> >On Mon, May 23, 2016 at 11:44:14AM +0100, Robin Murphy wrote:
-> >>On 23/05/16 02:37, Shunqian Zheng wrote:
-> >>>From: Simon <xxm@rock-chips.com>
-> >>>
-> >>>Signed-off-by: Simon <xxm@rock-chips.com>
-> >>>---
-> >>>  drivers/iommu/rockchip-iommu.c | 4 ++++
-> >>>  1 file changed, 4 insertions(+)
-> >>>
-> >>>diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockch=
-ip-iommu.c
-> >>>index 043d18c..1741b65 100644
-> >>>--- a/drivers/iommu/rockchip-iommu.c
-> >>>+++ b/drivers/iommu/rockchip-iommu.c
-> >>>@@ -95,12 +95,16 @@ struct rk_iommu {
-> >>>
-> >>>  static inline void rk_table_flush(u32 *va, unsigned int count)
-> >>>  {
-> >>>+#if defined(CONFIG_ARM)
-> >>>  	phys_addr_t pa_start =3D virt_to_phys(va);
-> >>>  	phys_addr_t pa_end =3D virt_to_phys(va + count);
-> >>>  	size_t size =3D pa_end - pa_start;
-> >>>
-> >>>  	__cpuc_flush_dcache_area(va, size);
-> >>>  	outer_flush_range(pa_start, pa_end);
-> >>>+#elif defined(CONFIG_ARM64)
-> >>>+	__dma_flush_range(va, va + count);
-> >>>+#endif
-> >>Ugh, please don't use arch-private cache maintenance functions dire=
-ctly from
-> >>a driver. Allocating/mapping page tables to be read by the IOMMU is=
- still
-> >>DMA, so using the DMA APIs is the correct way to manage them, *espe=
-cially*
-> >>if it needs to work across multiple architectures.
->=20
-> It's easier for us if changing  the __dma_flush_range() to
-> __flush_dcache_area() is acceptable here?
+On Monday, May 23, 2016 11:35:04 AM CEST Sricharan wrote:
+> Hi Arnd,
+> 
+> >> @@ -124,6 +124,9 @@ static void msm_iommu_reset(void __iomem *base, int ncb)
+> >>  		SET_TLBLKCR(base, ctx, 0);
+> >>  		SET_CONTEXTIDR(base, ctx, 0);
+> >>  	}
+> >> +
+> >> +	/* Ensure completion of relaxed writes from the above SET macros */
+> >> +	mb();
+> >>  }
+> >
+> >Why do the above use the relaxed writes? Do you have any performance
+> >numbers showing that skipping the sync for the reset makes a measurable
+> >difference?
+> >
+> >How did you prove that skipping the sync before the write is safe?
+> >
+> >How about resetting the iommu less often instead?
+> >
+> 
+> I had measured the numbers only for the full usecase path, not for the
+> reset path alone. I saw improvement of about 5% on full numbers.
+> As you said, the reset path would be called only less often
+> and might not bring a measurable change. I did not see a difference in behavior
+> when changing the sync to happen after the writes.
 
-It's not really acceptable for arm64, nor for arm32. Please fix this
-driver in a similar way to commit e3c971960fd4 ("iommu/tegra-smmu:
-Convert to use DMA API").
+Ok, then better not change it.
 
-The only place where we allowed __flush_dcache_area() is in the GICv3
-driver and that's because it hasn't been wired as a platform device
-(yet).
+> But my understanding was that
+> the sync after the writes was required to ensure write completion. 
 
---=20
-Catalin
+Can you cite the relevant documentation on this? Is this specific
+to the Qualcomm CPU implementation or the IOMMU? I don't think
+the ARM architecture requires anything like this in general.
+
+> I should have made smaller patches to do this change.
+> The only patch relevant for this series is the one that changes the write in _iotlb_range
+> function. Rest of the changes, should be added one by one in a separate series.
+
+If you see the same 5% performance improvement with a simpler change, then
+better do only that. The IOMMU infrastructure is rather sensitive to
+having correct barriers everywhere, so this minimizes the risk of getting
+it wrong somewhere.
+
+
+> >> @@ -181,7 +187,8 @@ fail:
+> >>
+> >>  static void __flush_iotlb_sync(void *cookie)
+> >>  {
+> >> -	/* To avoid a null function pointer */
+> >> +	/* To ensure completion of the TLBIVA in __flush_iotlb_range */
+> >> +	mb();
+> >>  }
+> >
+> >I don't understand the specific race from the comment.
+> >
+> >What operation comes after this that relies on __flush_iotlb_range
+> >having completed, and how does an mb() guarantee this?
+> >
+> 
+> The flush_iotlb_range operation invalidates the tlb for writes to
+> pagetable and the finally calls the sync operation to ensure completion
+> of the flush and this is required before returning back to the client
+> of the iommu. In the case of this iommu, only a barrier is required to
+> ensure completion of the invalidate operation. 
+
+This doesn't answer my question: What operation would a client do
+that requires the flush to be completed here? A barrier is always
+defined in terms of things that come before it in combination with
+things that come after it.
+
+Any operation that could trigger a DMA from a device is required
+to have a barrier preceding it (usually wmb() one implied by writel()),
+so this is clearly not about a driver that installs a DMA mapping
+before starting a DMA, but I don't see what else it would be.
+
+> >This seems to be a bug fix that is unrelated to the change to
+> >use writel_relaxed(), so better split it out into a separate
+> >patch, with a longer changeset description. Did you spot this
+> >race by running into incorrect data, or by inspection?
+> >
+> 
+> No i did not see a data corruption issue without the mb(),
+> but that it would have been hidden in someother way as well.
+> Another difference was the sync  was done before the write
+> previously and now its moved after the write. As i understand
+> sync after the write is correct. So i will change this patch with more
+> description and move rest of that changes out.
+
+Ok.
+
+> >> @@ -500,7 +516,8 @@ static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
+> >>  	/* Invalidate context TLB */
+> >>  	SET_CTX_TLBIALL(iommu->base, master->num, 0);
+> >>  	SET_V2PPR(iommu->base, master->num, va & V2Pxx_VA);
+> >> -
+> >> +	/* Ensure completion of relaxed writes from the above SET macros */
+> >> +	mb();
+> >>  	par = GET_PAR(iommu->base, master->num);
+> >>
+> >>  	/* We are dealing with a supersection */
+> >
+> >In this case, I'd say it's better to rewrite the function to avoid the
+> >read: iova_to_phys() should be fast, and not require hardware access.
+> >Getting rid of the hardware access by using an in-memory cache for
+> >this should gain more than just removing the barriers, as an MMIO read
+> >is always slow
+> 
+> Ok, you mean using the software walk through ? I will check on this to measure
+>  the latency difference. If thats true, then the iopgtable ops itself provides a
+> function for iova_to_phys conversion, so that can be used.
+
+I hadn't realized that this is a lookup in the hardware, rather than
+reading a static register. It's probably a good idea to check this
+anyway.
+
+
+	Arnd
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
