@@ -1,7 +1,7 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [Patch v4 5/9] iommu/amd: Define bit fields for DTE particularly
-Date: Wed, 25 May 2016 14:28:51 +0800
-Message-ID: <1464157735-8865-6-git-send-email-bhe@redhat.com>
+Subject: [Patch v4 7/9] iommu/amd: copy old trans table from old kernel
+Date: Wed, 25 May 2016 14:28:53 +0800
+Message-ID: <1464157735-8865-8-git-send-email-bhe@redhat.com>
 References: <1464157735-8865-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,108 +21,101 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vincent.wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In amd-vi spec several bits of IO PTE fields and DTE fields are similar
-so that both of them can share the same MACRO definition. However
-defining their respecitve bit fields can make code more read-able. So
-do it in this patch.
+From: Baoquan HE <bhe-sa4SJRhfYT7yzlqKoElxGh/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
+
+Here several things need be done:
+1) Initialize amd_iommu_dev_table because it was set several times
+   since kdump kernel reboot. We don't need the set because we will
+   copy the content from old kernel.
+2) Re-enable event/cmd buffer
+3) Install the DTE table to reg
+4) Flush all caches
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       | 10 +++++-----
- drivers/iommu/amd_iommu_types.h | 19 +++++++++++++++----
- 2 files changed, 20 insertions(+), 9 deletions(-)
+ drivers/iommu/amd_iommu_init.c | 47 +++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 42 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index cc636e6..1c916cc 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1401,9 +1401,9 @@ static int iommu_map_page(struct protection_domain *dom,
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 71c7ac9..66a1fa5 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -35,7 +35,7 @@
+ #include <asm/iommu_table.h>
+ #include <asm/io_apic.h>
+ #include <asm/irq_remapping.h>
+-
++#include <linux/crash_dump.h>
+ #include "amd_iommu_proto.h"
+ #include "amd_iommu_types.h"
+ #include "irq_remapping.h"
+@@ -675,7 +675,7 @@ static int copy_dev_tables(void)
+ 	static int copied;
  
- 	if (count > 1) {
- 		__pte = PAGE_SIZE_PTE(phys_addr, page_size);
--		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_P | IOMMU_PTE_FC;
-+		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_PR | IOMMU_PTE_FC;
- 	} else
--		__pte = phys_addr | IOMMU_PTE_P | IOMMU_PTE_FC;
-+		__pte = phys_addr | IOMMU_PTE_PR | IOMMU_PTE_FC;
+         for_each_iommu(iommu) {
+-		if (!translation_pre_enabled()) {
++		if (!translation_pre_enabled(iommu)) {
+ 			pr_err("IOMMU:%d is not pre-enabled!/n", iommu->index);
+ 			return -1;
+ 		}
+@@ -1160,8 +1160,13 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ 	iommu->int_enabled = false;
  
- 	if (prot & IOMMU_PROT_IR)
- 		__pte |= IOMMU_PTE_IR;
-@@ -2048,7 +2048,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+ 	init_translation_status(iommu);
++	if (translation_pre_enabled(iommu) && !is_kdump_kernel()) {
++                        clear_translation_pre_enabled(iommu);
++                        pr_warn("Translation was enabled for IOMMU:%d but we are not in kdump mode\n",
++                                iommu->index);
++                }
  
- 	pte_root |= (domain->mode & DEV_ENTRY_MODE_MASK)
- 		    << DEV_ENTRY_MODE_SHIFT;
--	pte_root |= IOMMU_PTE_IR | IOMMU_PTE_IW | IOMMU_PTE_P | IOMMU_PTE_TV;
-+	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V | DTE_FLAG_TV;
+-	if (translation_pre_enabled())
++	if (translation_pre_enabled(iommu))
+ 		pr_warn("Translation is already enabled - trying to copy translation structures\n");
  
- 	flags = amd_iommu_dev_table[devid].data[1];
- 
-@@ -2091,7 +2091,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
- static void clear_dte_entry(u16 devid)
+ 	ret = init_iommu_from_acpi(iommu, h);
+@@ -1730,9 +1735,41 @@ static void early_enable_iommu(struct amd_iommu *iommu)
+ static void early_enable_iommus(void)
  {
- 	/* remove entry from the device table seen by the hardware */
--	amd_iommu_dev_table[devid].data[0]  = IOMMU_PTE_P | IOMMU_PTE_TV;
-+	amd_iommu_dev_table[devid].data[0]  = DTE_FLAG_V | DTE_FLAG_TV;
- 	amd_iommu_dev_table[devid].data[1] &= DTE_FLAG_MASK;
+ 	struct amd_iommu *iommu;
++	bool is_pre_enabled=false;
  
- 	amd_iommu_apply_erratum_63(devid);
-@@ -2533,7 +2533,7 @@ static dma_addr_t dma_ops_domain_map(struct dma_ops_domain *dom,
- 	if (!pte)
- 		return DMA_ERROR_CODE;
- 
--	__pte = paddr | IOMMU_PTE_P | IOMMU_PTE_FC;
-+	__pte = paddr | IOMMU_PTE_PR | IOMMU_PTE_FC;
- 
- 	if (direction == DMA_TO_DEVICE)
- 		__pte |= IOMMU_PTE_IR;
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 01783cc..7796edf 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -239,7 +239,7 @@
- #define PM_LEVEL_INDEX(x, a)	(((a) >> PM_LEVEL_SHIFT((x))) & 0x1ffULL)
- #define PM_LEVEL_ENC(x)		(((x) << 9) & 0xe00ULL)
- #define PM_LEVEL_PDE(x, a)	((a) | PM_LEVEL_ENC((x)) | \
--				 IOMMU_PTE_P | IOMMU_PTE_IR | IOMMU_PTE_IW)
-+				 IOMMU_PTE_PR | IOMMU_PTE_IR | IOMMU_PTE_IW)
- #define PM_PTE_LEVEL(pte)	(((pte) >> 9) & 0x7ULL)
- 
- #define PM_MAP_4k		0
-@@ -288,13 +288,24 @@
- #define PTE_LEVEL_PAGE_SIZE(level)			\
- 	(1ULL << (12 + (9 * (level))))
- 
--#define IOMMU_PTE_P  (1ULL << 0)
--#define IOMMU_PTE_TV (1ULL << 1)
-+/*
-+ * Bit value definition for I/O PTE fields
-+ */
-+#define IOMMU_PTE_PR (1ULL << 0)
- #define IOMMU_PTE_U  (1ULL << 59)
- #define IOMMU_PTE_FC (1ULL << 60)
- #define IOMMU_PTE_IR (1ULL << 61)
- #define IOMMU_PTE_IW (1ULL << 62)
- 
+-	for_each_iommu(iommu)
+-		early_enable_iommu(iommu);
++	for_each_iommu(iommu) {
++		if ( translation_pre_enabled(iommu) ) {
++			is_pre_enabled = true;
++			break;
++		}
++	}
 +
-+/*
-+ * Bit value definition for DTE fields
-+ */
-+#define DTE_FLAG_V  (1ULL << 0)
-+#define DTE_FLAG_TV (1ULL << 1)
-+#define DTE_FLAG_IR (1ULL << 61)
-+#define DTE_FLAG_IW (1ULL << 62)
-+
- #define DTE_FLAG_IOTLB	(1ULL << 32)
- #define DTE_FLAG_GV	(1ULL << 55)
- #define DTE_FLAG_MASK	(0x3ffULL << 32)
-@@ -316,7 +327,7 @@
- #define GCR3_VALID		0x01ULL
++	if ( !is_pre_enabled) {
++		for_each_iommu(iommu)
++			early_enable_iommu(iommu);
++	} else {
++		if (copy_dev_tables()) {
++			pr_err("Failed to copy translation tables from previous kernel.\n");
++			/*
++			 * If failed to copy dev tables from old kernel, continue to proceed
++			 * as it does in normal kernel.
++			 */
++			for_each_iommu(iommu) {
++				clear_translation_pre_enabled(iommu);
++				early_enable_iommu(iommu);
++			}
++		} else {
++			pr_info("Copied translation tables from previous kernel.\n");
++			for_each_iommu(iommu) {
++				iommu_feature_disable(iommu, CONTROL_CMDBUF_EN);
++		                iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN);
++		                iommu_enable_command_buffer(iommu);
++		                iommu_enable_event_buffer(iommu);
++		                iommu_set_device_table(iommu);
++		                iommu_flush_all_caches(iommu);
++			}
++		}
++	}
+ }
  
- #define IOMMU_PAGE_MASK (((1ULL << 52) - 1) & ~0xfffULL)
--#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_P)
-+#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_PR)
- #define IOMMU_PTE_PAGE(pte) (phys_to_virt((pte) & IOMMU_PAGE_MASK))
- #define IOMMU_PTE_MODE(pte) (((pte) >> 9) & 0x07)
- 
+ static void enable_iommus_v2(void)
 -- 
 2.5.5
