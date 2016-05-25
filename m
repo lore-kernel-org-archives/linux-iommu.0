@@ -1,15 +1,11 @@
-From: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH 1/5] PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
-Date: Wed, 25 May 2016 13:46:23 +0800
-Message-ID: <201605250546.u4P5htW1048499@mx0a-001b2d01.pphosted.com>
-References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-	<1461761010-5452-2-git-send-email-xyjxie@linux.vnet.ibm.com>
-	<20160524205519.GA16463@localhost>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [Patch v4 0/9] *** Fix kdump failure in system with amd iommu***
+Date: Wed, 25 May 2016 14:28:46 +0800
+Message-ID: <1464157735-8865-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160524205519.GA16463@localhost>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,43 +15,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org, nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vincent.wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2016/5/25 4:55, Bjorn Helgaas wrote:
+Hi Joerg,
 
-> On Wed, Apr 27, 2016 at 08:43:26PM +0800, Yongji Xie wrote:
->> We introduce a new pci_bus_flags, PCI_BUS_FLAGS_MSI_REMAP
->> which indicates all devices on the bus are protected by the
->> hardware which supports IRQ remapping(intel naming).
-> This changelog is ambiguous.  It's possible that there is hardware
-> that *supports* IRQ remapping, but does not actually *do* IRQ
-> remapping.  For example, an IRQ remapping capability may be present
-> but not enabled.
->
-> I think your intent is to set this flag only when MSI remapping is
-> actually *enabled* for all devices on the bus.
+Recently I have time to continue the work of fixing AMD IOMMU faults in
+kdump kernel. The situation is I tried to make change at the time point
+as Intel iommu has done, but still Ethernet NIC will trigger the printing
+of IO_PAGE_FAULT. I got 2 machines with AMD IOMMU v1 and v2 separately,
+the test result is similar, always there are IO_PAGE_FAULT message for
+Ethernet network card. I have no idea why it happened though I did it
+just like Intel IOMMU did.
 
-Yes. This is exactly my intent. Thank you for the correction!
+In this v4 change, I just made changes as follows:
 
-> I'd also like to know exactly what protection is implied by
-> PCI_BUS_FLAGS_MSI_REMAP and IOMMU_CAP_INTR_REMAP.  I guess it means a
-> device can only generate MSIs to a certain set of CPUs?  I assume the
-> remapping hardware only checks the target address, not the data being
-> written?
+1) Several clean up patches when I reviewed AMD IOMMU code.
+2) Detect if it's pre-enabled in kdump kernel.
+3) Copy dev tables in kdump kernel. Since dev table is per device we just
+   need to copy the content in dev table, the io page table pointer and
+   irq table pointer are contained in each dev table entry.
+4) Reserved the domain id which has been allocated in 1st kernel
+5) Do not re-enable or re-init the dev table entry bits or control bit
+   of AMD IOMMU.
 
-When IRQ remapping is enabled, the hardware will check both target
-address and data, then compute the interrupt_index from them.
-Interrupt_index will be used to find a specific Interrupt Remapping Table
-Entry containing some fields which could be used to identify a device or
-a group of devices(these devices should be in the same isolation domain).
-Then hardware can use this to verify the interrupt request. If the interrupt
-request is not from the specific devices, it will be blocked.
+Post this to mailing list, hope it can be figured out which need be further
+changed.
 
-So this flag indicate that the hardware can ensure that a given PCI device
-can only shoot the MSIs assigned for it. When there is something wrong
-with MSI in device or device driver, this can prevent all damage from it.
+v3->v4:
+    1)Define several PTE/DTE bits MACRO definition according to Zongshun's
+      comments.
+    2)Learned the implementation of vt-d fix done by Joerg and did the AMD
+      IOMMU change similiarly.
 
-Regards,
-Yongji
+Baoquan HE (4):
+  iommu/amd: add early_enable_iommu() helper function
+  iommu/amd: copy old trans table from old kernel
+  iommu/amd: Do not initialize dev tables again in kdump
+  iommu/amd: Check the validation of irq table and domain id
+
+Baoquan He (5):
+  iommu/amd: clean up the cmpxchg64 invocation
+  iommu/amd: Use standard bitmap operation to set bitmap
+  iommu/amd: Detect pre enabled translation
+  iommu/amd: Define bit fields for DTE particularly
+  iommu/amd: Add function copy_dev_tables
+
+ drivers/iommu/amd_iommu.c       |  21 +++----
+ drivers/iommu/amd_iommu_init.c  | 136 +++++++++++++++++++++++++++++++++++-----
+ drivers/iommu/amd_iommu_types.h |  29 +++++++--
+ 3 files changed, 156 insertions(+), 30 deletions(-)
+
+-- 
+2.5.5
