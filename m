@@ -1,74 +1,61 @@
-From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: Re: [PATCH 2/5] iommu: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have
- capability of IRQ remapping
-Date: Wed, 25 May 2016 13:54:23 +0800
-Message-ID: <201605250554.u4P5sRvw014882@mx0a-001b2d01.pphosted.com>
+From: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH 1/5] PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
+Date: Wed, 25 May 2016 13:46:23 +0800
+Message-ID: <201605250546.u4P5htW1048499@mx0a-001b2d01.pphosted.com>
 References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
- <1461761010-5452-3-git-send-email-xyjxie@linux.vnet.ibm.com>
- <20160524211149.GC16463@localhost>
+	<1461761010-5452-2-git-send-email-xyjxie@linux.vnet.ibm.com>
+	<20160524205519.GA16463@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <20160524211149.GC16463@localhost>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: alistair@popple.id.au, nikunj@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, kvm@vger.kernel.org, eric.auger@linaro.org, aik@ozlabs.ru, linux-pci@vger.kernel.org, joro@8bytes.org, will.deacon@arm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, warrier@linux.vnet.ibm.com, alex.williamson@redhat.com, David.Laight@ACULAB.COM, paulus@samba.org, bhelgaas@google.com, linuxppc-dev@lists.ozlabs.org, gwshan@linux.vnet.ibm.com
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160524205519.GA16463@localhost>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org, nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjAxNi81LzI1IDU6MTEsIEJqb3JuIEhlbGdhYXMgd3JvdGU6Cgo+IE9uIFdlZCwgQXByIDI3
-LCAyMDE2IGF0IDA4OjQzOjI3UE0gKzA4MDAsIFlvbmdqaSBYaWUgd3JvdGU6Cj4+IFRoZSBjYXBh
-YmlsaXR5IG9mIElSUSByZW1hcHBpbmcgaXMgYWJzdHJhY3RlZCBvbiBJT01NVSBzaWRlIG9uCj4+
-IHNvbWUgYXJjaHMuIFRoZXJlIGlzIGEgZXhpc3RpbmcgZmxhZyBJT01NVV9DQVBfSU5UUl9SRU1B
-UCBmb3IgdGhpcy4KPj4KPj4gVG8gaGF2ZSBhIHVuaXZlcnNhbCBmbGFnIHRvIHRlc3QgdGhpcyBj
-YXBhYmlsaXR5IGZvciBkaWZmZXJlbnQKPj4gYXJjaHMgb24gUENJIHNpZGUsIHdlIHNldCBQQ0lf
-QlVTX0ZMQUdTX01TSV9SRU1BUCBmb3IgUENJIGJ1c2VzCj4+IHdoZW4gSU9NTVVfQ0FQX0lOVFJf
-UkVNQVAgaXMgc2V0Lgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBZb25namkgWGllIDx4eWp4aWVAbGlu
-dXgudm5ldC5pYm0uY29tPgo+PiAtLS0KPj4gICBkcml2ZXJzL2lvbW11L2lvbW11LmMgfCAgIDE1
-ICsrKysrKysrKysrKysrKwo+PiAgIDEgZmlsZSBjaGFuZ2VkLCAxNSBpbnNlcnRpb25zKCspCj4+
-Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2lvbW11LmMgYi9kcml2ZXJzL2lvbW11L2lv
-bW11LmMKPj4gaW5kZXggMGUzYjAwOS4uNWQyYjZmNiAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9p
-b21tdS9pb21tdS5jCj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW9tbXUuYwo+PiBAQCAtODEzLDYg
-KzgxMywxNiBAQCBzdHJ1Y3QgaW9tbXVfZ3JvdXAgKnBjaV9kZXZpY2VfZ3JvdXAoc3RydWN0IGRl
-dmljZSAqZGV2KQo+PiAgIAlyZXR1cm4gZ3JvdXA7Cj4+ICAgfQo+PiAgIAo+PiArc3RhdGljIHZv
-aWQgcGNpX2NoZWNrX21zaV9yZW1hcHBpbmcoc3RydWN0IHBjaV9kZXYgKnBkZXYsCj4+ICsJCQkJ
-CWNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKm9wcykKPj4gK3sKPj4gKwlzdHJ1Y3QgcGNpX2J1cyAq
-YnVzID0gcGRldi0+YnVzOwo+PiArCj4+ICsJaWYgKG9wcy0+Y2FwYWJsZShJT01NVV9DQVBfSU5U
-Ul9SRU1BUCkgJiYKPj4gKwkJIShidXMtPmJ1c19mbGFncyAmIFBDSV9CVVNfRkxBR1NfTVNJX1JF
-TUFQKSkKPj4gKwkJYnVzLT5idXNfZmxhZ3MgfD0gUENJX0JVU19GTEFHU19NU0lfUkVNQVA7Cj4+
-ICt9Cj4gVGhpcyBsb29rcyBhbiBhd2Z1bCBsb3QgbGlrZSB0aGUgcGNpX2J1c19jaGVja19tc2lf
-cmVtYXBwaW5nKCkgeW91IGFkZAo+IGVsc2V3aGVyZS4gIFdoeSBkbyB3ZSBuZWVkIGJvdGg/CgpJ
-IHdpbGwgbW9kaWZ5IHRoaXMgZnVuY3Rpb24gYXMgeW91IHN1Z2dlc3RlZC4gIEFuZCB3ZSBhZGQg
-dGhpcyBmdW5jdGlvbgpoZXJlIGJlY2F1c2Ugc29tZSBpb21tdSBkcml2ZXJzIHdvdWxkIGJlIGlu
-aXRpYWxlZCBhZnRlciBQQ0kgcHJvYmluZy4KCj4+ICAgLyoqCj4+ICAgICogaW9tbXVfZ3JvdXBf
-Z2V0X2Zvcl9kZXYgLSBGaW5kIG9yIGNyZWF0ZSB0aGUgSU9NTVUgZ3JvdXAgZm9yIGEgZGV2aWNl
-Cj4+ICAgICogQGRldjogdGFyZ2V0IGRldmljZQo+PiBAQCAtODcxLDYgKzg4MSw5IEBAIHN0YXRp
-YyBpbnQgYWRkX2lvbW11X2dyb3VwKHN0cnVjdCBkZXZpY2UgKmRldiwgdm9pZCAqZGF0YSkKPj4g
-ICAJY29uc3Qgc3RydWN0IGlvbW11X29wcyAqb3BzID0gY2ItPm9wczsKPj4gICAJaW50IHJldDsK
-Pj4gICAKPj4gKwlpZiAoZGV2X2lzX3BjaShkZXYpICYmIG9wcy0+Y2FwYWJsZSkKPj4gKwkJcGNp
-X2NoZWNrX21zaV9yZW1hcHBpbmcodG9fcGNpX2RldihkZXYpLCBvcHMpOwo+PiArCj4+ICAgCWlm
-ICghb3BzLT5hZGRfZGV2aWNlKQo+PiAgIAkJcmV0dXJuIDA7Cj4+ICAgCj4+IEBAIC05MTMsNiAr
-OTI2LDggQEAgc3RhdGljIGludCBpb21tdV9idXNfbm90aWZpZXIoc3RydWN0IG5vdGlmaWVyX2Js
-b2NrICpuYiwKPj4gICAJICogcmVzdWx0IGluIEFERC9ERUwgbm90aWZpZXJzIHRvIGdyb3VwLT5u
-b3RpZmllcgo+PiAgIAkgKi8KPj4gICAJaWYgKGFjdGlvbiA9PSBCVVNfTk9USUZZX0FERF9ERVZJ
-Q0UpIHsKPj4gKwkJaWYgKGRldl9pc19wY2koZGV2KSAmJiBvcHMtPmNhcGFibGUpCj4+ICsJCQlw
-Y2lfY2hlY2tfbXNpX3JlbWFwcGluZyh0b19wY2lfZGV2KGRldiksIG9wcyk7Cj4gVGhlc2UgY2Fs
-bHMgZG9uJ3Qgc21lbGwgcmlnaHQgZWl0aGVyLiAgV2h5IGRvIHdlIG5lZWQgZGV2X2lzX3BjaSgp
-Cj4gY2hlY2tzIGhlcmU/CgpTb21lIHBsYXRmb3JtIGRldmljZXMgbWF5IGFsc28gY2FsbCB0aGlz
-LgoKPiBDYW4ndCB0aGlzIGJlIGRvbmUgaW4gdGhlIFBDSSBwcm9iZSBwYXRoIHNvbWVob3csIGUu
-Zy4sCj4gaW4gcGNpX3NldF9idXNfbXNpX2RvbWFpbigpIG9yIHNvbWV0aGluZz8KPgoKWWVzLCB0
-aGlzIGNhbiBiZSBkb25lIGluIHBjaV9jcmVhdGVfcm9vdF9idXMoKS4gQnV0IGl0IGNvdWxkIG9u
-bHkKaGFuZGxlIHRoZSBjYXNlIHRoYXQgaW9tbXUgZHJpdmVycyBhcmUgaW5pdGlhbGVkIGJlZm9y
-ZSBQQ0kgcHJvYmluZy4KClJlZ2FyZHMsCllvbmdqaQoKX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KTGludXhwcGMtZGV2IG1haWxpbmcgbGlzdApMaW51eHBw
-Yy1kZXZAbGlzdHMub3psYWJzLm9yZwpodHRwczovL2xpc3RzLm96bGFicy5vcmcvbGlzdGluZm8v
-bGludXhwcGMtZGV2
+On 2016/5/25 4:55, Bjorn Helgaas wrote:
+
+> On Wed, Apr 27, 2016 at 08:43:26PM +0800, Yongji Xie wrote:
+>> We introduce a new pci_bus_flags, PCI_BUS_FLAGS_MSI_REMAP
+>> which indicates all devices on the bus are protected by the
+>> hardware which supports IRQ remapping(intel naming).
+> This changelog is ambiguous.  It's possible that there is hardware
+> that *supports* IRQ remapping, but does not actually *do* IRQ
+> remapping.  For example, an IRQ remapping capability may be present
+> but not enabled.
+>
+> I think your intent is to set this flag only when MSI remapping is
+> actually *enabled* for all devices on the bus.
+
+Yes. This is exactly my intent. Thank you for the correction!
+
+> I'd also like to know exactly what protection is implied by
+> PCI_BUS_FLAGS_MSI_REMAP and IOMMU_CAP_INTR_REMAP.  I guess it means a
+> device can only generate MSIs to a certain set of CPUs?  I assume the
+> remapping hardware only checks the target address, not the data being
+> written?
+
+When IRQ remapping is enabled, the hardware will check both target
+address and data, then compute the interrupt_index from them.
+Interrupt_index will be used to find a specific Interrupt Remapping Table
+Entry containing some fields which could be used to identify a device or
+a group of devices(these devices should be in the same isolation domain).
+Then hardware can use this to verify the interrupt request. If the interrupt
+request is not from the specific devices, it will be blocked.
+
+So this flag indicate that the hardware can ensure that a given PCI device
+can only shoot the MSIs assigned for it. When there is something wrong
+with MSI in device or device driver, this can prevent all damage from it.
+
+Regards,
+Yongji
