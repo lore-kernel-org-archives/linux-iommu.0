@@ -1,74 +1,67 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH V5 6/7] iommu/msm: Use writel_relaxed and add a barrier
-Date: Wed, 25 May 2016 16:15:33 +0200
-Message-ID: <7715835.BXgVNoY5UO@wuerfel>
-References: <1463741694-1735-1-git-send-email-sricharan@codeaurora.org> <14302911.qQPb4UMJ8d@wuerfel> <004c01d1b688$0f6379c0$2e2a6d40$@codeaurora.org>
+From: Daniel Kiper <daniel.kiper@oracle.com>
+Subject: Re: [RFC PATCH v1 10/18] x86/efi: Access EFI related tables in the
+ clear
+Date: Wed, 25 May 2016 18:09:30 +0200
+Message-ID: <20160525160930.GJ5490@olila.local.net-space.pl>
+References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
+ <20160426225740.13567.85438.stgit@tlendack-t1.amdoffice.net>
+ <20160510134358.GR2839@codeblueprint.co.uk>
+ <20160510135758.GA16783@pd.tnic>
+ <5734C97D.8060803@amd.com>
+ <57446B27.20406@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <004c01d1b688$0f6379c0$2e2a6d40$@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Sricharan <sricharan@codeaurora.org>
-Cc: devicetree@vger.kernel.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, joro@8bytes.org, iommu@lists.linux-foundation.org, robdclark@gmail.com, srinivas.kandagatla@linaro.org, laurent.pinchart@ideasonboard.com, treding@nvidia.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, stepanm@codeaurora.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <57446B27.20406@amd.com>
+Sender: owner-linux-mm@kvack.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Borislav Petkov <bp@alien8.de>, Matt Fleming <matt@codeblueprint.co.uk>, Leif Lindholm <leif.lindholm@linaro.org>, Mark Salter <msalter@redhat.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday, May 25, 2016 6:49:18 PM CEST Sricharan wrote:
-> Hi Arnd,
-> 
-> >> Ok, so i was doing this from the idea that, other iommu drivers
-> >>  where polling on a status bit in their sync call to ensure completion
-> >> of pending TLB invalidations. But in this case, there is no status bit.
-> >>  So added a barrier to have no ordering issues before the client
-> >> triggers the dma operation. But as you say above that it is implicit that
-> >> the device would have a barrier before starting the trigger, then the
-> >> barrier here becomes redundant.
+On Tue, May 24, 2016 at 09:54:31AM -0500, Tom Lendacky wrote:
+> On 05/12/2016 01:20 PM, Tom Lendacky wrote:
+> > On 05/10/2016 08:57 AM, Borislav Petkov wrote:
+> >> On Tue, May 10, 2016 at 02:43:58PM +0100, Matt Fleming wrote:
+> >>> Is it not possible to maintain some kind of kernel virtual address
+> >>> mapping so memremap*() and friends can figure out when to twiddle the
+> >>> mapping attributes and map with/without encryption?
+> >>
+> >> I guess we can move the sme_* specific stuff one indirection layer
+> >> below, i.e., in the *memremap() routines so that callers don't have to
+> >> care... That should keep the churn down...
+> >>
 > >
-> >Ok. There are two more things to note here:
-> >
-> >* On other platforms, polling the register is likely required because
-> >  an MMIO write is "posted", meaning that a sync after writel() will
-> >  only ensure that it has left the CPU write queue, but it may still be
-> >  on the bus fabric and whatever side-effects are triggered by the
-> >  write are normally not guaranteed to be completed even after the
-> >  'sync'. You need to check the datasheet for your IOMMU to find out
-> >  whether the 'dsb' instruction actually has any effect on the IOMMU.
-> >  If not, then neither the barrier that you add here nor the barrier
-> >  in the following writel() is sufficient.
-> >
->    Thanks for the detailed explanation.
-> i will check this. So with this, i think that if the iommu does not
->  support polling for its status, then it should listen to 'dsb' otherwise
->  there will no be no way of make it coherent ?
+> > We could do that, but we'll have to generate that list of addresses so
+> > that it can be checked against the range being mapped.  Since this is
+> > part of early memmap support searching that list every time might not be
+> > too bad. I'll have to look into that and see what that looks like.
+>
+> I looked into this and this would be a large change also to parse tables
+> and build lists.  It occurred to me that this could all be taken care of
+> if the early_memremap calls were changed to early_ioremap calls. Looking
+> in the git log I see that they were originally early_ioremap calls but
+> were changed to early_memremap calls with this commit:
+>
+> commit abc93f8eb6e4 ("efi: Use early_mem*() instead of early_io*()")
+>
+> Looking at the early_memremap code and the early_ioremap code they both
+> call __early_ioremap so I don't see how this change makes any
+> difference (especially since FIXMAP_PAGE_NORMAL and FIXMAP_PAGE_IO are
+> identical in this case).
+>
+> Is it safe to change these back to early_ioremap calls (at least on
+> x86)?
 
-It's more likely that you have to do a readl() after the writel() to
-any address inside of the device in order to ensure the writel()
-has completed, but that is something that the hardware manual for
-the iommu should describe.
+Commit f955371ca9d3986bca100666041fcfa9b6d21962 (x86: remove the Xen-specific
+_PAGE_IOMAP PTE flag) made commit abc93f8eb6e4 unnecessary. Though, IMO, it
+is still valid code cleanup. So, if it is not very strongly needed I would
+not revert this change.
 
-> >* The one barrier that is normally required in an IOMMU is between
-> >  updating the in-memory page tables and the following MMIO store
-> >  that triggers the TLB flush for that entry. This barrier is
-> >  implied by writel() but not writel_relaxed(). If you don't have
-> >  a hardware page table walker in your IOMMU, you don't need to worry
-> >  about this.
-> >
->   To get my understanding correct here, is the barrier required here because
->    of speculative fetch ?
+Daniel
 
-It doesn't have to be a speculative fetch, it could also be a normal
-fetch triggered by a DMA. The point is that the CPU is free to reorder
-the store to (io page table) memory relative to the store to the
-IOMMU flush register, and when you directly follow up with a store to
-the DMA master that triggers a transfer, this transfer can hit the
-IOMMU and cause the stale page table entry to be read.
-
-I guess in practice the barrier that comes before the MMIO write to the
-DMA master would ensure ordering of the DMA after both the IOPTE
-update and the MMIO flush (unless there was the speculative fetch you
-mentioned), but this is where I'm no longer confident enough in my
-pwn understanding of th ordering rules to rely on that. Having the
-barrier between the IOPTE update and the flush certainly leaves
-no room for ambiguity.
-
-	Arnd
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
