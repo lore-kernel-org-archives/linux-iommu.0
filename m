@@ -1,72 +1,108 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/vt-d: reduce extra first level entry in
- iommu->domains
-Date: Wed, 25 May 2016 11:17:49 +0100
-Message-ID: <57457BCD.7080909@arm.com>
-References: <1463798511-4015-1-git-send-email-richard.weiyang@gmail.com>
- <20160524230655.GA28550@vultr.guest>
+From: "Sricharan" <sricharan@codeaurora.org>
+Subject: RE: [PATCH V5 6/7] iommu/msm: Use writel_relaxed and add a barrier
+Date: Wed, 25 May 2016 16:15:31 +0530
+Message-ID: <000a01d1b672$93d54690$bb7fd3b0$@codeaurora.org>
+References: <1463741694-1735-1-git-send-email-sricharan@codeaurora.org> <3164695.VzCnHHyi7r@wuerfel> <000601d1b4b9$119c2410$34d46c30$@codeaurora.org> <7555154.mU2oTAdECP@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160524230655.GA28550@vultr.guest>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Wei Yang <richard.weiyang@gmail.com>
-Cc: dwmw2@infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <7555154.mU2oTAdECP@wuerfel>
+Content-Language: en-us
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: 'Arnd Bergmann' <arnd@arndb.de>
+Cc: devicetree@vger.kernel.org, architt@codeaurora.org, linux-arm-msm@vger.kernel.org, joro@8bytes.org, iommu@lists.linux-foundation.org, robdclark@gmail.com, srinivas.kandagatla@linaro.org, laurent.pinchart@ideasonboard.com, treding@nvidia.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, stepanm@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 25/05/16 00:06, Wei Yang wrote:
-> Hi, Joerg
->
-> Not sure whether you think this calculation is correct.
->
-> If I missed something for this " + 1" in your formula, I am glad to hear your
-> explanation. So that I could learn something from you :-)
+Hi Arnd,
 
-I'm not familiar enough with this aspect of the driver to confirm 
-whether the change is appropriate or not, but it does seem worth noting 
-that using DIV_ROUND_UP would be an even neater approach.
+<snip..>
 
-Robin.
+>> I had measured the numbers only for the full usecase path, not for the
+>> reset path alone. I saw improvement of about 5% on full numbers.
+>> As you said, the reset path would be called only less often
+>> and might not bring a measurable change. I did not see a difference in behavior
+>> when changing the sync to happen after the writes.
+>
+>Ok, then better not change it.
+>
 
-> Have a good day~
+Ok.
+
+>> But my understanding was that
+>> the sync after the writes was required to ensure write completion.
 >
-> On Sat, May 21, 2016 at 02:41:51AM +0000, Wei Yang wrote:
->> In commit <8bf478163e69> ("iommu/vt-d: Split up iommu->domains array"), it
->> it splits iommu->domains in two levels. Each first level contains 256
->> entries of second level. In case of the ndomains is exact a multiple of
->> 256, it would have one more extra first level entry for current
->> implementation.
->>
->> This patch refines this calculation to reduce the extra first level entry.
->>
->> Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
->> ---
->> drivers/iommu/intel-iommu.c |    4 ++--
->> 1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->> index e3061d3..2204ca4 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -1634,7 +1634,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
->> 		return -ENOMEM;
->> 	}
->>
->> -	size = ((ndomains >> 8) + 1) * sizeof(struct dmar_domain **);
->> +	size = (ALIGN(ndomains, 256) >> 8) * sizeof(struct dmar_domain **);
->> 	iommu->domains = kzalloc(size, GFP_KERNEL);
->>
->> 	if (iommu->domains) {
->> @@ -1699,7 +1699,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
->> static void free_dmar_iommu(struct intel_iommu *iommu)
->> {
->> 	if ((iommu->domains) && (iommu->domain_ids)) {
->> -		int elems = (cap_ndoms(iommu->cap) >> 8) + 1;
->> +		int elems = ALIGN(cap_ndoms(iommu->cap), 256) >> 8;
->> 		int i;
->>
->> 		for (i = 0; i < elems; i++)
->> --
->> 1.7.9.5
+>Can you cite the relevant documentation on this? Is this specific
+>to the Qualcomm CPU implementation or the IOMMU? I don't think
+>the ARM architecture requires anything like this in general.
 >
+
+My explanation was not correct. So the whole reason for doing the
+sync here was to make sure that client is going to observe the effect
+the of tlb invalidation before starting any dma operation.
+But as you have explained below, if it is implicit that any operation
+ from a device that could trigger a dma should have an barrier preceding
+that, then the a sync here may not be needed.
+
+>
+>> >> @@ -181,7 +187,8 @@ fail:
+>> >>
+>> >>  static void __flush_iotlb_sync(void *cookie)
+>> >>  {
+>> >> -	/* To avoid a null function pointer */
+>> >> +	/* To ensure completion of the TLBIVA in __flush_iotlb_range */
+>> >> +	mb();
+>> >>  }
+>> >
+>> >I don't understand the specific race from the comment.
+>> >
+>> >What operation comes after this that relies on __flush_iotlb_range
+>> >having completed, and how does an mb() guarantee this?
+>> >
+>>
+>> The flush_iotlb_range operation invalidates the tlb for writes to
+>> pagetable and the finally calls the sync operation to ensure completion
+>> of the flush and this is required before returning back to the client
+>> of the iommu. In the case of this iommu, only a barrier is required to
+>> ensure completion of the invalidate operation.
+>
+>This doesn't answer my question: What operation would a client do
+>that requires the flush to be completed here? A barrier is always
+>defined in terms of things that come before it in combination with
+>things that come after it.
+>
+>Any operation that could trigger a DMA from a device is required
+>to have a barrier preceding it (usually wmb() one implied by writel()),
+>so this is clearly not about a driver that installs a DMA mapping
+>before starting a DMA, but I don't see what else it would be.
+>
+
+Ok, so i was doing this from the idea that, other iommu drivers
+ where polling on a status bit in their sync call to ensure completion
+of pending TLB invalidations. But in this case, there is no status bit.
+ So added a barrier to have no ordering issues before the client
+triggers the dma operation. But as you say above that it is implicit that
+the device would have a barrier before starting the trigger, then the
+barrier here becomes redundant.
+
+<snip..>
+
+>> >In this case, I'd say it's better to rewrite the function to avoid the
+>> >read: iova_to_phys() should be fast, and not require hardware access.
+>> >Getting rid of the hardware access by using an in-memory cache for
+>> >this should gain more than just removing the barriers, as an MMIO read
+>> >is always slow
+>>
+>> Ok, you mean using the software walk through ? I will check on this to measure
+>>  the latency difference. If thats true, then the iopgtable ops itself provides a
+>> function for iova_to_phys conversion, so that can be used.
+>
+>I hadn't realized that this is a lookup in the hardware, rather than
+>reading a static register. It's probably a good idea to check this
+>anyway.
+
+Ok, will measure the difference and have the better one.
+
+Regards,
+ Sricharan
