@@ -1,54 +1,59 @@
 From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
 Subject: Re: [PATCH 1/5] PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
 Date: Wed, 25 May 2016 13:46:23 +0800
-Message-ID: <201605250546.u4P5huIK048546@mx0a-001b2d01.pphosted.com>
+Message-ID: <201605250546.u4P5i1si003562@mx0a-001b2d01.pphosted.com>
 References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
  <1461761010-5452-2-git-send-email-xyjxie@linux.vnet.ibm.com>
  <20160524205519.GA16463@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 In-Reply-To: <20160524205519.GA16463@localhost>
-Sender: kvm-owner@vger.kernel.org
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, David.Laight@ACULAB.COM, alistair@popple.id.au, ruscur@russell.cc
+Cc: alistair@popple.id.au, nikunj@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, kvm@vger.kernel.org, eric.auger@linaro.org, aik@ozlabs.ru, linux-pci@vger.kernel.org, joro@8bytes.org, will.deacon@arm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, warrier@linux.vnet.ibm.com, alex.williamson@redhat.com, David.Laight@ACULAB.COM, paulus@samba.org, bhelgaas@google.com, linuxppc-dev@lists.ozlabs.org, gwshan@linux.vnet.ibm.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 2016/5/25 4:55, Bjorn Helgaas wrote:
-
-> On Wed, Apr 27, 2016 at 08:43:26PM +0800, Yongji Xie wrote:
->> We introduce a new pci_bus_flags, PCI_BUS_FLAGS_MSI_REMAP
->> which indicates all devices on the bus are protected by the
->> hardware which supports IRQ remapping(intel naming).
-> This changelog is ambiguous.  It's possible that there is hardware
-> that *supports* IRQ remapping, but does not actually *do* IRQ
-> remapping.  For example, an IRQ remapping capability may be present
-> but not enabled.
->
-> I think your intent is to set this flag only when MSI remapping is
-> actually *enabled* for all devices on the bus.
-
-Yes. This is exactly my intent. Thank you for the correction!
-
-> I'd also like to know exactly what protection is implied by
-> PCI_BUS_FLAGS_MSI_REMAP and IOMMU_CAP_INTR_REMAP.  I guess it means a
-> device can only generate MSIs to a certain set of CPUs?  I assume the
-> remapping hardware only checks the target address, not the data being
-> written?
-
-When IRQ remapping is enabled, the hardware will check both target
-address and data, then compute the interrupt_index from them.
-Interrupt_index will be used to find a specific Interrupt Remapping Table
-Entry containing some fields which could be used to identify a device or
-a group of devices(these devices should be in the same isolation domain).
-Then hardware can use this to verify the interrupt request. If the interrupt
-request is not from the specific devices, it will be blocked.
-
-So this flag indicate that the hardware can ensure that a given PCI device
-can only shoot the MSIs assigned for it. When there is something wrong
-with MSI in device or device driver, this can prevent all damage from it.
-
-Regards,
-Yongji
-
+T24gMjAxNi81LzI1IDQ6NTUsIEJqb3JuIEhlbGdhYXMgd3JvdGU6Cgo+IE9uIFdlZCwgQXByIDI3
+LCAyMDE2IGF0IDA4OjQzOjI2UE0gKzA4MDAsIFlvbmdqaSBYaWUgd3JvdGU6Cj4+IFdlIGludHJv
+ZHVjZSBhIG5ldyBwY2lfYnVzX2ZsYWdzLCBQQ0lfQlVTX0ZMQUdTX01TSV9SRU1BUAo+PiB3aGlj
+aCBpbmRpY2F0ZXMgYWxsIGRldmljZXMgb24gdGhlIGJ1cyBhcmUgcHJvdGVjdGVkIGJ5IHRoZQo+
+PiBoYXJkd2FyZSB3aGljaCBzdXBwb3J0cyBJUlEgcmVtYXBwaW5nKGludGVsIG5hbWluZykuCj4g
+VGhpcyBjaGFuZ2Vsb2cgaXMgYW1iaWd1b3VzLiAgSXQncyBwb3NzaWJsZSB0aGF0IHRoZXJlIGlz
+IGhhcmR3YXJlCj4gdGhhdCAqc3VwcG9ydHMqIElSUSByZW1hcHBpbmcsIGJ1dCBkb2VzIG5vdCBh
+Y3R1YWxseSAqZG8qIElSUQo+IHJlbWFwcGluZy4gIEZvciBleGFtcGxlLCBhbiBJUlEgcmVtYXBw
+aW5nIGNhcGFiaWxpdHkgbWF5IGJlIHByZXNlbnQKPiBidXQgbm90IGVuYWJsZWQuCj4KPiBJIHRo
+aW5rIHlvdXIgaW50ZW50IGlzIHRvIHNldCB0aGlzIGZsYWcgb25seSB3aGVuIE1TSSByZW1hcHBp
+bmcgaXMKPiBhY3R1YWxseSAqZW5hYmxlZCogZm9yIGFsbCBkZXZpY2VzIG9uIHRoZSBidXMuCgpZ
+ZXMuIFRoaXMgaXMgZXhhY3RseSBteSBpbnRlbnQuIFRoYW5rIHlvdSBmb3IgdGhlIGNvcnJlY3Rp
+b24hCgo+IEknZCBhbHNvIGxpa2UgdG8ga25vdyBleGFjdGx5IHdoYXQgcHJvdGVjdGlvbiBpcyBp
+bXBsaWVkIGJ5Cj4gUENJX0JVU19GTEFHU19NU0lfUkVNQVAgYW5kIElPTU1VX0NBUF9JTlRSX1JF
+TUFQLiAgSSBndWVzcyBpdCBtZWFucyBhCj4gZGV2aWNlIGNhbiBvbmx5IGdlbmVyYXRlIE1TSXMg
+dG8gYSBjZXJ0YWluIHNldCBvZiBDUFVzPyAgSSBhc3N1bWUgdGhlCj4gcmVtYXBwaW5nIGhhcmR3
+YXJlIG9ubHkgY2hlY2tzIHRoZSB0YXJnZXQgYWRkcmVzcywgbm90IHRoZSBkYXRhIGJlaW5nCj4g
+d3JpdHRlbj8KCldoZW4gSVJRIHJlbWFwcGluZyBpcyBlbmFibGVkLCB0aGUgaGFyZHdhcmUgd2ls
+bCBjaGVjayBib3RoIHRhcmdldAphZGRyZXNzIGFuZCBkYXRhLCB0aGVuIGNvbXB1dGUgdGhlIGlu
+dGVycnVwdF9pbmRleCBmcm9tIHRoZW0uCkludGVycnVwdF9pbmRleCB3aWxsIGJlIHVzZWQgdG8g
+ZmluZCBhIHNwZWNpZmljIEludGVycnVwdCBSZW1hcHBpbmcgVGFibGUKRW50cnkgY29udGFpbmlu
+ZyBzb21lIGZpZWxkcyB3aGljaCBjb3VsZCBiZSB1c2VkIHRvIGlkZW50aWZ5IGEgZGV2aWNlIG9y
+CmEgZ3JvdXAgb2YgZGV2aWNlcyh0aGVzZSBkZXZpY2VzIHNob3VsZCBiZSBpbiB0aGUgc2FtZSBp
+c29sYXRpb24gZG9tYWluKS4KVGhlbiBoYXJkd2FyZSBjYW4gdXNlIHRoaXMgdG8gdmVyaWZ5IHRo
+ZSBpbnRlcnJ1cHQgcmVxdWVzdC4gSWYgdGhlIGludGVycnVwdApyZXF1ZXN0IGlzIG5vdCBmcm9t
+IHRoZSBzcGVjaWZpYyBkZXZpY2VzLCBpdCB3aWxsIGJlIGJsb2NrZWQuCgpTbyB0aGlzIGZsYWcg
+aW5kaWNhdGUgdGhhdCB0aGUgaGFyZHdhcmUgY2FuIGVuc3VyZSB0aGF0IGEgZ2l2ZW4gUENJIGRl
+dmljZQpjYW4gb25seSBzaG9vdCB0aGUgTVNJcyBhc3NpZ25lZCBmb3IgaXQuIFdoZW4gdGhlcmUg
+aXMgc29tZXRoaW5nIHdyb25nCndpdGggTVNJIGluIGRldmljZSBvciBkZXZpY2UgZHJpdmVyLCB0
+aGlzIGNhbiBwcmV2ZW50IGFsbCBkYW1hZ2UgZnJvbSBpdC4KClJlZ2FyZHMsCllvbmdqaQoKX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KTGludXhwcGMtZGV2
+IG1haWxpbmcgbGlzdApMaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZwpodHRwczovL2xpc3Rz
+Lm96bGFicy5vcmcvbGlzdGluZm8vbGludXhwcGMtZGV2
