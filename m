@@ -1,7 +1,7 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [Patch v4 3/9] iommu/amd: Detect pre enabled translation
-Date: Wed, 25 May 2016 14:28:49 +0800
-Message-ID: <1464157735-8865-4-git-send-email-bhe@redhat.com>
+Subject: [Patch v4 4/9] iommu/amd: add early_enable_iommu() helper function
+Date: Wed, 25 May 2016 14:28:50 +0800
+Message-ID: <1464157735-8865-5-git-send-email-bhe@redhat.com>
 References: <1464157735-8865-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,85 +21,56 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, vincent.wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add functions to check whether translation is already enabled in IOMMU.
+From: Baoquan HE <bhe-sa4SJRhfYT7yzlqKoElxGh/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
+
+This can make later kdump change easier.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c  | 25 +++++++++++++++++++++++++
- drivers/iommu/amd_iommu_types.h |  4 ++++
- 2 files changed, 29 insertions(+)
+ drivers/iommu/amd_iommu_init.c | 24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 8361367d..9e1dfcb 100644
+index 9e1dfcb..9c1aa54 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -229,6 +229,26 @@ static int amd_iommu_enable_interrupts(void);
- static int __init iommu_go_to_state(enum iommu_init_state state);
- static void init_device_table_dma(void);
+@@ -1673,6 +1673,18 @@ static void iommu_apply_resume_quirks(struct amd_iommu *iommu)
+ 			       iommu->stored_addr_lo | 1);
+ }
  
-+
-+static bool translation_pre_enabled(struct amd_iommu *iommu)
++static void early_enable_iommu(struct amd_iommu *iommu)
 +{
-+	return (iommu->flags & AMD_IOMMU_FLAG_TRANS_PRE_ENABLED);
++	iommu_disable(iommu);
++	iommu_init_flags(iommu);
++	iommu_set_device_table(iommu);
++	iommu_enable_command_buffer(iommu);
++	iommu_enable_event_buffer(iommu);
++	iommu_set_exclusion_range(iommu);
++	iommu_enable(iommu);
++	iommu_flush_all_caches(iommu);
 +}
-+
-+static void clear_translation_pre_enabled(struct amd_iommu *iommu)
-+{
-+        iommu->flags &= ~AMD_IOMMU_FLAG_TRANS_PRE_ENABLED;
-+}
-+
-+static void init_translation_status(struct amd_iommu *iommu)
-+{
-+	u32 ctrl;
-+
-+	ctrl = readl(iommu->mmio_base + MMIO_CONTROL_OFFSET);
-+	if (ctrl & (1<<CONTROL_IOMMU_EN))
-+		iommu->flags |= AMD_IOMMU_FLAG_TRANS_PRE_ENABLED;
-+}
-+
- static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
- 				    u8 bank, u8 cntr, u8 fxn,
- 				    u64 *value, bool is_write);
-@@ -1101,6 +1121,11 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 
- 	iommu->int_enabled = false;
- 
-+	init_translation_status(iommu);
-+
-+	if (translation_pre_enabled())
-+		pr_warn("Translation is already enabled - trying to copy translation structures\n");
-+
- 	ret = init_iommu_from_acpi(iommu, h);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 9d32b20..01783cc 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -384,6 +384,7 @@ extern struct kmem_cache *amd_iommu_irq_cache;
- #define APERTURE_PAGE_INDEX(a)	(((a) >> 21) & 0x3fULL)
- 
- 
 +
  /*
-  * This struct is used to pass information about
-  * incoming PPR faults around.
-@@ -401,6 +402,8 @@ struct amd_iommu_fault {
- struct iommu_domain;
- struct irq_domain;
+  * This function finally enables all IOMMUs found in the system after
+  * they have been initialized
+@@ -1681,16 +1693,8 @@ static void early_enable_iommus(void)
+ {
+ 	struct amd_iommu *iommu;
  
-+#define AMD_IOMMU_FLAG_TRANS_PRE_ENABLED      (1 << 0)
-+
- /*
-  * This structure contains generic data for  IOMMU protection domains
-  * independent of their use.
-@@ -525,6 +528,7 @@ struct amd_iommu {
- 	struct irq_domain *ir_domain;
- 	struct irq_domain *msi_domain;
- #endif
-+	u32 flags;
- };
+-	for_each_iommu(iommu) {
+-		iommu_disable(iommu);
+-		iommu_init_flags(iommu);
+-		iommu_set_device_table(iommu);
+-		iommu_enable_command_buffer(iommu);
+-		iommu_enable_event_buffer(iommu);
+-		iommu_set_exclusion_range(iommu);
+-		iommu_enable(iommu);
+-		iommu_flush_all_caches(iommu);
+-	}
++	for_each_iommu(iommu)
++		early_enable_iommu(iommu);
+ }
  
- struct devid_map {
+ static void enable_iommus_v2(void)
 -- 
 2.5.5
