@@ -1,77 +1,53 @@
-From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: reduce extra first level entry in
-	iommu->domains
-Date: Tue, 24 May 2016 23:06:55 +0000
-Message-ID: <20160524230655.GA28550@vultr.guest>
-References: <1463798511-4015-1-git-send-email-richard.weiyang@gmail.com>
-Reply-To: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
+Subject: Re: [PATCH 1/5] PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
+Date: Wed, 25 May 2016 13:46:23 +0800
+Message-ID: <201605250546.u4P5i5Di003723@mx0a-001b2d01.pphosted.com>
+References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+ <1461761010-5452-2-git-send-email-xyjxie@linux.vnet.ibm.com>
+ <20160524205519.GA16463@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1463798511-4015-1-git-send-email-richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160524205519.GA16463@localhost>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, David.Laight@ACULAB.COM, alistair@popple.id.au, ruscur@russell.cc
 List-Id: iommu@lists.linux-foundation.org
 
-Hi, Joerg
+On 2016/5/25 4:55, Bjorn Helgaas wrote:
 
-Not sure whether you think this calculation is correct.
-
-If I missed something for this " + 1" in your formula, I am glad to hear your
-explanation. So that I could learn something from you :-)
-
-Have a good day~
-
-On Sat, May 21, 2016 at 02:41:51AM +0000, Wei Yang wrote:
->In commit <8bf478163e69> ("iommu/vt-d: Split up iommu->domains array"), it
->it splits iommu->domains in two levels. Each first level contains 256
->entries of second level. In case of the ndomains is exact a multiple of
->256, it would have one more extra first level entry for current
->implementation.
+> On Wed, Apr 27, 2016 at 08:43:26PM +0800, Yongji Xie wrote:
+>> We introduce a new pci_bus_flags, PCI_BUS_FLAGS_MSI_REMAP
+>> which indicates all devices on the bus are protected by the
+>> hardware which supports IRQ remapping(intel naming).
+> This changelog is ambiguous.  It's possible that there is hardware
+> that *supports* IRQ remapping, but does not actually *do* IRQ
+> remapping.  For example, an IRQ remapping capability may be present
+> but not enabled.
 >
->This patch refines this calculation to reduce the extra first level entry.
->
->Signed-off-by: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->---
-> drivers/iommu/intel-iommu.c |    4 ++--
-> 1 file changed, 2 insertions(+), 2 deletions(-)
->
->diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->index e3061d3..2204ca4 100644
->--- a/drivers/iommu/intel-iommu.c
->+++ b/drivers/iommu/intel-iommu.c
->@@ -1634,7 +1634,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
-> 		return -ENOMEM;
-> 	}
-> 
->-	size = ((ndomains >> 8) + 1) * sizeof(struct dmar_domain **);
->+	size = (ALIGN(ndomains, 256) >> 8) * sizeof(struct dmar_domain **);
-> 	iommu->domains = kzalloc(size, GFP_KERNEL);
-> 
-> 	if (iommu->domains) {
->@@ -1699,7 +1699,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
-> static void free_dmar_iommu(struct intel_iommu *iommu)
-> {
-> 	if ((iommu->domains) && (iommu->domain_ids)) {
->-		int elems = (cap_ndoms(iommu->cap) >> 8) + 1;
->+		int elems = ALIGN(cap_ndoms(iommu->cap), 256) >> 8;
-> 		int i;
-> 
-> 		for (i = 0; i < elems; i++)
->-- 
->1.7.9.5
+> I think your intent is to set this flag only when MSI remapping is
+> actually *enabled* for all devices on the bus.
 
--- 
-Wei Yang
-Help you, Help me
+Yes. This is exactly my intent. Thank you for the correction!
+
+> I'd also like to know exactly what protection is implied by
+> PCI_BUS_FLAGS_MSI_REMAP and IOMMU_CAP_INTR_REMAP.  I guess it means a
+> device can only generate MSIs to a certain set of CPUs?  I assume the
+> remapping hardware only checks the target address, not the data being
+> written?
+
+When IRQ remapping is enabled, the hardware will check both target
+address and data, then compute the interrupt_index from them.
+Interrupt_index will be used to find a specific Interrupt Remapping Table
+Entry containing some fields which could be used to identify a device or
+a group of devices(these devices should be in the same isolation domain).
+Then hardware can use this to verify the interrupt request. If the interrupt
+request is not from the specific devices, it will be blocked.
+
+So this flag indicate that the hardware can ensure that a given PCI device
+can only shoot the MSIs assigned for it. When there is something wrong
+with MSI in device or device driver, this can prevent all damage from it.
+
+Regards,
+Yongji
