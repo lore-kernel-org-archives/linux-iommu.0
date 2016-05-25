@@ -1,7 +1,8 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [Patch v4 8/9] iommu/amd: Do not initialize dev tables again in kdump
-Date: Wed, 25 May 2016 14:28:54 +0800
-Message-ID: <1464157735-8865-9-git-send-email-bhe@redhat.com>
+Subject: [Patch v4 9/9] iommu/amd: Check the validation of irq table and
+	domain id
+Date: Wed, 25 May 2016 14:28:55 +0800
+Message-ID: <1464157735-8865-10-git-send-email-bhe@redhat.com>
 References: <1464157735-8865-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,40 +24,68 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Baoquan HE <bhe-sa4SJRhfYT7yzlqKoElxGh/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
 
-The init should have been done in normal kernel, skip it in kdump
-kernel. And clean up the function comments.
+If not valid just skip reserving the old domain id.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/iommu/amd_iommu.c       | 4 ----
+ drivers/iommu/amd_iommu_init.c  | 5 +++--
+ drivers/iommu/amd_iommu_types.h | 5 +++++
+ 3 files changed, 8 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index f3bd7fd..40c4a05 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3697,10 +3697,6 @@ struct amd_ir_data {
+ 
+ static struct irq_chip amd_ir_chip;
+ 
+-#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
+-#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
+-#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
+-#define DTE_IRQ_REMAP_ENABLE    1ULL
+ 
+ static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
+ {
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 66a1fa5..47e5972 100644
+index 47e5972..263704a 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -1432,7 +1432,11 @@ static int __init amd_iommu_init_pci(void)
- 			break;
- 	}
+@@ -670,7 +670,7 @@ static int copy_dev_tables(void)
+ 	u32 lo, hi, devid;
+ 	phys_addr_t old_devtb_phys;
+ 	struct dev_table_entry *old_devtb;
+-	u16 dom_id, dte_v;
++	u16 dom_id, dte_v, irq_v;
+ 	struct amd_iommu *iommu;
+ 	static int copied;
  
--	init_device_table_dma();
-+	for_each_iommu(iommu) {
-+		if ( !translation_pre_enabled(iommu) )
-+			init_device_table_dma();
-+			break;
-+	}
+@@ -692,7 +692,8 @@ static int copy_dev_tables(void)
+                         amd_iommu_dev_table[devid] = old_devtb[devid];
+                         dom_id = amd_iommu_dev_table[devid].data[1] & DEV_DOMID_MASK;
+ 			dte_v = amd_iommu_dev_table[devid].data[0] & DTE_FLAG_V;
+-			if (!dte_v)
++			irq_v = amd_iommu_dev_table[devid].data[2] & DTE_IRQ_REMAP_ENABLE;
++			if (!dte_v || !irq_v || !dom_id)
+ 				continue;
+                         __set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
+                 }
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index 34acd73..08340f5 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -224,6 +224,11 @@
  
- 	for_each_iommu(iommu)
- 		iommu_flush_all_caches(iommu);
-@@ -1612,8 +1616,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
- }
+ #define PPR_REQ_FAULT		0x01
  
- /*
-- * Init the device table to not allow DMA access for devices and
-- * suppress all page faults
-+ * Init the device table to not allow DMA access for devices.
-  */
- static void init_device_table_dma(void)
- {
++#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
++#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
++#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
++#define DTE_IRQ_REMAP_ENABLE    1ULL
++
+ #define PAGE_MODE_NONE    0x00
+ #define PAGE_MODE_1_LEVEL 0x01
+ #define PAGE_MODE_2_LEVEL 0x02
 -- 
 2.5.5
