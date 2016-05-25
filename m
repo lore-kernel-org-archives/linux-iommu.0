@@ -1,59 +1,89 @@
 From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: Re: [PATCH 1/5] PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
-Date: Wed, 25 May 2016 13:46:23 +0800
-Message-ID: <201605250546.u4P5i1si003562@mx0a-001b2d01.pphosted.com>
+Subject: Re: [PATCH 3/5] PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI controller
+ supports IRQ remapping
+Date: Wed, 25 May 2016 13:48:00 +0800
+Message-ID: <201605250548.u4P5i1tA003562@mx0a-001b2d01.pphosted.com>
 References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
- <1461761010-5452-2-git-send-email-xyjxie@linux.vnet.ibm.com>
- <20160524205519.GA16463@localhost>
+ <1461761010-5452-4-git-send-email-xyjxie@linux.vnet.ibm.com>
+ <20160524210434.GB16463@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <20160524205519.GA16463@localhost>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160524210434.GB16463@localhost>
+Sender: linux-kernel-owner@vger.kernel.org
 To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: alistair@popple.id.au, nikunj@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, kvm@vger.kernel.org, eric.auger@linaro.org, aik@ozlabs.ru, linux-pci@vger.kernel.org, joro@8bytes.org, will.deacon@arm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, warrier@linux.vnet.ibm.com, alex.williamson@redhat.com, David.Laight@ACULAB.COM, paulus@samba.org, bhelgaas@google.com, linuxppc-dev@lists.ozlabs.org, gwshan@linux.vnet.ibm.com
+Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, David.Laight@ACULAB.COM, alistair@popple.id.au, ruscur@russell.cc
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjAxNi81LzI1IDQ6NTUsIEJqb3JuIEhlbGdhYXMgd3JvdGU6Cgo+IE9uIFdlZCwgQXByIDI3
-LCAyMDE2IGF0IDA4OjQzOjI2UE0gKzA4MDAsIFlvbmdqaSBYaWUgd3JvdGU6Cj4+IFdlIGludHJv
-ZHVjZSBhIG5ldyBwY2lfYnVzX2ZsYWdzLCBQQ0lfQlVTX0ZMQUdTX01TSV9SRU1BUAo+PiB3aGlj
-aCBpbmRpY2F0ZXMgYWxsIGRldmljZXMgb24gdGhlIGJ1cyBhcmUgcHJvdGVjdGVkIGJ5IHRoZQo+
-PiBoYXJkd2FyZSB3aGljaCBzdXBwb3J0cyBJUlEgcmVtYXBwaW5nKGludGVsIG5hbWluZykuCj4g
-VGhpcyBjaGFuZ2Vsb2cgaXMgYW1iaWd1b3VzLiAgSXQncyBwb3NzaWJsZSB0aGF0IHRoZXJlIGlz
-IGhhcmR3YXJlCj4gdGhhdCAqc3VwcG9ydHMqIElSUSByZW1hcHBpbmcsIGJ1dCBkb2VzIG5vdCBh
-Y3R1YWxseSAqZG8qIElSUQo+IHJlbWFwcGluZy4gIEZvciBleGFtcGxlLCBhbiBJUlEgcmVtYXBw
-aW5nIGNhcGFiaWxpdHkgbWF5IGJlIHByZXNlbnQKPiBidXQgbm90IGVuYWJsZWQuCj4KPiBJIHRo
-aW5rIHlvdXIgaW50ZW50IGlzIHRvIHNldCB0aGlzIGZsYWcgb25seSB3aGVuIE1TSSByZW1hcHBp
-bmcgaXMKPiBhY3R1YWxseSAqZW5hYmxlZCogZm9yIGFsbCBkZXZpY2VzIG9uIHRoZSBidXMuCgpZ
-ZXMuIFRoaXMgaXMgZXhhY3RseSBteSBpbnRlbnQuIFRoYW5rIHlvdSBmb3IgdGhlIGNvcnJlY3Rp
-b24hCgo+IEknZCBhbHNvIGxpa2UgdG8ga25vdyBleGFjdGx5IHdoYXQgcHJvdGVjdGlvbiBpcyBp
-bXBsaWVkIGJ5Cj4gUENJX0JVU19GTEFHU19NU0lfUkVNQVAgYW5kIElPTU1VX0NBUF9JTlRSX1JF
-TUFQLiAgSSBndWVzcyBpdCBtZWFucyBhCj4gZGV2aWNlIGNhbiBvbmx5IGdlbmVyYXRlIE1TSXMg
-dG8gYSBjZXJ0YWluIHNldCBvZiBDUFVzPyAgSSBhc3N1bWUgdGhlCj4gcmVtYXBwaW5nIGhhcmR3
-YXJlIG9ubHkgY2hlY2tzIHRoZSB0YXJnZXQgYWRkcmVzcywgbm90IHRoZSBkYXRhIGJlaW5nCj4g
-d3JpdHRlbj8KCldoZW4gSVJRIHJlbWFwcGluZyBpcyBlbmFibGVkLCB0aGUgaGFyZHdhcmUgd2ls
-bCBjaGVjayBib3RoIHRhcmdldAphZGRyZXNzIGFuZCBkYXRhLCB0aGVuIGNvbXB1dGUgdGhlIGlu
-dGVycnVwdF9pbmRleCBmcm9tIHRoZW0uCkludGVycnVwdF9pbmRleCB3aWxsIGJlIHVzZWQgdG8g
-ZmluZCBhIHNwZWNpZmljIEludGVycnVwdCBSZW1hcHBpbmcgVGFibGUKRW50cnkgY29udGFpbmlu
-ZyBzb21lIGZpZWxkcyB3aGljaCBjb3VsZCBiZSB1c2VkIHRvIGlkZW50aWZ5IGEgZGV2aWNlIG9y
-CmEgZ3JvdXAgb2YgZGV2aWNlcyh0aGVzZSBkZXZpY2VzIHNob3VsZCBiZSBpbiB0aGUgc2FtZSBp
-c29sYXRpb24gZG9tYWluKS4KVGhlbiBoYXJkd2FyZSBjYW4gdXNlIHRoaXMgdG8gdmVyaWZ5IHRo
-ZSBpbnRlcnJ1cHQgcmVxdWVzdC4gSWYgdGhlIGludGVycnVwdApyZXF1ZXN0IGlzIG5vdCBmcm9t
-IHRoZSBzcGVjaWZpYyBkZXZpY2VzLCBpdCB3aWxsIGJlIGJsb2NrZWQuCgpTbyB0aGlzIGZsYWcg
-aW5kaWNhdGUgdGhhdCB0aGUgaGFyZHdhcmUgY2FuIGVuc3VyZSB0aGF0IGEgZ2l2ZW4gUENJIGRl
-dmljZQpjYW4gb25seSBzaG9vdCB0aGUgTVNJcyBhc3NpZ25lZCBmb3IgaXQuIFdoZW4gdGhlcmUg
-aXMgc29tZXRoaW5nIHdyb25nCndpdGggTVNJIGluIGRldmljZSBvciBkZXZpY2UgZHJpdmVyLCB0
-aGlzIGNhbiBwcmV2ZW50IGFsbCBkYW1hZ2UgZnJvbSBpdC4KClJlZ2FyZHMsCllvbmdqaQoKX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KTGludXhwcGMtZGV2
-IG1haWxpbmcgbGlzdApMaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZwpodHRwczovL2xpc3Rz
-Lm96bGFicy5vcmcvbGlzdGluZm8vbGludXhwcGMtZGV2
+On 2016/5/25 5:04, Bjorn Helgaas wrote:
+
+> On Wed, Apr 27, 2016 at 08:43:28PM +0800, Yongji Xie wrote:
+>> On ARM HW the capability of IRQ remapping is abstracted on
+>> MSI controller side. MSI_FLAG_IRQ_REMAPPING is used to advertise
+>> this [1].
+>>
+>> To have a universal flag to test this capability for different
+>> archs on PCI side, we set PCI_BUS_FLAGS_MSI_REMAP for PCI buses
+>> when MSI_FLAG_IRQ_REMAPPING is set.
+>>
+>> [1] http://www.spinics.net/lists/kvm/msg130256.html
+>>
+>> Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
+>> ---
+>>   drivers/pci/msi.c   |   12 ++++++++++++
+>>   drivers/pci/probe.c |    3 +++
+>>   include/linux/msi.h |    6 +++++-
+>>   3 files changed, 20 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+>> index a080f44..1661cdf 100644
+>> --- a/drivers/pci/msi.c
+>> +++ b/drivers/pci/msi.c
+>> @@ -1134,6 +1134,18 @@ void *msi_desc_to_pci_sysdata(struct msi_desc *desc)
+>>   }
+>>   EXPORT_SYMBOL_GPL(msi_desc_to_pci_sysdata);
+>>   
+>> +void pci_bus_check_msi_remapping(struct pci_bus *bus,
+>> +				 struct irq_domain *domain)
+>> +{
+>> +#ifdef CONFIG_PCI_MSI_IRQ_DOMAIN
+>> +	struct msi_domain_info *info;
+>> +
+>> +	info = msi_get_domain_info(domain);
+>> +	if (info->flags & MSI_FLAG_IRQ_REMAPPING)
+>> +		bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
+>> +#endif
+>> +}
+> Functions named "check_foo" are a pet peeve of mine because the name
+> doesn't tell us anything about what the function *does*.  In this
+> case, we know it checks something about MSI remapping, but we don't
+> know whether we're checking whether it's enabled, disabled, or some
+> other property.
+>
+> I'd prefer something like:
+>
+>    int pci_bus_msi_isolated(struct pci_bus *bus, struct irq_domain *domain)
+>    {
+>      struct msi_domain_info *info;
+>
+>      if (!domain)
+>        return 0;
+>
+>      info = msi_get_domain_info(domain);
+>      if (info->flags & MSI_FLAG_IRQ_REMAPPING)
+>        return 1;
+>
+>      return 0;
+>    }
+>
+>    void pci_set_bus_msi_domain(struct pci_bus *bus)
+>    {
+>      ...
+>      if (b == bus && pci_bus_msi_isolated(bus, d))
+>        bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
+
+Yes. This looks more reasonable. Thank you!
+
+Regards,
+Yongji
