@@ -1,57 +1,98 @@
-From: Matt Fleming <matt@codeblueprint.co.uk>
-Subject: Re: [RFC PATCH v1 10/18] x86/efi: Access EFI related tables in the
- clear
-Date: Wed, 25 May 2016 20:30:11 +0100
-Message-ID: <20160525193011.GC2984@codeblueprint.co.uk>
-References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
- <20160426225740.13567.85438.stgit@tlendack-t1.amdoffice.net>
- <20160510134358.GR2839@codeblueprint.co.uk>
- <20160510135758.GA16783@pd.tnic>
- <5734C97D.8060803@amd.com>
- <57446B27.20406@amd.com>
+From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: reduce extra first level entry in
+	iommu->domains
+Date: Wed, 25 May 2016 21:43:59 +0000
+Message-ID: <20160525214359.GA4132@vultr.guest>
+References: <1463798511-4015-1-git-send-email-richard.weiyang@gmail.com>
+	<20160524230655.GA28550@vultr.guest> <57457BCD.7080909@arm.com>
+Reply-To: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <owner-linux-mm@kvack.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <57446B27.20406@amd.com>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: Borislav Petkov <bp@alien8.de>, Leif Lindholm <leif.lindholm@linaro.org>, Mark Salter <msalter@redhat.com>, Daniel Kiper <daniel.kiper@oracle.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>, Ard Biesheuvel <ard.biesheuvel@linaro.or>
+In-Reply-To: <57457BCD.7080909-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 24 May, at 09:54:31AM, Tom Lendacky wrote:
-> 
-> I looked into this and this would be a large change also to parse tables
-> and build lists.  It occurred to me that this could all be taken care of
-> if the early_memremap calls were changed to early_ioremap calls. Looking
-> in the git log I see that they were originally early_ioremap calls but
-> were changed to early_memremap calls with this commit:
-> 
-> commit abc93f8eb6e4 ("efi: Use early_mem*() instead of early_io*()")
-> 
-> Looking at the early_memremap code and the early_ioremap code they both
-> call __early_ioremap so I don't see how this change makes any
-> difference (especially since FIXMAP_PAGE_NORMAL and FIXMAP_PAGE_IO are
-> identical in this case).
-> 
-> Is it safe to change these back to early_ioremap calls (at least on
-> x86)?
+On Wed, May 25, 2016 at 11:17:49AM +0100, Robin Murphy wrote:
+>On 25/05/16 00:06, Wei Yang wrote:
+>>Hi, Joerg
+>>
+>>Not sure whether you think this calculation is correct.
+>>
+>>If I missed something for this " + 1" in your formula, I am glad to hear your
+>>explanation. So that I could learn something from you :-)
+>
+>I'm not familiar enough with this aspect of the driver to confirm whether the
+>change is appropriate or not, but it does seem worth noting that using
+>DIV_ROUND_UP would be an even neater approach.
+>
 
-I really don't want to begin mixing early_ioremap() calls and
-early_memremap() calls for any of the EFI code if it can be avoided.
+Hi, Robin,
 
-There is slow but steady progress to move more and more of the
-architecture specific EFI code out into generic code. Swapping
-early_memremap() for early_ioremap() would be a step backwards,
-because FIXMAP_PAGE_NORMAL and FIXMAP_PAGE_IO are not identical on
-ARM/arm64.
+Thanks for your comment.
 
-Could you point me at the patch that in this series that fixes up
-early_ioremap() to work with mem encrypt/decrypt? I took another
-(quick) look through but couldn't find it.
+Yes, I agree DIV_ROUND_UP would make the code more easy to read.
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+I have thought about using DIV_ROUND_UP, while from the definition
+DIV_ROUND_UP use operation "/", and ALIGN use bit operation. So the change in
+my patch chooses the second one and tries to keep the efficiency.
+
+>Robin.
+>
+>>Have a good day~
+>>
+>>On Sat, May 21, 2016 at 02:41:51AM +0000, Wei Yang wrote:
+>>>In commit <8bf478163e69> ("iommu/vt-d: Split up iommu->domains array"), it
+>>>it splits iommu->domains in two levels. Each first level contains 256
+>>>entries of second level. In case of the ndomains is exact a multiple of
+>>>256, it would have one more extra first level entry for current
+>>>implementation.
+>>>
+>>>This patch refines this calculation to reduce the extra first level entry.
+>>>
+>>>Signed-off-by: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>>>---
+>>>drivers/iommu/intel-iommu.c |    4 ++--
+>>>1 file changed, 2 insertions(+), 2 deletions(-)
+>>>
+>>>diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+>>>index e3061d3..2204ca4 100644
+>>>--- a/drivers/iommu/intel-iommu.c
+>>>+++ b/drivers/iommu/intel-iommu.c
+>>>@@ -1634,7 +1634,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
+>>>		return -ENOMEM;
+>>>	}
+>>>
+>>>-	size = ((ndomains >> 8) + 1) * sizeof(struct dmar_domain **);
+>>>+	size = (ALIGN(ndomains, 256) >> 8) * sizeof(struct dmar_domain **);
+>>>	iommu->domains = kzalloc(size, GFP_KERNEL);
+>>>
+>>>	if (iommu->domains) {
+>>>@@ -1699,7 +1699,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+>>>static void free_dmar_iommu(struct intel_iommu *iommu)
+>>>{
+>>>	if ((iommu->domains) && (iommu->domain_ids)) {
+>>>-		int elems = (cap_ndoms(iommu->cap) >> 8) + 1;
+>>>+		int elems = ALIGN(cap_ndoms(iommu->cap), 256) >> 8;
+>>>		int i;
+>>>
+>>>		for (i = 0; i < elems; i++)
+>>>--
+>>>1.7.9.5
+>>
+
+-- 
+Wei Yang
+Help you, Help me
