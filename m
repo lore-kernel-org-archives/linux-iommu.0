@@ -1,102 +1,131 @@
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/vt-d: reduce extra first level entry in
- iommu->domains
-Date: Thu, 26 May 2016 11:11:51 +0100
-Message-ID: <5746CBE7.2080206@arm.com>
-References: <1463798511-4015-1-git-send-email-richard.weiyang@gmail.com>
- <20160524230655.GA28550@vultr.guest> <57457BCD.7080909@arm.com>
- <20160525214359.GA4132@vultr.guest>
+Subject: Re: How to keep PCI-e endpoints and RCs in distinct IOMMU groups?
+Date: Thu, 26 May 2016 11:58:53 +0100
+Message-ID: <5746D6ED.1010305@arm.com>
+References: <vnkwoa7ty89k.fsf@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160525214359.GA4132@vultr.guest>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Wei Yang <richard.weiyang@gmail.com>
-Cc: dwmw2@infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <vnkwoa7ty89k.fsf@codeaurora.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Mitchel Humpherys <mitchelh@codeaurora.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>, Will Deacon <will.deacon@arm.com>
+Cc: Tony Truong <truong@codeaurora.org>, Yan He <yanhe@codeaurora.org>, Pratik Patel <pratikp@codeaurora.org>, Hamad Kadmany <hkadmany@codeaurora.org>, Maya Erez <qca_merez@qca.qualcomm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 25/05/16 22:43, Wei Yang wrote:
-> On Wed, May 25, 2016 at 11:17:49AM +0100, Robin Murphy wrote:
->> On 25/05/16 00:06, Wei Yang wrote:
->>> Hi, Joerg
->>>
->>> Not sure whether you think this calculation is correct.
->>>
->>> If I missed something for this " + 1" in your formula, I am glad to hear your
->>> explanation. So that I could learn something from you :-)
->>
->> I'm not familiar enough with this aspect of the driver to confirm whether the
->> change is appropriate or not, but it does seem worth noting that using
->> DIV_ROUND_UP would be an even neater approach.
->>
->
-> Hi, Robin,
->
-> Thanks for your comment.
->
-> Yes, I agree DIV_ROUND_UP would make the code more easy to read.
->
-> I have thought about using DIV_ROUND_UP, while from the definition
-> DIV_ROUND_UP use operation "/", and ALIGN use bit operation. So the change in
-> my patch chooses the second one and tries to keep the efficiency.
+Hey Mitch,
 
-The efficiency of what, though?
+On 26/05/16 01:26, Mitchel Humpherys wrote:
+> Hey there,
+>
+> We're experiencing an issue with IOMMU groups and PCI-e devices.  The
+> system in question has a WLAN DMA master behind a PCI-e root complex
+> which is, in turn, behind an IOMMU.  There are no there devices behind
+> the RC.  This is on an ARM platform using the arm-smmu and pci-msm
+> drivers (pci-msm is in the MSM vendor tree, sorry...).
+>
+> What we're observing is that the WLAN endpoint device is being added to
+> the same IOMMU group as the root complex device itself.  I don't think
+> they should be in the same group though, since they each have different
+> BDFs, which, in our system, are translated to different SMMU Stream IDs,
+> so their traffic is split onto separate SMMU context banks.  Since their
+> traffic is isolated from one other I don't think they need to be in the
+> same IOMMU group (as I understand IOMMU groups).
+>
+> The result is that when the WLAN driver tries to attach to their IOMMU
+> it errors out due to the following check in iommu_attach_device:
+>
+>          if (iommu_group_device_count(group) != 1)
+>                  goto out_unlock;
+>
+> I've come up with a few hacky workarounds:
+>
+>    - Forcing PCI-e ACS to be "enabled" unconditionally (even though our
+>      platform doesn't actually support it).
 
-It's an unsigned division by a constant power of two, which GCC 
-implements with a shift instruction regardless of optimisation - and at 
--O1 and above the machine code generated for either form of expression 
-is completely identical (try it and see!).
+If the _only_ use of the IOMMU is to allow 32-bit devices to get at 
+physically higher RAM without DAC addressing, then perhaps. If system 
+integrity matters, though, you're opening up the big hole that Alex 
+mentions. I'm reminded of Rob Clark's awesome Fire TV hack for some of 
+the dangers of letting DMA-capable devices play together without careful 
+supervision...
 
-On the other hand, the small amount of time and cognitive effort it took 
-to parse "ALIGN(x, 256) >> 8" as "divide by 256, rounding up" compared 
-to simply seeing "DIV_ROUND_UP(x, 256)" and knowing instantly what's 
-intended, certainly makes it less efficient to _maintain_; thus it's 
-exactly the kind of thing to which Dijkstra's famous quotation applies.
+>    - Call iommu_attach_group instead of iommu_attach_device in the arm64
+>      DMA IOMMU mapping layer (yuck).
 
-Does that count towards learning something? ;)
+That's not yuck, that would be correct, except for the arm64 DMA mapping 
+code relying on default domains from the IOMMU core and not calling 
+iommu_attach anything :/
+
+If you've not picked 921b1f52c942 into the MSM kernel, please do so and 
+fix the fallout in whatever other modifications you have. That dodgy 
+workaround was only necessary for the brief window between the DMA 
+mapping code and the IOMMU core group rework both landing in 4.4, and 
+then hung around unused for far too long, frankly.
+
+>    - Don't use the pci_device_group helper at all from the arm-smmu
+>      driver.  Just allocate a new group for all PCI-e devices.
+
+See point #1.
+
+> It seems like the proper solution would be to somehow make these devices
+> end up in separate IOMMU groups using the existing pci_device_group
+> helper, since that might be doing useful stuff for other configurations
+> (like detecting the DMA aliasing quirks).
+>
+> Looking at pci_device_group, though, I'm not sure how we could tell that
+> these two devices are supposed to get separated.  I know very little
+> about PCI-e so maybe I'm just missing something simple.  The match
+> happens in the following loop where we walk up the PCI-e topology:
+>
+>          /*
+>           * Continue upstream from the point of minimum IOMMU granularity
+>           * due to aliases to the point where devices are protected from
+>           * peer-to-peer DMA by PCI ACS.  Again, if we find an existing
+>           * group, use it.
+>           */
+>          for (bus = pdev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
+>                  if (!bus->self)
+>                          continue;
+>
+>                  if (pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
+>                          break;
+>
+>                  pdev = bus->self;
+>
+>                  group = iommu_group_get(&pdev->dev);
+>                  if (group)
+>                          return group;
+>          }
+>
+> Why do we do that?  If the devices have different BDFs can't we safely
+> say that they're protected from peer-to-peer DMA (assuming no DMA
+> aliasing quirks)?  Even as I write that out it seems wrong though since
+> the RC can probably do whatever it wants...
+
+Quite ;)
+
+> Maybe the IOMMU framework can't actually know whether the devices should
+> be kept in separate groups and we just need to do something custom in
+> the arm-smmu driver?
+
+ From my perspective, things are to the contrary - the IOMMU core 
+assumes devices should be in separate groups unless it _does_ know 
+otherwise, and the ARM SMMU driver is severely lacking in the cases 
+where devices do need grouping in ways the core can't discover - I guess 
+you've not had the pleasure of watching multiple platform devices on the 
+same stream ID blowing up.
+
+I am of course addressing this in my SMMU generic bindings patches (v2 
+coming real soon now) - having said which I'm now doing a double-take 
+because until that series there are no IOMMU DMA ops for PCI devices and 
+no real DMA mapping support for the SMMU, so... how... this would appear 
+to be a problem entirely belonging to out-of-tree code :P
 
 Robin.
 
->>> Have a good day~
->>>
->>> On Sat, May 21, 2016 at 02:41:51AM +0000, Wei Yang wrote:
->>>> In commit <8bf478163e69> ("iommu/vt-d: Split up iommu->domains array"), it
->>>> it splits iommu->domains in two levels. Each first level contains 256
->>>> entries of second level. In case of the ndomains is exact a multiple of
->>>> 256, it would have one more extra first level entry for current
->>>> implementation.
->>>>
->>>> This patch refines this calculation to reduce the extra first level entry.
->>>>
->>>> Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
->>>> ---
->>>> drivers/iommu/intel-iommu.c |    4 ++--
->>>> 1 file changed, 2 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->>>> index e3061d3..2204ca4 100644
->>>> --- a/drivers/iommu/intel-iommu.c
->>>> +++ b/drivers/iommu/intel-iommu.c
->>>> @@ -1634,7 +1634,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
->>>> 		return -ENOMEM;
->>>> 	}
->>>>
->>>> -	size = ((ndomains >> 8) + 1) * sizeof(struct dmar_domain **);
->>>> +	size = (ALIGN(ndomains, 256) >> 8) * sizeof(struct dmar_domain **);
->>>> 	iommu->domains = kzalloc(size, GFP_KERNEL);
->>>>
->>>> 	if (iommu->domains) {
->>>> @@ -1699,7 +1699,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
->>>> static void free_dmar_iommu(struct intel_iommu *iommu)
->>>> {
->>>> 	if ((iommu->domains) && (iommu->domain_ids)) {
->>>> -		int elems = (cap_ndoms(iommu->cap) >> 8) + 1;
->>>> +		int elems = ALIGN(cap_ndoms(iommu->cap), 256) >> 8;
->>>> 		int i;
->>>>
->>>> 		for (i = 0; i < elems; i++)
->>>> --
->>>> 1.7.9.5
->>>
+> Sorry for the novel!  Thanks for any pointers.
+>
+>
+> -Mitch
 >
