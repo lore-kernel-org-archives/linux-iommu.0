@@ -1,98 +1,114 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: How to keep PCI-e endpoints and RCs in distinct IOMMU groups?
-Date: Wed, 25 May 2016 20:45:58 -0600
-Message-ID: <20160525204558.08c30a34@ul30vt.home>
-References: <vnkwoa7ty89k.fsf@codeaurora.org>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 2/5] iommu: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have
+	capability of IRQ remapping
+Date: Wed, 25 May 2016 22:48:49 -0500
+Message-ID: <20160526034849.GE3208@localhost>
+References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+	<1461761010-5452-3-git-send-email-xyjxie@linux.vnet.ibm.com>
+	<20160524211149.GC16463@localhost>
+	<201605250554.u4P5sRqv014439@mx0a-001b2d01.pphosted.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <vnkwoa7ty89k.fsf@codeaurora.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Mitchel Humpherys <mitchelh@codeaurora.org>
-Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Tony Truong <truong@codeaurora.org>, Yan He <yanhe@codeaurora.org>, Pratik Patel <pratikp@codeaurora.org>, Hamad Kadmany <hkadmany@codeaurora.org>, Maya Erez <qca_merez@qca.qualcomm.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <201605250554.u4P5sRqv014439-QbrlkLqkJHK1JOh/WJROsbgYzuMpulrC0E9HWUfgJXw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Cc: alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org, nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 25 May 2016 17:26:15 -0700
-Mitchel Humpherys <mitchelh@codeaurora.org> wrote:
+On Wed, May 25, 2016 at 01:54:23PM +0800, Yongji Xie wrote:
+> On 2016/5/25 5:11, Bjorn Helgaas wrote:
+> >On Wed, Apr 27, 2016 at 08:43:27PM +0800, Yongji Xie wrote:
+> >>The capability of IRQ remapping is abstracted on IOMMU side on
+> >>some archs. There is a existing flag IOMMU_CAP_INTR_REMAP for this.
+> >>
+> >>To have a universal flag to test this capability for different
+> >>archs on PCI side, we set PCI_BUS_FLAGS_MSI_REMAP for PCI buses
+> >>when IOMMU_CAP_INTR_REMAP is set.
+> >>
+> >>Signed-off-by: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+> >>---
+> >>  drivers/iommu/iommu.c |   15 +++++++++++++++
+> >>  1 file changed, 15 insertions(+)
+> >>
+> >>diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> >>index 0e3b009..5d2b6f6 100644
+> >>--- a/drivers/iommu/iommu.c
+> >>+++ b/drivers/iommu/iommu.c
+> >>@@ -813,6 +813,16 @@ struct iommu_group *pci_device_group(struct device *dev)
+> >>  	return group;
+> >>  }
+> >>+static void pci_check_msi_remapping(struct pci_dev *pdev,
+> >>+					const struct iommu_ops *ops)
+> >>+{
+> >>+	struct pci_bus *bus = pdev->bus;
+> >>+
+> >>+	if (ops->capable(IOMMU_CAP_INTR_REMAP) &&
+> >>+		!(bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP))
+> >>+		bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
+> >>+}
+> >This looks an awful lot like the pci_bus_check_msi_remapping() you add
+> >elsewhere.  Why do we need both?
+> 
+> I will modify this function as you suggested.  And we add this function
+> here because some iommu drivers would be initialed after PCI probing.
+>
+> >>  /**
+> >>   * iommu_group_get_for_dev - Find or create the IOMMU group for a device
+> >>   * @dev: target device
+> >>@@ -871,6 +881,9 @@ static int add_iommu_group(struct device *dev, void *data)
+> >>  	const struct iommu_ops *ops = cb->ops;
+> >>  	int ret;
+> >>+	if (dev_is_pci(dev) && ops->capable)
+> >>+		pci_check_msi_remapping(to_pci_dev(dev), ops);
+> >>+
+> >>  	if (!ops->add_device)
+> >>  		return 0;
+> >>@@ -913,6 +926,8 @@ static int iommu_bus_notifier(struct notifier_block *nb,
+> >>  	 * result in ADD/DEL notifiers to group->notifier
+> >>  	 */
+> >>  	if (action == BUS_NOTIFY_ADD_DEVICE) {
+> >>+		if (dev_is_pci(dev) && ops->capable)
+> >>+			pci_check_msi_remapping(to_pci_dev(dev), ops);
+> >These calls don't smell right either.  Why do we need dev_is_pci()
+> >checks here?
+> 
+> Some platform devices may also call this.
+> 
+> >Can't this be done in the PCI probe path somehow, e.g.,
+> >in pci_set_bus_msi_domain() or something?
+> 
+> Yes, this can be done in pci_create_root_bus(). But it could only
+> handle the case that iommu drivers are initialed before PCI probing.
 
-> Hey there,
-> 
-> We're experiencing an issue with IOMMU groups and PCI-e devices.  The
-> system in question has a WLAN DMA master behind a PCI-e root complex
-> which is, in turn, behind an IOMMU.  There are no there devices behind
-> the RC.  This is on an ARM platform using the arm-smmu and pci-msm
-> drivers (pci-msm is in the MSM vendor tree, sorry...).
-> 
-> What we're observing is that the WLAN endpoint device is being added to
-> the same IOMMU group as the root complex device itself.  I don't think
-> they should be in the same group though, since they each have different
-> BDFs, which, in our system, are translated to different SMMU Stream IDs,
-> so their traffic is split onto separate SMMU context banks.  Since their
-> traffic is isolated from one other I don't think they need to be in the
-> same IOMMU group (as I understand IOMMU groups).
-> 
-> The result is that when the WLAN driver tries to attach to their IOMMU
-> it errors out due to the following check in iommu_attach_device:
-> 
->         if (iommu_group_device_count(group) != 1)
->                 goto out_unlock;
-> 
-> I've come up with a few hacky workarounds:
-> 
->   - Forcing PCI-e ACS to be "enabled" unconditionally (even though our
->     platform doesn't actually support it).
-> 
->   - Call iommu_attach_group instead of iommu_attach_device in the arm64
->     DMA IOMMU mapping layer (yuck).
-> 
->   - Don't use the pci_device_group helper at all from the arm-smmu
->     driver.  Just allocate a new group for all PCI-e devices.
-> 
-> It seems like the proper solution would be to somehow make these devices
-> end up in separate IOMMU groups using the existing pci_device_group
-> helper, since that might be doing useful stuff for other configurations
-> (like detecting the DMA aliasing quirks).
-> 
-> Looking at pci_device_group, though, I'm not sure how we could tell that
-> these two devices are supposed to get separated.  I know very little
-> about PCI-e so maybe I'm just missing something simple.  The match
-> happens in the following loop where we walk up the PCI-e topology:
-> 
->         /*
->          * Continue upstream from the point of minimum IOMMU granularity
->          * due to aliases to the point where devices are protected from
->          * peer-to-peer DMA by PCI ACS.  Again, if we find an existing
->          * group, use it.
->          */
->         for (bus = pdev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
->                 if (!bus->self)
->                         continue;
-> 
->                 if (pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
->                         break;
-> 
->                 pdev = bus->self;
-> 
->                 group = iommu_group_get(&pdev->dev);
->                 if (group)
->                         return group;
->         }
-> 
-> Why do we do that?  If the devices have different BDFs can't we safely
-> say that they're protected from peer-to-peer DMA (assuming no DMA
-> aliasing quirks)?  Even as I write that out it seems wrong though since
-> the RC can probably do whatever it wants...
-> 
-> Maybe the IOMMU framework can't actually know whether the devices should
-> be kept in separate groups and we just need to do something custom in
-> the arm-smmu driver?
+Hmm, that's sort of what I expected, but I don't like it.  I don't
+think initializing IOMMU drivers after probing PCI devices is the
+optimal design.  As soon as we add a PCI device, a driver can bind to
+it and start using it.  If we set up an IOMMU after a driver has
+claimed the device, something is going to break.  The driver may have
+already made DMA mappings that would now be invalid.
 
-You're only considering the visibility of devices to the IOMMU, not the
-isolation between devices.  Without ACS peer-to-peer can be re-routed
-between devices before the IOMMU even knows about it.  That's why the
-root port is included in the group.  I'm confused why your driver is
-using the IOMMU API instead of the much more common DMA API anyway
-though.  Thanks,
+IOMMU drivers are logically between the CPU and the device, so they
+should be initialized before the device is enumerated.  I know there
+are probably some legacy issues behind this design, and I know it has
+nothing to do with your patch, so this is not a very constructive
+comment.
 
-Alex
+I just want to be on record that I'm not a fan of this out-of-order
+initialization, and I don't like the notification scheme for handling
+device hotplug either.  Notifiers make the code hard to read, and you
+can't tell what order things happen in.  It just seems like a hack to
+connect things together when they should really have been designed to
+be more tightly integrated from the beginning.
+
+Bjorn
