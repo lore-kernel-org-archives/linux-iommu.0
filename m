@@ -1,71 +1,102 @@
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [v10, 7/7] mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
-Date: Thu, 26 May 2016 09:44:10 +0200
-Message-ID: <CAPDyKFqx2JMLzXoDxGCKFYMFV47+SegnkuWFXKvsQHK7L5w-1g@mail.gmail.com>
-References: <1462417950-46796-1-git-send-email-yangbo.lu@nxp.com>
-	<4448030.Zs8fVnr3nm@wuerfel>
-	<HE1PR04MB0889B52134A43C0E7A452B7BF87C0@HE1PR04MB0889.eurprd04.prod.outlook.com>
-	<5159406.HOFrj7pRfW@wuerfel>
-	<1462937186.16584.77.camel@buserror.net>
-	<HE1PR04MB0889852B7809A1CCFF8922ACF8410@HE1PR04MB0889.eurprd04.prod.outlook.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/vt-d: reduce extra first level entry in
+ iommu->domains
+Date: Thu, 26 May 2016 11:11:51 +0100
+Message-ID: <5746CBE7.2080206@arm.com>
+References: <1463798511-4015-1-git-send-email-richard.weiyang@gmail.com>
+ <20160524230655.GA28550@vultr.guest> <57457BCD.7080909@arm.com>
+ <20160525214359.GA4132@vultr.guest>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-mmc-owner@vger.kernel.org>
-In-Reply-To: <HE1PR04MB0889852B7809A1CCFF8922ACF8410@HE1PR04MB0889.eurprd04.prod.outlook.com>
-Sender: linux-mmc-owner@vger.kernel.org
-To: Yangbo Lu <yangbo.lu@nxp.com>
-Cc: Scott Wood <oss@buserror.net>, Arnd Bergmann <arnd@arndb.de>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Russell King <linux@arm.linux.org.uk>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, Kumar Gala <galak@codeaurora.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Yang-Leo Li <leoyang.li@nxp.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, Santosh
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160525214359.GA4132@vultr.guest>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Wei Yang <richard.weiyang@gmail.com>
+Cc: dwmw2@infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 26 May 2016 at 06:05, Yangbo Lu <yangbo.lu@nxp.com> wrote:
-> Hi Uffe,
+On 25/05/16 22:43, Wei Yang wrote:
+> On Wed, May 25, 2016 at 11:17:49AM +0100, Robin Murphy wrote:
+>> On 25/05/16 00:06, Wei Yang wrote:
+>>> Hi, Joerg
+>>>
+>>> Not sure whether you think this calculation is correct.
+>>>
+>>> If I missed something for this " + 1" in your formula, I am glad to hear your
+>>> explanation. So that I could learn something from you :-)
+>>
+>> I'm not familiar enough with this aspect of the driver to confirm whether the
+>> change is appropriate or not, but it does seem worth noting that using
+>> DIV_ROUND_UP would be an even neater approach.
+>>
 >
-> Could we merge this patchset? ...
-> It has been a long time to wait for Arnd's response...
+> Hi, Robin,
 >
-> Thanks a lot.
+> Thanks for your comment.
 >
+> Yes, I agree DIV_ROUND_UP would make the code more easy to read.
 >
+> I have thought about using DIV_ROUND_UP, while from the definition
+> DIV_ROUND_UP use operation "/", and ALIGN use bit operation. So the change in
+> my patch chooses the second one and tries to keep the efficiency.
 
-As we are still in the merge window I won't queue anything but fixes.
-Let's give Arnd another week or so to respond.
+The efficiency of what, though?
 
-Kind regards
-Uffe
+It's an unsigned division by a constant power of two, which GCC 
+implements with a shift instruction regardless of optimisation - and at 
+-O1 and above the machine code generated for either form of expression 
+is completely identical (try it and see!).
 
-> Best regards,
-> Yangbo Lu
->
->
->> -----Original Message-----
->> From: Yangbo Lu
->> Sent: Friday, May 20, 2016 2:06 PM
->> To: 'Scott Wood'; Arnd Bergmann; linux-arm-kernel@lists.infradead.org
->> Cc: linuxppc-dev@lists.ozlabs.org; Mark Rutland;
->> devicetree@vger.kernel.org; ulf.hansson@linaro.org; Russell King; Bhupesh
->> Sharma; netdev@vger.kernel.org; Joerg Roedel; Kumar Gala; linux-
->> mmc@vger.kernel.org; linux-kernel@vger.kernel.org; Yang-Leo Li;
->> iommu@lists.linux-foundation.org; Rob Herring; linux-i2c@vger.kernel.org;
->> Claudiu Manoil; Santosh Shilimkar; Xiaobo Xie; linux-clk@vger.kernel.org;
->> Qiang Zhao
->> Subject: RE: [v10, 7/7] mmc: sdhci-of-esdhc: fix host version for T4240-
->> R1.0-R2.0
->>
->> Hi Arnd,
->>
->> Any comments?
->> Please reply when you see the email since we want this eSDHC issue to be
->> fixed soon.
->>
->> All the patches are Freescale-specific and is to fix the eSDHC driver.
->> Could we let them merged first if you were talking about a new way of
->> abstracting getting SoC version.
->>
->>
->> Thanks :)
->>
->>
->> Best regards,
->> Yangbo Lu
->>
+On the other hand, the small amount of time and cognitive effort it took 
+to parse "ALIGN(x, 256) >> 8" as "divide by 256, rounding up" compared 
+to simply seeing "DIV_ROUND_UP(x, 256)" and knowing instantly what's 
+intended, certainly makes it less efficient to _maintain_; thus it's 
+exactly the kind of thing to which Dijkstra's famous quotation applies.
+
+Does that count towards learning something? ;)
+
+Robin.
+
+>>> Have a good day~
+>>>
+>>> On Sat, May 21, 2016 at 02:41:51AM +0000, Wei Yang wrote:
+>>>> In commit <8bf478163e69> ("iommu/vt-d: Split up iommu->domains array"), it
+>>>> it splits iommu->domains in two levels. Each first level contains 256
+>>>> entries of second level. In case of the ndomains is exact a multiple of
+>>>> 256, it would have one more extra first level entry for current
+>>>> implementation.
+>>>>
+>>>> This patch refines this calculation to reduce the extra first level entry.
+>>>>
+>>>> Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
+>>>> ---
+>>>> drivers/iommu/intel-iommu.c |    4 ++--
+>>>> 1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+>>>> index e3061d3..2204ca4 100644
+>>>> --- a/drivers/iommu/intel-iommu.c
+>>>> +++ b/drivers/iommu/intel-iommu.c
+>>>> @@ -1634,7 +1634,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
+>>>> 		return -ENOMEM;
+>>>> 	}
+>>>>
+>>>> -	size = ((ndomains >> 8) + 1) * sizeof(struct dmar_domain **);
+>>>> +	size = (ALIGN(ndomains, 256) >> 8) * sizeof(struct dmar_domain **);
+>>>> 	iommu->domains = kzalloc(size, GFP_KERNEL);
+>>>>
+>>>> 	if (iommu->domains) {
+>>>> @@ -1699,7 +1699,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+>>>> static void free_dmar_iommu(struct intel_iommu *iommu)
+>>>> {
+>>>> 	if ((iommu->domains) && (iommu->domain_ids)) {
+>>>> -		int elems = (cap_ndoms(iommu->cap) >> 8) + 1;
+>>>> +		int elems = ALIGN(cap_ndoms(iommu->cap), 256) >> 8;
+>>>> 		int i;
+>>>>
+>>>> 		for (i = 0; i < elems; i++)
+>>>> --
+>>>> 1.7.9.5
+>>>
 >
