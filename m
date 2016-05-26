@@ -1,131 +1,69 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: How to keep PCI-e endpoints and RCs in distinct IOMMU groups?
-Date: Thu, 26 May 2016 11:58:53 +0100
-Message-ID: <5746D6ED.1010305@arm.com>
-References: <vnkwoa7ty89k.fsf@codeaurora.org>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [RFC PATCH v1 10/18] x86/efi: Access EFI related tables in the
+ clear
+Date: Thu, 26 May 2016 08:45:58 -0500
+Message-ID: <5746FE16.9070408@amd.com>
+References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
+ <20160426225740.13567.85438.stgit@tlendack-t1.amdoffice.net>
+ <20160510134358.GR2839@codeblueprint.co.uk> <20160510135758.GA16783@pd.tnic>
+ <5734C97D.8060803@amd.com> <57446B27.20406@amd.com>
+ <20160525193011.GC2984@codeblueprint.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <vnkwoa7ty89k.fsf@codeaurora.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Mitchel Humpherys <mitchelh@codeaurora.org>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>, Will Deacon <will.deacon@arm.com>
-Cc: Tony Truong <truong@codeaurora.org>, Yan He <yanhe@codeaurora.org>, Pratik Patel <pratikp@codeaurora.org>, Hamad Kadmany <hkadmany@codeaurora.org>, Maya Erez <qca_merez@qca.qualcomm.com>
+Return-path: <linux-arch-owner@vger.kernel.org>
+In-Reply-To: <20160525193011.GC2984@codeblueprint.co.uk>
+Sender: linux-arch-owner@vger.kernel.org
+To: Matt Fleming <matt@codeblueprint.co.uk>
+Cc: Borislav Petkov <bp@alien8.de>, Leif Lindholm <leif.lindholm@linaro.org>, Mark Salter <msalter@redhat.com>, Daniel Kiper <daniel.kiper@oracle.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>Ard Biesheuvel <a>
 List-Id: iommu@lists.linux-foundation.org
 
-Hey Mitch,
+On 05/25/2016 02:30 PM, Matt Fleming wrote:
+> On Tue, 24 May, at 09:54:31AM, Tom Lendacky wrote:
+>>
+>> I looked into this and this would be a large change also to parse tables
+>> and build lists.  It occurred to me that this could all be taken care of
+>> if the early_memremap calls were changed to early_ioremap calls. Looking
+>> in the git log I see that they were originally early_ioremap calls but
+>> were changed to early_memremap calls with this commit:
+>>
+>> commit abc93f8eb6e4 ("efi: Use early_mem*() instead of early_io*()")
+>>
+>> Looking at the early_memremap code and the early_ioremap code they both
+>> call __early_ioremap so I don't see how this change makes any
+>> difference (especially since FIXMAP_PAGE_NORMAL and FIXMAP_PAGE_IO are
+>> identical in this case).
+>>
+>> Is it safe to change these back to early_ioremap calls (at least on
+>> x86)?
+> 
+> I really don't want to begin mixing early_ioremap() calls and
+> early_memremap() calls for any of the EFI code if it can be avoided.
 
-On 26/05/16 01:26, Mitchel Humpherys wrote:
-> Hey there,
->
-> We're experiencing an issue with IOMMU groups and PCI-e devices.  The
-> system in question has a WLAN DMA master behind a PCI-e root complex
-> which is, in turn, behind an IOMMU.  There are no there devices behind
-> the RC.  This is on an ARM platform using the arm-smmu and pci-msm
-> drivers (pci-msm is in the MSM vendor tree, sorry...).
->
-> What we're observing is that the WLAN endpoint device is being added to
-> the same IOMMU group as the root complex device itself.  I don't think
-> they should be in the same group though, since they each have different
-> BDFs, which, in our system, are translated to different SMMU Stream IDs,
-> so their traffic is split onto separate SMMU context banks.  Since their
-> traffic is isolated from one other I don't think they need to be in the
-> same IOMMU group (as I understand IOMMU groups).
->
-> The result is that when the WLAN driver tries to attach to their IOMMU
-> it errors out due to the following check in iommu_attach_device:
->
->          if (iommu_group_device_count(group) != 1)
->                  goto out_unlock;
->
-> I've come up with a few hacky workarounds:
->
->    - Forcing PCI-e ACS to be "enabled" unconditionally (even though our
->      platform doesn't actually support it).
+I definitely wouldn't mix them, it would be all or nothing.
 
-If the _only_ use of the IOMMU is to allow 32-bit devices to get at 
-physically higher RAM without DAC addressing, then perhaps. If system 
-integrity matters, though, you're opening up the big hole that Alex 
-mentions. I'm reminded of Rob Clark's awesome Fire TV hack for some of 
-the dangers of letting DMA-capable devices play together without careful 
-supervision...
+> 
+> There is slow but steady progress to move more and more of the
+> architecture specific EFI code out into generic code. Swapping
+> early_memremap() for early_ioremap() would be a step backwards,
+> because FIXMAP_PAGE_NORMAL and FIXMAP_PAGE_IO are not identical on
+> ARM/arm64.
 
->    - Call iommu_attach_group instead of iommu_attach_device in the arm64
->      DMA IOMMU mapping layer (yuck).
+Maybe adding something similar to __acpi_map_table would be more
+appropriate?
 
-That's not yuck, that would be correct, except for the arm64 DMA mapping 
-code relying on default domains from the IOMMU core and not calling 
-iommu_attach anything :/
+> 
+> Could you point me at the patch that in this series that fixes up
+> early_ioremap() to work with mem encrypt/decrypt? I took another
+> (quick) look through but couldn't find it.
 
-If you've not picked 921b1f52c942 into the MSM kernel, please do so and 
-fix the fallout in whatever other modifications you have. That dodgy 
-workaround was only necessary for the brief window between the DMA 
-mapping code and the IOMMU core group rework both landing in 4.4, and 
-then hung around unused for far too long, frankly.
+The patch in question is patch 6/18 where PAGE_KERNEL is changed to
+include the _PAGE_ENC attribute (the encryption mask). This now
+makes FIXMAP_PAGE_NORMAL contain the encryption mask while
+FIXMAP_PAGE_IO does not. In this way, anything mapped using the
+early_ioremap call won't be mapped encrypted.
 
->    - Don't use the pci_device_group helper at all from the arm-smmu
->      driver.  Just allocate a new group for all PCI-e devices.
+Thanks,
+Tom
 
-See point #1.
-
-> It seems like the proper solution would be to somehow make these devices
-> end up in separate IOMMU groups using the existing pci_device_group
-> helper, since that might be doing useful stuff for other configurations
-> (like detecting the DMA aliasing quirks).
->
-> Looking at pci_device_group, though, I'm not sure how we could tell that
-> these two devices are supposed to get separated.  I know very little
-> about PCI-e so maybe I'm just missing something simple.  The match
-> happens in the following loop where we walk up the PCI-e topology:
->
->          /*
->           * Continue upstream from the point of minimum IOMMU granularity
->           * due to aliases to the point where devices are protected from
->           * peer-to-peer DMA by PCI ACS.  Again, if we find an existing
->           * group, use it.
->           */
->          for (bus = pdev->bus; !pci_is_root_bus(bus); bus = bus->parent) {
->                  if (!bus->self)
->                          continue;
->
->                  if (pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
->                          break;
->
->                  pdev = bus->self;
->
->                  group = iommu_group_get(&pdev->dev);
->                  if (group)
->                          return group;
->          }
->
-> Why do we do that?  If the devices have different BDFs can't we safely
-> say that they're protected from peer-to-peer DMA (assuming no DMA
-> aliasing quirks)?  Even as I write that out it seems wrong though since
-> the RC can probably do whatever it wants...
-
-Quite ;)
-
-> Maybe the IOMMU framework can't actually know whether the devices should
-> be kept in separate groups and we just need to do something custom in
-> the arm-smmu driver?
-
- From my perspective, things are to the contrary - the IOMMU core 
-assumes devices should be in separate groups unless it _does_ know 
-otherwise, and the ARM SMMU driver is severely lacking in the cases 
-where devices do need grouping in ways the core can't discover - I guess 
-you've not had the pleasure of watching multiple platform devices on the 
-same stream ID blowing up.
-
-I am of course addressing this in my SMMU generic bindings patches (v2 
-coming real soon now) - having said which I'm now doing a double-take 
-because until that series there are no IOMMU DMA ops for PCI devices and 
-no real DMA mapping support for the SMMU, so... how... this would appear 
-to be a problem entirely belonging to out-of-tree code :P
-
-Robin.
-
-> Sorry for the novel!  Thanks for any pointers.
->
->
-> -Mitch
->
+> 
