@@ -1,18 +1,17 @@
-From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/5] iommu: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have
-	capability of IRQ remapping
-Date: Wed, 25 May 2016 22:48:49 -0500
-Message-ID: <20160526034849.GE3208@localhost>
-References: <1461761010-5452-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-	<1461761010-5452-3-git-send-email-xyjxie@linux.vnet.ibm.com>
-	<20160524211149.GC16463@localhost>
-	<201605250554.u4P5sRqv014439@mx0a-001b2d01.pphosted.com>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [RFC 5/9] drivers: platform: Configure dma operations at probe
+	time
+Date: Thu, 26 May 2016 09:33:39 +0530
+Message-ID: <000401d1b703$993446e0$cb9cd4a0$@codeaurora.org>
+References: <1461599894-1969-1-git-send-email-sricharan@codeaurora.org>
+	<1461599894-1969-6-git-send-email-sricharan@codeaurora.org>
+	<5744770D.9090303@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <201605250554.u4P5sRqv014439-QbrlkLqkJHK1JOh/WJROsbgYzuMpulrC0E9HWUfgJXw@public.gmane.org>
+In-Reply-To: <5744770D.9090303-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,93 +21,101 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-Cc: alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org, nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org
+To: 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 25, 2016 at 01:54:23PM +0800, Yongji Xie wrote:
-> On 2016/5/25 5:11, Bjorn Helgaas wrote:
-> >On Wed, Apr 27, 2016 at 08:43:27PM +0800, Yongji Xie wrote:
-> >>The capability of IRQ remapping is abstracted on IOMMU side on
-> >>some archs. There is a existing flag IOMMU_CAP_INTR_REMAP for this.
-> >>
-> >>To have a universal flag to test this capability for different
-> >>archs on PCI side, we set PCI_BUS_FLAGS_MSI_REMAP for PCI buses
-> >>when IOMMU_CAP_INTR_REMAP is set.
-> >>
-> >>Signed-off-by: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-> >>---
-> >>  drivers/iommu/iommu.c |   15 +++++++++++++++
-> >>  1 file changed, 15 insertions(+)
-> >>
-> >>diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> >>index 0e3b009..5d2b6f6 100644
-> >>--- a/drivers/iommu/iommu.c
-> >>+++ b/drivers/iommu/iommu.c
-> >>@@ -813,6 +813,16 @@ struct iommu_group *pci_device_group(struct device *dev)
-> >>  	return group;
-> >>  }
-> >>+static void pci_check_msi_remapping(struct pci_dev *pdev,
-> >>+					const struct iommu_ops *ops)
-> >>+{
-> >>+	struct pci_bus *bus = pdev->bus;
-> >>+
-> >>+	if (ops->capable(IOMMU_CAP_INTR_REMAP) &&
-> >>+		!(bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP))
-> >>+		bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
-> >>+}
-> >This looks an awful lot like the pci_bus_check_msi_remapping() you add
-> >elsewhere.  Why do we need both?
-> 
-> I will modify this function as you suggested.  And we add this function
-> here because some iommu drivers would be initialed after PCI probing.
+Hi Robin,
+
+>On 25/04/16 16:58, Sricharan R wrote:
+>> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+>>
+>> Configuring DMA ops at probe time will allow deferring device probe when
+>> the IOMMU isn't available yet.
+>>
+>> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+>> ---
+>>   drivers/base/platform.c | 13 +++++++++++++
+>>   drivers/of/platform.c   |  7 +++----
+>>   2 files changed, 16 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+>> index f437afa..17e64a4 100644
+>> --- a/drivers/base/platform.c
+>> +++ b/drivers/base/platform.c
+>> @@ -557,6 +557,12 @@ static int platform_drv_probe(struct device *_dev)
+>>   	if (ret < 0)
+>>   		return ret;
+>>
+>> +	if (of_have_populated_dt()) {
+>> +		ret = of_dma_configure_ops(_dev, _dev->of_node);
+>> +		if (ret < 0)
+>> +			goto done;
+>> +	}
+>> +
+>>   	ret = dev_pm_domain_attach(_dev, true);
+>>   	if (ret != -EPROBE_DEFER) {
+>>   		if (drv->probe) {
+>> @@ -569,6 +575,11 @@ static int platform_drv_probe(struct device *_dev)
+>>   		}
+>>   	}
+>>
+>> +	if (of_have_populated_dt()) {
+>> +		if (ret)
+>> +			of_dma_deconfigure(_dev);
+>> +	}
+>> +done:
+>>   	if (drv->prevent_deferred_probe && ret == -EPROBE_DEFER) {
+>>   		dev_warn(_dev, "probe deferral not supported\n");
+>>   		ret = -ENXIO;
+>> @@ -591,6 +602,8 @@ static int platform_drv_remove(struct device *_dev)
+>>   	if (drv->remove)
+>>   		ret = drv->remove(dev);
+>>   	dev_pm_domain_detach(_dev, true);
+>> +	if (of_have_populated_dt())
+>> +		of_dma_deconfigure(_dev);
+>>
+>>   	return ret;
+>>   }
+>> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+>> index 17ee8d5..12bbc8e1 100644
+>> --- a/drivers/of/platform.c
+>> +++ b/drivers/of/platform.c
+>> @@ -180,11 +180,9 @@ static struct platform_device *of_platform_device_create_pdata(
+>>   	dev->dev.bus = &platform_bus_type;
+>>   	dev->dev.platform_data = platform_data;
+>>   	of_dma_configure_masks(&dev->dev, dev->dev.of_node);
+>> -	of_dma_configure_ops(&dev->dev, dev->dev.of_node);
+>>   	of_msi_configure(&dev->dev, dev->dev.of_node);
+>>
+>>   	if (of_device_add(dev) != 0) {
+>> -		of_dma_deconfigure(&dev->dev);
+>>   		platform_device_put(dev);
+>>   		goto err_clear_flag;
+>>   	}
+>> @@ -481,11 +479,12 @@ static int of_platform_device_destroy(struct device *dev, void *data)
+>>   	if (dev->bus == &platform_bus_type)
+>>   		platform_device_unregister(to_platform_device(dev));
+>>   #ifdef CONFIG_ARM_AMBA
+>> -	else if (dev->bus == &amba_bustype)
+>> +	else if (dev->bus == &amba_bustype) {
+>>   		amba_device_unregister(to_amba_device(dev));
+>> +		of_dma_deconfigure(dev);
+>> +	}
 >
-> >>  /**
-> >>   * iommu_group_get_for_dev - Find or create the IOMMU group for a device
-> >>   * @dev: target device
-> >>@@ -871,6 +881,9 @@ static int add_iommu_group(struct device *dev, void *data)
-> >>  	const struct iommu_ops *ops = cb->ops;
-> >>  	int ret;
-> >>+	if (dev_is_pci(dev) && ops->capable)
-> >>+		pci_check_msi_remapping(to_pci_dev(dev), ops);
-> >>+
-> >>  	if (!ops->add_device)
-> >>  		return 0;
-> >>@@ -913,6 +926,8 @@ static int iommu_bus_notifier(struct notifier_block *nb,
-> >>  	 * result in ADD/DEL notifiers to group->notifier
-> >>  	 */
-> >>  	if (action == BUS_NOTIFY_ADD_DEVICE) {
-> >>+		if (dev_is_pci(dev) && ops->capable)
-> >>+			pci_check_msi_remapping(to_pci_dev(dev), ops);
-> >These calls don't smell right either.  Why do we need dev_is_pci()
-> >checks here?
-> 
-> Some platform devices may also call this.
-> 
-> >Can't this be done in the PCI probe path somehow, e.g.,
-> >in pci_set_bus_msi_domain() or something?
-> 
-> Yes, this can be done in pci_create_root_bus(). But it could only
-> handle the case that iommu drivers are initialed before PCI probing.
+>Note that we definitely need this to happen properly on other buses,
+>too. I had something for the AMBA bus back when I last looked at
+>this[0], but since then we now have PCI devices going through the
+>of_dma_configure() path as well (hence 226d89cbb242).
+>
+>There's also now some initial ACPI code in flight[1], so it's probably
+>about time to take another closer look at how this can be properly
+>generalised, but I'm not necessarily averse to starting with a
+>DT-focused solution that gets at least half way, then building on top of
+>that.
 
-Hmm, that's sort of what I expected, but I don't like it.  I don't
-think initializing IOMMU drivers after probing PCI devices is the
-optimal design.  As soon as we add a PCI device, a driver can bind to
-it and start using it.  If we set up an IOMMU after a driver has
-claimed the device, something is going to break.  The driver may have
-already made DMA mappings that would now be invalid.
+Thanks for direction. I will definitely look at how this can be generalised
+ for other buses as well. Based on how that looks, as you said if required
+ a DT-only can be done first.
 
-IOMMU drivers are logically between the CPU and the device, so they
-should be initialized before the device is enumerated.  I know there
-are probably some legacy issues behind this design, and I know it has
-nothing to do with your patch, so this is not a very constructive
-comment.
-
-I just want to be on record that I'm not a fan of this out-of-order
-initialization, and I don't like the notification scheme for handling
-device hotplug either.  Notifiers make the code hard to read, and you
-can't tell what order things happen in.  It just seems like a hack to
-connect things together when they should really have been designed to
-be more tightly integrated from the beginning.
-
-Bjorn
+Regards,
+ Sricharan
