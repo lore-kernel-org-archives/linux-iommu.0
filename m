@@ -1,69 +1,126 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [RFC PATCH v1 10/18] x86/efi: Access EFI related tables in the
- clear
-Date: Thu, 26 May 2016 08:45:58 -0500
-Message-ID: <5746FE16.9070408@amd.com>
-References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
- <20160426225740.13567.85438.stgit@tlendack-t1.amdoffice.net>
- <20160510134358.GR2839@codeblueprint.co.uk> <20160510135758.GA16783@pd.tnic>
- <5734C97D.8060803@amd.com> <57446B27.20406@amd.com>
- <20160525193011.GC2984@codeblueprint.co.uk>
+From: Wei Yang <richard.weiyang@gmail.com>
+Subject: Re: [PATCH] iommu/vt-d: reduce extra first level entry in
+ iommu->domains
+Date: Thu, 26 May 2016 22:34:08 +0000
+Message-ID: <20160526223408.GA10407@vultr.guest>
+References: <1463798511-4015-1-git-send-email-richard.weiyang@gmail.com>
+ <20160524230655.GA28550@vultr.guest>
+ <57457BCD.7080909@arm.com>
+ <20160525214359.GA4132@vultr.guest>
+ <5746CBE7.2080206@arm.com>
+Reply-To: Wei Yang <richard.weiyang@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arch-owner@vger.kernel.org>
-In-Reply-To: <20160525193011.GC2984@codeblueprint.co.uk>
-Sender: linux-arch-owner@vger.kernel.org
-To: Matt Fleming <matt@codeblueprint.co.uk>
-Cc: Borislav Petkov <bp@alien8.de>, Leif Lindholm <leif.lindholm@linaro.org>, Mark Salter <msalter@redhat.com>, Daniel Kiper <daniel.kiper@oracle.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>Ard Biesheuvel <a>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5746CBE7.2080206@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Wei Yang <richard.weiyang@gmail.com>, dwmw2@infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/25/2016 02:30 PM, Matt Fleming wrote:
-> On Tue, 24 May, at 09:54:31AM, Tom Lendacky wrote:
+On Thu, May 26, 2016 at 11:11:51AM +0100, Robin Murphy wrote:
+>On 25/05/16 22:43, Wei Yang wrote:
+>>On Wed, May 25, 2016 at 11:17:49AM +0100, Robin Murphy wrote:
+>>>On 25/05/16 00:06, Wei Yang wrote:
+>>>>Hi, Joerg
+>>>>
+>>>>Not sure whether you think this calculation is correct.
+>>>>
+>>>>If I missed something for this " + 1" in your formula, I am glad to hear your
+>>>>explanation. So that I could learn something from you :-)
+>>>
+>>>I'm not familiar enough with this aspect of the driver to confirm whether the
+>>>change is appropriate or not, but it does seem worth noting that using
+>>>DIV_ROUND_UP would be an even neater approach.
+>>>
 >>
->> I looked into this and this would be a large change also to parse tables
->> and build lists.  It occurred to me that this could all be taken care of
->> if the early_memremap calls were changed to early_ioremap calls. Looking
->> in the git log I see that they were originally early_ioremap calls but
->> were changed to early_memremap calls with this commit:
+>>Hi, Robin,
 >>
->> commit abc93f8eb6e4 ("efi: Use early_mem*() instead of early_io*()")
+>>Thanks for your comment.
 >>
->> Looking at the early_memremap code and the early_ioremap code they both
->> call __early_ioremap so I don't see how this change makes any
->> difference (especially since FIXMAP_PAGE_NORMAL and FIXMAP_PAGE_IO are
->> identical in this case).
+>>Yes, I agree DIV_ROUND_UP would make the code more easy to read.
 >>
->> Is it safe to change these back to early_ioremap calls (at least on
->> x86)?
-> 
-> I really don't want to begin mixing early_ioremap() calls and
-> early_memremap() calls for any of the EFI code if it can be avoided.
+>>I have thought about using DIV_ROUND_UP, while from the definition
+>>DIV_ROUND_UP use operation "/", and ALIGN use bit operation. So the change in
+>>my patch chooses the second one and tries to keep the efficiency.
+>
+>The efficiency of what, though?
+>
+>It's an unsigned division by a constant power of two, which GCC implements
+>with a shift instruction regardless of optimisation - and at -O1 and above
+>the machine code generated for either form of expression is completely
+>identical (try it and see!).
+>
 
-I definitely wouldn't mix them, it would be all or nothing.
+Thanks.
 
-> 
-> There is slow but steady progress to move more and more of the
-> architecture specific EFI code out into generic code. Swapping
-> early_memremap() for early_ioremap() would be a step backwards,
-> because FIXMAP_PAGE_NORMAL and FIXMAP_PAGE_IO are not identical on
-> ARM/arm64.
+Looks my knowledge of the compiler is an ancient one :-)
 
-Maybe adding something similar to __acpi_map_table would be more
-appropriate?
+I haven't thought about to compare the generated code. This is really a good
+test before making the decision. Next time I would try this before choosing
+one.
 
-> 
-> Could you point me at the patch that in this series that fixes up
-> early_ioremap() to work with mem encrypt/decrypt? I took another
-> (quick) look through but couldn't find it.
+>On the other hand, the small amount of time and cognitive effort it took to
+>parse "ALIGN(x, 256) >> 8" as "divide by 256, rounding up" compared to simply
+>seeing "DIV_ROUND_UP(x, 256)" and knowing instantly what's intended,
+>certainly makes it less efficient to _maintain_; thus it's exactly the kind
+>of thing to which Dijkstra's famous quotation applies.
+>
+>Does that count towards learning something? ;)
+>
 
-The patch in question is patch 6/18 where PAGE_KERNEL is changed to
-include the _PAGE_ENC attribute (the encryption mask). This now
-makes FIXMAP_PAGE_NORMAL contain the encryption mask while
-FIXMAP_PAGE_IO does not. In this way, anything mapped using the
-early_ioremap call won't be mapped encrypted.
+Really~
 
-Thanks,
-Tom
+I am really happy to see your comments which help me to be more mature on the
+solution. I owe you a favor :-) If you would come to Shanghai, I would like to
+take you around~
 
-> 
+>Robin.
+>
+>>>>Have a good day~
+>>>>
+>>>>On Sat, May 21, 2016 at 02:41:51AM +0000, Wei Yang wrote:
+>>>>>In commit <8bf478163e69> ("iommu/vt-d: Split up iommu->domains array"), it
+>>>>>it splits iommu->domains in two levels. Each first level contains 256
+>>>>>entries of second level. In case of the ndomains is exact a multiple of
+>>>>>256, it would have one more extra first level entry for current
+>>>>>implementation.
+>>>>>
+>>>>>This patch refines this calculation to reduce the extra first level entry.
+>>>>>
+>>>>>Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
+>>>>>---
+>>>>>drivers/iommu/intel-iommu.c |    4 ++--
+>>>>>1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>>
+>>>>>diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+>>>>>index e3061d3..2204ca4 100644
+>>>>>--- a/drivers/iommu/intel-iommu.c
+>>>>>+++ b/drivers/iommu/intel-iommu.c
+>>>>>@@ -1634,7 +1634,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
+>>>>>		return -ENOMEM;
+>>>>>	}
+>>>>>
+>>>>>-	size = ((ndomains >> 8) + 1) * sizeof(struct dmar_domain **);
+>>>>>+	size = (ALIGN(ndomains, 256) >> 8) * sizeof(struct dmar_domain **);
+>>>>>	iommu->domains = kzalloc(size, GFP_KERNEL);
+>>>>>
+>>>>>	if (iommu->domains) {
+>>>>>@@ -1699,7 +1699,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+>>>>>static void free_dmar_iommu(struct intel_iommu *iommu)
+>>>>>{
+>>>>>	if ((iommu->domains) && (iommu->domain_ids)) {
+>>>>>-		int elems = (cap_ndoms(iommu->cap) >> 8) + 1;
+>>>>>+		int elems = ALIGN(cap_ndoms(iommu->cap), 256) >> 8;
+>>>>>		int i;
+>>>>>
+>>>>>		for (i = 0; i < elems; i++)
+>>>>>--
+>>>>>1.7.9.5
+>>>>
+>>
+
+-- 
+Wei Yang
+Help you, Help me
