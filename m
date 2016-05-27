@@ -1,49 +1,44 @@
-From: Al Viro <viro@ZenIV.linux.org.uk>
-Subject: Re: [PATCH] remove lots of IS_ERR_VALUE abuses
-Date: Fri, 27 May 2016 23:04:58 +0100
-Message-ID: <20160527220458.GV14480@ZenIV.linux.org.uk>
-References: <1464384685-347275-1-git-send-email-arnd@arndb.de>
+From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v2 0/2] fix and cleanup for iommu/vt-d
+Date: Fri, 27 May 2016 22:24:06 +0000
+Message-ID: <1464387848-16942-1-git-send-email-richard.weiyang@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-acpi-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1464384685-347275-1-git-send-email-arnd@arndb.de>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org, Andrzej Hajda <a.hajda@samsung.com>, Andrew Morton <akpm@linux-foundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Maxime Ripard <maxime.ripard@free-electrons.com>, David Airlie <airlied@linux.ie>, Robin Murphy <robin.murphy@arm.com>, Thomas Gleixner <tglx@linutronix.de>, Adrian Hunter <adrian.hunter@intel.com>, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, Russell King <linux@armlinux.org.uk>, Bob Peterson <rpeterso@redhat.com>, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, linux-media@vger.kernel.org, netdev@vger.kernel.org, linux-wireless@vger.kernel.org, v9fs-developer@lists.sourceforge.net
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 27, 2016 at 11:23:25PM +0200, Arnd Bergmann wrote:
+The first patch tries to improve the calculation of the dmar_domain first
+level entry.
 
-> @@ -837,7 +837,7 @@ static int load_flat_shared_library(int id, struct lib_info *libs)
->  
->  	res = prepare_binprm(&bprm);
->  
-> -	if (!IS_ERR_VALUE(res))
-> +	if (res >= 0)
+The second patch defines two marco for dmar_domains second level size and
+shift instead of using an integer.
 
-	if (res == 0), please - prepare_binprm() returns 0 or -E...
+---
+v2:
+    * use DIV_ROUND_UP instead of ALIGN for the calculation.
+      Thanks Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+    * adds patch 2 for comment
 
-> --- a/net/9p/client.c
-> +++ b/net/9p/client.c
-> @@ -521,7 +521,7 @@ static int p9_check_errors(struct p9_client *c, struct p9_req_t *req)
->  		if (p9_is_proto_dotu(c))
->  			err = -ecode;
->  
-> -		if (!err || !IS_ERR_VALUE(err)) {
-> +		if (!err || !IS_ERR_VALUE((unsigned long)err)) {
 
-Not really - it's actually
-		if (p9_is_proto_dotu(c) && ecode < 512)
-			err = -ecode;
+Wei Yang (2):
+  iommu/vt-d: reduce extra first level entry in iommu->domains
+  iommu/vt-d: use marco for dmar_domain's second level size and shift
 
-		if (!err) {
-			...
-> @@ -608,7 +608,7 @@ static int p9_check_zc_errors(struct p9_client *c, struct p9_req_t *req,
->  		if (p9_is_proto_dotu(c))
->  			err = -ecode;
->  
-> -		if (!err || !IS_ERR_VALUE(err)) {
-> +		if (!err || !IS_ERR_VALUE((unsigned long)err)) {
+ drivers/iommu/intel-iommu.c | 12 ++++++------
+ include/linux/intel-iommu.h |  2 ++
+ 2 files changed, 8 insertions(+), 6 deletions(-)
 
-Ditto.
+-- 
+2.5.0
