@@ -1,126 +1,150 @@
 From: "Luis R. Rodriguez" <mcgrof@kernel.org>
-Subject: Re: [RFT v2] iommu/amd: use subsys_initcall() on amdv2 iommu
-Date: Fri, 27 May 2016 02:46:42 +0200
-Message-ID: <20160527004642.GQ11948@wotan.suse.de>
-References: <CAB=NE6XCmMk4sraQo34XQJfjWu_yRc1rar_eQRSET8Q7VR9EOw@mail.gmail.com>
- <570BA694.8040900@amd.com>
- <CAFCwf10oD9c3MOW3+J8A5MVjVkX0nNRGCEE2pWcQxOy7mjUsBw@mail.gmail.com>
- <570BAC2B.4090508@amd.com>
- <20160412220715.GL1990@wotan.suse.de>
- <CAFCwf12SJ-dTv6PC0_KfHbtC9951xb_4v8wu5uSjXO-V3TgdkA@mail.gmail.com>
- <CAB=NE6WL7j_azrFxQUG3bybXtu67ew51CyzYvkBct6tCdARKDg@mail.gmail.com>
- <CAFCwf12B6TQ5kYEG4+hYoWriv2rnTcngQLX_Cvtbz=64fo35Qg@mail.gmail.com>
- <20160418120350.GE1990@wotan.suse.de>
- <20160425102351.GC17926@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Subject: [RFT v3] drm: use late_initcall() for amdkfd and radeon
+Date: Thu, 26 May 2016 18:18:36 -0700
+Message-ID: <1464311916-10065-1-git-send-email-mcgrof@kernel.org>
+References: <20160527004642.GQ11948@wotan.suse.de>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160425102351.GC17926@8bytes.org>
+In-Reply-To: <20160527004642.GQ11948@wotan.suse.de>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: "Luis R. Rodriguez" <mcgrof@kernel.org>, Oded Gabbay <oded.gabbay@gmail.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, hpa@zytor.com
+To: vw@iommu.org, oded.gabbay@gmail.com, joro@8bytes.org, christian.koenig@amd.com, alexander.deucher@amd.com, airlied@linux.ie
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, "Luis R. Rodriguez" <mcgrof@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 25, 2016 at 12:23:51PM +0200, Joerg Roedel wrote:
-> On Mon, Apr 18, 2016 at 02:03:50PM +0200, Luis R. Rodriguez wrote:
-> > You said that with my patch you saw AMD IOMMUv2 kick off first,
-> > that was intentional as I thought that's what you needed. Can
-> > someone please describe the requirements?
-> > 
-> > Also what does drm use that you say has a conflict already? What
-> > drm code are we talking about exactly ?
-> 
-> The required order is:
-> 
-> 	1. AMD IOMMUv1 (in-kernel only, initialized at boot time after PCI)
-> 	2. AMD IOMMUv2 (in-kernel or as module, provides demand paging
-> 			and uses v1 interfaces to talk to the IOMMU)
-> 	3. AMD-KFD     (Implements compute offloading to the GPU and
-> 			uses AMD IOMMUv2 functionality, also provides a
-> 			symbol for the radeon driver)
-> 	4. DRM with    (Checks if the symbol provided by AMD-KFD is
-> 	   Radeon	available at init time and does the KFD
-> 			initialization from there, because the GPU needs
-> 			to be up first)
-> 
-> So AMD IOMMUv2 does not initialize (but it does load to have the symbols
-> available for drivers that optionally use its functionality) without the
-> AMD IOMMUv1 driver, as it can't access the IOMMU hardware then.
-> 
-> AMD-KFD does not load without AMD IOMMUv2 being loaded, as it depends on
-> its symbols. AMD-KFD on the other hand needs to be loaded before the
-> radeon driver (but this it not enforced by symbols), because otherwise
-> the radeon driver will not initialize the AMD-KFD driver.
-> 
-> When AMD-KFD is loaded and you load radeon then, you get the KFD
-> functionality in the kernel. Then you can move on to the fun getting the
-> userspace running and actually execute anything on the GPU. But thats
-> another story.
-> 
-> I know what you think, and I agree: It's a big mess :)
+To get KFD support in radeon we need the following
+initialization to happen in this order, their
+respective driver file that has its init routine
+listed next to it:
 
-Its no concern for me that its a mess, frankly most drivers are. This however
-illustrates a semantic gap in the driver core when you have more than 3
-dependencies after a rootfs_initcall(), given that the buck stops at
-late_initcall(), only 3 levels above. With 4 dependencies you run out
-of semantics to specify explicit requirements.
+0. AMD IOMMUv1:    arch/x86/kernel/pci-dma.c
+1. AMD IOMMUv2:    drivers/iommu/amd_iommu_v2.c
+2. AMD KFD:        drivers/gpu/drm/amd/amdkfd/kfd_module.c
+3. AMD Radeon:     drivers/gpu/drm/radeon/radeon_drv.c
 
-Ties can be disputed through link order though, but this is obviously fragile,
-and the dependencies are then left implicit. Nothing vets for correctness,
-either in software or through static analysers.
+Order is rather implicit, but these drivers can currently
+only do so much given the amount of leg room available.
+Below are the respective init routines and how they are
+initialized:
 
-To summarize the specific code in question is (and order required):
+arch/x86/kernel/pci-dma.c               rootfs_initcall(pci_iommu_init);
+drivers/iommu/amd_iommu_v2.c            module_init(amd_iommu_v2_init);
+drivers/gpu/drm/amd/amdkfd/kfd_module.c module_init(kfd_module_init);
+drivers/gpu/drm/radeon/radeon_drv.c     module_init(radeon_init);
 
-AMD IOMMUv1:    arch/x86/kernel/pci-dma.c               rootfs_initcall(pci_iommu_init);
-AMD IOMMUv2:    drivers/iommu/amd_iommu_v2.c            module_init(amd_iommu_v2_init); (device_initcall())
-AMD KFD:        drivers/gpu/drm/amd/amdkfd/kfd_module.c module_init(kfd_module_init); (device_initcall())
-AMD Radeon:     drivers/gpu/drm/radeon/radeon_drv.c     module_init(radeon_init); (device_initcall())
+When a driver is built-in module_init() folds to use
+device_initcall(), and we have the following possible
+orders:
 
-Commit 1bacc894c227fad8a7 ("drivers: Move iommu/ before gpu/ in Makefile") resolved
-the race between IOMMU and GPU drivers this way, however an alternative is to make
-the dependencies in levels explicit by making the amdkfd and radeon drivers both
-use late_initcall(), this however is technically still racy specially since you
-note that the amdkfd driver is not loaded prior to radeon through symbol
-dependencies, if happens to be loaded it then you get KFD functionality,
-otherwise you don't.
+	#define pure_initcall(fn)    __define_initcall(fn, 0)
+	#define core_initcall(fn)    __define_initcall(fn, 1)
+	#define postcore_initcall(fn)__define_initcall(fn, 2)
+	#define arch_initcall(fn)    __define_initcall(fn, 3)
+	#define subsys_initcall(fn)  __define_initcall(fn, 4)
+	#define fs_initcall(fn)      __define_initcall(fn, 5)
+        ---------------------------------------------------------
+	#define rootfs_initcall(fn)  __define_initcall(fn, rootfs)
+	#define device_initcall(fn)  __define_initcall(fn, 6)
+	#define late_initcall(fn)    __define_initcall(fn, 7)
 
-Making both amdkfd and radeon use late_initcall() would actually work now though
-but that's only because the link order also happens to match the dependency
-requirements:
+Since we start off from rootfs_initcall(), it gives us 3 more
+levels of leg room to play with for order semantics, this isn't
+enough to address all required levels of dependencies, this
+is specially true given that AMD-KFD needs to be loaded before
+the radeon driver -- -but this it not enforced by symbols.
+If the AMD-KFD driver is not loaded prior to the radeon driver
+because otherwise the radeon driver will not initialize the
+AMD-KFD driver and you get no KFD functionality in userspace.
+
+Commit 1bacc894c227fad8a7 ("drivers: Move iommu/ before gpu/ in
+Makefile") works around some of the possibe races between
+the AMD IOMMU v2 and GPU drivers by changing the link order.
+This is fragile, however its the bets we can do, given that
+making the GPU drivers use late_initcall() would also implicate
+a similar race between them. That possible race is fortunatley
+addressed given that the drm Makefile currently has amdkfd
+linked prior to radeon:
 
 drivers/gpu/drm/Makefile
 ...
-obj-$(CONFIG_HSA_AMD) += amd/amdkfd/                                            
-obj-$(CONFIG_DRM_RADEON)+= radeon/  
+obj-$(CONFIG_HSA_AMD) += amd/amdkfd/
+obj-$(CONFIG_DRM_RADEON)+= radeon/
 ...
 
-Since we currently lack proper semantics to define clear dependencies for all
-this reverting 1bacc894c227fad8a7 after using late_initcall() on both amdkfd
-and radeon would not be useful other than to just test the race fix, given that
-such work around would still be present also on drivers/gpu/drm/Makefile to
-account for the race between amdkfd and radeon. Reverting 1bacc894c227fad8a7
-after using late_initcall() on both amdkfd and radeon would just bump the
-race work around another level.
+Changing amdkfd and radeon to late_initcall() however is
+still the right call in orde to annotate explicitly a
+delayed dependency requirement between the GPU drivers
+and the IOMMUs.
 
-Modifying both amdkfd and radeon to use late_initcall() however seems well
-justified for now, and given the current state of affairs with link order
-one should be able to then correctly build all these things as built-in
-and it should work correctly.
+We can't address the fragile nature of the link order
+right now, but in the future that might be possible.
 
-I'm still not satisfied with the issues on semantics here though. A fix
-for that, if desired, should be possible using linker-tables, currently
-in RFCv2 [0] stage. Linker tables offer practically infinite number (as
-long as a valid ELF section name, as the order level is part of the
-section name) of order levels. It also would offer the opportunity
-to build dependencies outside of the driver core layer, so you can
-customize the dependency map per subsystem as you see fit.
+Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+---
 
-So -- for now I'll submit a patch to just use late_initcall(), in the
-future we can evaluate linker table uses to make these dependencies
-explicit. This is perhaps a good test case to illustrate limitations
-of the current driver model.
+Please note, the changes to drivers/Makefile are just
+for the sake of forcing the possible race to occur,
+if this works well the actual [PATCH] submission will
+skip those changes as its pointless to remove those
+work arounds as it stands, due to the limited nature
+of the levels available for addressing requirements.
 
-[0] http://lkml.kernel.org/r/1455889559-9428-1-git-send-email-mcgrof@kernel.org
+Also, if you are aware of further dependency hell
+things like these -- please do let me know as I am
+interested in looking at addressing them.
 
-  Luis
+ drivers/Makefile                        | 6 ++----
+ drivers/gpu/drm/amd/amdkfd/kfd_module.c | 2 +-
+ drivers/gpu/drm/radeon/radeon_drv.c     | 2 +-
+ 3 files changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/Makefile b/drivers/Makefile
+index 0b6f3d60193d..0fbe3982041f 100644
+--- a/drivers/Makefile
++++ b/drivers/Makefile
+@@ -50,10 +50,7 @@ obj-$(CONFIG_RESET_CONTROLLER)	+= reset/
+ obj-y				+= tty/
+ obj-y				+= char/
+ 
+-# iommu/ comes before gpu as gpu are using iommu controllers
+-obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
+-
+-# gpu/ comes after char for AGP vs DRM startup and after iommu
++# gpu/ comes after char for AGP vs DRM startup
+ obj-y				+= gpu/
+ 
+ obj-$(CONFIG_CONNECTOR)		+= connector/
+@@ -147,6 +144,7 @@ obj-y				+= clk/
+ 
+ obj-$(CONFIG_MAILBOX)		+= mailbox/
+ obj-$(CONFIG_HWSPINLOCK)	+= hwspinlock/
++obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
+ obj-$(CONFIG_REMOTEPROC)	+= remoteproc/
+ obj-$(CONFIG_RPMSG)		+= rpmsg/
+ 
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_module.c b/drivers/gpu/drm/amd/amdkfd/kfd_module.c
+index 850a5623661f..3d1dab8a31c7 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_module.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_module.c
+@@ -141,7 +141,7 @@ static void __exit kfd_module_exit(void)
+ 	dev_info(kfd_device, "Removed module\n");
+ }
+ 
+-module_init(kfd_module_init);
++late_initcall(kfd_module_init);
+ module_exit(kfd_module_exit);
+ 
+ MODULE_AUTHOR(KFD_DRIVER_AUTHOR);
+diff --git a/drivers/gpu/drm/radeon/radeon_drv.c b/drivers/gpu/drm/radeon/radeon_drv.c
+index b55aa740171f..1fa1b7f3a89c 100644
+--- a/drivers/gpu/drm/radeon/radeon_drv.c
++++ b/drivers/gpu/drm/radeon/radeon_drv.c
+@@ -609,7 +609,7 @@ static void __exit radeon_exit(void)
+ 	radeon_unregister_atpx_handler();
+ }
+ 
+-module_init(radeon_init);
++late_initcall(radeon_init);
+ module_exit(radeon_exit);
+ 
+ MODULE_AUTHOR(DRIVER_AUTHOR);
+-- 
+2.8.2
