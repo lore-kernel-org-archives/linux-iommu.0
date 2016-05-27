@@ -1,13 +1,11 @@
 From: <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v3 2/5] iommu/mediatek: move the common struct into header file
-Date: Fri, 27 May 2016 16:56:37 +0800
-Message-ID: <1464339400-22559-3-git-send-email-honghui.zhang@mediatek.com>
-References: <1464339400-22559-1-git-send-email-honghui.zhang@mediatek.com>
+Subject: [PATCH v3 0/5] MT2701 iommu support
+Date: Fri, 27 May 2016 16:56:35 +0800
+Message-ID: <1464339400-22559-1-git-send-email-honghui.zhang@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1464339400-22559-1-git-send-email-honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,178 +21,75 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-Move the struct defines of mtk iommu into a new header files for
-common use.
+  Mediatek's m4u(Multimedia Memory Management Unit) and SMI(Smart
+Multimedia Interface)have two generations HW. They basically sharing the
+same hardware block diagram, but have some difference as below:
 
-Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
----
- drivers/iommu/mtk_iommu.c | 48 +----------------------------
- drivers/iommu/mtk_iommu.h | 77 +++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 78 insertions(+), 47 deletions(-)
+  Generation one m4u only supports one layer, flat pagetable addressing,
+and only supports 4K size page mapping. While generation two m4u supports 2
+levels of pagetable which uses the ARM short-descriptor translation table
+format for address translation.
+They have slight different register base and register offset.
+They have very different HW ports defines.
+
+  Generaion one SMI has additional "async" clock which transform the smi
+clock into emi clock domain, this clock should be prepared and enabled for
+SMI generation one HW.
+The register which control the iommu need to translation the address or not
+for a particular port is located at smi ao base(smi always on register
+base) for generation one SMI HW, but located at each larb's register base
+for generation two HW.
+
+This patch set add mt2701 iommu support, it's based on 4.6-rc1 and James
+Liao's "Add clock support for Mediatek MT2701 v8[1]" and "Mediatek MT2701
+SCPSYS power domain support v7[2]" patch.
+
+v3:
+-Rebase on "of: Implement iterator for phandles[3]" and take use of
+ of_for_each_phandle.
+-Forward-declare mtk_iommu_domain and implement the struct separately.
+-Free the pagetable memory in mtk_iommu_domain_free
+-Roll back the mapping in error case.
+-Minor cleanups.
+
+v2: https://lists.linuxfoundation.org/pipermail/iommu/2016-May/017068.html
+-Fix syntax errors in dt-bindings.
+-Use dma_alloc/free_coherent to allocate pagetable memory and reduce the
+ streaming DMA stuff.
+-Make the mtk_iommu_ops.pgsize_bitmap as ~0UL << MT2701_IOMMU_PAGE_SHIFT.
+-Use macro instead of variable to indicate the pagetable size.
+-Change some macro name from MTK_XXX to MT2701_XXX.
+
+v1: http://lists.infradead.org/pipermail/linux-mediatek/2016-May/005301.html
+-initial version
+
+[1] http://lists.infradead.org/pipermail/linux-mediatek/2016-May/005439.html
+[2] http://lists.infradead.org/pipermail/linux-mediatek/2016-May/005429.html
+[3] https://lists.linuxfoundation.org/pipermail/iommu/2016-April/016300.html
+
+Honghui Zhang (5):
+  dt-bindings: mediatek: add descriptions for mediatek mt2701 iommu and
+    smi
+  iommu/mediatek: move the common struct into header file
+  memory/mediatek: add support for mt2701
+  iommu/mediatek: add support for mtk iommu generation one HW
+  ARM: dts: mt2701: add iommu/smi dtsi node for mt2701
+
+ .../devicetree/bindings/iommu/mediatek,iommu.txt   |  13 +-
+ .../memory-controllers/mediatek,smi-common.txt     |  21 +-
+ .../memory-controllers/mediatek,smi-larb.txt       |   4 +-
+ arch/arm/boot/dts/mt2701.dtsi                      |  51 ++
+ drivers/iommu/Kconfig                              |  18 +
+ drivers/iommu/Makefile                             |   1 +
+ drivers/iommu/mtk_iommu.c                          |  48 +-
+ drivers/iommu/mtk_iommu.h                          |  77 +++
+ drivers/iommu/mtk_iommu_v1.c                       | 728 +++++++++++++++++++++
+ drivers/memory/mtk-smi.c                           | 168 ++++-
+ include/dt-bindings/memory/mt2701-larb-port.h      |  85 +++
+ 11 files changed, 1140 insertions(+), 74 deletions(-)
  create mode 100644 drivers/iommu/mtk_iommu.h
+ create mode 100644 drivers/iommu/mtk_iommu_v1.c
+ create mode 100644 include/dt-bindings/memory/mt2701-larb-port.h
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index db74553..f83c9bc 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -34,7 +34,7 @@
- #include <dt-bindings/memory/mt8173-larb-port.h>
- #include <soc/mediatek/smi.h>
- 
--#include "io-pgtable.h"
-+#include "mtk_iommu.h"
- 
- #define REG_MMU_PT_BASE_ADDR			0x000
- 
-@@ -93,20 +93,6 @@
- 
- #define MTK_PROTECT_PA_ALIGN			128
- 
--struct mtk_iommu_suspend_reg {
--	u32				standard_axi_mode;
--	u32				dcm_dis;
--	u32				ctrl_reg;
--	u32				int_control0;
--	u32				int_main_control;
--};
--
--struct mtk_iommu_client_priv {
--	struct list_head		client;
--	unsigned int			mtk_m4u_id;
--	struct device			*m4udev;
--};
--
- struct mtk_iommu_domain {
- 	spinlock_t			pgtlock; /* lock for page table */
- 
-@@ -116,19 +102,6 @@ struct mtk_iommu_domain {
- 	struct iommu_domain		domain;
- };
- 
--struct mtk_iommu_data {
--	void __iomem			*base;
--	int				irq;
--	struct device			*dev;
--	struct clk			*bclk;
--	phys_addr_t			protect_base; /* protect memory base */
--	struct mtk_iommu_suspend_reg	reg;
--	struct mtk_iommu_domain		*m4u_dom;
--	struct iommu_group		*m4u_group;
--	struct mtk_smi_iommu		smi_imu;      /* SMI larb iommu info */
--	bool                            enable_4GB;
--};
--
- static struct iommu_ops mtk_iommu_ops;
- 
- static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
-@@ -552,25 +525,6 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 	return 0;
- }
- 
--static int compare_of(struct device *dev, void *data)
--{
--	return dev->of_node == data;
--}
--
--static int mtk_iommu_bind(struct device *dev)
--{
--	struct mtk_iommu_data *data = dev_get_drvdata(dev);
--
--	return component_bind_all(dev, &data->smi_imu);
--}
--
--static void mtk_iommu_unbind(struct device *dev)
--{
--	struct mtk_iommu_data *data = dev_get_drvdata(dev);
--
--	component_unbind_all(dev, &data->smi_imu);
--}
--
- static const struct component_master_ops mtk_iommu_com_ops = {
- 	.bind		= mtk_iommu_bind,
- 	.unbind		= mtk_iommu_unbind,
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-new file mode 100644
-index 0000000..9ed0a84
---- /dev/null
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -0,0 +1,77 @@
-+/*
-+ * Copyright (c) 2015-2016 MediaTek Inc.
-+ * Author: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#ifndef _MTK_IOMMU_H_
-+#define _MTK_IOMMU_H_
-+
-+#include <linux/clk.h>
-+#include <linux/component.h>
-+#include <linux/device.h>
-+#include <linux/io.h>
-+#include <linux/iommu.h>
-+#include <linux/list.h>
-+#include <linux/spinlock.h>
-+#include <soc/mediatek/smi.h>
-+
-+#include "io-pgtable.h"
-+
-+struct mtk_iommu_suspend_reg {
-+	u32				standard_axi_mode;
-+	u32				dcm_dis;
-+	u32				ctrl_reg;
-+	u32				int_control0;
-+	u32				int_main_control;
-+};
-+
-+struct mtk_iommu_client_priv {
-+	struct list_head		client;
-+	unsigned int			mtk_m4u_id;
-+	struct device			*m4udev;
-+};
-+
-+struct mtk_iommu_domain;
-+
-+struct mtk_iommu_data {
-+	void __iomem			*base;
-+	int				irq;
-+	struct device			*dev;
-+	struct clk			*bclk;
-+	phys_addr_t			protect_base; /* protect memory base */
-+	struct mtk_iommu_suspend_reg	reg;
-+	struct mtk_iommu_domain		*m4u_dom;
-+	struct iommu_group		*m4u_group;
-+	struct mtk_smi_iommu		smi_imu;      /* SMI larb iommu info */
-+	bool                            enable_4GB;
-+};
-+
-+static int compare_of(struct device *dev, void *data)
-+{
-+	return dev->of_node == data;
-+}
-+
-+static int mtk_iommu_bind(struct device *dev)
-+{
-+	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-+
-+	return component_bind_all(dev, &data->smi_imu);
-+}
-+
-+static void mtk_iommu_unbind(struct device *dev)
-+{
-+	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-+
-+	component_unbind_all(dev, &data->smi_imu);
-+}
-+
-+#endif
 -- 
 1.8.1.1.dirty
