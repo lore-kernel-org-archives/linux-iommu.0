@@ -1,150 +1,223 @@
-From: "Luis R. Rodriguez" <mcgrof@kernel.org>
-Subject: [RFT v3] drm: use late_initcall() for amdkfd and radeon
-Date: Thu, 26 May 2016 18:18:36 -0700
-Message-ID: <1464311916-10065-1-git-send-email-mcgrof@kernel.org>
-References: <20160527004642.GQ11948@wotan.suse.de>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160527004642.GQ11948@wotan.suse.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: vw@iommu.org, oded.gabbay@gmail.com, joro@8bytes.org, christian.koenig@amd.com, alexander.deucher@amd.com, airlied@linux.ie
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, "Luis R. Rodriguez" <mcgrof@kernel.org>
+From: <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: [PATCH v3 1/5] dt-bindings: mediatek: add descriptions for mediatek
+	mt2701 iommu and smi
+Date: Fri, 27 May 2016 16:56:36 +0800
+Message-ID: <1464339400-22559-2-git-send-email-honghui.zhang@mediatek.com>
+References: <1464339400-22559-1-git-send-email-honghui.zhang@mediatek.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1464339400-22559-1-git-send-email-honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-To get KFD support in radeon we need the following
-initialization to happen in this order, their
-respective driver file that has its init routine
-listed next to it:
+From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-0. AMD IOMMUv1:    arch/x86/kernel/pci-dma.c
-1. AMD IOMMUv2:    drivers/iommu/amd_iommu_v2.c
-2. AMD KFD:        drivers/gpu/drm/amd/amdkfd/kfd_module.c
-3. AMD Radeon:     drivers/gpu/drm/radeon/radeon_drv.c
+This patch defines the local arbitor port IDs for mediatek SoC MT2701 and
+add descriptions of binding for mediatek generation one iommu and smi.
 
-Order is rather implicit, but these drivers can currently
-only do so much given the amount of leg room available.
-Below are the respective init routines and how they are
-initialized:
-
-arch/x86/kernel/pci-dma.c               rootfs_initcall(pci_iommu_init);
-drivers/iommu/amd_iommu_v2.c            module_init(amd_iommu_v2_init);
-drivers/gpu/drm/amd/amdkfd/kfd_module.c module_init(kfd_module_init);
-drivers/gpu/drm/radeon/radeon_drv.c     module_init(radeon_init);
-
-When a driver is built-in module_init() folds to use
-device_initcall(), and we have the following possible
-orders:
-
-	#define pure_initcall(fn)    __define_initcall(fn, 0)
-	#define core_initcall(fn)    __define_initcall(fn, 1)
-	#define postcore_initcall(fn)__define_initcall(fn, 2)
-	#define arch_initcall(fn)    __define_initcall(fn, 3)
-	#define subsys_initcall(fn)  __define_initcall(fn, 4)
-	#define fs_initcall(fn)      __define_initcall(fn, 5)
-        ---------------------------------------------------------
-	#define rootfs_initcall(fn)  __define_initcall(fn, rootfs)
-	#define device_initcall(fn)  __define_initcall(fn, 6)
-	#define late_initcall(fn)    __define_initcall(fn, 7)
-
-Since we start off from rootfs_initcall(), it gives us 3 more
-levels of leg room to play with for order semantics, this isn't
-enough to address all required levels of dependencies, this
-is specially true given that AMD-KFD needs to be loaded before
-the radeon driver -- -but this it not enforced by symbols.
-If the AMD-KFD driver is not loaded prior to the radeon driver
-because otherwise the radeon driver will not initialize the
-AMD-KFD driver and you get no KFD functionality in userspace.
-
-Commit 1bacc894c227fad8a7 ("drivers: Move iommu/ before gpu/ in
-Makefile") works around some of the possibe races between
-the AMD IOMMU v2 and GPU drivers by changing the link order.
-This is fragile, however its the bets we can do, given that
-making the GPU drivers use late_initcall() would also implicate
-a similar race between them. That possible race is fortunatley
-addressed given that the drm Makefile currently has amdkfd
-linked prior to radeon:
-
-drivers/gpu/drm/Makefile
-...
-obj-$(CONFIG_HSA_AMD) += amd/amdkfd/
-obj-$(CONFIG_DRM_RADEON)+= radeon/
-...
-
-Changing amdkfd and radeon to late_initcall() however is
-still the right call in orde to annotate explicitly a
-delayed dependency requirement between the GPU drivers
-and the IOMMUs.
-
-We can't address the fragile nature of the link order
-right now, but in the future that might be possible.
-
-Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 ---
+ .../devicetree/bindings/iommu/mediatek,iommu.txt   | 13 +++-
+ .../memory-controllers/mediatek,smi-common.txt     | 21 +++++-
+ .../memory-controllers/mediatek,smi-larb.txt       |  4 +-
+ include/dt-bindings/memory/mt2701-larb-port.h      | 85 ++++++++++++++++++++++
+ 4 files changed, 115 insertions(+), 8 deletions(-)
+ create mode 100644 include/dt-bindings/memory/mt2701-larb-port.h
 
-Please note, the changes to drivers/Makefile are just
-for the sake of forcing the possible race to occur,
-if this works well the actual [PATCH] submission will
-skip those changes as its pointless to remove those
-work arounds as it stands, due to the limited nature
-of the levels available for addressing requirements.
-
-Also, if you are aware of further dependency hell
-things like these -- please do let me know as I am
-interested in looking at addressing them.
-
- drivers/Makefile                        | 6 ++----
- drivers/gpu/drm/amd/amdkfd/kfd_module.c | 2 +-
- drivers/gpu/drm/radeon/radeon_drv.c     | 2 +-
- 3 files changed, 4 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/Makefile b/drivers/Makefile
-index 0b6f3d60193d..0fbe3982041f 100644
---- a/drivers/Makefile
-+++ b/drivers/Makefile
-@@ -50,10 +50,7 @@ obj-$(CONFIG_RESET_CONTROLLER)	+= reset/
- obj-y				+= tty/
- obj-y				+= char/
+diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+index cd1b1cd..53c20ca 100644
+--- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
++++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+@@ -1,7 +1,9 @@
+ * Mediatek IOMMU Architecture Implementation
  
--# iommu/ comes before gpu as gpu are using iommu controllers
--obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
--
--# gpu/ comes after char for AGP vs DRM startup and after iommu
-+# gpu/ comes after char for AGP vs DRM startup
- obj-y				+= gpu/
+-  Some Mediatek SOCs contain a Multimedia Memory Management Unit (M4U) which
+-uses the ARM Short-Descriptor translation table format for address translation.
++  Some Mediatek SOCs contain a Multimedia Memory Management Unit (M4U), and
++this M4U have two generations of HW architecture. Generation one uses flat
++pagetable, and only supports 4K size page mapping. Generation two uses the
++ARM Short-Descriptor translation table format for address translation.
  
- obj-$(CONFIG_CONNECTOR)		+= connector/
-@@ -147,6 +144,7 @@ obj-y				+= clk/
+   About the M4U Hardware Block Diagram, please check below:
  
- obj-$(CONFIG_MAILBOX)		+= mailbox/
- obj-$(CONFIG_HWSPINLOCK)	+= hwspinlock/
-+obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
- obj-$(CONFIG_REMOTEPROC)	+= remoteproc/
- obj-$(CONFIG_RPMSG)		+= rpmsg/
+@@ -36,7 +38,9 @@ in each larb. Take a example, There are many ports like MC, PP, VLD in the
+ video decode local arbiter, all these ports are according to the video HW.
  
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_module.c b/drivers/gpu/drm/amd/amdkfd/kfd_module.c
-index 850a5623661f..3d1dab8a31c7 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_module.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_module.c
-@@ -141,7 +141,7 @@ static void __exit kfd_module_exit(void)
- 	dev_info(kfd_device, "Removed module\n");
- }
+ Required properties:
+-- compatible : must be "mediatek,mt8173-m4u".
++- compatible : must be one of the following string:
++	"mediatek,mt2701-m4u" for mt2701 which uses generation one m4u HW.
++	"mediatek,mt8173-m4u" for mt8173 which uses generation two m4u HW.
+ - reg : m4u register base and size.
+ - interrupts : the interrupt of m4u.
+ - clocks : must contain one entry for each clock-names.
+@@ -46,7 +50,8 @@ Required properties:
+ 	according to the local arbiter index, like larb0, larb1, larb2...
+ - iommu-cells : must be 1. This is the mtk_m4u_id according to the HW.
+ 	Specifies the mtk_m4u_id as defined in
+-	dt-binding/memory/mt8173-larb-port.h.
++	dt-binding/memory/mt2701-larb-port.h for mt2701 and
++	dt-binding/memory/mt8173-larb-port.h for mt8173
  
--module_init(kfd_module_init);
-+late_initcall(kfd_module_init);
- module_exit(kfd_module_exit);
+ Example:
+ 	iommu: iommu@10205000 {
+diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
+index 06a83ce..aa614b2 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.txt
+@@ -2,16 +2,31 @@ SMI (Smart Multimedia Interface) Common
  
- MODULE_AUTHOR(KFD_DRIVER_AUTHOR);
-diff --git a/drivers/gpu/drm/radeon/radeon_drv.c b/drivers/gpu/drm/radeon/radeon_drv.c
-index b55aa740171f..1fa1b7f3a89c 100644
---- a/drivers/gpu/drm/radeon/radeon_drv.c
-+++ b/drivers/gpu/drm/radeon/radeon_drv.c
-@@ -609,7 +609,7 @@ static void __exit radeon_exit(void)
- 	radeon_unregister_atpx_handler();
- }
+ The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
  
--module_init(radeon_init);
-+late_initcall(radeon_init);
- module_exit(radeon_exit);
++Mediatek SMI have two generations of HW architecture, mt8173 uses the second
++generation of SMI HW while mt2701 uses the first generation HW of SMI.
++
++There's slight differences between the two SMI, for generation 2, the
++register which control the iommu port is at each larb's register base. But
++for generation 1, the register is at smi ao base(smi always on register
++base). Besides that, the smi async clock should be prepared and enabled for
++SMI generation 1 to transform the smi clock into emi clock domain, but that is
++not needed for SMI generation 2.
++
+ Required properties:
+-- compatible : must be "mediatek,mt8173-smi-common"
++- compatible : must be one of :
++	"mediatek,mt2701-smi-common"
++	"mediatek,mt8173-smi-common"
+ - reg : the register and size of the SMI block.
+ - power-domains : a phandle to the power domain of this local arbiter.
+ - clocks : Must contain an entry for each entry in clock-names.
+-- clock-names : must contain 2 entries, as follows:
++- clock-names : must contain 3 entries for generation 1 smi HW and 2 entries
++  for generation 2 smi HW as follows:
+   - "apb" : Advanced Peripheral Bus clock, It's the clock for setting
+ 	    the register.
+   - "smi" : It's the clock for transfer data and command.
+-  They may be the same if both source clocks are the same.
++	    They may be the same if both source clocks are the same.
++  - "async" : asynchronous clock, it help transform the smi clock into the emi
++	      clock domain, this clock is only needed by generation 1 smi HW.
  
- MODULE_AUTHOR(DRIVER_AUTHOR);
+ Example:
+ 	smi_common: smi@14022000 {
+diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
+index 55ff3b7..21277a5 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.txt
+@@ -3,7 +3,9 @@ SMI (Smart Multimedia Interface) Local Arbiter
+ The hardware block diagram please check bindings/iommu/mediatek,iommu.txt
+ 
+ Required properties:
+-- compatible : must be "mediatek,mt8173-smi-larb"
++- compatible : must be one of :
++		"mediatek,mt8173-smi-larb"
++		"mediatek,mt2701-smi-larb"
+ - reg : the register and size of this local arbiter.
+ - mediatek,smi : a phandle to the smi_common node.
+ - power-domains : a phandle to the power domain of this local arbiter.
+diff --git a/include/dt-bindings/memory/mt2701-larb-port.h b/include/dt-bindings/memory/mt2701-larb-port.h
+new file mode 100644
+index 0000000..78f6678
+--- /dev/null
++++ b/include/dt-bindings/memory/mt2701-larb-port.h
+@@ -0,0 +1,85 @@
++/*
++ * Copyright (c) 2015 MediaTek Inc.
++ * Author: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef _MT2701_LARB_PORT_H_
++#define _MT2701_LARB_PORT_H_
++
++/*
++ * Mediatek m4u generation 1 such as mt2701 has flat m4u port numbers,
++ * the first port's id for larb[N] would be the last port's id of larb[N - 1]
++ * plus one while larb[0]'s first port number is 0. The definition of
++ * MT2701_M4U_ID_LARBx is following HW register spec.
++ * But m4u generation 2 like mt8173 have different port number, it use fixed
++ * offset for each larb, the first port's id for larb[N] would be (N * 32).
++ */
++#define LARB0_PORT_OFFSET		0
++#define LARB1_PORT_OFFSET		11
++#define LARB2_PORT_OFFSET		21
++#define LARB3_PORT_OFFSET		43
++
++#define MT2701_M4U_ID_LARB0(port)	((port) + LARB0_PORT_OFFSET)
++#define MT2701_M4U_ID_LARB1(port)	((port) + LARB1_PORT_OFFSET)
++#define MT2701_M4U_ID_LARB2(port)	((port) + LARB2_PORT_OFFSET)
++
++/* Port define for larb0 */
++#define MT2701_M4U_PORT_DISP_OVL_0		MT2701_M4U_ID_LARB0(0)
++#define MT2701_M4U_PORT_DISP_RDMA1		MT2701_M4U_ID_LARB0(1)
++#define MT2701_M4U_PORT_DISP_RDMA		MT2701_M4U_ID_LARB0(2)
++#define MT2701_M4U_PORT_DISP_WDMA		MT2701_M4U_ID_LARB0(3)
++#define MT2701_M4U_PORT_MM_CMDQ			MT2701_M4U_ID_LARB0(4)
++#define MT2701_M4U_PORT_MDP_RDMA		MT2701_M4U_ID_LARB0(5)
++#define MT2701_M4U_PORT_MDP_WDMA		MT2701_M4U_ID_LARB0(6)
++#define MT2701_M4U_PORT_MDP_ROTO		MT2701_M4U_ID_LARB0(7)
++#define MT2701_M4U_PORT_MDP_ROTCO		MT2701_M4U_ID_LARB0(8)
++#define MT2701_M4U_PORT_MDP_ROTVO		MT2701_M4U_ID_LARB0(9)
++#define MT2701_M4U_PORT_MDP_RDMA1		MT2701_M4U_ID_LARB0(10)
++
++/* Port define for larb1 */
++#define MT2701_M4U_PORT_VDEC_MC_EXT		MT2701_M4U_ID_LARB1(0)
++#define MT2701_M4U_PORT_VDEC_PP_EXT		MT2701_M4U_ID_LARB1(1)
++#define MT2701_M4U_PORT_VDEC_PPWRAP_EXT		MT2701_M4U_ID_LARB1(2)
++#define MT2701_M4U_PORT_VDEC_AVC_MV_EXT		MT2701_M4U_ID_LARB1(3)
++#define MT2701_M4U_PORT_VDEC_PRED_RD_EXT	MT2701_M4U_ID_LARB1(4)
++#define MT2701_M4U_PORT_VDEC_PRED_WR_EXT	MT2701_M4U_ID_LARB1(5)
++#define MT2701_M4U_PORT_VDEC_VLD_EXT		MT2701_M4U_ID_LARB1(6)
++#define MT2701_M4U_PORT_VDEC_VLD2_EXT		MT2701_M4U_ID_LARB1(7)
++#define MT2701_M4U_PORT_VDEC_TILE_EXT		MT2701_M4U_ID_LARB1(8)
++#define MT2701_M4U_PORT_VDEC_IMG_RESZ_EXT	MT2701_M4U_ID_LARB1(9)
++
++/* Port define for larb2 */
++#define MT2701_M4U_PORT_VENC_RCPU		MT2701_M4U_ID_LARB2(0)
++#define MT2701_M4U_PORT_VENC_REC_FRM		MT2701_M4U_ID_LARB2(1)
++#define MT2701_M4U_PORT_VENC_BSDMA		MT2701_M4U_ID_LARB2(2)
++#define MT2701_M4U_PORT_JPGENC_RDMA		MT2701_M4U_ID_LARB2(3)
++#define MT2701_M4U_PORT_VENC_LT_RCPU		MT2701_M4U_ID_LARB2(4)
++#define MT2701_M4U_PORT_VENC_LT_REC_FRM		MT2701_M4U_ID_LARB2(5)
++#define MT2701_M4U_PORT_VENC_LT_BSDMA		MT2701_M4U_ID_LARB2(6)
++#define MT2701_M4U_PORT_JPGDEC_BSDMA		MT2701_M4U_ID_LARB2(7)
++#define MT2701_M4U_PORT_VENC_SV_COMV		MT2701_M4U_ID_LARB2(8)
++#define MT2701_M4U_PORT_VENC_RD_COMV		MT2701_M4U_ID_LARB2(9)
++#define MT2701_M4U_PORT_JPGENC_BSDMA		MT2701_M4U_ID_LARB2(10)
++#define MT2701_M4U_PORT_VENC_CUR_LUMA		MT2701_M4U_ID_LARB2(11)
++#define MT2701_M4U_PORT_VENC_CUR_CHROMA		MT2701_M4U_ID_LARB2(12)
++#define MT2701_M4U_PORT_VENC_REF_LUMA		MT2701_M4U_ID_LARB2(13)
++#define MT2701_M4U_PORT_VENC_REF_CHROMA		MT2701_M4U_ID_LARB2(14)
++#define MT2701_M4U_PORT_IMG_RESZ		MT2701_M4U_ID_LARB2(15)
++#define MT2701_M4U_PORT_VENC_LT_SV_COMV		MT2701_M4U_ID_LARB2(16)
++#define MT2701_M4U_PORT_VENC_LT_RD_COMV		MT2701_M4U_ID_LARB2(17)
++#define MT2701_M4U_PORT_VENC_LT_CUR_LUMA	MT2701_M4U_ID_LARB2(18)
++#define MT2701_M4U_PORT_VENC_LT_CUR_CHROMA	MT2701_M4U_ID_LARB2(19)
++#define MT2701_M4U_PORT_VENC_LT_REF_LUMA	MT2701_M4U_ID_LARB2(20)
++#define MT2701_M4U_PORT_VENC_LT_REF_CHROMA	MT2701_M4U_ID_LARB2(21)
++#define MT2701_M4U_PORT_JPGDEC_WDMA		MT2701_M4U_ID_LARB2(22)
++
++#endif
 -- 
-2.8.2
+1.8.1.1.dirty
