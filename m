@@ -1,14 +1,13 @@
-From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 1/2] iommu/vt-d: reduce extra first level entry in
-	iommu->domains
-Date: Fri, 27 May 2016 22:24:07 +0000
-Message-ID: <1464387848-16942-2-git-send-email-richard.weiyang@gmail.com>
-References: <1464387848-16942-1-git-send-email-richard.weiyang@gmail.com>
+From: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Subject: Re: [PATCH] remove lots of IS_ERR_VALUE abuses
+Date: Fri, 27 May 2016 16:24:47 -0700
+Message-ID: <CA+55aFw_SZ7nydXMQKcaQJmYy1=pCg7S6mUgHJGyfGvNoRgoRg@mail.gmail.com>
+References: <1464384685-347275-1-git-send-email-arnd@arndb.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1464387848-16942-1-git-send-email-richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1464384685-347275-1-git-send-email-arnd-r2nGTMty4D4@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,45 +17,29 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Linux Wireless List <linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux ACPI <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kbuild mailing list <linux-kbuild-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Network Development <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Adrian Hunter <adrian.hunter-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, V9FS Developers <v9fs-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, Bob Peterson <rpeterso-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Linux Media Mailing List <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-In commit <8bf478163e69> ("iommu/vt-d: Split up iommu->domains array"), it
-it splits iommu->domains in two levels. Each first level contains 256
-entries of second level. In case of the ndomains is exact a multiple of
-256, it would have one more extra first level entry for current
-implementation.
+On Fri, May 27, 2016 at 2:23 PM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
+>
+> This patch changes all users of IS_ERR_VALUE() that I could find
+> on 32-bit ARM randconfig builds and x86 allmodconfig. For the
+> moment, this doesn't change the definition of IS_ERR_VALUE()
+> because there are probably still architecture specific users
+> elsewhere.
 
-This patch refines this calculation to reduce the extra first level entry
-when ndomains is exact a multiple of 256.
+Patch applied with the fixups from Al Viro edited in.
 
-Signed-off-by: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
- drivers/iommu/intel-iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I also ended up removing a few other users (due to the vm_brk()
+interface), and then made IS_ERR_VALUE() do the "void *" cast so that
+integer use of a non-pointer size should now complain.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index d7fa268..1c8b587 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1634,7 +1634,7 @@ static int iommu_init_domains(struct intel_iommu *iommu)
- 		return -ENOMEM;
- 	}
- 
--	size = ((ndomains >> 8) + 1) * sizeof(struct dmar_domain **);
-+	size = DIV_ROUND_UP(ndomains, 256) * sizeof(struct dmar_domain **);
- 	iommu->domains = kzalloc(size, GFP_KERNEL);
- 
- 	if (iommu->domains) {
-@@ -1699,7 +1699,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
- static void free_dmar_iommu(struct intel_iommu *iommu)
- {
- 	if ((iommu->domains) && (iommu->domain_ids)) {
--		int elems = (cap_ndoms(iommu->cap) >> 8) + 1;
-+		int elems = DIV_ROUND_UP(cap_ndoms(iommu->cap), 256);
- 		int i;
- 
- 		for (i = 0; i < elems; i++)
--- 
-2.5.0
+It works for me and has no new warnings in my allmodconfig build, and
+with your ARM work that is presumably clean too. But other
+architectures may see new warnings.
+
+People who got affected by this should check their subsystem code for
+the changes.
+
+              Linus
