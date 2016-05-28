@@ -1,111 +1,131 @@
-From: Wan Zongshun <vw@iommu.org>
-Subject: Re: [Patch v4 6/9] iommu/amd: Add function copy_dev_tables
-Date: Sat, 28 May 2016 21:08:34 +0800
-Message-ID: <80e8478c-3797-df49-3bf9-e3c5d6879c8b@iommu.org>
+From: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
+Subject: Re: [Patch v4 7/9] iommu/amd: copy old trans table from old kernel
+Date: Sat, 28 May 2016 21:25:16 +0800
+Message-ID: <23334ff3-1560-c8b4-2730-67253cb05730@iommu.org>
 References: <1464157735-8865-1-git-send-email-bhe@redhat.com>
- <1464157735-8865-7-git-send-email-bhe@redhat.com>
+	<1464157735-8865-8-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1464157735-8865-7-git-send-email-bhe@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Baoquan He <bhe@redhat.com>, joro@8bytes.org
-Cc: linux-kernel@vger.kernel.org, vincent.wan@amd.com, iommu@lists.linux-foundation.org, dyoung@redhat.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1464157735-8865-8-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: vincent.wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
 
 -------- Original Message --------
-> Add function copy_dev_tables to copy old DTE of the 1st kernel to
-> the new DTE table. Since all iommu share the same DTE table the
-> copy only need be done once as long as the physical address of
-> old DTE table is retrieved from iommu reg. Besides the old domain
-> id occupied in 1st kernel need be reserved in order to avoid touch
-> the old translation tables.
+> From: Baoquan HE <bhe-sa4SJRhfYT7yzlqKoElxGh/sF2h8X+2i0E9HWUfgJXw@public.gmane.org>
 >
-> Signed-off-by: Baoquan He <bhe@redhat.com>
+> Here several things need be done:
+> 1) Initialize amd_iommu_dev_table because it was set several times
+>    since kdump kernel reboot. We don't need the set because we will
+>    copy the content from old kernel.
+> 2) Re-enable event/cmd buffer
+> 3) Install the DTE table to reg
+> 4) Flush all caches
+>
+> Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 > ---
->  drivers/iommu/amd_iommu.c       |  2 +-
->  drivers/iommu/amd_iommu_init.c  | 38 ++++++++++++++++++++++++++++++++++++++
->  drivers/iommu/amd_iommu_types.h |  1 +
->  3 files changed, 40 insertions(+), 1 deletion(-)
+>  drivers/iommu/amd_iommu_init.c | 47 +++++++++++++++++++++++++++++++++++++-----
+>  1 file changed, 42 insertions(+), 5 deletions(-)
 >
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 1c916cc..f3bd7fd 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -2081,7 +2081,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
->  		flags    |= tmp;
->  	}
->
-> -	flags &= ~(0xffffUL);
-> +	flags &= ~DEV_DOMID_MASK;
->  	flags |= domain->id;
->
->  	amd_iommu_dev_table[devid].data[1]  = flags;
 > diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-> index 9c1aa54..71c7ac9 100644
+> index 71c7ac9..66a1fa5 100644
 > --- a/drivers/iommu/amd_iommu_init.c
 > +++ b/drivers/iommu/amd_iommu_init.c
-> @@ -664,6 +664,44 @@ static int get_dev_entry_bit(u16 devid, u8 bit)
+> @@ -35,7 +35,7 @@
+>  #include <asm/iommu_table.h>
+>  #include <asm/io_apic.h>
+>  #include <asm/irq_remapping.h>
+> -
+> +#include <linux/crash_dump.h>
+>  #include "amd_iommu_proto.h"
+>  #include "amd_iommu_types.h"
+>  #include "irq_remapping.h"
+> @@ -675,7 +675,7 @@ static int copy_dev_tables(void)
+>  	static int copied;
+>
+>          for_each_iommu(iommu) {
+> -		if (!translation_pre_enabled()) {
+> +		if (!translation_pre_enabled(iommu)) {
+>  			pr_err("IOMMU:%d is not pre-enabled!/n", iommu->index);
+>  			return -1;
+>  		}
+> @@ -1160,8 +1160,13 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+>  	iommu->int_enabled = false;
+>
+>  	init_translation_status(iommu);
+> +	if (translation_pre_enabled(iommu) && !is_kdump_kernel()) {
+> +                        clear_translation_pre_enabled(iommu);
+> +                        pr_warn("Translation was enabled for IOMMU:%d but we are not in kdump mode\n",
+> +                                iommu->index);
+> +                }
+>
+> -	if (translation_pre_enabled())
+> +	if (translation_pre_enabled(iommu))
+>  		pr_warn("Translation is already enabled - trying to copy translation structures\n");
+>
+>  	ret = init_iommu_from_acpi(iommu, h);
+> @@ -1730,9 +1735,41 @@ static void early_enable_iommu(struct amd_iommu *iommu)
+>  static void early_enable_iommus(void)
+>  {
+>  	struct amd_iommu *iommu;
+> +	bool is_pre_enabled=false;
+>
+> -	for_each_iommu(iommu)
+> -		early_enable_iommu(iommu);
+> +	for_each_iommu(iommu) {
+> +		if ( translation_pre_enabled(iommu) ) {
+> +			is_pre_enabled = true;
+> +			break;
+> +		}
+> +	}
+
+I wonder if you consider multi-iommus condition for your those series 
+patches?
+
+> +
+> +	if ( !is_pre_enabled) {
+
+Why not use translation_pre_enabled(iommu) to judge pre-enable directly?
+
+> +		for_each_iommu(iommu)
+> +			early_enable_iommu(iommu);
+> +	} else {
+> +		if (copy_dev_tables()) {
+> +			pr_err("Failed to copy translation tables from previous kernel.\n");
+> +			/*
+> +			 * If failed to copy dev tables from old kernel, continue to proceed
+> +			 * as it does in normal kernel.
+> +			 */
+> +			for_each_iommu(iommu) {
+> +				clear_translation_pre_enabled(iommu);
+> +				early_enable_iommu(iommu);
+> +			}
+> +		} else {
+> +			pr_info("Copied translation tables from previous kernel.\n");
+> +			for_each_iommu(iommu) {
+> +				iommu_feature_disable(iommu, CONTROL_CMDBUF_EN);
+> +		                iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN);
+> +		                iommu_enable_command_buffer(iommu);
+> +		                iommu_enable_event_buffer(iommu);
+> +		                iommu_set_device_table(iommu);
+> +		                iommu_flush_all_caches(iommu);
+> +			}
+> +		}
+> +	}
 >  }
 >
->
-> +static int copy_dev_tables(void)
-> +{
-> +	u64 entry;
-> +	u32 lo, hi, devid;
-> +	phys_addr_t old_devtb_phys;
-> +	struct dev_table_entry *old_devtb;
-> +	u16 dom_id, dte_v;
-> +	struct amd_iommu *iommu;
-> +	static int copied;
-> +
-> +        for_each_iommu(iommu) {
-> +		if (!translation_pre_enabled()) {
-> +			pr_err("IOMMU:%d is not pre-enabled!/n", iommu->index);
-> +			return -1;
-> +		}
-
-If one iommu is not pre-enabled, all iommus will be exit the copy.
-
-> +
-> +		if (copied)
-> +			continue;
-> +
-> +                lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
-> +                hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
-> +                entry = (((u64) hi) << 32) + lo;
-> +                old_devtb_phys = entry & PAGE_MASK;
-> +                old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
-> +                for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
-> +                        amd_iommu_dev_table[devid] = old_devtb[devid];
-> +                        dom_id = amd_iommu_dev_table[devid].data[1] & DEV_DOMID_MASK;
-> +			dte_v = amd_iommu_dev_table[devid].data[0] & DTE_FLAG_V;
-> +			if (!dte_v)
-> +				continue;
-> +                        __set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
-> +                }
-> +		memunmap(old_devtb);
-> +		copied = 1;
-> +        }
-> +	return 0;
-> +}
-> +
->  void amd_iommu_apply_erratum_63(u16 devid)
->  {
->  	int sysmgt;
-> diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-> index 7796edf..34acd73 100644
-> --- a/drivers/iommu/amd_iommu_types.h
-> +++ b/drivers/iommu/amd_iommu_types.h
-> @@ -311,6 +311,7 @@
->  #define DTE_FLAG_MASK	(0x3ffULL << 32)
->  #define DTE_GLX_SHIFT	(56)
->  #define DTE_GLX_MASK	(3)
-> +#define DEV_DOMID_MASK 	0xffffULL
->
->  #define DTE_GCR3_VAL_A(x)	(((x) >> 12) & 0x00007ULL)
->  #define DTE_GCR3_VAL_B(x)	(((x) >> 15) & 0x0ffffULL)
+>  static void enable_iommus_v2(void)
 >
