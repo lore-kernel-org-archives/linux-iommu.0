@@ -1,13 +1,14 @@
-From: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Subject: Re: [PATCH] remove lots of IS_ERR_VALUE abuses
-Date: Fri, 27 May 2016 16:24:47 -0700
-Message-ID: <CA+55aFw_SZ7nydXMQKcaQJmYy1=pCg7S6mUgHJGyfGvNoRgoRg@mail.gmail.com>
-References: <1464384685-347275-1-git-send-email-arnd@arndb.de>
+From: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
+Subject: Re: [Patch v4 3/9] iommu/amd: Detect pre enabled translation
+Date: Sat, 28 May 2016 20:49:46 +0800
+Message-ID: <3371fab6-b3db-6f4a-a1a1-b272c3f8fdbe@iommu.org>
+References: <1464157735-8865-1-git-send-email-bhe@redhat.com>
+	<1464157735-8865-4-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1464384685-347275-1-git-send-email-arnd-r2nGTMty4D4@public.gmane.org>
+In-Reply-To: <1464157735-8865-4-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,29 +18,95 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
-Cc: Linux Wireless List <linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux ACPI <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux Kbuild mailing list <linux-kbuild-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Network Development <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Adrian Hunter <adrian.hunter-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, V9FS Developers <v9fs-developer-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, Bob Peterson <rpeterso-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>, Maxime Ripard <maxime.ripard-wi1+55ScJUtKEb57/3fJTNBPR1lH4CV8@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Linux Media Mailing List <linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: vincent.wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 27, 2016 at 2:23 PM, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org> wrote:
+
+
+-------- Original Message --------
+> Add functions to check whether translation is already enabled in IOMMU.
 >
-> This patch changes all users of IS_ERR_VALUE() that I could find
-> on 32-bit ARM randconfig builds and x86 allmodconfig. For the
-> moment, this doesn't change the definition of IS_ERR_VALUE()
-> because there are probably still architecture specific users
-> elsewhere.
+> Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/amd_iommu_init.c  | 25 +++++++++++++++++++++++++
+>  drivers/iommu/amd_iommu_types.h |  4 ++++
+>  2 files changed, 29 insertions(+)
+>
+> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> index 8361367d..9e1dfcb 100644
+> --- a/drivers/iommu/amd_iommu_init.c
+> +++ b/drivers/iommu/amd_iommu_init.c
+> @@ -229,6 +229,26 @@ static int amd_iommu_enable_interrupts(void);
+>  static int __init iommu_go_to_state(enum iommu_init_state state);
+>  static void init_device_table_dma(void);
+>
+> +
+> +static bool translation_pre_enabled(struct amd_iommu *iommu)
+> +{
+> +	return (iommu->flags & AMD_IOMMU_FLAG_TRANS_PRE_ENABLED);
+> +}
+> +
+> +static void clear_translation_pre_enabled(struct amd_iommu *iommu)
+> +{
+> +        iommu->flags &= ~AMD_IOMMU_FLAG_TRANS_PRE_ENABLED;
+> +}
+> +
+> +static void init_translation_status(struct amd_iommu *iommu)
+> +{
+> +	u32 ctrl;
+> +
+> +	ctrl = readl(iommu->mmio_base + MMIO_CONTROL_OFFSET);
+> +	if (ctrl & (1<<CONTROL_IOMMU_EN))
+> +		iommu->flags |= AMD_IOMMU_FLAG_TRANS_PRE_ENABLED;
+> +}
+> +
+>  static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
+>  				    u8 bank, u8 cntr, u8 fxn,
+>  				    u64 *value, bool is_write);
+> @@ -1101,6 +1121,11 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+>
+>  	iommu->int_enabled = false;
+>
+> +	init_translation_status(iommu);
+> +
+> +	if (translation_pre_enabled())
+> +		pr_warn("Translation is already enabled - trying to copy translation structures\n");
+> +
 
-Patch applied with the fixups from Al Viro edited in.
+You missed this 'iommu' parameter here, even I saw you fixed it in 
+another patch, but please keep each patch to be meaningful.
 
-I also ended up removing a few other users (due to the vm_brk()
-interface), and then made IS_ERR_VALUE() do the "void *" cast so that
-integer use of a non-pointer size should now complain.
-
-It works for me and has no new warnings in my allmodconfig build, and
-with your ARM work that is presumably clean too. But other
-architectures may see new warnings.
-
-People who got affected by this should check their subsystem code for
-the changes.
-
-              Linus
+>  	ret = init_iommu_from_acpi(iommu, h);
+>  	if (ret)
+>  		return ret;
+> diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+> index 9d32b20..01783cc 100644
+> --- a/drivers/iommu/amd_iommu_types.h
+> +++ b/drivers/iommu/amd_iommu_types.h
+> @@ -384,6 +384,7 @@ extern struct kmem_cache *amd_iommu_irq_cache;
+>  #define APERTURE_PAGE_INDEX(a)	(((a) >> 21) & 0x3fULL)
+>
+>
+> +
+>  /*
+>   * This struct is used to pass information about
+>   * incoming PPR faults around.
+> @@ -401,6 +402,8 @@ struct amd_iommu_fault {
+>  struct iommu_domain;
+>  struct irq_domain;
+>
+> +#define AMD_IOMMU_FLAG_TRANS_PRE_ENABLED      (1 << 0)
+> +
+>  /*
+>   * This structure contains generic data for  IOMMU protection domains
+>   * independent of their use.
+> @@ -525,6 +528,7 @@ struct amd_iommu {
+>  	struct irq_domain *ir_domain;
+>  	struct irq_domain *msi_domain;
+>  #endif
+> +	u32 flags;
+>  };
+>
+>  struct devid_map {
+>
