@@ -1,82 +1,74 @@
 From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: [PATCH v2 6/6] vfio-pci: Allow to expose MSI-X table to userspace if interrupt remapping is enabled
-Date: Mon, 30 May 2016 21:32:13 +0800
-Message-ID: <201605301340.u4UDeVNX026481@mx0a-001b2d01.pphosted.com>
+Subject: [PATCH v2 2/6] PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI controller
+ enables IRQ remapping
+Date: Mon, 30 May 2016 21:32:09 +0800
+Message-ID: <201605301337.u4UDY6ii002554@mx0a-001b2d01.pphosted.com>
 References: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 In-Reply-To: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Sender: linux-pci-owner@vger.kernel.org
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 To: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org
-Cc: alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, kevin.tian@intel.com, David.Laight@ACULAB.COM
+Cc: alistair@popple.id.au, nikunj@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, eric.auger@linaro.org, aik@ozlabs.ru, joro@8bytes.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, kevin.tian@intel.com, warrier@linux.vnet.ibm.com, alex.williamson@redhat.com, David.Laight@ACULAB.COM, paulus@samba.org, bhelgaas@google.com
 List-Id: iommu@lists.linux-foundation.org
 
-This patch tries to expose MSI-X tables to userspace if hardware
-enables interrupt remapping. This capability can ensure that a
-given PCI device can only shoot the MSIs assigned for it. That
-means a userspace driver could never hurt other devices or system
-by writing to the exposed MSI-X table directly.
-
-Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
----
- drivers/vfio/pci/vfio_pci.c      |   17 ++++++++++++++---
- drivers/vfio/pci/vfio_pci_rdwr.c |    3 ++-
- 2 files changed, 16 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
-index 188b1ff..6bae388 100644
---- a/drivers/vfio/pci/vfio_pci.c
-+++ b/drivers/vfio/pci/vfio_pci.c
-@@ -487,8 +487,12 @@ static int msix_sparse_mmap_cap(struct vfio_pci_device *vdev,
- 
- 	end = pci_resource_len(vdev->pdev, vdev->msix_bar);
- 
--	/* If MSI-X table is aligned to the start or end, only one area */
--	if (((vdev->msix_offset & PAGE_MASK) == 0) ||
-+	/*
-+	 * If MSI-X table is allowed to mmap because of the capability
-+	 * of IRQ remapping or aligned to the start or end, only one area
-+	 */
-+	if ((vdev->pdev->bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP) ||
-+	    ((vdev->msix_offset & PAGE_MASK) == 0) ||
- 	    (PAGE_ALIGN(vdev->msix_offset + vdev->msix_size) >= end))
- 		nr_areas = 1;
- 
-@@ -503,6 +507,12 @@ static int msix_sparse_mmap_cap(struct vfio_pci_device *vdev,
- 			      struct vfio_region_info_cap_sparse_mmap, header);
- 	sparse->nr_areas = nr_areas;
- 
-+	if (vdev->pdev->bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP) {
-+		sparse->areas[i].offset = 0;
-+		sparse->areas[i].size = end;
-+		return 0;
-+	}
-+
- 	if (vdev->msix_offset & PAGE_MASK) {
- 		sparse->areas[i].offset = 0;
- 		sparse->areas[i].size = vdev->msix_offset & PAGE_MASK;
-@@ -1061,7 +1071,8 @@ static int vfio_pci_mmap(void *device_data, struct vm_area_struct *vma)
- 	if (phys_len < PAGE_SIZE || req_start + req_len > phys_len)
- 		return -EINVAL;
- 
--	if (index == vdev->msix_bar) {
-+	if (index == vdev->msix_bar &&
-+		!(pdev->bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP)) {
- 		/*
- 		 * Disallow mmaps overlapping the MSI-X table; users don't
- 		 * get to touch this directly.  We could find somewhere
-diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
-index 5ffd1d9..dbf9cd0 100644
---- a/drivers/vfio/pci/vfio_pci_rdwr.c
-+++ b/drivers/vfio/pci/vfio_pci_rdwr.c
-@@ -164,7 +164,8 @@ ssize_t vfio_pci_bar_rw(struct vfio_pci_device *vdev, char __user *buf,
- 	} else
- 		io = vdev->barmap[bar];
- 
--	if (bar == vdev->msix_bar) {
-+	if (bar == vdev->msix_bar &&
-+		!(pdev->bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP)) {
- 		x_start = vdev->msix_offset;
- 		x_end = vdev->msix_offset + vdev->msix_size;
- 	}
--- 
-1.7.9.5
+T24gQVJNIEhXIHRoZSBjYXBhYmlsaXR5IG9mIElSUSByZW1hcHBpbmcgaXMgYWJzdHJhY3RlZCBv
+bgpNU0kgY29udHJvbGxlciBzaWRlLiBNU0lfRkxBR19JUlFfUkVNQVBQSU5HIGlzIHVzZWQgdG8g
+YWR2ZXJ0aXNlCnRoaXMgWzFdLgoKVG8gaGF2ZSBhIHVuaXZlcnNhbCBmbGFnIHRvIHRlc3QgdGhp
+cyBjYXBhYmlsaXR5IGZvciBkaWZmZXJlbnQKYXJjaHMgb24gUENJIHNpZGUsIHdlIHNldCBQQ0lf
+QlVTX0ZMQUdTX01TSV9SRU1BUCBmb3IgUENJIGJ1c2VzCndoZW4gTVNJX0ZMQUdfSVJRX1JFTUFQ
+UElORyBpcyBzZXQuCgpbMV0gaHR0cHM6Ly93d3cubWFpbC1hcmNoaXZlLmNvbS9saW51eC1rZXJu
+ZWwlNDB2Z2VyLmtlcm5lbC5vcmcvbXNnMTEzODgyMC5odG1sCgpTaWduZWQtb2ZmLWJ5OiBZb25n
+amkgWGllIDx4eWp4aWVAbGludXgudm5ldC5pYm0uY29tPgotLS0KIGRyaXZlcnMvcGNpL21zaS5j
+ICAgfCAgIDE1ICsrKysrKysrKysrKysrKwogZHJpdmVycy9wY2kvcHJvYmUuYyB8ICAgIDMgKysr
+CiBpbmNsdWRlL2xpbnV4L21zaS5oIHwgICAgNSArKysrLQogMyBmaWxlcyBjaGFuZ2VkLCAyMiBp
+bnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9wY2kvbXNp
+LmMgYi9kcml2ZXJzL3BjaS9tc2kuYwppbmRleCBhMDgwZjQ0Li5kYmRiNWMzIDEwMDY0NAotLS0g
+YS9kcml2ZXJzL3BjaS9tc2kuYworKysgYi9kcml2ZXJzL3BjaS9tc2kuYwpAQCAtMTEzNCw2ICsx
+MTM0LDIxIEBAIHZvaWQgKm1zaV9kZXNjX3RvX3BjaV9zeXNkYXRhKHN0cnVjdCBtc2lfZGVzYyAq
+ZGVzYykKIH0KIEVYUE9SVF9TWU1CT0xfR1BMKG1zaV9kZXNjX3RvX3BjaV9zeXNkYXRhKTsKIAor
+aW50IHBjaV9idXNfbXNpX2lzb2xhdGVkKHN0cnVjdCBwY2lfYnVzICpidXMsIHN0cnVjdCBpcnFf
+ZG9tYWluICpkb21haW4pCit7CisjaWZkZWYgQ09ORklHX1BDSV9NU0lfSVJRX0RPTUFJTgorCXN0
+cnVjdCBtc2lfZG9tYWluX2luZm8gKmluZm87CisKKwlpZiAoIWRvbWFpbikKKwkJcmV0dXJuIDA7
+CisKKwlpbmZvID0gbXNpX2dldF9kb21haW5faW5mbyhkb21haW4pOworCWlmIChpbmZvLT5mbGFn
+cyAmIE1TSV9GTEFHX0lSUV9SRU1BUFBJTkcpCisJCXJldHVybiAxOworI2VuZGlmCisJcmV0dXJu
+IDA7Cit9CisKICNpZmRlZiBDT05GSUdfUENJX01TSV9JUlFfRE9NQUlOCiAvKioKICAqIHBjaV9t
+c2lfZG9tYWluX3dyaXRlX21zZyAtIEhlbHBlciB0byB3cml0ZSBNU0kgbWVzc2FnZSB0byBQQ0kg
+Y29uZmlnIHNwYWNlCmRpZmYgLS1naXQgYS9kcml2ZXJzL3BjaS9wcm9iZS5jIGIvZHJpdmVycy9w
+Y2kvcHJvYmUuYwppbmRleCA4MDA0ZjY3Li4yYjllM2JhIDEwMDY0NAotLS0gYS9kcml2ZXJzL3Bj
+aS9wcm9iZS5jCisrKyBiL2RyaXZlcnMvcGNpL3Byb2JlLmMKQEAgLTcxMyw2ICs3MTMsOSBAQCBz
+dGF0aWMgdm9pZCBwY2lfc2V0X2J1c19tc2lfZG9tYWluKHN0cnVjdCBwY2lfYnVzICpidXMpCiAJ
+aWYgKCFkKQogCQlkID0gcGNpX2hvc3RfYnJpZGdlX21zaV9kb21haW4oYik7CiAKKwlpZiAoYiA9
+PSBidXMgJiYgcGNpX2J1c19tc2lfaXNvbGF0ZWQoYnVzLCBkKSkKKwkJYnVzLT5idXNfZmxhZ3Mg
+fD0gUENJX0JVU19GTEFHU19NU0lfUkVNQVA7CisKIAlkZXZfc2V0X21zaV9kb21haW4oJmJ1cy0+
+ZGV2LCBkKTsKIH0KIApkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9tc2kuaCBiL2luY2x1ZGUv
+bGludXgvbXNpLmgKaW5kZXggMDg0NDFiMS4uMDRjYzc0OSAxMDA2NDQKLS0tIGEvaW5jbHVkZS9s
+aW51eC9tc2kuaAorKysgYi9pbmNsdWRlL2xpbnV4L21zaS5oCkBAIC0xNSw2ICsxNSw4IEBAIGV4
+dGVybiBpbnQgcGNpX21zaV9pZ25vcmVfbWFzazsKIHN0cnVjdCBpcnFfZGF0YTsKIHN0cnVjdCBt
+c2lfZGVzYzsKIHN0cnVjdCBwY2lfZGV2Oworc3RydWN0IHBjaV9idXM7CitzdHJ1Y3QgaXJxX2Rv
+bWFpbjsKIHN0cnVjdCBwbGF0Zm9ybV9tc2lfcHJpdl9kYXRhOwogdm9pZCBfX2dldF9jYWNoZWRf
+bXNpX21zZyhzdHJ1Y3QgbXNpX2Rlc2MgKmVudHJ5LCBzdHJ1Y3QgbXNpX21zZyAqbXNnKTsKIHZv
+aWQgZ2V0X2NhY2hlZF9tc2lfbXNnKHVuc2lnbmVkIGludCBpcnEsIHN0cnVjdCBtc2lfbXNnICpt
+c2cpOwpAQCAtMTY0LDYgKzE2Niw4IEBAIHZvaWQgYXJjaF9yZXN0b3JlX21zaV9pcnFzKHN0cnVj
+dCBwY2lfZGV2ICpkZXYpOwogdm9pZCBkZWZhdWx0X3RlYXJkb3duX21zaV9pcnFzKHN0cnVjdCBw
+Y2lfZGV2ICpkZXYpOwogdm9pZCBkZWZhdWx0X3Jlc3RvcmVfbXNpX2lycXMoc3RydWN0IHBjaV9k
+ZXYgKmRldik7CiAKK2ludCBwY2lfYnVzX21zaV9pc29sYXRlZChzdHJ1Y3QgcGNpX2J1cyAqYnVz
+LCBzdHJ1Y3QgaXJxX2RvbWFpbiAqZG9tYWluKTsKKwogc3RydWN0IG1zaV9jb250cm9sbGVyIHsK
+IAlzdHJ1Y3QgbW9kdWxlICpvd25lcjsKIAlzdHJ1Y3QgZGV2aWNlICpkZXY7CkBAIC0xODIsNyAr
+MTg2LDYgQEAgc3RydWN0IG1zaV9jb250cm9sbGVyIHsKICNpbmNsdWRlIDxsaW51eC9pcnFoYW5k
+bGVyLmg+CiAjaW5jbHVkZSA8YXNtL21zaS5oPgogCi1zdHJ1Y3QgaXJxX2RvbWFpbjsKIHN0cnVj
+dCBpcnFfZG9tYWluX29wczsKIHN0cnVjdCBpcnFfY2hpcDsKIHN0cnVjdCBkZXZpY2Vfbm9kZTsK
+LS0gCjEuNy45LjUKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCkxpbnV4cHBjLWRldiBtYWlsaW5nIGxpc3QKTGludXhwcGMtZGV2QGxpc3RzLm96bGFicy5v
+cmcKaHR0cHM6Ly9saXN0cy5vemxhYnMub3JnL2xpc3RpbmZvL2xpbnV4cHBjLWRldg==
