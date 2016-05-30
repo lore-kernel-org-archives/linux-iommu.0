@@ -1,44 +1,64 @@
 From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: [PATCH v2 4/6] iommu: Set PCI_BUS_FLAGS_MSI_REMAP on iommu driver initialization
-Date: Mon, 30 May 2016 21:32:11 +0800
-Message-ID: <201605301337.u4UDY6WZ028713@mx0a-001b2d01.pphosted.com>
-References: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH v2 0/6] vfio-pci: Add support for mmapping MSI-X table
+Date: Mon, 30 May 2016 21:32:07 +0800
+Message-ID: <201605301337.u4UDY4Ad016621@mx0a-001b2d01.pphosted.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 To: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org
-Cc: alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, kevin.tian@intel.com, David.Laight@ACULAB.COM
+Cc: alistair@popple.id.au, nikunj@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, eric.auger@linaro.org, aik@ozlabs.ru, joro@8bytes.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, kevin.tian@intel.com, warrier@linux.vnet.ibm.com, alex.williamson@redhat.com, David.Laight@ACULAB.COM, paulus@samba.org, bhelgaas@google.com
 List-Id: iommu@lists.linux-foundation.org
 
-Some iommu drivers would be initialized after PCI device
-enumeration. So PCI_BUS_FLAGS_MSI_REMAP would not be set
-when probing PCI devices although IOMMU enables capability
-of IRQ remapping. This patch tests this capability and
-set the flag when iommu driver is initialized.
-
-Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
----
- drivers/iommu/iommu.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index b9df141..e6159ab 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -872,6 +872,14 @@ static int add_iommu_group(struct device *dev, void *data)
- 	const struct iommu_ops *ops = cb->ops;
- 	int ret;
- 
-+	/*
-+	 * Set PCI_BUS_FLAGS_MSI_REMAP for all PCI buses when IOMMU
-+	 * have capability of IRQ remapping.
-+	 */
-+	if (dev_is_pci(dev) && ops->capable &&
-+			ops->capable(IOMMU_CAP_INTR_REMAP))
-+		to_pci_dev(dev)->bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
-+
- 	if (!ops->add_device)
- 		return 0;
- 
--- 
-1.7.9.5
+Q3VycmVudCB2ZmlvLXBjaSBpbXBsZW1lbnRhdGlvbiBkaXNhbGxvd3MgdG8gbW1hcCB0aGUgcGFn
+ZQpjb250YWluaW5nIE1TSS1YIHRhYmxlIGluIGNhc2UgdGhhdCB1c2VycyBjYW4gd3JpdGUgZGly
+ZWN0bHkKdG8gTVNJLVggdGFibGUgYW5kIGdlbmVyYXRlIGFuIGluY29ycmVjdCBNU0lzLgoKSG93
+ZXZlciwgdGhpcyB3aWxsIGNhdXNlIHNvbWUgcGVyZm9ybWFuY2UgaXNzdWUgd2hlbiB0aGVyZQph
+cmUgc29tZSBjcml0aWNhbCBkZXZpY2UgcmVnaXN0ZXJzIGluIHRoZSBzYW1lIHBhZ2UgYXMgdGhl
+IApNU0ktWCB0YWJsZS4gV2UgaGF2ZSB0byBoYW5kbGUgdGhlIG1taW8gYWNjZXNzIHRvIHRoZXNl
+CnJlZ2lzdGVycyBpbiBRRU1VIGVtdWxhdGlvbiByYXRoZXIgdGhhbiBpbiBndWVzdC4KClRvIHNv
+bHZlIHRoaXMgaXNzdWUsIHRoaXMgc2VyaWVzIGFsbG93cyB0byBleHBvc2UgTVNJLVggdGFibGUK
+dG8gdXNlcnNwYWNlIHdoZW4gaGFyZHdhcmUgZW5hYmxlcyB0aGUgY2FwYWJpbGl0eSBvZiBpbnRl
+cnJ1cHQKcmVtYXBwaW5nIHdoaWNoIGNhbiBlbnN1cmUgdGhhdCBhIGdpdmVuIFBDSSBkZXZpY2Ug
+Y2FuIG9ubHkKc2hvb3QgdGhlIE1TSXMgYXNzaWduZWQgZm9yIGl0LiBBbmQgd2UgaW50cm9kdWNl
+IGEgbmV3IGJ1c19mbGFncwpQQ0lfQlVTX0ZMQUdTX01TSV9SRU1BUCB0byB0ZXN0IHRoaXMgY2Fw
+YWJpbGl0eSBvbiBQQ0kgc2lkZQpmb3IgZGlmZmVyZW50IGFyY2hzLgoKVGhlIHBhdGNoIDMgYXJl
+IGJhc2VkIG9uIHRoZSBwcm9wb3NlZCBwYXRjaHNldFsxXS4KCkNoYW5nZWxvZyB2MjogCi0gTWFr
+ZSB0aGUgY29tbWl0IGxvZyBtb3JlIGNsZWFyCi0gUmVwbGFjZSBwY2lfYnVzX2NoZWNrX21zaV9y
+ZW1hcHBpbmcoKSB3aXRoIHBjaV9idXNfbXNpX2lzb2xhdGVkKCkKICBzbyB0aGF0IHdlIGNvdWxk
+IGNsZWFybHkga25vdyB3aGF0IHRoZSBmdW5jdGlvbiBkb2VzCi0gU2V0IFBDSV9CVVNfRkxBR1Nf
+TVNJX1JFTUFQIGluIHBjaV9jcmVhdGVfcm9vdF9idXMoKSBpbnN0ZWFkCiAgb2YgaW9tbXVfYnVz
+X25vdGlmaWVyKCkKLSBSZXNlcnZlIFZGSU9fUkVHSU9OX0lORk9fRkxBR19DQVBTIHdoZW4gd2Ug
+YWxsb3cgdG8gbW1hcCBNU0ktWAogIHRhYmxlIHNvIHRoYXQgd2UgY2FuIGtub3cgd2hldGhlciB3
+ZSBhbGxvdyB0byBtbWFwIE1TSS1YIHRhYmxlCiAgaW4gUUVNVQoKWzFdIGh0dHBzOi8vd3d3Lm1h
+aWwtYXJjaGl2ZS5jb20vbGludXgta2VybmVsJTQwdmdlci5rZXJuZWwub3JnL21zZzExMzg4MjAu
+aHRtbAoKWW9uZ2ppIFhpZSAoNik6CiAgUENJOiBBZGQgYSBuZXcgUENJX0JVU19GTEFHU19NU0lf
+UkVNQVAgZmxhZwogIFBDSTogU2V0IFBDSV9CVVNfRkxBR1NfTVNJX1JFTUFQIGlmIE1TSSBjb250
+cm9sbGVyIGVuYWJsZXMgSVJRIHJlbWFwcGluZwogIFBDSTogU2V0IFBDSV9CVVNfRkxBR1NfTVNJ
+X1JFTUFQIGlmIElPTU1VIGhhdmUgY2FwYWJpbGl0eSBvZiBJUlEgcmVtYXBwaW5nCiAgaW9tbXU6
+IFNldCBQQ0lfQlVTX0ZMQUdTX01TSV9SRU1BUCBvbiBpb21tdSBkcml2ZXIgaW5pdGlhbGl6YXRp
+b24KICBwY2ktaW9kYTogU2V0IFBDSV9CVVNfRkxBR1NfTVNJX1JFTUFQIGZvciBJT0RBIGhvc3Qg
+YnJpZGdlCiAgdmZpby1wY2k6IEFsbG93IHRvIGV4cG9zZSBNU0ktWCB0YWJsZSB0byB1c2Vyc3Bh
+Y2UgaWYgaW50ZXJydXB0IHJlbWFwcGluZyBpcyBlbmFibGVkCgogYXJjaC9wb3dlcnBjL3BsYXRm
+b3Jtcy9wb3dlcm52L3BjaS1pb2RhLmMgfCAgICA4ICsrKysrKysrCiBkcml2ZXJzL2lvbW11L2lv
+bW11LmMgICAgICAgICAgICAgICAgICAgICB8ICAgIDggKysrKysrKysKIGRyaXZlcnMvcGNpL21z
+aS5jICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAxNSArKysrKysrKysrKysrKysKIGRyaXZl
+cnMvcGNpL3Byb2JlLmMgICAgICAgICAgICAgICAgICAgICAgIHwgICAgNyArKysrKysrCiBkcml2
+ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpLmMgICAgICAgICAgICAgICB8ICAgMTcgKysrKysrKysrKysr
+KystLS0KIGRyaXZlcnMvdmZpby9wY2kvdmZpb19wY2lfcmR3ci5jICAgICAgICAgIHwgICAgMyAr
+Ky0KIGluY2x1ZGUvbGludXgvbXNpLmggICAgICAgICAgICAgICAgICAgICAgIHwgICAgNSArKysr
+LQogaW5jbHVkZS9saW51eC9wY2kuaCAgICAgICAgICAgICAgICAgICAgICAgfCAgICAxICsKIDgg
+ZmlsZXMgY2hhbmdlZCwgNTkgaW5zZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkKCi0tIAoxLjcu
+OS41CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpMaW51
+eHBwYy1kZXYgbWFpbGluZyBsaXN0CkxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnCmh0dHBz
+Oi8vbGlzdHMub3psYWJzLm9yZy9saXN0aW5mby9saW51eHBwYy1kZXY=
