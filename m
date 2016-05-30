@@ -1,44 +1,51 @@
 From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: [PATCH v2 4/6] iommu: Set PCI_BUS_FLAGS_MSI_REMAP on iommu driver initialization
-Date: Mon, 30 May 2016 21:32:11 +0800
-Message-ID: <201605301337.u4UDY4ot016620@mx0a-001b2d01.pphosted.com>
+Subject: [PATCH v2 5/6] pci-ioda: Set PCI_BUS_FLAGS_MSI_REMAP for IODA host bridge
+Date: Mon, 30 May 2016 21:32:12 +0800
+Message-ID: <201605301338.u4UDY5lK028646@mx0a-001b2d01.pphosted.com>
 References: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
+Return-path: <kvm-owner@vger.kernel.org>
 In-Reply-To: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Sender: linux-pci-owner@vger.kernel.org
+Sender: kvm-owner@vger.kernel.org
 To: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org
 Cc: alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, kevin.tian@intel.com, David.Laight@ACULAB.COM
 List-Id: iommu@lists.linux-foundation.org
 
-Some iommu drivers would be initialized after PCI device
-enumeration. So PCI_BUS_FLAGS_MSI_REMAP would not be set
-when probing PCI devices although IOMMU enables capability
-of IRQ remapping. This patch tests this capability and
-set the flag when iommu driver is initialized.
+Any IODA host bridge have the capability of IRQ remapping.
+So we set PCI_BUS_FLAGS_MSI_REMAP when this kind of host birdge
+is detected.
 
 Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
+Reviewed-by: Alexey Kardashevskiy <aik@ozlabs.ru>
 ---
- drivers/iommu/iommu.c |    8 ++++++++
+ arch/powerpc/platforms/powernv/pci-ioda.c |    8 ++++++++
  1 file changed, 8 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index b9df141..e6159ab 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -872,6 +872,14 @@ static int add_iommu_group(struct device *dev, void *data)
- 	const struct iommu_ops *ops = cb->ops;
- 	int ret;
+diff --git a/arch/powerpc/platforms/powernv/pci-ioda.c b/arch/powerpc/platforms/powernv/pci-ioda.c
+index c5baaf3..9011268 100644
+--- a/arch/powerpc/platforms/powernv/pci-ioda.c
++++ b/arch/powerpc/platforms/powernv/pci-ioda.c
+@@ -3094,6 +3094,12 @@ static void pnv_pci_ioda_fixup(void)
+ 	pnv_npu_ioda_fixup();
+ }
  
-+	/*
-+	 * Set PCI_BUS_FLAGS_MSI_REMAP for all PCI buses when IOMMU
-+	 * have capability of IRQ remapping.
-+	 */
-+	if (dev_is_pci(dev) && ops->capable &&
-+			ops->capable(IOMMU_CAP_INTR_REMAP))
-+		to_pci_dev(dev)->bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
++int pnv_pci_ioda_root_bridge_prepare(struct pci_host_bridge *bridge)
++{
++	bridge->bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
++	return 0;
++}
 +
- 	if (!ops->add_device)
- 		return 0;
+ /*
+  * Returns the alignment for I/O or memory windows for P2P
+  * bridges. That actually depends on how PEs are segmented.
+@@ -3395,6 +3401,8 @@ static void __init pnv_pci_init_ioda_phb(struct device_node *np,
+ 	 */
+ 	ppc_md.pcibios_fixup = pnv_pci_ioda_fixup;
  
++	ppc_md.pcibios_root_bridge_prepare = pnv_pci_ioda_root_bridge_prepare;
++
+ 	if (phb->type == PNV_PHB_NPU)
+ 		hose->controller_ops = pnv_npu_ioda_controller_ops;
+ 	else
 -- 
 1.7.9.5
+
