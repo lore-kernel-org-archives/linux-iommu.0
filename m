@@ -1,49 +1,50 @@
 From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: [PATCH v2 3/6] PCI: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have capability of IRQ remapping
-Date: Mon, 30 May 2016 21:32:10 +0800
-Message-ID: <201605301338.u4UDY7vj002600@mx0a-001b2d01.pphosted.com>
+Subject: [PATCH v2 5/6] pci-ioda: Set PCI_BUS_FLAGS_MSI_REMAP for IODA host bridge
+Date: Mon, 30 May 2016 21:32:12 +0800
+Message-ID: <201605301338.u4UDY6s9002584@mx0a-001b2d01.pphosted.com>
 References: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Return-path: <kvm-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Sender: kvm-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org
 Cc: alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, kevin.tian@intel.com, David.Laight@ACULAB.COM
 List-Id: iommu@lists.linux-foundation.org
 
-The capability of IRQ remapping is abstracted on IOMMU side on
-some archs. There is a existing flag IOMMU_CAP_INTR_REMAP for this.
-
-To have a universal flag to test this capability for different
-archs on PCI side, we set PCI_BUS_FLAGS_MSI_REMAP for PCI buses
-when IOMMU_CAP_INTR_REMAP is set.
+Any IODA host bridge have the capability of IRQ remapping.
+So we set PCI_BUS_FLAGS_MSI_REMAP when this kind of host birdge
+is detected.
 
 Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
+Reviewed-by: Alexey Kardashevskiy <aik@ozlabs.ru>
 ---
- drivers/pci/probe.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ arch/powerpc/platforms/powernv/pci-ioda.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 2b9e3ba..15a33e2 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -16,6 +16,7 @@
- #include <linux/aer.h>
- #include <linux/acpi.h>
- #include <linux/irqdomain.h>
-+#include <linux/iommu.h>
- #include "pci.h"
+diff --git a/arch/powerpc/platforms/powernv/pci-ioda.c b/arch/powerpc/platforms/powernv/pci-ioda.c
+index c5baaf3..9011268 100644
+--- a/arch/powerpc/platforms/powernv/pci-ioda.c
++++ b/arch/powerpc/platforms/powernv/pci-ioda.c
+@@ -3094,6 +3094,12 @@ static void pnv_pci_ioda_fixup(void)
+ 	pnv_npu_ioda_fixup();
+ }
  
- #define CARDBUS_LATENCY_TIMER	176	/* secondary latency timer */
-@@ -2160,6 +2161,9 @@ struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
- 	pci_set_bus_of_node(b);
- 	pci_set_bus_msi_domain(b);
- 
-+	if (iommu_capable(&pci_bus_type, IOMMU_CAP_INTR_REMAP))
-+		b->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
++int pnv_pci_ioda_root_bridge_prepare(struct pci_host_bridge *bridge)
++{
++	bridge->bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
++	return 0;
++}
 +
- 	if (!parent)
- 		set_dev_node(b->bridge, pcibus_to_node(b));
+ /*
+  * Returns the alignment for I/O or memory windows for P2P
+  * bridges. That actually depends on how PEs are segmented.
+@@ -3395,6 +3401,8 @@ static void __init pnv_pci_init_ioda_phb(struct device_node *np,
+ 	 */
+ 	ppc_md.pcibios_fixup = pnv_pci_ioda_fixup;
  
++	ppc_md.pcibios_root_bridge_prepare = pnv_pci_ioda_root_bridge_prepare;
++
+ 	if (phb->type == PNV_PHB_NPU)
+ 		hose->controller_ops = pnv_npu_ioda_controller_ops;
+ 	else
 -- 
 1.7.9.5
-
