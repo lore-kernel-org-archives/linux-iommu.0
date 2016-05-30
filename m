@@ -1,82 +1,88 @@
 From: Baoquan He <bhe@redhat.com>
-Subject: Re: [Patch v4 6/9] iommu/amd: Add function copy_dev_tables
-Date: Mon, 30 May 2016 11:32:45 +0800
-Message-ID: <20160530033245.GD2488@x1.redhat.com>
+Subject: Re: [Patch v4 9/9] iommu/amd: Check the validation of irq table and
+ domain id
+Date: Mon, 30 May 2016 13:10:59 +0800
+Message-ID: <20160530051059.GE2488@x1.redhat.com>
 References: <1464157735-8865-1-git-send-email-bhe@redhat.com>
- <1464157735-8865-7-git-send-email-bhe@redhat.com>
- <80e8478c-3797-df49-3bf9-e3c5d6879c8b@iommu.org>
+ <1464157735-8865-10-git-send-email-bhe@redhat.com>
+ <4da4c13e-1dc8-1096-f05a-e6d172c07df2@iommu.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <80e8478c-3797-df49-3bf9-e3c5d6879c8b@iommu.org>
+In-Reply-To: <4da4c13e-1dc8-1096-f05a-e6d172c07df2@iommu.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Wan Zongshun <vw@iommu.org>
 Cc: joro@8bytes.org, linux-kernel@vger.kernel.org, vincent.wan@amd.com, iommu@lists.linux-foundation.org, dyoung@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/28/16 at 09:08pm, Wan Zongshun wrote:
-> >+static int copy_dev_tables(void)
-> >+{
-> >+	u64 entry;
-> >+	u32 lo, hi, devid;
-> >+	phys_addr_t old_devtb_phys;
-> >+	struct dev_table_entry *old_devtb;
-> >+	u16 dom_id, dte_v;
-> >+	struct amd_iommu *iommu;
-> >+	static int copied;
-> >+
-> >+        for_each_iommu(iommu) {
-> >+		if (!translation_pre_enabled()) {
-> >+			pr_err("IOMMU:%d is not pre-enabled!/n", iommu->index);
-> >+			return -1;
-> >+		}
+On 05/28/16 at 09:30pm, Wan Zongshun wrote:
 > 
-> If one iommu is not pre-enabled, all iommus will be exit the copy.
+> 
+> -------- Original Message --------
+> >From: Baoquan HE <bhe@dhcp-129-10.nay.redhat.com>
+> >diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> >index f3bd7fd..40c4a05 100644
+> >--- a/drivers/iommu/amd_iommu.c
+> >+++ b/drivers/iommu/amd_iommu.c
+> >@@ -3697,10 +3697,6 @@ struct amd_ir_data {
+> >
+> > static struct irq_chip amd_ir_chip;
+> >
+> >-#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
+> >-#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
+> >-#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
+> >-#define DTE_IRQ_REMAP_ENABLE    1ULL
+> 
+> At least, you should give reason comments to why you want move it.
+> 
+> Any drivers files you want to use them as well?
 
-Currently amd iommu driver make all iommu-s share a single device table.
-When handling this code, I am struggling to take what way to make this
-look better. Say we have two iommus A and B on a system, A is detected
-to be pre_enabled, but B is not, I didn't think of a good way to do. Any
-suggestion?
+Yes, sorry fot this. I have several test machines. I made change on
+them and made patches. In the machine I posted this patch was not
+arranged well.
 
 > 
-> >+
-> >+		if (copied)
-> >+			continue;
-> >+
-> >+                lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
-> >+                hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
-> >+                entry = (((u64) hi) << 32) + lo;
-> >+                old_devtb_phys = entry & PAGE_MASK;
-> >+                old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
-> >+                for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
-> >+                        amd_iommu_dev_table[devid] = old_devtb[devid];
-> >+                        dom_id = amd_iommu_dev_table[devid].data[1] & DEV_DOMID_MASK;
-> >+			dte_v = amd_iommu_dev_table[devid].data[0] & DTE_FLAG_V;
-> >+			if (!dte_v)
-> >+				continue;
-> >+                        __set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
-> >+                }
-> >+		memunmap(old_devtb);
-> >+		copied = 1;
-> >+        }
-> >+	return 0;
-> >+}
-> >+
-> > void amd_iommu_apply_erratum_63(u16 devid)
+> >
+> > static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
 > > {
-> > 	int sysmgt;
+> >diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> >index 47e5972..263704a 100644
+> >--- a/drivers/iommu/amd_iommu_init.c
+> >+++ b/drivers/iommu/amd_iommu_init.c
+> >@@ -670,7 +670,7 @@ static int copy_dev_tables(void)
+> > 	u32 lo, hi, devid;
+> > 	phys_addr_t old_devtb_phys;
+> > 	struct dev_table_entry *old_devtb;
+> >-	u16 dom_id, dte_v;
+> >+	u16 dom_id, dte_v, irq_v;
+> > 	struct amd_iommu *iommu;
+> > 	static int copied;
+> >
+> >@@ -692,7 +692,8 @@ static int copy_dev_tables(void)
+> >                         amd_iommu_dev_table[devid] = old_devtb[devid];
+> >                         dom_id = amd_iommu_dev_table[devid].data[1] & DEV_DOMID_MASK;
+> > 			dte_v = amd_iommu_dev_table[devid].data[0] & DTE_FLAG_V;
+> >-			if (!dte_v)
+> >+			irq_v = amd_iommu_dev_table[devid].data[2] & DTE_IRQ_REMAP_ENABLE;
+> >+			if (!dte_v || !irq_v || !dom_id)
+> > 				continue;
+> >                         __set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
+> >                 }
 > >diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-> >index 7796edf..34acd73 100644
+> >index 34acd73..08340f5 100644
 > >--- a/drivers/iommu/amd_iommu_types.h
 > >+++ b/drivers/iommu/amd_iommu_types.h
-> >@@ -311,6 +311,7 @@
-> > #define DTE_FLAG_MASK	(0x3ffULL << 32)
-> > #define DTE_GLX_SHIFT	(56)
-> > #define DTE_GLX_MASK	(3)
-> >+#define DEV_DOMID_MASK 	0xffffULL
+> >@@ -224,6 +224,11 @@
 > >
-> > #define DTE_GCR3_VAL_A(x)	(((x) >> 12) & 0x00007ULL)
-> > #define DTE_GCR3_VAL_B(x)	(((x) >> 15) & 0x0ffffULL)
+> > #define PPR_REQ_FAULT		0x01
+> >
+> >+#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
+> >+#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
+> >+#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
+> >+#define DTE_IRQ_REMAP_ENABLE    1ULL
+> >+
+> > #define PAGE_MODE_NONE    0x00
+> > #define PAGE_MODE_1_LEVEL 0x01
+> > #define PAGE_MODE_2_LEVEL 0x02
 > >
