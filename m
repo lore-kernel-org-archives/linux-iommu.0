@@ -1,60 +1,71 @@
-From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: [PATCH v2 1/6] PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
-Date: Mon, 30 May 2016 21:32:08 +0800
-Message-ID: <201605301337.u4UDY4eh016595@mx0a-001b2d01.pphosted.com>
-References: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org
-Cc: alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, kevin.tian@intel.com, David.Laight@ACULAB.COM
+From: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH v2 0/6] vfio-pci: Add support for mmapping MSI-X table
+Date: Mon, 30 May 2016 21:32:07 +0800
+Message-ID: <201605301337.u4UDY6Os028683@mx0a-001b2d01.pphosted.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org, nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We introduce a new pci_bus_flags, PCI_BUS_FLAGS_MSI_REMAP
-which indicates interrupts of all devices on the bus are
-managed by the hardware enabling IRQ remapping(intel naming).
-When the capability is enabled, a given PCI device can only
-shoot the MSIs assigned for it. In other words, the hardware
-can protect system from invalid MSIs of the device by checking
-the target address and data when there is something wrong
-with MSI part in device or device driver.
+Current vfio-pci implementation disallows to mmap the page
+containing MSI-X table in case that users can write directly
+to MSI-X table and generate an incorrect MSIs.
 
-There is a existing flag for this capability in the IOMMU space:
+However, this will cause some performance issue when there
+are some critical device registers in the same page as the 
+MSI-X table. We have to handle the mmio access to these
+registers in QEMU emulation rather than in guest.
 
-enum iommu_cap {
-	IOMMU_CAP_CACHE_COHERENCY,
---->	IOMMU_CAP_INTR_REMAP,
-	IOMMU_CAP_NOEXEC,
-};
+To solve this issue, this series allows to expose MSI-X table
+to userspace when hardware enables the capability of interrupt
+remapping which can ensure that a given PCI device can only
+shoot the MSIs assigned for it. And we introduce a new bus_flags
+PCI_BUS_FLAGS_MSI_REMAP to test this capability on PCI side
+for different archs.
 
-and Eric also posted a patchset [1] to abstract it on MSI
-controller side for ARM. But it would make sense to have a
-more common flag like PCI_BUS_FLAGS_MSI_REMAP so that we can
-use a universal flag to test this capability on PCI side for
-different archs.
+The patch 3 are based on the proposed patchset[1].
 
-With this flag enabled, we can easily know whether it's safe
-to expose MSI-X tables of PCI BARs to userspace. Some usespace
-drivers such as VFIO may benefit from this.
+Changelog v2: 
+- Make the commit log more clear
+- Replace pci_bus_check_msi_remapping() with pci_bus_msi_isolated()
+  so that we could clearly know what the function does
+- Set PCI_BUS_FLAGS_MSI_REMAP in pci_create_root_bus() instead
+  of iommu_bus_notifier()
+- Reserve VFIO_REGION_INFO_FLAG_CAPS when we allow to mmap MSI-X
+  table so that we can know whether we allow to mmap MSI-X table
+  in QEMU
 
 [1] https://www.mail-archive.com/linux-kernel%40vger.kernel.org/msg1138820.html
 
-Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
----
- include/linux/pci.h |    1 +
- 1 file changed, 1 insertion(+)
+Yongji Xie (6):
+  PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
+  PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI controller enables IRQ remapping
+  PCI: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have capability of IRQ remapping
+  iommu: Set PCI_BUS_FLAGS_MSI_REMAP on iommu driver initialization
+  pci-ioda: Set PCI_BUS_FLAGS_MSI_REMAP for IODA host bridge
+  vfio-pci: Allow to expose MSI-X table to userspace if interrupt remapping is enabled
 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 932ec74..4ec37da 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -187,6 +187,7 @@ typedef unsigned short __bitwise pci_bus_flags_t;
- enum pci_bus_flags {
- 	PCI_BUS_FLAGS_NO_MSI   = (__force pci_bus_flags_t) 1,
- 	PCI_BUS_FLAGS_NO_MMRBC = (__force pci_bus_flags_t) 2,
-+	PCI_BUS_FLAGS_MSI_REMAP = (__force pci_bus_flags_t) 4,
- };
- 
- /* These values come from the PCI Express Spec */
+ arch/powerpc/platforms/powernv/pci-ioda.c |    8 ++++++++
+ drivers/iommu/iommu.c                     |    8 ++++++++
+ drivers/pci/msi.c                         |   15 +++++++++++++++
+ drivers/pci/probe.c                       |    7 +++++++
+ drivers/vfio/pci/vfio_pci.c               |   17 ++++++++++++++---
+ drivers/vfio/pci/vfio_pci_rdwr.c          |    3 ++-
+ include/linux/msi.h                       |    5 ++++-
+ include/linux/pci.h                       |    1 +
+ 8 files changed, 59 insertions(+), 5 deletions(-)
+
 -- 
 1.7.9.5
