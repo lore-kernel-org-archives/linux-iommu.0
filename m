@@ -1,94 +1,49 @@
-From: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v2 6/6] vfio-pci: Allow to expose MSI-X table to userspace if
-	interrupt remapping is enabled
-Date: Mon, 30 May 2016 21:32:13 +0800
-Message-ID: <201605301338.u4UDchKi041380@mx0a-001b2d01.pphosted.com>
+From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
+Subject: [PATCH v2 3/6] PCI: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have capability of IRQ remapping
+Date: Mon, 30 May 2016 21:32:10 +0800
+Message-ID: <201605301338.u4UDY7vj002600@mx0a-001b2d01.pphosted.com>
 References: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1464615133-12050-1-git-send-email-xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org, nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+Sender: kvm-owner@vger.kernel.org
+To: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org
+Cc: alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, kevin.tian@intel.com, David.Laight@ACULAB.COM
 List-Id: iommu@lists.linux-foundation.org
 
-This patch tries to expose MSI-X tables to userspace if hardware
-enables interrupt remapping. This capability can ensure that a
-given PCI device can only shoot the MSIs assigned for it. That
-means a userspace driver could never hurt other devices or system
-by writing to the exposed MSI-X table directly.
+The capability of IRQ remapping is abstracted on IOMMU side on
+some archs. There is a existing flag IOMMU_CAP_INTR_REMAP for this.
 
-Signed-off-by: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+To have a universal flag to test this capability for different
+archs on PCI side, we set PCI_BUS_FLAGS_MSI_REMAP for PCI buses
+when IOMMU_CAP_INTR_REMAP is set.
+
+Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
 ---
- drivers/vfio/pci/vfio_pci.c      |   17 ++++++++++++++---
- drivers/vfio/pci/vfio_pci_rdwr.c |    3 ++-
- 2 files changed, 16 insertions(+), 4 deletions(-)
+ drivers/pci/probe.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
-index 188b1ff..6bae388 100644
---- a/drivers/vfio/pci/vfio_pci.c
-+++ b/drivers/vfio/pci/vfio_pci.c
-@@ -487,8 +487,12 @@ static int msix_sparse_mmap_cap(struct vfio_pci_device *vdev,
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 2b9e3ba..15a33e2 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -16,6 +16,7 @@
+ #include <linux/aer.h>
+ #include <linux/acpi.h>
+ #include <linux/irqdomain.h>
++#include <linux/iommu.h>
+ #include "pci.h"
  
- 	end = pci_resource_len(vdev->pdev, vdev->msix_bar);
+ #define CARDBUS_LATENCY_TIMER	176	/* secondary latency timer */
+@@ -2160,6 +2161,9 @@ struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
+ 	pci_set_bus_of_node(b);
+ 	pci_set_bus_msi_domain(b);
  
--	/* If MSI-X table is aligned to the start or end, only one area */
--	if (((vdev->msix_offset & PAGE_MASK) == 0) ||
-+	/*
-+	 * If MSI-X table is allowed to mmap because of the capability
-+	 * of IRQ remapping or aligned to the start or end, only one area
-+	 */
-+	if ((vdev->pdev->bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP) ||
-+	    ((vdev->msix_offset & PAGE_MASK) == 0) ||
- 	    (PAGE_ALIGN(vdev->msix_offset + vdev->msix_size) >= end))
- 		nr_areas = 1;
- 
-@@ -503,6 +507,12 @@ static int msix_sparse_mmap_cap(struct vfio_pci_device *vdev,
- 			      struct vfio_region_info_cap_sparse_mmap, header);
- 	sparse->nr_areas = nr_areas;
- 
-+	if (vdev->pdev->bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP) {
-+		sparse->areas[i].offset = 0;
-+		sparse->areas[i].size = end;
-+		return 0;
-+	}
++	if (iommu_capable(&pci_bus_type, IOMMU_CAP_INTR_REMAP))
++		b->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
 +
- 	if (vdev->msix_offset & PAGE_MASK) {
- 		sparse->areas[i].offset = 0;
- 		sparse->areas[i].size = vdev->msix_offset & PAGE_MASK;
-@@ -1061,7 +1071,8 @@ static int vfio_pci_mmap(void *device_data, struct vm_area_struct *vma)
- 	if (phys_len < PAGE_SIZE || req_start + req_len > phys_len)
- 		return -EINVAL;
+ 	if (!parent)
+ 		set_dev_node(b->bridge, pcibus_to_node(b));
  
--	if (index == vdev->msix_bar) {
-+	if (index == vdev->msix_bar &&
-+		!(pdev->bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP)) {
- 		/*
- 		 * Disallow mmaps overlapping the MSI-X table; users don't
- 		 * get to touch this directly.  We could find somewhere
-diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
-index 5ffd1d9..dbf9cd0 100644
---- a/drivers/vfio/pci/vfio_pci_rdwr.c
-+++ b/drivers/vfio/pci/vfio_pci_rdwr.c
-@@ -164,7 +164,8 @@ ssize_t vfio_pci_bar_rw(struct vfio_pci_device *vdev, char __user *buf,
- 	} else
- 		io = vdev->barmap[bar];
- 
--	if (bar == vdev->msix_bar) {
-+	if (bar == vdev->msix_bar &&
-+		!(pdev->bus->bus_flags & PCI_BUS_FLAGS_MSI_REMAP)) {
- 		x_start = vdev->msix_offset;
- 		x_end = vdev->msix_offset + vdev->msix_size;
- 	}
 -- 
 1.7.9.5
+
