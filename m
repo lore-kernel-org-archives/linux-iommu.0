@@ -1,88 +1,70 @@
-From: Baoquan He <bhe@redhat.com>
-Subject: Re: [Patch v4 9/9] iommu/amd: Check the validation of irq table and
- domain id
-Date: Mon, 30 May 2016 13:10:59 +0800
-Message-ID: <20160530051059.GE2488@x1.redhat.com>
-References: <1464157735-8865-1-git-send-email-bhe@redhat.com>
- <1464157735-8865-10-git-send-email-bhe@redhat.com>
- <4da4c13e-1dc8-1096-f05a-e6d172c07df2@iommu.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <4da4c13e-1dc8-1096-f05a-e6d172c07df2@iommu.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Wan Zongshun <vw@iommu.org>
-Cc: joro@8bytes.org, linux-kernel@vger.kernel.org, vincent.wan@amd.com, iommu@lists.linux-foundation.org, dyoung@redhat.com
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: [RFC v2] Change dma_attrs from bitfield to unsigned long
+Date: Mon, 30 May 2016 13:54:05 +0200
+Message-ID: <1464609246-6948-1-git-send-email-k.kozlowski@samsung.com>
+Return-path: <linux-doc-owner@vger.kernel.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Andrew Morton <akpm@linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: hch@infradead.org, sstabellini@kernel.org, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/28/16 at 09:30pm, Wan Zongshun wrote:
-> 
-> 
-> -------- Original Message --------
-> >From: Baoquan HE <bhe@dhcp-129-10.nay.redhat.com>
-> >diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> >index f3bd7fd..40c4a05 100644
-> >--- a/drivers/iommu/amd_iommu.c
-> >+++ b/drivers/iommu/amd_iommu.c
-> >@@ -3697,10 +3697,6 @@ struct amd_ir_data {
-> >
-> > static struct irq_chip amd_ir_chip;
-> >
-> >-#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
-> >-#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
-> >-#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
-> >-#define DTE_IRQ_REMAP_ENABLE    1ULL
-> 
-> At least, you should give reason comments to why you want move it.
-> 
-> Any drivers files you want to use them as well?
+Hi,
 
-Yes, sorry fot this. I have several test machines. I made change on
-them and made patches. In the machine I posted this patch was not
-arranged well.
 
-> 
-> >
-> > static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
-> > {
-> >diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-> >index 47e5972..263704a 100644
-> >--- a/drivers/iommu/amd_iommu_init.c
-> >+++ b/drivers/iommu/amd_iommu_init.c
-> >@@ -670,7 +670,7 @@ static int copy_dev_tables(void)
-> > 	u32 lo, hi, devid;
-> > 	phys_addr_t old_devtb_phys;
-> > 	struct dev_table_entry *old_devtb;
-> >-	u16 dom_id, dte_v;
-> >+	u16 dom_id, dte_v, irq_v;
-> > 	struct amd_iommu *iommu;
-> > 	static int copied;
-> >
-> >@@ -692,7 +692,8 @@ static int copy_dev_tables(void)
-> >                         amd_iommu_dev_table[devid] = old_devtb[devid];
-> >                         dom_id = amd_iommu_dev_table[devid].data[1] & DEV_DOMID_MASK;
-> > 			dte_v = amd_iommu_dev_table[devid].data[0] & DTE_FLAG_V;
-> >-			if (!dte_v)
-> >+			irq_v = amd_iommu_dev_table[devid].data[2] & DTE_IRQ_REMAP_ENABLE;
-> >+			if (!dte_v || !irq_v || !dom_id)
-> > 				continue;
-> >                         __set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
-> >                 }
-> >diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-> >index 34acd73..08340f5 100644
-> >--- a/drivers/iommu/amd_iommu_types.h
-> >+++ b/drivers/iommu/amd_iommu_types.h
-> >@@ -224,6 +224,11 @@
-> >
-> > #define PPR_REQ_FAULT		0x01
-> >
-> >+#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
-> >+#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
-> >+#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
-> >+#define DTE_IRQ_REMAP_ENABLE    1ULL
-> >+
-> > #define PAGE_MODE_NONE    0x00
-> > #define PAGE_MODE_1_LEVEL 0x01
-> > #define PAGE_MODE_2_LEVEL 0x02
-> >
+This is second attempt to bring some safeness to dma_attrs.
+In v1 [0] I added const to data pointed by attrs. However Christoph
+Hellwig suggested getting rid of struct dma_attrs in favor of
+some simpler data type.
+
+
+Benefits of unsigned long for dma_attrs:
+1. This is just simpler.  Both in terms of reading the code and setting
+   attributes.  Instead of initializing local attributes on the stack and
+   passing pointer to it to dma_set_attr(), just set the bits.
+
+2. It brings safeness and checking for const correctness because the
+   attributes are passed by value.
+
+
+The problem is that the patch touches the dma-mapping API so all
+the users have to be converted (ARM and ARM64 as of now).
+
+Any ideas to split it per smaller patches?
+
+The work is not finished yet, I would rather get some feedback before
+progressing further.
+
+
+Best regards,
+Krzysztof
+
+
+Krzysztof Kozlowski (1):
+  dma-mapping: Use unsigned long for dma_attrs
+
+ Documentation/DMA-API.txt                 |   2 +-
+ Documentation/DMA-attributes.txt          |   2 +-
+ arch/arm/include/asm/dma-mapping.h        |  13 ++--
+ arch/arm/include/asm/xen/page-coherent.h  |  16 ++---
+ arch/arm/mm/dma-mapping.c                 |  82 +++++++++++------------
+ arch/arm/xen/mm.c                         |   4 +-
+ arch/arm64/mm/dma-mapping.c               |  57 ++++++++--------
+ drivers/gpu/drm/exynos/exynos_drm_fbdev.c |   2 +-
+ drivers/gpu/drm/exynos/exynos_drm_g2d.c   |   1 -
+ drivers/gpu/drm/exynos/exynos_drm_gem.c   |  20 +++---
+ drivers/gpu/drm/exynos/exynos_drm_gem.h   |   2 +-
+ drivers/iommu/dma-iommu.c                 |   6 +-
+ drivers/xen/swiotlb-xen.c                 |  14 ++--
+ include/linux/dma-attrs.h                 |  71 --------------------
+ include/linux/dma-iommu.h                 |   6 +-
+ include/linux/dma-mapping.h               | 105 +++++++++++++++++-------------
+ include/linux/swiotlb.h                   |  10 +--
+ include/xen/swiotlb-xen.h                 |  12 ++--
+ lib/dma-noop.c                            |   9 +--
+ lib/swiotlb.c                             |  13 ++--
+ 20 files changed, 195 insertions(+), 252 deletions(-)
+ delete mode 100644 include/linux/dma-attrs.h
+
+-- 
+1.9.1
+
