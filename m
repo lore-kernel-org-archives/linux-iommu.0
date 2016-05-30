@@ -1,75 +1,84 @@
-From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: [PATCH v2 6/6] vfio-pci: Allow to expose MSI-X table to userspace if
- interrupt remapping is enabled
-Date: Mon, 30 May 2016 21:32:13 +0800
-Message-ID: <201605301338.u4UDcgGf041344@mx0a-001b2d01.pphosted.com>
-References: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+From: Bogdan Purcareata <bogdan.purcareata@nxp.com>
+Subject: [PATCH] iommu/arm-smmu: Properly initialize CBAR MemAttr
+Date: Mon, 30 May 2016 14:15:42 +0000
+Message-ID: <1464617742-5493-1-git-send-email-bogdan.purcareata@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org
-Cc: alistair@popple.id.au, nikunj@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, eric.auger@linaro.org, aik@ozlabs.ru, joro@8bytes.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, kevin.tian@intel.com, warrier@linux.vnet.ibm.com, alex.williamson@redhat.com, David.Laight@ACULAB.COM, paulus@samba.org, bhelgaas@google.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: will.deacon@arm.com, robin.murphy@arm.com
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-VGhpcyBwYXRjaCB0cmllcyB0byBleHBvc2UgTVNJLVggdGFibGVzIHRvIHVzZXJzcGFjZSBpZiBo
-YXJkd2FyZQplbmFibGVzIGludGVycnVwdCByZW1hcHBpbmcuIFRoaXMgY2FwYWJpbGl0eSBjYW4g
-ZW5zdXJlIHRoYXQgYQpnaXZlbiBQQ0kgZGV2aWNlIGNhbiBvbmx5IHNob290IHRoZSBNU0lzIGFz
-c2lnbmVkIGZvciBpdC4gVGhhdAptZWFucyBhIHVzZXJzcGFjZSBkcml2ZXIgY291bGQgbmV2ZXIg
-aHVydCBvdGhlciBkZXZpY2VzIG9yIHN5c3RlbQpieSB3cml0aW5nIHRvIHRoZSBleHBvc2VkIE1T
-SS1YIHRhYmxlIGRpcmVjdGx5LgoKU2lnbmVkLW9mZi1ieTogWW9uZ2ppIFhpZSA8eHlqeGllQGxp
-bnV4LnZuZXQuaWJtLmNvbT4KLS0tCiBkcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpLmMgICAgICB8
-ICAgMTcgKysrKysrKysrKysrKystLS0KIGRyaXZlcnMvdmZpby9wY2kvdmZpb19wY2lfcmR3ci5j
-IHwgICAgMyArKy0KIDIgZmlsZXMgY2hhbmdlZCwgMTYgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlv
-bnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpLmMgYi9kcml2ZXJz
-L3ZmaW8vcGNpL3ZmaW9fcGNpLmMKaW5kZXggMTg4YjFmZi4uNmJhZTM4OCAxMDA2NDQKLS0tIGEv
-ZHJpdmVycy92ZmlvL3BjaS92ZmlvX3BjaS5jCisrKyBiL2RyaXZlcnMvdmZpby9wY2kvdmZpb19w
-Y2kuYwpAQCAtNDg3LDggKzQ4NywxMiBAQCBzdGF0aWMgaW50IG1zaXhfc3BhcnNlX21tYXBfY2Fw
-KHN0cnVjdCB2ZmlvX3BjaV9kZXZpY2UgKnZkZXYsCiAKIAllbmQgPSBwY2lfcmVzb3VyY2VfbGVu
-KHZkZXYtPnBkZXYsIHZkZXYtPm1zaXhfYmFyKTsKIAotCS8qIElmIE1TSS1YIHRhYmxlIGlzIGFs
-aWduZWQgdG8gdGhlIHN0YXJ0IG9yIGVuZCwgb25seSBvbmUgYXJlYSAqLwotCWlmICgoKHZkZXYt
-Pm1zaXhfb2Zmc2V0ICYgUEFHRV9NQVNLKSA9PSAwKSB8fAorCS8qCisJICogSWYgTVNJLVggdGFi
-bGUgaXMgYWxsb3dlZCB0byBtbWFwIGJlY2F1c2Ugb2YgdGhlIGNhcGFiaWxpdHkKKwkgKiBvZiBJ
-UlEgcmVtYXBwaW5nIG9yIGFsaWduZWQgdG8gdGhlIHN0YXJ0IG9yIGVuZCwgb25seSBvbmUgYXJl
-YQorCSAqLworCWlmICgodmRldi0+cGRldi0+YnVzLT5idXNfZmxhZ3MgJiBQQ0lfQlVTX0ZMQUdT
-X01TSV9SRU1BUCkgfHwKKwkgICAgKCh2ZGV2LT5tc2l4X29mZnNldCAmIFBBR0VfTUFTSykgPT0g
-MCkgfHwKIAkgICAgKFBBR0VfQUxJR04odmRldi0+bXNpeF9vZmZzZXQgKyB2ZGV2LT5tc2l4X3Np
-emUpID49IGVuZCkpCiAJCW5yX2FyZWFzID0gMTsKIApAQCAtNTAzLDYgKzUwNywxMiBAQCBzdGF0
-aWMgaW50IG1zaXhfc3BhcnNlX21tYXBfY2FwKHN0cnVjdCB2ZmlvX3BjaV9kZXZpY2UgKnZkZXYs
-CiAJCQkgICAgICBzdHJ1Y3QgdmZpb19yZWdpb25faW5mb19jYXBfc3BhcnNlX21tYXAsIGhlYWRl
-cik7CiAJc3BhcnNlLT5ucl9hcmVhcyA9IG5yX2FyZWFzOwogCisJaWYgKHZkZXYtPnBkZXYtPmJ1
-cy0+YnVzX2ZsYWdzICYgUENJX0JVU19GTEFHU19NU0lfUkVNQVApIHsKKwkJc3BhcnNlLT5hcmVh
-c1tpXS5vZmZzZXQgPSAwOworCQlzcGFyc2UtPmFyZWFzW2ldLnNpemUgPSBlbmQ7CisJCXJldHVy
-biAwOworCX0KKwogCWlmICh2ZGV2LT5tc2l4X29mZnNldCAmIFBBR0VfTUFTSykgewogCQlzcGFy
-c2UtPmFyZWFzW2ldLm9mZnNldCA9IDA7CiAJCXNwYXJzZS0+YXJlYXNbaV0uc2l6ZSA9IHZkZXYt
-Pm1zaXhfb2Zmc2V0ICYgUEFHRV9NQVNLOwpAQCAtMTA2MSw3ICsxMDcxLDggQEAgc3RhdGljIGlu
-dCB2ZmlvX3BjaV9tbWFwKHZvaWQgKmRldmljZV9kYXRhLCBzdHJ1Y3Qgdm1fYXJlYV9zdHJ1Y3Qg
-KnZtYSkKIAlpZiAocGh5c19sZW4gPCBQQUdFX1NJWkUgfHwgcmVxX3N0YXJ0ICsgcmVxX2xlbiA+
-IHBoeXNfbGVuKQogCQlyZXR1cm4gLUVJTlZBTDsKIAotCWlmIChpbmRleCA9PSB2ZGV2LT5tc2l4
-X2JhcikgeworCWlmIChpbmRleCA9PSB2ZGV2LT5tc2l4X2JhciAmJgorCQkhKHBkZXYtPmJ1cy0+
-YnVzX2ZsYWdzICYgUENJX0JVU19GTEFHU19NU0lfUkVNQVApKSB7CiAJCS8qCiAJCSAqIERpc2Fs
-bG93IG1tYXBzIG92ZXJsYXBwaW5nIHRoZSBNU0ktWCB0YWJsZTsgdXNlcnMgZG9uJ3QKIAkJICog
-Z2V0IHRvIHRvdWNoIHRoaXMgZGlyZWN0bHkuICBXZSBjb3VsZCBmaW5kIHNvbWV3aGVyZQpkaWZm
-IC0tZ2l0IGEvZHJpdmVycy92ZmlvL3BjaS92ZmlvX3BjaV9yZHdyLmMgYi9kcml2ZXJzL3ZmaW8v
-cGNpL3ZmaW9fcGNpX3Jkd3IuYwppbmRleCA1ZmZkMWQ5Li5kYmY5Y2QwIDEwMDY0NAotLS0gYS9k
-cml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpX3Jkd3IuYworKysgYi9kcml2ZXJzL3ZmaW8vcGNpL3Zm
-aW9fcGNpX3Jkd3IuYwpAQCAtMTY0LDcgKzE2NCw4IEBAIHNzaXplX3QgdmZpb19wY2lfYmFyX3J3
-KHN0cnVjdCB2ZmlvX3BjaV9kZXZpY2UgKnZkZXYsIGNoYXIgX191c2VyICpidWYsCiAJfSBlbHNl
-CiAJCWlvID0gdmRldi0+YmFybWFwW2Jhcl07CiAKLQlpZiAoYmFyID09IHZkZXYtPm1zaXhfYmFy
-KSB7CisJaWYgKGJhciA9PSB2ZGV2LT5tc2l4X2JhciAmJgorCQkhKHBkZXYtPmJ1cy0+YnVzX2Zs
-YWdzICYgUENJX0JVU19GTEFHU19NU0lfUkVNQVApKSB7CiAJCXhfc3RhcnQgPSB2ZGV2LT5tc2l4
-X29mZnNldDsKIAkJeF9lbmQgPSB2ZGV2LT5tc2l4X29mZnNldCArIHZkZXYtPm1zaXhfc2l6ZTsK
-IAl9Ci0tIAoxLjcuOS41CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fXwpMaW51eHBwYy1kZXYgbWFpbGluZyBsaXN0CkxpbnV4cHBjLWRldkBsaXN0cy5vemxh
-YnMub3JnCmh0dHBzOi8vbGlzdHMub3psYWJzLm9yZy9saXN0aW5mby9saW51eHBwYy1kZXY=
+Currently, when initializing the CBAR memattr attributes to the weakest
+values, it is expected that the final ones will be declared in the TTBCR
+register (SMMU_CBn_TCR).
+
+This is not required when CBAR type consists of a stage 1 translation
+followed by a stage 2 bypass. This is the case when assigning a VFIO PCI
+device to a KVM guest. Overriding the default transaction attributes to
+writeback cacheable results in the device no longer working in the guest
+(the adapter requires explicit flushes on the descriptor rings memory).
+
+Update the context init routine to initialize the CBAR MemAttr field only
+if there's a stage 1 followed by a stage 2 translation.
+
+Signed-off-by: Bogdan Purcareata <bogdan.purcareata@nxp.com>
+---
+ drivers/iommu/arm-smmu.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index ff7a392..1400ec9 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -765,13 +765,14 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ {
+ 	u32 reg;
+ 	u64 reg64;
+-	bool stage1;
++	bool stage1, stage1_stage2;
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 	void __iomem *cb_base, *gr1_base;
+ 
+ 	gr1_base = ARM_SMMU_GR1(smmu);
+ 	stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
++	stage1_stage2 = cfg->cbar == CBAR_TYPE_S1_TRANS_S2_TRANS;
+ 	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
+ 
+ 	if (smmu->version > ARM_SMMU_V1) {
+@@ -793,15 +794,19 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 
+ 	/*
+ 	 * Use the weakest shareability/memory types, so they are
+-	 * overridden by the ttbcr/pte.
++	 * overridden by the ttbcr/pte. This happens only if the stage
++	 * 1 is followed by a stage 2 translation.
+ 	 */
+-	if (stage1) {
++	if (stage1_stage2) {
+ 		reg |= (CBAR_S1_BPSHCFG_NSH << CBAR_S1_BPSHCFG_SHIFT) |
+ 			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
+-	} else if (!(smmu->features & ARM_SMMU_FEAT_VMID16)) {
++	}
++
++	if (!stage1 && !(smmu->features & ARM_SMMU_FEAT_VMID16)) {
+ 		/* 8-bit VMIDs live in CBAR */
+ 		reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBAR_VMID_SHIFT;
+ 	}
++
+ 	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
+ 
+ 	/* TTBRs */
+-- 
+1.9.1
