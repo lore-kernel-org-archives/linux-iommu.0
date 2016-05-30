@@ -1,11 +1,11 @@
 From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
 Subject: [PATCH v2 3/6] PCI: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have capability of IRQ remapping
 Date: Mon, 30 May 2016 21:32:10 +0800
-Message-ID: <201605301338.u4UDY5lS030402@mx0a-001b2d01.pphosted.com>
+Message-ID: <201605301338.u4UDY615030462@mx0a-001b2d01.pphosted.com>
 References: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
 In-Reply-To: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Sender: linux-pci-owner@vger.kernel.org
 To: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org
 Cc: alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, kevin.tian@intel.com, David.Laight@ACULAB.COM
 List-Id: iommu@lists.linux-foundation.org
