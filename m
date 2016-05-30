@@ -1,101 +1,57 @@
 From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: [PATCH v2 2/6] PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI controller enables IRQ remapping
-Date: Mon, 30 May 2016 21:32:09 +0800
-Message-ID: <201605301337.u4UDY3Pl026684@mx0a-001b2d01.pphosted.com>
+Subject: [PATCH v2 1/6] PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
+Date: Mon, 30 May 2016 21:32:08 +0800
+Message-ID: <201605301337.u4UDY4HP031869@mx0a-001b2d01.pphosted.com>
 References: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 In-Reply-To: <1464615133-12050-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 To: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org
-Cc: alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, kevin.tian@intel.com, David.Laight@ACULAB.COM
+Cc: alistair@popple.id.au, nikunj@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, eric.auger@linaro.org, aik@ozlabs.ru, joro@8bytes.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, kevin.tian@intel.com, warrier@linux.vnet.ibm.com, alex.williamson@redhat.com, David.Laight@ACULAB.COM, paulus@samba.org, bhelgaas@google.com
 List-Id: iommu@lists.linux-foundation.org
 
-On ARM HW the capability of IRQ remapping is abstracted on
-MSI controller side. MSI_FLAG_IRQ_REMAPPING is used to advertise
-this [1].
-
-To have a universal flag to test this capability for different
-archs on PCI side, we set PCI_BUS_FLAGS_MSI_REMAP for PCI buses
-when MSI_FLAG_IRQ_REMAPPING is set.
-
-[1] https://www.mail-archive.com/linux-kernel%40vger.kernel.org/msg1138820.html
-
-Signed-off-by: Yongji Xie <xyjxie@linux.vnet.ibm.com>
----
- drivers/pci/msi.c   |   15 +++++++++++++++
- drivers/pci/probe.c |    3 +++
- include/linux/msi.h |    5 ++++-
- 3 files changed, 22 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-index a080f44..dbdb5c3 100644
---- a/drivers/pci/msi.c
-+++ b/drivers/pci/msi.c
-@@ -1134,6 +1134,21 @@ void *msi_desc_to_pci_sysdata(struct msi_desc *desc)
- }
- EXPORT_SYMBOL_GPL(msi_desc_to_pci_sysdata);
- 
-+int pci_bus_msi_isolated(struct pci_bus *bus, struct irq_domain *domain)
-+{
-+#ifdef CONFIG_PCI_MSI_IRQ_DOMAIN
-+	struct msi_domain_info *info;
-+
-+	if (!domain)
-+		return 0;
-+
-+	info = msi_get_domain_info(domain);
-+	if (info->flags & MSI_FLAG_IRQ_REMAPPING)
-+		return 1;
-+#endif
-+	return 0;
-+}
-+
- #ifdef CONFIG_PCI_MSI_IRQ_DOMAIN
- /**
-  * pci_msi_domain_write_msg - Helper to write MSI message to PCI config space
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 8004f67..2b9e3ba 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -713,6 +713,9 @@ static void pci_set_bus_msi_domain(struct pci_bus *bus)
- 	if (!d)
- 		d = pci_host_bridge_msi_domain(b);
- 
-+	if (b == bus && pci_bus_msi_isolated(bus, d))
-+		bus->bus_flags |= PCI_BUS_FLAGS_MSI_REMAP;
-+
- 	dev_set_msi_domain(&bus->dev, d);
- }
- 
-diff --git a/include/linux/msi.h b/include/linux/msi.h
-index 08441b1..04cc749 100644
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -15,6 +15,8 @@ extern int pci_msi_ignore_mask;
- struct irq_data;
- struct msi_desc;
- struct pci_dev;
-+struct pci_bus;
-+struct irq_domain;
- struct platform_msi_priv_data;
- void __get_cached_msi_msg(struct msi_desc *entry, struct msi_msg *msg);
- void get_cached_msi_msg(unsigned int irq, struct msi_msg *msg);
-@@ -164,6 +166,8 @@ void arch_restore_msi_irqs(struct pci_dev *dev);
- void default_teardown_msi_irqs(struct pci_dev *dev);
- void default_restore_msi_irqs(struct pci_dev *dev);
- 
-+int pci_bus_msi_isolated(struct pci_bus *bus, struct irq_domain *domain);
-+
- struct msi_controller {
- 	struct module *owner;
- 	struct device *dev;
-@@ -182,7 +186,6 @@ struct msi_controller {
- #include <linux/irqhandler.h>
- #include <asm/msi.h>
- 
--struct irq_domain;
- struct irq_domain_ops;
- struct irq_chip;
- struct device_node;
--- 
-1.7.9.5
+V2UgaW50cm9kdWNlIGEgbmV3IHBjaV9idXNfZmxhZ3MsIFBDSV9CVVNfRkxBR1NfTVNJX1JFTUFQ
+CndoaWNoIGluZGljYXRlcyBpbnRlcnJ1cHRzIG9mIGFsbCBkZXZpY2VzIG9uIHRoZSBidXMgYXJl
+Cm1hbmFnZWQgYnkgdGhlIGhhcmR3YXJlIGVuYWJsaW5nIElSUSByZW1hcHBpbmcoaW50ZWwgbmFt
+aW5nKS4KV2hlbiB0aGUgY2FwYWJpbGl0eSBpcyBlbmFibGVkLCBhIGdpdmVuIFBDSSBkZXZpY2Ug
+Y2FuIG9ubHkKc2hvb3QgdGhlIE1TSXMgYXNzaWduZWQgZm9yIGl0LiBJbiBvdGhlciB3b3Jkcywg
+dGhlIGhhcmR3YXJlCmNhbiBwcm90ZWN0IHN5c3RlbSBmcm9tIGludmFsaWQgTVNJcyBvZiB0aGUg
+ZGV2aWNlIGJ5IGNoZWNraW5nCnRoZSB0YXJnZXQgYWRkcmVzcyBhbmQgZGF0YSB3aGVuIHRoZXJl
+IGlzIHNvbWV0aGluZyB3cm9uZwp3aXRoIE1TSSBwYXJ0IGluIGRldmljZSBvciBkZXZpY2UgZHJp
+dmVyLgoKVGhlcmUgaXMgYSBleGlzdGluZyBmbGFnIGZvciB0aGlzIGNhcGFiaWxpdHkgaW4gdGhl
+IElPTU1VIHNwYWNlOgoKZW51bSBpb21tdV9jYXAgewoJSU9NTVVfQ0FQX0NBQ0hFX0NPSEVSRU5D
+WSwKLS0tPglJT01NVV9DQVBfSU5UUl9SRU1BUCwKCUlPTU1VX0NBUF9OT0VYRUMsCn07CgphbmQg
+RXJpYyBhbHNvIHBvc3RlZCBhIHBhdGNoc2V0IFsxXSB0byBhYnN0cmFjdCBpdCBvbiBNU0kKY29u
+dHJvbGxlciBzaWRlIGZvciBBUk0uIEJ1dCBpdCB3b3VsZCBtYWtlIHNlbnNlIHRvIGhhdmUgYQpt
+b3JlIGNvbW1vbiBmbGFnIGxpa2UgUENJX0JVU19GTEFHU19NU0lfUkVNQVAgc28gdGhhdCB3ZSBj
+YW4KdXNlIGEgdW5pdmVyc2FsIGZsYWcgdG8gdGVzdCB0aGlzIGNhcGFiaWxpdHkgb24gUENJIHNp
+ZGUgZm9yCmRpZmZlcmVudCBhcmNocy4KCldpdGggdGhpcyBmbGFnIGVuYWJsZWQsIHdlIGNhbiBl
+YXNpbHkga25vdyB3aGV0aGVyIGl0J3Mgc2FmZQp0byBleHBvc2UgTVNJLVggdGFibGVzIG9mIFBD
+SSBCQVJzIHRvIHVzZXJzcGFjZS4gU29tZSB1c2VzcGFjZQpkcml2ZXJzIHN1Y2ggYXMgVkZJTyBt
+YXkgYmVuZWZpdCBmcm9tIHRoaXMuCgpbMV0gaHR0cHM6Ly93d3cubWFpbC1hcmNoaXZlLmNvbS9s
+aW51eC1rZXJuZWwlNDB2Z2VyLmtlcm5lbC5vcmcvbXNnMTEzODgyMC5odG1sCgpTaWduZWQtb2Zm
+LWJ5OiBZb25namkgWGllIDx4eWp4aWVAbGludXgudm5ldC5pYm0uY29tPgotLS0KIGluY2x1ZGUv
+bGludXgvcGNpLmggfCAgICAxICsKIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQoKZGlm
+ZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvcGNpLmggYi9pbmNsdWRlL2xpbnV4L3BjaS5oCmluZGV4
+IDkzMmVjNzQuLjRlYzM3ZGEgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgvcGNpLmgKKysrIGIv
+aW5jbHVkZS9saW51eC9wY2kuaApAQCAtMTg3LDYgKzE4Nyw3IEBAIHR5cGVkZWYgdW5zaWduZWQg
+c2hvcnQgX19iaXR3aXNlIHBjaV9idXNfZmxhZ3NfdDsKIGVudW0gcGNpX2J1c19mbGFncyB7CiAJ
+UENJX0JVU19GTEFHU19OT19NU0kgICA9IChfX2ZvcmNlIHBjaV9idXNfZmxhZ3NfdCkgMSwKIAlQ
+Q0lfQlVTX0ZMQUdTX05PX01NUkJDID0gKF9fZm9yY2UgcGNpX2J1c19mbGFnc190KSAyLAorCVBD
+SV9CVVNfRkxBR1NfTVNJX1JFTUFQID0gKF9fZm9yY2UgcGNpX2J1c19mbGFnc190KSA0LAogfTsK
+IAogLyogVGhlc2UgdmFsdWVzIGNvbWUgZnJvbSB0aGUgUENJIEV4cHJlc3MgU3BlYyAqLwotLSAK
+MS43LjkuNQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+TGludXhwcGMtZGV2IG1haWxpbmcgbGlzdApMaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZwpo
+dHRwczovL2xpc3RzLm96bGFicy5vcmcvbGlzdGluZm8vbGludXhwcGMtZGV2
