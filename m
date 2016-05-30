@@ -1,96 +1,98 @@
-From: Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [RFT v3] drm: use late_initcall() for amdkfd and radeon
-Date: Sun, 29 May 2016 20:27:07 +0200
-Message-ID: <CAKMK7uHTAWOmrTsGHxwW1nGcNeEeAb8b2OPFKcJvQ3AXkbs+Kg@mail.gmail.com>
-References: <20160527004642.GQ11948@wotan.suse.de>
- <1464311916-10065-1-git-send-email-mcgrof@kernel.org>
+From: Baoquan He <bhe@redhat.com>
+Subject: Re: [Patch v4 3/9] iommu/amd: Detect pre enabled translation
+Date: Mon, 30 May 2016 11:24:07 +0800
+Message-ID: <20160530032407.GB2488@x1.redhat.com>
+References: <1464157735-8865-1-git-send-email-bhe@redhat.com>
+ <1464157735-8865-4-git-send-email-bhe@redhat.com>
+ <3371fab6-b3db-6f4a-a1a1-b272c3f8fdbe@iommu.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1464311916-10065-1-git-send-email-mcgrof@kernel.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: "Luis R. Rodriguez" <mcgrof@kernel.org>
-Cc: vw@iommu.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, iommu@lists.linux-foundation.org, "alexander.deucher@amd.com" <alexander.deucher@amd.com>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <3371fab6-b3db-6f4a-a1a1-b272c3f8fdbe@iommu.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Wan Zongshun <vw@iommu.org>
+Cc: joro@8bytes.org, linux-kernel@vger.kernel.org, vincent.wan@amd.com, iommu@lists.linux-foundation.org, dyoung@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-T24gRnJpLCBNYXkgMjcsIDIwMTYgYXQgMzoxOCBBTSwgTHVpcyBSLiBSb2RyaWd1ZXogPG1jZ3Jv
-ZkBrZXJuZWwub3JnPiB3cm90ZToKPiBUbyBnZXQgS0ZEIHN1cHBvcnQgaW4gcmFkZW9uIHdlIG5l
-ZWQgdGhlIGZvbGxvd2luZwo+IGluaXRpYWxpemF0aW9uIHRvIGhhcHBlbiBpbiB0aGlzIG9yZGVy
-LCB0aGVpcgo+IHJlc3BlY3RpdmUgZHJpdmVyIGZpbGUgdGhhdCBoYXMgaXRzIGluaXQgcm91dGlu
-ZQo+IGxpc3RlZCBuZXh0IHRvIGl0Ogo+Cj4gMC4gQU1EIElPTU1VdjE6ICAgIGFyY2gveDg2L2tl
-cm5lbC9wY2ktZG1hLmMKPiAxLiBBTUQgSU9NTVV2MjogICAgZHJpdmVycy9pb21tdS9hbWRfaW9t
-bXVfdjIuYwo+IDIuIEFNRCBLRkQ6ICAgICAgICBkcml2ZXJzL2dwdS9kcm0vYW1kL2FtZGtmZC9r
-ZmRfbW9kdWxlLmMKPiAzLiBBTUQgUmFkZW9uOiAgICAgZHJpdmVycy9ncHUvZHJtL3JhZGVvbi9y
-YWRlb25fZHJ2LmMKPgo+IE9yZGVyIGlzIHJhdGhlciBpbXBsaWNpdCwgYnV0IHRoZXNlIGRyaXZl
-cnMgY2FuIGN1cnJlbnRseQo+IG9ubHkgZG8gc28gbXVjaCBnaXZlbiB0aGUgYW1vdW50IG9mIGxl
-ZyByb29tIGF2YWlsYWJsZS4KPiBCZWxvdyBhcmUgdGhlIHJlc3BlY3RpdmUgaW5pdCByb3V0aW5l
-cyBhbmQgaG93IHRoZXkgYXJlCj4gaW5pdGlhbGl6ZWQ6Cj4KPiBhcmNoL3g4Ni9rZXJuZWwvcGNp
-LWRtYS5jICAgICAgICAgICAgICAgcm9vdGZzX2luaXRjYWxsKHBjaV9pb21tdV9pbml0KTsKPiBk
-cml2ZXJzL2lvbW11L2FtZF9pb21tdV92Mi5jICAgICAgICAgICAgbW9kdWxlX2luaXQoYW1kX2lv
-bW11X3YyX2luaXQpOwo+IGRyaXZlcnMvZ3B1L2RybS9hbWQvYW1ka2ZkL2tmZF9tb2R1bGUuYyBt
-b2R1bGVfaW5pdChrZmRfbW9kdWxlX2luaXQpOwo+IGRyaXZlcnMvZ3B1L2RybS9yYWRlb24vcmFk
-ZW9uX2Rydi5jICAgICBtb2R1bGVfaW5pdChyYWRlb25faW5pdCk7Cj4KPiBXaGVuIGEgZHJpdmVy
-IGlzIGJ1aWx0LWluIG1vZHVsZV9pbml0KCkgZm9sZHMgdG8gdXNlCj4gZGV2aWNlX2luaXRjYWxs
-KCksIGFuZCB3ZSBoYXZlIHRoZSBmb2xsb3dpbmcgcG9zc2libGUKPiBvcmRlcnM6Cj4KPiAgICAg
-ICAgICNkZWZpbmUgcHVyZV9pbml0Y2FsbChmbikgICAgX19kZWZpbmVfaW5pdGNhbGwoZm4sIDAp
-Cj4gICAgICAgICAjZGVmaW5lIGNvcmVfaW5pdGNhbGwoZm4pICAgIF9fZGVmaW5lX2luaXRjYWxs
-KGZuLCAxKQo+ICAgICAgICAgI2RlZmluZSBwb3N0Y29yZV9pbml0Y2FsbChmbilfX2RlZmluZV9p
-bml0Y2FsbChmbiwgMikKPiAgICAgICAgICNkZWZpbmUgYXJjaF9pbml0Y2FsbChmbikgICAgX19k
-ZWZpbmVfaW5pdGNhbGwoZm4sIDMpCj4gICAgICAgICAjZGVmaW5lIHN1YnN5c19pbml0Y2FsbChm
-bikgIF9fZGVmaW5lX2luaXRjYWxsKGZuLCA0KQo+ICAgICAgICAgI2RlZmluZSBmc19pbml0Y2Fs
-bChmbikgICAgICBfX2RlZmluZV9pbml0Y2FsbChmbiwgNSkKPiAgICAgICAgIC0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQo+ICAgICAgICAg
-I2RlZmluZSByb290ZnNfaW5pdGNhbGwoZm4pICBfX2RlZmluZV9pbml0Y2FsbChmbiwgcm9vdGZz
-KQo+ICAgICAgICAgI2RlZmluZSBkZXZpY2VfaW5pdGNhbGwoZm4pICBfX2RlZmluZV9pbml0Y2Fs
-bChmbiwgNikKPiAgICAgICAgICNkZWZpbmUgbGF0ZV9pbml0Y2FsbChmbikgICAgX19kZWZpbmVf
-aW5pdGNhbGwoZm4sIDcpCj4KPiBTaW5jZSB3ZSBzdGFydCBvZmYgZnJvbSByb290ZnNfaW5pdGNh
-bGwoKSwgaXQgZ2l2ZXMgdXMgMyBtb3JlCj4gbGV2ZWxzIG9mIGxlZyByb29tIHRvIHBsYXkgd2l0
-aCBmb3Igb3JkZXIgc2VtYW50aWNzLCB0aGlzIGlzbid0Cj4gZW5vdWdoIHRvIGFkZHJlc3MgYWxs
-IHJlcXVpcmVkIGxldmVscyBvZiBkZXBlbmRlbmNpZXMsIHRoaXMKPiBpcyBzcGVjaWFsbHkgdHJ1
-ZSBnaXZlbiB0aGF0IEFNRC1LRkQgbmVlZHMgdG8gYmUgbG9hZGVkIGJlZm9yZQo+IHRoZSByYWRl
-b24gZHJpdmVyIC0tIC1idXQgdGhpcyBpdCBub3QgZW5mb3JjZWQgYnkgc3ltYm9scy4KPiBJZiB0
-aGUgQU1ELUtGRCBkcml2ZXIgaXMgbm90IGxvYWRlZCBwcmlvciB0byB0aGUgcmFkZW9uIGRyaXZl
-cgo+IGJlY2F1c2Ugb3RoZXJ3aXNlIHRoZSByYWRlb24gZHJpdmVyIHdpbGwgbm90IGluaXRpYWxp
-emUgdGhlCj4gQU1ELUtGRCBkcml2ZXIgYW5kIHlvdSBnZXQgbm8gS0ZEIGZ1bmN0aW9uYWxpdHkg
-aW4gdXNlcnNwYWNlLgo+Cj4gQ29tbWl0IDFiYWNjODk0YzIyN2ZhZDhhNyAoImRyaXZlcnM6IE1v
-dmUgaW9tbXUvIGJlZm9yZSBncHUvIGluCj4gTWFrZWZpbGUiKSB3b3JrcyBhcm91bmQgc29tZSBv
-ZiB0aGUgcG9zc2liZSByYWNlcyBiZXR3ZWVuCj4gdGhlIEFNRCBJT01NVSB2MiBhbmQgR1BVIGRy
-aXZlcnMgYnkgY2hhbmdpbmcgdGhlIGxpbmsgb3JkZXIuCj4gVGhpcyBpcyBmcmFnaWxlLCBob3dl
-dmVyIGl0cyB0aGUgYmV0cyB3ZSBjYW4gZG8sIGdpdmVuIHRoYXQKPiBtYWtpbmcgdGhlIEdQVSBk
-cml2ZXJzIHVzZSBsYXRlX2luaXRjYWxsKCkgd291bGQgYWxzbyBpbXBsaWNhdGUKPiBhIHNpbWls
-YXIgcmFjZSBiZXR3ZWVuIHRoZW0uIFRoYXQgcG9zc2libGUgcmFjZSBpcyBmb3J0dW5hdGxleQo+
-IGFkZHJlc3NlZCBnaXZlbiB0aGF0IHRoZSBkcm0gTWFrZWZpbGUgY3VycmVudGx5IGhhcyBhbWRr
-ZmQKPiBsaW5rZWQgcHJpb3IgdG8gcmFkZW9uOgo+Cj4gZHJpdmVycy9ncHUvZHJtL01ha2VmaWxl
-Cj4gLi4uCj4gb2JqLSQoQ09ORklHX0hTQV9BTUQpICs9IGFtZC9hbWRrZmQvCj4gb2JqLSQoQ09O
-RklHX0RSTV9SQURFT04pKz0gcmFkZW9uLwo+IC4uLgo+Cj4gQ2hhbmdpbmcgYW1ka2ZkIGFuZCBy
-YWRlb24gdG8gbGF0ZV9pbml0Y2FsbCgpIGhvd2V2ZXIgaXMKPiBzdGlsbCB0aGUgcmlnaHQgY2Fs
-bCBpbiBvcmRlIHRvIGFubm90YXRlIGV4cGxpY2l0bHkgYQo+IGRlbGF5ZWQgZGVwZW5kZW5jeSBy
-ZXF1aXJlbWVudCBiZXR3ZWVuIHRoZSBHUFUgZHJpdmVycwo+IGFuZCB0aGUgSU9NTVVzLgo+Cj4g
-V2UgY2FuJ3QgYWRkcmVzcyB0aGUgZnJhZ2lsZSBuYXR1cmUgb2YgdGhlIGxpbmsgb3JkZXIKPiBy
-aWdodCBub3csIGJ1dCBpbiB0aGUgZnV0dXJlIHRoYXQgbWlnaHQgYmUgcG9zc2libGUuCj4KPiBT
-aWduZWQtb2ZmLWJ5OiBMdWlzIFIuIFJvZHJpZ3VleiA8bWNncm9mQGtlcm5lbC5vcmc+Cj4gLS0t
-Cj4KPiBQbGVhc2Ugbm90ZSwgdGhlIGNoYW5nZXMgdG8gZHJpdmVycy9NYWtlZmlsZSBhcmUganVz
-dAo+IGZvciB0aGUgc2FrZSBvZiBmb3JjaW5nIHRoZSBwb3NzaWJsZSByYWNlIHRvIG9jY3VyLAo+
-IGlmIHRoaXMgd29ya3Mgd2VsbCB0aGUgYWN0dWFsIFtQQVRDSF0gc3VibWlzc2lvbiB3aWxsCj4g
-c2tpcCB0aG9zZSBjaGFuZ2VzIGFzIGl0cyBwb2ludGxlc3MgdG8gcmVtb3ZlIHRob3NlCj4gd29y
-ayBhcm91bmRzIGFzIGl0IHN0YW5kcywgZHVlIHRvIHRoZSBsaW1pdGVkIG5hdHVyZQo+IG9mIHRo
-ZSBsZXZlbHMgYXZhaWxhYmxlIGZvciBhZGRyZXNzaW5nIHJlcXVpcmVtZW50cy4KPgo+IEFsc28s
-IGlmIHlvdSBhcmUgYXdhcmUgb2YgZnVydGhlciBkZXBlbmRlbmN5IGhlbGwKPiB0aGluZ3MgbGlr
-ZSB0aGVzZSAtLSBwbGVhc2UgZG8gbGV0IG1lIGtub3cgYXMgSSBhbQo+IGludGVyZXN0ZWQgaW4g
-bG9va2luZyBhdCBhZGRyZXNzaW5nIHRoZW0uCgpUaGlzIHNob3VsZCBiZSBmaXhlZCB3aXRoIC1F
-REVGRVJfUFJPQkUgaW5zdGVhZC4gRnJvYmJpbmcgaW5pdGNhbGwKbGV2ZWxzIHNob3VsZCB0aGVu
-IGp1c3QgYmUgZG9uZSBhcyBhbiBvcHRpbWl6YXRpb24gdG8gYXZvaWQgdG9vIG11Y2gKcmVwcm9i
-aW5nLgoKVGhhbmtzLCBEYW5pZWwKLS0gCkRhbmllbCBWZXR0ZXIKU29mdHdhcmUgRW5naW5lZXIs
-IEludGVsIENvcnBvcmF0aW9uCis0MSAoMCkgNzkgMzY1IDU3IDQ4IC0gaHR0cDovL2Jsb2cuZmZ3
-bGwuY2gKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJp
-LWRldmVsIG1haWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBz
-Oi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+On 05/28/16 at 08:49pm, Wan Zongshun wrote:
+> 
+> 
+> -------- Original Message --------
+> >@@ -1101,6 +1121,11 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+> >
+> > 	iommu->int_enabled = false;
+> >
+> >+	init_translation_status(iommu);
+> >+
+> >+	if (translation_pre_enabled())
+> >+		pr_warn("Translation is already enabled - trying to copy translation structures\n");
+> >+
+> 
+> You missed this 'iommu' parameter here, even I saw you fixed it in
+> another patch, but please keep each patch to be meaningful.
+
+Hi Zongshun,
+
+Thanks for reviewing this patchset and great comments, will remember and
+update with change.
+
+Yes, translation_pre_enabled() in this patchset need a parameter "struct
+amd_iommu*". 
+
+In fact I am still debugging and trying to figure out what need be done
+further to stop the IO_PAGE_FAULT happened on ethernet network card. I
+kept changing code and adjust the patches. Up to now seems I still
+didn't figure out why. There must be something I didn't notice and
+everything will be fine as soon as I close that valve. With my
+understand pci bug scanning will detect each pci device and do the
+initialization job like setting configuration space registers and
+control registers. After that we can safely re-init the pci device and
+re-install the new io-page tables, and this is how Joerg has done for
+vt-d fix for kdump if my understanding is correct. And I tried to do
+like that in this patchset, don't know why it doesn't work.
+
+As you know in previous post I thought the final initialization of
+device should be done when its related driver probe and do the mapping
+job, I tried re-install io-page tables at this time. Seems it didn't
+work too. So I left that way.
+
+Sorry for this rough post, will pay attention and make a formal post if
+there's new update.
+
+Thanks
+Baoquan
+> 
+> > 	ret = init_iommu_from_acpi(iommu, h);
+> > 	if (ret)
+> > 		return ret;
+> >diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+> >index 9d32b20..01783cc 100644
+> >--- a/drivers/iommu/amd_iommu_types.h
+> >+++ b/drivers/iommu/amd_iommu_types.h
+> >@@ -384,6 +384,7 @@ extern struct kmem_cache *amd_iommu_irq_cache;
+> > #define APERTURE_PAGE_INDEX(a)	(((a) >> 21) & 0x3fULL)
+> >
+> >
+> >+
+> > /*
+> >  * This struct is used to pass information about
+> >  * incoming PPR faults around.
+> >@@ -401,6 +402,8 @@ struct amd_iommu_fault {
+> > struct iommu_domain;
+> > struct irq_domain;
+> >
+> >+#define AMD_IOMMU_FLAG_TRANS_PRE_ENABLED      (1 << 0)
+> >+
+> > /*
+> >  * This structure contains generic data for  IOMMU protection domains
+> >  * independent of their use.
+> >@@ -525,6 +528,7 @@ struct amd_iommu {
+> > 	struct irq_domain *ir_domain;
+> > 	struct irq_domain *msi_domain;
+> > #endif
+> >+	u32 flags;
+> > };
+> >
+> > struct devid_map {
+> >
