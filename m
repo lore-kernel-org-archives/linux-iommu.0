@@ -1,150 +1,130 @@
-From: Chris Wilson <chris@chris-wilson.co.uk>
-Subject: [PATCH] iommu: Disable preemption around use of
-	this_cpu_ptr()
-Date: Tue, 31 May 2016 17:34:30 +0100
-Message-ID: <1464712470-26286-1-git-send-email-chris@chris-wilson.co.uk>
+From: "Luis R. Rodriguez" <mcgrof@suse.com>
+Subject: Re: [RFT v3] drm: use late_initcall() for amdkfd and radeon
+Date: Tue, 31 May 2016 18:58:34 +0200
+Message-ID: <20160531165834.GG11948@wotan.suse.de>
+References: <20160527004642.GQ11948@wotan.suse.de>
+ <1464311916-10065-1-git-send-email-mcgrof@kernel.org>
+ <CAKMK7uHTAWOmrTsGHxwW1nGcNeEeAb8b2OPFKcJvQ3AXkbs+Kg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <CAKMK7uHTAWOmrTsGHxwW1nGcNeEeAb8b2OPFKcJvQ3AXkbs+Kg@mail.gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Daniel Vetter <daniel@ffwll.ch>
+Cc: "Luis R. Rodriguez" <mcgrof@kernel.org>, vw@iommu.org, Oded Gabbay <oded.gabbay@gmail.com>, Joerg Roedel <joro@8bytes.org>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, "alexander.deucher@amd.com" <alexander.deucher@amd.com>, Dave Airlie <airlied@linux.ie>, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, gregkh@linuxfoundation.org, hpa@zytor.com
 List-Id: iommu@lists.linux-foundation.org
 
-QmV0d2VlbiBhY3F1aXJpbmcgdGhlIHRoaXNfY3B1X3B0cigpIGFuZCB1c2luZyBpdCwgaWRlYWxs
-eSB3ZSBkb24ndCB3YW50CnRvIGJlIHByZWVtcHRlZCBhbmQgd29yayBvbiBhbm90aGVyIENQVSdz
-IHByaXZhdGUgZGF0YS4gSWYgd2UgZGlzYWJsZQpwcmVlbXB0aW9uIGFyb3VuZCB0aGlzX2NwdV9w
-dHIsIHdlIGRvIG5vdCBuZWVkIHRoZSBDUFUgbG9jYWwgc3BpbmxvY2sgLQpzbyBsb25nIGFzIHRh
-a2UgY2FyZSB0aGF0IG5vIG90aGVyIENQVSBpcyBydW5uaW5nIHRoYXQgY29kZSBhcyBkbyBwZXJm
-b3JtCnRoZSBjcm9zcy1DUFUgY2FjaGUgZmx1c2hpbmcgYW5kIHRlYXJkb3duLgoKWyAgMTY3Ljk5
-Nzg3N10gQlVHOiB1c2luZyBzbXBfcHJvY2Vzc29yX2lkKCkgaW4gcHJlZW1wdGlibGUgWzAwMDAw
-MDAwXSBjb2RlOiB1c2Itc3RvcmFnZS8yMTYKWyAgMTY3Ljk5Nzk0MF0gY2FsbGVyIGlzIGRlYnVn
-X3NtcF9wcm9jZXNzb3JfaWQrMHgxNy8weDIwClsgIDE2Ny45OTc5NDVdIENQVTogNyBQSUQ6IDIx
-NiBDb21tOiB1c2Itc3RvcmFnZSBUYWludGVkOiBHICAgICBVICAgICAgICAgIDQuNy4wLXJjMS1n
-ZnhiZW5jaC1ST19QYXRjaHdvcmtfMTA1NysgIzEKWyAgMTY3Ljk5Nzk0OF0gSGFyZHdhcmUgbmFt
-ZTogSGV3bGV0dC1QYWNrYXJkIEhQIFBybyAzNTAwIFNlcmllcy8yQUJGLCBCSU9TIDguMTEgMTAv
-MjQvMjAxMgpbICAxNjcuOTk3OTUxXSAgMDAwMDAwMDAwMDAwMDAwMCBmZmZmODgwMTE4YjdmOWM4
-IGZmZmZmZmZmODE0MGRjYTUgMDAwMDAwMDAwMDAwMDAwNwpbICAxNjcuOTk3OTU4XSAgZmZmZmZm
-ZmY4MWEzYTdlOSBmZmZmODgwMTE4YjdmOWY4IGZmZmZmZmZmODE0MmE5MjcgMDAwMDAwMDAwMDAw
-MDAwMApbICAxNjcuOTk3OTY1XSAgZmZmZjg4MDBkNDk5ZWQ1OCAwMDAwMDAwMDAwMDAwMDAxIDAw
-MDAwMDAwMDAwZmZmZmYgZmZmZjg4MDExOGI3ZmEwOApbICAxNjcuOTk3OTcxXSBDYWxsIFRyYWNl
-OgpbICAxNjcuOTk3OTc3XSAgWzxmZmZmZmZmZjgxNDBkY2E1Pl0gZHVtcF9zdGFjaysweDY3LzB4
-OTIKWyAgMTY3Ljk5Nzk4MV0gIFs8ZmZmZmZmZmY4MTQyYTkyNz5dIGNoZWNrX3ByZWVtcHRpb25f
-ZGlzYWJsZWQrMHhkNy8weGUwClsgIDE2Ny45OTc5ODVdICBbPGZmZmZmZmZmODE0MmE5NDc+XSBk
-ZWJ1Z19zbXBfcHJvY2Vzc29yX2lkKzB4MTcvMHgyMApbICAxNjcuOTk3OTkwXSAgWzxmZmZmZmZm
-ZjgxNTA3ZTE3Pl0gYWxsb2NfaW92YV9mYXN0KzB4YjcvMHgyMTAKWyAgMTY3Ljk5Nzk5NF0gIFs8
-ZmZmZmZmZmY4MTUwYzU1Zj5dIGludGVsX2FsbG9jX2lvdmErMHg3Zi8weGQwClsgIDE2Ny45OTc5
-OThdICBbPGZmZmZmZmZmODE1MTAyMWQ+XSBpbnRlbF9tYXBfc2crMHhiZC8weDI0MApbICAxNjcu
-OTk4MDAyXSAgWzxmZmZmZmZmZjgxMGU1ZWZkPl0gPyBkZWJ1Z19sb2NrZGVwX3JjdV9lbmFibGVk
-KzB4MWQvMHgyMApbICAxNjcuOTk4MDA5XSAgWzxmZmZmZmZmZjgxNTk2MDU5Pl0gdXNiX2hjZF9t
-YXBfdXJiX2Zvcl9kbWErMHg0YjkvMHg1YTAKWyAgMTY3Ljk5ODAxM10gIFs8ZmZmZmZmZmY4MTU5
-NmQxOT5dIHVzYl9oY2Rfc3VibWl0X3VyYisweGU5LzB4YWEwClsgIDE2Ny45OTgwMTddICBbPGZm
-ZmZmZmZmODEwY2ZmMmY+XSA/IG1hcmtfaGVsZF9sb2NrcysweDZmLzB4YTAKWyAgMTY3Ljk5ODAy
-Ml0gIFs8ZmZmZmZmZmY4MTBkNTI1Yz5dID8gX19yYXdfc3Bpbl9sb2NrX2luaXQrMHgxYy8weDUw
-ClsgIDE2Ny45OTgwMjVdICBbPGZmZmZmZmZmODEwZTVlZmQ+XSA/IGRlYnVnX2xvY2tkZXBfcmN1
-X2VuYWJsZWQrMHgxZC8weDIwClsgIDE2Ny45OTgwMjhdICBbPGZmZmZmZmZmODE1OTg4ZjM+XSB1
-c2Jfc3VibWl0X3VyYisweDNmMy8weDVhMApbICAxNjcuOTk4MDMyXSAgWzxmZmZmZmZmZjgxMGQw
-MDgyPl0gPyB0cmFjZV9oYXJkaXJxc19vbl9jYWxsZXIrMHgxMjIvMHgxYjAKWyAgMTY3Ljk5ODAz
-NV0gIFs8ZmZmZmZmZmY4MTU5OWFlNz5dIHVzYl9zZ193YWl0KzB4NjcvMHgxNTAKWyAgMTY3Ljk5
-ODAzOV0gIFs8ZmZmZmZmZmY4MTVkYzIwMj5dIHVzYl9zdG9yX2J1bGtfdHJhbnNmZXJfc2dsaXN0
-LnBhcnQuMysweDgyLzB4ZDAKWyAgMTY3Ljk5ODA0Ml0gIFs8ZmZmZmZmZmY4MTVkYzI5Yz5dIHVz
-Yl9zdG9yX2J1bGtfc3JiKzB4NGMvMHg2MApbICAxNjcuOTk4MDQ1XSAgWzxmZmZmZmZmZjgxNWRj
-NDJlPl0gdXNiX3N0b3JfQnVsa190cmFuc3BvcnQrMHgxN2UvMHg0MjAKWyAgMTY3Ljk5ODA0OV0g
-IFs8ZmZmZmZmZmY4MTVkY2YzMj5dIHVzYl9zdG9yX2ludm9rZV90cmFuc3BvcnQrMHgyNDIvMHg1
-NDAKWyAgMTY3Ljk5ODA1Ml0gIFs8ZmZmZmZmZmY4MTBlNWVmZD5dID8gZGVidWdfbG9ja2RlcF9y
-Y3VfZW5hYmxlZCsweDFkLzB4MjAKWyAgMTY3Ljk5ODA1OF0gIFs8ZmZmZmZmZmY4MTVkYmExOT5d
-IHVzYl9zdG9yX3RyYW5zcGFyZW50X3Njc2lfY29tbWFuZCsweDkvMHgxMApbICAxNjcuOTk4MDYx
-XSAgWzxmZmZmZmZmZjgxNWRlNTE4Pl0gdXNiX3N0b3JfY29udHJvbF90aHJlYWQrMHgxNTgvMHgy
-NjAKWyAgMTY3Ljk5ODA2NF0gIFs8ZmZmZmZmZmY4MTVkZTNjMD5dID8gZmlsbF9pbnF1aXJ5X3Jl
-c3BvbnNlKzB4MjAvMHgyMApbICAxNjcuOTk4MDY3XSAgWzxmZmZmZmZmZjgxNWRlM2MwPl0gPyBm
-aWxsX2lucXVpcnlfcmVzcG9uc2UrMHgyMC8weDIwClsgIDE2Ny45OTgwNzFdICBbPGZmZmZmZmZm
-ODEwOWRkZmE+XSBrdGhyZWFkKzB4ZWEvMHgxMDAKWyAgMTY3Ljk5ODA3OF0gIFs8ZmZmZmZmZmY4
-MTdhYzZhZj5dIHJldF9mcm9tX2ZvcmsrMHgxZi8weDQwClsgIDE2Ny45OTgwODFdICBbPGZmZmZm
-ZmZmODEwOWRkMTA+XSA/IGt0aHJlYWRfY3JlYXRlX29uX25vZGUrMHgxZjAvMHgxZjAKCkJ1Z3pp
-bGxhOiBodHRwczovL2J1Z3MuZnJlZWRlc2t0b3Aub3JnL3Nob3dfYnVnLmNnaT9pZD05NjI5MwpT
-aWduZWQtb2ZmLWJ5OiBDaHJpcyBXaWxzb24gPGNocmlzQGNocmlzLXdpbHNvbi5jby51az4KQ2M6
-IEpvb25hcyBMYWh0aW5lbiA8am9vbmFzLmxhaHRpbmVuQGxpbnV4LmludGVsLmNvbT4KQ2M6IEpv
-ZXJnIFJvZWRlbCA8am9yb0A4Ynl0ZXMub3JnPgpDYzogaW9tbXVAbGlzdHMubGludXgtZm91bmRh
-dGlvbi5vcmcKQ2M6IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcKLS0tCiBkcml2ZXJzL2lv
-bW11L2lvdmEuYyB8IDMxICsrKysrKysrKystLS0tLS0tLS0tLS0tLS0tLS0tLS0KIDEgZmlsZSBj
-aGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspLCAyMSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9k
-cml2ZXJzL2lvbW11L2lvdmEuYyBiL2RyaXZlcnMvaW9tbXUvaW92YS5jCmluZGV4IGJhNzY0YTA4
-MzVkMy4uNWM1YmJkYjg2YTQyIDEwMDY0NAotLS0gYS9kcml2ZXJzL2lvbW11L2lvdmEuYworKysg
-Yi9kcml2ZXJzL2lvbW11L2lvdmEuYwpAQCAtMzkwLDYgKzM5MCwxMSBAQCBmcmVlX2lvdmEoc3Ry
-dWN0IGlvdmFfZG9tYWluICppb3ZhZCwgdW5zaWduZWQgbG9uZyBwZm4pCiB9CiBFWFBPUlRfU1lN
-Qk9MX0dQTChmcmVlX2lvdmEpOwogCitzdGF0aWMgdm9pZCBmcmVlX3RoaXNfY2FjaGVkX2lvdmFz
-KHZvaWQgKmluZm8pCit7CisJZnJlZV9jcHVfY2FjaGVkX2lvdmFzKHNtcF9wcm9jZXNzb3JfaWQo
-KSwgaW5mbyk7Cit9CisKIC8qKgogICogYWxsb2NfaW92YV9mYXN0IC0gYWxsb2NhdGVzIGFuIGlv
-dmEgZnJvbSByY2FjaGUKICAqIEBpb3ZhZDogLSBpb3ZhIGRvbWFpbiBpbiBxdWVzdGlvbgpAQCAt
-NDEzLDE1ICs0MTgsMTIgQEAgYWxsb2NfaW92YV9mYXN0KHN0cnVjdCBpb3ZhX2RvbWFpbiAqaW92
-YWQsIHVuc2lnbmVkIGxvbmcgc2l6ZSwKIHJldHJ5OgogCW5ld19pb3ZhID0gYWxsb2NfaW92YShp
-b3ZhZCwgc2l6ZSwgbGltaXRfcGZuLCB0cnVlKTsKIAlpZiAoIW5ld19pb3ZhKSB7Ci0JCXVuc2ln
-bmVkIGludCBjcHU7Ci0KIAkJaWYgKGZsdXNoZWRfcmNhY2hlKQogCQkJcmV0dXJuIDA7CiAKIAkJ
-LyogVHJ5IHJlcGxlbmlzaGluZyBJT1ZBcyBieSBmbHVzaGluZyByY2FjaGUuICovCiAJCWZsdXNo
-ZWRfcmNhY2hlID0gdHJ1ZTsKLQkJZm9yX2VhY2hfb25saW5lX2NwdShjcHUpCi0JCQlmcmVlX2Nw
-dV9jYWNoZWRfaW92YXMoY3B1LCBpb3ZhZCk7CisJCW9uX2VhY2hfY3B1KGZyZWVfdGhpc19jYWNo
-ZWRfaW92YXMsIGlvdmFkLCB0cnVlKTsKIAkJZ290byByZXRyeTsKIAl9CiAKQEAgLTY0NSw3ICs2
-NDcsNiBAQCBzdHJ1Y3QgaW92YV9tYWdhemluZSB7CiB9OwogCiBzdHJ1Y3QgaW92YV9jcHVfcmNh
-Y2hlIHsKLQlzcGlubG9ja190IGxvY2s7CiAJc3RydWN0IGlvdmFfbWFnYXppbmUgKmxvYWRlZDsK
-IAlzdHJ1Y3QgaW92YV9tYWdhemluZSAqcHJldjsKIH07CkBAIC03MjcsNyArNzI4LDYgQEAgc3Rh
-dGljIHZvaWQgaW5pdF9pb3ZhX3JjYWNoZXMoc3RydWN0IGlvdmFfZG9tYWluICppb3ZhZCkKIAkJ
-CWNvbnRpbnVlOwogCQlmb3JfZWFjaF9wb3NzaWJsZV9jcHUoY3B1KSB7CiAJCQljcHVfcmNhY2hl
-ID0gcGVyX2NwdV9wdHIocmNhY2hlLT5jcHVfcmNhY2hlcywgY3B1KTsKLQkJCXNwaW5fbG9ja19p
-bml0KCZjcHVfcmNhY2hlLT5sb2NrKTsKIAkJCWNwdV9yY2FjaGUtPmxvYWRlZCA9IGlvdmFfbWFn
-YXppbmVfYWxsb2MoR0ZQX0tFUk5FTCk7CiAJCQljcHVfcmNhY2hlLT5wcmV2ID0gaW92YV9tYWdh
-emluZV9hbGxvYyhHRlBfS0VSTkVMKTsKIAkJfQpAQCAtNzQ3LDEwICs3NDcsOSBAQCBzdGF0aWMg
-Ym9vbCBfX2lvdmFfcmNhY2hlX2luc2VydChzdHJ1Y3QgaW92YV9kb21haW4gKmlvdmFkLAogCXN0
-cnVjdCBpb3ZhX21hZ2F6aW5lICptYWdfdG9fZnJlZSA9IE5VTEw7CiAJc3RydWN0IGlvdmFfY3B1
-X3JjYWNoZSAqY3B1X3JjYWNoZTsKIAlib29sIGNhbl9pbnNlcnQgPSBmYWxzZTsKLQl1bnNpZ25l
-ZCBsb25nIGZsYWdzOwogCisJcHJlZW1wdF9kaXNhYmxlKCk7CiAJY3B1X3JjYWNoZSA9IHRoaXNf
-Y3B1X3B0cihyY2FjaGUtPmNwdV9yY2FjaGVzKTsKLQlzcGluX2xvY2tfaXJxc2F2ZSgmY3B1X3Jj
-YWNoZS0+bG9jaywgZmxhZ3MpOwogCiAJaWYgKCFpb3ZhX21hZ2F6aW5lX2Z1bGwoY3B1X3JjYWNo
-ZS0+bG9hZGVkKSkgewogCQljYW5faW5zZXJ0ID0gdHJ1ZTsKQEAgLTc3OCw3ICs3NzcsNyBAQCBz
-dGF0aWMgYm9vbCBfX2lvdmFfcmNhY2hlX2luc2VydChzdHJ1Y3QgaW92YV9kb21haW4gKmlvdmFk
-LAogCWlmIChjYW5faW5zZXJ0KQogCQlpb3ZhX21hZ2F6aW5lX3B1c2goY3B1X3JjYWNoZS0+bG9h
-ZGVkLCBpb3ZhX3Bmbik7CiAKLQlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZjcHVfcmNhY2hlLT5s
-b2NrLCBmbGFncyk7CisJcHJlZW1wdF9lbmFibGUoKTsKIAogCWlmIChtYWdfdG9fZnJlZSkgewog
-CQlpb3ZhX21hZ2F6aW5lX2ZyZWVfcGZucyhtYWdfdG9fZnJlZSwgaW92YWQpOwpAQCAtODEwLDEw
-ICs4MDksOSBAQCBzdGF0aWMgdW5zaWduZWQgbG9uZyBfX2lvdmFfcmNhY2hlX2dldChzdHJ1Y3Qg
-aW92YV9yY2FjaGUgKnJjYWNoZSwKIAlzdHJ1Y3QgaW92YV9jcHVfcmNhY2hlICpjcHVfcmNhY2hl
-OwogCXVuc2lnbmVkIGxvbmcgaW92YV9wZm4gPSAwOwogCWJvb2wgaGFzX3BmbiA9IGZhbHNlOwot
-CXVuc2lnbmVkIGxvbmcgZmxhZ3M7CiAKKwlwcmVlbXB0X2Rpc2FibGUoKTsKIAljcHVfcmNhY2hl
-ID0gdGhpc19jcHVfcHRyKHJjYWNoZS0+Y3B1X3JjYWNoZXMpOwotCXNwaW5fbG9ja19pcnFzYXZl
-KCZjcHVfcmNhY2hlLT5sb2NrLCBmbGFncyk7CiAKIAlpZiAoIWlvdmFfbWFnYXppbmVfZW1wdHko
-Y3B1X3JjYWNoZS0+bG9hZGVkKSkgewogCQloYXNfcGZuID0gdHJ1ZTsKQEAgLTgzMyw3ICs4MzEs
-NyBAQCBzdGF0aWMgdW5zaWduZWQgbG9uZyBfX2lvdmFfcmNhY2hlX2dldChzdHJ1Y3QgaW92YV9y
-Y2FjaGUgKnJjYWNoZSwKIAlpZiAoaGFzX3BmbikKIAkJaW92YV9wZm4gPSBpb3ZhX21hZ2F6aW5l
-X3BvcChjcHVfcmNhY2hlLT5sb2FkZWQsIGxpbWl0X3Bmbik7CiAKLQlzcGluX3VubG9ja19pcnFy
-ZXN0b3JlKCZjcHVfcmNhY2hlLT5sb2NrLCBmbGFncyk7CisJcHJlZW1wdF9lbmFibGUoKTsKIAog
-CXJldHVybiBpb3ZhX3BmbjsKIH0KQEAgLTg2MiwxNyArODYwLDExIEBAIHN0YXRpYyB2b2lkIGZy
-ZWVfY3B1X2lvdmFfcmNhY2hlKHVuc2lnbmVkIGludCBjcHUsIHN0cnVjdCBpb3ZhX2RvbWFpbiAq
-aW92YWQsCiAJCQkJIHN0cnVjdCBpb3ZhX3JjYWNoZSAqcmNhY2hlKQogewogCXN0cnVjdCBpb3Zh
-X2NwdV9yY2FjaGUgKmNwdV9yY2FjaGUgPSBwZXJfY3B1X3B0cihyY2FjaGUtPmNwdV9yY2FjaGVz
-LCBjcHUpOwotCXVuc2lnbmVkIGxvbmcgZmxhZ3M7Ci0KLQlzcGluX2xvY2tfaXJxc2F2ZSgmY3B1
-X3JjYWNoZS0+bG9jaywgZmxhZ3MpOwotCiAJaW92YV9tYWdhemluZV9mcmVlX3BmbnMoY3B1X3Jj
-YWNoZS0+bG9hZGVkLCBpb3ZhZCk7CiAJaW92YV9tYWdhemluZV9mcmVlKGNwdV9yY2FjaGUtPmxv
-YWRlZCk7CiAKIAlpb3ZhX21hZ2F6aW5lX2ZyZWVfcGZucyhjcHVfcmNhY2hlLT5wcmV2LCBpb3Zh
-ZCk7CiAJaW92YV9tYWdhemluZV9mcmVlKGNwdV9yY2FjaGUtPnByZXYpOwotCi0Jc3Bpbl91bmxv
-Y2tfaXJxcmVzdG9yZSgmY3B1X3JjYWNoZS0+bG9jaywgZmxhZ3MpOwogfQogCiAvKgpAQCAtOTA2
-LDE2ICs4OTgsMTMgQEAgdm9pZCBmcmVlX2NwdV9jYWNoZWRfaW92YXModW5zaWduZWQgaW50IGNw
-dSwgc3RydWN0IGlvdmFfZG9tYWluICppb3ZhZCkKIHsKIAlzdHJ1Y3QgaW92YV9jcHVfcmNhY2hl
-ICpjcHVfcmNhY2hlOwogCXN0cnVjdCBpb3ZhX3JjYWNoZSAqcmNhY2hlOwotCXVuc2lnbmVkIGxv
-bmcgZmxhZ3M7CiAJaW50IGk7CiAKIAlmb3IgKGkgPSAwOyBpIDwgSU9WQV9SQU5HRV9DQUNIRV9N
-QVhfU0laRTsgKytpKSB7CiAJCXJjYWNoZSA9ICZpb3ZhZC0+cmNhY2hlc1tpXTsKIAkJY3B1X3Jj
-YWNoZSA9IHBlcl9jcHVfcHRyKHJjYWNoZS0+Y3B1X3JjYWNoZXMsIGNwdSk7Ci0JCXNwaW5fbG9j
-a19pcnFzYXZlKCZjcHVfcmNhY2hlLT5sb2NrLCBmbGFncyk7CiAJCWlvdmFfbWFnYXppbmVfZnJl
-ZV9wZm5zKGNwdV9yY2FjaGUtPmxvYWRlZCwgaW92YWQpOwogCQlpb3ZhX21hZ2F6aW5lX2ZyZWVf
-cGZucyhjcHVfcmNhY2hlLT5wcmV2LCBpb3ZhZCk7Ci0JCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUo
-JmNwdV9yY2FjaGUtPmxvY2ssIGZsYWdzKTsKIAl9CiB9CiAKLS0gCjIuOC4xCgpfX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBs
-aXN0CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVz
-a3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
+On Sun, May 29, 2016 at 08:27:07PM +0200, Daniel Vetter wrote:
+> On Fri, May 27, 2016 at 3:18 AM, Luis R. Rodriguez <mcgrof@kernel.org> wrote:
+> > To get KFD support in radeon we need the following
+> > initialization to happen in this order, their
+> > respective driver file that has its init routine
+> > listed next to it:
+> >
+> > 0. AMD IOMMUv1:    arch/x86/kernel/pci-dma.c
+> > 1. AMD IOMMUv2:    drivers/iommu/amd_iommu_v2.c
+> > 2. AMD KFD:        drivers/gpu/drm/amd/amdkfd/kfd_module.c
+> > 3. AMD Radeon:     drivers/gpu/drm/radeon/radeon_drv.c
+> >
+> > Order is rather implicit, but these drivers can currently
+> > only do so much given the amount of leg room available.
+> > Below are the respective init routines and how they are
+> > initialized:
+> >
+> > arch/x86/kernel/pci-dma.c               rootfs_initcall(pci_iommu_init);
+> > drivers/iommu/amd_iommu_v2.c            module_init(amd_iommu_v2_init);
+> > drivers/gpu/drm/amd/amdkfd/kfd_module.c module_init(kfd_module_init);
+> > drivers/gpu/drm/radeon/radeon_drv.c     module_init(radeon_init);
+> >
+> > When a driver is built-in module_init() folds to use
+> > device_initcall(), and we have the following possible
+> > orders:
+> >
+> >         #define pure_initcall(fn)    __define_initcall(fn, 0)
+> >         #define core_initcall(fn)    __define_initcall(fn, 1)
+> >         #define postcore_initcall(fn)__define_initcall(fn, 2)
+> >         #define arch_initcall(fn)    __define_initcall(fn, 3)
+> >         #define subsys_initcall(fn)  __define_initcall(fn, 4)
+> >         #define fs_initcall(fn)      __define_initcall(fn, 5)
+> >         ---------------------------------------------------------
+> >         #define rootfs_initcall(fn)  __define_initcall(fn, rootfs)
+> >         #define device_initcall(fn)  __define_initcall(fn, 6)
+> >         #define late_initcall(fn)    __define_initcall(fn, 7)
+> >
+> > Since we start off from rootfs_initcall(), it gives us 3 more
+> > levels of leg room to play with for order semantics, this isn't
+> > enough to address all required levels of dependencies, this
+> > is specially true given that AMD-KFD needs to be loaded before
+> > the radeon driver -- -but this it not enforced by symbols.
+> > If the AMD-KFD driver is not loaded prior to the radeon driver
+> > because otherwise the radeon driver will not initialize the
+> > AMD-KFD driver and you get no KFD functionality in userspace.
+> >
+> > Commit 1bacc894c227fad8a7 ("drivers: Move iommu/ before gpu/ in
+> > Makefile") works around some of the possibe races between
+> > the AMD IOMMU v2 and GPU drivers by changing the link order.
+> > This is fragile, however its the bets we can do, given that
+> > making the GPU drivers use late_initcall() would also implicate
+> > a similar race between them. That possible race is fortunatley
+> > addressed given that the drm Makefile currently has amdkfd
+> > linked prior to radeon:
+> >
+> > drivers/gpu/drm/Makefile
+> > ...
+> > obj-$(CONFIG_HSA_AMD) += amd/amdkfd/
+> > obj-$(CONFIG_DRM_RADEON)+= radeon/
+> > ...
+> >
+> > Changing amdkfd and radeon to late_initcall() however is
+> > still the right call in orde to annotate explicitly a
+> > delayed dependency requirement between the GPU drivers
+> > and the IOMMUs.
+> >
+> > We can't address the fragile nature of the link order
+> > right now, but in the future that might be possible.
+> >
+> > Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
+> > ---
+> >
+> > Please note, the changes to drivers/Makefile are just
+> > for the sake of forcing the possible race to occur,
+> > if this works well the actual [PATCH] submission will
+> > skip those changes as its pointless to remove those
+> > work arounds as it stands, due to the limited nature
+> > of the levels available for addressing requirements.
+> >
+> > Also, if you are aware of further dependency hell
+> > things like these -- please do let me know as I am
+> > interested in looking at addressing them.
+> 
+> This should be fixed with -EDEFER_PROBE instead. Frobbing initcall
+> levels should then just be done as an optimization to avoid too much
+> reprobing.
+
+radeon already uses -EDEFER_PROBE but it assumes that amdkfd *is* loaded first,
+and only if it is already loaded can it count on getting -EDEFER_PROBE. The
+radeon driver will deffer probe *iff* kgd2kfd_init() returns -EDEFER_PROBE,
+which only happens when amdkfd_init_completed is no longer present. If radeon
+gets linked first though the symbol fetch for kgd2kfd_init() will make it as
+not-present though. So the current heuristic used does not address proper link
+/ load order. Part of the issue mentioned on the commit log is another race
+underneath the hood with the AMD IOMMU v2 which is needed for amdkfd. The
+underlying issue however really is the lack of available clear semantics for
+dependencies over 3 levels here.  This is solved one way or another by link
+order in the Makefiles, but as I've noted so far this has been rather implicit
+and fragile. The change here makes at least the order of the GPU drivers
+explicitly later than the IOMMUs. The specific race between radeon and amdfkd
+is solved currently through link order through the Makefiles. In the future we
+maybe able to make things more explicit.
+
+-EDEFER_PROBE also introduces a latency on load which we should not need if we
+can handle proper link / load order dependency annotations. This change is a
+small part of that work, but as it the commit log also notes future further
+work is possible to build stronger semantics.  Some of the work I'm doing with
+linker-tables may help with this in the future [0], but for now this should
+help with what the semantics we have in place.
+
+[0] http://lkml.kernel.org/r/1455889559-9428-1-git-send-email-mcgrof@kernel.org
+ 
+  Luis
