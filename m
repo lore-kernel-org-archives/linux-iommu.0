@@ -1,132 +1,150 @@
-From: Bogdan Purcareata <bogdan.purcareata-3arQi8VN3Tc@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Properly initialize CBAR MemAttr
-Date: Tue, 31 May 2016 13:09:23 +0000
-Message-ID: <574D8D01.7090500@nxp.com>
-References: <1464617742-5493-1-git-send-email-bogdan.purcareata@nxp.com>
-	<574D5EBF.8010707@arm.com>
+From: Chris Wilson <chris@chris-wilson.co.uk>
+Subject: [PATCH] iommu: Disable preemption around use of
+	this_cpu_ptr()
+Date: Tue, 31 May 2016 17:34:30 +0100
+Message-ID: <1464712470-26286-1-git-send-email-chris@chris-wilson.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <574D5EBF.8010707-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-Content-ID: <7F9A417FFC7A4147BEFA2F43C0466B1F-jdb/QiT5osKcE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 31.05.2016 12:51, Robin Murphy wrote:
-> On 30/05/16 15:15, Bogdan Purcareata wrote:
->> Currently, when initializing the CBAR memattr attributes to the weakest
->> values, it is expected that the final ones will be declared in the TTBCR
->> register (SMMU_CBn_TCR).
->
-> You mean the stage 1 PTE, right? TTBCR only controls the attributes for
-> table walks.
-
-I got lost in the SMMU spec. I couldn't find the direct correlation between CBAR 
-and TTBCR. Thanks for the clarification.
-
->> This is not required when CBAR type consists of a stage 1 translation
->> followed by a stage 2 bypass.
->
-> On the contrary, this is _only_ required for stage 1 translation with
-> stage 2 bypass - CBAR.MemAttr gives the _stage 2_ memory type (see
-> section 2.4 "Memory type and shareability attribute determination" in
-> the SMMU spec). For nested translation the stage 2 attributes come from
-> the stage 2 context itself.
-
-Yes. In the previous "this", I was referring to the TTBCR configurations, not 
-CBAR itself.
-
->>                                This is the case when assigning a VFIO PCI
->> device to a KVM guest. Overriding the default transaction attributes to
->> writeback cacheable results in the device no longer working in the guest
->> (the adapter requires explicit flushes on the descriptor rings memory).
->
->   From that, the real problem is almost certainly that you're erroneously
-> describing the device as coherent or non-coherent (whichever it actually
-> isn't) somewhere.
-
-And that was the issue, indeed. The PCIe controller was not described as 
-dma-coherent in the device tree, when in fact it was, thus wreaking all this havoc.
-
-Thank you for the valuable insight and please discard the patch.
-
-Bogdan P.
-
->> Update the context init routine to initialize the CBAR MemAttr field only
->> if there's a stage 1 followed by a stage 2 translation.
->
-> The CBAR.MemAttr field doesn't even exist in that format - it's a good
-> thing that we don't actually implement nested translation (we currently
-> just use a stage 2 context instead), because this would end up
-> corrupting CBAR.CBNDX (i.e. the stage 2 context bank index). Now that I
-> should probably fix...
->
->> Signed-off-by: Bogdan Purcareata <bogdan.purcareata-3arQi8VN3Tc@public.gmane.org>
->> ---
->>    drivers/iommu/arm-smmu.c | 13 +++++++++----
->>    1 file changed, 9 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index ff7a392..1400ec9 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -765,13 +765,14 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
->>    {
->>    	u32 reg;
->>    	u64 reg64;
->> -	bool stage1;
->> +	bool stage1, stage1_stage2;
->>    	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
->>    	struct arm_smmu_device *smmu = smmu_domain->smmu;
->>    	void __iomem *cb_base, *gr1_base;
->>
->>    	gr1_base = ARM_SMMU_GR1(smmu);
->>    	stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
->> +	stage1_stage2 = cfg->cbar == CBAR_TYPE_S1_TRANS_S2_TRANS;
->>    	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
->>
->>    	if (smmu->version > ARM_SMMU_V1) {
->> @@ -793,15 +794,19 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
->>
->>    	/*
->>    	 * Use the weakest shareability/memory types, so they are
->> -	 * overridden by the ttbcr/pte.
->> +	 * overridden by the ttbcr/pte. This happens only if the stage
->> +	 * 1 is followed by a stage 2 translation.
->>    	 */
->> -	if (stage1) {
->> +	if (stage1_stage2) {
->>    		reg |= (CBAR_S1_BPSHCFG_NSH << CBAR_S1_BPSHCFG_SHIFT) |
->>    			(CBAR_S1_MEMATTR_WB << CBAR_S1_MEMATTR_SHIFT);
->> -	} else if (!(smmu->features & ARM_SMMU_FEAT_VMID16)) {
->
-> Since MemAttr is initially zero, the net result of this is that *all*
-> stage 1 transactions will now get overridden to Strongly-Ordered. That
-> may hide your problem, but it's definitely not the correct thing to do.
->
-> Robin.
->
->> +	}
->> +
->> +	if (!stage1 && !(smmu->features & ARM_SMMU_FEAT_VMID16)) {
->>    		/* 8-bit VMIDs live in CBAR */
->>    		reg |= ARM_SMMU_CB_VMID(smmu, cfg) << CBAR_VMID_SHIFT;
->>    	}
->> +
->>    	writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
->>
->>    	/* TTBRs */
->>
->
+QmV0d2VlbiBhY3F1aXJpbmcgdGhlIHRoaXNfY3B1X3B0cigpIGFuZCB1c2luZyBpdCwgaWRlYWxs
+eSB3ZSBkb24ndCB3YW50CnRvIGJlIHByZWVtcHRlZCBhbmQgd29yayBvbiBhbm90aGVyIENQVSdz
+IHByaXZhdGUgZGF0YS4gSWYgd2UgZGlzYWJsZQpwcmVlbXB0aW9uIGFyb3VuZCB0aGlzX2NwdV9w
+dHIsIHdlIGRvIG5vdCBuZWVkIHRoZSBDUFUgbG9jYWwgc3BpbmxvY2sgLQpzbyBsb25nIGFzIHRh
+a2UgY2FyZSB0aGF0IG5vIG90aGVyIENQVSBpcyBydW5uaW5nIHRoYXQgY29kZSBhcyBkbyBwZXJm
+b3JtCnRoZSBjcm9zcy1DUFUgY2FjaGUgZmx1c2hpbmcgYW5kIHRlYXJkb3duLgoKWyAgMTY3Ljk5
+Nzg3N10gQlVHOiB1c2luZyBzbXBfcHJvY2Vzc29yX2lkKCkgaW4gcHJlZW1wdGlibGUgWzAwMDAw
+MDAwXSBjb2RlOiB1c2Itc3RvcmFnZS8yMTYKWyAgMTY3Ljk5Nzk0MF0gY2FsbGVyIGlzIGRlYnVn
+X3NtcF9wcm9jZXNzb3JfaWQrMHgxNy8weDIwClsgIDE2Ny45OTc5NDVdIENQVTogNyBQSUQ6IDIx
+NiBDb21tOiB1c2Itc3RvcmFnZSBUYWludGVkOiBHICAgICBVICAgICAgICAgIDQuNy4wLXJjMS1n
+ZnhiZW5jaC1ST19QYXRjaHdvcmtfMTA1NysgIzEKWyAgMTY3Ljk5Nzk0OF0gSGFyZHdhcmUgbmFt
+ZTogSGV3bGV0dC1QYWNrYXJkIEhQIFBybyAzNTAwIFNlcmllcy8yQUJGLCBCSU9TIDguMTEgMTAv
+MjQvMjAxMgpbICAxNjcuOTk3OTUxXSAgMDAwMDAwMDAwMDAwMDAwMCBmZmZmODgwMTE4YjdmOWM4
+IGZmZmZmZmZmODE0MGRjYTUgMDAwMDAwMDAwMDAwMDAwNwpbICAxNjcuOTk3OTU4XSAgZmZmZmZm
+ZmY4MWEzYTdlOSBmZmZmODgwMTE4YjdmOWY4IGZmZmZmZmZmODE0MmE5MjcgMDAwMDAwMDAwMDAw
+MDAwMApbICAxNjcuOTk3OTY1XSAgZmZmZjg4MDBkNDk5ZWQ1OCAwMDAwMDAwMDAwMDAwMDAxIDAw
+MDAwMDAwMDAwZmZmZmYgZmZmZjg4MDExOGI3ZmEwOApbICAxNjcuOTk3OTcxXSBDYWxsIFRyYWNl
+OgpbICAxNjcuOTk3OTc3XSAgWzxmZmZmZmZmZjgxNDBkY2E1Pl0gZHVtcF9zdGFjaysweDY3LzB4
+OTIKWyAgMTY3Ljk5Nzk4MV0gIFs8ZmZmZmZmZmY4MTQyYTkyNz5dIGNoZWNrX3ByZWVtcHRpb25f
+ZGlzYWJsZWQrMHhkNy8weGUwClsgIDE2Ny45OTc5ODVdICBbPGZmZmZmZmZmODE0MmE5NDc+XSBk
+ZWJ1Z19zbXBfcHJvY2Vzc29yX2lkKzB4MTcvMHgyMApbICAxNjcuOTk3OTkwXSAgWzxmZmZmZmZm
+ZjgxNTA3ZTE3Pl0gYWxsb2NfaW92YV9mYXN0KzB4YjcvMHgyMTAKWyAgMTY3Ljk5Nzk5NF0gIFs8
+ZmZmZmZmZmY4MTUwYzU1Zj5dIGludGVsX2FsbG9jX2lvdmErMHg3Zi8weGQwClsgIDE2Ny45OTc5
+OThdICBbPGZmZmZmZmZmODE1MTAyMWQ+XSBpbnRlbF9tYXBfc2crMHhiZC8weDI0MApbICAxNjcu
+OTk4MDAyXSAgWzxmZmZmZmZmZjgxMGU1ZWZkPl0gPyBkZWJ1Z19sb2NrZGVwX3JjdV9lbmFibGVk
+KzB4MWQvMHgyMApbICAxNjcuOTk4MDA5XSAgWzxmZmZmZmZmZjgxNTk2MDU5Pl0gdXNiX2hjZF9t
+YXBfdXJiX2Zvcl9kbWErMHg0YjkvMHg1YTAKWyAgMTY3Ljk5ODAxM10gIFs8ZmZmZmZmZmY4MTU5
+NmQxOT5dIHVzYl9oY2Rfc3VibWl0X3VyYisweGU5LzB4YWEwClsgIDE2Ny45OTgwMTddICBbPGZm
+ZmZmZmZmODEwY2ZmMmY+XSA/IG1hcmtfaGVsZF9sb2NrcysweDZmLzB4YTAKWyAgMTY3Ljk5ODAy
+Ml0gIFs8ZmZmZmZmZmY4MTBkNTI1Yz5dID8gX19yYXdfc3Bpbl9sb2NrX2luaXQrMHgxYy8weDUw
+ClsgIDE2Ny45OTgwMjVdICBbPGZmZmZmZmZmODEwZTVlZmQ+XSA/IGRlYnVnX2xvY2tkZXBfcmN1
+X2VuYWJsZWQrMHgxZC8weDIwClsgIDE2Ny45OTgwMjhdICBbPGZmZmZmZmZmODE1OTg4ZjM+XSB1
+c2Jfc3VibWl0X3VyYisweDNmMy8weDVhMApbICAxNjcuOTk4MDMyXSAgWzxmZmZmZmZmZjgxMGQw
+MDgyPl0gPyB0cmFjZV9oYXJkaXJxc19vbl9jYWxsZXIrMHgxMjIvMHgxYjAKWyAgMTY3Ljk5ODAz
+NV0gIFs8ZmZmZmZmZmY4MTU5OWFlNz5dIHVzYl9zZ193YWl0KzB4NjcvMHgxNTAKWyAgMTY3Ljk5
+ODAzOV0gIFs8ZmZmZmZmZmY4MTVkYzIwMj5dIHVzYl9zdG9yX2J1bGtfdHJhbnNmZXJfc2dsaXN0
+LnBhcnQuMysweDgyLzB4ZDAKWyAgMTY3Ljk5ODA0Ml0gIFs8ZmZmZmZmZmY4MTVkYzI5Yz5dIHVz
+Yl9zdG9yX2J1bGtfc3JiKzB4NGMvMHg2MApbICAxNjcuOTk4MDQ1XSAgWzxmZmZmZmZmZjgxNWRj
+NDJlPl0gdXNiX3N0b3JfQnVsa190cmFuc3BvcnQrMHgxN2UvMHg0MjAKWyAgMTY3Ljk5ODA0OV0g
+IFs8ZmZmZmZmZmY4MTVkY2YzMj5dIHVzYl9zdG9yX2ludm9rZV90cmFuc3BvcnQrMHgyNDIvMHg1
+NDAKWyAgMTY3Ljk5ODA1Ml0gIFs8ZmZmZmZmZmY4MTBlNWVmZD5dID8gZGVidWdfbG9ja2RlcF9y
+Y3VfZW5hYmxlZCsweDFkLzB4MjAKWyAgMTY3Ljk5ODA1OF0gIFs8ZmZmZmZmZmY4MTVkYmExOT5d
+IHVzYl9zdG9yX3RyYW5zcGFyZW50X3Njc2lfY29tbWFuZCsweDkvMHgxMApbICAxNjcuOTk4MDYx
+XSAgWzxmZmZmZmZmZjgxNWRlNTE4Pl0gdXNiX3N0b3JfY29udHJvbF90aHJlYWQrMHgxNTgvMHgy
+NjAKWyAgMTY3Ljk5ODA2NF0gIFs8ZmZmZmZmZmY4MTVkZTNjMD5dID8gZmlsbF9pbnF1aXJ5X3Jl
+c3BvbnNlKzB4MjAvMHgyMApbICAxNjcuOTk4MDY3XSAgWzxmZmZmZmZmZjgxNWRlM2MwPl0gPyBm
+aWxsX2lucXVpcnlfcmVzcG9uc2UrMHgyMC8weDIwClsgIDE2Ny45OTgwNzFdICBbPGZmZmZmZmZm
+ODEwOWRkZmE+XSBrdGhyZWFkKzB4ZWEvMHgxMDAKWyAgMTY3Ljk5ODA3OF0gIFs8ZmZmZmZmZmY4
+MTdhYzZhZj5dIHJldF9mcm9tX2ZvcmsrMHgxZi8weDQwClsgIDE2Ny45OTgwODFdICBbPGZmZmZm
+ZmZmODEwOWRkMTA+XSA/IGt0aHJlYWRfY3JlYXRlX29uX25vZGUrMHgxZjAvMHgxZjAKCkJ1Z3pp
+bGxhOiBodHRwczovL2J1Z3MuZnJlZWRlc2t0b3Aub3JnL3Nob3dfYnVnLmNnaT9pZD05NjI5MwpT
+aWduZWQtb2ZmLWJ5OiBDaHJpcyBXaWxzb24gPGNocmlzQGNocmlzLXdpbHNvbi5jby51az4KQ2M6
+IEpvb25hcyBMYWh0aW5lbiA8am9vbmFzLmxhaHRpbmVuQGxpbnV4LmludGVsLmNvbT4KQ2M6IEpv
+ZXJnIFJvZWRlbCA8am9yb0A4Ynl0ZXMub3JnPgpDYzogaW9tbXVAbGlzdHMubGludXgtZm91bmRh
+dGlvbi5vcmcKQ2M6IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcKLS0tCiBkcml2ZXJzL2lv
+bW11L2lvdmEuYyB8IDMxICsrKysrKysrKystLS0tLS0tLS0tLS0tLS0tLS0tLS0KIDEgZmlsZSBj
+aGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspLCAyMSBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9k
+cml2ZXJzL2lvbW11L2lvdmEuYyBiL2RyaXZlcnMvaW9tbXUvaW92YS5jCmluZGV4IGJhNzY0YTA4
+MzVkMy4uNWM1YmJkYjg2YTQyIDEwMDY0NAotLS0gYS9kcml2ZXJzL2lvbW11L2lvdmEuYworKysg
+Yi9kcml2ZXJzL2lvbW11L2lvdmEuYwpAQCAtMzkwLDYgKzM5MCwxMSBAQCBmcmVlX2lvdmEoc3Ry
+dWN0IGlvdmFfZG9tYWluICppb3ZhZCwgdW5zaWduZWQgbG9uZyBwZm4pCiB9CiBFWFBPUlRfU1lN
+Qk9MX0dQTChmcmVlX2lvdmEpOwogCitzdGF0aWMgdm9pZCBmcmVlX3RoaXNfY2FjaGVkX2lvdmFz
+KHZvaWQgKmluZm8pCit7CisJZnJlZV9jcHVfY2FjaGVkX2lvdmFzKHNtcF9wcm9jZXNzb3JfaWQo
+KSwgaW5mbyk7Cit9CisKIC8qKgogICogYWxsb2NfaW92YV9mYXN0IC0gYWxsb2NhdGVzIGFuIGlv
+dmEgZnJvbSByY2FjaGUKICAqIEBpb3ZhZDogLSBpb3ZhIGRvbWFpbiBpbiBxdWVzdGlvbgpAQCAt
+NDEzLDE1ICs0MTgsMTIgQEAgYWxsb2NfaW92YV9mYXN0KHN0cnVjdCBpb3ZhX2RvbWFpbiAqaW92
+YWQsIHVuc2lnbmVkIGxvbmcgc2l6ZSwKIHJldHJ5OgogCW5ld19pb3ZhID0gYWxsb2NfaW92YShp
+b3ZhZCwgc2l6ZSwgbGltaXRfcGZuLCB0cnVlKTsKIAlpZiAoIW5ld19pb3ZhKSB7Ci0JCXVuc2ln
+bmVkIGludCBjcHU7Ci0KIAkJaWYgKGZsdXNoZWRfcmNhY2hlKQogCQkJcmV0dXJuIDA7CiAKIAkJ
+LyogVHJ5IHJlcGxlbmlzaGluZyBJT1ZBcyBieSBmbHVzaGluZyByY2FjaGUuICovCiAJCWZsdXNo
+ZWRfcmNhY2hlID0gdHJ1ZTsKLQkJZm9yX2VhY2hfb25saW5lX2NwdShjcHUpCi0JCQlmcmVlX2Nw
+dV9jYWNoZWRfaW92YXMoY3B1LCBpb3ZhZCk7CisJCW9uX2VhY2hfY3B1KGZyZWVfdGhpc19jYWNo
+ZWRfaW92YXMsIGlvdmFkLCB0cnVlKTsKIAkJZ290byByZXRyeTsKIAl9CiAKQEAgLTY0NSw3ICs2
+NDcsNiBAQCBzdHJ1Y3QgaW92YV9tYWdhemluZSB7CiB9OwogCiBzdHJ1Y3QgaW92YV9jcHVfcmNh
+Y2hlIHsKLQlzcGlubG9ja190IGxvY2s7CiAJc3RydWN0IGlvdmFfbWFnYXppbmUgKmxvYWRlZDsK
+IAlzdHJ1Y3QgaW92YV9tYWdhemluZSAqcHJldjsKIH07CkBAIC03MjcsNyArNzI4LDYgQEAgc3Rh
+dGljIHZvaWQgaW5pdF9pb3ZhX3JjYWNoZXMoc3RydWN0IGlvdmFfZG9tYWluICppb3ZhZCkKIAkJ
+CWNvbnRpbnVlOwogCQlmb3JfZWFjaF9wb3NzaWJsZV9jcHUoY3B1KSB7CiAJCQljcHVfcmNhY2hl
+ID0gcGVyX2NwdV9wdHIocmNhY2hlLT5jcHVfcmNhY2hlcywgY3B1KTsKLQkJCXNwaW5fbG9ja19p
+bml0KCZjcHVfcmNhY2hlLT5sb2NrKTsKIAkJCWNwdV9yY2FjaGUtPmxvYWRlZCA9IGlvdmFfbWFn
+YXppbmVfYWxsb2MoR0ZQX0tFUk5FTCk7CiAJCQljcHVfcmNhY2hlLT5wcmV2ID0gaW92YV9tYWdh
+emluZV9hbGxvYyhHRlBfS0VSTkVMKTsKIAkJfQpAQCAtNzQ3LDEwICs3NDcsOSBAQCBzdGF0aWMg
+Ym9vbCBfX2lvdmFfcmNhY2hlX2luc2VydChzdHJ1Y3QgaW92YV9kb21haW4gKmlvdmFkLAogCXN0
+cnVjdCBpb3ZhX21hZ2F6aW5lICptYWdfdG9fZnJlZSA9IE5VTEw7CiAJc3RydWN0IGlvdmFfY3B1
+X3JjYWNoZSAqY3B1X3JjYWNoZTsKIAlib29sIGNhbl9pbnNlcnQgPSBmYWxzZTsKLQl1bnNpZ25l
+ZCBsb25nIGZsYWdzOwogCisJcHJlZW1wdF9kaXNhYmxlKCk7CiAJY3B1X3JjYWNoZSA9IHRoaXNf
+Y3B1X3B0cihyY2FjaGUtPmNwdV9yY2FjaGVzKTsKLQlzcGluX2xvY2tfaXJxc2F2ZSgmY3B1X3Jj
+YWNoZS0+bG9jaywgZmxhZ3MpOwogCiAJaWYgKCFpb3ZhX21hZ2F6aW5lX2Z1bGwoY3B1X3JjYWNo
+ZS0+bG9hZGVkKSkgewogCQljYW5faW5zZXJ0ID0gdHJ1ZTsKQEAgLTc3OCw3ICs3NzcsNyBAQCBz
+dGF0aWMgYm9vbCBfX2lvdmFfcmNhY2hlX2luc2VydChzdHJ1Y3QgaW92YV9kb21haW4gKmlvdmFk
+LAogCWlmIChjYW5faW5zZXJ0KQogCQlpb3ZhX21hZ2F6aW5lX3B1c2goY3B1X3JjYWNoZS0+bG9h
+ZGVkLCBpb3ZhX3Bmbik7CiAKLQlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZjcHVfcmNhY2hlLT5s
+b2NrLCBmbGFncyk7CisJcHJlZW1wdF9lbmFibGUoKTsKIAogCWlmIChtYWdfdG9fZnJlZSkgewog
+CQlpb3ZhX21hZ2F6aW5lX2ZyZWVfcGZucyhtYWdfdG9fZnJlZSwgaW92YWQpOwpAQCAtODEwLDEw
+ICs4MDksOSBAQCBzdGF0aWMgdW5zaWduZWQgbG9uZyBfX2lvdmFfcmNhY2hlX2dldChzdHJ1Y3Qg
+aW92YV9yY2FjaGUgKnJjYWNoZSwKIAlzdHJ1Y3QgaW92YV9jcHVfcmNhY2hlICpjcHVfcmNhY2hl
+OwogCXVuc2lnbmVkIGxvbmcgaW92YV9wZm4gPSAwOwogCWJvb2wgaGFzX3BmbiA9IGZhbHNlOwot
+CXVuc2lnbmVkIGxvbmcgZmxhZ3M7CiAKKwlwcmVlbXB0X2Rpc2FibGUoKTsKIAljcHVfcmNhY2hl
+ID0gdGhpc19jcHVfcHRyKHJjYWNoZS0+Y3B1X3JjYWNoZXMpOwotCXNwaW5fbG9ja19pcnFzYXZl
+KCZjcHVfcmNhY2hlLT5sb2NrLCBmbGFncyk7CiAKIAlpZiAoIWlvdmFfbWFnYXppbmVfZW1wdHko
+Y3B1X3JjYWNoZS0+bG9hZGVkKSkgewogCQloYXNfcGZuID0gdHJ1ZTsKQEAgLTgzMyw3ICs4MzEs
+NyBAQCBzdGF0aWMgdW5zaWduZWQgbG9uZyBfX2lvdmFfcmNhY2hlX2dldChzdHJ1Y3QgaW92YV9y
+Y2FjaGUgKnJjYWNoZSwKIAlpZiAoaGFzX3BmbikKIAkJaW92YV9wZm4gPSBpb3ZhX21hZ2F6aW5l
+X3BvcChjcHVfcmNhY2hlLT5sb2FkZWQsIGxpbWl0X3Bmbik7CiAKLQlzcGluX3VubG9ja19pcnFy
+ZXN0b3JlKCZjcHVfcmNhY2hlLT5sb2NrLCBmbGFncyk7CisJcHJlZW1wdF9lbmFibGUoKTsKIAog
+CXJldHVybiBpb3ZhX3BmbjsKIH0KQEAgLTg2MiwxNyArODYwLDExIEBAIHN0YXRpYyB2b2lkIGZy
+ZWVfY3B1X2lvdmFfcmNhY2hlKHVuc2lnbmVkIGludCBjcHUsIHN0cnVjdCBpb3ZhX2RvbWFpbiAq
+aW92YWQsCiAJCQkJIHN0cnVjdCBpb3ZhX3JjYWNoZSAqcmNhY2hlKQogewogCXN0cnVjdCBpb3Zh
+X2NwdV9yY2FjaGUgKmNwdV9yY2FjaGUgPSBwZXJfY3B1X3B0cihyY2FjaGUtPmNwdV9yY2FjaGVz
+LCBjcHUpOwotCXVuc2lnbmVkIGxvbmcgZmxhZ3M7Ci0KLQlzcGluX2xvY2tfaXJxc2F2ZSgmY3B1
+X3JjYWNoZS0+bG9jaywgZmxhZ3MpOwotCiAJaW92YV9tYWdhemluZV9mcmVlX3BmbnMoY3B1X3Jj
+YWNoZS0+bG9hZGVkLCBpb3ZhZCk7CiAJaW92YV9tYWdhemluZV9mcmVlKGNwdV9yY2FjaGUtPmxv
+YWRlZCk7CiAKIAlpb3ZhX21hZ2F6aW5lX2ZyZWVfcGZucyhjcHVfcmNhY2hlLT5wcmV2LCBpb3Zh
+ZCk7CiAJaW92YV9tYWdhemluZV9mcmVlKGNwdV9yY2FjaGUtPnByZXYpOwotCi0Jc3Bpbl91bmxv
+Y2tfaXJxcmVzdG9yZSgmY3B1X3JjYWNoZS0+bG9jaywgZmxhZ3MpOwogfQogCiAvKgpAQCAtOTA2
+LDE2ICs4OTgsMTMgQEAgdm9pZCBmcmVlX2NwdV9jYWNoZWRfaW92YXModW5zaWduZWQgaW50IGNw
+dSwgc3RydWN0IGlvdmFfZG9tYWluICppb3ZhZCkKIHsKIAlzdHJ1Y3QgaW92YV9jcHVfcmNhY2hl
+ICpjcHVfcmNhY2hlOwogCXN0cnVjdCBpb3ZhX3JjYWNoZSAqcmNhY2hlOwotCXVuc2lnbmVkIGxv
+bmcgZmxhZ3M7CiAJaW50IGk7CiAKIAlmb3IgKGkgPSAwOyBpIDwgSU9WQV9SQU5HRV9DQUNIRV9N
+QVhfU0laRTsgKytpKSB7CiAJCXJjYWNoZSA9ICZpb3ZhZC0+cmNhY2hlc1tpXTsKIAkJY3B1X3Jj
+YWNoZSA9IHBlcl9jcHVfcHRyKHJjYWNoZS0+Y3B1X3JjYWNoZXMsIGNwdSk7Ci0JCXNwaW5fbG9j
+a19pcnFzYXZlKCZjcHVfcmNhY2hlLT5sb2NrLCBmbGFncyk7CiAJCWlvdmFfbWFnYXppbmVfZnJl
+ZV9wZm5zKGNwdV9yY2FjaGUtPmxvYWRlZCwgaW92YWQpOwogCQlpb3ZhX21hZ2F6aW5lX2ZyZWVf
+cGZucyhjcHVfcmNhY2hlLT5wcmV2LCBpb3ZhZCk7Ci0JCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUo
+JmNwdV9yY2FjaGUtPmxvY2ssIGZsYWdzKTsKIAl9CiB9CiAKLS0gCjIuOC4xCgpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBs
+aXN0CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVz
+a3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
