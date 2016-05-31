@@ -1,130 +1,100 @@
-From: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+From: Oded Gabbay <oded.gabbay@gmail.com>
 Subject: Re: [RFT v3] drm: use late_initcall() for amdkfd and radeon
-Date: Tue, 31 May 2016 19:15:55 +0200
-Message-ID: <20160531171555.GH11948@wotan.suse.de>
+Date: Tue, 31 May 2016 20:33:33 +0300
+Message-ID: <CAFCwf10n8CrGyJmv0uBP7NLCZeDqc0vGg4g3u8_EaQgSs+FFVw@mail.gmail.com>
 References: <20160527004642.GQ11948@wotan.suse.de>
-	<1464311916-10065-1-git-send-email-mcgrof@kernel.org>
-	<CAFCwf12kzUharmGfLch1OgdngLk6=YoaTb9rJ65hG+y9p5Nvjg@mail.gmail.com>
+ <1464311916-10065-1-git-send-email-mcgrof@kernel.org>
+ <CAFCwf12kzUharmGfLch1OgdngLk6=YoaTb9rJ65hG+y9p5Nvjg@mail.gmail.com>
+ <20160531171555.GH11948@wotan.suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAFCwf12kzUharmGfLch1OgdngLk6=YoaTb9rJ65hG+y9p5Nvjg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Maling list - DRI developers <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, Alex Deucher <alexander.deucher-5C7GfCeVMHo@public.gmane.org>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <20160531171555.GH11948@wotan.suse.de>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: "Luis R. Rodriguez" <mcgrof@kernel.org>
+Cc: vw@iommu.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>, Maling list - DRI developers <dri-devel@lists.freedesktop.org>, iommu@lists.linux-foundation.org, "H. Peter Anvin" <hpa@zytor.com>, Alex Deucher <alexander.deucher@amd.com>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, May 29, 2016 at 05:49:17PM +0300, Oded Gabbay wrote:
-> On Fri, May 27, 2016 at 4:18 AM, Luis R. Rodriguez <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
-> > diff --git a/drivers/gpu/drm/radeon/radeon_drv.c b/drivers/gpu/drm/radeon/radeon_drv.c
-> > index b55aa740171f..1fa1b7f3a89c 100644
-> > --- a/drivers/gpu/drm/radeon/radeon_drv.c
-> > +++ b/drivers/gpu/drm/radeon/radeon_drv.c
-> > @@ -609,7 +609,7 @@ static void __exit radeon_exit(void)
-> >         radeon_unregister_atpx_handler();
-> >  }
-> >
-> > -module_init(radeon_init);
-> > +late_initcall(radeon_init);
-> >  module_exit(radeon_exit);
-> 
-> Need to modify also amdgpu module_init
-
-Thanks, so other than considering the first two hunks are only for testing purposes
-(a proper [PATCH] will drop these hunks on the Makefile), you're suggestng this
-then, is that right?:
-
----
- drivers/Makefile                        | 6 ++----
- drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 2 +-
- drivers/gpu/drm/amd/amdkfd/kfd_module.c | 2 +-
- drivers/gpu/drm/radeon/radeon_drv.c     | 2 +-
- 4 files changed, 5 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/Makefile b/drivers/Makefile
-index 0b6f3d60193d..0fbe3982041f 100644
---- a/drivers/Makefile
-+++ b/drivers/Makefile
-@@ -50,10 +50,7 @@ obj-$(CONFIG_RESET_CONTROLLER)	+= reset/
- obj-y				+= tty/
- obj-y				+= char/
- 
--# iommu/ comes before gpu as gpu are using iommu controllers
--obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
--
--# gpu/ comes after char for AGP vs DRM startup and after iommu
-+# gpu/ comes after char for AGP vs DRM startup
- obj-y				+= gpu/
- 
- obj-$(CONFIG_CONNECTOR)		+= connector/
-@@ -147,6 +144,7 @@ obj-y				+= clk/
- 
- obj-$(CONFIG_MAILBOX)		+= mailbox/
- obj-$(CONFIG_HWSPINLOCK)	+= hwspinlock/
-+obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
- obj-$(CONFIG_REMOTEPROC)	+= remoteproc/
- obj-$(CONFIG_RPMSG)		+= rpmsg/
- 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-index 1dab5f2b725b..1ca448f2b4d2 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-@@ -589,7 +589,7 @@ static void __exit amdgpu_exit(void)
- 	amdgpu_sync_fini();
- }
- 
--module_init(amdgpu_init);
-+late_initcall(amdgpu_init);
- module_exit(amdgpu_exit);
- 
- MODULE_AUTHOR(DRIVER_AUTHOR);
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_module.c b/drivers/gpu/drm/amd/amdkfd/kfd_module.c
-index 850a5623661f..3d1dab8a31c7 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_module.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_module.c
-@@ -141,7 +141,7 @@ static void __exit kfd_module_exit(void)
- 	dev_info(kfd_device, "Removed module\n");
- }
- 
--module_init(kfd_module_init);
-+late_initcall(kfd_module_init);
- module_exit(kfd_module_exit);
- 
- MODULE_AUTHOR(KFD_DRIVER_AUTHOR);
-diff --git a/drivers/gpu/drm/radeon/radeon_drv.c b/drivers/gpu/drm/radeon/radeon_drv.c
-index b55aa740171f..1fa1b7f3a89c 100644
---- a/drivers/gpu/drm/radeon/radeon_drv.c
-+++ b/drivers/gpu/drm/radeon/radeon_drv.c
-@@ -609,7 +609,7 @@ static void __exit radeon_exit(void)
- 	radeon_unregister_atpx_handler();
- }
- 
--module_init(radeon_init);
-+late_initcall(radeon_init);
- module_exit(radeon_exit);
- 
- MODULE_AUTHOR(DRIVER_AUTHOR);
--- 
-2.8.2
-
-
-> I tested this on Kaveri, and amdkfd is working. For amdkfd that's
-> fine, but IMO that's not enough testing for radeon/amdgpu. I would
-> like to hear AMD's developers take on this.
-
-Sure. Hopefully the above extensions suffice. In the future we should be able
-to also replace the radeon amdkfd -EPROBE_DEFER kludge and the implicit
-sensitivity in Makefiles over GPU drivers and IOMMUs, but a bit more work is
-needed before that happens.
-
-  Luis
+T24gVHVlLCBNYXkgMzEsIDIwMTYgYXQgODoxNSBQTSwgTHVpcyBSLiBSb2RyaWd1ZXogPG1jZ3Jv
+ZkBrZXJuZWwub3JnPiB3cm90ZToKPiBPbiBTdW4sIE1heSAyOSwgMjAxNiBhdCAwNTo0OToxN1BN
+ICswMzAwLCBPZGVkIEdhYmJheSB3cm90ZToKPj4gT24gRnJpLCBNYXkgMjcsIDIwMTYgYXQgNDox
+OCBBTSwgTHVpcyBSLiBSb2RyaWd1ZXogPG1jZ3JvZkBrZXJuZWwub3JnPiB3cm90ZToKPj4gPiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL3JhZGVvbi9yYWRlb25fZHJ2LmMgYi9kcml2ZXJz
+L2dwdS9kcm0vcmFkZW9uL3JhZGVvbl9kcnYuYwo+PiA+IGluZGV4IGI1NWFhNzQwMTcxZi4uMWZh
+MWI3ZjNhODljIDEwMDY0NAo+PiA+IC0tLSBhL2RyaXZlcnMvZ3B1L2RybS9yYWRlb24vcmFkZW9u
+X2Rydi5jCj4+ID4gKysrIGIvZHJpdmVycy9ncHUvZHJtL3JhZGVvbi9yYWRlb25fZHJ2LmMKPj4g
+PiBAQCAtNjA5LDcgKzYwOSw3IEBAIHN0YXRpYyB2b2lkIF9fZXhpdCByYWRlb25fZXhpdCh2b2lk
+KQo+PiA+ICAgICAgICAgcmFkZW9uX3VucmVnaXN0ZXJfYXRweF9oYW5kbGVyKCk7Cj4+ID4gIH0K
+Pj4gPgo+PiA+IC1tb2R1bGVfaW5pdChyYWRlb25faW5pdCk7Cj4+ID4gK2xhdGVfaW5pdGNhbGwo
+cmFkZW9uX2luaXQpOwo+PiA+ICBtb2R1bGVfZXhpdChyYWRlb25fZXhpdCk7Cj4+Cj4+IE5lZWQg
+dG8gbW9kaWZ5IGFsc28gYW1kZ3B1IG1vZHVsZV9pbml0Cj4KPiBUaGFua3MsIHNvIG90aGVyIHRo
+YW4gY29uc2lkZXJpbmcgdGhlIGZpcnN0IHR3byBodW5rcyBhcmUgb25seSBmb3IgdGVzdGluZyBw
+dXJwb3Nlcwo+IChhIHByb3BlciBbUEFUQ0hdIHdpbGwgZHJvcCB0aGVzZSBodW5rcyBvbiB0aGUg
+TWFrZWZpbGUpLCB5b3UncmUgc3VnZ2VzdG5nIHRoaXMKPiB0aGVuLCBpcyB0aGF0IHJpZ2h0PzoK
+ClllcywgdGhlIGJlbG93IHNob3VsZCBjb3ZlciB0aGUgYW1kZ3B1IGNhc2UgYXMgd2VsbC4KPgo+
+IC0tLQo+ICBkcml2ZXJzL01ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICAgfCA2ICsrLS0t
+LQo+ICBkcml2ZXJzL2dwdS9kcm0vYW1kL2FtZGdwdS9hbWRncHVfZHJ2LmMgfCAyICstCj4gIGRy
+aXZlcnMvZ3B1L2RybS9hbWQvYW1ka2ZkL2tmZF9tb2R1bGUuYyB8IDIgKy0KPiAgZHJpdmVycy9n
+cHUvZHJtL3JhZGVvbi9yYWRlb25fZHJ2LmMgICAgIHwgMiArLQo+ICA0IGZpbGVzIGNoYW5nZWQs
+IDUgaW5zZXJ0aW9ucygrKSwgNyBkZWxldGlvbnMoLSkKPgo+IGRpZmYgLS1naXQgYS9kcml2ZXJz
+L01ha2VmaWxlIGIvZHJpdmVycy9NYWtlZmlsZQo+IGluZGV4IDBiNmYzZDYwMTkzZC4uMGZiZTM5
+ODIwNDFmIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvTWFrZWZpbGUKPiArKysgYi9kcml2ZXJzL01h
+a2VmaWxlCj4gQEAgLTUwLDEwICs1MCw3IEBAIG9iai0kKENPTkZJR19SRVNFVF9DT05UUk9MTEVS
+KSAgICAgICArPSByZXNldC8KPiAgb2JqLXkgICAgICAgICAgICAgICAgICAgICAgICAgICs9IHR0
+eS8KPiAgb2JqLXkgICAgICAgICAgICAgICAgICAgICAgICAgICs9IGNoYXIvCj4KPiAtIyBpb21t
+dS8gY29tZXMgYmVmb3JlIGdwdSBhcyBncHUgYXJlIHVzaW5nIGlvbW11IGNvbnRyb2xsZXJzCj4g
+LW9iai0kKENPTkZJR19JT01NVV9TVVBQT1JUKSAgICArPSBpb21tdS8KPiAtCj4gLSMgZ3B1LyBj
+b21lcyBhZnRlciBjaGFyIGZvciBBR1AgdnMgRFJNIHN0YXJ0dXAgYW5kIGFmdGVyIGlvbW11Cj4g
+KyMgZ3B1LyBjb21lcyBhZnRlciBjaGFyIGZvciBBR1AgdnMgRFJNIHN0YXJ0dXAKPiAgb2JqLXkg
+ICAgICAgICAgICAgICAgICAgICAgICAgICs9IGdwdS8KPgo+ICBvYmotJChDT05GSUdfQ09OTkVD
+VE9SKSAgICAgICAgICAgICAgICArPSBjb25uZWN0b3IvCj4gQEAgLTE0Nyw2ICsxNDQsNyBAQCBv
+YmoteSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICArPSBjbGsvCj4KPiAgb2JqLSQoQ09O
+RklHX01BSUxCT1gpICAgICAgICAgICs9IG1haWxib3gvCj4gIG9iai0kKENPTkZJR19IV1NQSU5M
+T0NLKSAgICAgICArPSBod3NwaW5sb2NrLwo+ICtvYmotJChDT05GSUdfSU9NTVVfU1VQUE9SVCkg
+ICAgKz0gaW9tbXUvCj4gIG9iai0kKENPTkZJR19SRU1PVEVQUk9DKSAgICAgICArPSByZW1vdGVw
+cm9jLwo+ICBvYmotJChDT05GSUdfUlBNU0cpICAgICAgICAgICAgKz0gcnBtc2cvCj4KPiBkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2FtZC9hbWRncHUvYW1kZ3B1X2Rydi5jIGIvZHJpdmVy
+cy9ncHUvZHJtL2FtZC9hbWRncHUvYW1kZ3B1X2Rydi5jCj4gaW5kZXggMWRhYjVmMmI3MjViLi4x
+Y2E0NDhmMmI0ZDIgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL2FtZC9hbWRncHUvYW1k
+Z3B1X2Rydi5jCj4gKysrIGIvZHJpdmVycy9ncHUvZHJtL2FtZC9hbWRncHUvYW1kZ3B1X2Rydi5j
+Cj4gQEAgLTU4OSw3ICs1ODksNyBAQCBzdGF0aWMgdm9pZCBfX2V4aXQgYW1kZ3B1X2V4aXQodm9p
+ZCkKPiAgICAgICAgIGFtZGdwdV9zeW5jX2ZpbmkoKTsKPiAgfQo+Cj4gLW1vZHVsZV9pbml0KGFt
+ZGdwdV9pbml0KTsKPiArbGF0ZV9pbml0Y2FsbChhbWRncHVfaW5pdCk7Cj4gIG1vZHVsZV9leGl0
+KGFtZGdwdV9leGl0KTsKPgo+ICBNT0RVTEVfQVVUSE9SKERSSVZFUl9BVVRIT1IpOwo+IGRpZmYg
+LS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vYW1kL2FtZGtmZC9rZmRfbW9kdWxlLmMgYi9kcml2ZXJz
+L2dwdS9kcm0vYW1kL2FtZGtmZC9rZmRfbW9kdWxlLmMKPiBpbmRleCA4NTBhNTYyMzY2MWYuLjNk
+MWRhYjhhMzFjNyAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vYW1kL2FtZGtmZC9rZmRf
+bW9kdWxlLmMKPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vYW1kL2FtZGtmZC9rZmRfbW9kdWxlLmMK
+PiBAQCAtMTQxLDcgKzE0MSw3IEBAIHN0YXRpYyB2b2lkIF9fZXhpdCBrZmRfbW9kdWxlX2V4aXQo
+dm9pZCkKPiAgICAgICAgIGRldl9pbmZvKGtmZF9kZXZpY2UsICJSZW1vdmVkIG1vZHVsZVxuIik7
+Cj4gIH0KPgo+IC1tb2R1bGVfaW5pdChrZmRfbW9kdWxlX2luaXQpOwo+ICtsYXRlX2luaXRjYWxs
+KGtmZF9tb2R1bGVfaW5pdCk7Cj4gIG1vZHVsZV9leGl0KGtmZF9tb2R1bGVfZXhpdCk7Cj4KPiAg
+TU9EVUxFX0FVVEhPUihLRkRfRFJJVkVSX0FVVEhPUik7Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+Z3B1L2RybS9yYWRlb24vcmFkZW9uX2Rydi5jIGIvZHJpdmVycy9ncHUvZHJtL3JhZGVvbi9yYWRl
+b25fZHJ2LmMKPiBpbmRleCBiNTVhYTc0MDE3MWYuLjFmYTFiN2YzYTg5YyAxMDA2NDQKPiAtLS0g
+YS9kcml2ZXJzL2dwdS9kcm0vcmFkZW9uL3JhZGVvbl9kcnYuYwo+ICsrKyBiL2RyaXZlcnMvZ3B1
+L2RybS9yYWRlb24vcmFkZW9uX2Rydi5jCj4gQEAgLTYwOSw3ICs2MDksNyBAQCBzdGF0aWMgdm9p
+ZCBfX2V4aXQgcmFkZW9uX2V4aXQodm9pZCkKPiAgICAgICAgIHJhZGVvbl91bnJlZ2lzdGVyX2F0
+cHhfaGFuZGxlcigpOwo+ICB9Cj4KPiAtbW9kdWxlX2luaXQocmFkZW9uX2luaXQpOwo+ICtsYXRl
+X2luaXRjYWxsKHJhZGVvbl9pbml0KTsKPiAgbW9kdWxlX2V4aXQocmFkZW9uX2V4aXQpOwo+Cj4g
+IE1PRFVMRV9BVVRIT1IoRFJJVkVSX0FVVEhPUik7Cj4gLS0KPiAyLjguMgo+Cj4KPj4gSSB0ZXN0
+ZWQgdGhpcyBvbiBLYXZlcmksIGFuZCBhbWRrZmQgaXMgd29ya2luZy4gRm9yIGFtZGtmZCB0aGF0
+J3MKPj4gZmluZSwgYnV0IElNTyB0aGF0J3Mgbm90IGVub3VnaCB0ZXN0aW5nIGZvciByYWRlb24v
+YW1kZ3B1LiBJIHdvdWxkCj4+IGxpa2UgdG8gaGVhciBBTUQncyBkZXZlbG9wZXJzIHRha2Ugb24g
+dGhpcy4KPgo+IFN1cmUuIEhvcGVmdWxseSB0aGUgYWJvdmUgZXh0ZW5zaW9ucyBzdWZmaWNlLiBJ
+biB0aGUgZnV0dXJlIHdlIHNob3VsZCBiZSBhYmxlCj4gdG8gYWxzbyByZXBsYWNlIHRoZSByYWRl
+b24gYW1ka2ZkIC1FUFJPQkVfREVGRVIga2x1ZGdlIGFuZCB0aGUgaW1wbGljaXQKPiBzZW5zaXRp
+dml0eSBpbiBNYWtlZmlsZXMgb3ZlciBHUFUgZHJpdmVycyBhbmQgSU9NTVVzLCBidXQgYSBiaXQg
+bW9yZSB3b3JrIGlzCj4gbmVlZGVkIGJlZm9yZSB0aGF0IGhhcHBlbnMuCj4KPiAgIEx1aXMKX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1h
+aWxpbmcgbGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMu
+ZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
