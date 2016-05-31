@@ -1,75 +1,130 @@
-From: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [RFC v2] dma-mapping: Use unsigned long for dma_attrs
-Date: Tue, 31 May 2016 10:04:20 -0700
-Message-ID: <20160531170420.GB25366@infradead.org>
-References: <1464609246-6948-1-git-send-email-k.kozlowski@samsung.com>
- <1464609246-6948-2-git-send-email-k.kozlowski@samsung.com>
+From: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFT v3] drm: use late_initcall() for amdkfd and radeon
+Date: Tue, 31 May 2016 19:15:55 +0200
+Message-ID: <20160531171555.GH11948@wotan.suse.de>
+References: <20160527004642.GQ11948@wotan.suse.de>
+	<1464311916-10065-1-git-send-email-mcgrof@kernel.org>
+	<CAFCwf12kzUharmGfLch1OgdngLk6=YoaTb9rJ65hG+y9p5Nvjg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1464609246-6948-2-git-send-email-k.kozlowski@samsung.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Cc: Michal Hocko <mhocko@suse.com>, Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Will Deacon <will.deacon@arm.com>, Russell King <linux@armlinux.org.uk>, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, hch@infradead.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, sstabellini@kernel.org, Andy Lutomirski <luto@kernel.org>, xen-devel@lists.xenproject.org, Andrew Morton <akpm@linux-foundation.org>, Mel Gorman <mgorman@techsingularity.net>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <CAFCwf12kzUharmGfLch1OgdngLk6=YoaTb9rJ65hG+y9p5Nvjg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Oded Gabbay <oded.gabbay-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Maling list - DRI developers <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "Linux-Kernel@Vger. Kernel. Org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, Alex Deucher <alexander.deucher-5C7GfCeVMHo@public.gmane.org>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig-5C7GfCeVMHo@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, May 30, 2016 at 01:54:06PM +0200, Krzysztof Kozlowski wrote:
-> The dma-mapping core and the implementations do not change the
-> DMA attributes passed by pointer.  Thus the pointer can point to const
-> data.  However the attributes do not have to be a bitfield. Instead
-> unsigned long will do fine:
+On Sun, May 29, 2016 at 05:49:17PM +0300, Oded Gabbay wrote:
+> On Fri, May 27, 2016 at 4:18 AM, Luis R. Rodriguez <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+> > diff --git a/drivers/gpu/drm/radeon/radeon_drv.c b/drivers/gpu/drm/radeon/radeon_drv.c
+> > index b55aa740171f..1fa1b7f3a89c 100644
+> > --- a/drivers/gpu/drm/radeon/radeon_drv.c
+> > +++ b/drivers/gpu/drm/radeon/radeon_drv.c
+> > @@ -609,7 +609,7 @@ static void __exit radeon_exit(void)
+> >         radeon_unregister_atpx_handler();
+> >  }
+> >
+> > -module_init(radeon_init);
+> > +late_initcall(radeon_init);
+> >  module_exit(radeon_exit);
 > 
-> 1. This is just simpler.  Both in terms of reading the code and setting
->    attributes.  Instead of initializing local attributes on the stack and
->    passing pointer to it to dma_set_attr(), just set the bits.
-> 
-> 2. It brings safeness and checking for const correctness because the
->    attributes are passed by value.
-> 
-> Please have in mind that this is RFC, not finished yet.  Only ARM and
-> ARM64 are fixed (and not everywhere).
-> However other API users also have to be converted which is quite
-> intrusive.  I would rather avoid it until the overall approach is
-> accepted.
+> Need to modify also amdgpu module_init
 
-This looks great!  Please continue doing the full conversion.
+Thanks, so other than considering the first two hunks are only for testing purposes
+(a proper [PATCH] will drop these hunks on the Makefile), you're suggestng this
+then, is that right?:
 
-> +/**
-> + * List of possible attributes associated with a DMA mapping. The semantics
-> + * of each attribute should be defined in Documentation/DMA-attributes.txt.
-> + */
-> +#define DMA_ATTR_WRITE_BARRIER		BIT(1)
-> +#define DMA_ATTR_WEAK_ORDERING		BIT(2)
-> +#define DMA_ATTR_WRITE_COMBINE		BIT(3)
-> +#define DMA_ATTR_NON_CONSISTENT		BIT(4)
-> +#define DMA_ATTR_NO_KERNEL_MAPPING	BIT(5)
-> +#define DMA_ATTR_SKIP_CPU_SYNC		BIT(6)
-> +#define DMA_ATTR_FORCE_CONTIGUOUS	BIT(7)
-> +#define DMA_ATTR_ALLOC_SINGLE_PAGES	BIT(8)
+---
+ drivers/Makefile                        | 6 ++----
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 2 +-
+ drivers/gpu/drm/amd/amdkfd/kfd_module.c | 2 +-
+ drivers/gpu/drm/radeon/radeon_drv.c     | 2 +-
+ 4 files changed, 5 insertions(+), 7 deletions(-)
 
-No really for this patch, but I would much prefer to document them next
-to the code in the long run.  Also I really think these BIT() macros
-are a distraction compared to the (1 << N) notation.
+diff --git a/drivers/Makefile b/drivers/Makefile
+index 0b6f3d60193d..0fbe3982041f 100644
+--- a/drivers/Makefile
++++ b/drivers/Makefile
+@@ -50,10 +50,7 @@ obj-$(CONFIG_RESET_CONTROLLER)	+= reset/
+ obj-y				+= tty/
+ obj-y				+= char/
+ 
+-# iommu/ comes before gpu as gpu are using iommu controllers
+-obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
+-
+-# gpu/ comes after char for AGP vs DRM startup and after iommu
++# gpu/ comes after char for AGP vs DRM startup
+ obj-y				+= gpu/
+ 
+ obj-$(CONFIG_CONNECTOR)		+= connector/
+@@ -147,6 +144,7 @@ obj-y				+= clk/
+ 
+ obj-$(CONFIG_MAILBOX)		+= mailbox/
+ obj-$(CONFIG_HWSPINLOCK)	+= hwspinlock/
++obj-$(CONFIG_IOMMU_SUPPORT)	+= iommu/
+ obj-$(CONFIG_REMOTEPROC)	+= remoteproc/
+ obj-$(CONFIG_RPMSG)		+= rpmsg/
+ 
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+index 1dab5f2b725b..1ca448f2b4d2 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -589,7 +589,7 @@ static void __exit amdgpu_exit(void)
+ 	amdgpu_sync_fini();
+ }
+ 
+-module_init(amdgpu_init);
++late_initcall(amdgpu_init);
+ module_exit(amdgpu_exit);
+ 
+ MODULE_AUTHOR(DRIVER_AUTHOR);
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_module.c b/drivers/gpu/drm/amd/amdkfd/kfd_module.c
+index 850a5623661f..3d1dab8a31c7 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_module.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_module.c
+@@ -141,7 +141,7 @@ static void __exit kfd_module_exit(void)
+ 	dev_info(kfd_device, "Removed module\n");
+ }
+ 
+-module_init(kfd_module_init);
++late_initcall(kfd_module_init);
+ module_exit(kfd_module_exit);
+ 
+ MODULE_AUTHOR(KFD_DRIVER_AUTHOR);
+diff --git a/drivers/gpu/drm/radeon/radeon_drv.c b/drivers/gpu/drm/radeon/radeon_drv.c
+index b55aa740171f..1fa1b7f3a89c 100644
+--- a/drivers/gpu/drm/radeon/radeon_drv.c
++++ b/drivers/gpu/drm/radeon/radeon_drv.c
+@@ -609,7 +609,7 @@ static void __exit radeon_exit(void)
+ 	radeon_unregister_atpx_handler();
+ }
+ 
+-module_init(radeon_init);
++late_initcall(radeon_init);
+ module_exit(radeon_exit);
+ 
+ MODULE_AUTHOR(DRIVER_AUTHOR);
+-- 
+2.8.2
 
-> +/**
-> + * dma_get_attr - check for a specific attribute
-> + * @attr: attribute to look for
-> + * @attrs: attributes to check within
-> + */
-> +static inline bool dma_get_attr(unsigned long attr, unsigned long attrs)
-> +{
-> +	return !!(attr & attrs);
-> +}
 
-I'd just kill this helper, much easier to simply open code it in the
-caller.
+> I tested this on Kaveri, and amdkfd is working. For amdkfd that's
+> fine, but IMO that's not enough testing for radeon/amdgpu. I would
+> like to hear AMD's developers take on this.
+
+Sure. Hopefully the above extensions suffice. In the future we should be able
+to also replace the radeon amdkfd -EPROBE_DEFER kludge and the implicit
+sensitivity in Makefiles over GPU drivers and IOMMUs, but a bit more work is
+needed before that happens.
+
+  Luis
