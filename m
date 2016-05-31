@@ -1,130 +1,75 @@
-From: "Luis R. Rodriguez" <mcgrof@suse.com>
-Subject: Re: [RFT v3] drm: use late_initcall() for amdkfd and radeon
-Date: Tue, 31 May 2016 18:58:34 +0200
-Message-ID: <20160531165834.GG11948@wotan.suse.de>
-References: <20160527004642.GQ11948@wotan.suse.de>
- <1464311916-10065-1-git-send-email-mcgrof@kernel.org>
- <CAKMK7uHTAWOmrTsGHxwW1nGcNeEeAb8b2OPFKcJvQ3AXkbs+Kg@mail.gmail.com>
+From: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [RFC v2] dma-mapping: Use unsigned long for dma_attrs
+Date: Tue, 31 May 2016 10:04:20 -0700
+Message-ID: <20160531170420.GB25366@infradead.org>
+References: <1464609246-6948-1-git-send-email-k.kozlowski@samsung.com>
+ <1464609246-6948-2-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
 Content-Disposition: inline
-In-Reply-To: <CAKMK7uHTAWOmrTsGHxwW1nGcNeEeAb8b2OPFKcJvQ3AXkbs+Kg@mail.gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Daniel Vetter <daniel@ffwll.ch>
-Cc: "Luis R. Rodriguez" <mcgrof@kernel.org>, vw@iommu.org, Oded Gabbay <oded.gabbay@gmail.com>, Joerg Roedel <joro@8bytes.org>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, "alexander.deucher@amd.com" <alexander.deucher@amd.com>, Dave Airlie <airlied@linux.ie>, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, gregkh@linuxfoundation.org, hpa@zytor.com
+In-Reply-To: <1464609246-6948-2-git-send-email-k.kozlowski@samsung.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Cc: Michal Hocko <mhocko@suse.com>, Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Will Deacon <will.deacon@arm.com>, Russell King <linux@armlinux.org.uk>, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, hch@infradead.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, sstabellini@kernel.org, Andy Lutomirski <luto@kernel.org>, xen-devel@lists.xenproject.org, Andrew Morton <akpm@linux-foundation.org>, Mel Gorman <mgorman@techsingularity.net>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, May 29, 2016 at 08:27:07PM +0200, Daniel Vetter wrote:
-> On Fri, May 27, 2016 at 3:18 AM, Luis R. Rodriguez <mcgrof@kernel.org> wrote:
-> > To get KFD support in radeon we need the following
-> > initialization to happen in this order, their
-> > respective driver file that has its init routine
-> > listed next to it:
-> >
-> > 0. AMD IOMMUv1:    arch/x86/kernel/pci-dma.c
-> > 1. AMD IOMMUv2:    drivers/iommu/amd_iommu_v2.c
-> > 2. AMD KFD:        drivers/gpu/drm/amd/amdkfd/kfd_module.c
-> > 3. AMD Radeon:     drivers/gpu/drm/radeon/radeon_drv.c
-> >
-> > Order is rather implicit, but these drivers can currently
-> > only do so much given the amount of leg room available.
-> > Below are the respective init routines and how they are
-> > initialized:
-> >
-> > arch/x86/kernel/pci-dma.c               rootfs_initcall(pci_iommu_init);
-> > drivers/iommu/amd_iommu_v2.c            module_init(amd_iommu_v2_init);
-> > drivers/gpu/drm/amd/amdkfd/kfd_module.c module_init(kfd_module_init);
-> > drivers/gpu/drm/radeon/radeon_drv.c     module_init(radeon_init);
-> >
-> > When a driver is built-in module_init() folds to use
-> > device_initcall(), and we have the following possible
-> > orders:
-> >
-> >         #define pure_initcall(fn)    __define_initcall(fn, 0)
-> >         #define core_initcall(fn)    __define_initcall(fn, 1)
-> >         #define postcore_initcall(fn)__define_initcall(fn, 2)
-> >         #define arch_initcall(fn)    __define_initcall(fn, 3)
-> >         #define subsys_initcall(fn)  __define_initcall(fn, 4)
-> >         #define fs_initcall(fn)      __define_initcall(fn, 5)
-> >         ---------------------------------------------------------
-> >         #define rootfs_initcall(fn)  __define_initcall(fn, rootfs)
-> >         #define device_initcall(fn)  __define_initcall(fn, 6)
-> >         #define late_initcall(fn)    __define_initcall(fn, 7)
-> >
-> > Since we start off from rootfs_initcall(), it gives us 3 more
-> > levels of leg room to play with for order semantics, this isn't
-> > enough to address all required levels of dependencies, this
-> > is specially true given that AMD-KFD needs to be loaded before
-> > the radeon driver -- -but this it not enforced by symbols.
-> > If the AMD-KFD driver is not loaded prior to the radeon driver
-> > because otherwise the radeon driver will not initialize the
-> > AMD-KFD driver and you get no KFD functionality in userspace.
-> >
-> > Commit 1bacc894c227fad8a7 ("drivers: Move iommu/ before gpu/ in
-> > Makefile") works around some of the possibe races between
-> > the AMD IOMMU v2 and GPU drivers by changing the link order.
-> > This is fragile, however its the bets we can do, given that
-> > making the GPU drivers use late_initcall() would also implicate
-> > a similar race between them. That possible race is fortunatley
-> > addressed given that the drm Makefile currently has amdkfd
-> > linked prior to radeon:
-> >
-> > drivers/gpu/drm/Makefile
-> > ...
-> > obj-$(CONFIG_HSA_AMD) += amd/amdkfd/
-> > obj-$(CONFIG_DRM_RADEON)+= radeon/
-> > ...
-> >
-> > Changing amdkfd and radeon to late_initcall() however is
-> > still the right call in orde to annotate explicitly a
-> > delayed dependency requirement between the GPU drivers
-> > and the IOMMUs.
-> >
-> > We can't address the fragile nature of the link order
-> > right now, but in the future that might be possible.
-> >
-> > Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
-> > ---
-> >
-> > Please note, the changes to drivers/Makefile are just
-> > for the sake of forcing the possible race to occur,
-> > if this works well the actual [PATCH] submission will
-> > skip those changes as its pointless to remove those
-> > work arounds as it stands, due to the limited nature
-> > of the levels available for addressing requirements.
-> >
-> > Also, if you are aware of further dependency hell
-> > things like these -- please do let me know as I am
-> > interested in looking at addressing them.
+On Mon, May 30, 2016 at 01:54:06PM +0200, Krzysztof Kozlowski wrote:
+> The dma-mapping core and the implementations do not change the
+> DMA attributes passed by pointer.  Thus the pointer can point to const
+> data.  However the attributes do not have to be a bitfield. Instead
+> unsigned long will do fine:
 > 
-> This should be fixed with -EDEFER_PROBE instead. Frobbing initcall
-> levels should then just be done as an optimization to avoid too much
-> reprobing.
+> 1. This is just simpler.  Both in terms of reading the code and setting
+>    attributes.  Instead of initializing local attributes on the stack and
+>    passing pointer to it to dma_set_attr(), just set the bits.
+> 
+> 2. It brings safeness and checking for const correctness because the
+>    attributes are passed by value.
+> 
+> Please have in mind that this is RFC, not finished yet.  Only ARM and
+> ARM64 are fixed (and not everywhere).
+> However other API users also have to be converted which is quite
+> intrusive.  I would rather avoid it until the overall approach is
+> accepted.
 
-radeon already uses -EDEFER_PROBE but it assumes that amdkfd *is* loaded first,
-and only if it is already loaded can it count on getting -EDEFER_PROBE. The
-radeon driver will deffer probe *iff* kgd2kfd_init() returns -EDEFER_PROBE,
-which only happens when amdkfd_init_completed is no longer present. If radeon
-gets linked first though the symbol fetch for kgd2kfd_init() will make it as
-not-present though. So the current heuristic used does not address proper link
-/ load order. Part of the issue mentioned on the commit log is another race
-underneath the hood with the AMD IOMMU v2 which is needed for amdkfd. The
-underlying issue however really is the lack of available clear semantics for
-dependencies over 3 levels here.  This is solved one way or another by link
-order in the Makefiles, but as I've noted so far this has been rather implicit
-and fragile. The change here makes at least the order of the GPU drivers
-explicitly later than the IOMMUs. The specific race between radeon and amdfkd
-is solved currently through link order through the Makefiles. In the future we
-maybe able to make things more explicit.
+This looks great!  Please continue doing the full conversion.
 
--EDEFER_PROBE also introduces a latency on load which we should not need if we
-can handle proper link / load order dependency annotations. This change is a
-small part of that work, but as it the commit log also notes future further
-work is possible to build stronger semantics.  Some of the work I'm doing with
-linker-tables may help with this in the future [0], but for now this should
-help with what the semantics we have in place.
+> +/**
+> + * List of possible attributes associated with a DMA mapping. The semantics
+> + * of each attribute should be defined in Documentation/DMA-attributes.txt.
+> + */
+> +#define DMA_ATTR_WRITE_BARRIER		BIT(1)
+> +#define DMA_ATTR_WEAK_ORDERING		BIT(2)
+> +#define DMA_ATTR_WRITE_COMBINE		BIT(3)
+> +#define DMA_ATTR_NON_CONSISTENT		BIT(4)
+> +#define DMA_ATTR_NO_KERNEL_MAPPING	BIT(5)
+> +#define DMA_ATTR_SKIP_CPU_SYNC		BIT(6)
+> +#define DMA_ATTR_FORCE_CONTIGUOUS	BIT(7)
+> +#define DMA_ATTR_ALLOC_SINGLE_PAGES	BIT(8)
 
-[0] http://lkml.kernel.org/r/1455889559-9428-1-git-send-email-mcgrof@kernel.org
- 
-  Luis
+No really for this patch, but I would much prefer to document them next
+to the code in the long run.  Also I really think these BIT() macros
+are a distraction compared to the (1 << N) notation.
+
+> +/**
+> + * dma_get_attr - check for a specific attribute
+> + * @attr: attribute to look for
+> + * @attrs: attributes to check within
+> + */
+> +static inline bool dma_get_attr(unsigned long attr, unsigned long attrs)
+> +{
+> +	return !!(attr & attrs);
+> +}
+
+I'd just kill this helper, much easier to simply open code it in the
+caller.
