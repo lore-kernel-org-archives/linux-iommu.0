@@ -1,57 +1,124 @@
-From: John Keeping <john-HooS5bfzL4hWk0Htik3J/w@public.gmane.org>
-Subject: [RESEND PATCH] iommu/rockchip: fix zap cache during device attach
-Date: Wed,  1 Jun 2016 16:46:10 +0100
-Message-ID: <20160601154610.22899-1-john@metanate.com>
+From: Russell King - ARM Linux <linux@armlinux.org.uk>
+Subject: Re: [PATCHv7 4/6] arm: dma-mapping: add {map, unmap}_resource for
+ iommu ops
+Date: Wed, 1 Jun 2016 17:16:06 +0100
+Message-ID: <20160601161605.GA19428@n2100.arm.linux.org.uk>
+References: <1464794549-6601-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+ <1464794549-6601-5-git-send-email-niklas.soderlund+renesas@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, John Keeping <john-HooS5bfzL4hWk0Htik3J/w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1464794549-6601-5-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas@ragnatech.se>
+Cc: hch@infradead.org, linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, arnd@arndb.de, vinod.koul@intel.com, linus.walleij@linaro.org, laurent.pinchart@ideasonboard.com, dan.j.williams@intel.com, robin.murphy@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-rk_iommu_command() takes a struct rk_iommu and iterates over the slave
-MMUs, so this is doubly wrong in that we're passing in the wrong pointer
-and talking to MMUs that we shouldn't be.
+On Wed, Jun 01, 2016 at 05:22:27PM +0200, Niklas S=F6derlund wrote:
+> +static dma_addr_t arm_iommu_map_resource(struct device *dev,
+> +		phys_addr_t phys_addr, size_t size,
+> +		enum dma_data_direction dir, struct dma_attrs *attrs)
+> +{
+> +	struct dma_iommu_mapping *mapping =3D to_dma_iommu_mapping(dev);
+> +	dma_addr_t dma_addr;
+> +	int ret, prot;
+> +	phys_addr_t addr =3D phys_addr & PAGE_MASK;
+> +	int offset =3D phys_addr & ~PAGE_MASK;
+> +	int len =3D PAGE_ALIGN(size + offset);
 
-Fixes: cd6438c5f844 ("iommu/rockchip: Reconstruct to support multi slaves")
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Signed-off-by: John Keeping <john-HooS5bfzL4hWk0Htik3J/w@public.gmane.org>
-Tested-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
-Reviewed-by: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
----
-The original was sent just before the merge window [0].  The only
-changes are to the commit message:
+Shouldn't both of these be unsigned - preferably size_t for len?
 
-* add Cc: stable
-* add Heiko's {Tested,Reviewed}-by
+> +
+> +	dma_addr =3D __alloc_iova(mapping, size);
 
-[0] http://article.gmane.org/gmane.linux.kernel.iommu/13556
+Is this really correct?  What if size =3D 4095 and offset =3D 10?  Do w=
+e
+really only need one IOVA page for such a mapping (I count two pages.)
+Shouldn't this be "len" ?
 
- drivers/iommu/rockchip-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> +	if (dma_addr =3D=3D DMA_ERROR_CODE)
+> +		return dma_addr;
+> +
+> +	prot =3D __dma_direction_to_prot(dir) | IOMMU_MMIO;
+> +
+> +	ret =3D iommu_map(mapping->domain, dma_addr, addr, len, prot);
+> +	if (ret < 0)
+> +		goto fail;
+> +
+> +	return dma_addr + offset;
+> +fail:
+> +	__free_iova(mapping, dma_addr, size);
 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index c7d6156ff536..25b4627cb57f 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -815,7 +815,7 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
- 	dte_addr = virt_to_phys(rk_domain->dt);
- 	for (i = 0; i < iommu->num_mmu; i++) {
- 		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, dte_addr);
--		rk_iommu_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
-+		rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
- 		rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, RK_MMU_IRQ_MASK);
- 	}
- 
--- 
-2.8.2.565.gdb84f68.dirty
+Shouldn't this be "len" as well?
+
+> +	return DMA_ERROR_CODE;
+> +}
+> +
+> +/**
+> + * arm_iommu_unmap_resource - unmap a device DMA resource
+> + * @dev: valid struct device pointer
+> + * @dma_handle: DMA address to resource
+> + * @size: size of resource to map
+> + * @dir: DMA transfer direction
+> + */
+> +static void arm_iommu_unmap_resource(struct device *dev, dma_addr_t =
+dma_handle,
+> +		size_t size, enum dma_data_direction dir,
+> +		struct dma_attrs *attrs)
+> +{
+> +	struct dma_iommu_mapping *mapping =3D to_dma_iommu_mapping(dev);
+> +	dma_addr_t iova =3D dma_handle & PAGE_MASK;
+> +	int offset =3D dma_handle & ~PAGE_MASK;
+> +	int len =3D PAGE_ALIGN(size + offset);
+
+unsigned/size_t again.
+
+> +
+> +	if (!iova)
+> +		return;
+> +
+> +	iommu_unmap(mapping->domain, iova, len);
+> +	__free_iova(mapping, iova, len);
+
+Here, you free "len" bytes of iova, which is different from above.
+
+> +}
+> +
+>  static void arm_iommu_sync_single_for_cpu(struct device *dev,
+>  		dma_addr_t handle, size_t size, enum dma_data_direction dir)
+>  {
+> @@ -1994,6 +2051,9 @@ struct dma_map_ops iommu_ops =3D {
+>  	.unmap_sg		=3D arm_iommu_unmap_sg,
+>  	.sync_sg_for_cpu	=3D arm_iommu_sync_sg_for_cpu,
+>  	.sync_sg_for_device	=3D arm_iommu_sync_sg_for_device,
+> +
+> +	.map_resource		=3D arm_iommu_map_resource,
+> +	.unmap_resource		=3D arm_iommu_unmap_resource,
+>  };
+> =20
+>  struct dma_map_ops iommu_coherent_ops =3D {
+> @@ -2007,6 +2067,9 @@ struct dma_map_ops iommu_coherent_ops =3D {
+> =20
+>  	.map_sg		=3D arm_coherent_iommu_map_sg,
+>  	.unmap_sg	=3D arm_coherent_iommu_unmap_sg,
+> +
+> +	.map_resource	=3D arm_iommu_map_resource,
+> +	.unmap_resource	=3D arm_iommu_unmap_resource,
+>  };
+> =20
+>  /**
+> --=20
+> 2.8.2
+>=20
+>=20
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+
+--=20
+RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
+=46TTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
+according to speedtest.net.
