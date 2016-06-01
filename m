@@ -1,144 +1,84 @@
-From: Daniel Vetter <daniel@ffwll.ch>
-Subject: Re: [RFT v3] drm: use late_initcall() for amdkfd and radeon
-Date: Tue, 31 May 2016 21:04:53 +0200
-Message-ID: <20160531190453.GL7231@phenom.ffwll.local>
-References: <20160527004642.GQ11948@wotan.suse.de>
- <1464311916-10065-1-git-send-email-mcgrof@kernel.org>
- <CAKMK7uHTAWOmrTsGHxwW1nGcNeEeAb8b2OPFKcJvQ3AXkbs+Kg@mail.gmail.com>
- <20160531165834.GG11948@wotan.suse.de>
+From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Subject: Re: [RFC v2] dma-mapping: Use unsigned long for dma_attrs
+Date: Wed, 01 Jun 2016 07:36:42 +0200
+Message-ID: <574E746A.2030806@samsung.com>
+References: <1464609246-6948-1-git-send-email-k.kozlowski@samsung.com>
+ <1464609246-6948-2-git-send-email-k.kozlowski@samsung.com>
+ <20160531170420.GB25366@infradead.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <20160531165834.GG11948@wotan.suse.de>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: "Luis R. Rodriguez" <mcgrof@suse.com>
-Cc: vw@iommu.org, gregkh@linuxfoundation.org, iommu@lists.linux-foundation.org, dri-devel <dri-devel@lists.freedesktop.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "Luis R. Rodriguez" <mcgrof@kernel.org>, hpa@zytor.com, "alexander.deucher@amd.com" <alexander.deucher@amd.com>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-reply-to: <20160531170420.GB25366@infradead.org>
+Sender: linux-doc-owner@vger.kernel.org
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Andrew Morton <akpm@linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, sstabellini@kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBNYXkgMzEsIDIwMTYgYXQgMDY6NTg6MzRQTSArMDIwMCwgTHVpcyBSLiBSb2RyaWd1
-ZXogd3JvdGU6Cj4gT24gU3VuLCBNYXkgMjksIDIwMTYgYXQgMDg6Mjc6MDdQTSArMDIwMCwgRGFu
-aWVsIFZldHRlciB3cm90ZToKPiA+IE9uIEZyaSwgTWF5IDI3LCAyMDE2IGF0IDM6MTggQU0sIEx1
-aXMgUi4gUm9kcmlndWV6IDxtY2dyb2ZAa2VybmVsLm9yZz4gd3JvdGU6Cj4gPiA+IFRvIGdldCBL
-RkQgc3VwcG9ydCBpbiByYWRlb24gd2UgbmVlZCB0aGUgZm9sbG93aW5nCj4gPiA+IGluaXRpYWxp
-emF0aW9uIHRvIGhhcHBlbiBpbiB0aGlzIG9yZGVyLCB0aGVpcgo+ID4gPiByZXNwZWN0aXZlIGRy
-aXZlciBmaWxlIHRoYXQgaGFzIGl0cyBpbml0IHJvdXRpbmUKPiA+ID4gbGlzdGVkIG5leHQgdG8g
-aXQ6Cj4gPiA+Cj4gPiA+IDAuIEFNRCBJT01NVXYxOiAgICBhcmNoL3g4Ni9rZXJuZWwvcGNpLWRt
-YS5jCj4gPiA+IDEuIEFNRCBJT01NVXYyOiAgICBkcml2ZXJzL2lvbW11L2FtZF9pb21tdV92Mi5j
-Cj4gPiA+IDIuIEFNRCBLRkQ6ICAgICAgICBkcml2ZXJzL2dwdS9kcm0vYW1kL2FtZGtmZC9rZmRf
-bW9kdWxlLmMKPiA+ID4gMy4gQU1EIFJhZGVvbjogICAgIGRyaXZlcnMvZ3B1L2RybS9yYWRlb24v
-cmFkZW9uX2Rydi5jCj4gPiA+Cj4gPiA+IE9yZGVyIGlzIHJhdGhlciBpbXBsaWNpdCwgYnV0IHRo
-ZXNlIGRyaXZlcnMgY2FuIGN1cnJlbnRseQo+ID4gPiBvbmx5IGRvIHNvIG11Y2ggZ2l2ZW4gdGhl
-IGFtb3VudCBvZiBsZWcgcm9vbSBhdmFpbGFibGUuCj4gPiA+IEJlbG93IGFyZSB0aGUgcmVzcGVj
-dGl2ZSBpbml0IHJvdXRpbmVzIGFuZCBob3cgdGhleSBhcmUKPiA+ID4gaW5pdGlhbGl6ZWQ6Cj4g
-PiA+Cj4gPiA+IGFyY2gveDg2L2tlcm5lbC9wY2ktZG1hLmMgICAgICAgICAgICAgICByb290ZnNf
-aW5pdGNhbGwocGNpX2lvbW11X2luaXQpOwo+ID4gPiBkcml2ZXJzL2lvbW11L2FtZF9pb21tdV92
-Mi5jICAgICAgICAgICAgbW9kdWxlX2luaXQoYW1kX2lvbW11X3YyX2luaXQpOwo+ID4gPiBkcml2
-ZXJzL2dwdS9kcm0vYW1kL2FtZGtmZC9rZmRfbW9kdWxlLmMgbW9kdWxlX2luaXQoa2ZkX21vZHVs
-ZV9pbml0KTsKPiA+ID4gZHJpdmVycy9ncHUvZHJtL3JhZGVvbi9yYWRlb25fZHJ2LmMgICAgIG1v
-ZHVsZV9pbml0KHJhZGVvbl9pbml0KTsKPiA+ID4KPiA+ID4gV2hlbiBhIGRyaXZlciBpcyBidWls
-dC1pbiBtb2R1bGVfaW5pdCgpIGZvbGRzIHRvIHVzZQo+ID4gPiBkZXZpY2VfaW5pdGNhbGwoKSwg
-YW5kIHdlIGhhdmUgdGhlIGZvbGxvd2luZyBwb3NzaWJsZQo+ID4gPiBvcmRlcnM6Cj4gPiA+Cj4g
-PiA+ICAgICAgICAgI2RlZmluZSBwdXJlX2luaXRjYWxsKGZuKSAgICBfX2RlZmluZV9pbml0Y2Fs
-bChmbiwgMCkKPiA+ID4gICAgICAgICAjZGVmaW5lIGNvcmVfaW5pdGNhbGwoZm4pICAgIF9fZGVm
-aW5lX2luaXRjYWxsKGZuLCAxKQo+ID4gPiAgICAgICAgICNkZWZpbmUgcG9zdGNvcmVfaW5pdGNh
-bGwoZm4pX19kZWZpbmVfaW5pdGNhbGwoZm4sIDIpCj4gPiA+ICAgICAgICAgI2RlZmluZSBhcmNo
-X2luaXRjYWxsKGZuKSAgICBfX2RlZmluZV9pbml0Y2FsbChmbiwgMykKPiA+ID4gICAgICAgICAj
-ZGVmaW5lIHN1YnN5c19pbml0Y2FsbChmbikgIF9fZGVmaW5lX2luaXRjYWxsKGZuLCA0KQo+ID4g
-PiAgICAgICAgICNkZWZpbmUgZnNfaW5pdGNhbGwoZm4pICAgICAgX19kZWZpbmVfaW5pdGNhbGwo
-Zm4sIDUpCj4gPiA+ICAgICAgICAgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gPiA+ICAgICAgICAgI2RlZmluZSByb290ZnNfaW5pdGNh
-bGwoZm4pICBfX2RlZmluZV9pbml0Y2FsbChmbiwgcm9vdGZzKQo+ID4gPiAgICAgICAgICNkZWZp
-bmUgZGV2aWNlX2luaXRjYWxsKGZuKSAgX19kZWZpbmVfaW5pdGNhbGwoZm4sIDYpCj4gPiA+ICAg
-ICAgICAgI2RlZmluZSBsYXRlX2luaXRjYWxsKGZuKSAgICBfX2RlZmluZV9pbml0Y2FsbChmbiwg
-NykKPiA+ID4KPiA+ID4gU2luY2Ugd2Ugc3RhcnQgb2ZmIGZyb20gcm9vdGZzX2luaXRjYWxsKCks
-IGl0IGdpdmVzIHVzIDMgbW9yZQo+ID4gPiBsZXZlbHMgb2YgbGVnIHJvb20gdG8gcGxheSB3aXRo
-IGZvciBvcmRlciBzZW1hbnRpY3MsIHRoaXMgaXNuJ3QKPiA+ID4gZW5vdWdoIHRvIGFkZHJlc3Mg
-YWxsIHJlcXVpcmVkIGxldmVscyBvZiBkZXBlbmRlbmNpZXMsIHRoaXMKPiA+ID4gaXMgc3BlY2lh
-bGx5IHRydWUgZ2l2ZW4gdGhhdCBBTUQtS0ZEIG5lZWRzIHRvIGJlIGxvYWRlZCBiZWZvcmUKPiA+
-ID4gdGhlIHJhZGVvbiBkcml2ZXIgLS0gLWJ1dCB0aGlzIGl0IG5vdCBlbmZvcmNlZCBieSBzeW1i
-b2xzLgo+ID4gPiBJZiB0aGUgQU1ELUtGRCBkcml2ZXIgaXMgbm90IGxvYWRlZCBwcmlvciB0byB0
-aGUgcmFkZW9uIGRyaXZlcgo+ID4gPiBiZWNhdXNlIG90aGVyd2lzZSB0aGUgcmFkZW9uIGRyaXZl
-ciB3aWxsIG5vdCBpbml0aWFsaXplIHRoZQo+ID4gPiBBTUQtS0ZEIGRyaXZlciBhbmQgeW91IGdl
-dCBubyBLRkQgZnVuY3Rpb25hbGl0eSBpbiB1c2Vyc3BhY2UuCj4gPiA+Cj4gPiA+IENvbW1pdCAx
-YmFjYzg5NGMyMjdmYWQ4YTcgKCJkcml2ZXJzOiBNb3ZlIGlvbW11LyBiZWZvcmUgZ3B1LyBpbgo+
-ID4gPiBNYWtlZmlsZSIpIHdvcmtzIGFyb3VuZCBzb21lIG9mIHRoZSBwb3NzaWJlIHJhY2VzIGJl
-dHdlZW4KPiA+ID4gdGhlIEFNRCBJT01NVSB2MiBhbmQgR1BVIGRyaXZlcnMgYnkgY2hhbmdpbmcg
-dGhlIGxpbmsgb3JkZXIuCj4gPiA+IFRoaXMgaXMgZnJhZ2lsZSwgaG93ZXZlciBpdHMgdGhlIGJl
-dHMgd2UgY2FuIGRvLCBnaXZlbiB0aGF0Cj4gPiA+IG1ha2luZyB0aGUgR1BVIGRyaXZlcnMgdXNl
-IGxhdGVfaW5pdGNhbGwoKSB3b3VsZCBhbHNvIGltcGxpY2F0ZQo+ID4gPiBhIHNpbWlsYXIgcmFj
-ZSBiZXR3ZWVuIHRoZW0uIFRoYXQgcG9zc2libGUgcmFjZSBpcyBmb3J0dW5hdGxleQo+ID4gPiBh
-ZGRyZXNzZWQgZ2l2ZW4gdGhhdCB0aGUgZHJtIE1ha2VmaWxlIGN1cnJlbnRseSBoYXMgYW1ka2Zk
-Cj4gPiA+IGxpbmtlZCBwcmlvciB0byByYWRlb246Cj4gPiA+Cj4gPiA+IGRyaXZlcnMvZ3B1L2Ry
-bS9NYWtlZmlsZQo+ID4gPiAuLi4KPiA+ID4gb2JqLSQoQ09ORklHX0hTQV9BTUQpICs9IGFtZC9h
-bWRrZmQvCj4gPiA+IG9iai0kKENPTkZJR19EUk1fUkFERU9OKSs9IHJhZGVvbi8KPiA+ID4gLi4u
-Cj4gPiA+Cj4gPiA+IENoYW5naW5nIGFtZGtmZCBhbmQgcmFkZW9uIHRvIGxhdGVfaW5pdGNhbGwo
-KSBob3dldmVyIGlzCj4gPiA+IHN0aWxsIHRoZSByaWdodCBjYWxsIGluIG9yZGUgdG8gYW5ub3Rh
-dGUgZXhwbGljaXRseSBhCj4gPiA+IGRlbGF5ZWQgZGVwZW5kZW5jeSByZXF1aXJlbWVudCBiZXR3
-ZWVuIHRoZSBHUFUgZHJpdmVycwo+ID4gPiBhbmQgdGhlIElPTU1Vcy4KPiA+ID4KPiA+ID4gV2Ug
-Y2FuJ3QgYWRkcmVzcyB0aGUgZnJhZ2lsZSBuYXR1cmUgb2YgdGhlIGxpbmsgb3JkZXIKPiA+ID4g
-cmlnaHQgbm93LCBidXQgaW4gdGhlIGZ1dHVyZSB0aGF0IG1pZ2h0IGJlIHBvc3NpYmxlLgo+ID4g
-Pgo+ID4gPiBTaWduZWQtb2ZmLWJ5OiBMdWlzIFIuIFJvZHJpZ3VleiA8bWNncm9mQGtlcm5lbC5v
-cmc+Cj4gPiA+IC0tLQo+ID4gPgo+ID4gPiBQbGVhc2Ugbm90ZSwgdGhlIGNoYW5nZXMgdG8gZHJp
-dmVycy9NYWtlZmlsZSBhcmUganVzdAo+ID4gPiBmb3IgdGhlIHNha2Ugb2YgZm9yY2luZyB0aGUg
-cG9zc2libGUgcmFjZSB0byBvY2N1ciwKPiA+ID4gaWYgdGhpcyB3b3JrcyB3ZWxsIHRoZSBhY3R1
-YWwgW1BBVENIXSBzdWJtaXNzaW9uIHdpbGwKPiA+ID4gc2tpcCB0aG9zZSBjaGFuZ2VzIGFzIGl0
-cyBwb2ludGxlc3MgdG8gcmVtb3ZlIHRob3NlCj4gPiA+IHdvcmsgYXJvdW5kcyBhcyBpdCBzdGFu
-ZHMsIGR1ZSB0byB0aGUgbGltaXRlZCBuYXR1cmUKPiA+ID4gb2YgdGhlIGxldmVscyBhdmFpbGFi
-bGUgZm9yIGFkZHJlc3NpbmcgcmVxdWlyZW1lbnRzLgo+ID4gPgo+ID4gPiBBbHNvLCBpZiB5b3Ug
-YXJlIGF3YXJlIG9mIGZ1cnRoZXIgZGVwZW5kZW5jeSBoZWxsCj4gPiA+IHRoaW5ncyBsaWtlIHRo
-ZXNlIC0tIHBsZWFzZSBkbyBsZXQgbWUga25vdyBhcyBJIGFtCj4gPiA+IGludGVyZXN0ZWQgaW4g
-bG9va2luZyBhdCBhZGRyZXNzaW5nIHRoZW0uCj4gPiAKPiA+IFRoaXMgc2hvdWxkIGJlIGZpeGVk
-IHdpdGggLUVERUZFUl9QUk9CRSBpbnN0ZWFkLiBGcm9iYmluZyBpbml0Y2FsbAo+ID4gbGV2ZWxz
-IHNob3VsZCB0aGVuIGp1c3QgYmUgZG9uZSBhcyBhbiBvcHRpbWl6YXRpb24gdG8gYXZvaWQgdG9v
-IG11Y2gKPiA+IHJlcHJvYmluZy4KPiAKPiByYWRlb24gYWxyZWFkeSB1c2VzIC1FREVGRVJfUFJP
-QkUgYnV0IGl0IGFzc3VtZXMgdGhhdCBhbWRrZmQgKmlzKiBsb2FkZWQgZmlyc3QsCj4gYW5kIG9u
-bHkgaWYgaXQgaXMgYWxyZWFkeSBsb2FkZWQgY2FuIGl0IGNvdW50IG9uIGdldHRpbmcgLUVERUZF
-Ul9QUk9CRS4gVGhlCj4gcmFkZW9uIGRyaXZlciB3aWxsIGRlZmZlciBwcm9iZSAqaWZmKiBrZ2Qy
-a2ZkX2luaXQoKSByZXR1cm5zIC1FREVGRVJfUFJPQkUsCj4gd2hpY2ggb25seSBoYXBwZW5zIHdo
-ZW4gYW1ka2ZkX2luaXRfY29tcGxldGVkIGlzIG5vIGxvbmdlciBwcmVzZW50LiBJZiByYWRlb24K
-PiBnZXRzIGxpbmtlZCBmaXJzdCB0aG91Z2ggdGhlIHN5bWJvbCBmZXRjaCBmb3Iga2dkMmtmZF9p
-bml0KCkgd2lsbCBtYWtlIGl0IGFzCj4gbm90LXByZXNlbnQgdGhvdWdoLiBTbyB0aGUgY3VycmVu
-dCBoZXVyaXN0aWMgdXNlZCBkb2VzIG5vdCBhZGRyZXNzIHByb3BlciBsaW5rCj4gLyBsb2FkIG9y
-ZGVyLiBQYXJ0IG9mIHRoZSBpc3N1ZSBtZW50aW9uZWQgb24gdGhlIGNvbW1pdCBsb2cgaXMgYW5v
-dGhlciByYWNlCj4gdW5kZXJuZWF0aCB0aGUgaG9vZCB3aXRoIHRoZSBBTUQgSU9NTVUgdjIgd2hp
-Y2ggaXMgbmVlZGVkIGZvciBhbWRrZmQuIFRoZQo+IHVuZGVybHlpbmcgaXNzdWUgaG93ZXZlciBy
-ZWFsbHkgaXMgdGhlIGxhY2sgb2YgYXZhaWxhYmxlIGNsZWFyIHNlbWFudGljcyBmb3IKPiBkZXBl
-bmRlbmNpZXMgb3ZlciAzIGxldmVscyBoZXJlLiAgVGhpcyBpcyBzb2x2ZWQgb25lIHdheSBvciBh
-bm90aGVyIGJ5IGxpbmsKPiBvcmRlciBpbiB0aGUgTWFrZWZpbGVzLCBidXQgYXMgSSd2ZSBub3Rl
-ZCBzbyBmYXIgdGhpcyBoYXMgYmVlbiByYXRoZXIgaW1wbGljaXQKPiBhbmQgZnJhZ2lsZS4gVGhl
-IGNoYW5nZSBoZXJlIG1ha2VzIGF0IGxlYXN0IHRoZSBvcmRlciBvZiB0aGUgR1BVIGRyaXZlcnMK
-PiBleHBsaWNpdGx5IGxhdGVyIHRoYW4gdGhlIElPTU1Vcy4gVGhlIHNwZWNpZmljIHJhY2UgYmV0
-d2VlbiByYWRlb24gYW5kIGFtZGZrZAo+IGlzIHNvbHZlZCBjdXJyZW50bHkgdGhyb3VnaCBsaW5r
-IG9yZGVyIHRocm91Z2ggdGhlIE1ha2VmaWxlcy4gSW4gdGhlIGZ1dHVyZSB3ZQo+IG1heWJlIGFi
-bGUgdG8gbWFrZSB0aGluZ3MgbW9yZSBleHBsaWNpdC4KClNvdW5kcyBsaWtlIHRoZSBFREVGRVJf
-UFJPQkUgaGFuZGxpbmcgaXMgYnJva2VuIC0gaWYgdGhlIG1vZHVsZSBpc24ndCBzZXQKdXAgeWV0
-IGJ1dCBzZWxlY3RlZCBpbiBLY29uZmlnLCBhbmQgbmVlZGVkIGZvciB0aGF0IGh3IGdlbmVyYXRp
-b24gdGhlbiBpdApzaG91bGQgbm90IGp1c3Qgc2lsZW50bHkgZmFpbC4KCj4gLUVERUZFUl9QUk9C
-RSBhbHNvIGludHJvZHVjZXMgYSBsYXRlbmN5IG9uIGxvYWQgd2hpY2ggd2Ugc2hvdWxkIG5vdCBu
-ZWVkIGlmIHdlCj4gY2FuIGhhbmRsZSBwcm9wZXIgbGluayAvIGxvYWQgb3JkZXIgZGVwZW5kZW5j
-eSBhbm5vdGF0aW9ucy4gVGhpcyBjaGFuZ2UgaXMgYQo+IHNtYWxsIHBhcnQgb2YgdGhhdCB3b3Jr
-LCBidXQgYXMgaXQgdGhlIGNvbW1pdCBsb2cgYWxzbyBub3RlcyBmdXR1cmUgZnVydGhlcgo+IHdv
-cmsgaXMgcG9zc2libGUgdG8gYnVpbGQgc3Ryb25nZXIgc2VtYW50aWNzLiAgU29tZSBvZiB0aGUg
-d29yayBJJ20gZG9pbmcgd2l0aAo+IGxpbmtlci10YWJsZXMgbWF5IGhlbHAgd2l0aCB0aGlzIGlu
-IHRoZSBmdXR1cmUgWzBdLCBidXQgZm9yIG5vdyB0aGlzIHNob3VsZAo+IGhlbHAgd2l0aCB3aGF0
-IHRoZSBzZW1hbnRpY3Mgd2UgaGF2ZSBpbiBwbGFjZS4KPiAKPiBbMF0gaHR0cDovL2xrbWwua2Vy
-bmVsLm9yZy9yLzE0NTU4ODk1NTktOTQyOC0xLWdpdC1zZW5kLWVtYWlsLW1jZ3JvZkBrZXJuZWwu
-b3JnCgpUaGF0J3Mgd2hhdCBJIG1lYW50IHdpdGggImF2b2lkaW5nIHRvbyBtdWNoIHJlcHJvYmlu
-ZyIuIEJ1dCBpbiB0aGUgZW5kIHRoZQpjdXJyZW50IHNvbHV0aW9uIHRvIGNyb3NzLWRyaXZlciBk
-ZXBzIHdlIGhhdmUgaXMgRURFRkVSX1BST0JFLiBGaWRkbGluZwp3aXRoIHRoZSBsaW5rIG9yZGVy
-IGlzIGFsbCB3ZWxsIGZvciBvcHRpbWl6aW5nIHN0dWZmLCBidXQgaW1vIF93YXlfIHRvbwpmcmFn
-aWxlIGZvciBjb3JyZWN0bmVzcy4KLURhbmllbAotLSAKRGFuaWVsIFZldHRlcgpTb2Z0d2FyZSBF
-bmdpbmVlciwgSW50ZWwgQ29ycG9yYXRpb24KaHR0cDovL2Jsb2cuZmZ3bGwuY2gKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcg
-bGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRl
-c2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+On 05/31/2016 07:04 PM, Christoph Hellwig wrote:
+> On Mon, May 30, 2016 at 01:54:06PM +0200, Krzysztof Kozlowski wrote:
+>> The dma-mapping core and the implementations do not change the
+>> DMA attributes passed by pointer.  Thus the pointer can point to const
+>> data.  However the attributes do not have to be a bitfield. Instead
+>> unsigned long will do fine:
+>>
+>> 1. This is just simpler.  Both in terms of reading the code and setting
+>>    attributes.  Instead of initializing local attributes on the stack and
+>>    passing pointer to it to dma_set_attr(), just set the bits.
+>>
+>> 2. It brings safeness and checking for const correctness because the
+>>    attributes are passed by value.
+>>
+>> Please have in mind that this is RFC, not finished yet.  Only ARM and
+>> ARM64 are fixed (and not everywhere).
+>> However other API users also have to be converted which is quite
+>> intrusive.  I would rather avoid it until the overall approach is
+>> accepted.
+> 
+> This looks great!  Please continue doing the full conversion.
+> 
+>> +/**
+>> + * List of possible attributes associated with a DMA mapping. The semantics
+>> + * of each attribute should be defined in Documentation/DMA-attributes.txt.
+>> + */
+>> +#define DMA_ATTR_WRITE_BARRIER		BIT(1)
+>> +#define DMA_ATTR_WEAK_ORDERING		BIT(2)
+>> +#define DMA_ATTR_WRITE_COMBINE		BIT(3)
+>> +#define DMA_ATTR_NON_CONSISTENT		BIT(4)
+>> +#define DMA_ATTR_NO_KERNEL_MAPPING	BIT(5)
+>> +#define DMA_ATTR_SKIP_CPU_SYNC		BIT(6)
+>> +#define DMA_ATTR_FORCE_CONTIGUOUS	BIT(7)
+>> +#define DMA_ATTR_ALLOC_SINGLE_PAGES	BIT(8)
+> 
+> No really for this patch, but I would much prefer to document them next
+> to the code in the long run.  Also I really think these BIT() macros
+> are a distraction compared to the (1 << N) notation.
+
+Not much difference to me but maybe plain number:
+...	0x01u
+...	0x02u
+?
+
+> 
+>> +/**
+>> + * dma_get_attr - check for a specific attribute
+>> + * @attr: attribute to look for
+>> + * @attrs: attributes to check within
+>> + */
+>> +static inline bool dma_get_attr(unsigned long attr, unsigned long attrs)
+>> +{
+>> +	return !!(attr & attrs);
+>> +}
+> 
+> I'd just kill this helper, much easier to simply open code it in the
+> caller.
+
+Keeping it for now helps reducing the number of changes in the patch.
+The patch will be quite big as it has to replace all the uses atomically.
+
+I can get rid of the helper in consecutive patch.
+
+Best regards,
+Krzysztof
+
+
