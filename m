@@ -1,48 +1,50 @@
-From: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+From: Christoph Hellwig <hch@infradead.org>
 Subject: Re: [RFC v2] dma-mapping: Use unsigned long for dma_attrs
-Date: Wed, 01 Jun 2016 08:08:11 +0200
-Message-ID: <574E7BCB.6040505@samsung.com>
+Date: Wed, 1 Jun 2016 00:51:42 -0700
+Message-ID: <20160601075142.GA1700@infradead.org>
 References: <1464609246-6948-1-git-send-email-k.kozlowski@samsung.com>
  <1464609246-6948-2-git-send-email-k.kozlowski@samsung.com>
- <20160531181533.GD11300@char.us.oracle.com>
+ <20160531170420.GB25366@infradead.org>
+ <574E746A.2030806@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
-In-reply-to: <20160531181533.GD11300@char.us.oracle.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Cc: Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Andrew Morton <akpm@linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Michal Hocko <mhocko@suse.com>, Mel Gorman <mgorman@techsingularity.net>, Arnd Bergmann <arnd@arndb.de>, Andy Lutomirski <luto@kernel.org>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, xen-devel@lists.xenproject.org, dri-devel@lists.freedesktop.org, linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org, hch@infradead.org, sstabellini@kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <574E746A.2030806@samsung.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Cc: Michal Hocko <mhocko@suse.com>, Arnd Bergmann <arnd@arndb.de>, linux-doc@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Will Deacon <will.deacon@arm.com>, Russell King <linux@armlinux.org.uk>, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, sstabellini@kernel.org, Andy Lutomirski <luto@kernel.org>, xen-devel@lists.xenproject.org, Andrew Morton <akpm@linux-foundation.org>, Mel Gorman <mgorman@techsingularity.net>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 05/31/2016 08:15 PM, Konrad Rzeszutek Wilk wrote:
-> On Mon, May 30, 2016 at 01:54:06PM +0200, Krzysztof Kozlowski wrote:
->> The dma-mapping core and the implementations do not change the
->> DMA attributes passed by pointer.  Thus the pointer can point to const
->> data.  However the attributes do not have to be a bitfield. Instead
->> unsigned long will do fine:
->>
->> 1. This is just simpler.  Both in terms of reading the code and setting
->>    attributes.  Instead of initializing local attributes on the stack and
->>    passing pointer to it to dma_set_attr(), just set the bits.
->>
->> 2. It brings safeness and checking for const correctness because the
->>    attributes are passed by value.
+On Wed, Jun 01, 2016 at 07:36:42AM +0200, Krzysztof Kozlowski wrote:
+> > No really for this patch, but I would much prefer to document them next
+> > to the code in the long run.  Also I really think these BIT() macros
+> > are a distraction compared to the (1 << N) notation.
 > 
+> Not much difference to me but maybe plain number:
+> ...	0x01u
+> ...	0x02u
+> ?
+
+I prefer the little bit shifts, but even the explicit values are much
+better than the obsfucating macros :)  Anyway, your patch and in the end
+all three methods will get the work done.
+
+> > I'd just kill this helper, much easier to simply open code it in the
+> > caller.
 > 
-> .. why not go the next step a do an enum? Perhaps that should be mentioned
-> as part of the description?
+> Keeping it for now helps reducing the number of changes in the patch.
+> The patch will be quite big as it has to replace all the uses atomically.
+> 
+> I can get rid of the helper in consecutive patch.
 
-These are additive flags so to me this would look a little bit weird:
-enum dma_attr {
-	DMA_ATTR_WRITE_BARRIER	= 0x1,
-	DMA_ATTR_WEAK_ORDERING	= 0x2,
-	DMA_ATTR_WRITE_COMBINE	= 0x4,
-	DMA_ATTR_NON_CONSISTENT	= 0x8,
-	...
-}
-
-It doesn't really look like enumeration.
-
-Best regards,
-Krzysztof
+Sounds fine.
