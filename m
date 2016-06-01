@@ -1,196 +1,107 @@
 From: Chris Wilson <chris@chris-wilson.co.uk>
-Subject: [PATCH v2] iommu: Disable preemption around use of this_cpu_ptr()
-Date: Wed,  1 Jun 2016 11:23:23 +0100
-Message-ID: <1464776603-11998-1-git-send-email-chris@chris-wilson.co.uk>
-References: <1464712470-26286-1-git-send-email-chris@chris-wilson.co.uk>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1464712470-26286-1-git-send-email-chris@chris-wilson.co.uk>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH v3 2/2] iommu: Remove cpu-local spinlock
+Date: Wed,  1 Jun 2016 12:10:09 +0100
+Message-ID: <1464779409-26711-2-git-send-email-chris@chris-wilson.co.uk>
+References: <1464776603-11998-1-git-send-email-chris@chris-wilson.co.uk>
+ <1464779409-26711-1-git-send-email-chris@chris-wilson.co.uk>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <1464779409-26711-1-git-send-email-chris@chris-wilson.co.uk>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
 To: Joerg Roedel <joro@8bytes.org>
-Cc: intel-gfx@lists.freedesktop.org, Chris Wilson <chris@chris-wilson.co.uk>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Between acquiring the this_cpu_ptr() and using it, ideally we don't want
-to be preempted and work on another CPU's private data. If we disable
-preemption around this_cpu_ptr, we do not need the CPU local spinlock -
-so long as take care that no other CPU is running that code as do perform
-the cross-CPU cache flushing and teardown.
-
-[  167.997877] BUG: using smp_processor_id() in preemptible [00000000] code: usb-storage/216
-[  167.997940] caller is debug_smp_processor_id+0x17/0x20
-[  167.997945] CPU: 7 PID: 216 Comm: usb-storage Tainted: G     U          4.7.0-rc1-gfxbench-RO_Patchwork_1057+ #1
-[  167.997948] Hardware name: Hewlett-Packard HP Pro 3500 Series/2ABF, BIOS 8.11 10/24/2012
-[  167.997951]  0000000000000000 ffff880118b7f9c8 ffffffff8140dca5 0000000000000007
-[  167.997958]  ffffffff81a3a7e9 ffff880118b7f9f8 ffffffff8142a927 0000000000000000
-[  167.997965]  ffff8800d499ed58 0000000000000001 00000000000fffff ffff880118b7fa08
-[  167.997971] Call Trace:
-[  167.997977]  [<ffffffff8140dca5>] dump_stack+0x67/0x92
-[  167.997981]  [<ffffffff8142a927>] check_preemption_disabled+0xd7/0xe0
-[  167.997985]  [<ffffffff8142a947>] debug_smp_processor_id+0x17/0x20
-[  167.997990]  [<ffffffff81507e17>] alloc_iova_fast+0xb7/0x210
-[  167.997994]  [<ffffffff8150c55f>] intel_alloc_iova+0x7f/0xd0
-[  167.997998]  [<ffffffff8151021d>] intel_map_sg+0xbd/0x240
-[  167.998002]  [<ffffffff810e5efd>] ? debug_lockdep_rcu_enabled+0x1d/0x20
-[  167.998009]  [<ffffffff81596059>] usb_hcd_map_urb_for_dma+0x4b9/0x5a0
-[  167.998013]  [<ffffffff81596d19>] usb_hcd_submit_urb+0xe9/0xaa0
-[  167.998017]  [<ffffffff810cff2f>] ? mark_held_locks+0x6f/0xa0
-[  167.998022]  [<ffffffff810d525c>] ? __raw_spin_lock_init+0x1c/0x50
-[  167.998025]  [<ffffffff810e5efd>] ? debug_lockdep_rcu_enabled+0x1d/0x20
-[  167.998028]  [<ffffffff815988f3>] usb_submit_urb+0x3f3/0x5a0
-[  167.998032]  [<ffffffff810d0082>] ? trace_hardirqs_on_caller+0x122/0x1b0
-[  167.998035]  [<ffffffff81599ae7>] usb_sg_wait+0x67/0x150
-[  167.998039]  [<ffffffff815dc202>] usb_stor_bulk_transfer_sglist.part.3+0x82/0xd0
-[  167.998042]  [<ffffffff815dc29c>] usb_stor_bulk_srb+0x4c/0x60
-[  167.998045]  [<ffffffff815dc42e>] usb_stor_Bulk_transport+0x17e/0x420
-[  167.998049]  [<ffffffff815dcf32>] usb_stor_invoke_transport+0x242/0x540
-[  167.998052]  [<ffffffff810e5efd>] ? debug_lockdep_rcu_enabled+0x1d/0x20
-[  167.998058]  [<ffffffff815dba19>] usb_stor_transparent_scsi_command+0x9/0x10
-[  167.998061]  [<ffffffff815de518>] usb_stor_control_thread+0x158/0x260
-[  167.998064]  [<ffffffff815de3c0>] ? fill_inquiry_response+0x20/0x20
-[  167.998067]  [<ffffffff815de3c0>] ? fill_inquiry_response+0x20/0x20
-[  167.998071]  [<ffffffff8109ddfa>] kthread+0xea/0x100
-[  167.998078]  [<ffffffff817ac6af>] ret_from_fork+0x1f/0x40
-[  167.998081]  [<ffffffff8109dd10>] ? kthread_create_on_node+0x1f0/0x1f0
-
-v2: convert preempt_disable(); var = this_cpu_ptr() to var = get_cpu_ptr()
-
-Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=96293
-Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org
-
-iova
----
- drivers/iommu/iova.c | 33 ++++++++++-----------------------
- 1 file changed, 10 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index ba764a0835d3..3464ed371eac 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -390,6 +390,11 @@ free_iova(struct iova_domain *iovad, unsigned long pfn)
- }
- EXPORT_SYMBOL_GPL(free_iova);
- 
-+static void free_this_cached_iovas(void *info)
-+{
-+	free_cpu_cached_iovas(smp_processor_id(), info);
-+}
-+
- /**
-  * alloc_iova_fast - allocates an iova from rcache
-  * @iovad: - iova domain in question
-@@ -413,15 +418,12 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
- retry:
- 	new_iova = alloc_iova(iovad, size, limit_pfn, true);
- 	if (!new_iova) {
--		unsigned int cpu;
--
- 		if (flushed_rcache)
- 			return 0;
- 
- 		/* Try replenishing IOVAs by flushing rcache. */
- 		flushed_rcache = true;
--		for_each_online_cpu(cpu)
--			free_cpu_cached_iovas(cpu, iovad);
-+		on_each_cpu(free_this_cached_iovas, iovad, true);
- 		goto retry;
- 	}
- 
-@@ -645,7 +647,6 @@ struct iova_magazine {
- };
- 
- struct iova_cpu_rcache {
--	spinlock_t lock;
- 	struct iova_magazine *loaded;
- 	struct iova_magazine *prev;
- };
-@@ -727,7 +728,6 @@ static void init_iova_rcaches(struct iova_domain *iovad)
- 			continue;
- 		for_each_possible_cpu(cpu) {
- 			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
--			spin_lock_init(&cpu_rcache->lock);
- 			cpu_rcache->loaded = iova_magazine_alloc(GFP_KERNEL);
- 			cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
- 		}
-@@ -747,10 +747,8 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
- 	struct iova_magazine *mag_to_free = NULL;
- 	struct iova_cpu_rcache *cpu_rcache;
- 	bool can_insert = false;
--	unsigned long flags;
- 
--	cpu_rcache = this_cpu_ptr(rcache->cpu_rcaches);
--	spin_lock_irqsave(&cpu_rcache->lock, flags);
-+	cpu_rcache = get_cpu_var(rcache->cpu_rcaches);
- 
- 	if (!iova_magazine_full(cpu_rcache->loaded)) {
- 		can_insert = true;
-@@ -778,7 +776,7 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
- 	if (can_insert)
- 		iova_magazine_push(cpu_rcache->loaded, iova_pfn);
- 
--	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
-+	put_cpu_var(rcache->cpu_rcaches);
- 
- 	if (mag_to_free) {
- 		iova_magazine_free_pfns(mag_to_free, iovad);
-@@ -810,10 +808,8 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
- 	struct iova_cpu_rcache *cpu_rcache;
- 	unsigned long iova_pfn = 0;
- 	bool has_pfn = false;
--	unsigned long flags;
- 
--	cpu_rcache = this_cpu_ptr(rcache->cpu_rcaches);
--	spin_lock_irqsave(&cpu_rcache->lock, flags);
-+	cpu_rcache = get_cpu_var(rcache->cpu_rcaches);
- 
- 	if (!iova_magazine_empty(cpu_rcache->loaded)) {
- 		has_pfn = true;
-@@ -833,7 +829,7 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
- 	if (has_pfn)
- 		iova_pfn = iova_magazine_pop(cpu_rcache->loaded, limit_pfn);
- 
--	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
-+	put_cpu_var(rcache->cpu_rcaches);
- 
- 	return iova_pfn;
- }
-@@ -862,17 +858,11 @@ static void free_cpu_iova_rcache(unsigned int cpu, struct iova_domain *iovad,
- 				 struct iova_rcache *rcache)
- {
- 	struct iova_cpu_rcache *cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
--	unsigned long flags;
--
--	spin_lock_irqsave(&cpu_rcache->lock, flags);
--
- 	iova_magazine_free_pfns(cpu_rcache->loaded, iovad);
- 	iova_magazine_free(cpu_rcache->loaded);
- 
- 	iova_magazine_free_pfns(cpu_rcache->prev, iovad);
- 	iova_magazine_free(cpu_rcache->prev);
--
--	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
- }
- 
- /*
-@@ -906,16 +896,13 @@ void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
- {
- 	struct iova_cpu_rcache *cpu_rcache;
- 	struct iova_rcache *rcache;
--	unsigned long flags;
- 	int i;
- 
- 	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
- 		rcache = &iovad->rcaches[i];
- 		cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
--		spin_lock_irqsave(&cpu_rcache->lock, flags);
- 		iova_magazine_free_pfns(cpu_rcache->loaded, iovad);
- 		iova_magazine_free_pfns(cpu_rcache->prev, iovad);
--		spin_unlock_irqrestore(&cpu_rcache->lock, flags);
- 	}
- }
- 
--- 
-2.8.1
+QnkgYXZvaWRpbmcgY3Jvc3MtQ1BVIHVzYWdlIG9mIHRoZSBwZXItY3B1IGlvdmEgY2FjaGUsIHdl
+IGNhbiBmb3JnbwpoYXZpbmcgYSBzcGlubG9jayBpbnNpZGUgdGhlIHBlci1jcHUgc3RydWN0LiBU
+aGUgb25seSBwbGFjZSB3aGVyZSB3ZQphY3R1YWxseSBtYXkgdG91Y2ggYW5vdGhlciBDUFUncyBk
+YXRhIGlzIHdoZW4gcGVyZm9ybWluZyBhIGNhY2hlIGZsdXNoCmFmdGVyIHJ1bm5pbmcgb3V0IG9m
+IG1lbW9yeS4gSGVyZSwgd2UgY2FuIGluc3RlYWQgc2NoZWR1bGUgYSB0YXNrIHRvIHJ1bgpvbiB0
+aGUgb3RoZXIgQ1BVIHRvIGRvIHRoZSBmbHVzaCBiZWZvcmUgdHJ5aW5nIGFnYWluLgoKU2lnbmVk
+LW9mZi1ieTogQ2hyaXMgV2lsc29uIDxjaHJpc0BjaHJpcy13aWxzb24uY28udWs+CkNjOiBKb29u
+YXMgTGFodGluZW4gPGpvb25hcy5sYWh0aW5lbkBsaW51eC5pbnRlbC5jb20+CkNjOiBKb2VyZyBS
+b2VkZWwgPGpvcm9AOGJ5dGVzLm9yZz4KQ2M6IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCkNjOiBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnCi0tLQogZHJpdmVycy9pb21tdS9p
+b3ZhLmMgfCAyOSArKysrKystLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQs
+IDYgaW5zZXJ0aW9ucygrKSwgMjMgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9p
+b21tdS9pb3ZhLmMgYi9kcml2ZXJzL2lvbW11L2lvdmEuYwppbmRleCBlMjMwMDFiZmNmZWUuLjM2
+Y2RjOGVlYWIxYyAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9pb3ZhLmMKKysrIGIvZHJpdmVy
+cy9pb21tdS9pb3ZhLmMKQEAgLTM5MCw2ICszOTAsMTEgQEAgZnJlZV9pb3ZhKHN0cnVjdCBpb3Zh
+X2RvbWFpbiAqaW92YWQsIHVuc2lnbmVkIGxvbmcgcGZuKQogfQogRVhQT1JUX1NZTUJPTF9HUEwo
+ZnJlZV9pb3ZhKTsKIAorc3RhdGljIHZvaWQgZnJlZV90aGlzX2NhY2hlZF9pb3Zhcyh2b2lkICpp
+bmZvKQoreworCWZyZWVfY3B1X2NhY2hlZF9pb3ZhcyhzbXBfcHJvY2Vzc29yX2lkKCksIGluZm8p
+OworfQorCiAvKioKICAqIGFsbG9jX2lvdmFfZmFzdCAtIGFsbG9jYXRlcyBhbiBpb3ZhIGZyb20g
+cmNhY2hlCiAgKiBAaW92YWQ6IC0gaW92YSBkb21haW4gaW4gcXVlc3Rpb24KQEAgLTQxMywxNyAr
+NDE4LDEyIEBAIGFsbG9jX2lvdmFfZmFzdChzdHJ1Y3QgaW92YV9kb21haW4gKmlvdmFkLCB1bnNp
+Z25lZCBsb25nIHNpemUsCiByZXRyeToKIAluZXdfaW92YSA9IGFsbG9jX2lvdmEoaW92YWQsIHNp
+emUsIGxpbWl0X3BmbiwgdHJ1ZSk7CiAJaWYgKCFuZXdfaW92YSkgewotCQl1bnNpZ25lZCBpbnQg
+Y3B1OwotCiAJCWlmIChmbHVzaGVkX3JjYWNoZSkKIAkJCXJldHVybiAwOwogCiAJCS8qIFRyeSBy
+ZXBsZW5pc2hpbmcgSU9WQXMgYnkgZmx1c2hpbmcgcmNhY2hlLiAqLwogCQlmbHVzaGVkX3JjYWNo
+ZSA9IHRydWU7Ci0JCXByZWVtcHRfZGlzYWJsZSgpOwotCQlmb3JfZWFjaF9vbmxpbmVfY3B1KGNw
+dSkKLQkJCWZyZWVfY3B1X2NhY2hlZF9pb3ZhcyhjcHUsIGlvdmFkKTsKLQkJcHJlZW1wdF9lbmFi
+bGUoKTsKKwkJb25fZWFjaF9jcHUoZnJlZV90aGlzX2NhY2hlZF9pb3ZhcywgaW92YWQsIHRydWUp
+OwogCQlnb3RvIHJldHJ5OwogCX0KIApAQCAtNjQ3LDcgKzY0Nyw2IEBAIHN0cnVjdCBpb3ZhX21h
+Z2F6aW5lIHsKIH07CiAKIHN0cnVjdCBpb3ZhX2NwdV9yY2FjaGUgewotCXNwaW5sb2NrX3QgbG9j
+azsKIAlzdHJ1Y3QgaW92YV9tYWdhemluZSAqbG9hZGVkOwogCXN0cnVjdCBpb3ZhX21hZ2F6aW5l
+ICpwcmV2OwogfTsKQEAgLTcyOSw3ICs3MjgsNiBAQCBzdGF0aWMgdm9pZCBpbml0X2lvdmFfcmNh
+Y2hlcyhzdHJ1Y3QgaW92YV9kb21haW4gKmlvdmFkKQogCQkJY29udGludWU7CiAJCWZvcl9lYWNo
+X3Bvc3NpYmxlX2NwdShjcHUpIHsKIAkJCWNwdV9yY2FjaGUgPSBwZXJfY3B1X3B0cihyY2FjaGUt
+PmNwdV9yY2FjaGVzLCBjcHUpOwotCQkJc3Bpbl9sb2NrX2luaXQoJmNwdV9yY2FjaGUtPmxvY2sp
+OwogCQkJY3B1X3JjYWNoZS0+bG9hZGVkID0gaW92YV9tYWdhemluZV9hbGxvYyhHRlBfS0VSTkVM
+KTsKIAkJCWNwdV9yY2FjaGUtPnByZXYgPSBpb3ZhX21hZ2F6aW5lX2FsbG9jKEdGUF9LRVJORUwp
+OwogCQl9CkBAIC03NDksMTAgKzc0Nyw4IEBAIHN0YXRpYyBib29sIF9faW92YV9yY2FjaGVfaW5z
+ZXJ0KHN0cnVjdCBpb3ZhX2RvbWFpbiAqaW92YWQsCiAJc3RydWN0IGlvdmFfbWFnYXppbmUgKm1h
+Z190b19mcmVlID0gTlVMTDsKIAlzdHJ1Y3QgaW92YV9jcHVfcmNhY2hlICpjcHVfcmNhY2hlOwog
+CWJvb2wgY2FuX2luc2VydCA9IGZhbHNlOwotCXVuc2lnbmVkIGxvbmcgZmxhZ3M7CiAKIAljcHVf
+cmNhY2hlID0gZ2V0X2NwdV9wdHIocmNhY2hlLT5jcHVfcmNhY2hlcyk7Ci0Jc3Bpbl9sb2NrX2ly
+cXNhdmUoJmNwdV9yY2FjaGUtPmxvY2ssIGZsYWdzKTsKIAogCWlmICghaW92YV9tYWdhemluZV9m
+dWxsKGNwdV9yY2FjaGUtPmxvYWRlZCkpIHsKIAkJY2FuX2luc2VydCA9IHRydWU7CkBAIC03ODAs
+NyArNzc2LDYgQEAgc3RhdGljIGJvb2wgX19pb3ZhX3JjYWNoZV9pbnNlcnQoc3RydWN0IGlvdmFf
+ZG9tYWluICppb3ZhZCwKIAlpZiAoY2FuX2luc2VydCkKIAkJaW92YV9tYWdhemluZV9wdXNoKGNw
+dV9yY2FjaGUtPmxvYWRlZCwgaW92YV9wZm4pOwogCi0Jc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgm
+Y3B1X3JjYWNoZS0+bG9jaywgZmxhZ3MpOwogCXB1dF9jcHVfcHRyKHJjYWNoZS0+Y3B1X3JjYWNo
+ZXMpOwogCiAJaWYgKG1hZ190b19mcmVlKSB7CkBAIC04MTMsMTAgKzgwOCw4IEBAIHN0YXRpYyB1
+bnNpZ25lZCBsb25nIF9faW92YV9yY2FjaGVfZ2V0KHN0cnVjdCBpb3ZhX3JjYWNoZSAqcmNhY2hl
+LAogCXN0cnVjdCBpb3ZhX2NwdV9yY2FjaGUgKmNwdV9yY2FjaGU7CiAJdW5zaWduZWQgbG9uZyBp
+b3ZhX3BmbiA9IDA7CiAJYm9vbCBoYXNfcGZuID0gZmFsc2U7Ci0JdW5zaWduZWQgbG9uZyBmbGFn
+czsKIAogCWNwdV9yY2FjaGUgPSBnZXRfY3B1X3B0cihyY2FjaGUtPmNwdV9yY2FjaGVzKTsKLQlz
+cGluX2xvY2tfaXJxc2F2ZSgmY3B1X3JjYWNoZS0+bG9jaywgZmxhZ3MpOwogCiAJaWYgKCFpb3Zh
+X21hZ2F6aW5lX2VtcHR5KGNwdV9yY2FjaGUtPmxvYWRlZCkpIHsKIAkJaGFzX3BmbiA9IHRydWU7
+CkBAIC04MzYsNyArODI5LDYgQEAgc3RhdGljIHVuc2lnbmVkIGxvbmcgX19pb3ZhX3JjYWNoZV9n
+ZXQoc3RydWN0IGlvdmFfcmNhY2hlICpyY2FjaGUsCiAJaWYgKGhhc19wZm4pCiAJCWlvdmFfcGZu
+ID0gaW92YV9tYWdhemluZV9wb3AoY3B1X3JjYWNoZS0+bG9hZGVkLCBsaW1pdF9wZm4pOwogCi0J
+c3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmY3B1X3JjYWNoZS0+bG9jaywgZmxhZ3MpOwogCXB1dF9j
+cHVfcHRyKHJjYWNoZS0+Y3B1X3JjYWNoZXMpOwogCiAJcmV0dXJuIGlvdmFfcGZuOwpAQCAtODY2
+LDE3ICs4NTgsMTEgQEAgc3RhdGljIHZvaWQgZnJlZV9jcHVfaW92YV9yY2FjaGUodW5zaWduZWQg
+aW50IGNwdSwgc3RydWN0IGlvdmFfZG9tYWluICppb3ZhZCwKIAkJCQkgc3RydWN0IGlvdmFfcmNh
+Y2hlICpyY2FjaGUpCiB7CiAJc3RydWN0IGlvdmFfY3B1X3JjYWNoZSAqY3B1X3JjYWNoZSA9IHBl
+cl9jcHVfcHRyKHJjYWNoZS0+Y3B1X3JjYWNoZXMsIGNwdSk7Ci0JdW5zaWduZWQgbG9uZyBmbGFn
+czsKLQotCXNwaW5fbG9ja19pcnFzYXZlKCZjcHVfcmNhY2hlLT5sb2NrLCBmbGFncyk7Ci0KIAlp
+b3ZhX21hZ2F6aW5lX2ZyZWVfcGZucyhjcHVfcmNhY2hlLT5sb2FkZWQsIGlvdmFkKTsKIAlpb3Zh
+X21hZ2F6aW5lX2ZyZWUoY3B1X3JjYWNoZS0+bG9hZGVkKTsKIAogCWlvdmFfbWFnYXppbmVfZnJl
+ZV9wZm5zKGNwdV9yY2FjaGUtPnByZXYsIGlvdmFkKTsKIAlpb3ZhX21hZ2F6aW5lX2ZyZWUoY3B1
+X3JjYWNoZS0+cHJldik7Ci0KLQlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZjcHVfcmNhY2hlLT5s
+b2NrLCBmbGFncyk7CiB9CiAKIC8qCkBAIC05MTAsMTYgKzg5NiwxMyBAQCB2b2lkIGZyZWVfY3B1
+X2NhY2hlZF9pb3Zhcyh1bnNpZ25lZCBpbnQgY3B1LCBzdHJ1Y3QgaW92YV9kb21haW4gKmlvdmFk
+KQogewogCXN0cnVjdCBpb3ZhX2NwdV9yY2FjaGUgKmNwdV9yY2FjaGU7CiAJc3RydWN0IGlvdmFf
+cmNhY2hlICpyY2FjaGU7Ci0JdW5zaWduZWQgbG9uZyBmbGFnczsKIAlpbnQgaTsKIAogCWZvciAo
+aSA9IDA7IGkgPCBJT1ZBX1JBTkdFX0NBQ0hFX01BWF9TSVpFOyArK2kpIHsKIAkJcmNhY2hlID0g
+JmlvdmFkLT5yY2FjaGVzW2ldOwogCQljcHVfcmNhY2hlID0gcGVyX2NwdV9wdHIocmNhY2hlLT5j
+cHVfcmNhY2hlcywgY3B1KTsKLQkJc3Bpbl9sb2NrX2lycXNhdmUoJmNwdV9yY2FjaGUtPmxvY2ss
+IGZsYWdzKTsKIAkJaW92YV9tYWdhemluZV9mcmVlX3BmbnMoY3B1X3JjYWNoZS0+bG9hZGVkLCBp
+b3ZhZCk7CiAJCWlvdmFfbWFnYXppbmVfZnJlZV9wZm5zKGNwdV9yY2FjaGUtPnByZXYsIGlvdmFk
+KTsKLQkJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmY3B1X3JjYWNoZS0+bG9jaywgZmxhZ3MpOwog
+CX0KIH0KIAotLSAKMi44LjEKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCkludGVsLWdmeCBtYWlsaW5nIGxpc3QKSW50ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNr
+dG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lu
+dGVsLWdmeAo=
