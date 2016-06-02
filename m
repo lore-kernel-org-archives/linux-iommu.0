@@ -1,7 +1,7 @@
 From: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [RFC v3 32/45] mips: dma-mapping: Use unsigned long for dma_attrs
-Date: Thu, 02 Jun 2016 17:39:34 +0200
-Message-ID: <1464881987-13203-33-git-send-email-k.kozlowski__316.914756740694$1464882246$gmane$org@samsung.com>
+Subject: [RFC v3 28/45] ia64: dma-mapping: Use unsigned long for dma_attrs
+Date: Thu, 02 Jun 2016 17:39:30 +0200
+Message-ID: <1464881987-13203-29-git-send-email-k.kozlowski__3654.9252843999$1464882254$gmane$org@samsung.com>
 References: <1464881987-13203-1-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -26,183 +26,200 @@ squashed with main commit.
 
 Signed-off-by: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- arch/mips/cavium-octeon/dma-octeon.c      |  8 ++++----
- arch/mips/loongson64/common/dma-swiotlb.c | 10 +++++-----
- arch/mips/mm/dma-default.c                | 14 +++++++-------
- arch/mips/netlogic/common/nlm-dma.c       |  4 ++--
- 4 files changed, 18 insertions(+), 18 deletions(-)
+ arch/ia64/hp/common/sba_iommu.c | 22 +++++++++++-----------
+ arch/ia64/include/asm/machvec.h |  1 -
+ arch/ia64/kernel/pci-swiotlb.c  |  4 ++--
+ arch/ia64/sn/pci/pci_dma.c      | 12 ++++++------
+ 4 files changed, 19 insertions(+), 20 deletions(-)
 
-diff --git a/arch/mips/cavium-octeon/dma-octeon.c b/arch/mips/cavium-octeon/dma-octeon.c
-index 2cd45f5f9481..fd69528b24fb 100644
---- a/arch/mips/cavium-octeon/dma-octeon.c
-+++ b/arch/mips/cavium-octeon/dma-octeon.c
-@@ -125,7 +125,7 @@ static phys_addr_t octeon_small_dma_to_phys(struct device *dev,
- 
- static dma_addr_t octeon_dma_map_page(struct device *dev, struct page *page,
- 	unsigned long offset, size_t size, enum dma_data_direction direction,
--	struct dma_attrs *attrs)
-+	unsigned long attrs)
+diff --git a/arch/ia64/hp/common/sba_iommu.c b/arch/ia64/hp/common/sba_iommu.c
+index a6d6190c9d24..630ee8073899 100644
+--- a/arch/ia64/hp/common/sba_iommu.c
++++ b/arch/ia64/hp/common/sba_iommu.c
+@@ -919,7 +919,7 @@ sba_mark_invalid(struct ioc *ioc, dma_addr_t iova, size_t byte_cnt)
+ static dma_addr_t sba_map_page(struct device *dev, struct page *page,
+ 			       unsigned long poff, size_t size,
+ 			       enum dma_data_direction dir,
+-			       struct dma_attrs *attrs)
++			       unsigned long attrs)
  {
- 	dma_addr_t daddr = swiotlb_map_page(dev, page, offset, size,
- 					    direction, attrs);
-@@ -135,7 +135,7 @@ static dma_addr_t octeon_dma_map_page(struct device *dev, struct page *page,
+ 	struct ioc *ioc;
+ 	void *addr = page_address(page) + poff;
+@@ -1005,7 +1005,7 @@ static dma_addr_t sba_map_page(struct device *dev, struct page *page,
+ 
+ static dma_addr_t sba_map_single_attrs(struct device *dev, void *addr,
+ 				       size_t size, enum dma_data_direction dir,
+-				       struct dma_attrs *attrs)
++				       unsigned long attrs)
+ {
+ 	return sba_map_page(dev, virt_to_page(addr),
+ 			    (unsigned long)addr & ~PAGE_MASK, size, dir, attrs);
+@@ -1046,7 +1046,7 @@ sba_mark_clean(struct ioc *ioc, dma_addr_t iova, size_t size)
+  * See Documentation/DMA-API-HOWTO.txt
+  */
+ static void sba_unmap_page(struct device *dev, dma_addr_t iova, size_t size,
+-			   enum dma_data_direction dir, struct dma_attrs *attrs)
++			   enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	struct ioc *ioc;
+ #if DELAYED_RESOURCE_CNT > 0
+@@ -1115,7 +1115,7 @@ static void sba_unmap_page(struct device *dev, dma_addr_t iova, size_t size,
  }
  
- static int octeon_dma_map_sg(struct device *dev, struct scatterlist *sg,
--	int nents, enum dma_data_direction direction, struct dma_attrs *attrs)
-+	int nents, enum dma_data_direction direction, unsigned long attrs)
+ void sba_unmap_single_attrs(struct device *dev, dma_addr_t iova, size_t size,
+-			    enum dma_data_direction dir, struct dma_attrs *attrs)
++			    enum dma_data_direction dir, unsigned long attrs)
  {
- 	int r = swiotlb_map_sg_attrs(dev, sg, nents, direction, attrs);
- 	mb();
-@@ -157,7 +157,7 @@ static void octeon_dma_sync_sg_for_device(struct device *dev,
+ 	sba_unmap_page(dev, iova, size, dir, attrs);
+ }
+@@ -1130,7 +1130,7 @@ void sba_unmap_single_attrs(struct device *dev, dma_addr_t iova, size_t size,
+  */
+ static void *
+ sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
+-		   gfp_t flags, struct dma_attrs *attrs)
++		   gfp_t flags, unsigned long attrs)
+ {
+ 	struct ioc *ioc;
+ 	void *addr;
+@@ -1175,7 +1175,7 @@ sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 	 * device to map single to get an iova mapping.
+ 	 */
+ 	*dma_handle = sba_map_single_attrs(&ioc->sac_only_dev->dev, addr,
+-					   size, 0, NULL);
++					   size, 0, 0);
+ 
+ 	return addr;
+ }
+@@ -1191,9 +1191,9 @@ sba_alloc_coherent(struct device *dev, size_t size, dma_addr_t *dma_handle,
+  * See Documentation/DMA-API-HOWTO.txt
+  */
+ static void sba_free_coherent(struct device *dev, size_t size, void *vaddr,
+-			      dma_addr_t dma_handle, struct dma_attrs *attrs)
++			      dma_addr_t dma_handle, unsigned long attrs)
+ {
+-	sba_unmap_single_attrs(dev, dma_handle, size, 0, NULL);
++	sba_unmap_single_attrs(dev, dma_handle, size, 0, 0);
+ 	free_pages((unsigned long) vaddr, get_order(size));
  }
  
- static void *octeon_dma_alloc_coherent(struct device *dev, size_t size,
--	dma_addr_t *dma_handle, gfp_t gfp, struct dma_attrs *attrs)
-+	dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
- {
- 	void *ret;
+@@ -1442,7 +1442,7 @@ sba_coalesce_chunks(struct ioc *ioc, struct device *dev,
  
-@@ -189,7 +189,7 @@ static void *octeon_dma_alloc_coherent(struct device *dev, size_t size,
+ static void sba_unmap_sg_attrs(struct device *dev, struct scatterlist *sglist,
+ 			       int nents, enum dma_data_direction dir,
+-			       struct dma_attrs *attrs);
++			       unsigned long attrs);
+ /**
+  * sba_map_sg - map Scatter/Gather list
+  * @dev: instance of PCI owned by the driver that's asking.
+@@ -1455,7 +1455,7 @@ static void sba_unmap_sg_attrs(struct device *dev, struct scatterlist *sglist,
+  */
+ static int sba_map_sg_attrs(struct device *dev, struct scatterlist *sglist,
+ 			    int nents, enum dma_data_direction dir,
+-			    struct dma_attrs *attrs)
++			    unsigned long attrs)
+ {
+ 	struct ioc *ioc;
+ 	int coalesced, filled = 0;
+@@ -1551,7 +1551,7 @@ static int sba_map_sg_attrs(struct device *dev, struct scatterlist *sglist,
+  */
+ static void sba_unmap_sg_attrs(struct device *dev, struct scatterlist *sglist,
+ 			       int nents, enum dma_data_direction dir,
+-			       struct dma_attrs *attrs)
++			       unsigned long attrs)
+ {
+ #ifdef ASSERT_PDIR_SANITY
+ 	struct ioc *ioc;
+diff --git a/arch/ia64/include/asm/machvec.h b/arch/ia64/include/asm/machvec.h
+index 9c39bdfc2da8..ed7f09089f12 100644
+--- a/arch/ia64/include/asm/machvec.h
++++ b/arch/ia64/include/asm/machvec.h
+@@ -22,7 +22,6 @@ struct pci_bus;
+ struct task_struct;
+ struct pci_dev;
+ struct msi_desc;
+-struct dma_attrs;
+ 
+ typedef void ia64_mv_setup_t (char **);
+ typedef void ia64_mv_cpu_init_t (void);
+diff --git a/arch/ia64/kernel/pci-swiotlb.c b/arch/ia64/kernel/pci-swiotlb.c
+index 939260aeac98..2933208c0285 100644
+--- a/arch/ia64/kernel/pci-swiotlb.c
++++ b/arch/ia64/kernel/pci-swiotlb.c
+@@ -16,7 +16,7 @@ EXPORT_SYMBOL(swiotlb);
+ 
+ static void *ia64_swiotlb_alloc_coherent(struct device *dev, size_t size,
+ 					 dma_addr_t *dma_handle, gfp_t gfp,
+-					 struct dma_attrs *attrs)
++					 unsigned long attrs)
+ {
+ 	if (dev->coherent_dma_mask != DMA_BIT_MASK(64))
+ 		gfp |= GFP_DMA;
+@@ -25,7 +25,7 @@ static void *ia64_swiotlb_alloc_coherent(struct device *dev, size_t size,
+ 
+ static void ia64_swiotlb_free_coherent(struct device *dev, size_t size,
+ 				       void *vaddr, dma_addr_t dma_addr,
+-				       struct dma_attrs *attrs)
++				       unsigned long attrs)
+ {
+ 	swiotlb_free_coherent(dev, size, vaddr, dma_addr);
  }
- 
- static void octeon_dma_free_coherent(struct device *dev, size_t size,
--	void *vaddr, dma_addr_t dma_handle, struct dma_attrs *attrs)
-+	void *vaddr, dma_addr_t dma_handle, unsigned long attrs)
+diff --git a/arch/ia64/sn/pci/pci_dma.c b/arch/ia64/sn/pci/pci_dma.c
+index 8f59907007cb..6b78fc953c4b 100644
+--- a/arch/ia64/sn/pci/pci_dma.c
++++ b/arch/ia64/sn/pci/pci_dma.c
+@@ -77,7 +77,7 @@ EXPORT_SYMBOL(sn_dma_set_mask);
+  */
+ static void *sn_dma_alloc_coherent(struct device *dev, size_t size,
+ 				   dma_addr_t * dma_handle, gfp_t flags,
+-				   struct dma_attrs *attrs)
++				   unsigned long attrs)
  {
- 	swiotlb_free_coherent(dev, size, vaddr, dma_handle);
- }
-diff --git a/arch/mips/loongson64/common/dma-swiotlb.c b/arch/mips/loongson64/common/dma-swiotlb.c
-index 4ffa6fc81c8f..1a80b6f73ab2 100644
---- a/arch/mips/loongson64/common/dma-swiotlb.c
-+++ b/arch/mips/loongson64/common/dma-swiotlb.c
-@@ -10,7 +10,7 @@
- #include <dma-coherence.h>
- 
- static void *loongson_dma_alloc_coherent(struct device *dev, size_t size,
--		dma_addr_t *dma_handle, gfp_t gfp, struct dma_attrs *attrs)
-+		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+ 	void *cpuaddr;
+ 	unsigned long phys_addr;
+@@ -138,7 +138,7 @@ static void *sn_dma_alloc_coherent(struct device *dev, size_t size,
+  * any associated IOMMU mappings.
+  */
+ static void sn_dma_free_coherent(struct device *dev, size_t size, void *cpu_addr,
+-				 dma_addr_t dma_handle, struct dma_attrs *attrs)
++				 dma_addr_t dma_handle, unsigned long attrs)
  {
- 	void *ret;
- 
-@@ -41,7 +41,7 @@ static void *loongson_dma_alloc_coherent(struct device *dev, size_t size,
- }
- 
- static void loongson_dma_free_coherent(struct device *dev, size_t size,
--		void *vaddr, dma_addr_t dma_handle, struct dma_attrs *attrs)
-+		void *vaddr, dma_addr_t dma_handle, unsigned long attrs)
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct sn_pcibus_provider *provider = SN_PCIDEV_BUSPROVIDER(pdev);
+@@ -176,7 +176,7 @@ static void sn_dma_free_coherent(struct device *dev, size_t size, void *cpu_addr
+ static dma_addr_t sn_dma_map_page(struct device *dev, struct page *page,
+ 				  unsigned long offset, size_t size,
+ 				  enum dma_data_direction dir,
+-				  struct dma_attrs *attrs)
++				  unsigned long attrs)
  {
- 	swiotlb_free_coherent(dev, size, vaddr, dma_handle);
- }
-@@ -49,7 +49,7 @@ static void loongson_dma_free_coherent(struct device *dev, size_t size,
- static dma_addr_t loongson_dma_map_page(struct device *dev, struct page *page,
- 				unsigned long offset, size_t size,
- 				enum dma_data_direction dir,
--				struct dma_attrs *attrs)
-+				unsigned long attrs)
+ 	void *cpu_addr = page_address(page) + offset;
+ 	dma_addr_t dma_addr;
+@@ -218,7 +218,7 @@ static dma_addr_t sn_dma_map_page(struct device *dev, struct page *page,
+  */
+ static void sn_dma_unmap_page(struct device *dev, dma_addr_t dma_addr,
+ 			      size_t size, enum dma_data_direction dir,
+-			      struct dma_attrs *attrs)
++			      unsigned long attrs)
  {
- 	dma_addr_t daddr = swiotlb_map_page(dev, page, offset, size,
- 					dir, attrs);
-@@ -59,9 +59,9 @@ static dma_addr_t loongson_dma_map_page(struct device *dev, struct page *page,
- 
- static int loongson_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 				int nents, enum dma_data_direction dir,
--				struct dma_attrs *attrs)
-+				unsigned long attrs)
- {
--	int r = swiotlb_map_sg_attrs(dev, sg, nents, dir, NULL);
-+	int r = swiotlb_map_sg_attrs(dev, sg, nents, dir, 0);
- 	mb();
- 
- 	return r;
-diff --git a/arch/mips/mm/dma-default.c b/arch/mips/mm/dma-default.c
-index cb557d28cb21..c9052108094f 100644
---- a/arch/mips/mm/dma-default.c
-+++ b/arch/mips/mm/dma-default.c
-@@ -131,7 +131,7 @@ static void *mips_dma_alloc_noncoherent(struct device *dev, size_t size,
- }
- 
- static void *mips_dma_alloc_coherent(struct device *dev, size_t size,
--	dma_addr_t * dma_handle, gfp_t gfp, struct dma_attrs *attrs)
-+	dma_addr_t * dma_handle, gfp_t gfp, unsigned long attrs)
- {
- 	void *ret;
- 	struct page *page = NULL;
-@@ -176,7 +176,7 @@ static void mips_dma_free_noncoherent(struct device *dev, size_t size,
- }
- 
- static void mips_dma_free_coherent(struct device *dev, size_t size, void *vaddr,
--	dma_addr_t dma_handle, struct dma_attrs *attrs)
-+	dma_addr_t dma_handle, unsigned long attrs)
- {
- 	unsigned long addr = (unsigned long) vaddr;
- 	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-@@ -200,7 +200,7 @@ static void mips_dma_free_coherent(struct device *dev, size_t size, void *vaddr,
- 
- static int mips_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- 	void *cpu_addr, dma_addr_t dma_addr, size_t size,
--	struct dma_attrs *attrs)
-+	unsigned long attrs)
- {
- 	unsigned long user_count = (vma->vm_end - vma->vm_start) >> PAGE_SHIFT;
- 	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-@@ -291,7 +291,7 @@ static inline void __dma_sync(struct page *page,
- }
- 
- static void mips_dma_unmap_page(struct device *dev, dma_addr_t dma_addr,
--	size_t size, enum dma_data_direction direction, struct dma_attrs *attrs)
-+	size_t size, enum dma_data_direction direction, unsigned long attrs)
- {
- 	if (cpu_needs_post_dma_flush(dev))
- 		__dma_sync(dma_addr_to_page(dev, dma_addr),
-@@ -301,7 +301,7 @@ static void mips_dma_unmap_page(struct device *dev, dma_addr_t dma_addr,
- }
- 
- static int mips_dma_map_sg(struct device *dev, struct scatterlist *sglist,
--	int nents, enum dma_data_direction direction, struct dma_attrs *attrs)
-+	int nents, enum dma_data_direction direction, unsigned long attrs)
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct sn_pcibus_provider *provider = SN_PCIDEV_BUSPROVIDER(pdev);
+@@ -240,7 +240,7 @@ static void sn_dma_unmap_page(struct device *dev, dma_addr_t dma_addr,
+  */
+ static void sn_dma_unmap_sg(struct device *dev, struct scatterlist *sgl,
+ 			    int nhwentries, enum dma_data_direction dir,
+-			    struct dma_attrs *attrs)
++			    unsigned long attrs)
  {
  	int i;
- 	struct scatterlist *sg;
-@@ -322,7 +322,7 @@ static int mips_dma_map_sg(struct device *dev, struct scatterlist *sglist,
- 
- static dma_addr_t mips_dma_map_page(struct device *dev, struct page *page,
- 	unsigned long offset, size_t size, enum dma_data_direction direction,
--	struct dma_attrs *attrs)
-+	unsigned long attrs)
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+@@ -273,7 +273,7 @@ static void sn_dma_unmap_sg(struct device *dev, struct scatterlist *sgl,
+  */
+ static int sn_dma_map_sg(struct device *dev, struct scatterlist *sgl,
+ 			 int nhwentries, enum dma_data_direction dir,
+-			 struct dma_attrs *attrs)
++			 unsigned long attrs)
  {
- 	if (!plat_device_is_coherent(dev))
- 		__dma_sync(page, offset, size, direction);
-@@ -332,7 +332,7 @@ static dma_addr_t mips_dma_map_page(struct device *dev, struct page *page,
- 
- static void mips_dma_unmap_sg(struct device *dev, struct scatterlist *sglist,
- 	int nhwentries, enum dma_data_direction direction,
--	struct dma_attrs *attrs)
-+	unsigned long attrs)
- {
- 	int i;
- 	struct scatterlist *sg;
-diff --git a/arch/mips/netlogic/common/nlm-dma.c b/arch/mips/netlogic/common/nlm-dma.c
-index 3758715d4ab6..0630693bec2a 100644
---- a/arch/mips/netlogic/common/nlm-dma.c
-+++ b/arch/mips/netlogic/common/nlm-dma.c
-@@ -45,7 +45,7 @@
- static char *nlm_swiotlb;
- 
- static void *nlm_dma_alloc_coherent(struct device *dev, size_t size,
--	dma_addr_t *dma_handle, gfp_t gfp, struct dma_attrs *attrs)
-+	dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
- {
- 	/* ignore region specifiers */
- 	gfp &= ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM);
-@@ -62,7 +62,7 @@ static void *nlm_dma_alloc_coherent(struct device *dev, size_t size,
- }
- 
- static void nlm_dma_free_coherent(struct device *dev, size_t size,
--	void *vaddr, dma_addr_t dma_handle, struct dma_attrs *attrs)
-+	void *vaddr, dma_addr_t dma_handle, unsigned long attrs)
- {
- 	swiotlb_free_coherent(dev, size, vaddr, dma_handle);
- }
+ 	unsigned long phys_addr;
+ 	struct scatterlist *saved_sg = sgl, *sg;
 -- 
 1.9.1
