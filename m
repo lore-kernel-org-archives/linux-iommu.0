@@ -1,181 +1,65 @@
-From: "Niklas =?iso-8859-1?Q?S=F6derlund?=" <niklas.soderlund-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
-Subject: Re: [PATCHv7 4/6] arm: dma-mapping: add {map, unmap}_resource for
-	iommu ops
-Date: Thu, 2 Jun 2016 14:50:13 +0200
-Message-ID: <20160602125013.GM8307@bigcity.dyn.berto.se>
+From: "Niklas =?iso-8859-1?Q?S=F6derlund?=" <niklas.soderlund@ragnatech.se>
+Subject: Re: [PATCHv7 0/6] dmaengine: rcar-dmac: add iommu support for slave
+ transfers
+Date: Thu, 2 Jun 2016 14:58:07 +0200
+Message-ID: <20160602125807.GN8307@bigcity.dyn.berto.se>
 References: <1464794549-6601-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
-	<1464794549-6601-5-git-send-email-niklas.soderlund+renesas@ragnatech.se>
-	<20160601161605.GA19428@n2100.arm.linux.org.uk>
+ <20160601180610.GV16910@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160601161605.GA19428-l+eeeJia6m9vn6HldHNs0ANdhmdF6hFW@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <20160601180610.GV16910@localhost>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Vinod Koul <vinod.koul@intel.com>
+Cc: hch@infradead.org, linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, dan.j.williams@intel.com, robin.murphy@arm.com, laurent.pinchart@ideasonboard.com, linus.walleij@linaro.org, arnd@arndb.de
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Russell,
+Hi Vinod,
 
-Thanks for your feedback.
+On 2016-06-01 23:36:11 +0530, Vinod Koul wrote:
+> On Wed, Jun 01, 2016 at 05:22:23PM +0200, Niklas S=F6derlund wrote:
+> > Hi,
+> >=20
+> > [In this v7 series I have tried to address the questions raised by =
+Christoph=20
+> > Hellwig and I hope it can awnser your concernes regarding dma-debug=
+=2E]
+> >=20
+> > This series tries to solve the problem with DMA with device registe=
+rs
+> > (MMIO registers) that are behind an IOMMU for the rcar-dmac driver.=
+ A
+> > recent patch '9575632 (dmaengine: make slave address physical)'
+> > clarifies that DMA slave address provided by clients is the physica=
+l
+> > address. This puts the task of mapping the DMA slave address from a
+> > phys_addr_t to a dma_addr_t on the DMA engine.
+> >=20
+> > Without an IOMMU this is easy since the phys_addr_t and dma_addr_t =
+are
+> > the same and no special care is needed. However if you have a IOMMU=
+ you
+> > need to map the DMA slave phys_addr_t to a dma_addr_t using somethi=
+ng
+> > like this.
+> >=20
+> > This series is based on top of v4.7-rc1.
+>=20
+> The dmanegine bits looks okay to me. Btw how is the merge planned for=
+ this?
+> Do you wnat this to be merged thru dmaengine tree or something else?
 
-On 2016-06-01 17:16:06 +0100, Russell King - ARM Linux wrote:
-> On Wed, Jun 01, 2016 at 05:22:27PM +0200, Niklas S=F6derlund wrote:
-> > +static dma_addr_t arm_iommu_map_resource(struct device *dev,
-> > +		phys_addr_t phys_addr, size_t size,
-> > +		enum dma_data_direction dir, struct dma_attrs *attrs)
-> > +{
-> > +	struct dma_iommu_mapping *mapping =3D to_dma_iommu_mapping(dev);
-> > +	dma_addr_t dma_addr;
-> > +	int ret, prot;
-> > +	phys_addr_t addr =3D phys_addr & PAGE_MASK;
-> > +	int offset =3D phys_addr & ~PAGE_MASK;
-> > +	int len =3D PAGE_ALIGN(size + offset);
-> =
+Yes, since the arm specific patch are depending on other parts of the=20
+series I was hoping to be able to get Russells Ack on it and then try t=
+o=20
+get it all in through the dmaengine tree.
 
-> Shouldn't both of these be unsigned - preferably size_t for len?
+If you see a better way I'm happy to do it that way, let me know what=20
+you think. I hold off v8 that adresses the issues Russell brought up a=20
+few days untill I know what you think is best.
 
-I have looked at arm_coherent_iommu_map_page() when writing this where =
-
-len is int. But I do agree that it should probably be size_t and offset =
-
-should be unsigned. Will fix this.
-
-> =
-
-> > +
-> > +	dma_addr =3D __alloc_iova(mapping, size);
-> =
-
-> Is this really correct?  What if size =3D 4095 and offset =3D 10?  Do we
-> really only need one IOVA page for such a mapping (I count two pages.)
-> Shouldn't this be "len" ?
-
-Wops, you are correct it should be len not size.
-
-> =
-
-> > +	if (dma_addr =3D=3D DMA_ERROR_CODE)
-> > +		return dma_addr;
-> > +
-> > +	prot =3D __dma_direction_to_prot(dir) | IOMMU_MMIO;
-> > +
-> > +	ret =3D iommu_map(mapping->domain, dma_addr, addr, len, prot);
-> > +	if (ret < 0)
-> > +		goto fail;
-> > +
-> > +	return dma_addr + offset;
-> > +fail:
-> > +	__free_iova(mapping, dma_addr, size);
-> =
-
-> Shouldn't this be "len" as well?
-
-Yes.
-
-> =
-
-> > +	return DMA_ERROR_CODE;
-> > +}
-> > +
-> > +/**
-> > + * arm_iommu_unmap_resource - unmap a device DMA resource
-> > + * @dev: valid struct device pointer
-> > + * @dma_handle: DMA address to resource
-> > + * @size: size of resource to map
-> > + * @dir: DMA transfer direction
-> > + */
-> > +static void arm_iommu_unmap_resource(struct device *dev, dma_addr_t dm=
-a_handle,
-> > +		size_t size, enum dma_data_direction dir,
-> > +		struct dma_attrs *attrs)
-> > +{
-> > +	struct dma_iommu_mapping *mapping =3D to_dma_iommu_mapping(dev);
-> > +	dma_addr_t iova =3D dma_handle & PAGE_MASK;
-> > +	int offset =3D dma_handle & ~PAGE_MASK;
-> > +	int len =3D PAGE_ALIGN(size + offset);
-> =
-
-> unsigned/size_t again.
-
-Will fix.
-
-> =
-
-> > +
-> > +	if (!iova)
-> > +		return;
-> > +
-> > +	iommu_unmap(mapping->domain, iova, len);
-> > +	__free_iova(mapping, iova, len);
-> =
-
-> Here, you free "len" bytes of iova, which is different from above.
-
-Yes you are correct. By using len instead of size in =
-
-arm_iommu_map_resource() the sizes do match.
-
-> =
-
-> > +}
-> > +
-> >  static void arm_iommu_sync_single_for_cpu(struct device *dev,
-> >  		dma_addr_t handle, size_t size, enum dma_data_direction dir)
-> >  {
-> > @@ -1994,6 +2051,9 @@ struct dma_map_ops iommu_ops =3D {
-> >  	.unmap_sg		=3D arm_iommu_unmap_sg,
-> >  	.sync_sg_for_cpu	=3D arm_iommu_sync_sg_for_cpu,
-> >  	.sync_sg_for_device	=3D arm_iommu_sync_sg_for_device,
-> > +
-> > +	.map_resource		=3D arm_iommu_map_resource,
-> > +	.unmap_resource		=3D arm_iommu_unmap_resource,
-> >  };
-> >  =
-
-> >  struct dma_map_ops iommu_coherent_ops =3D {
-> > @@ -2007,6 +2067,9 @@ struct dma_map_ops iommu_coherent_ops =3D {
-> >  =
-
-> >  	.map_sg		=3D arm_coherent_iommu_map_sg,
-> >  	.unmap_sg	=3D arm_coherent_iommu_unmap_sg,
-> > +
-> > +	.map_resource	=3D arm_iommu_map_resource,
-> > +	.unmap_resource	=3D arm_iommu_unmap_resource,
-> >  };
-> >  =
-
-> >  /**
-> > -- =
-
-> > 2.8.2
-> > =
-
-> > =
-
-> > _______________________________________________
-> > linux-arm-kernel mailing list
-> > linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> =
-
-> -- =
-
-> RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-> according to speedtest.net.
-
--- =
-
+--=20
 Regards,
 Niklas S=F6derlund
