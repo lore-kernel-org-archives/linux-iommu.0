@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 03/06] iommu/ipmmu-vmsa: Break out utlb parsing code
-Date: Fri, 03 Jun 2016 00:55:50 +0900
-Message-ID: <20160602155550.31018.5799.sendpatchset@little-apple>
+Subject: [PATCH v3 04/06] iommu/ipmmu-vmsa: Break out domain allocation code
+Date: Fri, 03 Jun 2016 00:55:59 +0900
+Message-ID: <20160602155559.31018.23972.sendpatchset@little-apple>
 References: <20160602155519.31018.59925.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,130 +23,48 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Break out the utlb parsing code and dev_data allocation into a
-separate function. This is preparation for future code sharing.
+Break out the domain allocation code into a separate function.
+This is preparation for future code sharing.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
  Changes since V2:
- - Included this new patch from the following series:
+ - Included this new patch as-is from the following series:
    [PATCH 00/04] iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
- - Reworked code to fit on top on previous two patches in current series.
 
- drivers/iommu/ipmmu-vmsa.c |   58 ++++++++++++++++++++++++++++----------------
- 1 file changed, 38 insertions(+), 20 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |   13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
---- 0004/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-02 21:23:51.700607110 +0900
-@@ -647,22 +647,16 @@ static int ipmmu_find_utlbs(struct ipmmu
- 	return 0;
+--- 0005/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-02 20:58:41.820607110 +0900
+@@ -506,13 +506,10 @@ static irqreturn_t ipmmu_irq(int irq, vo
+  * IOMMU Operations
+  */
+ 
+-static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
++static struct iommu_domain *__ipmmu_domain_alloc(unsigned type)
+ {
+ 	struct ipmmu_vmsa_domain *domain;
+ 
+-	if (type != IOMMU_DOMAIN_UNMANAGED)
+-		return NULL;
+-
+ 	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+ 	if (!domain)
+ 		return NULL;
+@@ -522,6 +519,14 @@ static struct iommu_domain *ipmmu_domain
+ 	return &domain->io_domain;
  }
  
--static int ipmmu_add_device(struct device *dev)
-+static int ipmmu_init_platform_device(struct device *dev,
-+				      struct iommu_group *group)
- {
- 	struct ipmmu_vmsa_archdata *archdata;
- 	struct ipmmu_vmsa_device *mmu;
--	struct iommu_group *group = NULL;
- 	unsigned int *utlbs;
- 	unsigned int i;
- 	int num_utlbs;
- 	int ret = -ENODEV;
- 
--	if (dev->archdata.iommu) {
--		dev_warn(dev, "IOMMU driver already assigned to device %s\n",
--			 dev_name(dev));
--		return -EINVAL;
--	}
--
- 	/* Find the master corresponding to the device. */
- 
- 	num_utlbs = of_count_phandle_with_args(dev->of_node, "iommus",
-@@ -690,7 +684,7 @@ static int ipmmu_add_device(struct devic
- 	spin_unlock(&ipmmu_devices_lock);
- 
- 	if (ret < 0)
--		return -ENODEV;
-+		goto error;
- 
- 	for (i = 0; i < num_utlbs; ++i) {
- 		if (utlbs[i] >= mmu->num_utlbs) {
-@@ -699,6 +693,36 @@ static int ipmmu_add_device(struct devic
- 		}
- 	}
- 
-+	archdata = kzalloc(sizeof(*archdata), GFP_KERNEL);
-+	if (!archdata) {
-+		ret = -ENOMEM;
-+		goto error;
-+	}
++static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
++{
++	if (type != IOMMU_DOMAIN_UNMANAGED)
++		return NULL;
 +
-+	archdata->mmu = mmu;
-+	archdata->utlbs = utlbs;
-+	archdata->num_utlbs = num_utlbs;
-+	dev->archdata.iommu = archdata;
-+	return 0;
-+
-+error:
-+	kfree(utlbs);
-+	return ret;
++	return __ipmmu_domain_alloc(type);
 +}
 +
-+static int ipmmu_add_device(struct device *dev)
-+{
-+	struct ipmmu_vmsa_archdata *archdata;
-+	struct ipmmu_vmsa_device *mmu;
-+	struct iommu_group *group;
-+	int ret;
-+
-+	if (dev->archdata.iommu) {
-+		dev_warn(dev, "IOMMU driver already assigned to device %s\n",
-+			 dev_name(dev));
-+		return -EINVAL;
-+	}
-+
- 	/* Create a device group and add the device to it. */
- 	group = iommu_group_alloc();
- 	if (IS_ERR(group)) {
-@@ -716,17 +740,12 @@ static int ipmmu_add_device(struct devic
- 		goto error;
- 	}
- 
--	archdata = kzalloc(sizeof(*archdata), GFP_KERNEL);
--	if (!archdata) {
--		ret = -ENOMEM;
-+	ret = ipmmu_init_platform_device(dev, group);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to init platform device\n");
- 		goto error;
- 	}
- 
--	archdata->mmu = mmu;
--	archdata->utlbs = utlbs;
--	archdata->num_utlbs = num_utlbs;
--	dev->archdata.iommu = archdata;
--
- 	/*
- 	 * Create the ARM mapping, used by the ARM DMA mapping core to allocate
- 	 * VAs. This will allocate a corresponding IOMMU domain.
-@@ -736,6 +755,8 @@ static int ipmmu_add_device(struct devic
- 	 * - Make the mapping size configurable ? We currently use a 2GB mapping
- 	 *   at a 1GB offset to ensure that NULL VAs will fault.
- 	 */
-+	archdata = dev->archdata.iommu;
-+	mmu = archdata->mmu;
- 	if (!mmu->mapping) {
- 		struct dma_iommu_mapping *mapping;
- 
-@@ -762,9 +783,6 @@ static int ipmmu_add_device(struct devic
- error:
- 	arm_iommu_release_mapping(mmu->mapping);
- 
--	kfree(dev->archdata.iommu);
--	kfree(utlbs);
--
- 	dev->archdata.iommu = NULL;
- 
- 	if (!IS_ERR_OR_NULL(group))
+ static void ipmmu_domain_free(struct iommu_domain *io_domain)
+ {
+ 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
