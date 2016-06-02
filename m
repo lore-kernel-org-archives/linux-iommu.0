@@ -1,166 +1,95 @@
-From: "Luis R. Rodriguez" <mcgrof@kernel.org>
-Subject: Re: [RFT v3] drm: use late_initcall() for amdkfd and radeon
-Date: Wed, 1 Jun 2016 23:11:59 +0200
-Message-ID: <20160601211159.GO11948@wotan.suse.de>
-References: <20160527004642.GQ11948@wotan.suse.de>
- <1464311916-10065-1-git-send-email-mcgrof@kernel.org>
- <CAKMK7uHTAWOmrTsGHxwW1nGcNeEeAb8b2OPFKcJvQ3AXkbs+Kg@mail.gmail.com>
- <20160531165834.GG11948@wotan.suse.de>
- <20160531190453.GL7231@phenom.ffwll.local>
+From: Scott Wood <oss@buserror.net>
+Subject: Re: [PATCH 3/4] mmc: sdhci-of-esdhc: fix host version for
+ T4240-R1.0-R2.0
+Date: Wed, 01 Jun 2016 20:11:14 -0500
+Message-ID: <1464829874.16584.163.camel@buserror.net>
+References: <1462417950-46796-1-git-send-email-yangbo.lu@nxp.com>
+	 <HE1PR04MB0889852B7809A1CCFF8922ACF8410@HE1PR04MB0889.eurprd04.prod.outlook.com>
+	 <CAPDyKFqx2JMLzXoDxGCKFYMFV47+SegnkuWFXKvsQHK7L5w-1g@mail.gmail.com>
+	 <6110875.0k1HlSKhzn@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160531190453.GL7231@phenom.ffwll.local>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Luis R. Rodriguez" <mcgrof@kernel.org>, vw@iommu.org, Oded Gabbay <oded.gabbay@gmail.com>, Joerg Roedel <joro@8bytes.org>, Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, "alexander.deucher@amd.com" <alexander.deucher@amd.com>, Dave Airlie <airlied@linux.ie>, iommu@lists.linux-foundation.org, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, gregkh@linuxfoundation.org, hpa@zytor.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <6110875.0k1HlSKhzn@wuerfel>
+Sender: netdev-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
+Cc: Ulf Hansson <ulf.hansson@linaro.org>, Yangbo Lu <yangbo.lu@nxp.com>, Mark Rutland <mark.rutland@arm.com>, Xiaobo Xie <xiaobo.xie@nxp.com>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>, Qiang Zhao <qiang.zhao@nxp.com>, Russell King <linux@arm.linux.org.uk>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>, Santosh Shilimkar <ssantosh@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Yang-Leo Li <leoyang.li@nxp.com>, iommu
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, May 31, 2016 at 09:04:53PM +0200, Daniel Vetter wrote:
-> On Tue, May 31, 2016 at 06:58:34PM +0200, Luis R. Rodriguez wrote:
-> > On Sun, May 29, 2016 at 08:27:07PM +0200, Daniel Vetter wrote:
-> > > On Fri, May 27, 2016 at 3:18 AM, Luis R. Rodriguez <mcgrof@kernel.org> wrote:
-> > > > To get KFD support in radeon we need the following
-> > > > initialization to happen in this order, their
-> > > > respective driver file that has its init routine
-> > > > listed next to it:
-> > > >
-> > > > 0. AMD IOMMUv1:    arch/x86/kernel/pci-dma.c
-> > > > 1. AMD IOMMUv2:    drivers/iommu/amd_iommu_v2.c
-> > > > 2. AMD KFD:        drivers/gpu/drm/amd/amdkfd/kfd_module.c
-> > > > 3. AMD Radeon:     drivers/gpu/drm/radeon/radeon_drv.c
-> > > >
-> > > > Order is rather implicit, but these drivers can currently
-> > > > only do so much given the amount of leg room available.
-> > > > Below are the respective init routines and how they are
-> > > > initialized:
-> > > >
-> > > > arch/x86/kernel/pci-dma.c               rootfs_initcall(pci_iommu_init);
-> > > > drivers/iommu/amd_iommu_v2.c            module_init(amd_iommu_v2_init);
-> > > > drivers/gpu/drm/amd/amdkfd/kfd_module.c module_init(kfd_module_init);
-> > > > drivers/gpu/drm/radeon/radeon_drv.c     module_init(radeon_init);
-> > > >
-> > > > When a driver is built-in module_init() folds to use
-> > > > device_initcall(), and we have the following possible
-> > > > orders:
-> > > >
-> > > >         #define pure_initcall(fn)    __define_initcall(fn, 0)
-> > > >         #define core_initcall(fn)    __define_initcall(fn, 1)
-> > > >         #define postcore_initcall(fn)__define_initcall(fn, 2)
-> > > >         #define arch_initcall(fn)    __define_initcall(fn, 3)
-> > > >         #define subsys_initcall(fn)  __define_initcall(fn, 4)
-> > > >         #define fs_initcall(fn)      __define_initcall(fn, 5)
-> > > >         ---------------------------------------------------------
-> > > >         #define rootfs_initcall(fn)  __define_initcall(fn, rootfs)
-> > > >         #define device_initcall(fn)  __define_initcall(fn, 6)
-> > > >         #define late_initcall(fn)    __define_initcall(fn, 7)
-> > > >
-> > > > Since we start off from rootfs_initcall(), it gives us 3 more
-> > > > levels of leg room to play with for order semantics, this isn't
-> > > > enough to address all required levels of dependencies, this
-> > > > is specially true given that AMD-KFD needs to be loaded before
-> > > > the radeon driver -- -but this it not enforced by symbols.
-> > > > If the AMD-KFD driver is not loaded prior to the radeon driver
-> > > > because otherwise the radeon driver will not initialize the
-> > > > AMD-KFD driver and you get no KFD functionality in userspace.
-> > > >
-> > > > Commit 1bacc894c227fad8a7 ("drivers: Move iommu/ before gpu/ in
-> > > > Makefile") works around some of the possibe races between
-> > > > the AMD IOMMU v2 and GPU drivers by changing the link order.
-> > > > This is fragile, however its the bets we can do, given that
-> > > > making the GPU drivers use late_initcall() would also implicate
-> > > > a similar race between them. That possible race is fortunatley
-> > > > addressed given that the drm Makefile currently has amdkfd
-> > > > linked prior to radeon:
-> > > >
-> > > > drivers/gpu/drm/Makefile
-> > > > ...
-> > > > obj-$(CONFIG_HSA_AMD) += amd/amdkfd/
-> > > > obj-$(CONFIG_DRM_RADEON)+= radeon/
-> > > > ...
-> > > >
-> > > > Changing amdkfd and radeon to late_initcall() however is
-> > > > still the right call in orde to annotate explicitly a
-> > > > delayed dependency requirement between the GPU drivers
-> > > > and the IOMMUs.
-> > > >
-> > > > We can't address the fragile nature of the link order
-> > > > right now, but in the future that might be possible.
-> > > >
-> > > > Signed-off-by: Luis R. Rodriguez <mcgrof@kernel.org>
-> > > > ---
-> > > >
-> > > > Please note, the changes to drivers/Makefile are just
-> > > > for the sake of forcing the possible race to occur,
-> > > > if this works well the actual [PATCH] submission will
-> > > > skip those changes as its pointless to remove those
-> > > > work arounds as it stands, due to the limited nature
-> > > > of the levels available for addressing requirements.
-> > > >
-> > > > Also, if you are aware of further dependency hell
-> > > > things like these -- please do let me know as I am
-> > > > interested in looking at addressing them.
-> > > 
-> > > This should be fixed with -EPROBE_DEFER instead. Frobbing initcall
-> > > levels should then just be done as an optimization to avoid too much
-> > > reprobing.
-> > 
-> > radeon already uses -EPROBE_DEFER but it assumes that amdkfd *is* loaded first,
-> > and only if it is already loaded can it count on getting -EPROBE_DEFER. The
-> > radeon driver will defer probe *iff* kgd2kfd_init() returns -EPROBE_DEFER,
-> > which only happens when amdkfd_init_completed is no longer 0. If radeon
-> > gets linked first though the symbol fetch for kgd2kfd_init() will make it as
-> > not-present though.
-
-I did some more homework and I no longer believe this was the issue. More below.
-
-> > So the current heuristic used does not address proper link
-> > / load order. Part of the issue mentioned on the commit log is another race
-> > underneath the hood with the AMD IOMMU v2 which is needed for amdkfd. The
-> > underlying issue however really is the lack of available clear semantics for
-> > dependencies over 3 levels here.  This is solved one way or another by link
-> > order in the Makefiles, but as I've noted so far this has been rather implicit
-> > and fragile. The change here makes at least the order of the GPU drivers
-> > explicitly later than the IOMMUs. The specific race between radeon and amdfkd
-> > is solved currently through link order through the Makefiles. In the future we
-> > maybe able to make things more explicit.
+On Mon, 2016-05-30 at 15:16 +0200, Arnd Bergmann wrote:
+> This is a rewrite of an earlier patch from Yangbo Lu, adding a quirk
+> for the NXP QorIQ T4240 in the detection of the host device version.
 > 
-> Sounds like the EPROBE_DEFER handling is broken - if the module isn't set
-> up yet but selected in Kconfig, and needed for that hw generation then it
-> should not just silently fail.
-
-Although I cannot confirm through testing, I did an under the hood inspection
-of symbol_request() which both radeon and amdgpu uses and have a better idea
-of why things where failing, it should not really be the inability to trust
-symbol_request() to work if link order changes between amdkfd and radeon or
-amdgpu, its the issue of link order also needed of the AMD IOMMU *and* amdkfd.
-So my above assumption here that -EPROBE_DEFER could fail should be
-invalid given that the real issue should have been that amdkfd was being
-kicked off prior to the AMD IOMMU v2, at that point kgd2kfd_init() would
-fail. The silent failure then was an issue not of radeon but rather higher
-order drivers, and in this case neither radeon nor amdgpu could address
-that regardless of what they do. Oded fixed this by changing the link order
-between all IOMMUs and GPU drivers via commit 1bacc894c227fad8a7 ("drivers:
-Move iommu/ before gpu/ in Makefile").
-
-> > -EPROBE_DEFER also introduces a latency on load which we should not need if we
-> > can handle proper link / load order dependency annotations. This change is a
-> > small part of that work, but as it the commit log also notes future further
-> > work is possible to build stronger semantics.  Some of the work I'm doing with
-> > linker-tables may help with this in the future [0], but for now this should
-> > help with what the semantics we have in place.
-> > 
-> > [0] http://lkml.kernel.org/r/1455889559-9428-1-git-send-email-mcgrof@kernel.org
+> Unfortunately, this device cannot be detected using the compatible
+> string, as we have to support existing DTS files that use the generic
+> "fsl,t4240-esdhc" identifier but that have other host versions that
+> are correctly detected.
 > 
-> That's what I meant with "avoiding too much reprobing". But in the end the
-> current solution to cross-driver deps we have is EPROBE_DEFER. Fiddling
-> with the link order is all well for optimizing stuff, but imo _way_ too
-> fragile for correctness.
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> 
+> diff --git a/drivers/mmc/host/sdhci-of-esdhc.c b/drivers/mmc/host/sdhci-of
+> -esdhc.c
+> index 3f34d354f1fc..1d4814fe4cb2 100644
+> --- a/drivers/mmc/host/sdhci-of-esdhc.c
+> +++ b/drivers/mmc/host/sdhci-of-esdhc.c
+> @@ -73,14 +73,16 @@ static u32 esdhc_readl_fixup(struct sdhci_host *host,
+>  static u16 esdhc_readw_fixup(struct sdhci_host *host,
+>  				     int spec_reg, u32 value)
+>  {
+> +	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
+> +	struct sdhci_esdhc *esdhc = sdhci_pltfm_priv(pltfm_host);
+>  	u16 ret;
+>  	int shift = (spec_reg & 0x2) * 8;
+>  
+>  	if (spec_reg == SDHCI_HOST_VERSION)
+> -		ret = value & 0xffff;
+> -	else
+> -		ret = (value >> shift) & 0xffff;
+> -	return ret;
+> +		return esdhc->vendor_ver << SDHCI_VENDOR_VER_SHIFT |
+> +		       esdhc->spec_ver;
+> +
+> +	return (value >> shift) & 0xffff;
+>  }
+>  
+>  static u8 esdhc_readb_fixup(struct sdhci_host *host,
+> @@ -562,16 +564,32 @@ static const struct sdhci_pltfm_data
+> sdhci_esdhc_le_pdata = {
+>  	.ops = &sdhci_esdhc_le_ops,
+>  };
+>  
+> +#define T4240_HOST_VER ((VENDOR_V_23 << SDHCI_VENDOR_VER_SHIFT) |
+> SDHCI_SPEC_200)
+> +static const struct soc_device_attribute esdhc_t4240_quirk = {
+> +	/* T4240 revision < 0x20 uses vendor version 23, SDHCI version 200
+> */
+> +	{ .soc_id = "T4*(0x824000)", .revision = "0x[01]?",
+> +	  .data = (void *)(uintptr_t)(T4240_HOST_VER) },
 
-Agreed, but EPROBE_DEFER cannot ensure layers below are correct either. By
-moving the GPU drivers radon and amdgpu to late_initcall() we'd actually be
-taking one more explicit ordering step for correctness to ensure that in case
-the Makefile order is different in other environments at least the IOMMU and
-GPU driver initialization is explicitly correct.
+Why should this code need to care that the string begins with "T4"?  This
+creates dual maintenance if that were to change.  It's also broken because
+T4240 has compatible = "fsl,t4240-device-config", "fsl,qoriq-device-config
+-2.0" and thus with these patches it would incorrectly show up as "P series
+(0x824000)".  The compatible string of this node was never meant to be a key
+for choosing a string to describe the system to userspace.
 
-  Luis
+0x824000 is a magic number which should be represented symbolically.
+
+If T4240 is affected, then so are the reduced-core variants T4160 and T4080,
+but 0x824000 doesn't match them (Yangbo's patch had the same problem).  And
+please don't respond with "0x824*"
+
+You also didn't strip out the E bit of SVR which indicates encryption
+capability and nothing else (Yangbo's patch did not have this problem because
+it used SVR_SOC_VER).
+
+What happens if the revision condition is more complicated, such as <= 0x20
+with 0x21 being fine?  Multiple quirk entries where before we had as simple
+comparison?
+
+I fail to see how this approach is an improvement (much less one that needs to
+hold up a patchset that is fixing a problem and is not touching any generic
+code).  Why does this need to be a string?
+
+-Scott
