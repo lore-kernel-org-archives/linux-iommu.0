@@ -1,7 +1,7 @@
 From: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [RFC v3 40/45] sparc: dma-mapping: Use unsigned long for dma_attrs
-Date: Thu, 02 Jun 2016 17:39:42 +0200
-Message-ID: <1464881987-13203-41-git-send-email-k.kozlowski__5304.43812390349$1464882286$gmane$org@samsung.com>
+Subject: [RFC v3 37/45] misc: mic: dma-mapping: Use unsigned long for dma_attrs
+Date: Thu, 02 Jun 2016 17:39:39 +0200
+Message-ID: <1464881987-13203-38-git-send-email-k.kozlowski__13586.1740135171$1464882287$gmane$org@samsung.com>
 References: <1464881987-13203-1-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -26,234 +26,102 @@ squashed with main commit.
 
 Signed-off-by: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- arch/sparc/kernel/iommu.c     | 12 ++++++------
- arch/sparc/kernel/ioport.c    | 24 ++++++++++++------------
- arch/sparc/kernel/pci_sun4v.c | 12 ++++++------
- 3 files changed, 24 insertions(+), 24 deletions(-)
+ drivers/misc/mic/host/mic_boot.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/arch/sparc/kernel/iommu.c b/arch/sparc/kernel/iommu.c
-index 37686828c3d9..5c615abff030 100644
---- a/arch/sparc/kernel/iommu.c
-+++ b/arch/sparc/kernel/iommu.c
-@@ -196,7 +196,7 @@ static inline void iommu_free_ctx(struct iommu *iommu, int ctx)
+diff --git a/drivers/misc/mic/host/mic_boot.c b/drivers/misc/mic/host/mic_boot.c
+index e047efd83f57..9599d732aff3 100644
+--- a/drivers/misc/mic/host/mic_boot.c
++++ b/drivers/misc/mic/host/mic_boot.c
+@@ -38,7 +38,7 @@ static inline struct mic_device *vpdev_to_mdev(struct device *dev)
+ static dma_addr_t
+ _mic_dma_map_page(struct device *dev, struct page *page,
+ 		  unsigned long offset, size_t size,
+-		  enum dma_data_direction dir, struct dma_attrs *attrs)
++		  enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	void *va = phys_to_virt(page_to_phys(page)) + offset;
+ 	struct mic_device *mdev = vpdev_to_mdev(dev);
+@@ -48,7 +48,7 @@ _mic_dma_map_page(struct device *dev, struct page *page,
  
- static void *dma_4u_alloc_coherent(struct device *dev, size_t size,
- 				   dma_addr_t *dma_addrp, gfp_t gfp,
--				   struct dma_attrs *attrs)
-+				   unsigned long attrs)
- {
- 	unsigned long order, first_page;
- 	struct iommu *iommu;
-@@ -245,7 +245,7 @@ static void *dma_4u_alloc_coherent(struct device *dev, size_t size,
- 
- static void dma_4u_free_coherent(struct device *dev, size_t size,
- 				 void *cpu, dma_addr_t dvma,
--				 struct dma_attrs *attrs)
-+				 unsigned long attrs)
- {
- 	struct iommu *iommu;
- 	unsigned long order, npages;
-@@ -263,7 +263,7 @@ static void dma_4u_free_coherent(struct device *dev, size_t size,
- static dma_addr_t dma_4u_map_page(struct device *dev, struct page *page,
- 				  unsigned long offset, size_t sz,
- 				  enum dma_data_direction direction,
--				  struct dma_attrs *attrs)
-+				  unsigned long attrs)
- {
- 	struct iommu *iommu;
- 	struct strbuf *strbuf;
-@@ -385,7 +385,7 @@ do_flush_sync:
- 
- static void dma_4u_unmap_page(struct device *dev, dma_addr_t bus_addr,
- 			      size_t sz, enum dma_data_direction direction,
--			      struct dma_attrs *attrs)
-+			      unsigned long attrs)
- {
- 	struct iommu *iommu;
- 	struct strbuf *strbuf;
-@@ -431,7 +431,7 @@ static void dma_4u_unmap_page(struct device *dev, dma_addr_t bus_addr,
- 
- static int dma_4u_map_sg(struct device *dev, struct scatterlist *sglist,
- 			 int nelems, enum dma_data_direction direction,
--			 struct dma_attrs *attrs)
-+			 unsigned long attrs)
- {
- 	struct scatterlist *s, *outs, *segstart;
- 	unsigned long flags, handle, prot, ctx;
-@@ -607,7 +607,7 @@ static unsigned long fetch_sg_ctx(struct iommu *iommu, struct scatterlist *sg)
- 
- static void dma_4u_unmap_sg(struct device *dev, struct scatterlist *sglist,
- 			    int nelems, enum dma_data_direction direction,
--			    struct dma_attrs *attrs)
-+			    unsigned long attrs)
- {
- 	unsigned long flags, ctx;
- 	struct scatterlist *sg;
-diff --git a/arch/sparc/kernel/ioport.c b/arch/sparc/kernel/ioport.c
-index ffd5ff4678cf..2344103414d1 100644
---- a/arch/sparc/kernel/ioport.c
-+++ b/arch/sparc/kernel/ioport.c
-@@ -260,7 +260,7 @@ EXPORT_SYMBOL(sbus_set_sbus64);
-  */
- static void *sbus_alloc_coherent(struct device *dev, size_t len,
- 				 dma_addr_t *dma_addrp, gfp_t gfp,
--				 struct dma_attrs *attrs)
-+				 unsigned long attrs)
- {
- 	struct platform_device *op = to_platform_device(dev);
- 	unsigned long len_total = PAGE_ALIGN(len);
-@@ -315,7 +315,7 @@ err_nopages:
- }
- 
- static void sbus_free_coherent(struct device *dev, size_t n, void *p,
--			       dma_addr_t ba, struct dma_attrs *attrs)
-+			       dma_addr_t ba, unsigned long attrs)
- {
- 	struct resource *res;
- 	struct page *pgv;
-@@ -355,7 +355,7 @@ static void sbus_free_coherent(struct device *dev, size_t n, void *p,
- static dma_addr_t sbus_map_page(struct device *dev, struct page *page,
- 				unsigned long offset, size_t len,
- 				enum dma_data_direction dir,
+ static void _mic_dma_unmap_page(struct device *dev, dma_addr_t dma_addr,
+ 				size_t size, enum dma_data_direction dir,
 -				struct dma_attrs *attrs)
 +				unsigned long attrs)
  {
- 	void *va = page_address(page) + offset;
+ 	struct mic_device *mdev = vpdev_to_mdev(dev);
  
-@@ -371,20 +371,20 @@ static dma_addr_t sbus_map_page(struct device *dev, struct page *page,
+@@ -144,7 +144,7 @@ static inline struct mic_device *scdev_to_mdev(struct scif_hw_dev *scdev)
+ 
+ static void *__mic_dma_alloc(struct device *dev, size_t size,
+ 			     dma_addr_t *dma_handle, gfp_t gfp,
+-			     struct dma_attrs *attrs)
++			     unsigned long attrs)
+ {
+ 	struct scif_hw_dev *scdev = dev_get_drvdata(dev);
+ 	struct mic_device *mdev = scdev_to_mdev(scdev);
+@@ -164,7 +164,7 @@ static void *__mic_dma_alloc(struct device *dev, size_t size,
  }
  
- static void sbus_unmap_page(struct device *dev, dma_addr_t ba, size_t n,
--			    enum dma_data_direction dir, struct dma_attrs *attrs)
-+			    enum dma_data_direction dir, unsigned long attrs)
+ static void __mic_dma_free(struct device *dev, size_t size, void *vaddr,
+-			   dma_addr_t dma_handle, struct dma_attrs *attrs)
++			   dma_addr_t dma_handle, unsigned long attrs)
  {
- 	mmu_release_scsi_one(dev, ba, n);
- }
+ 	struct scif_hw_dev *scdev = dev_get_drvdata(dev);
+ 	struct mic_device *mdev = scdev_to_mdev(scdev);
+@@ -176,7 +176,7 @@ static void __mic_dma_free(struct device *dev, size_t size, void *vaddr,
+ static dma_addr_t
+ __mic_dma_map_page(struct device *dev, struct page *page, unsigned long offset,
+ 		   size_t size, enum dma_data_direction dir,
+-		   struct dma_attrs *attrs)
++		   unsigned long attrs)
+ {
+ 	void *va = phys_to_virt(page_to_phys(page)) + offset;
+ 	struct scif_hw_dev *scdev = dev_get_drvdata(dev);
+@@ -188,7 +188,7 @@ __mic_dma_map_page(struct device *dev, struct page *page, unsigned long offset,
+ static void
+ __mic_dma_unmap_page(struct device *dev, dma_addr_t dma_addr,
+ 		     size_t size, enum dma_data_direction dir,
+-		     struct dma_attrs *attrs)
++		     unsigned long attrs)
+ {
+ 	struct scif_hw_dev *scdev = dev_get_drvdata(dev);
+ 	struct mic_device *mdev = scdev_to_mdev(scdev);
+@@ -198,7 +198,7 @@ __mic_dma_unmap_page(struct device *dev, dma_addr_t dma_addr,
  
- static int sbus_map_sg(struct device *dev, struct scatterlist *sg, int n,
--		       enum dma_data_direction dir, struct dma_attrs *attrs)
-+		       enum dma_data_direction dir, unsigned long attrs)
- {
- 	mmu_get_scsi_sgl(dev, sg, n);
- 	return n;
- }
- 
- static void sbus_unmap_sg(struct device *dev, struct scatterlist *sg, int n,
--			  enum dma_data_direction dir, struct dma_attrs *attrs)
-+			  enum dma_data_direction dir, unsigned long attrs)
- {
- 	mmu_release_scsi_sgl(dev, sg, n);
- }
-@@ -429,7 +429,7 @@ arch_initcall(sparc_register_ioport);
-  */
- static void *pci32_alloc_coherent(struct device *dev, size_t len,
- 				  dma_addr_t *pba, gfp_t gfp,
--				  struct dma_attrs *attrs)
-+				  unsigned long attrs)
- {
- 	unsigned long len_total = PAGE_ALIGN(len);
- 	void *va;
-@@ -482,7 +482,7 @@ err_nopages:
-  * past this call are illegal.
-  */
- static void pci32_free_coherent(struct device *dev, size_t n, void *p,
--				dma_addr_t ba, struct dma_attrs *attrs)
-+				dma_addr_t ba, unsigned long attrs)
- {
- 	struct resource *res;
- 
-@@ -518,14 +518,14 @@ static void pci32_free_coherent(struct device *dev, size_t n, void *p,
- static dma_addr_t pci32_map_page(struct device *dev, struct page *page,
- 				 unsigned long offset, size_t size,
- 				 enum dma_data_direction dir,
--				 struct dma_attrs *attrs)
-+				 unsigned long attrs)
- {
- 	/* IIep is write-through, not flushing. */
- 	return page_to_phys(page) + offset;
- }
- 
- static void pci32_unmap_page(struct device *dev, dma_addr_t ba, size_t size,
--			     enum dma_data_direction dir, struct dma_attrs *attrs)
-+			     enum dma_data_direction dir, unsigned long attrs)
- {
- 	if (dir != PCI_DMA_TODEVICE)
- 		dma_make_coherent(ba, PAGE_ALIGN(size));
-@@ -548,7 +548,7 @@ static void pci32_unmap_page(struct device *dev, dma_addr_t ba, size_t size,
-  */
- static int pci32_map_sg(struct device *device, struct scatterlist *sgl,
- 			int nents, enum dma_data_direction dir,
--			struct dma_attrs *attrs)
-+			unsigned long attrs)
- {
- 	struct scatterlist *sg;
- 	int n;
-@@ -567,7 +567,7 @@ static int pci32_map_sg(struct device *device, struct scatterlist *sgl,
-  */
- static void pci32_unmap_sg(struct device *dev, struct scatterlist *sgl,
- 			   int nents, enum dma_data_direction dir,
--			   struct dma_attrs *attrs)
-+			   unsigned long attrs)
- {
- 	struct scatterlist *sg;
- 	int n;
-diff --git a/arch/sparc/kernel/pci_sun4v.c b/arch/sparc/kernel/pci_sun4v.c
-index 836e8cef47e2..61c6f935accc 100644
---- a/arch/sparc/kernel/pci_sun4v.c
-+++ b/arch/sparc/kernel/pci_sun4v.c
-@@ -130,7 +130,7 @@ static inline long iommu_batch_end(void)
- 
- static void *dma_4v_alloc_coherent(struct device *dev, size_t size,
- 				   dma_addr_t *dma_addrp, gfp_t gfp,
--				   struct dma_attrs *attrs)
-+				   unsigned long attrs)
- {
- 	unsigned long flags, order, first_page, npages, n;
- 	struct iommu *iommu;
-@@ -213,7 +213,7 @@ static void dma_4v_iommu_demap(void *demap_arg, unsigned long entry,
- }
- 
- static void dma_4v_free_coherent(struct device *dev, size_t size, void *cpu,
--				 dma_addr_t dvma, struct dma_attrs *attrs)
-+				 dma_addr_t dvma, unsigned long attrs)
- {
- 	struct pci_pbm_info *pbm;
- 	struct iommu *iommu;
-@@ -235,7 +235,7 @@ static void dma_4v_free_coherent(struct device *dev, size_t size, void *cpu,
- static dma_addr_t dma_4v_map_page(struct device *dev, struct page *page,
- 				  unsigned long offset, size_t sz,
- 				  enum dma_data_direction direction,
--				  struct dma_attrs *attrs)
-+				  unsigned long attrs)
- {
- 	struct iommu *iommu;
- 	unsigned long flags, npages, oaddr;
-@@ -294,7 +294,7 @@ iommu_map_fail:
- 
- static void dma_4v_unmap_page(struct device *dev, dma_addr_t bus_addr,
- 			      size_t sz, enum dma_data_direction direction,
--			      struct dma_attrs *attrs)
-+			      unsigned long attrs)
- {
- 	struct pci_pbm_info *pbm;
- 	struct iommu *iommu;
-@@ -322,7 +322,7 @@ static void dma_4v_unmap_page(struct device *dev, dma_addr_t bus_addr,
- 
- static int dma_4v_map_sg(struct device *dev, struct scatterlist *sglist,
- 			 int nelems, enum dma_data_direction direction,
--			 struct dma_attrs *attrs)
-+			 unsigned long attrs)
- {
- 	struct scatterlist *s, *outs, *segstart;
- 	unsigned long flags, handle, prot;
-@@ -466,7 +466,7 @@ iommu_map_failed:
- 
- static void dma_4v_unmap_sg(struct device *dev, struct scatterlist *sglist,
- 			    int nelems, enum dma_data_direction direction,
+ static int __mic_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 			    int nents, enum dma_data_direction dir,
 -			    struct dma_attrs *attrs)
 +			    unsigned long attrs)
  {
- 	struct pci_pbm_info *pbm;
- 	struct scatterlist *sg;
+ 	struct scif_hw_dev *scdev = dev_get_drvdata(dev);
+ 	struct mic_device *mdev = scdev_to_mdev(scdev);
+@@ -229,7 +229,7 @@ err:
+ static void __mic_dma_unmap_sg(struct device *dev,
+ 			       struct scatterlist *sg, int nents,
+ 			       enum dma_data_direction dir,
+-			       struct dma_attrs *attrs)
++			       unsigned long attrs)
+ {
+ 	struct scif_hw_dev *scdev = dev_get_drvdata(dev);
+ 	struct mic_device *mdev = scdev_to_mdev(scdev);
+@@ -327,7 +327,7 @@ static inline struct mic_device *mbdev_to_mdev(struct mbus_device *mbdev)
+ static dma_addr_t
+ mic_dma_map_page(struct device *dev, struct page *page,
+ 		 unsigned long offset, size_t size, enum dma_data_direction dir,
+-		 struct dma_attrs *attrs)
++		 unsigned long attrs)
+ {
+ 	void *va = phys_to_virt(page_to_phys(page)) + offset;
+ 	struct mic_device *mdev = dev_get_drvdata(dev->parent);
+@@ -338,7 +338,7 @@ mic_dma_map_page(struct device *dev, struct page *page,
+ static void
+ mic_dma_unmap_page(struct device *dev, dma_addr_t dma_addr,
+ 		   size_t size, enum dma_data_direction dir,
+-		   struct dma_attrs *attrs)
++		   unsigned long attrs)
+ {
+ 	struct mic_device *mdev = dev_get_drvdata(dev->parent);
+ 	mic_unmap_single(mdev, dma_addr, size);
 -- 
 1.9.1
