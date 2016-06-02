@@ -1,7 +1,7 @@
 From: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [RFC v3 26/45] h8300: dma-mapping: Use unsigned long for dma_attrs
-Date: Thu, 02 Jun 2016 17:39:28 +0200
-Message-ID: <1464881987-13203-27-git-send-email-k.kozlowski__4051.29728974334$1464882226$gmane$org@samsung.com>
+Subject: [RFC v3 23/45] video: dma-mapping: Use unsigned long for dma_attrs
+Date: Thu, 02 Jun 2016 17:39:25 +0200
+Message-ID: <1464881987-13203-24-git-send-email-k.kozlowski__29923.297026153$1464882240$gmane$org@samsung.com>
 References: <1464881987-13203-1-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -26,47 +26,80 @@ squashed with main commit.
 
 Signed-off-by: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- arch/h8300/kernel/dma.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/video/fbdev/omap2/omapfb/omapfb-main.c | 12 ++++++------
+ drivers/video/fbdev/omap2/omapfb/omapfb.h      |  3 +--
+ 2 files changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/arch/h8300/kernel/dma.c b/arch/h8300/kernel/dma.c
-index eeb13d3f2424..3651da045806 100644
---- a/arch/h8300/kernel/dma.c
-+++ b/arch/h8300/kernel/dma.c
-@@ -12,7 +12,7 @@
+diff --git a/drivers/video/fbdev/omap2/omapfb/omapfb-main.c b/drivers/video/fbdev/omap2/omapfb/omapfb-main.c
+index d3af01c94a58..59172a2185c0 100644
+--- a/drivers/video/fbdev/omap2/omapfb/omapfb-main.c
++++ b/drivers/video/fbdev/omap2/omapfb/omapfb-main.c
+@@ -1332,7 +1332,7 @@ static void omapfb_free_fbmem(struct fb_info *fbi)
+ 	}
  
- static void *dma_alloc(struct device *dev, size_t size,
- 		       dma_addr_t *dma_handle, gfp_t gfp,
--		       struct dma_attrs *attrs)
-+		       unsigned long attrs)
- {
- 	void *ret;
+ 	dma_free_attrs(fbdev->dev, rg->size, rg->token, rg->dma_handle,
+-			&rg->attrs);
++			rg->attrs);
  
-@@ -32,7 +32,7 @@ static void *dma_alloc(struct device *dev, size_t size,
+ 	rg->token = NULL;
+ 	rg->vaddr = NULL;
+@@ -1370,7 +1370,7 @@ static int omapfb_alloc_fbmem(struct fb_info *fbi, unsigned long size,
+ 	struct omapfb2_device *fbdev = ofbi->fbdev;
+ 	struct omapfb2_mem_region *rg;
+ 	void *token;
+-	DEFINE_DMA_ATTRS(attrs);
++	unsigned long attrs;
+ 	dma_addr_t dma_handle;
+ 	int r;
  
- static void dma_free(struct device *dev, size_t size,
- 		     void *vaddr, dma_addr_t dma_handle,
--		     struct dma_attrs *attrs)
-+		     unsigned long attrs)
+@@ -1386,15 +1386,15 @@ static int omapfb_alloc_fbmem(struct fb_info *fbi, unsigned long size,
  
- {
- 	free_pages((unsigned long)vaddr, get_order(size));
-@@ -41,14 +41,14 @@ static void dma_free(struct device *dev, size_t size,
- static dma_addr_t map_page(struct device *dev, struct page *page,
- 				  unsigned long offset, size_t size,
- 				  enum dma_data_direction direction,
--				  struct dma_attrs *attrs)
-+				  unsigned long attrs)
- {
- 	return page_to_phys(page) + offset;
- }
+ 	size = PAGE_ALIGN(size);
  
- static int map_sg(struct device *dev, struct scatterlist *sgl,
- 		  int nents, enum dma_data_direction direction,
--		  struct dma_attrs *attrs)
-+		  unsigned long attrs)
- {
- 	struct scatterlist *sg;
- 	int i;
+-	dma_set_attr(DMA_ATTR_WRITE_COMBINE, &attrs);
++	attrs = DMA_ATTR_WRITE_COMBINE;
+ 
+ 	if (ofbi->rotation_type == OMAP_DSS_ROT_VRFB)
+-		dma_set_attr(DMA_ATTR_NO_KERNEL_MAPPING, &attrs);
++		attrs |= DMA_ATTR_NO_KERNEL_MAPPING;
+ 
+ 	DBG("allocating %lu bytes for fb %d\n", size, ofbi->id);
+ 
+ 	token = dma_alloc_attrs(fbdev->dev, size, &dma_handle,
+-			GFP_KERNEL, &attrs);
++			GFP_KERNEL, attrs);
+ 
+ 	if (token == NULL) {
+ 		dev_err(fbdev->dev, "failed to allocate framebuffer\n");
+@@ -1408,7 +1408,7 @@ static int omapfb_alloc_fbmem(struct fb_info *fbi, unsigned long size,
+ 		r = omap_vrfb_request_ctx(&rg->vrfb);
+ 		if (r) {
+ 			dma_free_attrs(fbdev->dev, size, token, dma_handle,
+-					&attrs);
++					attrs);
+ 			dev_err(fbdev->dev, "vrfb create ctx failed\n");
+ 			return r;
+ 		}
+diff --git a/drivers/video/fbdev/omap2/omapfb/omapfb.h b/drivers/video/fbdev/omap2/omapfb/omapfb.h
+index 623cd872a367..8aaa2f643820 100644
+--- a/drivers/video/fbdev/omap2/omapfb/omapfb.h
++++ b/drivers/video/fbdev/omap2/omapfb/omapfb.h
+@@ -28,7 +28,6 @@
+ #endif
+ 
+ #include <linux/rwsem.h>
+-#include <linux/dma-attrs.h>
+ #include <linux/dma-mapping.h>
+ 
+ #include <video/omapdss.h>
+@@ -51,7 +50,7 @@ extern bool omapfb_debug;
+ 
+ struct omapfb2_mem_region {
+ 	int             id;
+-	struct dma_attrs attrs;
++	unsigned long	attrs;
+ 	void		*token;
+ 	dma_addr_t	dma_handle;
+ 	u32		paddr;
 -- 
 1.9.1
