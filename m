@@ -1,70 +1,156 @@
-From: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 3/4] mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
-Date: Thu, 02 Jun 2016 10:52:48 +0200
-Message-ID: <3851136.KiJNtFycNm@wuerfel>
-References: <1462417950-46796-1-git-send-email-yangbo.lu@nxp.com> <6110875.0k1HlSKhzn@wuerfel> <1464829874.16584.163.camel@buserror.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-clk-owner@vger.kernel.org>
-In-Reply-To: <1464829874.16584.163.camel@buserror.net>
-Sender: linux-clk-owner@vger.kernel.org
-To: linuxppc-dev@lists.ozlabs.org
-Cc: Scott Wood <oss@buserror.net>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Russell King <linux@arm.linux.org.uk>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, Santosh Shilimkar <ssantosh@kernel.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, Xiaobo Xie <xiaobo.xie@nxp.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, Yangbo Lu <yangbo.lu@nxp.com>, Kumar Gala <galak@codeaurora.org>, Yang-Leo Li <leoyang.li@nxp.com>, "linux-clk@vger.kernel.org" <linux-clk@vg>
+From: Sagar Arun Kamble <sagar.a.kamble@intel.com>
+Subject: [PATCH 2/2] iommu: Remove cpu-local spinlock
+Date: Thu,  2 Jun 2016 17:15:30 +0530
+Message-ID: <1464867930-28588-3-git-send-email-sagar.a.kamble@intel.com>
+References: <1464867930-28588-1-git-send-email-sagar.a.kamble@intel.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1464867930-28588-1-git-send-email-sagar.a.kamble@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Intel-gfx-trybot@lists.freedesktop.org
+Cc: Chris Wilson <chris@chris-wilson.co.uk>, Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wednesday, June 1, 2016 8:11:14 PM CEST Scott Wood wrote:
-> > +#define T4240_HOST_VER ((VENDOR_V_23 << SDHCI_VENDOR_VER_SHIFT) |
-> > SDHCI_SPEC_200)
-> > +static const struct soc_device_attribute esdhc_t4240_quirk = {
-> > +     /* T4240 revision < 0x20 uses vendor version 23, SDHCI version 200
-> > */
-> > +     { .soc_id = "T4*(0x824000)", .revision = "0x[01]?",
-> > +       .data = (void *)(uintptr_t)(T4240_HOST_VER) },
-> 
-> Why should this code need to care that the string begins with "T4"?  This
-> creates dual maintenance if that were to change.  It's also broken because
-> T4240 has compatible = "fsl,t4240-device-config", "fsl,qoriq-device-config
-> -2.0" and thus with these patches it would incorrectly show up as "P series
-> (0x824000)".  The compatible string of this node was never meant to be a key
-> for choosing a string to describe the system to userspace.
+From: Chris Wilson <chris@chris-wilson.co.uk>
 
-This is an artifact of not knowing the specific SoC name, and we can change
-that by looking up the name from the SVR value in the soc_device driver.
+By avoiding cross-CPU usage of the per-cpu iova cache, we can forgo
+having a spinlock inside the per-cpu struct. The only place where we
+actually may touch another CPU's data is when performing a cache flush
+after running out of memory. Here, we can instead schedule a task to run
+on the other CPU to do the flush before trying again.
+
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org
+Reviewed-by: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+---
+ drivers/iommu/iova.c | 29 ++++++-----------------------
+ 1 file changed, 6 insertions(+), 23 deletions(-)
+
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index e23001b..36cdc8e 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -390,6 +390,11 @@ free_iova(struct iova_domain *iovad, unsigned long pfn)
+ }
+ EXPORT_SYMBOL_GPL(free_iova);
  
-> 0x824000 is a magic number which should be represented symbolically.
-
-Sure, feel free to change the format of the soc_device string in any
-name, I just converted the information I had available in the comments.
-The only thing that is important here is that the string matches what
-the soc_device driver calls it.
-
-> If T4240 is affected, then so are the reduced-core variants T4160 and T4080,
-> but 0x824000 doesn't match them (Yangbo's patch had the same problem).  And
-> please don't respond with "0x824*"
-> 
-> You also didn't strip out the E bit of SVR which indicates encryption
-> capability and nothing else (Yangbo's patch did not have this problem because
-> it used SVR_SOC_VER).
-
-Ok, that should be easy enough to fix in the soc_device driver.
-
-> What happens if the revision condition is more complicated, such as <= 0x20
-> with 0x21 being fine?  Multiple quirk entries where before we had as simple
-> comparison?
-
-I guess yes. I would really hope that there is no need to use this interface
-pervasively, it's really just to work around the cases where there is no
-way to pass the information in DT otherwise.
-
-> I fail to see how this approach is an improvement (much less one that needs to
-> hold up a patchset that is fixing a problem and is not touching any generic
-> code).  Why does this need to be a string?
-
-A string is what user space gets in /sys/devices/soc/*, and we already have
-code that does the same things there to work around quirks, here we just
-use the same interface in a completely generic way. Note that not every
-SoC family uses numbers in the same way, some have multiple subrevisions,
-some have names etc.
-
-	Arnd
++static void free_this_cached_iovas(void *info)
++{
++	free_cpu_cached_iovas(smp_processor_id(), info);
++}
++
+ /**
+  * alloc_iova_fast - allocates an iova from rcache
+  * @iovad: - iova domain in question
+@@ -413,17 +418,12 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+ retry:
+ 	new_iova = alloc_iova(iovad, size, limit_pfn, true);
+ 	if (!new_iova) {
+-		unsigned int cpu;
+-
+ 		if (flushed_rcache)
+ 			return 0;
+ 
+ 		/* Try replenishing IOVAs by flushing rcache. */
+ 		flushed_rcache = true;
+-		preempt_disable();
+-		for_each_online_cpu(cpu)
+-			free_cpu_cached_iovas(cpu, iovad);
+-		preempt_enable();
++		on_each_cpu(free_this_cached_iovas, iovad, true);
+ 		goto retry;
+ 	}
+ 
+@@ -647,7 +647,6 @@ struct iova_magazine {
+ };
+ 
+ struct iova_cpu_rcache {
+-	spinlock_t lock;
+ 	struct iova_magazine *loaded;
+ 	struct iova_magazine *prev;
+ };
+@@ -729,7 +728,6 @@ static void init_iova_rcaches(struct iova_domain *iovad)
+ 			continue;
+ 		for_each_possible_cpu(cpu) {
+ 			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
+-			spin_lock_init(&cpu_rcache->lock);
+ 			cpu_rcache->loaded = iova_magazine_alloc(GFP_KERNEL);
+ 			cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
+ 		}
+@@ -749,10 +747,8 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+ 	struct iova_magazine *mag_to_free = NULL;
+ 	struct iova_cpu_rcache *cpu_rcache;
+ 	bool can_insert = false;
+-	unsigned long flags;
+ 
+ 	cpu_rcache = get_cpu_ptr(rcache->cpu_rcaches);
+-	spin_lock_irqsave(&cpu_rcache->lock, flags);
+ 
+ 	if (!iova_magazine_full(cpu_rcache->loaded)) {
+ 		can_insert = true;
+@@ -780,7 +776,6 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+ 	if (can_insert)
+ 		iova_magazine_push(cpu_rcache->loaded, iova_pfn);
+ 
+-	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+ 	put_cpu_ptr(rcache->cpu_rcaches);
+ 
+ 	if (mag_to_free) {
+@@ -813,10 +808,8 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
+ 	struct iova_cpu_rcache *cpu_rcache;
+ 	unsigned long iova_pfn = 0;
+ 	bool has_pfn = false;
+-	unsigned long flags;
+ 
+ 	cpu_rcache = get_cpu_ptr(rcache->cpu_rcaches);
+-	spin_lock_irqsave(&cpu_rcache->lock, flags);
+ 
+ 	if (!iova_magazine_empty(cpu_rcache->loaded)) {
+ 		has_pfn = true;
+@@ -836,7 +829,6 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
+ 	if (has_pfn)
+ 		iova_pfn = iova_magazine_pop(cpu_rcache->loaded, limit_pfn);
+ 
+-	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+ 	put_cpu_ptr(rcache->cpu_rcaches);
+ 
+ 	return iova_pfn;
+@@ -866,17 +858,11 @@ static void free_cpu_iova_rcache(unsigned int cpu, struct iova_domain *iovad,
+ 				 struct iova_rcache *rcache)
+ {
+ 	struct iova_cpu_rcache *cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
+-	unsigned long flags;
+-
+-	spin_lock_irqsave(&cpu_rcache->lock, flags);
+-
+ 	iova_magazine_free_pfns(cpu_rcache->loaded, iovad);
+ 	iova_magazine_free(cpu_rcache->loaded);
+ 
+ 	iova_magazine_free_pfns(cpu_rcache->prev, iovad);
+ 	iova_magazine_free(cpu_rcache->prev);
+-
+-	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+ }
+ 
+ /*
+@@ -910,16 +896,13 @@ void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
+ {
+ 	struct iova_cpu_rcache *cpu_rcache;
+ 	struct iova_rcache *rcache;
+-	unsigned long flags;
+ 	int i;
+ 
+ 	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+ 		rcache = &iovad->rcaches[i];
+ 		cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
+-		spin_lock_irqsave(&cpu_rcache->lock, flags);
+ 		iova_magazine_free_pfns(cpu_rcache->loaded, iovad);
+ 		iova_magazine_free_pfns(cpu_rcache->prev, iovad);
+-		spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+ 	}
+ }
+ 
+-- 
+1.9.1
