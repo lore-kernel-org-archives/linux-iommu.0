@@ -1,51 +1,44 @@
 From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH v3 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update V3
-Date: Fri, 03 Jun 2016 00:55:19 +0900
-Message-ID: <20160602155519.31018.59925.sendpatchset@little-apple>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Sender: linux-renesas-soc-owner@vger.kernel.org
+Subject: [PATCH v3 01/06] iommu/ipmmu-vmsa: Remove platform data handling
+Date: Fri, 03 Jun 2016 00:55:29 +0900
+Message-ID: <20160602155529.31018.53638.sendpatchset@little-apple>
+References: <20160602155519.31018.59925.sendpatchset@little-apple>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160602155519.31018.59925.sendpatchset@little-apple>
+Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
 Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, joro@8bytes.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>, robin.murphy@arm.com, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-iommu/ipmmu-vmsa: IPMMU multi-arch update V3
+From: Magnus Damm <damm+renesas@opensource.se>
 
-[PATCH v3 01/06] iommu/ipmmu-vmsa: Remove platform data handling
-[PATCH v3 02/06] iommu/ipmmu-vmsa: Rework interrupt code and use bitmap for context
-[PATCH v3 03/06] iommu/ipmmu-vmsa: Break out utlb parsing code
-[PATCH v3 04/06] iommu/ipmmu-vmsa: Break out domain allocation code
-[PATCH v3 05/06] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
-[PATCH v3 06/06] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
-
-These patches update the IPMMU driver with a couple of changes
-to support build on multiple architectures. In the process of
-doing so the interrupt code gets reworked and the foundation
-for supporting multiple contexts are added.
-
-In this version of the series the patch order has been reworked
-to make simplify review. Thanks to Laurent for his suggestions!
-
-The 32-bit ARM logic has intentionally been changed as little as possible
-to avoid breakage. Once CONFIG_IOMMU_DMA can be used it may be good time
-to revisit the init ordering for the 32-bit SoCs. There is room for
-improvement for sure like Robin Murphy kindly pointed out.
-
-Changes since V2:
- - Got rid of patch 3 from the V2 however patch 1, 2 and 4 are kept.
- - V3 patch 3, 4 and 5 come from
-   [PATCH 00/04] iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
- - Patch 5 has been reworked to include patch 3 of the V1 of this series 
-
-Changes since V1:
- - Got rid of patch 2 and 3 from initial series
- - Updated bitmap code locking and also used lighter bitop functions
- - Updated the Kconfig bits to apply on top of ARCH_RENESAS
+The IPMMU driver is using DT these days, and platform data is no longer
+used by the driver. Remove unused code.
 
 Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 ---
 
- Built on top of next-20160602
+ Changes since V2:
+ - None
 
- drivers/iommu/Kconfig      |    1 
- drivers/iommu/ipmmu-vmsa.c |  263 ++++++++++++++++++++++++++++++++++++--------
- 2 files changed, 216 insertions(+), 48 deletions(-)
+ Changes since V1:
+ - Added Reviewed-by from Laurent
+
+ drivers/iommu/ipmmu-vmsa.c |    5 -----
+ 1 file changed, 5 deletions(-)
+
+--- 0001/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-02 20:43:14.090607110 +0900
+@@ -766,11 +766,6 @@ static int ipmmu_probe(struct platform_d
+ 	int irq;
+ 	int ret;
+ 
+-	if (!IS_ENABLED(CONFIG_OF) && !pdev->dev.platform_data) {
+-		dev_err(&pdev->dev, "missing platform data\n");
+-		return -EINVAL;
+-	}
+-
+ 	mmu = devm_kzalloc(&pdev->dev, sizeof(*mmu), GFP_KERNEL);
+ 	if (!mmu) {
+ 		dev_err(&pdev->dev, "cannot allocate device data\n");
