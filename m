@@ -1,14 +1,11 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RESEND PATCH v2 0/6] vfio-pci: Add support for mmapping MSI-X
-	table
-Date: Thu, 2 Jun 2016 07:11:32 -0600
-Message-ID: <20160602071132.273c64c7@ul30vt.home>
-References: <1464847803-22756-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+From: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [RFC v3 00/45] dma-mapping: Use unsigned long for dma_attrs
+Date: Thu, 02 Jun 2016 17:39:02 +0200
+Message-ID: <1464881987-13203-1-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1464847803-22756-1-git-send-email-xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,67 +15,217 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-Cc: alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org, nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
+To: Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>, Ivan Kokshaysky <ink-biIs/Y0ymYJMZLIVYojuPNP0rXTJTi09@public.gmane.org>, Matt Turner <mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Vineet Gupta <vgupta-HKixBCOQz3hWk0Htik3J/w@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, Stefano Stabellini <sstabellini-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Haavard Skinnemoen <hskinnemoen-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Hans-Christian Egtvedt <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, Steven Miao <realmz6-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mark Salter <msalter-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Aurelien Jacquiot <a-jacquiot-l0cyMroinI0@public.gmane.org>, Mikael Starvik <starvik-VrBV9hrLPhE@public.gmane.org>, Jesper Nilsson <jesper.nilsson-VrBV9hrLPhE@public.gmane.org>, Yoshinori Sato <ysato-Rn4VEauK+AKRv+LV9MX5uooqe+aC9MnS@public.gmane.org>, Richard Kuo <rkuo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Tony Luck <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Fenghua Yu <fenghua.yu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, James Hogan <james.hogan-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>
+Cc: hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi,
 
-AFAICT, you posted this *3* days ago, has something changed here or is
-this just expedited nagging for review?  This also depends on a
-non-upstream series and crosses multiple functional areas, all of which
-make it difficult for maintainers to actually do anything with this
-series.  Thanks,
 
-Alex
+This is third approach (complete this time) for replacing struct
+dma_attrs with unsigned long.
 
-On Thu,  2 Jun 2016 14:09:57 +0800
-Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org> wrote:
+The main patch (2/45) doing the change is split into many subpatches
+for easier review (3-43).  They should be squashed together when
+applying.
 
-> Current vfio-pci implementation disallows to mmap the page
-> containing MSI-X table in case that users can write directly
-> to MSI-X table and generate an incorrect MSIs.
-> 
-> However, this will cause some performance issue when there
-> are some critical device registers in the same page as the 
-> MSI-X table. We have to handle the mmio access to these
-> registers in QEMU emulation rather than in guest.
-> 
-> To solve this issue, this series allows to expose MSI-X table
-> to userspace when hardware enables the capability of interrupt
-> remapping which can ensure that a given PCI device can only
-> shoot the MSIs assigned for it. And we introduce a new bus_flags
-> PCI_BUS_FLAGS_MSI_REMAP to test this capability on PCI side
-> for different archs.
-> 
-> The patch 3 are based on the proposed patchset[1].
-> 
-> Changelog v2: 
-> - Make the commit log more clear
-> - Replace pci_bus_check_msi_remapping() with pci_bus_msi_isolated()
->   so that we could clearly know what the function does
-> - Set PCI_BUS_FLAGS_MSI_REMAP in pci_create_root_bus() instead
->   of iommu_bus_notifier()
-> - Reserve VFIO_REGION_INFO_FLAG_CAPS when we allow to mmap MSI-X
->   table so that we can know whether we allow to mmap MSI-X table
->   in QEMU
-> 
-> [1] https://www.mail-archive.com/linux-kernel%40vger.kernel.org/msg1138820.html
-> 
-> Yongji Xie (6):
->   PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
->   PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI controller enables IRQ remapping
->   PCI: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have capability of IRQ remapping
->   iommu: Set PCI_BUS_FLAGS_MSI_REMAP on iommu driver initialization
->   pci-ioda: Set PCI_BUS_FLAGS_MSI_REMAP for IODA host bridge
->   vfio-pci: Allow to expose MSI-X table to userspace if interrupt remapping is enabled
-> 
->  arch/powerpc/platforms/powernv/pci-ioda.c |    8 ++++++++
->  drivers/iommu/iommu.c                     |    8 ++++++++
->  drivers/pci/msi.c                         |   15 +++++++++++++++
->  drivers/pci/probe.c                       |    7 +++++++
->  drivers/vfio/pci/vfio_pci.c               |   17 ++++++++++++++---
->  drivers/vfio/pci/vfio_pci_rdwr.c          |    3 ++-
->  include/linux/msi.h                       |    5 ++++-
->  include/linux/pci.h                       |    1 +
->  8 files changed, 59 insertions(+), 5 deletions(-)
-> 
+
+*Important:* Patchset is *only* build tested on allyesconfigs: ARM,
+ARM64, i386, x86_64 and powerpc. Please provide reviewes and tests
+for other platforms.
+
+Rebased on next-20160602.
+
+For easier testing the patchset is available here:
+repo:   https://github.com/krzk/linux
+branch: for-next/dma-attrs-const-v3
+
+
+I didn't CC all the maintainers... the list is too big.
+
+Changes since v2
+================
+1. Follow Christoph Hellwig's comments (don't use BIT add
+   documentation, remove dma_get_attr).
+
+
+Rationale
+=========
+The dma-mapping core and the implementations do not change the
+DMA attributes passed by pointer.  Thus the pointer can point to const
+data.  However the attributes do not have to be a bitfield. Instead
+unsigned long will do fine:
+
+1. This is just simpler.  Both in terms of reading the code and setting
+   attributes.  Instead of initializing local attributes on the stack
+   and passing pointer to it to dma_set_attr(), just set the bits.
+
+2. It brings safeness and checking for const correctness because the
+   attributes are passed by value.
+
+
+Best regards,
+Krzysztof
+
+
+Krzysztof Kozlowski (45):
+  powerpc: dma-mapping: Don't hard-code the value of
+    DMA_ATTR_WEAK_ORDERING
+  dma-mapping: Use unsigned long for dma_attrs
+  alpha: dma-mapping: Use unsigned long for dma_attrs
+  arc: dma-mapping: Use unsigned long for dma_attrs
+  ARM: dma-mapping: Use unsigned long for dma_attrs
+  arm64: dma-mapping: Use unsigned long for dma_attrs
+  avr32: dma-mapping: Use unsigned long for dma_attrs
+  blackfin: dma-mapping: Use unsigned long for dma_attrs
+  c6x: dma-mapping: Use unsigned long for dma_attrs
+  cris: dma-mapping: Use unsigned long for dma_attrs
+  frv: dma-mapping: Use unsigned long for dma_attrs
+  drm/exynos: dma-mapping: Use unsigned long for dma_attrs
+  drm/mediatek: dma-mapping: Use unsigned long for dma_attrs
+  drm/msm: dma-mapping: Use unsigned long for dma_attrs
+  drm/nouveau: dma-mapping: Use unsigned long for dma_attrs
+  drm/rockship: dma-mapping: Use unsigned long for dma_attrs
+  infiniband: dma-mapping: Use unsigned long for dma_attrs
+  iommu: dma-mapping: Use unsigned long for dma_attrs
+  [media] dma-mapping: Use unsigned long for dma_attrs
+  xen: dma-mapping: Use unsigned long for dma_attrs
+  swiotlb: dma-mapping: Use unsigned long for dma_attrs
+  powerpc: dma-mapping: Use unsigned long for dma_attrs
+  video: dma-mapping: Use unsigned long for dma_attrs
+  x86: dma-mapping: Use unsigned long for dma_attrs
+  iommu: intel: dma-mapping: Use unsigned long for dma_attrs
+  h8300: dma-mapping: Use unsigned long for dma_attrs
+  hexagon: dma-mapping: Use unsigned long for dma_attrs
+  ia64: dma-mapping: Use unsigned long for dma_attrs
+  m68k: dma-mapping: Use unsigned long for dma_attrs
+  metag: dma-mapping: Use unsigned long for dma_attrs
+  microblaze: dma-mapping: Use unsigned long for dma_attrs
+  mips: dma-mapping: Use unsigned long for dma_attrs
+  mn10300: dma-mapping: Use unsigned long for dma_attrs
+  nios2: dma-mapping: Use unsigned long for dma_attrs
+  openrisc: dma-mapping: Use unsigned long for dma_attrs
+  parisc: dma-mapping: Use unsigned long for dma_attrs
+  misc: mic: dma-mapping: Use unsigned long for dma_attrs
+  s390: dma-mapping: Use unsigned long for dma_attrs
+  sh: dma-mapping: Use unsigned long for dma_attrs
+  sparc: dma-mapping: Use unsigned long for dma_attrs
+  tile: dma-mapping: Use unsigned long for dma_attrs
+  unicore32: dma-mapping: Use unsigned long for dma_attrs
+  xtensa: dma-mapping: Use unsigned long for dma_attrs
+  dma-mapping: Remove dma_get_attr
+  dma-mapping: Document the DMA attributes right in declaration
+
+ Documentation/DMA-API.txt                          |  33 +++---
+ Documentation/DMA-attributes.txt                   |   2 +-
+ arch/alpha/include/asm/dma-mapping.h               |   2 -
+ arch/alpha/kernel/pci-noop.c                       |   2 +-
+ arch/alpha/kernel/pci_iommu.c                      |  12 +-
+ arch/arc/mm/dma.c                                  |  12 +-
+ arch/arm/common/dmabounce.c                        |   4 +-
+ arch/arm/include/asm/dma-mapping.h                 |  13 +--
+ arch/arm/include/asm/xen/page-coherent.h           |  16 +--
+ arch/arm/mm/dma-mapping.c                          | 117 +++++++++----------
+ arch/arm/xen/mm.c                                  |   8 +-
+ arch/arm64/mm/dma-mapping.c                        |  67 +++++------
+ arch/avr32/mm/dma-coherent.c                       |  12 +-
+ arch/blackfin/kernel/dma-mapping.c                 |   8 +-
+ arch/c6x/include/asm/dma-mapping.h                 |   4 +-
+ arch/c6x/kernel/dma.c                              |   9 +-
+ arch/c6x/mm/dma-coherent.c                         |   4 +-
+ arch/cris/arch-v32/drivers/pci/dma.c               |   9 +-
+ arch/frv/mb93090-mb00/pci-dma-nommu.c              |   8 +-
+ arch/frv/mb93090-mb00/pci-dma.c                    |   9 +-
+ arch/h8300/kernel/dma.c                            |   8 +-
+ arch/hexagon/include/asm/dma-mapping.h             |   1 -
+ arch/hexagon/kernel/dma.c                          |   8 +-
+ arch/ia64/hp/common/sba_iommu.c                    |  22 ++--
+ arch/ia64/include/asm/machvec.h                    |   1 -
+ arch/ia64/kernel/pci-swiotlb.c                     |   4 +-
+ arch/ia64/sn/pci/pci_dma.c                         |  22 ++--
+ arch/m68k/kernel/dma.c                             |  12 +-
+ arch/metag/kernel/dma.c                            |  16 +--
+ arch/microblaze/include/asm/dma-mapping.h          |   1 -
+ arch/microblaze/kernel/dma.c                       |  12 +-
+ arch/mips/cavium-octeon/dma-octeon.c               |   8 +-
+ arch/mips/loongson64/common/dma-swiotlb.c          |  10 +-
+ arch/mips/mm/dma-default.c                         |  20 ++--
+ arch/mips/netlogic/common/nlm-dma.c                |   4 +-
+ arch/mn10300/mm/dma-alloc.c                        |   8 +-
+ arch/nios2/mm/dma-mapping.c                        |  12 +-
+ arch/openrisc/kernel/dma.c                         |  21 ++--
+ arch/parisc/kernel/pci-dma.c                       |  18 +--
+ arch/powerpc/include/asm/dma-mapping.h             |   7 +-
+ arch/powerpc/include/asm/iommu.h                   |  10 +-
+ arch/powerpc/kernel/dma-iommu.c                    |  12 +-
+ arch/powerpc/kernel/dma.c                          |  18 +--
+ arch/powerpc/kernel/ibmebus.c                      |  12 +-
+ arch/powerpc/kernel/iommu.c                        |  12 +-
+ arch/powerpc/kernel/vio.c                          |  12 +-
+ arch/powerpc/platforms/cell/iommu.c                |  26 ++---
+ arch/powerpc/platforms/pasemi/iommu.c              |   2 +-
+ arch/powerpc/platforms/powernv/npu-dma.c           |   8 +-
+ arch/powerpc/platforms/powernv/pci-ioda.c          |   4 +-
+ arch/powerpc/platforms/powernv/pci.c               |   2 +-
+ arch/powerpc/platforms/powernv/pci.h               |   2 +-
+ arch/powerpc/platforms/ps3/system-bus.c            |  18 +--
+ arch/powerpc/platforms/pseries/iommu.c             |   6 +-
+ arch/powerpc/sysdev/dart_iommu.c                   |   2 +-
+ arch/s390/include/asm/dma-mapping.h                |   1 -
+ arch/s390/pci/pci_dma.c                            |  23 ++--
+ arch/sh/include/asm/dma-mapping.h                  |   4 +-
+ arch/sh/kernel/dma-nommu.c                         |   4 +-
+ arch/sh/mm/consistent.c                            |   4 +-
+ arch/sparc/kernel/iommu.c                          |  12 +-
+ arch/sparc/kernel/ioport.c                         |  24 ++--
+ arch/sparc/kernel/pci_sun4v.c                      |  12 +-
+ arch/tile/kernel/pci-dma.c                         |  28 ++---
+ arch/unicore32/mm/dma-swiotlb.c                    |   4 +-
+ arch/x86/include/asm/dma-mapping.h                 |   5 +-
+ arch/x86/include/asm/swiotlb.h                     |   4 +-
+ arch/x86/include/asm/xen/page-coherent.h           |   9 +-
+ arch/x86/kernel/amd_gart_64.c                      |  20 ++--
+ arch/x86/kernel/pci-calgary_64.c                   |  14 +--
+ arch/x86/kernel/pci-dma.c                          |   4 +-
+ arch/x86/kernel/pci-nommu.c                        |   4 +-
+ arch/x86/kernel/pci-swiotlb.c                      |   4 +-
+ arch/x86/pci/sta2x11-fixup.c                       |   2 +-
+ arch/x86/pci/vmd.c                                 |  16 +--
+ arch/xtensa/kernel/pci-dma.c                       |  12 +-
+ drivers/gpu/drm/exynos/exynos_drm_fbdev.c          |   2 +-
+ drivers/gpu/drm/exynos/exynos_drm_g2d.c            |  12 +-
+ drivers/gpu/drm/exynos/exynos_drm_gem.c            |  20 ++--
+ drivers/gpu/drm/exynos/exynos_drm_gem.h            |   2 +-
+ drivers/gpu/drm/mediatek/mtk_drm_gem.c             |  13 +--
+ drivers/gpu/drm/mediatek/mtk_drm_gem.h             |   2 +-
+ drivers/gpu/drm/msm/msm_drv.c                      |  13 +--
+ .../gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c    |  13 +--
+ drivers/gpu/drm/rockchip/rockchip_drm_gem.c        |  17 ++-
+ drivers/gpu/drm/rockchip/rockchip_drm_gem.h        |   2 +-
+ drivers/infiniband/core/umem.c                     |   7 +-
+ drivers/iommu/amd_iommu.c                          |  12 +-
+ drivers/iommu/dma-iommu.c                          |   8 +-
+ drivers/iommu/intel-iommu.c                        |  12 +-
+ drivers/media/platform/sti/bdisp/bdisp-hw.c        |  26 ++---
+ drivers/media/v4l2-core/videobuf2-dma-contig.c     |  30 ++---
+ drivers/media/v4l2-core/videobuf2-dma-sg.c         |  19 +--
+ drivers/misc/mic/host/mic_boot.c                   |  20 ++--
+ drivers/parisc/ccio-dma.c                          |  16 +--
+ drivers/parisc/sba_iommu.c                         |  16 +--
+ drivers/video/fbdev/omap2/omapfb/omapfb-main.c     |  12 +-
+ drivers/video/fbdev/omap2/omapfb/omapfb.h          |   3 +-
+ drivers/xen/swiotlb-xen.c                          |  14 +--
+ include/linux/dma-attrs.h                          |  71 ------------
+ include/linux/dma-iommu.h                          |   6 +-
+ include/linux/dma-mapping.h                        | 128 ++++++++++++++-------
+ include/linux/swiotlb.h                            |  10 +-
+ include/media/videobuf2-dma-contig.h               |   7 +-
+ include/rdma/ib_verbs.h                            |   8 +-
+ include/xen/swiotlb-xen.h                          |  12 +-
+ lib/dma-noop.c                                     |   9 +-
+ lib/swiotlb.c                                      |  13 ++-
+ 108 files changed, 689 insertions(+), 788 deletions(-)
+ delete mode 100644 include/linux/dma-attrs.h
+
+-- 
+1.9.1
