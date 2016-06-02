@@ -1,8 +1,7 @@
 From: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [RFC v3 13/45] drm/mediatek: dma-mapping: Use unsigned long for
-	dma_attrs
-Date: Thu, 02 Jun 2016 17:39:15 +0200
-Message-ID: <1464881987-13203-14-git-send-email-k.kozlowski@samsung.com>
+Subject: [RFC v3 14/45] drm/msm: dma-mapping: Use unsigned long for dma_attrs
+Date: Thu, 02 Jun 2016 17:39:16 +0200
+Message-ID: <1464881987-13203-15-git-send-email-k.kozlowski@samsung.com>
 References: <1464881987-13203-1-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -27,72 +26,52 @@ squashed with main commit.
 
 Signed-off-by: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/gpu/drm/mediatek/mtk_drm_gem.c | 13 ++++++-------
- drivers/gpu/drm/mediatek/mtk_drm_gem.h |  2 +-
- 2 files changed, 7 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/msm/msm_drv.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_drm_gem.c b/drivers/gpu/drm/mediatek/mtk_drm_gem.c
-index fa2ec0cd00e8..7abc550ebc00 100644
---- a/drivers/gpu/drm/mediatek/mtk_drm_gem.c
-+++ b/drivers/gpu/drm/mediatek/mtk_drm_gem.c
-@@ -54,15 +54,14 @@ struct mtk_drm_gem_obj *mtk_drm_gem_create(struct drm_device *dev,
+diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
+index 1f7de47d817e..9b806e576d35 100644
+--- a/drivers/gpu/drm/msm/msm_drv.c
++++ b/drivers/gpu/drm/msm/msm_drv.c
+@@ -230,11 +230,10 @@ static int msm_drm_uninit(struct device *dev)
+ 	}
  
- 	obj = &mtk_gem->base;
+ 	if (priv->vram.paddr) {
+-		DEFINE_DMA_ATTRS(attrs);
+-		dma_set_attr(DMA_ATTR_NO_KERNEL_MAPPING, &attrs);
++		unsigned long attrs = DMA_ATTR_NO_KERNEL_MAPPING;
+ 		drm_mm_takedown(&priv->vram.mm);
+ 		dma_free_attrs(dev, priv->vram.size, NULL,
+-			       priv->vram.paddr, &attrs);
++			       priv->vram.paddr, attrs);
+ 	}
  
--	init_dma_attrs(&mtk_gem->dma_attrs);
--	dma_set_attr(DMA_ATTR_WRITE_COMBINE, &mtk_gem->dma_attrs);
-+	mtk_gem->dma_attrs = DMA_ATTR_WRITE_COMBINE;
+ 	component_unbind_all(dev, ddev);
+@@ -299,21 +298,21 @@ static int msm_init_vram(struct drm_device *dev)
+ 	}
  
- 	if (!alloc_kmap)
--		dma_set_attr(DMA_ATTR_NO_KERNEL_MAPPING, &mtk_gem->dma_attrs);
-+		mtk_gem->dma_attrs |= DMA_ATTR_NO_KERNEL_MAPPING;
+ 	if (size) {
+-		DEFINE_DMA_ATTRS(attrs);
++		unsigned long attrs = 0;
+ 		void *p;
  
- 	mtk_gem->cookie = dma_alloc_attrs(priv->dma_dev, obj->size,
- 					  &mtk_gem->dma_addr, GFP_KERNEL,
--					  &mtk_gem->dma_attrs);
-+					  mtk_gem->dma_attrs);
- 	if (!mtk_gem->cookie) {
- 		DRM_ERROR("failed to allocate %zx byte dma buffer", obj->size);
- 		ret = -ENOMEM;
-@@ -93,7 +92,7 @@ void mtk_drm_gem_free_object(struct drm_gem_object *obj)
- 		drm_prime_gem_destroy(obj, mtk_gem->sg);
- 	else
- 		dma_free_attrs(priv->dma_dev, obj->size, mtk_gem->cookie,
--			       mtk_gem->dma_addr, &mtk_gem->dma_attrs);
-+			       mtk_gem->dma_addr, mtk_gem->dma_attrs);
+ 		priv->vram.size = size;
  
- 	/* release file pointer to gem object. */
- 	drm_gem_object_release(obj);
-@@ -173,7 +172,7 @@ static int mtk_drm_gem_object_mmap(struct drm_gem_object *obj,
- 	vma->vm_pgoff = 0;
+ 		drm_mm_init(&priv->vram.mm, 0, (size >> PAGE_SHIFT) - 1);
  
- 	ret = dma_mmap_attrs(priv->dma_dev, vma, mtk_gem->cookie,
--			     mtk_gem->dma_addr, obj->size, &mtk_gem->dma_attrs);
-+			     mtk_gem->dma_addr, obj->size, mtk_gem->dma_attrs);
- 	if (ret)
- 		drm_gem_vm_close(vma);
+-		dma_set_attr(DMA_ATTR_NO_KERNEL_MAPPING, &attrs);
+-		dma_set_attr(DMA_ATTR_WRITE_COMBINE, &attrs);
++		attrs |= DMA_ATTR_NO_KERNEL_MAPPING;
++		attrs |= DMA_ATTR_WRITE_COMBINE;
  
-@@ -224,7 +223,7 @@ struct sg_table *mtk_gem_prime_get_sg_table(struct drm_gem_object *obj)
- 
- 	ret = dma_get_sgtable_attrs(priv->dma_dev, sgt, mtk_gem->cookie,
- 				    mtk_gem->dma_addr, obj->size,
--				    &mtk_gem->dma_attrs);
-+				    mtk_gem->dma_attrs);
- 	if (ret) {
- 		DRM_ERROR("failed to allocate sgt, %d\n", ret);
- 		kfree(sgt);
-diff --git a/drivers/gpu/drm/mediatek/mtk_drm_gem.h b/drivers/gpu/drm/mediatek/mtk_drm_gem.h
-index 3a2a5624a1cb..2752718fa5b2 100644
---- a/drivers/gpu/drm/mediatek/mtk_drm_gem.h
-+++ b/drivers/gpu/drm/mediatek/mtk_drm_gem.h
-@@ -35,7 +35,7 @@ struct mtk_drm_gem_obj {
- 	void			*cookie;
- 	void			*kvaddr;
- 	dma_addr_t		dma_addr;
--	struct dma_attrs	dma_attrs;
-+	unsigned long		dma_attrs;
- 	struct sg_table		*sg;
- };
- 
+ 		/* note that for no-kernel-mapping, the vaddr returned
+ 		 * is bogus, but non-null if allocation succeeded:
+ 		 */
+ 		p = dma_alloc_attrs(dev->dev, size,
+-				&priv->vram.paddr, GFP_KERNEL, &attrs);
++				&priv->vram.paddr, GFP_KERNEL, attrs);
+ 		if (!p) {
+ 			dev_err(dev->dev, "failed to allocate VRAM\n");
+ 			priv->vram.paddr = 0;
 -- 
 1.9.1
