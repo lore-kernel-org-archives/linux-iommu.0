@@ -1,65 +1,84 @@
-From: "Niklas =?iso-8859-1?Q?S=F6derlund?=" <niklas.soderlund@ragnatech.se>
-Subject: Re: [PATCHv7 0/6] dmaengine: rcar-dmac: add iommu support for slave
- transfers
-Date: Thu, 2 Jun 2016 14:58:07 +0200
-Message-ID: <20160602125807.GN8307@bigcity.dyn.berto.se>
-References: <1464794549-6601-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
- <20160601180610.GV16910@localhost>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RESEND PATCH v2 0/6] vfio-pci: Add support for mmapping MSI-X
+	table
+Date: Thu, 2 Jun 2016 07:11:32 -0600
+Message-ID: <20160602071132.273c64c7@ul30vt.home>
+References: <1464847803-22756-1-git-send-email-xyjxie@linux.vnet.ibm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20160601180610.GV16910@localhost>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Vinod Koul <vinod.koul@intel.com>
-Cc: hch@infradead.org, linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, dan.j.williams@intel.com, robin.murphy@arm.com, laurent.pinchart@ideasonboard.com, linus.walleij@linaro.org, arnd@arndb.de
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1464847803-22756-1-git-send-email-xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Cc: alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org, nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Vinod,
 
-On 2016-06-01 23:36:11 +0530, Vinod Koul wrote:
-> On Wed, Jun 01, 2016 at 05:22:23PM +0200, Niklas S=F6derlund wrote:
-> > Hi,
-> >=20
-> > [In this v7 series I have tried to address the questions raised by =
-Christoph=20
-> > Hellwig and I hope it can awnser your concernes regarding dma-debug=
-=2E]
-> >=20
-> > This series tries to solve the problem with DMA with device registe=
-rs
-> > (MMIO registers) that are behind an IOMMU for the rcar-dmac driver.=
- A
-> > recent patch '9575632 (dmaengine: make slave address physical)'
-> > clarifies that DMA slave address provided by clients is the physica=
-l
-> > address. This puts the task of mapping the DMA slave address from a
-> > phys_addr_t to a dma_addr_t on the DMA engine.
-> >=20
-> > Without an IOMMU this is easy since the phys_addr_t and dma_addr_t =
-are
-> > the same and no special care is needed. However if you have a IOMMU=
- you
-> > need to map the DMA slave phys_addr_t to a dma_addr_t using somethi=
-ng
-> > like this.
-> >=20
-> > This series is based on top of v4.7-rc1.
->=20
-> The dmanegine bits looks okay to me. Btw how is the merge planned for=
- this?
-> Do you wnat this to be merged thru dmaengine tree or something else?
+AFAICT, you posted this *3* days ago, has something changed here or is
+this just expedited nagging for review?  This also depends on a
+non-upstream series and crosses multiple functional areas, all of which
+make it difficult for maintainers to actually do anything with this
+series.  Thanks,
 
-Yes, since the arm specific patch are depending on other parts of the=20
-series I was hoping to be able to get Russells Ack on it and then try t=
-o=20
-get it all in through the dmaengine tree.
+Alex
 
-If you see a better way I'm happy to do it that way, let me know what=20
-you think. I hold off v8 that adresses the issues Russell brought up a=20
-few days untill I know what you think is best.
+On Thu,  2 Jun 2016 14:09:57 +0800
+Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org> wrote:
 
---=20
-Regards,
-Niklas S=F6derlund
+> Current vfio-pci implementation disallows to mmap the page
+> containing MSI-X table in case that users can write directly
+> to MSI-X table and generate an incorrect MSIs.
+> 
+> However, this will cause some performance issue when there
+> are some critical device registers in the same page as the 
+> MSI-X table. We have to handle the mmio access to these
+> registers in QEMU emulation rather than in guest.
+> 
+> To solve this issue, this series allows to expose MSI-X table
+> to userspace when hardware enables the capability of interrupt
+> remapping which can ensure that a given PCI device can only
+> shoot the MSIs assigned for it. And we introduce a new bus_flags
+> PCI_BUS_FLAGS_MSI_REMAP to test this capability on PCI side
+> for different archs.
+> 
+> The patch 3 are based on the proposed patchset[1].
+> 
+> Changelog v2: 
+> - Make the commit log more clear
+> - Replace pci_bus_check_msi_remapping() with pci_bus_msi_isolated()
+>   so that we could clearly know what the function does
+> - Set PCI_BUS_FLAGS_MSI_REMAP in pci_create_root_bus() instead
+>   of iommu_bus_notifier()
+> - Reserve VFIO_REGION_INFO_FLAG_CAPS when we allow to mmap MSI-X
+>   table so that we can know whether we allow to mmap MSI-X table
+>   in QEMU
+> 
+> [1] https://www.mail-archive.com/linux-kernel%40vger.kernel.org/msg1138820.html
+> 
+> Yongji Xie (6):
+>   PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
+>   PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI controller enables IRQ remapping
+>   PCI: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have capability of IRQ remapping
+>   iommu: Set PCI_BUS_FLAGS_MSI_REMAP on iommu driver initialization
+>   pci-ioda: Set PCI_BUS_FLAGS_MSI_REMAP for IODA host bridge
+>   vfio-pci: Allow to expose MSI-X table to userspace if interrupt remapping is enabled
+> 
+>  arch/powerpc/platforms/powernv/pci-ioda.c |    8 ++++++++
+>  drivers/iommu/iommu.c                     |    8 ++++++++
+>  drivers/pci/msi.c                         |   15 +++++++++++++++
+>  drivers/pci/probe.c                       |    7 +++++++
+>  drivers/vfio/pci/vfio_pci.c               |   17 ++++++++++++++---
+>  drivers/vfio/pci/vfio_pci_rdwr.c          |    3 ++-
+>  include/linux/msi.h                       |    5 ++++-
+>  include/linux/pci.h                       |    1 +
+>  8 files changed, 59 insertions(+), 5 deletions(-)
+> 
