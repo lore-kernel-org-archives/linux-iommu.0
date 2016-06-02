@@ -1,8 +1,7 @@
 From: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [RFC v3 45/45] dma-mapping: Document the DMA attributes right in
-	declaration
-Date: Thu, 02 Jun 2016 17:39:47 +0200
-Message-ID: <1464881987-13203-46-git-send-email-k.kozlowski__4448.00989139384$1464882317$gmane$org@samsung.com>
+Subject: [RFC v3 43/45] xtensa: dma-mapping: Use unsigned long for dma_attrs
+Date: Thu, 02 Jun 2016 17:39:45 +0200
+Message-ID: <1464881987-13203-44-git-send-email-k.kozlowski__48350.4859418192$1464882318$gmane$org@samsung.com>
 References: <1464881987-13203-1-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,66 +21,70 @@ To: Richard Henderson <rth-hL46jP5Bxq7R7s880joybQ@public.gmane.org>, Ivan Koksha
 Cc: hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Copy documentation abstract about each DMA attribute from
-Documentation/DMA-attributes.txt to the place with declaration.
+Split out subsystem specific changes for easier reviews. This will be
+squashed with main commit.
 
-Suggested-by: Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Signed-off-by: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- include/linux/dma-mapping.h | 33 +++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ arch/xtensa/kernel/pci-dma.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 6d013ba94213..f349df4cb009 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -14,14 +14,47 @@
- /**
-  * List of possible attributes associated with a DMA mapping. The semantics
-  * of each attribute should be defined in Documentation/DMA-attributes.txt.
-+ *
-+ * DMA_ATTR_WRITE_BARRIER: DMA to a memory region with this attribute
-+ * forces all pending DMA writes to complete.
-  */
- #define DMA_ATTR_WRITE_BARRIER		(1UL << 1)
-+/*
-+ * DMA_ATTR_WEAK_ORDERING: Specifies that reads and writes to the mapping
-+ * may be weakly ordered, that is that reads and writes may pass each other.
-+ */
- #define DMA_ATTR_WEAK_ORDERING		(1UL << 2)
-+/*
-+ * DMA_ATTR_WRITE_COMBINE: Specifies that writes to the mapping may be
-+ * buffered to improve performance.
-+ */
- #define DMA_ATTR_WRITE_COMBINE		(1UL << 3)
-+/*
-+ * DMA_ATTR_NON_CONSISTENT: Lets the platform to choose to return either
-+ * consistent or non-consistent memory as it sees fit.
-+ */
- #define DMA_ATTR_NON_CONSISTENT		(1UL << 4)
-+/*
-+ * DMA_ATTR_NO_KERNEL_MAPPING: Lets the platform to avoid creating a kernel
-+ * virtual mapping for the allocated buffer.
-+ */
- #define DMA_ATTR_NO_KERNEL_MAPPING	(1UL << 5)
-+/*
-+ * DMA_ATTR_SKIP_CPU_SYNC: Allows platform code to skip synchronization of
-+ * the CPU cache for the given buffer assuming that it has been already
-+ * transferred to 'device' domain.
-+ */
- #define DMA_ATTR_SKIP_CPU_SYNC		(1UL << 6)
-+/*
-+ * DMA_ATTR_FORCE_CONTIGUOUS: Forces contiguous allocation of the buffer
-+ * in physical memory.
-+ */
- #define DMA_ATTR_FORCE_CONTIGUOUS	(1UL << 7)
-+/*
-+ * DMA_ATTR_ALLOC_SINGLE_PAGES: This is a hint to the DMA-mapping subsystem
-+ * that it's probably not worth the time to try to allocate memory to in a way
-+ * that gives better TLB efficiency.
-+ */
- #define DMA_ATTR_ALLOC_SINGLE_PAGES	(1UL << 8)
+diff --git a/arch/xtensa/kernel/pci-dma.c b/arch/xtensa/kernel/pci-dma.c
+index cd66698348ca..1e68806d6695 100644
+--- a/arch/xtensa/kernel/pci-dma.c
++++ b/arch/xtensa/kernel/pci-dma.c
+@@ -142,7 +142,7 @@ static void xtensa_sync_sg_for_device(struct device *dev,
  
- /*
+ static void *xtensa_dma_alloc(struct device *dev, size_t size,
+ 			      dma_addr_t *handle, gfp_t flag,
+-			      struct dma_attrs *attrs)
++			      unsigned long attrs)
+ {
+ 	unsigned long ret;
+ 	unsigned long uncached = 0;
+@@ -171,7 +171,7 @@ static void *xtensa_dma_alloc(struct device *dev, size_t size,
+ }
+ 
+ static void xtensa_dma_free(struct device *hwdev, size_t size, void *vaddr,
+-			    dma_addr_t dma_handle, struct dma_attrs *attrs)
++			    dma_addr_t dma_handle, unsigned long attrs)
+ {
+ 	unsigned long addr = (unsigned long)vaddr +
+ 		XCHAL_KSEG_CACHED_VADDR - XCHAL_KSEG_BYPASS_VADDR;
+@@ -185,7 +185,7 @@ static void xtensa_dma_free(struct device *hwdev, size_t size, void *vaddr,
+ static dma_addr_t xtensa_map_page(struct device *dev, struct page *page,
+ 				  unsigned long offset, size_t size,
+ 				  enum dma_data_direction dir,
+-				  struct dma_attrs *attrs)
++				  unsigned long attrs)
+ {
+ 	dma_addr_t dma_handle = page_to_phys(page) + offset;
+ 
+@@ -195,14 +195,14 @@ static dma_addr_t xtensa_map_page(struct device *dev, struct page *page,
+ 
+ static void xtensa_unmap_page(struct device *dev, dma_addr_t dma_handle,
+ 			      size_t size, enum dma_data_direction dir,
+-			      struct dma_attrs *attrs)
++			      unsigned long attrs)
+ {
+ 	xtensa_sync_single_for_cpu(dev, dma_handle, size, dir);
+ }
+ 
+ static int xtensa_map_sg(struct device *dev, struct scatterlist *sg,
+ 			 int nents, enum dma_data_direction dir,
+-			 struct dma_attrs *attrs)
++			 unsigned long attrs)
+ {
+ 	struct scatterlist *s;
+ 	int i;
+@@ -217,7 +217,7 @@ static int xtensa_map_sg(struct device *dev, struct scatterlist *sg,
+ static void xtensa_unmap_sg(struct device *dev,
+ 			    struct scatterlist *sg, int nents,
+ 			    enum dma_data_direction dir,
+-			    struct dma_attrs *attrs)
++			    unsigned long attrs)
+ {
+ 	struct scatterlist *s;
+ 	int i;
 -- 
 1.9.1
