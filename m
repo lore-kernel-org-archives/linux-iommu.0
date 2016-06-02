@@ -1,7 +1,7 @@
 From: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [RFC v3 27/45] hexagon: dma-mapping: Use unsigned long for dma_attrs
-Date: Thu, 02 Jun 2016 17:39:29 +0200
-Message-ID: <1464881987-13203-28-git-send-email-k.kozlowski__8971.63618724353$1464882204$gmane$org@samsung.com>
+Subject: [RFC v3 30/45] metag: dma-mapping: Use unsigned long for dma_attrs
+Date: Thu, 02 Jun 2016 17:39:32 +0200
+Message-ID: <1464881987-13203-31-git-send-email-k.kozlowski__14621.7603506104$1464882211$gmane$org@samsung.com>
 References: <1464881987-13203-1-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -26,61 +26,74 @@ squashed with main commit.
 
 Signed-off-by: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- arch/hexagon/include/asm/dma-mapping.h | 1 -
- arch/hexagon/kernel/dma.c              | 8 ++++----
- 2 files changed, 4 insertions(+), 5 deletions(-)
+ arch/metag/kernel/dma.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/arch/hexagon/include/asm/dma-mapping.h b/arch/hexagon/include/asm/dma-mapping.h
-index aa6203464520..7ef58df909fc 100644
---- a/arch/hexagon/include/asm/dma-mapping.h
-+++ b/arch/hexagon/include/asm/dma-mapping.h
-@@ -26,7 +26,6 @@
- #include <linux/mm.h>
- #include <linux/scatterlist.h>
- #include <linux/dma-debug.h>
--#include <linux/dma-attrs.h>
- #include <asm/io.h>
- 
- struct device;
-diff --git a/arch/hexagon/kernel/dma.c b/arch/hexagon/kernel/dma.c
-index 9e3ddf792bd3..b9017785fb71 100644
---- a/arch/hexagon/kernel/dma.c
-+++ b/arch/hexagon/kernel/dma.c
-@@ -51,7 +51,7 @@ static struct gen_pool *coherent_pool;
- 
- static void *hexagon_dma_alloc_coherent(struct device *dev, size_t size,
- 				 dma_addr_t *dma_addr, gfp_t flag,
--				 struct dma_attrs *attrs)
-+				 unsigned long attrs)
+diff --git a/arch/metag/kernel/dma.c b/arch/metag/kernel/dma.c
+index e12368d02155..d68f498e82a1 100644
+--- a/arch/metag/kernel/dma.c
++++ b/arch/metag/kernel/dma.c
+@@ -172,7 +172,7 @@ out:
+  * virtual and bus address for that space.
+  */
+ static void *metag_dma_alloc(struct device *dev, size_t size,
+-		dma_addr_t *handle, gfp_t gfp, struct dma_attrs *attrs)
++		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
  {
- 	void *ret;
+ 	struct page *page;
+ 	struct metag_vm_region *c;
+@@ -268,7 +268,7 @@ no_page:
+  * free a page as defined by the above mapping.
+  */
+ static void metag_dma_free(struct device *dev, size_t size, void *vaddr,
+-		dma_addr_t dma_handle, struct dma_attrs *attrs)
++		dma_addr_t dma_handle, unsigned long attrs)
+ {
+ 	struct metag_vm_region *c;
+ 	unsigned long flags, addr;
+@@ -331,7 +331,7 @@ no_area:
  
-@@ -84,7 +84,7 @@ static void *hexagon_dma_alloc_coherent(struct device *dev, size_t size,
+ static int metag_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
+-		struct dma_attrs *attrs)
++		unsigned long attrs)
+ {
+ 	unsigned long flags, user_size, kern_size;
+ 	struct metag_vm_region *c;
+@@ -482,7 +482,7 @@ static void dma_sync_for_cpu(void *vaddr, size_t size, int dma_direction)
+ 
+ static dma_addr_t metag_dma_map_page(struct device *dev, struct page *page,
+ 		unsigned long offset, size_t size,
+-		enum dma_data_direction direction, struct dma_attrs *attrs)
++		enum dma_data_direction direction, unsigned long attrs)
+ {
+ 	dma_sync_for_device((void *)(page_to_phys(page) + offset), size,
+ 			    direction);
+@@ -491,14 +491,14 @@ static dma_addr_t metag_dma_map_page(struct device *dev, struct page *page,
+ 
+ static void metag_dma_unmap_page(struct device *dev, dma_addr_t dma_address,
+ 		size_t size, enum dma_data_direction direction,
+-		struct dma_attrs *attrs)
++		unsigned long attrs)
+ {
+ 	dma_sync_for_cpu(phys_to_virt(dma_address), size, direction);
  }
  
- static void hexagon_free_coherent(struct device *dev, size_t size, void *vaddr,
--				  dma_addr_t dma_addr, struct dma_attrs *attrs)
-+				  dma_addr_t dma_addr, unsigned long attrs)
+ static int metag_dma_map_sg(struct device *dev, struct scatterlist *sglist,
+ 		int nents, enum dma_data_direction direction,
+-		struct dma_attrs *attrs)
++		unsigned long attrs)
  {
- 	gen_pool_free(coherent_pool, (unsigned long) vaddr, size);
- }
-@@ -105,7 +105,7 @@ static int check_addr(const char *name, struct device *hwdev,
- 
- static int hexagon_map_sg(struct device *hwdev, struct scatterlist *sg,
- 			  int nents, enum dma_data_direction dir,
--			  struct dma_attrs *attrs)
-+			  unsigned long attrs)
- {
- 	struct scatterlist *s;
+ 	struct scatterlist *sg;
  	int i;
-@@ -172,7 +172,7 @@ static inline void dma_sync(void *addr, size_t size,
- static dma_addr_t hexagon_map_page(struct device *dev, struct page *page,
- 				   unsigned long offset, size_t size,
- 				   enum dma_data_direction dir,
--				   struct dma_attrs *attrs)
-+				   unsigned long attrs)
+@@ -516,7 +516,7 @@ static int metag_dma_map_sg(struct device *dev, struct scatterlist *sglist,
+ 
+ static void metag_dma_unmap_sg(struct device *dev, struct scatterlist *sglist,
+ 		int nhwentries, enum dma_data_direction direction,
+-		struct dma_attrs *attrs)
++		unsigned long attrs)
  {
- 	dma_addr_t bus = page_to_phys(page) + offset;
- 	WARN_ON(size == 0);
+ 	struct scatterlist *sg;
+ 	int i;
 -- 
 1.9.1
