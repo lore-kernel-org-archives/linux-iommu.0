@@ -1,8 +1,7 @@
 From: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [RFC v3 15/45] drm/nouveau: dma-mapping: Use unsigned long for
-	dma_attrs
-Date: Thu, 02 Jun 2016 17:39:17 +0200
-Message-ID: <1464881987-13203-16-git-send-email-k.kozlowski__46228.074321016$1464882149$gmane$org@samsung.com>
+Subject: [RFC v3 18/45] iommu: dma-mapping: Use unsigned long for dma_attrs
+Date: Thu, 02 Jun 2016 17:39:20 +0200
+Message-ID: <1464881987-13203-19-git-send-email-k.kozlowski__47898.8352501348$1464882163$gmane$org@samsung.com>
 References: <1464881987-13203-1-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -27,53 +26,124 @@ squashed with main commit.
 
 Signed-off-by: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/iommu/amd_iommu.c | 12 ++++++------
+ drivers/iommu/dma-iommu.c |  6 +++---
+ include/linux/dma-iommu.h |  6 +++---
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c b/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c
-index 6b8f2a19b2d9..a6a7fa0d7679 100644
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c
-@@ -109,7 +109,7 @@ struct gk20a_instmem {
- 	u16 iommu_bit;
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 634f636393d5..afbb0de6a7f5 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2716,7 +2716,7 @@ static void __unmap_single(struct dma_ops_domain *dma_dom,
+ static dma_addr_t map_page(struct device *dev, struct page *page,
+ 			   unsigned long offset, size_t size,
+ 			   enum dma_data_direction dir,
+-			   struct dma_attrs *attrs)
++			   unsigned long attrs)
+ {
+ 	phys_addr_t paddr = page_to_phys(page) + offset;
+ 	struct protection_domain *domain;
+@@ -2738,7 +2738,7 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
+  * The exported unmap_single function for dma_ops.
+  */
+ static void unmap_page(struct device *dev, dma_addr_t dma_addr, size_t size,
+-		       enum dma_data_direction dir, struct dma_attrs *attrs)
++		       enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	struct protection_domain *domain;
  
- 	/* Only used by DMA API */
--	struct dma_attrs attrs;
-+	unsigned long attrs;
- };
- #define gk20a_instmem(p) container_of((p), struct gk20a_instmem, base)
+@@ -2755,7 +2755,7 @@ static void unmap_page(struct device *dev, dma_addr_t dma_addr, size_t size,
+  */
+ static int map_sg(struct device *dev, struct scatterlist *sglist,
+ 		  int nelems, enum dma_data_direction dir,
+-		  struct dma_attrs *attrs)
++		  unsigned long attrs)
+ {
+ 	struct protection_domain *domain;
+ 	int i;
+@@ -2803,7 +2803,7 @@ unmap:
+  */
+ static void unmap_sg(struct device *dev, struct scatterlist *sglist,
+ 		     int nelems, enum dma_data_direction dir,
+-		     struct dma_attrs *attrs)
++		     unsigned long attrs)
+ {
+ 	struct protection_domain *domain;
+ 	struct scatterlist *s;
+@@ -2825,7 +2825,7 @@ static void unmap_sg(struct device *dev, struct scatterlist *sglist,
+  */
+ static void *alloc_coherent(struct device *dev, size_t size,
+ 			    dma_addr_t *dma_addr, gfp_t flag,
+-			    struct dma_attrs *attrs)
++			    unsigned long attrs)
+ {
+ 	u64 dma_mask = dev->coherent_dma_mask;
+ 	struct protection_domain *domain;
+@@ -2879,7 +2879,7 @@ out_free:
+  */
+ static void free_coherent(struct device *dev, size_t size,
+ 			  void *virt_addr, dma_addr_t dma_addr,
+-			  struct dma_attrs *attrs)
++			  unsigned long attrs)
+ {
+ 	struct protection_domain *domain;
+ 	struct page *page;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index ea5a9ebf0f78..6c1bda504fb1 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -286,7 +286,7 @@ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
+  *	   or NULL on failure.
+  */
+ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+-		struct dma_attrs *attrs, int prot, dma_addr_t *handle,
++		unsigned long attrs, int prot, dma_addr_t *handle,
+ 		void (*flush_page)(struct device *, const void *, phys_addr_t))
+ {
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+@@ -400,7 +400,7 @@ dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+ }
  
-@@ -293,7 +293,7 @@ gk20a_instobj_dtor_dma(struct nvkm_memory *memory)
- 		goto out;
+ void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
+-		enum dma_data_direction dir, struct dma_attrs *attrs)
++		enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), handle);
+ }
+@@ -560,7 +560,7 @@ out_restore_sg:
+ }
  
- 	dma_free_attrs(dev, node->base.mem.size << PAGE_SHIFT, node->base.vaddr,
--		       node->handle, &imem->attrs);
-+		       node->handle, imem->attrs);
+ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+-		enum dma_data_direction dir, struct dma_attrs *attrs)
++		enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	/*
+ 	 * The scatterlist segments are mapped into a single
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index 8443bbb5c071..81c5c8d167ad 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -39,7 +39,7 @@ int dma_direction_to_prot(enum dma_data_direction dir, bool coherent);
+  * the arch code to take care of attributes and cache maintenance
+  */
+ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+-		struct dma_attrs *attrs, int prot, dma_addr_t *handle,
++		unsigned long attrs, int prot, dma_addr_t *handle,
+ 		void (*flush_page)(struct device *, const void *, phys_addr_t));
+ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
+ 		dma_addr_t *handle);
+@@ -56,9 +56,9 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+  * directly as DMA mapping callbacks for simplicity
+  */
+ void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
+-		enum dma_data_direction dir, struct dma_attrs *attrs);
++		enum dma_data_direction dir, unsigned long attrs);
+ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+-		enum dma_data_direction dir, struct dma_attrs *attrs);
++		enum dma_data_direction dir, unsigned long attrs);
+ int iommu_dma_supported(struct device *dev, u64 mask);
+ int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
  
- out:
- 	return node;
-@@ -386,7 +386,7 @@ gk20a_instobj_ctor_dma(struct gk20a_instmem *imem, u32 npages, u32 align,
- 
- 	node->base.vaddr = dma_alloc_attrs(dev, npages << PAGE_SHIFT,
- 					   &node->handle, GFP_KERNEL,
--					   &imem->attrs);
-+					   imem->attrs);
- 	if (!node->base.vaddr) {
- 		nvkm_error(subdev, "cannot allocate DMA memory\n");
- 		return -ENOMEM;
-@@ -597,10 +597,9 @@ gk20a_instmem_new(struct nvkm_device *device, int index,
- 
- 		nvkm_info(&imem->base.subdev, "using IOMMU\n");
- 	} else {
--		init_dma_attrs(&imem->attrs);
--		dma_set_attr(DMA_ATTR_NON_CONSISTENT, &imem->attrs);
--		dma_set_attr(DMA_ATTR_WEAK_ORDERING, &imem->attrs);
--		dma_set_attr(DMA_ATTR_WRITE_COMBINE, &imem->attrs);
-+		imem->attrs = DMA_ATTR_NON_CONSISTENT |
-+			      DMA_ATTR_WEAK_ORDERING |
-+			      DMA_ATTR_WRITE_COMBINE;
- 
- 		nvkm_info(&imem->base.subdev, "using DMA API\n");
- 	}
 -- 
 1.9.1
