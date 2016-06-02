@@ -1,8 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 02/06] iommu/ipmmu-vmsa: Rework interrupt code and use
-	bitmap for context
-Date: Fri, 03 Jun 2016 00:55:40 +0900
-Message-ID: <20160602155540.31018.29838.sendpatchset@little-apple>
+Subject: [PATCH v3 03/06] iommu/ipmmu-vmsa: Break out utlb parsing code
+Date: Fri, 03 Jun 2016 00:55:50 +0900
+Message-ID: <20160602155550.31018.5799.sendpatchset@little-apple>
 References: <20160602155519.31018.59925.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,176 +23,130 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Introduce a bitmap for context handing and convert the
-interrupt routine to handle all registered contexts.
-
-At this point the number of contexts are still limited.
-
-Also remove the use of the ARM specific mapping variable
-from ipmmu_irq() to allow compile on ARM64.
+Break out the utlb parsing code and dev_data allocation into a
+separate function. This is preparation for future code sharing.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
- Changes since V2: (Thanks again to Laurent!)
- - Introduce a spinlock together with the bitmap and domain array.
- - Break out code into separate functions for alloc and free.
- - Perform free after (instead of before) configuring hardware registers.
- - Use the spinlock to protect the domain array in the interrupt handler.
+ Changes since V2:
+ - Included this new patch from the following series:
+   [PATCH 00/04] iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
+ - Reworked code to fit on top on previous two patches in current series.
 
- Changes since V1: (Thanks to Laurent for feedback!)
- - Use simple find_first_zero()/set_bit()/clear_bit() for context management.
- - For allocation rely on spinlock held when calling ipmmu_domain_init_context()
- - For test/free use atomic bitops
- - Return IRQ_HANDLED if any of the contexts generated interrupts
+ drivers/iommu/ipmmu-vmsa.c |   58 ++++++++++++++++++++++++++++----------------
+ 1 file changed, 38 insertions(+), 20 deletions(-)
 
- drivers/iommu/ipmmu-vmsa.c |   76 ++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 66 insertions(+), 10 deletions(-)
-
---- 0002/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-02 21:10:37.350607110 +0900
-@@ -8,6 +8,7 @@
-  * the Free Software Foundation; version 2 of the License.
-  */
- 
-+#include <linux/bitmap.h>
- #include <linux/delay.h>
- #include <linux/dma-mapping.h>
- #include <linux/err.h>
-@@ -26,12 +27,17 @@
- 
- #include "io-pgtable.h"
- 
-+#define IPMMU_CTX_MAX 1
-+
- struct ipmmu_vmsa_device {
- 	struct device *dev;
- 	void __iomem *base;
- 	struct list_head list;
- 
- 	unsigned int num_utlbs;
-+	spinlock_t lock;			/* Protects ctx and domains[] */
-+	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
-+	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
- 
- 	struct dma_iommu_mapping *mapping;
- };
-@@ -293,9 +299,29 @@ static struct iommu_gather_ops ipmmu_gat
-  * Domain/Context Management
-  */
- 
-+static int ipmmu_domain_allocate_context(struct ipmmu_vmsa_device *mmu,
-+					 struct ipmmu_vmsa_domain *domain)
-+{
-+	unsigned long flags;
-+	int ret;
-+
-+	spin_lock_irqsave(&mmu->lock, flags);
-+
-+	ret = find_first_zero_bit(mmu->ctx, IPMMU_CTX_MAX);
-+	if (ret != IPMMU_CTX_MAX) {
-+		mmu->domains[ret] = domain;
-+		set_bit(ret, mmu->ctx);
-+	}
-+
-+	spin_unlock_irqrestore(&mmu->lock, flags);
-+
-+	return ret;
-+}
-+
- static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
- {
- 	u64 ttbr;
-+	int ret;
- 
- 	/*
- 	 * Allocate the page table operations.
-@@ -325,10 +351,15 @@ static int ipmmu_domain_init_context(str
- 		return -EINVAL;
- 
- 	/*
--	 * TODO: When adding support for multiple contexts, find an unused
--	 * context.
-+	 * Find an unused context.
- 	 */
--	domain->context_id = 0;
-+	ret = ipmmu_domain_allocate_context(domain->mmu, domain);
-+	if (ret == IPMMU_CTX_MAX) {
-+		free_io_pgtable_ops(domain->iop);
-+		return -EBUSY;
-+	}
-+
-+	domain->context_id = ret;
- 
- 	/* TTBR0 */
- 	ttbr = domain->cfg.arm_lpae_s1_cfg.ttbr[0];
-@@ -370,6 +401,19 @@ static int ipmmu_domain_init_context(str
+--- 0004/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-02 21:23:51.700607110 +0900
+@@ -647,22 +647,16 @@ static int ipmmu_find_utlbs(struct ipmmu
  	return 0;
  }
  
-+static void ipmmu_domain_free_context(struct ipmmu_vmsa_device *mmu,
-+				      unsigned int context_id)
-+{
-+	unsigned long flags;
+-static int ipmmu_add_device(struct device *dev)
++static int ipmmu_init_platform_device(struct device *dev,
++				      struct iommu_group *group)
+ {
+ 	struct ipmmu_vmsa_archdata *archdata;
+ 	struct ipmmu_vmsa_device *mmu;
+-	struct iommu_group *group = NULL;
+ 	unsigned int *utlbs;
+ 	unsigned int i;
+ 	int num_utlbs;
+ 	int ret = -ENODEV;
+ 
+-	if (dev->archdata.iommu) {
+-		dev_warn(dev, "IOMMU driver already assigned to device %s\n",
+-			 dev_name(dev));
+-		return -EINVAL;
+-	}
+-
+ 	/* Find the master corresponding to the device. */
+ 
+ 	num_utlbs = of_count_phandle_with_args(dev->of_node, "iommus",
+@@ -690,7 +684,7 @@ static int ipmmu_add_device(struct devic
+ 	spin_unlock(&ipmmu_devices_lock);
+ 
+ 	if (ret < 0)
+-		return -ENODEV;
++		goto error;
+ 
+ 	for (i = 0; i < num_utlbs; ++i) {
+ 		if (utlbs[i] >= mmu->num_utlbs) {
+@@ -699,6 +693,36 @@ static int ipmmu_add_device(struct devic
+ 		}
+ 	}
+ 
++	archdata = kzalloc(sizeof(*archdata), GFP_KERNEL);
++	if (!archdata) {
++		ret = -ENOMEM;
++		goto error;
++	}
 +
-+	spin_lock_irqsave(&mmu->lock, flags);
++	archdata->mmu = mmu;
++	archdata->utlbs = utlbs;
++	archdata->num_utlbs = num_utlbs;
++	dev->archdata.iommu = archdata;
++	return 0;
 +
-+	clear_bit(context_id, mmu->ctx);
-+	mmu->domains[context_id] = NULL;
-+
-+	spin_unlock_irqrestore(&mmu->lock, flags);
++error:
++	kfree(utlbs);
++	return ret;
 +}
 +
- static void ipmmu_domain_destroy_context(struct ipmmu_vmsa_domain *domain)
- {
- 	/*
-@@ -380,6 +424,7 @@ static void ipmmu_domain_destroy_context
- 	 */
- 	ipmmu_ctx_write(domain, IMCTR, IMCTR_FLUSH);
- 	ipmmu_tlb_sync(domain);
-+	ipmmu_domain_free_context(domain->mmu, domain->context_id);
- }
- 
- /* -----------------------------------------------------------------------------
-@@ -437,16 +482,25 @@ static irqreturn_t ipmmu_domain_irq(stru
- static irqreturn_t ipmmu_irq(int irq, void *dev)
- {
- 	struct ipmmu_vmsa_device *mmu = dev;
--	struct iommu_domain *io_domain;
--	struct ipmmu_vmsa_domain *domain;
-+	irqreturn_t status = IRQ_NONE;
-+	unsigned int i;
-+	unsigned long flags;
- 
--	if (!mmu->mapping)
--		return IRQ_NONE;
-+	spin_lock_irqsave(&mmu->lock, flags);
++static int ipmmu_add_device(struct device *dev)
++{
++	struct ipmmu_vmsa_archdata *archdata;
++	struct ipmmu_vmsa_device *mmu;
++	struct iommu_group *group;
++	int ret;
 +
-+	/*
-+	 * Check interrupts for all active contexts.
-+	 */
-+	for (i = 0; i < IPMMU_CTX_MAX; i++) {
-+		if (!mmu->domains[i])
-+			continue;
-+		if (ipmmu_domain_irq(mmu->domains[i]) == IRQ_HANDLED)
-+			status = IRQ_HANDLED;
++	if (dev->archdata.iommu) {
++		dev_warn(dev, "IOMMU driver already assigned to device %s\n",
++			 dev_name(dev));
++		return -EINVAL;
 +	}
++
+ 	/* Create a device group and add the device to it. */
+ 	group = iommu_group_alloc();
+ 	if (IS_ERR(group)) {
+@@ -716,17 +740,12 @@ static int ipmmu_add_device(struct devic
+ 		goto error;
+ 	}
  
--	io_domain = mmu->mapping->domain;
--	domain = to_vmsa_domain(io_domain);
-+	spin_unlock_irqrestore(&mmu->lock, flags);
+-	archdata = kzalloc(sizeof(*archdata), GFP_KERNEL);
+-	if (!archdata) {
+-		ret = -ENOMEM;
++	ret = ipmmu_init_platform_device(dev, group);
++	if (ret < 0) {
++		dev_err(dev, "Failed to init platform device\n");
+ 		goto error;
+ 	}
  
--	return ipmmu_domain_irq(domain);
-+	return status;
- }
+-	archdata->mmu = mmu;
+-	archdata->utlbs = utlbs;
+-	archdata->num_utlbs = num_utlbs;
+-	dev->archdata.iommu = archdata;
+-
+ 	/*
+ 	 * Create the ARM mapping, used by the ARM DMA mapping core to allocate
+ 	 * VAs. This will allocate a corresponding IOMMU domain.
+@@ -736,6 +755,8 @@ static int ipmmu_add_device(struct devic
+ 	 * - Make the mapping size configurable ? We currently use a 2GB mapping
+ 	 *   at a 1GB offset to ensure that NULL VAs will fault.
+ 	 */
++	archdata = dev->archdata.iommu;
++	mmu = archdata->mmu;
+ 	if (!mmu->mapping) {
+ 		struct dma_iommu_mapping *mapping;
  
- /* -----------------------------------------------------------------------------
-@@ -774,6 +828,8 @@ static int ipmmu_probe(struct platform_d
+@@ -762,9 +783,6 @@ static int ipmmu_add_device(struct devic
+ error:
+ 	arm_iommu_release_mapping(mmu->mapping);
  
- 	mmu->dev = &pdev->dev;
- 	mmu->num_utlbs = 32;
-+	spin_lock_init(&mmu->lock);
-+	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
+-	kfree(dev->archdata.iommu);
+-	kfree(utlbs);
+-
+ 	dev->archdata.iommu = NULL;
  
- 	/* Map I/O memory and request IRQ. */
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!IS_ERR_OR_NULL(group))
