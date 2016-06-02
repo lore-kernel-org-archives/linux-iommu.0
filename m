@@ -1,207 +1,45 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 05/06] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
-Date: Fri, 03 Jun 2016 00:56:09 +0900
-Message-ID: <20160602155609.31018.31070.sendpatchset@little-apple>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: [PATCH v3 06/06] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
+Date: Fri, 03 Jun 2016 00:56:18 +0900
+Message-ID: <20160602155618.31018.67078.sendpatchset@little-apple>
 References: <20160602155519.31018.59925.sendpatchset@little-apple>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20160602155519.31018.59925.sendpatchset@little-apple>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, joro@8bytes.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>, robin.murphy@arm.com, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+From: Magnus Damm <damm+renesas@opensource.se>
 
-Introduce an alternative set of iommu_ops suitable for 64-bit ARM
-as well as 32-bit ARM when CONFIG_IOMMU_DMA=y.
+Neither the ARM page table code enabled by IOMMU_IO_PGTABLE_LPAE
+nor the IPMMU_VMSA driver actually depends on ARM_LPAE, so get
+rid of the dependency.
 
-Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Tested with ipmmu-vmsa on r8a7794 ALT and a kernel config using:
+ # CONFIG_ARM_LPAE is not set
+
+Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 ---
 
  Changes since V2:
- - Included this new patch from the following series:
-   [PATCH 00/04] iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
- - Use only a single iommu_ops structure with #ifdef CONFIG_IOMMU_DMA
- - Folded in #ifdefs to handle CONFIG_ARM and CONFIG_IOMMU_DMA
- - of_xlate() is now used without #ifdefs
- - Made sure code compiles on both 32-bit and 64-bit ARM.
- 
- drivers/iommu/ipmmu-vmsa.c |  111 ++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 103 insertions(+), 8 deletions(-)
+ - None
 
---- 0008/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-02 22:15:52.090607110 +0900
-@@ -10,6 +10,7 @@
+ Changes since V1:
+ - Rebased on top of ARCH_RENESAS change
+ - Added Acked-by from Laurent
+
+ drivers/iommu/Kconfig |    1 -
+ 1 file changed, 1 deletion(-)
+
+--- 0001/drivers/iommu/Kconfig
++++ work/drivers/iommu/Kconfig	2016-06-02 22:17:14.950607110 +0900
+@@ -273,7 +273,6 @@ config EXYNOS_IOMMU_DEBUG
  
- #include <linux/bitmap.h>
- #include <linux/delay.h>
-+#include <linux/dma-iommu.h>
- #include <linux/dma-mapping.h>
- #include <linux/err.h>
- #include <linux/export.h>
-@@ -22,8 +23,10 @@
- #include <linux/sizes.h>
- #include <linux/slab.h>
- 
-+#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
- #include <asm/dma-iommu.h>
- #include <asm/pgalloc.h>
-+#endif
- 
- #include "io-pgtable.h"
- 
-@@ -520,14 +523,6 @@ static struct iommu_domain *__ipmmu_doma
- 	return &domain->io_domain;
- }
- 
--static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
--{
--	if (type != IOMMU_DOMAIN_UNMANAGED)
--		return NULL;
--
--	return __ipmmu_domain_alloc(type);
--}
--
- static void ipmmu_domain_free(struct iommu_domain *io_domain)
- {
- 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
-@@ -715,6 +710,8 @@ error:
- 	return ret;
- }
- 
-+#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
-+
- static int ipmmu_add_device(struct device *dev)
- {
- 	struct ipmmu_vmsa_archdata *archdata;
-@@ -809,6 +806,14 @@ static void ipmmu_remove_device(struct d
- 	dev->archdata.iommu = NULL;
- }
- 
-+static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
-+{
-+	if (type != IOMMU_DOMAIN_UNMANAGED)
-+		return NULL;
-+
-+	return __ipmmu_domain_alloc(type);
-+}
-+
- static const struct iommu_ops ipmmu_ops = {
- 	.domain_alloc = ipmmu_domain_alloc,
- 	.domain_free = ipmmu_domain_free,
-@@ -823,6 +828,94 @@ static const struct iommu_ops ipmmu_ops
- 	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
- };
- 
-+#endif /* !CONFIG_ARM && CONFIG_IOMMU_DMA */
-+
-+#ifdef CONFIG_IOMMU_DMA
-+
-+static struct iommu_domain *ipmmu_domain_alloc_dma(unsigned type)
-+{
-+	struct iommu_domain *io_domain;
-+
-+	if (type != IOMMU_DOMAIN_DMA)
-+		return NULL;
-+
-+	io_domain = __ipmmu_domain_alloc(type);
-+	if (io_domain)
-+		iommu_get_dma_cookie(io_domain);
-+
-+	return io_domain;
-+}
-+
-+static void ipmmu_domain_free_dma(struct iommu_domain *io_domain)
-+{
-+	iommu_put_dma_cookie(io_domain);
-+	ipmmu_domain_free(io_domain);
-+}
-+
-+static int ipmmu_add_device_dma(struct device *dev)
-+{
-+	struct iommu_group *group;
-+
-+	/* only accept devices with iommus property */
-+	if (of_count_phandle_with_args(dev->of_node, "iommus",
-+				       "#iommu-cells") < 0)
-+		return -ENODEV;
-+
-+	group = iommu_group_get_for_dev(dev);
-+	if (IS_ERR(group))
-+		return PTR_ERR(group);
-+
-+	return 0;
-+}
-+
-+static void ipmmu_remove_device_dma(struct device *dev)
-+{
-+	iommu_group_remove_device(dev);
-+}
-+
-+static struct iommu_group *ipmmu_device_group_dma(struct device *dev)
-+{
-+	struct iommu_group *group;
-+	int ret;
-+
-+	group = generic_device_group(dev);
-+	if (IS_ERR(group))
-+		return group;
-+
-+	ret = ipmmu_init_platform_device(dev, group);
-+	if (ret) {
-+		iommu_group_put(group);
-+		group = ERR_PTR(ret);
-+	}
-+
-+	return group;
-+}
-+
-+static int ipmmu_of_xlate_dma(struct device *dev,
-+			      struct of_phandle_args *spec)
-+{
-+	/* dummy callback to satisfy of_iommu_configure() */
-+	return 0;
-+}
-+
-+static const struct iommu_ops ipmmu_ops = {
-+	.domain_alloc = ipmmu_domain_alloc_dma,
-+	.domain_free = ipmmu_domain_free_dma,
-+	.attach_dev = ipmmu_attach_device,
-+	.detach_dev = ipmmu_detach_device,
-+	.map = ipmmu_map,
-+	.unmap = ipmmu_unmap,
-+	.map_sg = default_iommu_map_sg,
-+	.iova_to_phys = ipmmu_iova_to_phys,
-+	.add_device = ipmmu_add_device_dma,
-+	.remove_device = ipmmu_remove_device_dma,
-+	.device_group = ipmmu_device_group_dma,
-+	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
-+	.of_xlate = ipmmu_of_xlate_dma,
-+};
-+
-+#endif /* CONFIG_IOMMU_DMA */
-+
- /* -----------------------------------------------------------------------------
-  * Probe/remove and init
-  */
-@@ -912,7 +1005,9 @@ static int ipmmu_remove(struct platform_
- 	list_del(&mmu->list);
- 	spin_unlock(&ipmmu_devices_lock);
- 
-+#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
- 	arm_iommu_release_mapping(mmu->mapping);
-+#endif
- 
- 	ipmmu_device_reset(mmu);
- 
+ config IPMMU_VMSA
+ 	bool "Renesas VMSA-compatible IPMMU"
+-	depends on ARM_LPAE
+ 	depends on ARCH_RENESAS || COMPILE_TEST
+ 	select IOMMU_API
+ 	select IOMMU_IO_PGTABLE_LPAE
