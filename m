@@ -1,7 +1,7 @@
 From: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [RFC v3 23/45] video: dma-mapping: Use unsigned long for dma_attrs
-Date: Thu, 02 Jun 2016 17:39:25 +0200
-Message-ID: <1464881987-13203-24-git-send-email-k.kozlowski__29923.297026153$1464882240$gmane$org@samsung.com>
+Subject: [RFC v3 29/45] m68k: dma-mapping: Use unsigned long for dma_attrs
+Date: Thu, 02 Jun 2016 17:39:31 +0200
+Message-ID: <1464881987-13203-30-git-send-email-k.kozlowski__44409.9042834297$1464882242$gmane$org@samsung.com>
 References: <1464881987-13203-1-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -26,80 +26,66 @@ squashed with main commit.
 
 Signed-off-by: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/video/fbdev/omap2/omapfb/omapfb-main.c | 12 ++++++------
- drivers/video/fbdev/omap2/omapfb/omapfb.h      |  3 +--
- 2 files changed, 7 insertions(+), 8 deletions(-)
+ arch/m68k/kernel/dma.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/video/fbdev/omap2/omapfb/omapfb-main.c b/drivers/video/fbdev/omap2/omapfb/omapfb-main.c
-index d3af01c94a58..59172a2185c0 100644
---- a/drivers/video/fbdev/omap2/omapfb/omapfb-main.c
-+++ b/drivers/video/fbdev/omap2/omapfb/omapfb-main.c
-@@ -1332,7 +1332,7 @@ static void omapfb_free_fbmem(struct fb_info *fbi)
- 	}
+diff --git a/arch/m68k/kernel/dma.c b/arch/m68k/kernel/dma.c
+index cbc78b4117b5..8cf97cbadc91 100644
+--- a/arch/m68k/kernel/dma.c
++++ b/arch/m68k/kernel/dma.c
+@@ -19,7 +19,7 @@
+ #if defined(CONFIG_MMU) && !defined(CONFIG_COLDFIRE)
  
- 	dma_free_attrs(fbdev->dev, rg->size, rg->token, rg->dma_handle,
--			&rg->attrs);
-+			rg->attrs);
+ static void *m68k_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+-		gfp_t flag, struct dma_attrs *attrs)
++		gfp_t flag, unsigned long attrs)
+ {
+ 	struct page *page, **map;
+ 	pgprot_t pgprot;
+@@ -62,7 +62,7 @@ static void *m68k_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+ }
  
- 	rg->token = NULL;
- 	rg->vaddr = NULL;
-@@ -1370,7 +1370,7 @@ static int omapfb_alloc_fbmem(struct fb_info *fbi, unsigned long size,
- 	struct omapfb2_device *fbdev = ofbi->fbdev;
- 	struct omapfb2_mem_region *rg;
- 	void *token;
--	DEFINE_DMA_ATTRS(attrs);
-+	unsigned long attrs;
- 	dma_addr_t dma_handle;
- 	int r;
+ static void m68k_dma_free(struct device *dev, size_t size, void *addr,
+-		dma_addr_t handle, struct dma_attrs *attrs)
++		dma_addr_t handle, unsigned long attrs)
+ {
+ 	pr_debug("dma_free_coherent: %p, %x\n", addr, handle);
+ 	vfree(addr);
+@@ -73,7 +73,7 @@ static void m68k_dma_free(struct device *dev, size_t size, void *addr,
+ #include <asm/cacheflush.h>
  
-@@ -1386,15 +1386,15 @@ static int omapfb_alloc_fbmem(struct fb_info *fbi, unsigned long size,
+ static void *m68k_dma_alloc(struct device *dev, size_t size,
+-		dma_addr_t *dma_handle, gfp_t gfp, struct dma_attrs *attrs)
++		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+ {
+ 	void *ret;
+ 	/* ignore region specifiers */
+@@ -91,7 +91,7 @@ static void *m68k_dma_alloc(struct device *dev, size_t size,
+ }
  
- 	size = PAGE_ALIGN(size);
+ static void m68k_dma_free(struct device *dev, size_t size, void *vaddr,
+-		dma_addr_t dma_handle, struct dma_attrs *attrs)
++		dma_addr_t dma_handle, unsigned long attrs)
+ {
+ 	free_pages((unsigned long)vaddr, get_order(size));
+ }
+@@ -130,7 +130,7 @@ static void m68k_dma_sync_sg_for_device(struct device *dev,
  
--	dma_set_attr(DMA_ATTR_WRITE_COMBINE, &attrs);
-+	attrs = DMA_ATTR_WRITE_COMBINE;
+ static dma_addr_t m68k_dma_map_page(struct device *dev, struct page *page,
+ 		unsigned long offset, size_t size, enum dma_data_direction dir,
+-		struct dma_attrs *attrs)
++		unsigned long attrs)
+ {
+ 	dma_addr_t handle = page_to_phys(page) + offset;
  
- 	if (ofbi->rotation_type == OMAP_DSS_ROT_VRFB)
--		dma_set_attr(DMA_ATTR_NO_KERNEL_MAPPING, &attrs);
-+		attrs |= DMA_ATTR_NO_KERNEL_MAPPING;
+@@ -139,7 +139,7 @@ static dma_addr_t m68k_dma_map_page(struct device *dev, struct page *page,
+ }
  
- 	DBG("allocating %lu bytes for fb %d\n", size, ofbi->id);
- 
- 	token = dma_alloc_attrs(fbdev->dev, size, &dma_handle,
--			GFP_KERNEL, &attrs);
-+			GFP_KERNEL, attrs);
- 
- 	if (token == NULL) {
- 		dev_err(fbdev->dev, "failed to allocate framebuffer\n");
-@@ -1408,7 +1408,7 @@ static int omapfb_alloc_fbmem(struct fb_info *fbi, unsigned long size,
- 		r = omap_vrfb_request_ctx(&rg->vrfb);
- 		if (r) {
- 			dma_free_attrs(fbdev->dev, size, token, dma_handle,
--					&attrs);
-+					attrs);
- 			dev_err(fbdev->dev, "vrfb create ctx failed\n");
- 			return r;
- 		}
-diff --git a/drivers/video/fbdev/omap2/omapfb/omapfb.h b/drivers/video/fbdev/omap2/omapfb/omapfb.h
-index 623cd872a367..8aaa2f643820 100644
---- a/drivers/video/fbdev/omap2/omapfb/omapfb.h
-+++ b/drivers/video/fbdev/omap2/omapfb/omapfb.h
-@@ -28,7 +28,6 @@
- #endif
- 
- #include <linux/rwsem.h>
--#include <linux/dma-attrs.h>
- #include <linux/dma-mapping.h>
- 
- #include <video/omapdss.h>
-@@ -51,7 +50,7 @@ extern bool omapfb_debug;
- 
- struct omapfb2_mem_region {
- 	int             id;
--	struct dma_attrs attrs;
-+	unsigned long	attrs;
- 	void		*token;
- 	dma_addr_t	dma_handle;
- 	u32		paddr;
+ static int m68k_dma_map_sg(struct device *dev, struct scatterlist *sglist,
+-		int nents, enum dma_data_direction dir, struct dma_attrs *attrs)
++		int nents, enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	int i;
+ 	struct scatterlist *sg;
 -- 
 1.9.1
