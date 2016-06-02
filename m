@@ -1,153 +1,61 @@
-From: Scott Wood <oss-fOR+EgIDQEHk1uMJSBkQmQ@public.gmane.org>
-Subject: Re: [PATCH 2/4] soc: fsl: add GUTS driver for QorIQ platforms
-Date: Wed, 01 Jun 2016 20:47:22 -0500
-Message-ID: <1464832042.22191.23.camel@buserror.net>
-References: <1462417950-46796-1-git-send-email-yangbo.lu@nxp.com>
-	<HE1PR04MB0889852B7809A1CCFF8922ACF8410@HE1PR04MB0889.eurprd04.prod.outlook.com>
-	<CAPDyKFqx2JMLzXoDxGCKFYMFV47+SegnkuWFXKvsQHK7L5w-1g@mail.gmail.com>
-	<5339448.D8rpq4ofAC@wuerfel>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5339448.D8rpq4ofAC@wuerfel>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Qiang Zhao <qiang.zhao-3arQi8VN3Tc@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Xiaobo Xie <xiaobo.xie-3arQi8VN3Tc@public.gmane.org>, Yang-Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iomm>
+From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
+Subject: [RESEND PATCH v2 0/6] vfio-pci: Add support for mmapping MSI-X table
+Date: Thu,  2 Jun 2016 14:09:57 +0800
+Message-ID: <1464847803-22756-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+Return-path: <kvm-owner@vger.kernel.org>
+Sender: kvm-owner@vger.kernel.org
+To: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org
+Cc: alex.williamson@redhat.com, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, kevin.tian@intel.com, David.Laight@ACULAB.COM
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 2016-05-30 at 15:15 +0200, Arnd Bergmann wrote:
-> diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
-> new file mode 100644
-> index 000000000000..2f30698f5bcf
-> --- /dev/null
-> +++ b/drivers/soc/fsl/guts.c
-> @@ -0,0 +1,130 @@
-> +/*
-> + * Freescale QorIQ Platforms GUTS Driver
-> + *
-> + * Copyright (C) 2016 Freescale Semiconductor, Inc.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + */
-> +
-> +#include <linux/io.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/of_address.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/sys_soc.h>
-> +
-> +#define GUTS_PVR	0x0a0
-> +#define GUTS_SVR	0x0a4
-> +
-> +struct guts {
-> +	void __iomem *regs;
+Current vfio-pci implementation disallows to mmap the page
+containing MSI-X table in case that users can write directly
+to MSI-X table and generate an incorrect MSIs.
 
-We already have a struct to define guts.  Why are you not using it?  Why do
-you consider using it to be "abuse"?  What if we want to move more guts
-functionality into this driver?
+However, this will cause some performance issue when there
+are some critical device registers in the same page as the 
+MSI-X table. We have to handle the mmio access to these
+registers in QEMU emulation rather than in guest.
 
-> +	bool little_endian;
-> +	struct soc_device_attribute soc;
-> +};
-> +
-> +static u32 fsl_guts_get_svr(struct guts *guts)
-> +{
-> +	if (guts->little_endian)
-> +		return ioread32(guts->regs + GUTS_SVR);
-> +	else
-> +		return ioread32be(guts->regs + GUTS_SVR);
-> +}
-> +
-> +static u32 fsl_guts_get_pvr(struct guts *guts)
-> +{
-> +	if (guts->little_endian)
-> +		return ioread32(guts->regs + GUTS_PVR);
-> +	else
-> +		return ioread32be(guts->regs + GUTS_PVR);
-> +}
+To solve this issue, this series allows to expose MSI-X table
+to userspace when hardware enables the capability of interrupt
+remapping which can ensure that a given PCI device can only
+shoot the MSIs assigned for it. And we introduce a new bus_flags
+PCI_BUS_FLAGS_MSI_REMAP to test this capability on PCI side
+for different archs.
 
-You've removed the fallback to mfspr() on PPC, which would be helpful in some
-virtualized environments where we don't have the guts node (but do have other
-directly assigned devices).  Of course, this is a consequence of the
-conversion into a platform device.
+The patch 3 are based on the proposed patchset[1].
 
-> +
-> +/*
-> + * Table for matching compatible strings, for device tree
-> + * guts node, for Freescale QorIQ SOCs.
-> + */
-> +static const struct of_device_id fsl_guts_of_match[] = {
-> +	/* For T4 & B4 Series SOCs */
-> +	{ .compatible = "fsl,qoriq-device-config-1.0", .data = "T4/B4
-> series" },
-[snip]
-> +	{ .compatible = "fsl,qoriq-device-config-2.0", .data = "P series"
+Changelog v2: 
+- Make the commit log more clear
+- Replace pci_bus_check_msi_remapping() with pci_bus_msi_isolated()
+  so that we could clearly know what the function does
+- Set PCI_BUS_FLAGS_MSI_REMAP in pci_create_root_bus() instead
+  of iommu_bus_notifier()
+- Reserve VFIO_REGION_INFO_FLAG_CAPS when we allow to mmap MSI-X
+  table so that we can know whether we allow to mmap MSI-X table
+  in QEMU
 
-As noted in my comment on patch 3/4, these descriptions are reversed.
+[1] https://www.mail-archive.com/linux-kernel%40vger.kernel.org/msg1138820.html
 
-They're also incomplete.  t2080 has device config 2.0.  t1040 is described as
-2.0 though it should probably be 2.1 (or better, drop the generic compatible
-altogether).
+Yongji Xie (6):
+  PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
+  PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI controller enables IRQ remapping
+  PCI: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have capability of IRQ remapping
+  iommu: Set PCI_BUS_FLAGS_MSI_REMAP on iommu driver initialization
+  pci-ioda: Set PCI_BUS_FLAGS_MSI_REMAP for IODA host bridge
+  vfio-pci: Allow to expose MSI-X table to userspace if interrupt remapping is enabled
 
-> +	/*
-> +	 * syscon devices default to little-endian, but on powerpc we have
-> +	 * existing device trees with big-endian maps and an absent
-> endianess
-> +	 * "big-property"
-> +	 */
-> +	if (!IS_ENABLED(CONFIG_POWERPC) &&
-> +	    !of_property_read_bool(dev->of_node, "big-endian"))
-> +		guts->little_endian = true;
+ arch/powerpc/platforms/powernv/pci-ioda.c |    8 ++++++++
+ drivers/iommu/iommu.c                     |    8 ++++++++
+ drivers/pci/msi.c                         |   15 +++++++++++++++
+ drivers/pci/probe.c                       |    7 +++++++
+ drivers/vfio/pci/vfio_pci.c               |   17 ++++++++++++++---
+ drivers/vfio/pci/vfio_pci_rdwr.c          |    3 ++-
+ include/linux/msi.h                       |    5 ++++-
+ include/linux/pci.h                       |    1 +
+ 8 files changed, 59 insertions(+), 5 deletions(-)
 
-This is not a syscon device (Yangbo's patch to add a guts node on ls2080 is
-the only guts node that says "syscon", and that was a leftover from earlier
-revisions and should probably be removed).  Even if it were, where is it
-documented that syscon defaults to little-endian?  
+-- 
+1.7.9.5
 
-Documentation/devicetree/bindings/common-properties.txt says that the
-individual binding specifies the default.  The default for this node should be
-big-endian because that's what existed before there was a need to describe the
-endianness.  And we need an update to the guts binding to specify that.
-
-> +
-> +	guts->regs = devm_ioremap_resource(dev, 0);
-> +	if (!guts->regs) {
-> +		ret = -ENOMEM;
-> +		kfree(guts);
-> +		goto out;
-> +	}
-> +
-> +	fsl_guts_init(dev, guts);
-> +	ret = 0;
-> +out:
-> +	return ret;
-> +}
-> +
-> +static struct platform_driver fsl_soc_guts = {
-> +	.probe = fsl_guts_probe,
-> +	.driver.of_match_table = fsl_guts_of_match,
-> +};
-> +
-> +module_platform_driver(fsl_soc_guts);
-
-Again, this means that the information is not available during early boot,
-such as in the clock driver.  Thus we would not be able to convert clk-qoriq's
-direct mfspr(SPRN_SVR) into an soc_device_match() (or anything else that makes
-use of this file), nor would we be able to move its access of the guts RCW
-registers into this driver.
-
--Scott
