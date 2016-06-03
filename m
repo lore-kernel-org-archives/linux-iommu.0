@@ -1,83 +1,58 @@
-From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: Re: [RESEND PATCH v2 0/6] vfio-pci: Add support for mmapping MSI-X
- table
-Date: Fri, 3 Jun 2016 10:28:21 +0800
-Message-ID: <201606030228.u532PVHx046040@mx0a-001b2d01.pphosted.com>
-References: <1464847803-22756-1-git-send-email-xyjxie@linux.vnet.ibm.com>
- <20160602071132.273c64c7@ul30vt.home>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [RFC v3 02/45] dma-mapping: Use unsigned long for dma_attrs
+Date: Fri, 3 Jun 2016 09:17:00 +0200
+Message-ID: <CAMuHMdXWMf7Dt77wSUj8NytQqb99jzDiAz46kJkAEz+6BX3Uvw@mail.gmail.com>
+References: <1464881987-13203-1-git-send-email-k.kozlowski@samsung.com>
+	<1464881987-13203-3-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <20160602071132.273c64c7@ul30vt.home>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: alistair@popple.id.au, nikunj@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, kvm@vger.kernel.org, eric.auger@linaro.org, aik@ozlabs.ru, linux-pci@vger.kernel.org, joro@8bytes.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, gwshan@linux.vnet.ibm.com, kevin.tian@intel.com, warrier@linux.vnet.ibm.com, iommu@lists.linux-foundation.org, David.Laight@ACULAB.COM, paulus@samba.org, bhelgaas@google.com, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1464881987-13203-3-git-send-email-k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Linux MIPS Mailing List <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, Aurelien Jacquiot <a-jacquiot-l0cyMroinI0@public.gmane.org>, Benjamin Herrenschmidt <benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, DRI Development <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Paul Mackerras <paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org>, "linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Michael Ellerman <mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org>, Linux-sh list <linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "James E.J. Bottomley" <jejb-6jwH94ZQLHl74goWV3ctuw@public.gmane.org>, Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, Matt Turner <mattst88-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, uclinux-h8-devel-5NWGOfrQmneRv+LV9MX5uooqe+aC9MnS@public.gmane.org, James Hogan <james.hogan-1AXoQHu6uovQT0dZR+AlfA@public.gmane.org>, "adi-buildroot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org" <adi-buildroot-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGksIEFsZXgKCk9uIDIwMTYvNi8yIDIxOjExLCBBbGV4IFdpbGxpYW1zb24gd3JvdGU6Cgo+IEFG
-QUlDVCwgeW91IHBvc3RlZCB0aGlzICozKiBkYXlzIGFnbywgaGFzIHNvbWV0aGluZyBjaGFuZ2Vk
-IGhlcmUgb3IgaXMKPiB0aGlzIGp1c3QgZXhwZWRpdGVkIG5hZ2dpbmcgZm9yIHJldmlldz8gIFRo
-aXMgYWxzbyBkZXBlbmRzIG9uIGEKPiBub24tdXBzdHJlYW0gc2VyaWVzIGFuZCBjcm9zc2VzIG11
-bHRpcGxlIGZ1bmN0aW9uYWwgYXJlYXMsIGFsbCBvZiB3aGljaAo+IG1ha2UgaXQgZGlmZmljdWx0
-IGZvciBtYWludGFpbmVycyB0byBhY3R1YWxseSBkbyBhbnl0aGluZyB3aXRoIHRoaXMKPiBzZXJp
-ZXMuICBUaGFua3MsCj4KPiBBbGV4CgpJIHJlc2VuZCB0aGlzIHNlcmllcyBiZWNhdXNlIEkgZm91
-bmQgdGhlIG1lc3NhZ2UtaWQgb2YgdGhlIHByZXZpb3VzIGVtYWlsCmlzIGNoYW5nZWQgdW5leHBl
-Y3RlZGx5LiBUaGUgY292ZXIgbGV0dGVyIGlzIG5vdCBpbiB0aGUgc2FtZSB0aHJlYWQgYXMgb3Ro
-ZXIKcGF0Y2hlcy4gIEl0IHdvdWxkIGJlIGEgbGl0dGxlIGhhcmQgZm9yIHBlb3BsZSB0byByZXZp
-ZXcuCgpUaGFua3MsCllvbmdqaQoKPiBPbiBUaHUsICAyIEp1biAyMDE2IDE0OjA5OjU3ICswODAw
-Cj4gWW9uZ2ppIFhpZSA8eHlqeGllQGxpbnV4LnZuZXQuaWJtLmNvbT4gd3JvdGU6Cj4KPj4gQ3Vy
-cmVudCB2ZmlvLXBjaSBpbXBsZW1lbnRhdGlvbiBkaXNhbGxvd3MgdG8gbW1hcCB0aGUgcGFnZQo+
-PiBjb250YWluaW5nIE1TSS1YIHRhYmxlIGluIGNhc2UgdGhhdCB1c2VycyBjYW4gd3JpdGUgZGly
-ZWN0bHkKPj4gdG8gTVNJLVggdGFibGUgYW5kIGdlbmVyYXRlIGFuIGluY29ycmVjdCBNU0lzLgo+
-Pgo+PiBIb3dldmVyLCB0aGlzIHdpbGwgY2F1c2Ugc29tZSBwZXJmb3JtYW5jZSBpc3N1ZSB3aGVu
-IHRoZXJlCj4+IGFyZSBzb21lIGNyaXRpY2FsIGRldmljZSByZWdpc3RlcnMgaW4gdGhlIHNhbWUg
-cGFnZSBhcyB0aGUKPj4gTVNJLVggdGFibGUuIFdlIGhhdmUgdG8gaGFuZGxlIHRoZSBtbWlvIGFj
-Y2VzcyB0byB0aGVzZQo+PiByZWdpc3RlcnMgaW4gUUVNVSBlbXVsYXRpb24gcmF0aGVyIHRoYW4g
-aW4gZ3Vlc3QuCj4+Cj4+IFRvIHNvbHZlIHRoaXMgaXNzdWUsIHRoaXMgc2VyaWVzIGFsbG93cyB0
-byBleHBvc2UgTVNJLVggdGFibGUKPj4gdG8gdXNlcnNwYWNlIHdoZW4gaGFyZHdhcmUgZW5hYmxl
-cyB0aGUgY2FwYWJpbGl0eSBvZiBpbnRlcnJ1cHQKPj4gcmVtYXBwaW5nIHdoaWNoIGNhbiBlbnN1
-cmUgdGhhdCBhIGdpdmVuIFBDSSBkZXZpY2UgY2FuIG9ubHkKPj4gc2hvb3QgdGhlIE1TSXMgYXNz
-aWduZWQgZm9yIGl0LiBBbmQgd2UgaW50cm9kdWNlIGEgbmV3IGJ1c19mbGFncwo+PiBQQ0lfQlVT
-X0ZMQUdTX01TSV9SRU1BUCB0byB0ZXN0IHRoaXMgY2FwYWJpbGl0eSBvbiBQQ0kgc2lkZQo+PiBm
-b3IgZGlmZmVyZW50IGFyY2hzLgo+Pgo+PiBUaGUgcGF0Y2ggMyBhcmUgYmFzZWQgb24gdGhlIHBy
-b3Bvc2VkIHBhdGNoc2V0WzFdLgo+Pgo+PiBDaGFuZ2Vsb2cgdjI6Cj4+IC0gTWFrZSB0aGUgY29t
-bWl0IGxvZyBtb3JlIGNsZWFyCj4+IC0gUmVwbGFjZSBwY2lfYnVzX2NoZWNrX21zaV9yZW1hcHBp
-bmcoKSB3aXRoIHBjaV9idXNfbXNpX2lzb2xhdGVkKCkKPj4gICAgc28gdGhhdCB3ZSBjb3VsZCBj
-bGVhcmx5IGtub3cgd2hhdCB0aGUgZnVuY3Rpb24gZG9lcwo+PiAtIFNldCBQQ0lfQlVTX0ZMQUdT
-X01TSV9SRU1BUCBpbiBwY2lfY3JlYXRlX3Jvb3RfYnVzKCkgaW5zdGVhZAo+PiAgICBvZiBpb21t
-dV9idXNfbm90aWZpZXIoKQo+PiAtIFJlc2VydmUgVkZJT19SRUdJT05fSU5GT19GTEFHX0NBUFMg
-d2hlbiB3ZSBhbGxvdyB0byBtbWFwIE1TSS1YCj4+ICAgIHRhYmxlIHNvIHRoYXQgd2UgY2FuIGtu
-b3cgd2hldGhlciB3ZSBhbGxvdyB0byBtbWFwIE1TSS1YIHRhYmxlCj4+ICAgIGluIFFFTVUKPj4K
-Pj4gWzFdIGh0dHBzOi8vd3d3Lm1haWwtYXJjaGl2ZS5jb20vbGludXgta2VybmVsJTQwdmdlci5r
-ZXJuZWwub3JnL21zZzExMzg4MjAuaHRtbAo+Pgo+PiBZb25namkgWGllICg2KToKPj4gICAgUENJ
-OiBBZGQgYSBuZXcgUENJX0JVU19GTEFHU19NU0lfUkVNQVAgZmxhZwo+PiAgICBQQ0k6IFNldCBQ
-Q0lfQlVTX0ZMQUdTX01TSV9SRU1BUCBpZiBNU0kgY29udHJvbGxlciBlbmFibGVzIElSUSByZW1h
-cHBpbmcKPj4gICAgUENJOiBTZXQgUENJX0JVU19GTEFHU19NU0lfUkVNQVAgaWYgSU9NTVUgaGF2
-ZSBjYXBhYmlsaXR5IG9mIElSUSByZW1hcHBpbmcKPj4gICAgaW9tbXU6IFNldCBQQ0lfQlVTX0ZM
-QUdTX01TSV9SRU1BUCBvbiBpb21tdSBkcml2ZXIgaW5pdGlhbGl6YXRpb24KPj4gICAgcGNpLWlv
-ZGE6IFNldCBQQ0lfQlVTX0ZMQUdTX01TSV9SRU1BUCBmb3IgSU9EQSBob3N0IGJyaWRnZQo+PiAg
-ICB2ZmlvLXBjaTogQWxsb3cgdG8gZXhwb3NlIE1TSS1YIHRhYmxlIHRvIHVzZXJzcGFjZSBpZiBp
-bnRlcnJ1cHQgcmVtYXBwaW5nIGlzIGVuYWJsZWQKPj4KPj4gICBhcmNoL3Bvd2VycGMvcGxhdGZv
-cm1zL3Bvd2VybnYvcGNpLWlvZGEuYyB8ICAgIDggKysrKysrKysKPj4gICBkcml2ZXJzL2lvbW11
-L2lvbW11LmMgICAgICAgICAgICAgICAgICAgICB8ICAgIDggKysrKysrKysKPj4gICBkcml2ZXJz
-L3BjaS9tc2kuYyAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMTUgKysrKysrKysrKysrKysr
-Cj4+ICAgZHJpdmVycy9wY2kvcHJvYmUuYyAgICAgICAgICAgICAgICAgICAgICAgfCAgICA3ICsr
-KysrKysKPj4gICBkcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpLmMgICAgICAgICAgICAgICB8ICAg
-MTcgKysrKysrKysrKysrKystLS0KPj4gICBkcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpX3Jkd3Iu
-YyAgICAgICAgICB8ICAgIDMgKystCj4+ICAgaW5jbHVkZS9saW51eC9tc2kuaCAgICAgICAgICAg
-ICAgICAgICAgICAgfCAgICA1ICsrKystCj4+ICAgaW5jbHVkZS9saW51eC9wY2kuaCAgICAgICAg
-ICAgICAgICAgICAgICAgfCAgICAxICsKPj4gICA4IGZpbGVzIGNoYW5nZWQsIDU5IGluc2VydGlv
-bnMoKyksIDUgZGVsZXRpb25zKC0pCj4+CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwpMaW51eHBwYy1kZXYgbWFpbGluZyBsaXN0CkxpbnV4cHBjLWRldkBs
-aXN0cy5vemxhYnMub3JnCmh0dHBzOi8vbGlzdHMub3psYWJzLm9yZy9saXN0aW5mby9saW51eHBw
-Yy1kZXY=
+Hi Krzysztof,
+
+On Thu, Jun 2, 2016 at 5:39 PM, Krzysztof Kozlowski
+<k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -5,13 +5,25 @@
+
+> +/**
+> + * List of possible attributes associated with a DMA mapping. The semantics
+> + * of each attribute should be defined in Documentation/DMA-attributes.txt.
+> + */
+> +#define DMA_ATTR_WRITE_BARRIER         (1UL << 1)
+
+Any particular reason they start at 2, not 1?
+
+> +#define DMA_ATTR_WEAK_ORDERING         (1UL << 2)
+> +#define DMA_ATTR_WRITE_COMBINE         (1UL << 3)
+> +#define DMA_ATTR_NON_CONSISTENT                (1UL << 4)
+> +#define DMA_ATTR_NO_KERNEL_MAPPING     (1UL << 5)
+> +#define DMA_ATTR_SKIP_CPU_SYNC         (1UL << 6)
+> +#define DMA_ATTR_FORCE_CONTIGUOUS      (1UL << 7)
+> +#define DMA_ATTR_ALLOC_SINGLE_PAGES    (1UL << 8)
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
