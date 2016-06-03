@@ -1,50 +1,75 @@
-From: Mitchel Humpherys <mitchelh@codeaurora.org>
-Subject: Re: How to keep PCI-e endpoints and RCs in distinct IOMMU groups?
-Date: Thu, 02 Jun 2016 12:33:22 -0700
-Message-ID: <vnkwa8j3fksd.fsf@codeaurora.org>
-References: <vnkwoa7ty89k.fsf@codeaurora.org>
-	<20160525204558.08c30a34@ul30vt.home>
-Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20160525204558.08c30a34@ul30vt.home> (Alex Williamson's message
-	of "Wed, 25 May 2016 20:45:58 -0600")
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Tony Truong <truong@codeaurora.org>, Yan He <yanhe@codeaurora.org>, Pratik Patel <pratikp@codeaurora.org>, Hamad Kadmany <hkadmany@codeaurora.org>, Maya Erez <qca_merez@qca.qualcomm.com>
+From: Roland Dreier <roland@kernel.org>
+Subject: [PATCH] iommu/vt-d: Don't reject NTB devices due to scope mismatch
+Date: Thu,  2 Jun 2016 17:46:10 -0700
+Message-ID: <1464914770-32107-1-git-send-email-roland@kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, David Woodhouse <David.Woodhouse@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 25 2016 at 08:45:58 PM, Alex Williamson <alex.williamson@redhat.com> wrote:
->> Why do we do that?  If the devices have different BDFs can't we safely
->> say that they're protected from peer-to-peer DMA (assuming no DMA
->> aliasing quirks)?  Even as I write that out it seems wrong though since
->> the RC can probably do whatever it wants...
->> 
->> Maybe the IOMMU framework can't actually know whether the devices should
->> be kept in separate groups and we just need to do something custom in
->> the arm-smmu driver?
->
-> You're only considering the visibility of devices to the IOMMU, not the
-> isolation between devices.  Without ACS peer-to-peer can be re-routed
-> between devices before the IOMMU even knows about it.  That's why the
-> root port is included in the group.  I'm confused why your driver is
-> using the IOMMU API instead of the much more common DMA API anyway
-> though.  Thanks,
->
-> Alex
+From: Roland Dreier <roland@purestorage.com>
 
-Ah ok, thanks for the explanation!
+On a system with an Intel PCIe port configured as an NTB device, iommu
+initialization fails with
 
-The driver *is* using the DMA API.  I'm actually working on the DMA APIs
-themselves (a hacked-up version of the arm32 DMA APIs that have been
-forklifted into arm64, to be exact).  Anyways, it looks like the best
-route for us long-term is to try and align with Robin's arm64 IOMMU DMA
-API mapper and take it from there.
+    DMAR: Device scope type does not match for 0000:80:03.0
 
+This is because the DMAR table reports this device as having scope 2
+(ACPI_DMAR_SCOPE_TYPE_BRIDGE):
 
--Mitch
+    [0A0h 0160   1]      Device Scope Entry Type : 02
+    [0A1h 0161   1]                 Entry Length : 08
+    [0A2h 0162   2]                     Reserved : 0000
+    [0A4h 0164   1]               Enumeration ID : 00
+    [0A5h 0165   1]               PCI Bus Number : 80
 
+    [0A6h 0166   2]                     PCI Path : 03,00
+
+but the device has a type 0 PCI header:
+
+    80:03.0 Bridge [0680]: Intel Corporation Device [8086:2f0d] (rev 02)
+    00: 86 80 0d 2f 00 00 10 00 02 00 80 06 10 00 80 00
+    10: 0c 00 c0 00 c0 38 00 00 0c 00 00 00 80 38 00 00
+    20: 00 00 00 c8 00 00 10 c8 00 00 00 00 86 80 00 00
+    30: 00 00 00 00 60 00 00 00 00 00 00 00 ff 01 00 00
+
+VT-d works perfectly on this system, so there's no reason to bail out
+on initialization due to this apparent scope mismatch.  Use the class
+0x0680 ("Other bridge device") as a heuristic for allowing DMAR
+initialization for non-bridge PCI devices listed with scope bridge.
+
+Signed-off-by: Roland Dreier <roland@purestorage.com>
+---
+ drivers/iommu/dmar.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 6a86b5d1defa..2eff7b6c6c98 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -241,8 +241,20 @@ int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
+ 		if (!dmar_match_pci_path(info, scope->bus, path, level))
+ 			continue;
+ 
+-		if ((scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT) ^
+-		    (info->dev->hdr_type == PCI_HEADER_TYPE_NORMAL)) {
++		/*
++		 * We expect devices with endpoint scope to have normal PCI
++		 * headers, and devices with bridge scope to have bridge PCI
++		 * headers.  However PCI NTB devices may be listed in the
++		 * DMAR table with bridge scope, even though they have a
++		 * normal PCI header.  NTB devices are identified by class
++		 * "BRIDGE_OTHER" (0680h) - we don't declare a socpe mismatch
++		 * for this special case.
++		 */
++		if ((scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT &&
++		     info->dev->hdr_type != PCI_HEADER_TYPE_NORMAL) ||
++		    (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_BRIDGE &&
++		     (info->dev->hdr_type == PCI_HEADER_TYPE_NORMAL &&
++		      info->dev->class >> 8 != PCI_CLASS_BRIDGE_OTHER))) {
+ 			pr_warn("Device scope type does not match for %s\n",
+ 				pci_name(info->dev));
+ 			return -EINVAL;
 -- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.7.4
