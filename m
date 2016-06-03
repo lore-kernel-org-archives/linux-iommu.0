@@ -2,86 +2,82 @@ From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
 Subject: Re: [RESEND PATCH v2 0/6] vfio-pci: Add support for mmapping MSI-X
  table
 Date: Fri, 3 Jun 2016 10:28:21 +0800
-Message-ID: <201606030228.u532PSG8045852@mx0a-001b2d01.pphosted.com>
+Message-ID: <201606030228.u532PVHx046040@mx0a-001b2d01.pphosted.com>
 References: <1464847803-22756-1-git-send-email-xyjxie@linux.vnet.ibm.com>
  <20160602071132.273c64c7@ul30vt.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 In-Reply-To: <20160602071132.273c64c7@ul30vt.home>
-Sender: linux-kernel-owner@vger.kernel.org
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 To: Alex Williamson <alex.williamson@redhat.com>
-Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, kevin.tian@intel.com, David.Laight@ACULAB.COM
+Cc: alistair@popple.id.au, nikunj@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, kvm@vger.kernel.org, eric.auger@linaro.org, aik@ozlabs.ru, linux-pci@vger.kernel.org, joro@8bytes.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, gwshan@linux.vnet.ibm.com, kevin.tian@intel.com, warrier@linux.vnet.ibm.com, iommu@lists.linux-foundation.org, David.Laight@ACULAB.COM, paulus@samba.org, bhelgaas@google.com, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi, Alex
-
-On 2016/6/2 21:11, Alex Williamson wrote:
-
-> AFAICT, you posted this *3* days ago, has something changed here or is
-> this just expedited nagging for review?  This also depends on a
-> non-upstream series and crosses multiple functional areas, all of which
-> make it difficult for maintainers to actually do anything with this
-> series.  Thanks,
->
-> Alex
-
-I resend this series because I found the message-id of the previous email
-is changed unexpectedly. The cover letter is not in the same thread as other
-patches.  It would be a little hard for people to review.
-
-Thanks,
-Yongji
-
-> On Thu,  2 Jun 2016 14:09:57 +0800
-> Yongji Xie <xyjxie@linux.vnet.ibm.com> wrote:
->
->> Current vfio-pci implementation disallows to mmap the page
->> containing MSI-X table in case that users can write directly
->> to MSI-X table and generate an incorrect MSIs.
->>
->> However, this will cause some performance issue when there
->> are some critical device registers in the same page as the
->> MSI-X table. We have to handle the mmio access to these
->> registers in QEMU emulation rather than in guest.
->>
->> To solve this issue, this series allows to expose MSI-X table
->> to userspace when hardware enables the capability of interrupt
->> remapping which can ensure that a given PCI device can only
->> shoot the MSIs assigned for it. And we introduce a new bus_flags
->> PCI_BUS_FLAGS_MSI_REMAP to test this capability on PCI side
->> for different archs.
->>
->> The patch 3 are based on the proposed patchset[1].
->>
->> Changelog v2:
->> - Make the commit log more clear
->> - Replace pci_bus_check_msi_remapping() with pci_bus_msi_isolated()
->>    so that we could clearly know what the function does
->> - Set PCI_BUS_FLAGS_MSI_REMAP in pci_create_root_bus() instead
->>    of iommu_bus_notifier()
->> - Reserve VFIO_REGION_INFO_FLAG_CAPS when we allow to mmap MSI-X
->>    table so that we can know whether we allow to mmap MSI-X table
->>    in QEMU
->>
->> [1] https://www.mail-archive.com/linux-kernel%40vger.kernel.org/msg1138820.html
->>
->> Yongji Xie (6):
->>    PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
->>    PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI controller enables IRQ remapping
->>    PCI: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have capability of IRQ remapping
->>    iommu: Set PCI_BUS_FLAGS_MSI_REMAP on iommu driver initialization
->>    pci-ioda: Set PCI_BUS_FLAGS_MSI_REMAP for IODA host bridge
->>    vfio-pci: Allow to expose MSI-X table to userspace if interrupt remapping is enabled
->>
->>   arch/powerpc/platforms/powernv/pci-ioda.c |    8 ++++++++
->>   drivers/iommu/iommu.c                     |    8 ++++++++
->>   drivers/pci/msi.c                         |   15 +++++++++++++++
->>   drivers/pci/probe.c                       |    7 +++++++
->>   drivers/vfio/pci/vfio_pci.c               |   17 ++++++++++++++---
->>   drivers/vfio/pci/vfio_pci_rdwr.c          |    3 ++-
->>   include/linux/msi.h                       |    5 ++++-
->>   include/linux/pci.h                       |    1 +
->>   8 files changed, 59 insertions(+), 5 deletions(-)
->>
+SGksIEFsZXgKCk9uIDIwMTYvNi8yIDIxOjExLCBBbGV4IFdpbGxpYW1zb24gd3JvdGU6Cgo+IEFG
+QUlDVCwgeW91IHBvc3RlZCB0aGlzICozKiBkYXlzIGFnbywgaGFzIHNvbWV0aGluZyBjaGFuZ2Vk
+IGhlcmUgb3IgaXMKPiB0aGlzIGp1c3QgZXhwZWRpdGVkIG5hZ2dpbmcgZm9yIHJldmlldz8gIFRo
+aXMgYWxzbyBkZXBlbmRzIG9uIGEKPiBub24tdXBzdHJlYW0gc2VyaWVzIGFuZCBjcm9zc2VzIG11
+bHRpcGxlIGZ1bmN0aW9uYWwgYXJlYXMsIGFsbCBvZiB3aGljaAo+IG1ha2UgaXQgZGlmZmljdWx0
+IGZvciBtYWludGFpbmVycyB0byBhY3R1YWxseSBkbyBhbnl0aGluZyB3aXRoIHRoaXMKPiBzZXJp
+ZXMuICBUaGFua3MsCj4KPiBBbGV4CgpJIHJlc2VuZCB0aGlzIHNlcmllcyBiZWNhdXNlIEkgZm91
+bmQgdGhlIG1lc3NhZ2UtaWQgb2YgdGhlIHByZXZpb3VzIGVtYWlsCmlzIGNoYW5nZWQgdW5leHBl
+Y3RlZGx5LiBUaGUgY292ZXIgbGV0dGVyIGlzIG5vdCBpbiB0aGUgc2FtZSB0aHJlYWQgYXMgb3Ro
+ZXIKcGF0Y2hlcy4gIEl0IHdvdWxkIGJlIGEgbGl0dGxlIGhhcmQgZm9yIHBlb3BsZSB0byByZXZp
+ZXcuCgpUaGFua3MsCllvbmdqaQoKPiBPbiBUaHUsICAyIEp1biAyMDE2IDE0OjA5OjU3ICswODAw
+Cj4gWW9uZ2ppIFhpZSA8eHlqeGllQGxpbnV4LnZuZXQuaWJtLmNvbT4gd3JvdGU6Cj4KPj4gQ3Vy
+cmVudCB2ZmlvLXBjaSBpbXBsZW1lbnRhdGlvbiBkaXNhbGxvd3MgdG8gbW1hcCB0aGUgcGFnZQo+
+PiBjb250YWluaW5nIE1TSS1YIHRhYmxlIGluIGNhc2UgdGhhdCB1c2VycyBjYW4gd3JpdGUgZGly
+ZWN0bHkKPj4gdG8gTVNJLVggdGFibGUgYW5kIGdlbmVyYXRlIGFuIGluY29ycmVjdCBNU0lzLgo+
+Pgo+PiBIb3dldmVyLCB0aGlzIHdpbGwgY2F1c2Ugc29tZSBwZXJmb3JtYW5jZSBpc3N1ZSB3aGVu
+IHRoZXJlCj4+IGFyZSBzb21lIGNyaXRpY2FsIGRldmljZSByZWdpc3RlcnMgaW4gdGhlIHNhbWUg
+cGFnZSBhcyB0aGUKPj4gTVNJLVggdGFibGUuIFdlIGhhdmUgdG8gaGFuZGxlIHRoZSBtbWlvIGFj
+Y2VzcyB0byB0aGVzZQo+PiByZWdpc3RlcnMgaW4gUUVNVSBlbXVsYXRpb24gcmF0aGVyIHRoYW4g
+aW4gZ3Vlc3QuCj4+Cj4+IFRvIHNvbHZlIHRoaXMgaXNzdWUsIHRoaXMgc2VyaWVzIGFsbG93cyB0
+byBleHBvc2UgTVNJLVggdGFibGUKPj4gdG8gdXNlcnNwYWNlIHdoZW4gaGFyZHdhcmUgZW5hYmxl
+cyB0aGUgY2FwYWJpbGl0eSBvZiBpbnRlcnJ1cHQKPj4gcmVtYXBwaW5nIHdoaWNoIGNhbiBlbnN1
+cmUgdGhhdCBhIGdpdmVuIFBDSSBkZXZpY2UgY2FuIG9ubHkKPj4gc2hvb3QgdGhlIE1TSXMgYXNz
+aWduZWQgZm9yIGl0LiBBbmQgd2UgaW50cm9kdWNlIGEgbmV3IGJ1c19mbGFncwo+PiBQQ0lfQlVT
+X0ZMQUdTX01TSV9SRU1BUCB0byB0ZXN0IHRoaXMgY2FwYWJpbGl0eSBvbiBQQ0kgc2lkZQo+PiBm
+b3IgZGlmZmVyZW50IGFyY2hzLgo+Pgo+PiBUaGUgcGF0Y2ggMyBhcmUgYmFzZWQgb24gdGhlIHBy
+b3Bvc2VkIHBhdGNoc2V0WzFdLgo+Pgo+PiBDaGFuZ2Vsb2cgdjI6Cj4+IC0gTWFrZSB0aGUgY29t
+bWl0IGxvZyBtb3JlIGNsZWFyCj4+IC0gUmVwbGFjZSBwY2lfYnVzX2NoZWNrX21zaV9yZW1hcHBp
+bmcoKSB3aXRoIHBjaV9idXNfbXNpX2lzb2xhdGVkKCkKPj4gICAgc28gdGhhdCB3ZSBjb3VsZCBj
+bGVhcmx5IGtub3cgd2hhdCB0aGUgZnVuY3Rpb24gZG9lcwo+PiAtIFNldCBQQ0lfQlVTX0ZMQUdT
+X01TSV9SRU1BUCBpbiBwY2lfY3JlYXRlX3Jvb3RfYnVzKCkgaW5zdGVhZAo+PiAgICBvZiBpb21t
+dV9idXNfbm90aWZpZXIoKQo+PiAtIFJlc2VydmUgVkZJT19SRUdJT05fSU5GT19GTEFHX0NBUFMg
+d2hlbiB3ZSBhbGxvdyB0byBtbWFwIE1TSS1YCj4+ICAgIHRhYmxlIHNvIHRoYXQgd2UgY2FuIGtu
+b3cgd2hldGhlciB3ZSBhbGxvdyB0byBtbWFwIE1TSS1YIHRhYmxlCj4+ICAgIGluIFFFTVUKPj4K
+Pj4gWzFdIGh0dHBzOi8vd3d3Lm1haWwtYXJjaGl2ZS5jb20vbGludXgta2VybmVsJTQwdmdlci5r
+ZXJuZWwub3JnL21zZzExMzg4MjAuaHRtbAo+Pgo+PiBZb25namkgWGllICg2KToKPj4gICAgUENJ
+OiBBZGQgYSBuZXcgUENJX0JVU19GTEFHU19NU0lfUkVNQVAgZmxhZwo+PiAgICBQQ0k6IFNldCBQ
+Q0lfQlVTX0ZMQUdTX01TSV9SRU1BUCBpZiBNU0kgY29udHJvbGxlciBlbmFibGVzIElSUSByZW1h
+cHBpbmcKPj4gICAgUENJOiBTZXQgUENJX0JVU19GTEFHU19NU0lfUkVNQVAgaWYgSU9NTVUgaGF2
+ZSBjYXBhYmlsaXR5IG9mIElSUSByZW1hcHBpbmcKPj4gICAgaW9tbXU6IFNldCBQQ0lfQlVTX0ZM
+QUdTX01TSV9SRU1BUCBvbiBpb21tdSBkcml2ZXIgaW5pdGlhbGl6YXRpb24KPj4gICAgcGNpLWlv
+ZGE6IFNldCBQQ0lfQlVTX0ZMQUdTX01TSV9SRU1BUCBmb3IgSU9EQSBob3N0IGJyaWRnZQo+PiAg
+ICB2ZmlvLXBjaTogQWxsb3cgdG8gZXhwb3NlIE1TSS1YIHRhYmxlIHRvIHVzZXJzcGFjZSBpZiBp
+bnRlcnJ1cHQgcmVtYXBwaW5nIGlzIGVuYWJsZWQKPj4KPj4gICBhcmNoL3Bvd2VycGMvcGxhdGZv
+cm1zL3Bvd2VybnYvcGNpLWlvZGEuYyB8ICAgIDggKysrKysrKysKPj4gICBkcml2ZXJzL2lvbW11
+L2lvbW11LmMgICAgICAgICAgICAgICAgICAgICB8ICAgIDggKysrKysrKysKPj4gICBkcml2ZXJz
+L3BjaS9tc2kuYyAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMTUgKysrKysrKysrKysrKysr
+Cj4+ICAgZHJpdmVycy9wY2kvcHJvYmUuYyAgICAgICAgICAgICAgICAgICAgICAgfCAgICA3ICsr
+KysrKysKPj4gICBkcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpLmMgICAgICAgICAgICAgICB8ICAg
+MTcgKysrKysrKysrKysrKystLS0KPj4gICBkcml2ZXJzL3ZmaW8vcGNpL3ZmaW9fcGNpX3Jkd3Iu
+YyAgICAgICAgICB8ICAgIDMgKystCj4+ICAgaW5jbHVkZS9saW51eC9tc2kuaCAgICAgICAgICAg
+ICAgICAgICAgICAgfCAgICA1ICsrKystCj4+ICAgaW5jbHVkZS9saW51eC9wY2kuaCAgICAgICAg
+ICAgICAgICAgICAgICAgfCAgICAxICsKPj4gICA4IGZpbGVzIGNoYW5nZWQsIDU5IGluc2VydGlv
+bnMoKyksIDUgZGVsZXRpb25zKC0pCj4+CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwpMaW51eHBwYy1kZXYgbWFpbGluZyBsaXN0CkxpbnV4cHBjLWRldkBs
+aXN0cy5vemxhYnMub3JnCmh0dHBzOi8vbGlzdHMub3psYWJzLm9yZy9saXN0aW5mby9saW51eHBw
+Yy1kZXY=
