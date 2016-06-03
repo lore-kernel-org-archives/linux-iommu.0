@@ -1,75 +1,95 @@
-From: Roland Dreier <roland@kernel.org>
-Subject: [PATCH] iommu/vt-d: Don't reject NTB devices due to scope mismatch
-Date: Thu,  2 Jun 2016 17:46:10 -0700
-Message-ID: <1464914770-32107-1-git-send-email-roland@kernel.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, David Woodhouse <David.Woodhouse@intel.com>
+From: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Subject: Re: [RESEND PATCH v2 0/6] vfio-pci: Add support for mmapping MSI-X
+	table
+Date: Fri, 3 Jun 2016 10:28:21 +0800
+Message-ID: <201606030228.u532PXdq040566@mx0a-001b2d01.pphosted.com>
+References: <1464847803-22756-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+	<20160602071132.273c64c7@ul30vt.home>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160602071132.273c64c7-85EaTFmN5p//9pzu0YdTqQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org, nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Roland Dreier <roland@purestorage.com>
+Hi, Alex
 
-On a system with an Intel PCIe port configured as an NTB device, iommu
-initialization fails with
+On 2016/6/2 21:11, Alex Williamson wrote:
 
-    DMAR: Device scope type does not match for 0000:80:03.0
+> AFAICT, you posted this *3* days ago, has something changed here or is
+> this just expedited nagging for review?  This also depends on a
+> non-upstream series and crosses multiple functional areas, all of which
+> make it difficult for maintainers to actually do anything with this
+> series.  Thanks,
+>
+> Alex
 
-This is because the DMAR table reports this device as having scope 2
-(ACPI_DMAR_SCOPE_TYPE_BRIDGE):
+I resend this series because I found the message-id of the previous email
+is changed unexpectedly. The cover letter is not in the same thread as other
+patches.  It would be a little hard for people to review.
 
-    [0A0h 0160   1]      Device Scope Entry Type : 02
-    [0A1h 0161   1]                 Entry Length : 08
-    [0A2h 0162   2]                     Reserved : 0000
-    [0A4h 0164   1]               Enumeration ID : 00
-    [0A5h 0165   1]               PCI Bus Number : 80
+Thanks,
+Yongji
 
-    [0A6h 0166   2]                     PCI Path : 03,00
-
-but the device has a type 0 PCI header:
-
-    80:03.0 Bridge [0680]: Intel Corporation Device [8086:2f0d] (rev 02)
-    00: 86 80 0d 2f 00 00 10 00 02 00 80 06 10 00 80 00
-    10: 0c 00 c0 00 c0 38 00 00 0c 00 00 00 80 38 00 00
-    20: 00 00 00 c8 00 00 10 c8 00 00 00 00 86 80 00 00
-    30: 00 00 00 00 60 00 00 00 00 00 00 00 ff 01 00 00
-
-VT-d works perfectly on this system, so there's no reason to bail out
-on initialization due to this apparent scope mismatch.  Use the class
-0x0680 ("Other bridge device") as a heuristic for allowing DMAR
-initialization for non-bridge PCI devices listed with scope bridge.
-
-Signed-off-by: Roland Dreier <roland@purestorage.com>
----
- drivers/iommu/dmar.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 6a86b5d1defa..2eff7b6c6c98 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -241,8 +241,20 @@ int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
- 		if (!dmar_match_pci_path(info, scope->bus, path, level))
- 			continue;
- 
--		if ((scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT) ^
--		    (info->dev->hdr_type == PCI_HEADER_TYPE_NORMAL)) {
-+		/*
-+		 * We expect devices with endpoint scope to have normal PCI
-+		 * headers, and devices with bridge scope to have bridge PCI
-+		 * headers.  However PCI NTB devices may be listed in the
-+		 * DMAR table with bridge scope, even though they have a
-+		 * normal PCI header.  NTB devices are identified by class
-+		 * "BRIDGE_OTHER" (0680h) - we don't declare a socpe mismatch
-+		 * for this special case.
-+		 */
-+		if ((scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT &&
-+		     info->dev->hdr_type != PCI_HEADER_TYPE_NORMAL) ||
-+		    (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_BRIDGE &&
-+		     (info->dev->hdr_type == PCI_HEADER_TYPE_NORMAL &&
-+		      info->dev->class >> 8 != PCI_CLASS_BRIDGE_OTHER))) {
- 			pr_warn("Device scope type does not match for %s\n",
- 				pci_name(info->dev));
- 			return -EINVAL;
--- 
-2.7.4
+> On Thu,  2 Jun 2016 14:09:57 +0800
+> Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org> wrote:
+>
+>> Current vfio-pci implementation disallows to mmap the page
+>> containing MSI-X table in case that users can write directly
+>> to MSI-X table and generate an incorrect MSIs.
+>>
+>> However, this will cause some performance issue when there
+>> are some critical device registers in the same page as the
+>> MSI-X table. We have to handle the mmio access to these
+>> registers in QEMU emulation rather than in guest.
+>>
+>> To solve this issue, this series allows to expose MSI-X table
+>> to userspace when hardware enables the capability of interrupt
+>> remapping which can ensure that a given PCI device can only
+>> shoot the MSIs assigned for it. And we introduce a new bus_flags
+>> PCI_BUS_FLAGS_MSI_REMAP to test this capability on PCI side
+>> for different archs.
+>>
+>> The patch 3 are based on the proposed patchset[1].
+>>
+>> Changelog v2:
+>> - Make the commit log more clear
+>> - Replace pci_bus_check_msi_remapping() with pci_bus_msi_isolated()
+>>    so that we could clearly know what the function does
+>> - Set PCI_BUS_FLAGS_MSI_REMAP in pci_create_root_bus() instead
+>>    of iommu_bus_notifier()
+>> - Reserve VFIO_REGION_INFO_FLAG_CAPS when we allow to mmap MSI-X
+>>    table so that we can know whether we allow to mmap MSI-X table
+>>    in QEMU
+>>
+>> [1] https://www.mail-archive.com/linux-kernel%40vger.kernel.org/msg1138820.html
+>>
+>> Yongji Xie (6):
+>>    PCI: Add a new PCI_BUS_FLAGS_MSI_REMAP flag
+>>    PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI controller enables IRQ remapping
+>>    PCI: Set PCI_BUS_FLAGS_MSI_REMAP if IOMMU have capability of IRQ remapping
+>>    iommu: Set PCI_BUS_FLAGS_MSI_REMAP on iommu driver initialization
+>>    pci-ioda: Set PCI_BUS_FLAGS_MSI_REMAP for IODA host bridge
+>>    vfio-pci: Allow to expose MSI-X table to userspace if interrupt remapping is enabled
+>>
+>>   arch/powerpc/platforms/powernv/pci-ioda.c |    8 ++++++++
+>>   drivers/iommu/iommu.c                     |    8 ++++++++
+>>   drivers/pci/msi.c                         |   15 +++++++++++++++
+>>   drivers/pci/probe.c                       |    7 +++++++
+>>   drivers/vfio/pci/vfio_pci.c               |   17 ++++++++++++++---
+>>   drivers/vfio/pci/vfio_pci_rdwr.c          |    3 ++-
+>>   include/linux/msi.h                       |    5 ++++-
+>>   include/linux/pci.h                       |    1 +
+>>   8 files changed, 59 insertions(+), 5 deletions(-)
+>>
