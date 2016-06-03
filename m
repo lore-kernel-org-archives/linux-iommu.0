@@ -2,15 +2,15 @@ From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
 Subject: Re: [RESEND PATCH v2 0/6] vfio-pci: Add support for mmapping MSI-X
  table
 Date: Fri, 3 Jun 2016 10:28:21 +0800
-Message-ID: <201606030228.u532PULR020603@mx0a-001b2d01.pphosted.com>
+Message-ID: <201606030228.u532PSG8045852@mx0a-001b2d01.pphosted.com>
 References: <1464847803-22756-1-git-send-email-xyjxie@linux.vnet.ibm.com>
  <20160602071132.273c64c7@ul30vt.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20160602071132.273c64c7@ul30vt.home>
-Sender: kvm-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: Alex Williamson <alex.williamson@redhat.com>
 Cc: kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org, bhelgaas@google.com, aik@ozlabs.ru, benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au, joro@8bytes.org, warrier@linux.vnet.ibm.com, zhong@linux.vnet.ibm.com, nikunj@linux.vnet.ibm.com, eric.auger@linaro.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, alistair@popple.id.au, ruscur@russell.cc, kevin.tian@intel.com, David.Laight@ACULAB.COM
 List-Id: iommu@lists.linux-foundation.org
@@ -85,4 +85,3 @@ Yongji
 >>   include/linux/pci.h                       |    1 +
 >>   8 files changed, 59 insertions(+), 5 deletions(-)
 >>
-
