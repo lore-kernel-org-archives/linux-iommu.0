@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 03/11] iommu/ipmmu-vmsa: Enable multi context support
-Date: Mon, 06 Jun 2016 12:57:52 +0900
-Message-ID: <20160606035752.31763.99685.sendpatchset@little-apple>
+Subject: [PATCH v2 04/11] iommu/ipmmu-vmsa: Reuse iommu groups
+Date: Mon, 06 Jun 2016 12:58:01 +0900
+Message-ID: <20160606035801.31763.40763.sendpatchset@little-apple>
 References: <20160606035723.31763.66500.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,128 +23,150 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Add support for up to 8 contexts. Each context is mapped
-to one domain. One domain is associated with each device,
-however one or more uTLBs for a single device are kept
-in the same domain.
+Extend the IPMMU driver to group devices together based
+on the IPMMU device they are connected to. The slave
+devices are kept on a list which is used to determine
+if existing groups (and contexts) exist.
+
+With this patch the two SYS-DMAC devices using IPMMU-DS0
+on r8a7795 will be grouped together.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
  Changes since V1:
- - Support up to 8 contexts instead of 4
- - Use feature flag and runtime handling
- - Default to single context
- 
- drivers/iommu/ipmmu-vmsa.c |   38 ++++++++++++++++++++++++++++++--------
- 1 file changed, 30 insertions(+), 8 deletions(-)
+ - New patch
 
---- 0011/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-06 10:34:37.680607110 +0900
-@@ -30,11 +30,12 @@
- 
- #include "io-pgtable.h"
- 
--#define IPMMU_CTX_MAX 1
-+#define IPMMU_CTX_MAX 8
- 
- struct ipmmu_features {
- 	bool use_ns_alias_offset;
- 	bool has_cache_leaf_nodes;
-+	bool has_eight_ctx;
+ drivers/iommu/ipmmu-vmsa.c |   68 ++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 60 insertions(+), 8 deletions(-)
+
+--- 0013/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-06 10:55:32.340607110 +0900
+@@ -69,11 +69,16 @@ struct ipmmu_vmsa_archdata {
+ 	struct ipmmu_vmsa_device *mmu;
+ 	unsigned int *utlbs;
+ 	unsigned int num_utlbs;
++	struct device *dev;
++	struct list_head list;
  };
  
- struct ipmmu_vmsa_device {
-@@ -44,6 +45,7 @@ struct ipmmu_vmsa_device {
- 	const struct ipmmu_features *features;
- 	bool is_leaf;
- 	unsigned int num_utlbs;
-+	unsigned int num_ctx;
- 	spinlock_t lock;			/* Protects ctx and domains[] */
- 	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
- 	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
-@@ -347,11 +349,12 @@ static int ipmmu_domain_allocate_context
+ static DEFINE_SPINLOCK(ipmmu_devices_lock);
+ static LIST_HEAD(ipmmu_devices);
  
- 	spin_lock_irqsave(&mmu->lock, flags);
- 
--	ret = find_first_zero_bit(mmu->ctx, IPMMU_CTX_MAX);
--	if (ret != IPMMU_CTX_MAX) {
-+	ret = find_first_zero_bit(mmu->ctx, mmu->num_ctx);
-+	if (ret != mmu->num_ctx) {
- 		mmu->domains[ret] = domain;
- 		set_bit(ret, mmu->ctx);
--	}
-+	} else
-+		ret = -EBUSY;
- 
- 	spin_unlock_irqrestore(&mmu->lock, flags);
- 
-@@ -394,9 +397,9 @@ static int ipmmu_domain_init_context(str
- 	 * Find an unused context.
- 	 */
- 	ret = ipmmu_domain_allocate_context(domain->root, domain);
--	if (ret == IPMMU_CTX_MAX) {
-+	if (ret < 0) {
- 		free_io_pgtable_ops(domain->iop);
--		return -EBUSY;
-+		return ret;
++static DEFINE_SPINLOCK(ipmmu_slave_devices_lock);
++static LIST_HEAD(ipmmu_slave_devices);
++
+ static struct ipmmu_vmsa_domain *to_vmsa_domain(struct iommu_domain *dom)
+ {
+ 	return container_of(dom, struct ipmmu_vmsa_domain, io_domain);
+@@ -619,6 +624,9 @@ static int ipmmu_attach_device(struct io
+ 		dev_err(dev, "Can't attach IPMMU %s to domain on IPMMU %s\n",
+ 			dev_name(mmu->dev), dev_name(domain->mmu->dev));
+ 		ret = -EINVAL;
++	} else {
++			dev_info(dev, "Reusing IPMMU context %u\n",
++				 domain->context_id);
  	}
  
- 	domain->context_id = ret;
-@@ -531,7 +534,7 @@ static irqreturn_t ipmmu_irq(int irq, vo
- 	/*
- 	 * Check interrupts for all active contexts.
- 	 */
--	for (i = 0; i < IPMMU_CTX_MAX; i++) {
-+	for (i = 0; i < mmu->num_ctx; i++) {
- 		if (!mmu->domains[i])
- 			continue;
- 		if (ipmmu_domain_irq(mmu->domains[i]) == IRQ_HANDLED)
-@@ -601,6 +604,13 @@ static int ipmmu_attach_device(struct io
- 		domain->mmu = mmu;
- 		domain->root = root;
- 		ret = ipmmu_domain_init_context(domain);
-+		if (ret < 0) {
-+			dev_err(dev, "Unable to initialize IPMMU context\n");
-+			domain->mmu = NULL;
-+		} else {
-+			dev_info(dev, "Using IPMMU context %u\n",
-+				 domain->context_id);
-+		}
- 	} else if (domain->mmu != mmu) {
- 		/*
- 		 * Something is wrong, we can't attach two devices using
-@@ -969,13 +979,14 @@ static void ipmmu_device_reset(struct ip
- 	unsigned int i;
- 
- 	/* Disable all contexts. */
--	for (i = 0; i < 4; ++i)
-+	for (i = 0; i < mmu->num_ctx; ++i)
- 		ipmmu_write(mmu, i * IM_CTX_SIZE + IMCTR, 0);
+ 	spin_unlock_irqrestore(&domain->lock, flags);
+@@ -676,6 +684,42 @@ static phys_addr_t ipmmu_iova_to_phys(st
+ 	return domain->iop->iova_to_phys(domain->iop, iova);
  }
  
- static const struct ipmmu_features ipmmu_features_default = {
- 	.use_ns_alias_offset = true,
- 	.has_cache_leaf_nodes = false,
-+	.has_eight_ctx = false,
- };
++static struct device *ipmmu_find_sibling_device(struct device *dev)
++{
++	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
++	struct ipmmu_vmsa_archdata *sibling_archdata = NULL;
++	bool found = false;
++
++	spin_lock(&ipmmu_slave_devices_lock);
++
++	list_for_each_entry(sibling_archdata, &ipmmu_slave_devices, list) {
++		if (archdata == sibling_archdata)
++			continue;
++		if (sibling_archdata->mmu == archdata->mmu) {
++			found = true;
++			break;
++		}
++	}
++
++	spin_unlock(&ipmmu_slave_devices_lock);
++
++	return found ? sibling_archdata->dev : NULL;
++}
++
++static struct iommu_group *ipmmu_find_group(struct device *dev)
++{
++	struct iommu_group *group;
++	struct device *sibling;
++
++	sibling = ipmmu_find_sibling_device(dev);
++	if (sibling)
++		group = iommu_group_get(sibling);
++	if (!sibling || IS_ERR(group))
++		group = generic_device_group(dev);
++
++	return group;
++}
++
+ static int ipmmu_find_utlbs(struct ipmmu_vmsa_device *mmu, struct device *dev,
+ 			    unsigned int *utlbs, unsigned int num_utlbs)
+ {
+@@ -756,6 +800,7 @@ static int ipmmu_init_platform_device(st
+ 	archdata->mmu = mmu;
+ 	archdata->utlbs = utlbs;
+ 	archdata->num_utlbs = num_utlbs;
++	archdata->dev = dev;
+ 	dev->archdata.iommu = archdata;
+ 	return 0;
  
- static const struct of_device_id ipmmu_of_ids[] = {
-@@ -1034,6 +1045,17 @@ static int ipmmu_probe(struct platform_d
- 	if (mmu->features->use_ns_alias_offset)
- 		mmu->base += IM_NS_ALIAS_OFFSET;
+@@ -908,6 +953,7 @@ static void ipmmu_domain_free_dma(struct
  
-+	/*
-+	 * The number of contexts varies with generation and instance.
-+	 * Newer SoCs get a total of 8 contexts enabled, older ones just one.
-+	 */
-+	if (mmu->features->has_eight_ctx)
-+		mmu->num_ctx = 8;
+ static int ipmmu_add_device_dma(struct device *dev)
+ {
++	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
+ 	struct iommu_group *group;
+ 
+ 	/* only accept devices with iommus property */
+@@ -919,11 +965,21 @@ static int ipmmu_add_device_dma(struct d
+ 	if (IS_ERR(group))
+ 		return PTR_ERR(group);
+ 
++	archdata = dev->archdata.iommu;
++	spin_lock(&ipmmu_slave_devices_lock);
++	list_add(&archdata->list, &ipmmu_slave_devices);
++	spin_unlock(&ipmmu_slave_devices_lock);
+ 	return 0;
+ }
+ 
+ static void ipmmu_remove_device_dma(struct device *dev)
+ {
++	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
++
++	spin_lock(&ipmmu_slave_devices_lock);
++	list_del(&archdata->list);
++	spin_unlock(&ipmmu_slave_devices_lock);
++
+ 	iommu_group_remove_device(dev);
+ }
+ 
+@@ -932,15 +988,11 @@ static struct iommu_group *ipmmu_device_
+ 	struct iommu_group *group;
+ 	int ret;
+ 
+-	group = generic_device_group(dev);
+-	if (IS_ERR(group))
+-		return group;
+-
+-	ret = ipmmu_init_platform_device(dev, group);
+-	if (ret) {
+-		iommu_group_put(group);
++	ret = ipmmu_init_platform_device(dev, NULL);
++	if (!ret)
++		group = ipmmu_find_group(dev);
 +	else
-+		mmu->num_ctx = 1;
-+
-+	WARN_ON(mmu->num_ctx > IPMMU_CTX_MAX);
-+
- 	irq = platform_get_irq(pdev, 0);
+ 		group = ERR_PTR(ret);
+-	}
  
- 	/*
+ 	return group;
+ }
