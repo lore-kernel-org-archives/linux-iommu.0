@@ -1,7 +1,8 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 05/11] iommu/ipmmu-vmsa: Make use of IOMMU_OF_DECLARE()
-Date: Mon, 06 Jun 2016 12:58:10 +0900
-Message-ID: <20160606035810.31763.53611.sendpatchset@little-apple>
+Subject: [PATCH v2 06/11] iommu/ipmmu-vmsa: Teach xlate() to skip disabled
+	iommus
+Date: Mon, 06 Jun 2016 12:58:22 +0900
+Message-ID: <20160606035822.31763.39713.sendpatchset@little-apple>
 References: <20160606035723.31763.66500.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,75 +24,37 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Hook up IOMMU_OF_DECLARE() support in case CONFIG_IOMMU_DMA
-is enabled. The only current supported case for 32-bit ARM
-is disabled, however for 64-bit ARM this is required.
+The ->xlate() call gets invoked even though the iommu
+device has status = "disabled" in DT, so make sure we
+skip over disabled devices.
+
+In my mind it would make sense to have this at some
+shared level, but I guess some users may want to
+configure the iommu regardless of DT state.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
  Changes since V1:
- - Reworked slightly to fit updated patch order and
-   [PATCH v3 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update V3
+ - Reworked slightly to fit on top of updated patch order
 
- drivers/iommu/ipmmu-vmsa.c |   26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ drivers/iommu/ipmmu-vmsa.c |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- 0015/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-06 10:57:26.790607110 +0900
-@@ -19,6 +19,7 @@
- #include <linux/iommu.h>
- #include <linux/module.h>
- #include <linux/of.h>
-+#include <linux/of_iommu.h>
- #include <linux/platform_device.h>
- #include <linux/sizes.h>
- #include <linux/slab.h>
-@@ -1178,15 +1179,22 @@ static struct platform_driver ipmmu_driv
- 
- static int __init ipmmu_init(void)
+--- 0017/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-06 10:58:18.530607110 +0900
+@@ -1001,7 +1001,13 @@ static struct iommu_group *ipmmu_device_
+ static int ipmmu_of_xlate_dma(struct device *dev,
+ 			      struct of_phandle_args *spec)
  {
-+	static bool setup_done;
- 	int ret;
- 
-+	if (setup_done)
-+		return 0;
+-	/* dummy callback to satisfy of_iommu_configure() */
++	/* If the IPMMU device is disabled in DT then return error
++	 * to make sure the of_iommu code does not install ops
++	 * even though the iommu device is disabled
++	 */
++	if (!of_device_is_available(spec->np))
++		return -ENODEV;
 +
- 	ret = platform_driver_register(&ipmmu_driver);
- 	if (ret < 0)
- 		return ret;
- 
-+#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
- 	if (!iommu_present(&platform_bus_type))
- 		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
-+#endif
- 
-+	setup_done = true;
  	return 0;
  }
  
-@@ -1198,6 +1206,24 @@ static void __exit ipmmu_exit(void)
- subsys_initcall(ipmmu_init);
- module_exit(ipmmu_exit);
- 
-+#ifdef CONFIG_IOMMU_DMA
-+static int __init ipmmu_vmsa_iommu_of_setup(struct device_node *np)
-+{
-+	static const struct iommu_ops *ops = &ipmmu_ops;
-+
-+	ipmmu_init();
-+
-+	of_iommu_set_ops(np, (struct iommu_ops *)ops);
-+	if (!iommu_present(&platform_bus_type))
-+		bus_set_iommu(&platform_bus_type, ops);
-+
-+	return 0;
-+}
-+
-+IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa",
-+		 ipmmu_vmsa_iommu_of_setup);
-+#endif
-+
- MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
- MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>");
- MODULE_LICENSE("GPL v2");
