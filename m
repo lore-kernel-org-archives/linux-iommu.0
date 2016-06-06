@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 04/11] iommu/ipmmu-vmsa: Reuse iommu groups
-Date: Mon, 06 Jun 2016 12:58:01 +0900
-Message-ID: <20160606035801.31763.40763.sendpatchset@little-apple>
+Subject: [PATCH v2 05/11] iommu/ipmmu-vmsa: Make use of IOMMU_OF_DECLARE()
+Date: Mon, 06 Jun 2016 12:58:10 +0900
+Message-ID: <20160606035810.31763.53611.sendpatchset@little-apple>
 References: <20160606035723.31763.66500.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,150 +23,75 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Extend the IPMMU driver to group devices together based
-on the IPMMU device they are connected to. The slave
-devices are kept on a list which is used to determine
-if existing groups (and contexts) exist.
-
-With this patch the two SYS-DMAC devices using IPMMU-DS0
-on r8a7795 will be grouped together.
+Hook up IOMMU_OF_DECLARE() support in case CONFIG_IOMMU_DMA
+is enabled. The only current supported case for 32-bit ARM
+is disabled, however for 64-bit ARM this is required.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
  Changes since V1:
- - New patch
+ - Reworked slightly to fit updated patch order and
+   [PATCH v3 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update V3
 
- drivers/iommu/ipmmu-vmsa.c |   68 ++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 60 insertions(+), 8 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |   26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
---- 0013/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-06 10:55:32.340607110 +0900
-@@ -69,11 +69,16 @@ struct ipmmu_vmsa_archdata {
- 	struct ipmmu_vmsa_device *mmu;
- 	unsigned int *utlbs;
- 	unsigned int num_utlbs;
-+	struct device *dev;
-+	struct list_head list;
- };
+--- 0015/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-06 10:57:26.790607110 +0900
+@@ -19,6 +19,7 @@
+ #include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
++#include <linux/of_iommu.h>
+ #include <linux/platform_device.h>
+ #include <linux/sizes.h>
+ #include <linux/slab.h>
+@@ -1178,15 +1179,22 @@ static struct platform_driver ipmmu_driv
  
- static DEFINE_SPINLOCK(ipmmu_devices_lock);
- static LIST_HEAD(ipmmu_devices);
- 
-+static DEFINE_SPINLOCK(ipmmu_slave_devices_lock);
-+static LIST_HEAD(ipmmu_slave_devices);
-+
- static struct ipmmu_vmsa_domain *to_vmsa_domain(struct iommu_domain *dom)
+ static int __init ipmmu_init(void)
  {
- 	return container_of(dom, struct ipmmu_vmsa_domain, io_domain);
-@@ -619,6 +624,9 @@ static int ipmmu_attach_device(struct io
- 		dev_err(dev, "Can't attach IPMMU %s to domain on IPMMU %s\n",
- 			dev_name(mmu->dev), dev_name(domain->mmu->dev));
- 		ret = -EINVAL;
-+	} else {
-+			dev_info(dev, "Reusing IPMMU context %u\n",
-+				 domain->context_id);
- 	}
- 
- 	spin_unlock_irqrestore(&domain->lock, flags);
-@@ -676,6 +684,42 @@ static phys_addr_t ipmmu_iova_to_phys(st
- 	return domain->iop->iova_to_phys(domain->iop, iova);
- }
- 
-+static struct device *ipmmu_find_sibling_device(struct device *dev)
-+{
-+	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
-+	struct ipmmu_vmsa_archdata *sibling_archdata = NULL;
-+	bool found = false;
-+
-+	spin_lock(&ipmmu_slave_devices_lock);
-+
-+	list_for_each_entry(sibling_archdata, &ipmmu_slave_devices, list) {
-+		if (archdata == sibling_archdata)
-+			continue;
-+		if (sibling_archdata->mmu == archdata->mmu) {
-+			found = true;
-+			break;
-+		}
-+	}
-+
-+	spin_unlock(&ipmmu_slave_devices_lock);
-+
-+	return found ? sibling_archdata->dev : NULL;
-+}
-+
-+static struct iommu_group *ipmmu_find_group(struct device *dev)
-+{
-+	struct iommu_group *group;
-+	struct device *sibling;
-+
-+	sibling = ipmmu_find_sibling_device(dev);
-+	if (sibling)
-+		group = iommu_group_get(sibling);
-+	if (!sibling || IS_ERR(group))
-+		group = generic_device_group(dev);
-+
-+	return group;
-+}
-+
- static int ipmmu_find_utlbs(struct ipmmu_vmsa_device *mmu, struct device *dev,
- 			    unsigned int *utlbs, unsigned int num_utlbs)
- {
-@@ -756,6 +800,7 @@ static int ipmmu_init_platform_device(st
- 	archdata->mmu = mmu;
- 	archdata->utlbs = utlbs;
- 	archdata->num_utlbs = num_utlbs;
-+	archdata->dev = dev;
- 	dev->archdata.iommu = archdata;
- 	return 0;
- 
-@@ -908,6 +953,7 @@ static void ipmmu_domain_free_dma(struct
- 
- static int ipmmu_add_device_dma(struct device *dev)
- {
-+	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
- 	struct iommu_group *group;
- 
- 	/* only accept devices with iommus property */
-@@ -919,11 +965,21 @@ static int ipmmu_add_device_dma(struct d
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
- 
-+	archdata = dev->archdata.iommu;
-+	spin_lock(&ipmmu_slave_devices_lock);
-+	list_add(&archdata->list, &ipmmu_slave_devices);
-+	spin_unlock(&ipmmu_slave_devices_lock);
- 	return 0;
- }
- 
- static void ipmmu_remove_device_dma(struct device *dev)
- {
-+	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
-+
-+	spin_lock(&ipmmu_slave_devices_lock);
-+	list_del(&archdata->list);
-+	spin_unlock(&ipmmu_slave_devices_lock);
-+
- 	iommu_group_remove_device(dev);
- }
- 
-@@ -932,15 +988,11 @@ static struct iommu_group *ipmmu_device_
- 	struct iommu_group *group;
++	static bool setup_done;
  	int ret;
  
--	group = generic_device_group(dev);
--	if (IS_ERR(group))
--		return group;
--
--	ret = ipmmu_init_platform_device(dev, group);
--	if (ret) {
--		iommu_group_put(group);
-+	ret = ipmmu_init_platform_device(dev, NULL);
-+	if (!ret)
-+		group = ipmmu_find_group(dev);
-+	else
- 		group = ERR_PTR(ret);
--	}
++	if (setup_done)
++		return 0;
++
+ 	ret = platform_driver_register(&ipmmu_driver);
+ 	if (ret < 0)
+ 		return ret;
  
- 	return group;
++#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
+ 	if (!iommu_present(&platform_bus_type))
+ 		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
++#endif
+ 
++	setup_done = true;
+ 	return 0;
  }
+ 
+@@ -1198,6 +1206,24 @@ static void __exit ipmmu_exit(void)
+ subsys_initcall(ipmmu_init);
+ module_exit(ipmmu_exit);
+ 
++#ifdef CONFIG_IOMMU_DMA
++static int __init ipmmu_vmsa_iommu_of_setup(struct device_node *np)
++{
++	static const struct iommu_ops *ops = &ipmmu_ops;
++
++	ipmmu_init();
++
++	of_iommu_set_ops(np, (struct iommu_ops *)ops);
++	if (!iommu_present(&platform_bus_type))
++		bus_set_iommu(&platform_bus_type, ops);
++
++	return 0;
++}
++
++IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa",
++		 ipmmu_vmsa_iommu_of_setup);
++#endif
++
+ MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
+ MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>");
+ MODULE_LICENSE("GPL v2");
