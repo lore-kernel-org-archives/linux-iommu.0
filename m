@@ -1,66 +1,80 @@
 From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH v2 11/11] iommu/ipmmu-vmsa: Hook up r8a7795 DT matching code
-Date: Mon, 06 Jun 2016 12:59:07 +0900
-Message-ID: <20160606035907.31763.20748.sendpatchset@little-apple>
+Subject: [PATCH v2 10/11] iommu/ipmmu-vmsa: Allow two bit SL0
+Date: Mon, 06 Jun 2016 12:58:58 +0900
+Message-ID: <20160606035858.31763.1660.sendpatchset@little-apple>
 References: <20160606035723.31763.66500.sendpatchset@little-apple>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20160606035723.31763.66500.sendpatchset@little-apple>
-Sender: linux-renesas-soc-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
 Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, joro@8bytes.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas@opensource.se>
 
-Tie in r8a7795 features and update the IOMMU_OF_DECLARE
-compat string to hook up the updated compat string.
-
-TODO:
- - Go over init order once more
- - Consider counting number of IPMMU devices from ->xlate()
- - Experiment with delaying call to bus_set_iommu()
+Introduce support for two bit SL0 bitfield in IMTTBCR
+by using a separate feature flag.
 
 Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 ---
 
  Changes since V1:
- - Enable multi context feature
- - Update TODO list
+ - None
 
- drivers/iommu/ipmmu-vmsa.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/iommu/ipmmu-vmsa.c |   15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
---- 0027/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-06 11:13:33.220607110 +0900
-@@ -1074,11 +1074,22 @@ static const struct ipmmu_features ipmmu
- 	.twobit_imttbcr_sl0 = false,
+--- 0025/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-06 11:08:38.360607110 +0900
+@@ -38,6 +38,7 @@ struct ipmmu_features {
+ 	bool has_cache_leaf_nodes;
+ 	bool has_eight_ctx;
+ 	bool setup_imbuscr;
++	bool twobit_imttbcr_sl0;
  };
  
-+static const struct ipmmu_features ipmmu_features_r8a7795 = {
-+	.use_ns_alias_offset = false,
-+	.has_cache_leaf_nodes = true,
-+	.has_eight_ctx = true,
-+	.setup_imbuscr = false,
-+	.twobit_imttbcr_sl0 = true,
-+};
+ struct ipmmu_vmsa_device {
+@@ -146,6 +147,10 @@ static struct ipmmu_vmsa_domain *to_vmsa
+ #define IMTTBCR_TSZ0_MASK		(7 << 0)
+ #define IMTTBCR_TSZ0_SHIFT		O
+ 
++#define IMTTBCR_SL0_TWOBIT_LVL_3	(0 << 6)
++#define IMTTBCR_SL0_TWOBIT_LVL_2	(1 << 6)
++#define IMTTBCR_SL0_TWOBIT_LVL_1	(2 << 6)
 +
- static const struct of_device_id ipmmu_of_ids[] = {
- 	{
- 		.compatible = "renesas,ipmmu-vmsa",
- 		.data = &ipmmu_features_default,
- 	}, {
-+		.compatible = "renesas,ipmmu-r8a7795",
-+		.data = &ipmmu_features_r8a7795,
-+	}, {
- 		/* Terminator */
- 	},
+ #define IMBUSCR				0x000c
+ #define IMBUSCR_DVM			(1 << 2)
+ #define IMBUSCR_BUSSEL_SYS		(0 << 0)
+@@ -381,6 +386,7 @@ static int ipmmu_domain_allocate_context
+ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
+ {
+ 	u64 ttbr;
++	u32 tmp;
+ 	int ret;
+ 
+ 	/*
+@@ -431,9 +437,15 @@ static int ipmmu_domain_init_context(str
+ 	 * We use long descriptors with inner-shareable WBWA tables and allocate
+ 	 * the whole 32-bit VA space to TTBR0.
+ 	 */
++
++	if (domain->root->features->twobit_imttbcr_sl0)
++		tmp = IMTTBCR_SL0_TWOBIT_LVL_1;
++	else
++		tmp = IMTTBCR_SL0_LVL_1;
++
+ 	ipmmu_ctx_write(domain, IMTTBCR, IMTTBCR_EAE |
+ 			IMTTBCR_SH0_INNER_SHAREABLE | IMTTBCR_ORGN0_WB_WA |
+-			IMTTBCR_IRGN0_WB_WA | IMTTBCR_SL0_LVL_1);
++			IMTTBCR_IRGN0_WB_WA | tmp);
+ 
+ 	/* MAIR0 */
+ 	ipmmu_ctx_write(domain, IMMAIR0, domain->cfg.arm_lpae_s1_cfg.mair[0]);
+@@ -1059,6 +1071,7 @@ static const struct ipmmu_features ipmmu
+ 	.has_cache_leaf_nodes = false,
+ 	.has_eight_ctx = false,
+ 	.setup_imbuscr = true,
++	.twobit_imttbcr_sl0 = false,
  };
-@@ -1255,6 +1266,8 @@ static int __init ipmmu_vmsa_iommu_of_se
  
- IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa",
- 		 ipmmu_vmsa_iommu_of_setup);
-+IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795",
-+		 ipmmu_vmsa_iommu_of_setup);
- #endif
- 
- MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
+ static const struct of_device_id ipmmu_of_ids[] = {
