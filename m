@@ -1,83 +1,66 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 08/11] iommu/ipmmu-vmsa: Write IMCTR twice
-Date: Mon, 06 Jun 2016 12:58:40 +0900
-Message-ID: <20160606035840.31763.40773.sendpatchset@little-apple>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: [PATCH v2 11/11] iommu/ipmmu-vmsa: Hook up r8a7795 DT matching code
+Date: Mon, 06 Jun 2016 12:59:07 +0900
+Message-ID: <20160606035907.31763.20748.sendpatchset@little-apple>
 References: <20160606035723.31763.66500.sendpatchset@little-apple>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 In-Reply-To: <20160606035723.31763.66500.sendpatchset@little-apple>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, joro@8bytes.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+From: Magnus Damm <damm+renesas@opensource.se>
 
-Write IMCTR both in the root device and the leaf node.
+Tie in r8a7795 features and update the IOMMU_OF_DECLARE
+compat string to hook up the updated compat string.
 
-Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+TODO:
+ - Go over init order once more
+ - Consider counting number of IPMMU devices from ->xlate()
+ - Experiment with delaying call to bus_set_iommu()
+
+Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 ---
 
  Changes since V1:
- - None
+ - Enable multi context feature
+ - Update TODO list
 
- drivers/iommu/ipmmu-vmsa.c |   17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- 0021/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-06 11:03:22.610607110 +0900
-@@ -261,6 +261,16 @@ static void ipmmu_ctx_write(struct ipmmu
- 	ipmmu_write(domain->root, domain->context_id * IM_CTX_SIZE + reg, data);
- }
+--- 0027/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-06 11:13:33.220607110 +0900
+@@ -1074,11 +1074,22 @@ static const struct ipmmu_features ipmmu
+ 	.twobit_imttbcr_sl0 = false,
+ };
  
-+static void ipmmu_ctx_write2(struct ipmmu_vmsa_domain *domain, unsigned int reg,
-+			     u32 data)
-+{
-+	if (domain->mmu != domain->root)
-+		ipmmu_write(domain->mmu,
-+			    domain->context_id * IM_CTX_SIZE + reg, data);
++static const struct ipmmu_features ipmmu_features_r8a7795 = {
++	.use_ns_alias_offset = false,
++	.has_cache_leaf_nodes = true,
++	.has_eight_ctx = true,
++	.setup_imbuscr = false,
++	.twobit_imttbcr_sl0 = true,
++};
 +
-+	ipmmu_write(domain->root, domain->context_id * IM_CTX_SIZE + reg, data);
-+}
-+
- /* -----------------------------------------------------------------------------
-  * TLB and microTLB Management
-  */
-@@ -287,7 +297,7 @@ static void ipmmu_tlb_invalidate(struct
+ static const struct of_device_id ipmmu_of_ids[] = {
+ 	{
+ 		.compatible = "renesas,ipmmu-vmsa",
+ 		.data = &ipmmu_features_default,
+ 	}, {
++		.compatible = "renesas,ipmmu-r8a7795",
++		.data = &ipmmu_features_r8a7795,
++	}, {
+ 		/* Terminator */
+ 	},
+ };
+@@ -1255,6 +1266,8 @@ static int __init ipmmu_vmsa_iommu_of_se
  
- 	reg = ipmmu_ctx_read(domain, IMCTR);
- 	reg |= IMCTR_FLUSH;
--	ipmmu_ctx_write(domain, IMCTR, reg);
-+	ipmmu_ctx_write2(domain, IMCTR, reg);
+ IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa",
+ 		 ipmmu_vmsa_iommu_of_setup);
++IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795",
++		 ipmmu_vmsa_iommu_of_setup);
+ #endif
  
- 	ipmmu_tlb_sync(domain);
- }
-@@ -445,7 +455,8 @@ static int ipmmu_domain_init_context(str
- 	 * software management as we have no use for it. Flush the TLB as
- 	 * required when modifying the context registers.
- 	 */
--	ipmmu_ctx_write(domain, IMCTR, IMCTR_INTEN | IMCTR_FLUSH | IMCTR_MMUEN);
-+	ipmmu_ctx_write2(domain, IMCTR,
-+			 IMCTR_INTEN | IMCTR_FLUSH | IMCTR_MMUEN);
- 
- 	return 0;
- }
-@@ -471,7 +482,7 @@ static void ipmmu_domain_destroy_context
- 	 *
- 	 * TODO: Is TLB flush really needed ?
- 	 */
--	ipmmu_ctx_write(domain, IMCTR, IMCTR_FLUSH);
-+	ipmmu_ctx_write2(domain, IMCTR, IMCTR_FLUSH);
- 	ipmmu_tlb_sync(domain);
- 	ipmmu_domain_free_context(domain->root, domain->context_id);
- }
+ MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
