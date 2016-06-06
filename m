@@ -2,14 +2,14 @@ From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
 Subject: Re: [RESEND PATCH v2 2/6] PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI
  controller enables IRQ remapping
 Date: Mon, 6 Jun 2016 16:21:35 +0800
-Message-ID: <201606060821.u568J1Ex012543@mx0a-001b2d01.pphosted.com>
+Message-ID: <201606060821.u568Ixgi033987@mx0a-001b2d01.pphosted.com>
 References: <201606060406.lSpseFnO%fengguang.wu@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <201606060406.lSpseFnO%fengguang.wu@intel.com>
-Sender: linux-pci-owner@vger.kernel.org
+Sender: linux-kernel-owner@vger.kernel.org
 To: kbuild test robot <lkp@intel.com>
 Cc: kvm@vger.kernel.org, aik@ozlabs.ru, linux-pci@vger.kernel.org, will.deacon@arm.com, paulus@samba.org, eric.auger@linaro.org, joro@8bytes.org, kevin.tian@intel.com, nikunj@linux.vnet.ibm.com, alistair@popple.id.au, gwshan@linux.vnet.ibm.com, alex.williamson@redhat.com, bhelgaas@google.com, zhong@linux.vnet.ibm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, David.Laight@ACULAB.COM, kbuild-all@01.org, warrier@linux.vnet.ibm.com, linuxppc-dev@lists.ozlabs.org
 List-Id: iommu@lists.linux-foundation.org
