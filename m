@@ -2,64 +2,58 @@ From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
 Subject: Re: [RESEND PATCH v2 2/6] PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI
  controller enables IRQ remapping
 Date: Mon, 6 Jun 2016 16:25:18 +0800
-Message-ID: <201606060825.u568OZDp033093@mx0a-001b2d01.pphosted.com>
+Message-ID: <201606060825.u568OZB8036751@mx0a-001b2d01.pphosted.com>
 References: <201606060500.cgRhY40o%fengguang.wu@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 In-Reply-To: <201606060500.cgRhY40o%fengguang.wu@intel.com>
-Sender: kvm-owner@vger.kernel.org
+List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
+List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
+List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
+List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
+List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
+ <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
+Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
+Sender: "Linuxppc-dev"
+ <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
 To: kbuild test robot <lkp@intel.com>
-Cc: kvm@vger.kernel.org, aik@ozlabs.ru, linux-pci@vger.kernel.org, will.deacon@arm.com, paulus@samba.org, eric.auger@linaro.org, joro@8bytes.org, kevin.tian@intel.com, nikunj@linux.vnet.ibm.com, alistair@popple.id.au, gwshan@linux.vnet.ibm.com, alex.williamson@redhat.com, bhelgaas@google.com, zhong@linux.vnet.ibm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, David.Laight@ACULAB.COM, kbuild-all@01.org, warrier@linux.vnet.ibm.com, linuxppc-dev@lists.ozlabs.org
+Cc: kevin.tian@intel.com, nikunj@linux.vnet.ibm.com, kvm@vger.kernel.org, eric.auger@linaro.org, aik@ozlabs.ru, linux-pci@vger.kernel.org, joro@8bytes.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, warrier@linux.vnet.ibm.com, alex.williamson@redhat.com, David.Laight@ACULAB.COM, paulus@samba.org, zhong@linux.vnet.ibm.com, alistair@popple.id.au, bhelgaas@google.com, linuxppc-dev@lists.ozlabs.org, kbuild-all@01.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2016/6/6 5:11, kbuild test robot wrote:
-
-> Hi,
->
-> [auto build test ERROR on vfio/next]
-> [also build test ERROR on v4.7-rc1 next-20160603]
-> [cannot apply to pci/next]
-> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
->
-> url:    https://github.com/0day-ci/linux/commits/Yongji-Xie/PCI-Add-a-new-PCI_BUS_FLAGS_MSI_REMAP-flag/20160530-215348
-> base:   https://github.com/awilliam/linux-vfio.git next
-> config: arm-allmodconfig (attached as .config)
-> compiler: arm-linux-gnueabi-gcc (Debian 5.3.1-8) 5.3.1 20160205
-> reproduce:
->          wget https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests.git/plain/sbin/make.cross -O ~/bin/make.cross
->          chmod +x ~/bin/make.cross
->          # save the attached .config to linux build tree
->          make.cross ARCH=arm
->
-> All errors (new ones prefixed by >>):
->
->     drivers/pci/msi.c: In function 'pci_bus_msi_isolated':
->>> drivers/pci/msi.c:1146:20: error: 'MSI_FLAG_IRQ_REMAPPING' undeclared (first use in this function)
->       if (info->flags & MSI_FLAG_IRQ_REMAPPING)
->                         ^
->     drivers/pci/msi.c:1146:20: note: each undeclared identifier is reported only once for each function it appears in
->
-> vim +/MSI_FLAG_IRQ_REMAPPING +1146 drivers/pci/msi.c
->
->    1140		struct msi_domain_info *info;
->    1141	
->    1142		if (!domain)
->    1143			return 0;
->    1144	
->    1145		info = msi_get_domain_info(domain);
->> 1146		if (info->flags & MSI_FLAG_IRQ_REMAPPING)
->    1147			return 1;
->    1148	#endif
->    1149		return 0;
-
-This fault is expected because this patch is based on patchset [1] which
-introduce flag MSI_FLAG_IRQ_REMAPPING.
-
-[1] 
-https://www.mail-archive.com/linux-kernel%40vger.kernel.org/msg1138820.html
-
-Thanks,
-Yongji
-
+T24gMjAxNi82LzYgNToxMSwga2J1aWxkIHRlc3Qgcm9ib3Qgd3JvdGU6Cgo+IEhpLAo+Cj4gW2F1
+dG8gYnVpbGQgdGVzdCBFUlJPUiBvbiB2ZmlvL25leHRdCj4gW2Fsc28gYnVpbGQgdGVzdCBFUlJP
+UiBvbiB2NC43LXJjMSBuZXh0LTIwMTYwNjAzXQo+IFtjYW5ub3QgYXBwbHkgdG8gcGNpL25leHRd
+Cj4gW2lmIHlvdXIgcGF0Y2ggaXMgYXBwbGllZCB0byB0aGUgd3JvbmcgZ2l0IHRyZWUsIHBsZWFz
+ZSBkcm9wIHVzIGEgbm90ZSB0byBoZWxwIGltcHJvdmUgdGhlIHN5c3RlbV0KPgo+IHVybDogICAg
+aHR0cHM6Ly9naXRodWIuY29tLzBkYXktY2kvbGludXgvY29tbWl0cy9Zb25namktWGllL1BDSS1B
+ZGQtYS1uZXctUENJX0JVU19GTEFHU19NU0lfUkVNQVAtZmxhZy8yMDE2MDUzMC0yMTUzNDgKPiBi
+YXNlOiAgIGh0dHBzOi8vZ2l0aHViLmNvbS9hd2lsbGlhbS9saW51eC12ZmlvLmdpdCBuZXh0Cj4g
+Y29uZmlnOiBhcm0tYWxsbW9kY29uZmlnIChhdHRhY2hlZCBhcyAuY29uZmlnKQo+IGNvbXBpbGVy
+OiBhcm0tbGludXgtZ251ZWFiaS1nY2MgKERlYmlhbiA1LjMuMS04KSA1LjMuMSAyMDE2MDIwNQo+
+IHJlcHJvZHVjZToKPiAgICAgICAgICB3Z2V0IGh0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvY2dpdC9s
+aW51eC9rZXJuZWwvZ2l0L3dmZy9sa3AtdGVzdHMuZ2l0L3BsYWluL3NiaW4vbWFrZS5jcm9zcyAt
+TyB+L2Jpbi9tYWtlLmNyb3NzCj4gICAgICAgICAgY2htb2QgK3ggfi9iaW4vbWFrZS5jcm9zcwo+
+ICAgICAgICAgICMgc2F2ZSB0aGUgYXR0YWNoZWQgLmNvbmZpZyB0byBsaW51eCBidWlsZCB0cmVl
+Cj4gICAgICAgICAgbWFrZS5jcm9zcyBBUkNIPWFybQo+Cj4gQWxsIGVycm9ycyAobmV3IG9uZXMg
+cHJlZml4ZWQgYnkgPj4pOgo+Cj4gICAgIGRyaXZlcnMvcGNpL21zaS5jOiBJbiBmdW5jdGlvbiAn
+cGNpX2J1c19tc2lfaXNvbGF0ZWQnOgo+Pj4gZHJpdmVycy9wY2kvbXNpLmM6MTE0NjoyMDogZXJy
+b3I6ICdNU0lfRkxBR19JUlFfUkVNQVBQSU5HJyB1bmRlY2xhcmVkIChmaXJzdCB1c2UgaW4gdGhp
+cyBmdW5jdGlvbikKPiAgICAgICBpZiAoaW5mby0+ZmxhZ3MgJiBNU0lfRkxBR19JUlFfUkVNQVBQ
+SU5HKQo+ICAgICAgICAgICAgICAgICAgICAgICAgIF4KPiAgICAgZHJpdmVycy9wY2kvbXNpLmM6
+MTE0NjoyMDogbm90ZTogZWFjaCB1bmRlY2xhcmVkIGlkZW50aWZpZXIgaXMgcmVwb3J0ZWQgb25s
+eSBvbmNlIGZvciBlYWNoIGZ1bmN0aW9uIGl0IGFwcGVhcnMgaW4KPgo+IHZpbSArL01TSV9GTEFH
+X0lSUV9SRU1BUFBJTkcgKzExNDYgZHJpdmVycy9wY2kvbXNpLmMKPgo+ICAgIDExNDAJCXN0cnVj
+dCBtc2lfZG9tYWluX2luZm8gKmluZm87Cj4gICAgMTE0MQkKPiAgICAxMTQyCQlpZiAoIWRvbWFp
+bikKPiAgICAxMTQzCQkJcmV0dXJuIDA7Cj4gICAgMTE0NAkKPiAgICAxMTQ1CQlpbmZvID0gbXNp
+X2dldF9kb21haW5faW5mbyhkb21haW4pOwo+PiAxMTQ2CQlpZiAoaW5mby0+ZmxhZ3MgJiBNU0lf
+RkxBR19JUlFfUkVNQVBQSU5HKQo+ICAgIDExNDcJCQlyZXR1cm4gMTsKPiAgICAxMTQ4CSNlbmRp
+Zgo+ICAgIDExNDkJCXJldHVybiAwOwoKVGhpcyBmYXVsdCBpcyBleHBlY3RlZCBiZWNhdXNlIHRo
+aXMgcGF0Y2ggaXMgYmFzZWQgb24gcGF0Y2hzZXQgWzFdIHdoaWNoCmludHJvZHVjZSBmbGFnIE1T
+SV9GTEFHX0lSUV9SRU1BUFBJTkcuCgpbMV0gCmh0dHBzOi8vd3d3Lm1haWwtYXJjaGl2ZS5jb20v
+bGludXgta2VybmVsJTQwdmdlci5rZXJuZWwub3JnL21zZzExMzg4MjAuaHRtbAoKVGhhbmtzLApZ
+b25namkKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkxp
+bnV4cHBjLWRldiBtYWlsaW5nIGxpc3QKTGludXhwcGMtZGV2QGxpc3RzLm96bGFicy5vcmcKaHR0
+cHM6Ly9saXN0cy5vemxhYnMub3JnL2xpc3RpbmZvL2xpbnV4cHBjLWRldg==
