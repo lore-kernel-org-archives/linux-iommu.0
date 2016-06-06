@@ -1,59 +1,82 @@
-From: Yongji Xie <xyjxie@linux.vnet.ibm.com>
-Subject: Re: [RESEND PATCH v2 2/6] PCI: Set PCI_BUS_FLAGS_MSI_REMAP if MSI
- controller enables IRQ remapping
-Date: Mon, 6 Jun 2016 16:25:18 +0800
-Message-ID: <201606060825.u568OZB8036751@mx0a-001b2d01.pphosted.com>
-References: <201606060500.cgRhY40o%fengguang.wu@intel.com>
+From: Marius Vlad <marius.c.vlad@intel.com>
+Subject: Re: iommu/vt-d: Use per-cpu IOVA caching,
+ suspend-to-ram causes machine hang
+Date: Mon, 6 Jun 2016 13:32:10 +0300
+Message-ID: <20160606103209.GA30777@mcvlad-wk.rb.intel.com>
+References: <CAHMfzJkuRBCMtkGniODGxfrZrmthx9nHog8vq-jCTMVJb_64Bw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-In-Reply-To: <201606060500.cgRhY40o%fengguang.wu@intel.com>
-List-Unsubscribe: <https://lists.ozlabs.org/options/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=unsubscribe>
-List-Archive: <http://lists.ozlabs.org/pipermail/linuxppc-dev/>
-List-Post: <mailto:linuxppc-dev@lists.ozlabs.org>
-List-Help: <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=help>
-List-Subscribe: <https://lists.ozlabs.org/listinfo/linuxppc-dev>,
- <mailto:linuxppc-dev-request@lists.ozlabs.org?subject=subscribe>
-Errors-To: linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org
-Sender: "Linuxppc-dev"
- <linuxppc-dev-bounces+glppe-linuxppc-embedded-2=m.gmane.org@lists.ozlabs.org>
-To: kbuild test robot <lkp@intel.com>
-Cc: kevin.tian@intel.com, nikunj@linux.vnet.ibm.com, kvm@vger.kernel.org, eric.auger@linaro.org, aik@ozlabs.ru, linux-pci@vger.kernel.org, joro@8bytes.org, will.deacon@arm.com, gwshan@linux.vnet.ibm.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, warrier@linux.vnet.ibm.com, alex.williamson@redhat.com, David.Laight@ACULAB.COM, paulus@samba.org, zhong@linux.vnet.ibm.com, alistair@popple.id.au, bhelgaas@google.com, linuxppc-dev@lists.ozlabs.org, kbuild-all@01.org
+Content-Type: multipart/mixed; boundary="===============0247392948=="
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <CAHMfzJkuRBCMtkGniODGxfrZrmthx9nHog8vq-jCTMVJb_64Bw@mail.gmail.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Adam Morrison <mad@cs.technion.ac.il>
+Cc: Omer Peleg <omer@cs.technion.ac.il>, David.Woodhouse@intel.com, intel-gfx@lists.freedesktop.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjAxNi82LzYgNToxMSwga2J1aWxkIHRlc3Qgcm9ib3Qgd3JvdGU6Cgo+IEhpLAo+Cj4gW2F1
-dG8gYnVpbGQgdGVzdCBFUlJPUiBvbiB2ZmlvL25leHRdCj4gW2Fsc28gYnVpbGQgdGVzdCBFUlJP
-UiBvbiB2NC43LXJjMSBuZXh0LTIwMTYwNjAzXQo+IFtjYW5ub3QgYXBwbHkgdG8gcGNpL25leHRd
-Cj4gW2lmIHlvdXIgcGF0Y2ggaXMgYXBwbGllZCB0byB0aGUgd3JvbmcgZ2l0IHRyZWUsIHBsZWFz
-ZSBkcm9wIHVzIGEgbm90ZSB0byBoZWxwIGltcHJvdmUgdGhlIHN5c3RlbV0KPgo+IHVybDogICAg
-aHR0cHM6Ly9naXRodWIuY29tLzBkYXktY2kvbGludXgvY29tbWl0cy9Zb25namktWGllL1BDSS1B
-ZGQtYS1uZXctUENJX0JVU19GTEFHU19NU0lfUkVNQVAtZmxhZy8yMDE2MDUzMC0yMTUzNDgKPiBi
-YXNlOiAgIGh0dHBzOi8vZ2l0aHViLmNvbS9hd2lsbGlhbS9saW51eC12ZmlvLmdpdCBuZXh0Cj4g
-Y29uZmlnOiBhcm0tYWxsbW9kY29uZmlnIChhdHRhY2hlZCBhcyAuY29uZmlnKQo+IGNvbXBpbGVy
-OiBhcm0tbGludXgtZ251ZWFiaS1nY2MgKERlYmlhbiA1LjMuMS04KSA1LjMuMSAyMDE2MDIwNQo+
-IHJlcHJvZHVjZToKPiAgICAgICAgICB3Z2V0IGh0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvY2dpdC9s
-aW51eC9rZXJuZWwvZ2l0L3dmZy9sa3AtdGVzdHMuZ2l0L3BsYWluL3NiaW4vbWFrZS5jcm9zcyAt
-TyB+L2Jpbi9tYWtlLmNyb3NzCj4gICAgICAgICAgY2htb2QgK3ggfi9iaW4vbWFrZS5jcm9zcwo+
-ICAgICAgICAgICMgc2F2ZSB0aGUgYXR0YWNoZWQgLmNvbmZpZyB0byBsaW51eCBidWlsZCB0cmVl
-Cj4gICAgICAgICAgbWFrZS5jcm9zcyBBUkNIPWFybQo+Cj4gQWxsIGVycm9ycyAobmV3IG9uZXMg
-cHJlZml4ZWQgYnkgPj4pOgo+Cj4gICAgIGRyaXZlcnMvcGNpL21zaS5jOiBJbiBmdW5jdGlvbiAn
-cGNpX2J1c19tc2lfaXNvbGF0ZWQnOgo+Pj4gZHJpdmVycy9wY2kvbXNpLmM6MTE0NjoyMDogZXJy
-b3I6ICdNU0lfRkxBR19JUlFfUkVNQVBQSU5HJyB1bmRlY2xhcmVkIChmaXJzdCB1c2UgaW4gdGhp
-cyBmdW5jdGlvbikKPiAgICAgICBpZiAoaW5mby0+ZmxhZ3MgJiBNU0lfRkxBR19JUlFfUkVNQVBQ
-SU5HKQo+ICAgICAgICAgICAgICAgICAgICAgICAgIF4KPiAgICAgZHJpdmVycy9wY2kvbXNpLmM6
-MTE0NjoyMDogbm90ZTogZWFjaCB1bmRlY2xhcmVkIGlkZW50aWZpZXIgaXMgcmVwb3J0ZWQgb25s
-eSBvbmNlIGZvciBlYWNoIGZ1bmN0aW9uIGl0IGFwcGVhcnMgaW4KPgo+IHZpbSArL01TSV9GTEFH
-X0lSUV9SRU1BUFBJTkcgKzExNDYgZHJpdmVycy9wY2kvbXNpLmMKPgo+ICAgIDExNDAJCXN0cnVj
-dCBtc2lfZG9tYWluX2luZm8gKmluZm87Cj4gICAgMTE0MQkKPiAgICAxMTQyCQlpZiAoIWRvbWFp
-bikKPiAgICAxMTQzCQkJcmV0dXJuIDA7Cj4gICAgMTE0NAkKPiAgICAxMTQ1CQlpbmZvID0gbXNp
-X2dldF9kb21haW5faW5mbyhkb21haW4pOwo+PiAxMTQ2CQlpZiAoaW5mby0+ZmxhZ3MgJiBNU0lf
-RkxBR19JUlFfUkVNQVBQSU5HKQo+ICAgIDExNDcJCQlyZXR1cm4gMTsKPiAgICAxMTQ4CSNlbmRp
-Zgo+ICAgIDExNDkJCXJldHVybiAwOwoKVGhpcyBmYXVsdCBpcyBleHBlY3RlZCBiZWNhdXNlIHRo
-aXMgcGF0Y2ggaXMgYmFzZWQgb24gcGF0Y2hzZXQgWzFdIHdoaWNoCmludHJvZHVjZSBmbGFnIE1T
-SV9GTEFHX0lSUV9SRU1BUFBJTkcuCgpbMV0gCmh0dHBzOi8vd3d3Lm1haWwtYXJjaGl2ZS5jb20v
-bGludXgta2VybmVsJTQwdmdlci5rZXJuZWwub3JnL21zZzExMzg4MjAuaHRtbAoKVGhhbmtzLApZ
-b25namkKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkxp
-bnV4cHBjLWRldiBtYWlsaW5nIGxpc3QKTGludXhwcGMtZGV2QGxpc3RzLm96bGFicy5vcmcKaHR0
-cHM6Ly9saXN0cy5vemxhYnMub3JnL2xpc3RpbmZvL2xpbnV4cHBjLWRldg==
+
+--===============0247392948==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gBBFr7Ir9EOA20Yy"
+Content-Disposition: inline
+
+
+--gBBFr7Ir9EOA20Yy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Yes, that does it. Thanks.
+
+On Mon, Jun 06, 2016 at 12:02:30AM +0300, Adam Morrison wrote:
+> > Hi Omer the following commit introduced a regression when doing
+> > suspend-to-ram. The machine never wakes up. We have more than
+> > a few machines that hang: SNB-i7-2620m, IVB-3370, HSW-4470r, BDW-5600u,
+> > BDW-525u.
+>=20
+> Jan Niehusmann posted a patch that fixes a similar problem:
+>=20
+>     http://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1158159.h=
+tml
+>=20
+> Can you please try it and see if it does the trick for you?
+>=20
+> Thanks,
+> Adam
+
+--gBBFr7Ir9EOA20Yy
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQEcBAEBAgAGBQJXVVEpAAoJELmLWIAQzyE+PPsH/09TiVfglIde1tKwXnTHzrqt
+CdRIxWuzDFDNgzPL7OhuRiPuqVi0AvZW5mgrzGG3T903frGtTEuuVq9VVas8225h
+6Bp9kpgavTokBNfgIKKAJdiSI0Gmk/KjZg4xaazUgaMXd4ZK75ZG9fGscud/T8CZ
+DZgW2sHaj677KTrHtHc3qDjsqUfSphiPyooZGNjiepycUVzJDryhMQKQQjB32gmb
+i9rxPKOU12zctWB/Dn0i5NkLTpWUe3hHpPscfBhQpQ3zArGCIp1KKRdq91Xkqs0D
+Lw8+D1SJH2AMuFM7VugcjOx6eg6aBRZHfGRUQsUr333nkfIfIDLhV3NZMQF8aV4=
+=YdoD
+-----END PGP SIGNATURE-----
+
+--gBBFr7Ir9EOA20Yy--
+
+--===============0247392948==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwtZ2Z4
+IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlz
+dHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
+
+--===============0247392948==--
