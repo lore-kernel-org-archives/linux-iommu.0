@@ -1,108 +1,66 @@
 From: Eric Auger <eric.auger@redhat.com>
-Subject: [PATCH v10 2/9] genirq/msi: msi_compose wrapper
-Date: Tue,  7 Jun 2016 16:01:21 +0000
-Message-ID: <1465315288-5931-3-git-send-email-eric.auger@redhat.com>
-References: <1465315288-5931-1-git-send-email-eric.auger@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1465315288-5931-1-git-send-email-eric.auger@redhat.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Subject: [PATCH v10 1/8] vfio: introduce a vfio_dma type field
+Date: Tue,  7 Jun 2016 16:03:46 +0000
+Message-ID: <1465315433-5974-2-git-send-email-eric.auger@redhat.com>
+References: <1465315433-5974-1-git-send-email-eric.auger@redhat.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1465315433-5974-1-git-send-email-eric.auger@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
 To: eric.auger@redhat.com, eric.auger.pro@gmail.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org
-Cc: julien.grall@arm.com, Jean-Philippe.Brucker@arm.com, p.fedin@samsung.com, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, iommu@lists.linux-foundation.org, pranav.sawargaonkar@gmail.com, yehuday@marvell.com
+Cc: linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com, yehuday@marvell.com
 List-Id: iommu@lists.linux-foundation.org
 
-Currently the MSI message is composed by directly calling
-irq_chip_compose_msi_msg and erased by setting the memory to zero.
-
-On some platforms, we will need to complexify this composition to
-properly handle MSI emission through IOMMU. Also we will need to track
-when the MSI message is erased.
-
-We propose to introduce a common wrapper for actual composition and
-erasure, msi_compose.
+We introduce a vfio_dma type since we will need to discriminate
+different types of dma slots:
+- VFIO_IOVA_USER: IOVA region used to map user vaddr
+- VFIO_IOVA_RESERVED_MSI: IOVA region reserved to map MSI doorbells
 
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
 
 ---
-v4 -> v5:
-- just introduce the msi-compose wrapper without adding new
-  functionalities
+v9 -> v10:
+- renamed VFIO_IOVA_RESERVED into VFIO_IOVA_RESERVED_MSI
+- explicitly set type to VFIO_IOVA_USER on dma_map
 
-v3 -> v4:
-- that code was formely in irq-gic-common.c
-  "irqchip/gicv2m/v3-its-pci-msi: IOMMU map the MSI frame when needed"
-  also the [un]mapping was done in irq_write_msi_msg; now done on compose
-
-v2 -> v3:
-- protect iova/addr manipulation with CONFIG_ARCH_DMA_ADDR_T_64BIT and
-  CONFIG_PHYS_ADDR_T_64BIT
-- only expose gic_pci_msi_domain_write_msg in case CONFIG_IOMMU_API &
-  CONFIG_PCI_MSI_IRQ_DOMAIN are set.
-- gic_set/unset_msi_addr duly become static
+v6 -> v7:
+- add VFIO_IOVA_ANY
+- do not introduce yet any VFIO_IOVA_RESERVED handling
 ---
- kernel/irq/msi.c | 19 ++++++++++++++++---
- 1 file changed, 16 insertions(+), 3 deletions(-)
+ drivers/vfio/vfio_iommu_type1.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-index 9b0ba4a..72bf4d6 100644
---- a/kernel/irq/msi.c
-+++ b/kernel/irq/msi.c
-@@ -55,6 +55,19 @@ static inline void irq_chip_write_msi_msg(struct irq_data *data,
- 	data->chip->irq_write_msi_msg(data, msg);
- }
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 2ba1942..a9f8b93 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -53,6 +53,12 @@ module_param_named(disable_hugepages,
+ MODULE_PARM_DESC(disable_hugepages,
+ 		 "Disable VFIO IOMMU support for IOMMU hugepages.");
  
-+static int msi_compose(struct irq_data *irq_data,
-+		       struct msi_msg *msg, bool erase)
-+{
-+	int ret = 0;
++enum vfio_iova_type {
++	VFIO_IOVA_USER = 0,	/* standard IOVA used to map user vaddr */
++	VFIO_IOVA_RESERVED_MSI,	/* reserved to map MSI doorbells */
++	VFIO_IOVA_ANY,		/* matches any IOVA type */
++};
 +
-+	if (erase)
-+		memset(msg, 0, sizeof(*msg));
-+	else
-+		ret = irq_chip_compose_msi_msg(irq_data, msg);
-+
-+	return ret;
-+}
-+
- /**
-  * msi_domain_set_affinity - Generic affinity setter function for MSI domains
-  * @irq_data:	The irq data associated to the interrupt
-@@ -73,7 +86,7 @@ int msi_domain_set_affinity(struct irq_data *irq_data,
+ struct vfio_iommu {
+ 	struct list_head	domain_list;
+ 	struct mutex		lock;
+@@ -75,6 +81,7 @@ struct vfio_dma {
+ 	unsigned long		vaddr;		/* Process virtual addr */
+ 	size_t			size;		/* Map size (bytes) */
+ 	int			prot;		/* IOMMU_READ/WRITE */
++	enum vfio_iova_type	type;		/* type of IOVA */
+ };
  
- 	ret = parent->chip->irq_set_affinity(parent, mask, force);
- 	if (ret >= 0 && ret != IRQ_SET_MASK_OK_DONE) {
--		BUG_ON(irq_chip_compose_msi_msg(irq_data, &msg));
-+		BUG_ON(msi_compose(irq_data, &msg, false));
- 		irq_chip_write_msi_msg(irq_data, &msg);
- 	}
+ struct vfio_group {
+@@ -607,6 +614,7 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+ 	dma->iova = iova;
+ 	dma->vaddr = vaddr;
+ 	dma->prot = prot;
++	dma->type = VFIO_IOVA_USER;
  
-@@ -85,7 +98,7 @@ static void msi_domain_activate(struct irq_domain *domain,
- {
- 	struct msi_msg msg;
- 
--	BUG_ON(irq_chip_compose_msi_msg(irq_data, &msg));
-+	BUG_ON(msi_compose(irq_data, &msg, false));
- 	irq_chip_write_msi_msg(irq_data, &msg);
- }
- 
-@@ -94,7 +107,7 @@ static void msi_domain_deactivate(struct irq_domain *domain,
- {
- 	struct msi_msg msg;
- 
--	memset(&msg, 0, sizeof(msg));
-+	msi_compose(irq_data, &msg, true);
- 	irq_chip_write_msi_msg(irq_data, &msg);
- }
- 
+ 	/* Insert zero-sized and grow as we map chunks of it */
+ 	vfio_link_dma(iommu, dma);
 -- 
 1.9.1
