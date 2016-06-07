@@ -1,59 +1,56 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
-Date: Tue, 07 Jun 2016 12:39:36 +0900
-Message-ID: <20160607033936.28687.78365.sendpatchset@little-apple>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: [PATCH 3/3] iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
+Date: Tue, 07 Jun 2016 12:39:45 +0900
+Message-ID: <20160607033945.28687.70956.sendpatchset@little-apple>
 References: <20160607033918.28687.98260.sendpatchset@little-apple>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <20160607033918.28687.98260.sendpatchset@little-apple>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, joro@8bytes.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+From: Magnus Damm <damm+renesas@opensource.se>
 
-Bump up the maximum numbers of micro-TLBS to 48.
+Support the r8a7796 IPMMU by sharing feature flags between
+r8a7795 and r8a7796. Also update IOMMU_OF_DECLARE to hook
+up the updated compat string.
 
-Each IPMMU device instance get micro-TLB assignment via
-the "iommus" property in DT. Older SoCs tend to use a
-maximum number of 32 micro-TLBd per IPMMU instance however
-newer SoCs such as r8a7796 make use of up to 48 micro-TLBs.
-
-At this point no SoC specific handling is done to validate
-the maximum number of micro-TLBs, and because of that the
-DT information is assumed to be within correct range for
-each particular SoC.
-
-If needed in the future SoC specific feature flags can be
-added to handle the maximum number of micro-TLBs without
-requiring DT changes, however at this point this does not
-seem necessary.
-
-Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 ---
 
- drivers/iommu/ipmmu-vmsa.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/ipmmu-vmsa.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- 0029/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-06 11:17:33.230607110 +0900
-@@ -1115,7 +1115,7 @@ static int ipmmu_probe(struct platform_d
- 	}
+--- 0031/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-06 11:19:40.210607110 +0900
+@@ -1074,7 +1074,7 @@ static const struct ipmmu_features ipmmu
+ 	.twobit_imttbcr_sl0 = false,
+ };
  
- 	mmu->dev = &pdev->dev;
--	mmu->num_utlbs = 32;
-+	mmu->num_utlbs = 48;
- 	spin_lock_init(&mmu->lock);
- 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
- 	mmu->features = match->data;
+-static const struct ipmmu_features ipmmu_features_r8a7795 = {
++static const struct ipmmu_features ipmmu_features_rcar_gen3 = {
+ 	.use_ns_alias_offset = false,
+ 	.has_cache_leaf_nodes = true,
+ 	.has_eight_ctx = true,
+@@ -1088,7 +1088,10 @@ static const struct of_device_id ipmmu_o
+ 		.data = &ipmmu_features_default,
+ 	}, {
+ 		.compatible = "renesas,ipmmu-r8a7795",
+-		.data = &ipmmu_features_r8a7795,
++		.data = &ipmmu_features_rcar_gen3,
++	}, {
++		.compatible = "renesas,ipmmu-r8a7796",
++		.data = &ipmmu_features_rcar_gen3,
+ 	}, {
+ 		/* Terminator */
+ 	},
+@@ -1268,6 +1271,8 @@ IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "r
+ 		 ipmmu_vmsa_iommu_of_setup);
+ IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795",
+ 		 ipmmu_vmsa_iommu_of_setup);
++IOMMU_OF_DECLARE(ipmmu_r8a7796_iommu_of, "renesas,ipmmu-r8a7796",
++		 ipmmu_vmsa_iommu_of_setup);
+ #endif
+ 
+ MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
