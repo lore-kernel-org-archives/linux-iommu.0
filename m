@@ -1,121 +1,117 @@
 From: Eric Auger <eric.auger@redhat.com>
-Subject: [PATCH v10 4/9] genirq/msi-doorbell: msi_doorbell_pages
-Date: Tue,  7 Jun 2016 16:01:23 +0000
-Message-ID: <1465315288-5931-5-git-send-email-eric.auger@redhat.com>
-References: <1465315288-5931-1-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v10 8/8] iommu/arm-smmu: get/put the msi cookie
+Date: Tue,  7 Jun 2016 15:59:22 +0000
+Message-ID: <1465315162-5888-9-git-send-email-eric.auger@redhat.com>
+References: <1465315162-5888-1-git-send-email-eric.auger@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1465315288-5931-1-git-send-email-eric.auger@redhat.com>
+In-Reply-To: <1465315162-5888-1-git-send-email-eric.auger@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
 To: eric.auger@redhat.com, eric.auger.pro@gmail.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com, yehuday@marvell.com
 List-Id: iommu@lists.linux-foundation.org
 
-msi_doorbell_pages sum up the number of iommu pages of a given order
-requested to map all the registered doorbells. This function will allow
-to dimension the intermediate physical address (IPA) aperture requested
-to map the MSI doorbells.
+For IOMMU_DOMAIN_UNMANAGED type we now also get the msi
+cookie in both arm-smmu and arm-smmu-v3. This initializes
+resources for MSI doorbell mapping.
 
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
-
 ---
+ drivers/iommu/arm-smmu-v3.c | 16 ++++++++++++----
+ drivers/iommu/arm-smmu.c    | 15 +++++++++++----
+ 2 files changed, 23 insertions(+), 8 deletions(-)
 
-v10: creation
----
- include/linux/msi-doorbell.h | 14 ++++++++++++
- kernel/irq/msi-doorbell.c    | 52 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 66 insertions(+)
-
-diff --git a/include/linux/msi-doorbell.h b/include/linux/msi-doorbell.h
-index bbc7321..abdaaa0 100644
---- a/include/linux/msi-doorbell.h
-+++ b/include/linux/msi-doorbell.h
-@@ -57,6 +57,14 @@ void msi_doorbell_unregister(void *chip_data);
- struct irq_chip_msi_doorbell_info *
- msi_doorbell_lookup(void *chip_data);
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 8eb002e..17a20a7 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -22,6 +22,7 @@
  
-+/**
-+ * msi_doorbell_pages: compute the number of iommu pages of size 1 << order
-+ * requested to map all the registered doorbells
-+ *
-+ * @order: iommu page order
-+ */
-+int msi_doorbell_pages(unsigned int order);
+ #include <linux/delay.h>
+ #include <linux/dma-iommu.h>
++#include <linux/msi-iommu.h>
+ #include <linux/err.h>
+ #include <linux/interrupt.h>
+ #include <linux/iommu.h>
+@@ -1412,15 +1413,21 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 		return NULL;
+ 
+ 	if (type == IOMMU_DOMAIN_DMA &&
+-	    iommu_get_dma_cookie(&smmu_domain->domain)) {
+-		kfree(smmu_domain);
+-		return NULL;
+-	}
++	    iommu_get_dma_cookie(&smmu_domain->domain))
++		goto err;
 +
- #else
++	if (type == IOMMU_DOMAIN_UNMANAGED &&
++		iommu_get_msi_cookie(&smmu_domain->domain))
++		goto err;
++
+ 	smmu_domain->domain.msi_geometry = msi_geometry;
  
- static inline int
-@@ -74,6 +82,12 @@ msi_doorbell_lookup(void *chip_data)
- 	return NULL;
+ 	mutex_init(&smmu_domain->init_mutex);
+ 	spin_lock_init(&smmu_domain->pgtbl_lock);
+ 	return &smmu_domain->domain;
++err:
++	kfree(smmu_domain);
++	return NULL;
  }
  
-+static inline int
-+msi_doorbell_pages(unsigned int order)
-+{
-+	return 0;
-+}
-+
- #endif /* CONFIG_MSI_DOORBELL */
+ static int arm_smmu_bitmap_alloc(unsigned long *map, int span)
+@@ -1446,6 +1453,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
  
- #endif
-diff --git a/kernel/irq/msi-doorbell.c b/kernel/irq/msi-doorbell.c
-index 84ecca1..65ca9292 100644
---- a/kernel/irq/msi-doorbell.c
-+++ b/kernel/irq/msi-doorbell.c
-@@ -80,3 +80,55 @@ msi_doorbell_lookup(void *chip_data)
++	iommu_put_msi_cookie(domain);
+ 	iommu_put_dma_cookie(domain);
+ 	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
+ 
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 9755a1b..867910b 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -30,6 +30,7 @@
+ 
+ #include <linux/delay.h>
+ #include <linux/dma-iommu.h>
++#include <linux/msi-iommu.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/err.h>
+ #include <linux/interrupt.h>
+@@ -1052,10 +1053,12 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 		return NULL;
+ 
+ 	if (type == IOMMU_DOMAIN_DMA &&
+-	    iommu_get_dma_cookie(&smmu_domain->domain)) {
+-		kfree(smmu_domain);
+-		return NULL;
+-	}
++	    iommu_get_dma_cookie(&smmu_domain->domain))
++		goto err;
++
++	if (type == IOMMU_DOMAIN_UNMANAGED &&
++		iommu_get_msi_cookie(&smmu_domain->domain))
++		goto err;
+ 
+ 	smmu_domain->domain.msi_geometry = msi_geometry;
+ 
+@@ -1063,6 +1066,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 	spin_lock_init(&smmu_domain->pgtbl_lock);
+ 
+ 	return &smmu_domain->domain;
++err:
++	kfree(smmu_domain);
++	return NULL;
  }
- EXPORT_SYMBOL_GPL(msi_doorbell_lookup);
  
-+static int compute_db_mapping_requirements(phys_addr_t addr, size_t size,
-+					   unsigned int order)
-+{
-+	phys_addr_t offset, granule;
-+	unsigned int nb_pages;
-+
-+	granule = (uint64_t)(1 << order);
-+	offset = addr & (granule - 1);
-+	size = ALIGN(size + offset, granule);
-+	nb_pages = size >> order;
-+
-+	return nb_pages;
-+}
-+
-+static int
-+compute_dbinfo_mapping_requirements(struct irq_chip_msi_doorbell_info *dbinfo,
-+				    unsigned int order)
-+{
-+	int ret = 0;
-+
-+	if (!dbinfo->doorbell_is_percpu) {
-+		ret = compute_db_mapping_requirements(dbinfo->global_doorbell,
-+						      dbinfo->size, order);
-+	} else {
-+		phys_addr_t __percpu *pbase;
-+		int cpu;
-+
-+		for_each_possible_cpu(cpu) {
-+			pbase = per_cpu_ptr(dbinfo->percpu_doorbells, cpu);
-+			ret += compute_db_mapping_requirements(*pbase,
-+							       dbinfo->size,
-+							       order);
-+		}
-+	}
-+	return ret;
-+}
-+
-+int msi_doorbell_pages(unsigned int order)
-+{
-+	struct irqchip_doorbell *db;
-+	int ret = 0;
-+
-+	mutex_lock(&irqchip_doorbell_mutex);
-+	list_for_each_entry(db, &irqchip_doorbell_list, next) {
-+		ret += compute_dbinfo_mapping_requirements(&db->info, order);
-+	}
-+	mutex_unlock(&irqchip_doorbell_mutex);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(msi_doorbell_pages);
-+
+ static void arm_smmu_domain_free(struct iommu_domain *domain)
+@@ -1073,6 +1079,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+ 	 * Free the domain resources. We assume that all devices have
+ 	 * already been detached.
+ 	 */
++	iommu_put_msi_cookie(domain);
+ 	iommu_put_dma_cookie(domain);
+ 	arm_smmu_destroy_domain_context(domain);
+ 	kfree(smmu_domain);
 -- 
 1.9.1
