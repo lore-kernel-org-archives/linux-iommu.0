@@ -1,8 +1,8 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH v2 03/15] arm64: mm: change IOMMU notifier action to
-	attach DMA ops
-Date: Tue,  7 Jun 2016 14:30:58 +0100
-Message-ID: <1465306270-27076-4-git-send-email-lorenzo.pieralisi@arm.com>
+Subject: [RFC PATCH v2 06/15] drivers: acpi: iort: enhance device identifiers
+	mappings
+Date: Tue,  7 Jun 2016 14:31:01 +0100
+Message-ID: <1465306270-27076-7-git-send-email-lorenzo.pieralisi@arm.com>
 References: <1465306270-27076-1-git-send-email-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,54 +19,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Current bus notifier in ARM64 (__iommu_attach_notifier)
-attempts to attach dma_ops to a device on BUS_NOTIFY_ADD_DEVICE
-action notification.
+Current IORT code only allow to map device identifiers to the
+corresponding ITS group device id. This is not sufficient, in that
+current code does not allow device id mappings to components
+that sit between devices and ITS interrupt controllers (eg IOMMUs).
 
-This causes issues on ACPI based systems, where PCI devices
-can be added before the IOMMUs the devices are attached to
-had a chance to be probed, causing failures on attempts to
-attach dma_ops in that the domain for the respective IOMMU
-may not be set-up yet by the time the bus notifier is run.
-
-Devices dma_ops do not require to be set-up till the matching
-device drivers are probed. This means that instead of running
-the notifier attaching dma_ops to devices (__iommu_attach_notifier)
-on BUS_NOTIFY_ADD_DEVICE action, it can be run just before the
-device driver is bound to the device in question (on action
-BUS_NOTIFY_BIND_DRIVER) so that it is certain that its IOMMU
-group and domain are set-up accordingly at the time the
-notifier is triggered.
-
-This patch changes the notifier action upon which dma_ops
-are attached to devices and defer it to driver binding time,
-so that IOMMU devices have a chance to be probed and to register
-their bus notifiers before the dma_ops attach sequence for a
-device is actually carried out.
+This patch enhances the current IORT ids mapping API to cater for
+all mappings allowed by the IORT specification.
 
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
 ---
- arch/arm64/mm/dma-mapping.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/iort.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index c566ec8..79b0882 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -848,7 +848,7 @@ static int __iommu_attach_notifier(struct notifier_block *nb,
+diff --git a/drivers/acpi/iort.c b/drivers/acpi/iort.c
+index cfdde71..0ba6c8a 100644
+--- a/drivers/acpi/iort.c
++++ b/drivers/acpi/iort.c
+@@ -264,14 +264,14 @@ iort_find_dev_callback(struct acpi_iort_node *node, void *context)
+ 
+ static struct acpi_iort_node *
+ iort_dev_map_rid(struct acpi_iort_node *node, u32 rid_in,
+-			    u32 *rid_out)
++			    u32 *rid_out, u8 type)
  {
- 	struct iommu_dma_notifier_data *master, *tmp;
  
--	if (action != BUS_NOTIFY_ADD_DEVICE)
-+	if (action != BUS_NOTIFY_BIND_DRIVER)
- 		return 0;
+ 	if (!node)
+ 		goto out;
  
- 	mutex_lock(&iommu_dma_notifier_lock);
+ 	/* Go upstream */
+-	while (node->type != ACPI_IORT_NODE_ITS_GROUP) {
++	while (node->type != type) {
+ 		struct acpi_iort_id_mapping *id;
+ 		int i, found = 0;
+ 
+@@ -346,7 +346,7 @@ iort_its_find_node_and_map_rid(struct pci_dev *pdev, u32 req_id, u32 *dev_id)
+ 		return NULL;
+ 	}
+ 
+-	return iort_dev_map_rid(node, req_id, dev_id);
++	return iort_dev_map_rid(node, req_id, dev_id, ACPI_IORT_NODE_ITS_GROUP);
+ }
+ 
+ /**
 -- 
 2.6.4
