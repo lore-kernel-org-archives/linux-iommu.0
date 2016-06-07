@@ -1,111 +1,90 @@
 From: Eric Auger <eric.auger@redhat.com>
-Subject: [PATCH v10 1/8] iommu: Add iommu_domain_msi_geometry and DOMAIN_ATTR_MSI_GEOMETRY
-Date: Tue,  7 Jun 2016 15:59:15 +0000
-Message-ID: <1465315162-5888-2-git-send-email-eric.auger@redhat.com>
-References: <1465315162-5888-1-git-send-email-eric.auger@redhat.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1465315162-5888-1-git-send-email-eric.auger@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Subject: [PATCH v10 5/9] genirq/msi-doorbell: msi_doorbell_safe
+Date: Tue,  7 Jun 2016 16:01:24 +0000
+Message-ID: <1465315288-5931-6-git-send-email-eric.auger@redhat.com>
+References: <1465315288-5931-1-git-send-email-eric.auger@redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1465315288-5931-1-git-send-email-eric.auger@redhat.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: eric.auger@redhat.com, eric.auger.pro@gmail.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com, yehuday@marvell.com
+Cc: julien.grall@arm.com, Jean-Philippe.Brucker@arm.com, p.fedin@samsung.com, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, iommu@lists.linux-foundation.org, pranav.sawargaonkar@gmail.com, yehuday@marvell.com
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce a new DOMAIN_ATTR_MSI_GEOMETRY domain attribute. It enables
-to query the aperture of the IOVA window dedicated to MSIs and
-test whether the MSIs must be mapped with the IOMMU-MSI API.
+msi_doorbell_safe returns whether all the registered doorbells
+implement irq_remapping.
 
-x86 IOMMUs will typically expose an MSI aperture matching the 1MB
-region [FEE0_0000h - FEF0_000h] corresponding to the the APIC
-configuration space and no support of the IOMMU-MSI API.
-
-On ARM, the support of the IOMMU-MSI API will be advertised. Aperture
-will refect the setting performed with the IOMMU-MSI API.
-
-A helper function is added to allow testing if the aperture is valid.
+When assigning a PCIe device whose host controller is upstream to
+an IOMMU, we currently do not know whether the MSI controller is
+upstream or downstream to the IOMMU.
 
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
-Suggested-by: Alex Williamson <alex.williamson@redhat.com>
-
 ---
-v8 -> v9:
-- rename programmable into iommu_msi_supported
-- add iommu_domain_msi_aperture_valid
+ include/linux/msi-doorbell.h | 12 ++++++++++++
+ kernel/irq/msi-doorbell.c    | 14 ++++++++++++++
+ 2 files changed, 26 insertions(+)
 
-v8: creation
-- deprecates DOMAIN_ATTR_MSI_MAPPING flag
----
- drivers/iommu/iommu.c |  5 +++++
- include/linux/iommu.h | 14 ++++++++++++++
- 2 files changed, 19 insertions(+)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3000051..feab3cc 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1496,6 +1496,7 @@ int iommu_domain_get_attr(struct iommu_domain *domain,
- 			  enum iommu_attr attr, void *data)
- {
- 	struct iommu_domain_geometry *geometry;
-+	struct iommu_domain_msi_geometry *msi_geometry;
- 	bool *paging;
- 	int ret = 0;
- 	u32 *count;
-@@ -1506,6 +1507,10 @@ int iommu_domain_get_attr(struct iommu_domain *domain,
- 		*geometry = domain->geometry;
+diff --git a/include/linux/msi-doorbell.h b/include/linux/msi-doorbell.h
+index abdaaa0..648f239 100644
+--- a/include/linux/msi-doorbell.h
++++ b/include/linux/msi-doorbell.h
+@@ -65,6 +65,13 @@ msi_doorbell_lookup(void *chip_data);
+  */
+ int msi_doorbell_pages(unsigned int order);
  
- 		break;
-+	case DOMAIN_ATTR_MSI_GEOMETRY:
-+		msi_geometry  = data;
-+		*msi_geometry = domain->msi_geometry;
-+		break;
- 	case DOMAIN_ATTR_PAGING:
- 		paging  = data;
- 		*paging = (domain->pgsize_bitmap != 0UL);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 664683a..1b553ee 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -52,6 +52,12 @@ struct iommu_domain_geometry {
- 	bool force_aperture;       /* DMA only allowed in mappable range? */
- };
- 
-+struct iommu_domain_msi_geometry {
-+	dma_addr_t aperture_start; /* First address used for MSI IOVA    */
-+	dma_addr_t aperture_end;   /* Last address used for MSI IOVA     */
-+	bool iommu_msi_supported;  /* Is MSI mapping supported?		 */
-+};
++/**
++ * msi_doorbell_safe: return whether all registered doorbells
++ * do implement irq_remapping and are safe to assign (coarse safety
++ * assessment)
++ */
++bool msi_doorbell_safe(void);
 +
- /* Domain feature flags */
- #define __IOMMU_DOMAIN_PAGING	(1U << 0)  /* Support for iommu_map/unmap */
- #define __IOMMU_DOMAIN_DMA_API	(1U << 1)  /* Domain for use in DMA-API
-@@ -83,6 +89,7 @@ struct iommu_domain {
- 	iommu_fault_handler_t handler;
- 	void *handler_token;
- 	struct iommu_domain_geometry geometry;
-+	struct iommu_domain_msi_geometry msi_geometry;
- 	void *iova_cookie;
- };
+ #else
  
-@@ -108,6 +115,7 @@ enum iommu_cap {
+ static inline int
+@@ -88,6 +95,11 @@ msi_doorbell_pages(unsigned int order)
+ 	return 0;
+ }
  
- enum iommu_attr {
- 	DOMAIN_ATTR_GEOMETRY,
-+	DOMAIN_ATTR_MSI_GEOMETRY,
- 	DOMAIN_ATTR_PAGING,
- 	DOMAIN_ATTR_WINDOWS,
- 	DOMAIN_ATTR_FSL_PAMU_STASH,
-@@ -328,6 +336,12 @@ extern struct iommu_group *pci_device_group(struct device *dev);
- /* Generic device grouping function */
- extern struct iommu_group *generic_device_group(struct device *dev);
- 
-+static inline bool iommu_domain_msi_aperture_valid(struct iommu_domain *domain)
++static inline bool
++msi_doorbell_safe(void)
 +{
-+	return (domain->msi_geometry.aperture_end >
-+		domain->msi_geometry.aperture_start);
++	return true;
 +}
-+
- #else /* CONFIG_IOMMU_API */
+ #endif /* CONFIG_MSI_DOORBELL */
  
- struct iommu_ops {};
+ #endif
+diff --git a/kernel/irq/msi-doorbell.c b/kernel/irq/msi-doorbell.c
+index 65ca9292..69121c8 100644
+--- a/kernel/irq/msi-doorbell.c
++++ b/kernel/irq/msi-doorbell.c
+@@ -132,3 +132,17 @@ int msi_doorbell_pages(unsigned int order)
+ }
+ EXPORT_SYMBOL_GPL(msi_doorbell_pages);
+ 
++bool msi_doorbell_safe(void)
++{
++	struct irqchip_doorbell *db;
++	bool irq_remapping = true;
++
++	mutex_lock(&irqchip_doorbell_mutex);
++	list_for_each_entry(db, &irqchip_doorbell_list, next) {
++		irq_remapping &= db->info.irq_remapping;
++	}
++	mutex_unlock(&irqchip_doorbell_mutex);
++
++	return irq_remapping;
++}
++EXPORT_SYMBOL_GPL(msi_doorbell_safe);
 -- 
 1.9.1
