@@ -1,40 +1,44 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH 0/3] iommu/ipmmu-vmsa: Initial r8a7796 support
-Date: Tue, 07 Jun 2016 12:39:18 +0900
-Message-ID: <20160607033918.28687.98260.sendpatchset@little-apple>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, joro@8bytes.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding
+Date: Tue, 07 Jun 2016 12:39:27 +0900
+Message-ID: <20160607033927.28687.67122.sendpatchset@little-apple>
+References: <20160607033918.28687.98260.sendpatchset@little-apple>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160607033918.28687.98260.sendpatchset@little-apple>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-iommu/ipmmu-vmsa: Initial r8a7796 support
+From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-[PATCH 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding
-[PATCH 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
-[PATCH 3/3] iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
+Update the IPMMU DT binding documentation to include the r8a7796 compat
+string for R-Car M3-W.
 
-This series adds r8a7796 support to the IPMMU driver. The DT binding
-gets updated, maximum number of micro-TLBs are increased and the
-driver is adjusted to match on the new DT binding.
-
-The main differences between r8a7795 and r8a7796 IPMMUs are:
-1) Number of on-chip IPMMU device instances
-2) Interrupt register bit assignment for IPMMU-MM
-3) Maximum number of micro-TLBs
-4) Micro-TLB assignment
-
-DT binding extension and change number 3 above are part of this patch
-series. Other changes will be part of DT integration code that will be
-submitted separately.
-
-Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
- Developed on top of next-20160602 and:
- [PATCH v3 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update V3
- [PATCH v2 00/11] iommu/ipmmu-vmsa: r8a7795 support V2
+ Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    1 +
+ 1 file changed, 1 insertion(+)
 
- Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    1 
- drivers/iommu/ipmmu-vmsa.c                                     |   11 +++++++---
- 2 files changed, 9 insertions(+), 3 deletions(-)
+--- 0001/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
++++ work/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt	2016-06-06 11:27:37.560607110 +0900
+@@ -16,6 +16,7 @@ Required Properties:
+     - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
+     - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
+     - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
++    - "renesas,ipmmu-r8a7796" for the R8A7796 (R-Car M3-W) IPMMU.
+     - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
+ 
+   - reg: Base address and size of the IPMMU registers.
