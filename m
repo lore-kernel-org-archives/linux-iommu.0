@@ -1,151 +1,40 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 6/7] iommu/arm-smmu: Finish off SMMUv3 default domain
- support
-Date: Mon, 6 Jun 2016 18:22:41 +0100
-Message-ID: <5755B161.3090109@arm.com>
-References: <cover.1464966939.git.robin.murphy@arm.com>
- <aabcdd814b93b2b6a902b189f6911f929a29b64f.1464966939.git.robin.murphy@arm.com>
- <20160606154712.GA9864@e106794-lin.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20160606154712.GA9864-lfHAr0XZR/FyySVAYrpuPyZi+YwRKgec@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: [PATCH 0/3] iommu/ipmmu-vmsa: Initial r8a7796 support
+Date: Tue, 07 Jun 2016 12:39:18 +0900
+Message-ID: <20160607033918.28687.98260.sendpatchset@little-apple>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, joro@8bytes.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/06/16 16:47, Jean-Philippe Brucker wrote:
-> Hi Robin,
->
-> I quite like this change, the result looks pretty clean. I rebased my
-> current work and didn't notice any major issue. Some nits below.
+iommu/ipmmu-vmsa: Initial r8a7796 support
 
-Thanks for looking!
+[PATCH 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding
+[PATCH 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
+[PATCH 3/3] iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
 
-> On Fri, Jun 03, 2016 at 06:15:41PM +0100, Robin Murphy wrote:
->> The driver's current reliance on attaching/detaching an entire group
->> for the first device it sees is at odds with the IOMMU core's initial
->> construction of a group by adding each device and attaching it to the
->> default domain in turn. As it turns out, we can happily do away with the
->> whole palaver by simply letting each device be in charge of its own
->> stream ID/stream table entry, and reducing the problem of tracking
->> duplicate IDs and domains down to "Is the STE already associated with
->> the appropriate context?", which is easily done by just looking at the
->> stream table itself.
->>
->> With an of_xlate() callback in place, devices attached to default
->> domains will now get appropriate DMA ops installed, so make sure we
->> enable translation again to stop them getting horribly confused - this
->> reverts the SMMUv3 portion of cbf8277ef456 ("iommu/arm-smmu: Treat
->> IOMMU_DOMAIN_DMA as bypass for now")
->>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
-> ...
->>
->> -static int arm_smmu_install_ste_for_group(struct arm_smmu_group *smmu_group)
->> +static void arm_smmu_install_ste(struct arm_smmu_master_data *master,
->> +				struct arm_smmu_domain *smmu_domain)
->
-> (Second line is misaligned here)
+This series adds r8a7796 support to the IPMMU driver. The DT binding
+gets updated, maximum number of micro-TLBs are increased and the
+driver is adjusted to match on the new DT binding.
 
-Fixed.
+The main differences between r8a7795 and r8a7796 IPMMUs are:
+1) Number of on-chip IPMMU device instances
+2) Interrupt register bit assignment for IPMMU-MM
+3) Maximum number of micro-TLBs
+4) Micro-TLB assignment
 
->>   {
->> -	int i;
->> -	struct arm_smmu_domain *smmu_domain = smmu_group->domain;
->> -	struct arm_smmu_strtab_ent *ste = &smmu_group->ste;
->> -	struct arm_smmu_device *smmu = smmu_group->smmu;
->> +	struct arm_smmu_device *smmu = master->smmu;
->> +	struct arm_smmu_strtab_ent *ste = &master->ste;
->> +	__le64 *step = arm_smmu_get_step_for_sid(smmu, master->sid);
->>
->>   	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
->>   		ste->s1_cfg = &smmu_domain->s1_cfg;
->> @@ -1634,42 +1628,16 @@ static int arm_smmu_install_ste_for_group(struct arm_smmu_group *smmu_group)
->>   		ste->s2_cfg = &smmu_domain->s2_cfg;
->>   	}
->>
->> -	for (i = 0; i < smmu_group->num_sids; ++i) {
->> -		u32 sid = smmu_group->sids[i];
->> -		__le64 *step = arm_smmu_get_step_for_sid(smmu, sid);
->> -
->> -		arm_smmu_write_strtab_ent(smmu, sid, step, ste);
->> -	}
->> -
->> -	return 0;
->> -}
->> -
->> -static void arm_smmu_detach_dev(struct device *dev)
->> -{
->> -	struct arm_smmu_group *smmu_group = arm_smmu_group_get(dev);
->> -
->> -	smmu_group->ste.bypass = true;
->> -	if (arm_smmu_install_ste_for_group(smmu_group) < 0)
->> -		dev_warn(dev, "failed to install bypass STE\n");
->> -
->> -	smmu_group->domain = NULL;
->> +	arm_smmu_write_strtab_ent(smmu, master->sid, step, ste);
->>   }
->>
->>   static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->>   {
->>   	int ret = 0;
->> -	struct arm_smmu_device *smmu;
->>   	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->> -	struct arm_smmu_group *smmu_group = arm_smmu_group_get(dev);
->> +	struct arm_smmu_master_data *master = dev->archdata.iommu;
->
-> (calling this member 'master' or 'smmu_master' consistently, instead of
-> 'data', would make the driver easier to grep)
+DT binding extension and change number 3 above are part of this patch
+series. Other changes will be part of DT integration code that will be
+submitted separately.
 
-Good point; it's now called "master" everywhere.
+Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+---
 
->> +	struct arm_smmu_device *smmu = master->smmu;
->>
->> -	if (!smmu_group)
->> -		return -ENOENT;
->> -
->> -	/* Already attached to a different domain? */
->> -	if (smmu_group->domain && smmu_group->domain != smmu_domain)
->> -		arm_smmu_detach_dev(dev);
->> -
->> -	smmu = smmu_group->smmu;
->>   	mutex_lock(&smmu_domain->init_mutex);
->>
->>   	if (!smmu_domain->smmu) {
->> @@ -1688,21 +1656,9 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->>   		goto out_unlock;
->>   	}
->>
->> -	/* Group already attached to this domain? */
->> -	if (smmu_group->domain)
->> -		goto out_unlock;
->> +	master->ste.bypass = false;
->
-> Should also set master->ste.valid = true. It worked out of the box
-> during my first test, because master is allocated with kmalloc and
-> initialised with garbage. Could we also use kzalloc, in the of_xlate
-> patch?
+ Developed on top of next-20160602 and:
+ [PATCH v3 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update V3
+ [PATCH v2 00/11] iommu/ipmmu-vmsa: r8a7795 support V2
 
-Yikes! I think this is the of_xlate directly cherry-picked from a more 
-aggressive attempt to remove arm_smmu_strtab_ent along with 
-arm_smmu_group, and those bits of initialisation never got added back; 
-both fixed.
-
-Thanks for catching all those - I've recreated the unversioned 
-iommu/generic branch with a fixup patch on top for the time being.
-
-Robin.
-
->
-> Thanks,
-> Jean-Philippe
->
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    1 
+ drivers/iommu/ipmmu-vmsa.c                                     |   11 +++++++---
+ 2 files changed, 9 insertions(+), 3 deletions(-)
