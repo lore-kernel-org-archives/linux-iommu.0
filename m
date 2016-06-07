@@ -1,8 +1,8 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH v2 05/15] drivers: acpi: iort: add support for named
-	component look-up
-Date: Tue,  7 Jun 2016 14:31:00 +0100
-Message-ID: <1465306270-27076-6-git-send-email-lorenzo.pieralisi@arm.com>
+Subject: [RFC PATCH v2 04/15] drivers: acpi: iort: add support for IOMMU
+	registration
+Date: Tue,  7 Jun 2016 14:30:59 +0100
+Message-ID: <1465306270-27076-5-git-send-email-lorenzo.pieralisi@arm.com>
 References: <1465306270-27076-1-git-send-email-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,72 +22,132 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-ACPI IORT table allows ids translations for PCI devices (through
-their respective root complex) and name components (ie components
-identified through their ACPI namespace path).
+The ACPI IORT table provide entries for IOMMU (aka SMMU in ARM world)
+components that allow creating the kernel data structures required to
+probe and initialize the IOMMU devices.
 
-Current IORT code only allows look-up and retrieval of IORT nodes
-corresponding to PCI root complexes components; this patch fills
-the gap by adding support for named components IORT node look-ups.
+This patch provides support in the IORT kernel code to register IOMMU
+components and their respective IOMMU operations, along with a hook
+(ie iommu_xlate()) that is used to translate devices ids to ids usable
+by the SMMU driver to set-up IOMMU group/domain configuration.
 
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
 Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
 ---
- drivers/acpi/iort.c | 30 +++++++++++++++++++++++++++---
- 1 file changed, 27 insertions(+), 3 deletions(-)
+ drivers/acpi/iort.c  | 72 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iort.h |  5 ++++
+ 2 files changed, 77 insertions(+)
 
 diff --git a/drivers/acpi/iort.c b/drivers/acpi/iort.c
-index 7cc9880..cfdde71 100644
+index 226eb6d..7cc9880 100644
 --- a/drivers/acpi/iort.c
 +++ b/drivers/acpi/iort.c
-@@ -215,12 +215,35 @@ iort_scan_node(enum acpi_iort_node_type type,
- static acpi_status
- iort_find_dev_callback(struct acpi_iort_node *node, void *context)
- {
--	struct acpi_iort_root_complex *pci_rc;
- 	struct device *dev = context;
--	struct pci_bus *bus;
+@@ -19,10 +19,13 @@
+ #define pr_fmt(fmt)	"ACPI: IORT: " fmt
  
- 	switch (node->type) {
--	case ACPI_IORT_NODE_PCI_ROOT_COMPLEX:
-+	case ACPI_IORT_NODE_NAMED_COMPONENT: {
-+		struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-+		struct acpi_iort_named_component *ncomp;
-+		struct acpi_device *adev = to_acpi_device_node(dev->fwnode);
+ #include <linux/export.h>
++#include <linux/iommu.h>
+ #include <linux/iort.h>
+ #include <linux/irqdomain.h>
+ #include <linux/kernel.h>
++#include <linux/list.h>
+ #include <linux/pci.h>
++#include <linux/slab.h>
+ 
+ struct iort_its_msi_chip {
+ 	struct list_head	list;
+@@ -30,6 +33,75 @@ struct iort_its_msi_chip {
+ 	u32			translation_id;
+ };
+ 
++struct iort_ops_node {
++	struct list_head list;
++	struct acpi_iort_node *node;
++	const struct iommu_ops *ops;
++	int (*iommu_xlate)(struct device *dev, u32 streamid,
++			   struct acpi_iort_node *node);
++};
++static LIST_HEAD(iort_iommu_ops);
++static DEFINE_SPINLOCK(iort_ops_lock);
 +
-+		if (!adev)
-+			break;
++/**
++ * iort_smmu_set_ops - Create iort_ops_node and use it to register
++ *		       iommu data in the iort_iommu_ops list.
++ *
++ * @node: IORT table node associated with the IOMMU
++ * @ops: IOMMU operations associated with the IORT node
++ * @iommu_xlate: iommu translate function to be used to carry out stream id
++ *		 translation
++ *
++ * Returns: 0 on success
++ *          -ENOMEM on failure
++ */
++int iort_smmu_set_ops(struct acpi_iort_node *node,
++		       const struct iommu_ops *ops,
++		       int (*iommu_xlate)(struct device *dev, u32 streamid,
++					  struct acpi_iort_node *node))
++{
++	struct iort_ops_node *iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
 +
-+		ncomp = (struct acpi_iort_named_component *)node->node_data;
++	if (WARN_ON(!iommu))
++		return -ENOMEM;
 +
-+		if (ACPI_FAILURE(acpi_get_name(adev->handle,
-+					       ACPI_FULL_PATHNAME, &buffer))) {
-+			pr_warn("Can't get device full path name\n");
++	INIT_LIST_HEAD(&iommu->list);
++	iommu->node = node;
++	iommu->ops = ops;
++	iommu->iommu_xlate = iommu_xlate;
++
++	spin_lock(&iort_ops_lock);
++	list_add_tail(&iommu->list, &iort_iommu_ops);
++	spin_unlock(&iort_ops_lock);
++
++	return 0;
++}
++
++/**
++ * iort_smmu_get_ops_node - Retrieve iort_ops_node associated with an
++ *			    IORT node.
++ *
++ * @node: IORT table node to be looked-up
++ *
++ * Returns: iort_ops_node pointer on success
++ *          NULL on failure
++*/
++const struct iort_ops_node *iort_smmu_get_ops_node(struct acpi_iort_node *node)
++{
++	struct iort_ops_node *curr, *iommu_node = NULL;
++
++	spin_lock(&iort_ops_lock);
++	list_for_each_entry(curr, &iort_iommu_ops, list) {
++		if (curr->node == node) {
++			iommu_node = curr;
 +			break;
 +		}
-+
-+		if (!strcmp(ncomp->device_name, (char *)buffer.pointer))
-+			return AE_OK;
-+
-+		break;
 +	}
++	spin_unlock(&iort_ops_lock);
 +
-+	case ACPI_IORT_NODE_PCI_ROOT_COMPLEX: {
-+		struct acpi_iort_root_complex *pci_rc;
-+		struct pci_bus *bus;
++	return iommu_node;
++}
 +
- 		bus = to_pci_bus(dev);
- 		pci_rc = (struct acpi_iort_root_complex *)node->node_data;
+ typedef acpi_status (*iort_find_node_callback)
+ 	(struct acpi_iort_node *node, void *context);
  
-@@ -234,6 +257,7 @@ iort_find_dev_callback(struct acpi_iort_node *node, void *context)
+diff --git a/include/linux/iort.h b/include/linux/iort.h
+index 6f2fec3..5053cc3 100644
+--- a/include/linux/iort.h
++++ b/include/linux/iort.h
+@@ -35,5 +35,10 @@ static inline u32 iort_pci_get_msi_rid(struct pci_dev *pdev, u32 req_id)
+ static inline struct irq_domain *
+ iort_pci_get_domain(struct pci_dev *pdev, u32 req_id) { return NULL; }
+ #endif
++int iort_smmu_set_ops(struct acpi_iort_node *node,
++		      const struct iommu_ops *ops,
++		      int (*iommu_xlate)(struct device *dev,
++					 u32 streamid,
++					 struct acpi_iort_node *node));
  
- 		break;
- 	}
-+	}
- 
- 	return AE_NOT_FOUND;
- }
+ #endif /* __IORT_H__ */
 -- 
 2.6.4
