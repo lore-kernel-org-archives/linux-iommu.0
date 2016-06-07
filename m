@@ -1,25 +1,28 @@
 From: Eric Auger <eric.auger@redhat.com>
-Subject: [PATCH v10 0/8] KVM PCIe/MSI passthrough on ARM/ARM64: kernel part 3/3: vfio changes
-Date: Tue,  7 Jun 2016 16:03:45 +0000
-Message-ID: <1465315433-5974-1-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v10 0/9] KVM PCIe/MSI passthrough on ARM/ARM64: kernel part 2/3: msi changes
+Date: Tue,  7 Jun 2016 16:01:19 +0000
+Message-ID: <1465315288-5931-1-git-send-email-eric.auger@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: eric.auger@redhat.com, eric.auger.pro@gmail.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com, yehuday@marvell.com
 List-Id: iommu@lists.linux-foundation.org
 
-This series allows the user-space to register a reserved IOVA domain.
-This completes the kernel integration of the whole functionality on top
-of part1 (v10) & part2 (v9).
+This series implements the MSI address mapping/unmapping in the MSI layer.
+IOMMU binding happens on pci_enable_msi since this function can sleep and
+return errors. On msi_domain_set_affinity, msi_domain_(de)activate, which
+are not allowed to sleep, we simply look for the already existing binding.
 
-We reuse the VFIO DMA MAP ioctl with a new flag to bridge to the
-msi-iommu API. The need for provisioning such MSI IOVA range is reported
-through capability chain, using VFIO_IOMMU_TYPE1_INFO_CAP_MSI_GEOMETRY.
+Irqchips likely to be downstream to iommus (not bypassing MSIs) are supposed
+to register their MSI doorbells. This make possible to retrieve their
+characteristics, detect whether MSI assignment is safe and report to the
+userspace the size/alignment of the guest PA window to provision for MSI
+mapping.
 
-vfio_iommu_type1 checks if the MSI mapping is safe when attaching the
-vfio group to the container (allow_unsafe_interrupts modality). This is
-done in a very coarse way, looking at all the registered doorbells and
-returning assignment is safe wrt IRQ if all the doorbells are safe.
+A new MSI domain info flag value is introduced to report whether the msi
+domain implements IRQ remapping. GIC v3 ITS is the first MSI controller
+advertising it. This flag value will be used by VFIO subsystem to
+determine whether MSI forwarding is safe.
 
 More details & context can be found at:
 http://www.linaro.org/blog/core-dump/kvm-pciemsi-passthrough-armarm64/
@@ -28,55 +31,51 @@ Best Regards
 
 Eric
 
-Testing:
-- functional on ARM64 AMD Overdrive HW (single GICv2m frame) with
-  Intel I350T2 (SR-IOV capable, igb/igbvf) and Intel 82574L (e1000e)
-- Not tested: ARM GICv3 ITS
-
-References:
-[1] [RFC 0/2] VFIO: Add virtual MSI doorbell support
-    (https://lkml.org/lkml/2015/7/24/135)
-[2] [RFC PATCH 0/6] vfio: Add interface to map MSI pages
-    (https://lists.cs.columbia.edu/pipermail/kvmarm/2015-September/016607.html)
-[3] [PATCH v2 0/3] Introduce MSI hardware mapping for VFIO
-    (http://permalink.gmane.org/gmane.comp.emulators.kvm.arm.devel/3858)
-
 Git: complete series available at
 https://github.com/eauger/linux/tree/v4.7-rc2-passthrough-v10
 
-previous version at
-https://git.linaro.org/people/eric.auger/linux.git/shortlog/refs/heads/v4.6-rc6-pcie-passthrough-v9
-
 History:
+
 v9 -> v10:
-Took into account Alex' comments:
-- split "vfio/type1: vfio_find_dma accepting a type argument" into 2 patches
-- properly implement replay of MSI DMA slots (by setting the aperture on the
-  new domain); fixes the assignment of several devices
-- rework user api for vfio_iommu_type1_info capability chains (cap_offset
-  at the end of the struct and fix padding issues)
-- VFIO_IOVA_RESERVED renamed into VFIO_IOVA_MSI_RESERVED
-- explicit dma->type setting to VFIO_IOVA_USER
+- was forced to introduce important changes on parts that were reviewed
+  already :-( I took the initiative to replace the irqchip's
+  get_doorbell_info callback by a new API, msi-doorbell).
+  the new API makes possible to register, lookup doorbells and also compute
+  the total requirements and IRQ safety flag used by VFIO.
+- also added code in GICv3 ITS to register a global doorbell.
 
 v8 -> v9:
-- report MSI geometry through capability chain (last patch only);
-  with the current limitation that an arbitrary number of 16 page
-  requirement is reported. To be improved later on.
-
+- use a union in irq_chip_msi_doorbell_info + boolean telling whether the
+  doorbell is percpu
+- decouple irq_data parsing from the actual mapping/unmapping in
+  msi_handle_doorbell_mappings
+- fix misc style issues
 
 v7 -> v8:
-- use renamed msi-iommu API
-- VFIO only responsible for setting the IOVA aperture
-- use new DOMAIN_ATTR_MSI_GEOMETRY iommu domain attribute
+take into account Marc's comments:
+- use iommu_msi_msg_pa_to_va with new proto
+- change in irq_chip_msi_doorbell_info struct definition:
+  prot and size became shared between all doorbells and phys_addr_t __percpu
+- cleanups in v2m irqchip
+- eventually did not touch MSI_FLAG_IRQ_REMAPPING naming
+- On msi_handle_doorbell_mappings, stop on the first irqchip where doorbells
+  can be found
+- fix resource deallocation on mapping failure in msi_domain_alloc_irqs
 
 v6 -> v7:
-- vfio_find_dma now accepts a dma_type argument.
-- should have recovered the capability to unmap the whole user IOVA range
-- remove computation of nb IOVA pages -> will post a separate RFC for that
-  while respinning the QEMU part
+- do alloc/map handling on pci_enable_msi and search on msi_(de)domain_activate
+- add msi_doorbell_info callback in irq-chip to retrieve the characteristics
+  of doorbells
 
 RFC v5 -> patch v6:
 - split to ease the review process
+- rebase on default iommu domain code (irq_data_to_msi_mapping_domain
+  checks IOMMU_DOMAIN_DMA type)
+- fix unmap sequence on msi_domain_set_affinity (reported by Marc):
+  unmap the previous doorbell when the new one has been mapped & written to
+  the device, ie. irq_chip_write_msi_msg.
+- "msi: msi_compose wrapper removed" following change above
+- add size parameter to iommu_get_reserved_iova API following Marc's request
 
 RFC v4 -> RFC v5:
 - take into account Thomas' comments on MSI related patches
@@ -132,22 +131,28 @@ RFC v1 [2] -> PATCH v1:
 - user modality enabled at the end of the series
 
 
-Eric Auger (8):
-  vfio: introduce a vfio_dma type field
-  vfio/type1: vfio_find_dma accepting a type argument
-  vfio/type1: implement recursive vfio_find_dma_from_node
-  vfio/type1: handle unmap/unpin and replay for VFIO_IOVA_RESERVED slots
-  vfio: allow reserved msi iova registration
-  vfio/type1: check doorbell safety
-  iommu/arm-smmu: do not advertise IOMMU_CAP_INTR_REMAP
-  vfio/type1: return MSI geometry through VFIO_IOMMU_GET_INFO capability
-    chains
+Eric Auger (9):
+  genirq/msi: export msi_get_domain_info
+  genirq/msi: msi_compose wrapper
+  genirq/msi-doorbell: creation
+  genirq/msi-doorbell: msi_doorbell_pages
+  genirq/msi-doorbell: msi_doorbell_safe
+  irqchip/gicv2m: register the MSI global doorbell
+  irqchip/gicv3-its: register the MSI global doorbell
+  genirq/msi: map/unmap the MSI doorbells on msi_domain_alloc/free_irqs
+  genirq/msi: use the MSI doorbell's IOVA when requested
 
- drivers/iommu/arm-smmu-v3.c     |   3 +-
- drivers/iommu/arm-smmu.c        |   3 +-
- drivers/vfio/vfio_iommu_type1.c | 246 +++++++++++++++++++++++++++++++++++++---
- include/uapi/linux/vfio.h       |  42 ++++++-
- 4 files changed, 276 insertions(+), 18 deletions(-)
+ drivers/iommu/Kconfig            |   1 +
+ drivers/irqchip/irq-gic-v2m.c    |  10 ++-
+ drivers/irqchip/irq-gic-v3-its.c |  14 ++++
+ include/linux/msi-doorbell.h     | 105 +++++++++++++++++++++++++++
+ kernel/irq/Kconfig               |   4 ++
+ kernel/irq/Makefile              |   1 +
+ kernel/irq/msi-doorbell.c        | 148 +++++++++++++++++++++++++++++++++++++++
+ kernel/irq/msi.c                 | 134 ++++++++++++++++++++++++++++++++---
+ 8 files changed, 405 insertions(+), 12 deletions(-)
+ create mode 100644 include/linux/msi-doorbell.h
+ create mode 100644 kernel/irq/msi-doorbell.c
 
 -- 
 1.9.1
