@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger@redhat.com>
-Subject: [PATCH v10 4/8] vfio/type1: handle unmap/unpin and replay for VFIO_IOVA_RESERVED slots
-Date: Tue,  7 Jun 2016 16:03:49 +0000
-Message-ID: <1465315433-5974-5-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v10 8/8] vfio/type1: return MSI geometry through VFIO_IOMMU_GET_INFO capability chains
+Date: Tue,  7 Jun 2016 16:03:53 +0000
+Message-ID: <1465315433-5974-9-git-send-email-eric.auger@redhat.com>
 References: <1465315433-5974-1-git-send-email-eric.auger@redhat.com>
 Return-path: <linux-kernel-owner@vger.kernel.org>
 In-Reply-To: <1465315433-5974-1-git-send-email-eric.auger@redhat.com>
@@ -10,68 +10,224 @@ To: eric.auger@redhat.com, eric.auger.pro@gmail.com, robin.murphy@arm.com, alex.
 Cc: linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com, yehuday@marvell.com
 List-Id: iommu@lists.linux-foundation.org
 
-Before allowing the end-user to create VFIO_IOVA_RESERVED dma slots,
-let's implement the expected behavior for removal and replay.
+This patch allows the user-space to retrieve the MSI geometry. The
+implementation is based on capability chains, now also added to
+VFIO_IOMMU_GET_INFO.
 
-As opposed to user dma slots, reserved IOVAs are not systematically bound
-to PAs and PAs are not pinned. VFIO just initializes the IOVA "aperture".
-IOVAs are allocated outside of the VFIO framework, by the MSI layer which
-is responsible to free and unmap them. The MSI mapping resources are freeed
-by the IOMMU driver on domain destruction.
+The returned info comprise:
+- whether the MSI IOVA are constrained to a reserved range (x86 case) and
+  in the positive, the start/end of the aperture,
+- or whether the IOVA aperture need to be set by the userspace. In that
+  case, the size and alignment of the IOVA window to be provided are
+  returned.
 
-On the creation of a new domain, the "replay" of a reserved slot simply
-needs to set the MSI aperture on the new domain.
+In case the userspace must provide the IOVA aperture, we currently report
+a size/alignment based on all the doorbells registered by the host kernel.
+This may exceed the actual needs.
 
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
 
 ---
-
 v9 -> v10:
-- replay of a reserved slot sets the MSI aperture on the new domain
-- use VFIO_IOVA_RESERVED_MSI enum value instead of VFIO_IOVA_RESERVED
+- move cap_offset after iova_pgsizes
+- replace __u64 alignment by __u32 order
+- introduce __u32 flags in vfio_iommu_type1_info_cap_msi_geometry and
+  fix alignment
+- call msi-doorbell API to compute the size/alignment
+
+v8 -> v9:
+- use iommu_msi_supported flag instead of programmable
+- replace IOMMU_INFO_REQUIRE_MSI_MAP flag by a more sophisticated
+  capability chain, reporting the MSI geometry
 
 v7 -> v8:
-- do no destroy anything anymore, just bypass unmap/unpin and iommu_map
-  on replay
+- use iommu_domain_msi_geometry
+
+v6 -> v7:
+- remove the computation of the number of IOVA pages to be provisionned.
+  This number depends on the domain/group/device topology which can
+  dynamically change. Let's rely instead rely on an arbitrary max depending
+  on the system
+
+v4 -> v5:
+- move msi_info and ret declaration within the conditional code
+
+v3 -> v4:
+- replace former vfio_domains_require_msi_mapping by
+  more complex computation of MSI mapping requirements, especially the
+  number of pages to be provided by the user-space.
+- reword patch title
+
+RFC v1 -> v1:
+- derived from
+  [RFC PATCH 3/6] vfio: Extend iommu-info to return MSIs automap state
+- renamed allow_msi_reconfig into require_msi_mapping
+- fixed VFIO_IOMMU_GET_INFO
 ---
- drivers/vfio/vfio_iommu_type1.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/vfio/vfio_iommu_type1.c | 78 ++++++++++++++++++++++++++++++++++++++++-
+ include/uapi/linux/vfio.h       | 32 ++++++++++++++++-
+ 2 files changed, 108 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 65a4038..69c775e 100644
+index 7daab53..7e38207 100644
 --- a/drivers/vfio/vfio_iommu_type1.c
 +++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -36,6 +36,7 @@
- #include <linux/uaccess.h>
- #include <linux/vfio.h>
+@@ -38,6 +38,8 @@
  #include <linux/workqueue.h>
-+#include <linux/msi-iommu.h>
+ #include <linux/msi-iommu.h>
+ #include <linux/msi-doorbell.h>
++#include <linux/irqdomain.h>
++#include <linux/msi.h>
  
  #define DRIVER_VERSION  "0.2"
  #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson@redhat.com>"
-@@ -387,7 +388,7 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
- 	struct vfio_domain *domain, *d;
- 	long unlocked = 0;
+@@ -1103,6 +1105,55 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
+ 	return ret;
+ }
  
--	if (!dma->size)
-+	if (!dma->size || dma->type != VFIO_IOVA_USER)
- 		return;
- 	/*
- 	 * We use the IOMMU to track the physical addresses, otherwise we'd
-@@ -724,6 +725,14 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
- 		dma = rb_entry(n, struct vfio_dma, node);
- 		iova = dma->iova;
++static int compute_msi_geometry_caps(struct vfio_iommu *iommu,
++				     struct vfio_info_cap *caps)
++{
++	struct vfio_iommu_type1_info_cap_msi_geometry *vfio_msi_geometry;
++	unsigned long order = __ffs(vfio_pgsize_bitmap(iommu));
++	struct iommu_domain_msi_geometry msi_geometry;
++	struct vfio_info_cap_header *header;
++	struct vfio_domain *d;
++	bool reserved;
++	size_t size;
++
++	mutex_lock(&iommu->lock);
++	/* All domains have same require_msi_map property, pick first */
++	d = list_first_entry(&iommu->domain_list, struct vfio_domain, next);
++	iommu_domain_get_attr(d->domain, DOMAIN_ATTR_MSI_GEOMETRY,
++			      &msi_geometry);
++	reserved = !msi_geometry.iommu_msi_supported;
++
++	mutex_unlock(&iommu->lock);
++
++	size = sizeof(*vfio_msi_geometry);
++	header = vfio_info_cap_add(caps, size,
++				   VFIO_IOMMU_TYPE1_INFO_CAP_MSI_GEOMETRY, 1);
++
++	if (IS_ERR(header))
++		return PTR_ERR(header);
++
++	vfio_msi_geometry = container_of(header,
++				struct vfio_iommu_type1_info_cap_msi_geometry,
++				header);
++
++	vfio_msi_geometry->flags = reserved;
++	if (reserved) {
++		vfio_msi_geometry->aperture_start = msi_geometry.aperture_start;
++		vfio_msi_geometry->aperture_end = msi_geometry.aperture_end;
++		return 0;
++	}
++
++	vfio_msi_geometry->order = order;
++	/*
++	 * we compute a system-wide requirement based on all the registered
++	 * doorbells
++	 */
++	vfio_msi_geometry->size =
++		msi_doorbell_pages(order) * ((uint64_t) 1 << order);
++
++	return 0;
++}
++
+ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 				   unsigned int cmd, unsigned long arg)
+ {
+@@ -1124,8 +1175,10 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 		}
+ 	} else if (cmd == VFIO_IOMMU_GET_INFO) {
+ 		struct vfio_iommu_type1_info info;
++		struct vfio_info_cap caps = { .buf = NULL, .size = 0 };
++		int ret;
  
-+		if (dma->type == VFIO_IOVA_RESERVED_MSI) {
-+			ret = iommu_msi_set_aperture(domain->domain,
-+						     dma->iova,
-+						     iova + dma->size - 1);
-+			WARN_ON(ret);
-+			continue;
+-		minsz = offsetofend(struct vfio_iommu_type1_info, iova_pgsizes);
++		minsz = offsetofend(struct vfio_iommu_type1_info, cap_offset);
+ 
+ 		if (copy_from_user(&info, (void __user *)arg, minsz))
+ 			return -EFAULT;
+@@ -1137,6 +1190,29 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 
+ 		info.iova_pgsizes = vfio_pgsize_bitmap(iommu);
+ 
++		ret = compute_msi_geometry_caps(iommu, &caps);
++		if (ret)
++			return ret;
++
++		if (caps.size) {
++			info.flags |= VFIO_IOMMU_INFO_CAPS;
++			if (info.argsz < sizeof(info) + caps.size) {
++				info.argsz = sizeof(info) + caps.size;
++				info.cap_offset = 0;
++			} else {
++				vfio_info_cap_shift(&caps, sizeof(info));
++				if (copy_to_user((void __user *)arg +
++						sizeof(info), caps.buf,
++						caps.size)) {
++					kfree(caps.buf);
++					return -EFAULT;
++				}
++				info.cap_offset = sizeof(info);
++			}
++
++			kfree(caps.buf);
 +		}
 +
- 		while (iova < dma->iova + dma->size) {
- 			phys_addr_t phys = iommu_iova_to_phys(d->domain, iova);
- 			size_t size;
+ 		return copy_to_user((void __user *)arg, &info, minsz) ?
+ 			-EFAULT : 0;
+ 
+diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+index 4a9dbc2..8dae013 100644
+--- a/include/uapi/linux/vfio.h
++++ b/include/uapi/linux/vfio.h
+@@ -488,7 +488,35 @@ struct vfio_iommu_type1_info {
+ 	__u32	argsz;
+ 	__u32	flags;
+ #define VFIO_IOMMU_INFO_PGSIZES (1 << 0)	/* supported page sizes info */
+-	__u64	iova_pgsizes;		/* Bitmap of supported page sizes */
++#define VFIO_IOMMU_INFO_CAPS	(1 << 1)	/* Info supports caps */
++	__u64	iova_pgsizes;	/* Bitmap of supported page sizes */
++	__u32	__resv;
++	__u32   cap_offset;	/* Offset within info struct of first cap */
++};
++
++#define VFIO_IOMMU_TYPE1_INFO_CAP_MSI_GEOMETRY	1
++
++/*
++ * The MSI geometry capability allows to report the MSI IOVA geometry:
++ * - either the MSI IOVAs are constrained within a reserved IOVA aperture
++ *   whose boundaries are given by [@aperture_start, @aperture_end].
++ *   this is typically the case on x86 host. The userspace is not allowed
++ *   to map userspace memory at IOVAs intersecting this range using
++ *   VFIO_IOMMU_MAP_DMA.
++ * - or the MSI IOVAs are not requested to belong to any reserved range;
++ *   in that case the userspace must provide an IOVA window characterized by
++ *   @size and @alignment using VFIO_IOMMU_MAP_DMA with RESERVED_MSI_IOVA flag.
++ */
++struct vfio_iommu_type1_info_cap_msi_geometry {
++	struct vfio_info_cap_header header;
++	__u32 flags;
++#define VFIO_IOMMU_MSI_GEOMETRY_RESERVED (1 << 0) /* reserved geometry */
++	/* not reserved */
++	__u32 order; /* iommu page order used for aperture alignment*/
++	__u64 size; /* IOVA aperture size (bytes) the userspace must provide */
++	/* reserved */
++	__u64 aperture_start;
++	__u64 aperture_end;
+ };
+ 
+ #define VFIO_IOMMU_GET_INFO _IO(VFIO_TYPE, VFIO_BASE + 12)
+@@ -503,6 +531,8 @@ struct vfio_iommu_type1_info {
+  * IOVA region that will be used on some platforms to map the host MSI frames.
+  * In that specific case, vaddr is ignored. Once registered, an MSI reserved
+  * IOVA region stays until the container is closed.
++ * The requirement for provisioning such reserved IOVA range can be checked by
++ * checking the VFIO_IOMMU_TYPE1_INFO_CAP_MSI_GEOMETRY capability.
+  */
+ struct vfio_iommu_type1_dma_map {
+ 	__u32	argsz;
 -- 
 1.9.1
