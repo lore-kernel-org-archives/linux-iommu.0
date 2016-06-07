@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger@redhat.com>
-Subject: [PATCH v10 3/9] genirq/msi-doorbell: creation
-Date: Tue,  7 Jun 2016 16:01:22 +0000
-Message-ID: <1465315288-5931-4-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v10 2/9] genirq/msi: msi_compose wrapper
+Date: Tue,  7 Jun 2016 16:01:21 +0000
+Message-ID: <1465315288-5931-3-git-send-email-eric.auger@redhat.com>
 References: <1465315288-5931-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,238 +21,88 @@ To: eric.auger@redhat.com, eric.auger.pro@gmail.com, robin.murphy@arm.com, alex.
 Cc: julien.grall@arm.com, Jean-Philippe.Brucker@arm.com, p.fedin@samsung.com, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, iommu@lists.linux-foundation.org, pranav.sawargaonkar@gmail.com, yehuday@marvell.com
 List-Id: iommu@lists.linux-foundation.org
 
-This new API aims at managing MSI doorbells likely to be iommu
-mapped. The API is bound to be used at least by irqchip drivers,
-the MSI layer and the VFIO sub-system.
+Currently the MSI message is composed by directly calling
+irq_chip_compose_msi_msg and erased by setting the memory to zero.
 
-Irqchips likely to be downstream to IOMMUs (that do not bypass MSI
-transactions) need to register their MSI doorbells so that the MSI
-layer can look them up and iommu map then when needed.
+On some platforms, we will need to complexify this composition to
+properly handle MSI emission through IOMMU. Also we will need to track
+when the MSI message is erased.
 
-We currently introduce the irq_chip_msi_doorbell_info struct that
-contains all the info characterizing a doorbell plus 3 functions that
-allows to (un)register, and lookup MSI doorbells stored in a global
-list.
+We propose to introduce a common wrapper for actual composition and
+erasure, msi_compose.
 
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
----
- drivers/iommu/Kconfig        |  1 +
- include/linux/msi-doorbell.h | 79 ++++++++++++++++++++++++++++++++++++++++++
- kernel/irq/Kconfig           |  4 +++
- kernel/irq/Makefile          |  1 +
- kernel/irq/msi-doorbell.c    | 82 ++++++++++++++++++++++++++++++++++++++++++++
- 5 files changed, 167 insertions(+)
- create mode 100644 include/linux/msi-doorbell.h
- create mode 100644 kernel/irq/msi-doorbell.c
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 5ea1610..ba54146 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -78,6 +78,7 @@ config IOMMU_DMA
- config IOMMU_MSI
- 	bool
- 	select IOMMU_DMA
-+	select MSI_DOORBELL
+---
+v4 -> v5:
+- just introduce the msi-compose wrapper without adding new
+  functionalities
+
+v3 -> v4:
+- that code was formely in irq-gic-common.c
+  "irqchip/gicv2m/v3-its-pci-msi: IOMMU map the MSI frame when needed"
+  also the [un]mapping was done in irq_write_msi_msg; now done on compose
+
+v2 -> v3:
+- protect iova/addr manipulation with CONFIG_ARCH_DMA_ADDR_T_64BIT and
+  CONFIG_PHYS_ADDR_T_64BIT
+- only expose gic_pci_msi_domain_write_msg in case CONFIG_IOMMU_API &
+  CONFIG_PCI_MSI_IRQ_DOMAIN are set.
+- gic_set/unset_msi_addr duly become static
+---
+ kernel/irq/msi.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+index 9b0ba4a..72bf4d6 100644
+--- a/kernel/irq/msi.c
++++ b/kernel/irq/msi.c
+@@ -55,6 +55,19 @@ static inline void irq_chip_write_msi_msg(struct irq_data *data,
+ 	data->chip->irq_write_msi_msg(data, msg);
+ }
  
- config FSL_PAMU
- 	bool "Freescale IOMMU support"
-diff --git a/include/linux/msi-doorbell.h b/include/linux/msi-doorbell.h
-new file mode 100644
-index 0000000..bbc7321
---- /dev/null
-+++ b/include/linux/msi-doorbell.h
-@@ -0,0 +1,79 @@
-+/*
-+ * Copyright (C) 2016 Eric Auger
-+ *
-+ * Eric Auger <eric.auger@linaro.org>
-+ *
-+ * This file is licensed under the terms of the GNU General Public
-+ * License version 2.  This program is licensed "as is" without any
-+ * warranty of any kind, whether express or implied.
-+ */
-+
-+#ifndef _LINUX_MSI_DOORBELL_H
-+#define _LINUX_MSI_DOORBELL_H
-+
-+#include <linux/irq.h>
-+
-+/* Describe all the MSI doorbell regions for an irqchip */
-+struct irq_chip_msi_doorbell_info {
-+	union {
-+		phys_addr_t __percpu *percpu_doorbells;
-+		phys_addr_t global_doorbell;
-+	};
-+	bool doorbell_is_percpu;
-+	bool irq_remapping;	/* is irq_remapping implemented? */
-+	size_t size;		/* size of a each doorbell */
-+	int prot;		/* iommu protection flag */
-+};
-+
-+#ifdef CONFIG_MSI_DOORBELL
-+
-+/**
-+ * msi_doorbell_register_global: allocate and register a global doorbell
-+ *
-+ * @chip_data: chip_data pointer
-+ * @addr: physical address of the global doorbell
-+ * @size: size of the global doorbell
-+ * @prot: protection/memory attributes
-+ * @irq_remapping: is irq_remapping implemented for this doorbell
-+ */
-+int msi_doorbell_register_global(void *chip_data, phys_addr_t addr,
-+				 size_t size, int prot, bool irq_remapping);
-+
-+/**
-+ * msi_doorbell_unregister: remove a doorbell from the list of registered
-+ * doorbells
-+ * @chip_data: chip_data pointer
-+ */
-+void msi_doorbell_unregister(void *chip_data);
-+
-+/**
-+ * msi_doorbell_lookup: return the doorbell info associated to @chip_data
-+ * doorbell info
-+ *
-+ * @chip_data: chip_data pointer
-+ * return NULL if no registered doorbell for that chip_data, or the actual
-+ * doorbell info pointer upon success
-+ */
-+struct irq_chip_msi_doorbell_info *
-+msi_doorbell_lookup(void *chip_data);
-+
-+#else
-+
-+static inline int
-+msi_doorbell_register_global(void *chip_data, phys_addr_t addr,
-+			     size_t size, int prot, bool irq_remapping)
++static int msi_compose(struct irq_data *irq_data,
++		       struct msi_msg *msg, bool erase)
 +{
-+	return -ENOENT;
++	int ret = 0;
++
++	if (erase)
++		memset(msg, 0, sizeof(*msg));
++	else
++		ret = irq_chip_compose_msi_msg(irq_data, msg);
++
++	return ret;
 +}
 +
-+static inline void msi_doorbell_unregister(void *chip_data);
-+
-+static inline struct irq_chip_msi_doorbell_info *
-+msi_doorbell_lookup(void *chip_data)
-+{
-+	return NULL;
-+}
-+
-+#endif /* CONFIG_MSI_DOORBELL */
-+
-+#endif
-diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
-index 3bbfd6a..d4faaaa 100644
---- a/kernel/irq/Kconfig
-+++ b/kernel/irq/Kconfig
-@@ -72,6 +72,10 @@ config GENERIC_IRQ_IPI
- config GENERIC_MSI_IRQ
- 	bool
+ /**
+  * msi_domain_set_affinity - Generic affinity setter function for MSI domains
+  * @irq_data:	The irq data associated to the interrupt
+@@ -73,7 +86,7 @@ int msi_domain_set_affinity(struct irq_data *irq_data,
  
-+# MSI doorbell support (for doorbell IOMMU mapping)
-+config MSI_DOORBELL
-+	bool
-+
- # Generic MSI hierarchical interrupt domain support
- config GENERIC_MSI_IRQ_DOMAIN
- 	bool
-diff --git a/kernel/irq/Makefile b/kernel/irq/Makefile
-index 2ee42e9..be02dfd 100644
---- a/kernel/irq/Makefile
-+++ b/kernel/irq/Makefile
-@@ -9,3 +9,4 @@ obj-$(CONFIG_GENERIC_IRQ_MIGRATION) += cpuhotplug.o
- obj-$(CONFIG_PM_SLEEP) += pm.o
- obj-$(CONFIG_GENERIC_MSI_IRQ) += msi.o
- obj-$(CONFIG_GENERIC_IRQ_IPI) += ipi.o
-+obj-$(CONFIG_MSI_DOORBELL) += msi-doorbell.o
-diff --git a/kernel/irq/msi-doorbell.c b/kernel/irq/msi-doorbell.c
-new file mode 100644
-index 0000000..84ecca1
---- /dev/null
-+++ b/kernel/irq/msi-doorbell.c
-@@ -0,0 +1,82 @@
-+/*
-+ * linux/kernel/irq/msi-doorbell.c
-+ *
-+ * Copyright (C) 2016 Linaro
-+ * Author: Eric Auger <eric.auger@linaro.org>
-+ *
-+ * This file is licensed under GPLv2.
-+ *
-+ * This file contains common code to manage MSI doorbells likely
-+ * to be iommu mapped. Typically meaningful on ARM.
-+ */
-+
-+#include <linux/slab.h>
-+#include <linux/irq.h>
-+#include <linux/msi-doorbell.h>
-+
-+struct irqchip_doorbell {
-+	struct irq_chip_msi_doorbell_info info;
-+	void *chip_data;
-+	struct list_head next;
-+};
-+
-+static LIST_HEAD(irqchip_doorbell_list);
-+static DEFINE_MUTEX(irqchip_doorbell_mutex);
-+
-+int msi_doorbell_register_global(void *chip_data, phys_addr_t addr,
-+				 size_t size, int prot, bool irq_remapping)
-+{
-+	struct irqchip_doorbell *db;
-+
-+	db = kmalloc(sizeof(*db), GFP_KERNEL);
-+	if (!db)
-+		return -ENOMEM;
-+
-+	db->chip_data = chip_data;
-+	db->info.doorbell_is_percpu = false;
-+	db->info.global_doorbell = addr;
-+	db->info.size = size;
-+	db->info.prot = prot;
-+	db->info.irq_remapping = irq_remapping;
-+
-+	mutex_lock(&irqchip_doorbell_mutex);
-+	list_add(&db->next, &irqchip_doorbell_list);
-+	mutex_unlock(&irqchip_doorbell_mutex);
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(msi_doorbell_register_global);
-+
-+void msi_doorbell_unregister(void *chip_data)
-+{
-+	struct irqchip_doorbell *db, *tmp;
-+
-+	mutex_lock(&irqchip_doorbell_mutex);
-+	list_for_each_entry_safe(db, tmp, &irqchip_doorbell_list, next) {
-+		if (db->chip_data == chip_data) {
-+			list_del(&db->next);
-+			kfree(db);
-+			break;
-+		}
-+	}
-+	mutex_unlock(&irqchip_doorbell_mutex);
-+}
-+EXPORT_SYMBOL_GPL(msi_doorbell_unregister);
-+
-+struct irq_chip_msi_doorbell_info *
-+msi_doorbell_lookup(void *chip_data)
-+{
-+	struct irqchip_doorbell *db;
-+	struct irq_chip_msi_doorbell_info *dbinfo = NULL;
-+
-+	mutex_lock(&irqchip_doorbell_mutex);
-+	list_for_each_entry(db, &irqchip_doorbell_list, next) {
-+		if (db->chip_data == chip_data) {
-+			dbinfo = &db->info;
-+			break;
-+		}
-+	}
-+	mutex_unlock(&irqchip_doorbell_mutex);
-+	return dbinfo;
-+}
-+EXPORT_SYMBOL_GPL(msi_doorbell_lookup);
-+
+ 	ret = parent->chip->irq_set_affinity(parent, mask, force);
+ 	if (ret >= 0 && ret != IRQ_SET_MASK_OK_DONE) {
+-		BUG_ON(irq_chip_compose_msi_msg(irq_data, &msg));
++		BUG_ON(msi_compose(irq_data, &msg, false));
+ 		irq_chip_write_msi_msg(irq_data, &msg);
+ 	}
+ 
+@@ -85,7 +98,7 @@ static void msi_domain_activate(struct irq_domain *domain,
+ {
+ 	struct msi_msg msg;
+ 
+-	BUG_ON(irq_chip_compose_msi_msg(irq_data, &msg));
++	BUG_ON(msi_compose(irq_data, &msg, false));
+ 	irq_chip_write_msi_msg(irq_data, &msg);
+ }
+ 
+@@ -94,7 +107,7 @@ static void msi_domain_deactivate(struct irq_domain *domain,
+ {
+ 	struct msi_msg msg;
+ 
+-	memset(&msg, 0, sizeof(msg));
++	msi_compose(irq_data, &msg, true);
+ 	irq_chip_write_msi_msg(irq_data, &msg);
+ }
+ 
 -- 
 1.9.1
