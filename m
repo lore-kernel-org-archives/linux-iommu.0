@@ -1,7 +1,7 @@
 From: <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v4 2/5] iommu/mediatek: move the common struct into header file
-Date: Wed, 8 Jun 2016 17:50:58 +0800
-Message-ID: <1465379461-14757-3-git-send-email-honghui.zhang@mediatek.com>
+Subject: [PATCH v4 3/5] memory/mediatek: add support for mt2701
+Date: Wed, 8 Jun 2016 17:50:59 +0800
+Message-ID: <1465379461-14757-4-git-send-email-honghui.zhang@mediatek.com>
 References: <1465379461-14757-1-git-send-email-honghui.zhang@mediatek.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,178 +23,290 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 
-Move the struct defines of mtk iommu into a new header files for
-common use.
+Mediatek SMI has two generations of HW architecture, mt8173 uses the
+second generation of SMI HW while mt2701 uses the first generation
+HW of SMI.
+
+There's slight differences between the two generations, for generation 2,
+the register which control the iommu port access PA or IOVA is at each
+larb's register base. But for generation 1, the register is at smi ao
+base(smi always on register base).
+Besides that, the smi async clock should be prepared and enabled for SMI
+generation 1 HW to transform the smi clock into emi clock domain, but is
+not needed for SMI generation 2.
+
+This patch add SMI driver for mt2701 which use generation 1 SMI HW.
 
 Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 ---
- drivers/iommu/mtk_iommu.c | 48 +----------------------------
- drivers/iommu/mtk_iommu.h | 77 +++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 78 insertions(+), 47 deletions(-)
- create mode 100644 drivers/iommu/mtk_iommu.h
+ drivers/memory/mtk-smi.c | 167 ++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 149 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index c3043d8..4f18ff5 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -34,7 +34,7 @@
- #include <dt-bindings/memory/mt8173-larb-port.h>
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+index f6b5757..4afbc41 100644
+--- a/drivers/memory/mtk-smi.c
++++ b/drivers/memory/mtk-smi.c
+@@ -21,19 +21,50 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
  #include <soc/mediatek/smi.h>
++#include <dt-bindings/memory/mt2701-larb-port.h>
  
--#include "io-pgtable.h"
-+#include "mtk_iommu.h"
+ #define SMI_LARB_MMU_EN		0xf00
++#define REG_SMI_SECUR_CON_BASE		0x5c0
++
++/* every register control 8 port, register offset 0x4 */
++#define REG_SMI_SECUR_CON_OFFSET(id)	(((id) >> 3) << 2)
++#define REG_SMI_SECUR_CON_ADDR(id)	\
++	(REG_SMI_SECUR_CON_BASE + REG_SMI_SECUR_CON_OFFSET(id))
++
++/*
++ * every port have 4 bit to control, bit[port + 3] control virtual or physical,
++ * bit[port + 2 : port + 1] control the domain, bit[port] control the security
++ * or non-security.
++ */
++#define SMI_SECUR_CON_VAL_MSK(id)	(~(0xf << (((id) & 0x7) << 2)))
++#define SMI_SECUR_CON_VAL_VIRT(id)	BIT((((id) & 0x7) << 2) + 3)
++/* mt2701 domain should be set to 3 */
++#define SMI_SECUR_CON_VAL_DOMAIN(id)	(0x3 << ((((id) & 0x7) << 2) + 1))
++
++struct mtk_smi_larb_gen {
++	int port_in_larb[MTK_LARB_NR_MAX + 1];
++	void (*config_port)(struct device *);
++};
  
- #define REG_MMU_PT_BASE_ADDR			0x000
- 
-@@ -93,20 +93,6 @@
- 
- #define MTK_PROTECT_PA_ALIGN			128
- 
--struct mtk_iommu_suspend_reg {
--	u32				standard_axi_mode;
--	u32				dcm_dis;
--	u32				ctrl_reg;
--	u32				int_control0;
--	u32				int_main_control;
--};
--
--struct mtk_iommu_client_priv {
--	struct list_head		client;
--	unsigned int			mtk_m4u_id;
--	struct device			*m4udev;
--};
--
- struct mtk_iommu_domain {
- 	spinlock_t			pgtlock; /* lock for page table */
- 
-@@ -116,19 +102,6 @@ struct mtk_iommu_domain {
- 	struct iommu_domain		domain;
+ struct mtk_smi {
+-	struct device	*dev;
+-	struct clk	*clk_apb, *clk_smi;
++	struct device			*dev;
++	struct clk			*clk_apb, *clk_smi;
++	struct clk			*clk_async; /*only needed by mt2701*/
++	void __iomem			*smi_ao_base;
  };
  
--struct mtk_iommu_data {
--	void __iomem			*base;
--	int				irq;
--	struct device			*dev;
--	struct clk			*bclk;
--	phys_addr_t			protect_base; /* protect memory base */
--	struct mtk_iommu_suspend_reg	reg;
--	struct mtk_iommu_domain		*m4u_dom;
--	struct iommu_group		*m4u_group;
--	struct mtk_smi_iommu		smi_imu;      /* SMI larb iommu info */
--	bool                            enable_4GB;
--};
--
- static struct iommu_ops mtk_iommu_ops;
+ struct mtk_smi_larb { /* larb: local arbiter */
+-	struct mtk_smi  smi;
+-	void __iomem	*base;
+-	struct device	*smi_common_dev;
+-	u32		*mmu;
++	struct mtk_smi			smi;
++	void __iomem			*base;
++	struct device			*smi_common_dev;
++	const struct mtk_smi_larb_gen	*larb_gen;
++	int				larbid;
++	u32				*mmu;
++};
++
++enum mtk_smi_gen {
++	MTK_SMI_GEN1,
++	MTK_SMI_GEN2
+ };
  
- static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
-@@ -552,25 +525,6 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+ static int mtk_smi_enable(const struct mtk_smi *smi)
+@@ -71,6 +102,7 @@ static void mtk_smi_disable(const struct mtk_smi *smi)
+ int mtk_smi_larb_get(struct device *larbdev)
+ {
+ 	struct mtk_smi_larb *larb = dev_get_drvdata(larbdev);
++	const struct mtk_smi_larb_gen *larb_gen = larb->larb_gen;
+ 	struct mtk_smi *common = dev_get_drvdata(larb->smi_common_dev);
+ 	int ret;
+ 
+@@ -87,7 +119,7 @@ int mtk_smi_larb_get(struct device *larbdev)
+ 	}
+ 
+ 	/* Configure the iommu info for this larb */
+-	writel(*larb->mmu, larb->base + SMI_LARB_MMU_EN);
++	larb_gen->config_port(larbdev);
+ 
+ 	return 0;
+ }
+@@ -126,6 +158,45 @@ mtk_smi_larb_bind(struct device *dev, struct device *master, void *data)
+ 	return -ENODEV;
+ }
+ 
++static void mtk_smi_larb_config_port(struct device *dev)
++{
++	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
++
++	writel(*larb->mmu, larb->base + SMI_LARB_MMU_EN);
++}
++
++
++static void mtk_smi_larb_config_port_gen1(struct device *dev)
++{
++	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
++	const struct mtk_smi_larb_gen *larb_gen = larb->larb_gen;
++	struct mtk_smi *common = dev_get_drvdata(larb->smi_common_dev);
++	int i, m4u_port_id, larb_port_num;
++	u32 sec_con_val, reg_val;
++
++	m4u_port_id = larb_gen->port_in_larb[larb->larbid];
++	larb_port_num = larb_gen->port_in_larb[larb->larbid + 1]
++			- larb_gen->port_in_larb[larb->larbid];
++
++	for (i = 0; i < larb_port_num; i++, m4u_port_id++) {
++		if (*larb->mmu & BIT(i)) {
++			/* bit[port + 3] controls the virtual or physical */
++			sec_con_val = SMI_SECUR_CON_VAL_VIRT(m4u_port_id);
++		} else {
++			/* do not need to enable m4u for this port */
++			continue;
++		}
++		reg_val = readl(common->smi_ao_base
++			+ REG_SMI_SECUR_CON_ADDR(m4u_port_id));
++		reg_val &= SMI_SECUR_CON_VAL_MSK(m4u_port_id);
++		reg_val |= sec_con_val;
++		reg_val |= SMI_SECUR_CON_VAL_DOMAIN(m4u_port_id);
++		writel(reg_val,
++			common->smi_ao_base
++			+ REG_SMI_SECUR_CON_ADDR(m4u_port_id));
++	}
++}
++
+ static void
+ mtk_smi_larb_unbind(struct device *dev, struct device *master, void *data)
+ {
+@@ -137,6 +208,31 @@ static const struct component_ops mtk_smi_larb_component_ops = {
+ 	.unbind = mtk_smi_larb_unbind,
+ };
+ 
++static const struct mtk_smi_larb_gen mtk_smi_larb_mt8173 = {
++	/* mt8173 do not need the port in larb */
++	.config_port = mtk_smi_larb_config_port,
++};
++
++static const struct mtk_smi_larb_gen mtk_smi_larb_mt2701 = {
++	.port_in_larb = {
++		LARB0_PORT_OFFSET, LARB1_PORT_OFFSET,
++		LARB2_PORT_OFFSET, LARB3_PORT_OFFSET
++	},
++	.config_port = mtk_smi_larb_config_port_gen1,
++};
++
++static const struct of_device_id mtk_smi_larb_of_ids[] = {
++	{
++		.compatible = "mediatek,mt8173-smi-larb",
++		.data = &mtk_smi_larb_mt8173
++	},
++	{
++		.compatible = "mediatek,mt2701-smi-larb",
++		.data = &mtk_smi_larb_mt2701
++	},
++	{}
++};
++
+ static int mtk_smi_larb_probe(struct platform_device *pdev)
+ {
+ 	struct mtk_smi_larb *larb;
+@@ -144,14 +240,20 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct device_node *smi_node;
+ 	struct platform_device *smi_pdev;
++	const struct of_device_id *of_id;
+ 
+ 	if (!dev->pm_domain)
+ 		return -EPROBE_DEFER;
+ 
++	of_id = of_match_node(mtk_smi_larb_of_ids, pdev->dev.of_node);
++	if (!of_id)
++		return -EINVAL;
++
+ 	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
+ 	if (!larb)
+ 		return -ENOMEM;
+ 
++	larb->larb_gen = of_id->data;
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	larb->base = devm_ioremap_resource(dev, res);
+ 	if (IS_ERR(larb->base))
+@@ -191,24 +293,34 @@ static int mtk_smi_larb_remove(struct platform_device *pdev)
  	return 0;
  }
  
--static int compare_of(struct device *dev, void *data)
--{
--	return dev->of_node == data;
--}
+-static const struct of_device_id mtk_smi_larb_of_ids[] = {
+-	{ .compatible = "mediatek,mt8173-smi-larb",},
+-	{}
+-};
 -
--static int mtk_iommu_bind(struct device *dev)
--{
--	struct mtk_iommu_data *data = dev_get_drvdata(dev);
--
--	return component_bind_all(dev, &data->smi_imu);
--}
--
--static void mtk_iommu_unbind(struct device *dev)
--{
--	struct mtk_iommu_data *data = dev_get_drvdata(dev);
--
--	component_unbind_all(dev, &data->smi_imu);
--}
--
- static const struct component_master_ops mtk_iommu_com_ops = {
- 	.bind		= mtk_iommu_bind,
- 	.unbind		= mtk_iommu_unbind,
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-new file mode 100644
-index 0000000..9ed0a84
---- /dev/null
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -0,0 +1,77 @@
-+/*
-+ * Copyright (c) 2015-2016 MediaTek Inc.
-+ * Author: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#ifndef _MTK_IOMMU_H_
-+#define _MTK_IOMMU_H_
-+
-+#include <linux/clk.h>
-+#include <linux/component.h>
-+#include <linux/device.h>
-+#include <linux/io.h>
-+#include <linux/iommu.h>
-+#include <linux/list.h>
-+#include <linux/spinlock.h>
-+#include <soc/mediatek/smi.h>
-+
-+#include "io-pgtable.h"
-+
-+struct mtk_iommu_suspend_reg {
-+	u32				standard_axi_mode;
-+	u32				dcm_dis;
-+	u32				ctrl_reg;
-+	u32				int_control0;
-+	u32				int_main_control;
+ static struct platform_driver mtk_smi_larb_driver = {
+ 	.probe	= mtk_smi_larb_probe,
+-	.remove = mtk_smi_larb_remove,
++	.remove	= mtk_smi_larb_remove,
+ 	.driver	= {
+ 		.name = "mtk-smi-larb",
+ 		.of_match_table = mtk_smi_larb_of_ids,
+ 	}
+ };
+ 
++static const struct of_device_id mtk_smi_common_of_ids[] = {
++	{
++		.compatible = "mediatek,mt8173-smi-common",
++		.data = (void *)MTK_SMI_GEN2
++	},
++	{
++		.compatible = "mediatek,mt2701-smi-common",
++		.data = (void *)MTK_SMI_GEN1
++	},
++	{}
 +};
 +
-+struct mtk_iommu_client_priv {
-+	struct list_head		client;
-+	unsigned int			mtk_m4u_id;
-+	struct device			*m4udev;
-+};
+ static int mtk_smi_common_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct mtk_smi *common;
++	struct resource *res;
++	const struct of_device_id *of_id;
++	enum mtk_smi_gen smi_gen;
+ 
+ 	if (!dev->pm_domain)
+ 		return -EPROBE_DEFER;
+@@ -226,6 +338,29 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+ 	if (IS_ERR(common->clk_smi))
+ 		return PTR_ERR(common->clk_smi);
+ 
++	of_id = of_match_node(mtk_smi_common_of_ids, pdev->dev.of_node);
++	if (!of_id)
++		return -EINVAL;
 +
-+struct mtk_iommu_domain;
++	/*
++	 * for mtk smi gen 1, we need to get the ao(always on) base to config
++	 * m4u port, and we need to enable the aync clock for transform the smi
++	 * clock into emi clock domain, but for mtk smi gen2, there's no smi ao
++	 * base.
++	 */
++	smi_gen = (enum mtk_smi_gen)of_id->data;
++	if (smi_gen == MTK_SMI_GEN1) {
++		res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++		common->smi_ao_base = devm_ioremap_resource(dev, res);
++		if (IS_ERR(common->smi_ao_base))
++			return PTR_ERR(common->smi_ao_base);
 +
-+struct mtk_iommu_data {
-+	void __iomem			*base;
-+	int				irq;
-+	struct device			*dev;
-+	struct clk			*bclk;
-+	phys_addr_t			protect_base; /* protect memory base */
-+	struct mtk_iommu_suspend_reg	reg;
-+	struct mtk_iommu_domain		*m4u_dom;
-+	struct iommu_group		*m4u_group;
-+	struct mtk_smi_iommu		smi_imu;      /* SMI larb iommu info */
-+	bool                            enable_4GB;
-+};
++		common->clk_async = devm_clk_get(dev, "async");
++		if (IS_ERR(common->clk_async))
++			return PTR_ERR(common->clk_async);
 +
-+static int compare_of(struct device *dev, void *data)
-+{
-+	return dev->of_node == data;
-+}
++		clk_prepare_enable(common->clk_async);
++	}
+ 	pm_runtime_enable(dev);
+ 	platform_set_drvdata(pdev, common);
+ 	return 0;
+@@ -237,11 +372,6 @@ static int mtk_smi_common_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static const struct of_device_id mtk_smi_common_of_ids[] = {
+-	{ .compatible = "mediatek,mt8173-smi-common", },
+-	{}
+-};
+-
+ static struct platform_driver mtk_smi_common_driver = {
+ 	.probe	= mtk_smi_common_probe,
+ 	.remove = mtk_smi_common_remove,
+@@ -272,4 +402,5 @@ err_unreg_smi:
+ 	platform_driver_unregister(&mtk_smi_common_driver);
+ 	return ret;
+ }
 +
-+static int mtk_iommu_bind(struct device *dev)
-+{
-+	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-+
-+	return component_bind_all(dev, &data->smi_imu);
-+}
-+
-+static void mtk_iommu_unbind(struct device *dev)
-+{
-+	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-+
-+	component_unbind_all(dev, &data->smi_imu);
-+}
-+
-+#endif
+ subsys_initcall(mtk_smi_init);
 -- 
 1.8.1.1.dirty
