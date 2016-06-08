@@ -1,58 +1,128 @@
-From: Matthew Leach <matthew@mattleach.net>
-Subject: [RFC PATCH 15/15] iommu/exynos: update to use iommu big-endian
-Date: Wed,  8 Jun 2016 19:31:10 +0100
-Message-ID: <20160608183110.13851-16-matthew@mattleach.net>
-References: <20160608183110.13851-1-matthew@mattleach.net>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <20160608183110.13851-1-matthew@mattleach.net>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Krzysztof Kozlowski <k.kozlowski@samsung.com>, Ben Dooks <ben.dooks@codethink.co.uk>
-Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene@kernel.org>, iommu@lists.linux-foundation.org
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v9 0/7] KVM PCIe/MSI passthrough on ARM/ARM64: kernel
+	part 3/3: vfio changes
+Date: Wed, 8 Jun 2016 15:06:09 -0600
+Message-ID: <20160608150609.7e28d63d@ul30vt.home>
+References: <1462362858-2925-1-git-send-email-eric.auger@linaro.org>
+	<573F34CA.5080308@linaro.org>
+	<875b5791-f7c9-97ca-46de-4b1474fe65e0@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <875b5791-f7c9-97ca-46de-4b1474fe65e0-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Auger Eric <eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: julien.grall-5wv7dgnIgG8@public.gmane.org, eric.auger-qxv4g6HH51o@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, patches-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Ben Dooks <ben.dooks@codethink.co.uk>
-
-Add initial support for big endian by always writing the pte
-in le32. Note, revisit if hardware capable of doing big endian
-fetches.
-
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
----
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Kukjin Kim <kgene@kernel.org>
-Cc: Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Cc: iommu@lists.linux-foundation.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-samsung-soc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org (open list)
----
- drivers/iommu/exynos-iommu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 5ecc86c..dd8b3b3 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -54,6 +54,10 @@ typedef u32 sysmmu_pte_t;
- #define lv2ent_small(pent) ((*(pent) & 2) == 2)
- #define lv2ent_large(pent) ((*(pent) & 3) == 1)
- 
-+#ifdef CONFIG_BIG_ENDIAN
-+#warning "revisit driver if we can enable big-endian ptes"
-+#endif
-+
- /*
-  * v1.x - v3.x SYSMMU supports 32bit physical and 32bit virtual address spaces
-  * v5.0 introduced support for 36bit physical address space by shifting
-@@ -716,7 +720,7 @@ static inline void update_pte(sysmmu_pte_t *ent, sysmmu_pte_t val)
- {
- 	dma_sync_single_for_cpu(dma_dev, virt_to_phys(ent), sizeof(*ent),
- 				DMA_TO_DEVICE);
--	*ent = val;
-+	*ent = cpu_to_le32(val);
- 	dma_sync_single_for_device(dma_dev, virt_to_phys(ent), sizeof(*ent),
- 				   DMA_TO_DEVICE);
- }
--- 
-2.8.3
+T24gV2VkLCA4IEp1biAyMDE2IDEwOjI5OjM1ICswMjAwCkF1Z2VyIEVyaWMgPGVyaWMuYXVnZXJA
+bGluYXJvLm9yZz4gd3JvdGU6Cgo+IERlYXIgYWxsLAo+IExlIDIwLzA1LzIwMTYgw6AgMTg6MDEs
+IEVyaWMgQXVnZXIgYSDDqWNyaXQgOgo+ID4gQWxleCwgUm9iaW4sCj4gPiAKPiA+IFdoaWxlIG15
+IDMgcGFydCBzZXJpZXMgcHJpbWFyaWx5IGFkZHJlc3NlcyB0aGUgcHJvYmxlbWF0aWMgb2YgbWFw
+cGluZwo+ID4gTVNJIGRvb3JiZWxscyBpbnRvIGFybS1zbW11LCBpdCBmYWlscyBpbiA6Cj4gPiAK
+PiA+IDEpIGRldGVybWluaW5nIHdoZXRoZXIgdGhlIE1TSSBjb250cm9sbGVyIGlzIGRvd25zdHJl
+YW0gb3IgdXBzdHJlYW0gdG8KPiA+IHRoZSBJT01NVSwgIAo+ID4gCT0+IGluZGljYXRlcyB3aGV0
+aGVyIHRoZSBNU0kgZG9vcmJlbGwgbXVzdCBiZSBtYXBwZWQKPiA+IAk9PiBwYXJ0aWNpcGF0ZXMg
+aW4gdGhlIGRlY2lzaW9uIGFib3V0IDIpICAKPiA+IAo+ID4gMikgZGV0ZXJtaW5pbmcgd2hldGhl
+ciBpdCBpcyBzYWZlIHRvIGFzc2lnbiBhIFBDSWUgZGV2aWNlLgo+ID4gCj4gPiBJIHRoaW5rIHdl
+IHNoYXJlIHRoaXMgdW5kZXJzdGFuZGluZyB3aXRoIFJvYmluLiBBbGwgYWJvdmUgb2YgY291cnNl
+Cj4gPiBzdGFuZHMgZm9yIEFSTS4KPiA+IAo+ID4gSSBnZXQgc3R1Y2sgd2l0aCB0aG9zZSAyIGlz
+c3VlcyBhbmQgSSBoYXZlIGZldyBxdWVzdGlvbnMgYWJvdXQgaW9tbXUKPiA+IGdyb3VwIHNldHVw
+LCBQQ0llLCBpb21tdSBkdC9BQ1BJIGRlc2NyaXB0aW9uLiBJIHdvdWxkIGJlIGdyYXRlZnVsIHRv
+IHlvdQo+ID4gaWYgeW91IGNvdWxkIGFuc3dlciBwYXJ0IG9mIHRob3NlIHF1ZXN0aW9ucyBhbmQg
+YWR2aXNlIGFib3V0IHRoZQo+ID4gc3RyYXRlZ3kgdG8gZml4IHRob3NlLiAgCj4gCj4gZ2VudGxl
+IHJlbWluZGVyIGFib3V0IHRoZSBxdWVzdGlvbnMgYmVsb3c7IGhvcGUgSSBkaWQgbm90IG1pc3Mg
+YW55IHJlcGx5Lgo+IElmIGFueWJvZHkgaGFzIHNvbWUgdGltZSB0byBzcGVudCBvbiB0aGlzIHRv
+cGljLi4uCj4gCj4gPiAKPiA+IEJlc3QgUmVnYXJkcwo+ID4gCj4gPiBFcmljCj4gPiAKPiA+IFFV
+RVNUSU9OUzoKPiA+IAo+ID4gMSkgUm9iaW4sIHlvdSBwb2ludGVkIHNvbWUgaG9zdCBjb250cm9s
+bGVycyB3aGljaCBhbHNvIGFyZSBNU0kKPiA+IGNvbnRyb2xsZXJzCj4gPiAoaHR0cDovL3RocmVh
+ZC5nbWFuZS5vcmcvZ21hbmUubGludXgua2VybmVsLnBjaS80NzE3NC9mb2N1cz00NzI2OCkuIElu
+Cj4gPiB0aGF0IGNhc2UgTVNJcyBuZXZlciByZWFjaCB0aGUgSU9NTVUuIEkgZmFpbGVkIGluIGZp
+bmRpbmcgYW55dGhpbmcgYWJvdXQKPiA+IE1TSXMgaW4gUENJZSBBQ1Mgc3BlYy4gV2hhdCBzaG91
+bGQgYmUgdGhlIGlvbW11IGdyb3VwcyBpbiB0aGF0Cj4gPiBzaXR1YXRpb24uIElzbid0IHRoZSB1
+cHN0cmVhbWVkIGNvZGUgYWJsZSB0byBzZWUgc29tZSBETUEgdHJhbnNmZXJzIGFyZQo+ID4gbm90
+IHByb3Blcmx5IGlzb2xhdGVkIGFuZCBhbGlhcyBkZXZpY2VzIGluIHRoZSBzYW1lIGdyb3VwPyBB
+Y2NvcmRpbmcgdG8KPiA+IHlvdXIgc2VjdXJpdHkgd2FybmluZywgQWxleCwgSSB3b3VsZCB0aGlu
+ayB0aGUgY29kZSBkb2VzIG5vdCByZWNvZ25pemUKPiA+IGl0LCBjYW4geW91IGNvbmZpcm0gcGxl
+YXNlPyAgCj4gbXkgY3VycmVudCB1bmRlcnN0YW5kaW5nIGlzIGVuZCBwb2ludHMgd291bGQgYmUg
+aW4gc2VwYXJhdGUgZ3JvdXBzIChhc3N1bWluZwo+IEFDUyBzdXBwb3J0KSBhbHRob3VnaCBNU0kg
+Y29udHJvbGxlciBmcmFtZSBpcyBub3QgcHJvcGVybHkgcHJvdGVjdGVkLgoKV2UgZG9uJ3QgY3Vy
+cmVudGx5IGNvbnNpZGVyIE1TSSBkaWZmZXJlbnRseSBmcm9tIG90aGVyIERNQSBhbmQgd2UgZG9u
+J3QKY3VycmVudGx5IGhhdmUgYW55IHNvcnQgb2YgY29uY2VwdCBvZiBhIGRldmljZSB3aXRoaW4g
+dGhlIGludGVybWVkaWF0ZQpmYWJyaWMgYXMgYmVpbmcgYSBETUEgdGFyZ2V0LiAgV2UgZXhwZWN0
+IGZhYnJpYyBkZXZpY2VzIHRvIG9ubHkgYmUKdHJhbnNhY3Rpb24gcm91dGVycy4gIFdlIHVzZSBB
+Q1MgdG8gZGV0ZXJtaW5lIHdoZXRoZXIgdGhlcmUncyBhbnkKcG9zc2liaWxpdHkgb2YgRE1BIGJl
+aW5nIHJlZGlyZWN0ZWQgYmVmb3JlIGl0IHJlYWNoZXMgdGhlIElPTU1VLCBidXQgaXQKc2VlbXMg
+dGhhdCBhIERNQSBiZWluZyBjb25zdW1lZCBieSBhbiBpbnRlcnJ1cHQgY29udHJvbGxlciBiZWZv
+cmUgaXQKcmVhY2hlcyB0aGUgSU9NTVUgd291bGQgYmUgYW5vdGhlciBjYXVzZSBmb3IgYW4gaXNv
+bGF0aW9uIGJyZWFjaC4KIAo+ID4gMikgY2FuIG90aGVyIFBDSWUgY29tcG9uZW50cyBiZSBNU0kg
+Y29udHJvbGxlcnM/CgpJJ20gbm90IGV2ZW4gZW50aXJlbHkgc3VyZSB3aGF0IHRoaXMgbWVhbnMu
+ICBXb3VsZCBhIERNQSB3cml0ZSBmcm9tIGFuCmVuZHBvaW50IHRhcmdldCB0aGUgTU1JTyBzcGFj
+ZSBvZiBhbiBpbnRlcm1lZGlhdGUsIGZhYnJpYyBkZXZpY2U/CiAKPiA+IDMpIEFtIEkgb2JsaWdl
+ZCB0byBjb25zaWRlciBhcmJpdHJhcnkgdG9wb2xvZ2llcyB3aGVyZSBhbiBNU0kgY29udHJvbGxl
+cgo+ID4gc3RhbmRzIGJldHdlZW4gdGhlIFBDSWUgaG9zdCBhbmQgdGhlIGlvbW11PyBpbiB0aGUg
+UENJZSBzcGFjZSBvcgo+ID4gcGxhdGZvcm0gc3BhY2U/IElmIHRoaXMgb25seSByZWxhdGVzIHRv
+IFBDSWUgY291bGRuJyBJIGNoZWNrIGlmIGFuIE1TSQo+ID4gY29udHJvbGxlciBleGlzdHMgaW4g
+dGhlIFBDSWUgdHJlZT8gIAo+IEluIG15IGxhc3Qgc2VyaWVzLCBJIGNvbnNpZGVyIHRoZSBhc3Np
+Z25tZW50IG9mIHBsYXRmb3JtIGRldmljZSB1bnNhZmUgYXMKPiBzb29uIGFzIHRoZXJlIGlzIGEg
+R0lDdjJtLiBUaGlzIGlzIGEgY2hhbmdlIGluIHRoZSB1c2VyIGV4cGVyaWVuY2UgY29tcGFyZWQg
+dG8KPiB3aGF0IHdlIGhhdmUgYmVmb3JlLgoKSWYgdGhlIE1TSSBjb250cm9sbGVyIGlzIGRvd25z
+dHJlYW0gb2Ygb3VyIERNQSB0cmFuc2xhdGlvbiwgaXQgZG9lc24ndApzZWVtIGxpa2Ugd2UgaGF2
+ZSBtdWNoIGNob2ljZSBidXQgdG8gbWFyayBpdCB1bnNhZmUuICBUaGUgZW5kcG9pbnQgaXMKZnVs
+bHkgYWJsZSB0byBhdHRlbXB0IHRvIGV4cGxvaXQgaXQuCiAKPiA+IDQpIFJvYmluIHN1Z2dlc3Rl
+ZCBpbiBhIHByaXZhdGUgdGhyZWFkIHRvIGVudW1lcmF0ZSB0aHJvdWdoIGEgbGlzdCBvZgo+ID4g
+InJlZ2lzdGVyZWQiIGRvb3JiZWxscyBhbmQgaWYgYW55IGJlbG9uZ3MgdG8gYW4gdW5zYWZlIE1T
+SSBjb250cm9sbGVyLAo+ID4gY29uc2lkZXIgdGhlIGFzc2lnbm1lbnQgaXMgdW5zYWZlLiBUaGlz
+IHdvdWxkIGJlIGEgZmlyc3Qgc3RlcCBiZWZvcmUKPiA+IGRvaW5nIHNvbWV0aGluZyBtb3JlIGNv
+bXBsZXguIEFsZXgsIHdvdWxkIHRoYXQgYmUgYWNjZXB0YWJsZSB0byB5b3UgZm9yCj4gPiBpc3N1
+ZSAjMj8gIAo+IEkgaW1wbGVtZW50ZWQgdGhpcyB0ZWNobmlxdWUgaW4gbXkgbGFzdCBzZXJpZXMg
+d2FpdGluZyBmb3IgbW9yZSBkaXNjdXNzaW9uCj4gb24gNCwgNS4KClNlZW1zIHN1ZmZpY2llbnQu
+ICBJIGRvbid0IG1pbmQgdGFraW5nIGEgYnJvYWQgc3dpbmcgdmVyc3VzIGFsbCB0aGUKZXh0cmEg
+Y29tcGxleGl0eSBvZiBkZWZpbmluZyB3aGljaCBkZXZpY2VzIGFyZSBzYWZlIHZzIHVuc2FmZS4K
+IAo+ID4gNSkgQWJvdXQgaXNzdWUgIzE6IGRvbid0IHdlIG1pc3MgdG9vbHMgaW4gZHQvQUNQSSB0
+byBkZXNjcmliZSB0aGUKPiA+IGxvY2F0aW9uIG9mIHRoZSBpb21tdSBvbiBBUk0/IFRoaXMgaXMg
+bm90IG5lZWRlZCBvbiB4ODYgYmVjYXVzZQo+ID4gaXJxX3JlbWFwcGluZyBhbmQgSU9NTVUgYXJl
+IGF0IHRoZSBzYW1lIHBsYWNlIGJ1dCBteSB1bmRlcnN0YW5kaW5nIGlzCj4gPiB0aGF0IGl0IGlz
+IG9uIEFSTSB3aGVyZQo+ID4gLSB0aGVyZSBpcyBubyBjb25uZWN0aW9uIGJldHdlZW4gdGhlIE1T
+SSBjb250cm9sbGVyIC0gd2hpY2ggaW1wbGVtZW50cwo+ID4gaXJxIHJlbWFwcGluZyAtIGFuZCB0
+aGUgaW9tbXUKPiA+IC0gTVNJIGFyZSBjb252ZXllZCBvbiB0aGUgc2FtZSBhZGRyZXNzIHNwYWNl
+IGFzIHN0YW5kYXJkIG1lbW9yeQo+ID4gdHJhbnNhY3Rpb25zLgoKSXQgc2VlbXMgcHJldHR5IGR1
+YmlvdXMgdG8gbWUgdG8gaGF2ZSBmaXhlZCBhZGRyZXNzLCB1bnByb3RlY3RlZCBNU0kKY29udHJv
+bGxlcnMgc2l0dGluZyBpbiB0aGUgRE1BIHNwYWNlIG9mIGEgZGV2aWNlIGJlZm9yZSBJT01NVQp0
+cmFuc2xhdGlvbi4gIFNlZW1zIGxpa2UgeW91IG5vdCBvbmx5IG5lZWQgdG8gbWFyayBpbnRlcnJ1
+cHRzIGFzCnVuc2FmZSwgYnV0IGV4Y2x1ZGUgdGhlIGFkZHJlc3Mgc3BhY2Ugb2YgdGhlIE1TSSBj
+b250cm9sbGVyIGZyb20gdGhlCmF2YWlsYWJsZSBJT1ZBIHNwYWNlIHRvIHRoZSB1c2VyLgogCj4g
+PiA2KSAgY2FuJ3Qgd2UgbGl2ZSB3aXRoIGlvbW11L01TSSBjb250cm9sbGVyIHJlc3BlY3RpdmUg
+bG9jYXRpb24gdW5jZXJ0YWludHk/Cj4gPiAKPiA+IC0gaW4gbXkgY3VycmVudCBzZXJpZXMsIHdp
+dGggdGhlIGFib3ZlIFhpbGlueCBNU0kgY29udHJvbGxlciwgSSB3b3VsZAo+ID4gc2VlIHRoZXJl
+IGlzIGFuIGFybS1zbW11IHJlcXVpcmluZyBtYXBwaW5nIGJlaGluZCB0aGUgUENJIGhvc3QsIHdv
+dWxkCj4gPiBxdWVyeSB0aGUgY2hhcmFjdGVyaXN0aWNzIG9mIHRoZSBNU0kgZG9vcmJlbGwgKG5v
+dCBpbXBsZW1lbnRlZCBieSB0aGF0Cj4gPiBjb250cm9sbGVyKSwgc28gbm8gbWFwcGluZyB3b3Vs
+ZCBiZSBkb25lLiBTbyBpdCB3b3VsZCB3b3JrIEkgdGhpbmsuCj4gPiAtIEhvd2V2ZXIgaW4gY2Fz
+ZSB3ZSBoYXZlIHRoaXMgdG9wb2xvZ3k6IFBDSWUgaG9zdCAtPiBNU0kgY29udHJvbGxlcgo+ID4g
+Z2VuZXJhbGx5IHVzZWQgYmVoaW5kIGFuIElPTU1VIChzbyByZWdpc3RlcmluZyBhIGRvb3JiZWxs
+KSAtPiBJT01NVSwKPiA+IHRoaXMgd291bGRuJ3Qgd29yayBzaW5jZSB0aGUgZG9vcmJlbGwgd291
+bGQgYmUgbWFwcGVkLiAgCgpJJ20gYSBsaXR0bGUgY29uZnVzZWQgd2hpY2ggZGlyZWN0aW9uICJi
+ZWhpbmQiIGlzIGhlcmUsIGJ1dCBpdCBzZWVtcwpsaWtlIGFueSB0aW1lIHRoZSBNU0kgY29udHJv
+bGxlciBsaXZlcyBpbiB0aGUgRE1BIGFkZHJlc3Mgc3BhY2Ugb2YgdGhlCmVuZHBvaW50LCBib3Ro
+IGludGVyZmVyaW5nIHdpdGggdGhlIGF2YWlsYWJsZSBJT1ZBIHNwYWNlIHRvIHRoZSB1c2VyCmFu
+ZCBwb3RlbnRpYWxseSBhbiBhdHRhY2sgdmVjdG9yIGZvciB0aGUgdXNlciwgd2UgbmVlZCB0byBj
+YWxsIGl0IG91dAphcyB1bnNhZmUuICBNYXliZSBzb21lIG9mIHRoZW0gYXJlIGZvciBleGNsdXNp
+dmUgdXNlIG9mIHRoZSBkZXZpY2UgYW5kCnRoZSBhdHRhY2sgdmVjdG9yIGlzIHJlbGF0aXZlbHkg
+Y29udGFpbmVkLCBidXQgdGhleSBzdGlsbCBhZmZlY3QgdGhlCklPVkEgc3BhY2Ugb2YgdGhlIHVz
+ZXIuICBTdWNoIGEgY29uZmlndXJhdGlvbiBtaWdodCBiZSBzYWZlLCBidXQgYXMgSQpzYWlkIEkn
+bSBub3Qgb3Bwb3NlZCB0byBiZWluZyBwcmV0dHkgbGliZXJhbCBpbiBhcHBseWluZyB0aGUgdW5z
+YWZlCnJlcXVpcmVtZW50IGlmIHRoZSBwbGF0Zm9ybSBoYXMgZG9uZSBzb21ldGhpbmcgdW5mcmll
+bmRseS4gIFRoYW5rcywKCkFsZXgKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
+b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2lvbW11
