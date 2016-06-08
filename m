@@ -1,65 +1,58 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 3/3] iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
-Date: Wed, 8 Jun 2016 09:04:17 +0200
-Message-ID: <CAMuHMdUr6P=xiiw02wEeJdBw+K_q2ATE9jHgiQ0KCOangYv=tw@mail.gmail.com>
-References: <20160607033918.28687.98260.sendpatchset@little-apple>
- <20160607033945.28687.70956.sendpatchset@little-apple> <10108662.fYf10pMtGa@avalon>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v4 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V4
+Date: Wed, 08 Jun 2016 16:17:37 +0900
+Message-ID: <20160608071737.7560.32571.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <10108662.fYf10pMtGa@avalon>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Magnus Damm <magnus.damm@gmail.com>, iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <joro@8bytes.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-renesas-soc@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Laurent,
+iommu/ipmmu-vmsa: IPMMU multi-arch update V4
 
-On Wed, Jun 8, 2016 at 2:18 AM, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
->> --- 0031/drivers/iommu/ipmmu-vmsa.c
->> +++ work/drivers/iommu/ipmmu-vmsa.c   2016-06-06 11:19:40.210607110 +0900
->> @@ -1074,7 +1074,7 @@ static const struct ipmmu_features ipmmu
->>       .twobit_imttbcr_sl0 = false,
->>  };
->>
->> -static const struct ipmmu_features ipmmu_features_r8a7795 = {
->> +static const struct ipmmu_features ipmmu_features_rcar_gen3 = {
->>       .use_ns_alias_offset = false,
->>       .has_cache_leaf_nodes = true,
->>       .has_eight_ctx = true,
->> @@ -1088,7 +1088,10 @@ static const struct of_device_id ipmmu_o
->>               .data = &ipmmu_features_default,
->>       }, {
->>               .compatible = "renesas,ipmmu-r8a7795",
->> -             .data = &ipmmu_features_r8a7795,
->> +             .data = &ipmmu_features_rcar_gen3,
->> +     }, {
->> +             .compatible = "renesas,ipmmu-r8a7796",
->> +             .data = &ipmmu_features_rcar_gen3,
->>       }, {
->>               /* Terminator */
->>       },
->> @@ -1268,6 +1271,8 @@ IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "r
->>                ipmmu_vmsa_iommu_of_setup);
->>  IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795",
->>                ipmmu_vmsa_iommu_of_setup);
->> +IOMMU_OF_DECLARE(ipmmu_r8a7796_iommu_of, "renesas,ipmmu-r8a7796",
->> +              ipmmu_vmsa_iommu_of_setup);
->
-> How about a Gen3 generic compatible string in addition to the SoC-specific
-> ones ?
+[PATCH v4 01/07] iommu/ipmmu-vmsa: Remove platform data handling
+[PATCH v4 02/07] iommu/ipmmu-vmsa: Rework interrupt code and use bitmap for context
+[PATCH v4 03/07] iommu/ipmmu-vmsa: Break out utlb parsing code
+[PATCH v4 04/07] iommu/ipmmu-vmsa: Break out domain allocation code
+[PATCH v4 05/07] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
+[PATCH v4 06/07] iommu/ipmmu-vmsa: ARM and ARM64 archdata access
+[PATCH v4 07/07] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
 
-Do we want to specify the number of utlbs here?
-Does it differ between r8a7795, r8a7796, and future members?
+These patches update the IPMMU driver with a couple of changes
+to support build on multiple architectures. In the process of
+doing so the interrupt code gets reworked and the foundation
+for supporting multiple contexts are added.
 
-Gr{oetje,eeting}s,
+Changes since V3:
+ - Updated patch 3/7 to fix hang-on-boot issue on 32-bit ARM - thanks Geert!
+ - Reworked group parameter handling in patch 3/7 and 5/7.
+ - Added patch 6/7 to fix build of the driver on s390/tile/um architectures
 
-                        Geert
+Changes since V2:
+ - Got rid of patch 3 from the V2 however patch 1, 2 and 4 are kept.
+ - V3 patch 3, 4 and 5 come from
+   [PATCH 00/04] iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
+ - Patch 5 has been reworked to include patch 3 of the V1 of this series 
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Changes since V1:
+ - Got rid of patch 2 and 3 from initial series
+ - Updated bitmap code locking and also used lighter bitop functions
+ - Updated the Kconfig bits to apply on top of ARCH_RENESAS
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+---
+
+ drivers/iommu/Kconfig      |    1 
+ drivers/iommu/ipmmu-vmsa.c |  302 +++++++++++++++++++++++++++++++++++---------
+ 2 files changed, 243 insertions(+), 60 deletions(-)
