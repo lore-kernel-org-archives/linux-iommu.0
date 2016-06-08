@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v4 06/07] iommu/ipmmu-vmsa: ARM and ARM64 archdata access
-Date: Wed, 08 Jun 2016 16:18:34 +0900
-Message-ID: <20160608071834.7560.85882.sendpatchset@little-apple>
+Subject: [PATCH v4 07/07] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
+Date: Wed, 08 Jun 2016 16:18:43 +0900
+Message-ID: <20160608071843.7560.72573.sendpatchset@little-apple>
 References: <20160608071737.7560.32571.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,121 +23,37 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Not all architectures have an iommu member in their archdata, so
-use #ifdefs support build wit COMPILE_TEST on any architecture.
+Neither the ARM page table code enabled by IOMMU_IO_PGTABLE_LPAE
+nor the IPMMU_VMSA driver actually depends on ARM_LPAE, so get
+rid of the dependency.
+
+Tested with ipmmu-vmsa on r8a7794 ALT and a kernel config using:
+ # CONFIG_ARM_LPAE is not set
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 ---
 
  Changes since V3:
- - New patch
+ - None
 
- drivers/iommu/ipmmu-vmsa.c |   37 +++++++++++++++++++++++++++----------
- 1 file changed, 27 insertions(+), 10 deletions(-)
+ Changes since V2:
+ - None
 
---- 0009/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-08 15:01:40.970607110 +0900
-@@ -70,6 +70,25 @@ static struct ipmmu_vmsa_domain *to_vmsa
- 	return container_of(dom, struct ipmmu_vmsa_domain, io_domain);
- }
+ Changes since V1:
+ - Rebased on top of ARCH_RENESAS change
+ - Added Acked-by from Laurent
+
+ drivers/iommu/Kconfig |    1 -
+ 1 file changed, 1 deletion(-)
+
+--- 0001/drivers/iommu/Kconfig
++++ work/drivers/iommu/Kconfig	2016-06-02 22:17:14.950607110 +0900
+@@ -273,7 +273,6 @@ config EXYNOS_IOMMU_DEBUG
  
-+#if defined(CONFIG_ARM) || defined(CONFIG_ARM64)
-+static struct ipmmu_vmsa_archdata *to_archdata(struct device *dev)
-+{
-+	return dev->archdata.iommu;
-+}
-+static void set_archdata(struct device *dev, struct ipmmu_vmsa_archdata *p)
-+{
-+	dev->archdata.iommu = p;
-+}
-+#else
-+static struct ipmmu_vmsa_archdata *to_archdata(struct device *dev)
-+{
-+	return NULL;
-+}
-+static void set_archdata(struct device *dev, struct ipmmu_vmsa_archdata *p)
-+{
-+}
-+#endif
-+
- #define TLB_LOOP_TIMEOUT		100	/* 100us */
- 
- /* -----------------------------------------------------------------------------
-@@ -539,7 +558,7 @@ static void ipmmu_domain_free(struct iom
- static int ipmmu_attach_device(struct iommu_domain *io_domain,
- 			       struct device *dev)
- {
--	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
-+	struct ipmmu_vmsa_archdata *archdata = to_archdata(dev);
- 	struct ipmmu_vmsa_device *mmu = archdata->mmu;
- 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
- 	unsigned long flags;
-@@ -581,7 +600,7 @@ static int ipmmu_attach_device(struct io
- static void ipmmu_detach_device(struct iommu_domain *io_domain,
- 				struct device *dev)
- {
--	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
-+	struct ipmmu_vmsa_archdata *archdata = to_archdata(dev);
- 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
- 	unsigned int i;
- 
-@@ -701,7 +720,7 @@ static int ipmmu_init_platform_device(st
- 	archdata->mmu = mmu;
- 	archdata->utlbs = utlbs;
- 	archdata->num_utlbs = num_utlbs;
--	dev->archdata.iommu = archdata;
-+	set_archdata(dev, archdata);
- 	return 0;
- 
- error:
-@@ -713,12 +732,11 @@ error:
- 
- static int ipmmu_add_device(struct device *dev)
- {
--	struct ipmmu_vmsa_archdata *archdata;
- 	struct ipmmu_vmsa_device *mmu = NULL;
- 	struct iommu_group *group;
- 	int ret;
- 
--	if (dev->archdata.iommu) {
-+	if (to_archdata(dev)) {
- 		dev_warn(dev, "IOMMU driver already assigned to device %s\n",
- 			 dev_name(dev));
- 		return -EINVAL;
-@@ -754,8 +772,7 @@ static int ipmmu_add_device(struct devic
- 	 * - Make the mapping size configurable ? We currently use a 2GB mapping
- 	 *   at a 1GB offset to ensure that NULL VAs will fault.
- 	 */
--	archdata = dev->archdata.iommu;
--	mmu = archdata->mmu;
-+	mmu = to_archdata(dev)->mmu;
- 	if (!mmu->mapping) {
- 		struct dma_iommu_mapping *mapping;
- 
-@@ -783,7 +800,7 @@ error:
- 	if (mmu)
- 		arm_iommu_release_mapping(mmu->mapping);
- 
--	dev->archdata.iommu = NULL;
-+	set_archdata(dev, NULL);
- 
- 	if (!IS_ERR_OR_NULL(group))
- 		iommu_group_remove_device(dev);
-@@ -793,7 +810,7 @@ error:
- 
- static void ipmmu_remove_device(struct device *dev)
- {
--	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
-+	struct ipmmu_vmsa_archdata *archdata = to_archdata(dev);
- 
- 	arm_iommu_detach_device(dev);
- 	iommu_group_remove_device(dev);
-@@ -801,7 +818,7 @@ static void ipmmu_remove_device(struct d
- 	kfree(archdata->utlbs);
- 	kfree(archdata);
- 
--	dev->archdata.iommu = NULL;
-+	set_archdata(dev, NULL);
- }
- 
- static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
+ config IPMMU_VMSA
+ 	bool "Renesas VMSA-compatible IPMMU"
+-	depends on ARM_LPAE
+ 	depends on ARCH_RENESAS || COMPILE_TEST
+ 	select IOMMU_API
+ 	select IOMMU_IO_PGTABLE_LPAE
