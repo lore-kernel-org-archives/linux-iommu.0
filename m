@@ -1,13 +1,15 @@
-From: <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: [PATCH v4 5/5] ARM: dts: mt2701: add iommu/smi dtsi node for mt2701
-Date: Wed, 8 Jun 2016 17:51:01 +0800
-Message-ID: <1465379461-14757-6-git-send-email-honghui.zhang@mediatek.com>
-References: <1465379461-14757-1-git-send-email-honghui.zhang@mediatek.com>
+From: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
+Subject: Re: [RESEND PATCH v2 0/6] vfio-pci: Add support for mmapping MSI-X
+	table
+Date: Wed, 8 Jun 2016 17:56:49 +0800
+Message-ID: <8ccf0165-da3e-9709-6cf2-ccab82eb55fb@linux.vnet.ibm.com>
+References: <1464847803-22756-1-git-send-email-xyjxie@linux.vnet.ibm.com>
+	<e03d36bb-c8ff-ec95-780e-5f625bdaf78e@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1465379461-14757-1-git-send-email-honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <e03d36bb-c8ff-ec95-780e-5f625bdaf78e-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,115 +19,46 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org, nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-
-Add the dtsi node of iommu and smi for mt2701.
-
-Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
----
- arch/arm/boot/dts/mt2701.dtsi | 51 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 51 insertions(+)
-
-diff --git a/arch/arm/boot/dts/mt2701.dtsi b/arch/arm/boot/dts/mt2701.dtsi
-index 42d5a37..363de0d 100644
---- a/arch/arm/boot/dts/mt2701.dtsi
-+++ b/arch/arm/boot/dts/mt2701.dtsi
-@@ -16,6 +16,7 @@
- #include <dt-bindings/power/mt2701-power.h>
- #include <dt-bindings/interrupt-controller/irq.h>
- #include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/memory/mt2701-larb-port.h>
- #include "skeleton64.dtsi"
- #include "mt2701-pinfunc.h"
- 
-@@ -160,6 +161,16 @@
- 		clock-names = "system-clk", "rtc-clk";
- 	};
- 
-+	smi_common: smi@1000c000 {
-+		compatible = "mediatek,mt2701-smi-common";
-+		reg = <0 0x1000c000 0 0x1000>;
-+		clocks = <&infracfg CLK_INFRA_SMI>,
-+			 <&mmsys CLK_MM_SMI_COMMON>,
-+			 <&infracfg CLK_INFRA_SMI>;
-+		clock-names = "apb", "smi", "async";
-+		power-domains = <&scpsys MT2701_POWER_DOMAIN_DISP>;
-+	};
-+
- 	sysirq: interrupt-controller@10200100 {
- 		compatible = "mediatek,mt2701-sysirq",
- 			     "mediatek,mt6577-sysirq";
-@@ -169,6 +180,16 @@
- 		reg = <0 0x10200100 0 0x1c>;
- 	};
- 
-+	iommu: mmsys_iommu@10205000 {
-+		compatible = "mediatek,mt2701-m4u";
-+		reg = <0 0x10205000 0 0x1000>;
-+		interrupts = <GIC_SPI 106 IRQ_TYPE_LEVEL_LOW>;
-+		clocks = <&infracfg CLK_INFRA_M4U>;
-+		clock-names = "bclk";
-+		mediatek,larbs = <&larb0 &larb1 &larb2>;
-+		#iommu-cells = <1>;
-+	};
-+
- 	apmixedsys: syscon@10209000 {
- 		compatible = "mediatek,mt2701-apmixedsys", "syscon";
- 		reg = <0 0x10209000 0 0x1000>;
-@@ -234,6 +255,16 @@
- 		status = "disabled";
- 	};
- 
-+	larb0: larb@14010000 {
-+		compatible = "mediatek,mt2701-smi-larb";
-+		reg = <0 0x14010000 0 0x1000>;
-+		mediatek,smi = <&smi_common>;
-+		clocks = <&mmsys CLK_MM_SMI_LARB0>,
-+			 <&mmsys CLK_MM_SMI_LARB0>;
-+		clock-names = "apb", "smi";
-+		power-domains = <&scpsys MT2701_POWER_DOMAIN_DISP>;
-+	};
-+
- 	imgsys: syscon@15000000 {
- 		compatible = "mediatek,mt2701-imgsys", "syscon";
- 		reg = <0 0x15000000 0 0x1000>;
-@@ -241,6 +272,16 @@
- 		status = "disabled";
- 	};
- 
-+	larb2: larb@15001000 {
-+		compatible = "mediatek,mt2701-smi-larb";
-+		reg = <0 0x15001000 0 0x1000>;
-+		mediatek,smi = <&smi_common>;
-+		clocks = <&imgsys CLK_IMG_SMI_COMM>,
-+			 <&imgsys CLK_IMG_SMI_COMM>;
-+		clock-names = "apb", "smi";
-+		power-domains = <&scpsys MT2701_POWER_DOMAIN_ISP>;
-+	};
-+
- 	vdecsys: syscon@16000000 {
- 		compatible = "mediatek,mt2701-vdecsys", "syscon";
- 		reg = <0 0x16000000 0 0x1000>;
-@@ -248,6 +289,16 @@
- 		status = "disabled";
- 	};
- 
-+	larb1: larb@16010000 {
-+		compatible = "mediatek,mt2701-smi-larb";
-+		reg = <0 0x16010000 0 0x1000>;
-+		mediatek,smi = <&smi_common>;
-+		clocks = <&vdecsys CLK_VDEC_CKGEN>,
-+			 <&vdecsys CLK_VDEC_LARB>;
-+		clock-names = "apb", "smi";
-+		power-domains = <&scpsys MT2701_POWER_DOMAIN_VDEC>;
-+	};
-+
- 	hifsys: syscon@1a000000 {
- 		compatible = "mediatek,mt2701-hifsys", "syscon";
- 		reg = <0 0x1a000000 0 0x1000>;
--- 
-1.8.1.1.dirty
+SGksIEVyaWMKCk9uIDIwMTYvNi84IDE1OjQxLCBBdWdlciBFcmljIHdyb3RlOgoKPiBIaSBZb25n
+amksCj4KPiBMZSAwMi8wNi8yMDE2IMOgIDA4OjA5LCBZb25namkgWGllIGEgw6ljcml0IDoKPj4g
+Q3VycmVudCB2ZmlvLXBjaSBpbXBsZW1lbnRhdGlvbiBkaXNhbGxvd3MgdG8gbW1hcCB0aGUgcGFn
+ZQo+PiBjb250YWluaW5nIE1TSS1YIHRhYmxlIGluIGNhc2UgdGhhdCB1c2VycyBjYW4gd3JpdGUg
+ZGlyZWN0bHkKPj4gdG8gTVNJLVggdGFibGUgYW5kIGdlbmVyYXRlIGFuIGluY29ycmVjdCBNU0lz
+Lgo+Pgo+PiBIb3dldmVyLCB0aGlzIHdpbGwgY2F1c2Ugc29tZSBwZXJmb3JtYW5jZSBpc3N1ZSB3
+aGVuIHRoZXJlCj4+IGFyZSBzb21lIGNyaXRpY2FsIGRldmljZSByZWdpc3RlcnMgaW4gdGhlIHNh
+bWUgcGFnZSBhcyB0aGUKPj4gTVNJLVggdGFibGUuIFdlIGhhdmUgdG8gaGFuZGxlIHRoZSBtbWlv
+IGFjY2VzcyB0byB0aGVzZQo+PiByZWdpc3RlcnMgaW4gUUVNVSBlbXVsYXRpb24gcmF0aGVyIHRo
+YW4gaW4gZ3Vlc3QuCj4+Cj4+IFRvIHNvbHZlIHRoaXMgaXNzdWUsIHRoaXMgc2VyaWVzIGFsbG93
+cyB0byBleHBvc2UgTVNJLVggdGFibGUKPj4gdG8gdXNlcnNwYWNlIHdoZW4gaGFyZHdhcmUgZW5h
+YmxlcyB0aGUgY2FwYWJpbGl0eSBvZiBpbnRlcnJ1cHQKPj4gcmVtYXBwaW5nIHdoaWNoIGNhbiBl
+bnN1cmUgdGhhdCBhIGdpdmVuIFBDSSBkZXZpY2UgY2FuIG9ubHkKPj4gc2hvb3QgdGhlIE1TSXMg
+YXNzaWduZWQgZm9yIGl0LiBBbmQgd2UgaW50cm9kdWNlIGEgbmV3IGJ1c19mbGFncwo+PiBQQ0lf
+QlVTX0ZMQUdTX01TSV9SRU1BUCB0byB0ZXN0IHRoaXMgY2FwYWJpbGl0eSBvbiBQQ0kgc2lkZQo+
+PiBmb3IgZGlmZmVyZW50IGFyY2hzLgo+Pgo+PiBUaGUgcGF0Y2ggMyBhcmUgYmFzZWQgb24gdGhl
+IHByb3Bvc2VkIHBhdGNoc2V0WzFdLgo+IFlvdSBtYXkgaGF2ZSBub3RpY2VkIEkgc2VudCBhIHJl
+c3BpbiBvZiBbMV0geWVzdGVyZGF5Ogo+IGh0dHA6Ly93d3cuZ29zc2FtZXItdGhyZWFkcy5jb20v
+bGlzdHMvbGludXgva2VybmVsLzI0NTUxODcuCj4KPiBVbmZvcnR1bmF0ZWx5IHlvdSB3aWxsIHNl
+ZSBJIHJlbW92ZWQgdGhlIHBhdGNoIGRlZmluaW5nIHRoZSBuZXcKPiBtc2lfZG9tYWluX2luZm8g
+TVNJX0ZMQUdfSVJRX1JFTUFQUElORyBmbGFnIHlvdSByZWx5IG9uIGluIHRoaXMgc2VyaWVzLgo+
+IEkgZGlkIHNvIGJlY2F1c2UgSSB3YXMgbm90IHVzaW5nIGl0IGFueW1vcmUuIEF0IHRoZSBiZWdp
+bm5pbmcgdGhpcyB3YXMKPiB1c2VkIHRvIGRldGVjdCB3aGV0aGVyIHRoZSBNU0kgYXNzaWdubWVu
+dCB3YXMgc2FmZSBidXQgdGhpcwo+IG1ldGhvZCB3YXMgY292ZXJpbmcgY2FzZXMgd2hlcmUgdGhl
+IE1TSSBjb250cm9sbGVyIHdhcwo+IHVwc3RyZWFtIHRvIHRoZSBJT01NVS4gU28gbm93IEkgcmVs
+eSBvbiBhIG1lY2hhbmlzbSB3aGVyZSBNU0kgY29udHJvbGxlcgo+IGFyZSBzdXBwb3NlZCB0byBy
+ZWdpc3RlciB0aGVpciBNU0kgZG9vcmJlbGxzIGFuZCB0YWcgd2hldGhlciBpdCBpcyBzYWZlLgo+
+Cj4gSSBkb24ndCBrbm93IHlldCBob3cgdGhpcyBjaGFuZ2Ugd2lsbCBiZSB3ZWxjb21lZCB0aG91
+Z2guIERlcGVuZGluZwo+IG9uIHJldmlld3MvZGlzY3Vzc2lvbnMsIG1pZ2h0IGhhcHBlbiB3ZSBy
+ZXZlcnQgdG8gdGhlIHByZXZpb3VzIGZsYWcuCj4KPiBJZiB5b3UgbmVlZCB0aGUgZmVhdHVyZSB5
+b3UgY2FuIGVtYmVkIHRoZSB1c2VkIHBhdGNoZXMgaW4geW91ciBzZXJpZXMgYW5kCj4gZm9sbG93
+IHRoZSByZXZpZXcgcHJvY2VzcyBzZXBhcmF0ZWx5LiBTb3JyeSBmb3IgdGhlIHNldGJhY2suCgpU
+aGFua3MgZm9yIHlvdXIgbm90aWZpY2F0aW9uLiBJJ2QgYmV0dGVyIHdhaXQgdW50aWwgeW91ciBw
+YXRjaGVzIGdldApzZXR0bGVkLiBUaGVuIEkgY291bGQgZXhhY3RseSBrbm93IHdoaWNoIHdheSB3
+ZSBzaG91bGQgdXNlIHRvIHRlc3QgdGhlCmNhcGFiaWxpdHkgb2YgaW50ZXJydXB0IHJlbWFwcGlu
+ZyBvbiBBUk0gaW4gbXkgc2VyaWVzLgoKVGhhbmtzLApZb25namkKCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
+aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
+cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
