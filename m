@@ -1,53 +1,61 @@
-From: Matt Fleming <matt@codeblueprint.co.uk>
-Subject: Re: [RFC PATCH v1 10/18] x86/efi: Access EFI related tables in the
- clear
-Date: Wed, 8 Jun 2016 11:07:13 +0100
-Message-ID: <20160608100713.GU2658@codeblueprint.co.uk>
-References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
- <20160426225740.13567.85438.stgit@tlendack-t1.amdoffice.net>
- <20160510134358.GR2839@codeblueprint.co.uk>
- <20160510135758.GA16783@pd.tnic>
- <5734C97D.8060803@amd.com>
- <57446B27.20406@amd.com>
- <20160525193011.GC2984@codeblueprint.co.uk>
- <5746FE16.9070408@amd.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH 0/3] Exynos IOMMU: proper runtime pm support
+Date: Wed, 08 Jun 2016 12:25:53 +0200
+Message-ID: <1465381556-2230-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-doc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <5746FE16.9070408@amd.com>
-Sender: linux-doc-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: Borislav Petkov <bp@alien8.de>, Leif Lindholm <leif.lindholm@linaro.org>, Mark Salter <msalter@redhat.com>, Daniel Kiper <daniel.kiper@oracle.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>, Ard Biesheuvel <ard.biesheuvel@linaro.>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-(Sorry for the delay)
+Hello,
 
-On Thu, 26 May, at 08:45:58AM, Tom Lendacky wrote:
-> 
-> The patch in question is patch 6/18 where PAGE_KERNEL is changed to
-> include the _PAGE_ENC attribute (the encryption mask). This now
-> makes FIXMAP_PAGE_NORMAL contain the encryption mask while
-> FIXMAP_PAGE_IO does not. In this way, anything mapped using the
-> early_ioremap call won't be mapped encrypted.
+This patch series finally implements proper runtime pm support in Exynos
+IOMMU driver. This has been achieved by adding runtime pm notifiers,
+which lets SYSMMU controller to follow it's master device (the device
+which actually performs DMA transaction) runtime pm. The main idea
+behind this solution is an observation that any DMA activity from master
+device can be done only when master device is active, thus when master
+device is suspended SYSMMU controller device can also be suspended.
 
-There are semantics attached to early_ioremap() that do not apply in
-this case; that you're mapping an MMIO region but for EFI we just care
-about noting where the firmware (not the kernel) populated the region
-with data. Similar problems exist for other early boot code such as
-the devicetree stuff.
+This patchset finally solves the situation that power domains are always
+enabled, because all SYSMMU controllers (which belongs to those domains)
+are permanently active (because existing driver was simplified and kept
+SYSMMU device active all the time after initialization).
 
-early_ioremap() is not the answer.
+This patchset requires my previous changes to Exynos IOMMU driver
+submitted in the "Exynos IOMMU: improve clock management" thread:
+http://www.spinics.net/lists/arm-kernel/msg505695.html  
 
-What you really want is just some way to distinguish kernel-owned
-regions from those owned by "somebody else".
+Best regards
+Marek Szyprowski
+Samsung R&D Institute Poland
 
-I have no problem updating early_memremap() to take a @flags argument
-to make that distinction, provided that the naming is generic and not
-tied to AMD's SME technology via an "sme" prefix/suffix.
+Krzysztof Kozlowski (1):
+  PM / Runtime: Add notifiers for device runtime PM events
 
-And making it generic should allow it to be easily sprinkled into the
-shared architecture code in drivers/firmware/efi/ without issue.
+Marek Szyprowski (2):
+  iommu/exynos: Remove excessive, useless debug
+  iommu/exynos: Add proper runtime pm support
 
-I'm going to follow up with some additional comments/questions on
-PATCH 10.
+ drivers/base/power/generic_ops.c |   9 ++
+ drivers/base/power/power.h       |   6 ++
+ drivers/base/power/runtime.c     |  34 ++++++-
+ drivers/iommu/exynos-iommu.c     | 214 ++++++++++++++++++---------------------
+ include/linux/pm.h               |   2 +
+ include/linux/pm_runtime.h       |  51 ++++++++++
+ 6 files changed, 201 insertions(+), 115 deletions(-)
+
+-- 
+1.9.2
