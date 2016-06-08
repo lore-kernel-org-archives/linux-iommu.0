@@ -1,64 +1,53 @@
-From: Yongji Xie <xyjxie-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [RESEND PATCH v2 0/6] vfio-pci: Add support for mmapping MSI-X
-	table
-Date: Wed, 8 Jun 2016 17:56:49 +0800
-Message-ID: <8ccf0165-da3e-9709-6cf2-ccab82eb55fb@linux.vnet.ibm.com>
-References: <1464847803-22756-1-git-send-email-xyjxie@linux.vnet.ibm.com>
-	<e03d36bb-c8ff-ec95-780e-5f625bdaf78e@redhat.com>
+From: Matt Fleming <matt@codeblueprint.co.uk>
+Subject: Re: [RFC PATCH v1 10/18] x86/efi: Access EFI related tables in the
+ clear
+Date: Wed, 8 Jun 2016 11:07:13 +0100
+Message-ID: <20160608100713.GU2658@codeblueprint.co.uk>
+References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
+ <20160426225740.13567.85438.stgit@tlendack-t1.amdoffice.net>
+ <20160510134358.GR2839@codeblueprint.co.uk>
+ <20160510135758.GA16783@pd.tnic>
+ <5734C97D.8060803@amd.com>
+ <57446B27.20406@amd.com>
+ <20160525193011.GC2984@codeblueprint.co.uk>
+ <5746FE16.9070408@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e03d36bb-c8ff-ec95-780e-5f625bdaf78e-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: alistair-Y4h6yKqj69EXC2x5gXVKYQ@public.gmane.org, nikunj-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, zhong-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, eric.auger-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org, mpe-Gsx/Oe8HsFggBc27wqDAHg@public.gmane.org, ruscur-3Su/lFKaw5ejKv3TNrM5DQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, gwshan-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, warrier-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org, David.Laight-ZS65k/vG3HxXrIkS9f7CXA@public.gmane.org, paulus-eUNUBHrolfbYtjvyW6yDsg@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <5746FE16.9070408@amd.com>
+Sender: linux-doc-owner@vger.kernel.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Borislav Petkov <bp@alien8.de>, Leif Lindholm <leif.lindholm@linaro.org>, Mark Salter <msalter@redhat.com>, Daniel Kiper <daniel.kiper@oracle.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>, Ard Biesheuvel <ard.biesheuvel@linaro.>
 List-Id: iommu@lists.linux-foundation.org
 
-SGksIEVyaWMKCk9uIDIwMTYvNi84IDE1OjQxLCBBdWdlciBFcmljIHdyb3RlOgoKPiBIaSBZb25n
-amksCj4KPiBMZSAwMi8wNi8yMDE2IMOgIDA4OjA5LCBZb25namkgWGllIGEgw6ljcml0IDoKPj4g
-Q3VycmVudCB2ZmlvLXBjaSBpbXBsZW1lbnRhdGlvbiBkaXNhbGxvd3MgdG8gbW1hcCB0aGUgcGFn
-ZQo+PiBjb250YWluaW5nIE1TSS1YIHRhYmxlIGluIGNhc2UgdGhhdCB1c2VycyBjYW4gd3JpdGUg
-ZGlyZWN0bHkKPj4gdG8gTVNJLVggdGFibGUgYW5kIGdlbmVyYXRlIGFuIGluY29ycmVjdCBNU0lz
-Lgo+Pgo+PiBIb3dldmVyLCB0aGlzIHdpbGwgY2F1c2Ugc29tZSBwZXJmb3JtYW5jZSBpc3N1ZSB3
-aGVuIHRoZXJlCj4+IGFyZSBzb21lIGNyaXRpY2FsIGRldmljZSByZWdpc3RlcnMgaW4gdGhlIHNh
-bWUgcGFnZSBhcyB0aGUKPj4gTVNJLVggdGFibGUuIFdlIGhhdmUgdG8gaGFuZGxlIHRoZSBtbWlv
-IGFjY2VzcyB0byB0aGVzZQo+PiByZWdpc3RlcnMgaW4gUUVNVSBlbXVsYXRpb24gcmF0aGVyIHRo
-YW4gaW4gZ3Vlc3QuCj4+Cj4+IFRvIHNvbHZlIHRoaXMgaXNzdWUsIHRoaXMgc2VyaWVzIGFsbG93
-cyB0byBleHBvc2UgTVNJLVggdGFibGUKPj4gdG8gdXNlcnNwYWNlIHdoZW4gaGFyZHdhcmUgZW5h
-YmxlcyB0aGUgY2FwYWJpbGl0eSBvZiBpbnRlcnJ1cHQKPj4gcmVtYXBwaW5nIHdoaWNoIGNhbiBl
-bnN1cmUgdGhhdCBhIGdpdmVuIFBDSSBkZXZpY2UgY2FuIG9ubHkKPj4gc2hvb3QgdGhlIE1TSXMg
-YXNzaWduZWQgZm9yIGl0LiBBbmQgd2UgaW50cm9kdWNlIGEgbmV3IGJ1c19mbGFncwo+PiBQQ0lf
-QlVTX0ZMQUdTX01TSV9SRU1BUCB0byB0ZXN0IHRoaXMgY2FwYWJpbGl0eSBvbiBQQ0kgc2lkZQo+
-PiBmb3IgZGlmZmVyZW50IGFyY2hzLgo+Pgo+PiBUaGUgcGF0Y2ggMyBhcmUgYmFzZWQgb24gdGhl
-IHByb3Bvc2VkIHBhdGNoc2V0WzFdLgo+IFlvdSBtYXkgaGF2ZSBub3RpY2VkIEkgc2VudCBhIHJl
-c3BpbiBvZiBbMV0geWVzdGVyZGF5Ogo+IGh0dHA6Ly93d3cuZ29zc2FtZXItdGhyZWFkcy5jb20v
-bGlzdHMvbGludXgva2VybmVsLzI0NTUxODcuCj4KPiBVbmZvcnR1bmF0ZWx5IHlvdSB3aWxsIHNl
-ZSBJIHJlbW92ZWQgdGhlIHBhdGNoIGRlZmluaW5nIHRoZSBuZXcKPiBtc2lfZG9tYWluX2luZm8g
-TVNJX0ZMQUdfSVJRX1JFTUFQUElORyBmbGFnIHlvdSByZWx5IG9uIGluIHRoaXMgc2VyaWVzLgo+
-IEkgZGlkIHNvIGJlY2F1c2UgSSB3YXMgbm90IHVzaW5nIGl0IGFueW1vcmUuIEF0IHRoZSBiZWdp
-bm5pbmcgdGhpcyB3YXMKPiB1c2VkIHRvIGRldGVjdCB3aGV0aGVyIHRoZSBNU0kgYXNzaWdubWVu
-dCB3YXMgc2FmZSBidXQgdGhpcwo+IG1ldGhvZCB3YXMgY292ZXJpbmcgY2FzZXMgd2hlcmUgdGhl
-IE1TSSBjb250cm9sbGVyIHdhcwo+IHVwc3RyZWFtIHRvIHRoZSBJT01NVS4gU28gbm93IEkgcmVs
-eSBvbiBhIG1lY2hhbmlzbSB3aGVyZSBNU0kgY29udHJvbGxlcgo+IGFyZSBzdXBwb3NlZCB0byBy
-ZWdpc3RlciB0aGVpciBNU0kgZG9vcmJlbGxzIGFuZCB0YWcgd2hldGhlciBpdCBpcyBzYWZlLgo+
-Cj4gSSBkb24ndCBrbm93IHlldCBob3cgdGhpcyBjaGFuZ2Ugd2lsbCBiZSB3ZWxjb21lZCB0aG91
-Z2guIERlcGVuZGluZwo+IG9uIHJldmlld3MvZGlzY3Vzc2lvbnMsIG1pZ2h0IGhhcHBlbiB3ZSBy
-ZXZlcnQgdG8gdGhlIHByZXZpb3VzIGZsYWcuCj4KPiBJZiB5b3UgbmVlZCB0aGUgZmVhdHVyZSB5
-b3UgY2FuIGVtYmVkIHRoZSB1c2VkIHBhdGNoZXMgaW4geW91ciBzZXJpZXMgYW5kCj4gZm9sbG93
-IHRoZSByZXZpZXcgcHJvY2VzcyBzZXBhcmF0ZWx5LiBTb3JyeSBmb3IgdGhlIHNldGJhY2suCgpU
-aGFua3MgZm9yIHlvdXIgbm90aWZpY2F0aW9uLiBJJ2QgYmV0dGVyIHdhaXQgdW50aWwgeW91ciBw
-YXRjaGVzIGdldApzZXR0bGVkLiBUaGVuIEkgY291bGQgZXhhY3RseSBrbm93IHdoaWNoIHdheSB3
-ZSBzaG91bGQgdXNlIHRvIHRlc3QgdGhlCmNhcGFiaWxpdHkgb2YgaW50ZXJydXB0IHJlbWFwcGlu
-ZyBvbiBBUk0gaW4gbXkgc2VyaWVzLgoKVGhhbmtzLApZb25namkKCl9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
-aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
-cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+(Sorry for the delay)
+
+On Thu, 26 May, at 08:45:58AM, Tom Lendacky wrote:
+> 
+> The patch in question is patch 6/18 where PAGE_KERNEL is changed to
+> include the _PAGE_ENC attribute (the encryption mask). This now
+> makes FIXMAP_PAGE_NORMAL contain the encryption mask while
+> FIXMAP_PAGE_IO does not. In this way, anything mapped using the
+> early_ioremap call won't be mapped encrypted.
+
+There are semantics attached to early_ioremap() that do not apply in
+this case; that you're mapping an MMIO region but for EFI we just care
+about noting where the firmware (not the kernel) populated the region
+with data. Similar problems exist for other early boot code such as
+the devicetree stuff.
+
+early_ioremap() is not the answer.
+
+What you really want is just some way to distinguish kernel-owned
+regions from those owned by "somebody else".
+
+I have no problem updating early_memremap() to take a @flags argument
+to make that distinction, provided that the naming is generic and not
+tied to AMD's SME technology via an "sme" prefix/suffix.
+
+And making it generic should allow it to be easily sprinkled into the
+shared architecture code in drivers/firmware/efi/ without issue.
+
+I'm going to follow up with some additional comments/questions on
+PATCH 10.
