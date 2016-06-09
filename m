@@ -1,50 +1,41 @@
-From: Ben Dooks <ben.dooks@codethink.co.uk>
-Subject: Re: [RFC PATCH 15/15] iommu/exynos: update to use iommu big-endian
-Date: Thu, 9 Jun 2016 09:14:31 +0100
-Message-ID: <f3c322a3-b474-ff46-7be3-8fa9c069a51b@codethink.co.uk>
-References: <20160608183110.13851-1-matthew@mattleach.net>
- <20160608183110.13851-16-matthew@mattleach.net>
- <338cbdc6-2830-813b-713e-1cc40d23d1f9@samsung.com>
+From: "Vesely, Jan" <Jan.Vesely-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/amd: Destroy api_lock mutex when freeing domain
+Date: Thu, 9 Jun 2016 15:48:44 +0000
+Message-ID: <1465487321.7114.0.camel@amd.com>
+References: <1463854264-26445-1-git-send-email-jan.vesely@rutgers.edu>
+	<1463854264-26445-2-git-send-email-jan.vesely@rutgers.edu>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <338cbdc6-2830-813b-713e-1cc40d23d1f9@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>, Matthew Leach <matthew@mattleach.net>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
-Cc: linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene@kernel.org>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1463854264-26445-2-git-send-email-jan.vesely-kgbqMDwikbSVc3sceRu5cw@public.gmane.org>
+Content-Language: en-US
+Content-ID: <5512DE78BE3B7B4287F3CE26E4737E70-asWib9pRmPqcE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/06/16 07:51, Marek Szyprowski wrote:
-> Hi
-> 
-> 
-> On 2016-06-08 20:31, Matthew Leach wrote:
->> From: Ben Dooks <ben.dooks@codethink.co.uk>
->>
->> Add initial support for big endian by always writing the pte
->> in le32. Note, revisit if hardware capable of doing big endian
->> fetches.
->>
->> Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
-> 
-> Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> 
-> Just to keep my curiosity satisfied - what's the reason to use
-> big-endian on ARM?
-
-Because we can. It was interesting to try.
-
-> Good luck with fixing the kernel and userspace codes, which usually
-> assume little-endian is the only possible order!
-
-We did a BE8 build of the baserock userspace a year or two ago
-and found mostly it just worked. I think Matt is using that image
-for testing the work he's been doing.
-
-I've no idea if we would ever bother trying to build Debian for BE8
-or similar, as not sure it would be worth trying.
-
--- 
-Ben Dooks				http://www.codethink.co.uk/
-Senior Engineer				Codethink - Providing Genius
+T24gU2F0LCAyMDE2LTA1LTIxIGF0IDE0OjExIC0wNDAwLCBKYW4gVmVzZWx5IHdyb3RlOg0KPiBG
+cm9tOiBKYW4gVmVzZWx5IDxqYW4udmVzZWx5QGFtZC5jb20+DQo+IA0KPiBTaWduZWQtb2ZmLWJ5
+OiBKYW4gVmVzZWx5IDxqYW4udmVzZWx5QGFtZC5jb20+DQo+IC0tLQ0KPiDCoGRyaXZlcnMvaW9t
+bXUvYW1kX2lvbW11LmMgfCAxICsNCj4gwqAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKykN
+Cj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jIGIvZHJpdmVycy9p
+b21tdS9hbWRfaW9tbXUuYw0KPiBpbmRleCAxN2M3NmYyLi40ZmY1ZTQwIDEwMDY0NA0KPiAtLS0g
+YS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jDQo+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYW1kX2lv
+bW11LmMNCj4gQEAgLTMwMTYsNiArMzAxNiw3IEBAIHN0YXRpYyB2b2lkIHByb3RlY3Rpb25fZG9t
+YWluX2ZyZWUoc3RydWN0DQo+IHByb3RlY3Rpb25fZG9tYWluICpkb21haW4pDQo+IMKgDQo+IMKg
+CWRlbF9kb21haW5fZnJvbV9saXN0KGRvbWFpbik7DQo+IMKgDQo+ICsJbXV0ZXhfZGVzdHJveSgm
+ZG9tYWluLT5hcGlfbG9jayk7DQo+IMKgCWlmIChkb21haW4tPmlkKQ0KPiDCoAkJZG9tYWluX2lk
+X2ZyZWUoZG9tYWluLT5pZCk7DQo+IMKgDQoNCnBpbmcKX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxp
+bnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWls
+bWFuL2xpc3RpbmZvL2lvbW11
