@@ -1,48 +1,109 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v4 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V4
-Date: Fri, 10 Jun 2016 08:55:58 +0200
-Message-ID: <CAMuHMdVuvg+hUL32SxXaqxXiPV=ZnRPuCLrm8CoW+1TZe-jT=g@mail.gmail.com>
-References: <20160608071737.7560.32571.sendpatchset@little-apple>
+From: Tomasz Figa <tfiga@chromium.org>
+Subject: Re: [PATCH v2 5/7] drm: rockchip: use common iommu api to attach iommu
+Date: Fri, 10 Jun 2016 17:03:22 +0900
+Message-ID: <CAAFQd5AEsMhQiNkjBr-Af6rBg9x6Z9bCOu7GuYXt2h=wao7Cow@mail.gmail.com>
+References: <1465392392-2003-1-git-send-email-zhengsq@rock-chips.com>
+ <1465392392-2003-6-git-send-email-zhengsq@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <20160608071737.7560.32571.sendpatchset@little-apple>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <joro@8bytes.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-renesas-soc@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+In-Reply-To: <1465392392-2003-6-git-send-email-zhengsq@rock-chips.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Shunqian Zheng <zhengsq@rock-chips.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux@armlinux.org.uk, dri-devel <dri-devel@lists.freedesktop.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, simon xue <xxm@rock-chips.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Magnus,
-
-On Wed, Jun 8, 2016 at 9:17 AM, Magnus Damm <magnus.damm@gmail.com> wrote:
-> iommu/ipmmu-vmsa: IPMMU multi-arch update V4
->
-> [PATCH v4 01/07] iommu/ipmmu-vmsa: Remove platform data handling
-> [PATCH v4 02/07] iommu/ipmmu-vmsa: Rework interrupt code and use bitmap for context
-> [PATCH v4 03/07] iommu/ipmmu-vmsa: Break out utlb parsing code
-> [PATCH v4 04/07] iommu/ipmmu-vmsa: Break out domain allocation code
-> [PATCH v4 05/07] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
-> [PATCH v4 06/07] iommu/ipmmu-vmsa: ARM and ARM64 archdata access
-> [PATCH v4 07/07] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
->
-> These patches update the IPMMU driver with a couple of changes
-> to support build on multiple architectures. In the process of
-> doing so the interrupt code gets reworked and the foundation
-> for supporting multiple contexts are added.
-
-Thanks for your series!
-
-For your convenience, I've queued it up in topic/ipmmu-multi-arch-v4 at
-https://git.kernel.org/cgit/linux/kernel/git/geert/renesas-drivers.git, and
-will include it in next renesas-drivers release.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+SGksCgpPbiBXZWQsIEp1biA4LCAyMDE2IGF0IDEwOjI2IFBNLCBTaHVucWlhbiBaaGVuZyA8emhl
+bmdzcUByb2NrLWNoaXBzLmNvbT4gd3JvdGU6Cj4gUm9ja2NoaXAgRFJNIHVzZWQgdGhlIGFybSBz
+cGVjaWFsIEFQSSwgYXJtX2lvbW11XyooKSwgdG8gYXR0YWNoCj4gaW9tbXUgZm9yIEFSTTMyIFNv
+Q3MuIFRoaXMgcGF0Y2ggY29udmVydCB0byBjb21tb24gaW9tbXUgQVBJCj4gc28gaXQgd291bGQg
+c3VwcG9ydCBBUk02NCBsaWtlIFJLMzM5OS4KPgo+IFRoZSBnZW5lcmFsIGlkZWEgaXMgZG9tYWlu
+X2FsbG9jKCksIGF0dGFjaF9kZXZpY2UoKSBhbmQKPiBhcmNoX3NldHVwX2RtYV9vcHMoKSB0byBz
+ZXQgZG1hX29wcyBtYW51YWxseSBmb3IgRFJNIGF0IHRoZSBsYXN0Lgo+Cj4gU2lnbmVkLW9mZi1i
+eTogU2h1bnFpYW4gWmhlbmcgPHpoZW5nc3FAcm9jay1jaGlwcy5jb20+Cj4gLS0tCj4gIGRyaXZl
+cnMvZ3B1L2RybS9yb2NrY2hpcC9yb2NrY2hpcF9kcm1fZHJ2LmMgfCAxMzAgKysrKysrKysrKysr
+KysrKysrKy0tLS0tLS0tLQo+ICBkcml2ZXJzL2dwdS9kcm0vcm9ja2NoaXAvcm9ja2NoaXBfZHJt
+X2Rydi5oIHwgICAxICsKPiAgMiBmaWxlcyBjaGFuZ2VkLCA4OSBpbnNlcnRpb25zKCspLCA0MiBk
+ZWxldGlvbnMoLSkKPgoKUGxlYXNlIHNlZSBteSBjb21tZW50cyBpbmxpbmUuCgo+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL2dwdS9kcm0vcm9ja2NoaXAvcm9ja2NoaXBfZHJtX2Rydi5jIGIvZHJpdmVy
+cy9ncHUvZHJtL3JvY2tjaGlwL3JvY2tjaGlwX2RybV9kcnYuYwo+IGluZGV4IGY1YTY4ZmMuLjc5
+NjVhNjYgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL3JvY2tjaGlwL3JvY2tjaGlwX2Ry
+bV9kcnYuYwo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9yb2NrY2hpcC9yb2NrY2hpcF9kcm1fZHJ2
+LmMKPiBAQCAtMTQsOCArMTQsNiBAQAo+ICAgKiBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBm
+b3IgbW9yZSBkZXRhaWxzLgo+ICAgKi8KPgo+IC0jaW5jbHVkZSA8YXNtL2RtYS1pb21tdS5oPgo+
+IC0KPiAgI2luY2x1ZGUgPGRybS9kcm1QLmg+Cj4gICNpbmNsdWRlIDxkcm0vZHJtX2NydGNfaGVs
+cGVyLmg+Cj4gICNpbmNsdWRlIDxkcm0vZHJtX2ZiX2hlbHBlci5oPgo+IEBAIC0yNCw2ICsyMiw4
+IEBACj4gICNpbmNsdWRlIDxsaW51eC9tb2R1bGUuaD4KPiAgI2luY2x1ZGUgPGxpbnV4L29mX2dy
+YXBoLmg+Cj4gICNpbmNsdWRlIDxsaW51eC9jb21wb25lbnQuaD4KPiArI2luY2x1ZGUgPGxpbnV4
+L2RtYS1pb21tdS5oPgo+ICsjaW5jbHVkZSA8bGludXgvaW9tbXUuaD4KPgo+ICAjaW5jbHVkZSAi
+cm9ja2NoaXBfZHJtX2Rydi5oIgo+ICAjaW5jbHVkZSAicm9ja2NoaXBfZHJtX2ZiLmgiCj4gQEAg
+LTQ2LDcgKzQ2LDggQEAgc3RhdGljIGJvb2wgaXNfc3VwcG9ydF9pb21tdSA9IHRydWU7Cj4gIGlu
+dCByb2NrY2hpcF9kcm1fZG1hX2F0dGFjaF9kZXZpY2Uoc3RydWN0IGRybV9kZXZpY2UgKmRybV9k
+ZXYsCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzdHJ1Y3QgZGV2aWNlICpk
+ZXYpCj4gIHsKPiAtICAgICAgIHN0cnVjdCBkbWFfaW9tbXVfbWFwcGluZyAqbWFwcGluZyA9IGRy
+bV9kZXYtPmRldi0+YXJjaGRhdGEubWFwcGluZzsKPiArICAgICAgIHN0cnVjdCByb2NrY2hpcF9k
+cm1fcHJpdmF0ZSAqcHJpdmF0ZSA9IGRybV9kZXYtPmRldl9wcml2YXRlOwo+ICsgICAgICAgc3Ry
+dWN0IGlvbW11X2RvbWFpbiAqZG9tYWluID0gcHJpdmF0ZS0+ZG9tYWluOwo+ICAgICAgICAgaW50
+IHJldDsKPgo+ICAgICAgICAgaWYgKCFpc19zdXBwb3J0X2lvbW11KQo+IEBAIC01OCwxNiArNTks
+MjUgQEAgaW50IHJvY2tjaGlwX2RybV9kbWFfYXR0YWNoX2RldmljZShzdHJ1Y3QgZHJtX2Rldmlj
+ZSAqZHJtX2RldiwKPgo+ICAgICAgICAgZG1hX3NldF9tYXhfc2VnX3NpemUoZGV2LCBETUFfQklU
+X01BU0soMzIpKTsKPgo+IC0gICAgICAgcmV0dXJuIGFybV9pb21tdV9hdHRhY2hfZGV2aWNlKGRl
+diwgbWFwcGluZyk7Cj4gKyAgICAgICByZXQgPSBpb21tdV9hdHRhY2hfZGV2aWNlKGRvbWFpbiwg
+ZGV2KTsKPiArCgpuaXQ6IFVubmVjZXNzYXJ5IGJsYW5rIGxpbmUuCgo+ICsgICAgICAgaWYgKHJl
+dCkgewo+ICsgICAgICAgICAgICAgICBkZXZfZXJyKGRldiwgIkZhaWxlZCB0byBhdHRhY2ggaW9t
+bXUgZGV2aWNlXG4iKTsKPiArICAgICAgICAgICAgICAgcmV0dXJuIHJldDsKPiArICAgICAgIH0K
+Cm5pdDogT24gdGhlIG90aGVyIGhhbmQsIGEgYmxhbmsgbGluZSBoZXJlIHdvdWxkIGltcHJvdmUg
+cmVhZGFiaWxpdHkuCgo+ICsgICAgICAgYXJjaF9zZXR1cF9kbWFfb3BzKGRldiwgMHgwMDAwMDAw
+MCwgU1pfMkcsCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgKHN0cnVjdCBpb21tdV9vcHMg
+KilkZXYtPmJ1cy0+aW9tbXVfb3BzLCBmYWxzZSk7CgpUaGlzIGlzIGNhc3RpbmcgYSBjb25zdCBw
+b2ludGVyIHRvIGEgbm9uLWNvbnN0IHBvaW50ZXIuIHdoaWNoIGlzbid0CnJlYWxseSBhIGdvb2Qg
+aWRlYS4gSSBjYW4gc2VlIHRoYXQgYXJjaF9zZXR1cF9kbWFfb3BzKCkgcmVxdWlyZXMgYQp3cml0
+YWJsZSBwb2ludGVyLCB0aG91Z2guIExvb2tpbmcgYXQgdGhlIGltcGxlbWVudGF0aW9ucyBvZgph
+cmNoX3NldHVwX2RtYV9vcHMoKSBhcm91bmQgdGhlIHBsYXRmb3JtcyAobmFtZWx5IGFybSBhbmQg
+YXJtNjQuLi4pLAppdCBtYWtlcyBtZSB3b25kZXIgaWYgdGhlIHByb3RvdHlwZSBzaG91bGRuJ3Qg
+YmUgY2hhbmdlZCB0byBjb25zdAppbnN0ZWFkLgoKPiArICAgICAgIHJldHVybiAwOwo+ICB9Cj4K
+PiAgdm9pZCByb2NrY2hpcF9kcm1fZG1hX2RldGFjaF9kZXZpY2Uoc3RydWN0IGRybV9kZXZpY2Ug
+KmRybV9kZXYsCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IGRl
+dmljZSAqZGV2KQo+ICB7Cj4gLSAgICAgICBpZiAoIWlzX3N1cHBvcnRfaW9tbXUpCj4gLSAgICAg
+ICAgICAgICAgIHJldHVybjsKPiArICAgICAgIHN0cnVjdCByb2NrY2hpcF9kcm1fcHJpdmF0ZSAq
+cHJpdmF0ZSA9IGRybV9kZXYtPmRldl9wcml2YXRlOwo+ICsgICAgICAgc3RydWN0IGlvbW11X2Rv
+bWFpbiAqZG9tYWluID0gcHJpdmF0ZS0+ZG9tYWluOwo+Cj4gLSAgICAgICBhcm1faW9tbXVfZGV0
+YWNoX2RldmljZShkZXYpOwo+ICsgICAgICAgaWYgKGlzX3N1cHBvcnRfaW9tbXUpCj4gKyAgICAg
+ICAgICAgICAgIGlvbW11X2RldGFjaF9kZXZpY2UoZG9tYWluLCBkZXYpOwo+ICB9Cj4KPiAgaW50
+IHJvY2tjaGlwX3JlZ2lzdGVyX2NydGNfZnVuY3Moc3RydWN0IGRybV9jcnRjICpjcnRjLAo+IEBA
+IC0xMzIsMTAgKzE0Miw3MCBAQCBzdGF0aWMgdm9pZCByb2NrY2hpcF9kcm1fY3J0Y19kaXNhYmxl
+X3ZibGFuayhzdHJ1Y3QgZHJtX2RldmljZSAqZGV2LAo+ICAgICAgICAgICAgICAgICBwcml2LT5j
+cnRjX2Z1bmNzW3BpcGVdLT5kaXNhYmxlX3ZibGFuayhjcnRjKTsKPiAgfQo+Cj4gK3N0YXRpYyBp
+bnQgcm9ja2NoaXBfZHJtX2luaXRfaW9tbXUoc3RydWN0IGRybV9kZXZpY2UgKmRybV9kZXYpCj4g
+K3sKPiArICAgICAgIHN0cnVjdCByb2NrY2hpcF9kcm1fcHJpdmF0ZSAqcHJpdmF0ZSA9IGRybV9k
+ZXYtPmRldl9wcml2YXRlOwo+ICsgICAgICAgc3RydWN0IGRldmljZSAqZGV2ID0gZHJtX2Rldi0+
+ZGV2Owo+ICsgICAgICAgaW50IHJldDsKPiArCj4gKyAgICAgICBkZXYtPmRtYV9wYXJtcyA9IGRl
+dm1fa3phbGxvYyhkZXYsIHNpemVvZigqZGV2LT5kbWFfcGFybXMpLAo+ICsgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgR0ZQX0tFUk5FTCk7Cj4gKyAgICAgICBpZiAoIWRldi0+
+ZG1hX3Bhcm1zKSB7Cj4gKyAgICAgICAgICAgICAgIHJldCA9IC1FTk9NRU07Cj4gKyAgICAgICAg
+ICAgICAgIHJldHVybiByZXQ7CgpuaXQ6IHJldHVybiAtRU5PTUVNOwoKPiArICAgICAgIH0KPiAr
+Cj4gKyAgICAgICByZXQgPSBkbWFfc2V0X2NvaGVyZW50X21hc2soZGV2LCBETUFfQklUX01BU0so
+MzIpKTsKPiArICAgICAgIGlmIChyZXQpIHsKPiArICAgICAgICAgICAgICAgZGV2X2VycihkZXYs
+ICJGYWlsZWQgdG8gc2V0IGNvaGVyZW50IG1hc2tcbiIpOwo+ICsgICAgICAgICAgICAgICByZXR1
+cm4gcmV0Owo+ICsgICAgICAgfQo+ICsKPiArICAgICAgIGRtYV9zZXRfbWF4X3NlZ19zaXplKGRl
+diwgRE1BX0JJVF9NQVNLKDMyKSk7Cj4gKwo+ICsgICAgICAgcHJpdmF0ZS0+ZG9tYWluID0gaW9t
+bXVfZG9tYWluX2FsbG9jKCZwbGF0Zm9ybV9idXNfdHlwZSk7Cj4gKyAgICAgICBpZiAoIXByaXZh
+dGUtPmRvbWFpbikKPiArICAgICAgICAgICAgICAgcmV0dXJuIC1FTk9NRU07Cj4gKwo+ICsgICAg
+ICAgcmV0ID0gaW9tbXVfZ2V0X2RtYV9jb29raWUocHJpdmF0ZS0+ZG9tYWluKTsKPiArICAgICAg
+IGlmIChyZXQpIHsKPiArICAgICAgICAgICAgICAgZGV2X2VycihkZXYsICJGYWlsZWQgdG8gZ2V0
+IGRtYSBjb29raWVcbiIpOwo+ICsgICAgICAgICAgICAgICBnb3RvIGVycl9mcmVlX2RvbWFpbjsK
+PiArICAgICAgIH0KPiArCj4gKyAgICAgICByZXQgPSBpb21tdV9kbWFfaW5pdF9kb21haW4ocHJp
+dmF0ZS0+ZG9tYWluLCAweDAwMDAwMDAwLCBTWl8yRyk7CgpJIGd1ZXNzIGRqa3VydHoncyBUT0RP
+IGNvbW1lbnQgY291bGQgYmUgcHJlc2VydmVkIGhlcmUuCgpCZXN0IHJlZ2FyZHMsClRvbWFzegpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpkcmktZGV2ZWwg
+bWFpbGluZyBsaXN0CmRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0
+cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9kcmktZGV2ZWwK
