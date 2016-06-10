@@ -1,78 +1,54 @@
-From: Tomasz Nowicki <tn@semihalf.com>
-Subject: Re: [RFC PATCH v2 13/15] drivers: acpi: iort: introduce
- iort_iommu_configure
-Date: Fri, 10 Jun 2016 14:46:56 +0200
-Message-ID: <575AB6C0.4050808@semihalf.com>
-References: <1465306270-27076-1-git-send-email-lorenzo.pieralisi@arm.com>
- <1465306270-27076-14-git-send-email-lorenzo.pieralisi@arm.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH] iommu/arm-smmu: wire up map_sg for arm-smmu-v3
+Date: Fri, 10 Jun 2016 16:53:35 +0100
+Message-ID: <20160610155335.GC16476@arm.com>
+References: <1464951030-14044-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1465306270-27076-14-git-send-email-lorenzo.pieralisi@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org
-Cc: Hanjun Guo <hanjun.guo@linaro.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jon Masters <jcm@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <stable-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1464951030-14044-1-git-send-email-will.deacon@arm.com>
+Sender: stable-owner@vger.kernel.org
+To: jroedel@suse.de
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, stable@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 07.06.2016 15:31, Lorenzo Pieralisi wrote:
-> +static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
-> +{
-> +	u32 *rid = data;
-> +
-> +	*rid = alias;
-> +	return 0;
-> +}
-> +
-> +/**
-> + * iort_iommu_configure - Set-up IOMMU configuration for a device.
-> + *
-> + * @dev: device to configure
-> + *
-> + * Returns: iommu_ops pointer on configuration success
-> + *          NULL on configuration failure
-> + */
-> +const struct iommu_ops *iort_iommu_configure(struct device *dev)
-> +{
-> +	struct acpi_iort_node *node, *parent;
-> +	const struct iort_ops_node *iort_ops;
-> +	u32 rid = 0, devid = 0;
-> +
-> +	if (dev_is_pci(dev)) {
-> +		struct pci_bus *bus = to_pci_dev(dev)->bus;
-> +
-> +		pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid,
-> +				       &rid);
+Hi Joerg,
 
-I think we should find here the root bus which is connected to RC IORT node.
+On Fri, Jun 03, 2016 at 11:50:30AM +0100, Will Deacon wrote:
+> From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> 
+> The map_sg callback is missing from arm_smmu_ops, but is required by
+> iommu.h. Similarly to most other IOMMU drivers, connect it to
+> default_iommu_map_sg.
+> 
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> Signed-off-by: Will Deacon <will.deacon@arm.com>
+> ---
+> 
+> Joerg -- this is the only fix I have queued, so could you pick it up
+> directly, please?
 
-> +
-> +		node = iort_scan_node(ACPI_IORT_NODE_PCI_ROOT_COMPLEX,
-> +				      iort_find_dev_callback, &bus->dev);
-> +	} else {
-> +		node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
-> +				      iort_find_dev_callback, dev);
-> +	}
-> +
-> +	if (!node)
-> +		return NULL;
-> +
-> +	parent = iort_find_parent_node(node);
-> +
-> +	if (!parent)
-> +		return NULL;
-> +
-> +	iort_ops = iort_smmu_get_ops_node(parent);
-> +
-> +	if (iort_ops && iort_ops->iommu_xlate) {
-> +		iort_dev_map_rid(node, rid, &devid, parent->type);
-> +		iort_ops->iommu_xlate(dev, devid, parent);
-> +		return iort_ops->ops;
-> +	}
-> +
-> +	return NULL;
-> +}
-> +
+Could you queue this as a fix for 4.7, please?
 
-Thanks,
-Tomasz
+Will
+
+>  drivers/iommu/arm-smmu-v3.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 94b68213c50d..5f6b3bcab078 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -1941,6 +1941,7 @@ static struct iommu_ops arm_smmu_ops = {
+>  	.attach_dev		= arm_smmu_attach_dev,
+>  	.map			= arm_smmu_map,
+>  	.unmap			= arm_smmu_unmap,
+> +	.map_sg			= default_iommu_map_sg,
+>  	.iova_to_phys		= arm_smmu_iova_to_phys,
+>  	.add_device		= arm_smmu_add_device,
+>  	.remove_device		= arm_smmu_remove_device,
+> -- 
+> 2.1.4
+> 
