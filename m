@@ -1,57 +1,48 @@
-From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v2 4/7] ARM: dts: rockchip: add virtual iommu for display
-Date: Fri, 10 Jun 2016 15:22:56 +0900
-Message-ID: <CAAFQd5AU2xV98bAEDvPpV1-5ED3oCMgp9vuTymX-RpWFVhH=mw@mail.gmail.com>
-References: <1465392392-2003-1-git-send-email-zhengsq@rock-chips.com>
-	<1465392392-2003-5-git-send-email-zhengsq@rock-chips.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v4 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V4
+Date: Fri, 10 Jun 2016 08:55:58 +0200
+Message-ID: <CAMuHMdVuvg+hUL32SxXaqxXiPV=ZnRPuCLrm8CoW+1TZe-jT=g@mail.gmail.com>
+References: <20160608071737.7560.32571.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1465392392-2003-5-git-send-email-zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, simon xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, =?UTF-8?B?5aea5pm65oOF?= <mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <20160608071737.7560.32571.sendpatchset@little-apple>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <joro@8bytes.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-renesas-soc@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Magnus,
 
-On Wed, Jun 8, 2016 at 10:26 PM, Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org> wrote:
-> An virtual iommu without reg or interrupts for display.
-> Adding this according to iommu driver changes.
+On Wed, Jun 8, 2016 at 9:17 AM, Magnus Damm <magnus.damm@gmail.com> wrote:
+> iommu/ipmmu-vmsa: IPMMU multi-arch update V4
 >
-> Signed-off-by: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-> ---
->  arch/arm/boot/dts/rk3288.dtsi | 6 ++++++
->  1 file changed, 6 insertions(+)
+> [PATCH v4 01/07] iommu/ipmmu-vmsa: Remove platform data handling
+> [PATCH v4 02/07] iommu/ipmmu-vmsa: Rework interrupt code and use bitmap for context
+> [PATCH v4 03/07] iommu/ipmmu-vmsa: Break out utlb parsing code
+> [PATCH v4 04/07] iommu/ipmmu-vmsa: Break out domain allocation code
+> [PATCH v4 05/07] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
+> [PATCH v4 06/07] iommu/ipmmu-vmsa: ARM and ARM64 archdata access
+> [PATCH v4 07/07] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
 >
-> diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
-> index 7fa932f..4cd535f 100644
-> --- a/arch/arm/boot/dts/rk3288.dtsi
-> +++ b/arch/arm/boot/dts/rk3288.dtsi
-> @@ -219,9 +219,15 @@
->                 clock-names = "timer", "pclk";
->         };
->
-> +       display_mmu: virtual-iommu {
-> +               compatible = "rockchip,iommu";
-> +               #iommu-cells = <0>;
-> +       };
-> +
+> These patches update the IPMMU driver with a couple of changes
+> to support build on multiple architectures. In the process of
+> doing so the interrupt code gets reworked and the foundation
+> for supporting multiple contexts are added.
 
-Device tree should describe real hardware and so it isn't really a
-good idea to add such virtual iommu, especially using a compatible
-string of a real device.
+Thanks for your series!
 
-Please see my comments to patch 3/7 for an alternative idea.
+For your convenience, I've queued it up in topic/ipmmu-multi-arch-v4 at
+https://git.kernel.org/cgit/linux/kernel/git/geert/renesas-drivers.git, and
+will include it in next renesas-drivers release.
 
-Best regards,
-Tomasz
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
