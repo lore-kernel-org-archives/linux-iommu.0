@@ -1,15 +1,15 @@
 From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [PATCH v2 1/7] iommu/rockchip: fix devm_{request,
- free}_irq parameter
-Date: Fri, 10 Jun 2016 14:30:14 +0900
-Message-ID: <CAAFQd5BOZBqieA3xCi00jRCrYpZSAZmncAK2Qg69AuQGT5FQGA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/7] iommu/rockchip: add map_sg callback for
+ rk_iommu_ops
+Date: Fri, 10 Jun 2016 14:31:08 +0900
+Message-ID: <CAAFQd5DNM518hk_RwF+af5Z881o9aEFSC237CvgfB8EAPM8s_g@mail.gmail.com>
 References: <1465392392-2003-1-git-send-email-zhengsq@rock-chips.com>
- <1465392392-2003-2-git-send-email-zhengsq@rock-chips.com>
+ <1465392392-2003-3-git-send-email-zhengsq@rock-chips.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
 Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1465392392-2003-2-git-send-email-zhengsq@rock-chips.com>
+In-Reply-To: <1465392392-2003-3-git-send-email-zhengsq@rock-chips.com>
 List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
  <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
 List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
@@ -25,14 +25,14 @@ List-Id: iommu@lists.linux-foundation.org
 
 SGksCgpPbiBXZWQsIEp1biA4LCAyMDE2IGF0IDEwOjI2IFBNLCBTaHVucWlhbiBaaGVuZyA8emhl
 bmdzcUByb2NrLWNoaXBzLmNvbT4gd3JvdGU6Cj4gRnJvbTogU2ltb24gWHVlIDx4eG1Acm9jay1j
-aGlwcy5jb20+Cj4KPiBFdmVuIHRob3VnaCB0aGUgaW9tbXUgc2hhcmVzIGlycSB3aXRoIGl0cyBt
-YXN0ZXIsIHVzaW5nIHRoZSAqZGV2IG9mIGlvbW11Cj4gaW5zdGVhZCBvZiBtYXN0ZXIncyAqZGV2
-IGZvciBkZXZtX3tyZXF1ZXN0LGZyZWV9X2lycSBtYWtlcyB0aGluZ3MgY2xlYXIuCj4KPiBTaWdu
-ZWQtb2ZmLWJ5OiBTaW1vbiBYdWUgPHh4bUByb2NrLWNoaXBzLmNvbT4KPiBTaWduZWQtb2ZmLWJ5
-OiBTaHVucWlhbiBaaGVuZyA8emhlbmdzcUByb2NrLWNoaXBzLmNvbT4KPiAtLS0KPiAgZHJpdmVy
-cy9pb21tdS9yb2NrY2hpcC1pb21tdS5jIHwgNCArKy0tCj4gIDEgZmlsZSBjaGFuZ2VkLCAyIGlu
-c2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCj4KClJldmlld2VkLWJ5OiBUb21hc3ogRmlnYSA8
-dGZpZ2FAY2hyb21pdW0ub3JnPgoKQmVzdCByZWdhcmRzLApUb21hc3oKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcgbGlzdApk
-cmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Au
-b3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+aGlwcy5jb20+Cj4KPiBUaGUgaW9tbXVfZG1hX2FsbG9jKCkgaW4gaW9tbXUvZG1hLWlvbW11LmMg
+Y2FsbHMgaW9tbXVfbWFwX3NnKCkKPiB0aGF0IHJlcXVpcmVzIHRoZSBjYWxsYmFjayBpb21tdV9v
+cHMgLm1hcF9zZygpLiBBZGRpbmcgdGhlCj4gZGVmYXVsdF9pb21tdV9tYXBfc2coKSB0byByb2Nr
+Y2hpcCBpb21tdSBhY2NvcmRpbmdseS4KPgo+IFNpZ25lZC1vZmYtYnk6IFNpbW9uIFh1ZSA8eHht
+QHJvY2stY2hpcHMuY29tPgo+IFNpZ25lZC1vZmYtYnk6IFNodW5xaWFuIFpoZW5nIDx4eG1Acm9j
+ay1jaGlwcy5jb20+Cj4gLS0tCj4gIGRyaXZlcnMvaW9tbXUvcm9ja2NoaXAtaW9tbXUuYyB8IDEg
+Kwo+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKykKClJldmlld2VkLWJ5OiBUb21hc3og
+RmlnYSA8dGZpZ2FAY2hyb21pdW0ub3JnPgoKQmVzdCByZWdhcmRzLApUb21hc3oKX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcg
+bGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRl
+c2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
