@@ -1,167 +1,188 @@
-From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH v2 12/15] drivers: acpi: implement acpi_dma_configure
-Date: Fri, 10 Jun 2016 11:25:28 -0500
-Message-ID: <20160610162528.GI19309@localhost>
-References: <1465306270-27076-1-git-send-email-lorenzo.pieralisi@arm.com>
-	<1465306270-27076-13-git-send-email-lorenzo.pieralisi@arm.com>
+From: Scott Wood <oss@buserror.net>
+Subject: Re: [PATCH 2/4] soc: fsl: add GUTS driver for QorIQ platforms
+Date: Fri, 10 Jun 2016 20:50:53 -0500
+Message-ID: <1465609853.22191.151.camel@buserror.net>
+References: <1462417950-46796-1-git-send-email-yangbo.lu@nxp.com>
+	 <5339448.D8rpq4ofAC@wuerfel> <1464832042.22191.23.camel@buserror.net>
+	 <3435609.s5m1DCsoNb@wuerfel>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1465306270-27076-13-git-send-email-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <netdev-owner@vger.kernel.org>
+In-Reply-To: <3435609.s5m1DCsoNb@wuerfel>
+Sender: netdev-owner@vger.kernel.org
+To: Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
+Cc: Mark Rutland <mark.rutland@arm.com>, Ulf Hansson <ulf.hansson@linaro.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>, Qiang Zhao <qiang.zhao@nxp.com>, Russell King <linux@arm.linux.org.uk>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Kumar Gala <galak@codeaurora.org>, Rob Herring <robh+dt@kernel.org>, Santosh Shilimkar <ssantosh@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, Xiaobo Xie <xiaobo.xie@nxp.com>, Yang-Leo Li <leoyang.li@nxp.com>i
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jun 07, 2016 at 02:31:07PM +0100, Lorenzo Pieralisi wrote:
-> On DT based systems, the of_dma_configure() API implements DMA configuration
-> for a given device. On ACPI systems an API equivalent to of_dma_configure()
-> is missing which implies that it is currently not possible to set-up DMA
-> operations for devices through the ACPI generic kernel layer.
+On Thu, 2016-06-02 at 10:43 +0200, Arnd Bergmann wrote:
+> On Wednesday, June 1, 2016 8:47:22 PM CEST Scott Wood wrote:
+> > On Mon, 2016-05-30 at 15:15 +0200, Arnd Bergmann wrote:
+> > > diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
+> > > new file mode 100644
+> > > index 000000000000..2f30698f5bcf
+> > > --- /dev/null
+> > > +++ b/drivers/soc/fsl/guts.c
+> > > @@ -0,0 +1,130 @@
+> > > +/*
+> > > + * Freescale QorIQ Platforms GUTS Driver
+> > > + *
+> > > + * Copyright (C) 2016 Freescale Semiconductor, Inc.
+> > > + *
+> > > + * This program is free software; you can redistribute it and/or modify
+> > > + * it under the terms of the GNU General Public License as published by
+> > > + * the Free Software Foundation; either version 2 of the License, or
+> > > + * (at your option) any later version.
+> > > + */
+> > > +
+> > > +#include <linux/io.h>
+> > > +#include <linux/platform_device.h>
+> > > +#include <linux/module.h>
+> > > +#include <linux/slab.h>
+> > > +#include <linux/of_address.h>
+> > > +#include <linux/of_platform.h>
+> > > +#include <linux/sys_soc.h>
+> > > +
+> > > +#define GUTS_PVR	0x0a0
+> > > +#define GUTS_SVR	0x0a4
+> > > +
+> > > +struct guts {
+> > > +	void __iomem *regs;
+> > 
+> > We already have a struct to define guts.  Why are you not using it?  Why
+> > do
+> > you consider using it to be "abuse"?  What if we want to move more guts
+> > functionality into this driver?
 > 
-> This patch fills the gap by introducing acpi_dma_configure/deconfigure()
-> calls that for now are just wrappers around arch_setup_dma_ops() and
-> arch_teardown_dma_ops() and also updates ACPI and PCI core code to use
-> the newly introduced acpi_dma_configure/acpi_dma_deconfigure functions.
-> 
-> The DMA range size passed to arch_setup_dma_ops() is sized according
-> to the device coherent_dma_mask (starting at address 0x0), mirroring the
-> DT probing path behaviour when a dma-ranges property is not provided
-> for the device being probed; this changes the current arch_setup_dma_ops()
-> call parameters in the ACPI probing case, but since arch_setup_dma_ops()
-> is a NOP on all architectures but ARM/ARM64 this patch does not change
-> the current kernel behaviour on them.
-> 
-> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-> Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+> This structure was in the original patch, I left it in there, only
+> removed the inclusion of the powerpc header file, which seemed to
+> be misplaced.
 
-Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+I'm not refering "struct guts".  I'm referring to changing
+"struct ccsr_guts __iomem *regs" into "void __iomem *regs".
 
-I assume this will be merged by somebody else along with the rest
-of the series.
+And it's not a powerpc header file.
 
-> ---
->  drivers/acpi/glue.c     |  4 ++--
->  drivers/acpi/scan.c     | 24 ++++++++++++++++++++++++
->  drivers/pci/probe.c     |  3 +--
->  include/acpi/acpi_bus.h |  2 ++
->  include/linux/acpi.h    |  5 +++++
->  5 files changed, 34 insertions(+), 4 deletions(-)
+> > > +/*
+> > > + * Table for matching compatible strings, for device tree
+> > > + * guts node, for Freescale QorIQ SOCs.
+> > > + */
+> > > +static const struct of_device_id fsl_guts_of_match[] = {
+> > > +	/* For T4 & B4 Series SOCs */
+> > > +	{ .compatible = "fsl,qoriq-device-config-1.0", .data = "T4/B4
+> > > series" },
+> > [snip]
+> > > +	{ .compatible = "fsl,qoriq-device-config-2.0", .data = "P
+> > > series"
+> > 
+> > As noted in my comment on patch 3/4, these descriptions are reversed.
+> > 
+> > They're also incomplete.  t2080 has device config 2.0.  t1040 is described
+> > as
+> > 2.0 though it should probably be 2.1 (or better, drop the generic
+> > compatible
+> > altogether).
 > 
-> diff --git a/drivers/acpi/glue.c b/drivers/acpi/glue.c
-> index 5ea5dc2..f8d6564 100644
-> --- a/drivers/acpi/glue.c
-> +++ b/drivers/acpi/glue.c
-> @@ -227,8 +227,7 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
->  
->  	attr = acpi_get_dma_attr(acpi_dev);
->  	if (attr != DEV_DMA_NOT_SUPPORTED)
-> -		arch_setup_dma_ops(dev, 0, 0, NULL,
-> -				   attr == DEV_DMA_COHERENT);
-> +		acpi_dma_configure(dev, attr);
->  
->  	acpi_physnode_link_name(physical_node_name, node_id);
->  	retval = sysfs_create_link(&acpi_dev->dev.kobj, &dev->kobj,
-> @@ -251,6 +250,7 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
->  	return 0;
->  
->   err:
-> +	acpi_dma_deconfigure(dev);
->  	ACPI_COMPANION_SET(dev, NULL);
->  	put_device(dev);
->  	put_device(&acpi_dev->dev);
-> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> index 5f28cf7..b4b9064 100644
-> --- a/drivers/acpi/scan.c
-> +++ b/drivers/acpi/scan.c
-> @@ -1358,6 +1358,30 @@ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
->  		return DEV_DMA_NON_COHERENT;
->  }
->  
-> +/**
-> + * acpi_dma_configure - Set-up DMA configuration for the device.
-> + * @dev: The pointer to the device
-> + * @attr: device dma attributes
-> + */
-> +void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
-> +{
-> +	/*
-> +	 * Assume dma valid range starts at 0 and covers the whole
-> +	 * coherent_dma_mask.
-> +	 */
-> +	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, NULL,
-> +			   attr == DEV_DMA_COHERENT);
-> +}
-> +
-> +/**
-> + * acpi_dma_deconfigure - Tear-down DMA configuration for the device.
-> + * @dev: The pointer to the device
-> + */
-> +void acpi_dma_deconfigure(struct device *dev)
-> +{
-> +	arch_teardown_dma_ops(dev);
-> +}
-> +
->  static void acpi_init_coherency(struct acpi_device *adev)
->  {
->  	unsigned long long cca = 0;
-> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-> index 8e3ef72..01dd369 100644
-> --- a/drivers/pci/probe.c
-> +++ b/drivers/pci/probe.c
-> @@ -1725,8 +1725,7 @@ static void pci_dma_configure(struct pci_dev *dev)
->  		if (attr == DEV_DMA_NOT_SUPPORTED)
->  			dev_warn(&dev->dev, "DMA not supported.\n");
->  		else
-> -			arch_setup_dma_ops(&dev->dev, 0, 0, NULL,
-> -					   attr == DEV_DMA_COHERENT);
-> +			acpi_dma_configure(&dev->dev, attr);
->  	}
->  
->  	pci_put_host_bridge_device(bridge);
-> diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
-> index 788c6c35..8b5039a 100644
-> --- a/include/acpi/acpi_bus.h
-> +++ b/include/acpi/acpi_bus.h
-> @@ -566,6 +566,8 @@ struct acpi_pci_root {
->  
->  bool acpi_dma_supported(struct acpi_device *adev);
->  enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev);
-> +void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr);
-> +void acpi_dma_deconfigure(struct device *dev);
->  
->  struct acpi_device *acpi_find_child_device(struct acpi_device *parent,
->  					   u64 address, bool check_children);
-> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-> index 288fac5..135a452 100644
-> --- a/include/linux/acpi.h
-> +++ b/include/linux/acpi.h
-> @@ -676,6 +676,11 @@ static inline enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
->  	return DEV_DMA_NOT_SUPPORTED;
->  }
->  
-> +static inline void acpi_dma_configure(struct device *dev,
-> +				      enum dev_dma_attr attr) { }
-> +
-> +static inline void acpi_dma_deconfigure(struct device *dev) { }
-> +
->  #define ACPI_PTR(_ptr)	(NULL)
->  
->  #endif	/* !CONFIG_ACPI */
-> -- 
-> 2.6.4
+> Ok. Ideally I think we'd even look up the specific SoC names from the
+> SVC rather than the compatible string. I just didn't have a good list
+> for those to put in the driver.
+
+The list is in arch/powerpc/include/asm/mpc85xx.h but I don't know why we need
+to convert it to a string in the first place.
+
 > 
+> > > +	/*
+> > > +	 * syscon devices default to little-endian, but on powerpc we
+> > > have
+> > > +	 * existing device trees with big-endian maps and an absent
+> > > endianess
+> > > +	 * "big-property"
+> > > +	 */
+> > > +	if (!IS_ENABLED(CONFIG_POWERPC) &&
+> > > +	    !of_property_read_bool(dev->of_node, "big-endian"))
+> > > +		guts->little_endian = true;
+> > 
+> > This is not a syscon device (Yangbo's patch to add a guts node on ls2080
+> > is
+> > the only guts node that says "syscon", and that was a leftover from
+> > earlier
+> > revisions and should probably be removed).  Even if it were, where is it
+> > documented that syscon defaults to little-endian?
+> 
+> Documentation/devicetree/bindings/regmap/regmap.txt
+> 
+> We had a little screwup here, basically regmap (and by consequence, syscon)
+> always defaulted to little-endian way before that was documented, so it's
+> too late to change it, 
+
+What causes a device node to fall under the jurisdiction of regmap.txt? 
+ Again, these nodes do not claim "syscon" compatibility.
+
+> although I agree it would have made sense to document
+> regmap to default to big-endian on powerpc.
+
+Please don't.  It's enough of a mess as is; no need to start throwing in
+architecture ifdefs.
+
+> > Documentation/devicetree/bindings/common-properties.txt says that the
+> > individual binding specifies the default.  The default for this node
+> > should be
+> > big-endian because that's what existed before there was a need to describe
+> > the
+> > endianness.  And we need an update to the guts binding to specify that.
+> 
+> Good point. This proably means that specifying both the "guts" and "syscon"
+> compatible strings implies having to also specify the endianess explicitly
+> both ways, because otherwise we break one of the two bindings.
+
+Yes, but the node should only specify "guts".
+
+> 
+> > > +
+> > > +	guts->regs = devm_ioremap_resource(dev, 0);
+> > > +	if (!guts->regs) {
+> > > +		ret = -ENOMEM;
+> > > +		kfree(guts);
+> > > +		goto out;
+> > > +	}
+> > > +
+> > > +	fsl_guts_init(dev, guts);
+> > > +	ret = 0;
+> > > +out:
+> > > +	return ret;
+> > > +}
+> > > +
+> > > +static struct platform_driver fsl_soc_guts = {
+> > > +	.probe = fsl_guts_probe,
+> > > +	.driver.of_match_table = fsl_guts_of_match,
+> > > +};
+> > > +
+> > > +module_platform_driver(fsl_soc_guts);
+> > 
+> > Again, this means that the information is not available during early boot,
+> > such as in the clock driver.  Thus we would not be able to convert clk
+> > -qoriq's
+> > direct mfspr(SPRN_SVR) into an soc_device_match() (or anything else that
+> > makes
+> > use of this file), nor would we be able to move its access of the guts RCW
+> > registers into this driver.
+> 
+> Correct. Do we have a reason to convert the mfspr() though? I don't really
+> see an improvement over the current state if we do that, 
+
+Then should we drop this patchset and put a similar PPC ifdef in
+ drivers/mmc/host/sdhci-of-esdhc.c?
+
+There's also the RCW access.  You said in the patch 4/4 discussion that you di
+dn't like any random driver ioremapping the registers...
+
+> and for new devices
+> that might need the erratum workaround, we could add a DT property that
+> would
+> be preferred to both.
+
+It's unlikely that we would know the erratum exists at the time the device
+tree is created.  We also generally don't have separate device trees for each
+revision of a chip (and if we did, we'd have users that use the wrong one).
+
+-Scott
