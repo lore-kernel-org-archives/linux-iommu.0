@@ -1,91 +1,117 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v2 2/2] PCI: Handle Broadcom Vulcan DMA alias calculation
- quirk
-Date: Sat, 11 Jun 2016 12:24:57 -0500
-Message-ID: <20160611172457.GK16462@localhost>
-References: <linux-pci@vger.kernel.org>
- <1462700001-30086-2-git-send-email-jchandra@broadcom.com>
+From: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Subject: Re: [PATCH v2 3/7] iommu/rockchip: support virtual iommu slave device
+Date: Sun, 12 Jun 2016 10:33:05 +0800
+Message-ID: <575CC9E1.2060409@rock-chips.com>
+References: <1465392392-2003-1-git-send-email-zhengsq@rock-chips.com>
+	<1465392392-2003-4-git-send-email-zhengsq@rock-chips.com>
+	<CAAFQd5DuAc-B17AqOg0mGcfLCGwztEOaukPL+c5jmL4a-AEeBA@mail.gmail.com>
+Reply-To: zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1462700001-30086-2-git-send-email-jchandra@broadcom.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jayachandran C <jchandra@broadcom.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAAFQd5DuAc-B17AqOg0mGcfLCGwztEOaukPL+c5jmL4a-AEeBA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?B?SGVpa28gU3TDvGJuZXI=?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, list-Y9sIeH5OGRo@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, simon xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, open-Y9sIeH5OGRo@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, =?UTF-8?B?5aea5pm65oOF?= <mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, May 08, 2016 at 03:03:21PM +0530, Jayachandran C wrote:
-> The Broadcom Vulcan PCI topology is slightly unusual, for a multi-node
-> system, it looks like:
-> 
->  [bus 0]
->      |
->      +--[node 0 PCI bridge 0.0.0]
->      |           |
->      |        [bus 1]
->      |           +---[SoC PCI devices 1.4.x, 1.5.x] ........
->      |           +---[Glue bridges    1.a.x, 1.b.x]         \
->      |                    |                        .....{node 0 GIC ITS}
->      |                    |                       /
->      |                    +----[SoC PCIe controller root ports]
->      |                                |         \...... {SMMUv3 0..3}
->      |                                |
->      |                                +---- [external PCI devices]
->      +- [node 1 PCI bridge 0.0.1]
->      |           |
->      |        [bus n - similar to bus 1 above]
->      ...
-> 
-> The for_each_dma_alias call for external PCI devices should not go
-> beyond the PCIe controllers where the SMMU and ITS is associated, going
-> further above to the glue bridges or the node bridges will find aliases
-> which are not valid. For internal devices, the association is at the
-> node level bridge and the alias search should not go further.
-
-I like the line of reasoning that we should not iterate higher in the
-hierarchy than where the translation hardware is attached.  That seems
-like a reasonable thing in general, not just for this hardware.
-
-Is there some generic way to learn where the translation hardware is
-attached?  If there is, we could make pci_for_each_dma_alias() use
-that information, and maybe we could solve the problem for other
-systems as well as for Vulcan.
-
-> To handle this quirk, we mark the SoC PCIe bridges and node PCI bridge
-> with flag PCI_DEV_FLAGS_DMA_ALIAS_ROOT so that the alias and RID
-> calculations are correct.
-> 
-> Signed-off-by: Jayachandran C <jchandra@broadcom.com>
-> ---
->  drivers/pci/quirks.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
-> 
-> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-> index 8e67802..62664b5 100644
-> --- a/drivers/pci/quirks.c
-> +++ b/drivers/pci/quirks.c
-> @@ -3734,6 +3734,20 @@ DECLARE_PCI_FIXUP_HEADER(0x1283, 0x8892, quirk_use_pcie_bridge_dma_alias);
->  DECLARE_PCI_FIXUP_HEADER(0x8086, 0x244e, quirk_use_pcie_bridge_dma_alias);
->  
->  /*
-> + * The IOMMU and interrupt controller of Broadcom vulcan are associated
-> + * not at the root bus, but at a bridge below. The DMA alias search should
-> + * not go above the bridge at which the association exists.
-> + */
-> +static void quirk_bridge_brcm_vulcan_pcie_root(struct pci_dev *pdev)
-> +{
-> +	pdev->dev_flags |= PCI_DEV_FLAGS_DMA_ALIAS_ROOT;
-> +}
-> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
-> +				quirk_bridge_brcm_vulcan_pcie_root);
-> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
-> +				quirk_bridge_brcm_vulcan_pcie_root);
-> +
-> +/*
->   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
->   * class code.  Fix it.
->   */
-> -- 
-> 1.9.1
-> 
+SEksCgpPbiAyMDE25bm0MDbmnIgxMOaXpSAxNDoyMiwgVG9tYXN6IEZpZ2Egd3JvdGU6Cj4gSGks
+Cj4KPiBPbiBXZWQsIEp1biA4LCAyMDE2IGF0IDEwOjI2IFBNLCBTaHVucWlhbiBaaGVuZyA8emhl
+bmdzcUByb2NrLWNoaXBzLmNvbT4gd3JvdGU6Cj4+IEFuIHZpcnR1YWwgbWFzdGVyIGRldmljZSBs
+aWtlIERSTSBuZWVkIHRvIGF0dGFjaCB0byBpb21tdQo+PiBkb21haW4gdG8gc2hhcmUgdGhlIGRv
+bWFpbiB3aXRoIFZPUCh0aGUgb25lIHdpdGggYWN0dWFsCj4+IGlvbW11IHNsYXZlKS4gV2UgY3Vy
+cmVudGx5IGNoZWNrIHRoZSBncm91cCBpcyBOVUxMIHRvIGluZGljYXRlCj4+IGEgdmlydHVhbCBt
+YXN0ZXIsIHdoaWNoIGlzIG5vdCB0cnVlIHNpbmNlIHdlIGRlY2lkZSB0byB1c2UKPj4gdGhlIGNv
+bW1vbiBpb21tdSBhcGkgdG8gYXR0YWNoIGRldmljZSBpbiBEUk0uCj4+Cj4+IFdpdGggdGhpcyBw
+YXRjaCwgd2UgY2FuIHByb2JlIGEgdmlydHVhbCBpb21tdSBkZXZpY2UgYW5kCj4+IGFsbG93IHRo
+ZSBEUk0gYXR0YWNoaW5nIHRvIGl0LiBUaGUgdmlydHVhbCBpb21tdSBpcyBuZWVkZWQgYWxzbwo+
+PiBiZWNhdXNlIHdlIHdhbnQgY29udmVydCB0byB1c2UgRE1BIEFQSSBmb3IgbWFwL3VubWFwLCBj
+YWNoZSBmbHVzaCwKPj4gc28gdGhhdCBEUk0gYnVmZmVyIGFsbG9jIHN0aWxsIHdvcmsgZXZlbiBW
+T1AgaXMgZGlzYWJsZWQuCj4gSSdtIG5vdCByZWFsbHkgY29udmluY2VkIHRoYXQgdGhpcyBpcyBh
+IGdvb2QgaWRlYS4gVGhpcyB3aWxsIHJlcXVpcmUKPiBjcmVhdGluZyBmYWtlIGRldmljZXMgaW4g
+dGhlIHN5c3RlbSBhbmQgZ2VuZXJhbGx5IGxvb2tzIHJlYWxseSBoYWNreS4KPiBQbGVhc2Ugc2Vl
+IG15IGFsdGVybmF0aXZlIHByb3Bvc2FsIGlubGluZS4KPgo+PiBTaWduZWQtb2ZmLWJ5OiBTaHVu
+cWlhbiBaaGVuZyA8emhlbmdzcUByb2NrLWNoaXBzLmNvbT4KPj4gLS0tCj4+ICAgZHJpdmVycy9p
+b21tdS9yb2NrY2hpcC1pb21tdS5jIHwgMzcgKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0t
+LS0tLS0tLQo+PiAgIDEgZmlsZSBjaGFuZ2VkLCAyNSBpbnNlcnRpb25zKCspLCAxMiBkZWxldGlv
+bnMoLSkKPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvcm9ja2NoaXAtaW9tbXUuYyBi
+L2RyaXZlcnMvaW9tbXUvcm9ja2NoaXAtaW9tbXUuYwo+PiBpbmRleCAzYzE2ZWMzLi5kNmMzMDUx
+IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2lvbW11L3JvY2tjaGlwLWlvbW11LmMKPj4gKysrIGIv
+ZHJpdmVycy9pb21tdS9yb2NrY2hpcC1pb21tdS5jCj4+IEBAIC03NSw2ICs3NSwxMSBAQAo+Pgo+
+PiAgICNkZWZpbmUgSU9NTVVfUkVHX1BPTExfQ09VTlRfRkFTVCAxMDAwCj4+Cj4+ICsvKiBBIHZp
+cnR1YWwgaW9tbXUgaW4gZGV2aWNlLXRyZWUgcmVnaXN0ZXJlZCB3aXRob3V0IHJlZyBvcgo+PiAr
+ICogaW50ZXJydXB0cywgc28gdGhlIG51bV9tbXUgaXMgemVyby4KPj4gKyAqLwo+PiArI2RlZmlu
+ZSBSS19JT01NVV9JU19WSVJUVUFMKGlvbW11KSAoaW9tbXUtPm51bV9tbXUgPT0gMCkKPj4gKwo+
+PiAgIHN0cnVjdCBya19pb21tdV9kb21haW4gewo+PiAgICAgICAgICBzdHJ1Y3QgbGlzdF9oZWFk
+IGlvbW11czsKPj4gICAgICAgICAgdTMyICpkdDsgLyogcGFnZSBkaXJlY3RvcnkgdGFibGUgKi8K
+Pj4gQEAgLTc4OSwxMyArNzk0LDEzIEBAIHN0YXRpYyBpbnQgcmtfaW9tbXVfYXR0YWNoX2Rldmlj
+ZShzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sCj4+ICAgICAgICAgIGludCByZXQsIGk7Cj4+
+ICAgICAgICAgIHBoeXNfYWRkcl90IGR0ZV9hZGRyOwo+Pgo+PiAtICAgICAgIC8qCj4+IC0gICAg
+ICAgICogQWxsb3cgJ3ZpcnR1YWwgZGV2aWNlcycgKGUuZy4sIGRybSkgdG8gYXR0YWNoIHRvIGRv
+bWFpbi4KPj4gLSAgICAgICAgKiBTdWNoIGEgZGV2aWNlIGRvZXMgbm90IGJlbG9uZyB0byBhbiBp
+b21tdSBncm91cC4KPj4gLSAgICAgICAgKi8KPj4gICAgICAgICAgaW9tbXUgPSBya19pb21tdV9m
+cm9tX2RldihkZXYpOwo+PiAtICAgICAgIGlmICghaW9tbXUpCj4gQ291bGQgd2UgaW5zdGVhZCBh
+bGxvY2F0ZSBzdWNoIHZpcnR1YWwgcmtfaW9tbXUgc3RydWN0IGhlcmUgKGRldiBjb3VsZAo+IGJl
+IHVzZWQgYXMgaW9tbXUtPmRldiBmb3IgbG9nZ2luZyBwdXJwb3NlcyBhbmQgYSBmYWtlIGdyb3Vw
+IGNvdWxkIGJlCj4gYWxsb2NhdGVkIHRvbyk/ClRoYW5rcyBmb3IgeW91ciBhZHZpY2UuClRoZSAi
+aW9tbXUtPmRldiIgbm90IG9ubHkgZm9yIGxvZ2dpbmcsIGJ1dCBtYWlubHkgZm9yIGRtYV8qKCku
+CklmIGFsbG9jYXRpbmcgdmlydHVhbCBya19pb21tdSBzdHJ1Y3QgaGVyZSBhbmQgc2V0IGlvbW11
+LT5kZXYgdG8gZGV2IG9mIERSTSwKZG1hX21hcF9zaW5nbGUoKSAob3IgZG1hX2FsbG9jX2NvaGVy
+ZW50KCkgYXMgeW91IHN1Z2dlc3RlZCBpbiBwYXRjaCA2LzcpIAptYXkgbm90CmFjdCBhcyBleHBl
+Y3RlZC4KQmVjYXVzZSB3aGVuIERSTSBhdHRhY2hlZCB0byBpb21tdSwgdGhlIGRtYV9vcHMgb2Yg
+RFJNIGlzIHRoZSAKcmtfaW9tbXVfb3BzLCBzbwpkbWFfbWFwX3NpbmdsZSgpIHdpbGwgZ2V0IGVu
+ZGxlc3MgbG9vcCB0byBjYWxsIHJrX2lvbW11X21hcCgpIGxpa2UgdGhlIApzdGFjayBzaG93czoK
+ClsgICAgMy4wOTUyMTVdIFs8ZmZmZmZmYzAwMDRiYzM3ND5dIGR1bXBfc3RhY2srMHhiNC8weGYw
+ClsgICAgMy4wOTUyMjJdIFs8ZmZmZmZmYzAwMDVhNjA0OD5dIHJrX2lvbW11X21hcCsweDUwLzB4
+NGI4ClsgICAgMy4wOTUyMjldIFs8ZmZmZmZmYzAwMDVhMTMwYz5dIGlvbW11X21hcCsweGQ4LzB4
+MmZjClsgICAgMy4wOTUyMzddIFs8ZmZmZmZmYzAwMDVhMzYzND5dIGlvbW11X2RtYV9tYXBfcGFn
+ZSsweGU0LzB4MTE0ClsgICAgMy4wOTUyNDVdIFs8ZmZmZmZmYzAwMDVhNDI1OD5dIF9faW9tbXVf
+bWFwX3BhZ2UrMHg2OC8weGI0ClsgICAgMy4wOTUyNTFdIFs8ZmZmZmZmYzAwMDVhNjExOD5dIHJr
+X2lvbW11X21hcCsweDEyMC8weDRiOApbICAgIDMuMDk1MjU4XSBbPGZmZmZmZmMwMDA1YTEzMGM+
+XSBpb21tdV9tYXArMHhkOC8weDJmYwpbICAgIDMuMDk1MjY1XSBbPGZmZmZmZmMwMDA1YTE1ZDQ+
+XSBkZWZhdWx0X2lvbW11X21hcF9zZysweGE0LzB4ZjgKWyAgICAzLjA5NTI3M10gWzxmZmZmZmZj
+MDAwNWEzNDc0Pl0gaW9tbXVfZG1hX2FsbG9jKzB4MjkwLzB4MmU4ClsgICAgMy4wOTUyODFdIFs8
+ZmZmZmZmYzAwMDVhM2NiYz5dIF9faW9tbXVfYWxsb2NfYXR0cnMrMHhiYy8weDIyYwpbICAgIDMu
+MDk1Mjg3XSBbPGZmZmZmZmMwMDA1ZTA3OTQ+XSByb2NrY2hpcF9nZW1fY3JlYXRlX29iamVjdCsw
+eDExOC8weDE2OAoKQnV0LCBpZiB0aGUgdmlydHVhbCBpb21tdSByZWdpc3RlcmVkIGluIGRldmlj
+ZS10cmVlLCB0aGUgaW9tbXUtPmRldiBpcyAKc2V0IHRvIHBsYXRmb3JtIGRtYV9vcHMsCnRoYXQg
+aXMgc3dpb3RsYl9kbWFfb3BzIGZvciBhcm02NCwgd2hpY2ggY2FuIGF2b2lkIHRoZSBpc3N1ZSBh
+Ym92ZS4KClRoaXMgaXMgd2h5IHRoZSB2aXJ0dWFsIGlvbW11IGFkZGVkIGluIGRldmljZS10cmVl
+LiBZZXMsIGl0J3MgaGFja3ksIGJ1dCAKSSBkb24ndCBoYXZlCmFub3RoZXIgaWRlYSB0byBzb2x2
+ZSB0aGUgcHJvYmxlbS4KCj4KPj4gKwo+PiArICAgICAgIGlvbW11LT5kb21haW4gPSBkb21haW47
+Cj4+ICsgICAgICAgaWYgKFJLX0lPTU1VX0lTX1ZJUlRVQUwoaW9tbXUpKSB7Cj4+ICsgICAgICAg
+ICAgICAgICBkZXZfZGJnKGRldiwgIkF0dGFjaCB2aXJ0dWFsIGRldmljZSB0byBpb21tdSBkb21h
+aW5cbiIpOwo+PiAgICAgICAgICAgICAgICAgIHJldHVybiAwOwo+PiArICAgICAgIH0KPj4KPj4g
+ICAgICAgICAgcmV0ID0gcmtfaW9tbXVfZW5hYmxlX3N0YWxsKGlvbW11KTsKPj4gICAgICAgICAg
+aWYgKHJldCkKPj4gQEAgLTgwNSw3ICs4MTAsNiBAQCBzdGF0aWMgaW50IHJrX2lvbW11X2F0dGFj
+aF9kZXZpY2Uoc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLAo+PiAgICAgICAgICBpZiAocmV0
+KQo+PiAgICAgICAgICAgICAgICAgIHJldHVybiByZXQ7Cj4+Cj4+IC0gICAgICAgaW9tbXUtPmRv
+bWFpbiA9IGRvbWFpbjsKPj4KPj4gICAgICAgICAgcmV0ID0gZGV2bV9yZXF1ZXN0X2lycShpb21t
+dS0+ZGV2LCBpb21tdS0+aXJxLCBya19pb21tdV9pcnEsCj4+ICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgSVJRRl9TSEFSRUQsIGRldl9uYW1lKGRldiksIGlvbW11KTsKPj4gQEAgLTg0
+MiwxMCArODQ2LDEzIEBAIHN0YXRpYyB2b2lkIHJrX2lvbW11X2RldGFjaF9kZXZpY2Uoc3RydWN0
+IGlvbW11X2RvbWFpbiAqZG9tYWluLAo+PiAgICAgICAgICB1bnNpZ25lZCBsb25nIGZsYWdzOwo+
+PiAgICAgICAgICBpbnQgaTsKPj4KPj4gLSAgICAgICAvKiBBbGxvdyAndmlydHVhbCBkZXZpY2Vz
+JyAoZWcgZHJtKSB0byBkZXRhY2ggZnJvbSBkb21haW4gKi8KPj4gICAgICAgICAgaW9tbXUgPSBy
+a19pb21tdV9mcm9tX2RldihkZXYpOwo+PiAtICAgICAgIGlmICghaW9tbXUpCj4+ICsKPj4gKyAg
+ICAgICBpb21tdS0+ZG9tYWluID0gTlVMTDsKPiBJIGRvbid0IHRoaW5rIGl0J3MgYSBnb29kIGlk
+ZWEgdG8gc2V0IHRoZSBkb21haW4gdG8gTlVMTCBiZWZvcmUKPiBkaXNhYmxpbmcgdGhlIHJlYWwg
+SU9NTVUuIEl0IG1pZ2h0IHN0aWxsIHRyaWdnZXIgYW4gaW50ZXJydXB0IGF0IHRoaXMKPiBwb2lu
+dCBhbmQgdGhpbmdzIHdvbid0IGJlaGF2ZSBjb3JyZWN0bHkuIEkgZ3Vlc3MgdGhlIG9yaWdpbmFs
+IGxpbmUKPiBjb3VsZCBiZSBsZWZ0IGFzIGlzIGFuZCBzaW1wbHkgc2FtZSBhc3NpZ25tZW50IGFk
+ZGVkIHVuZGVyIHRoZSBpZgo+IGJlbG93LgpDb3JyZWN0LCBmb3IgdGhlIHZpcnR1YWwgb25lLCBp
+dCdzIHNhZmUgdG8gc2V0ICJpb21tdS0+ZG9tYWluID0gTlVMTCIsCndoaWxlIGZvciB0aGUgcmVh
+bCBpb21tdSwgYmV0dGVyIHRvIGtlZXAgYXMgaXQncyBiZWZvcmUuCgpUaGFuayB5b3UgdmVyeSBt
+dWNoLApTaHVucWlhbgo+Cj4gQmVzdCByZWdhcmRzLAo+IFRvbWFzego+Cj4KPgoKCl9fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlz
+dAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91
+bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
