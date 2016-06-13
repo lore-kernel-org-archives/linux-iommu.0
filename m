@@ -1,73 +1,100 @@
-From: Wei Chen <Wei.Chen@arm.com>
-Subject: [PATCH] iommu/arm-smmu: request pcie devices to enable ACS
-Date: Mon, 13 Jun 2016 17:20:17 +0800
-Message-ID: <1465809617-13003-1-git-send-email-Wei.Chen@arm.com>
+From: Shunqian Zheng <shunqian.zheng-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 6/7] iommu/rockchip: use DMA API to map, to flush cache
+Date: Mon, 13 Jun 2016 17:56:28 +0800
+Message-ID: <575E834C.30305@gmail.com>
+References: <1465392392-2003-1-git-send-email-zhengsq@rock-chips.com>
+ <1465392392-2003-7-git-send-email-zhengsq@rock-chips.com>
+ <CAAFQd5Da+Eg=eiRUgLSS_qPjGbG474KYWDC=GaAMS8A_CuQ3Mg@mail.gmail.com>
+Reply-To: shunqian.zheng-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: linux-arm-kernel@lists.infradead.org
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org, steve.capper@arm.com
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
+Return-path: <linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+In-Reply-To: <CAAFQd5Da+Eg=eiRUgLSS_qPjGbG474KYWDC=GaAMS8A_CuQ3Mg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-rockchip/>
+List-Post: <mailto:linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+List-Help: <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-rockchip>,
+ <mailto:linux-rockchip-request-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org?subject=subscribe>
+Sender: "Linux-rockchip" <linux-rockchip-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Errors-To: linux-rockchip-bounces+glpar-linux-rockchip=m.gmane.org-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?B?SGVpa28gU3TDvGJuZXI=?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, =?UTF-8?B?5aea5pm65oOF?= <mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, simon xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The PCIe ACS capability will affect the layout of iommu groups.
-Generally speaking, if the path from root port to the PCIe device
-is ACS enabled, the iommu will create a single iommu group for this
-PCIe device. If all PCIe devices on the path are ACS enabled then
-Linux can determine this path is ACS enabled.
-
-Linux use two PCIe configuration registers to determine the ACS
-status of PCIe devices:
-ACS Capability Register and ACS Control Register.
-
-The first register is used to check the implementation of ACS function
-of a PCIe device, the second register is used to check the enable status
-of ACS function. If one PCIe device has implemented and enabled the ACS
-function then Linux will determine this PCIe device enabled ACS.
-
->From the Chapter:6.12 of PCI Express Base Specification Revision 3.1a,
-we can find that when a PCIe device implements ACS function, the enable
-status is set to disabled by default and can be enabled by ACS-aware
-software.
-
-ACS will affect the iommu groups topology, so, the iommu driver is
-ACS-aware software. This patch adds a call to pci_request_acs() to the
-arm-smmu driver to enable the ACS function in PCIe devices that support
-it.
-
-Signed-off-by: Wei Chen <Wei.Chen@arm.com>
----
- drivers/iommu/arm-smmu-v3.c | 2 ++
- drivers/iommu/arm-smmu.c    | 4 +++-
- 2 files changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 94b6821..30ea899 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2686,6 +2686,8 @@ static int __init arm_smmu_init(void)
-        if (ret)
-                return ret;
-
-+       pci_request_acs();
-+
-        return bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
- }
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 9345a3f..ab365ec 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -2096,8 +2096,10 @@ static int __init arm_smmu_init(void)
- #endif
-
- #ifdef CONFIG_PCI
--       if (!iommu_present(&pci_bus_type))
-+       if (!iommu_present(&pci_bus_type)) {
-+               pci_request_acs();
-                bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
-+       }
- #endif
-
-        return 0;
+SGkKCk9uIDIwMTblubQwNuaciDEw5pelIDE3OjEwLCBUb21hc3ogRmlnYSB3cm90ZToKPiBIaSwK
+Pgo+IE9uIFdlZCwgSnVuIDgsIDIwMTYgYXQgMTA6MjYgUE0sIFNodW5xaWFuIFpoZW5nIDx6aGVu
+Z3NxQHJvY2stY2hpcHMuY29tPiB3cm90ZToKPj4gVXNlIERNQSBBUEkgaW5zdGVhZCBvZiBhcmNo
+aXRlY3R1cmUgaW50ZXJuYWwgZnVuY3Rpb25zIGxpa2UKPj4gX19jcHVjX2ZsdXNoX2RjYWNoZV9h
+cmVhKCkgZXRjLgo+Pgo+PiBUbyBzdXBwb3J0IHRoZSB2aXJ0dWFsIGRldmljZSBsaWtlIERSTSB0
+aGUgdmlydHVhbCBzbGF2ZSBpb21tdQo+PiBhZGRlZCBpbiB0aGUgcHJldmlvdXMgcGF0Y2gsIGF0
+dGFjaGluZyB0byB3aGljaCB0aGUgRFJNIGNhbiB1c2UKPj4gaXQgb3duIGRvbWFpbi0+ZGV2IGZv
+ciBkbWFfbWFwXyooKSwgZG1hX3N5bmNfKigpIGV2ZW4gVk9QIGlzIGRpc2FibGVkLgo+Pgo+PiBX
+aXRoIHRoaXMgcGF0Y2gsIHRoaXMgZHJpdmVyIGlzIGF2YWlsYWJsZSBmb3IgQVJNNjQgbGlrZSBS
+SzMzOTkuCj4+Cj4gQ291bGQgd2UgaW5zdGVhZCBzaW1wbHkgYWxsb2NhdGUgY29oZXJlbnQgbWVt
+b3J5IGZvciBwYWdlIHRhYmxlcyB1c2luZwo+IGRtYV9hbGxvY19jb2hlcmVudCgpIGFuZCBza2lw
+IGFueSBmbHVzaGluZyBvbiBDUFUgc2lkZSBjb21wbGV0ZWx5PyBJZgo+IEknbSBsb29raW5nIGNv
+cnJlY3RseSwgdGhlIGRyaXZlciBvbmx5IHJlYWRzIGJhY2sgdGhlIHBhZ2UgZGlyZWN0b3J5Cj4g
+d2hlbiBjaGVja2luZyBpZiB0aGVyZSBpcyBhIG5lZWQgdG8gYWxsb2NhdGUgbmV3IHBhZ2UgdGFi
+bGUsIHNvIHRoZXJlCj4gc2hvdWxkbid0IGJlIGFueSBzaWduaWZpY2FudCBwZW5hbHR5IGZvciBk
+aXNhYmxpbmcgdGhlIGNhY2hlLgpJIHRyeSB0byB1c2UgZG1hX2FsbG9jX2NvaGVyZW50KCkgdG8g
+cmVwbGFjZSB0aGUgZG1hX21hcF9zaW5nbGUoKSwKYnV0IGl0IGRvZXNuJ3Qgd29yayBmb3IgbWUg
+cHJvcGVybHkuCkJlY2F1c2UgdGhlIERSTSB1c2VzIHRoZSBpb21tdV9kbWFfb3BzIGluc3RlYWQg
+dGhlIHN3aW90bGJfZG1hX29wcyBhZnRlciAKYXR0YWNoaW5nCnRvIGlvbW11LCBzbyB3aGVuIHRo
+ZSBpb21tdSBkb21haW4gbmVlZCB0byBhbGxvYyBhIG5ldyBwYWdlIGluIApya19pb21tdV9tYXAo
+KSwKaXQgd291bGQgY2FsbDoKcmtfaW9tbXVfbWFwKCkgIC0tPiBkbWFfYWxsb2NfY29oZXJlbnQo
+KSAgLS0+IG9wcy0+YWxsb2MoKSAgLS0+IAppb21tdV9tYXAoKSAtLT4gcmtfaW9tbXVfbWFwKCkK
+ClRoZW4gSSB0cnkgdG8gcmVzZXJ2ZSBtZW1vcnkgZm9yIGNvaGVyZW50IHNvIHRoYXQsIGRtYV9h
+bGxvY19jb2hlcmVudCgpICAKY2FsbHMgZG1hX2FsbG9jX2Zyb21fY29oZXJlbnQoKQpidXQgbm90
+IG9wcy0+YWxsb2MoKS4gQnV0IGl0IGRvZXNuJ3Qgd29yayB0b28gYmVjYXVzZSB3aGVuIERSTSBy
+ZXF1ZXN0IApidWZmZXIgaXQgbmV2ZXIgdXNlcyBpb21tdS4KPgo+IE90aGVyIHRoYW4gdGhhdCwg
+cGxlYXNlIHNlZSBzb21lIGNvbW1lbnRzIGlubGluZS4KPgo+PiBTaWduZWQtb2ZmLWJ5OiBTaHVu
+cWlhbiBaaGVuZyA8emhlbmdzcUByb2NrLWNoaXBzLmNvbT4KPj4gLS0tCj4+ICAgZHJpdmVycy9p
+b21tdS9yb2NrY2hpcC1pb21tdS5jIHwgMTEzICsrKysrKysrKysrKysrKysrKysrKysrKysrLS0t
+LS0tLS0tLS0tLS0tCj4+ICAgMSBmaWxlIGNoYW5nZWQsIDcxIGluc2VydGlvbnMoKyksIDQyIGRl
+bGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9yb2NrY2hpcC1pb21t
+dS5jIGIvZHJpdmVycy9pb21tdS9yb2NrY2hpcC1pb21tdS5jCj4+IGluZGV4IGQ2YzMwNTEuLmFh
+ZmVhNmUgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvcm9ja2NoaXAtaW9tbXUuYwo+PiAr
+KysgYi9kcml2ZXJzL2lvbW11L3JvY2tjaGlwLWlvbW11LmMKPj4gQEAgLTQsOCArNCw2IEBACj4+
+ICAgICogcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24uCj4+ICAgICov
+Cj4+Cj4+IC0jaW5jbHVkZSA8YXNtL2NhY2hlZmx1c2guaD4KPj4gLSNpbmNsdWRlIDxhc20vcGd0
+YWJsZS5oPgo+PiAgICNpbmNsdWRlIDxsaW51eC9jb21waWxlci5oPgo+PiAgICNpbmNsdWRlIDxs
+aW51eC9kZWxheS5oPgo+PiAgICNpbmNsdWRlIDxsaW51eC9kZXZpY2UuaD4KPj4gQEAgLTYxLDgg
+KzU5LDcgQEAKPj4gICAjZGVmaW5lIFJLX01NVV9JUlFfQlVTX0VSUk9SICAgICAweDAyICAvKiBi
+dXMgcmVhZCBlcnJvciAqLwo+PiAgICNkZWZpbmUgUktfTU1VX0lSUV9NQVNLICAgICAgICAgIChS
+S19NTVVfSVJRX1BBR0VfRkFVTFQgfCBSS19NTVVfSVJRX0JVU19FUlJPUikKPj4KPj4gLSNkZWZp
+bmUgTlVNX0RUX0VOVFJJRVMgMTAyNAo+PiAtI2RlZmluZSBOVU1fUFRfRU5UUklFUyAxMDI0Cj4+
+ICsjZGVmaW5lIE5VTV9UTEJfRU5UUklFUyAxMDI0IC8qIGZvciBib3RoIERUIGFuZCBQVCAqLwo+
+IElzIGl0IG5lY2Vzc2FyeSB0byBjaGFuZ2UgdGhpcyBpbiB0aGlzIHBhdGNoPyBJbiBnZW5lcmFs
+LCBpdCdzIG5vdCBhCj4gZ29vZCBpZGVhIHRvIG1peCBtdWx0aXBsZSBsb2dpY2FsIGNoYW5nZXMg
+dG9nZXRoZXIuClN1cmUsIHdpbGwgcmVzdG9yZSBjaGFuZ2VzIGluIHYzLgo+Cj4+ICAgI2RlZmlu
+ZSBTUEFHRV9PUkRFUiAxMgo+PiAgICNkZWZpbmUgU1BBR0VfU0laRSAoMSA8PCBTUEFHRV9PUkRF
+UikKPj4gQEAgLTgyLDcgKzc5LDkgQEAKPj4KPj4gICBzdHJ1Y3QgcmtfaW9tbXVfZG9tYWluIHsK
+Pj4gICAgICAgICAgc3RydWN0IGxpc3RfaGVhZCBpb21tdXM7Cj4+ICsgICAgICAgc3RydWN0IGRl
+dmljZSAqZGV2Owo+PiAgICAgICAgICB1MzIgKmR0OyAvKiBwYWdlIGRpcmVjdG9yeSB0YWJsZSAq
+Lwo+PiArICAgICAgIGRtYV9hZGRyX3QgZHRfZG1hOwo+PiAgICAgICAgICBzcGlubG9ja190IGlv
+bW11c19sb2NrOyAvKiBsb2NrIGZvciBpb21tdXMgbGlzdCAqLwo+PiAgICAgICAgICBzcGlubG9j
+a190IGR0X2xvY2s7IC8qIGxvY2sgZm9yIG1vZGlmeWluZyBwYWdlIGRpcmVjdG9yeSB0YWJsZSAq
+Lwo+Pgo+PiBAQCAtOTgsMTQgKzk3LDEyIEBAIHN0cnVjdCBya19pb21tdSB7Cj4+ICAgICAgICAg
+IHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbjsgLyogZG9tYWluIHRvIHdoaWNoIGlvbW11IGlz
+IGF0dGFjaGVkICovCj4+ICAgfTsKPj4KPj4gLXN0YXRpYyBpbmxpbmUgdm9pZCBya190YWJsZV9m
+bHVzaCh1MzIgKnZhLCB1bnNpZ25lZCBpbnQgY291bnQpCj4+ICtzdGF0aWMgaW5saW5lIHZvaWQg
+cmtfdGFibGVfZmx1c2goc3RydWN0IGRldmljZSAqZGV2LCBkbWFfYWRkcl90IGRtYSwKPj4gKyAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHVuc2lnbmVkIGludCBjb3VudCkKPj4gICB7
+Cj4+IC0gICAgICAgcGh5c19hZGRyX3QgcGFfc3RhcnQgPSB2aXJ0X3RvX3BoeXModmEpOwo+PiAt
+ICAgICAgIHBoeXNfYWRkcl90IHBhX2VuZCA9IHZpcnRfdG9fcGh5cyh2YSArIGNvdW50KTsKPj4g
+LSAgICAgICBzaXplX3Qgc2l6ZSA9IHBhX2VuZCAtIHBhX3N0YXJ0Owo+PiArICAgICAgIHNpemVf
+dCBzaXplID0gY291bnQgKiA0Owo+IEl0IHdvdWxkIGJlIGEgZ29vZCBpZGVhIHRvIHNwZWNpZnkg
+d2hhdCAiY291bnQiIGlzLiBJJ20gYSBiaXQgY29uZnVzZWQKPiB0aGF0IGJlZm9yZSBpdCBtZWFu
+dCBieXRlcyBhbmQgbm93IHNvbWUgbXVsdGlwbGUgb2YgND8KImNvdW50IiBtZWFucyBQVC9EVCBl
+bnRyeSBjb3VudCB0byBmbHVzaCBoZXJlLiBJIHdvdWxkIGFkZCBzb21lIG1vcmUgCmNvbW1lbnQg
+b24gaXQuCgpUaGFuayB5b3UgdmVyeSBtdWNoLApTaHVucWlhbgo+Cj4gQmVzdCByZWdhcmRzLAo+
+IFRvbWFzego+Cj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KPiBMaW51eC1yb2NrY2hpcCBtYWlsaW5nIGxpc3QKPiBMaW51eC1yb2NrY2hpcEBsaXN0cy5p
+bmZyYWRlYWQub3JnCj4gaHR0cDovL2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5m
+by9saW51eC1yb2NrY2hpcAoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCkxpbnV4LXJvY2tjaGlwIG1haWxpbmcgbGlzdApMaW51eC1yb2NrY2hpcEBsaXN0
+cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGlu
+Zm8vbGludXgtcm9ja2NoaXAK
