@@ -1,16 +1,20 @@
-From: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Subject: Re: [PATCH v2 5/7] drm: rockchip: use common iommu api to attach iommu
-Date: Sun, 12 Jun 2016 11:37:12 +0800
-Message-ID: <575CD8E8.6060502@rock-chips.com>
-References: <1465392392-2003-1-git-send-email-zhengsq@rock-chips.com>
-	<1465392392-2003-6-git-send-email-zhengsq@rock-chips.com>
-	<CAAFQd5AEsMhQiNkjBr-Af6rBg9x6Z9bCOu7GuYXt2h=wao7Cow@mail.gmail.com>
-Reply-To: zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org
+From: Wan ZongShun <mcuos.com-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [E1000-devel] AMD-Vi: Event logged IO_PAGE_FAULT - ixgbe Detected
+	Tx Unit Hang - Reset adapter - master disable timed out
+Date: Mon, 13 Jun 2016 10:46:39 +0800
+Message-ID: <CAKT61h9cNnGDNugoWXYcpN1VjVK3Hn-VOW+TwHahj5EXzfsXgA@mail.gmail.com>
+References: <loom.20160606T232112-817@post.gmane.org>
+	<CAKgT0UfEGS_QzM1phGKRV1hDgcnAwX-BqMkyQ6KJUOv82_kCiA@mail.gmail.com>
+	<nj64hf$9v5$1@ger.gmane.org>
+	<CAKgT0UfKUkrsXqLm4KdjXgLZ6QXZp5Rf-yYA3pBSzc1=ghJ4CQ@mail.gmail.com>
+	<njbvjb$40r$1@ger.gmane.org>
+	<CAKgT0UeFM1jYTU83YFohxUHWuJeTYfWDpdFM2CDQCutmf_vXvA@mail.gmail.com>
+	<5759A009.8040200@5t9.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5AEsMhQiNkjBr-Af6rBg9x6Z9bCOu7GuYXt2h=wao7Cow-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <5759A009.8040200-i6VILw57VWU@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,100 +24,121 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?B?SGVpa28gU3TDvGJuZXI=?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, list-Y9sIeH5OGRo@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, simon xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, open-Y9sIeH5OGRo@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, =?UTF-8?B?5aea5pm65oOF?= <mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+To: Lutz Vieweg <lvml-i6VILw57VWU@public.gmane.org>
+Cc: e1000-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGksCgpPbiAyMDE25bm0MDbmnIgxMOaXpSAxNjowMywgVG9tYXN6IEZpZ2Egd3JvdGU6Cj4gSGks
-Cj4KPiBPbiBXZWQsIEp1biA4LCAyMDE2IGF0IDEwOjI2IFBNLCBTaHVucWlhbiBaaGVuZyA8emhl
-bmdzcUByb2NrLWNoaXBzLmNvbT4gd3JvdGU6Cj4+IFJvY2tjaGlwIERSTSB1c2VkIHRoZSBhcm0g
-c3BlY2lhbCBBUEksIGFybV9pb21tdV8qKCksIHRvIGF0dGFjaAo+PiBpb21tdSBmb3IgQVJNMzIg
-U29Dcy4gVGhpcyBwYXRjaCBjb252ZXJ0IHRvIGNvbW1vbiBpb21tdSBBUEkKPj4gc28gaXQgd291
-bGQgc3VwcG9ydCBBUk02NCBsaWtlIFJLMzM5OS4KPj4KPj4gVGhlIGdlbmVyYWwgaWRlYSBpcyBk
-b21haW5fYWxsb2MoKSwgYXR0YWNoX2RldmljZSgpIGFuZAo+PiBhcmNoX3NldHVwX2RtYV9vcHMo
-KSB0byBzZXQgZG1hX29wcyBtYW51YWxseSBmb3IgRFJNIGF0IHRoZSBsYXN0Lgo+Pgo+PiBTaWdu
-ZWQtb2ZmLWJ5OiBTaHVucWlhbiBaaGVuZyA8emhlbmdzcUByb2NrLWNoaXBzLmNvbT4KPj4gLS0t
-Cj4+ICAgZHJpdmVycy9ncHUvZHJtL3JvY2tjaGlwL3JvY2tjaGlwX2RybV9kcnYuYyB8IDEzMCAr
-KysrKysrKysrKysrKysrKysrLS0tLS0tLS0tCj4+ICAgZHJpdmVycy9ncHUvZHJtL3JvY2tjaGlw
-L3JvY2tjaGlwX2RybV9kcnYuaCB8ICAgMSArCj4+ICAgMiBmaWxlcyBjaGFuZ2VkLCA4OSBpbnNl
-cnRpb25zKCspLCA0MiBkZWxldGlvbnMoLSkKPj4KPiBQbGVhc2Ugc2VlIG15IGNvbW1lbnRzIGlu
-bGluZS4KPgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL3JvY2tjaGlwL3JvY2tjaGlw
-X2RybV9kcnYuYyBiL2RyaXZlcnMvZ3B1L2RybS9yb2NrY2hpcC9yb2NrY2hpcF9kcm1fZHJ2LmMK
-Pj4gaW5kZXggZjVhNjhmYy4uNzk2NWE2NiAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9ncHUvZHJt
-L3JvY2tjaGlwL3JvY2tjaGlwX2RybV9kcnYuYwo+PiArKysgYi9kcml2ZXJzL2dwdS9kcm0vcm9j
-a2NoaXAvcm9ja2NoaXBfZHJtX2Rydi5jCj4+IEBAIC0xNCw4ICsxNCw2IEBACj4+ICAgICogR05V
-IEdlbmVyYWwgUHVibGljIExpY2Vuc2UgZm9yIG1vcmUgZGV0YWlscy4KPj4gICAgKi8KPj4KPj4g
-LSNpbmNsdWRlIDxhc20vZG1hLWlvbW11Lmg+Cj4+IC0KPj4gICAjaW5jbHVkZSA8ZHJtL2RybVAu
-aD4KPj4gICAjaW5jbHVkZSA8ZHJtL2RybV9jcnRjX2hlbHBlci5oPgo+PiAgICNpbmNsdWRlIDxk
-cm0vZHJtX2ZiX2hlbHBlci5oPgo+PiBAQCAtMjQsNiArMjIsOCBAQAo+PiAgICNpbmNsdWRlIDxs
-aW51eC9tb2R1bGUuaD4KPj4gICAjaW5jbHVkZSA8bGludXgvb2ZfZ3JhcGguaD4KPj4gICAjaW5j
-bHVkZSA8bGludXgvY29tcG9uZW50Lmg+Cj4+ICsjaW5jbHVkZSA8bGludXgvZG1hLWlvbW11Lmg+
-Cj4+ICsjaW5jbHVkZSA8bGludXgvaW9tbXUuaD4KPj4KPj4gICAjaW5jbHVkZSAicm9ja2NoaXBf
-ZHJtX2Rydi5oIgo+PiAgICNpbmNsdWRlICJyb2NrY2hpcF9kcm1fZmIuaCIKPj4gQEAgLTQ2LDcg
-KzQ2LDggQEAgc3RhdGljIGJvb2wgaXNfc3VwcG9ydF9pb21tdSA9IHRydWU7Cj4+ICAgaW50IHJv
-Y2tjaGlwX2RybV9kbWFfYXR0YWNoX2RldmljZShzdHJ1Y3QgZHJtX2RldmljZSAqZHJtX2RldiwK
-Pj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IGRldmljZSAqZGV2
-KQo+PiAgIHsKPj4gLSAgICAgICBzdHJ1Y3QgZG1hX2lvbW11X21hcHBpbmcgKm1hcHBpbmcgPSBk
-cm1fZGV2LT5kZXYtPmFyY2hkYXRhLm1hcHBpbmc7Cj4+ICsgICAgICAgc3RydWN0IHJvY2tjaGlw
-X2RybV9wcml2YXRlICpwcml2YXRlID0gZHJtX2Rldi0+ZGV2X3ByaXZhdGU7Cj4+ICsgICAgICAg
-c3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluID0gcHJpdmF0ZS0+ZG9tYWluOwo+PiAgICAgICAg
-ICBpbnQgcmV0Owo+Pgo+PiAgICAgICAgICBpZiAoIWlzX3N1cHBvcnRfaW9tbXUpCj4+IEBAIC01
-OCwxNiArNTksMjUgQEAgaW50IHJvY2tjaGlwX2RybV9kbWFfYXR0YWNoX2RldmljZShzdHJ1Y3Qg
-ZHJtX2RldmljZSAqZHJtX2RldiwKPj4KPj4gICAgICAgICAgZG1hX3NldF9tYXhfc2VnX3NpemUo
-ZGV2LCBETUFfQklUX01BU0soMzIpKTsKPj4KPj4gLSAgICAgICByZXR1cm4gYXJtX2lvbW11X2F0
-dGFjaF9kZXZpY2UoZGV2LCBtYXBwaW5nKTsKPj4gKyAgICAgICByZXQgPSBpb21tdV9hdHRhY2hf
-ZGV2aWNlKGRvbWFpbiwgZGV2KTsKPj4gKwo+IG5pdDogVW5uZWNlc3NhcnkgYmxhbmsgbGluZS4K
-V2lsbCBmaXggaXQgaW4gdjMuCj4KPj4gKyAgICAgICBpZiAocmV0KSB7Cj4+ICsgICAgICAgICAg
-ICAgICBkZXZfZXJyKGRldiwgIkZhaWxlZCB0byBhdHRhY2ggaW9tbXUgZGV2aWNlXG4iKTsKPj4g
-KyAgICAgICAgICAgICAgIHJldHVybiByZXQ7Cj4+ICsgICAgICAgfQo+IG5pdDogT24gdGhlIG90
-aGVyIGhhbmQsIGEgYmxhbmsgbGluZSBoZXJlIHdvdWxkIGltcHJvdmUgcmVhZGFiaWxpdHkuCldp
-bGwgZml4IGl0IGluIHYzLgo+Cj4+ICsgICAgICAgYXJjaF9zZXR1cF9kbWFfb3BzKGRldiwgMHgw
-MDAwMDAwMCwgU1pfMkcsCj4+ICsgICAgICAgICAgICAgICAgICAgICAgICAgIChzdHJ1Y3QgaW9t
-bXVfb3BzICopZGV2LT5idXMtPmlvbW11X29wcywgZmFsc2UpOwo+IFRoaXMgaXMgY2FzdGluZyBh
-IGNvbnN0IHBvaW50ZXIgdG8gYSBub24tY29uc3QgcG9pbnRlci4gd2hpY2ggaXNuJ3QKPiByZWFs
-bHkgYSBnb29kIGlkZWEuIEkgY2FuIHNlZSB0aGF0IGFyY2hfc2V0dXBfZG1hX29wcygpIHJlcXVp
-cmVzIGEKPiB3cml0YWJsZSBwb2ludGVyLCB0aG91Z2guIExvb2tpbmcgYXQgdGhlIGltcGxlbWVu
-dGF0aW9ucyBvZgo+IGFyY2hfc2V0dXBfZG1hX29wcygpIGFyb3VuZCB0aGUgcGxhdGZvcm1zIChu
-YW1lbHkgYXJtIGFuZCBhcm02NC4uLiksCj4gaXQgbWFrZXMgbWUgd29uZGVyIGlmIHRoZSBwcm90
-b3R5cGUgc2hvdWxkbid0IGJlIGNoYW5nZWQgdG8gY29uc3QKPiBpbnN0ZWFkLgpBY3R1YWxseSwg
-a2VybmVsLW5leHQgY2hhbmdlZCBpb21tdV9vcHMgdG8gY29uc3QgYnk6CjUzYzkyZDcgaW9tbXU6
-IG9mOiBlbmZvcmNlIGNvbnN0LW5lc3Mgb2Ygc3RydWN0IGlvbW11X29wcwoKV2lsbCByZW1vdmUg
-Y2FzdGluZyBpbiB0aGUgdjMuCj4KPj4gKyAgICAgICByZXR1cm4gMDsKPj4gICB9Cj4+Cj4+ICAg
-dm9pZCByb2NrY2hpcF9kcm1fZG1hX2RldGFjaF9kZXZpY2Uoc3RydWN0IGRybV9kZXZpY2UgKmRy
-bV9kZXYsCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzdHJ1Y3QgZGV2
-aWNlICpkZXYpCj4+ICAgewo+PiAtICAgICAgIGlmICghaXNfc3VwcG9ydF9pb21tdSkKPj4gLSAg
-ICAgICAgICAgICAgIHJldHVybjsKPj4gKyAgICAgICBzdHJ1Y3Qgcm9ja2NoaXBfZHJtX3ByaXZh
-dGUgKnByaXZhdGUgPSBkcm1fZGV2LT5kZXZfcHJpdmF0ZTsKPj4gKyAgICAgICBzdHJ1Y3QgaW9t
-bXVfZG9tYWluICpkb21haW4gPSBwcml2YXRlLT5kb21haW47Cj4+Cj4+IC0gICAgICAgYXJtX2lv
-bW11X2RldGFjaF9kZXZpY2UoZGV2KTsKPj4gKyAgICAgICBpZiAoaXNfc3VwcG9ydF9pb21tdSkK
-Pj4gKyAgICAgICAgICAgICAgIGlvbW11X2RldGFjaF9kZXZpY2UoZG9tYWluLCBkZXYpOwo+PiAg
-IH0KPj4KPj4gICBpbnQgcm9ja2NoaXBfcmVnaXN0ZXJfY3J0Y19mdW5jcyhzdHJ1Y3QgZHJtX2Ny
-dGMgKmNydGMsCj4+IEBAIC0xMzIsMTAgKzE0Miw3MCBAQCBzdGF0aWMgdm9pZCByb2NrY2hpcF9k
-cm1fY3J0Y19kaXNhYmxlX3ZibGFuayhzdHJ1Y3QgZHJtX2RldmljZSAqZGV2LAo+PiAgICAgICAg
-ICAgICAgICAgIHByaXYtPmNydGNfZnVuY3NbcGlwZV0tPmRpc2FibGVfdmJsYW5rKGNydGMpOwo+
-PiAgIH0KPj4KPj4gK3N0YXRpYyBpbnQgcm9ja2NoaXBfZHJtX2luaXRfaW9tbXUoc3RydWN0IGRy
-bV9kZXZpY2UgKmRybV9kZXYpCj4+ICt7Cj4+ICsgICAgICAgc3RydWN0IHJvY2tjaGlwX2RybV9w
-cml2YXRlICpwcml2YXRlID0gZHJtX2Rldi0+ZGV2X3ByaXZhdGU7Cj4+ICsgICAgICAgc3RydWN0
-IGRldmljZSAqZGV2ID0gZHJtX2Rldi0+ZGV2Owo+PiArICAgICAgIGludCByZXQ7Cj4+ICsKPj4g
-KyAgICAgICBkZXYtPmRtYV9wYXJtcyA9IGRldm1fa3phbGxvYyhkZXYsIHNpemVvZigqZGV2LT5k
-bWFfcGFybXMpLAo+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEdGUF9L
-RVJORUwpOwo+PiArICAgICAgIGlmICghZGV2LT5kbWFfcGFybXMpIHsKPj4gKyAgICAgICAgICAg
-ICAgIHJldCA9IC1FTk9NRU07Cj4+ICsgICAgICAgICAgICAgICByZXR1cm4gcmV0Owo+IG5pdDog
-cmV0dXJuIC1FTk9NRU07CldpbGwgZml4IGl0IGluIHYzLgo+Cj4+ICsgICAgICAgfQo+PiArCj4+
-ICsgICAgICAgcmV0ID0gZG1hX3NldF9jb2hlcmVudF9tYXNrKGRldiwgRE1BX0JJVF9NQVNLKDMy
-KSk7Cj4+ICsgICAgICAgaWYgKHJldCkgewo+PiArICAgICAgICAgICAgICAgZGV2X2VycihkZXYs
-ICJGYWlsZWQgdG8gc2V0IGNvaGVyZW50IG1hc2tcbiIpOwo+PiArICAgICAgICAgICAgICAgcmV0
-dXJuIHJldDsKPj4gKyAgICAgICB9Cj4+ICsKPj4gKyAgICAgICBkbWFfc2V0X21heF9zZWdfc2l6
-ZShkZXYsIERNQV9CSVRfTUFTSygzMikpOwo+PiArCj4+ICsgICAgICAgcHJpdmF0ZS0+ZG9tYWlu
-ID0gaW9tbXVfZG9tYWluX2FsbG9jKCZwbGF0Zm9ybV9idXNfdHlwZSk7Cj4+ICsgICAgICAgaWYg
-KCFwcml2YXRlLT5kb21haW4pCj4+ICsgICAgICAgICAgICAgICByZXR1cm4gLUVOT01FTTsKPj4g
-Kwo+PiArICAgICAgIHJldCA9IGlvbW11X2dldF9kbWFfY29va2llKHByaXZhdGUtPmRvbWFpbik7
-Cj4+ICsgICAgICAgaWYgKHJldCkgewo+PiArICAgICAgICAgICAgICAgZGV2X2VycihkZXYsICJG
-YWlsZWQgdG8gZ2V0IGRtYSBjb29raWVcbiIpOwo+PiArICAgICAgICAgICAgICAgZ290byBlcnJf
-ZnJlZV9kb21haW47Cj4+ICsgICAgICAgfQo+PiArCj4+ICsgICAgICAgcmV0ID0gaW9tbXVfZG1h
-X2luaXRfZG9tYWluKHByaXZhdGUtPmRvbWFpbiwgMHgwMDAwMDAwMCwgU1pfMkcpOwo+IEkgZ3Vl
-c3MgZGprdXJ0eidzIFRPRE8gY29tbWVudCBjb3VsZCBiZSBwcmVzZXJ2ZWQgaGVyZS4KQWdyZWUu
-CgpUaGFuayB5b3UgdmVyeSBtdWNoLgpTaHVucWlhbgo+Cj4gQmVzdCByZWdhcmRzLAo+IFRvbWFz
-ego+Cj4KPgoKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRw
-czovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+2016-06-10 0:57 GMT+08:00 Lutz Vieweg <lvml-i6VILw57VWU@public.gmane.org>:
+> On 06/09/2016 06:03 PM, Alexander Duyck wrote:
+>>>
+>>> This time I'll reboot the machine, and also try "iommu=pt" as suggested
+>>> in different places for use with 10G NICs.
+>>
+>>
+>> That might be a good place to start.
+>>
+>> I'm adding, or at least attempting to, the mailing list and maintainer
+>> for the IOMMU code.  You might want to check with the AMD-Vi IOMMU
+>> maintainers to see if they have any other advice as this seems like
+>> something that may have been introduced with changes to the IOMMU as
+>> the ixgbe driver hasn't had any updates to the DMA mapping/unmapping
+>> code in some time and it was working in the 4.4 kernel series and
+>> still works on my system which runs an Intel IOMMU so I am wondering
+>> if this may be something specifically related to changes in the AMD
+>> IOMMU code.
+>
+>
+> After having rebooted the system with "iommu=pt", the following change
+> of dmesg-output looks curious to me:
+>
+> Without "iommu=pt":
+>>
+>> [    4.869591] iommu: Adding device 0000:04:00.0 to group 13
+>
+> ...
+>>
+>> [    4.873105] AMD-Vi: Found IOMMU at 0000:00:00.2 cap 0x40
+>> [    4.873347] AMD-Vi: Found IOMMU at 0000:40:00.2 cap 0x40
+>> [    4.873586] AMD-Vi: Interrupt remapping enabled
+>> [    4.874108] AMD-Vi: Lazy IO/TLB flushing enabled
+>
+
+Ok, so there are two iommus controller in your system.
+
+>
+> With "iommu=pt":
+>>
+>> [    4.832580] iommu: Adding device 0000:04:00.0 to group 13
+>> [    4.832838] iommu: Using direct mapping for device 0000:04:00.0
+>
+
+That is right, you will pass through AMD IOMMU when you set iommu=pt.
+
+> ...
+>>
+>> [    4.837074] AMD-Vi: Found IOMMU at 0000:00:00.2 cap 0x40
+>> [    4.837305] AMD-Vi: Found IOMMU at 0000:40:00.2 cap 0x40
+>> [    4.837535] AMD-Vi: Interrupt remapping enabled
+>> [    4.838062] AMD-Vi: Lazy IO/TLB flushing enabled
+>> [    4.838291] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+>> [    4.838533] software IO TLB [mem 0xd3e80000-0xd7e80000] (64MB) mapped
+>> at [ffff8800d3e80000-ffff8800d7e7ffff]
+>
+>
+> I hope that doesn't mean all my network data is now passing through
+> an additional copy-by-CPU... that would be kind of the opposite of what
+> "iommu=pt" seemed to promise :-)
+
+It depends.
+
+Firstly, I need to know if your ethernet card works well now or not
+after you set iommu=pt.
+
+If your ethernet card with 64bit(not 32bit) DMA addressable cap, that
+is ok, you will not be impacted by bounce buffer. But iommu=pt is a
+terrible option, that make all devices bypass the iommu.
+
+If you want to get further help, Please try:
+
+(1)Please add 'amd_iommu_dump' option in your kernel boot option, and
+send your full kernel logs, lspci info, don't add iommu=pt.
+(2) Add amd_iommu=fullflush option to kernel boot option, just try it.
+
+
+>
+> One more thing I find curious, but this didn't change with "iommu=pt":
+>>
+>> [    0.000000] AGP: Checking aperture...
+>> [    0.000000] AGP: No AGP bridge found
+>> [    0.000000] AGP: Node 0: aperture [bus addr 0x00000000-0x01ffffff]
+>> (32MB)
+>> [    0.000000] AGP: Your BIOS doesn't leave an aperture memory hole
+>> [    0.000000] AGP: Please enable the IOMMU option in the BIOS setup
+>> [    0.000000] AGP: This costs you 64MB of RAM
+>> [    0.000000] AGP: Mapping aperture over RAM [mem 0xcc000000-0xcfffffff]
+>> (65536KB)
+>
+> I checked and the IOMMU-option is definitely enabled in the BIOS setup.
+> So I assume right that these message are irrelevant (since AGP as a whole
+> is irrelevant on this server)?
+
+Please cat /proc/iomem, send the information.
+
+>
+> Regards,
+>
+> Lutz Vieweg
+>
+>
+>
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
+
+
+-- 
+---
+Vincent Wan(Zongshun)
+www.mcuos.com
