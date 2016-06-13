@@ -1,69 +1,107 @@
-From: Sricharan R <sricharan@codeaurora.org>
-Subject: [PATCH V6 0/6] iommu/msm: Add DT adaptation and generic bindings support
-Date: Mon, 13 Jun 2016 17:06:01 +0530
-Message-ID: <1465817767-9856-1-git-send-email-sricharan@codeaurora.org>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, joro@8bytes.org, robdclark@gmail.com, iommu@lists.linux-foundation.org, srinivas.kandagatla@linaro.org, laurent.pinchart@ideasonboard.com, treding@nvidia.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, stepanm@codeaurora.org, architt@codeaurora.org, arnd@arndb.de
-Cc: sricharan@codeaurora.org
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH V6 2/6] documentation: iommu: Add bindings for msm, iommu-v0 ip
+Date: Mon, 13 Jun 2016 17:06:03 +0530
+Message-ID: <1465817767-9856-3-git-send-email-sricharan@codeaurora.org>
+References: <1465817767-9856-1-git-send-email-sricharan@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1465817767-9856-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org
+Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The msm_iommu.c driver currently works based on platform data.
-A single master device can be connected to more than one iommu and multiple
-contexts in each of the iommu. This association between master and iommus was
-represented from platform data using parent/child devices. The master drivers
-were responsible for attaching all of the iommus/context to a domain. Now the
-platform data support is removed and DT support is added. The master/iommus are
-added through generic iommu bindings.
+The MSM IOMMU is an implementation compatible with the ARM VMSA short
+descriptor page tables. It provides address translation for bus masters outside
+of the CPU, each connected to the IOMMU through a port called micro-TLB.
+Adding the DT bindings for the same.
 
-This is essentially rework of the patch posted earlier by
-Rob Clark <robdclark@gmail.com>. This series folds the changes in to the
-existing driver with the addition of generic bindings.
-
-        http://www.spinics.net/lists/linux-arm-msm/msg10077.html
-
-Tested this series on ifc6410 board.
-
-[V6] After some discussions on patch 6 [1] from previous post,
-     it was concluded that the changes for using relaxed writes
-     in all places should not be a part of this series, so should
-     be moved it. So removed that patch and added Acked/Tested tags.
-     [1] https://patchwork.kernel.org/patch/9129231/
-
-[V5] Changed the compatible binding name as per comments, added comments
-     for usage of barriers in patch 6.
-
-[V4] Addressed comments for making the iommu compatible binding more soc
-     specific and updated the documentation for the iommu clocks.
-
-[V3] Addressed comments to correct the usage
-     of the #iommu-cells binding, improve the flush_iotlb_range function,
-     added a new patch to use writel_relaxed for register access and split
-     up the documentation patch.
-
-[V2] Adapted the driver to use generic ARMV7S short descriptor pagetable ops
-     and addressed comments.
-
-[V1]
-   https://lists.linuxfoundation.org/pipermail/iommu/2015-August/014074.html
-
-Sricharan R (6):
-  iommu/msm: Add DT adaptation
-  documentation: iommu: Add bindings for msm,iommu-v0 ip
-  iommu/msm: Move the contents from msm_iommu_dev.c to msm_iommu.c
-  iommu/msm: Add support for generic master bindings
-  iommu/msm: use generic ARMV7S short descriptor pagetable ops
-  iommu/msm: Remove driver BROKEN
-
- .../devicetree/bindings/iommu/msm,iommu-v0.txt     |  64 ++
- drivers/iommu/Kconfig                              |   2 +-
- drivers/iommu/Makefile                             |   2 +-
- drivers/iommu/msm_iommu.c                          | 870 +++++++++++----------
- drivers/iommu/msm_iommu.h                          |  73 +-
- drivers/iommu/msm_iommu_dev.c                      | 381 ---------
- 6 files changed, 564 insertions(+), 828 deletions(-)
+Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+---
+ .../devicetree/bindings/iommu/msm,iommu-v0.txt     | 64 ++++++++++++++++++++++
+ 1 file changed, 64 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
- delete mode 100644 drivers/iommu/msm_iommu_dev.c
 
+diff --git a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+new file mode 100644
+index 0000000..2023638
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+@@ -0,0 +1,64 @@
++* QCOM IOMMU
++
++The MSM IOMMU is an implementation compatible with the ARM VMSA short
++descriptor page tables. It provides address translation for bus masters outside
++of the CPU, each connected to the IOMMU through a port called micro-TLB.
++
++Required Properties:
++
++  - compatible: Must contain "qcom,apq8064-iommu".
++  - reg: Base address and size of the IOMMU registers.
++  - interrupts: Specifiers for the MMU fault interrupts. For instances that
++    support secure mode two interrupts must be specified, for non-secure and
++    secure mode, in that order. For instances that don't support secure mode a
++    single interrupt must be specified.
++  - #iommu-cells: The number of cells needed to specify the stream id. This
++		  is always 1.
++  - qcom,ncb:	  The total number of context banks in the IOMMU.
++  - clocks	: List of clocks to be used during SMMU register access. See
++		  Documentation/devicetree/bindings/clock/clock-bindings.txt
++		  for information about the format. For each clock specified
++		  here, there must be a corresponding entry in clock-names
++		  (see below).
++
++  - clock-names	: List of clock names corresponding to the clocks specified in
++		  the "clocks" property (above).
++		  Should be "smmu_pclk" for specifying the interface clock
++		  required for iommu's register accesses.
++		  Should be "smmu_clk" for specifying the functional clock
++		  required by iommu for bus accesses.
++
++Each bus master connected to an IOMMU must reference the IOMMU in its device
++node with the following property:
++
++  - iommus: A reference to the IOMMU in multiple cells. The first cell is a
++	    phandle to the IOMMU and the second cell is the stream id.
++	    A single master device can be connected to more than one iommu
++	    and multiple contexts in each of the iommu. So multiple entries
++	    are required to list all the iommus and the stream ids that the
++	    master is connected to.
++
++Example: mdp iommu and its bus master
++
++                mdp_port0: iommu@7500000 {
++			compatible = "qcom,apq8064-iommu";
++			#iommu-cells = <1>;
++			clock-names =
++			    "smmu_pclk",
++			    "smmu_clk";
++			clocks =
++			    <&mmcc SMMU_AHB_CLK>,
++			    <&mmcc MDP_AXI_CLK>;
++			reg = <0x07500000 0x100000>;
++			interrupts =
++			    <GIC_SPI 63 0>,
++			    <GIC_SPI 64 0>;
++			qcom,ncb = <2>;
++		};
++
++		mdp: qcom,mdp@5100000 {
++			compatible = "qcom,mdp";
++			...
++			iommus = <&mdp_port0 0
++				  &mdp_port0 2>;
++		};
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
