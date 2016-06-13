@@ -1,16 +1,13 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 6/7] iommu/rockchip: use DMA API to map, to flush cache
-Date: Mon, 13 Jun 2016 11:39:26 +0100
-Message-ID: <575E8D5E.9090400@arm.com>
-References: <1465392392-2003-1-git-send-email-zhengsq@rock-chips.com>
-	<1465392392-2003-7-git-send-email-zhengsq@rock-chips.com>
-	<CAAFQd5Da+Eg=eiRUgLSS_qPjGbG474KYWDC=GaAMS8A_CuQ3Mg@mail.gmail.com>
-	<575E834C.30305@gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu: request pcie devices to enable ACS
+Date: Mon, 13 Jun 2016 12:18:50 +0100
+Message-ID: <575E969A.6070400@arm.com>
+References: <1465809617-13003-1-git-send-email-Wei.Chen@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <575E834C.30305-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1465809617-13003-1-git-send-email-Wei.Chen-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,100 +17,89 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: shunqian.zheng-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, IOMMU DRIVERS <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, simon xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, =?UTF-8?B?5aea5pm65oOF?= <mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+To: Wei Chen <Wei.Chen-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, steve.capper-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMTMvMDYvMTYgMTA6NTYsIFNodW5xaWFuIFpoZW5nIHdyb3RlOgo+IEhpCj4KPiBPbiAyMDE2
-5bm0MDbmnIgxMOaXpSAxNzoxMCwgVG9tYXN6IEZpZ2Egd3JvdGU6Cj4+IEhpLAo+Pgo+PiBPbiBX
-ZWQsIEp1biA4LCAyMDE2IGF0IDEwOjI2IFBNLCBTaHVucWlhbiBaaGVuZwo+PiA8emhlbmdzcUBy
-b2NrLWNoaXBzLmNvbT4gd3JvdGU6Cj4+PiBVc2UgRE1BIEFQSSBpbnN0ZWFkIG9mIGFyY2hpdGVj
-dHVyZSBpbnRlcm5hbCBmdW5jdGlvbnMgbGlrZQo+Pj4gX19jcHVjX2ZsdXNoX2RjYWNoZV9hcmVh
-KCkgZXRjLgo+Pj4KPj4+IFRvIHN1cHBvcnQgdGhlIHZpcnR1YWwgZGV2aWNlIGxpa2UgRFJNIHRo
-ZSB2aXJ0dWFsIHNsYXZlIGlvbW11Cj4+PiBhZGRlZCBpbiB0aGUgcHJldmlvdXMgcGF0Y2gsIGF0
-dGFjaGluZyB0byB3aGljaCB0aGUgRFJNIGNhbiB1c2UKPj4+IGl0IG93biBkb21haW4tPmRldiBm
-b3IgZG1hX21hcF8qKCksIGRtYV9zeW5jXyooKSBldmVuIFZPUCBpcyBkaXNhYmxlZC4KPj4+Cj4+
-PiBXaXRoIHRoaXMgcGF0Y2gsIHRoaXMgZHJpdmVyIGlzIGF2YWlsYWJsZSBmb3IgQVJNNjQgbGlr
-ZSBSSzMzOTkuCj4+Pgo+PiBDb3VsZCB3ZSBpbnN0ZWFkIHNpbXBseSBhbGxvY2F0ZSBjb2hlcmVu
-dCBtZW1vcnkgZm9yIHBhZ2UgdGFibGVzIHVzaW5nCj4+IGRtYV9hbGxvY19jb2hlcmVudCgpIGFu
-ZCBza2lwIGFueSBmbHVzaGluZyBvbiBDUFUgc2lkZSBjb21wbGV0ZWx5PyBJZgo+PiBJJ20gbG9v
-a2luZyBjb3JyZWN0bHksIHRoZSBkcml2ZXIgb25seSByZWFkcyBiYWNrIHRoZSBwYWdlIGRpcmVj
-dG9yeQo+PiB3aGVuIGNoZWNraW5nIGlmIHRoZXJlIGlzIGEgbmVlZCB0byBhbGxvY2F0ZSBuZXcg
-cGFnZSB0YWJsZSwgc28gdGhlcmUKPj4gc2hvdWxkbid0IGJlIGFueSBzaWduaWZpY2FudCBwZW5h
-bHR5IGZvciBkaXNhYmxpbmcgdGhlIGNhY2hlLgo+IEkgdHJ5IHRvIHVzZSBkbWFfYWxsb2NfY29o
-ZXJlbnQoKSB0byByZXBsYWNlIHRoZSBkbWFfbWFwX3NpbmdsZSgpLAo+IGJ1dCBpdCBkb2Vzbid0
-IHdvcmsgZm9yIG1lIHByb3Blcmx5Lgo+IEJlY2F1c2UgdGhlIERSTSB1c2VzIHRoZSBpb21tdV9k
-bWFfb3BzIGluc3RlYWQgdGhlIHN3aW90bGJfZG1hX29wcyBhZnRlcgo+IGF0dGFjaGluZwo+IHRv
-IGlvbW11LCBzbyB3aGVuIHRoZSBpb21tdSBkb21haW4gbmVlZCB0byBhbGxvYyBhIG5ldyBwYWdl
-IGluCj4gcmtfaW9tbXVfbWFwKCksCj4gaXQgd291bGQgY2FsbDoKPiBya19pb21tdV9tYXAoKSAg
-LS0+IGRtYV9hbGxvY19jb2hlcmVudCgpICAtLT4gb3BzLT5hbGxvYygpICAtLT4KPiBpb21tdV9t
-YXAoKSAtLT4gcmtfaW9tbXVfbWFwKCkKClRoYXQgc291bmRzIG1vcmUgbGlrZSB5b3UncmUgcGFz
-c2luZyB0aGUgd3JvbmcgZGV2aWNlIGFyb3VuZCBzb21ld2hlcmUsIApzaW5jZSB0aGlzIGFwcHJv
-YWNoIGlzIHdvcmtpbmcgZmluZSBmb3Igb3RoZXIgSU9NTVVzOyBzcGVjaWZpY2FsbHksIHRoZSAK
-ZmxvdyBnb2VzOgoKZG1hX2FsbG9jX2NvaGVyZW50KERSTSBkZXYpICAgLy8gZm9yIGJ1ZmZlcgot
-LT4gb3BzLT5hbGxvYyhEUk0gZGV2KQogICAgIC0tPiBpb21tdV9kbWFfYWxsb2MoRFJNIGRldikK
-ICAgICAgICAgLS0+IGlvbW11X21hcCgpCiAgICAgICAgICAgICAtLT4gZG1hX2FsbG9jX2NvaGVy
-ZW50KElPTU1VIGRldikgIC8vIGZvciBwYWdldGFibGUKICAgICAgICAgICAgICAgICAtLT4gb3Bz
-LT5hbGxvYyhJT01NVSBkZXYpCiAgICAgICAgICAgICAgICAgICAgIC0tPiBzd2lvdGxiX2FsbG9j
-KElPTU1VIGRldikKClRoZXJlIHNob3VsZG4ndCBiZSBhbnkgbmVlZCBmb3IgdGhpcyAidmlydHVh
-bCBJT01NVSIgYXQgYWxsLiBJIHRoaW5rIHRoZSAKRXh5bm9zIERSTSBkcml2ZXIgaXMgaW4gYSBz
-aW1pbGFyIHNpdHVhdGlvbiBvZiBoYXZpbmcgbXVsdGlwbGUgZGV2aWNlcyAKKGludm9sdmluZyBt
-dWx0aXBsZSBJT01NVXMpIGJhY2tpbmcgdGhlIHZpcnR1YWwgRFJNIGRldmljZSwgYW5kIHRoYXQg
-CmRvZXNuJ3Qgc2VlbSB0byBiZSBkb2luZyBhbnl0aGluZyB0aGlzIGNyYXp5IHNvIGl0J3MgcHJv
-YmFibHkgd29ydGggCnRha2luZyBhIGxvb2sgYXQuCgpSb2Jpbi4KCj4gVGhlbiBJIHRyeSB0byBy
-ZXNlcnZlIG1lbW9yeSBmb3IgY29oZXJlbnQgc28gdGhhdCwgZG1hX2FsbG9jX2NvaGVyZW50KCkK
-PiBjYWxscyBkbWFfYWxsb2NfZnJvbV9jb2hlcmVudCgpCj4gYnV0IG5vdCBvcHMtPmFsbG9jKCku
-IEJ1dCBpdCBkb2Vzbid0IHdvcmsgdG9vIGJlY2F1c2Ugd2hlbiBEUk0gcmVxdWVzdAo+IGJ1ZmZl
-ciBpdCBuZXZlciB1c2VzIGlvbW11Lgo+Pgo+PiBPdGhlciB0aGFuIHRoYXQsIHBsZWFzZSBzZWUg
-c29tZSBjb21tZW50cyBpbmxpbmUuCj4+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBTaHVucWlhbiBaaGVu
-ZyA8emhlbmdzcUByb2NrLWNoaXBzLmNvbT4KPj4+IC0tLQo+Pj4gICBkcml2ZXJzL2lvbW11L3Jv
-Y2tjaGlwLWlvbW11LmMgfCAxMTMKPj4+ICsrKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0t
-LS0tLS0tLS0tCj4+PiAgIDEgZmlsZSBjaGFuZ2VkLCA3MSBpbnNlcnRpb25zKCspLCA0MiBkZWxl
-dGlvbnMoLSkKPj4+Cj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9yb2NrY2hpcC1pb21t
-dS5jCj4+PiBiL2RyaXZlcnMvaW9tbXUvcm9ja2NoaXAtaW9tbXUuYwo+Pj4gaW5kZXggZDZjMzA1
-MS4uYWFmZWE2ZSAxMDA2NDQKPj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvcm9ja2NoaXAtaW9tbXUu
-Ywo+Pj4gKysrIGIvZHJpdmVycy9pb21tdS9yb2NrY2hpcC1pb21tdS5jCj4+PiBAQCAtNCw4ICs0
-LDYgQEAKPj4+ICAgICogcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24u
-Cj4+PiAgICAqLwo+Pj4KPj4+IC0jaW5jbHVkZSA8YXNtL2NhY2hlZmx1c2guaD4KPj4+IC0jaW5j
-bHVkZSA8YXNtL3BndGFibGUuaD4KPj4+ICAgI2luY2x1ZGUgPGxpbnV4L2NvbXBpbGVyLmg+Cj4+
-PiAgICNpbmNsdWRlIDxsaW51eC9kZWxheS5oPgo+Pj4gICAjaW5jbHVkZSA8bGludXgvZGV2aWNl
-Lmg+Cj4+PiBAQCAtNjEsOCArNTksNyBAQAo+Pj4gICAjZGVmaW5lIFJLX01NVV9JUlFfQlVTX0VS
-Uk9SICAgICAweDAyICAvKiBidXMgcmVhZCBlcnJvciAqLwo+Pj4gICAjZGVmaW5lIFJLX01NVV9J
-UlFfTUFTSyAgICAgICAgICAoUktfTU1VX0lSUV9QQUdFX0ZBVUxUIHwKPj4+IFJLX01NVV9JUlFf
-QlVTX0VSUk9SKQo+Pj4KPj4+IC0jZGVmaW5lIE5VTV9EVF9FTlRSSUVTIDEwMjQKPj4+IC0jZGVm
-aW5lIE5VTV9QVF9FTlRSSUVTIDEwMjQKPj4+ICsjZGVmaW5lIE5VTV9UTEJfRU5UUklFUyAxMDI0
-IC8qIGZvciBib3RoIERUIGFuZCBQVCAqLwo+PiBJcyBpdCBuZWNlc3NhcnkgdG8gY2hhbmdlIHRo
-aXMgaW4gdGhpcyBwYXRjaD8gSW4gZ2VuZXJhbCwgaXQncyBub3QgYQo+PiBnb29kIGlkZWEgdG8g
-bWl4IG11bHRpcGxlIGxvZ2ljYWwgY2hhbmdlcyB0b2dldGhlci4KPiBTdXJlLCB3aWxsIHJlc3Rv
-cmUgY2hhbmdlcyBpbiB2My4KPj4KPj4+ICAgI2RlZmluZSBTUEFHRV9PUkRFUiAxMgo+Pj4gICAj
-ZGVmaW5lIFNQQUdFX1NJWkUgKDEgPDwgU1BBR0VfT1JERVIpCj4+PiBAQCAtODIsNyArNzksOSBA
-QAo+Pj4KPj4+ICAgc3RydWN0IHJrX2lvbW11X2RvbWFpbiB7Cj4+PiAgICAgICAgICBzdHJ1Y3Qg
-bGlzdF9oZWFkIGlvbW11czsKPj4+ICsgICAgICAgc3RydWN0IGRldmljZSAqZGV2Owo+Pj4gICAg
-ICAgICAgdTMyICpkdDsgLyogcGFnZSBkaXJlY3RvcnkgdGFibGUgKi8KPj4+ICsgICAgICAgZG1h
-X2FkZHJfdCBkdF9kbWE7Cj4+PiAgICAgICAgICBzcGlubG9ja190IGlvbW11c19sb2NrOyAvKiBs
-b2NrIGZvciBpb21tdXMgbGlzdCAqLwo+Pj4gICAgICAgICAgc3BpbmxvY2tfdCBkdF9sb2NrOyAv
-KiBsb2NrIGZvciBtb2RpZnlpbmcgcGFnZSBkaXJlY3RvcnkKPj4+IHRhYmxlICovCj4+Pgo+Pj4g
-QEAgLTk4LDE0ICs5NywxMiBAQCBzdHJ1Y3QgcmtfaW9tbXUgewo+Pj4gICAgICAgICAgc3RydWN0
-IGlvbW11X2RvbWFpbiAqZG9tYWluOyAvKiBkb21haW4gdG8gd2hpY2ggaW9tbXUgaXMKPj4+IGF0
-dGFjaGVkICovCj4+PiAgIH07Cj4+Pgo+Pj4gLXN0YXRpYyBpbmxpbmUgdm9pZCBya190YWJsZV9m
-bHVzaCh1MzIgKnZhLCB1bnNpZ25lZCBpbnQgY291bnQpCj4+PiArc3RhdGljIGlubGluZSB2b2lk
-IHJrX3RhYmxlX2ZsdXNoKHN0cnVjdCBkZXZpY2UgKmRldiwgZG1hX2FkZHJfdCBkbWEsCj4+PiAr
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgdW5zaWduZWQgaW50IGNvdW50KQo+Pj4g
-ICB7Cj4+PiAtICAgICAgIHBoeXNfYWRkcl90IHBhX3N0YXJ0ID0gdmlydF90b19waHlzKHZhKTsK
-Pj4+IC0gICAgICAgcGh5c19hZGRyX3QgcGFfZW5kID0gdmlydF90b19waHlzKHZhICsgY291bnQp
-Owo+Pj4gLSAgICAgICBzaXplX3Qgc2l6ZSA9IHBhX2VuZCAtIHBhX3N0YXJ0Owo+Pj4gKyAgICAg
-ICBzaXplX3Qgc2l6ZSA9IGNvdW50ICogNDsKPj4gSXQgd291bGQgYmUgYSBnb29kIGlkZWEgdG8g
-c3BlY2lmeSB3aGF0ICJjb3VudCIgaXMuIEknbSBhIGJpdCBjb25mdXNlZAo+PiB0aGF0IGJlZm9y
-ZSBpdCBtZWFudCBieXRlcyBhbmQgbm93IHNvbWUgbXVsdGlwbGUgb2YgND8KPiAiY291bnQiIG1l
-YW5zIFBUL0RUIGVudHJ5IGNvdW50IHRvIGZsdXNoIGhlcmUuIEkgd291bGQgYWRkIHNvbWUgbW9y
-ZQo+IGNvbW1lbnQgb24gaXQuCj4KPiBUaGFuayB5b3UgdmVyeSBtdWNoLAo+IFNodW5xaWFuCj4+
-Cj4+IEJlc3QgcmVnYXJkcywKPj4gVG9tYXN6Cj4+Cj4+IF9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCj4+IExpbnV4LXJvY2tjaGlwIG1haWxpbmcgbGlzdAo+
-PiBMaW51eC1yb2NrY2hpcEBsaXN0cy5pbmZyYWRlYWQub3JnCj4+IGh0dHA6Ly9saXN0cy5pbmZy
-YWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGludXgtcm9ja2NoaXAKPgo+IF9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gaW9tbXUgbWFpbGluZyBsaXN0
-Cj4gaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKPiBodHRwczovL2xpc3RzLmxpbnV4
-Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQoKX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxp
-c3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On 13/06/16 10:20, Wei Chen wrote:
+> The PCIe ACS capability will affect the layout of iommu groups.
+> Generally speaking, if the path from root port to the PCIe device
+> is ACS enabled, the iommu will create a single iommu group for this
+> PCIe device. If all PCIe devices on the path are ACS enabled then
+> Linux can determine this path is ACS enabled.
+>
+> Linux use two PCIe configuration registers to determine the ACS
+> status of PCIe devices:
+> ACS Capability Register and ACS Control Register.
+>
+> The first register is used to check the implementation of ACS function
+> of a PCIe device, the second register is used to check the enable status
+> of ACS function. If one PCIe device has implemented and enabled the ACS
+> function then Linux will determine this PCIe device enabled ACS.
+>
+>  From the Chapter:6.12 of PCI Express Base Specification Revision 3.1a,
+> we can find that when a PCIe device implements ACS function, the enable
+> status is set to disabled by default and can be enabled by ACS-aware
+> software.
+>
+> ACS will affect the iommu groups topology, so, the iommu driver is
+> ACS-aware software. This patch adds a call to pci_request_acs() to the
+> arm-smmu driver to enable the ACS function in PCIe devices that support
+> it.
+>
+> Signed-off-by: Wei Chen <Wei.Chen-5wv7dgnIgG8@public.gmane.org>
+
+Makes sense to me:
+
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+p.s. The confidential disclaimer is a good way to get patches ignored 
+here on the lists - please check with Steve about getting set up on the 
+appropriate SMTP server.
+
+Robin.
+
+> ---
+>   drivers/iommu/arm-smmu-v3.c | 2 ++
+>   drivers/iommu/arm-smmu.c    | 4 +++-
+>   2 files changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 94b6821..30ea899 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2686,6 +2686,8 @@ static int __init arm_smmu_init(void)
+>          if (ret)
+>                  return ret;
+>
+> +       pci_request_acs();
+> +
+>          return bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+>   }
+>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 9345a3f..ab365ec 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -2096,8 +2096,10 @@ static int __init arm_smmu_init(void)
+>   #endif
+>
+>   #ifdef CONFIG_PCI
+> -       if (!iommu_present(&pci_bus_type))
+> +       if (!iommu_present(&pci_bus_type)) {
+> +               pci_request_acs();
+>                  bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+> +       }
+>   #endif
+>
+>          return 0;
+> --
+> 2.7.4
+>
+> IMPORTANT NOTICE: The contents of this email and any attachments are confidential and may also be privileged. If you are not the intended recipient, please notify the sender immediately and do not disclose the contents to any other person, use it for any purpose, or store or copy the information in any medium. Thank you.
+>
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>
