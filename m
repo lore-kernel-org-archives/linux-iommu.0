@@ -1,60 +1,54 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: request pcie devices to enable ACS
-Date: Mon, 13 Jun 2016 13:45:32 +0100
-Message-ID: <20160613124531.GE1605@arm.com>
-References: <1465809617-13003-1-git-send-email-Wei.Chen@arm.com>
+From: M G Berberich <berberic-vmG2aq7wDA3mFSIgyKwhw7NAH6kLmebB@public.gmane.org>
+Subject: Re: BUG: using smp_processor_id() in preemptible [00000000] code]
+Date: Mon, 13 Jun 2016 15:06:51 +0200
+Message-ID: <20160613130651.GA8662@invalid>
+References: <Pine.LNX.4.44L0.1606091410580.1353-100000@iolanthe.rowland.org>
+ <50F437E3-85F7-4034-BAAE-B2558173A2EA@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1465809617-13003-1-git-send-email-Wei.Chen-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wei Chen <Wei.Chen-5wv7dgnIgG8@public.gmane.org>
-Cc: steve.capper-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <50F437E3-85F7-4034-BAAE-B2558173A2EA-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: linux-usb-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Nadav Amit <nadav.amit-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, USB list <linux-usb-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jun 13, 2016 at 05:20:17PM +0800, Wei Chen wrote:
-> The PCIe ACS capability will affect the layout of iommu groups.
-> Generally speaking, if the path from root port to the PCIe device
-> is ACS enabled, the iommu will create a single iommu group for this
-> PCIe device. If all PCIe devices on the path are ACS enabled then
-> Linux can determine this path is ACS enabled.
-> 
-> Linux use two PCIe configuration registers to determine the ACS
-> status of PCIe devices:
-> ACS Capability Register and ACS Control Register.
-> 
-> The first register is used to check the implementation of ACS function
-> of a PCIe device, the second register is used to check the enable status
-> of ACS function. If one PCIe device has implemented and enabled the ACS
-> function then Linux will determine this PCIe device enabled ACS.
-> 
-> From the Chapter:6.12 of PCI Express Base Specification Revision 3.1a,
-> we can find that when a PCIe device implements ACS function, the enable
-> status is set to disabled by default and can be enabled by ACS-aware
-> software.
-> 
-> ACS will affect the iommu groups topology, so, the iommu driver is
-> ACS-aware software. This patch adds a call to pci_request_acs() to the
-> arm-smmu driver to enable the ACS function in PCIe devices that support
-> it.
-> 
-> Signed-off-by: Wei Chen <Wei.Chen-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 2 ++
->  drivers/iommu/arm-smmu.c    | 4 +++-
->  2 files changed, 5 insertions(+), 1 deletion(-)
+Hello,
 
-Thanks, queued for 4.8 w/ Robin and Eric's reviewed-by tags and the minor
-commit wording change.
+Am Donnerstag, den 09. Juni schrieb Nadav Amit:
+> Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org> wrote:
+>=20
+> > On Thu, 9 Jun 2016, M G Berberich wrote:
+> >=20
+> >> With 4.7-rc2, after detecting a USB Mass Storage device
+> >>=20
+> >>  [   11.589843] usb-storage 4-2:1.0: USB Mass Storage device detec=
+ted
+> >>=20
+> >> a constant flow of kernel-BUGS is reported (several per second).
 
-Will
+[=E2=80=A6]
+
+> > This looks like a bug in the memory management subsystem.  It shoul=
+d be=20
+> > reported on the linux-mm mailing list (CC'ed).
+>=20
+> This bug is IOMMU related (mailing list CC=E2=80=99ed) and IIUC alrea=
+dy fixed.
+
+Not fixed in 4.7-rc3
+
+	MfG
+	bmg
+
+--=20
+=E2=80=9EDes is v=C3=B6llig wurscht, was heut beschlos- | M G Berberich
+ sen wird: I bin sowieso dagegn!=E2=80=9C          | mail@m-berberich.d=
+e
+(SPD-Stadtrat Kurt Schindler; Regensburg)  |=20
+--
+To unsubscribe from this list: send the line "unsubscribe linux-usb" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
