@@ -1,66 +1,131 @@
-From: Matt Fleming <matt@codeblueprint.co.uk>
-Subject: Re: [RFC PATCH v1 10/18] x86/efi: Access EFI related tables in the
- clear
-Date: Mon, 13 Jun 2016 13:34:52 +0100
-Message-ID: <20160613123452.GB2658@codeblueprint.co.uk>
-References: <20160426225740.13567.85438.stgit@tlendack-t1.amdoffice.net>
- <20160510134358.GR2839@codeblueprint.co.uk>
- <20160510135758.GA16783@pd.tnic>
- <5734C97D.8060803@amd.com>
- <57446B27.20406@amd.com>
- <20160525193011.GC2984@codeblueprint.co.uk>
- <5746FE16.9070408@amd.com>
- <20160608100713.GU2658@codeblueprint.co.uk>
- <57599668.20000@amd.com>
- <20160613120322.GA2658@codeblueprint.co.uk>
+From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: request pcie devices to enable ACS
+Date: Mon, 13 Jun 2016 14:41:36 +0200
+Message-ID: <76dd8909-d1bc-c282-bca0-6c4da2ac0fed@redhat.com>
+References: <1465809617-13003-1-git-send-email-Wei.Chen@arm.com>
+	<575E969A.6070400@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <20160613120322.GA2658@codeblueprint.co.uk>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: Borislav Petkov <bp@alien8.de>, Leif Lindholm <leif.lindholm@linaro.org>, Mark Salter <msalter@redhat.com>, Daniel Kiper <daniel.kiper@oracle.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>, Ard Biesheuvel <ard.biesheuvel@linaro.or>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <575E969A.6070400-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Wei Chen <Wei.Chen-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, steve.capper-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, 13 Jun, at 01:03:22PM, Matt Fleming wrote:
-> 
-> Would we need a new function? Couldn't we just have a new
-> FIXMAP_PAGE_* constant? e.g. would something like this work?
-> 
-> ---
-> 
-> enum memremap_owner {
-> 	KERNEL_DATA = 0,
-> 	BOOT_DATA,
-> };
-> 
-> void __init *
-> early_memremap(resource_size_t phys_addr, unsigned long size,
-> 	       enum memremap_owner owner)
-> {
-> 	pgprot_t prot;
-> 
-> 	switch (owner) {
-> 	case BOOT_DATA:
-> 		prot = FIXMAP_PAGE_BOOT;
-> 		break;
-> 	case KERNEL_DATA:	/* FALLTHROUGH */
-> 	default:
-> 		prot = FIXMAP_PAGE_NORMAL;
-> 		
-> 	}
-> 
-> 	return (__force void *)__early_ioremap(phys_addr, size, prot);
-> }
+Wei,
+Le 13/06/2016 =E0 13:18, Robin Murphy a =E9crit :
+> On 13/06/16 10:20, Wei Chen wrote:
+>> The PCIe ACS capability will affect the layout of iommu groups.
+>> Generally speaking, if the path from root port to the PCIe device
+>> is ACS enabled, the iommu will create a single iommu group for this
+>> PCIe device. If all PCIe devices on the path are ACS enabled then
+>> Linux can determine this path is ACS enabled.
+>>
+>> Linux use two PCIe configuration registers to determine the ACS
+>> status of PCIe devices:
+>> ACS Capability Register and ACS Control Register.
+>>
+>> The first register is used to check the implementation of ACS function
+>> of a PCIe device, the second register is used to check the enable status
+>> of ACS function. If one PCIe device has implemented and enabled the ACS
+>> function then Linux will determine this PCIe device enabled ACS.
+>>
+>>  From the Chapter:6.12 of PCI Express Base Specification Revision 3.1a,
+>> we can find that when a PCIe device implements ACS function, the enable
+>> status is set to disabled by default and can be enabled by ACS-aware
+>> software.
+>>
+>> ACS will affect the iommu groups topology, so, the iommu driver is
+>> ACS-aware software. This patch adds a call to pci_request_acs() to the
+>> arm-smmu driver to enable the ACS function in PCIe devices that support
+>> it.
+nit: I would add ", when they get probed."
 
-Although it occurs to me that if there's a trivial 1:1 mapping between
-memremap_owner and FIXMAP_PAGE_* we might as well just add a new
-early_memremap_boot() that uses the correct FIXMAP_PAGE_* constant,
-akin to early_memremap_ro().
+Besides Reviewed-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Best Regards
+
+Eric
+>>
+>> Signed-off-by: Wei Chen <Wei.Chen-5wv7dgnIgG8@public.gmane.org>
+> =
+
+> Makes sense to me:
+> =
+
+> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> =
+
+> p.s. The confidential disclaimer is a good way to get patches ignored
+> here on the lists - please check with Steve about getting set up on the
+> appropriate SMTP server.
+> =
+
+> Robin.
+> =
+
+>> ---
+>>   drivers/iommu/arm-smmu-v3.c | 2 ++
+>>   drivers/iommu/arm-smmu.c    | 4 +++-
+>>   2 files changed, 5 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index 94b6821..30ea899 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -2686,6 +2686,8 @@ static int __init arm_smmu_init(void)
+>>          if (ret)
+>>                  return ret;
+>>
+>> +       pci_request_acs();
+>> +
+>>          return bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+>>   }
+>>
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index 9345a3f..ab365ec 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -2096,8 +2096,10 @@ static int __init arm_smmu_init(void)
+>>   #endif
+>>
+>>   #ifdef CONFIG_PCI
+>> -       if (!iommu_present(&pci_bus_type))
+>> +       if (!iommu_present(&pci_bus_type)) {
+>> +               pci_request_acs();
+>>                  bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+>> +       }
+>>   #endif
+>>
+>>          return 0;
+>> -- =
+
+>> 2.7.4
+>>
+>> IMPORTANT NOTICE: The contents of this email and any attachments are
+>> confidential and may also be privileged. If you are not the intended
+>> recipient, please notify the sender immediately and do not disclose
+>> the contents to any other person, use it for any purpose, or store or
+>> copy the information in any medium. Thank you.
+>>
+>> _______________________________________________
+>> iommu mailing list
+>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>>
+> =
+
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
