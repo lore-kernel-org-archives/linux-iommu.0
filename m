@@ -1,67 +1,78 @@
-From: M G Berberich <berberic@fmi.uni-passau.de>
-Subject: Re: BUG: using smp_processor_id() in preemptible [00000000] code]
-Date: Tue, 14 Jun 2016 11:08:09 +0200
-Message-ID: <20160614090809.GA6723@invalid>
-References: <Pine.LNX.4.44L0.1606091410580.1353-100000@iolanthe.rowland.org>
- <50F437E3-85F7-4034-BAAE-B2558173A2EA@gmail.com>
- <20160613130651.GA8662@invalid>
- <CAHMfzJktLSPZuLJ0R90Zaa6tj+awX9NDO2DPzjxEEJuY0CFV+g@mail.gmail.com>
+From: Wei Chen <Wei.Chen-5wv7dgnIgG8@public.gmane.org>
+Subject: RE: [PATCH] iommu/arm-smmu: request pcie devices to enable ACS
+Date: Tue, 14 Jun 2016 10:00:21 +0000
+Message-ID: <DB5PR0801MB151054CCAD2ABFC0F2BB85B19E540@DB5PR0801MB1510.eurprd08.prod.outlook.com>
+References: <1465809617-13003-1-git-send-email-Wei.Chen@arm.com>
+	<20160613124531.GE1605@arm.com>
+	<CANta1d-wRGcU51P3Av7EXbvu7hJfUBk_Kd5p=7RDMW6u+v0gvg@mail.gmail.com>
+	<20160614085627.GA19407@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <CAHMfzJktLSPZuLJ0R90Zaa6tj+awX9NDO2DPzjxEEJuY0CFV+g@mail.gmail.com>
-Sender: owner-linux-mm@kvack.org
-To: Adam Morrison <mad@cs.technion.ac.il>
-Cc: Nadav Amit <nadav.amit@gmail.com>, iommu@lists.linux-foundation.org, USB list <linux-usb@vger.kernel.org>, linux-mm@kvack.org, Alan Stern <stern@rowland.harvard.edu>
+Content-Type: text/plain; charset="gbk"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160614085627.GA19407-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, Wei Chen <wei.chen-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Steve Capper <Steve.Capper-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
-
-Am Montag, den 13. Juni schrieb Adam Morrison:
-> On Mon, Jun 13, 2016 at 4:06 PM, M G Berberich
-> <berberic@fmi.uni-passau.de> wrote:
->=20
-> > Hello,
-> >
-> >> >> With 4.7-rc2, after detecting a USB Mass Storage device
-> >> >>
-> >> >>  [   11.589843] usb-storage 4-2:1.0: USB Mass Storage device dete=
-cted
-> >> >>
-> >> >> a constant flow of kernel-BUGS is reported (several per second).
-> >
-> > [=E2=80=A6]
-> >
-> >> > This looks like a bug in the memory management subsystem.  It shou=
-ld be
-> >> > reported on the linux-mm mailing list (CC'ed).
-> >>
-> >> This bug is IOMMU related (mailing list CC=E2=80=99ed) and IIUC alre=
-ady fixed.
-> >
-> > Not fixed in 4.7-rc3
->=20
-> These patches should fix the issue:
->=20
->     https://lkml.org/lkml/2016/6/1/310
->     https://lkml.org/lkml/2016/6/1/311
-
-FYIO: They do, indeed.
-
-> I'm not sure why they weren't applied... will ping the maintainers.
-
-	MfG
-	bmg
-
---=20
-=E2=80=9EDes is v=C3=B6llig wurscht, was heut beschlos- | M G Berberich
- sen wird: I bin sowieso dagegn!=E2=80=9C          | mail@m-berberich.de
-(SPD-Stadtrat Kurt Schindler; Regensburg)  |=20
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=3Dmailto:"dont@kvack.org"> email@kvack.org </a>
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogV2lsbCBEZWFjb24gW21h
+aWx0bzp3aWxsLmRlYWNvbkBhcm0uY29tXQ0KPiBTZW50OiAyMDE2xOo21MIxNMjVIDE2OjU2DQo+
+IFRvOiBXZWkgQ2hlbg0KPiBDYzogV2VpIENoZW47IFN0ZXZlIENhcHBlcjsgam9yb0A4Ynl0ZXMu
+b3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOw0KPiBpb21tdUBsaXN0cy5saW51eC1m
+b3VuZGF0aW9uLm9yZzsgUm9iaW4gTXVycGh5OyBsaW51eC1hcm0tDQo+IGtlcm5lbEBsaXN0cy5p
+bmZyYWRlYWQub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIGlvbW11L2FybS1zbW11OiByZXF1
+ZXN0IHBjaWUgZGV2aWNlcyB0byBlbmFibGUgQUNTDQo+DQo+IE9uIFR1ZSwgSnVuIDE0LCAyMDE2
+IGF0IDExOjExOjM2QU0gKzA4MDAsIFdlaSBDaGVuIHdyb3RlOg0KPiA+IE9uIDEzIEp1bmUgMjAx
+NiBhdCAyMDo0NSwgV2lsbCBEZWFjb24gPHdpbGwuZGVhY29uQGFybS5jb20+IHdyb3RlOg0KPiA+
+ID4gT24gTW9uLCBKdW4gMTMsIDIwMTYgYXQgMDU6MjA6MTdQTSArMDgwMCwgV2VpIENoZW4gd3Jv
+dGU6DQo+ID4gPj4gVGhlIFBDSWUgQUNTIGNhcGFiaWxpdHkgd2lsbCBhZmZlY3QgdGhlIGxheW91
+dCBvZiBpb21tdSBncm91cHMuDQo+ID4gPj4gR2VuZXJhbGx5IHNwZWFraW5nLCBpZiB0aGUgcGF0
+aCBmcm9tIHJvb3QgcG9ydCB0byB0aGUgUENJZSBkZXZpY2UNCj4gPiA+PiBpcyBBQ1MgZW5hYmxl
+ZCwgdGhlIGlvbW11IHdpbGwgY3JlYXRlIGEgc2luZ2xlIGlvbW11IGdyb3VwIGZvciB0aGlzDQo+
+ID4gPj4gUENJZSBkZXZpY2UuIElmIGFsbCBQQ0llIGRldmljZXMgb24gdGhlIHBhdGggYXJlIEFD
+UyBlbmFibGVkIHRoZW4NCj4gPiA+PiBMaW51eCBjYW4gZGV0ZXJtaW5lIHRoaXMgcGF0aCBpcyBB
+Q1MgZW5hYmxlZC4NCj4gPiA+Pg0KPiA+ID4+IExpbnV4IHVzZSB0d28gUENJZSBjb25maWd1cmF0
+aW9uIHJlZ2lzdGVycyB0byBkZXRlcm1pbmUgdGhlIEFDUw0KPiA+ID4+IHN0YXR1cyBvZiBQQ0ll
+IGRldmljZXM6DQo+ID4gPj4gQUNTIENhcGFiaWxpdHkgUmVnaXN0ZXIgYW5kIEFDUyBDb250cm9s
+IFJlZ2lzdGVyLg0KPiA+ID4+DQo+ID4gPj4gVGhlIGZpcnN0IHJlZ2lzdGVyIGlzIHVzZWQgdG8g
+Y2hlY2sgdGhlIGltcGxlbWVudGF0aW9uIG9mIEFDUw0KPiA+ID4+IGZ1bmN0aW9uIG9mIGEgUENJ
+ZSBkZXZpY2UsIHRoZSBzZWNvbmQgcmVnaXN0ZXIgaXMgdXNlZCB0byBjaGVjayB0aGUNCj4gPiA+
+PiBlbmFibGUgc3RhdHVzIG9mIEFDUyBmdW5jdGlvbi4gSWYgb25lIFBDSWUgZGV2aWNlIGhhcyBp
+bXBsZW1lbnRlZA0KPiA+ID4+IGFuZCBlbmFibGVkIHRoZSBBQ1MgZnVuY3Rpb24gdGhlbiBMaW51
+eCB3aWxsIGRldGVybWluZSB0aGlzIFBDSWUNCj4gZGV2aWNlIGVuYWJsZWQgQUNTLg0KPiA+ID4+
+DQo+ID4gPj4gRnJvbSB0aGUgQ2hhcHRlcjo2LjEyIG9mIFBDSSBFeHByZXNzIEJhc2UgU3BlY2lm
+aWNhdGlvbiBSZXZpc2lvbg0KPiA+ID4+IDMuMWEsIHdlIGNhbiBmaW5kIHRoYXQgd2hlbiBhIFBD
+SWUgZGV2aWNlIGltcGxlbWVudHMgQUNTIGZ1bmN0aW9uLA0KPiA+ID4+IHRoZSBlbmFibGUgc3Rh
+dHVzIGlzIHNldCB0byBkaXNhYmxlZCBieSBkZWZhdWx0IGFuZCBjYW4gYmUgZW5hYmxlZA0KPiA+
+ID4+IGJ5IEFDUy1hd2FyZSBzb2Z0d2FyZS4NCj4gPiA+Pg0KPiA+ID4+IEFDUyB3aWxsIGFmZmVj
+dCB0aGUgaW9tbXUgZ3JvdXBzIHRvcG9sb2d5LCBzbywgdGhlIGlvbW11IGRyaXZlciBpcw0KPiA+
+ID4+IEFDUy1hd2FyZSBzb2Z0d2FyZS4gVGhpcyBwYXRjaCBhZGRzIGEgY2FsbCB0byBwY2lfcmVx
+dWVzdF9hY3MoKSB0bw0KPiA+ID4+IHRoZSBhcm0tc21tdSBkcml2ZXIgdG8gZW5hYmxlIHRoZSBB
+Q1MgZnVuY3Rpb24gaW4gUENJZSBkZXZpY2VzIHRoYXQNCj4gPiA+PiBzdXBwb3J0IGl0Lg0KPiA+
+ID4+DQo+ID4gPj4gU2lnbmVkLW9mZi1ieTogV2VpIENoZW4gPFdlaS5DaGVuQGFybS5jb20+DQo+
+ID4gPj4gLS0tDQo+ID4gPj4gIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMuYyB8IDIgKysNCj4g
+PiA+PiAgZHJpdmVycy9pb21tdS9hcm0tc21tdS5jICAgIHwgNCArKystDQo+ID4gPj4gIDIgZmls
+ZXMgY2hhbmdlZCwgNSBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQo+ID4gPg0KPiA+ID4g
+VGhhbmtzLCBxdWV1ZWQgZm9yIDQuOCB3LyBSb2JpbiBhbmQgRXJpYydzIHJldmlld2VkLWJ5IHRh
+Z3MgYW5kIHRoZQ0KPiA+ID4gbWlub3IgY29tbWl0IHdvcmRpbmcgY2hhbmdlLg0KPiA+ID4NCj4g
+Pg0KPiA+IFRoYW5rcywgSSB3aWxsIHBvc3QgYSB2MiBwYXRjaCB0byBpbmNsdWRlIGFib3ZlIGNo
+YW5nZXMuDQo+DQo+IDovIEFzIGFib3ZlLCBJJ3ZlIGFscmVhZHkgcXVldWVkIHRoaXMuDQpPaCwg
+dGhhbmsgeW91IDopDQo+DQo+IFdpbGwNCg0KSU1QT1JUQU5UIE5PVElDRTogVGhlIGNvbnRlbnRz
+IG9mIHRoaXMgZW1haWwgYW5kIGFueSBhdHRhY2htZW50cyBhcmUgY29uZmlkZW50aWFsIGFuZCBt
+YXkgYWxzbyBiZSBwcml2aWxlZ2VkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBp
+ZW50LCBwbGVhc2Ugbm90aWZ5IHRoZSBzZW5kZXIgaW1tZWRpYXRlbHkgYW5kIGRvIG5vdCBkaXNj
+bG9zZSB0aGUgY29udGVudHMgdG8gYW55IG90aGVyIHBlcnNvbiwgdXNlIGl0IGZvciBhbnkgcHVy
+cG9zZSwgb3Igc3RvcmUgb3IgY29weSB0aGUgaW5mb3JtYXRpb24gaW4gYW55IG1lZGl1bS4gVGhh
+bmsgeW91Lg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
+Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
