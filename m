@@ -1,67 +1,107 @@
-From: Jayachandran C <jchandra@broadcom.com>
-Subject: Re: [PATCH v2 2/2] PCI: Handle Broadcom Vulcan DMA alias calculation quirk
-Date: Tue, 14 Jun 2016 21:40:36 +0530
-Message-ID: <CAKc_7PXfydUJspWdgj6YT_VhFhHcjaK_PDTH+-dRYofW=4sQ3A@mail.gmail.com>
-References: <linux-pci@vger.kernel.org> <1462700001-30086-2-git-send-email-jchandra@broadcom.com>
- <20160611172457.GK16462@localhost>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 5/7] iommu/arm-smmu: Implement of_xlate() for SMMUv3
+Date: Tue, 14 Jun 2016 17:11:59 +0100
+Message-ID: <57602CCF.1060603@arm.com>
+References: <cover.1464966939.git.robin.murphy@arm.com>
+ <55aa94e099f00fd586077c45d4c4fd1c010981d9.1464966939.git.robin.murphy@arm.com>
+ <20160614150757.GB16531@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20160611172457.GK16462@localhost>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org, Linux PCI <linux-pci@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, marc.zyngier@arm.com
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20160614150757.GB16531-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-[Adding ARM GIC and SMMU maintainers]
-
-On Sat, Jun 11, 2016 at 10:54 PM, Bjorn Helgaas <helgaas@kernel.org> wrote:
-> On Sun, May 08, 2016 at 03:03:21PM +0530, Jayachandran C wrote:
->> The Broadcom Vulcan PCI topology is slightly unusual, for a multi-node
->> system, it looks like:
+On 14/06/16 16:07, Will Deacon wrote:
+> On Fri, Jun 03, 2016 at 06:15:40PM +0100, Robin Murphy wrote:
+>> Now that we can properly describe the mapping between PCI RIDs and
+>> stream IDs via "iommu-map", and have it fed it to the driver
+>> automatically via of_xlate(), rework the SMMUv3 driver to benefit from
+>> that. Initially, this just gets rid of the misuse of the "iommus"
+>> binding without changing the driver's existing level of functionality,
+>> but does at least pave the way to extending it more easily in future.
 >>
->>  [bus 0]
->>      |
->>      +--[node 0 PCI bridge 0.0.0]
->>      |           |
->>      |        [bus 1]
->>      |           +---[SoC PCI devices 1.4.x, 1.5.x] ........
->>      |           +---[Glue bridges    1.a.x, 1.b.x]         \
->>      |                    |                        .....{node 0 GIC ITS}
->>      |                    |                       /
->>      |                    +----[SoC PCIe controller root ports]
->>      |                                |         \...... {SMMUv3 0..3}
->>      |                                |
->>      |                                +---- [external PCI devices]
->>      +- [node 1 PCI bridge 0.0.1]
->>      |           |
->>      |        [bus n - similar to bus 1 above]
->>      ...
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
 >>
->> The for_each_dma_alias call for external PCI devices should not go
->> beyond the PCIe controllers where the SMMU and ITS is associated, going
->> further above to the glue bridges or the node bridges will find aliases
->> which are not valid. For internal devices, the association is at the
->> node level bridge and the alias search should not go further.
+>> v2: New.
+>>
+>>   drivers/iommu/arm-smmu-v3.c | 119 +++++++++++++++++++++++++++-----------------
+>>   1 file changed, 73 insertions(+), 46 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index 94b68213c50d..7631639cc209 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -30,6 +30,7 @@
+>>   #include <linux/msi.h>
+>>   #include <linux/of.h>
+>>   #include <linux/of_address.h>
+>> +#include <linux/of_iommu.h>
+>>   #include <linux/of_platform.h>
+>>   #include <linux/pci.h>
+>>   #include <linux/platform_device.h>
+>> @@ -638,6 +639,12 @@ struct arm_smmu_domain {
+>>   	struct iommu_domain		domain;
+>>   };
+>>
+>> +/* SMMU private data for each master */
+>> +struct arm_smmu_master_data {
+>> +	struct arm_smmu_device		*smmu;
+>> +	u32				sid;
+>> +};
 >
-> I like the line of reasoning that we should not iterate higher in the
-> hierarchy than where the translation hardware is attached.  That seems
-> like a reasonable thing in general, not just for this hardware.
+> Hmm, we already have this information in arm_smmu_group so I'd rather
+> avoid the duplication if we can.
+
+For of_xlate() to work at all, we need to associate the IDs with their 
+device long before groups are even available (because the device is only 
+partially constructed), so at a bare minimum we need something to carry 
+the data through until we see it again in add_device, where we can 
+allocate a group.
+
+>> @@ -1804,23 +1790,41 @@ static int arm_smmu_add_device(struct device *dev)
+>>   {
+>>   	int i, ret;
+>>   	u32 sid, *sids;
+>> -	struct pci_dev *pdev;
+>>   	struct iommu_group *group;
+>> +	struct device_node *np;
+>>   	struct arm_smmu_group *smmu_group;
+>> -	struct arm_smmu_device *smmu;
+>> +	struct arm_smmu_device *smmu = NULL;
+>> +	struct arm_smmu_master_data *data = dev->archdata.iommu;
+>>
+>> -	/* We only support PCI, for now */
+>> -	if (!dev_is_pci(dev))
+>> +	if (!data)
+>>   		return -ENODEV;
+>>
+>> -	pdev = to_pci_dev(dev);
+>> +	np = (struct device_node *)data->smmu;
+>> +	smmu = data->smmu = arm_smmu_get_by_node(np);
+>> +	of_node_put(np);
+>> +	if (!smmu)
+>> +		return -ENODEV;
 >
-> Is there some generic way to learn where the translation hardware is
-> attached?  If there is, we could make pci_for_each_dma_alias() use
-> that information, and maybe we could solve the problem for other
-> systems as well as for Vulcan.
+> Why can't we continue to use the group here?
 
-There was discussion on using the return value of the callback function
-to stop the alias search when we reach the bridge to which the IOMMU
-or MSI controller is attached[1]. There was an iommu patch proposed to
-handle this for the device tree case[2], It is possible that we can do
-something similar for MSI and extend it to work when ACPI IORT is
-used as well.
+I don't follow; at this point we've still not even allocated/found a 
+group for this device yet. The code a few dozen lines later that takes 
+the IDs and stashes them in the groupdata once it _does_ exist is 
+unchanged in this patch, all that's changing is how those IDs got here 
+in the first place.
 
-I will spend some time to see if this can be done.
+Robin.
 
-JC.
-[1] http://www.spinics.net/lists/linux-pci/msg51093.html
-[2] http://www.spinics.net/lists/arm-kernel/msg508266.html
+>
+> Will
+>
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
