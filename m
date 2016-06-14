@@ -1,88 +1,63 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 7/7] iommu/arm-smmu: Support non-PCI devices with SMMUv3
-Date: Tue, 14 Jun 2016 16:16:42 +0100
-Message-ID: <20160614151642.GC16531@arm.com>
+Subject: Re: [PATCH v2 6/7] iommu/arm-smmu: Finish off SMMUv3 default domain
+ support
+Date: Tue, 14 Jun 2016 16:59:48 +0100
+Message-ID: <20160614155948.GD16531@arm.com>
 References: <cover.1464966939.git.robin.murphy@arm.com>
-	<42a8a71932f766d70ea9dcae5d11d5f33dcc3652.1464966939.git.robin.murphy@arm.com>
+ <aabcdd814b93b2b6a902b189f6911f929a29b64f.1464966939.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <42a8a71932f766d70ea9dcae5d11d5f33dcc3652.1464966939.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+In-Reply-To: <aabcdd814b93b2b6a902b189f6911f929a29b64f.1464966939.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-[adding ThunderTown, since he might be able to test this for us]
+On Fri, Jun 03, 2016 at 06:15:41PM +0100, Robin Murphy wrote:
+> The driver's current reliance on attaching/detaching an entire group
+> for the first device it sees is at odds with the IOMMU core's initial
+> construction of a group by adding each device and attaching it to the
+> default domain in turn. As it turns out, we can happily do away with the
+> whole palaver by simply letting each device be in charge of its own
+> stream ID/stream table entry, and reducing the problem of tracking
+> duplicate IDs and domains down to "Is the STE already associated with
+> the appropriate context?", which is easily done by just looking at the
+> stream table itself.
 
-On Fri, Jun 03, 2016 at 06:15:42PM +0100, Robin Murphy wrote:
-> With the device <-> stream ID relationship suitably abstracted and
-> of_xlate() hooked up, we no longer have any PCI-specifics in play,
-> so adding support for the simpler kinds of platform device (a single
-> unique stream ID each) becomes trivial; let's do it!
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
-> 
-> v2: New. Consider this one "extra bonus material" as I'm not sure there
->     are even any suitable devices on our model to test it with (it
->     _should_ be OK, given that I know the basic infrastructure on either
->     side works...)
-> 
->  drivers/iommu/Kconfig       |  2 +-
->  drivers/iommu/arm-smmu-v3.c | 36 ++++++++++++++++++++++++++++++------
->  2 files changed, 31 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index ad0860383cb3..d1c66afefeed 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -308,7 +308,7 @@ config ARM_SMMU
->  
->  config ARM_SMMU_V3
->  	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
-> -	depends on ARM64 && PCI
-> +	depends on ARM64
->  	select IOMMU_API
->  	select IOMMU_IO_PGTABLE_LPAE
->  	select GENERIC_MSI_IRQ_DOMAIN
+Hmm, it would be nice if Joerg could confirm this before we remove the
+driver code.
+
+Joerg: can an IOMMU driver rely on not receiving contradictory ->attach
+callbacks for devices in the same group? Robin is proposing that we
+remove the group tracking code from the ARM SMMU driver which is a nice
+cleanup but leaves us open to silent misconfiguration if we are asked to
+violate the group constraints.
+
 > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 28dcc5ca237e..6379f0ab24fc 100644
+> index 7631639cc209..28dcc5ca237e 100644
 > --- a/drivers/iommu/arm-smmu-v3.c
 > +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -35,6 +35,8 @@
->  #include <linux/pci.h>
->  #include <linux/platform_device.h>
+> @@ -607,15 +607,6 @@ struct arm_smmu_device {
+>  	struct arm_smmu_strtab_cfg	strtab_cfg;
+>  };
 >  
-> +#include <linux/amba/bus.h>
-> +
->  #include "io-pgtable.h"
->  
->  /* MMIO registers */
-> @@ -1773,6 +1775,22 @@ static void arm_smmu_remove_device(struct device *dev)
->  	iommu_group_remove_device(dev);
->  }
->  
-> +static struct iommu_group *arm_smmu_device_group(struct device *dev)
-> +{
-> +	struct iommu_group *group;
-> +
-> +	/*
-> +	 * We've currently no means of grouping non-PCI masters, so
-> +	 * there'd better not be any non-unique stream IDs in the DT...
-> +	 */
+> -/* SMMU private data for an IOMMU group */
+> -struct arm_smmu_group {
+> -	struct arm_smmu_device		*smmu;
+> -	struct arm_smmu_domain		*domain;
+> -	int				num_sids;
+> -	u32				*sids;
+> -	struct arm_smmu_strtab_ent	ste;
+> -};
 
-Worse: what if a SID in the DT aliases with a PCI master? It might be
-nice to have some basic snity checking, at least.
+I'm not keen on losing this structure. How about we instead change the
+sids array to be a linked list of {struct device, sid[]} and then change
+arm_smmu_install_ste_for_group to take a device pointer as well?
 
 Will
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
