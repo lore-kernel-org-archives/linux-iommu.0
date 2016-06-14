@@ -1,63 +1,67 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 6/7] iommu/arm-smmu: Finish off SMMUv3 default domain
- support
-Date: Tue, 14 Jun 2016 16:59:48 +0100
-Message-ID: <20160614155948.GD16531@arm.com>
-References: <cover.1464966939.git.robin.murphy@arm.com>
- <aabcdd814b93b2b6a902b189f6911f929a29b64f.1464966939.git.robin.murphy@arm.com>
+From: Jayachandran C <jchandra@broadcom.com>
+Subject: Re: [PATCH v2 2/2] PCI: Handle Broadcom Vulcan DMA alias calculation quirk
+Date: Tue, 14 Jun 2016 21:40:36 +0530
+Message-ID: <CAKc_7PXfydUJspWdgj6YT_VhFhHcjaK_PDTH+-dRYofW=4sQ3A@mail.gmail.com>
+References: <linux-pci@vger.kernel.org> <1462700001-30086-2-git-send-email-jchandra@broadcom.com>
+ <20160611172457.GK16462@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <aabcdd814b93b2b6a902b189f6911f929a29b64f.1464966939.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20160611172457.GK16462@localhost>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org, Linux PCI <linux-pci@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, marc.zyngier@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 03, 2016 at 06:15:41PM +0100, Robin Murphy wrote:
-> The driver's current reliance on attaching/detaching an entire group
-> for the first device it sees is at odds with the IOMMU core's initial
-> construction of a group by adding each device and attaching it to the
-> default domain in turn. As it turns out, we can happily do away with the
-> whole palaver by simply letting each device be in charge of its own
-> stream ID/stream table entry, and reducing the problem of tracking
-> duplicate IDs and domains down to "Is the STE already associated with
-> the appropriate context?", which is easily done by just looking at the
-> stream table itself.
+[Adding ARM GIC and SMMU maintainers]
 
-Hmm, it would be nice if Joerg could confirm this before we remove the
-driver code.
+On Sat, Jun 11, 2016 at 10:54 PM, Bjorn Helgaas <helgaas@kernel.org> wrote:
+> On Sun, May 08, 2016 at 03:03:21PM +0530, Jayachandran C wrote:
+>> The Broadcom Vulcan PCI topology is slightly unusual, for a multi-node
+>> system, it looks like:
+>>
+>>  [bus 0]
+>>      |
+>>      +--[node 0 PCI bridge 0.0.0]
+>>      |           |
+>>      |        [bus 1]
+>>      |           +---[SoC PCI devices 1.4.x, 1.5.x] ........
+>>      |           +---[Glue bridges    1.a.x, 1.b.x]         \
+>>      |                    |                        .....{node 0 GIC ITS}
+>>      |                    |                       /
+>>      |                    +----[SoC PCIe controller root ports]
+>>      |                                |         \...... {SMMUv3 0..3}
+>>      |                                |
+>>      |                                +---- [external PCI devices]
+>>      +- [node 1 PCI bridge 0.0.1]
+>>      |           |
+>>      |        [bus n - similar to bus 1 above]
+>>      ...
+>>
+>> The for_each_dma_alias call for external PCI devices should not go
+>> beyond the PCIe controllers where the SMMU and ITS is associated, going
+>> further above to the glue bridges or the node bridges will find aliases
+>> which are not valid. For internal devices, the association is at the
+>> node level bridge and the alias search should not go further.
+>
+> I like the line of reasoning that we should not iterate higher in the
+> hierarchy than where the translation hardware is attached.  That seems
+> like a reasonable thing in general, not just for this hardware.
+>
+> Is there some generic way to learn where the translation hardware is
+> attached?  If there is, we could make pci_for_each_dma_alias() use
+> that information, and maybe we could solve the problem for other
+> systems as well as for Vulcan.
 
-Joerg: can an IOMMU driver rely on not receiving contradictory ->attach
-callbacks for devices in the same group? Robin is proposing that we
-remove the group tracking code from the ARM SMMU driver which is a nice
-cleanup but leaves us open to silent misconfiguration if we are asked to
-violate the group constraints.
+There was discussion on using the return value of the callback function
+to stop the alias search when we reach the bridge to which the IOMMU
+or MSI controller is attached[1]. There was an iommu patch proposed to
+handle this for the device tree case[2], It is possible that we can do
+something similar for MSI and extend it to work when ACPI IORT is
+used as well.
 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 7631639cc209..28dcc5ca237e 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -607,15 +607,6 @@ struct arm_smmu_device {
->  	struct arm_smmu_strtab_cfg	strtab_cfg;
->  };
->  
-> -/* SMMU private data for an IOMMU group */
-> -struct arm_smmu_group {
-> -	struct arm_smmu_device		*smmu;
-> -	struct arm_smmu_domain		*domain;
-> -	int				num_sids;
-> -	u32				*sids;
-> -	struct arm_smmu_strtab_ent	ste;
-> -};
+I will spend some time to see if this can be done.
 
-I'm not keen on losing this structure. How about we instead change the
-sids array to be a linked list of {struct device, sid[]} and then change
-arm_smmu_install_ste_for_group to take a device pointer as well?
-
-Will
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+JC.
+[1] http://www.spinics.net/lists/linux-pci/msg51093.html
+[2] http://www.spinics.net/lists/arm-kernel/msg508266.html
