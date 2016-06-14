@@ -1,88 +1,88 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 5/7] iommu/arm-smmu: Implement of_xlate() for SMMUv3
-Date: Tue, 14 Jun 2016 16:07:59 +0100
-Message-ID: <20160614150757.GB16531@arm.com>
+Subject: Re: [PATCH v2 7/7] iommu/arm-smmu: Support non-PCI devices with SMMUv3
+Date: Tue, 14 Jun 2016 16:16:42 +0100
+Message-ID: <20160614151642.GC16531@arm.com>
 References: <cover.1464966939.git.robin.murphy@arm.com>
- <55aa94e099f00fd586077c45d4c4fd1c010981d9.1464966939.git.robin.murphy@arm.com>
+	<42a8a71932f766d70ea9dcae5d11d5f33dcc3652.1464966939.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <55aa94e099f00fd586077c45d4c4fd1c010981d9.1464966939.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <42a8a71932f766d70ea9dcae5d11d5f33dcc3652.1464966939.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 03, 2016 at 06:15:40PM +0100, Robin Murphy wrote:
-> Now that we can properly describe the mapping between PCI RIDs and
-> stream IDs via "iommu-map", and have it fed it to the driver
-> automatically via of_xlate(), rework the SMMUv3 driver to benefit from
-> that. Initially, this just gets rid of the misuse of the "iommus"
-> binding without changing the driver's existing level of functionality,
-> but does at least pave the way to extending it more easily in future.
+[adding ThunderTown, since he might be able to test this for us]
+
+On Fri, Jun 03, 2016 at 06:15:42PM +0100, Robin Murphy wrote:
+> With the device <-> stream ID relationship suitably abstracted and
+> of_xlate() hooked up, we no longer have any PCI-specifics in play,
+> so adding support for the simpler kinds of platform device (a single
+> unique stream ID each) becomes trivial; let's do it!
 > 
 > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 > ---
 > 
-> v2: New.
+> v2: New. Consider this one "extra bonus material" as I'm not sure there
+>     are even any suitable devices on our model to test it with (it
+>     _should_ be OK, given that I know the basic infrastructure on either
+>     side works...)
 > 
->  drivers/iommu/arm-smmu-v3.c | 119 +++++++++++++++++++++++++++-----------------
->  1 file changed, 73 insertions(+), 46 deletions(-)
+>  drivers/iommu/Kconfig       |  2 +-
+>  drivers/iommu/arm-smmu-v3.c | 36 ++++++++++++++++++++++++++++++------
+>  2 files changed, 31 insertions(+), 7 deletions(-)
 > 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index ad0860383cb3..d1c66afefeed 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -308,7 +308,7 @@ config ARM_SMMU
+>  
+>  config ARM_SMMU_V3
+>  	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
+> -	depends on ARM64 && PCI
+> +	depends on ARM64
+>  	select IOMMU_API
+>  	select IOMMU_IO_PGTABLE_LPAE
+>  	select GENERIC_MSI_IRQ_DOMAIN
 > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 94b68213c50d..7631639cc209 100644
+> index 28dcc5ca237e..6379f0ab24fc 100644
 > --- a/drivers/iommu/arm-smmu-v3.c
 > +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -30,6 +30,7 @@
->  #include <linux/msi.h>
->  #include <linux/of.h>
->  #include <linux/of_address.h>
-> +#include <linux/of_iommu.h>
->  #include <linux/of_platform.h>
+> @@ -35,6 +35,8 @@
 >  #include <linux/pci.h>
 >  #include <linux/platform_device.h>
-> @@ -638,6 +639,12 @@ struct arm_smmu_domain {
->  	struct iommu_domain		domain;
->  };
 >  
-> +/* SMMU private data for each master */
-> +struct arm_smmu_master_data {
-> +	struct arm_smmu_device		*smmu;
-> +	u32				sid;
-> +};
-
-Hmm, we already have this information in arm_smmu_group so I'd rather
-avoid the duplication if we can.
-
-> @@ -1804,23 +1790,41 @@ static int arm_smmu_add_device(struct device *dev)
->  {
->  	int i, ret;
->  	u32 sid, *sids;
-> -	struct pci_dev *pdev;
->  	struct iommu_group *group;
-> +	struct device_node *np;
->  	struct arm_smmu_group *smmu_group;
-> -	struct arm_smmu_device *smmu;
-> +	struct arm_smmu_device *smmu = NULL;
-> +	struct arm_smmu_master_data *data = dev->archdata.iommu;
+> +#include <linux/amba/bus.h>
+> +
+>  #include "io-pgtable.h"
 >  
-> -	/* We only support PCI, for now */
-> -	if (!dev_is_pci(dev))
-> +	if (!data)
->  		return -ENODEV;
+>  /* MMIO registers */
+> @@ -1773,6 +1775,22 @@ static void arm_smmu_remove_device(struct device *dev)
+>  	iommu_group_remove_device(dev);
+>  }
 >  
-> -	pdev = to_pci_dev(dev);
-> +	np = (struct device_node *)data->smmu;
-> +	smmu = data->smmu = arm_smmu_get_by_node(np);
-> +	of_node_put(np);
-> +	if (!smmu)
-> +		return -ENODEV;
+> +static struct iommu_group *arm_smmu_device_group(struct device *dev)
+> +{
+> +	struct iommu_group *group;
+> +
+> +	/*
+> +	 * We've currently no means of grouping non-PCI masters, so
+> +	 * there'd better not be any non-unique stream IDs in the DT...
+> +	 */
 
-Why can't we continue to use the group here?
+Worse: what if a SID in the DT aliases with a PCI master? It might be
+nice to have some basic snity checking, at least.
 
 Will
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
