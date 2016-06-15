@@ -1,66 +1,161 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: Re: [PATCH v3 3/6] iommu/rockchip: support virtual iommu slave device
-Date: Wed, 15 Jun 2016 23:21:28 +0900
-Message-ID: <CAAFQd5AHj8dNrpXXP80k9qguBjEyGehbnGO=rCQU499Nm23yew@mail.gmail.com>
+From: Tomasz Figa via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH v3 4/6] drm: rockchip: use common iommu api to attach iommu
+Date: Wed, 15 Jun 2016 23:24:21 +0900
+Message-ID: <CAAFQd5Ds=KC26i5k1Fpe78n8S40Q+PdNpn9hp8QQLgJhgnag7A@mail.gmail.com>
 References: <1465992285-16187-1-git-send-email-zhengsq@rock-chips.com>
- <1465992285-16187-4-git-send-email-zhengsq@rock-chips.com>
+	<1465992285-16187-5-git-send-email-zhengsq@rock-chips.com>
+Reply-To: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-In-Reply-To: <1465992285-16187-4-git-send-email-zhengsq@rock-chips.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Shunqian Zheng <zhengsq@rock-chips.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org, linux@armlinux.org.uk, dri-devel <dri-devel@lists.freedesktop.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, simon xue <xxm@rock-chips.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1465992285-16187-5-git-send-email-zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, simon xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, =?UTF-8?B?5aea5pm65oOF?= <mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgU2h1bnFpYW4sCgpPbiBXZWQsIEp1biAxNSwgMjAxNiBhdCA5OjA0IFBNLCBTaHVucWlhbiBa
-aGVuZyA8emhlbmdzcUByb2NrLWNoaXBzLmNvbT4gd3JvdGU6Cj4gQW4gdmlydHVhbCBtYXN0ZXIg
-ZGV2aWNlIGxpa2UgRFJNIG5lZWQgdG8gYXR0YWNoIHRvIGlvbW11Cj4gZG9tYWluIHRvIHNoYXJl
-IHRoZSBtYXBwaW5nIHdpdGggVk9Qcyh0aGUgb25lIHdpdGggYWN0dWFsCj4gaW9tbXUgc2xhdmVz
-KS4KPiBEUk0gYXR0YWNoZXMgdG8gaW9tbXUgYW5kIGFsbG9jYXRlcyBidWZmZXJzIGJlZm9yZSBW
-T1BzIGVuYWJsZWQsCj4gd2hpY2ggbWVhbnMgdGhlcmUgbWF5IGhhdmUgbm90IHJlYWwgaW9tbXUg
-ZGV2aWNlcyBjYW4gYmUgdXNlZAo+IHRvIGRvIGRtYSBtYXBwaW5nLgo+Cj4gVGhpcyBwYXRjaCBj
-cmVhdGVzIGEgaW9tbXUgd2hlbiB2aXJ0dWFsIG1hc3Rlcihncm91cCBpcyBOVUxMKQo+IGF0dGFj
-aGluZywgc28gaXQgY2FuIHVzZSB0aGlzIGlvbW11IGV2ZW4gdGhlIHJlYWwgaW9tbXVzIGRpc2Fi
-bGVkLgo+Cj4gQ2hhbmdlcyBvZiBWMzoKPiAtIEluc3RlYWQgb2YgcmVnaXN0ZXJpbmcgdmlydHVh
-bCBpb21tdSBpbiBEVFMsIHRoaXMgcGF0Y2gKPiAgIGNyZWF0ZXMgYSBpb21tdSB3aGVuIGF0dGFj
-aGluZy4KPgo+IFNpZ25lZC1vZmYtYnk6IFNodW5xaWFuIFpoZW5nIDx6aGVuZ3NxQHJvY2stY2hp
-cHMuY29tPgo+IFN1Z2dlc3RlZC1ieTogVG9tYXN6IEZpZ2EgPHRmaWdhQGNocm9taXVtLm9yZz4K
-ClRvIGNsYXJpZnksIEkgZG9uJ3QgcmVhbGx5IGxpa2UgdGhlIGlkZWEgb2YgdmlydHVhbCBJT01N
-VSwgaG93ZXZlciBpdAppcyByZWdpc3RlcmVkLCBkdHMgb3IgbWFudWFsbHksIGJ1dCBJIGRvbid0
-IHRoaW5rIHRoZXJlIGlzIGFueSBvdGhlcgpyZWFzb25hYmxlIHdheSBvZiBkZWFsaW5nIHdpdGgg
-YWxsb2NhdGlvbnMgZm9yIHN1YnN5c3RlbXMgc3VjaCBhcyBEUk0sCndoZXJlIHRoZXJlIGFyZSBt
-dWx0aXBsZSBkZXZpY2VzIGluIG9uZSBJT01NVSBkb21haW4uIEhhdmluZyBzYWlkCnRoYXQsIHBs
-ZWFzZSBzZWUgc29tZSBtaW5vciBjb21tZW50cyBpbmxpbmUuCgo+IC0tLQo+ICBkcml2ZXJzL2lv
-bW11L3JvY2tjaGlwLWlvbW11LmMgfCAxMzMgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKy0tLS0KPiAgMSBmaWxlIGNoYW5nZWQsIDEyMiBpbnNlcnRpb25zKCspLCAxMSBkZWxl
-dGlvbnMoLSkKPgo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L3JvY2tjaGlwLWlvbW11LmMg
-Yi9kcml2ZXJzL2lvbW11L3JvY2tjaGlwLWlvbW11LmMKPiBpbmRleCAzYzE2ZWMzLi44MmVjYzk5
-IDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvcm9ja2NoaXAtaW9tbXUuYwo+ICsrKyBiL2Ry
-aXZlcnMvaW9tbXUvcm9ja2NoaXAtaW9tbXUuYwpbc25pcF0KPiBAQCAtODc4LDYgKzk3NSw5IEBA
-IHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZG9tYWluICpya19pb21tdV9kb21haW5fYWxsb2ModW5zaWdu
-ZWQgdHlwZSkKPiAgICAgICAgIGlmICghcmtfZG9tYWluKQo+ICAgICAgICAgICAgICAgICByZXR1
-cm4gTlVMTDsKPgo+ICsgICAgICAgaWYgKGlvbW11X2dldF9kbWFfY29va2llKCZya19kb21haW4t
-PmRvbWFpbikpCj4gKyAgICAgICAgICAgICAgIGdvdG8gZXJyX2R0Owo+ICsKClNob3VsZG4ndCB0
-aGlzIGJlbG9uZyB0byBhIHNlcGFyYXRlIHBhdGNoPyBBY3R1YWxseSwgaXMgdGhpcyByZXF1aXJl
-ZD8KSWYgc28sIGhvdyB0aGlzIHdvcmtlZCBiZWZvcmU/Cgo+ICAgICAgICAgLyoKPiAgICAgICAg
-ICAqIHJrMzJ4eCBpb21tdXMgdXNlIGEgMiBsZXZlbCBwYWdldGFibGUuCj4gICAgICAgICAgKiBF
-YWNoIGxldmVsMSAoZHQpIGFuZCBsZXZlbDIgKHB0KSB0YWJsZSBoYXMgMTAyNCA0LWJ5dGUgZW50
-cmllcy4KPiBAQCAtOTE3LDYgKzEwMTcsOSBAQCBzdGF0aWMgdm9pZCBya19pb21tdV9kb21haW5f
-ZnJlZShzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4pCj4gICAgICAgICB9Cj4KPiAgICAgICAg
-IGZyZWVfcGFnZSgodW5zaWduZWQgbG9uZylya19kb21haW4tPmR0KTsKPiArCj4gKyAgICAgICBp
-b21tdV9wdXRfZG1hX2Nvb2tpZSgmcmtfZG9tYWluLT5kb21haW4pOwo+ICsKClNlZSBhYm92ZS4K
-Ck90aGVyd2lzZSwgd2l0aCB0aGUgYWJvdmUgYWRkcmVzc2VkLCB5b3UgY2FuIGFkZCBteSBSZXZp
-ZXdlZC1ieS4KCkJlc3QgcmVnYXJkcywKVG9tYXN6Cl9fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxp
-c3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFu
-L2xpc3RpbmZvL2RyaS1kZXZlbAo=
+Hi Shunqian,
+
+On Wed, Jun 15, 2016 at 9:04 PM, Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org> wrote:
+> Rockchip DRM used the arm special API, arm_iommu_*(), to attach
+> iommu for ARM32 SoCs. This patch convert to common iommu API
+> so it would support ARM64 like RK3399.
+>
+> The general idea is domain_alloc(), attach_device() and
+> arch_setup_dma_ops() to set dma_ops manually for DRM at the last.
+>
+> Signed-off-by: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+> ---
+>  drivers/gpu/drm/rockchip/rockchip_drm_drv.c | 112 +++++++++++++++++-----------
+>  drivers/gpu/drm/rockchip/rockchip_drm_drv.h |   1 +
+>  2 files changed, 71 insertions(+), 42 deletions(-)
+
+Please see my comment inline.
+
+> diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
+> index f5a68fc..b52c38d 100644
+> --- a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
+> +++ b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
+> @@ -14,16 +14,16 @@
+>   * GNU General Public License for more details.
+>   */
+>
+> -#include <asm/dma-iommu.h>
+> -
+>  #include <drm/drmP.h>
+>  #include <drm/drm_crtc_helper.h>
+>  #include <drm/drm_fb_helper.h>
+> +#include <linux/dma-iommu.h>
+>  #include <linux/dma-mapping.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/module.h>
+>  #include <linux/of_graph.h>
+>  #include <linux/component.h>
+> +#include <linux/iommu.h>
+>
+>  #include "rockchip_drm_drv.h"
+>  #include "rockchip_drm_fb.h"
+> @@ -46,7 +46,8 @@ static bool is_support_iommu = true;
+>  int rockchip_drm_dma_attach_device(struct drm_device *drm_dev,
+>                                    struct device *dev)
+>  {
+> -       struct dma_iommu_mapping *mapping = drm_dev->dev->archdata.mapping;
+> +       struct rockchip_drm_private *private = drm_dev->dev_private;
+> +       struct iommu_domain *domain = private->domain;
+>         int ret;
+>
+>         if (!is_support_iommu)
+> @@ -58,16 +59,25 @@ int rockchip_drm_dma_attach_device(struct drm_device *drm_dev,
+>
+>         dma_set_max_seg_size(dev, DMA_BIT_MASK(32));
+>
+> -       return arm_iommu_attach_device(dev, mapping);
+> +       ret = iommu_attach_device(domain, dev);
+> +       if (ret) {
+> +               dev_err(dev, "Failed to attach iommu device\n");
+> +               return ret;
+> +       }
+> +
+> +       /* TODO(djkurtz): fetch the mapping start/size from somewhere */
+> +       arch_setup_dma_ops(dev, 0x00000000, SZ_2G, dev->bus->iommu_ops, false);
+> +       return 0;
+>  }
+>
+>  void rockchip_drm_dma_detach_device(struct drm_device *drm_dev,
+>                                     struct device *dev)
+>  {
+> -       if (!is_support_iommu)
+> -               return;
+> +       struct rockchip_drm_private *private = drm_dev->dev_private;
+> +       struct iommu_domain *domain = private->domain;
+>
+> -       arm_iommu_detach_device(dev);
+> +       if (is_support_iommu)
+> +               iommu_detach_device(domain, dev);
+>  }
+>
+>  int rockchip_register_crtc_funcs(struct drm_crtc *crtc,
+> @@ -132,10 +142,52 @@ static void rockchip_drm_crtc_disable_vblank(struct drm_device *dev,
+>                 priv->crtc_funcs[pipe]->disable_vblank(crtc);
+>  }
+>
+> +static int rockchip_drm_init_iommu(struct drm_device *drm_dev)
+> +{
+> +       struct rockchip_drm_private *private = drm_dev->dev_private;
+> +       struct device *dev = drm_dev->dev;
+> +       int ret;
+> +
+> +       dev->dma_parms = devm_kzalloc(dev, sizeof(*dev->dma_parms),
+> +                                     GFP_KERNEL);
+> +       if (!dev->dma_parms)
+> +               return -ENOMEM;
+> +
+> +       private->domain = iommu_domain_alloc(&platform_bus_type);
+> +       if (!private->domain)
+> +               return -ENOMEM;
+> +
+> +       /* TODO(djkurtz): fetch the mapping start/size from somewhere */
+> +       ret = iommu_dma_init_domain(private->domain, 0x00000000, SZ_2G);
+> +       if (ret) {
+> +               dev_err(dev, "Failed to init domain\n");
+> +               goto err_free_domain;
+> +       }
+> +
+> +       ret = rockchip_drm_dma_attach_device(drm_dev, dev);
+> +       if (ret) {
+> +               dev_err(dev, "Failed to attach device\n");
+> +               goto err_free_domain;
+> +       }
+> +
+> +       return 0;
+> +
+> +err_free_domain:
+> +       iommu_domain_free(private->domain);
+> +
+> +       return ret;
+> +}
+> +
+> +static void rockchip_iommu_cleanup(struct drm_device *drm_dev)
+> +{
+> +       struct rockchip_drm_private *private = drm_dev->dev_private;
+> +
+
+No need to call rockchip_drm_dma_detach_device() here?
+
+> +       iommu_domain_free(private->domain);
+> +}
+
+Otherwise looks good, so after addressing the above, feel free to add
+my Reviewed-by.
+
+Best regards,
+Tomasz
