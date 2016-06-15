@@ -1,15 +1,15 @@
 From: Tomasz Figa via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH v3 4/6] drm: rockchip: use common iommu api to attach iommu
-Date: Wed, 15 Jun 2016 23:24:21 +0900
-Message-ID: <CAAFQd5Ds=KC26i5k1Fpe78n8S40Q+PdNpn9hp8QQLgJhgnag7A@mail.gmail.com>
+Subject: Re: [PATCH v3 5/6] iommu/rockchip: use DMA API to map, to flush cache
+Date: Wed, 15 Jun 2016 23:31:49 +0900
+Message-ID: <CAAFQd5AuHgJ=P3ZWcrOUyB_8Z_xAX23F26a-6+S6aMWF0KpCwQ@mail.gmail.com>
 References: <1465992285-16187-1-git-send-email-zhengsq@rock-chips.com>
-	<1465992285-16187-5-git-send-email-zhengsq@rock-chips.com>
+	<1465992285-16187-6-git-send-email-zhengsq@rock-chips.com>
 Reply-To: Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1465992285-16187-5-git-send-email-zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+In-Reply-To: <1465992285-16187-6-git-send-email-zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,136 +26,74 @@ List-Id: iommu@lists.linux-foundation.org
 Hi Shunqian,
 
 On Wed, Jun 15, 2016 at 9:04 PM, Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org> wrote:
-> Rockchip DRM used the arm special API, arm_iommu_*(), to attach
-> iommu for ARM32 SoCs. This patch convert to common iommu API
-> so it would support ARM64 like RK3399.
+> Use DMA API instead of architecture internal functions like
+> __cpuc_flush_dcache_area() etc.
 >
-> The general idea is domain_alloc(), attach_device() and
-> arch_setup_dma_ops() to set dma_ops manually for DRM at the last.
+> To support the virtual device like DRM the virtual slave iommu
+> added in the previous patch, attaching to which the DRM can use
+> it own domain->dev for dma_map_*(), dma_sync_*() even VOP is disabled.
+>
+> With this patch, this driver is available for ARM64 like RK3399.
 >
 > Signed-off-by: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 > ---
->  drivers/gpu/drm/rockchip/rockchip_drm_drv.c | 112 +++++++++++++++++-----------
->  drivers/gpu/drm/rockchip/rockchip_drm_drv.h |   1 +
->  2 files changed, 71 insertions(+), 42 deletions(-)
+>  drivers/iommu/rockchip-iommu.c | 113 +++++++++++++++++++++++++++--------------
+>  1 file changed, 76 insertions(+), 37 deletions(-)
 
-Please see my comment inline.
+In general looks good to me, but still have some concern about
+attaching and detaching. Please see inline.
 
-> diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
-> index f5a68fc..b52c38d 100644
-> --- a/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
-> +++ b/drivers/gpu/drm/rockchip/rockchip_drm_drv.c
-> @@ -14,16 +14,16 @@
->   * GNU General Public License for more details.
->   */
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index 82ecc99..b60b29e 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+[snip]
+> @@ -886,6 +901,22 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+>                         return -ENOMEM;
+>         }
 >
-> -#include <asm/dma-iommu.h>
+> +       /* Set the domain dev to virtual one if exist */
+> +       if (rk_iommu_is_virtual(iommu) || !rk_domain->dev)
+
+Does it matter if the iommu is virtual or not? This condition will
+always evaluate to true on first attach anyway, so there might be
+times when rk_domain->dev points to a real device.
+
+> +               rk_domain->dev = iommu->dev;
+> +
+[snip]
+>  static void rk_iommu_detach_device(struct iommu_domain *domain,
+> @@ -987,8 +1023,6 @@ static struct iommu_domain *rk_iommu_domain_alloc(unsigned type)
+>         if (!rk_domain->dt)
+>                 goto err_dt;
+>
+> -       rk_table_flush(rk_domain->dt, NUM_DT_ENTRIES);
 > -
->  #include <drm/drmP.h>
->  #include <drm/drm_crtc_helper.h>
->  #include <drm/drm_fb_helper.h>
-> +#include <linux/dma-iommu.h>
->  #include <linux/dma-mapping.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/module.h>
->  #include <linux/of_graph.h>
->  #include <linux/component.h>
-> +#include <linux/iommu.h>
+>         spin_lock_init(&rk_domain->iommus_lock);
+>         spin_lock_init(&rk_domain->dt_lock);
+>         INIT_LIST_HEAD(&rk_domain->iommus);
+> @@ -1012,10 +1046,15 @@ static void rk_iommu_domain_free(struct iommu_domain *domain)
+>                 if (rk_dte_is_pt_valid(dte)) {
+>                         phys_addr_t pt_phys = rk_dte_pt_address(dte);
+>                         u32 *page_table = phys_to_virt(pt_phys);
+> +                       dma_unmap_single(rk_domain->dev, pt_phys,
+> +                                        SPAGE_SIZE, DMA_TO_DEVICE);
+>                         free_page((unsigned long)page_table);
+>                 }
+>         }
 >
->  #include "rockchip_drm_drv.h"
->  #include "rockchip_drm_fb.h"
-> @@ -46,7 +46,8 @@ static bool is_support_iommu = true;
->  int rockchip_drm_dma_attach_device(struct drm_device *drm_dev,
->                                    struct device *dev)
->  {
-> -       struct dma_iommu_mapping *mapping = drm_dev->dev->archdata.mapping;
-> +       struct rockchip_drm_private *private = drm_dev->dev_private;
-> +       struct iommu_domain *domain = private->domain;
->         int ret;
+> +       if (!rk_domain->dt_dma)
+> +               dma_unmap_single(rk_domain->dev, rk_domain->dt_dma,
+> +                                SPAGE_SIZE, DMA_TO_DEVICE);
+>         free_page((unsigned long)rk_domain->dt);
 >
->         if (!is_support_iommu)
-> @@ -58,16 +59,25 @@ int rockchip_drm_dma_attach_device(struct drm_device *drm_dev,
->
->         dma_set_max_seg_size(dev, DMA_BIT_MASK(32));
->
-> -       return arm_iommu_attach_device(dev, mapping);
-> +       ret = iommu_attach_device(domain, dev);
-> +       if (ret) {
-> +               dev_err(dev, "Failed to attach iommu device\n");
-> +               return ret;
-> +       }
-> +
-> +       /* TODO(djkurtz): fetch the mapping start/size from somewhere */
-> +       arch_setup_dma_ops(dev, 0x00000000, SZ_2G, dev->bus->iommu_ops, false);
-> +       return 0;
->  }
->
->  void rockchip_drm_dma_detach_device(struct drm_device *drm_dev,
->                                     struct device *dev)
->  {
-> -       if (!is_support_iommu)
-> -               return;
-> +       struct rockchip_drm_private *private = drm_dev->dev_private;
-> +       struct iommu_domain *domain = private->domain;
->
-> -       arm_iommu_detach_device(dev);
-> +       if (is_support_iommu)
-> +               iommu_detach_device(domain, dev);
->  }
->
->  int rockchip_register_crtc_funcs(struct drm_crtc *crtc,
-> @@ -132,10 +142,52 @@ static void rockchip_drm_crtc_disable_vblank(struct drm_device *dev,
->                 priv->crtc_funcs[pipe]->disable_vblank(crtc);
->  }
->
-> +static int rockchip_drm_init_iommu(struct drm_device *drm_dev)
-> +{
-> +       struct rockchip_drm_private *private = drm_dev->dev_private;
-> +       struct device *dev = drm_dev->dev;
-> +       int ret;
-> +
-> +       dev->dma_parms = devm_kzalloc(dev, sizeof(*dev->dma_parms),
-> +                                     GFP_KERNEL);
-> +       if (!dev->dma_parms)
-> +               return -ENOMEM;
-> +
-> +       private->domain = iommu_domain_alloc(&platform_bus_type);
-> +       if (!private->domain)
-> +               return -ENOMEM;
-> +
-> +       /* TODO(djkurtz): fetch the mapping start/size from somewhere */
-> +       ret = iommu_dma_init_domain(private->domain, 0x00000000, SZ_2G);
-> +       if (ret) {
-> +               dev_err(dev, "Failed to init domain\n");
-> +               goto err_free_domain;
-> +       }
-> +
-> +       ret = rockchip_drm_dma_attach_device(drm_dev, dev);
-> +       if (ret) {
-> +               dev_err(dev, "Failed to attach device\n");
-> +               goto err_free_domain;
-> +       }
-> +
-> +       return 0;
-> +
-> +err_free_domain:
-> +       iommu_domain_free(private->domain);
-> +
-> +       return ret;
-> +}
-> +
-> +static void rockchip_iommu_cleanup(struct drm_device *drm_dev)
-> +{
-> +       struct rockchip_drm_private *private = drm_dev->dev_private;
-> +
+>         iommu_put_dma_cookie(&rk_domain->domain);
 
-No need to call rockchip_drm_dma_detach_device() here?
-
-> +       iommu_domain_free(private->domain);
-> +}
-
-Otherwise looks good, so after addressing the above, feel free to add
-my Reviewed-by.
+If we detach here a device whose IOMMU is currently pointed by
+rk_domain->dev, then the pointer will not point to anything valid
+anymore. To be honest, I don't see any good solution for this. Maybe
+we should keep all the IOMMUs in a list and set the ->dev pointer to
+any from the list here?
 
 Best regards,
 Tomasz
