@@ -1,23 +1,110 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [RESEND PATCH] iommu/rockchip: fix zap cache during device attach
-Date: Wed, 15 Jun 2016 12:03:45 +0200
-Message-ID: <20160615100345.GB26566@8bytes.org>
-References: <20160601154610.22899-1-john@metanate.com>
- <7766050.fLosifENnk@diego>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 3/7] of/irq: Break out msi-map lookup (again)
+Date: Wed, 15 Jun 2016 11:16:16 +0100
+Message-ID: <57612AF0.7020208@arm.com>
+References: <cover.1464966939.git.robin.murphy@arm.com>
+ <2cbffa9a341edfd10114994f6486f6b08d0c390c.1464966939.git.robin.murphy@arm.com>
+ <CAL_JsqJ4km0dH2PxHma9-cPwC20WR0ejn_14UeV0vBWJ+XLBBg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <stable-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <7766050.fLosifENnk@diego>
-Sender: stable-owner@vger.kernel.org
-To: Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-Cc: John Keeping <john@metanate.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <CAL_JsqJ4km0dH2PxHma9-cPwC20WR0ejn_14UeV0vBWJ+XLBBg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 08, 2016 at 05:32:10PM +0200, Heiko St=FCbner wrote:
-> this definitly looks like material for 4.7-rc fixes to me. Could you =
-take a look=20
-> and maybe include it?
+On 14/06/16 18:01, Rob Herring wrote:
+> On Fri, Jun 3, 2016 at 12:15 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>> The PCI msi-map code is already doing double-duty translating IDs and
+>> retrieving MSI parents, which unsurprisingly is the same functionality
+>> we need for the identically-formatted PCI iommu-map property. Drag the
+>> core parsing routine up yet another layer into the general OF-PCI code,
+>> and further generalise it for either kind of lookup in either flavour
+>> of map property.
+>>
+>> CC: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+>> CC: Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> CC: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>
+>> v2: No change.
+>>
+>>   drivers/of/irq.c       |  70 ++-------------------------------
+>>   drivers/of/of_pci.c    | 102 +++++++++++++++++++++++++++++++++++++++++++++++++
+>>   include/linux/of_pci.h |   8 ++++
+>>   3 files changed, 114 insertions(+), 66 deletions(-)
+>>
+>> diff --git a/drivers/of/irq.c b/drivers/of/irq.c
+>> index e7bfc175b8e1..0c9118d849ee 100644
+>> --- a/drivers/of/irq.c
+>> +++ b/drivers/of/irq.c
+>> @@ -24,6 +24,7 @@
+>>   #include <linux/module.h>
+>>   #include <linux/of.h>
+>>   #include <linux/of_irq.h>
+>> +#include <linux/of_pci.h>
+>>   #include <linux/string.h>
+>>   #include <linux/slab.h>
+>>
+>> @@ -586,13 +587,7 @@ static u32 __of_msi_map_rid(struct device *dev, struct device_node **np,
+>>                              u32 rid_in)
+>>   {
+>>          struct device *parent_dev;
+>> -       struct device_node *msi_controller_node;
+>> -       struct device_node *msi_np = *np;
+>> -       u32 map_mask, masked_rid, rid_base, msi_base, rid_len, phandle;
+>> -       int msi_map_len;
+>> -       bool matched;
+>>          u32 rid_out = rid_in;
+>> -       const __be32 *msi_map = NULL;
+>>
+>>          /*
+>>           * Walk up the device parent links looking for one with a
+>> @@ -602,71 +597,14 @@ static u32 __of_msi_map_rid(struct device *dev, struct device_node **np,
+>>                  if (!parent_dev->of_node)
+>>                          continue;
+>>
+>> -               msi_map = of_get_property(parent_dev->of_node,
+>> -                                         "msi-map", &msi_map_len);
+>> -               if (!msi_map)
+>> +               if (!of_property_read_bool(parent_dev->of_node, "msi-map"))
+>
+> But msi-map is not bool, right? I think we allow bools to have values
+> for historical reasons, but really bool with a value should be an
+> error. So don't rely on current behavior.
 
-Applied to my fixes branch, thanks.
+Right, I now have no idea why that wasn't of_find_property() in the 
+first place...
+
+>>                          continue;
+>>
+>> -               if (msi_map_len % (4 * sizeof(__be32))) {
+>> -                       dev_err(parent_dev, "Error: Bad msi-map length: %d\n",
+>> -                               msi_map_len);
+>> -                       return rid_out;
+>> -               }
+>>                  /* We have a good parent_dev and msi_map, let's use them. */
+>> +               of_pci_map_rid(parent_dev->of_node, "msi-map", rid_in, np,
+>> +                              &rid_out);
+>
+> Seems like this could return an error code and then you could continue
+> based on the return code. Then you wouldn't be looking up msi-map
+> twice. Probably could get rid of the !parent_dev->of_node check too.
+
+...but I agree that approach does sound better overall, so I'll take a 
+closer look at this whole patch again.
+
+Thanks,
+Robin.
+
+>
+> Rob
+>
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
