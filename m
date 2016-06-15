@@ -1,49 +1,38 @@
-From: "joro@8bytes.org" <joro@8bytes.org>
-Subject: Re: [PATCH 2/2] iommu/amd: Destroy api_lock mutex when freeing domain
-Date: Wed, 15 Jun 2016 13:54:07 +0200
-Message-ID: <20160615115406.GF26566@8bytes.org>
-References: <1463854264-26445-1-git-send-email-jan.vesely@rutgers.edu>
- <1463854264-26445-2-git-send-email-jan.vesely@rutgers.edu>
- <1465487321.7114.0.camel@amd.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 22/54] MAINTAINERS: Add file patterns for iommu device
+	tree bindings
+Date: Wed, 15 Jun 2016 13:55:17 +0200
+Message-ID: <20160615115517.GG26566@8bytes.org>
+References: <1463907991-7916-1-git-send-email-geert@linux-m68k.org>
+	<1463907991-7916-23-git-send-email-geert@linux-m68k.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1465487321.7114.0.camel@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Vesely, Jan" <Jan.Vesely@amd.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+In-Reply-To: <1463907991-7916-23-git-send-email-geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 09, 2016 at 03:48:44PM +0000, Vesely, Jan wrote:
-> On Sat, 2016-05-21 at 14:11 -0400, Jan Vesely wrote:
-> > From: Jan Vesely <jan.vesely@amd.com>
-> >=20
-> > Signed-off-by: Jan Vesely <jan.vesely@amd.com>
-> > ---
-> > =A0drivers/iommu/amd_iommu.c | 1 +
-> > =A01 file changed, 1 insertion(+)
-> >=20
-> > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> > index 17c76f2..4ff5e40 100644
-> > --- a/drivers/iommu/amd_iommu.c
-> > +++ b/drivers/iommu/amd_iommu.c
-> > @@ -3016,6 +3016,7 @@ static void protection_domain_free(struct
-> > protection_domain *domain)
-> > =A0
-> > =A0	del_domain_from_list(domain);
-> > =A0
-> > +	mutex_destroy(&domain->api_lock);
-> > =A0	if (domain->id)
-> > =A0		domain_id_free(domain->id);
-> > =A0
->=20
-> ping
+On Sun, May 22, 2016 at 11:05:59AM +0200, Geert Uytterhoeven wrote:
+> Submitters of device tree binding documentation may forget to CC
+> the subsystem maintainer if this is missing.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> ---
+> Please apply this patch directly if you want to be involved in device
+> tree binding documentation for your subsystem.
 
-Your patches lack commit messages, please add a more detailed
-description of what you are fixing and why. Please also add 'Fixes:'
-tags when resubmitting. The changes itself look good to me.
-
-
-	Joerg
+Applied, thanks.
