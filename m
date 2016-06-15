@@ -1,54 +1,77 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH 2/2] iommu/amd: Destroy api_lock mutex when freeing domain
-Date: Wed, 15 Jun 2016 22:53:11 +0200
-Message-ID: <20160615205311.GB19822@pd.tnic>
-References: <1463854264-26445-1-git-send-email-jan.vesely@rutgers.edu>
- <1463854264-26445-2-git-send-email-jan.vesely@rutgers.edu>
- <1465487321.7114.0.camel@amd.com>
- <20160615115406.GF26566@8bytes.org>
- <1466013192.3265.74.camel@amd.com>
+From: Nadav Amit <namit-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v3] iommu/vt-d: Avoid write-tearing on PTE clear
+Date: Wed, 15 Jun 2016 08:02:30 -0700
+Message-ID: <1466002950-23326-1-git-send-email-namit@vmware.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1466013192.3265.74.camel@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: "Vesely, Jan" <Jan.Vesely@amd.com>
-Cc: "joro@8bytes.org" <joro@8bytes.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: Nadav Amit <namit-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 15, 2016 at 05:53:15PM +0000, Vesely, Jan wrote:
-> There are no specific bugs/oopses that these patches fix (that I'm
-> aware of). Both were found while I was familiarizing myself with the
-> code looking for memory corruption (which turned out to be [0]).
-> Either issue would be very difficult to hit in the wild and
-> mutex_destroy is empty unless you compile using CONFIG_DEBUG_MUTEXES.
+When a PTE is cleared, the write may be teared or perform by multiple
+writes. In addition, in 32-bit kernel, writes are currently performed
+using a single 64-bit write, which does not guarantee order.
 
-See Documentation/SubmittingPatches which explains what "Fixes:" means.
+The byte-code right now does not seem to cause a problem, but it may
+still occur in the future.
 
-That same file also contains info in section 2) how to write commit
-messages.
+Avoid this scenario by using WRITE_ONCE, and order the writes on
+32-bit kernels.
 
-Please read it, it'll help you significantly if you're planning on
-sending more patches to LKML.
+Signed-off-by: Nadav Amit <namit-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>
 
-> [0] https://lkml.org/lkml/2016/3/7/1087
+---
+V3: Move split_dma_pte struct to dma_clear_pte (Joerg)
+    Add comments (Joerg)
+V2: Use two WRITE_ONCE on 32-bit to avoid reordering
+---
+ drivers/iommu/intel-iommu.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
-Oh, and also, please don't use any web pages archiving lkml as pointers
-but the kernel.org redirector:
-
-http://lkml.kernel.org/r/<Message-ID>
-
-or
-
-http://lkml.kernel.org/g/<Message-ID>
-
-(that second one redirects to gmane)
-
-HTH.
-
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index e1852e8..5df87a3 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -328,7 +328,28 @@ struct dma_pte {
+ 
+ static inline void dma_clear_pte(struct dma_pte *pte)
+ {
+-	pte->val = 0;
++	/*
++	 * We want to prevent the compiler from doing store-tearing or multiple
++	 * writes when it clears the PTE. Otherwise, a DMA address may be
++	 * translated using a partially updated PTE.
++	 */
++#ifdef CONFIG_64BIT
++	WRITE_ONCE(pte->val, 0);
++#else
++	/*
++	 * On 32-bit platform the PTE must be updated in two chunks. We first
++	 * update the lower part that holds the present bit. The two writes are
++	 * ordered in the byte-code by WRITE_ONCE, and in the execution by x86
++	 * TSO-like memory model. This allows us to avoid using dma_wmb().
++	 */
++	struct split_dma_pte {
++		u32 val_low;
++		u32 val_high;
++	} __packed *sdma_pte = (struct split_dma_pte *)pte;
++
++	WRITE_ONCE(sdma_pte->val_low, 0);
++	WRITE_ONCE(sdma_pte->val_high, 0);
++#endif
+ }
+ 
+ static inline u64 dma_pte_addr(struct dma_pte *pte)
 -- 
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
+2.7.4
