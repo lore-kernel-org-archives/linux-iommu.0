@@ -1,110 +1,74 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2 3/7] of/irq: Break out msi-map lookup (again)
-Date: Wed, 15 Jun 2016 11:16:16 +0100
-Message-ID: <57612AF0.7020208@arm.com>
-References: <cover.1464966939.git.robin.murphy@arm.com>
- <2cbffa9a341edfd10114994f6486f6b08d0c390c.1464966939.git.robin.murphy@arm.com>
- <CAL_JsqJ4km0dH2PxHma9-cPwC20WR0ejn_14UeV0vBWJ+XLBBg@mail.gmail.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu/amd: Add proper error check in two functions
+Date: Wed, 15 Jun 2016 13:17:09 +0200
+Message-ID: <20160615111709.GC26566@8bytes.org>
+References: <1462898401-2917-1-git-send-email-vincent.wan@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <CAL_JsqJ4km0dH2PxHma9-cPwC20WR0ejn_14UeV0vBWJ+XLBBg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1462898401-2917-1-git-send-email-vincent.wan@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Wan Zongshun <vincent.wan@amd.com>
+Cc: iommu@lists.linux-foundation.org, vw@iommu.org, mcuos.com@gmail.com, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 14/06/16 18:01, Rob Herring wrote:
-> On Fri, Jun 3, 2016 at 12:15 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->> The PCI msi-map code is already doing double-duty translating IDs and
->> retrieving MSI parents, which unsurprisingly is the same functionality
->> we need for the identically-formatted PCI iommu-map property. Drag the
->> core parsing routine up yet another layer into the general OF-PCI code,
->> and further generalise it for either kind of lookup in either flavour
->> of map property.
->>
->> CC: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
->> CC: Frank Rowand <frowand.list-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->> CC: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
->>
->> v2: No change.
->>
->>   drivers/of/irq.c       |  70 ++-------------------------------
->>   drivers/of/of_pci.c    | 102 +++++++++++++++++++++++++++++++++++++++++++++++++
->>   include/linux/of_pci.h |   8 ++++
->>   3 files changed, 114 insertions(+), 66 deletions(-)
->>
->> diff --git a/drivers/of/irq.c b/drivers/of/irq.c
->> index e7bfc175b8e1..0c9118d849ee 100644
->> --- a/drivers/of/irq.c
->> +++ b/drivers/of/irq.c
->> @@ -24,6 +24,7 @@
->>   #include <linux/module.h>
->>   #include <linux/of.h>
->>   #include <linux/of_irq.h>
->> +#include <linux/of_pci.h>
->>   #include <linux/string.h>
->>   #include <linux/slab.h>
->>
->> @@ -586,13 +587,7 @@ static u32 __of_msi_map_rid(struct device *dev, struct device_node **np,
->>                              u32 rid_in)
->>   {
->>          struct device *parent_dev;
->> -       struct device_node *msi_controller_node;
->> -       struct device_node *msi_np = *np;
->> -       u32 map_mask, masked_rid, rid_base, msi_base, rid_len, phandle;
->> -       int msi_map_len;
->> -       bool matched;
->>          u32 rid_out = rid_in;
->> -       const __be32 *msi_map = NULL;
->>
->>          /*
->>           * Walk up the device parent links looking for one with a
->> @@ -602,71 +597,14 @@ static u32 __of_msi_map_rid(struct device *dev, struct device_node **np,
->>                  if (!parent_dev->of_node)
->>                          continue;
->>
->> -               msi_map = of_get_property(parent_dev->of_node,
->> -                                         "msi-map", &msi_map_len);
->> -               if (!msi_map)
->> +               if (!of_property_read_bool(parent_dev->of_node, "msi-map"))
->
-> But msi-map is not bool, right? I think we allow bools to have values
-> for historical reasons, but really bool with a value should be an
-> error. So don't rely on current behavior.
+On Tue, May 10, 2016 at 12:40:01PM -0400, Wan Zongshun wrote:
+> From: Wan Zongshun <Vincent.Wan@amd.com>
+> 
+> This patch is to do the following:
+> 
+> 1. Add error check for caller of iommu_device_create.
+> 
+> 2. Add error check for caller of iommu_device_link and
+> move 'iommu = amd_iommu_rlookup_table[dev_data->devid]' out of
+> iommuv2 capability condition that make iommu_device_link also
+> use the 'iommu' to make code more clear and no more than 80
+> characters.
+> 
+> Signed-off-by: Wan Zongshun <Vincent.Wan@amd.com>
+> ---
+>  drivers/iommu/amd_iommu.c      | 12 ++++--------
+>  drivers/iommu/amd_iommu_init.c |  2 ++
+>  2 files changed, 6 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index 547cdd4..232a3b9 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -414,6 +414,7 @@ out:
+>  static int iommu_init_device(struct device *dev)
+>  {
+>  	struct iommu_dev_data *dev_data;
+> +	struct amd_iommu *iommu;
+>  	int devid;
+>  
+>  	if (dev->archdata.iommu)
+> @@ -427,19 +428,14 @@ static int iommu_init_device(struct device *dev)
+>  	if (!dev_data)
+>  		return -ENOMEM;
+>  
+> -	if (dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev))) {
+> -		struct amd_iommu *iommu;
+> +	iommu = amd_iommu_rlookup_table[dev_data->devid];
+>  
+> -		iommu = amd_iommu_rlookup_table[dev_data->devid];
+> +	if (dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev)))
+>  		dev_data->iommu_v2 = iommu->is_iommu_v2;
+> -	}
+>  
+>  	dev->archdata.iommu = dev_data;
+>  
+> -	iommu_device_link(amd_iommu_rlookup_table[dev_data->devid]->iommu_dev,
+> -			  dev);
+> -
+> -	return 0;
+> +	return iommu_device_link(iommu->iommu_dev, dev);
 
-Right, I now have no idea why that wasn't of_find_property() in the 
-first place...
+I don't like to fail the whole iommu_init_device() function here, since
+iommu_device_link only creates sysfs entries. Please just check for an
+error return code and print a message if one happened. The function
+should return 0 then.
 
->>                          continue;
->>
->> -               if (msi_map_len % (4 * sizeof(__be32))) {
->> -                       dev_err(parent_dev, "Error: Bad msi-map length: %d\n",
->> -                               msi_map_len);
->> -                       return rid_out;
->> -               }
->>                  /* We have a good parent_dev and msi_map, let's use them. */
->> +               of_pci_map_rid(parent_dev->of_node, "msi-map", rid_in, np,
->> +                              &rid_out);
->
-> Seems like this could return an error code and then you could continue
-> based on the return code. Then you wouldn't be looking up msi-map
-> twice. Probably could get rid of the !parent_dev->of_node check too.
 
-...but I agree that approach does sound better overall, so I'll take a 
-closer look at this whole patch again.
-
-Thanks,
-Robin.
-
->
-> Rob
->
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+	Joerg
