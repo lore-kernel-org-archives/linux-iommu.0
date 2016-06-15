@@ -1,15 +1,17 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: iommu/vt-d: Fix intel vt-d faults in kdump kernel
-Date: Wed, 15 Jun 2016 18:13:52 +0200
-Message-ID: <20160615161352.GQ26566@8bytes.org>
-References: <57604810.1070504@cisco.com> <20160615140529.GO26566@8bytes.org>
-	<57617B86.6090205@cisco.com>
+From: "Vesely, Jan" <Jan.Vesely-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/amd: Destroy api_lock mutex when freeing domain
+Date: Wed, 15 Jun 2016 17:53:15 +0000
+Message-ID: <1466013192.3265.74.camel@amd.com>
+References: <1463854264-26445-1-git-send-email-jan.vesely@rutgers.edu>
+	<1463854264-26445-2-git-send-email-jan.vesely@rutgers.edu>
+	<1465487321.7114.0.camel@amd.com> <20160615115406.GF26566@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <57617B86.6090205-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20160615115406.GF26566-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
+Content-ID: <0A36D5F7E6B1BD459574C42442437B94-asWib9pRmPqcE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,18 +21,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Daniel Walker <danielwa-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org>
-Cc: "xe-kernel-qGaTmy9+pjmU+GOnkdjqUdBPR1lH4CV8@public.gmane.org" <xe-kernel-qGaTmy9+pjmU+GOnkdjqUdBPR1lH4CV8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Nikunj Kela (nkela)" <nkela-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org>
+To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 15, 2016 at 09:00:06AM -0700, Daniel Walker wrote:
-> That's surprising 11 versions and still broken ;( ..  Can you point me to
-> your re-writes ?
-
-Here is a link to the email thread with the patches:
-
-	http://marc.info/?l=linux-kernel&m=143417806913601
-
-Regards,
-
-	Joerg
+T24gV2VkLCAyMDE2LTA2LTE1IGF0IDEzOjU0ICswMjAwLCBqb3JvQDhieXRlcy5vcmcgd3JvdGU6
+DQo+IE9uIFRodSwgSnVuIDA5LCAyMDE2IGF0IDAzOjQ4OjQ0UE0gKzAwMDAsIFZlc2VseSwgSmFu
+IHdyb3RlOg0KPiA+IE9uIFNhdCwgMjAxNi0wNS0yMSBhdCAxNDoxMSAtMDQwMCwgSmFuIFZlc2Vs
+eSB3cm90ZToNCj4gPiA+IEZyb206IEphbiBWZXNlbHkgPGphbi52ZXNlbHlAYW1kLmNvbT4NCj4g
+PiA+IA0KPiA+ID4gU2lnbmVkLW9mZi1ieTogSmFuIFZlc2VseSA8amFuLnZlc2VseUBhbWQuY29t
+Pg0KPiA+ID4gLS0tDQo+ID4gPiDCoGRyaXZlcnMvaW9tbXUvYW1kX2lvbW11LmMgfCAxICsNCj4g
+PiA+IMKgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspDQo+ID4gPiANCj4gPiA+IGRpZmYg
+LS1naXQgYS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jDQo+ID4gPiBiL2RyaXZlcnMvaW9tbXUv
+YW1kX2lvbW11LmMNCj4gPiA+IGluZGV4IDE3Yzc2ZjIuLjRmZjVlNDAgMTAwNjQ0DQo+ID4gPiAt
+LS0gYS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jDQo+ID4gPiArKysgYi9kcml2ZXJzL2lvbW11
+L2FtZF9pb21tdS5jDQo+ID4gPiBAQCAtMzAxNiw2ICszMDE2LDcgQEAgc3RhdGljIHZvaWQgcHJv
+dGVjdGlvbl9kb21haW5fZnJlZShzdHJ1Y3QNCj4gPiA+IHByb3RlY3Rpb25fZG9tYWluICpkb21h
+aW4pDQo+ID4gPiDCoA0KPiA+ID4gwqAJZGVsX2RvbWFpbl9mcm9tX2xpc3QoZG9tYWluKTsNCj4g
+PiA+IMKgDQo+ID4gPiArCW11dGV4X2Rlc3Ryb3koJmRvbWFpbi0+YXBpX2xvY2spOw0KPiA+ID4g
+wqAJaWYgKGRvbWFpbi0+aWQpDQo+ID4gPiDCoAkJZG9tYWluX2lkX2ZyZWUoZG9tYWluLT5pZCk7
+DQo+ID4gPiDCoA0KPiA+IA0KPiA+IHBpbmcNCj4gDQo+IFlvdXIgcGF0Y2hlcyBsYWNrIGNvbW1p
+dCBtZXNzYWdlcywgcGxlYXNlIGFkZCBhIG1vcmUgZGV0YWlsZWQNCj4gZGVzY3JpcHRpb24gb2Yg
+d2hhdCB5b3UgYXJlIGZpeGluZyBhbmQgd2h5LiBQbGVhc2UgYWxzbyBhZGQgJ0ZpeGVzOicNCj4g
+dGFncyB3aGVuIHJlc3VibWl0dGluZy4gVGhlIGNoYW5nZXMgaXRzZWxmIGxvb2sgZ29vZCB0byBt
+ZS4NCg0KVGhlcmUgYXJlIG5vIHNwZWNpZmljIGJ1Z3Mvb29wc2VzIHRoYXQgdGhlc2UgcGF0Y2hl
+cyBmaXggKHRoYXQgSSdtDQphd2FyZSBvZikuIEJvdGggd2VyZSBmb3VuZCB3aGlsZSBJIHdhcyBm
+YW1pbGlhcml6aW5nIG15c2VsZiB3aXRoIHRoZQ0KY29kZSBsb29raW5nIGZvciBtZW1vcnkgY29y
+cnVwdGlvbiAod2hpY2ggdHVybmVkIG91dCB0byBiZSBbMF0pLg0KRWl0aGVyIGlzc3VlIHdvdWxk
+IGJlIHZlcnkgZGlmZmljdWx0IHRvIGhpdCBpbiB0aGUgd2lsZCBhbmQNCm11dGV4X2Rlc3Ryb3kg
+aXMgZW1wdHkgdW5sZXNzIHlvdSBjb21waWxlIHVzaW5nIENPTkZJR19ERUJVR19NVVRFWEVTLg0K
+DQpKYW4NCg0KWzBdIGh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDE2LzMvNy8xMDg3DQoNCj4gDQo+
+IA0KPiAJSm9lcmcNCj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
+ZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21t
+dQ==
