@@ -1,7 +1,7 @@
-From: Nadav Amit <namit-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v3] iommu/vt-d: Avoid write-tearing on PTE clear
-Date: Wed, 15 Jun 2016 08:02:30 -0700
-Message-ID: <1466002950-23326-1-git-send-email-namit@vmware.com>
+From: Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH v2] iommu/amd: Add proper error check in two functions
+Date: Thu, 16 Jun 2016 07:57:04 -0400
+Message-ID: <1466078224-3155-1-git-send-email-vincent.wan@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -15,63 +15,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
-Cc: Nadav Amit <namit-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When a PTE is cleared, the write may be teared or perform by multiple
-writes. In addition, in 32-bit kernel, writes are currently performed
-using a single 64-bit write, which does not guarantee order.
+From: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
 
-The byte-code right now does not seem to cause a problem, but it may
-still occur in the future.
+This patch is to do the following:
 
-Avoid this scenario by using WRITE_ONCE, and order the writes on
-32-bit kernels.
+1. Add error check for caller of iommu_device_create.
 
-Signed-off-by: Nadav Amit <namit-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>
+2. Add error check for caller of iommu_device_link and
+move 'iommu = amd_iommu_rlookup_table[dev_data->devid]' out of
+iommuv2 capability condition that make iommu_device_link also
+use the 'iommu' to make code more clear and no more than 80
+characters.
 
+Signed-off-by: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
 ---
-V3: Move split_dma_pte struct to dma_clear_pte (Joerg)
-    Add comments (Joerg)
-V2: Use two WRITE_ONCE on 32-bit to avoid reordering
----
- drivers/iommu/intel-iommu.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+Changes from v1:
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index e1852e8..5df87a3 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -328,7 +328,28 @@ struct dma_pte {
- 
- static inline void dma_clear_pte(struct dma_pte *pte)
+Don't fail the iommu_init_device() function when the iommu_device_link returned
+an error,just print a warning message.
+---
+ drivers/iommu/amd_iommu.c      | 11 +++++------
+ drivers/iommu/amd_iommu_init.c |  2 ++
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 634f636..dbdcaeb 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -476,6 +476,7 @@ out:
+ static int iommu_init_device(struct device *dev)
  {
--	pte->val = 0;
-+	/*
-+	 * We want to prevent the compiler from doing store-tearing or multiple
-+	 * writes when it clears the PTE. Otherwise, a DMA address may be
-+	 * translated using a partially updated PTE.
-+	 */
-+#ifdef CONFIG_64BIT
-+	WRITE_ONCE(pte->val, 0);
-+#else
-+	/*
-+	 * On 32-bit platform the PTE must be updated in two chunks. We first
-+	 * update the lower part that holds the present bit. The two writes are
-+	 * ordered in the byte-code by WRITE_ONCE, and in the execution by x86
-+	 * TSO-like memory model. This allows us to avoid using dma_wmb().
-+	 */
-+	struct split_dma_pte {
-+		u32 val_low;
-+		u32 val_high;
-+	} __packed *sdma_pte = (struct split_dma_pte *)pte;
-+
-+	WRITE_ONCE(sdma_pte->val_low, 0);
-+	WRITE_ONCE(sdma_pte->val_high, 0);
-+#endif
- }
+ 	struct iommu_dev_data *dev_data;
++	struct amd_iommu *iommu;
+ 	int devid;
  
- static inline u64 dma_pte_addr(struct dma_pte *pte)
+ 	if (dev->archdata.iommu)
+@@ -491,17 +492,15 @@ static int iommu_init_device(struct device *dev)
+ 
+ 	dev_data->alias = get_alias(dev);
+ 
+-	if (dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev))) {
+-		struct amd_iommu *iommu;
++	iommu = amd_iommu_rlookup_table[dev_data->devid];
+ 
+-		iommu = amd_iommu_rlookup_table[dev_data->devid];
++	if (dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev)))
+ 		dev_data->iommu_v2 = iommu->is_iommu_v2;
+-	}
+ 
+ 	dev->archdata.iommu = dev_data;
+ 
+-	iommu_device_link(amd_iommu_rlookup_table[dev_data->devid]->iommu_dev,
+-			  dev);
++	if (iommu_device_link(iommu->iommu_dev, dev))
++		dev_warn(dev, "Creating iommu device link failed in sysfs.\n");
+ 
+ 	return 0;
+ }
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 9e00341..73fa986 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1526,6 +1526,8 @@ static int iommu_init_pci(struct amd_iommu *iommu)
+ 	iommu->iommu_dev = iommu_device_create(&iommu->dev->dev, iommu,
+ 					       amd_iommu_groups, "ivhd%d",
+ 					       iommu->index);
++	if (IS_ERR(iommu->iommu_dev))
++		return PTR_ERR(iommu->iommu_dev);
+ 
+ 	return pci_enable_device(iommu->dev);
+ }
 -- 
-2.7.4
+1.9.1
