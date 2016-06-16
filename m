@@ -1,11 +1,18 @@
-From: Wan Zongshun <vincent.wan-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v2] iommu/amd: Add proper error check in two functions
-Date: Thu, 16 Jun 2016 07:57:04 -0400
-Message-ID: <1466078224-3155-1-git-send-email-vincent.wan@amd.com>
+From: Dheeraj CVR <cvr.dheeraj-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [BUGREPORT] Intel X58 Boards don't boot after "iommu/vt-d: Make
+	root entry visible for hardware right after allocation"
+Date: Thu, 16 Jun 2016 10:26:20 +0400
+Message-ID: <CAH-=PyRBZU95f0XPLZQXyaKLPx+K5iNsQs3ucQRj6BPfj9ERBA@mail.gmail.com>
+References: <CAH-=PyRpjuKf0XJNyzkVLpggaaYq163AfA84SZ5=DQH2Ys5Lkw@mail.gmail.com>
+	<CAH-=PyR-6sY1vuzQSfJyh35Q+WqZKD70Ev7vDns+02h8j=m18Q@mail.gmail.com>
+	<20160425110151.GE17926@8bytes.org>
+	<CAH-=PyTGF76sq7LvQH0-28DoK1dXGUOdnCF6z9shF_CWosWYwQ@mail.gmail.com>
+	<CAH-=PyTaR-xH7D4eOnFkB-7gojdZW08yHEPP2Gw2-0GjWTA4dw@mail.gmail.com>
+	<20160615161149.GJ13971@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============1832928553645192621=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160615161149.GJ13971-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,79 +22,133 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
+--===============1832928553645192621==
+Content-Type: multipart/alternative; boundary=001a113f91e0096d1705355f518d
 
-This patch is to do the following:
+--001a113f91e0096d1705355f518d
+Content-Type: text/plain; charset=UTF-8
 
-1. Add error check for caller of iommu_device_create.
+I have added some debugging code to see where exactly the hang
+happens. The set_root_entry
+call works fine without any issues as you have expected. However, the hang
+happens when calling flush_context.
 
-2. Add error check for caller of iommu_device_link and
-move 'iommu = amd_iommu_rlookup_table[dev_data->devid]' out of
-iommuv2 capability condition that make iommu_device_link also
-use the 'iommu' to make code more clear and no more than 80
-characters.
+flush_context -> qi_flush_context -> qi_submit_sync
 
-Signed-off-by: Wan Zongshun <Vincent.Wan-5C7GfCeVMHo@public.gmane.org>
----
-Changes from v1:
+The loop "while (qi->desc_status[wait_index] != QI_DONE) {}" in
+"qi_submit_sync" executes indefinitely and the control doesn't break.
+Hence, "iommu->flush.flush_context()" never returns.
 
-Don't fail the iommu_init_device() function when the iommu_device_link returned
-an error,just print a warning message.
----
- drivers/iommu/amd_iommu.c      | 11 +++++------
- drivers/iommu/amd_iommu_init.c |  2 ++
- 2 files changed, 7 insertions(+), 6 deletions(-)
+Tested on 2 X58 Motherboards and both hang at the same place with
+intel_iommu=on.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 634f636..dbdcaeb 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -476,6 +476,7 @@ out:
- static int iommu_init_device(struct device *dev)
- {
- 	struct iommu_dev_data *dev_data;
-+	struct amd_iommu *iommu;
- 	int devid;
- 
- 	if (dev->archdata.iommu)
-@@ -491,17 +492,15 @@ static int iommu_init_device(struct device *dev)
- 
- 	dev_data->alias = get_alias(dev);
- 
--	if (dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev))) {
--		struct amd_iommu *iommu;
-+	iommu = amd_iommu_rlookup_table[dev_data->devid];
- 
--		iommu = amd_iommu_rlookup_table[dev_data->devid];
-+	if (dev_is_pci(dev) && pci_iommuv2_capable(to_pci_dev(dev)))
- 		dev_data->iommu_v2 = iommu->is_iommu_v2;
--	}
- 
- 	dev->archdata.iommu = dev_data;
- 
--	iommu_device_link(amd_iommu_rlookup_table[dev_data->devid]->iommu_dev,
--			  dev);
-+	if (iommu_device_link(iommu->iommu_dev, dev))
-+		dev_warn(dev, "Creating iommu device link failed in sysfs.\n");
- 
- 	return 0;
- }
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 9e00341..73fa986 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1526,6 +1526,8 @@ static int iommu_init_pci(struct amd_iommu *iommu)
- 	iommu->iommu_dev = iommu_device_create(&iommu->dev->dev, iommu,
- 					       amd_iommu_groups, "ivhd%d",
- 					       iommu->index);
-+	if (IS_ERR(iommu->iommu_dev))
-+		return PTR_ERR(iommu->iommu_dev);
- 
- 	return pci_enable_device(iommu->dev);
- }
+Hope this helps.
+
+On Wed, Jun 15, 2016 at 8:11 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+
+> On Fri, Apr 29, 2016 at 04:41:23PM +0400, Dheeraj CVR wrote:
+> > Hi Joerg,
+> >
+> > Did you find time to have a look at the dmesg that I have sent to you in
+> the
+> > earlier email? Please let me know if you need any more debugging info to
+> > diagnose this issue.
+>
+> Yes, I had a look at the dmesg and went through the code again. I have
+> no clue yet why that commit causes the issue on your machine. Between
+> the two places in the code where the set_root_entry calls are/were,
+> there are no other things going on with the iommu hardware, so it
+> shouldn't matter when setting the root entry happens earlier.
+>
+> Can you try to track down (with some debug code) exactly where it is
+> hanging? That might bring some more light into the issue.
+>
+>
+>
+>         Joerg
+>
+>
+
+
 -- 
-1.9.1
+Regards,
+Dheeraj CVR.
+
+--001a113f91e0096d1705355f518d
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><span style=3D"font-size:12.8px">I have added some debuggi=
+ng code to see where exactly the hang happens. The=C2=A0</span><span style=
+=3D"font-size:12.8px">set_root_entry call works fine without any issues as =
+you have expected. However, the hang happens when calling flush_context.</s=
+pan><div><span style=3D"font-size:12.8px"><br></span></div><div><span style=
+=3D"font-size:12.8px">flush_context -&gt; qi_flush_context -&gt; qi_submit_=
+sync</span><br></div><div><span style=3D"font-size:12.8px"><font face=3D"ar=
+ial, helvetica, sans-serif" color=3D"#000000"><br></font></span></div><div>=
+<font face=3D"arial, helvetica, sans-serif" color=3D"#000000">The loop &quo=
+t;<span class=3D"" style=3D"font-size:12px;line-height:16.8px;white-space:p=
+re">while</span><span style=3D"font-size:12px;line-height:16.8px;white-spac=
+e:pre"> (qi-&gt;desc_status[wait_index] !=3D QI_DONE) {}&quot; in &quot;qi_=
+submit_sync&quot; executes indefinitely and the control doesn&#39;t break. =
+Hence, &quot;</span><span style=3D"font-size:12px;line-height:16.8px;white-=
+space:pre">iommu-&gt;flush.</span><span class=3D"" style=3D"font-size:12px;=
+line-height:16.8px;white-space:pre">flush_context</span><span style=3D"font=
+-size:12px;line-height:16.8px;white-space:pre">()&quot; never returns.</spa=
+n></font></div><div><font face=3D"arial, helvetica, sans-serif" color=3D"#0=
+00000"><span style=3D"font-size:12px;line-height:16.8px;white-space:pre"><b=
+r></span></font></div><div><font face=3D"arial, helvetica, sans-serif" colo=
+r=3D"#000000"><span style=3D"font-size:12px;line-height:16.8px;white-space:=
+pre">Tested on 2 X58 Motherboards and both hang at the same place with inte=
+l_iommu=3Don.</span></font></div><div><font face=3D"arial, helvetica, sans-=
+serif" color=3D"#000000"><span style=3D"font-size:12px;line-height:16.8px;w=
+hite-space:pre"><br></span></font></div><div><font face=3D"arial, helvetica=
+, sans-serif" color=3D"#000000"><span style=3D"font-size:12px;line-height:1=
+6.8px;white-space:pre">Hope this helps.</span></font></div></div><div class=
+=3D"gmail_extra"><br><div class=3D"gmail_quote">On Wed, Jun 15, 2016 at 8:1=
+1 PM, Joerg Roedel <span dir=3D"ltr">&lt;<a href=3D"mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org"=
+ target=3D"_blank">joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org</a>&gt;</span> wrote:<br><blockquote cla=
+ss=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;pa=
+dding-left:1ex"><span class=3D"">On Fri, Apr 29, 2016 at 04:41:23PM +0400, =
+Dheeraj CVR wrote:<br>
+&gt; Hi=C2=A0Joerg,<br>
+&gt;<br>
+&gt; Did you find time to have a look at the dmesg that I have sent to you =
+in the<br>
+&gt; earlier email? Please let me know if you need any more debugging info =
+to<br>
+&gt; diagnose this issue.<br>
+<br>
+</span>Yes, I had a look at the dmesg and went through the code again. I ha=
+ve<br>
+no clue yet why that commit causes the issue on your machine. Between<br>
+the two places in the code where the set_root_entry calls are/were,<br>
+there are no other things going on with the iommu hardware, so it<br>
+shouldn&#39;t matter when setting the root entry happens earlier.<br>
+<br>
+Can you try to track down (with some debug code) exactly where it is<br>
+hanging? That might bring some more light into the issue.<br>
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 Joerg<br>
+<br>
+</font></span></blockquote></div><br><br clear=3D"all"><div><br></div>-- <b=
+r><div class=3D"gmail_signature" data-smartmail=3D"gmail_signature"><div di=
+r=3D"ltr">Regards,<br>Dheeraj CVR.<br></div></div>
+</div>
+
+--001a113f91e0096d1705355f518d--
+
+--===============1832928553645192621==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1832928553645192621==--
