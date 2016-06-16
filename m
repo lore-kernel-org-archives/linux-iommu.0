@@ -1,16 +1,11 @@
-From: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 02/10] driver core: Functional dependencies tracking
-	support
-Date: Fri, 17 Jun 2016 14:54:56 +0200
-Message-ID: <CAJZ5v0h71xxvzex2D6s9W8Qvq3+BqOQnTJRKy32gMu=tuQLxDA@mail.gmail.com>
-References: <1466144820-6286-1-git-send-email-m.szyprowski@samsung.com>
-	<1466144820-6286-3-git-send-email-m.szyprowski@samsung.com>
-	<20160617103620.GA1626@wunner.de>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/io-pgtable-arm: Fix iova_to_phys for block entries
+Date: Thu, 16 Jun 2016 18:44:38 +0100
+Message-ID: <1466099078-3919-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160617103620.GA1626-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,61 +15,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Andreas Noever <andreas.noever-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jun 17, 2016 at 12:36 PM, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org> wrote:
-> Hi Marek,
->
-> On Fri, Jun 17, 2016 at 08:26:52AM +0200, Marek Szyprowski wrote:
->> From: "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
->>
->> Currently, there is a problem with handling cases where functional
->> dependencies between devices are involved.
->>
->> What I mean by a "functional dependency" is when the driver of device
->> B needs both device A and its driver to be present and functional to
->> be able to work.  This implies that the driver of A needs to be
->> working for B to be probed successfully and it cannot be unbound from
->> the device before the B's driver.  This also has certain consequences
->> for power management of these devices (suspend/resume and runtime PM
->> ordering).
->>
->> Add support for representing those functional dependencies between
->> devices to allow the driver core to track them and act on them in
->> certain cases where they matter.
->
-> Rafael has indicated that he intends to respin this series:
-> https://lkml.org/lkml/2016/6/8/1061
+The implementation of iova_to_phys for the long-descriptor ARM
+io-pgtable code always masks with the granule size when inserting the
+low virtual address bits into the physical address determined from the
+page tables. In cases where the leaf entry is found before the final
+level of table (i.e. due to a block mapping), this results in rounding
+down to the bottom page of the block mapping. Consequently, the physical
+address range batching in the vfio_unmap_unpin is defeated and we end
+up taking the long way home.
 
-That's OK.
+This patch fixes the problem by masking the virtual address with the
+appropriate mask for the level at which the leaf descriptor is located.
+The short-descriptor code already gets this right, so no change is
+needed there.
 
-> We also have such a functional dependency for Thunderbolt on Macs:
-> On resume from system sleep, the PCIe hotplug ports may not resume
-> before the thunderbolt driver has reestablished the PCI tunnels.
-> Currently this is enforced by quirk_apple_wait_for_thunderbolt()
-> in drivers/pci/quirks.c. It would be good if we could represent
-> this dependency using something like Rafael's approach instead of
-> open coding it, however one detail in Rafael's patches is problematic:
->
->> New links are added by calling device_link_add() which may happen
->> either before the consumer device is probed or when probing it, in
->> which case the caller needs to ensure that the driver of the
->> supplier device is present and functional and the DEVICE_LINK_PROBE_TIME
->> flag should be passed to device_link_add() to reflect that.
->
-> The thunderbolt driver cannot call device_link_add() before the
-> PCIe hotplug ports are bound to a driver unless we amend portdrv
-> to return -EPROBE_DEFER for Thunderbolt hotplug ports on Macs
-> if the thunderbolt driver isn't loaded.
->
-> It would therefore be beneficial if device_link_add() can be
-> called even *after* the consumer is bound.
+Reported-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/io-pgtable-arm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I don't quite follow.
-
-Who's the provider and who's the consumer here?
-
-Thanks,
-Rafael
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index a1ed1b73fed4..f5c90e1366ce 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -576,7 +576,7 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
+ 	return 0;
+ 
+ found_translation:
+-	iova &= (ARM_LPAE_GRANULE(data) - 1);
++	iova &= (ARM_LPAE_BLOCK_SIZE(lvl, data) - 1);
+ 	return ((phys_addr_t)iopte_to_pfn(pte,data) << data->pg_shift) | iova;
+ }
+ 
+-- 
+2.1.4
