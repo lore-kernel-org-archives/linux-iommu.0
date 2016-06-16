@@ -1,21 +1,17 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [BUGREPORT] Intel X58 Boards don't boot after "iommu/vt-d: Make
-	root entry visible for hardware right after allocation"
-Date: Thu, 16 Jun 2016 12:29:14 +0200
-Message-ID: <20160616102914.GA11432@8bytes.org>
-References: <CAH-=PyRpjuKf0XJNyzkVLpggaaYq163AfA84SZ5=DQH2Ys5Lkw@mail.gmail.com>
-	<CAH-=PyR-6sY1vuzQSfJyh35Q+WqZKD70Ev7vDns+02h8j=m18Q@mail.gmail.com>
-	<20160425110151.GE17926@8bytes.org>
-	<CAH-=PyTGF76sq7LvQH0-28DoK1dXGUOdnCF6z9shF_CWosWYwQ@mail.gmail.com>
-	<CAH-=PyTaR-xH7D4eOnFkB-7gojdZW08yHEPP2Gw2-0GjWTA4dw@mail.gmail.com>
-	<20160615161149.GJ13971@8bytes.org>
-	<CAH-=PyRBZU95f0XPLZQXyaKLPx+K5iNsQs3ucQRj6BPfj9ERBA@mail.gmail.com>
+From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [RFC PATCH v1 10/18] x86/efi: Access EFI related tables in the
+	clear
+Date: Thu, 16 Jun 2016 09:38:31 -0500
+Message-ID: <5762B9E7.80903@amd.com>
+References: <20160426225553.13567.19459.stgit@tlendack-t1.amdoffice.net>
+	<20160426225740.13567.85438.stgit@tlendack-t1.amdoffice.net>
+	<20160608111844.GV2658@codeblueprint.co.uk> <5759B67A.4000800@amd.com>
+	<20160613135110.GC2658@codeblueprint.co.uk> <57615561.4090502@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAH-=PyRBZU95f0XPLZQXyaKLPx+K5iNsQs3ucQRj6BPfj9ERBA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <57615561.4090502-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,84 +21,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dheeraj CVR <cvr.dheeraj-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>
+Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jun 16, 2016 at 10:26:20AM +0400, Dheeraj CVR wrote:
-> I have added some debugging code to see where exactly the hang happens. T=
-he=A0
-> set_root_entry call works fine without any issues as you have expected.
-> However, the hang happens when calling flush_context.
-> =
+On 06/15/2016 08:17 AM, Tom Lendacky wrote:
+> On 06/13/2016 08:51 AM, Matt Fleming wrote:
+>> On Thu, 09 Jun, at 01:33:30PM, Tom Lendacky wrote:
+>>>
 
-> flush_context -> qi_flush_context -> qi_submit_sync
-> =
+[...]
 
-> The loop "while (qi->desc_status[wait_index] !=3D QI_DONE) {}" in
-> "qi_submit_sync" executes indefinitely and the control doesn't break. Hen=
-ce, "
-> iommu->flush.flush_context()" never returns.
-> =
+>>
+>>> I'll look further into this, but I saw that this area of virtual memory
+>>> was mapped un-encrypted and after freeing the boot services the
+>>> mappings were somehow reused as un-encrypted for DMA which assumes
+>>> (unless using swiotlb) encrypted. This resulted in DMA data being
+>>> transferred in as encrypted and then accessed un-encrypted.
+>>
+>> That the mappings were re-used isn't a surprise.
+>>
+>> efi_free_boot_services() lifts the reservation that was put in place
+>> during efi_reserve_boot_services() and releases the pages to the
+>> kernel's memory allocators.
+>>
+>> What is surprising is that they were marked unencrypted at all.
+>> There's nothing special about these pages as far as the __va() region
+>> is concerned.
+> 
+> Right, let me keep looking into this to see if I can pin down what
+> was (or is) happening.
 
-> Tested on 2 X58 Motherboards and both hang at the same place with intel_i=
-ommu=3D
-> on.
-> =
+Ok, I think this was happening before the commit to build our own
+EFI page table structures:
 
-> Hope this helps.
+commit 67a9108ed ("x86/efi: Build our own page table structures")
 
-Hmm, okay. Yesterday I tried to reproduce the problem on a box in our
-test-lab which has the same chipset. The bug didn't show up there, and
-one difference to your machine is that is only has one iommu instead of
-two.
-
-This brought me to another difference the patch made: Before the patch
-QI was enabled on all iommus before the root entry was set and the
-caches flushed. With the patch QI is enabled in the same loop that sets
-the root entry and tries to flush. Maybe that is the problem on this
-chipset.
-
-Can you please try the attached diff? It is just a guess, but maybe that
-is the problem.
+Before this commit the boot services ended up mapped into the kernel
+page table entries as un-encrypted during efi_map_regions() and I needed
+to change those entries back to encrypted. With your change above,
+this appears to no longer be needed.
 
 Thanks,
+Tom
 
-	Joerg
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a644d0c..0ddbb6a 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3222,11 +3222,6 @@ static int __init init_dmars(void)
- 			}
- 		}
- =
-
--		iommu_flush_write_buffer(iommu);
--		iommu_set_root_entry(iommu);
--		iommu->flush.flush_context(iommu, 0, 0, 0, DMA_CCMD_GLOBAL_INVL);
--		iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
--
- 		if (!ecap_pass_through(iommu->ecap))
- 			hw_pass_through =3D 0;
- #ifdef CONFIG_INTEL_IOMMU_SVM
-@@ -3235,6 +3230,17 @@ static int __init init_dmars(void)
- #endif
- 	}
- =
-
-+	/*
-+	 * Now that qi is enabled on all iommus, set the root entry and flush
-+	 * caches.
-+	 */
-+	for_each_active_iommu(iommu, drhd) {
-+		iommu_flush_write_buffer(iommu);
-+		iommu_set_root_entry(iommu);
-+		iommu->flush.flush_context(iommu, 0, 0, 0, DMA_CCMD_GLOBAL_INVL);
-+		iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
-+	}
-+
- 	if (iommu_pass_through)
- 		iommu_identity_mapping |=3D IDENTMAP_ALL;
- =
+> 
+> Thanks,
+> Tom
+> 
+>>
