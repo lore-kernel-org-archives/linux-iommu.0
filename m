@@ -1,17 +1,10 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v2 03/15] arm64: mm: change IOMMU notifier action to
-	attach DMA ops
-Date: Fri, 17 Jun 2016 15:15:36 +0100
-Message-ID: <20160617141536.GA24840@red-moon>
-References: <1465306270-27076-1-git-send-email-lorenzo.pieralisi@arm.com>
-	<1465306270-27076-4-git-send-email-lorenzo.pieralisi@arm.com>
-	<5763C27A.9030306@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.7-rc3
+Date: Fri, 17 Jun 2016 16:38:58 +0200
+Message-ID: <20160617143845.GA25478@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============5077237496355729758=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <5763C27A.9030306-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,86 +14,101 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
 
-On Fri, Jun 17, 2016 at 10:27:22AM +0100, Robin Murphy wrote:
-> Hi Lorenzo,
-> 
-> I think this patch makes sense even independent of the rest of the
-> series, one nit inline notwithstanding.
+--===============5077237496355729758==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="ZGiS0Q5IWpPtfppv"
+Content-Disposition: inline
 
-Thanks. Yes I added it to this series since it is not strictly
-necessary (ie it does not fix anything) in the mainline, but
-it *is* necessary for this whole series to function when we
-boot through ACPI.
 
-I will send it out in a separate patch and fold changes you
-request below, it would be good to have some coverage for
-it before merging it.
+--ZGiS0Q5IWpPtfppv
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Thank you !
-Lorenzo
+Hi Linus,
 
-> Marek; I'm curious as to whether this could make the workaround in
-> 722ec35f7 obsolete as well, or are all the drivers also bound
-> super-early in the setup you had there?
-> 
-> On 07/06/16 14:30, Lorenzo Pieralisi wrote:
-> >Current bus notifier in ARM64 (__iommu_attach_notifier)
-> >attempts to attach dma_ops to a device on BUS_NOTIFY_ADD_DEVICE
-> >action notification.
-> >
-> >This causes issues on ACPI based systems, where PCI devices
-> >can be added before the IOMMUs the devices are attached to
-> >had a chance to be probed, causing failures on attempts to
-> >attach dma_ops in that the domain for the respective IOMMU
-> >may not be set-up yet by the time the bus notifier is run.
-> >
-> >Devices dma_ops do not require to be set-up till the matching
-> >device drivers are probed. This means that instead of running
-> >the notifier attaching dma_ops to devices (__iommu_attach_notifier)
-> >on BUS_NOTIFY_ADD_DEVICE action, it can be run just before the
-> >device driver is bound to the device in question (on action
-> >BUS_NOTIFY_BIND_DRIVER) so that it is certain that its IOMMU
-> >group and domain are set-up accordingly at the time the
-> >notifier is triggered.
-> >
-> >This patch changes the notifier action upon which dma_ops
-> >are attached to devices and defer it to driver binding time,
-> >so that IOMMU devices have a chance to be probed and to register
-> >their bus notifiers before the dma_ops attach sequence for a
-> >device is actually carried out.
-> >
-> >Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-> >Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> >Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-> >Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> >---
-> >  arch/arm64/mm/dma-mapping.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> >diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> >index c566ec8..79b0882 100644
-> >--- a/arch/arm64/mm/dma-mapping.c
-> >+++ b/arch/arm64/mm/dma-mapping.c
-> >@@ -848,7 +848,7 @@ static int __iommu_attach_notifier(struct notifier_block *nb,
-> >  {
-> >  	struct iommu_dma_notifier_data *master, *tmp;
-> >
-> >-	if (action != BUS_NOTIFY_ADD_DEVICE)
-> >+	if (action != BUS_NOTIFY_BIND_DRIVER)
-> 
-> With this, you can also get rid of the priority setting and big fat
-> explanatory comment in register_iommu_dma_ops_notifier().
-> 
-> Robin.
-> 
-> >  		return 0;
-> >
-> >  	mutex_lock(&iommu_dma_notifier_lock);
-> >
-> 
+The following changes since commit 5edb56491d4812c42175980759da53388e5d86f5:
+
+  Linux 4.7-rc3 (2016-06-12 07:20:35 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.7-rc3
+
+for you to fetch changes up to a4c34ff1c029e90e7d5f8dd8d29b0a93b31c3cb2:
+
+  iommu/vt-d: Enable QI on all IOMMUs before setting root entry (2016-06-17 11:29:48 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.7-rc3
+
+Three patches queued up:
+
+	* Fix for ARM-SMMU to add a missing iommu-ops callback which is
+	  required by common iommu code
+
+	* Fix for the rockchip iommu where the wrong MMUs got the
+	  commands
+
+	* A regression fix for the Intel VT-d driver. The regression
+	  only showed up on X58 chipsets with more than one iommu. These
+	  chipsets seem to require that QI is enabled on all IOMMUs
+	  before it can be used.
+
+----------------------------------------------------------------
+Jean-Philippe Brucker (1):
+      iommu/arm-smmu: Wire up map_sg for arm-smmu-v3
+
+Joerg Roedel (1):
+      iommu/vt-d: Enable QI on all IOMMUs before setting root entry
+
+John Keeping (1):
+      iommu/rockchip: Fix zap cache during device attach
+
+ drivers/iommu/arm-smmu-v3.c    |  1 +
+ drivers/iommu/intel-iommu.c    | 17 ++++++++++++-----
+ drivers/iommu/rockchip-iommu.c |  2 +-
+ 3 files changed, 14 insertions(+), 6 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--ZGiS0Q5IWpPtfppv
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJXZAt1AAoJECvwRC2XARrj8IgP/RAPHphtmZhSd2vgdiUJSC8G
+v/Xq9ttdJQwL+W223B5r7iDppFD19QMMsmEJWFRS7mnpT8ljlfxacHII4c7GyV4G
+yfNG/ueLTPmNa8reKDlpsOaFfuWcSTBG5p0c5DzspNUDeTqP8LMWANA57TUfQZ8d
+55uncvuKq/2MIIaZ7Y/712HxlXhw6rWKHeca2wjKah1c3SNdtZUVs7OZ+bZW0wx9
+3owfNAuJ01Bd98QtWEHeDpMCcFZb1eeNCSgYVqN/LALGh36w3KZLYuE+tIWjthB+
+gJ8tqEz+zNc4YY1F1qJGRzLcpo+R8yezVdojLF4iyLhQP9Y1GOWC3I+iKsSWJ0+2
+hDQYhVk2xAqrYHf4jyTroEknHi0sE1iL/OhKN/LrvJouXd5Tan31Iqw6wViFVGte
+0ITxei4Rj8t3nbzZRK74OR04zD8tLWdIPF8r5Oj1n+1PEqDEBWyrAQnoxCt1zTX1
+R8P7JmQL8XW70xYSPeSEPYvD2JpIkTyKppsz+dxUCd8X9+KYsOvVmo0gCikOyXYs
+uzNQgrz3VOm0PQEC1V2/tqNZeVY6ltUkHOSiwZ8E/eueKHQ2vHcB9A+PppVO/oru
+xKAs4QmPhQq4e72OGaSaxJMPvrep2k+lKIlLkC2Px1qHxTXzKNLgVJesTPHKNAot
+4TTxRrh/cmZ6tSmyDNd7
+=XPte
+-----END PGP SIGNATURE-----
+
+--ZGiS0Q5IWpPtfppv--
+
+--===============5077237496355729758==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============5077237496355729758==--
