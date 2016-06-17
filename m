@@ -1,14 +1,23 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v2 07/10] driver core: Add support for links to already probed
-	drivers
-Date: Fri, 17 Jun 2016 08:26:57 +0200
-Message-ID: <1466144820-6286-8-git-send-email-m.szyprowski@samsung.com>
-References: <1466144820-6286-1-git-send-email-m.szyprowski@samsung.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [BUGREPORT] Intel X58 Boards don't boot after "iommu/vt-d: Make
+	root entry visible for hardware right after allocation"
+Date: Fri, 17 Jun 2016 11:01:46 +0200
+Message-ID: <20160617090146.GC11432@8bytes.org>
+References: <CAH-=PyRpjuKf0XJNyzkVLpggaaYq163AfA84SZ5=DQH2Ys5Lkw@mail.gmail.com>
+	<CAH-=PyR-6sY1vuzQSfJyh35Q+WqZKD70Ev7vDns+02h8j=m18Q@mail.gmail.com>
+	<20160425110151.GE17926@8bytes.org>
+	<CAH-=PyTGF76sq7LvQH0-28DoK1dXGUOdnCF6z9shF_CWosWYwQ@mail.gmail.com>
+	<CAH-=PyTaR-xH7D4eOnFkB-7gojdZW08yHEPP2Gw2-0GjWTA4dw@mail.gmail.com>
+	<20160615161149.GJ13971@8bytes.org>
+	<CAH-=PyRBZU95f0XPLZQXyaKLPx+K5iNsQs3ucQRj6BPfj9ERBA@mail.gmail.com>
+	<20160616102914.GA11432@8bytes.org>
+	<CAH-=PyREixkSp59v_ErYK6rn0X8KLS29XxVCd9u51Yy6+r2tKg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1466144820-6286-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAH-=PyREixkSp59v_ErYK6rn0X8KLS29XxVCd9u51Yy6+r2tKg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,32 +27,18 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: Dheeraj CVR <cvr.dheeraj-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Set proper link state if link is created between already probed supplier
-device and to be probed consumer device.
+On Thu, Jun 16, 2016 at 08:11:29PM +0400, Dheeraj CVR wrote:
+> I have applied your patch to 4.7.0-rc3 mainline kernel and the machine
+> successfully boots with intel_iommu=on. Thank you so much for your time and
+> effort.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
----
- drivers/base/core.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Thanks a lot for testing. I am sending this patch upstream soon.
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 4e778539b750..d9c5c5542a6b 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -125,7 +125,9 @@ struct devlink *device_link_add(struct device *consumer,
- 
- 	link->flags = flags;
- 	link->status = (flags & DEVICE_LINK_PROBE_TIME) ?
--			DEVICE_LINK_CONSUMER_PROBE : DEVICE_LINK_DORMANT;
-+			DEVICE_LINK_CONSUMER_PROBE :
-+			(supplier->driver ? DEVICE_LINK_AVAILABLE :
-+			 DEVICE_LINK_DORMANT);
- 	spin_lock_init(&link->lock);
- 
- 	/*
--- 
-1.9.1
+
+Regards,
+
+	Joerg
