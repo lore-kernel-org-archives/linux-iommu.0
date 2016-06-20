@@ -1,222 +1,164 @@
 From: Pranav Sawargaonkar <pranav.sawargaonkar@gmail.com>
 Subject: Re: [PATCH v9 0/7] KVM PCIe/MSI passthrough on ARM/ARM64: kernel part
  3/3: vfio changes
-Date: Mon, 20 Jun 2016 21:12:58 +0530
-Message-ID: <CAP_HG2umBnV_88WGW20_oQ2X9zMxZKQJ952tQY_0=023R2AKjg@mail.gmail.com>
+Date: Mon, 20 Jun 2016 21:16:05 +0530
+Message-ID: <CAP_HG2ueSZ9XgyJLv1wGKzs0ObjEL5Vy8708+ZaZZJ4B9wmVmQ@mail.gmail.com>
 References: <1462362858-2925-1-git-send-email-eric.auger@linaro.org>
- <573F34CA.5080308@linaro.org> <875b5791-f7c9-97ca-46de-4b1474fe65e0@linaro.org>
- <20160608150609.7e28d63d@ul30vt.home> <e379ffed-6a73-d18a-1af9-a49b096d3f60@redhat.com>
+ <573F34CA.5080308@linaro.org>
+ <875b5791-f7c9-97ca-46de-4b1474fe65e0@linaro.org>
+ <20160608150609.7e28d63d@ul30vt.home>
+ <e379ffed-6a73-d18a-1af9-a49b096d3f60@redhat.com>
+ <CAP_HG2umBnV_88WGW20_oQ2X9zMxZKQJ952tQY_0=023R2AKjg@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <e379ffed-6a73-d18a-1af9-a49b096d3f60@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <CAP_HG2umBnV_88WGW20_oQ2X9zMxZKQJ952tQY_0=023R2AKjg@mail.gmail.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
 To: Auger Eric <eric.auger@redhat.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>, eric.auger.pro@gmail.com, robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, marc.zyngier@arm.com, christoffer.dall@linaro.org, linux-arm-kernel@lists.infradead.org, patches@linaro.org, linux-kernel@vger.kernel.org, Bharat Bhushan <Bharat.Bhushan@freescale.com>, Pavel Fedin <p.fedin@samsung.com>, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, julien.grall@arm.com, yehuday@marvell.com, Pranavkumar Sawargaonkar <psawargaonkar@apm.com>
+Cc: yehuday@marvell.com, julien.grall@arm.com, jason@lakedaemon.net, patches@linaro.org, marc.zyngier@arm.com, Pavel Fedin <p.fedin@samsung.com>, joro@8bytes.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Bharat Bhushan <Bharat.Bhushan@freescale.com>, Jean-Philippe.Brucker@arm.com, Alex Williamson <alex.williamson@redhat.com>, linux-arm-kernel@lists.infradead.org, tglx@linutronix.de, robin.murphy@arm.com, Pranavkumar Sawargaonkar <psawargaonkar@apm.com>, christoffer.dall@linaro.org, eric.auger.pro@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Eric,
-
-Tested this series on APM X-Gene2 with E1000 and sata sil card.
-Tested-By: Pranavkumar Sawargaonkar <psawargaonkar@apm.com>
-
-Thanks,
-Pranav
-
-
-On Thu, Jun 9, 2016 at 1:25 PM, Auger Eric <eric.auger@redhat.com> wrot=
-e:
-> Alex,
->> On Wed, 8 Jun 2016 10:29:35 +0200
->> Auger Eric <eric.auger@linaro.org> wrote:
->>
->>> Dear all,
->>> Le 20/05/2016 =C3=A0 18:01, Eric Auger a =C3=A9crit :
->>>> Alex, Robin,
->>>>
->>>> While my 3 part series primarily addresses the problematic of mapp=
-ing
->>>> MSI doorbells into arm-smmu, it fails in :
->>>>
->>>> 1) determining whether the MSI controller is downstream or upstrea=
-m to
->>>> the IOMMU,
->>>>     =3D> indicates whether the MSI doorbell must be mapped
->>>>     =3D> participates in the decision about 2)
->>>>
->>>> 2) determining whether it is safe to assign a PCIe device.
->>>>
->>>> I think we share this understanding with Robin. All above of cours=
-e
->>>> stands for ARM.
->>>>
->>>> I get stuck with those 2 issues and I have few questions about iom=
-mu
->>>> group setup, PCIe, iommu dt/ACPI description. I would be grateful =
-to you
->>>> if you could answer part of those questions and advise about the
->>>> strategy to fix those.
->>>
->>> gentle reminder about the questions below; hope I did not miss any =
-reply.
->>> If anybody has some time to spent on this topic...
->>>
->>>>
->>>> Best Regards
->>>>
->>>> Eric
->>>>
->>>> QUESTIONS:
->>>>
->>>> 1) Robin, you pointed some host controllers which also are MSI
->>>> controllers
->>>> (http://thread.gmane.org/gmane.linux.kernel.pci/47174/focus=3D4726=
-8). In
->>>> that case MSIs never reach the IOMMU. I failed in finding anything=
- about
->>>> MSIs in PCIe ACS spec. What should be the iommu groups in that
->>>> situation. Isn't the upstreamed code able to see some DMA transfer=
-s are
->>>> not properly isolated and alias devices in the same group? Accordi=
-ng to
->>>> your security warning, Alex, I would think the code does not recog=
-nize
->>>> it, can you confirm please?
->>> my current understanding is end points would be in separate groups =
-(assuming
->>> ACS support) although MSI controller frame is not properly protecte=
-d.
->>
->> We don't currently consider MSI differently from other DMA and we do=
-n't
->> currently have any sort of concept of a device within the intermedia=
-te
->> fabric as being a DMA target.  We expect fabric devices to only be
->> transaction routers.  We use ACS to determine whether there's any
->> possibility of DMA being redirected before it reaches the IOMMU, but=
- it
->> seems that a DMA being consumed by an interrupt controller before it
->> reaches the IOMMU would be another cause for an isolation breach.
->>
-> OK thank you for the confirmation
->>>> 2) can other PCIe components be MSI controllers?
->>
->> I'm not even entirely sure what this means.  Would a DMA write from =
-an
->> endpoint target the MMIO space of an intermediate, fabric device?
-> With the example provided by Robin we have a host controller acting a=
-s
-> an MSI controller. I wondered whether we could have some other fabric
-> devices (downstream to the host controller in PCIe terminology) also
-> likely to act as MSI controllers.
->>
->>>> 3) Am I obliged to consider arbitrary topologies where an MSI cont=
-roller
->>>> stands between the PCIe host and the iommu? in the PCIe space or
->>>> platform space? If this only relates to PCIe couldn' I check if an=
- MSI
->>>> controller exists in the PCIe tree?
->>> In my last series, I consider the assignment of platform device uns=
-afe as
->>> soon as there is a GICv2m. This is a change in the user experience =
-compared to
->>> what we have before.
->>
->> If the MSI controller is downstream of our DMA translation, it doesn=
-'t
->> seem like we have much choice but to mark it unsafe.  The endpoint i=
-s
->> fully able to attempt to exploit it.
-> OK the orginal question was related to non PCIe topologies:
->
-> - we know some PCIe fabric topologies where the PCIe host controller
-> implements MSI controller.
-> - Shall we be prepared to address the same kind of issues with platfo=
-rm
-> MSI controllers. Are there some SOCs where we would put an unsafe MSI
-> platform controller before IOMMU translation. Or do we consider it is=
- a
-> platform topology we don't support for assignment?
->
->>
->>>> 4) Robin suggested in a private thread to enumerate through a list=
- of
->>>> "registered" doorbells and if any belongs to an unsafe MSI control=
-ler,
->>>> consider the assignment is unsafe. This would be a first step befo=
-re
->>>> doing something more complex. Alex, would that be acceptable to yo=
-u for
->>>> issue #2?
->>> I implemented this technique in my last series waiting for more dis=
-cussion
->>> on 4, 5.
->>
->> Seems sufficient.  I don't mind taking a broad swing versus all the
->> extra complexity of defining which devices are safe vs unsafe.
-> OK
->>
->>>> 5) About issue #1: don't we miss tools in dt/ACPI to describe the
->>>> location of the iommu on ARM? This is not needed on x86 because
->>>> irq_remapping and IOMMU are at the same place but my understanding=
- is
->>>> that it is on ARM where
->>>> - there is no connection between the MSI controller - which implem=
-ents
->>>> irq remapping - and the iommu
->>>> - MSI are conveyed on the same address space as standard memory
->>>> transactions.
->>
->> It seems pretty dubious to me to have fixed address, unprotected MSI
->> controllers sitting in the DMA space of a device before IOMMU
->> translation.
-> same for me ;-)
->   Seems like you not only need to mark interrupts as
->> unsafe, but exclude the address space of the MSI controller from the
->> available IOVA space to the user.
-> I currently do not see how to achieve that. The guest can program the
-> assigned device DMA target address with the MSI frame PA. there is no
-> IOMMU to protect. How can we make it if we don't trap on DMA programm=
-ing?
->>
->>>> 6)  can't we live with iommu/MSI controller respective location un=
-certainty?
->>>>
->>>> - in my current series, with the above Xilinx MSI controller, I wo=
-uld
->>>> see there is an arm-smmu requiring mapping behind the PCI host, wo=
-uld
->>>> query the characteristics of the MSI doorbell (not implemented by =
-that
->>>> controller), so no mapping would be done. So it would work I think=
-=2E
->>>> - However in case we have this topology: PCIe host -> MSI controll=
-er
->>>> generally used behind an IOMMU (so registering a doorbell) -> IOMM=
-U,
->>>> this wouldn't work since the doorbell would be mapped.
->>
->> I'm a little confused which direction "behind" is here, but it seems
->> like any time the MSI controller lives in the DMA address space of t=
-he
->> endpoint, both interfering with the available IOVA space to the user
->> and potentially an attack vector for the user, we need to call it ou=
-t
->> as unsafe.  Maybe some of them are for exclusive use of the device a=
-nd
->> the attack vector is relatively contained, but they still affect the
->> IOVA space of the user.  Such a configuration might be safe, but as =
-I
->> said I'm not opposed to being pretty liberal in applying the unsafe
->> requirement if the platform has done something unfriendly.  Thanks,
-> OK that's clear.
->
-> Thank you for your feedbacks
->
-> Best Regards
->
-> Eric
->>
->> Alex
->>
+T24gTW9uLCBKdW4gMjAsIDIwMTYgYXQgOToxMiBQTSwgUHJhbmF2IFNhd2FyZ2Fvbmthcgo8cHJh
+bmF2LnNhd2FyZ2FvbmthckBnbWFpbC5jb20+IHdyb3RlOgo+IEhpIEVyaWMsCj4KPiBUZXN0ZWQg
+dGhpcyBzZXJpZXMgb24gQVBNIFgtR2VuZTIgd2l0aCBFMTAwMCBhbmQgc2F0YSBzaWwgY2FyZC4K
+PiBUZXN0ZWQtQnk6IFByYW5hdmt1bWFyIFNhd2FyZ2FvbmthciA8cHNhd2FyZ2FvbmthckBhcG0u
+Y29tPgo+Cj4gVGhhbmtzLAo+IFByYW5hdgo+Cj4KPiBPbiBUaHUsIEp1biA5LCAyMDE2IGF0IDE6
+MjUgUE0sIEF1Z2VyIEVyaWMgPGVyaWMuYXVnZXJAcmVkaGF0LmNvbT4gd3JvdGU6Cj4+IEFsZXgs
+Cj4+PiBPbiBXZWQsIDggSnVuIDIwMTYgMTA6Mjk6MzUgKzAyMDAKPj4+IEF1Z2VyIEVyaWMgPGVy
+aWMuYXVnZXJAbGluYXJvLm9yZz4gd3JvdGU6Cj4+Pgo+Pj4+IERlYXIgYWxsLAo+Pj4+IExlIDIw
+LzA1LzIwMTYgw6AgMTg6MDEsIEVyaWMgQXVnZXIgYSDDqWNyaXQgOgo+Pj4+PiBBbGV4LCBSb2Jp
+biwKPj4+Pj4KPj4+Pj4gV2hpbGUgbXkgMyBwYXJ0IHNlcmllcyBwcmltYXJpbHkgYWRkcmVzc2Vz
+IHRoZSBwcm9ibGVtYXRpYyBvZiBtYXBwaW5nCj4+Pj4+IE1TSSBkb29yYmVsbHMgaW50byBhcm0t
+c21tdSwgaXQgZmFpbHMgaW4gOgo+Pj4+Pgo+Pj4+PiAxKSBkZXRlcm1pbmluZyB3aGV0aGVyIHRo
+ZSBNU0kgY29udHJvbGxlciBpcyBkb3duc3RyZWFtIG9yIHVwc3RyZWFtIHRvCj4+Pj4+IHRoZSBJ
+T01NVSwKPj4+Pj4gICAgID0+IGluZGljYXRlcyB3aGV0aGVyIHRoZSBNU0kgZG9vcmJlbGwgbXVz
+dCBiZSBtYXBwZWQKPj4+Pj4gICAgID0+IHBhcnRpY2lwYXRlcyBpbiB0aGUgZGVjaXNpb24gYWJv
+dXQgMikKPj4+Pj4KPj4+Pj4gMikgZGV0ZXJtaW5pbmcgd2hldGhlciBpdCBpcyBzYWZlIHRvIGFz
+c2lnbiBhIFBDSWUgZGV2aWNlLgo+Pj4+Pgo+Pj4+PiBJIHRoaW5rIHdlIHNoYXJlIHRoaXMgdW5k
+ZXJzdGFuZGluZyB3aXRoIFJvYmluLiBBbGwgYWJvdmUgb2YgY291cnNlCj4+Pj4+IHN0YW5kcyBm
+b3IgQVJNLgo+Pj4+Pgo+Pj4+PiBJIGdldCBzdHVjayB3aXRoIHRob3NlIDIgaXNzdWVzIGFuZCBJ
+IGhhdmUgZmV3IHF1ZXN0aW9ucyBhYm91dCBpb21tdQo+Pj4+PiBncm91cCBzZXR1cCwgUENJZSwg
+aW9tbXUgZHQvQUNQSSBkZXNjcmlwdGlvbi4gSSB3b3VsZCBiZSBncmF0ZWZ1bCB0byB5b3UKPj4+
+Pj4gaWYgeW91IGNvdWxkIGFuc3dlciBwYXJ0IG9mIHRob3NlIHF1ZXN0aW9ucyBhbmQgYWR2aXNl
+IGFib3V0IHRoZQo+Pj4+PiBzdHJhdGVneSB0byBmaXggdGhvc2UuCj4+Pj4KPj4+PiBnZW50bGUg
+cmVtaW5kZXIgYWJvdXQgdGhlIHF1ZXN0aW9ucyBiZWxvdzsgaG9wZSBJIGRpZCBub3QgbWlzcyBh
+bnkgcmVwbHkuCj4+Pj4gSWYgYW55Ym9keSBoYXMgc29tZSB0aW1lIHRvIHNwZW50IG9uIHRoaXMg
+dG9waWMuLi4KPj4+Pgo+Pj4+Pgo+Pj4+PiBCZXN0IFJlZ2FyZHMKPj4+Pj4KPj4+Pj4gRXJpYwo+
+Pj4+Pgo+Pj4+PiBRVUVTVElPTlM6Cj4+Pj4+Cj4+Pj4+IDEpIFJvYmluLCB5b3UgcG9pbnRlZCBz
+b21lIGhvc3QgY29udHJvbGxlcnMgd2hpY2ggYWxzbyBhcmUgTVNJCj4+Pj4+IGNvbnRyb2xsZXJz
+Cj4+Pj4+IChodHRwOi8vdGhyZWFkLmdtYW5lLm9yZy9nbWFuZS5saW51eC5rZXJuZWwucGNpLzQ3
+MTc0L2ZvY3VzPTQ3MjY4KS4gSW4KPj4+Pj4gdGhhdCBjYXNlIE1TSXMgbmV2ZXIgcmVhY2ggdGhl
+IElPTU1VLiBJIGZhaWxlZCBpbiBmaW5kaW5nIGFueXRoaW5nIGFib3V0Cj4+Pj4+IE1TSXMgaW4g
+UENJZSBBQ1Mgc3BlYy4gV2hhdCBzaG91bGQgYmUgdGhlIGlvbW11IGdyb3VwcyBpbiB0aGF0Cj4+
+Pj4+IHNpdHVhdGlvbi4gSXNuJ3QgdGhlIHVwc3RyZWFtZWQgY29kZSBhYmxlIHRvIHNlZSBzb21l
+IERNQSB0cmFuc2ZlcnMgYXJlCj4+Pj4+IG5vdCBwcm9wZXJseSBpc29sYXRlZCBhbmQgYWxpYXMg
+ZGV2aWNlcyBpbiB0aGUgc2FtZSBncm91cD8gQWNjb3JkaW5nIHRvCj4+Pj4+IHlvdXIgc2VjdXJp
+dHkgd2FybmluZywgQWxleCwgSSB3b3VsZCB0aGluayB0aGUgY29kZSBkb2VzIG5vdCByZWNvZ25p
+emUKPj4+Pj4gaXQsIGNhbiB5b3UgY29uZmlybSBwbGVhc2U/Cj4+Pj4gbXkgY3VycmVudCB1bmRl
+cnN0YW5kaW5nIGlzIGVuZCBwb2ludHMgd291bGQgYmUgaW4gc2VwYXJhdGUgZ3JvdXBzIChhc3N1
+bWluZwo+Pj4+IEFDUyBzdXBwb3J0KSBhbHRob3VnaCBNU0kgY29udHJvbGxlciBmcmFtZSBpcyBu
+b3QgcHJvcGVybHkgcHJvdGVjdGVkLgo+Pj4KPj4+IFdlIGRvbid0IGN1cnJlbnRseSBjb25zaWRl
+ciBNU0kgZGlmZmVyZW50bHkgZnJvbSBvdGhlciBETUEgYW5kIHdlIGRvbid0Cj4+PiBjdXJyZW50
+bHkgaGF2ZSBhbnkgc29ydCBvZiBjb25jZXB0IG9mIGEgZGV2aWNlIHdpdGhpbiB0aGUgaW50ZXJt
+ZWRpYXRlCj4+PiBmYWJyaWMgYXMgYmVpbmcgYSBETUEgdGFyZ2V0LiAgV2UgZXhwZWN0IGZhYnJp
+YyBkZXZpY2VzIHRvIG9ubHkgYmUKPj4+IHRyYW5zYWN0aW9uIHJvdXRlcnMuICBXZSB1c2UgQUNT
+IHRvIGRldGVybWluZSB3aGV0aGVyIHRoZXJlJ3MgYW55Cj4+PiBwb3NzaWJpbGl0eSBvZiBETUEg
+YmVpbmcgcmVkaXJlY3RlZCBiZWZvcmUgaXQgcmVhY2hlcyB0aGUgSU9NTVUsIGJ1dCBpdAo+Pj4g
+c2VlbXMgdGhhdCBhIERNQSBiZWluZyBjb25zdW1lZCBieSBhbiBpbnRlcnJ1cHQgY29udHJvbGxl
+ciBiZWZvcmUgaXQKPj4+IHJlYWNoZXMgdGhlIElPTU1VIHdvdWxkIGJlIGFub3RoZXIgY2F1c2Ug
+Zm9yIGFuIGlzb2xhdGlvbiBicmVhY2guCj4+Pgo+PiBPSyB0aGFuayB5b3UgZm9yIHRoZSBjb25m
+aXJtYXRpb24KPj4+Pj4gMikgY2FuIG90aGVyIFBDSWUgY29tcG9uZW50cyBiZSBNU0kgY29udHJv
+bGxlcnM/Cj4+Pgo+Pj4gSSdtIG5vdCBldmVuIGVudGlyZWx5IHN1cmUgd2hhdCB0aGlzIG1lYW5z
+LiAgV291bGQgYSBETUEgd3JpdGUgZnJvbSBhbgo+Pj4gZW5kcG9pbnQgdGFyZ2V0IHRoZSBNTUlP
+IHNwYWNlIG9mIGFuIGludGVybWVkaWF0ZSwgZmFicmljIGRldmljZT8KPj4gV2l0aCB0aGUgZXhh
+bXBsZSBwcm92aWRlZCBieSBSb2JpbiB3ZSBoYXZlIGEgaG9zdCBjb250cm9sbGVyIGFjdGluZyBh
+cwo+PiBhbiBNU0kgY29udHJvbGxlci4gSSB3b25kZXJlZCB3aGV0aGVyIHdlIGNvdWxkIGhhdmUg
+c29tZSBvdGhlciBmYWJyaWMKPj4gZGV2aWNlcyAoZG93bnN0cmVhbSB0byB0aGUgaG9zdCBjb250
+cm9sbGVyIGluIFBDSWUgdGVybWlub2xvZ3kpIGFsc28KPj4gbGlrZWx5IHRvIGFjdCBhcyBNU0kg
+Y29udHJvbGxlcnMuCj4+Pgo+Pj4+PiAzKSBBbSBJIG9ibGlnZWQgdG8gY29uc2lkZXIgYXJiaXRy
+YXJ5IHRvcG9sb2dpZXMgd2hlcmUgYW4gTVNJIGNvbnRyb2xsZXIKPj4+Pj4gc3RhbmRzIGJldHdl
+ZW4gdGhlIFBDSWUgaG9zdCBhbmQgdGhlIGlvbW11PyBpbiB0aGUgUENJZSBzcGFjZSBvcgo+Pj4+
+PiBwbGF0Zm9ybSBzcGFjZT8gSWYgdGhpcyBvbmx5IHJlbGF0ZXMgdG8gUENJZSBjb3VsZG4nIEkg
+Y2hlY2sgaWYgYW4gTVNJCj4+Pj4+IGNvbnRyb2xsZXIgZXhpc3RzIGluIHRoZSBQQ0llIHRyZWU/
+Cj4+Pj4gSW4gbXkgbGFzdCBzZXJpZXMsIEkgY29uc2lkZXIgdGhlIGFzc2lnbm1lbnQgb2YgcGxh
+dGZvcm0gZGV2aWNlIHVuc2FmZSBhcwo+Pj4+IHNvb24gYXMgdGhlcmUgaXMgYSBHSUN2Mm0uIFRo
+aXMgaXMgYSBjaGFuZ2UgaW4gdGhlIHVzZXIgZXhwZXJpZW5jZSBjb21wYXJlZCB0bwo+Pj4+IHdo
+YXQgd2UgaGF2ZSBiZWZvcmUuCj4+Pgo+Pj4gSWYgdGhlIE1TSSBjb250cm9sbGVyIGlzIGRvd25z
+dHJlYW0gb2Ygb3VyIERNQSB0cmFuc2xhdGlvbiwgaXQgZG9lc24ndAo+Pj4gc2VlbSBsaWtlIHdl
+IGhhdmUgbXVjaCBjaG9pY2UgYnV0IHRvIG1hcmsgaXQgdW5zYWZlLiAgVGhlIGVuZHBvaW50IGlz
+Cj4+PiBmdWxseSBhYmxlIHRvIGF0dGVtcHQgdG8gZXhwbG9pdCBpdC4KPj4gT0sgdGhlIG9yZ2lu
+YWwgcXVlc3Rpb24gd2FzIHJlbGF0ZWQgdG8gbm9uIFBDSWUgdG9wb2xvZ2llczoKPj4KPj4gLSB3
+ZSBrbm93IHNvbWUgUENJZSBmYWJyaWMgdG9wb2xvZ2llcyB3aGVyZSB0aGUgUENJZSBob3N0IGNv
+bnRyb2xsZXIKPj4gaW1wbGVtZW50cyBNU0kgY29udHJvbGxlci4KPj4gLSBTaGFsbCB3ZSBiZSBw
+cmVwYXJlZCB0byBhZGRyZXNzIHRoZSBzYW1lIGtpbmQgb2YgaXNzdWVzIHdpdGggcGxhdGZvcm0K
+Pj4gTVNJIGNvbnRyb2xsZXJzLiBBcmUgdGhlcmUgc29tZSBTT0NzIHdoZXJlIHdlIHdvdWxkIHB1
+dCBhbiB1bnNhZmUgTVNJCj4+IHBsYXRmb3JtIGNvbnRyb2xsZXIgYmVmb3JlIElPTU1VIHRyYW5z
+bGF0aW9uLiBPciBkbyB3ZSBjb25zaWRlciBpdCBpcyBhCj4+IHBsYXRmb3JtIHRvcG9sb2d5IHdl
+IGRvbid0IHN1cHBvcnQgZm9yIGFzc2lnbm1lbnQ/Cj4+Cj4+Pgo+Pj4+PiA0KSBSb2JpbiBzdWdn
+ZXN0ZWQgaW4gYSBwcml2YXRlIHRocmVhZCB0byBlbnVtZXJhdGUgdGhyb3VnaCBhIGxpc3Qgb2YK
+Pj4+Pj4gInJlZ2lzdGVyZWQiIGRvb3JiZWxscyBhbmQgaWYgYW55IGJlbG9uZ3MgdG8gYW4gdW5z
+YWZlIE1TSSBjb250cm9sbGVyLAo+Pj4+PiBjb25zaWRlciB0aGUgYXNzaWdubWVudCBpcyB1bnNh
+ZmUuIFRoaXMgd291bGQgYmUgYSBmaXJzdCBzdGVwIGJlZm9yZQo+Pj4+PiBkb2luZyBzb21ldGhp
+bmcgbW9yZSBjb21wbGV4LiBBbGV4LCB3b3VsZCB0aGF0IGJlIGFjY2VwdGFibGUgdG8geW91IGZv
+cgo+Pj4+PiBpc3N1ZSAjMj8KPj4+PiBJIGltcGxlbWVudGVkIHRoaXMgdGVjaG5pcXVlIGluIG15
+IGxhc3Qgc2VyaWVzIHdhaXRpbmcgZm9yIG1vcmUgZGlzY3Vzc2lvbgo+Pj4+IG9uIDQsIDUuCj4+
+Pgo+Pj4gU2VlbXMgc3VmZmljaWVudC4gIEkgZG9uJ3QgbWluZCB0YWtpbmcgYSBicm9hZCBzd2lu
+ZyB2ZXJzdXMgYWxsIHRoZQo+Pj4gZXh0cmEgY29tcGxleGl0eSBvZiBkZWZpbmluZyB3aGljaCBk
+ZXZpY2VzIGFyZSBzYWZlIHZzIHVuc2FmZS4KPj4gT0sKPj4+Cj4+Pj4+IDUpIEFib3V0IGlzc3Vl
+ICMxOiBkb24ndCB3ZSBtaXNzIHRvb2xzIGluIGR0L0FDUEkgdG8gZGVzY3JpYmUgdGhlCj4+Pj4+
+IGxvY2F0aW9uIG9mIHRoZSBpb21tdSBvbiBBUk0/IFRoaXMgaXMgbm90IG5lZWRlZCBvbiB4ODYg
+YmVjYXVzZQo+Pj4+PiBpcnFfcmVtYXBwaW5nIGFuZCBJT01NVSBhcmUgYXQgdGhlIHNhbWUgcGxh
+Y2UgYnV0IG15IHVuZGVyc3RhbmRpbmcgaXMKPj4+Pj4gdGhhdCBpdCBpcyBvbiBBUk0gd2hlcmUK
+Pj4+Pj4gLSB0aGVyZSBpcyBubyBjb25uZWN0aW9uIGJldHdlZW4gdGhlIE1TSSBjb250cm9sbGVy
+IC0gd2hpY2ggaW1wbGVtZW50cwo+Pj4+PiBpcnEgcmVtYXBwaW5nIC0gYW5kIHRoZSBpb21tdQo+
+Pj4+PiAtIE1TSSBhcmUgY29udmV5ZWQgb24gdGhlIHNhbWUgYWRkcmVzcyBzcGFjZSBhcyBzdGFu
+ZGFyZCBtZW1vcnkKPj4+Pj4gdHJhbnNhY3Rpb25zLgo+Pj4KPj4+IEl0IHNlZW1zIHByZXR0eSBk
+dWJpb3VzIHRvIG1lIHRvIGhhdmUgZml4ZWQgYWRkcmVzcywgdW5wcm90ZWN0ZWQgTVNJCj4+PiBj
+b250cm9sbGVycyBzaXR0aW5nIGluIHRoZSBETUEgc3BhY2Ugb2YgYSBkZXZpY2UgYmVmb3JlIElP
+TU1VCj4+PiB0cmFuc2xhdGlvbi4KPj4gc2FtZSBmb3IgbWUgOy0pCj4+ICAgU2VlbXMgbGlrZSB5
+b3Ugbm90IG9ubHkgbmVlZCB0byBtYXJrIGludGVycnVwdHMgYXMKPj4+IHVuc2FmZSwgYnV0IGV4
+Y2x1ZGUgdGhlIGFkZHJlc3Mgc3BhY2Ugb2YgdGhlIE1TSSBjb250cm9sbGVyIGZyb20gdGhlCj4+
+PiBhdmFpbGFibGUgSU9WQSBzcGFjZSB0byB0aGUgdXNlci4KPj4gSSBjdXJyZW50bHkgZG8gbm90
+IHNlZSBob3cgdG8gYWNoaWV2ZSB0aGF0LiBUaGUgZ3Vlc3QgY2FuIHByb2dyYW0gdGhlCj4+IGFz
+c2lnbmVkIGRldmljZSBETUEgdGFyZ2V0IGFkZHJlc3Mgd2l0aCB0aGUgTVNJIGZyYW1lIFBBLiB0
+aGVyZSBpcyBubwo+PiBJT01NVSB0byBwcm90ZWN0LiBIb3cgY2FuIHdlIG1ha2UgaXQgaWYgd2Ug
+ZG9uJ3QgdHJhcCBvbiBETUEgcHJvZ3JhbW1pbmc/Cj4+Pgo+Pj4+PiA2KSAgY2FuJ3Qgd2UgbGl2
+ZSB3aXRoIGlvbW11L01TSSBjb250cm9sbGVyIHJlc3BlY3RpdmUgbG9jYXRpb24gdW5jZXJ0YWlu
+dHk/Cj4+Pj4+Cj4+Pj4+IC0gaW4gbXkgY3VycmVudCBzZXJpZXMsIHdpdGggdGhlIGFib3ZlIFhp
+bGlueCBNU0kgY29udHJvbGxlciwgSSB3b3VsZAo+Pj4+PiBzZWUgdGhlcmUgaXMgYW4gYXJtLXNt
+bXUgcmVxdWlyaW5nIG1hcHBpbmcgYmVoaW5kIHRoZSBQQ0kgaG9zdCwgd291bGQKPj4+Pj4gcXVl
+cnkgdGhlIGNoYXJhY3RlcmlzdGljcyBvZiB0aGUgTVNJIGRvb3JiZWxsIChub3QgaW1wbGVtZW50
+ZWQgYnkgdGhhdAo+Pj4+PiBjb250cm9sbGVyKSwgc28gbm8gbWFwcGluZyB3b3VsZCBiZSBkb25l
+LiBTbyBpdCB3b3VsZCB3b3JrIEkgdGhpbmsuCj4+Pj4+IC0gSG93ZXZlciBpbiBjYXNlIHdlIGhh
+dmUgdGhpcyB0b3BvbG9neTogUENJZSBob3N0IC0+IE1TSSBjb250cm9sbGVyCj4+Pj4+IGdlbmVy
+YWxseSB1c2VkIGJlaGluZCBhbiBJT01NVSAoc28gcmVnaXN0ZXJpbmcgYSBkb29yYmVsbCkgLT4g
+SU9NTVUsCj4+Pj4+IHRoaXMgd291bGRuJ3Qgd29yayBzaW5jZSB0aGUgZG9vcmJlbGwgd291bGQg
+YmUgbWFwcGVkLgo+Pj4KPj4+IEknbSBhIGxpdHRsZSBjb25mdXNlZCB3aGljaCBkaXJlY3Rpb24g
+ImJlaGluZCIgaXMgaGVyZSwgYnV0IGl0IHNlZW1zCj4+PiBsaWtlIGFueSB0aW1lIHRoZSBNU0kg
+Y29udHJvbGxlciBsaXZlcyBpbiB0aGUgRE1BIGFkZHJlc3Mgc3BhY2Ugb2YgdGhlCj4+PiBlbmRw
+b2ludCwgYm90aCBpbnRlcmZlcmluZyB3aXRoIHRoZSBhdmFpbGFibGUgSU9WQSBzcGFjZSB0byB0
+aGUgdXNlcgo+Pj4gYW5kIHBvdGVudGlhbGx5IGFuIGF0dGFjayB2ZWN0b3IgZm9yIHRoZSB1c2Vy
+LCB3ZSBuZWVkIHRvIGNhbGwgaXQgb3V0Cj4+PiBhcyB1bnNhZmUuICBNYXliZSBzb21lIG9mIHRo
+ZW0gYXJlIGZvciBleGNsdXNpdmUgdXNlIG9mIHRoZSBkZXZpY2UgYW5kCj4+PiB0aGUgYXR0YWNr
+IHZlY3RvciBpcyByZWxhdGl2ZWx5IGNvbnRhaW5lZCwgYnV0IHRoZXkgc3RpbGwgYWZmZWN0IHRo
+ZQo+Pj4gSU9WQSBzcGFjZSBvZiB0aGUgdXNlci4gIFN1Y2ggYSBjb25maWd1cmF0aW9uIG1pZ2h0
+IGJlIHNhZmUsIGJ1dCBhcyBJCj4+PiBzYWlkIEknbSBub3Qgb3Bwb3NlZCB0byBiZWluZyBwcmV0
+dHkgbGliZXJhbCBpbiBhcHBseWluZyB0aGUgdW5zYWZlCj4+PiByZXF1aXJlbWVudCBpZiB0aGUg
+cGxhdGZvcm0gaGFzIGRvbmUgc29tZXRoaW5nIHVuZnJpZW5kbHkuICBUaGFua3MsCj4+IE9LIHRo
+YXQncyBjbGVhci4KPj4KPj4gVGhhbmsgeW91IGZvciB5b3VyIGZlZWRiYWNrcwo+Pgo+PiBCZXN0
+IFJlZ2FyZHMKPj4KPj4gRXJpYwo+Pj4KPj4+IEFsZXgKPj4+CgpPb3BzIHNvcnJ5IHRvcCBwb3N0
+aW5nIGluIGVhcmxpZXIgcmVwbHksCgpUZXN0ZWQgdGhpcyBzZXJpZXMgb24gQVBNIFgtR2VuZTIg
+d2l0aCBFMTAwMCBhbmQgc2F0YSBzaWwgY2FyZC4KVGVzdGVkLUJ5OiBQcmFuYXZrdW1hciBTYXdh
+cmdhb25rYXIgPHBzYXdhcmdhb25rYXJAYXBtLmNvbT4KClRoYW5rcywKUHJhbmF2CgpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVs
+IG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDov
+L2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
