@@ -1,164 +1,66 @@
-From: Pranav Sawargaonkar <pranav.sawargaonkar@gmail.com>
-Subject: Re: [PATCH v9 0/7] KVM PCIe/MSI passthrough on ARM/ARM64: kernel part
- 3/3: vfio changes
-Date: Mon, 20 Jun 2016 21:16:05 +0530
-Message-ID: <CAP_HG2ueSZ9XgyJLv1wGKzs0ObjEL5Vy8708+ZaZZJ4B9wmVmQ@mail.gmail.com>
-References: <1462362858-2925-1-git-send-email-eric.auger@linaro.org>
- <573F34CA.5080308@linaro.org>
- <875b5791-f7c9-97ca-46de-4b1474fe65e0@linaro.org>
- <20160608150609.7e28d63d@ul30vt.home>
- <e379ffed-6a73-d18a-1af9-a49b096d3f60@redhat.com>
- <CAP_HG2umBnV_88WGW20_oQ2X9zMxZKQJ952tQY_0=023R2AKjg@mail.gmail.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: SMMU driver and stall vs terminate mode
+Date: Mon, 20 Jun 2016 17:08:45 +0100
+Message-ID: <5768150D.2070705@arm.com>
+References: <HE1PR04MB1641B0F8442061E3437037628D2A0@HE1PR04MB1641.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <CAP_HG2umBnV_88WGW20_oQ2X9zMxZKQJ952tQY_0=023R2AKjg@mail.gmail.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Auger Eric <eric.auger@redhat.com>
-Cc: yehuday@marvell.com, julien.grall@arm.com, jason@lakedaemon.net, patches@linaro.org, marc.zyngier@arm.com, Pavel Fedin <p.fedin@samsung.com>, joro@8bytes.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Bharat Bhushan <Bharat.Bhushan@freescale.com>, Jean-Philippe.Brucker@arm.com, Alex Williamson <alex.williamson@redhat.com>, linux-arm-kernel@lists.infradead.org, tglx@linutronix.de, robin.murphy@arm.com, Pranavkumar Sawargaonkar <psawargaonkar@apm.com>, christoffer.dall@linaro.org, eric.auger.pro@gmail.com
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <HE1PR04MB1641B0F8442061E3437037628D2A0-6LN7OEpIatU5tNmRkpaxD89NdZoXdze2vxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>, Brian Starkey <brian.starkey-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gTW9uLCBKdW4gMjAsIDIwMTYgYXQgOToxMiBQTSwgUHJhbmF2IFNhd2FyZ2Fvbmthcgo8cHJh
-bmF2LnNhd2FyZ2FvbmthckBnbWFpbC5jb20+IHdyb3RlOgo+IEhpIEVyaWMsCj4KPiBUZXN0ZWQg
-dGhpcyBzZXJpZXMgb24gQVBNIFgtR2VuZTIgd2l0aCBFMTAwMCBhbmQgc2F0YSBzaWwgY2FyZC4K
-PiBUZXN0ZWQtQnk6IFByYW5hdmt1bWFyIFNhd2FyZ2FvbmthciA8cHNhd2FyZ2FvbmthckBhcG0u
-Y29tPgo+Cj4gVGhhbmtzLAo+IFByYW5hdgo+Cj4KPiBPbiBUaHUsIEp1biA5LCAyMDE2IGF0IDE6
-MjUgUE0sIEF1Z2VyIEVyaWMgPGVyaWMuYXVnZXJAcmVkaGF0LmNvbT4gd3JvdGU6Cj4+IEFsZXgs
-Cj4+PiBPbiBXZWQsIDggSnVuIDIwMTYgMTA6Mjk6MzUgKzAyMDAKPj4+IEF1Z2VyIEVyaWMgPGVy
-aWMuYXVnZXJAbGluYXJvLm9yZz4gd3JvdGU6Cj4+Pgo+Pj4+IERlYXIgYWxsLAo+Pj4+IExlIDIw
-LzA1LzIwMTYgw6AgMTg6MDEsIEVyaWMgQXVnZXIgYSDDqWNyaXQgOgo+Pj4+PiBBbGV4LCBSb2Jp
-biwKPj4+Pj4KPj4+Pj4gV2hpbGUgbXkgMyBwYXJ0IHNlcmllcyBwcmltYXJpbHkgYWRkcmVzc2Vz
-IHRoZSBwcm9ibGVtYXRpYyBvZiBtYXBwaW5nCj4+Pj4+IE1TSSBkb29yYmVsbHMgaW50byBhcm0t
-c21tdSwgaXQgZmFpbHMgaW4gOgo+Pj4+Pgo+Pj4+PiAxKSBkZXRlcm1pbmluZyB3aGV0aGVyIHRo
-ZSBNU0kgY29udHJvbGxlciBpcyBkb3duc3RyZWFtIG9yIHVwc3RyZWFtIHRvCj4+Pj4+IHRoZSBJ
-T01NVSwKPj4+Pj4gICAgID0+IGluZGljYXRlcyB3aGV0aGVyIHRoZSBNU0kgZG9vcmJlbGwgbXVz
-dCBiZSBtYXBwZWQKPj4+Pj4gICAgID0+IHBhcnRpY2lwYXRlcyBpbiB0aGUgZGVjaXNpb24gYWJv
-dXQgMikKPj4+Pj4KPj4+Pj4gMikgZGV0ZXJtaW5pbmcgd2hldGhlciBpdCBpcyBzYWZlIHRvIGFz
-c2lnbiBhIFBDSWUgZGV2aWNlLgo+Pj4+Pgo+Pj4+PiBJIHRoaW5rIHdlIHNoYXJlIHRoaXMgdW5k
-ZXJzdGFuZGluZyB3aXRoIFJvYmluLiBBbGwgYWJvdmUgb2YgY291cnNlCj4+Pj4+IHN0YW5kcyBm
-b3IgQVJNLgo+Pj4+Pgo+Pj4+PiBJIGdldCBzdHVjayB3aXRoIHRob3NlIDIgaXNzdWVzIGFuZCBJ
-IGhhdmUgZmV3IHF1ZXN0aW9ucyBhYm91dCBpb21tdQo+Pj4+PiBncm91cCBzZXR1cCwgUENJZSwg
-aW9tbXUgZHQvQUNQSSBkZXNjcmlwdGlvbi4gSSB3b3VsZCBiZSBncmF0ZWZ1bCB0byB5b3UKPj4+
-Pj4gaWYgeW91IGNvdWxkIGFuc3dlciBwYXJ0IG9mIHRob3NlIHF1ZXN0aW9ucyBhbmQgYWR2aXNl
-IGFib3V0IHRoZQo+Pj4+PiBzdHJhdGVneSB0byBmaXggdGhvc2UuCj4+Pj4KPj4+PiBnZW50bGUg
-cmVtaW5kZXIgYWJvdXQgdGhlIHF1ZXN0aW9ucyBiZWxvdzsgaG9wZSBJIGRpZCBub3QgbWlzcyBh
-bnkgcmVwbHkuCj4+Pj4gSWYgYW55Ym9keSBoYXMgc29tZSB0aW1lIHRvIHNwZW50IG9uIHRoaXMg
-dG9waWMuLi4KPj4+Pgo+Pj4+Pgo+Pj4+PiBCZXN0IFJlZ2FyZHMKPj4+Pj4KPj4+Pj4gRXJpYwo+
-Pj4+Pgo+Pj4+PiBRVUVTVElPTlM6Cj4+Pj4+Cj4+Pj4+IDEpIFJvYmluLCB5b3UgcG9pbnRlZCBz
-b21lIGhvc3QgY29udHJvbGxlcnMgd2hpY2ggYWxzbyBhcmUgTVNJCj4+Pj4+IGNvbnRyb2xsZXJz
-Cj4+Pj4+IChodHRwOi8vdGhyZWFkLmdtYW5lLm9yZy9nbWFuZS5saW51eC5rZXJuZWwucGNpLzQ3
-MTc0L2ZvY3VzPTQ3MjY4KS4gSW4KPj4+Pj4gdGhhdCBjYXNlIE1TSXMgbmV2ZXIgcmVhY2ggdGhl
-IElPTU1VLiBJIGZhaWxlZCBpbiBmaW5kaW5nIGFueXRoaW5nIGFib3V0Cj4+Pj4+IE1TSXMgaW4g
-UENJZSBBQ1Mgc3BlYy4gV2hhdCBzaG91bGQgYmUgdGhlIGlvbW11IGdyb3VwcyBpbiB0aGF0Cj4+
-Pj4+IHNpdHVhdGlvbi4gSXNuJ3QgdGhlIHVwc3RyZWFtZWQgY29kZSBhYmxlIHRvIHNlZSBzb21l
-IERNQSB0cmFuc2ZlcnMgYXJlCj4+Pj4+IG5vdCBwcm9wZXJseSBpc29sYXRlZCBhbmQgYWxpYXMg
-ZGV2aWNlcyBpbiB0aGUgc2FtZSBncm91cD8gQWNjb3JkaW5nIHRvCj4+Pj4+IHlvdXIgc2VjdXJp
-dHkgd2FybmluZywgQWxleCwgSSB3b3VsZCB0aGluayB0aGUgY29kZSBkb2VzIG5vdCByZWNvZ25p
-emUKPj4+Pj4gaXQsIGNhbiB5b3UgY29uZmlybSBwbGVhc2U/Cj4+Pj4gbXkgY3VycmVudCB1bmRl
-cnN0YW5kaW5nIGlzIGVuZCBwb2ludHMgd291bGQgYmUgaW4gc2VwYXJhdGUgZ3JvdXBzIChhc3N1
-bWluZwo+Pj4+IEFDUyBzdXBwb3J0KSBhbHRob3VnaCBNU0kgY29udHJvbGxlciBmcmFtZSBpcyBu
-b3QgcHJvcGVybHkgcHJvdGVjdGVkLgo+Pj4KPj4+IFdlIGRvbid0IGN1cnJlbnRseSBjb25zaWRl
-ciBNU0kgZGlmZmVyZW50bHkgZnJvbSBvdGhlciBETUEgYW5kIHdlIGRvbid0Cj4+PiBjdXJyZW50
-bHkgaGF2ZSBhbnkgc29ydCBvZiBjb25jZXB0IG9mIGEgZGV2aWNlIHdpdGhpbiB0aGUgaW50ZXJt
-ZWRpYXRlCj4+PiBmYWJyaWMgYXMgYmVpbmcgYSBETUEgdGFyZ2V0LiAgV2UgZXhwZWN0IGZhYnJp
-YyBkZXZpY2VzIHRvIG9ubHkgYmUKPj4+IHRyYW5zYWN0aW9uIHJvdXRlcnMuICBXZSB1c2UgQUNT
-IHRvIGRldGVybWluZSB3aGV0aGVyIHRoZXJlJ3MgYW55Cj4+PiBwb3NzaWJpbGl0eSBvZiBETUEg
-YmVpbmcgcmVkaXJlY3RlZCBiZWZvcmUgaXQgcmVhY2hlcyB0aGUgSU9NTVUsIGJ1dCBpdAo+Pj4g
-c2VlbXMgdGhhdCBhIERNQSBiZWluZyBjb25zdW1lZCBieSBhbiBpbnRlcnJ1cHQgY29udHJvbGxl
-ciBiZWZvcmUgaXQKPj4+IHJlYWNoZXMgdGhlIElPTU1VIHdvdWxkIGJlIGFub3RoZXIgY2F1c2Ug
-Zm9yIGFuIGlzb2xhdGlvbiBicmVhY2guCj4+Pgo+PiBPSyB0aGFuayB5b3UgZm9yIHRoZSBjb25m
-aXJtYXRpb24KPj4+Pj4gMikgY2FuIG90aGVyIFBDSWUgY29tcG9uZW50cyBiZSBNU0kgY29udHJv
-bGxlcnM/Cj4+Pgo+Pj4gSSdtIG5vdCBldmVuIGVudGlyZWx5IHN1cmUgd2hhdCB0aGlzIG1lYW5z
-LiAgV291bGQgYSBETUEgd3JpdGUgZnJvbSBhbgo+Pj4gZW5kcG9pbnQgdGFyZ2V0IHRoZSBNTUlP
-IHNwYWNlIG9mIGFuIGludGVybWVkaWF0ZSwgZmFicmljIGRldmljZT8KPj4gV2l0aCB0aGUgZXhh
-bXBsZSBwcm92aWRlZCBieSBSb2JpbiB3ZSBoYXZlIGEgaG9zdCBjb250cm9sbGVyIGFjdGluZyBh
-cwo+PiBhbiBNU0kgY29udHJvbGxlci4gSSB3b25kZXJlZCB3aGV0aGVyIHdlIGNvdWxkIGhhdmUg
-c29tZSBvdGhlciBmYWJyaWMKPj4gZGV2aWNlcyAoZG93bnN0cmVhbSB0byB0aGUgaG9zdCBjb250
-cm9sbGVyIGluIFBDSWUgdGVybWlub2xvZ3kpIGFsc28KPj4gbGlrZWx5IHRvIGFjdCBhcyBNU0kg
-Y29udHJvbGxlcnMuCj4+Pgo+Pj4+PiAzKSBBbSBJIG9ibGlnZWQgdG8gY29uc2lkZXIgYXJiaXRy
-YXJ5IHRvcG9sb2dpZXMgd2hlcmUgYW4gTVNJIGNvbnRyb2xsZXIKPj4+Pj4gc3RhbmRzIGJldHdl
-ZW4gdGhlIFBDSWUgaG9zdCBhbmQgdGhlIGlvbW11PyBpbiB0aGUgUENJZSBzcGFjZSBvcgo+Pj4+
-PiBwbGF0Zm9ybSBzcGFjZT8gSWYgdGhpcyBvbmx5IHJlbGF0ZXMgdG8gUENJZSBjb3VsZG4nIEkg
-Y2hlY2sgaWYgYW4gTVNJCj4+Pj4+IGNvbnRyb2xsZXIgZXhpc3RzIGluIHRoZSBQQ0llIHRyZWU/
-Cj4+Pj4gSW4gbXkgbGFzdCBzZXJpZXMsIEkgY29uc2lkZXIgdGhlIGFzc2lnbm1lbnQgb2YgcGxh
-dGZvcm0gZGV2aWNlIHVuc2FmZSBhcwo+Pj4+IHNvb24gYXMgdGhlcmUgaXMgYSBHSUN2Mm0uIFRo
-aXMgaXMgYSBjaGFuZ2UgaW4gdGhlIHVzZXIgZXhwZXJpZW5jZSBjb21wYXJlZCB0bwo+Pj4+IHdo
-YXQgd2UgaGF2ZSBiZWZvcmUuCj4+Pgo+Pj4gSWYgdGhlIE1TSSBjb250cm9sbGVyIGlzIGRvd25z
-dHJlYW0gb2Ygb3VyIERNQSB0cmFuc2xhdGlvbiwgaXQgZG9lc24ndAo+Pj4gc2VlbSBsaWtlIHdl
-IGhhdmUgbXVjaCBjaG9pY2UgYnV0IHRvIG1hcmsgaXQgdW5zYWZlLiAgVGhlIGVuZHBvaW50IGlz
-Cj4+PiBmdWxseSBhYmxlIHRvIGF0dGVtcHQgdG8gZXhwbG9pdCBpdC4KPj4gT0sgdGhlIG9yZ2lu
-YWwgcXVlc3Rpb24gd2FzIHJlbGF0ZWQgdG8gbm9uIFBDSWUgdG9wb2xvZ2llczoKPj4KPj4gLSB3
-ZSBrbm93IHNvbWUgUENJZSBmYWJyaWMgdG9wb2xvZ2llcyB3aGVyZSB0aGUgUENJZSBob3N0IGNv
-bnRyb2xsZXIKPj4gaW1wbGVtZW50cyBNU0kgY29udHJvbGxlci4KPj4gLSBTaGFsbCB3ZSBiZSBw
-cmVwYXJlZCB0byBhZGRyZXNzIHRoZSBzYW1lIGtpbmQgb2YgaXNzdWVzIHdpdGggcGxhdGZvcm0K
-Pj4gTVNJIGNvbnRyb2xsZXJzLiBBcmUgdGhlcmUgc29tZSBTT0NzIHdoZXJlIHdlIHdvdWxkIHB1
-dCBhbiB1bnNhZmUgTVNJCj4+IHBsYXRmb3JtIGNvbnRyb2xsZXIgYmVmb3JlIElPTU1VIHRyYW5z
-bGF0aW9uLiBPciBkbyB3ZSBjb25zaWRlciBpdCBpcyBhCj4+IHBsYXRmb3JtIHRvcG9sb2d5IHdl
-IGRvbid0IHN1cHBvcnQgZm9yIGFzc2lnbm1lbnQ/Cj4+Cj4+Pgo+Pj4+PiA0KSBSb2JpbiBzdWdn
-ZXN0ZWQgaW4gYSBwcml2YXRlIHRocmVhZCB0byBlbnVtZXJhdGUgdGhyb3VnaCBhIGxpc3Qgb2YK
-Pj4+Pj4gInJlZ2lzdGVyZWQiIGRvb3JiZWxscyBhbmQgaWYgYW55IGJlbG9uZ3MgdG8gYW4gdW5z
-YWZlIE1TSSBjb250cm9sbGVyLAo+Pj4+PiBjb25zaWRlciB0aGUgYXNzaWdubWVudCBpcyB1bnNh
-ZmUuIFRoaXMgd291bGQgYmUgYSBmaXJzdCBzdGVwIGJlZm9yZQo+Pj4+PiBkb2luZyBzb21ldGhp
-bmcgbW9yZSBjb21wbGV4LiBBbGV4LCB3b3VsZCB0aGF0IGJlIGFjY2VwdGFibGUgdG8geW91IGZv
-cgo+Pj4+PiBpc3N1ZSAjMj8KPj4+PiBJIGltcGxlbWVudGVkIHRoaXMgdGVjaG5pcXVlIGluIG15
-IGxhc3Qgc2VyaWVzIHdhaXRpbmcgZm9yIG1vcmUgZGlzY3Vzc2lvbgo+Pj4+IG9uIDQsIDUuCj4+
-Pgo+Pj4gU2VlbXMgc3VmZmljaWVudC4gIEkgZG9uJ3QgbWluZCB0YWtpbmcgYSBicm9hZCBzd2lu
-ZyB2ZXJzdXMgYWxsIHRoZQo+Pj4gZXh0cmEgY29tcGxleGl0eSBvZiBkZWZpbmluZyB3aGljaCBk
-ZXZpY2VzIGFyZSBzYWZlIHZzIHVuc2FmZS4KPj4gT0sKPj4+Cj4+Pj4+IDUpIEFib3V0IGlzc3Vl
-ICMxOiBkb24ndCB3ZSBtaXNzIHRvb2xzIGluIGR0L0FDUEkgdG8gZGVzY3JpYmUgdGhlCj4+Pj4+
-IGxvY2F0aW9uIG9mIHRoZSBpb21tdSBvbiBBUk0/IFRoaXMgaXMgbm90IG5lZWRlZCBvbiB4ODYg
-YmVjYXVzZQo+Pj4+PiBpcnFfcmVtYXBwaW5nIGFuZCBJT01NVSBhcmUgYXQgdGhlIHNhbWUgcGxh
-Y2UgYnV0IG15IHVuZGVyc3RhbmRpbmcgaXMKPj4+Pj4gdGhhdCBpdCBpcyBvbiBBUk0gd2hlcmUK
-Pj4+Pj4gLSB0aGVyZSBpcyBubyBjb25uZWN0aW9uIGJldHdlZW4gdGhlIE1TSSBjb250cm9sbGVy
-IC0gd2hpY2ggaW1wbGVtZW50cwo+Pj4+PiBpcnEgcmVtYXBwaW5nIC0gYW5kIHRoZSBpb21tdQo+
-Pj4+PiAtIE1TSSBhcmUgY29udmV5ZWQgb24gdGhlIHNhbWUgYWRkcmVzcyBzcGFjZSBhcyBzdGFu
-ZGFyZCBtZW1vcnkKPj4+Pj4gdHJhbnNhY3Rpb25zLgo+Pj4KPj4+IEl0IHNlZW1zIHByZXR0eSBk
-dWJpb3VzIHRvIG1lIHRvIGhhdmUgZml4ZWQgYWRkcmVzcywgdW5wcm90ZWN0ZWQgTVNJCj4+PiBj
-b250cm9sbGVycyBzaXR0aW5nIGluIHRoZSBETUEgc3BhY2Ugb2YgYSBkZXZpY2UgYmVmb3JlIElP
-TU1VCj4+PiB0cmFuc2xhdGlvbi4KPj4gc2FtZSBmb3IgbWUgOy0pCj4+ICAgU2VlbXMgbGlrZSB5
-b3Ugbm90IG9ubHkgbmVlZCB0byBtYXJrIGludGVycnVwdHMgYXMKPj4+IHVuc2FmZSwgYnV0IGV4
-Y2x1ZGUgdGhlIGFkZHJlc3Mgc3BhY2Ugb2YgdGhlIE1TSSBjb250cm9sbGVyIGZyb20gdGhlCj4+
-PiBhdmFpbGFibGUgSU9WQSBzcGFjZSB0byB0aGUgdXNlci4KPj4gSSBjdXJyZW50bHkgZG8gbm90
-IHNlZSBob3cgdG8gYWNoaWV2ZSB0aGF0LiBUaGUgZ3Vlc3QgY2FuIHByb2dyYW0gdGhlCj4+IGFz
-c2lnbmVkIGRldmljZSBETUEgdGFyZ2V0IGFkZHJlc3Mgd2l0aCB0aGUgTVNJIGZyYW1lIFBBLiB0
-aGVyZSBpcyBubwo+PiBJT01NVSB0byBwcm90ZWN0LiBIb3cgY2FuIHdlIG1ha2UgaXQgaWYgd2Ug
-ZG9uJ3QgdHJhcCBvbiBETUEgcHJvZ3JhbW1pbmc/Cj4+Pgo+Pj4+PiA2KSAgY2FuJ3Qgd2UgbGl2
-ZSB3aXRoIGlvbW11L01TSSBjb250cm9sbGVyIHJlc3BlY3RpdmUgbG9jYXRpb24gdW5jZXJ0YWlu
-dHk/Cj4+Pj4+Cj4+Pj4+IC0gaW4gbXkgY3VycmVudCBzZXJpZXMsIHdpdGggdGhlIGFib3ZlIFhp
-bGlueCBNU0kgY29udHJvbGxlciwgSSB3b3VsZAo+Pj4+PiBzZWUgdGhlcmUgaXMgYW4gYXJtLXNt
-bXUgcmVxdWlyaW5nIG1hcHBpbmcgYmVoaW5kIHRoZSBQQ0kgaG9zdCwgd291bGQKPj4+Pj4gcXVl
-cnkgdGhlIGNoYXJhY3RlcmlzdGljcyBvZiB0aGUgTVNJIGRvb3JiZWxsIChub3QgaW1wbGVtZW50
-ZWQgYnkgdGhhdAo+Pj4+PiBjb250cm9sbGVyKSwgc28gbm8gbWFwcGluZyB3b3VsZCBiZSBkb25l
-LiBTbyBpdCB3b3VsZCB3b3JrIEkgdGhpbmsuCj4+Pj4+IC0gSG93ZXZlciBpbiBjYXNlIHdlIGhh
-dmUgdGhpcyB0b3BvbG9neTogUENJZSBob3N0IC0+IE1TSSBjb250cm9sbGVyCj4+Pj4+IGdlbmVy
-YWxseSB1c2VkIGJlaGluZCBhbiBJT01NVSAoc28gcmVnaXN0ZXJpbmcgYSBkb29yYmVsbCkgLT4g
-SU9NTVUsCj4+Pj4+IHRoaXMgd291bGRuJ3Qgd29yayBzaW5jZSB0aGUgZG9vcmJlbGwgd291bGQg
-YmUgbWFwcGVkLgo+Pj4KPj4+IEknbSBhIGxpdHRsZSBjb25mdXNlZCB3aGljaCBkaXJlY3Rpb24g
-ImJlaGluZCIgaXMgaGVyZSwgYnV0IGl0IHNlZW1zCj4+PiBsaWtlIGFueSB0aW1lIHRoZSBNU0kg
-Y29udHJvbGxlciBsaXZlcyBpbiB0aGUgRE1BIGFkZHJlc3Mgc3BhY2Ugb2YgdGhlCj4+PiBlbmRw
-b2ludCwgYm90aCBpbnRlcmZlcmluZyB3aXRoIHRoZSBhdmFpbGFibGUgSU9WQSBzcGFjZSB0byB0
-aGUgdXNlcgo+Pj4gYW5kIHBvdGVudGlhbGx5IGFuIGF0dGFjayB2ZWN0b3IgZm9yIHRoZSB1c2Vy
-LCB3ZSBuZWVkIHRvIGNhbGwgaXQgb3V0Cj4+PiBhcyB1bnNhZmUuICBNYXliZSBzb21lIG9mIHRo
-ZW0gYXJlIGZvciBleGNsdXNpdmUgdXNlIG9mIHRoZSBkZXZpY2UgYW5kCj4+PiB0aGUgYXR0YWNr
-IHZlY3RvciBpcyByZWxhdGl2ZWx5IGNvbnRhaW5lZCwgYnV0IHRoZXkgc3RpbGwgYWZmZWN0IHRo
-ZQo+Pj4gSU9WQSBzcGFjZSBvZiB0aGUgdXNlci4gIFN1Y2ggYSBjb25maWd1cmF0aW9uIG1pZ2h0
-IGJlIHNhZmUsIGJ1dCBhcyBJCj4+PiBzYWlkIEknbSBub3Qgb3Bwb3NlZCB0byBiZWluZyBwcmV0
-dHkgbGliZXJhbCBpbiBhcHBseWluZyB0aGUgdW5zYWZlCj4+PiByZXF1aXJlbWVudCBpZiB0aGUg
-cGxhdGZvcm0gaGFzIGRvbmUgc29tZXRoaW5nIHVuZnJpZW5kbHkuICBUaGFua3MsCj4+IE9LIHRo
-YXQncyBjbGVhci4KPj4KPj4gVGhhbmsgeW91IGZvciB5b3VyIGZlZWRiYWNrcwo+Pgo+PiBCZXN0
-IFJlZ2FyZHMKPj4KPj4gRXJpYwo+Pj4KPj4+IEFsZXgKPj4+CgpPb3BzIHNvcnJ5IHRvcCBwb3N0
-aW5nIGluIGVhcmxpZXIgcmVwbHksCgpUZXN0ZWQgdGhpcyBzZXJpZXMgb24gQVBNIFgtR2VuZTIg
-d2l0aCBFMTAwMCBhbmQgc2F0YSBzaWwgY2FyZC4KVGVzdGVkLUJ5OiBQcmFuYXZrdW1hciBTYXdh
-cmdhb25rYXIgPHBzYXdhcmdhb25rYXJAYXBtLmNvbT4KClRoYW5rcywKUHJhbmF2CgpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpsaW51eC1hcm0ta2VybmVs
-IG1haWxpbmcgbGlzdApsaW51eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcKaHR0cDov
-L2xpc3RzLmluZnJhZGVhZC5vcmcvbWFpbG1hbi9saXN0aW5mby9saW51eC1hcm0ta2VybmVsCg==
+Hi Stuart,
+
+On 20/06/16 16:28, Stuart Yoder wrote:
+> Robin/Will,
+>
+> Right now the SMMU driver is hardcoded to configure 'stall' mode for
+> context faults:
+>
+>        /* SCTLR */
+>        reg = SCTLR_CFCFG | SCTLR_CFIE | SCTLR_CFRE | SCTLR_M | SCTLR_EAE_SBOP;
+>
+> We are running into an issue with a device where it seems behave sanely
+> when SCTLR_CFCFG=0 ...i.e. 'terminate' mode, but in stall mode seems to be
+> unaware that an access violation occurred.
+
+Does the device keep issuing transactions after the initial faulting 
+one, by any chance? Brian (+cc) has seen similar-sounding issues in the 
+past (albeit with backports to some horrible Android kernel), and I 
+think we concluded that there's an inherent race window between writing 
+RESUME and acking the interrupt in which MMU-500 can process another 
+faulting transaction and reassert the IRQ without Linux realising, which 
+then gets lost and things go out of whack.
+
+> Is there really some assumption that all devices that send transcactions
+> through the SMMU _must_ be able to handle stall mode?  I am trying to
+> find out from our hw designers what is going on at the signal level for
+> the device in question, but it seems to me that 'terminate' mode exists
+> for a reason and I wonder what your thoughts are about providing a
+> configuration option to allow configuration of terminate mode if a particular
+> SoC requires it.
+
+Personally, I'd quite happily leave it turned off (MMU-400/401 don't 
+support stalling anyway), but I recall Will having a fairly 
+reasonable-sounding argument in favour, which I now can't remember the 
+details of. Hopefully he might remind us, unless his conference is too 
+enthralling.
+
+Robin.
+
+>
+> Thanks,
+> Stuart
+>
