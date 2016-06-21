@@ -1,39 +1,40 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2 00/11] iommu/ipmmu-vmsa: r8a7795 support V2
-Date: Tue, 21 Jun 2016 14:42:07 +0200
-Message-ID: <20160621124206.GI28248@8bytes.org>
-References: <20160606035723.31763.66500.sendpatchset@little-apple>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v4 0/8] iommu/rockchip: Fix bugs and enable on ARM64
+Date: Tue, 21 Jun 2016 14:54:35 +0200
+Message-ID: <20160621125435.GE11432@8bytes.org>
+References: <1466483681-36110-1-git-send-email-tfiga@chromium.org>
+ <20160621091732.GB28248@8bytes.org>
+ <CAAFQd5B8sxbZ6MymwDKL4vZkfQ-ej_bNh7tS1OhRC=X7-eie+Q@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20160606035723.31763.66500.sendpatchset@little-apple>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
+In-Reply-To: <CAAFQd5B8sxbZ6MymwDKL4vZkfQ-ej_bNh7tS1OhRC=X7-eie+Q@mail.gmail.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: Tomasz Figa <tfiga@chromium.org>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Shunqian Zheng <zhengsq@rock-chips.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jun 06, 2016 at 12:57:23PM +0900, Magnus Damm wrote:
->  Developed on top of next-20160602 and:
->  [PATCH v3 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update V3
-> 
->  drivers/iommu/ipmmu-vmsa.c |  318 +++++++++++++++++++++++++++++++++++++-------
->  1 file changed, 269 insertions(+), 49 deletions(-)
-
-Okay, what is the plan on merging this? It is developed on linux-next
-and doesn't apply on v4.7-rc4. From the areas it touches it should go
-through the iommu-tree, unless there are good reasons not to.
-
-
-	Joerg
-
-P.S.: Same question applies to your other two patch-sets.
+SGkgVG9tYXN6LAoKT24gVHVlLCBKdW4gMjEsIDIwMTYgYXQgMDk6NDI6MTZQTSArMDkwMCwgVG9t
+YXN6IEZpZ2Egd3JvdGU6Cj4gSW4gc2ltcGxlIHdvcmRzLCBEUk0gcGF0Y2hlcyBkZXBlbmQgb24g
+SU9NTVUgcGF0Y2hlcy4KPiAKPiBNb3JlIHByZWNpc2VseTogVGhlIElPTU1VIHBhdGNoZXMgYWxv
+bmUgYXJlIHN1cHBvc2VkIHRvIG5vdCBicmVhawo+IGFueXRoaW5nLiBTYW1lIGdvZXMgZm9yIHRo
+ZSBmaXJzdCBEUk0gcGF0Y2ggKDcvOCkuIE9ubHkgc2Vjb25kIERSTQo+IHBhdGNoICg4LzgpIGRl
+cGVuZHMgb24gY2hhbmdlcyBpbnRyb2R1Y2VkIGJ5IGl0cyBwcmVkZWNlc3NvcnMuCgpUaGUgZmly
+c3QgRFJNIHBhdGNoIGlzIDYvNywgc28gaXQgaXMgNy84IHdpdGggdGhlIGlvbW11IGRlcGVuZGVu
+Y3ksCnJpZ2h0PyBBbnl3YXksIEkgdGhpbmsgdGhlIGJlc3QgaXMgSSB0YWtlIHRoZSBpb21tdSBw
+YXRjaGVzIHdoZW4gSGVpa28KaXMgb2sgd2l0aCB0aGVtIGFuZCB0aGVuIHRoZSBEUk0gdHJlZSBj
+YW4gbWVyZ2UgdGhhdCBicmFuY2ggaW4gdG8gYXBwbHkKdGhlIERSTSBwYXRjaGVzLgoKQnV0IGZp
+cnN0IEhlaWtvIHNob3VsZCBoYXZlIGEgbG9vayBhdCB0aGUgcGF0Y2hlcy4KCgpUaGFua3MsCgoJ
+Sm9lcmcKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRy
+aS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRw
+czovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
