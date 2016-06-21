@@ -1,50 +1,87 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v4 0/8] iommu/rockchip: Fix bugs and enable on ARM64
-Date: Tue, 21 Jun 2016 15:52:02 +0200
-Message-ID: <20160621135202.GK28248@8bytes.org>
-References: <1466483681-36110-1-git-send-email-tfiga@chromium.org>
- <CAAFQd5B8sxbZ6MymwDKL4vZkfQ-ej_bNh7tS1OhRC=X7-eie+Q@mail.gmail.com>
- <20160621125435.GE11432@8bytes.org> <2015742.xhx642kbrC@diego>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH v2 00/15] ACPI IORT ARM SMMU v3 support
+Date: Tue, 21 Jun 2016 15:27:04 +0100
+Message-ID: <20160621142704.GA31593@red-moon>
+References: <1465306270-27076-1-git-send-email-lorenzo.pieralisi@arm.com>
+	<b00f33ad-be24-21a9-b03b-611756bbc8e9@linaro.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <2015742.xhx642kbrC@diego>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, Tomasz Figa <tfiga@chromium.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Shunqian Zheng <zhengsq@rock-chips.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <b00f33ad-be24-21a9-b03b-611756bbc8e9-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBKdW4gMjEsIDIwMTYgYXQgMDM6MTg6NDlQTSArMDIwMCwgSGVpa28gU3TDvGJuZXIg
-d3JvdGU6Cj4gQW0gRGllbnN0YWcsIDIxLiBKdW5pIDIwMTYsIDE0OjU0OjM1IHNjaHJpZWIgSm9l
-cmcgUm9lZGVsOgo+ID4gSGkgVG9tYXN6LAo+ID4gCj4gPiBPbiBUdWUsIEp1biAyMSwgMjAxNiBh
-dCAwOTo0MjoxNlBNICswOTAwLCBUb21hc3ogRmlnYSB3cm90ZToKPiA+ID4gSW4gc2ltcGxlIHdv
-cmRzLCBEUk0gcGF0Y2hlcyBkZXBlbmQgb24gSU9NTVUgcGF0Y2hlcy4KPiA+ID4gCj4gPiA+IE1v
-cmUgcHJlY2lzZWx5OiBUaGUgSU9NTVUgcGF0Y2hlcyBhbG9uZSBhcmUgc3VwcG9zZWQgdG8gbm90
-IGJyZWFrCj4gPiA+IGFueXRoaW5nLiBTYW1lIGdvZXMgZm9yIHRoZSBmaXJzdCBEUk0gcGF0Y2gg
-KDcvOCkuIE9ubHkgc2Vjb25kIERSTQo+ID4gPiBwYXRjaCAoOC84KSBkZXBlbmRzIG9uIGNoYW5n
-ZXMgaW50cm9kdWNlZCBieSBpdHMgcHJlZGVjZXNzb3JzLgo+ID4gCj4gPiBUaGUgZmlyc3QgRFJN
-IHBhdGNoIGlzIDYvNywgc28gaXQgaXMgNy84IHdpdGggdGhlIGlvbW11IGRlcGVuZGVuY3ksCj4g
-PiByaWdodD8gQW55d2F5LCBJIHRoaW5rIHRoZSBiZXN0IGlzIEkgdGFrZSB0aGUgaW9tbXUgcGF0
-Y2hlcyB3aGVuIEhlaWtvCj4gPiBpcyBvayB3aXRoIHRoZW0gYW5kIHRoZW4gdGhlIERSTSB0cmVl
-IGNhbiBtZXJnZSB0aGF0IGJyYW5jaCBpbiB0byBhcHBseQo+ID4gdGhlIERSTSBwYXRjaGVzLgo+
-ID4gCj4gPiBCdXQgZmlyc3QgSGVpa28gc2hvdWxkIGhhdmUgYSBsb29rIGF0IHRoZSBwYXRjaGVz
-Lgo+IAo+IEkgdGhpbmsgZnJvbSBhbGwgaGlzIHByZXZpb3VzIHdvcmsgb24gdGhlIHJvY2tjaGlw
-IGlvbW11cyBUb21hc3ogaXMgYSBsb3QgbW9yZSAKPiBxdWFsaWZpZWQgdG8ganVkZ2UgdGhlbSAt
-IHdoaWNoIEkgZ3Vlc3MgaGUgZGlkIHdoZW4gcGlja2luZyB1cCB0aGUgb25lcyBmcm9tIAo+IFJv
-Y2tjaGlwIGRldnMgOi0pIC4KCkluIHRoYXQgY2FzZSB5b3UgZ3V5cyBzaG91bGQgcHJvYmFibHkg
-Y28tbWFpbnRhaW4gdGhhdCBkcml2ZXI/Cj4gCj4gPkZyb20gYSBzdHlsZS1zaWRlLCBwbGVhc2Ug
-ZG9uJ3QgY2FycnkgdGhlIFJldmlld2VkLW9uIGdlcnJpdCB0YWdzIG92ZXIgdG8gCj4gbWFpbmxp
-bmUgcGF0Y2hlcyAocGF0Y2hlcyAxIGFuZCAyKS4KCk9rYXkuCgoKCglKb2VyZwoKX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KZHJpLWRldmVsIG1haWxpbmcg
-bGlzdApkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRl
-c2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vZHJpLWRldmVsCg==
+Hi Hanjun,
+
+On Tue, Jun 21, 2016 at 06:37:17PM +0800, Hanjun Guo wrote:
+> Hi Lorenzo,
+> 
+> On 2016/6/7 21:30, Lorenzo Pieralisi wrote:
+> >This RFC patch series is v2 of a previous posting:
+> >
+> >https://lkml.org/lkml/2016/4/14/702
+> >
+> >v1 -> v2:
+> >	- Rebased on top of dependencies series [1][2][3](v4.7-rc1)
+> >	- Removed IOMMU fwnode generalization
+> >	- Implemented ARM SMMU v3 ACPI probing instead of ARM SMMU v2
+> >	  owing to patch series dependencies [1]
+> >	- Moved platform device creation logic to IORT code to
+> >	  generalize its usage for ARM SMMU v1-v2-v3 components
+> >	- Removed reliance on ACPI early device probing
+> >	- Created IORT specific iommu_xlate() translation hook leaving
+> >	  OF code unchanged according to v1 reviews
+> >
+> >The ACPI IORT table provides information that allows instantiating
+> >ARM SMMU devices and carrying out id mappings between components on
+> >ARM based systems (devices, IOMMUs, interrupt controllers).
+> >
+> >http://infocenter.arm.com/help/topic/com.arm.doc.den0049b/DEN0049B_IO_Remapping_Table.pdf
+> >
+> >Building on basic IORT support, available through [2]:
+> >
+> >this patchset enables ARM SMMU v3 support on ACPI systems.
+> 
+> I'm trying to test your patches on D03 (SMMUv3 based) but ...
+
+What do you mean by "I am trying.." :), have you actually tested
+this series ?
+
+> [...]
+> >[1] R.Murphy "Generic DT bindings for PCI and ARM SMMU v3"
+> >    http://marc.info/?l=linux-arm-kernel&m=146497432413816&w=2
+> 
+> ...This patch set is still in discussion and seems not work
+> for non-PCI devices.
+
+Can you be more specific please ? Yes, both series are work
+in progress.
+
+> >[2] T.Nowicki "Introduce ACPI world to ITS irqchip" v5
+> >    http://marc.info/?l=linux-acpi&m=146469369703684&w=2
+> 
+> Tomasz sent out the v7 and included patches in your series.
+> 
+> I think a updated version before the test makes sense, what
+> do you think? Let me know your thoughts.
+
+I am working with Robin so that the xlate() mechanism works
+properly and seamlessly for both DT and ACPI, given the
+dependencies I think it makes more sense to wait for Tomasz
+and Robin patches to get merged or at least stabilize before
+doing anything else, I am curently working on a v3.
+
+Thanks,
+Lorenzo
