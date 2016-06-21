@@ -1,109 +1,145 @@
-From: Brian Starkey <brian.starkey@arm.com>
-Subject: Re: SMMU driver and stall vs terminate mode
-Date: Tue, 21 Jun 2016 15:47:42 +0100
-Message-ID: <20160621144742.GA23672@e106950-lin.cambridge.arm.com>
-References: <HE1PR04MB1641B0F8442061E3437037628D2A0@HE1PR04MB1641.eurprd04.prod.outlook.com>
- <5768150D.2070705@arm.com> <20160621094237.GL29165@arm.com>
- <HE1PR04MB16414F95D83077B75F3000188D2B0@HE1PR04MB1641.eurprd04.prod.outlook.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH v2 03/15] arm64: mm: change IOMMU notifier action to
+	attach DMA ops
+Date: Tue, 21 Jun 2016 17:06:47 +0100
+Message-ID: <20160621160637.GA31761@red-moon>
+References: <1465306270-27076-1-git-send-email-lorenzo.pieralisi@arm.com>
+	<1465306270-27076-4-git-send-email-lorenzo.pieralisi@arm.com>
+	<5763C27A.9030306@arm.com>
+	<03c537e7-0acf-edca-d0e0-369490c828df@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <HE1PR04MB16414F95D83077B75F3000188D2B0@HE1PR04MB1641.eurprd04.prod.outlook.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Stuart Yoder <stuart.yoder@nxp.com>
-Cc: Bharat Bhushan <bharat.bhushan@nxp.com>, Will Deacon <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Nipun Gupta <nipun.gupta@nxp.com>, Robin Murphy <robin.murphy@arm.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <03c537e7-0acf-edca-d0e0-369490c828df-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Marek,
 
-On Tue, Jun 21, 2016 at 02:36:17PM +0000, Stuart Yoder wrote:
->
->
->> -----Original Message-----
->> From: Will Deacon [mailto:will.deacon@arm.com]
->> Sent: Tuesday, June 21, 2016 4:43 AM
->> To: Robin Murphy <robin.murphy@arm.com>
->> Cc: Stuart Yoder <stuart.yoder@nxp.com>; linux-arm-kernel@lists.infradead.org; iommu@lists.linux-
->> foundation.org; Nipun Gupta <nipun.gupta@nxp.com>; Bharat Bhushan <bharat.bhushan@nxp.com>; Brian
->> Starkey <brian.starkey@arm.com>
->> Subject: Re: SMMU driver and stall vs terminate mode
->>
->> On Mon, Jun 20, 2016 at 05:08:45PM +0100, Robin Murphy wrote:
->> > On 20/06/16 16:28, Stuart Yoder wrote:
->> > >Right now the SMMU driver is hardcoded to configure 'stall' mode for
->> > >context faults:
->> > >
->> > >       /* SCTLR */
->> > >       reg = SCTLR_CFCFG | SCTLR_CFIE | SCTLR_CFRE | SCTLR_M | SCTLR_EAE_SBOP;
->> > >
->> > >We are running into an issue with a device where it seems behave sanely
->> > >when SCTLR_CFCFG=0 ...i.e. 'terminate' mode, but in stall mode seems to be
->> > >unaware that an access violation occurred.
->> >
->> > Does the device keep issuing transactions after the initial faulting one, by
->> > any chance? Brian (+cc) has seen similar-sounding issues in the past (albeit
->> > with backports to some horrible Android kernel), and I think we concluded
->> > that there's an inherent race window between writing RESUME and acking the
->> > interrupt in which MMU-500 can process another faulting transaction and
->> > reassert the IRQ without Linux realising, which then gets lost and things go
->> > out of whack.
+On Tue, Jun 21, 2016 at 09:53:20AM +0200, Marek Szyprowski wrote:
+> Hi Robin,
+> 
+> 
+> On 2016-06-17 11:27, Robin Murphy wrote:
+> >Hi Lorenzo,
+> >
+> >I think this patch makes sense even independent of the rest of the
+> >series, one nit inline notwithstanding.
+> >
+> >Marek; I'm curious as to whether this could make the workaround in
+> >722ec35f7 obsolete as well, or are all the drivers also bound
+> >super-early in the setup you had there?
+> 
+> Yes, this will solve that problem too. I will also hide some possible
+> deferred probe issues, because the moment at which IOMMU is activated
+> will be postponed. The only drawback with this approach is the fact
+> that is drivers won't be allowed to do any dma-mapping operations on
+> devices, which they don't own. This should not be a big issue, but
+> this was the reason to setup IOMMU on device add instead of driver
+> bind.
+> 
+> While at it, please make sure that the case of failed client driver
+> probe will be handled properly. IOMMU might do some operations while
+> setting up and if the client driver fails to probe (for whatever
+> reason, might be a deferred probe too), those operation has to be
+> undone. However the current code of the driver core won't call any
+> notifier (like BUS_NOTIFY_UNBOUND_DRIVER or whatever else) in such
+> case.
 
-The problem in my case ended up being that one of the IRQ lines for the
-MMU wasn't actually wired up - so the MMU driver never knew there was an
-IRQ to handle and so never un-stalled the transactions.
-I think it was the context bank's line, so global faults worked fine but
-not context faults.
+Isn't Andy's commit 14b6257a5f3d enough ? Is that what you had in
+mind ?
 
-Of course, there may also be a race on RESUME.
+> Long time ago I used BUS_NOTIFY_BIND_DRIVER based approach for my
+> Exynos IOMMU patches and had to extend bus core with such patch:
+> https://patchwork.kernel.org/patch/4678181/ to properly cleanup
+> after failed client driver probe and avoid leaking resources. Please
+> read the discussion, because some changes were requested to it.
 
->>
->> Do we not detect this with the MULTI bit in the FSR?
->>
->> > >Is there really some assumption that all devices that send transcactions
->> > >through the SMMU _must_ be able to handle stall mode?  I am trying to
->> > >find out from our hw designers what is going on at the signal level for
->> > >the device in question, but it seems to me that 'terminate' mode exists
->> > >for a reason and I wonder what your thoughts are about providing a
->> > >configuration option to allow configuration of terminate mode if a particular
->> > >SoC requires it.
->> >
->> > Personally, I'd quite happily leave it turned off (MMU-400/401 don't support
->> > stalling anyway), but I recall Will having a fairly reasonable-sounding
->> > argument in favour, which I now can't remember the details of. Hopefully he
->> > might remind us, unless his conference is too enthralling.
->>
->> Given that we don't do anything particularly useful in the context fault
->> handler, I also wouldn't object to turning this off (and removing the
->> retry/reporting machinery). However, I'd want t better description of
->> *why* it's causing problems first, so that we can justify the decision
->> in case anybody is using this out of tree.
+It looks like commit 14b6257a5f3d ("device core: add
+BUS_NOTIFY_DRIVER_NOT_BOUND notification") does what you
+are requesting, please let me know if that's enough.
 
-Is map-on-fault a valid enough use-case?
-Drivers can register their own fault handlers, so even if arm-smmu isn't
-doing anything interesting, I think the master's driver might.
-
->
->I am trying to get more details from HW owners of this device as to
->its behavior in these 2 different SMMU modes.
->
-
-My understanding is that it should be transparent to the hardware. It
-just looks like translation is taking a particularly long time (before
-ultimately faulting). As long as the MMU IRQ handler is running as it
-should, the transactions will eventually fault as normal.
+I will revert the changes in 722ec35f7 and fold them in the
+new version along with Robin's suggestions.
 
 Thanks,
-Brian
+Lorenzo
 
->Stuart
->
+> 
+> 
+> Best regards
+> Marek Szyprowski, PhD
+> Samsung R&D Institute Poland
+> 
+> >
+> >On 07/06/16 14:30, Lorenzo Pieralisi wrote:
+> >>Current bus notifier in ARM64 (__iommu_attach_notifier)
+> >>attempts to attach dma_ops to a device on BUS_NOTIFY_ADD_DEVICE
+> >>action notification.
+> >>
+> >>This causes issues on ACPI based systems, where PCI devices
+> >>can be added before the IOMMUs the devices are attached to
+> >>had a chance to be probed, causing failures on attempts to
+> >>attach dma_ops in that the domain for the respective IOMMU
+> >>may not be set-up yet by the time the bus notifier is run.
+> >>
+> >>Devices dma_ops do not require to be set-up till the matching
+> >>device drivers are probed. This means that instead of running
+> >>the notifier attaching dma_ops to devices (__iommu_attach_notifier)
+> >>on BUS_NOTIFY_ADD_DEVICE action, it can be run just before the
+> >>device driver is bound to the device in question (on action
+> >>BUS_NOTIFY_BIND_DRIVER) so that it is certain that its IOMMU
+> >>group and domain are set-up accordingly at the time the
+> >>notifier is triggered.
+> >>
+> >>This patch changes the notifier action upon which dma_ops
+> >>are attached to devices and defer it to driver binding time,
+> >>so that IOMMU devices have a chance to be probed and to register
+> >>their bus notifiers before the dma_ops attach sequence for a
+> >>device is actually carried out.
+> >>
+> >>Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+> >>Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> >>Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+> >>Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> >>---
+> >>  arch/arm64/mm/dma-mapping.c | 2 +-
+> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >>diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> >>index c566ec8..79b0882 100644
+> >>--- a/arch/arm64/mm/dma-mapping.c
+> >>+++ b/arch/arm64/mm/dma-mapping.c
+> >>@@ -848,7 +848,7 @@ static int __iommu_attach_notifier(struct
+> >>notifier_block *nb,
+> >>  {
+> >>      struct iommu_dma_notifier_data *master, *tmp;
+> >>
+> >>-    if (action != BUS_NOTIFY_ADD_DEVICE)
+> >>+    if (action != BUS_NOTIFY_BIND_DRIVER)
+> >
+> >With this, you can also get rid of the priority setting and big
+> >fat explanatory comment in register_iommu_dma_ops_notifier().
+> >
+> >Robin.
+> >
+> >>          return 0;
+> >>
+> >>      mutex_lock(&iommu_dma_notifier_lock);
+> >>
+> >
+> >
+> >
+> 
