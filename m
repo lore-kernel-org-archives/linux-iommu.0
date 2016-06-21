@@ -1,15 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/mediatek: Do not call of_node_put in
-	mtk_iommu_of_xlate
-Date: Tue, 21 Jun 2016 11:39:51 +0200
-Message-ID: <20160621093951.GC28248@8bytes.org>
-References: <1465379444-14719-1-git-send-email-honghui.zhang@mediatek.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: SMMU driver and stall vs terminate mode
+Date: Tue, 21 Jun 2016 10:42:37 +0100
+Message-ID: <20160621094237.GL29165@arm.com>
+References: <HE1PR04MB1641B0F8442061E3437037628D2A0@HE1PR04MB1641.eurprd04.prod.outlook.com>
+	<5768150D.2070705@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1465379444-14719-1-git-send-email-honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <5768150D.2070705-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,19 +19,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>, Brian Starkey <brian.starkey-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jun 08, 2016 at 05:50:44PM +0800, honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
-> From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+On Mon, Jun 20, 2016 at 05:08:45PM +0100, Robin Murphy wrote:
+> On 20/06/16 16:28, Stuart Yoder wrote:
+> >Right now the SMMU driver is hardcoded to configure 'stall' mode for
+> >context faults:
+> >
+> >       /* SCTLR */
+> >       reg = SCTLR_CFCFG | SCTLR_CFIE | SCTLR_CFRE | SCTLR_M | SCTLR_EAE_SBOP;
+> >
+> >We are running into an issue with a device where it seems behave sanely
+> >when SCTLR_CFCFG=0 ...i.e. 'terminate' mode, but in stall mode seems to be
+> >unaware that an access violation occurred.
 > 
-> The device_node will be released in of_iommu_configure, it may be double
-> released if call of_node_put in mtk_iommu_of_xlate.
-> 
-> Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> ---
->  drivers/iommu/mtk_iommu.c | 1 -
->  1 file changed, 1 deletion(-)
+> Does the device keep issuing transactions after the initial faulting one, by
+> any chance? Brian (+cc) has seen similar-sounding issues in the past (albeit
+> with backports to some horrible Android kernel), and I think we concluded
+> that there's an inherent race window between writing RESUME and acking the
+> interrupt in which MMU-500 can process another faulting transaction and
+> reassert the IRQ without Linux realising, which then gets lost and things go
+> out of whack.
 
-Applied, thanks.
+Do we not detect this with the MULTI bit in the FSR?
+
+> >Is there really some assumption that all devices that send transcactions
+> >through the SMMU _must_ be able to handle stall mode?  I am trying to
+> >find out from our hw designers what is going on at the signal level for
+> >the device in question, but it seems to me that 'terminate' mode exists
+> >for a reason and I wonder what your thoughts are about providing a
+> >configuration option to allow configuration of terminate mode if a particular
+> >SoC requires it.
+> 
+> Personally, I'd quite happily leave it turned off (MMU-400/401 don't support
+> stalling anyway), but I recall Will having a fairly reasonable-sounding
+> argument in favour, which I now can't remember the details of. Hopefully he
+> might remind us, unless his conference is too enthralling.
+
+Given that we don't do anything particularly useful in the context fault
+handler, I also wouldn't object to turning this off (and removing the
+retry/reporting machinery). However, I'd want t better description of
+*why* it's causing problems first, so that we can justify the decision
+in case anybody is using this out of tree.
+
+If we did make the thing configurable, would that be another command line
+option, or something in DT? What about ACPI?
+
+Will
