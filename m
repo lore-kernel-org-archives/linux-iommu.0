@@ -1,40 +1,53 @@
-From: Joerg Roedel <joro@8bytes.org>
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>
 Subject: Re: [PATCH v4 0/8] iommu/rockchip: Fix bugs and enable on ARM64
-Date: Tue, 21 Jun 2016 14:54:35 +0200
-Message-ID: <20160621125435.GE11432@8bytes.org>
+Date: Tue, 21 Jun 2016 15:18:49 +0200
+Message-ID: <2015742.xhx642kbrC@diego>
 References: <1466483681-36110-1-git-send-email-tfiga@chromium.org>
- <20160621091732.GB28248@8bytes.org>
- <CAAFQd5B8sxbZ6MymwDKL4vZkfQ-ej_bNh7tS1OhRC=X7-eie+Q@mail.gmail.com>
+	<CAAFQd5B8sxbZ6MymwDKL4vZkfQ-ej_bNh7tS1OhRC=X7-eie+Q@mail.gmail.com>
+	<20160621125435.GE11432@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <CAAFQd5B8sxbZ6MymwDKL4vZkfQ-ej_bNh7tS1OhRC=X7-eie+Q@mail.gmail.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Tomasz Figa <tfiga@chromium.org>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, dri-devel <dri-devel@lists.freedesktop.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Shunqian Zheng <zhengsq@rock-chips.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160621125435.GE11432-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, dri-devel <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Mark Yao <mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgVG9tYXN6LAoKT24gVHVlLCBKdW4gMjEsIDIwMTYgYXQgMDk6NDI6MTZQTSArMDkwMCwgVG9t
-YXN6IEZpZ2Egd3JvdGU6Cj4gSW4gc2ltcGxlIHdvcmRzLCBEUk0gcGF0Y2hlcyBkZXBlbmQgb24g
-SU9NTVUgcGF0Y2hlcy4KPiAKPiBNb3JlIHByZWNpc2VseTogVGhlIElPTU1VIHBhdGNoZXMgYWxv
-bmUgYXJlIHN1cHBvc2VkIHRvIG5vdCBicmVhawo+IGFueXRoaW5nLiBTYW1lIGdvZXMgZm9yIHRo
-ZSBmaXJzdCBEUk0gcGF0Y2ggKDcvOCkuIE9ubHkgc2Vjb25kIERSTQo+IHBhdGNoICg4LzgpIGRl
-cGVuZHMgb24gY2hhbmdlcyBpbnRyb2R1Y2VkIGJ5IGl0cyBwcmVkZWNlc3NvcnMuCgpUaGUgZmly
-c3QgRFJNIHBhdGNoIGlzIDYvNywgc28gaXQgaXMgNy84IHdpdGggdGhlIGlvbW11IGRlcGVuZGVu
-Y3ksCnJpZ2h0PyBBbnl3YXksIEkgdGhpbmsgdGhlIGJlc3QgaXMgSSB0YWtlIHRoZSBpb21tdSBw
-YXRjaGVzIHdoZW4gSGVpa28KaXMgb2sgd2l0aCB0aGVtIGFuZCB0aGVuIHRoZSBEUk0gdHJlZSBj
-YW4gbWVyZ2UgdGhhdCBicmFuY2ggaW4gdG8gYXBwbHkKdGhlIERSTSBwYXRjaGVzLgoKQnV0IGZp
-cnN0IEhlaWtvIHNob3VsZCBoYXZlIGEgbG9vayBhdCB0aGUgcGF0Y2hlcy4KCgpUaGFua3MsCgoJ
-Sm9lcmcKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRy
-aS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRw
-czovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
+Am Dienstag, 21. Juni 2016, 14:54:35 schrieb Joerg Roedel:
+> Hi Tomasz,
+> 
+> On Tue, Jun 21, 2016 at 09:42:16PM +0900, Tomasz Figa wrote:
+> > In simple words, DRM patches depend on IOMMU patches.
+> > 
+> > More precisely: The IOMMU patches alone are supposed to not break
+> > anything. Same goes for the first DRM patch (7/8). Only second DRM
+> > patch (8/8) depends on changes introduced by its predecessors.
+> 
+> The first DRM patch is 6/7, so it is 7/8 with the iommu dependency,
+> right? Anyway, I think the best is I take the iommu patches when Heiko
+> is ok with them and then the DRM tree can merge that branch in to apply
+> the DRM patches.
+> 
+> But first Heiko should have a look at the patches.
+
+I think from all his previous work on the rockchip iommus Tomasz is a lot more 
+qualified to judge them - which I guess he did when picking up the ones from 
+Rockchip devs :-) .
+
+>From a style-side, please don't carry the Reviewed-on gerrit tags over to 
+mainline patches (patches 1 and 2).
+
+Other than that, I didn't see anything jump out and it looks all pretty nice.
+
+
+Heiko
