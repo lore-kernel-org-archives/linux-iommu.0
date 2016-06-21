@@ -1,56 +1,63 @@
-From: Tomasz Figa <tfiga@chromium.org>
-Subject: [PATCH v4 0/8] iommu/rockchip: Fix bugs and enable on ARM64
-Date: Tue, 21 Jun 2016 13:34:33 +0900
-Message-ID: <1466483681-36110-1-git-send-email-tfiga@chromium.org>
+From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: [PATCH v4 1/8] iommu/rockchip: Fix devm_{request,free}_irq parameter
+Date: Tue, 21 Jun 2016 13:34:34 +0900
+Message-ID: <1466483681-36110-2-git-send-email-tfiga@chromium.org>
+References: <1466483681-36110-1-git-send-email-tfiga@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: iommu@lists.linux-foundation.org, dri-devel@lists.freedesktop.org
-Cc: linux-kernel@vger.kernel.org, Tomasz Figa <tfiga@chromium.org>, linux-rockchip@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>, Shunqian Zheng <zhengsq@rock-chips.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1466483681-36110-1-git-send-email-tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Mark Yao <mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-VGhpcyBzZXJpZXMgaW50ZW5kcyBtb3N0bHkgdG8gZW5hYmxlIHN1cHBvcnQgZm9yIEFSTTY0IGFy
-Y2hpdGVjdHVyZQppbiB0aGUgcm9ja2NoaXAtaW9tbXUgZHJpdmVyLiBPbiB0aGUgd2F5IHRvIGRv
-IHNvLCBzb21lIGJ1Z3MgYXJlIGFsc28KZml4ZWQuCgpUaGUgbW9zdCBpbXBvcnRhbnQgY2hhbmdl
-cyBoZXJlIGFyZToKIC0gbWFraW5nIHRoZSBSb2NrY2hpcCBJT01NVSBkcml2ZXIgdXNlIERNQSBB
-UEkgZm9yIG1hbmFnaW5nIGNhY2hlCiAgIGNvaGVyZW5jeSBvZiBwYWdlIHRhYmxlcywKIC0gbWFr
-aW5nIHRoZSBSb2NrY2hpcCBEUk0gZHJpdmVyIG5vdCB1c2UgRE1BIEFQSSBvbiBiZWhhbGYgb2Yg
-YSB2aXJ0dWFsCiAgIGRldmljZSAoYmVoaW5kIGEgdmlydHVhbCBJT01NVSkgdG8gYWxsb2NhdGUg
-YW5kIG1hcCBidWZmZXJzLCBidXQKICAgaW5zdGVhZCBwcm9wZXIgRFJNIGhlbHBlcnMgYW5kIElP
-TU1VIEFQSSBkaXJlY3RseS4KCkNoYW5nZXMgc2luY2UgdjM6CiAtIERyb3AgdGhlIGlkZWEgb2Yg
-dmlydHVhbCBJT01NVS4gSW5zdGVhZCByZXBsYWNlIGhhY2t5IGFsbG9jYXRpb24gY29kZQogICBp
-biBEUk0gZHJpdmVyLCB3aXRoIHByb3BlciBtYW5hZ2VtZW50IG9mIElPTU1VIGRvbWFpbi4KIC0g
-QWRkIG9uZSBtb3JlIGZpeCBmb3IgYWxsb2NhdGlvbiBvZiBJT01NVSByZWdpc3RlciBiYXNlIGFk
-ZHJlc3Nlcy4KQ2hhbmdlcyBzaW5jZSB2MjoKIC0gSW5zdGVhZCBvZiByZWdpc3RlcmluZyB2aXJ0
-dWFsIElPTU1VIGZyb20gRFRTLCBjcmVhdGUgaXQgd2hlbgogICBhdHRhY2hpbmcuCiAtIEZpeCBz
-b21lIGJ1Z3MgZm91bmQgaW4gaW50ZXJuYWwgcmV2aWV3LgoKU2h1bnFpYW4gWmhlbmcgKDQpOgog
-IGlvbW11L3JvY2tjaGlwOiBGaXggYWxsb2NhdGlvbiBvZiBiYXNlcyBhcnJheSBpbiBkcml2ZXIg
-cHJvYmUKICBpb21tdS9yb2NrY2hpcDogVXNlIERNQSBBUEkgdG8gbWFuYWdlIGNvaGVyZW5jeQog
-IGlvbW11L3JvY2tjaGlwOiBQcmVwYXJlIHRvIHN1cHBvcnQgZ2VuZXJpYyBETUEgbWFwcGluZwog
-IGRybS9yb2NrY2hpcDogVXNlIGNvbW1vbiBJT01NVSBBUEkgdG8gYXR0YWNoIGRldmljZXMKClNp
-bW9uIFh1ZSAoMyk6CiAgaW9tbXUvcm9ja2NoaXA6IEZpeCBkZXZtX3tyZXF1ZXN0LGZyZWV9X2ly
-cSBwYXJhbWV0ZXIKICBpb21tdS9yb2NrY2hpcDogQWRkIG1hcF9zZyBjYWxsYmFjayBmb3Igcmtf
-aW9tbXVfb3BzCiAgaW9tbXUvcm9ja2NoaXA6IEVuYWJsZSBSb2NrY2hpcCBJT01NVSBvbiBBUk02
-NAoKVG9tYXN6IEZpZ2EgKDEpOgogIGRybS9yb2NrY2hpcDogRG8gbm90IHVzZSBETUEgbWFwcGlu
-ZyBBUEkgaWYgYXR0YWNoZWQgdG8gSU9NTVUgZG9tYWluCgogZHJpdmVycy9ncHUvZHJtL3JvY2tj
-aGlwL3JvY2tjaGlwX2RybV9kcnYuYyB8IDEwMCArKysrKystLS0tLS0KIGRyaXZlcnMvZ3B1L2Ry
-bS9yb2NrY2hpcC9yb2NrY2hpcF9kcm1fZHJ2LmggfCAgIDMgKwogZHJpdmVycy9ncHUvZHJtL3Jv
-Y2tjaGlwL3JvY2tjaGlwX2RybV9nZW0uYyB8IDIzNiArKysrKysrKysrKysrKysrKysrKysrKysr
-Ky0tCiBkcml2ZXJzL2dwdS9kcm0vcm9ja2NoaXAvcm9ja2NoaXBfZHJtX2dlbS5oIHwgICA5ICsr
-CiBkcml2ZXJzL2lvbW11L0tjb25maWcgICAgICAgICAgICAgICAgICAgICAgIHwgICAyICstCiBk
-cml2ZXJzL2lvbW11L3JvY2tjaGlwLWlvbW11LmMgICAgICAgICAgICAgIHwgMTgwICsrKysrKysr
-KysrKysrKy0tLS0tLQogNiBmaWxlcyBjaGFuZ2VkLCA0MjcgaW5zZXJ0aW9ucygrKSwgMTAzIGRl
-bGV0aW9ucygtKQoKLS0gCjIuOC4wLnJjMy4yMjYuZzM5ZDQwMjAKCl9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJp
-LWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
+From: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+
+Even though the IOMMU shares IRQ with its master, the struct device
+passed to {request,free}_irq is supposed to represent the device that is
+signalling the interrupt. This patch makes the driver use IOMMU device
+instead of master's device to make things clear.
+
+Signed-off-by: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Signed-off-by: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Reviewed-on: https://chromium-review.googlesource.com/346325
+Reviewed-by: Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+---
+ drivers/iommu/rockchip-iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 25b4627..5a9659a 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -807,7 +807,7 @@ static int rk_iommu_attach_device(struct iommu_domain *domain,
+ 
+ 	iommu->domain = domain;
+ 
+-	ret = devm_request_irq(dev, iommu->irq, rk_iommu_irq,
++	ret = devm_request_irq(iommu->dev, iommu->irq, rk_iommu_irq,
+ 			       IRQF_SHARED, dev_name(dev), iommu);
+ 	if (ret)
+ 		return ret;
+@@ -860,7 +860,7 @@ static void rk_iommu_detach_device(struct iommu_domain *domain,
+ 	}
+ 	rk_iommu_disable_stall(iommu);
+ 
+-	devm_free_irq(dev, iommu->irq, iommu);
++	devm_free_irq(iommu->dev, iommu->irq, iommu);
+ 
+ 	iommu->domain = NULL;
+ 
+-- 
+2.8.0.rc3.226.g39d4020
