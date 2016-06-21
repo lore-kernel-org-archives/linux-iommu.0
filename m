@@ -1,66 +1,56 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: SMMU driver and stall vs terminate mode
-Date: Mon, 20 Jun 2016 17:08:45 +0100
-Message-ID: <5768150D.2070705@arm.com>
-References: <HE1PR04MB1641B0F8442061E3437037628D2A0@HE1PR04MB1641.eurprd04.prod.outlook.com>
+From: Tomasz Figa <tfiga@chromium.org>
+Subject: [PATCH v4 0/8] iommu/rockchip: Fix bugs and enable on ARM64
+Date: Tue, 21 Jun 2016 13:34:33 +0900
+Message-ID: <1466483681-36110-1-git-send-email-tfiga@chromium.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <HE1PR04MB1641B0F8442061E3437037628D2A0-6LN7OEpIatU5tNmRkpaxD89NdZoXdze2vxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>, Brian Starkey <brian.starkey-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <dri-devel-bounces@lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+ <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+To: iommu@lists.linux-foundation.org, dri-devel@lists.freedesktop.org
+Cc: linux-kernel@vger.kernel.org, Tomasz Figa <tfiga@chromium.org>, linux-rockchip@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>, Shunqian Zheng <zhengsq@rock-chips.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Stuart,
-
-On 20/06/16 16:28, Stuart Yoder wrote:
-> Robin/Will,
->
-> Right now the SMMU driver is hardcoded to configure 'stall' mode for
-> context faults:
->
->        /* SCTLR */
->        reg = SCTLR_CFCFG | SCTLR_CFIE | SCTLR_CFRE | SCTLR_M | SCTLR_EAE_SBOP;
->
-> We are running into an issue with a device where it seems behave sanely
-> when SCTLR_CFCFG=0 ...i.e. 'terminate' mode, but in stall mode seems to be
-> unaware that an access violation occurred.
-
-Does the device keep issuing transactions after the initial faulting 
-one, by any chance? Brian (+cc) has seen similar-sounding issues in the 
-past (albeit with backports to some horrible Android kernel), and I 
-think we concluded that there's an inherent race window between writing 
-RESUME and acking the interrupt in which MMU-500 can process another 
-faulting transaction and reassert the IRQ without Linux realising, which 
-then gets lost and things go out of whack.
-
-> Is there really some assumption that all devices that send transcactions
-> through the SMMU _must_ be able to handle stall mode?  I am trying to
-> find out from our hw designers what is going on at the signal level for
-> the device in question, but it seems to me that 'terminate' mode exists
-> for a reason and I wonder what your thoughts are about providing a
-> configuration option to allow configuration of terminate mode if a particular
-> SoC requires it.
-
-Personally, I'd quite happily leave it turned off (MMU-400/401 don't 
-support stalling anyway), but I recall Will having a fairly 
-reasonable-sounding argument in favour, which I now can't remember the 
-details of. Hopefully he might remind us, unless his conference is too 
-enthralling.
-
-Robin.
-
->
-> Thanks,
-> Stuart
->
+VGhpcyBzZXJpZXMgaW50ZW5kcyBtb3N0bHkgdG8gZW5hYmxlIHN1cHBvcnQgZm9yIEFSTTY0IGFy
+Y2hpdGVjdHVyZQppbiB0aGUgcm9ja2NoaXAtaW9tbXUgZHJpdmVyLiBPbiB0aGUgd2F5IHRvIGRv
+IHNvLCBzb21lIGJ1Z3MgYXJlIGFsc28KZml4ZWQuCgpUaGUgbW9zdCBpbXBvcnRhbnQgY2hhbmdl
+cyBoZXJlIGFyZToKIC0gbWFraW5nIHRoZSBSb2NrY2hpcCBJT01NVSBkcml2ZXIgdXNlIERNQSBB
+UEkgZm9yIG1hbmFnaW5nIGNhY2hlCiAgIGNvaGVyZW5jeSBvZiBwYWdlIHRhYmxlcywKIC0gbWFr
+aW5nIHRoZSBSb2NrY2hpcCBEUk0gZHJpdmVyIG5vdCB1c2UgRE1BIEFQSSBvbiBiZWhhbGYgb2Yg
+YSB2aXJ0dWFsCiAgIGRldmljZSAoYmVoaW5kIGEgdmlydHVhbCBJT01NVSkgdG8gYWxsb2NhdGUg
+YW5kIG1hcCBidWZmZXJzLCBidXQKICAgaW5zdGVhZCBwcm9wZXIgRFJNIGhlbHBlcnMgYW5kIElP
+TU1VIEFQSSBkaXJlY3RseS4KCkNoYW5nZXMgc2luY2UgdjM6CiAtIERyb3AgdGhlIGlkZWEgb2Yg
+dmlydHVhbCBJT01NVS4gSW5zdGVhZCByZXBsYWNlIGhhY2t5IGFsbG9jYXRpb24gY29kZQogICBp
+biBEUk0gZHJpdmVyLCB3aXRoIHByb3BlciBtYW5hZ2VtZW50IG9mIElPTU1VIGRvbWFpbi4KIC0g
+QWRkIG9uZSBtb3JlIGZpeCBmb3IgYWxsb2NhdGlvbiBvZiBJT01NVSByZWdpc3RlciBiYXNlIGFk
+ZHJlc3Nlcy4KQ2hhbmdlcyBzaW5jZSB2MjoKIC0gSW5zdGVhZCBvZiByZWdpc3RlcmluZyB2aXJ0
+dWFsIElPTU1VIGZyb20gRFRTLCBjcmVhdGUgaXQgd2hlbgogICBhdHRhY2hpbmcuCiAtIEZpeCBz
+b21lIGJ1Z3MgZm91bmQgaW4gaW50ZXJuYWwgcmV2aWV3LgoKU2h1bnFpYW4gWmhlbmcgKDQpOgog
+IGlvbW11L3JvY2tjaGlwOiBGaXggYWxsb2NhdGlvbiBvZiBiYXNlcyBhcnJheSBpbiBkcml2ZXIg
+cHJvYmUKICBpb21tdS9yb2NrY2hpcDogVXNlIERNQSBBUEkgdG8gbWFuYWdlIGNvaGVyZW5jeQog
+IGlvbW11L3JvY2tjaGlwOiBQcmVwYXJlIHRvIHN1cHBvcnQgZ2VuZXJpYyBETUEgbWFwcGluZwog
+IGRybS9yb2NrY2hpcDogVXNlIGNvbW1vbiBJT01NVSBBUEkgdG8gYXR0YWNoIGRldmljZXMKClNp
+bW9uIFh1ZSAoMyk6CiAgaW9tbXUvcm9ja2NoaXA6IEZpeCBkZXZtX3tyZXF1ZXN0LGZyZWV9X2ly
+cSBwYXJhbWV0ZXIKICBpb21tdS9yb2NrY2hpcDogQWRkIG1hcF9zZyBjYWxsYmFjayBmb3Igcmtf
+aW9tbXVfb3BzCiAgaW9tbXUvcm9ja2NoaXA6IEVuYWJsZSBSb2NrY2hpcCBJT01NVSBvbiBBUk02
+NAoKVG9tYXN6IEZpZ2EgKDEpOgogIGRybS9yb2NrY2hpcDogRG8gbm90IHVzZSBETUEgbWFwcGlu
+ZyBBUEkgaWYgYXR0YWNoZWQgdG8gSU9NTVUgZG9tYWluCgogZHJpdmVycy9ncHUvZHJtL3JvY2tj
+aGlwL3JvY2tjaGlwX2RybV9kcnYuYyB8IDEwMCArKysrKystLS0tLS0KIGRyaXZlcnMvZ3B1L2Ry
+bS9yb2NrY2hpcC9yb2NrY2hpcF9kcm1fZHJ2LmggfCAgIDMgKwogZHJpdmVycy9ncHUvZHJtL3Jv
+Y2tjaGlwL3JvY2tjaGlwX2RybV9nZW0uYyB8IDIzNiArKysrKysrKysrKysrKysrKysrKysrKysr
+Ky0tCiBkcml2ZXJzL2dwdS9kcm0vcm9ja2NoaXAvcm9ja2NoaXBfZHJtX2dlbS5oIHwgICA5ICsr
+CiBkcml2ZXJzL2lvbW11L0tjb25maWcgICAgICAgICAgICAgICAgICAgICAgIHwgICAyICstCiBk
+cml2ZXJzL2lvbW11L3JvY2tjaGlwLWlvbW11LmMgICAgICAgICAgICAgIHwgMTgwICsrKysrKysr
+KysrKysrKy0tLS0tLQogNiBmaWxlcyBjaGFuZ2VkLCA0MjcgaW5zZXJ0aW9ucygrKSwgMTAzIGRl
+bGV0aW9ucygtKQoKLS0gCjIuOC4wLnJjMy4yMjYuZzM5ZDQwMjAKCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxpc3QKZHJp
+LWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9y
+Zy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
