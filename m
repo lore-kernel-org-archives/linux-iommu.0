@@ -1,96 +1,51 @@
-From: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH v2 00/15] ACPI IORT ARM SMMU v3 support
-Date: Wed, 22 Jun 2016 10:45:05 +0800
-Message-ID: <e9d5d68a-3e1d-4517-7f67-b7941e74eddd@linaro.org>
-References: <1465306270-27076-1-git-send-email-lorenzo.pieralisi@arm.com>
-	<b00f33ad-be24-21a9-b03b-611756bbc8e9@linaro.org>
-	<20160621142704.GA31593@red-moon>
+From: Eddie Huang <eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v4 5/5] ARM: dts: mt2701: add iommu/smi dtsi node for
+ mt2701
+Date: Wed, 22 Jun 2016 13:45:42 +0800
+Message-ID: <1466574342.27791.8.camel@mtksdaap41>
+References: <1465379461-14757-1-git-send-email-honghui.zhang@mediatek.com>
+	 <1465379461-14757-6-git-send-email-honghui.zhang@mediatek.com>
+	 <20160621095748.GE28248@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160621142704.GA31593@red-moon>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20160621095748.GE28248-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Honghui Zhang =?UTF-8?Q?=28=E5=BC=A0=E6=B4=AA=E8=BE=89=29?= <Honghui.Zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org" <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org" <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org" <pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org>, Kendrick Hsu =?UTF-8?Q?=28=E5=BE=90=E5=AD=90=E5=87=A1=29?= <Kendrick.Hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "arnd-r2nGTMty4D4@public.gmane.org" <arnd-r2nGTMty4D4@public.gmane.org>, srv_heupstream <srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2016/6/21 22:27, Lorenzo Pieralisi wrote:
-> Hi Hanjun,
->
-> On Tue, Jun 21, 2016 at 06:37:17PM +0800, Hanjun Guo wrote:
->> Hi Lorenzo,
->>
->> On 2016/6/7 21:30, Lorenzo Pieralisi wrote:
->>> This RFC patch series is v2 of a previous posting:
->>>
->>> https://lkml.org/lkml/2016/4/14/702
->>>
->>> v1 -> v2:
->>> 	- Rebased on top of dependencies series [1][2][3](v4.7-rc1)
->>> 	- Removed IOMMU fwnode generalization
->>> 	- Implemented ARM SMMU v3 ACPI probing instead of ARM SMMU v2
->>> 	  owing to patch series dependencies [1]
->>> 	- Moved platform device creation logic to IORT code to
->>> 	  generalize its usage for ARM SMMU v1-v2-v3 components
->>> 	- Removed reliance on ACPI early device probing
->>> 	- Created IORT specific iommu_xlate() translation hook leaving
->>> 	  OF code unchanged according to v1 reviews
->>>
->>> The ACPI IORT table provides information that allows instantiating
->>> ARM SMMU devices and carrying out id mappings between components on
->>> ARM based systems (devices, IOMMUs, interrupt controllers).
->>>
->>> http://infocenter.arm.com/help/topic/com.arm.doc.den0049b/DEN0049B_IO_Remapping_Table.pdf
->>>
->>> Building on basic IORT support, available through [2]:
->>>
->>> this patchset enables ARM SMMU v3 support on ACPI systems.
->>
->> I'm trying to test your patches on D03 (SMMUv3 based) but ...
->
-> What do you mean by "I am trying.." :), have you actually tested
-> this series ?
+On Tue, 2016-06-21 at 17:57 +0800, Joerg Roedel wrote:
+> On Wed, Jun 08, 2016 at 05:51:01PM +0800, honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
+> > From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> > 
+> > Add the dtsi node of iommu and smi for mt2701.
+> > 
+> > Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> > ---
+> >  arch/arm/boot/dts/mt2701.dtsi | 51 +++++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 51 insertions(+)
+> 
+> Okay, I pushed my arm/mediatek branch to my tree at
+> 
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+> 
+> Please base the patch on that branch and re-send.
+> 
 
-I was rebasing this series on top of Tomasz's latest ITS patchset,
-and found that patch 1~2,5 are not needed, and also have conflicts
-(expected), so I think it's better to wait for the updated version
-from you :)
+I think it is better let Mediatek SoC maintainer Matthias to accept dtsi
+patch like other drivers. This can avoid dtsi conflict. As I
+remember,last time MT8173 IOMMU dtsi patch accepted in iommu tree and
+mt8173.dtsi had conflict with arm soc tree at the merge window. Honghui
+should resend this patch to Matthias, and elaborate your dependency with
+clock and power domain dtsi, then Matthias know the merge sequence. 
 
->
->> [...]
->>> [1] R.Murphy "Generic DT bindings for PCI and ARM SMMU v3"
->>>    http://marc.info/?l=linux-arm-kernel&m=146497432413816&w=2
->>
->> ...This patch set is still in discussion and seems not work
->> for non-PCI devices.
->
-> Can you be more specific please ? Yes, both series are work
-> in progress.
->
->>> [2] T.Nowicki "Introduce ACPI world to ITS irqchip" v5
->>>    http://marc.info/?l=linux-acpi&m=146469369703684&w=2
->>
->> Tomasz sent out the v7 and included patches in your series.
->>
->> I think a updated version before the test makes sense, what
->> do you think? Let me know your thoughts.
->
-> I am working with Robin so that the xlate() mechanism works
-> properly and seamlessly for both DT and ACPI, given the
-> dependencies I think it makes more sense to wait for Tomasz
-> and Robin patches to get merged or at least stabilize before
-> doing anything else, I am curently working on a v3.
-
-OK.
-
+Eddie
 Thanks
-Hanjun
+
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
