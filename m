@@ -1,15 +1,15 @@
-From: Doug Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH v4 3/8] iommu/rockchip: Fix allocation of bases array in
-	driver probe
-Date: Tue, 21 Jun 2016 10:19:58 -0700
-Message-ID: <CAD=FV=Vunsf0vEyn-MTmr-+5jy+q81423HVtMsP6cTECyiciXQ@mail.gmail.com>
-References: <1466483681-36110-1-git-send-email-tfiga@chromium.org>
-	<1466483681-36110-4-git-send-email-tfiga@chromium.org>
+From: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH v2 00/15] ACPI IORT ARM SMMU v3 support
+Date: Wed, 22 Jun 2016 10:45:05 +0800
+Message-ID: <e9d5d68a-3e1d-4517-7f67-b7941e74eddd@linaro.org>
+References: <1465306270-27076-1-git-send-email-lorenzo.pieralisi@arm.com>
+	<b00f33ad-be24-21a9-b03b-611756bbc8e9@linaro.org>
+	<20160621142704.GA31593@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1466483681-36110-4-git-send-email-tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+In-Reply-To: <20160621142704.GA31593@red-moon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,26 +19,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "open list:ARM/Rockchip SoC..." <linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Kurtz <djkurtz-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Mark Yao <mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linuxarm-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On 2016/6/21 22:27, Lorenzo Pieralisi wrote:
+> Hi Hanjun,
+>
+> On Tue, Jun 21, 2016 at 06:37:17PM +0800, Hanjun Guo wrote:
+>> Hi Lorenzo,
+>>
+>> On 2016/6/7 21:30, Lorenzo Pieralisi wrote:
+>>> This RFC patch series is v2 of a previous posting:
+>>>
+>>> https://lkml.org/lkml/2016/4/14/702
+>>>
+>>> v1 -> v2:
+>>> 	- Rebased on top of dependencies series [1][2][3](v4.7-rc1)
+>>> 	- Removed IOMMU fwnode generalization
+>>> 	- Implemented ARM SMMU v3 ACPI probing instead of ARM SMMU v2
+>>> 	  owing to patch series dependencies [1]
+>>> 	- Moved platform device creation logic to IORT code to
+>>> 	  generalize its usage for ARM SMMU v1-v2-v3 components
+>>> 	- Removed reliance on ACPI early device probing
+>>> 	- Created IORT specific iommu_xlate() translation hook leaving
+>>> 	  OF code unchanged according to v1 reviews
+>>>
+>>> The ACPI IORT table provides information that allows instantiating
+>>> ARM SMMU devices and carrying out id mappings between components on
+>>> ARM based systems (devices, IOMMUs, interrupt controllers).
+>>>
+>>> http://infocenter.arm.com/help/topic/com.arm.doc.den0049b/DEN0049B_IO_Remapping_Table.pdf
+>>>
+>>> Building on basic IORT support, available through [2]:
+>>>
+>>> this patchset enables ARM SMMU v3 support on ACPI systems.
+>>
+>> I'm trying to test your patches on D03 (SMMUv3 based) but ...
+>
+> What do you mean by "I am trying.." :), have you actually tested
+> this series ?
 
-On Mon, Jun 20, 2016 at 9:34 PM, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org> wrote:
-> From: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
->
-> In .probe(), devm_kzalloc() is called with size == 0 and works only
-> by luck, due to internal behavior of the allocator and the fact
-> that the proper allocation size is small. Let's use proper value for
-> calculating the size.
->
-> Fixes: cd6438c5f844 ("iommu/rockchip: Reconstruct to support multi slaves")
->
-> Signed-off-by: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
-> Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-> ---
->  drivers/iommu/rockchip-iommu.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+I was rebasing this series on top of Tomasz's latest ITS patchset,
+and found that patch 1~2,5 are not needed, and also have conflicts
+(expected), so I think it's better to wait for the updated version
+from you :)
 
-Reviewed-by: Douglas Anderson <dianders-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+>
+>> [...]
+>>> [1] R.Murphy "Generic DT bindings for PCI and ARM SMMU v3"
+>>>    http://marc.info/?l=linux-arm-kernel&m=146497432413816&w=2
+>>
+>> ...This patch set is still in discussion and seems not work
+>> for non-PCI devices.
+>
+> Can you be more specific please ? Yes, both series are work
+> in progress.
+>
+>>> [2] T.Nowicki "Introduce ACPI world to ITS irqchip" v5
+>>>    http://marc.info/?l=linux-acpi&m=146469369703684&w=2
+>>
+>> Tomasz sent out the v7 and included patches in your series.
+>>
+>> I think a updated version before the test makes sense, what
+>> do you think? Let me know your thoughts.
+>
+> I am working with Robin so that the xlate() mechanism works
+> properly and seamlessly for both DT and ACPI, given the
+> dependencies I think it makes more sense to wait for Tomasz
+> and Robin patches to get merged or at least stabilize before
+> doing anything else, I am curently working on a v3.
+
+OK.
+
+Thanks
+Hanjun
