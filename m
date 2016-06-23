@@ -1,77 +1,63 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
+From: Robin Murphy <robin.murphy@arm.com>
 Subject: Re: [RFC PATCH v2 03/15] arm64: mm: change IOMMU notifier action to
  attach DMA ops
-Date: Thu, 23 Jun 2016 08:13:30 +0200
-Message-ID: <76c43b76-518c-a2d3-c200-d02aa9125e1d@samsung.com>
+Date: Thu, 23 Jun 2016 12:32:12 +0100
+Message-ID: <576BC8BC.6090400@arm.com>
 References: <1465306270-27076-1-git-send-email-lorenzo.pieralisi@arm.com>
  <1465306270-27076-4-git-send-email-lorenzo.pieralisi@arm.com>
- <5763C27A.9030306@arm.com> <03c537e7-0acf-edca-d0e0-369490c828df@samsung.com>
- <20160621160637.GA31761@red-moon>
+ <5763C27A.9030306@arm.com> <20160617141536.GA24840@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-reply-to: <20160621160637.GA31761@red-moon>
-Sender: linux-pci-owner@vger.kernel.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20160617141536.GA24840@red-moon>
+Sender: linux-acpi-owner@vger.kernel.org
 To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Marc Zyngier <marc.zyngier@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, Sinan Kaya <okaya@codeaurora.org>, linux-acpi@vger.kernel.org, Hanjun Guo <hanjun.guo@linaro.org>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>
+Cc: Jon Masters <jcm@redhat.com>, Marc Zyngier <marc.zyngier@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org, Will Deacon <will.deacon@arm.com>, Sinan Kaya <okaya@codeaurora.org>, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, Hanjun Guo <hanjun.guo@linaro.org>, linux-pci@vger.kernel.org, Tomasz Nowicki <tn@semihalf.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Lorenzo,
 
-
-On 2016-06-21 18:06, Lorenzo Pieralisi wrote:
-> Hi Marek,
+On 17/06/16 15:15, Lorenzo Pieralisi wrote:
+>> I think this patch makes sense even independent of the rest of the
+>> series, one nit inline notwithstanding.
 >
-> On Tue, Jun 21, 2016 at 09:53:20AM +0200, Marek Szyprowski wrote:
->> Hi Robin,
->>
->>
->> On 2016-06-17 11:27, Robin Murphy wrote:
->>> Hi Lorenzo,
->>>
->>> I think this patch makes sense even independent of the rest of the
->>> series, one nit inline notwithstanding.
->>>
->>> Marek; I'm curious as to whether this could make the workaround in
->>> 722ec35f7 obsolete as well, or are all the drivers also bound
->>> super-early in the setup you had there?
->> Yes, this will solve that problem too. I will also hide some possible
->> deferred probe issues, because the moment at which IOMMU is activated
->> will be postponed. The only drawback with this approach is the fact
->> that is drivers won't be allowed to do any dma-mapping operations on
->> devices, which they don't own. This should not be a big issue, but
->> this was the reason to setup IOMMU on device add instead of driver
->> bind.
->>
->> While at it, please make sure that the case of failed client driver
->> probe will be handled properly. IOMMU might do some operations while
->> setting up and if the client driver fails to probe (for whatever
->> reason, might be a deferred probe too), those operation has to be
->> undone. However the current code of the driver core won't call any
->> notifier (like BUS_NOTIFY_UNBOUND_DRIVER or whatever else) in such
->> case.
-> Isn't Andy's commit 14b6257a5f3d enough ? Is that what you had in
-> mind ?
+> Thanks. Yes I added it to this series since it is not strictly
+> necessary (ie it does not fix anything) in the mainline, but
+> it *is* necessary for this whole series to function when we
+> boot through ACPI.
 >
->> Long time ago I used BUS_NOTIFY_BIND_DRIVER based approach for my
->> Exynos IOMMU patches and had to extend bus core with such patch:
->> https://patchwork.kernel.org/patch/4678181/ to properly cleanup
->> after failed client driver probe and avoid leaking resources. Please
->> read the discussion, because some changes were requested to it.
-> It looks like commit 14b6257a5f3d ("device core: add
-> BUS_NOTIFY_DRIVER_NOT_BOUND notification") does what you
-> are requesting, please let me know if that's enough.
+> I will send it out in a separate patch and fold changes you
+> request below, it would be good to have some coverage for
+> it before merging it.
 
-Yes, that's exactly the change I needed that time. Nice to see that it
-finally landed in mainline.
+Having considered it a bit more, triggering on BIND_DRIVER also means 
+the silly "process the whole list every time" behaviour should go away. 
+There's little point in trying to configure a device's ops before we 
+know they're actually needed, and once a driver has bound it's too late 
+to change anything anyway. What do you think of squashing in something 
+like the below?
 
-> I will revert the changes in 722ec35f7 and fold them in the
-> new version along with Robin's suggestions.
+Robin.
 
-Okay.
+----->8-----
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 7d3fa9ae8a11..02484dc3f369 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -854,10 +854,11 @@ static int __iommu_attach_notifier(struct 
+notifier_block *nb,
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+  	mutex_lock(&iommu_dma_notifier_lock);
+  	list_for_each_entry_safe(master, tmp, &iommu_dma_masters, list) {
+-		if (do_iommu_attach(master->dev, master->ops,
+-				master->dma_base, master->size)) {
++		if (data == master->dev && do_iommu_attach(master->dev,
++				master->ops, master->dma_base, master->size)) {
+  			list_del(&master->list);
+  			kfree(master);
++			break;
+  		}
+  	}
+  	mutex_unlock(&iommu_dma_notifier_lock);
+
