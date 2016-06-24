@@ -1,58 +1,63 @@
-From: Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v2 1/2] PCI: Add PCI device flag
-	PCI_DEV_FLAGS_DMA_ALIAS_ROOT
-Date: Thu, 23 Jun 2016 09:19:29 -0400 (EDT)
-Message-ID: <E235EFDF-81B0-4A93-8F2D-49065B202581@redhat.com>
-References: <linux-pci@vger.kernel.org>
-	<1462700001-30086-1-git-send-email-jchandra@broadcom.com>
-	<5730621B.2050503@arm.com>
-	<CAKc_7PVAV6uAbEFLWHyh1hngLa1PdJxPzk7bPoppexU1oAJHnw@mail.gmail.com>
-	<573340F9.6050507@arm.com>
-	<037404e2-3168-8f99-0bdb-bb929776108e@redhat.com>
-	<576BD031.7090105@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <576BD031.7090105-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jayachandran C <jchandra-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Subject: iommu/rockchip: Fix bugs and enable on ARM64
+Date: Fri, 24 Jun 2016 10:13:25 +0800
+Message-ID: <1466734413-7453-1-git-send-email-zhengsq@rock-chips.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org, airlied-cv59FeDIM0c@public.gmane.org, tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Quick reply (sorry about top post): I am just getting online so I might discover that this callback is shared by both - in which case, cool - but if not, we need an interim ACPI solution.
+This series intends mostly to enable support for ARM64 architecture
+in the rockchip-iommu driver. On the way to do so, some bugs are also
+fixed.
 
-Aside: Current RHEL Server for ARM (RHELSA) explicitly disables SMMUv3 support because (I warned the folks involved more than a year ago), we will only support ACPI/IORT, and as you can imagine, many people would like us to enable support for device passthrough and robustness, not to mention 32-bit devices (32-bit DMA mask). Nonetheless, that will only happen when the upstream kernel has IORT and quirks in place.
+The most important changes here are:
+ - making the Rockchip IOMMU driver use DMA API for managing cache
+   coherency of page tables,
+ - making the Rockchip DRM driver not use DMA API on behalf of a virtual
+   device (behind a virtual IOMMU) to allocate and map buffers, but
+   instead proper DRM helpers and IOMMU API directly.
+
+Changes since v4:
+ - Address some coding style comments on:
+    - https://chromium-review.googlesource.com/#/c/346328/38
+    - https://chromium-review.googlesource.com/#/c/353591/10
+Changes since v3:
+ - Drop the idea of virtual IOMMU. Instead replace hacky allocation code
+   in DRM driver, with proper management of IOMMU domain.
+ - Add one more fix for allocation of IOMMU register base addresses.
+Changes since v2:
+ - Instead of registering virtual IOMMU from DTS, create it when
+   attaching.
+ - Fix some bugs found in internal review.
+
+Shunqian Zheng (4):
+  iommu/rockchip: Fix allocation of bases array in driver probe
+  iommu/rockchip: Use DMA API to manage coherency
+  iommu/rockchip: Prepare to support generic DMA mapping
+  drm/rockchip: Use common IOMMU API to attach devices
+
+Simon Xue (3):
+  iommu/rockchip: Fix devm_{request,free}_irq parameter
+  iommu/rockchip: Add map_sg callback for rk_iommu_ops
+  iommu/rockchip: Enable Rockchip IOMMU on ARM64
+
+Tomasz Figa (1):
+  drm/rockchip: Do not use DMA mapping API if attached to IOMMU domain
+
+ drivers/gpu/drm/rockchip/rockchip_drm_drv.c | 100 +++++++------
+ drivers/gpu/drm/rockchip/rockchip_drm_drv.h |   3 +
+ drivers/gpu/drm/rockchip/rockchip_drm_gem.c | 221 ++++++++++++++++++++++++++--
+ drivers/gpu/drm/rockchip/rockchip_drm_gem.h |   9 ++
+ drivers/iommu/Kconfig                       |   2 +-
+ drivers/iommu/rockchip-iommu.c              | 181 +++++++++++++++++------
+ 6 files changed, 413 insertions(+), 103 deletions(-)
 
 -- 
-Computer Architect | Sent from my 64-bit #ARM Powered phone
+1.9.1
 
-> On Jun 23, 2016, at 08:04, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> 
->> On 23/06/16 06:01, Jon Masters wrote:
->>> On 05/11/2016 10:26 AM, Robin Murphy wrote:
->>> (I have no actual objection to this patch, though, and at this point
->>> I'm just chucking ideas about).
->> 
->> Can I ask what the next steps are here? We're looking for upstream
->> direction to guide some internal activities and could really do with
->> understanding how you'd like to solve this one longer term as well as
->> what interim solution could be acceptable until we get there.
-> 
-> Well, for now I'm planning to leave the explicit "terminate the alias walk from the callback function" behaviour in the DT-parsing code[1], since there doesn't seem any good reason not to. As Bjorn says, though, it probably is generally useful for the PCI code to have its own knowledge of exactly where DMA can escape the PCI hierarchy - I now wonder if we could actually just do that from the DT/IORT code; if firmware says a particular bridge/etc. has a relationship with an ITS or SMMU, then presumably it's reasonable to infer that DMA can come out of it, thus we could inform the PCI code there and then without it having to quirk things on its own?
-> 
-> Robin.
-> 
-> [1]:http://article.gmane.org/gmane.linux.kernel.iommu/13932
-> 
->> 
->> Jon.
-> 
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
