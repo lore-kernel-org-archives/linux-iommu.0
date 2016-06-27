@@ -1,37 +1,45 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: iommu/rockchip: Fix bugs and enable on ARM64
-Date: Mon, 27 Jun 2016 14:57:51 +0200
-Message-ID: <20160627125751.GN11432@8bytes.org>
-References: <1466734413-7453-1-git-send-email-zhengsq@rock-chips.com>
-Mime-Version: 1.0
+From: Nadav Amit <nadav.amit-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Remove unnecassary qi clflushes
+Date: Mon, 27 Jun 2016 09:17:32 -0700
+Message-ID: <C78095BC-3BED-48DE-90CE-601DE40AA613@gmail.com>
+References: <1466773994-242872-1-git-send-email-namit@vmware.com>
+	<20160627113014.GL11432@8bytes.org>
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
-Return-path: <dri-devel-bounces@lists.freedesktop.org>
-Content-Disposition: inline
-In-Reply-To: <1466734413-7453-1-git-send-email-zhengsq@rock-chips.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
-List-Post: <mailto:dri-devel@lists.freedesktop.org>
-List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
- <mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: dri-devel-bounces@lists.freedesktop.org
-Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
-To: Shunqian Zheng <zhengsq@rock-chips.com>
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org, linux@armlinux.org.uk, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, tfiga@google.com, iommu@lists.linux-foundation.org, robh+dt@kernel.org, xxm@rock-chips.com, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160627113014.GL11432-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Nadav Amit <namit-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gRnJpLCBKdW4gMjQsIDIwMTYgYXQgMTA6MTM6MjVBTSArMDgwMCwgU2h1bnFpYW4gWmhlbmcg
-d3JvdGU6Cj4gIGRyaXZlcnMvZ3B1L2RybS9yb2NrY2hpcC9yb2NrY2hpcF9kcm1fZHJ2LmMgfCAx
-MDAgKysrKysrKy0tLS0tLQo+ICBkcml2ZXJzL2dwdS9kcm0vcm9ja2NoaXAvcm9ja2NoaXBfZHJt
-X2Rydi5oIHwgICAzICsKPiAgZHJpdmVycy9ncHUvZHJtL3JvY2tjaGlwL3JvY2tjaGlwX2RybV9n
-ZW0uYyB8IDIyMSArKysrKysrKysrKysrKysrKysrKysrKysrKy0tCj4gIGRyaXZlcnMvZ3B1L2Ry
-bS9yb2NrY2hpcC9yb2NrY2hpcF9kcm1fZ2VtLmggfCAgIDkgKysKPiAgZHJpdmVycy9pb21tdS9L
-Y29uZmlnICAgICAgICAgICAgICAgICAgICAgICB8ICAgMiArLQo+ICBkcml2ZXJzL2lvbW11L3Jv
-Y2tjaGlwLWlvbW11LmMgICAgICAgICAgICAgIHwgMTgxICsrKysrKysrKysrKysrKysrLS0tLS0t
-Cj4gIDYgZmlsZXMgY2hhbmdlZCwgNDEzIGluc2VydGlvbnMoKyksIDEwMyBkZWxldGlvbnMoLSkK
-CkFwcGxpZWQgdGhlIElPTU1VIHBhdGNoZXMsIHRoYW5rcy4KCgoJSm9lcmcKCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmRyaS1kZXZlbCBtYWlsaW5nIGxp
-c3QKZHJpLWRldmVsQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNr
-dG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2RyaS1kZXZlbAo=
+Sm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+IHdyb3RlOgoKPiBPbiBGcmksIEp1biAyNCwg
+MjAxNiBhdCAwNjoxMzoxNEFNIC0wNzAwLCBOYWRhdiBBbWl0IHdyb3RlOgo+PiBBY2NvcmRpbmcg
+dG8gdGhlIG1hbnVhbDogIkhhcmR3YXJlIGFjY2VzcyB0byAuLi4gIGludmFsaWRhdGlvbiBxdWV1
+ZSAuLi4KPj4gYXJlIGFsd2F5cyBjb2hlcmVudC4iCj4+IAo+PiBSZW1vdmUgdW5uZWNhc3Nhcnkg
+Y2xmbHVzaGVzIGFjY29yZGluZ2x5Lgo+IAo+IEl0IGlzIG9uZSB0aGluZyB3aGF0IHRoZSBzcGVj
+IHNheXMgYW5kIGFub3RoZXIgaG93IGhhcmR3YXJlIHJlYWxseQo+IGJlaGF2ZXMuIEhhdmUgeW91
+IHRlc3RlZCB0aGlzIG9uIChwb3RlbnRpYWxseSByZWFsbHkgb2xkKSBWVC1kIG1hY2hpbmVzCj4g
+dG8gbWFrZSBzdXJlIHRoZSBzcGVjIGlzIF9hbHdheXNfIHJpZ2h0IGhlcmU/CgpObyBJIGRpZG7i
+gJl0IGFzIHRoZSBjb21taXQgbWVzc2FnZSBzYXlzLiBJIHdvdWxkIGJlIGhhcHB5IGZvciBzb21l
+b25lc+KAmQp0ZXN0ZWQtYnkuCgpIYXZpbmcgc2FpZCB0aGF0IC0gRnJlZUJTRCBkb2VzIG5vdCBk
+byB0aGVzZSAodW5uZWNlc3NhcnkpCmludmFsaWRhdGlvbnMgWzFdLCBhbmQgdGhlaXIgY29kZSBj
+b21tZW50IGNsZWFybHkgc2F5cyBpdC4gU2luY2UgdGhpcyBjb2RlCmlzIG5vdCBuZXcsIEkgd291
+bGQgYXNzdW1lIEZyZWVCU0Qgd291bGQgY3Jhc2ggYnkgbm93IGlmIHRoZSBjb2RlIHdhcwpidWdn
+eS4KCkFsdGhvdWdoIHN1Y2ggaGFyZHdhcmUgaXMgb2xkLCB0aGVyZSBhcmUgc29tZSBoeXBlcnZp
+c29ycyB0aGF0IGRvIG5vdCBzZXQKdGhlIGVjYXAuY29oZXJlbmN5IG9mIGVtdWxhdGVkIElPTU1V
+cy4gWWVzLCBpdCBpcyB1bndpc2UsIGJ1dCB0aGVyZSBpcyBubwpyZWFzb24gdG8gZnVydGhlciBw
+dW5pc2ggdGhlc2UgaHlwZXJ2aXNvcnMuCgpUaGFua3MsCk5hZGF2CgpbMV0gaHR0cDovL3dlYi5t
+aXQuZWR1L2ZyZWVic2QvaGVhZC9zeXMveDg2L2lvbW11L2ludGVsX3FpLmMKX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
+bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
+aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
