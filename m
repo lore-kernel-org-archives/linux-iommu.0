@@ -1,124 +1,115 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v3 8/9] iommu/arm-smmu: Support non-PCI devices with SMMUv3
-Date: Tue, 28 Jun 2016 16:48:27 +0100
-Message-ID: <19b0d973e170bebfa57157047bf76499de2a6d33.1467123945.git.robin.murphy@arm.com>
+Subject: [PATCH v3 1/9] arm64: mm: change IOMMU notifier action to attach DMA ops
+Date: Tue, 28 Jun 2016 16:48:20 +0100
+Message-ID: <06d430a86f5d7f461308a9278bf25f40fb50d93c.1467123945.git.robin.murphy@arm.com>
 References: <cover.1467123945.git.robin.murphy@arm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1467123945.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-With the device <-> stream ID relationship suitably abstracted and
-of_xlate() hooked up, the PCI dependency now looks, and is, entirely
-arbitrary. Any bus using the of_dma_configure() mechanism will work,
-so extend support to the platform and AMBA buses which do just that.
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 
+Current bus notifier in ARM64 (__iommu_attach_notifier)
+attempts to attach dma_ops to a device on BUS_NOTIFY_ADD_DEVICE
+action notification.
+
+This will cause issues on ACPI based systems, where PCI devices
+can be added before the IOMMUs the devices are attached to
+had a chance to be probed, causing failures on attempts to
+attach dma_ops in that the domain for the respective IOMMU
+may not be set-up yet by the time the bus notifier is run.
+
+Devices dma_ops do not require to be set-up till the matching
+device drivers are probed. This means that instead of running
+the notifier attaching dma_ops to devices (__iommu_attach_notifier)
+on BUS_NOTIFY_ADD_DEVICE action, it can be run just before the
+device driver is bound to the device in question (on action
+BUS_NOTIFY_BIND_DRIVER) so that it is certain that its IOMMU
+group and domain are set-up accordingly at the time the
+notifier is triggered.
+
+This patch changes the notifier action upon which dma_ops
+are attached to devices and defer it to driver binding time,
+so that IOMMU devices have a chance to be probed and to register
+their bus notifiers before the dma_ops attach sequence for a
+device is actually carried out.
+
+As a result we also no longer need worry about racing with
+iommu_bus_notifier(), or about retrying the queue in case devices
+were added too early on DT-based systems, so clean up the notifier
+itself plus the additional workaround from 722ec35f7fae ("arm64:
+dma-mapping: fix handling of devices registered before arch_initcall")
+
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+[rm: get rid of other now-redundant bits]
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
 
-v3: Now actually tested; improve comment about duplicate IDs.
+v3: New, co-opted from http://article.gmane.org/gmane.linux.kernel.iommu/13991
 
- drivers/iommu/Kconfig       |  2 +-
- drivers/iommu/arm-smmu-v3.c | 42 ++++++++++++++++++++++++++++++++++--------
- 2 files changed, 35 insertions(+), 9 deletions(-)
+ arch/arm64/mm/dma-mapping.c | 22 +++++-----------------
+ 1 file changed, 5 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index ad0860383cb3..d1c66afefeed 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -308,7 +308,7 @@ config ARM_SMMU
- 
- config ARM_SMMU_V3
- 	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
--	depends on ARM64 && PCI
-+	depends on ARM64
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select GENERIC_MSI_IRQ_DOMAIN
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 8ce2a4f9342b..735690e03818 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -35,6 +35,8 @@
- #include <linux/pci.h>
- #include <linux/platform_device.h>
- 
-+#include <linux/amba/bus.h>
-+
- #include "io-pgtable.h"
- 
- /* MMIO registers */
-@@ -1822,6 +1824,25 @@ static void arm_smmu_remove_device(struct device *dev)
- 	iommu_fwspec_free(dev);
- }
- 
-+static struct iommu_group *arm_smmu_device_group(struct device *dev)
-+{
-+	struct iommu_group *group;
-+
-+	/*
-+	 * The difficulty of efficient stream-ID-to-device lookup prevents us
-+	 * from reasonably detecting aliasing outside of PCI buses, but for the
-+	 * the same underlying reason (a sparse 32-bit ID space) there's also
-+	 * little excuse for systems to be wired up with non-unique IDs in the
-+	 * first place; consider them unsupported.
-+	 */
-+	if (dev_is_pci(dev))
-+		group = pci_device_group(dev);
-+	else
-+		group = generic_device_group(dev);
-+
-+	return group;
-+}
-+
- static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- 				    enum iommu_attr attr, void *data)
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index c566ec83719f..e384b76203cc 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -848,15 +848,16 @@ static int __iommu_attach_notifier(struct notifier_block *nb,
  {
-@@ -1868,13 +1889,8 @@ out_unlock:
+ 	struct iommu_dma_notifier_data *master, *tmp;
  
- static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- {
--	int ret;
-+	int ret = iommu_fwspec_init(dev, args->np);
+-	if (action != BUS_NOTIFY_ADD_DEVICE)
++	if (action != BUS_NOTIFY_BIND_DRIVER)
+ 		return 0;
  
--	/* We only support PCI, for now */
--	if (!dev_is_pci(dev))
--		return -ENODEV;
--
--	ret = iommu_fwspec_init(dev, args->np);
+ 	mutex_lock(&iommu_dma_notifier_lock);
+ 	list_for_each_entry_safe(master, tmp, &iommu_dma_masters, list) {
+-		if (do_iommu_attach(master->dev, master->ops,
+-				master->dma_base, master->size)) {
++		if (data == master->dev && do_iommu_attach(master->dev,
++				master->ops, master->dma_base, master->size)) {
+ 			list_del(&master->list);
+ 			kfree(master);
++			break;
+ 		}
+ 	}
+ 	mutex_unlock(&iommu_dma_notifier_lock);
+@@ -870,17 +871,8 @@ static int __init register_iommu_dma_ops_notifier(struct bus_type *bus)
+ 
+ 	if (!nb)
+ 		return -ENOMEM;
+-	/*
+-	 * The device must be attached to a domain before the driver probe
+-	 * routine gets a chance to start allocating DMA buffers. However,
+-	 * the IOMMU driver also needs a chance to configure the iommu_group
+-	 * via its add_device callback first, so we need to make the attach
+-	 * happen between those two points. Since the IOMMU core uses a bus
+-	 * notifier with default priority for add_device, do the same but
+-	 * with a lower priority to ensure the appropriate ordering.
+-	 */
++
+ 	nb->notifier_call = __iommu_attach_notifier;
+-	nb->priority = -100;
+ 
+ 	ret = bus_register_notifier(bus, nb);
+ 	if (ret) {
+@@ -904,10 +896,6 @@ static int __init __iommu_dma_init(void)
  	if (!ret)
- 		ret = iommu_fwspec_add_ids(dev, &args->args[0], 1);
- 
-@@ -1891,7 +1907,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.iova_to_phys		= arm_smmu_iova_to_phys,
- 	.add_device		= arm_smmu_add_device,
- 	.remove_device		= arm_smmu_remove_device,
--	.device_group		= pci_device_group,
-+	.device_group		= arm_smmu_device_group,
- 	.domain_get_attr	= arm_smmu_domain_get_attr,
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
- 	.of_xlate		= arm_smmu_of_xlate,
-@@ -2634,7 +2650,17 @@ static int __init arm_smmu_init(void)
- 	if (ret)
- 		return ret;
- 
--	return bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
-+#ifdef CONFIG_PCI
-+	ret = bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
-+	if (ret)
-+		return ret;
-+#endif
-+#ifdef CONFIG_ARM_AMBA
-+	ret = bus_set_iommu(&amba_bustype, &arm_smmu_ops);
-+	if (ret)
-+		return ret;
-+#endif
-+	return bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
+ 		ret = register_iommu_dma_ops_notifier(&pci_bus_type);
+ #endif
+-
+-	/* handle devices queued before this arch_initcall */
+-	if (!ret)
+-		__iommu_attach_notifier(NULL, BUS_NOTIFY_ADD_DEVICE, NULL);
+ 	return ret;
  }
- 
- static void __exit arm_smmu_exit(void)
+ arch_initcall(__iommu_dma_init);
 -- 
 2.8.1.dirty
 
