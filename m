@@ -1,7 +1,8 @@
 From: Heiner Kallweit <hkallweit1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 3/3] iommu: remove unneeded check
-Date: Tue, 28 Jun 2016 20:40:37 +0200
-Message-ID: <461a9f1f-f601-8575-f2cc-78a1bcc12ee5@gmail.com>
+Subject: [PATCH 2/3] iommu: improve handling of failed call to
+	kset_create_and_add
+Date: Tue, 28 Jun 2016 20:39:54 +0200
+Message-ID: <00b60d38-f397-58b0-2a05-919649fc1e68@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -19,27 +20,30 @@ To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The init function ensures that iommu_group_kset can't be NULL.
-Therefore this check isn't needed.
+If kset_create_and_add fails then most likely due to out-of-memory.
+There's not necessarily a bug somewhere.
+Therefore I think we shouldn't use BUG_ON and simply return -ENOMEM.
+That's also what other callers of kset_create_and_add do.
 
 Signed-off-by: Heiner Kallweit <hkallweit1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/iommu/iommu.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index b36ec9c..b36e24d 100644
+index debce45..b36ec9c 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -235,9 +235,6 @@ struct iommu_group *iommu_group_get_by_id(int id)
- 	struct iommu_group *group;
- 	const char *name;
- 
--	if (!iommu_group_kset)
--		return NULL;
+@@ -1483,9 +1483,7 @@ static int __init iommu_init(void)
+ {
+ 	iommu_group_kset = kset_create_and_add("iommu_groups",
+ 					       NULL, kernel_kobj);
+-	BUG_ON(!iommu_group_kset);
 -
- 	name = kasprintf(GFP_KERNEL, "%d", id);
- 	if (!name)
- 		return NULL;
+-	return 0;
++	return iommu_group_kset ? 0 : -ENOMEM;
+ }
+ core_initcall(iommu_init);
+ 
 -- 
 2.9.0
