@@ -1,13 +1,18 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC 1/2] iommu/dma: Restrict IOVAs to physical memory layout
-Date: Tue, 28 Jun 2016 17:18:57 +0100
-Message-ID: <ac9b11493dfa3500889268488adfa8d4d5c34962.1467129314.git.robin.murphy@arm.com>
-References: <cover.1467123945.git.robin.murphy@arm.com>
+From: "Vesely, Jan" <Jan.Vesely-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH 2/2] iommu/amd: Destroy api_lock mutex when freeing domain
+Date: Tue, 28 Jun 2016 16:48:54 +0000
+Message-ID: <1467132531.2590.158.camel@amd.com>
+References: <1463854264-26445-1-git-send-email-jan.vesely@rutgers.edu>
+	<1463854264-26445-2-git-send-email-jan.vesely@rutgers.edu>
+	<1465487321.7114.0.camel@amd.com> <20160615115406.GF26566@8bytes.org>
+	<1466013192.3265.74.camel@amd.com> <20160615205311.GB19822@pd.tnic>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1467123945.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20160615205311.GB19822-fF5Pk5pvG8Y@public.gmane.org>
+Content-Language: en-US
+Content-ID: <3C4D694E4E14434D913FCE474348F977-asWib9pRmPqcE4WynfumptQqCkab/8FMAL8bYrjMMd8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,69 +22,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: "bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org" <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Certain peripherals may be bestowed with knowledge of the physical
-memory map of the system in which they live, and refuse to handle
-addresses that they do not think are memory, which causes issues when
-remapping to arbitrary IOVAs. Sidestep the issue by restricting IOVA
-domains to only allocate addresses within ranges which match the
-physical memory layout.
+On Wed, 2016-06-15 at 22:53 +0200, Borislav Petkov wrote:
+> On Wed, Jun 15, 2016 at 05:53:15PM +0000, Vesely, Jan wrote:
+> > There are no specific bugs/oopses that these patches fix (that I'm
+> > aware of). Both were found while I was familiarizing myself with
+> > the
+> > code looking for memory corruption (which turned out to be [0]).
+> > Either issue would be very difficult to hit in the wild and
+> > mutex_destroy is empty unless you compile using
+> > CONFIG_DEBUG_MUTEXES.
+> 
+> See Documentation/SubmittingPatches which explains what "Fixes:"
+> means.
+> 
+> That same file also contains info in section 2) how to write commit
+> messages.
+> 
+> Please read it, it'll help you significantly if you're planning on
+> sending more patches to LKML.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+Hi,
 
-Posting this as an RFC because it's something I've been having to use
-on Juno for all the PCI IOMMU development - it's pretty horrible, but I
-can't easily think of a nicer solution...
+thanks for all the hints. I'll try to revisit and update the patches
+soon (might take few weeks though). Kernel development is not my
+(current) job and other subsystems don't have these requirements, if
+submissions need more than just git send-email of existing fixes
+dedicating extra time is difficult.
 
- drivers/iommu/dma-iommu.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+Jan
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index ea5a9ebf0f78..2385fab382d8 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -25,6 +25,7 @@
- #include <linux/huge_mm.h>
- #include <linux/iommu.h>
- #include <linux/iova.h>
-+#include <linux/memblock.h>
- #include <linux/mm.h>
- #include <linux/scatterlist.h>
- #include <linux/vmalloc.h>
-@@ -74,6 +75,23 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
- }
- EXPORT_SYMBOL(iommu_put_dma_cookie);
- 
-+static void iova_match_mem(struct iova_domain *iovad)
-+{
-+	struct memblock_region *reg;
-+	unsigned long blk, base = iovad->start_pfn;
-+	unsigned long shift = iova_shift(iovad);
-+
-+	for_each_memblock(memory, reg) {
-+		blk = (reg->base + iova_mask(iovad)) >> shift;
-+		if (blk > base)
-+			reserve_iova(iovad, base, blk - 1);
-+		base = (reg->base + reg->size) >> shift;
-+	}
-+	blk = -1UL >> shift;
-+	if (blk > base)
-+		reserve_iova(iovad, base, blk);
-+}
-+
- /**
-  * iommu_dma_init_domain - Initialise a DMA mapping domain
-  * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
-@@ -123,6 +141,7 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size
- 		iovad->dma_32bit_pfn = end_pfn;
- 	} else {
- 		init_iova_domain(iovad, 1UL << order, base_pfn, end_pfn);
-+		iova_match_mem(iovad);
- 	}
- 	return 0;
- }
--- 
-2.8.1.dirty
+> 
+> > [0] https://lkml.org/lkml/2016/3/7/1087
+> 
+> Oh, and also, please don't use any web pages archiving lkml as
+> pointers
+> but the kernel.org redirector:
+> 
+> http://lkml.kernel.org/r/<Message-ID>;
+> 
+> or
+> 
+> http://lkml.kernel.org/g/<Message-ID>;
+> 
+> (that second one redirects to gmane)
+> 
+> HTH.
+> 
