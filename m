@@ -1,7 +1,7 @@
 From: Heiner Kallweit <hkallweit1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 1/3] iommu: simplify init function
-Date: Tue, 28 Jun 2016 20:38:36 +0200
-Message-ID: <eb8426b8-d601-af6e-170f-1a29eb8e1d56@gmail.com>
+Subject: [PATCH 3/3] iommu: remove unneeded check
+Date: Tue, 28 Jun 2016 20:40:37 +0200
+Message-ID: <461a9f1f-f601-8575-f2cc-78a1bcc12ee5@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -19,38 +19,27 @@ To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-iommu_group_ida and iommu_group_mutex can be initialized statically.
-There's no need to do this dynamically in the init function.
+The init function ensures that iommu_group_kset can't be NULL.
+Therefore this check isn't needed.
 
 Signed-off-by: Heiner Kallweit <hkallweit1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/iommu/iommu.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3000051..debce45 100644
+index b36ec9c..b36e24d 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -34,8 +34,8 @@
- #include <trace/events/iommu.h>
+@@ -235,9 +235,6 @@ struct iommu_group *iommu_group_get_by_id(int id)
+ 	struct iommu_group *group;
+ 	const char *name;
  
- static struct kset *iommu_group_kset;
--static struct ida iommu_group_ida;
--static struct mutex iommu_group_mutex;
-+static DEFINE_IDA(iommu_group_ida);
-+static DEFINE_MUTEX(iommu_group_mutex);
- 
- struct iommu_callback_data {
- 	const struct iommu_ops *ops;
-@@ -1483,9 +1483,6 @@ static int __init iommu_init(void)
- {
- 	iommu_group_kset = kset_create_and_add("iommu_groups",
- 					       NULL, kernel_kobj);
--	ida_init(&iommu_group_ida);
--	mutex_init(&iommu_group_mutex);
+-	if (!iommu_group_kset)
+-		return NULL;
 -
- 	BUG_ON(!iommu_group_kset);
- 
- 	return 0;
+ 	name = kasprintf(GFP_KERNEL, "%d", id);
+ 	if (!name)
+ 		return NULL;
 -- 
 2.9.0
