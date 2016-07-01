@@ -1,216 +1,96 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v4 2/8] Docs: dt: add PCI IOMMU map bindings
-Date: Fri,  1 Jul 2016 17:50:11 +0100
-Message-ID: <cdddd1d0f41d6fb9b81b4c35d6c30dbe4af945ed.1467388950.git.robin.murphy@arm.com>
+Subject: [PATCH v4 4/8] iommu/of: Handle iommu-map property for PCI
+Date: Fri,  1 Jul 2016 17:50:13 +0100
+Message-ID: <3e048b1536c4524c688ea1163623c585df0214f1.1467388950.git.robin.murphy@arm.com>
 References: <cover.1467388950.git.robin.murphy@arm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1467388950.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Now that we have a way to pick up the RID translation and target IOMMU,
+hook up of_iommu_configure() to bring PCI devices into the of_xlate
+mechanism and allow them IOMMU-backed DMA ops without the need for
+driver-specific handling.
 
-The existing IOMMU bindings are able to specify the relationship between
-masters and IOMMUs, but they are insufficient for describing the general
-case of hotpluggable busses such as PCI where the set of masters is not
-known until runtime, and the relationship between masters and IOMMUs is
-a property of the integration of the system.
-
-This patch adds a generic binding for mapping PCI devices to IOMMUs,
-using a new iommu-map property (specific to PCI*) which may be used to
-map devices (identified by their Requester ID) to sideband data for the
-IOMMU which they master through.
-
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
 
 v4: No change.
 
- .../devicetree/bindings/pci/pci-iommu.txt          | 171 +++++++++++++++++++++
- 1 file changed, 171 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pci/pci-iommu.txt
+ drivers/iommu/of_iommu.c | 43 ++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 36 insertions(+), 7 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/pci/pci-iommu.txt b/Documentation/devicetree/bindings/pci/pci-iommu.txt
-new file mode 100644
-index 000000000000..56c829621b9a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pci/pci-iommu.txt
-@@ -0,0 +1,171 @@
-+This document describes the generic device tree binding for describing the
-+relationship between PCI(e) devices and IOMMU(s).
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index af499aea0a1a..1fe1f620f79d 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -22,6 +22,7 @@
+ #include <linux/limits.h>
+ #include <linux/of.h>
+ #include <linux/of_iommu.h>
++#include <linux/of_pci.h>
+ #include <linux/slab.h>
+ 
+ static const struct of_device_id __iommu_of_table_sentinel
+@@ -134,20 +135,48 @@ const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+ 	return ops;
+ }
+ 
++static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
++{
++	struct of_phandle_args *iommu_spec = data;
 +
-+Each PCI(e) device under a root complex is uniquely identified by its Requester
-+ID (AKA RID). A Requester ID is a triplet of a Bus number, Device number, and
-+Function number.
++	iommu_spec->args[0] = alias;
++	return iommu_spec->np == pdev->bus->dev.of_node;
++}
 +
-+For the purpose of this document, when treated as a numeric value, a RID is
-+formatted such that:
-+
-+* Bits [15:8] are the Bus number.
-+* Bits [7:3] are the Device number.
-+* Bits [2:0] are the Function number.
-+* Any other bits required for padding must be zero.
-+
-+IOMMUs may distinguish PCI devices through sideband data derived from the
-+Requester ID. While a given PCI device can only master through one IOMMU, a
-+root complex may split masters across a set of IOMMUs (e.g. with one IOMMU per
-+bus).
-+
-+The generic 'iommus' property is insufficient to describe this relationship,
-+and a mechanism is required to map from a PCI device to its IOMMU and sideband
-+data.
-+
-+For generic IOMMU bindings, see
-+Documentation/devicetree/bindings/iommu/iommu.txt.
-+
-+
-+PCI root complex
-+================
-+
-+Optional properties
-+-------------------
-+
-+- iommu-map: Maps a Requester ID to an IOMMU and associated iommu-specifier
-+  data.
-+
-+  The property is an arbitrary number of tuples of
-+  (rid-base,iommu,iommu-base,length).
-+
-+  Any RID r in the interval [rid-base, rid-base + length) is associated with
-+  the listed IOMMU, with the iommu-specifier (r - rid-base + iommu-base).
-+
-+- iommu-map-mask: A mask to be applied to each Requester ID prior to being
-+  mapped to an iommu-specifier per the iommu-map property.
-+
-+
-+Example (1)
-+===========
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	iommu: iommu@a {
-+		reg = <0xa 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	pci: pci@f {
-+		reg = <0xf 0x1>;
-+		compatible = "vendor,pcie-root-complex";
-+		device_type = "pci";
-+
+ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 					   struct device_node *master_np)
+ {
+ 	struct of_phandle_args iommu_spec;
+-	struct device_node *np;
++	struct device_node *np = NULL;
+ 	const struct iommu_ops *ops = NULL;
+ 	int idx = 0;
+ 
+-	/*
+-	 * We can't do much for PCI devices without knowing how
+-	 * device IDs are wired up from the PCI bus to the IOMMU.
+-	 */
+-	if (dev_is_pci(dev))
+-		return NULL;
++	if (dev_is_pci(dev)) {
 +		/*
-+		 * The sideband data provided to the IOMMU is the RID,
-+		 * identity-mapped.
++		 * Start by tracing the RID alias down the PCI topology as
++		 * far as the host bridge whose OF node we have...
 +		 */
-+		iommu-map = <0x0 &iommu 0x0 0x10000>;
-+	};
-+};
-+
-+
-+Example (2)
-+===========
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	iommu: iommu@a {
-+		reg = <0xa 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	pci: pci@f {
-+		reg = <0xf 0x1>;
-+		compatible = "vendor,pcie-root-complex";
-+		device_type = "pci";
-+
++		iommu_spec.np = master_np;
++		pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid,
++				       &iommu_spec);
 +		/*
-+		 * The sideband data provided to the IOMMU is the RID with the
-+		 * function bits masked out.
++		 * ...then find out what that becomes once it escapes the PCI
++		 * bus into the system beyond, and which IOMMU it ends up at.
 +		 */
-+		iommu-map = <0x0 &iommu 0x0 0x10000>;
-+		iommu-map-mask = <0xfff8>;
-+	};
-+};
++		if (of_pci_map_rid(master_np, iommu_spec.args[0], "iommu-map",
++				    "iommu-map-mask", &np, iommu_spec.args))
++			return NULL;
 +
++		/* We're not attempting to handle multi-alias devices yet */
++		iommu_spec.np = np;
++		iommu_spec.args_count = 1;
++		ops = of_iommu_get_ops(np);
++		if (!ops || !ops->of_xlate || ops->of_xlate(dev, &iommu_spec))
++			ops = NULL;
 +
-+Example (3)
-+===========
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	iommu: iommu@a {
-+		reg = <0xa 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	pci: pci@f {
-+		reg = <0xf 0x1>;
-+		compatible = "vendor,pcie-root-complex";
-+		device_type = "pci";
-+
-+		/*
-+		 * The sideband data provided to the IOMMU is the RID,
-+		 * but the high bits of the bus number are flipped.
-+		 */
-+		iommu-map = <0x0000 &iommu 0x8000 0x8000>,
-+			    <0x8000 &iommu 0x0000 0x8000>;
-+	};
-+};
-+
-+
-+Example (4)
-+===========
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	iommu_a: iommu@a {
-+		reg = <0xa 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	iommu_b: iommu@b {
-+		reg = <0xb 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	iommu_c: iommu@c {
-+		reg = <0xc 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	pci: pci@f {
-+		reg = <0xf 0x1>;
-+		compatible = "vendor,pcie-root-complex";
-+		device_type = "pci";
-+
-+		/*
-+		 * Devices with bus number 0-127 are mastered via IOMMU
-+		 * a, with sideband data being RID[14:0].
-+		 * Devices with bus number 128-255 are mastered via
-+		 * IOMMU b, with sideband data being RID[14:0].
-+		 * No devices master via IOMMU c.
-+		 */
-+		iommu-map = <0x0000 &iommu_a 0x0000 0x8000>,
-+			    <0x8000 &iommu_b 0x0000 0x8000>;
-+	};
-+};
++		of_node_put(np);
++		return ops;
++	}
+ 
+ 	/*
+ 	 * We don't currently walk up the tree looking for a parent IOMMU.
 -- 
 2.8.1.dirty
 
