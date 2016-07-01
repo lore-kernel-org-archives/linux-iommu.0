@@ -1,120 +1,58 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 6/9] iommu/of: Introduce iommu_fwspec
-Date: Fri, 1 Jul 2016 13:04:46 +0100
-Message-ID: <57765C5E.8010400@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 2/9] iommu/of: Consolidate device creation workarounds
+Date: Fri, 1 Jul 2016 13:29:55 +0100
+Message-ID: <20160701122955.GI12735@arm.com>
 References: <cover.1467123945.git.robin.murphy@arm.com>
-	<227abd6fb43e4163d94673066b4b736d7efaa635.1467123945.git.robin.murphy@arm.com>
-	<20160701105505.GH12735@arm.com>
+ <dc8ac0f397ea5c90937fb5c9974e4ab02e264bd8.1467123945.git.robin.murphy@arm.com>
+ <611b2a77-e7e8-e1e2-85b5-4f469f3ebdf4@samsung.com>
+ <577651D7.4030309@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160701105505.GH12735-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <577651D7.4030309-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/07/16 11:55, Will Deacon wrote:
-> On Tue, Jun 28, 2016 at 04:48:25PM +0100, Robin Murphy wrote:
->> Introduce a common structure to hold the per-device firmware data that
->> non-architectural IOMMU drivers generally need to keep track of.
->> Initially this is DT-specific to complement the existing of_iommu
->> support code, but will generalise further once other firmware methods
->> (e.g. ACPI IORT) come along.
->>
->> Ultimately the aim is to promote the fwspec to a first-class member of
->> struct device, and handle the init/free automatically in the firmware
->> code. That way we can have API calls look for dev->fwspec->iommu_ops
->> before falling back to dev->bus->iommu_ops, and thus gracefully handle
->> those troublesome multi-IOMMU systems which we currently cannot. To
->> start with, though, make use of the existing archdata field and delegate
->> the init/free to drivers to allow an incremental conversion rather than
->> the impractical pain of trying to attempt everything in one go.
->>
->> Suggested-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
->>
->> v3: New.
->>
->>  drivers/iommu/of_iommu.c | 47 +++++++++++++++++++++++++++++++++++++++++++++++
->>  include/linux/of_iommu.h | 18 ++++++++++++++++++
->>  2 files changed, 65 insertions(+)
->>
->> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->> index 25406a8b9d4e..2b90c1f56ff2 100644
->> --- a/drivers/iommu/of_iommu.c
->> +++ b/drivers/iommu/of_iommu.c
->> @@ -220,3 +220,50 @@ void __init of_iommu_init(void)
->>  				of_node_full_name(np));
->>  	}
->>  }
->> +
->> +int iommu_fwspec_init(struct device *dev, struct device_node *iommu_np)
+On Fri, Jul 01, 2016 at 12:19:51PM +0100, Robin Murphy wrote:
+> On 01/07/16 11:32, Marek Szyprowski wrote:
+> > Frankly, I would avoid moving this workaround to the iommu core. IMHO the
+> > best solution would be to let IOMMU controllers to be instantiated as
+> > normal
+> > devices and implement proper support in the device core for waiting for the
+> > iommu controller. Then the workaround can be removed from exynos and mtk
+> > iommu drivers. What's the status of IOMMU deferred probe patches?
 > 
-> These functions might want an of_* prefix to match the rest of the file,
-> or do you plan to re-use these later for ACPI?
-
-Indeed, the naming is a deliberate concession to the future - I was
-trying to pre-empt the idea that the interface might be intended to grow
-into separate of_* and iort_* versions. I'm just using raw device_nodes
-for the moment as I don't think we'd reached a consensus on whether
-fwnode_handle or some other abstraction was the appropriate way to go.
-
->> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
->> index bd02b44902d0..5a4f516cfcfe 100644
->> --- a/include/linux/of_iommu.h
->> +++ b/include/linux/of_iommu.h
->> @@ -15,6 +15,14 @@ extern void of_iommu_init(void);
->>  extern const struct iommu_ops *of_iommu_configure(struct device *dev,
->>  					struct device_node *master_np);
->>  
->> +struct iommu_fwspec {
->> +	const struct iommu_ops	*iommu_ops;
->> +	struct device_node	*iommu_np;
->> +	void			*iommu_priv;
->> +	unsigned int		num_ids;
->> +	u32			ids[];
->> +};
->> +
->>  #else
->>  
->>  static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
->> @@ -31,8 +39,18 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
->>  	return NULL;
->>  }
->>  
->> +struct iommu_fwspec;
->> +
->>  #endif	/* CONFIG_OF_IOMMU */
->>  
->> +int iommu_fwspec_init(struct device *dev, struct device_node *iommu_np);
->> +void iommu_fwspec_free(struct device *dev);
->> +int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
->> +static inline struct iommu_fwspec *dev_iommu_fwspec(struct device *dev)
->> +{
->> +	return dev->archdata.iommu;
->> +}
+> I think revisiting probe ordering is now second-from-top on my to-do
+> list after this lot. This patch was kind of thinking ahead to get the
+> "touch all the drivers" aspect out of the way before it grows any
+> bigger, and all the development can then happen in the core code alone,
+> but I admit it's not a particularly strong argument.
 > 
-> I'm a bit nervous about putting this inline in a header file, since not
-> all architectures unconditionally provide the iommu field in dev_archdata.
-
-Ah yes, you're right, this shouldn't be defined without OF_IOMMU (or the
-IORT equivalent) anyway. Clearly the premature optimisation demons had
-begun whispering "A measly one-line accessor in a separate compilation
-unit? Won't somebody think of the chil^Wbranch predictors!?"
-
-Robin.
-
+> > I've encountered a serious problems with current code (the one which
+> > instantiates iommu controller devices from iommu driver) and its
+> > integration
+> > with power domains, clocks and runtime pm, which were not possible to
+> > resolve
+> > without iommu deferred probe.
 > 
-> Will
+> OK. Do you have any plans to try tweaking the current workaround, or is
+> it really not worth it? FWIW I do have an Exynos 5410 (Odroid-XU) on my
+> desk which I could theoretically test things on, but I suspect it would
+> take a fair amount of work to get the SYSMMUs and relevant media bits up
+> and running on top of Krzysztof's basic support.
 > 
+> Will: for the time being, the alternative to this patch would be to
+> squash the following change into patch 7/9 (without either, patch 8/9
+> doesn't really work).
+
+It's ugly, but I'm fine with it for the moment. No need to wait for the
+probe deferral stuff before getting this in.
+
+Will
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
