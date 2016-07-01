@@ -1,115 +1,51 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v4 1/8] arm64: mm: change IOMMU notifier action to attach DMA ops
-Date: Fri,  1 Jul 2016 17:50:10 +0100
-Message-ID: <06d430a86f5d7f461308a9278bf25f40fb50d93c.1467388950.git.robin.murphy@arm.com>
-References: <cover.1467388950.git.robin.murphy@arm.com>
+Subject: [PATCH v4 0/8] Generic DT bindings for PCI IOMMUs and ARM SMMUv3
+Date: Fri,  1 Jul 2016 17:50:09 +0100
+Message-ID: <cover.1467388950.git.robin.murphy@arm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <cover.1467388950.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Here's a quick repost to address the comments on v3[1], in the hope of
+making some progress while I'm away next week.
 
-Current bus notifier in ARM64 (__iommu_attach_notifier)
-attempts to attach dma_ops to a device on BUS_NOTIFY_ADD_DEVICE
-action notification.
+I've dropped the workaround consolidation patch (and added the
+equivalent to patch 6) since it's as much of a step sideways as in the
+right direction, so we may as well hold off until _really_ fixing probe
+ordering. Beyond that, a few minor tweaks per Will's comments.
 
-This will cause issues on ACPI based systems, where PCI devices
-can be added before the IOMMUs the devices are attached to
-had a chance to be probed, causing failures on attempts to
-attach dma_ops in that the domain for the respective IOMMU
-may not be set-up yet by the time the bus notifier is run.
+Robin.
 
-Devices dma_ops do not require to be set-up till the matching
-device drivers are probed. This means that instead of running
-the notifier attaching dma_ops to devices (__iommu_attach_notifier)
-on BUS_NOTIFY_ADD_DEVICE action, it can be run just before the
-device driver is bound to the device in question (on action
-BUS_NOTIFY_BIND_DRIVER) so that it is certain that its IOMMU
-group and domain are set-up accordingly at the time the
-notifier is triggered.
+[1]:http://thread.gmane.org/gmane.linux.kernel.iommu/14303
 
-This patch changes the notifier action upon which dma_ops
-are attached to devices and defer it to driver binding time,
-so that IOMMU devices have a chance to be probed and to register
-their bus notifiers before the dma_ops attach sequence for a
-device is actually carried out.
+Lorenzo Pieralisi (1):
+  arm64: mm: change IOMMU notifier action to attach DMA ops
 
-As a result we also no longer need worry about racing with
-iommu_bus_notifier(), or about retrying the queue in case devices
-were added too early on DT-based systems, so clean up the notifier
-itself plus the additional workaround from 722ec35f7fae ("arm64:
-dma-mapping: fix handling of devices registered before arch_initcall")
+Mark Rutland (1):
+  Docs: dt: add PCI IOMMU map bindings
 
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-[rm: get rid of other now-redundant bits]
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+Robin Murphy (6):
+  of/irq: Break out msi-map lookup (again)
+  iommu/of: Handle iommu-map property for PCI
+  iommu/of: Introduce iommu_fwspec
+  iommu/arm-smmu: Implement of_xlate() for SMMUv3
+  iommu/arm-smmu: Support non-PCI devices with SMMUv3
+  iommu/arm-smmu: Set PRIVCFG in stage 1 STEs
 
-v4: No change.
+ .../devicetree/bindings/pci/pci-iommu.txt          | 171 +++++++++++
+ arch/arm64/mm/dma-mapping.c                        |  22 +-
+ drivers/iommu/Kconfig                              |   2 +-
+ drivers/iommu/arm-smmu-v3.c                        | 313 ++++++++++-----------
+ drivers/iommu/of_iommu.c                           |  95 ++++++-
+ drivers/of/irq.c                                   |  78 +----
+ drivers/of/of_pci.c                                | 102 +++++++
+ include/linux/of_iommu.h                           |  15 +
+ include/linux/of_pci.h                             |  10 +
+ 9 files changed, 549 insertions(+), 259 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pci/pci-iommu.txt
 
- arch/arm64/mm/dma-mapping.c | 22 +++++-----------------
- 1 file changed, 5 insertions(+), 17 deletions(-)
-
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index c566ec83719f..e384b76203cc 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -848,15 +848,16 @@ static int __iommu_attach_notifier(struct notifier_block *nb,
- {
- 	struct iommu_dma_notifier_data *master, *tmp;
- 
--	if (action != BUS_NOTIFY_ADD_DEVICE)
-+	if (action != BUS_NOTIFY_BIND_DRIVER)
- 		return 0;
- 
- 	mutex_lock(&iommu_dma_notifier_lock);
- 	list_for_each_entry_safe(master, tmp, &iommu_dma_masters, list) {
--		if (do_iommu_attach(master->dev, master->ops,
--				master->dma_base, master->size)) {
-+		if (data == master->dev && do_iommu_attach(master->dev,
-+				master->ops, master->dma_base, master->size)) {
- 			list_del(&master->list);
- 			kfree(master);
-+			break;
- 		}
- 	}
- 	mutex_unlock(&iommu_dma_notifier_lock);
-@@ -870,17 +871,8 @@ static int __init register_iommu_dma_ops_notifier(struct bus_type *bus)
- 
- 	if (!nb)
- 		return -ENOMEM;
--	/*
--	 * The device must be attached to a domain before the driver probe
--	 * routine gets a chance to start allocating DMA buffers. However,
--	 * the IOMMU driver also needs a chance to configure the iommu_group
--	 * via its add_device callback first, so we need to make the attach
--	 * happen between those two points. Since the IOMMU core uses a bus
--	 * notifier with default priority for add_device, do the same but
--	 * with a lower priority to ensure the appropriate ordering.
--	 */
-+
- 	nb->notifier_call = __iommu_attach_notifier;
--	nb->priority = -100;
- 
- 	ret = bus_register_notifier(bus, nb);
- 	if (ret) {
-@@ -904,10 +896,6 @@ static int __init __iommu_dma_init(void)
- 	if (!ret)
- 		ret = register_iommu_dma_ops_notifier(&pci_bus_type);
- #endif
--
--	/* handle devices queued before this arch_initcall */
--	if (!ret)
--		__iommu_attach_notifier(NULL, BUS_NOTIFY_ADD_DEVICE, NULL);
- 	return ret;
- }
- arch_initcall(__iommu_dma_init);
 -- 
 2.8.1.dirty
 
