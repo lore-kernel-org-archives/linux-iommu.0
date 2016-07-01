@@ -1,146 +1,183 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 7/9] iommu/arm-smmu: Implement of_xlate() for SMMUv3
-Date: Fri, 1 Jul 2016 14:26:08 +0100
-Message-ID: <57766F70.6070704@arm.com>
-References: <cover.1467123945.git.robin.murphy@arm.com>
- <6de0ca7795e1b74627ceb55dcefcfd5537f245ce.1467123945.git.robin.murphy@arm.com>
- <20160701123507.GJ12735@arm.com>
+From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Subject: RE: [RFC PATCH 1/2] fsl-mc: Added header file to provide fsl-mc bus
+	iommu group creation
+Date: Fri, 1 Jul 2016 15:11:26 +0000
+Message-ID: <HE1PR0401MB18665619AD59E13351348558E6250@HE1PR0401MB1866.eurprd04.prod.outlook.com>
+References: <1467220448-16764-1-git-send-email-nipun.gupta@nxp.com>
+	<5774FABE.5070707@arm.com>
+	<HE1PR0401MB1866C1468D3B4733B437C79BE6240@HE1PR0401MB1866.eurprd04.prod.outlook.com>
+	<57752939.9010504@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20160701123507.GJ12735-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <57752939.9010504-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/07/16 13:35, Will Deacon wrote:
-> On Tue, Jun 28, 2016 at 04:48:26PM +0100, Robin Murphy wrote:
->> Now that we can properly describe the mapping between PCI RIDs and
->> stream IDs via "iommu-map", and have it fed it to the driver
->> automatically via of_xlate(), rework the SMMUv3 driver to benefit from
->> that, and get rid of the current misuse of the "iommus" binding.
->>
->> Since having of_xlate wired up means that masters will now be given the
->> appropriate DMA ops, we also need to make sure that default domains work
->> properly. This necessitates dispensing with the "whole group at a time"
->> notion for attaching to a domain, as devices which share a group get
->> attached to the group's default domain one by one as they are initially
->> probed.
->>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
-> 
-> [...]
-> 
->>  static int arm_smmu_add_device(struct device *dev)
->>  {
->>  	int i, ret;
->> -	u32 sid, *sids;
->> -	struct pci_dev *pdev;
->> -	struct iommu_group *group;
->> -	struct arm_smmu_group *smmu_group;
->>  	struct arm_smmu_device *smmu;
->> +	struct arm_smmu_master_data *master;
->> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec(dev);
->> +	struct iommu_group *group;
->>  
->> -	/* We only support PCI, for now */
->> -	if (!dev_is_pci(dev))
->> +	if (!fwspec || fwspec->iommu_ops != &arm_smmu_ops)
->>  		return -ENODEV;
->> -
->> -	pdev = to_pci_dev(dev);
->> -	group = iommu_group_get_for_dev(dev);
->> -	if (IS_ERR(group))
->> -		return PTR_ERR(group);
->> -
->> -	smmu_group = iommu_group_get_iommudata(group);
->> -	if (!smmu_group) {
->> -		smmu = arm_smmu_get_for_pci_dev(pdev);
->> -		if (!smmu) {
->> -			ret = -ENOENT;
->> -			goto out_remove_dev;
->> -		}
->> -
->> -		smmu_group = kzalloc(sizeof(*smmu_group), GFP_KERNEL);
->> -		if (!smmu_group) {
->> -			ret = -ENOMEM;
->> -			goto out_remove_dev;
->> -		}
->> -
->> -		smmu_group->ste.valid	= true;
->> -		smmu_group->smmu	= smmu;
->> -		iommu_group_set_iommudata(group, smmu_group,
->> -					  __arm_smmu_release_pci_iommudata);
->> +	/*
->> +	 * We _can_ actually withstand dodgy bus code re-calling add_device()
->> +	 * without an intervening remove_device()/of_xlate() sequence, but
->> +	 * we're not going to do so quietly...
->> +	 */
->> +	if (WARN_ON_ONCE(fwspec->iommu_priv)) {
->> +		master = fwspec->iommu_priv;
->> +		smmu = master->smmu;
->>  	} else {
->> -		smmu = smmu_group->smmu;
->> +		smmu = arm_smmu_get_by_node(fwspec->iommu_np);
->> +		if (!smmu)
->> +			return -ENODEV;
->> +		master = kzalloc(sizeof(*master), GFP_KERNEL);
->> +		if (!master)
->> +			return -ENOMEM;
->> +
->> +		master->smmu = smmu;
->> +		fwspec->iommu_priv = master;
->>  	}
->>  
->> -	/* Assume SID == RID until firmware tells us otherwise */
->> -	pci_for_each_dma_alias(pdev, __arm_smmu_get_pci_sid, &sid);
->> -	for (i = 0; i < smmu_group->num_sids; ++i) {
->> -		/* If we already know about this SID, then we're done */
->> -		if (smmu_group->sids[i] == sid)
->> -			goto out_put_group;
->> +	/* Check the SIDs are in range of the SMMU and our stream table */
->> +	for (i = 0; i < fwspec->num_ids; i++) {
->> +		u32 sid = fwspec->ids[i];
->> +
->> +		if (!arm_smmu_sid_in_range(smmu, sid))
->> +			return -ERANGE;
->> +
->> +		/* Ensure l2 strtab is initialised */
->> +		if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
->> +			ret = arm_smmu_init_l2_strtab(smmu, sid);
->> +			if (ret)
->> +				return ret;
->> +		}
->>  	}
-> 
-> Do you not need to do some cleanup here, rather than just returning (same
-> for the -ERANGE above)? For example, freeing the master?
 
-The master will be freed in arm_smmu_remove_device() if and when the
-device is removed from the bus. By the time we get this add_device call,
-we're already past the point of it being added to the bus and there's
-nothing we can do (all the return value here actually does is terminate
-the notifier chain). By bailing out before assigning the group, though,
-we prevent the device from being valid for any VFIO/IOMMU API usage.
 
-That does make me think, however, that it would be worth trying to
-detect in arch_setup_dma_ops() if a device has been rejected by an IOMMU
-it was supposed to be associated with, and in such cases prevent it from
-doing DMA *at all* rather than just leaving it with the default SWIOTLB
-ops. I'll have a think about how feasible that is (with any luck it
-should slot fairly neatly into the probe ordering work touching those
-areas).
-
-Robin.
-
+> -----Original Message-----
+> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
+> Sent: Thursday, June 30, 2016 19:44
+> To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>; will.deacon-5wv7dgnIgG8@public.gmane.org; Stuart Yoder
+> <stuart.yoder-3arQi8VN3Tc@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
+> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> Cc: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
+> Subject: Re: [RFC PATCH 1/2] fsl-mc: Added header file to provide fsl-mc bus
+> iommu group creation
 > 
-> Will
+> On 30/06/16 12:43, Nipun Gupta wrote:
+> >
+> >
+> >> -----Original Message-----
+> >> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
+> >> Sent: Thursday, June 30, 2016 16:26
+> >> To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>; will.deacon-5wv7dgnIgG8@public.gmane.org; Stuart
+> >> Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
+> >> linux-arm- kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> >> Cc: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
+> >> Subject: Re: [RFC PATCH 1/2] fsl-mc: Added header file to provide
+> >> fsl-mc bus iommu group creation
+> >>
+> >> On 29/06/16 18:14, Nipun Gupta wrote:
+> >>> Added a header file fsl_mc_smmu.h to provide basic support of
+> >>> creating an IOMMU group for a fsl-mc type device and also provide
+> >>> helper macro to get the stream ID of fsl-mc tyoe device.
+> >>>
+> >>> Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+> >>> Signed-off-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
+> >>> ---
+> >>>  drivers/staging/fsl-mc/include/fsl_mc_smmu.h | 45
+> >>> ++++++++++++++++++++++++++++
+> >>>  1 file changed, 45 insertions(+)
+> >>>  create mode 100644 drivers/staging/fsl-mc/include/fsl_mc_smmu.h
+> >>>
+> >>> diff --git a/drivers/staging/fsl-mc/include/fsl_mc_smmu.h
+> >>> b/drivers/staging/fsl-mc/include/fsl_mc_smmu.h
+> >>> new file mode 100644
+> >>> index 0000000..9dff5ba
+> >>> --- /dev/null
+> >>> +++ b/drivers/staging/fsl-mc/include/fsl_mc_smmu.h
+> >>> @@ -0,0 +1,45 @@
+> >>> +/*
+> >>> + * Copyright (C) 2016 Freescale Semiconductor, Inc.
+> >>> + * Author: Nipun Gupta <nipun.gupta-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
+> >>> + *
+> >>> + * This file is licensed under the terms of the GNU General Public
+> >>> + * License version 2. This program is licensed "as is" without any
+> >>> + * warranty of any kind, whether express or implied.
+> >>> + */
+> >>> +
+> >>> +#ifndef _FSL_MC_SMMU_H_
+> >>> +#define _FSL_MC_SMMU_H_
+> >>> +
+> >>> +#include <../drivers/staging/fsl-mc/include/mc.h>
+> >>> +
+> >>> +/* Macro to get the MC device ICID (Stream ID) */ #define
+> >>> +fslmc_dev_streamid(_dev) (to_fsl_mc_device(_dev)->icid)
+> >>
+> >> Is the the full 15-bit ICID from the MC's point of view, just the 7
+> >> bits that are actually routed to the SMMU, or the actual stream ID
+> >> seen by the SMMU? None of those three are necessarily the same, and
+> >> unless it's the third then I don't see the point of patches adding incomplete
+> code which isn't going to work.
+> >
+> > Hi Robin,
+> >
+> > It's the second one where just 7 bits are maintained in the 'fsl_mc_device---
+> >icid' which is programmed in SMMU. Right, once the SMR masking support is
+> there then only these patches would make more sense.
+> > We have sent these patches to get some early comments and to have you guys
+> well informed beforehand about the changes which we require in the SMMU
+> driver specific to fsl-mc bus :).
 > 
+> Indeed, it's just kinda hard to review incomplete code, especially when it's the
+> parts which don't exist yet which are the most significant ;)
+> 
+> Either way, I'm deep in the middle of reworking SMMUv2 generic bindings[1]
+> based on the latest iteration of the core code and iommu_fwspec[2], which
+> removes the need for nearly all the bus-specific business within the driver (it's
+> getting too big to be 4.8 material now, but I'll have something to post shortly).
+> In that context, if the fsl-mc driver could process an "iommu-map" property on
+> the MC node to plumb the ICID-to-stream-ID relationship into of_xlate, and
+> inherit bus->iommu_ops from its parent bus, there shouldn't be any need to
+> directly touch the SMMU driver at all.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Hi Robin,
+
+One thing I would like to bring to your notice is that with our SoC the container devices gets dynamically created by MC (using linux command line). Once the container is created, the ICID is provided by MC to the devices.
+Structure is somewhat the following:
+							      		  ---- device 1 (ID 1)
+				  ---- Container device 1 (ID 1)-----------	|---- device 2 (ID 1)
+				|					  ---- device 3 (ID 1) ...
+	MC bus/device------------	|---- Container device 2 (ID 2) ...
+	(has a DT node)  	  ---- Container device 3 (ID 3) ...
+
+Here the MC device node which is the SMMU master mode is present in the device tree, but the Container devices are created dynamically with ICID's provided to them by the MC (again at run-time).
+A single iommu_group is required to be created per container, which will have the container device and all of its child devices added into that group.
+
+On lines of your suggestion we can call the of_xlate callback of the MC device whenever the devices are created. This shall make API 'arm_smmu_init_fslmc_device' redundant from http://article.gmane.org/gmane.linux.kernel.iommu/14323 (patch 2/2).  Also looking at the your older patch-set for SMMU-v2 if we use of_xlate, I think for fsl-mc bus support there may be few changes required to facilitate addition of all the devices within the container into the single iommu_group & also setting up the 'dev->archdata.iommu' for the fsl-mc non-container devices.
+I need to have a closer look at the iommu_fwspec[2] to see if these other changes required to support fsl-mc bus can also be minimized/removed.
+
+We are eagerly waiting for your patches on SMMU-v2 for the new exciting stuff :).
+
+Thanks,
+Nipun
+ 
+> 
+> Robin.
+> 
+> [1]:http://thread.gmane.org/gmane.linux.kernel.iommu/12454
+> [2]:http://thread.gmane.org/gmane.linux.kernel.iommu/14303
+> 
+> >
+> > Thanks,
+> > Nipun
+> >
+> >>
+> >>> +/* Macro to get the container device of a MC device */ #define
+> >>> +fslmc_cont_dev(_dev) ((to_fsl_mc_device(dev)->flags & \
+> >>> +	FSL_MC_IS_DPRC) ? (_dev) : (_dev->parent))
+> >>> +
+> >>> +/* Macro to check if a device is a container device */ #define
+> >>> +is_cont_dev(_dev) (to_fsl_mc_device(_dev)->flags & FSL_MC_IS_DPRC)
+> >>> +
+> >>> +static struct iommu_group *fslmc_device_group(struct device *dev) {
+> >>> +	struct device *cont_dev = fslmc_cont_dev(dev);
+> >>> +	struct iommu_group *group;
+> >>> +
+> >>> +	/* Container device is responsible for creating the iommu group */
+> >>> +	if (is_cont_dev(dev)) {
+> >>> +		group = iommu_group_alloc();
+> >>> +
+> >>> +		if (IS_ERR(group))
+> >>> +			return NULL;
+> >>> +	} else {
+> >>> +		get_device(cont_dev);
+> >>> +		group = iommu_group_get(cont_dev);
+> >>> +		put_device(cont_dev);
+> >>> +	}
+> >>> +
+> >>> +	return group;
+> >>> +}
+> >>
+> >> In isolation, though, this part seems perfectly reasonable.
+> >>
+> >> Robin.
+> >>
+> >>> +
+> >>> +#endif /* _FSL_MC_SMMU_H_ */
+> >>>
+> >
