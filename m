@@ -1,15 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 5/9] iommu/of: Handle iommu-map property for PCI
-Date: Fri, 1 Jul 2016 12:33:10 +0100
-Message-ID: <577654F6.4040209@arm.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v3 2/9] iommu/of: Consolidate device creation workarounds
+Date: Fri, 01 Jul 2016 14:02:14 +0200
+Message-ID: <f820051f-6785-85ed-7c36-9b49e62e1200@samsung.com>
 References: <cover.1467123945.git.robin.murphy@arm.com>
-	<17617dff6e7998b91d53ed8a1d6283b1c7bc3470.1467123945.git.robin.murphy@arm.com>
-	<20160701103105.GE12735@arm.com>
+	<dc8ac0f397ea5c90937fb5c9974e4ab02e264bd8.1467123945.git.robin.murphy@arm.com>
+	<611b2a77-e7e8-e1e2-85b5-4f469f3ebdf4@samsung.com>
+	<577651D7.4030309@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160701103105.GE12735-5wv7dgnIgG8@public.gmane.org>
+In-reply-to: <577651D7.4030309-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,103 +20,99 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/07/16 11:31, Will Deacon wrote:
-> On Tue, Jun 28, 2016 at 04:48:24PM +0100, Robin Murphy wrote:
->> Now that we have a way to pick up the RID translation and target IOMMU,
->> hook up of_iommu_configure() to bring PCI devices into the of_xlate
->> mechanism and allow them IOMMU-backed DMA ops without the need for
->> driver-specific handling.
+Hi Robin,
+
+
+On 2016-07-01 13:19, Robin Murphy wrote:
+> Hi Marek,
+>
+> On 01/07/16 11:32, Marek Szyprowski wrote:
+>> Hi Robin,
 >>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
 >>
->> v3: Use explicit "iommu-map-mask", drop of_device_is_available() check.
->>
->>  drivers/iommu/of_iommu.c | 43 ++++++++++++++++++++++++++++++++++++-------
->>  1 file changed, 36 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->> index 7e6369cffc95..25406a8b9d4e 100644
->> --- a/drivers/iommu/of_iommu.c
->> +++ b/drivers/iommu/of_iommu.c
->> @@ -22,6 +22,7 @@
->>  #include <linux/limits.h>
->>  #include <linux/of.h>
->>  #include <linux/of_iommu.h>
->> +#include <linux/of_pci.h>
->>  #include <linux/of_platform.h>
->>  #include <linux/slab.h>
->>  
->> @@ -138,20 +139,48 @@ const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
->>  	return ops;
->>  }
->>  
->> +static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
->> +{
->> +	struct of_phandle_args *iommu_spec = data;
->> +
->> +	iommu_spec->args[0] = alias;
->> +	return iommu_spec->np == pdev->bus->dev.of_node;
->> +}
->> +
->>  const struct iommu_ops *of_iommu_configure(struct device *dev,
->>  					   struct device_node *master_np)
->>  {
->>  	struct of_phandle_args iommu_spec;
->> -	struct device_node *np;
->> +	struct device_node *np = NULL;
-> 
-> This sets off some alarm bells...
-> 
->>  	const struct iommu_ops *ops = NULL;
->>  	int idx = 0;
->>  
->> -	/*
->> -	 * We can't do much for PCI devices without knowing how
->> -	 * device IDs are wired up from the PCI bus to the IOMMU.
->> -	 */
->> -	if (dev_is_pci(dev))
->> -		return NULL;
->> +	if (dev_is_pci(dev)) {
->> +		/*
->> +		 * Start by tracing the RID alias down the PCI topology as
->> +		 * far as the host bridge whose OF node we have...
->> +		 */
->> +		iommu_spec.np = master_np;
->> +		pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid,
->> +				       &iommu_spec);
->> +		/*
->> +		 * ...then find out what that becomes once it escapes the PCI
->> +		 * bus into the system beyond, and which IOMMU it ends up at.
->> +		 */
->> +		if (of_pci_map_rid(master_np, iommu_spec.args[0], "iommu-map",
->> +				    "iommu-map-mask", &np, iommu_spec.args))
->> +			return NULL;
-> 
-> ... because you're assumedly initialising np to NULL in case of_pci_map_rid
-> returns 0, but doesn't set np...
+>> On 2016-06-28 17:48, Robin Murphy wrote:
+>>> So far, all the users of the generic of_xlate configuration mechanism
+>>> are resorting to explicit platform device creation to ensure the IOMMU
+>>> device is ready before anything tries to refer to it. As I'm about to
+>>> convert two more drivers that will need exactly the same thing, let's
+>>> nip that proliferation in the bud and move it to a single place.
+>>>
+>>> A neat solution is to make of_get_iommu_ops() ensure an IOMMU device is
+>>> instantiated before giving out its associated ops, since it's a fairly
+>>> safe assumption that the ops aren't going to be much use if the IOMMU
+>>> can't or won't exist to back them up.
+>>>
+>>> CC: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>>> CC: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+>>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> Frankly, I would avoid moving this workaround to the iommu core. IMHO the
+>> best solution would be to let IOMMU controllers to be instantiated as
+>> normal
+>> devices and implement proper support in the device core for waiting for the
+>> iommu controller. Then the workaround can be removed from exynos and mtk
+>> iommu drivers. What's the status of IOMMU deferred probe patches?
+> I think revisiting probe ordering is now second-from-top on my to-do
+> list after this lot. This patch was kind of thinking ahead to get the
+> "touch all the drivers" aspect out of the way before it grows any
+> bigger, and all the development can then happen in the core code alone,
+> but I admit it's not a particularly strong argument.
+>
+>> I've encountered a serious problems with current code (the one which
+>> instantiates iommu controller devices from iommu driver) and its
+>> integration
+>> with power domains, clocks and runtime pm, which were not possible to
+>> resolve
+>> without iommu deferred probe.
+> OK. Do you have any plans to try tweaking the current workaround, or is
+> it really not worth it?
 
-Not quite; we're passing &np as the optional "target" argument to
-of_pci_map_rid - since that argument is provided, it will either find a
-matching translation (and fill in np in the process) or return -EFAULT.
+I will keep it as is until the core will be ready for initializing Exynos
+iommu driver simply from the core_initcall (or other), which will just do
+platform_driver_register(&exynos_sysmmu_driver).
 
->> +
->> +		/* We're not attempting to handle multi-alias devices yet */
->> +		iommu_spec.np = np;
->> +		iommu_spec.args_count = 1;
->> +		ops = of_iommu_get_ops(np);
-> 
-> ... and then we call of_iommu_get_ops(NULL). Does that make any sense?
+>   FWIW I do have an Exynos 5410 (Odroid-XU) on my
+> desk which I could theoretically test things on, but I suspect it would
+> take a fair amount of work to get the SYSMMUs and relevant media bits up
+> and running on top of Krzysztof's basic support.
 
-It would actually work out, since nobody should have registered any ops
-for a NULL node, but as above won't happen in practice anyway.
+It should be quite easy to get Exynos DRM with HDMI display working on
+Odroid XU1, I can take a look in that after getting back from holidays
+(probably after 17th July).
 
-Robin.
+> Will: for the time being, the alternative to this patch would be to
+> squash the following change into patch 7/9 (without either, patch 8/9
+> doesn't really work).
+>
+> Robin.
+>
+> -----8<-----
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index e4c3916efba9..c002ff06b625 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2678,6 +2678,14 @@ module_exit(arm_smmu_exit);
+>
+>   static int __init arm_smmu_of_init(struct device_node *np)
+>   {
+> +	static bool registered;
+> +
+> +	if (!registered)
+> +		registered = !arm_smmu_init();
+> +
+> +	if (!of_platform_device_create(np, NULL, platform_bus_type.dev_root))
+> +		return -ENODEV;
+> +
+>   	of_iommu_set_ops(np, &arm_smmu_ops);
+>
+>   	return 0;
+>
+>
 
-> 
-> Will
-> 
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
