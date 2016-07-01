@@ -1,18 +1,10 @@
-From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [RFC PATCH 1/2] fsl-mc: Added header file to provide fsl-mc bus
-	iommu group creation
-Date: Fri, 1 Jul 2016 15:11:26 +0000
-Message-ID: <HE1PR0401MB18665619AD59E13351348558E6250@HE1PR0401MB1866.eurprd04.prod.outlook.com>
-References: <1467220448-16764-1-git-send-email-nipun.gupta@nxp.com>
-	<5774FABE.5070707@arm.com>
-	<HE1PR0401MB1866C1468D3B4733B437C79BE6240@HE1PR0401MB1866.eurprd04.prod.outlook.com>
-	<57752939.9010504@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.7-rc5
+Date: Fri, 1 Jul 2016 17:36:24 +0200
+Message-ID: <20160701153611.GA28903@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============4233885177304956091=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <57752939.9010504-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,162 +14,100 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Cc: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
+--===============4233885177304956091==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="dDRMvlgZJXvWKvBx"
+Content-Disposition: inline
 
-> -----Original Message-----
-> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
-> Sent: Thursday, June 30, 2016 19:44
-> To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>; will.deacon-5wv7dgnIgG8@public.gmane.org; Stuart Yoder
-> <stuart.yoder-3arQi8VN3Tc@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
-> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Cc: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
-> Subject: Re: [RFC PATCH 1/2] fsl-mc: Added header file to provide fsl-mc bus
-> iommu group creation
-> 
-> On 30/06/16 12:43, Nipun Gupta wrote:
-> >
-> >
-> >> -----Original Message-----
-> >> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
-> >> Sent: Thursday, June 30, 2016 16:26
-> >> To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>; will.deacon-5wv7dgnIgG8@public.gmane.org; Stuart
-> >> Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> >> linux-arm- kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> >> Cc: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
-> >> Subject: Re: [RFC PATCH 1/2] fsl-mc: Added header file to provide
-> >> fsl-mc bus iommu group creation
-> >>
-> >> On 29/06/16 18:14, Nipun Gupta wrote:
-> >>> Added a header file fsl_mc_smmu.h to provide basic support of
-> >>> creating an IOMMU group for a fsl-mc type device and also provide
-> >>> helper macro to get the stream ID of fsl-mc tyoe device.
-> >>>
-> >>> Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-> >>> Signed-off-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
-> >>> ---
-> >>>  drivers/staging/fsl-mc/include/fsl_mc_smmu.h | 45
-> >>> ++++++++++++++++++++++++++++
-> >>>  1 file changed, 45 insertions(+)
-> >>>  create mode 100644 drivers/staging/fsl-mc/include/fsl_mc_smmu.h
-> >>>
-> >>> diff --git a/drivers/staging/fsl-mc/include/fsl_mc_smmu.h
-> >>> b/drivers/staging/fsl-mc/include/fsl_mc_smmu.h
-> >>> new file mode 100644
-> >>> index 0000000..9dff5ba
-> >>> --- /dev/null
-> >>> +++ b/drivers/staging/fsl-mc/include/fsl_mc_smmu.h
-> >>> @@ -0,0 +1,45 @@
-> >>> +/*
-> >>> + * Copyright (C) 2016 Freescale Semiconductor, Inc.
-> >>> + * Author: Nipun Gupta <nipun.gupta-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> >>> + *
-> >>> + * This file is licensed under the terms of the GNU General Public
-> >>> + * License version 2. This program is licensed "as is" without any
-> >>> + * warranty of any kind, whether express or implied.
-> >>> + */
-> >>> +
-> >>> +#ifndef _FSL_MC_SMMU_H_
-> >>> +#define _FSL_MC_SMMU_H_
-> >>> +
-> >>> +#include <../drivers/staging/fsl-mc/include/mc.h>
-> >>> +
-> >>> +/* Macro to get the MC device ICID (Stream ID) */ #define
-> >>> +fslmc_dev_streamid(_dev) (to_fsl_mc_device(_dev)->icid)
-> >>
-> >> Is the the full 15-bit ICID from the MC's point of view, just the 7
-> >> bits that are actually routed to the SMMU, or the actual stream ID
-> >> seen by the SMMU? None of those three are necessarily the same, and
-> >> unless it's the third then I don't see the point of patches adding incomplete
-> code which isn't going to work.
-> >
-> > Hi Robin,
-> >
-> > It's the second one where just 7 bits are maintained in the 'fsl_mc_device---
-> >icid' which is programmed in SMMU. Right, once the SMR masking support is
-> there then only these patches would make more sense.
-> > We have sent these patches to get some early comments and to have you guys
-> well informed beforehand about the changes which we require in the SMMU
-> driver specific to fsl-mc bus :).
-> 
-> Indeed, it's just kinda hard to review incomplete code, especially when it's the
-> parts which don't exist yet which are the most significant ;)
-> 
-> Either way, I'm deep in the middle of reworking SMMUv2 generic bindings[1]
-> based on the latest iteration of the core code and iommu_fwspec[2], which
-> removes the need for nearly all the bus-specific business within the driver (it's
-> getting too big to be 4.8 material now, but I'll have something to post shortly).
-> In that context, if the fsl-mc driver could process an "iommu-map" property on
-> the MC node to plumb the ICID-to-stream-ID relationship into of_xlate, and
-> inherit bus->iommu_ops from its parent bus, there shouldn't be any need to
-> directly touch the SMMU driver at all.
 
-Hi Robin,
+--dDRMvlgZJXvWKvBx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-One thing I would like to bring to your notice is that with our SoC the container devices gets dynamically created by MC (using linux command line). Once the container is created, the ICID is provided by MC to the devices.
-Structure is somewhat the following:
-							      		  ---- device 1 (ID 1)
-				  ---- Container device 1 (ID 1)-----------	|---- device 2 (ID 1)
-				|					  ---- device 3 (ID 1) ...
-	MC bus/device------------	|---- Container device 2 (ID 2) ...
-	(has a DT node)  	  ---- Container device 3 (ID 3) ...
+Hi Linus,
 
-Here the MC device node which is the SMMU master mode is present in the device tree, but the Container devices are created dynamically with ICID's provided to them by the MC (again at run-time).
-A single iommu_group is required to be created per container, which will have the container device and all of its child devices added into that group.
+The following changes since commit a4c34ff1c029e90e7d5f8dd8d29b0a93b31c3cb2:
 
-On lines of your suggestion we can call the of_xlate callback of the MC device whenever the devices are created. This shall make API 'arm_smmu_init_fslmc_device' redundant from http://article.gmane.org/gmane.linux.kernel.iommu/14323 (patch 2/2).  Also looking at the your older patch-set for SMMU-v2 if we use of_xlate, I think for fsl-mc bus support there may be few changes required to facilitate addition of all the devices within the container into the single iommu_group & also setting up the 'dev->archdata.iommu' for the fsl-mc non-container devices.
-I need to have a closer look at the iommu_fwspec[2] to see if these other changes required to support fsl-mc bus can also be minimized/removed.
+  iommu/vt-d: Enable QI on all IOMMUs before setting root entry (2016-06-17 11:29:48 +0200)
 
-We are eagerly waiting for your patches on SMMU-v2 for the new exciting stuff :).
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.7-rc5
+
+for you to fetch changes up to 6082ee72e9d89e80a664418be06f47d728243e85:
+
+  iommu/amd: Initialize devid variable before using it (2016-06-27 13:24:46 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.7-rc5
+
+Three fixes:
+
+	* Fix use of smp_processor_id() in preemptible code in the IOVA
+	  allocation code. This got introduced with the scalability
+	  improvements in this release cycle.
+
+	* A VT-d fix for out-of-bounds access of the iommu->domains
+	  array. The bug showed during suspend/resume.
+
+	* AMD IOMMU fix to print the correct device id in the ACPI
+	  parsing code.
+
+----------------------------------------------------------------
+Chris Wilson (1):
+      iommu/iova: Disable preemption around use of this_cpu_ptr()
+
+Jan Niehusmann (1):
+      iommu/vt-d: Fix overflow of iommu->domains array
+
+Nicolas Iooss (1):
+      iommu/amd: Initialize devid variable before using it
+
+ drivers/iommu/amd_iommu_init.c | 2 +-
+ drivers/iommu/intel-iommu.c    | 2 +-
+ drivers/iommu/iova.c           | 8 ++++++--
+ 3 files changed, 8 insertions(+), 4 deletions(-)
+
+Please pull.
 
 Thanks,
-Nipun
- 
-> 
-> Robin.
-> 
-> [1]:http://thread.gmane.org/gmane.linux.kernel.iommu/12454
-> [2]:http://thread.gmane.org/gmane.linux.kernel.iommu/14303
-> 
-> >
-> > Thanks,
-> > Nipun
-> >
-> >>
-> >>> +/* Macro to get the container device of a MC device */ #define
-> >>> +fslmc_cont_dev(_dev) ((to_fsl_mc_device(dev)->flags & \
-> >>> +	FSL_MC_IS_DPRC) ? (_dev) : (_dev->parent))
-> >>> +
-> >>> +/* Macro to check if a device is a container device */ #define
-> >>> +is_cont_dev(_dev) (to_fsl_mc_device(_dev)->flags & FSL_MC_IS_DPRC)
-> >>> +
-> >>> +static struct iommu_group *fslmc_device_group(struct device *dev) {
-> >>> +	struct device *cont_dev = fslmc_cont_dev(dev);
-> >>> +	struct iommu_group *group;
-> >>> +
-> >>> +	/* Container device is responsible for creating the iommu group */
-> >>> +	if (is_cont_dev(dev)) {
-> >>> +		group = iommu_group_alloc();
-> >>> +
-> >>> +		if (IS_ERR(group))
-> >>> +			return NULL;
-> >>> +	} else {
-> >>> +		get_device(cont_dev);
-> >>> +		group = iommu_group_get(cont_dev);
-> >>> +		put_device(cont_dev);
-> >>> +	}
-> >>> +
-> >>> +	return group;
-> >>> +}
-> >>
-> >> In isolation, though, this part seems perfectly reasonable.
-> >>
-> >> Robin.
-> >>
-> >>> +
-> >>> +#endif /* _FSL_MC_SMMU_H_ */
-> >>>
-> >
+
+	Joerg
+
+--dDRMvlgZJXvWKvBx
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJXdo3rAAoJECvwRC2XARrjfTwP/2jiR0l/PqMYSAGKp8sGLw1R
+ajt1YJSW7hjnt2xeGlZjpFDNt43WmOOdyLsJ0LIGClY0MIvZg0bBYJdR80zzidfA
+o5RWdlFKtzMkB/yj2ypxlB4olDd+DnPm0AmySlmpsUxl0fsYRI375IFPYdkFEr3l
+eB06YJZUK6rSAusv+VjoxktWrgAfPGUP0I26oAnfS6dK9+1Sj5Wi6fT1XgMEMb4N
+gyBFTOjOKZIVaq6I25ItV9KUdl/4ZML5TLFgM1iiHOIM9OczygSWOWQM+qDTJLCf
+ObE+CmOfCCDhUg+Jr3Hq/efrGUBaHzFYEJ1FeuwuZGbrtVIrNZQHJucz8QKXJ8fM
+vV5AbCeDRKrtumapQINytErw6Gb1cM6wKU4+8GsMJrdO+6jtJrbDWY0JYkUdUseJ
+PphvXmUQioLC9vJPoFEGp7NRBwNOLNT0RQMSn8tO+2D3jgs5nS+XSKEqvTNCSpaQ
+8ccPzinhvRB5WUwOb3WCV9wdyvnmxxXEjKNpSGAAjUcNQ8Vbcw7K89HmwmZgFjoP
+4yKqQ/Hj1c8NIMgZuYX1i3nB8Pit+nvUp/PYbN4LqwqXNviCYLay1fJN+lLe95kn
+vuPtZhFTbDymiEEg0moqN8FiuWl+1BMxlYi55UM07Z5jukgnsrumtfNjDhud63r2
+mqA8f5JdFeqHRut3tjCN
+=gImg
+-----END PGP SIGNATURE-----
+
+--dDRMvlgZJXvWKvBx--
+
+--===============4233885177304956091==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============4233885177304956091==--
