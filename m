@@ -1,11 +1,16 @@
-From: Aaron Campbell <aaron-J6AcJDG0ZEwdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH] iommu/vt-d: Fix infinite loop in free_all_cpu_cached_iovas
-Date: Sat,  2 Jul 2016 21:23:24 -0300
-Message-ID: <1467505404-3561-1-git-send-email-aaron@monkey.org>
+From: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+Subject: Re: [PATCH 3/3] iommu: remove unneeded check
+Date: Sun, 3 Jul 2016 21:56:26 +1000
+Message-ID: <cbd94f5c-d03a-15f8-8c43-6fe1dc919202@ozlabs.ru>
+References: <461a9f1f-f601-8575-f2cc-78a1bcc12ee5@gmail.com>
+	<20160628140922.56953ab9@t450s.home>
+	<3c9dae01-9ccf-b820-b45a-65037d26d440@gmail.com>
+	<20160628160734.065ec7e1@t450s.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160628160734.065ec7e1-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,44 +20,92 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Aaron Campbell <aaron-J6AcJDG0ZEwdnm+yROfE0A@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Heiner Kallweit <hkallweit1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Per VT-d spec Section 10.4.2 ("Capability Register"), the maximum
-number of possible domains is 64K; indeed this is the maximum value
-that the cap_ndoms() macro will expand to.  Since the value 65536
-will not fix in a u16, the 'did' variable must be promoted to an
-int, otherwise the test for < 65536 will always be true and the
-loop will never end.
+On 29/06/16 08:07, Alex Williamson wrote:
+> On Tue, 28 Jun 2016 23:37:06 +0200
+> Heiner Kallweit <hkallweit1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> 
+>> Am 28.06.2016 um 22:09 schrieb Alex Williamson:
+>>> On Tue, 28 Jun 2016 20:40:37 +0200
+>>> Heiner Kallweit <hkallweit1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>>>   
+>>>> The init function ensures that iommu_group_kset can't be NULL.
+>>>> Therefore this check isn't needed.  
+>>>
+>>> Have you seen your previous patch?  Wasn't this claim that the init
+>>> function ensures iommu_group_kset more true when iommu_init() called
+>>> BUG_ON(!iommu_group_kset) than it is when we can get by with just
+>>> returning -ENOMEM?  Thanks,
+>>>   
+>> Uh, you're right. I was in "module mode" where initcall retvals are
+>> assessed. Here the initcall retval is ignored.
+>> If we leave the BUG_ON in however then the check is actually unneeded
+>> as the system is halted after the BUG_ON.
+>>
+>> By the way:
+>> This check is in iommu_group_get_by_id() and this function doesn't seem
+>> to have any user in the kernel. It was added about three years ago.
+>> Is the original intention of this function obsolete meanwhile?
+> 
+> 
+> Alexey, this is a question for you.  Did the user of this function
+> never materialize:
 
-The symptom, in my case, was a hung machine during suspend.
+Not yet and probably never will. I am (still) working on KVM+VFIO+SPAPR
+acceleration and one of the approaches uses this helper, another one
+(proposed by David a couple of months ago) does not. This week I'll post a
+version and see if it goes well, then we will ditch iommu_group_get_by_id().
 
-Fixes: 3bd4f9112f87 ("iommu/vt-d: Fix overflow of iommu->domains array")
-Signed-off-by: Aaron Campbell <aaron-J6AcJDG0ZEwdnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/intel-iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index cfe410e..323dac9 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4602,13 +4602,13 @@ static void free_all_cpu_cached_iovas(unsigned int cpu)
- 	for (i = 0; i < g_num_of_iommus; i++) {
- 		struct intel_iommu *iommu = g_iommus[i];
- 		struct dmar_domain *domain;
--		u16 did;
-+		int did;
- 
- 		if (!iommu)
- 			continue;
- 
- 		for (did = 0; did < cap_ndoms(iommu->cap); did++) {
--			domain = get_iommu_domain(iommu, did);
-+			domain = get_iommu_domain(iommu, (u16)did);
- 
- 			if (!domain)
- 				continue;
+> 
+> commit aa16bea929aed6ea854b55d2be8306a9fb40e694
+> Author: Alexey Kardashevskiy <aik-sLpHqDYs0B2HXe+LvDLADg@public.gmane.org>
+> Date:   Mon Mar 25 10:23:49 2013 +1100
+> 
+>     iommu: Add a function to find an iommu group by id
+>     
+>     As IOMMU groups are exposed to the user space by their numbers,
+>     the user space can use them in various kernel APIs so the kernel
+>     might need an API to find a group by its ID.
+>     
+>     As an example, QEMU VFIO on PPC64 platform needs it to associate
+>     a logical bus number (LIOBN) with a specific IOMMU group in order
+>     to support in-kernel handling of DMA map/unmap requests.
+>     
+>     The patch adds the iommu_group_get_by_id(id) function which performs
+>     such search.
+> 
+> If not, let's remove it.  Dead code is broken code.  Thanks,
+> 
+> Alex
+> 
+>>>> Signed-off-by: Heiner Kallweit <hkallweit1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>>>> ---
+>>>>  drivers/iommu/iommu.c | 3 ---
+>>>>  1 file changed, 3 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>>> index b36ec9c..b36e24d 100644
+>>>> --- a/drivers/iommu/iommu.c
+>>>> +++ b/drivers/iommu/iommu.c
+>>>> @@ -235,9 +235,6 @@ struct iommu_group *iommu_group_get_by_id(int id)
+>>>>  	struct iommu_group *group;
+>>>>  	const char *name;
+>>>>  
+>>>> -	if (!iommu_group_kset)
+>>>> -		return NULL;
+>>>> -
+>>>>  	name = kasprintf(GFP_KERNEL, "%d", id);
+>>>>  	if (!name)
+>>>>  		return NULL;  
+>>>
+>>>   
+>>
+> 
+
+
 -- 
-2.7.4
+Alexey
