@@ -1,15 +1,11 @@
-From: sunnydrake <sunnydrake7-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [Regression] Amd-Vi + ivrs_ioapic cause kernel oops (4.4, 4.7
-	fail 3.9 works)
-Date: Sun, 3 Jul 2016 23:48:55 +0300
-Message-ID: <57797A37.4030805@gmail.com>
-References: <57786362.1010702@gmail.com>
-	<790da4e5-985a-a4f5-1ead-b4fa1f37e8a4@iommu.org>
+From: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] iommu: arm-smmu: use devm_request_irq and devm_free_irq
+Date: Mon,  4 Jul 2016 17:38:22 +0800
+Message-ID: <1467625102-9755-1-git-send-email-van.freenix@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <790da4e5-985a-a4f5-1ead-b4fa1f37e8a4-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,98 +15,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-VGhhbmtzIGZvciByZXBseS4KT24gMDMuMDcuMTYgMTc6MjYsIFdhbiBab25nc2h1biB3cm90ZToK
-Pgo+Cj4g5ZyoIDcvMy8yMDE2IDg6NTkgQU0sIHN1bm55ZHJha2Ug5YaZ6YGTOgo+PiBbZGVzY3Jp
-cHRpb25dCj4+IHdvcmtpbmcgaW4ga2VybmVsIDMuOQo+PiBPb3BzIGluIGN1cnJlbnQgNC40LjAt
-MjgsNC43LjAtMDQwNzAwcmM1Cj4+IGtlcm5lbCBvcHRpb25zIGl2cnNfaW9hcGljWzddPTAwOjE0
-LjAgaXZyc19pb2FwaWNbOF09MDA6MDAuMSAKPj4gd29ya2Fyb3VuZCB0byBmaXggaXZycyB0YWJs
-ZQo+PiBjYXVzZSBrZXJuZWwgT29wcyBvbiBib290Cj4gRG8geW91IG1lYW4gIml2cnNfaW9hcGlj
-WzddPTAwOjE0LjAgIGl2cnNfaW9hcGljWzhdPTAwOjAwLjEiIGFyZSAKPiB3b3JrYWJsZSBhdCBr
-ZXJuZWwtMy45IGJ1dCBmYWlsZWQgaW4ga2VybmVsLTQuND8KMSl5ZXMga2VybmVsIDMuOSBib290
-cyBvayB3aXRoIGl2cnNfaW9hcGljWzddPTAwOjE0LjAgaXZyc19pb2FwaWNbOF09MDA6MDAuMQpr
-ZXJuZWxzIDQuNCBhbmQgNC43IGZhbGwgdG8gT29wcwo+Cj4+Cj4+IFtidWddCj4+IG9vcHM6Cj4+
-IHNob3J0IG9vcHMgdGV4dAo+PiBBTUQtVmk6IENvbXBsZXRpb25fd2FpdCBsb29wIHRpbWVkIE91
-dAo+PiBCVUc6IHVuYWJsZSB0byBoYW5kbGUga2VybmVsIE5VTEwgcG9pbnRlciBkZXJlZmVyZW5j
-ZSBhdCAwMDAuLjAzZQo+PiAuLi4gaXJxX3BtX2luc3RhbGxfYWN0aW9uKzB4MWMvMHhkMAo+PiBm
-dWxsIG9vcHMgaW1hZ2UgdGV4dAo+PiBodHRwOi8vaW1nLmN0cmx2LmluL2ltZy8xNi8wNy8wMy81
-Nzc4NjMwNTUzNzBjLmpwZwo+Pgo+PiBbYWRkaXRpb25hbCBpbmZvXQo+PiBkbWVzZ3xncmVwIEFN
-RC1WaSB3aXRob3V0IGl2cnNfaW9hcGljWzhdPTAwOjAwLjEKPiBUaGlzIGxvZyBpcyBmcm9tIHRo
-ZSBrZXJuZWwgcHJpbnQgd2l0aG91dCBpdnJzX2lvYXBpY1s4XT0wMDowMC4xPwo+IFdoeSBub3Qg
-cHJvdmlkZSB5b3VyIGtlcm5lbCBsb2cgd2l0aCAiaXZyc19pb2FwaWNbN109MDA6MTQuMCAKPiBp
-dnJzX2lvYXBpY1s4XT0wMDowMC4xIiA/Cj4gRnVsbCBrZXJuZWwgbG9nIGlzIGJldHRlci4KPgoK
-MikgeWVzLCAgYmVjYXVzZSB3aXRoIGl2cnNfaW9hcGljWzddPTAwOjE0LjAgIGl2cnNfaW9hcGlj
-WzhdPTAwOjAwLjEgCmtlcm5lbHMgYXJlIG5vdCBib290YWJsZS4gU2NyZWVuIG9mIE9vcHMgCmh0
-dHA6Ly9pbWcuY3RybHYuaW4vaW1nLzE2LzA3LzAzLzU3Nzg2MzA1NTM3MGMuanBnICh0aGlzIHdp
-dGggcGFyYW1zIAppdnJzX2lvYXBpY1s3XT0wMDoxNC4wICBpdnJzX2lvYXBpY1s4XT0wMDowMC4x
-ICkuIGlmIHlvdSBuZWVkIHNvbWV0aGluZyAKYW5vdGhlciBsaWtlIGtkdW1wLCBpIGNhbiBwcm92
-aWRlLgo+PiBbIDAuMTA4NTY2XSBBTUQtVmk6IFVzaW5nIElWSEQgdHlwZSAweDEwCj4+IFsgICAg
-MC4xMDg2MzBdIEFNRC1WaTogZGV2aWNlOiAwMDowMC4yIGNhcDogMDA0MCBzZWc6IDAgZmxhZ3M6
-IDNlIAo+PiBpbmZvIDEzMDAKPj4gWyAgICAwLjEwODY3MV0gQU1ELVZpOiAgICAgICAgbW1pby1h
-ZGRyOiAwMDAwMDAwMGZlYjIwMDAwCj4+IFsgICAgMC4xMDg3NTBdIEFNRC1WaTogICBERVZfU0VM
-RUNUX1JBTkdFX1NUQVJUICAgICBkZXZpZDogMDA6MDAuMCAKPj4gZmxhZ3M6IDAwCj4+IFsgICAg
-MC4xMDg3OTJdIEFNRC1WaTogICBERVZfUkFOR0VfRU5EICAgICAgICAgZGV2aWQ6IDAwOjAwLjIK
-Pj4gWyAgICAwLjEwODgzNF0gQU1ELVZpOiAgIERFVl9TRUxFQ1QgICAgICAgICAgICAgZGV2aWQ6
-IDAwOjAyLjAgZmxhZ3M6IDAwCj4+IFsgICAgMC4xMDg4NzVdIEFNRC1WaTogICBERVZfU0VMRUNU
-X1JBTkdFX1NUQVJUICAgICBkZXZpZDogMDE6MDAuMCAKPj4gZmxhZ3M6IDAwCj4+IFsgICAgMC4x
-MDg5MTddIEFNRC1WaTogICBERVZfUkFOR0VfRU5EICAgICAgICAgZGV2aWQ6IDAxOjAwLjEKPj4g
-WyAgICAwLjEwODk1OF0gQU1ELVZpOiAgIERFVl9TRUxFQ1QgICAgICAgICAgICAgZGV2aWQ6IDAw
-OjA0LjAgZmxhZ3M6IDAwCj4+IFsgICAgMC4xMDg5OTldIEFNRC1WaTogICBERVZfU0VMRUNUICAg
-ICAgICAgICAgIGRldmlkOiAwMjowMC4wIGZsYWdzOiAwMAo+PiBbICAgIDAuMTA5MDQxXSBBTUQt
-Vmk6ICAgREVWX1NFTEVDVCAgICAgICAgICAgICBkZXZpZDogMDA6MDcuMCBmbGFnczogMDAKPj4g
-WyAgICAwLjEwOTA4Ml0gQU1ELVZpOiAgIERFVl9TRUxFQ1QgICAgICAgICAgICAgZGV2aWQ6IDAz
-OjAwLjAgZmxhZ3M6IDAwCj4+IFsgICAgMC4xMDkxMjRdIEFNRC1WaTogICBERVZfU0VMRUNUICAg
-ICAgICAgICAgIGRldmlkOiAwMDoxMS4wIGZsYWdzOiAwMAo+PiBbICAgIDAuMTA5MTY2XSBBTUQt
-Vmk6ICAgREVWX1NFTEVDVF9SQU5HRV9TVEFSVCAgICAgZGV2aWQ6IDAwOjEyLjAgCj4+IGZsYWdz
-OiAwMAo+PiBbICAgIDAuMTA5MjA3XSBBTUQtVmk6ICAgREVWX1JBTkdFX0VORCAgICAgICAgIGRl
-dmlkOiAwMDoxMi4yCj4+IFsgICAgMC4xMDkyNDldIEFNRC1WaTogICBERVZfU0VMRUNUX1JBTkdF
-X1NUQVJUICAgICBkZXZpZDogMDA6MTMuMCAKPj4gZmxhZ3M6IDAwCj4+IFsgICAgMC4xMTQyNjdd
-IEFNRC1WaTogICBERVZfUkFOR0VfRU5EICAgICAgICAgZGV2aWQ6IDAwOjEzLjIKPj4gWyAgICAw
-LjExNDMwOF0gQU1ELVZpOiAgIERFVl9TRUxFQ1QgICAgICAgICAgICAgZGV2aWQ6IDAwOjE0LjAg
-ZmxhZ3M6IGQ3Cj4+IFsgICAgMC4xMTQzNDhdIEFNRC1WaTogICBERVZfU0VMRUNUICAgICAgICAg
-ICAgIGRldmlkOiAwMDoxNC4yIGZsYWdzOiAwMAo+PiBbICAgIDAuMTE0Mzg5XSBBTUQtVmk6ICAg
-REVWX1NFTEVDVCAgICAgICAgICAgICBkZXZpZDogMDA6MTQuMyBmbGFnczogMDAKPj4gWyAgICAw
-LjExNDQyOV0gQU1ELVZpOiAgIERFVl9TRUxFQ1QgICAgICAgICAgICAgZGV2aWQ6IDAwOjE0LjQg
-ZmxhZ3M6IDAwCj4+IFsgICAgMC4xMTQ0NzFdIEFNRC1WaTogICBERVZfQUxJQVNfUkFOR0UgICAg
-ICAgICBkZXZpZDogMDQ6MDAuMCAKPj4gZmxhZ3M6IDAwIGRldmlkX3RvOiAwMDoxNC40Cj4+IFsg
-ICAgMC4xMTQ1MTldIEFNRC1WaTogICBERVZfUkFOR0VfRU5EICAgICAgICAgZGV2aWQ6IDA0OjFm
-LjcKPj4gWyAgICAwLjExNDU2NF0gQU1ELVZpOiAgIERFVl9TRUxFQ1QgICAgICAgICAgICAgZGV2
-aWQ6IDAwOjE0LjUgZmxhZ3M6IDAwCj4+IFsgICAgMC4xMTQ2MDVdIEFNRC1WaTogICBERVZfU0VM
-RUNUICAgICAgICAgICAgIGRldmlkOiAwMDoxNS4wIGZsYWdzOiAwMAo+PiBbICAgIDAuMTE0NjQ1
-XSBBTUQtVmk6ICAgREVWX1NFTEVDVF9SQU5HRV9TVEFSVCAgICAgZGV2aWQ6IDA1OjAwLjAgCj4+
-IGZsYWdzOiAwMAo+PiBbICAgIDAuMTE0Njg3XSBBTUQtVmk6ICAgREVWX1JBTkdFX0VORCAgICAg
-ICAgIGRldmlkOiAwNTowMC4xCj4+IFsgICAgMC4xMTQ3MjhdIEFNRC1WaTogICBERVZfU0VMRUNU
-X1JBTkdFX1NUQVJUICAgICBkZXZpZDogMDA6MTYuMCAKPj4gZmxhZ3M6IDAwCj4+IFsgICAgMC4x
-MTQ3NjhdIEFNRC1WaTogICBERVZfUkFOR0VfRU5EICAgICAgICAgZGV2aWQ6IDAwOjE2LjIKPj4g
-WyAgICAwLjExNDg0MF0gQU1ELVZpOiAgIERFVl9TUEVDSUFMKElPQVBJQ1swXSkgICAgICAgIGRl
-dmlkOiAwMDoxNC4wCj4+IFsgICAgMC4xMTQ4ODVdIEFNRC1WaTogICBERVZfU1BFQ0lBTChIUEVU
-WzBdKSAgICAgICAgZGV2aWQ6IDAwOjE0LjAKPj4gWyAgICAwLjExNDkyN10gQU1ELVZpOiAgIERF
-Vl9TUEVDSUFMKElPQVBJQ1syNTVdKSAgICAgICAgZGV2aWQ6IDAwOjAwLjEKPj4gWyAgICAwLjEx
-NDk2OV0gQU1ELVZpOiBJT0FQSUNbOF0gbm90IGluIElWUlMgdGFibGUKPiBIZXJlLCBpdCBpcyBh
-Ym5vcm1hbCwgeW91IHNob3VsZCBhZGQgaXZyc19pb2FwaWNbOF09MDA6MDAuMSBpbiBib290IAo+
-IG9wdGlvbiwgb3IgZWxzZSBpZiB0aGUgZGV2aWNlcyByZWx5IG9uCj4gaXZyc19pb2FwaWNbOF0s
-IHRoZXkgd2lsbCBub3Qgd29yay4KPgozKSB5ZXMgdGhpcyB3aHkgaSB1c2VkIGl2cnNfaW9hcGlj
-WzddPTAwOjE0LjAgaXZyc19pb2FwaWNbOF09MDA6MDAuMSBpbiAKMy45IGtlcm5lbCB0byBlbmFi
-bGUgaW50ZXJydXB0IHJlbWFwcGluZywgYnV0IG9uIDQuNCBhbmQgNC43IHRoaXMgd2lsIApjYXVz
-ZSBPb3BzLgo+PiBbIDAuMTE1MDEwXSBBTUQtVmk6IERpc2FibGluZyBpbnRlcnJ1cHQgcmVtYXBw
-aW5nCj4+IFsgICAgMi45OTQ1ODRdIEFNRC1WaTogQ29tcGxldGlvbi1XYWl0IGxvb3AgdGltZWQg
-b3V0Cj4+IFsgICAgMy4xMDMwNTldIEFNRC1WaTogQ29tcGxldGlvbi1XYWl0IGxvb3AgdGltZWQg
-b3V0Cj4+IFsgICAgMy4xMDMxNDVdIEFNRC1WaTogRm91bmQgSU9NTVUgYXQgMDAwMDowMDowMC4y
-IGNhcCAweDQwCj4+IFsgICAgMy4xMDMyNzldIEFNRC1WaTogTGF6eSBJTy9UTEIgZmx1c2hpbmcg
-ZW5hYmxlZAo+PiBbICAgIDMuOTkzMTM0XSBBTUQtVmk6IEV2ZW50IGxvZ2dlZCBbSU9UTEJfSU5W
-X1RJTUVPVVQgZGV2aWNlPTA1OjAwLjAgCj4+IGFkZHJlc3M9MHgwMDAwMDAwNDRjNjQ2NGEwXQo+
-PiBbICAgIDMuOTkzMjEzXSBBTUQtVmk6IEV2ZW50IGxvZ2dlZCBbSU9UTEJfSU5WX1RJTUVPVVQg
-ZGV2aWNlPTA1OjAwLjAgCj4+IGFkZHJlc3M9MHgwMDAwMDAwNDRjNjQ2NGMwXQo+PiBbICAgIDUu
-MTAwNjIyXSBBTUQtVmk6IEV2ZW50IGxvZ2dlZCBbSU9UTEJfSU5WX1RJTUVPVVQgZGV2aWNlPTA1
-OjAwLjAgCj4+IGFkZHJlc3M9MHgwMDAwMDAwNDRjNjQ2NTAwXQo+IDA1OjAwLjAgZGV2aWNlIHNo
-b3VsZCBiZSBkZWFkIG5vdy4KCjQpIHRoaXMgaXMgc2Vjb25kIGdyYXBoaWNzIGNhcmQoQVRJIFI5
-IDM4MCkgb24gc2Vjb25kIFBDSS1FIGkgdXNlIAp2ZmlvLXBjaSB0byBiaW5kIGl0IGVhcmx5IGZv
-ciBsYXRlciB1c2UgaW4gaW4gdmlydHVhbCBtYWNoaW5lLgo+Pgo+PiBfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+PiBpb21tdSBtYWlsaW5nIGxpc3QKPj4g
-aW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKPj4gaHR0cHM6Ly9saXN0cy5saW51eGZv
-dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXUKPgo+CgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
-bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
-b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Use devm_request_irq to simplify error handling path,
+when probe smmu device.
+
+Also devm_{request|free}_irq when init or destroy domain context.
+
+Signed-off-by: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 24 ++++++++++--------------
+ 1 file changed, 10 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 9345a3f..860652e 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -987,8 +987,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	 * handler seeing a half-initialised domain state.
+ 	 */
+ 	irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
+-	ret = request_irq(irq, arm_smmu_context_fault, IRQF_SHARED,
+-			  "arm-smmu-context-fault", domain);
++	ret = devm_request_irq(smmu->dev, irq, arm_smmu_context_fault,
++			       IRQF_SHARED, "arm-smmu-context-fault", domain);
+ 	if (ret < 0) {
+ 		dev_err(smmu->dev, "failed to request context IRQ %d (%u)\n",
+ 			cfg->irptndx, irq);
+@@ -1028,7 +1028,7 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+ 
+ 	if (cfg->irptndx != INVALID_IRPTNDX) {
+ 		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
+-		free_irq(irq, domain);
++		devm_free_irq(smmu->dev, irq, domain);
+ 	}
+ 
+ 	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
+@@ -1986,15 +1986,15 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	for (i = 0; i < smmu->num_global_irqs; ++i) {
+-		err = request_irq(smmu->irqs[i],
+-				  arm_smmu_global_fault,
+-				  IRQF_SHARED,
+-				  "arm-smmu global fault",
+-				  smmu);
++		err = devm_request_irq(smmu->dev, smmu->irqs[i],
++				       arm_smmu_global_fault,
++				       IRQF_SHARED,
++				       "arm-smmu global fault",
++				       smmu);
+ 		if (err) {
+ 			dev_err(dev, "failed to request global IRQ %d (%u)\n",
+ 				i, smmu->irqs[i]);
+-			goto out_free_irqs;
++			goto out_put_masters;
+ 		}
+ 	}
+ 
+@@ -2006,10 +2006,6 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	arm_smmu_device_reset(smmu);
+ 	return 0;
+ 
+-out_free_irqs:
+-	while (i--)
+-		free_irq(smmu->irqs[i], smmu);
+-
+ out_put_masters:
+ 	for (node = rb_first(&smmu->masters); node; node = rb_next(node)) {
+ 		struct arm_smmu_master *master
+@@ -2050,7 +2046,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 		dev_err(dev, "removing device with active domains!\n");
+ 
+ 	for (i = 0; i < smmu->num_global_irqs; ++i)
+-		free_irq(smmu->irqs[i], smmu);
++		devm_free_irq(smmu->dev, smmu->irqs[i], smmu);
+ 
+ 	/* Turn the thing off */
+ 	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+-- 
+2.6.2
