@@ -1,15 +1,16 @@
-From: Nadav Amit <nadav.amit-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Subject: Re: [PATCH] iommu/vt-d: Remove unnecassary qi clflushes
-Date: Tue, 5 Jul 2016 09:27:27 -0700
-Message-ID: <926A8CFB-D22D-4DC6-9EE0-D912451365BB@gmail.com>
+Date: Tue, 5 Jul 2016 18:40:47 +0200
+Message-ID: <ac3ff8d4-e47b-e4d8-40ed-02811732526a@redhat.com>
 References: <1466773994-242872-1-git-send-email-namit@vmware.com>
 	<20160627113014.GL11432@8bytes.org>
 	<C78095BC-3BED-48DE-90CE-601DE40AA613@gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	<926A8CFB-D22D-4DC6-9EE0-D912451365BB@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <C78095BC-3BED-48DE-90CE-601DE40AA613-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <926A8CFB-D22D-4DC6-9EE0-D912451365BB-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,31 +20,18 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Nadav Amit <namit-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>
+To: Nadav Amit <nadav.amit-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Nadav Amit <namit-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-TmFkYXYgQW1pdCA8bmFkYXYuYW1pdEBnbWFpbC5jb20+IHdyb3RlOgoKPiBKb2VyZyBSb2VkZWwg
-PGpvcm9AOGJ5dGVzLm9yZz4gd3JvdGU6Cj4gCj4+IE9uIEZyaSwgSnVuIDI0LCAyMDE2IGF0IDA2
-OjEzOjE0QU0gLTA3MDAsIE5hZGF2IEFtaXQgd3JvdGU6Cj4+PiBBY2NvcmRpbmcgdG8gdGhlIG1h
-bnVhbDogIkhhcmR3YXJlIGFjY2VzcyB0byAuLi4gIGludmFsaWRhdGlvbiBxdWV1ZSAuLi4KPj4+
-IGFyZSBhbHdheXMgY29oZXJlbnQuIgo+Pj4gCj4+PiBSZW1vdmUgdW5uZWNhc3NhcnkgY2xmbHVz
-aGVzIGFjY29yZGluZ2x5Lgo+PiAKPj4gSXQgaXMgb25lIHRoaW5nIHdoYXQgdGhlIHNwZWMgc2F5
-cyBhbmQgYW5vdGhlciBob3cgaGFyZHdhcmUgcmVhbGx5Cj4+IGJlaGF2ZXMuIEhhdmUgeW91IHRl
-c3RlZCB0aGlzIG9uIChwb3RlbnRpYWxseSByZWFsbHkgb2xkKSBWVC1kIG1hY2hpbmVzCj4+IHRv
-IG1ha2Ugc3VyZSB0aGUgc3BlYyBpcyBfYWx3YXlzXyByaWdodCBoZXJlPwo+IAo+IE5vIEkgZGlk
-buKAmXQgYXMgdGhlIGNvbW1pdCBtZXNzYWdlIHNheXMuIEkgd291bGQgYmUgaGFwcHkgZm9yIHNv
-bWVvbmVz4oCZCj4gdGVzdGVkLWJ5Lgo+IAo+IEhhdmluZyBzYWlkIHRoYXQgLSBGcmVlQlNEIGRv
-ZXMgbm90IGRvIHRoZXNlICh1bm5lY2Vzc2FyeSkKPiBpbnZhbGlkYXRpb25zIFsxXSwgYW5kIHRo
-ZWlyIGNvZGUgY29tbWVudCBjbGVhcmx5IHNheXMgaXQuIFNpbmNlIHRoaXMgY29kZQo+IGlzIG5v
-dCBuZXcsIEkgd291bGQgYXNzdW1lIEZyZWVCU0Qgd291bGQgY3Jhc2ggYnkgbm93IGlmIHRoZSBj
-b2RlIHdhcwo+IGJ1Z2d5Lgo+IAo+IEFsdGhvdWdoIHN1Y2ggaGFyZHdhcmUgaXMgb2xkLCB0aGVy
-ZSBhcmUgc29tZSBoeXBlcnZpc29ycyB0aGF0IGRvIG5vdCBzZXQKPiB0aGUgZWNhcC5jb2hlcmVu
-Y3kgb2YgZW11bGF0ZWQgSU9NTVVzLiBZZXMsIGl0IGlzIHVud2lzZSwgYnV0IHRoZXJlIGlzIG5v
-Cj4gcmVhc29uIHRvIGZ1cnRoZXIgcHVuaXNoIHRoZXNlIGh5cGVydmlzb3JzLgoKUGluZz8gVG8g
-Y2xhcmlmeSAtIHRoaXMgYmVoYXZpb3IgYXBwbGllcyB0byB0aGUgZ3Vlc3Qgb2YgVk13YXJlIGFu
-ZCBLVk0KKHdoaWNoIHVzZXMgUUVNVSBmb3IgSU9NTVUgZW11bGF0aW9uKS4KClJlZ2FyZGxlc3Ms
-IHBsZWFzZSByZXNwb25kIHRvIHRoZSBvdGhlciBwYXRjaCBJIHNlbnQgYXMgd2VsbC4KClRoYW5r
-cywKTmFkYXYKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRw
-czovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+
+
+On 05/07/2016 18:27, Nadav Amit wrote:
+>> Although such hardware is old, there are some hypervisors that do not set
+>> the ecap.coherency of emulated IOMMUs. Yes, it is unwise, but there is no
+>> reason to further punish these hypervisors.
+
+QEMU will need the kernel to respect ecap.coherency in order to support
+nested VFIO, for example.
+
+Paolo
