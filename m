@@ -1,51 +1,39 @@
-From: Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Remove unnecassary qi clflushes
-Date: Tue, 5 Jul 2016 18:57:09 +0200
-Message-ID: <f75fc793-d955-3c9d-832c-d4a494f0854e@redhat.com>
-References: <1466773994-242872-1-git-send-email-namit@vmware.com>
-	<20160627113014.GL11432@8bytes.org>
-	<C78095BC-3BED-48DE-90CE-601DE40AA613@gmail.com>
-	<926A8CFB-D22D-4DC6-9EE0-D912451365BB@gmail.com>
-	<ac3ff8d4-e47b-e4d8-40ed-02811732526a@redhat.com>
-	<5F48A3E6-99EE-4DC5-BF38-4F0338E9E8D0@gmail.com>
+From: weiyj_lk@163.com
+Subject: [PATCH -next] iommu/exynos: Fix return value check in exynos_iommu_of_setup()
+Date: Wed,  6 Jul 2016 12:15:54 +0000
+Message-ID: <1467807354-26503-1-git-send-email-weiyj_lk@163.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5F48A3E6-99EE-4DC5-BF38-4F0338E9E8D0-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nadav Amit <nadav.amit-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Nadav Amit <namit-pghWNbHTmq7QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>
+Cc: Wei Yongjun <yongjun_wei@trendmicro.com.cn>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
+From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
 
+In case of error, the function of_platform_device_create() returns
+NULL pointer not ERR_PTR(). The IS_ERR() test in the return value
+check should be replaced with NULL test.
 
-On 05/07/2016 18:50, Nadav Amit wrote:
-> Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> 
->>
->>
->> On 05/07/2016 18:27, Nadav Amit wrote:
->>>> Although such hardware is old, there are some hypervisors that do not set
->>>> the ecap.coherency of emulated IOMMUs. Yes, it is unwise, but there is no
->>>> reason to further punish these hypervisors.
->>
->> QEMU will need the kernel to respect ecap.coherency in order to support
->> nested VFIO, for example.
-> 
-> To clarify - the kernel respects the coherency, but performs more clflushes
-> than necessary. It has no functional impact, but induces performance
-> degradation (which I  did not measure, but is likely to be several hundreds
-> of cycles per flush).
+Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+---
+ drivers/iommu/exynos-iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Oh, then QEMU indeed doesn't care about flushing the invalidation queue.
-
-Paolo
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 33dcc29..9b23059 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1345,8 +1345,8 @@ static int __init exynos_iommu_of_setup(struct device_node *np)
+ 		exynos_iommu_init();
+ 
+ 	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
+-	if (IS_ERR(pdev))
+-		return PTR_ERR(pdev);
++	if (!pdev)
++		return -ENOMEM;
+ 
+ 	/*
+ 	 * use the first registered sysmmu device for performing
