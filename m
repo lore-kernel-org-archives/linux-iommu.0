@@ -1,92 +1,65 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 5/8] iommu/of: Introduce iommu_fwspec
-Date: Thu, 7 Jul 2016 17:56:31 +0100
-Message-ID: <20160707165631.GB2685@red-moon>
-References: <cover.1467388950.git.robin.murphy@arm.com>
- <7947dbaa0e0d4ace8eebe8de1fe5810fe05f7734.1467388950.git.robin.murphy@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 0/3] Add support for privileged mappings
+Date: Thu, 7 Jul 2016 18:00:26 +0100
+Message-ID: <20160707170026.GG20682@arm.com>
+References: <20160706235136.27854-1-mitchelh@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <7947dbaa0e0d4ace8eebe8de1fe5810fe05f7734.1467388950.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <20160706235136.27854-1-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 01, 2016 at 05:50:14PM +0100, Robin Murphy wrote:
-
-[...]
-
-> +int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
-> +{
-> +	struct iommu_fwspec *fwspec = dev->archdata.iommu;
-> +	size_t size;
-> +
-> +	if (!fwspec)
-> +		return -EINVAL;
-> +
-> +	size = offsetof(struct iommu_fwspec, ids[fwspec->num_ids + 1]);
-								^^^^
-
-+ num_ids ?
-
-Lorenzo
-
-> +	fwspec = krealloc(dev->archdata.iommu, size, GFP_KERNEL);
-> +	if (!fwspec)
-> +		return -ENOMEM;
-> +
-> +	while (num_ids--)
-> +		fwspec->ids[fwspec->num_ids++] = *ids++;
-> +
-> +	dev->archdata.iommu = fwspec;
-> +	return 0;
-> +}
-> +
-> +inline struct iommu_fwspec *dev_iommu_fwspec(struct device *dev)
-> +{
-> +	return dev->archdata.iommu;
-> +}
-> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-> index bd02b44902d0..308791fca32d 100644
-> --- a/include/linux/of_iommu.h
-> +++ b/include/linux/of_iommu.h
-> @@ -15,6 +15,14 @@ extern void of_iommu_init(void);
->  extern const struct iommu_ops *of_iommu_configure(struct device *dev,
->  					struct device_node *master_np);
->  
-> +struct iommu_fwspec {
-> +	const struct iommu_ops	*iommu_ops;
-> +	struct device_node	*iommu_np;
-> +	void			*iommu_priv;
-> +	unsigned int		num_ids;
-> +	u32			ids[];
-> +};
-> +
->  #else
->  
->  static inline int of_get_dma_window(struct device_node *dn, const char *prefix,
-> @@ -31,8 +39,15 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
->  	return NULL;
->  }
->  
-> +struct iommu_fwspec;
-> +
->  #endif	/* CONFIG_OF_IOMMU */
->  
-> +int iommu_fwspec_init(struct device *dev, struct device_node *iommu_np);
-> +void iommu_fwspec_free(struct device *dev);
-> +int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
-> +struct iommu_fwspec *dev_iommu_fwspec(struct device *dev);
-> +
->  void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops);
->  const struct iommu_ops *of_iommu_get_ops(struct device_node *np);
->  
-> -- 
-> 2.8.1.dirty
+On Wed, Jul 06, 2016 at 04:51:33PM -0700, Mitchel Humpherys wrote:
+> The following patch to the ARM SMMU driver:
 > 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>     commit d346180e70b91b3d5a1ae7e5603e65593d4622bc
+>     Author: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>     Date:   Tue Jan 26 18:06:34 2016 +0000
+>     
+>         iommu/arm-smmu: Treat all device transactions as unprivileged
+> 
+> started forcing all SMMU transactions to come through as "unprivileged".
+> The rationale given was that:
+> 
+>   (1) There is no way in the IOMMU API to even request privileged mappings.
+> 
+>   (2) It's difficult to implement a DMA mapper that correctly models the
+>       ARM VMSAv8 behavior of unprivileged-writeable =>
+>       privileged-execute-never.
+> 
+> This series attempts to rectify (1) by introducing an IOMMU API for
+> privileged mappings (and implementing it in io-pgtable-arm).  It seems like
+> (2) can be safely ignored for now under the assumption that any users of
+> the IOMMU_PRIV flag will be using the low-level IOMMU APIs directly, rather
+> than going through the DMA APIs.
+> 
+> Robin, Will, what do you think?  Jordan and Jeremy can provide more info on
+> the use case if needed, but the high level is that it's a security feature
+> to prevent attacks such as [1].
+
+So I think the problem that the offending patch tried to fix is that
+the PL330 DMA controller (drivers/dma/pl330.c) uses dma_alloc_coherent
+to allocate its microcode buffer, but the so-called "manager" thread
+that fetches the microcode does so with privileged accesses and
+consequently fails.
+
+Whilst this series is a step in the right direction for fixing that, I
+don't think you can claim that only low-level users need this, given that
+we have in-tree code which would break without it. Perhaps you just need
+to extend things slightly more to expose this to the DMA API as well (or,
+alternatively, hack the PL330 driver some how).
+
+Will
