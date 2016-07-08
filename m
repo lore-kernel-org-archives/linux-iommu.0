@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 10/20] iommu/amd: Remove align-parameter from __map_single()
-Date: Fri,  8 Jul 2016 13:45:01 +0200
-Message-ID: <1467978311-28322-11-git-send-email-joro@8bytes.org>
+Subject: [PATCH 15/20] iommu/amd: Introduce dir2prot() helper
+Date: Fri,  8 Jul 2016 13:45:06 +0200
+Message-ID: <1467978311-28322-16-git-send-email-joro@8bytes.org>
 References: <1467978311-28322-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,69 +23,59 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This parameter is not required anymore because the
-iova-allocations are always aligned to its size.
+This function converts dma_data_direction to
+iommu-protection flags. This will be needed on multiple
+places in the code, so this will save some code.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+ drivers/iommu/amd_iommu.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index fbfe51b..b91843c 100644
+index 1bb003e..78b278b 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -2170,22 +2170,17 @@ static dma_addr_t __map_single(struct device *dev,
+@@ -2260,6 +2260,17 @@ static void update_domain(struct protection_domain *domain)
+ 	domain->updated = false;
+ }
+ 
++static int dir2prot(enum dma_data_direction direction)
++{
++	if (direction == DMA_TO_DEVICE)
++		return IOMMU_PROT_IR;
++	else if (direction == DMA_FROM_DEVICE)
++		return IOMMU_PROT_IW;
++	else if (direction == DMA_BIDIRECTIONAL)
++		return IOMMU_PROT_IW | IOMMU_PROT_IR;
++	else
++		return 0;
++}
+ /*
+  * This function contains common code for mapping of a physically
+  * contiguous memory region into DMA address space. It is used by all
+@@ -2270,7 +2281,7 @@ static dma_addr_t __map_single(struct device *dev,
+ 			       struct dma_ops_domain *dma_dom,
  			       phys_addr_t paddr,
  			       size_t size,
- 			       int direction,
--			       bool align,
+-			       int direction,
++			       enum dma_data_direction direction,
  			       u64 dma_mask)
  {
  	dma_addr_t offset = paddr & ~PAGE_MASK;
- 	dma_addr_t address, start, ret;
- 	unsigned int pages;
--	unsigned long align_mask = 0;
- 	int prot = 0;
- 	int i;
- 
- 	pages = iommu_num_pages(paddr, size, PAGE_SIZE);
- 	paddr &= PAGE_MASK;
- 
--	if (align)
--		align_mask = (1UL << get_order(size)) - 1;
--
- 	address = dma_ops_alloc_iova(dev, dma_dom, pages, dma_mask);
+@@ -2286,12 +2297,7 @@ static dma_addr_t __map_single(struct device *dev,
  	if (address == DMA_ERROR_CODE)
  		goto out;
-@@ -2281,8 +2276,7 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
  
- 	dma_mask = *dev->dma_mask;
+-	if (direction == DMA_TO_DEVICE)
+-		prot = IOMMU_PROT_IR;
+-	else if (direction == DMA_FROM_DEVICE)
+-		prot = IOMMU_PROT_IW;
+-	else if (direction == DMA_BIDIRECTIONAL)
+-		prot = IOMMU_PROT_IW | IOMMU_PROT_IR;
++	prot = dir2prot(direction);
  
--	return __map_single(dev, domain->priv, paddr, size, dir, false,
--			    dma_mask);
-+	return __map_single(dev, domain->priv, paddr, size, dir, dma_mask);
- }
- 
- /*
-@@ -2325,8 +2319,7 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
- 		paddr = sg_phys(s);
- 
- 		s->dma_address = __map_single(dev, domain->priv,
--					      paddr, s->length, dir, false,
--					      dma_mask);
-+					      paddr, s->length, dir, dma_mask);
- 
- 		if (s->dma_address) {
- 			s->dma_length = s->length;
-@@ -2410,7 +2403,7 @@ static void *alloc_coherent(struct device *dev, size_t size,
- 		dma_mask = *dev->dma_mask;
- 
- 	*dma_addr = __map_single(dev, domain->priv, page_to_phys(page),
--				 size, DMA_BIDIRECTIONAL, true, dma_mask);
-+				 size, DMA_BIDIRECTIONAL, dma_mask);
- 
- 	if (*dma_addr == DMA_ERROR_CODE)
- 		goto out_free;
+ 	start = address;
+ 	for (i = 0; i < pages; ++i) {
 -- 
 1.9.1
