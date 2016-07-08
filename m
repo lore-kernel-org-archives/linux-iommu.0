@@ -1,146 +1,57 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 04/20] iommu/amd: Create a list of reserved iova addresses
-Date: Fri,  8 Jul 2016 13:44:55 +0200
-Message-ID: <1467978311-28322-5-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 06/20] iommu/amd: Pass gfp-flags to iommu_map_page()
+Date: Fri,  8 Jul 2016 13:44:57 +0200
+Message-ID: <1467978311-28322-7-git-send-email-joro@8bytes.org>
 References: <1467978311-28322-1-git-send-email-joro@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1467978311-28322-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Vincent.Wan-5C7GfCeVMHo@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1467978311-28322-1-git-send-email-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>, Vincent.Wan@amd.com, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+From: Joerg Roedel <jroedel@suse.de>
 
-Put the MSI-range, the HT-range and the MMIO ranges of PCI
-devices into that range, so that these addresses are not
-allocated for DMA.
+Make this function ready to be used in the DMA-API path.
+Reorder parameters a bit while at it.
 
-Copy this address list into every created dma_ops_domain.
-
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/amd_iommu.c | 69 +++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 69 insertions(+)
+ drivers/iommu/amd_iommu.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 71af367..4b8b9ee 100644
+index 5ea5679..e7c042b 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -62,6 +62,12 @@
- #define IOVA_PFN(addr)		((addr) >> PAGE_SHIFT)
- #define DMA_32BIT_PFN		IOVA_PFN(DMA_BIT_MASK(32))
- 
-+/* Reserved IOVA ranges */
-+#define MSI_RANGE_START		(0xfee00000)
-+#define MSI_RANGE_END		(0xfeefffff)
-+#define HT_RANGE_START		(0xfd00000000ULL)
-+#define HT_RANGE_END		(0xffffffffffULL)
-+
- /*
-  * This bitmap is used to advertise the page sizes our hardware support
-  * to the IOMMU core, which will then use this information to split
-@@ -168,6 +174,9 @@ struct dma_ops_domain {
- 	struct iova_domain iovad;
- };
- 
-+static struct iova_domain reserved_iova_ranges;
-+static struct lock_class_key reserved_rbtree_key;
-+
- /****************************************************************************
-  *
-  * Helper functions
-@@ -2055,6 +2064,9 @@ static struct dma_ops_domain *dma_ops_domain_alloc(void)
- 	init_iova_domain(&dma_dom->iovad, PAGE_SIZE,
- 			 IOVA_START_PFN, DMA_32BIT_PFN);
- 
-+	/* Initialize reserved ranges */
-+	copy_reserved_iova(&reserved_iova_ranges, &dma_dom->iovad);
-+
- 	return dma_dom;
- 
- free_dma_dom:
-@@ -2960,6 +2972,59 @@ static struct dma_map_ops amd_iommu_dma_ops = {
- 	.set_dma_mask	= set_dma_mask,
- };
- 
-+static int init_reserved_iova_ranges(void)
-+{
-+	struct pci_dev *pdev = NULL;
-+	struct iova *val;
-+
-+	init_iova_domain(&reserved_iova_ranges, PAGE_SIZE,
-+			 IOVA_START_PFN, DMA_32BIT_PFN);
-+
-+	lockdep_set_class(&reserved_iova_ranges.iova_rbtree_lock,
-+			  &reserved_rbtree_key);
-+
-+	/* MSI memory range */
-+	val = reserve_iova(&reserved_iova_ranges,
-+			   IOVA_PFN(MSI_RANGE_START), IOVA_PFN(MSI_RANGE_END));
-+	if (!val) {
-+		pr_err("Reserving MSI range failed\n");
-+		return -ENOMEM;
-+	}
-+
-+	/* HT memory range */
-+	val = reserve_iova(&reserved_iova_ranges,
-+			   IOVA_PFN(HT_RANGE_START), IOVA_PFN(HT_RANGE_END));
-+	if (!val) {
-+		pr_err("Reserving HT range failed\n");
-+		return -ENOMEM;
-+	}
-+
-+	/*
-+	 * Memory used for PCI resources
-+	 * FIXME: Check whether we can reserve the PCI-hole completly
-+	 */
-+	for_each_pci_dev(pdev) {
-+		int i;
-+
-+		for (i = 0; i < PCI_NUM_RESOURCES; ++i) {
-+			struct resource *r = &pdev->resource[i];
-+
-+			if (!(r->flags & IORESOURCE_MEM))
-+				continue;
-+
-+			val = reserve_iova(&reserved_iova_ranges,
-+					   IOVA_PFN(r->start),
-+					   IOVA_PFN(r->end));
-+			if (!val) {
-+				pr_err("Reserve pci-resource range failed\n");
-+				return -ENOMEM;
-+			}
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- int __init amd_iommu_init_api(void)
+@@ -1415,8 +1415,9 @@ static u64 *fetch_pte(struct protection_domain *domain,
+ static int iommu_map_page(struct protection_domain *dom,
+ 			  unsigned long bus_addr,
+ 			  unsigned long phys_addr,
++			  unsigned long page_size,
+ 			  int prot,
+-			  unsigned long page_size)
++			  gfp_t gfp)
  {
- 	int ret, err = 0;
-@@ -2968,6 +3033,10 @@ int __init amd_iommu_init_api(void)
- 	if (ret)
- 		return ret;
+ 	u64 __pte, *pte;
+ 	int i, count;
+@@ -1428,7 +1429,7 @@ static int iommu_map_page(struct protection_domain *dom,
+ 		return -EINVAL;
  
-+	ret = init_reserved_iova_ranges();
-+	if (ret)
-+		return ret;
-+
- 	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
- 	if (err)
- 		return err;
+ 	count = PAGE_SIZE_PTE_COUNT(page_size);
+-	pte   = alloc_pte(dom, bus_addr, page_size, NULL, GFP_KERNEL);
++	pte   = alloc_pte(dom, bus_addr, page_size, NULL, gfp);
+ 
+ 	if (!pte)
+ 		return -ENOMEM;
+@@ -3277,7 +3278,7 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
+ 		prot |= IOMMU_PROT_IW;
+ 
+ 	mutex_lock(&domain->api_lock);
+-	ret = iommu_map_page(domain, iova, paddr, prot, page_size);
++	ret = iommu_map_page(domain, iova, paddr, page_size, prot, GFP_KERNEL);
+ 	mutex_unlock(&domain->api_lock);
+ 
+ 	return ret;
 -- 
 1.9.1
