@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 11/20] iommu/amd: Set up data structures for flush queue
-Date: Fri,  8 Jul 2016 13:45:02 +0200
-Message-ID: <1467978311-28322-12-git-send-email-joro@8bytes.org>
+Subject: [PATCH 07/20] iommu/amd: Remove special mapping code for dma_ops path
+Date: Fri,  8 Jul 2016 13:44:58 +0200
+Message-ID: <1467978311-28322-8-git-send-email-joro@8bytes.org>
 References: <1467978311-28322-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,93 +23,169 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-The flush queue is the equivalent to defered-flushing in the
-Intel VT-d driver. This patch sets up the data structures
-needed for this.
+Use the iommu-api map/unmap functions instead. This will be
+required anyway when IOVA code is used for address
+allocation.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 40 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 39 insertions(+), 1 deletion(-)
+ drivers/iommu/amd_iommu.c | 107 ++++++----------------------------------------
+ 1 file changed, 14 insertions(+), 93 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index b91843c..4e27c57 100644
+index e7c042b..08aa46c 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -88,6 +88,22 @@ LIST_HEAD(ioapic_map);
- LIST_HEAD(hpet_map);
- LIST_HEAD(acpihid_map);
+@@ -2557,94 +2557,6 @@ static void update_domain(struct protection_domain *domain)
+ }
  
-+#define FLUSH_QUEUE_SIZE 256
-+
-+struct flush_queue_entry {
-+	unsigned long iova_pfn;
-+	unsigned long pages;
-+	struct dma_ops_domain *dma_dom;
-+};
-+
-+struct flush_queue {
-+	spinlock_t lock;
-+	unsigned next;
-+	struct flush_queue_entry *entries;
-+};
-+
-+DEFINE_PER_CPU(struct flush_queue, flush_queue);
-+
  /*
-  * Domain for untranslated devices - only allocated
-  * if iommu=pt passed on kernel cmd line.
-@@ -2516,7 +2532,7 @@ static int init_reserved_iova_ranges(void)
- 
- int __init amd_iommu_init_api(void)
+- * This function fetches the PTE for a given address in the aperture
+- */
+-static u64* dma_ops_get_pte(struct dma_ops_domain *dom,
+-			    unsigned long address)
+-{
+-	struct aperture_range *aperture;
+-	u64 *pte, *pte_page;
+-
+-	aperture = dom->aperture[APERTURE_RANGE_INDEX(address)];
+-	if (!aperture)
+-		return NULL;
+-
+-	pte = aperture->pte_pages[APERTURE_PAGE_INDEX(address)];
+-	if (!pte) {
+-		pte = alloc_pte(&dom->domain, address, PAGE_SIZE, &pte_page,
+-				GFP_ATOMIC);
+-		aperture->pte_pages[APERTURE_PAGE_INDEX(address)] = pte_page;
+-	} else
+-		pte += PM_LEVEL_INDEX(0, address);
+-
+-	update_domain(&dom->domain);
+-
+-	return pte;
+-}
+-
+-/*
+- * This is the generic map function. It maps one 4kb page at paddr to
+- * the given address in the DMA address space for the domain.
+- */
+-static dma_addr_t dma_ops_domain_map(struct dma_ops_domain *dom,
+-				     unsigned long address,
+-				     phys_addr_t paddr,
+-				     int direction)
+-{
+-	u64 *pte, __pte;
+-
+-	WARN_ON(address > dom->aperture_size);
+-
+-	paddr &= PAGE_MASK;
+-
+-	pte  = dma_ops_get_pte(dom, address);
+-	if (!pte)
+-		return DMA_ERROR_CODE;
+-
+-	__pte = paddr | IOMMU_PTE_P | IOMMU_PTE_FC;
+-
+-	if (direction == DMA_TO_DEVICE)
+-		__pte |= IOMMU_PTE_IR;
+-	else if (direction == DMA_FROM_DEVICE)
+-		__pte |= IOMMU_PTE_IW;
+-	else if (direction == DMA_BIDIRECTIONAL)
+-		__pte |= IOMMU_PTE_IR | IOMMU_PTE_IW;
+-
+-	WARN_ON_ONCE(*pte);
+-
+-	*pte = __pte;
+-
+-	return (dma_addr_t)address;
+-}
+-
+-/*
+- * The generic unmapping function for on page in the DMA address space.
+- */
+-static void dma_ops_domain_unmap(struct dma_ops_domain *dom,
+-				 unsigned long address)
+-{
+-	struct aperture_range *aperture;
+-	u64 *pte;
+-
+-	if (address >= dom->aperture_size)
+-		return;
+-
+-	aperture = dom->aperture[APERTURE_RANGE_INDEX(address)];
+-	if (!aperture)
+-		return;
+-
+-	pte  = aperture->pte_pages[APERTURE_PAGE_INDEX(address)];
+-	if (!pte)
+-		return;
+-
+-	pte += PM_LEVEL_INDEX(0, address);
+-
+-	WARN_ON_ONCE(!*pte);
+-
+-	*pte = 0ULL;
+-}
+-
+-/*
+  * This function contains common code for mapping of a physically
+  * contiguous memory region into DMA address space. It is used by all
+  * mapping functions provided with this IOMMU driver.
+@@ -2654,7 +2566,7 @@ static dma_addr_t __map_single(struct device *dev,
+ 			       struct dma_ops_domain *dma_dom,
+ 			       phys_addr_t paddr,
+ 			       size_t size,
+-			       int dir,
++			       int direction,
+ 			       bool align,
+ 			       u64 dma_mask)
  {
--	int ret, err = 0;
-+	int ret, cpu, err = 0;
+@@ -2662,6 +2574,7 @@ static dma_addr_t __map_single(struct device *dev,
+ 	dma_addr_t address, start, ret;
+ 	unsigned int pages;
+ 	unsigned long align_mask = 0;
++	int prot = 0;
+ 	int i;
  
- 	ret = iova_cache_get();
- 	if (ret)
-@@ -2526,6 +2542,18 @@ int __init amd_iommu_init_api(void)
- 	if (ret)
- 		return ret;
+ 	pages = iommu_num_pages(paddr, size, PAGE_SIZE);
+@@ -2676,10 +2589,18 @@ static dma_addr_t __map_single(struct device *dev,
+ 	if (address == DMA_ERROR_CODE)
+ 		goto out;
  
-+	for_each_possible_cpu(cpu) {
-+		struct flush_queue *queue = per_cpu_ptr(&flush_queue, cpu);
++	if (direction == DMA_TO_DEVICE)
++		prot = IOMMU_PROT_IR;
++	else if (direction == DMA_FROM_DEVICE)
++		prot = IOMMU_PROT_IW;
++	else if (direction == DMA_BIDIRECTIONAL)
++		prot = IOMMU_PROT_IW | IOMMU_PROT_IR;
 +
-+		queue->entries = kzalloc(FLUSH_QUEUE_SIZE *
-+					 sizeof(*queue->entries),
-+					 GFP_KERNEL);
-+		if (!queue->entries)
-+			goto out_put_iova;
-+
-+		spin_lock_init(&queue->lock);
-+	}
-+
- 	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
- 	if (err)
- 		return err;
-@@ -2535,6 +2563,15 @@ int __init amd_iommu_init_api(void)
- 		return err;
- #endif
- 	return 0;
-+
-+out_put_iova:
-+	for_each_possible_cpu(cpu) {
-+		struct flush_queue *queue = per_cpu_ptr(&flush_queue, cpu);
-+
-+		kfree(queue->entries);
-+	}
-+
-+	return -ENOMEM;
- }
+ 	start = address;
+ 	for (i = 0; i < pages; ++i) {
+-		ret = dma_ops_domain_map(dma_dom, start, paddr, dir);
+-		if (ret == DMA_ERROR_CODE)
++		ret = iommu_map_page(&dma_dom->domain, start, paddr,
++				     PAGE_SIZE, prot, GFP_ATOMIC);
++		if (ret)
+ 			goto out_unmap;
  
- int __init amd_iommu_init_dma_ops(void)
-@@ -2557,6 +2594,7 @@ int __init amd_iommu_init_dma_ops(void)
- 		pr_info("AMD-Vi: Lazy IO/TLB flushing enabled\n");
+ 		paddr += PAGE_SIZE;
+@@ -2699,7 +2620,7 @@ out_unmap:
  
- 	return 0;
-+
- }
+ 	for (--i; i >= 0; --i) {
+ 		start -= PAGE_SIZE;
+-		dma_ops_domain_unmap(dma_dom, start);
++		iommu_unmap_page(&dma_dom->domain, start, PAGE_SIZE);
+ 	}
  
- /*****************************************************************************
+ 	dma_ops_free_addresses(dma_dom, address, pages);
+@@ -2730,7 +2651,7 @@ static void __unmap_single(struct dma_ops_domain *dma_dom,
+ 	start = dma_addr;
+ 
+ 	for (i = 0; i < pages; ++i) {
+-		dma_ops_domain_unmap(dma_dom, start);
++		iommu_unmap_page(&dma_dom->domain, start, PAGE_SIZE);
+ 		start += PAGE_SIZE;
+ 	}
+ 
 -- 
 1.9.1
