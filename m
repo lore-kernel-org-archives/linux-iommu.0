@@ -1,106 +1,77 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.7-rc6
-Date: Fri, 8 Jul 2016 16:30:56 +0200
-Message-ID: <20160708143046.GA1093@8bytes.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 1/8] arm64: mm: change IOMMU notifier action to attach
+ DMA ops
+Date: Fri, 8 Jul 2016 15:55:21 +0100
+Message-ID: <20160708145521.GD6493@arm.com>
+References: <cover.1467388950.git.robin.murphy@arm.com>
+ <06d430a86f5d7f461308a9278bf25f40fb50d93c.1467388950.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============6167494132155358307=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <06d430a86f5d7f461308a9278bf25f40fb50d93c.1467388950.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Catalin,
 
---===============6167494132155358307==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="BXVAT5kNtrzKuDFl"
-Content-Disposition: inline
+On Fri, Jul 01, 2016 at 05:50:10PM +0100, Robin Murphy wrote:
+> From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+> 
+> Current bus notifier in ARM64 (__iommu_attach_notifier)
+> attempts to attach dma_ops to a device on BUS_NOTIFY_ADD_DEVICE
+> action notification.
+> 
+> This will cause issues on ACPI based systems, where PCI devices
+> can be added before the IOMMUs the devices are attached to
+> had a chance to be probed, causing failures on attempts to
+> attach dma_ops in that the domain for the respective IOMMU
+> may not be set-up yet by the time the bus notifier is run.
+> 
+> Devices dma_ops do not require to be set-up till the matching
+> device drivers are probed. This means that instead of running
+> the notifier attaching dma_ops to devices (__iommu_attach_notifier)
+> on BUS_NOTIFY_ADD_DEVICE action, it can be run just before the
+> device driver is bound to the device in question (on action
+> BUS_NOTIFY_BIND_DRIVER) so that it is certain that its IOMMU
+> group and domain are set-up accordingly at the time the
+> notifier is triggered.
+> 
+> This patch changes the notifier action upon which dma_ops
+> are attached to devices and defer it to driver binding time,
+> so that IOMMU devices have a chance to be probed and to register
+> their bus notifiers before the dma_ops attach sequence for a
+> device is actually carried out.
+> 
+> As a result we also no longer need worry about racing with
+> iommu_bus_notifier(), or about retrying the queue in case devices
+> were added too early on DT-based systems, so clean up the notifier
+> itself plus the additional workaround from 722ec35f7fae ("arm64:
+> dma-mapping: fix handling of devices registered before arch_initcall")
+> 
+> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+> Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+> [rm: get rid of other now-redundant bits]
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+> 
+> v4: No change.
+> 
+>  arch/arm64/mm/dma-mapping.c | 22 +++++-----------------
+>  1 file changed, 5 insertions(+), 17 deletions(-)
 
+Whilst this series is unlikely to make it for 4.8, this patch is
+independent and it would be good to see it queued in the arm64 tree for
+4.8, if possible. It shouldn't change anything on its own, but it's a
+prerequisite for this series and anything on the IORT side from Lorenzo,
+so it makes sense to me to keep the delta down if we can.
 
---BXVAT5kNtrzKuDFl
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Linus,
-
-The following changes since commit a99cde438de0c4c0cecc1d1af1a55a75b10bfdef:
-
-  Linux 4.7-rc6 (2016-07-03 23:01:00 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.7-rc6
-
-for you to fetch changes up to 522e5cb76d0663c88f96b6a8301451c8efa37207:
-
-  iommu/amd: Fix unity mapping initialization race (2016-07-06 18:04:55 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v4.7-rc6
-
-Two Fixes:
-
-	* Intel VT-d fix for a suspend/resume issue, introduced with the
-	  scalability improvements in this cycle.
-
-	* AMD IOMMU fix for systems that have unity mappings defined. There was
-	  a race where translation got enabled before the unity mappings were
-	  in place. This issue was seen on some HP servers.
-
-----------------------------------------------------------------
-Aaron Campbell (1):
-      iommu/vt-d: Fix infinite loop in free_all_cpu_cached_iovas
-
-Joerg Roedel (1):
-      iommu/amd: Fix unity mapping initialization race
-
- drivers/iommu/amd_iommu_init.c | 14 ++++++++++++--
- drivers/iommu/intel-iommu.c    |  4 ++--
- 2 files changed, 14 insertions(+), 4 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---BXVAT5kNtrzKuDFl
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJXf7kWAAoJECvwRC2XARrjetMQAMvQi4sZldicwd2vm7XGUYiB
-zcFjALH347bUtM8gAGtNhEdEqaRxB6tU7eux7AVLJi+hn9w8F+PSx0lfcH2Wu5Ze
-4uwatMHj4ycLA4gGdMsxiazDkuL0ZbafBWIeQVhc72sTuRNzw/dsDhuXoFy2PFka
-8vo/aChSlCMLAf5YRE7WAeIumIozIZEFFTQ1kL/0jDf4J9WevDMmO+TcGYKy0EWk
-l1+5MOUXAbBjZZ1r7Fwx9qh1fl5HAT6n0MsP6fizMloxNRU+TmrSoFEvkTRqSl1P
-waKBITRaKdS8MTQuyHTuHcigGhfW0H0BtEJ619pNopFKJOI3O1r81V1dgp1YbQRc
-Pt3YU7DtMfwM0Kn17iS7bjA9uV7LUJ6fC3lNTta7H+HzuTBqq4oPNoTiKFVr37xv
-AME3PQV43GNkqJZpI6TlfTbZjVS3X5V8rf2T3Ii+rqyCZFKcu71D1c5u1eTxFBk5
-zVGf49+8dF/DThTXyZANyA18AJMdhk2UYWSbYLojOgKDMCNY4ufbpUSaFXquYSxT
-lSPxTqbLpuY/tOOd6TlJAZ10XvSsV9KNMwsjTvdFhc0lAW9ZmjkZ2pd0F9Trmdxv
-zeRAequw3yOhcMRyXMB6EBd0YMzy5U2RNysU0m3/P4Si2okm1JlfbUFz1PYNfG0e
-90d4uR/c1sO5OzHJLxg3
-=2l2u
------END PGP SIGNATURE-----
-
---BXVAT5kNtrzKuDFl--
-
---===============6167494132155358307==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============6167494132155358307==--
+Will
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
