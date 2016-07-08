@@ -1,49 +1,71 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 12/20] iommu/amd: Allow NULL pointer parameter for
-	domain_flush_complete()
-Date: Fri,  8 Jul 2016 13:45:03 +0200
-Message-ID: <1467978311-28322-13-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 18/20] iommu/amd: Handle IOMMU_DOMAIN_DMA in ops->domain_free call-back
+Date: Fri,  8 Jul 2016 13:45:09 +0200
+Message-ID: <1467978311-28322-19-git-send-email-joro@8bytes.org>
 References: <1467978311-28322-1-git-send-email-joro@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1467978311-28322-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Vincent.Wan-5C7GfCeVMHo@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1467978311-28322-1-git-send-email-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>, Vincent.Wan@amd.com, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+From: Joerg Roedel <jroedel@suse.de>
 
-If domain == NULL is passed to the function, it will queue a
-completion-wait command on all IOMMUs in the system.
+This domain type is not yet handled in the
+iommu_ops->domain_free() call-back. Fix that.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Fixes: 0bb6e243d7fb ('iommu/amd: Support IOMMU_DOMAIN_DMA type allocation')
+Cc: stable@vger.kernel.org # v4.2+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/amd_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/amd_iommu.c | 25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 4e27c57..7b8e1f8 100644
+index 4b17148..dc3dbb4 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1185,7 +1185,7 @@ static void domain_flush_complete(struct protection_domain *domain)
- 	int i;
+@@ -2836,9 +2836,7 @@ static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
+ static void amd_iommu_domain_free(struct iommu_domain *dom)
+ {
+ 	struct protection_domain *domain;
+-
+-	if (!dom)
+-		return;
++	struct dma_ops_domain *dma_dom;
  
- 	for (i = 0; i < amd_iommus_present; ++i) {
--		if (!domain->dev_iommu[i])
-+		if (domain && !domain->dev_iommu[i])
- 			continue;
+ 	domain = to_pdomain(dom);
  
- 		/*
+@@ -2847,13 +2845,24 @@ static void amd_iommu_domain_free(struct iommu_domain *dom)
+ 
+ 	BUG_ON(domain->dev_cnt != 0);
+ 
+-	if (domain->mode != PAGE_MODE_NONE)
+-		free_pagetable(domain);
++	if (!dom)
++		return;
+ 
+-	if (domain->flags & PD_IOMMUV2_MASK)
+-		free_gcr3_table(domain);
++	switch (dom->type) {
++	case IOMMU_DOMAIN_DMA:
++		dma_dom = domain->priv;
++		dma_ops_domain_free(dma_dom);
++		break;
++	default:
++		if (domain->mode != PAGE_MODE_NONE)
++			free_pagetable(domain);
+ 
+-	protection_domain_free(domain);
++		if (domain->flags & PD_IOMMUV2_MASK)
++			free_gcr3_table(domain);
++
++		protection_domain_free(domain);
++		break;
++	}
+ }
+ 
+ static void amd_iommu_detach_device(struct iommu_domain *dom,
 -- 
 1.9.1
