@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 01/20] iommu: Add apply_dm_region call-back to iommu-ops
-Date: Fri,  8 Jul 2016 13:44:52 +0200
-Message-ID: <1467978311-28322-2-git-send-email-joro@8bytes.org>
+Subject: [PATCH 05/20] iommu/amd: Implement apply_dm_region call-back
+Date: Fri,  8 Jul 2016 13:44:56 +0200
+Message-ID: <1467978311-28322-6-git-send-email-joro@8bytes.org>
 References: <1467978311-28322-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,53 +23,45 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This new call-back will be used by the iommu driver to do
-reserve the given dm_region in its iova space before the
-mapping is created.
-
-The call-back is temporary until the dma-ops implementation
-is part of the common iommu code.
+It is used to reserve the dm-regions in the iova-tree.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 3 +++
- include/linux/iommu.h | 3 +++
- 2 files changed, 6 insertions(+)
+ drivers/iommu/amd_iommu.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3000051..e8d2fb0 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -348,6 +348,9 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
- 	list_for_each_entry(entry, &mappings, list) {
- 		dma_addr_t start, end, addr;
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 4b8b9ee..5ea5679 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3379,6 +3379,20 @@ static void amd_iommu_put_dm_regions(struct device *dev,
+ 		kfree(entry);
+ }
  
-+		if (domain->ops->apply_dm_region)
-+			domain->ops->apply_dm_region(dev, domain, entry);
++static void amd_iommu_apply_dm_region(struct device *dev,
++				      struct iommu_domain *domain,
++				      struct iommu_dm_region *region)
++{
++	struct protection_domain *pdomain = to_pdomain(domain);
++	struct dma_ops_domain *dma_dom = pdomain->priv;
++	unsigned long start, end;
 +
- 		start = ALIGN(entry->start, pg_size);
- 		end   = ALIGN(entry->start + entry->length, pg_size);
++	start = IOVA_PFN(region->start);
++	end   = IOVA_PFN(region->start + region->length);
++
++	WARN_ON_ONCE(reserve_iova(&dma_dom->iovad, start, end) == NULL);
++}
++
+ static const struct iommu_ops amd_iommu_ops = {
+ 	.capable = amd_iommu_capable,
+ 	.domain_alloc = amd_iommu_domain_alloc,
+@@ -3394,6 +3408,7 @@ static const struct iommu_ops amd_iommu_ops = {
+ 	.device_group = amd_iommu_device_group,
+ 	.get_dm_regions = amd_iommu_get_dm_regions,
+ 	.put_dm_regions = amd_iommu_put_dm_regions,
++	.apply_dm_region = amd_iommu_apply_dm_region,
+ 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
+ };
  
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 664683a..a35fb8b 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -152,6 +152,7 @@ struct iommu_dm_region {
-  * @domain_set_attr: Change domain attributes
-  * @get_dm_regions: Request list of direct mapping requirements for a device
-  * @put_dm_regions: Free list of direct mapping requirements for a device
-+ * @apply_dm_region: Temporary helper call-back for iova reserved ranges
-  * @domain_window_enable: Configure and enable a particular window for a domain
-  * @domain_window_disable: Disable a particular window for a domain
-  * @domain_set_windows: Set the number of windows for a domain
-@@ -186,6 +187,8 @@ struct iommu_ops {
- 	/* Request/Free a list of direct mapping requirements for a device */
- 	void (*get_dm_regions)(struct device *dev, struct list_head *list);
- 	void (*put_dm_regions)(struct device *dev, struct list_head *list);
-+	void (*apply_dm_region)(struct device *dev, struct iommu_domain *domain,
-+				struct iommu_dm_region *region);
- 
- 	/* Window handling functions */
- 	int (*domain_window_enable)(struct iommu_domain *domain, u32 wnd_nr,
 -- 
 1.9.1
