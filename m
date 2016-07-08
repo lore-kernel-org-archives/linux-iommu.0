@@ -1,96 +1,70 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 14/20] iommu/amd: Implement timeout to flush unmap queues
-Date: Fri,  8 Jul 2016 13:45:05 +0200
-Message-ID: <1467978311-28322-15-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 19/20] iommu/amd: Flush iova queue before releasing dma_ops_domain
+Date: Fri,  8 Jul 2016 13:45:10 +0200
+Message-ID: <1467978311-28322-20-git-send-email-joro@8bytes.org>
 References: <1467978311-28322-1-git-send-email-joro@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1467978311-28322-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Vincent.Wan-5C7GfCeVMHo@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1467978311-28322-1-git-send-email-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org, Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>, Vincent.Wan@amd.com, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+From: Joerg Roedel <jroedel@suse.de>
 
-In case the queue doesn't fill up, we flush the TLB at least
-10ms after the unmap happened to make sure that the TLB is
-cleaned up.
+Before a dma_ops_domain can be freed, we need to make sure
+it is not longer referenced by the flush queue. So empty the
+queue before a dma_ops_domain can be freed.
 
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/amd_iommu.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ drivers/iommu/amd_iommu.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index a3e09cd..1bb003e 100644
+index dc3dbb4..4052997 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -104,6 +104,9 @@ struct flush_queue {
- 
- DEFINE_PER_CPU(struct flush_queue, flush_queue);
- 
-+static atomic_t queue_timer_on;
-+static struct timer_list queue_timer;
-+
- /*
-  * Domain for untranslated devices - only allocated
-  * if iommu=pt passed on kernel cmd line.
-@@ -2159,6 +2162,24 @@ static void __queue_flush(struct flush_queue *queue)
+@@ -2162,12 +2162,10 @@ static void __queue_flush(struct flush_queue *queue)
  	queue->next = 0;
  }
  
-+void queue_flush_timeout(unsigned long unsused)
+-void queue_flush_timeout(unsigned long unsused)
++static void queue_flush_all(void)
+ {
+ 	int cpu;
+ 
+-	atomic_set(&queue_timer_on, 0);
+-
+ 	for_each_possible_cpu(cpu) {
+ 		struct flush_queue *queue;
+ 		unsigned long flags;
+@@ -2180,6 +2178,12 @@ void queue_flush_timeout(unsigned long unsused)
+ 	}
+ }
+ 
++static void queue_flush_timeout(unsigned long unsused)
 +{
-+	int cpu;
-+
 +	atomic_set(&queue_timer_on, 0);
-+
-+	for_each_possible_cpu(cpu) {
-+		struct flush_queue *queue;
-+		unsigned long flags;
-+
-+		queue = per_cpu_ptr(&flush_queue, cpu);
-+		spin_lock_irqsave(&queue->lock, flags);
-+		if (queue->next > 0)
-+			__queue_flush(queue);
-+		spin_unlock_irqrestore(&queue->lock, flags);
-+	}
++	queue_flush_all();
 +}
 +
  static void queue_add(struct dma_ops_domain *dma_dom,
  		      unsigned long address, unsigned long pages)
  {
-@@ -2184,6 +2205,10 @@ static void queue_add(struct dma_ops_domain *dma_dom,
- 	entry->dma_dom  = dma_dom;
+@@ -2850,6 +2854,13 @@ static void amd_iommu_domain_free(struct iommu_domain *dom)
  
- 	spin_unlock_irqrestore(&queue->lock, flags);
+ 	switch (dom->type) {
+ 	case IOMMU_DOMAIN_DMA:
++		/*
++		 * First make sure the domain is no longer referenced from the
++		 * flush queue
++		 */
++		queue_flush_all();
 +
-+	if (atomic_cmpxchg(&queue_timer_on, 0, 1) == 0)
-+		mod_timer(&queue_timer, jiffies + msecs_to_jiffies(10));
-+
- 	put_cpu_ptr(&flush_queue);
- }
- 
-@@ -2639,6 +2664,9 @@ out_put_iova:
- 
- int __init amd_iommu_init_dma_ops(void)
- {
-+	setup_timer(&queue_timer, queue_flush_timeout, 0);
-+	atomic_set(&queue_timer_on, 0);
-+
- 	swiotlb        = iommu_pass_through ? 1 : 0;
- 	iommu_detected = 1;
- 
++		/* Now release the domain */
+ 		dma_dom = domain->priv;
+ 		dma_ops_domain_free(dma_dom);
+ 		break;
 -- 
 1.9.1
