@@ -1,18 +1,13 @@
-From: sunnydrake <sunnydrake7-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [Regression] Amd-Vi + ivrs_ioapic cause kernel oops (4.4, 4.7
-	fail 3.9 works)
-Date: Sun, 10 Jul 2016 11:48:10 +0300
-Message-ID: <57820BCA.3070400@gmail.com>
-References: <57786362.1010702@gmail.com>
-	<790da4e5-985a-a4f5-1ead-b4fa1f37e8a4@iommu.org>
-	<57797A37.4030805@gmail.com>
-	<6a84fd9d-6897-2b19-de87-be09722593dc@iommu.org>
-	<577B13D5.7030200@gmail.com> <577B26C3.6040108@iommu.org>
+From: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: Fix unity mapping initialization race
+Date: Sun, 10 Jul 2016 19:40:53 +0800
+Message-ID: <57823445.1020808@iommu.org>
+References: <1467820838-5059-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <577B26C3.6040108-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>
+In-Reply-To: <1467820838-5059-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,11 +17,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Wan Zongshun <vw-6ukY98dZOFrYtjvyW6yDsg@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-after applying patch " [PATCH] iommu/amd: Fix unity mapping 
-initialization 
-race<https://lists.linuxfoundation.org/pipermail/iommu/2016-July/017781.html>" 
-https://lists.linuxfoundation.org/pipermail/iommu/2016-July/017781.html 
-kernel boots but then freeze in Login Manager
+CgpPbiAyMDE25bm0MDfmnIgwN+aXpSAwMDowMCwgSm9lcmcgUm9lZGVsIHdyb3RlOgo+IEZyb206
+IEpvZXJnIFJvZWRlbCA8anJvZWRlbEBzdXNlLmRlPgo+Cj4gVGhlcmUgaXMgYSByYWNlIGNvbmRp
+dGlvbiBpbiB0aGUgQU1EIElPTU1VIGluaXQgY29kZSB0aGF0Cj4gY2F1c2VzIHJlcXVlc3RlZCB1
+bml0eSBtYXBwaW5ncyB0byBiZSBibG9ja2VkIGJ5IHRoZSBJT01NVQo+IGZvciBhIHNob3J0IHBl
+cmlvZCBvZiB0aW1lLiBUaGlzIHJlc3VsdHMgb24gYm9vdCBmYWlsdXJlcwo+IGFuZCBJT19QQUdF
+X0ZBVUxUcyBvbiBzb21lIG1hY2hpbmVzLgo+Cj4gRml4IHRoaXMgYnkgbWFraW5nIHN1cmUgdGhl
+IHVuaXR5IG1hcHBpbmdzIGFyZSBpbnN0YWxsZWQKPiBiZWZvcmUgYWxsIG90aGVyIERNQSBpcyBi
+bG9ja2VkLgo+Cj4gRml4ZXM6IGFhZmQ4YmEwY2E3NCAoJ2lvbW11L2FtZDogSW1wbGVtZW50IGFk
+ZF9kZXZpY2UgYW5kIHJlbW92ZV9kZXZpY2UnKQo+IENjOiBzdGFibGVAdmdlci5rZXJuZWwub3Jn
+ICMgdjQuMisKPiBTaWduZWQtb2ZmLWJ5OiBKb2VyZyBSb2VkZWwgPGpyb2VkZWxAc3VzZS5kZT4K
+PiAtLS0KPiAgIGRyaXZlcnMvaW9tbXUvYW1kX2lvbW11X2luaXQuYyB8IDE0ICsrKysrKysrKysr
+Ky0tCj4gICAxIGZpbGUgY2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkK
+Pgo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdV9pbml0LmMgYi9kcml2ZXJz
+L2lvbW11L2FtZF9pb21tdV9pbml0LmMKPiBpbmRleCBkMDkxZGVmLi41OTc0MWVhIDEwMDY0NAo+
+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11X2luaXQuYwo+ICsrKyBiL2RyaXZlcnMvaW9t
+bXUvYW1kX2lvbW11X2luaXQuYwo+IEBAIC0xNTY4LDEzICsxNTY4LDIzIEBAIHN0YXRpYyBpbnQg
+X19pbml0IGFtZF9pb21tdV9pbml0X3BjaSh2b2lkKQo+ICAgCQkJYnJlYWs7Cj4gICAJfQo+Cj4g
+KwkvKgo+ICsJICogT3JkZXIgaXMgaW1wb3J0YW50IGhlcmUgdG8gbWFrZSBzdXJlIGFueSB1bml0
+eSBtYXAgcmVxdWlyZW1lbnRzIGFyZQo+ICsJICogZnVsZmlsbGVkLiBUaGUgdW5pdHkgbWFwcGlu
+Z3MgYXJlIGNyZWF0ZWQgYW5kIHdyaXR0ZW4gdG8gdGhlIGRldmljZQo+ICsJICogdGFibGUgZHVy
+aW5nIHRoZSBhbWRfaW9tbXVfaW5pdF9hcGkoKSBjYWxsLgo+ICsJICoKPiArCSAqIEFmdGVyIHRo
+YXQgd2UgY2FsbCBpbml0X2RldmljZV90YWJsZV9kbWEoKSB0byBtYWtlIHN1cmUgYW55Cj4gKwkg
+KiB1bmluaXRpYWxpemVkIERURSB3aWxsIGJsb2NrIERNQSwgYW5kIGluIHRoZSBlbmQgd2UgZmx1
+c2ggdGhlIGNhY2hlcwo+ICsJICogb2YgYWxsIElPTU1VcyB0byBtYWtlIHN1cmUgdGhlIGNoYW5n
+ZXMgdG8gdGhlIGRldmljZSB0YWJsZSBhcmUKPiArCSAqIGFjdGl2ZS4KPiArCSAqLwoKSm9lcmcs
+CgpEbyB5b3UgbWVhbiB3ZSBuZWVkIGVuYWJsZSB0aGUgViBhbmQgVFYgYml0cyB0byBEVEUgZW50
+cnkgYWZ0ZXIgYWxsIERURXMgCnRhYmxlcyB3ZXJlIGluaXRpYWxpemVkIGNvbXBsZXRlbHk/CgpJ
+IGNoZWNrZWQgdGhpcyBmdW5jdGlvbiAnaW5pdF9kZXZpY2VfdGFibGVfZG1hJywgYW5kIGZpbmQg
+aXQganVzdCBzZXQKViBhbmQgVFYgYml0LCB0byBzZXQgdHJhbnNsYXRpb24gaW5mbyB2YWxpZCBh
+bmQgRFRFIGJpdHMxMjc6MSB2YWxpZC4KClNvIEkganVzdCB0aGluayBhbGwgdGhpbmdzIGl0IHNo
+b3VsZCB0byBkbyBhcmUgdG8gYWxsb3cgRE1BIGFjY2VzcywKR1BBLXRvLVNQQSB0cmFuc2xhdGlv
+biBzaG91bGQgYmUgYWN0aXZlLCB3aHkgeW91IGFkZCBmdW5jdGlvbiBjb21tZW50cyAKYmVsb3cg
+aXMgdG8gbm90IGFsbG93IERNQSBhY2Nlc3MgYW5kIHN1cHByZXNzIGFsbCBwYWdlIGZhdWx0cz8K
+Ci8qCiAgKiBJbml0IHRoZSBkZXZpY2UgdGFibGUgdG8gbm90IGFsbG93IERNQSBhY2Nlc3MgZm9y
+IGRldmljZXMgYW5kCiAgKiBzdXBwcmVzcyBhbGwgcGFnZSBmYXVsdHMKICAqLwpzdGF0aWMgdm9p
+ZCBpbml0X2RldmljZV90YWJsZV9kbWEodm9pZCkKCj4gKwlyZXQgPSBhbWRfaW9tbXVfaW5pdF9h
+cGkoKTsKPiArCj4gICAJaW5pdF9kZXZpY2VfdGFibGVfZG1hKCk7Cj4KPiAgIAlmb3JfZWFjaF9p
+b21tdShpb21tdSkKPiAgIAkJaW9tbXVfZmx1c2hfYWxsX2NhY2hlcyhpb21tdSk7Cj4KPiAtCXJl
+dCA9IGFtZF9pb21tdV9pbml0X2FwaSgpOwo+IC0KPiAgIAlpZiAoIXJldCkKPiAgIAkJcHJpbnRf
+aW9tbXVfaW5mbygpOwo+Cj4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
+bW11
