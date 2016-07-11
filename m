@@ -1,49 +1,50 @@
-From: Wan ZongShun <mcuos.com@gmail.com>
-Subject: Re: [PATCH] iommu/amd: Fix unity mapping initialization race
-Date: Mon, 11 Jul 2016 18:05:51 +0800
-Message-ID: <CAKT61h9=yCdgsEXh3MQgtoyPb_Jzmpv2L_k-8gxHfqYwTYKKOw@mail.gmail.com>
-References: <1467820838-5059-1-git-send-email-joro@8bytes.org>
- <57823445.1020808@iommu.org> <20160711071959.GB12639@8bytes.org>
- <57836609.5060406@iommu.org> <20160711093907.GD12639@8bytes.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu: arm-smmu: use devm_request_irq and devm_free_irq
+Date: Mon, 11 Jul 2016 11:32:55 +0100
+Message-ID: <578375D7.7090609@arm.com>
+References: <1467625102-9755-1-git-send-email-van.freenix@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160711093907.GD12639@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Wan Zongshun <vw@iommu.org>, iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>, linux-kernel <linux-kernel@vger.kernel.org>, stable@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1467625102-9755-1-git-send-email-van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
->
->> Sorry, why you still say this 'init_device_table_dma' can block DMA?
->> I just think this function will enable DMA transfer, since  we set
->> the V and TV bits, right? or I misunderstand what "block DMA" mean?
->
-> When the V and TV bits are not set, it means that all DMA from that
-> device-id is forwared untranslated by the IOMMU. But if we set V and TV
-> it means that there is translation information, and the IOMMU translates
-> the requests using the rest of the DTE information. As all other bits
-> are 0, this means that page-table-level is 0 (== no page-table) and that
-> the global IW and IR bits are 0 too (== no read and write permissions).
-> So all requests are blocked.
->
+On 04/07/16 10:38, Peng Fan wrote:
+> Use devm_request_irq to simplify error handling path,
+> when probe smmu device.
+> 
+> Also devm_{request|free}_irq when init or destroy domain context.
+> 
+> Signed-off-by: Peng Fan <van.freenix-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+[...]
+> @@ -2050,7 +2046,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+>  		dev_err(dev, "removing device with active domains!\n");
+>  
+>  	for (i = 0; i < smmu->num_global_irqs; ++i)
+> -		free_irq(smmu->irqs[i], smmu);
+> +		devm_free_irq(smmu->dev, smmu->irqs[i], smmu);
 
-Clearly.
+There shouldn't be any need for this at all, since the very next thing
+called after drv->remove() is devres_release_all().
 
-Thanks.
+Robin.
 
->
->
->         Joerg
->
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-
-
-
--- 
----
-Vincent Wan(Zongshun)
-www.mcuos.com
+>  
+>  	/* Turn the thing off */
+>  	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+> 
