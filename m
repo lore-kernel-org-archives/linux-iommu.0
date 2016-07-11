@@ -1,15 +1,15 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v2 0/6] Add support for privileged mappings
-Date: Mon, 11 Jul 2016 09:00:34 -0600
-Message-ID: <20160711150034.GA6526@jcrouse-lnx.qualcomm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 5/6] arm64/dma-mapping: Implement
+	DMA_ATTR_PRIVILEGED_EXECUTABLE
+Date: Mon, 11 Jul 2016 16:06:54 +0100
+Message-ID: <5783B60E.3050907@arm.com>
 References: <20160709020919.6760-1-mitchelh@codeaurora.org>
-	<5783A6F0.7040903@arm.com>
+	<20160709020919.6760-6-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <5783A6F0.7040903-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20160709020919.6760-6-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,67 +19,118 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 11, 2016 at 03:02:24PM +0100, Robin Murphy wrote:
-> Hey Mitch,
+On 09/07/16 03:09, Mitchel Humpherys wrote:
+> The newly added DMA_ATTR_PRIVILEGED_EXECUTABLE is useful for creating
+> mappings that are executable by privileged DMA engines.  Implement it in
+> dma-iommu.c so that the ARM64 DMA IOMMU mapper can make use of it.
 > 
-> Thanks for having the necessary go at the DMA API - I think the series
-> looks broadly workable now.
+> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ---
+>  arch/arm64/mm/dma-mapping.c |  6 +++---
+>  drivers/iommu/dma-iommu.c   | 15 +++++++++++----
+>  include/linux/dma-iommu.h   |  3 ++-
+>  3 files changed, 16 insertions(+), 8 deletions(-)
 > 
-> On 09/07/16 03:09, Mitchel Humpherys wrote:
-> > The following patch to the ARM SMMU driver:
-> > 
-> >     commit d346180e70b91b3d5a1ae7e5603e65593d4622bc
-> >     Author: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> >     Date:   Tue Jan 26 18:06:34 2016 +0000
-> >     
-> >         iommu/arm-smmu: Treat all device transactions as unprivileged
-> > 
-> > started forcing all SMMU transactions to come through as "unprivileged".
-> > The rationale given was that:
-> > 
-> >   (1) There is no way in the IOMMU API to even request privileged mappings.
-> > 
-> >   (2) It's difficult to implement a DMA mapper that correctly models the
-> >       ARM VMSAv8 behavior of unprivileged-writeable =>
-> >       privileged-execute-never.
-> > 
-> > This series rectifies (1) by introducing an IOMMU API for privileged
-> > mappings and implements it in io-pgtable-arm.
-> > 
-> > This series rectifies (2) by introducing a new dma attribute
-> > (DMA_ATTR_PRIVILEGED_EXECUTABLE) for users of the DMA API that need
-> > privileged, executable mappings, and implements it in the arm64 IOMMU DMA
-> > mapper.  The one known user (pl330.c) is converted over to the new
-> > attribute.
-> > 
-> > Jordan and Jeremy can provide more info on the use case if needed, but the
-> > high level is that it's a security feature to prevent attacks such as [1].
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index c566ec83719f..44f676268df6 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -543,7 +543,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+>  				 struct dma_attrs *attrs)
+>  {
+>  	bool coherent = is_device_dma_coherent(dev);
+> -	int ioprot = dma_direction_to_prot(DMA_BIDIRECTIONAL, coherent);
+> +	int ioprot = dma_direction_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
+>  	size_t iosize = size;
+>  	void *addr;
+>  
+> @@ -697,7 +697,7 @@ static dma_addr_t __iommu_map_page(struct device *dev, struct page *page,
+>  				   struct dma_attrs *attrs)
+>  {
+>  	bool coherent = is_device_dma_coherent(dev);
+> -	int prot = dma_direction_to_prot(dir, coherent);
+> +	int prot = dma_direction_to_prot(dir, coherent, attrs);
+>  	dma_addr_t dev_addr = iommu_dma_map_page(dev, page, offset, size, prot);
+>  
+>  	if (!iommu_dma_mapping_error(dev, dev_addr) &&
+> @@ -755,7 +755,7 @@ static int __iommu_map_sg_attrs(struct device *dev, struct scatterlist *sgl,
+>  		__iommu_sync_sg_for_device(dev, sgl, nelems, dir);
+>  
+>  	return iommu_dma_map_sg(dev, sgl, nelems,
+> -			dma_direction_to_prot(dir, coherent));
+> +			dma_direction_to_prot(dir, coherent, attrs));
+>  }
+>  
+>  static void __iommu_unmap_sg_attrs(struct device *dev,
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index ea5a9ebf0f78..ccc6219da228 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -132,23 +132,30 @@ EXPORT_SYMBOL(iommu_dma_init_domain);
+>   * dma_direction_to_prot - Translate DMA API directions to IOMMU API page flags
+
+Privilege really isn't a direction :(
+
+If we're going to cram more into this function it really wants renaming
+and redocumenting.
+
+>   * @dir: Direction of DMA transfer
+>   * @coherent: Is the DMA master cache-coherent?
+> + * @attrs: DMA attributes for the mapping
+>   *
+>   * Return: corresponding IOMMU API page protection flags
+>   */
+> -int dma_direction_to_prot(enum dma_data_direction dir, bool coherent)
+> +int dma_direction_to_prot(enum dma_data_direction dir, bool coherent,
+> +			  struct dma_attrs *attrs)
+>  {
+>  	int prot = coherent ? IOMMU_CACHE : 0;
+>  
+>  	switch (dir) {
+>  	case DMA_BIDIRECTIONAL:
+> -		return prot | IOMMU_READ | IOMMU_WRITE;
+> +		prot |= IOMMU_READ | IOMMU_WRITE;
+>  	case DMA_TO_DEVICE:
+> -		return prot | IOMMU_READ;
+> +		prot |= IOMMU_READ;
+>  	case DMA_FROM_DEVICE:
+> -		return prot | IOMMU_WRITE;
+> +		prot |= IOMMU_WRITE;
+>  	default:
+>  		return 0;
+>  	}
+> +	if (dma_get_attr(DMA_ATTR_PRIVILEGED_EXECUTABLE, attrs)) {
+> +		prot &= ~IOMMU_WRITE;
+
+Hey, we didn't say anything anywhere about anything being privileged
+read-only! Frankly, I think this is going to create more problems that
+it solves. Implementing IOMMU_PRIV as simply unprivileged no-access
+should be sufficient.
+
+Robin.
+
+> +		prot |= IOMMU_PRIV;
+> +	}
+> +	return prot;
+>  }
+>  
+>  static struct iova *__alloc_iova(struct iova_domain *iovad, size_t size,
+> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+> index 8443bbb5c071..d5a37e58d29b 100644
+> --- a/include/linux/dma-iommu.h
+> +++ b/include/linux/dma-iommu.h
+> @@ -32,7 +32,8 @@ void iommu_put_dma_cookie(struct iommu_domain *domain);
+>  int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size);
+>  
+>  /* General helpers for DMA-API <-> IOMMU-API interaction */
+> -int dma_direction_to_prot(enum dma_data_direction dir, bool coherent);
+> +int dma_direction_to_prot(enum dma_data_direction dir, bool coherent,
+> +			  struct dma_attrs *attrs);
+>  
+>  /*
+>   * These implement the bulk of the relevant DMA mapping callbacks, but require
 > 
-> My understanding of that hack is that it involves switching the GPU into
-> privileged mode to get at the mapping of the IOMMU registers in the
-> first place, so I don't see at a glance how having privileged mappings
-> defends against that. What it clearly does do, however, is get us _to_
-> the point where it's necessary to do such a privilege switch in the
-> first place, as opposed to everything being trivially wide-open, which
-> is no bad thing.
-
-It was a two pronged attack.  First the attacker had to use the GPU to construct
-a new pagetable and some various GPU command buffers and then they could switch
-the context to the new pagetable to complete the attack.
-
-The first part was made possible by vast tracts of read/write memory that is
-mapped globally and accessible to all users so it was easy and legal to write
-whatever the user wished including a pusedo-pagetable.
-
-As you said, while the actual fix for the exploit was blocking access to the SMMU
-registers it isn't a bad thing if we get in the habit of assuming that we shouldn't
-leave a bunch of scratch memory around for somebody clever to take advantage of.
-
-Jordan
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
