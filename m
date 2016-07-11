@@ -1,44 +1,78 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 1/6] iommu: add IOMMU_PRIV attribute
-Date: Mon, 11 Jul 2016 15:08:06 +0100
-Message-ID: <5783A846.1050601@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 2/6] iommu/io-pgtable-arm: add support for the
+	IOMMU_PRIV flag
+Date: Mon, 11 Jul 2016 15:14:07 +0100
+Message-ID: <5783A9AF.3060700@arm.com>
 References: <20160709020919.6760-1-mitchelh@codeaurora.org>
- <20160709020919.6760-2-mitchelh@codeaurora.org>
+	<20160709020919.6760-3-mitchelh@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160709020919.6760-2-mitchelh@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mitchel Humpherys <mitchelh@codeaurora.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Will Deacon <will.deacon@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Jordan Crouse <jcrouse@codeaurora.org>, Jeremy Gebben <jgebben@codeaurora.org>, Patrick Daly <pdaly@codeaurora.org>, Pratik Patel <pratikp@codeaurora.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160709020919.6760-3-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 On 09/07/16 03:09, Mitchel Humpherys wrote:
-> Add the IOMMU_PRIV attribute, which is used to indicate privileged
-> mappings.
+> From: Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 > 
-> Signed-off-by: Mitchel Humpherys <mitchelh@codeaurora.org>
+> Allow the creation of privileged mode mappings, for stage 1 only.
+> 
+> Signed-off-by: Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 > ---
->  include/linux/iommu.h | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/iommu/io-pgtable-arm.c | 16 +++++++++++-----
+>  1 file changed, 11 insertions(+), 5 deletions(-)
 > 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 664683aedcce..01c9f2667f2b 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -31,6 +31,7 @@
->  #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
->  #define IOMMU_NOEXEC	(1 << 3)
->  #define IOMMU_MMIO	(1 << 4) /* e.g. things like MSI doorbells */
-> +#define IOMMU_PRIV	(1 << 5)
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index a1ed1b73fed4..e9e7dd179708 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -101,8 +101,10 @@
+>  					 ARM_LPAE_PTE_ATTR_HI_MASK)
+>  
+>  /* Stage-1 PTE */
+> -#define ARM_LPAE_PTE_AP_UNPRIV		(((arm_lpae_iopte)1) << 6)
+> -#define ARM_LPAE_PTE_AP_RDONLY		(((arm_lpae_iopte)2) << 6)
+> +#define ARM_LPAE_PTE_AP_PRIV_RW		(((arm_lpae_iopte)0) << 6)
+> +#define ARM_LPAE_PTE_AP_RW		(((arm_lpae_iopte)1) << 6)
+> +#define ARM_LPAE_PTE_AP_PRIV_RO		(((arm_lpae_iopte)2) << 6)
+> +#define ARM_LPAE_PTE_AP_RO		(((arm_lpae_iopte)3) << 6)
 
-I agree on the IOMMU_PRIV name, but can't help thinking it might be
-worth a brief comment to make it abundantly clear at a glance that it
-isn't "private" or "priority 5" or whatever ;)
+I'd much rather keep the existing per-bit definitions and compose them
+in the code below (which by the look of it should then become a simple
+one-liner of making the OR-ing in of AP_UNPRIV conditional.)
 
 Robin.
 
->  struct iommu_ops;
->  struct iommu_group;
+>  #define ARM_LPAE_PTE_ATTRINDX_SHIFT	2
+>  #define ARM_LPAE_PTE_nG			(((arm_lpae_iopte)1) << 11)
+>  
+> @@ -350,10 +352,14 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+>  
+>  	if (data->iop.fmt == ARM_64_LPAE_S1 ||
+>  	    data->iop.fmt == ARM_32_LPAE_S1) {
+> -		pte = ARM_LPAE_PTE_AP_UNPRIV | ARM_LPAE_PTE_nG;
+> +		pte = ARM_LPAE_PTE_nG;
+>  
+> -		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
+> -			pte |= ARM_LPAE_PTE_AP_RDONLY;
+> +		if (prot & IOMMU_WRITE)
+> +			pte |= (prot & IOMMU_PRIV) ? ARM_LPAE_PTE_AP_PRIV_RW
+> +					: ARM_LPAE_PTE_AP_RW;
+> +		else
+> +			pte |= (prot & IOMMU_PRIV) ? ARM_LPAE_PTE_AP_PRIV_RO
+> +					: ARM_LPAE_PTE_AP_RO;
+>  
+>  		if (prot & IOMMU_MMIO)
+>  			pte |= (ARM_LPAE_MAIR_ATTR_IDX_DEV
 > 
