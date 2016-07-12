@@ -1,42 +1,34 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 07/20] iommu/amd: Remove special mapping code for dma_ops
- path
-Date: Tue, 12 Jul 2016 13:08:39 +0200
-Message-ID: <20160712110839.GF12639@8bytes.org>
-References: <1467978311-28322-1-git-send-email-joro@8bytes.org>
- <1467978311-28322-8-git-send-email-joro@8bytes.org>
- <5784CCAB.8000007@arm.com>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [GIT PULL] iommu/arm-smmu: Updates for 4.8
+Date: Tue, 12 Jul 2016 13:29:56 +0200
+Message-ID: <20160712112956.GB27306@suse.de>
+References: <20160708155946.GG6493@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <5784CCAB.8000007@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux-foundation.org, Vincent.Wan@amd.com, Joerg Roedel <jroedel@suse.de>, linux-kernel@vger.kernel.org
+In-Reply-To: <20160708155946.GG6493-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-On Tue, Jul 12, 2016 at 11:55:39AM +0100, Robin Murphy wrote:
-> >  	start = address;
-> >  	for (i = 0; i < pages; ++i) {
-> > -		ret = dma_ops_domain_map(dma_dom, start, paddr, dir);
-> > -		if (ret == DMA_ERROR_CODE)
-> > +		ret = iommu_map_page(&dma_dom->domain, start, paddr,
-> > +				     PAGE_SIZE, prot, GFP_ATOMIC);
+On Fri, Jul 08, 2016 at 04:59:46PM +0100, Will Deacon wrote:
+> The following changes since commit af8c34ce6ae32addda3788d54a7e340cad22516b:
 > 
-> I see that amd_iommu_map/unmap() takes a lock around calling
-> iommu_map/unmap_page(), but we don't appear to do that here. That seems
-> to suggest that either one is unsafe or the other is unnecessary.
+>   Linux 4.7-rc2 (2016-06-05 14:31:26 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
 
-At this point no locking is required, because in this code path we know
-that we own the memory range and that nobody else is mapping that range.
-
-In the IOMMU-API path we can't make that assumption, so locking is
-required there. Both code-path use different types of domains, so there
-is also no chance that a domain is used in both code-paths (except when
-a dma-ops domain is set up).
-
-
-	Joerg
+Pulled, thanks Will.
