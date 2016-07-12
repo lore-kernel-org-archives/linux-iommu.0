@@ -1,70 +1,53 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: limit use of 2-level stream tables
-Date: Tue, 12 Jul 2016 10:36:06 +0100
-Message-ID: <5784BA06.2020607@arm.com>
-References: <1468260059-10759-1-git-send-email-nwatters@codeaurora.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu: arm-smmu: drop devm_free_irq when driver detach
+Date: Tue, 12 Jul 2016 11:13:15 +0100
+Message-ID: <5784C2BB.4000503@arm.com>
+References: <1468287224-12036-1-git-send-email-van.freenix@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1468260059-10759-1-git-send-email-nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1468287224-12036-1-git-send-email-van.freenix@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Peng Fan <van.freenix@gmail.com>, will.deacon@arm.com
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/07/16 19:00, Nate Watterson wrote:
-> In the current arm-smmu-v3 driver, all smmus that support 2-level
-> stream tables are being forced to use them. This is suboptimal for
-> smmus that support fewer stream id bits than would fill in a single
-> second level table. This patch limits the use of 2-level tables to
-> smmus that both support the feature and whose first level table can
-> possibly contain more than a single entry.
-
-Makes sense to me, in principle.
-
-> Signed-off-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
+On 12/07/16 02:33, Peng Fan wrote:
+> There is no need to call devm_free_irq when driver detach.
+> devres_release_all which is called after 'drv->remove' will
+> release all managed resources.
 > 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 5f6b3bc..742254c 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -2531,6 +2531,17 @@ static int arm_smmu_device_probe(struct arm_smmu_device *smmu)
->  	smmu->ssid_bits = reg >> IDR1_SSID_SHIFT & IDR1_SSID_MASK;
->  	smmu->sid_bits = reg >> IDR1_SID_SHIFT & IDR1_SID_MASK;
+> Signed-off-by: Peng Fan <van.freenix@gmail.com>
+> Cc: Will Deacon <will.deacon@arm.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+
+drivers/iommu/arm-smmu.c: In function 'arm_smmu_device_remove':
+drivers/iommu/arm-smmu.c:2021:6: warning: unused variable 'i'
+[-Wunused-variable]
+  int i;
+      ^
+
+With that addressed:
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+> ---
+>  drivers/iommu/arm-smmu.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 860652e..5837391c 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -2045,9 +2045,6 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+>  	if (!bitmap_empty(smmu->context_map, ARM_SMMU_MAX_CBS))
+>  		dev_err(dev, "removing device with active domains!\n");
 >  
-> +	/*
-> +	 * If the SMMU supports fewer bits than would fill a single L2 stream
-> +	 * table, use a linear table instead.
-> +	 */
-> +	if (smmu->sid_bits <= STRTAB_SPLIT &&
-> +	    smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
-> +		smmu->features &= ~ARM_SMMU_FEAT_2_LVL_STRTAB;
-> +		dev_info(smmu->dev, "SIDSIZE (%d) <= STRTAB_SPLIT (%d) : disabling 2-level stream tables\n",
-> +			 smmu->sid_bits, STRTAB_SPLIT);
-
-There's no useful reason to squawk about this; it's just noise.
-
-Whatever old version of the spec I have here would appear to agree: "In
-all cases, aside from the lookup of the STE itself, the choice of Stream
-Table format is irrelevant to any other SMMU operation."
-
-> +	}
-> +
->  	/* IDR5 */
->  	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR5);
-
-I think this now leaves some of the logic in arm_smmu_init_strtab_2lvl()
-redundant, so it would probably be worth tidying that up at the same time.
-
-Robin.
+> -	for (i = 0; i < smmu->num_global_irqs; ++i)
+> -		devm_free_irq(smmu->dev, smmu->irqs[i], smmu);
+> -
+>  	/* Turn the thing off */
+>  	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+>  	return 0;
+> 
