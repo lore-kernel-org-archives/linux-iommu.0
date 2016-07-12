@@ -1,53 +1,40 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu: arm-smmu: drop devm_free_irq when driver detach
-Date: Tue, 12 Jul 2016 11:13:15 +0100
-Message-ID: <5784C2BB.4000503@arm.com>
-References: <1468287224-12036-1-git-send-email-van.freenix@gmail.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 00/20] iommu/amd: Use generic IOVA allocator
+Date: Tue, 12 Jul 2016 12:55:33 +0200
+Message-ID: <20160712105533.GE12639@8bytes.org>
+References: <1467978311-28322-1-git-send-email-joro@8bytes.org>
+ <5784B24C.60305@iommu.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1468287224-12036-1-git-send-email-van.freenix@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <5784B24C.60305@iommu.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Peng Fan <van.freenix@gmail.com>, will.deacon@arm.com
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Wan Zongshun <vw@iommu.org>
+Cc: iommu@lists.linux-foundation.org, Vincent.Wan@amd.com, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/07/16 02:33, Peng Fan wrote:
-> There is no need to call devm_free_irq when driver detach.
-> devres_release_all which is called after 'drv->remove' will
-> release all managed resources.
+Hey Vincent,
+
+On Tue, Jul 12, 2016 at 05:03:08PM +0800, Wan Zongshun wrote:
+> Currently, those patches can not work at my eCarrizo board.
+> When I merged your patches, boot failed, and no any info print to me.
+> I set iommu=pt, it also does not work; set iommu=soft, boot ok.
 > 
-> Signed-off-by: Peng Fan <van.freenix@gmail.com>
-> Cc: Will Deacon <will.deacon@arm.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-
-drivers/iommu/arm-smmu.c: In function 'arm_smmu_device_remove':
-drivers/iommu/arm-smmu.c:2021:6: warning: unused variable 'i'
-[-Wunused-variable]
-  int i;
-      ^
-
-With that addressed:
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-> ---
->  drivers/iommu/arm-smmu.c | 3 ---
->  1 file changed, 3 deletions(-)
+> When I removed those patches, kernel boot ok.
 > 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 860652e..5837391c 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -2045,9 +2045,6 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
->  	if (!bitmap_empty(smmu->context_map, ARM_SMMU_MAX_CBS))
->  		dev_err(dev, "removing device with active domains!\n");
->  
-> -	for (i = 0; i < smmu->num_global_irqs; ++i)
-> -		devm_free_irq(smmu->dev, smmu->irqs[i], smmu);
-> -
->  	/* Turn the thing off */
->  	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
->  	return 0;
-> 
+> This eCarrizo board uart doesnot work, so I can not get useful
+> information from kernel by uart console, I also set 'text' in boot
+> option, but still cannot print any log.
+
+Thanks for your testing. The issue turned out to be an older bug, which
+just got uncovered by these patches. I updated the branch at
+
+	git://git.kernel.org/pub/scm/linux/kernel/git/joro/linux.git amd-iommu-iova
+
+This branch boots now on my Kaveri and Carrizo system. Can you please
+give it a test too?
+
+Thanks,
+
+	Joerg
