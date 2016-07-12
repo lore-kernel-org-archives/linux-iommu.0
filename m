@@ -1,89 +1,70 @@
-From: Wan Zongshun <vw@iommu.org>
-Subject: Re: [PATCH 00/20] iommu/amd: Use generic IOVA allocator
-Date: Tue, 12 Jul 2016 17:03:08 +0800
-Message-ID: <5784B24C.60305@iommu.org>
-References: <1467978311-28322-1-git-send-email-joro@8bytes.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: limit use of 2-level stream tables
+Date: Tue, 12 Jul 2016 10:36:06 +0100
+Message-ID: <5784BA06.2020607@arm.com>
+References: <1468260059-10759-1-git-send-email-nwatters@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
-	format=flowed
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1467978311-28322-1-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
-Cc: Vincent.Wan@amd.com, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1468260059-10759-1-git-send-email-nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On 11/07/16 19:00, Nate Watterson wrote:
+> In the current arm-smmu-v3 driver, all smmus that support 2-level
+> stream tables are being forced to use them. This is suboptimal for
+> smmus that support fewer stream id bits than would fill in a single
+> second level table. This patch limits the use of 2-level tables to
+> smmus that both support the feature and whose first level table can
+> possibly contain more than a single entry.
 
+Makes sense to me, in principle.
 
-On 2016=E5=B9=B407=E6=9C=8808=E6=97=A5 19:44, Joerg Roedel wrote:
-> Hi,
->
-> here is a patch-set to make the AMD IOMMU driver use the
-> generic IOVA allocator, which is already used in the Intel
-> VT-d driver and a few other places.
->
-> The main reason for the conversion is to make the driver
-> benefit from the recent scalability improvements to the IOVA
-> code. Some of these improvements happened in the Intel VT-d
-> driver, these are not re-used but, for now, re-implemented.
->
-> This leaves more room for merging things together into
-> common code for the future.
->
-> The allocator that was previously used will be removed with
-> these patches.
->
-> Please review.
+> Signed-off-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 5f6b3bc..742254c 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -2531,6 +2531,17 @@ static int arm_smmu_device_probe(struct arm_smmu_device *smmu)
+>  	smmu->ssid_bits = reg >> IDR1_SSID_SHIFT & IDR1_SSID_MASK;
+>  	smmu->sid_bits = reg >> IDR1_SID_SHIFT & IDR1_SID_MASK;
+>  
+> +	/*
+> +	 * If the SMMU supports fewer bits than would fill a single L2 stream
+> +	 * table, use a linear table instead.
+> +	 */
+> +	if (smmu->sid_bits <= STRTAB_SPLIT &&
+> +	    smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
+> +		smmu->features &= ~ARM_SMMU_FEAT_2_LVL_STRTAB;
+> +		dev_info(smmu->dev, "SIDSIZE (%d) <= STRTAB_SPLIT (%d) : disabling 2-level stream tables\n",
+> +			 smmu->sid_bits, STRTAB_SPLIT);
 
-Joerg,
+There's no useful reason to squawk about this; it's just noise.
 
-Currently, those patches can not work at my eCarrizo board.
-When I merged your patches, boot failed, and no any info print to me.
-I set iommu=3Dpt, it also does not work; set iommu=3Dsoft, boot ok.
+Whatever old version of the spec I have here would appear to agree: "In
+all cases, aside from the lookup of the STE itself, the choice of Stream
+Table format is irrelevant to any other SMMU operation."
 
-When I removed those patches, kernel boot ok.
+> +	}
+> +
+>  	/* IDR5 */
+>  	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR5);
 
-This eCarrizo board uart doesnot work, so I can not get useful=20
-information from kernel by uart console, I also set 'text' in boot=20
-option, but still cannot print any log.
+I think this now leaves some of the logic in arm_smmu_init_strtab_2lvl()
+redundant, so it would probably be worth tidying that up at the same time.
 
-
-Vincent.
-
->
-> Thanks,
->
-> 	Joerg
->
-> Joerg Roedel (20):
->    iommu: Add apply_dm_region call-back to iommu-ops
->    iommu/amd: Select IOMMU_IOVA for AMD IOMMU
->    iommu/amd: Allocate iova_domain for dma_ops_domain
->    iommu/amd: Create a list of reserved iova addresses
->    iommu/amd: Implement apply_dm_region call-back
->    iommu/amd: Pass gfp-flags to iommu_map_page()
->    iommu/amd: Remove special mapping code for dma_ops path
->    iommu/amd: Make use of the generic IOVA allocator
->    iommu/amd: Remove other remains of old address allocator
->    iommu/amd: Remove align-parameter from __map_single()
->    iommu/amd: Set up data structures for flush queue
->    iommu/amd: Allow NULL pointer parameter for domain_flush_complete(=
-)
->    iommu/amd: Implement flush queue
->    iommu/amd: Implement timeout to flush unmap queues
->    iommu/amd: Introduce dir2prot() helper
->    iommu/amd: Optimize map_sg and unmap_sg
->    iommu/amd: Use dev_data->domain in get_domain()
->    iommu/amd: Handle IOMMU_DOMAIN_DMA in ops->domain_free call-back
->    iommu/amd: Flush iova queue before releasing dma_ops_domain
->    iommu/amd: Use container_of to get dma_ops_domain
->
->   drivers/iommu/Kconfig           |   1 +
->   drivers/iommu/amd_iommu.c       | 976 ++++++++++++++++-------------=
------------
->   drivers/iommu/amd_iommu_types.h |   1 -
->   drivers/iommu/iommu.c           |   3 +
->   include/linux/iommu.h           |   3 +
->   5 files changed, 387 insertions(+), 597 deletions(-)
->
+Robin.
