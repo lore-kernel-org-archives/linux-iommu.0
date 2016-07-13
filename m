@@ -1,7 +1,7 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH] iommu/amd: Init unity mappings only for dma_ops domains
-Date: Wed, 13 Jul 2016 12:43:39 +0200
-Message-ID: <1468406623-11080-1-git-send-email-joro@8bytes.org>
+From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] iommu/vt-d: return error code in domain_context_mapping_one()
+Date: Wed, 13 Jul 2016 13:53:21 +0000
+Message-ID: <1468418001-19089-1-git-send-email-richard.weiyang@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -15,41 +15,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Vincent.Wan-5C7GfCeVMHo@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: jroedel-l3A5Bk7waGM@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org
+Cc: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+In 'commit <55d940430ab9> ("iommu/vt-d: Get rid of domain->iommu_lock")',
+the error handling path is changed a little, which makes the function
+always return 0.
 
-The default domain for a device might also be
-identity-mapped. In this case the kernel would crash when
-unity mappings are defined for the device. Fix that by
-making sure the domain is a dma_ops domain.
+This path fixes this.
 
-Fixes: 0bb6e243d7fb ('iommu/amd: Support IOMMU_DOMAIN_DMA type allocation')
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org # v4.2+
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iommu/intel-iommu.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 921111e..b938a4a 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -467,9 +467,11 @@ static void init_iommu_group(struct device *dev)
- 	if (!domain)
- 		goto out;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 323dac9..d416242 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2076,7 +2076,7 @@ out_unlock:
+ 	spin_unlock(&iommu->lock);
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
  
--	dma_domain = to_pdomain(domain)->priv;
-+	if (to_pdomain(domain)->flags == PD_DMA_OPS_MASK) {
-+		dma_domain = to_pdomain(domain)->priv;
-+		init_unity_mappings_for_device(dev, dma_domain);
-+	}
- 
--	init_unity_mappings_for_device(dev, dma_domain);
- out:
- 	iommu_group_put(group);
+-	return 0;
++	return ret;
  }
+ 
+ struct domain_context_mapping_data {
 -- 
-2.6.6
+1.7.9.5
