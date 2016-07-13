@@ -1,11 +1,30 @@
 From: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v6 00/46] dma-mapping: Use unsigned long for dma_attrs
-Date: Wed, 13 Jul 2016 10:39:27 +0200
-Message-ID: <1468399167-28083-1-git-send-email-k.kozlowski@samsung.com>
+Subject: [PATCH v6 18/46] iommu: dma-mapping: Use unsigned long for dma_attrs
+Date: Wed, 13 Jul 2016 10:41:09 +0200
+Message-ID: <1468399300-5399-18-git-send-email-k.kozlowski@samsung.com>
+References: <1468399167-28083-1-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-1-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-2-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-3-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-4-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-5-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-6-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-7-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-8-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-9-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-10-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-11-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-12-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-13-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-14-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-15-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-16-git-send-email-k.kozlowski@samsung.com>
+	<1468399300-5399-17-git-send-email-k.kozlowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <1468399300-5399-17-git-send-email-k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,236 +35,134 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-fbdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org, linux-rdma-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-hexagon-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-sh-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, xen-devel-GuqFBffKawtpuQazS67q72D2FQJk+8+b@public.gmane.org, linux-snps-arc-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-media-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-m68k-cunTk1MwBs8S/qaLPR03pWD2FQJk+8+b@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-metag-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XWGXanvQGlWp@public.gmane.org
+Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Split out subsystem specific changes for easier reviews. This will be
+squashed with main commit.
 
-The fifth version of this patchset was merged by Andrew Morton
-few days ago.  It was rebased on v4.7-rc5 so it missed some ongoing
-changes.
+Signed-off-by: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+[for iommu]
+Acked-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c | 12 ++++++------
+ drivers/iommu/dma-iommu.c |  6 +++---
+ include/linux/dma-iommu.h |  6 +++---
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
-This is just rebase on next-20160713.
-
-
-For easier testing the patchset is available here:
-repo:   https://github.com/krzk/linux
-branch: for-next/dma-attrs-const-v6
-
-
-Changes since v5
-================
-1. New patches:
-   1/46:  [media] mtk-vcodec: Remove unused dma_attrs
-   44/46: remoteproc: qcom: Use unsigned long for dma_attrs
-2. 19/46: rebased on next, some more changes inside
-3. Added accumulated acks: Marek Szyprowski, Richard Kuo,
-   Konrad Rzeszutek Wilk, Daniel Vetter and Joerg Roedel.
-
-
-Changes since v4
-================
-1. Collect some acks. Still need more.
-2. Minor fixes pointed by Robin Murphy.
-3. Applied changes from Bart Van Assche's comment.
-4. More tests and builds (using https://www.kernel.org/pub/tools/crosstool/).
-
-
-Changes since v3
-================
-1. Collect some acks.
-2. Drop wrong patch 1/45 ("powerpc: dma-mapping: Don't hard-code
-   the value of DMA_ATTR_WEAK_ORDERING").
-3. Minor fix pointed out by Michael Ellerman.
-
-
-Changes since v2
-================
-1. Follow Christoph Hellwig's comments (don't use BIT add
-   documentation, remove dma_get_attr).
-
-
-Rationale
-=========
-The dma-mapping core and the implementations do not change the
-DMA attributes passed by pointer.  Thus the pointer can point to const
-data.  However the attributes do not have to be a bitfield. Instead
-unsigned long will do fine:
-
-1. This is just simpler.  Both in terms of reading the code and setting
-   attributes.  Instead of initializing local attributes on the stack
-   and passing pointer to it to dma_set_attr(), just set the bits.
-
-2. It brings safeness and checking for const correctness because the
-   attributes are passed by value.
-
-
-Best regards,
-Krzysztof
-
-
-Krzysztof Kozlowski (46):
-  [media] mtk-vcodec: Remove unused dma_attrs
-  dma-mapping: Use unsigned long for dma_attrs
-  alpha: dma-mapping: Use unsigned long for dma_attrs
-  arc: dma-mapping: Use unsigned long for dma_attrs
-  ARM: dma-mapping: Use unsigned long for dma_attrs
-  arm64: dma-mapping: Use unsigned long for dma_attrs
-  avr32: dma-mapping: Use unsigned long for dma_attrs
-  blackfin: dma-mapping: Use unsigned long for dma_attrs
-  c6x: dma-mapping: Use unsigned long for dma_attrs
-  cris: dma-mapping: Use unsigned long for dma_attrs
-  frv: dma-mapping: Use unsigned long for dma_attrs
-  drm/exynos: dma-mapping: Use unsigned long for dma_attrs
-  drm/mediatek: dma-mapping: Use unsigned long for dma_attrs
-  drm/msm: dma-mapping: Use unsigned long for dma_attrs
-  drm/nouveau: dma-mapping: Use unsigned long for dma_attrs
-  drm/rockship: dma-mapping: Use unsigned long for dma_attrs
-  infiniband: dma-mapping: Use unsigned long for dma_attrs
-  iommu: dma-mapping: Use unsigned long for dma_attrs
-  [media] dma-mapping: Use unsigned long for dma_attrs
-  xen: dma-mapping: Use unsigned long for dma_attrs
-  swiotlb: dma-mapping: Use unsigned long for dma_attrs
-  powerpc: dma-mapping: Use unsigned long for dma_attrs
-  video: dma-mapping: Use unsigned long for dma_attrs
-  x86: dma-mapping: Use unsigned long for dma_attrs
-  iommu: intel: dma-mapping: Use unsigned long for dma_attrs
-  h8300: dma-mapping: Use unsigned long for dma_attrs
-  hexagon: dma-mapping: Use unsigned long for dma_attrs
-  ia64: dma-mapping: Use unsigned long for dma_attrs
-  m68k: dma-mapping: Use unsigned long for dma_attrs
-  metag: dma-mapping: Use unsigned long for dma_attrs
-  microblaze: dma-mapping: Use unsigned long for dma_attrs
-  mips: dma-mapping: Use unsigned long for dma_attrs
-  mn10300: dma-mapping: Use unsigned long for dma_attrs
-  nios2: dma-mapping: Use unsigned long for dma_attrs
-  openrisc: dma-mapping: Use unsigned long for dma_attrs
-  parisc: dma-mapping: Use unsigned long for dma_attrs
-  misc: mic: dma-mapping: Use unsigned long for dma_attrs
-  s390: dma-mapping: Use unsigned long for dma_attrs
-  sh: dma-mapping: Use unsigned long for dma_attrs
-  sparc: dma-mapping: Use unsigned long for dma_attrs
-  tile: dma-mapping: Use unsigned long for dma_attrs
-  unicore32: dma-mapping: Use unsigned long for dma_attrs
-  xtensa: dma-mapping: Use unsigned long for dma_attrs
-  remoteproc: qcom: Use unsigned long for dma_attrs
-  dma-mapping: Remove dma_get_attr
-  dma-mapping: Document the DMA attributes next to the declaration
-
- Documentation/DMA-API.txt                          |  33 +++---
- Documentation/DMA-attributes.txt                   |   2 +-
- arch/alpha/include/asm/dma-mapping.h               |   2 -
- arch/alpha/kernel/pci-noop.c                       |   2 +-
- arch/alpha/kernel/pci_iommu.c                      |  12 +-
- arch/arc/mm/dma.c                                  |  12 +-
- arch/arm/common/dmabounce.c                        |   4 +-
- arch/arm/include/asm/dma-mapping.h                 |  13 +--
- arch/arm/include/asm/xen/page-coherent.h           |  16 +--
- arch/arm/mm/dma-mapping.c                          | 117 +++++++++----------
- arch/arm/xen/mm.c                                  |   8 +-
- arch/arm64/mm/dma-mapping.c                        |  66 +++++------
- arch/avr32/mm/dma-coherent.c                       |  12 +-
- arch/blackfin/kernel/dma-mapping.c                 |   8 +-
- arch/c6x/include/asm/dma-mapping.h                 |   4 +-
- arch/c6x/kernel/dma.c                              |   9 +-
- arch/c6x/mm/dma-coherent.c                         |   4 +-
- arch/cris/arch-v32/drivers/pci/dma.c               |   9 +-
- arch/frv/mb93090-mb00/pci-dma-nommu.c              |   8 +-
- arch/frv/mb93090-mb00/pci-dma.c                    |   9 +-
- arch/h8300/kernel/dma.c                            |   8 +-
- arch/hexagon/include/asm/dma-mapping.h             |   1 -
- arch/hexagon/kernel/dma.c                          |   8 +-
- arch/ia64/hp/common/sba_iommu.c                    |  22 ++--
- arch/ia64/include/asm/machvec.h                    |   1 -
- arch/ia64/kernel/pci-swiotlb.c                     |   4 +-
- arch/ia64/sn/pci/pci_dma.c                         |  22 ++--
- arch/m68k/kernel/dma.c                             |  12 +-
- arch/metag/kernel/dma.c                            |  16 +--
- arch/microblaze/include/asm/dma-mapping.h          |   1 -
- arch/microblaze/kernel/dma.c                       |  12 +-
- arch/mips/cavium-octeon/dma-octeon.c               |   8 +-
- arch/mips/loongson64/common/dma-swiotlb.c          |  10 +-
- arch/mips/mm/dma-default.c                         |  20 ++--
- arch/mips/netlogic/common/nlm-dma.c                |   4 +-
- arch/mn10300/mm/dma-alloc.c                        |   8 +-
- arch/nios2/mm/dma-mapping.c                        |  12 +-
- arch/openrisc/kernel/dma.c                         |  21 ++--
- arch/parisc/kernel/pci-dma.c                       |  18 +--
- arch/powerpc/include/asm/dma-mapping.h             |   7 +-
- arch/powerpc/include/asm/iommu.h                   |  10 +-
- arch/powerpc/kernel/dma-iommu.c                    |  12 +-
- arch/powerpc/kernel/dma.c                          |  18 +--
- arch/powerpc/kernel/ibmebus.c                      |  12 +-
- arch/powerpc/kernel/iommu.c                        |  12 +-
- arch/powerpc/kernel/vio.c                          |  12 +-
- arch/powerpc/platforms/cell/iommu.c                |  28 ++---
- arch/powerpc/platforms/pasemi/iommu.c              |   2 +-
- arch/powerpc/platforms/powernv/npu-dma.c           |   8 +-
- arch/powerpc/platforms/powernv/pci-ioda.c          |   4 +-
- arch/powerpc/platforms/powernv/pci.c               |   2 +-
- arch/powerpc/platforms/powernv/pci.h               |   2 +-
- arch/powerpc/platforms/ps3/system-bus.c            |  18 +--
- arch/powerpc/platforms/pseries/iommu.c             |   6 +-
- arch/powerpc/sysdev/dart_iommu.c                   |   2 +-
- arch/s390/include/asm/dma-mapping.h                |   1 -
- arch/s390/pci/pci_dma.c                            |  23 ++--
- arch/sh/include/asm/dma-mapping.h                  |   4 +-
- arch/sh/kernel/dma-nommu.c                         |   4 +-
- arch/sh/mm/consistent.c                            |   4 +-
- arch/sparc/kernel/iommu.c                          |  12 +-
- arch/sparc/kernel/ioport.c                         |  24 ++--
- arch/sparc/kernel/pci_sun4v.c                      |  12 +-
- arch/tile/kernel/pci-dma.c                         |  28 ++---
- arch/unicore32/mm/dma-swiotlb.c                    |   4 +-
- arch/x86/include/asm/dma-mapping.h                 |   5 +-
- arch/x86/include/asm/swiotlb.h                     |   4 +-
- arch/x86/include/asm/xen/page-coherent.h           |   9 +-
- arch/x86/kernel/amd_gart_64.c                      |  20 ++--
- arch/x86/kernel/pci-calgary_64.c                   |  14 +--
- arch/x86/kernel/pci-dma.c                          |   4 +-
- arch/x86/kernel/pci-nommu.c                        |   4 +-
- arch/x86/kernel/pci-swiotlb.c                      |   4 +-
- arch/x86/pci/sta2x11-fixup.c                       |   2 +-
- arch/x86/pci/vmd.c                                 |  16 +--
- arch/xtensa/kernel/pci-dma.c                       |  12 +-
- drivers/gpu/drm/exynos/exynos_drm_fbdev.c          |   2 +-
- drivers/gpu/drm/exynos/exynos_drm_g2d.c            |  12 +-
- drivers/gpu/drm/exynos/exynos_drm_gem.c            |  20 ++--
- drivers/gpu/drm/exynos/exynos_drm_gem.h            |   2 +-
- drivers/gpu/drm/mediatek/mtk_drm_gem.c             |  13 +--
- drivers/gpu/drm/mediatek/mtk_drm_gem.h             |   2 +-
- drivers/gpu/drm/msm/msm_drv.c                      |  13 +--
- .../gpu/drm/nouveau/nvkm/subdev/instmem/gk20a.c    |  13 +--
- drivers/gpu/drm/rockchip/rockchip_drm_gem.c        |  17 ++-
- drivers/gpu/drm/rockchip/rockchip_drm_gem.h        |   2 +-
- drivers/infiniband/core/umem.c                     |   7 +-
- drivers/iommu/amd_iommu.c                          |  12 +-
- drivers/iommu/dma-iommu.c                          |   8 +-
- drivers/iommu/intel-iommu.c                        |  12 +-
- .../media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c |   4 -
- drivers/media/platform/sti/bdisp/bdisp-hw.c        |  26 ++---
- drivers/media/v4l2-core/videobuf2-dma-contig.c     |  28 ++---
- drivers/media/v4l2-core/videobuf2-dma-sg.c         |  21 +---
- drivers/media/v4l2-core/videobuf2-vmalloc.c        |   2 +-
- drivers/misc/mic/host/mic_boot.c                   |  20 ++--
- drivers/parisc/ccio-dma.c                          |  16 +--
- drivers/parisc/sba_iommu.c                         |  16 +--
- drivers/remoteproc/qcom_q6v5_pil.c                 |   7 +-
- drivers/video/fbdev/omap2/omapfb/omapfb-main.c     |  12 +-
- drivers/video/fbdev/omap2/omapfb/omapfb.h          |   3 +-
- drivers/xen/swiotlb-xen.c                          |  14 +--
- include/linux/dma-attrs.h                          |  71 ------------
- include/linux/dma-iommu.h                          |   6 +-
- include/linux/dma-mapping.h                        | 128 ++++++++++++++-------
- include/linux/swiotlb.h                            |  10 +-
- include/media/videobuf2-core.h                     |   6 +-
- include/media/videobuf2-dma-contig.h               |   2 -
- include/rdma/ib_verbs.h                            |   8 +-
- include/xen/swiotlb-xen.h                          |  12 +-
- lib/dma-noop.c                                     |   9 +-
- lib/swiotlb.c                                      |  13 ++-
- 112 files changed, 694 insertions(+), 798 deletions(-)
- delete mode 100644 include/linux/dma-attrs.h
-
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 921111e65c8c..b225e82a5228 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2717,7 +2717,7 @@ static void __unmap_single(struct dma_ops_domain *dma_dom,
+ static dma_addr_t map_page(struct device *dev, struct page *page,
+ 			   unsigned long offset, size_t size,
+ 			   enum dma_data_direction dir,
+-			   struct dma_attrs *attrs)
++			   unsigned long attrs)
+ {
+ 	phys_addr_t paddr = page_to_phys(page) + offset;
+ 	struct protection_domain *domain;
+@@ -2739,7 +2739,7 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
+  * The exported unmap_single function for dma_ops.
+  */
+ static void unmap_page(struct device *dev, dma_addr_t dma_addr, size_t size,
+-		       enum dma_data_direction dir, struct dma_attrs *attrs)
++		       enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	struct protection_domain *domain;
+ 
+@@ -2756,7 +2756,7 @@ static void unmap_page(struct device *dev, dma_addr_t dma_addr, size_t size,
+  */
+ static int map_sg(struct device *dev, struct scatterlist *sglist,
+ 		  int nelems, enum dma_data_direction dir,
+-		  struct dma_attrs *attrs)
++		  unsigned long attrs)
+ {
+ 	struct protection_domain *domain;
+ 	int i;
+@@ -2804,7 +2804,7 @@ unmap:
+  */
+ static void unmap_sg(struct device *dev, struct scatterlist *sglist,
+ 		     int nelems, enum dma_data_direction dir,
+-		     struct dma_attrs *attrs)
++		     unsigned long attrs)
+ {
+ 	struct protection_domain *domain;
+ 	struct scatterlist *s;
+@@ -2826,7 +2826,7 @@ static void unmap_sg(struct device *dev, struct scatterlist *sglist,
+  */
+ static void *alloc_coherent(struct device *dev, size_t size,
+ 			    dma_addr_t *dma_addr, gfp_t flag,
+-			    struct dma_attrs *attrs)
++			    unsigned long attrs)
+ {
+ 	u64 dma_mask = dev->coherent_dma_mask;
+ 	struct protection_domain *domain;
+@@ -2880,7 +2880,7 @@ out_free:
+  */
+ static void free_coherent(struct device *dev, size_t size,
+ 			  void *virt_addr, dma_addr_t dma_addr,
+-			  struct dma_attrs *attrs)
++			  unsigned long attrs)
+ {
+ 	struct protection_domain *domain;
+ 	struct page *page;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index ea5a9ebf0f78..6c1bda504fb1 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -286,7 +286,7 @@ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
+  *	   or NULL on failure.
+  */
+ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+-		struct dma_attrs *attrs, int prot, dma_addr_t *handle,
++		unsigned long attrs, int prot, dma_addr_t *handle,
+ 		void (*flush_page)(struct device *, const void *, phys_addr_t))
+ {
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+@@ -400,7 +400,7 @@ dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+ }
+ 
+ void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
+-		enum dma_data_direction dir, struct dma_attrs *attrs)
++		enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), handle);
+ }
+@@ -560,7 +560,7 @@ out_restore_sg:
+ }
+ 
+ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+-		enum dma_data_direction dir, struct dma_attrs *attrs)
++		enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	/*
+ 	 * The scatterlist segments are mapped into a single
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index 8443bbb5c071..81c5c8d167ad 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -39,7 +39,7 @@ int dma_direction_to_prot(enum dma_data_direction dir, bool coherent);
+  * the arch code to take care of attributes and cache maintenance
+  */
+ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+-		struct dma_attrs *attrs, int prot, dma_addr_t *handle,
++		unsigned long attrs, int prot, dma_addr_t *handle,
+ 		void (*flush_page)(struct device *, const void *, phys_addr_t));
+ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
+ 		dma_addr_t *handle);
+@@ -56,9 +56,9 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+  * directly as DMA mapping callbacks for simplicity
+  */
+ void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
+-		enum dma_data_direction dir, struct dma_attrs *attrs);
++		enum dma_data_direction dir, unsigned long attrs);
+ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+-		enum dma_data_direction dir, struct dma_attrs *attrs);
++		enum dma_data_direction dir, unsigned long attrs);
+ int iommu_dma_supported(struct device *dev, u64 mask);
+ int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
+ 
 -- 
 1.9.1
