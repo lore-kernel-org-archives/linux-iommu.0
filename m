@@ -1,16 +1,11 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: [PATCH] iommu: simplify and fix ida handling
-Date: Wed, 13 Jul 2016 12:29:28 +0200
-Message-ID: <20160713102928.GE27306@suse.de>
-References: <e6d78cf6-2af6-8638-6f08-70025b720265@gmail.com>
-	<20160704114648.GE11467@suse.de>
-	<7c77402b-cbcb-1ac0-d81a-0e7c92201ee8@gmail.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH] iommu/amd: Init unity mappings only for dma_ops domains
+Date: Wed, 13 Jul 2016 12:43:39 +0200
+Message-ID: <1468406623-11080-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <7c77402b-cbcb-1ac0-d81a-0e7c92201ee8-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,29 +15,41 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Heiner Kallweit <hkallweit1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Vincent.Wan-5C7GfCeVMHo@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 04, 2016 at 09:01:18PM +0200, Heiner Kallweit wrote:
-> Am 04.07.2016 um 13:46 schrieb Joerg Roedel:
-> > On Wed, Jun 29, 2016 at 09:13:59PM +0200, Heiner Kallweit wrote:
-> >> Ida handling can be much simplified by using the ida_simple_.. functions.
-> >>
-> >> This change also fixes the bug that previously checking for errors
-> >> returned by ida_get_new() was incomplete.
-> >> ida_get_new() can return errors other than EAGAIN, e.g. ENOSPC.
-> >> This case wasn't handled.
-> >>
-> >> Signed-off-by: Heiner Kallweit <hkallweit1-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> >> ---
-> >>  drivers/iommu/iommu.c | 24 ++++++------------------
-> >>  1 file changed, 6 insertions(+), 18 deletions(-)
-> > 
-> > The patch does not apply. Please rebase it against the latest upstream
-> > kernel and resend.
-> > 
-> This patch applies on top of patch "[PATCH 1/3] iommu: simplify init function"
-> I submitted on June 28th. Do you have an opinion on that patch?
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Applied both, thanks.
+The default domain for a device might also be
+identity-mapped. In this case the kernel would crash when
+unity mappings are defined for the device. Fix that by
+making sure the domain is a dma_ops domain.
+
+Fixes: 0bb6e243d7fb ('iommu/amd: Support IOMMU_DOMAIN_DMA type allocation')
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org # v4.2+
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 921111e..b938a4a 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -467,9 +467,11 @@ static void init_iommu_group(struct device *dev)
+ 	if (!domain)
+ 		goto out;
+ 
+-	dma_domain = to_pdomain(domain)->priv;
++	if (to_pdomain(domain)->flags == PD_DMA_OPS_MASK) {
++		dma_domain = to_pdomain(domain)->priv;
++		init_unity_mappings_for_device(dev, dma_domain);
++	}
+ 
+-	init_unity_mappings_for_device(dev, dma_domain);
+ out:
+ 	iommu_group_put(group);
+ }
+-- 
+2.6.6
