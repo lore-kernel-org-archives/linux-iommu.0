@@ -1,24 +1,17 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: IOMMU+DMAR causing NMIs-s (was: 4.7-rc6: NMI in intel_idle on HP
-	Proliant G6)
-Date: Wed, 13 Jul 2016 12:18:59 +0200
-Message-ID: <20160713101859.GO12639@8bytes.org>
-References: <alpine.LRH.2.20.1607121525060.2088@math.ut.ee>
-	<5630546.0MIYeGNSYG@vostro.rjw.lan>
-	<alpine.LRH.2.20.1607121654490.2088@math.ut.ee>
-	<alpine.LRH.2.20.1607130855210.11080@math.ut.ee>
-	<20160713081817.GJ12639@8bytes.org>
-	<alpine.LRH.2.20.1607131122010.20366@math.ut.ee>
-	<20160713090332.GK12639@8bytes.org>
-	<alpine.LRH.2.20.1607131239410.20366@math.ut.ee>
-	<20160713094917.GM12639@8bytes.org>
-	<alpine.LRH.2.20.1607131257390.20366@math.ut.ee>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH 16/20 v2] iommu/amd: Optimize map_sg and unmap_sg
+Date: Wed, 13 Jul 2016 12:27:18 +0200
+Message-ID: <20160713102718.GD27306@suse.de>
+References: <1467978311-28322-1-git-send-email-joro@8bytes.org>
+	<1467978311-28322-17-git-send-email-joro@8bytes.org>
+	<5784D597.4010703@arm.com> <20160712133042.GG12639@8bytes.org>
+	<57850DF8.9040507@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <alpine.LRH.2.20.1607131257390.20366-ptEonEWSGqKptlylMvRsHA@public.gmane.org>
+In-Reply-To: <57850DF8.9040507-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -28,40 +21,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Linux Kernel list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 13, 2016 at 12:58:24PM +0300, Meelis Roos wrote:
-> > > Just got http://kodu.ut.ee/~mroos/4.6-dmar-fault2.png when playing with 
-> > > BIOS settings (disabling NUMA). It is the first time I see at least some 
-> > > info in NMI decode.
-> > 
-> > This looks interesting. Can you please post output of 'lspci -vvv' and
-> > 'lspci -t'?
+On Tue, Jul 12, 2016 at 04:34:16PM +0100, Robin Murphy wrote:
+> The boundary masks for block devices are tricky to track down through so
+> many layers of indirection in the common frameworks, but there are a lot
+> of 64K ones there. After some more impromptu digging into the subject
+> I've finally satisfied my curiosity - it seems this restriction stems
+> from the ATA DMA PRD table format, so it could perhaps still be a real
+> concern for anyone using some crusty old PCI IDE card in their modern
+> system.
+
+The boundary-mask is a capability of the underlying PCI device, no? The
+ATA or whatever-stack above should have no influence on it.
 > 
-> Here.
+> Indeed, I wasn't suggesting making more than one call, just that
+> alloc_iova_fast() is quite likely to have to fall back to alloc_iova()
+> here, so there may be some mileage in going directly to the latter, with
+> the benefit of then being able to rely on find_iova() later (since you
+> know for sure you allocated out of the tree rather than the caches). My
+> hunch is that dma_map_sg() tends to be called for bulk data transfer
+> (block devices, DRM, etc.) so is probably a less contended path compared
+> to the network layer hammering dma_map_single().
 
-Thanks. So device 00:1e.0 is a PCI-bridge which has some 32-bit
-PCI-devices behind it. One of these devices tries to read address
-0xb000, which is blocked by the IOMMU and causes the fault seen in the
-screen-shot. The fault also causes a PCI-error which is then reported
-through the NMI, causing your kernel panic.
+Using different functions for allocation would also require special
+handling in the queued-freeing code, as I have to track the allocation
+then to know wheter I free it with the _fast variant or not.
 
-So the 32bit PCI devices behind the bridge are:
+> > +	mask          = dma_get_seg_boundary(dev);
+> > +	boundary_size = mask + 1 ? ALIGN(mask + 1, PAGE_SIZE) >> PAGE_SHIFT :
+> > +				   1UL << (BITS_PER_LONG - PAGE_SHIFT);
+> 
+> (mask >> PAGE_SHIFT) + 1 ?
 
-01:03.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] ES1000 (rev 02) (prog-if 00 [VGA controller])
-01:04.0 System peripheral: Compaq Computer Corporation Integrated Lights Out Controller (rev 03)
-01:04.2 System peripheral: Compaq Computer Corporation Integrated Lights Out  Processor (rev 03)
-01:04.4 USB controller: Hewlett-Packard Company Integrated Lights-Out Standard Virtual USB Controller (prog-if 00 [UHCI])
-01:04.6 IPMI SMIC interface: Hewlett-Packard Company Integrated Lights-Out Standard KCS Interface (prog-if 01)
-
-Can you try to disable this 'Lights Out' processor? Maybe it is causing
-the issues. On the other side, the radeon driver for the ATI card is
-also know for causing faults from time to time. Can you capture the
-kernel messages right before a crash too?
+Should make no difference unless some of the first PAGE_SHIFT bits of
+mask is 0 (which shouldn't happen).
 
 
-Thanks,
 
 	Joerg
