@@ -1,26 +1,15 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: IOMMU+DMAR causing NMIs-s
-Date: Wed, 13 Jul 2016 17:04:08 -0600
-Message-ID: <20160713170408.6e5d2534@t450s.home>
-References: <alpine.LRH.2.20.1607121525060.2088@math.ut.ee>
-	<5630546.0MIYeGNSYG@vostro.rjw.lan>
-	<alpine.LRH.2.20.1607121654490.2088@math.ut.ee>
-	<alpine.LRH.2.20.1607130855210.11080@math.ut.ee>
-	<20160713081817.GJ12639@8bytes.org>
-	<alpine.LRH.2.20.1607131122010.20366@math.ut.ee>
-	<20160713090332.GK12639@8bytes.org>
-	<alpine.LRH.2.20.1607131239410.20366@math.ut.ee>
-	<20160713094917.GM12639@8bytes.org>
-	<alpine.LRH.2.20.1607131257390.20366@math.ut.ee>
-	<20160713101859.GO12639@8bytes.org>
-	<20160713084830.09453584@t450s.home>
-	<1a4c4b65-c716-08a5-af89-1b0f551024ed@hpe.com>
-	<alpine.LRH.2.20.1607132258001.30020@math.ut.ee>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: return error code in
+	domain_context_mapping_one()
+Date: Thu, 14 Jul 2016 10:27:28 +0200
+Message-ID: <20160714082728.GF27306@suse.de>
+References: <1468418001-19089-1-git-send-email-richard.weiyang@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <alpine.LRH.2.20.1607132258001.30020-ptEonEWSGqKptlylMvRsHA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1468418001-19089-1-git-send-email-richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -30,74 +19,17 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux Kernel list <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 14 Jul 2016 00:52:02 +0300 (EEST)
-Meelis Roos <mroos-Y27EyoLml9s@public.gmane.org> wrote:
+On Wed, Jul 13, 2016 at 01:53:21PM +0000, Wei Yang wrote:
+> In 'commit <55d940430ab9> ("iommu/vt-d: Get rid of domain->iommu_lock")',
+> the error handling path is changed a little, which makes the function
+> always return 0.
+> 
+> This path fixes this.
+> 
+> Signed-off-by: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 
-> > >> Thanks. So device 00:1e.0 is a PCI-bridge which has some 32-bit
-> > >> PCI-devices behind it. One of these devices tries to read address
-> > >> 0xb000, which is blocked by the IOMMU and causes the fault seen in the
-> > >> screen-shot. The fault also causes a PCI-error which is then reported
-> > >> through the NMI, causing your kernel panic.
-> > >>
-> > >> So the 32bit PCI devices behind the bridge are:
-> > >>
-> > >> 01:03.0 VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] ES1000 (rev 02) (prog-if 00 [VGA controller])
-> > >> 01:04.0 System peripheral: Compaq Computer Corporation Integrated Lights Out Controller (rev 03)
-> > >> 01:04.2 System peripheral: Compaq Computer Corporation Integrated Lights Out  Processor (rev 03)
-> > >> 01:04.4 USB controller: Hewlett-Packard Company Integrated Lights-Out Standard Virtual USB Controller (prog-if 00 [UHCI])
-> > >> 01:04.6 IPMI SMIC interface: Hewlett-Packard Company Integrated Lights-Out Standard KCS Interface (prog-if 01)
-> > >>
-> > >> Can you try to disable this 'Lights Out' processor? Maybe it is causing
-> > >> the issues. On the other side, the radeon driver for the ATI card is
-> > >> also know for causing faults from time to time. Can you capture the
-> > >> kernel messages right before a crash too?  
-> > > 
-> > > IIRC, blacklisting the hpwdt module can defuse those NMIs and might
-> > > help us see more of the actual DMAR faults.  Blacklist in modprobe.d
-> > > and rebuild initrd. Thanks,
-> > > 
-> > > Alex
-> > > 
-> > > PS - never assume BIOS release notes are actually complete  
-> > 
-> > I agree. I'd do the BIOS update and also make sure the iLO FW is current.  
-> 
-> OK, updates to the latest BIOS, CPU microcode revison is now 0x1b 
-> instead of 0x19. ILO2 fw is already the latest.
-> 
-> The NMI-s still happen.
-> 
-> Disabled hpwdt. Now most boots are fine, only one hung with radeon 
-> loading:
-> 
-> http://kodu.ut.ee/~mroos/boot-radeon-1.png 
-> 
-> Vusal patterns also remind me that all the previous hangs were before 
-> radeon mode change - once radeon changes the mode, it already works.
-
-There might be multiple things going on here, I tend to associate the
-NMIs with the DMAR faults on HP systems and I expect that disabling
-hpwdt will remove that DMAR fault to NMI escalation, but it won't fix
-the fact that DMAR faults are occurring.  I'm not sure how any of that
-is related to radeon though other than the fact that the radeon device
-is behind the bridge that generated the DMAR fault and since we can't
-tell which device behind the bridge generated that transaction, it's
-possible that it was the radeon card (though we're all more likely to
-throw stones at the iLO first).
-
-With hpwdt disabled, can you reboot a few times and look for DMAR
-faults in the dmesg to see if they're all consistent, ie. device 1e.0
-doing a read from 0xb000?  Is there any correlation to radeon hanging
-and one of those DMAR faults appearing in the log (you can make use of
-the iLO for a serial console so you can record more of the boot than
-what can be captured on the VGA console).  Also, this should be an
-X58-based system, which reminds me of Joerg's recent commit
-a4c34ff1c029 that's intended to fix a hang on such systems.  That was
-included starting in v4.7-rc4, so if this is a new issue, testing
-before and after that commit might be relevant.  Thanks,
-
-Alex
+Applied, thanks.
