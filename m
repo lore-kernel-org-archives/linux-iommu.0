@@ -1,102 +1,57 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 6/8] iommu/arm-smmu: Implement of_xlate() for SMMUv3
-Date: Fri, 15 Jul 2016 14:55:06 +0100
-Message-ID: <20160715135506.GA4687@red-moon>
-References: <cover.1467388950.git.robin.murphy@arm.com>
-	<925b054b1e96dc83c0b1dc9607785d0346187366.1467388950.git.robin.murphy@arm.com>
+From: Matthias Brugger <mbrugger-IBi9RG/b67k@public.gmane.org>
+Subject: Re: iommu/rockchip: Fix bugs and enable on ARM64
+Date: Fri, 15 Jul 2016 17:32:02 +0200
+Message-ID: <575f6cd7-6e03-e701-78ed-ea2fe9f7573c@suse.com>
+References: <1466734413-7453-1-git-send-email-zhengsq@rock-chips.com>
+ <20160627125751.GN11432@8bytes.org> <577EFB86.1060502@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <925b054b1e96dc83c0b1dc9607785d0346187366.1467388950.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=utf-8;
+	format=flowed
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <577EFB86.1060502-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Mark yao <mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, airlied-cv59FeDIM0c@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 01, 2016 at 05:50:15PM +0100, Robin Murphy wrote:
 
-[...]
 
-> +static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
-> +{
-> +	int ret;
-> +
-> +	/* We only support PCI, for now */
-> +	if (!dev_is_pci(dev))
-> +		return -ENODEV;
+On 08/07/16 03:01, Mark yao wrote:
+> On 2016=E5=B9=B406=E6=9C=8827=E6=97=A5 20:57, Joerg Roedel wrote:
+>> On Fri, Jun 24, 2016 at 10:13:25AM +0800, Shunqian Zheng wrote:
+>>>   drivers/gpu/drm/rockchip/rockchip_drm_drv.c | 100 +++++++------
+>>>   drivers/gpu/drm/rockchip/rockchip_drm_drv.h |   3 +
+>>>   drivers/gpu/drm/rockchip/rockchip_drm_gem.c | 221
+>>> ++++++++++++++++++++++++++--
+>>>   drivers/gpu/drm/rockchip/rockchip_drm_gem.h |   9 ++
+>>>   drivers/iommu/Kconfig                       |   2 +-
+>>>   drivers/iommu/rockchip-iommu.c              | 181
+>>> +++++++++++++++++------
+>>>   6 files changed, 413 insertions(+), 103 deletions(-)
+>> Applied the IOMMU patches, thanks.
+>>
+>>
+>>     Joerg
+>>
+>>
+>>
+>>
+>
+> Hi Joerg
+>
+> The drm rockchip patches are dependent on iommu/rockchip patches, can
+> you also apply these patches together? So that can avoid compile prob=
+lem.
+>
 
-Given that a) the check above is removed in a later patch and b)
-code below does not depend on SMMU v3, I think the aim should
-be to make this a core function (ie I am asking this since I will
-need it in IORT based translation and I do not want to add yet another
-*_xlate hook to iommu_op), iommu_fwspec_xlate() ?
+While at it. I don't see patch 8 (iommu/Kconfig) in linux-next.
+I suppose you forgot to pick that one.
 
-What I will do with my next RFC is move the iommu_fwspec out of
-OF_IOMMU code in a separate compilation unit and we will take the
-discussion from there.
-
-[...]
-
-> +
-> +	ret = iommu_fwspec_init(dev, args->np);
-> +	if (!ret)
-> +		ret = iommu_fwspec_add_ids(dev, &args->args[0], 1);
-> +
-> +	return ret;
-> +}
-> +
->  static struct iommu_ops arm_smmu_ops = {
->  	.capable		= arm_smmu_capable,
->  	.domain_alloc		= arm_smmu_domain_alloc,
-> @@ -1947,6 +1894,7 @@ static struct iommu_ops arm_smmu_ops = {
->  	.device_group		= pci_device_group,
->  	.domain_get_attr	= arm_smmu_domain_get_attr,
->  	.domain_set_attr	= arm_smmu_domain_set_attr,
-> +	.of_xlate		= arm_smmu_of_xlate,
->  	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
->  };
->  
-> @@ -2697,6 +2645,22 @@ static void __exit arm_smmu_exit(void)
->  subsys_initcall(arm_smmu_init);
->  module_exit(arm_smmu_exit);
->  
-> +static int __init arm_smmu_of_init(struct device_node *np)
-> +{
-> +	static bool registered;
-> +
-> +	if (!registered)
-> +		registered = !arm_smmu_init();
-
-We also need a static variable in arm_smmu_init() to make sure
-we do not try to execute it multiple times :( (here and
-subsys_initcall).
-
-Thanks,
-Lorenzo
-
-> +
-> +	if (!of_platform_device_create(np, NULL, platform_bus_type.dev_root))
-> +		return -ENODEV;
-> +
-> +	of_iommu_set_ops(np, &arm_smmu_ops);
-> +
-> +	return 0;
-> +}
-> +IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3", arm_smmu_of_init);
-> +
->  MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
->  MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
->  MODULE_LICENSE("GPL v2");
-> -- 
-> 2.8.1.dirty
-> 
+Regards,
+Matthias
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" i=
+n
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
