@@ -1,122 +1,120 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [v10, 3/7] soc: fsl: add GUTS driver for QorIQ platforms
-Date: Fri, 15 Jul 2016 12:43:41 -0400
-Message-ID: <CAP=VYLqsV_M=8CM47k4kzdULCp_y0yP9t8Sq9=jFp6W593QJgw@mail.gmail.com>
-References: <1462417950-46796-1-git-send-email-yangbo.lu@nxp.com> <1462417950-46796-4-git-send-email-yangbo.lu@nxp.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 6/8] iommu/arm-smmu: Implement of_xlate() for SMMUv3
+Date: Fri, 15 Jul 2016 19:27:04 +0100
+Message-ID: <57892AF8.3020103@arm.com>
+References: <cover.1467388950.git.robin.murphy@arm.com>
+ <925b054b1e96dc83c0b1dc9607785d0346187366.1467388950.git.robin.murphy@arm.com>
+ <20160715135506.GA4687@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <netdev-owner@vger.kernel.org>
-In-Reply-To: <1462417950-46796-4-git-send-email-yangbo.lu@nxp.com>
-Sender: netdev-owner@vger.kernel.org
-To: Yangbo Lu <yangbo.lu@nxp.com>
-Cc: linux-mmc@vger.kernel.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, devicetree@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>, linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org, netdev <netdev@vger.kernel.org>, ulf.hansson@linaro.org, Scott Wood <oss@buserror.net>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Jochen Friedrich <jochen@scram.de>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Qiang Zhao <qiang.zhao@nxp.com>, Kumar Gala <galak@codeaurora.org>, Santosh Shilimkar <ssantosh@kernel.org>, leoyang.li@nxp.com, xiaobo.xie@nxp.com
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20160715135506.GA4687@red-moon>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 4, 2016 at 11:12 PM, Yangbo Lu <yangbo.lu@nxp.com> wrote:
-> The global utilities block controls power management, I/O device
-> enabling, power-onreset(POR) configuration monitoring, alternate
-> function selection for multiplexed signals,and clock control.
->
-> This patch adds GUTS driver to manage and access global utilities
-> block.
->
-> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-> Acked-by: Scott Wood <oss@buserror.net>
-> ---
-> Changes for v4:
->         - Added this patch
-> Changes for v5:
->         - Modified copyright info
->         - Changed MODULE_LICENSE to GPL
->         - Changed EXPORT_SYMBOL_GPL to EXPORT_SYMBOL
->         - Made FSL_GUTS user-invisible
->         - Added a complete compatible list for GUTS
->         - Stored guts info in file-scope variable
->         - Added mfspr() getting SVR
->         - Redefined GUTS APIs
->         - Called fsl_guts_init rather than using platform driver
->         - Removed useless parentheses
->         - Removed useless 'extern' key words
-> Changes for v6:
->         - Made guts thread safe in fsl_guts_init
-> Changes for v7:
->         - Removed 'ifdef' for function declaration in guts.h
-> Changes for v8:
->         - Fixes lines longer than 80 characters checkpatch issue
->         - Added 'Acked-by: Scott Wood'
-> Changes for v9:
->         - None
-> Changes for v10:
->         - None
-> ---
->  drivers/soc/Kconfig      |   2 +-
->  drivers/soc/fsl/Kconfig  |   8 +++
->  drivers/soc/fsl/Makefile |   1 +
->  drivers/soc/fsl/guts.c   | 119 ++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/fsl/guts.h | 126 +++++++++++++++++++++++++++++------------------
->  5 files changed, 207 insertions(+), 49 deletions(-)
->  create mode 100644 drivers/soc/fsl/Kconfig
->  create mode 100644 drivers/soc/fsl/guts.c
->
-> diff --git a/drivers/soc/Kconfig b/drivers/soc/Kconfig
-> index cb58ef0..7106463 100644
-> --- a/drivers/soc/Kconfig
-> +++ b/drivers/soc/Kconfig
-> @@ -2,7 +2,7 @@ menu "SOC (System On Chip) specific Drivers"
->
->  source "drivers/soc/bcm/Kconfig"
->  source "drivers/soc/brcmstb/Kconfig"
-> -source "drivers/soc/fsl/qe/Kconfig"
-> +source "drivers/soc/fsl/Kconfig"
->  source "drivers/soc/mediatek/Kconfig"
->  source "drivers/soc/qcom/Kconfig"
->  source "drivers/soc/rockchip/Kconfig"
-> diff --git a/drivers/soc/fsl/Kconfig b/drivers/soc/fsl/Kconfig
-> new file mode 100644
-> index 0000000..b313759
-> --- /dev/null
-> +++ b/drivers/soc/fsl/Kconfig
-> @@ -0,0 +1,8 @@
-> +#
-> +# Freescale SOC drivers
-> +#
-> +
-> +source "drivers/soc/fsl/qe/Kconfig"
-> +
-> +config FSL_GUTS
-> +       bool
-> diff --git a/drivers/soc/fsl/Makefile b/drivers/soc/fsl/Makefile
-> index 203307f..02afb7f 100644
-> --- a/drivers/soc/fsl/Makefile
-> +++ b/drivers/soc/fsl/Makefile
-> @@ -4,3 +4,4 @@
->
->  obj-$(CONFIG_QUICC_ENGINE)             += qe/
->  obj-$(CONFIG_CPM)                      += qe/
-> +obj-$(CONFIG_FSL_GUTS)                 += guts.o
-> diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
-> new file mode 100644
-> index 0000000..fa155e6
-> --- /dev/null
-> +++ b/drivers/soc/fsl/guts.c
-> @@ -0,0 +1,119 @@
-> +/*
-> + * Freescale QorIQ Platforms GUTS Driver
-> + *
-> + * Copyright (C) 2016 Freescale Semiconductor, Inc.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + */
-> +
-> +#include <linux/io.h>
-> +#include <linux/module.h>
+On 15/07/16 14:55, Lorenzo Pieralisi wrote:
+> On Fri, Jul 01, 2016 at 05:50:15PM +0100, Robin Murphy wrote:
+> 
+> [...]
+> 
+>> +static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+>> +{
+>> +	int ret;
+>> +
+>> +	/* We only support PCI, for now */
+>> +	if (!dev_is_pci(dev))
+>> +		return -ENODEV;
+> 
+> Given that a) the check above is removed in a later patch and b)
+> code below does not depend on SMMU v3, I think the aim should
+> be to make this a core function (ie I am asking this since I will
+> need it in IORT based translation and I do not want to add yet another
+> *_xlate hook to iommu_op), iommu_fwspec_xlate() ?
 
-Seems there was lots of discussion on this.  If it does end up being
-resent, it would be nice to get the module.h and other modular stuff
-gone since it is a bool Kconfig.
+Indeed, this is only tied to OF by the current datatypes, and that's
+straightforward to change. Ultimately the purpose is just for
+firmware/bus code to pass in some words of configuration data, and the
+driver to respond with what corresponding runtime data it wants to
+associate with the device. As I suggested over on the fsl-mc discussion,
+the caller might not even really be 'firmware' at all.
+
+> What I will do with my next RFC is move the iommu_fwspec out of
+> OF_IOMMU code in a separate compilation unit and we will take the
+> discussion from there.
+
+Sounds good. If the end result starts looking clear, it might be an idea
+to squash some patches and skip this intermediate OF-specific step
+entirely (I was just hesitant to do that myself without a clear view of
+the IORT side).
+
+>> +
+>> +	ret = iommu_fwspec_init(dev, args->np);
+>> +	if (!ret)
+>> +		ret = iommu_fwspec_add_ids(dev, &args->args[0], 1);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>>  static struct iommu_ops arm_smmu_ops = {
+>>  	.capable		= arm_smmu_capable,
+>>  	.domain_alloc		= arm_smmu_domain_alloc,
+>> @@ -1947,6 +1894,7 @@ static struct iommu_ops arm_smmu_ops = {
+>>  	.device_group		= pci_device_group,
+>>  	.domain_get_attr	= arm_smmu_domain_get_attr,
+>>  	.domain_set_attr	= arm_smmu_domain_set_attr,
+>> +	.of_xlate		= arm_smmu_of_xlate,
+>>  	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+>>  };
+>>  
+>> @@ -2697,6 +2645,22 @@ static void __exit arm_smmu_exit(void)
+>>  subsys_initcall(arm_smmu_init);
+>>  module_exit(arm_smmu_exit);
+>>  
+>> +static int __init arm_smmu_of_init(struct device_node *np)
+>> +{
+>> +	static bool registered;
+>> +
+>> +	if (!registered)
+>> +		registered = !arm_smmu_init();
+> 
+> We also need a static variable in arm_smmu_init() to make sure
+> we do not try to execute it multiple times :( (here and
+> subsys_initcall).
+
+Strictly, yes, although since there didn't seem to be any real issue
+with just letting the initcall fail when register_driver() detects the
+collision, I'd hoped we might be able to keep this bodge together in one
+place. I guess it might end up printing some unwanted failure message
+though, so I'll take another look.
 
 Thanks,
-Paul.
+Robin.
+
+> Thanks,
+> Lorenzo
+> 
+>> +
+>> +	if (!of_platform_device_create(np, NULL, platform_bus_type.dev_root))
+>> +		return -ENODEV;
+>> +
+>> +	of_iommu_set_ops(np, &arm_smmu_ops);
+>> +
+>> +	return 0;
+>> +}
+>> +IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3", arm_smmu_of_init);
+>> +
+>>  MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
+>>  MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
+>>  MODULE_LICENSE("GPL v2");
+>> -- 
+>> 2.8.1.dirty
+>>
+> 
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
