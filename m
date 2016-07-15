@@ -1,15 +1,15 @@
-From: nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Subject: Re: [PATCH] iommu/iova: validate iova_domain input to put_iova_domain
-Date: Thu, 14 Jul 2016 13:55:32 -0400
-Message-ID: <333f4b4f52168db68250a447ef5db3f3@codeaurora.org>
-References: <1468435772-27905-1-git-send-email-nwatters@codeaurora.org>
-	<20160714083420.GR12639@8bytes.org> <57876B45.6010206@arm.com>
-	<77bca715-36e1-eb11-a49b-5d389b6cc0e8@redhat.com>
+From: Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>
+Subject: Re: [PATCH v2 00/10] Exynos IOMMU: proper runtime PM support (use
+	device dependencies)
+Date: Fri, 15 Jul 2016 15:21:22 +0200
+Message-ID: <5788E352.3040801@math.uni-bielefeld.de>
+References: <1466144820-6286-1-git-send-email-m.szyprowski@samsung.com>
+	<5787B2B0.9020809@math.uni-bielefeld.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <77bca715-36e1-eb11-a49b-5d389b6cc0e8-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <5787B2B0.9020809-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,106 +19,104 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2016-07-14 07:21, Auger Eric wrote:
-> Hi Robin, Nate,
-> On 14/07/2016 12:36, Robin Murphy wrote:
->> On 14/07/16 09:34, Joerg Roedel wrote:
->>> On Wed, Jul 13, 2016 at 02:49:32PM -0400, Nate Watterson wrote:
->>>> Passing a NULL or uninitialized iova_domain into put_iova_domain
->>>> will currently crash the kernel when the unconfigured iova_domain
->>>> data members are accessed. To prevent this from occurring, this 
->>>> patch
->>>> adds a check to make sure that the domain is non-NULL and that the
->>>> domain granule is non-zero. The granule can be used to check if the
->>>> domain was properly initialized because calling init_iova_domain
->>>> with a granule of zero would have already triggered a BUG statement
->>>> crashing the kernel.
->>> 
->>> Have you seen real crashes happening because of this?
+Tobias Jakobi wrote:
+> Hello Marek,
+> 
+> I've tested the patchset on 4.7-rc7 and noticed that it breaks reboot on
+> my ODROID-X2.
+> 
+> Going to check where exactly things break.
+Sadly it's the last patch where everything comes together:
+"iommu/exynos: Add proper runtime pm support"
 
-In my case, it was calling iommu_request_dm_for_dev() which triggered 
-the
-"iommu_[get/put]_dma_cookie() without iommu_dma_init_domain()" issue 
-that
-has Robin documented below.
+I still have to check if forcing runpm status to 'on' makes a
+difference. I suspect that the aggressive clock gating might be the reason?
 
-> 
-> I also saw the crash happening with my PCIe passthrough series (not
-> upstreamed)
-> [PATCH v10 0/8] [PATCH v10 0/8] KVM PCIe/MSI passthrough on ARM/ARM64:
-> kernel part 1/3: iommu changes  https://lkml.org/lkml/2016/6/7/676
-> 
-> patch [PATCH v10 8/8] iommu/arm-smmu: get/put the msi cookie
-> also uses iommu_put_dma_cookie
-> 
-> 
-> and the uninitialised lock crash happens if the group gets destroyed
-> before the iommu_dma_init_domain is called, which can also happen for 
-> me.
-> 
->> 
->> It _can_ happen via the iommu-dma code if something goes wrong
->> initialising a group - the IOVA domain gets allocated at the same time
->> as the default IOMMU domain, but isn't initialised until later once 
->> the
->> device in question gets ity dma ops set up. If adding the device to 
->> the
->> group fails, everything gets torn down again and 
->> iommu_put_dma_cookie()
->> ends up trying to take an uninitialised lock .
-> Cant' we allow the granule check also with UNMANAGED type?
-> 
-> Thanks
-> 
-> Eric
-> 
->> 
->> However, I think the appropriate fix for that particular situation 
->> would
->> be more like this:
->> 
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index ea5a9ebf0f78..d00d22930a6b 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -65,10 +65,11 @@ void iommu_put_dma_cookie(struct iommu_domain 
->> *domain)
->>  {
->>         struct iova_domain *iovad = domain->iova_cookie;
->> 
->> -       if (!iovad)
->> +       if (domain->type != IOMMU_DOMAIN_DMA || !iovad)
->>                 return;
->> 
->> -       put_iova_domain(iovad);
->> +       if (iovad->granule)
->> +               put_iova_domain(iovad);
->>         kfree(iovad);
->>         domain->iova_cookie = NULL;
->>  }
->> 
->> (It probably should have been that way from the start; mea culpa)
+With best wishes,
+Tobias
 
-I originally put together a similar patch, but then thought that people 
-would
-complain it didn't fix the root of the problem. Yet another instance 
-where
-thinking was best avoided I guess.
-
->> 
->> Robin.
->> _______________________________________________
->> iommu mailing list
->> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->> 
-
--- 
-Qualcomm Datacenter Technologies, Inc. on behalf of the Qualcomm 
-Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a 
-Linux Foundation Collaborative Project.
+> With best wishes,
+> Tobias
+> 
+> 
+> Marek Szyprowski wrote:
+>> Hello,
+>>
+>> This patch series finally implements proper runtime PM support in Exynos
+>> IOMMU driver. This has been achieved by using device links, which lets
+>> SYSMMU controller's runtime PM to follow master's device runtime PM (the
+>> device which actually performs DMA transaction). The main idea
+>> behind this solution is an observation that any DMA activity from master
+>> device can be done only when master device is active, thus when master
+>> device is suspended SYSMMU controller device can also be suspended.
+>>
+>> This patchset solves the situation that power domains are always enabled,
+>> because all SYSMMU controllers (which belongs to those domains) are
+>> permanently active (because existing driver was simplified and kept
+>> SYSMMU device active all the time after initialization).
+>>
+>> Patches 1-5 are resend of the "[RFC][PATCH 0/5] Functional dependencies
+>> between devices" patchset:
+>> http://thread.gmane.org/gmane.linux.power-management.general/67424/focus=2126379
+>> I've included them here, because it is hard to find them all on mailing
+>> list archives.
+>>
+>> Patches 6-8 are fixes to device dependencies/links code, which were
+>> required to use this solution for Exynos IOMMU driver. I'm not PM/runtime
+>> PM code expert, so please double check if my changes are really correct.
+>>
+>> This patchset requires my previous changes to Exynos IOMMU driver
+>> submitted in the "Exynos IOMMU: improve clock management" thread:
+>> http://www.spinics.net/lists/arm-kernel/msg505695.html
+>>
+>> Best regards
+>> Marek Szyprowski
+>> Samsung R&D Institute Poland
+>>
+>>
+>> Changelog:
+>> v2:
+>> - replaced PM notifiers with generic device dependencies/links developped
+>>   by Rafael J. Wysocki
+>>
+>> v1: http://www.spinics.net/lists/arm-kernel/msg509600.html
+>> - initial version
+>>
+>>
+>> Patch summary:
+>>
+>> Marek Szyprowski (5):
+>>   driver core: Avoid endless recursion if device has more than one link
+>>   driver core: Add support for links to already probed drivers
+>>   PM core: Fix restoring devices with links during system PM transition
+>>   iommu/exynos: Remove excessive, useless debug
+>>   iommu/exynos: Add proper runtime pm support
+>>
+>> Rafael J. Wysocki (5):
+>>   driver core: Add a wrapper around __device_release_driver()
+>>   driver core: Functional dependencies tracking support
+>>   PM core: Make async suspend/resume of devices use device links
+>>   PM core: Make runtime PM of devices use device links
+>>   PM core: Optimize the use of device links for runtime PM
+>>
+>>  drivers/base/base.h          |  13 ++
+>>  drivers/base/core.c          | 410 +++++++++++++++++++++++++++++++++++++++++++
+>>  drivers/base/dd.c            |  65 +++++--
+>>  drivers/base/power/main.c    |  68 ++++++-
+>>  drivers/base/power/runtime.c | 130 +++++++++++++-
+>>  drivers/iommu/exynos-iommu.c | 221 +++++++++++------------
+>>  include/linux/device.h       |  41 +++++
+>>  include/linux/pm.h           |   1 +
+>>  include/linux/pm_runtime.h   |   6 +
+>>  9 files changed, 809 insertions(+), 146 deletions(-)
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-samsung-soc" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
