@@ -1,65 +1,39 @@
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH -next] iommu/exynos: Fix return value check in
- exynos_iommu_of_setup()
-Date: Mon, 18 Jul 2016 09:34:11 +0200
-Message-ID: <7d4c2517-5149-30d8-eeff-2bd7519dfdf3@samsung.com>
-References: <1467807354-26503-1-git-send-email-weiyj_lk@163.com>
- <577D0316.1050502@samsung.com>
+Subject: Re: [PATCH v2 00/10] Exynos IOMMU: proper runtime PM support (use
+ device dependencies)
+Date: Mon, 18 Jul 2016 12:32:14 +0200
+Message-ID: <a15e438a-7fa0-3a4d-e6e2-13425512dddd@samsung.com>
+References: <1466144820-6286-1-git-send-email-m.szyprowski@samsung.com>
+ <5787B2B0.9020809@math.uni-bielefeld.de>
+ <5788E352.3040801@math.uni-bielefeld.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <577D0316.1050502@samsung.com>
+In-reply-to: <5788E352.3040801@math.uni-bielefeld.de>
 Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Krzysztof Kozlowski <k.kozlowski@samsung.com>, weiyj_lk@163.com, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene@kernel.org>
-Cc: Wei Yongjun <yongjun_wei@trendmicro.com.cn>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org
+To: Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Ulf Hansson <ulf.hansson@linaro.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+Hi Tobias,
 
 
-On 2016-07-06 15:09, Krzysztof Kozlowski wrote:
-> On 07/06/2016 02:15 PM, weiyj_lk@163.com wrote:
->> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+On 2016-07-15 15:21, Tobias Jakobi wrote:
+> Tobias Jakobi wrote:
+>> Hello Marek,
 >>
->> In case of error, the function of_platform_device_create() returns
->> NULL pointer not ERR_PTR(). The IS_ERR() test in the return value
->> check should be replaced with NULL test.
+>> I've tested the patchset on 4.7-rc7 and noticed that it breaks reboot on
+>> my ODROID-X2.
 >>
->> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
->> ---
->>   drivers/iommu/exynos-iommu.c | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
->> index 33dcc29..9b23059 100644
->> --- a/drivers/iommu/exynos-iommu.c
->> +++ b/drivers/iommu/exynos-iommu.c
->> @@ -1345,8 +1345,8 @@ static int __init exynos_iommu_of_setup(struct device_node *np)
->>   		exynos_iommu_init();
->>   
->>   	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
->> -	if (IS_ERR(pdev))
->> -		return PTR_ERR(pdev);
->> +	if (!pdev)
->> +		return -ENOMEM;
->>   
->>   	/*
->>   	 * use the first registered sysmmu device for performing
->>
-> Reviewed-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+>> Going to check where exactly things break.
+> Sadly it's the last patch where everything comes together:
+> "iommu/exynos: Add proper runtime pm support"
 >
->
-> Which in case of first sysmmu device and of_platform_device_create()
-> failure will lead to NULL pointer exception, so I think it is
-> appropriate to:
-> Fixes: 8ed55c812fa8 ("iommu/exynos: Init from dt-specific callback
-> instead of initcall")
-> Cc: <stable@vger.kernel.org>
+> I still have to check if forcing runpm status to 'on' makes a
+> difference. I suspect that the aggressive clock gating might be the reason?
 
-Thanks for spotting this issue.
-
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Thanks for testing. I will check this issue. Could you send me your .config?
 
 Best regards
 -- 
