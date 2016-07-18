@@ -1,90 +1,67 @@
-From: Paul Gortmaker <paul.gortmaker@windriver.com>
-Subject: Re: [v10, 3/7] soc: fsl: add GUTS driver for QorIQ platforms
-Date: Fri, 15 Jul 2016 18:39:33 -0400
-Message-ID: <20160715223932.GC10758@windriver.com>
-References: <1462417950-46796-1-git-send-email-yangbo.lu@nxp.com>
- <1462417950-46796-4-git-send-email-yangbo.lu@nxp.com>
- <CAP=VYLqsV_M=8CM47k4kzdULCp_y0yP9t8Sq9=jFp6W593QJgw@mail.gmail.com>
- <1468609977.25630.5.camel@buserror.net>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH -next] iommu/exynos: Fix return value check in
+ exynos_iommu_of_setup()
+Date: Mon, 18 Jul 2016 09:34:11 +0200
+Message-ID: <7d4c2517-5149-30d8-eeff-2bd7519dfdf3@samsung.com>
+References: <1467807354-26503-1-git-send-email-weiyj_lk@163.com>
+ <577D0316.1050502@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: QUOTED-PRINTABLE
-Return-path: <linux-clk-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1468609977.25630.5.camel@buserror.net>
-Sender: linux-clk-owner@vger.kernel.org
-To: Scott Wood <oss@buserror.net>
-Cc: Yangbo Lu <yangbo.lu@nxp.com>, linux-mmc@vger.kernel.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, devicetree@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>, linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org, netdev <netdev@vger.kernel.org>, ulf.hansson@linaro.org, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Jochen Friedrich <jochen@scram.de>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Qiang Zhao <qiang.zhao@nxp.com>, Kumar Gala <galak@codeaurora.org>, Santosh Shilimkar <ssantosh@kernel.org>, leoyang.li@nxp.com, xiaobo.xie@nxp.com
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <577D0316.1050502@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Krzysztof Kozlowski <k.kozlowski@samsung.com>, weiyj_lk@163.com, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene@kernel.org>
+Cc: Wei Yongjun <yongjun_wei@trendmicro.com.cn>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-[Re: [v10, 3/7] soc: fsl: add GUTS driver for QorIQ platforms] On 15/07=
-/2016 (Fri 14:12) Scott Wood wrote:
+Hello,
 
-> On Fri, 2016-07-15 at 12:43 -0400, Paul Gortmaker wrote:
-> > > +source "drivers/soc/fsl/qe/Kconfig"
 
-[...]
+On 2016-07-06 15:09, Krzysztof Kozlowski wrote:
+> On 07/06/2016 02:15 PM, weiyj_lk@163.com wrote:
+>> From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+>>
+>> In case of error, the function of_platform_device_create() returns
+>> NULL pointer not ERR_PTR(). The IS_ERR() test in the return value
+>> check should be replaced with NULL test.
+>>
+>> Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+>> ---
+>>   drivers/iommu/exynos-iommu.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+>> index 33dcc29..9b23059 100644
+>> --- a/drivers/iommu/exynos-iommu.c
+>> +++ b/drivers/iommu/exynos-iommu.c
+>> @@ -1345,8 +1345,8 @@ static int __init exynos_iommu_of_setup(struct device_node *np)
+>>   		exynos_iommu_init();
+>>   
+>>   	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
+>> -	if (IS_ERR(pdev))
+>> -		return PTR_ERR(pdev);
+>> +	if (!pdev)
+>> +		return -ENOMEM;
+>>   
+>>   	/*
+>>   	 * use the first registered sysmmu device for performing
+>>
+> Reviewed-by: Krzysztof Kozlowski <k.kozlowski@samsung.com>
+>
+>
+> Which in case of first sysmmu device and of_platform_device_create()
+> failure will lead to NULL pointer exception, so I think it is
+> appropriate to:
+> Fixes: 8ed55c812fa8 ("iommu/exynos: Init from dt-specific callback
+> instead of initcall")
+> Cc: <stable@vger.kernel.org>
 
-> > > +
-> > > +config FSL_GUTS
-> > > +=A0=A0=A0=A0=A0=A0=A0bool
-> > > diff --git a/drivers/soc/fsl/Makefile b/drivers/soc/fsl/Makefile
-> > > index 203307f..02afb7f 100644
-> > > --- a/drivers/soc/fsl/Makefile
-> > > +++ b/drivers/soc/fsl/Makefile
-> > > @@ -4,3 +4,4 @@
-> > >=20
-> > > =A0obj-$(CONFIG_QUICC_ENGINE)=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0+=3D qe/
-> > > =A0obj-$(CONFIG_CPM)=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0=A0=A0+=3D qe/
-> > > +obj-$(CONFIG_FSL_GUTS)=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0+=3D guts.o
-> > > diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
-> > > new file mode 100644
-> > > index 0000000..fa155e6
-> > > --- /dev/null
-> > > +++ b/drivers/soc/fsl/guts.c
-> > > @@ -0,0 +1,119 @@
-> > > +/*
-> > > + * Freescale QorIQ Platforms GUTS Driver
-> > > + *
-> > > + * Copyright (C) 2016 Freescale Semiconductor, Inc.
-> > > + *
-> > > + * This program is free software; you can redistribute it and/or=
- modify
-> > > + * it under the terms of the GNU General Public License as publi=
-shed by
-> > > + * the Free Software Foundation; either version 2 of the License=
-, or
-> > > + * (at your option) any later version.
-> > > + */
-> > > +
-> > > +#include <linux/io.h>
-> > > +#include <linux/module.h>
-> > Seems there was lots of discussion on this.=A0=A0If it does end up =
-being
-> > resent, it would be nice to get the module.h and other modular stuf=
-f
-> > gone since it is a bool Kconfig.
->=20
-> I plan to resend just the GUTS driver portion and send it through the=
- PPC
-> tree.
->=20
-> I don't see any modular stuff in there besides the linux/module.h inc=
-lude.
+Thanks for spotting this issue.
 
-Great.  Normally I'm seeing the MODULE_DEVICE_TABLE and MODULE_AUTHOR
-and MODULE_LICENSE etc, so it has (unfortunately) become a knee jerk
-reaction to assume the latter follows a module.h presence...  thanks fo=
-r
-removing the extraneous include.
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
-Paul.
---
-
->=20
-> -Scott
->=20
->=20
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
