@@ -1,20 +1,12 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v2 00/10] Exynos IOMMU: proper runtime PM support (use
-	device dependencies)
-Date: Tue, 19 Jul 2016 08:26:20 +0200
-Message-ID: <7c770ff5-2b22-adf6-b8d0-e94d1d7d7550@samsung.com>
-References: <1466144820-6286-1-git-send-email-m.szyprowski@samsung.com>
-	<5787B2B0.9020809@math.uni-bielefeld.de>
-	<5788E352.3040801@math.uni-bielefeld.de>
-	<a15e438a-7fa0-3a4d-e6e2-13425512dddd@samsung.com>
-	<578CB6DB.90608@math.uni-bielefeld.de>
-	<6939949e-4c8e-cba0-9858-b37d1ba01869@samsung.com>
-	<578D0716.6060106@math.uni-bielefeld.de>
+From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v11 0/8] KVM PCIe/MSI passthrough on ARM/ARM64: kernel part
+	1/3: iommu changes
+Date: Tue, 19 Jul 2016 12:55:03 +0000
+Message-ID: <1468932911-23062-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <578D0716.6060106-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,70 +16,166 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, andre.przywara-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, robert.richter-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tobias
+This series introduces the msi-iommu api used to:
+
+- allocate/free resources for MSI IOMMU mapping
+- set the MSI iova window aperture
+- map/unmap physical addresses onto MSI IOVAs.
+- determine whether an msi needs to be iommu mapped
+- overwrite an msi_msg PA address with its pre-allocated/mapped IOVA
+
+Also a new iommu domain attribute, DOMAIN_ATTR_MSI_GEOMETRY is introduced
+to report the MSI iova window geometry (aperture and iommu-msi API support).
+
+Currently:
+- iommu driver is supposed to allocate/free MSI mapping resources
+- VFIO subsystem is supposed to set the MSI IOVA aperture.
+- The MSI layer is supposed to allocate/free iova mappings and overwrite
+  msi_msg with IOVA at composition time
+
+More details & context can be found at:
+http://www.linaro.org/blog/core-dump/kvm-pciemsi-passthrough-armarm64/
+
+Best Regards
+
+Eric
+
+Git: complete series available at
+https://github.com/eauger/linux/tree/v4.7-rc7-passthrough-v11
+
+see part III for wrap-up details.
+
+History:
+v10 -> v11:
+- no change in the series, just incremented for consistency
+- added a temporary patch in the branch:
+  "iommu/iova: FIXUP! validate iova_domain input to put_iova_domain"
+  originally sent by Nate and adapted for this use case. This is currently
+  under discussion on the ML. The crash typically occurs in case unsafe
+  interrupts are discovered while allow_unsafe_interrupts is not set.
+
+v9 -> v10:
+- split error management in iommu_msi_set_aperture
+
+v8 -> v9:
+- rename iommu_domain_msi_geometry programmable flag into iommu_msi_supported
+- introduce msi_apperture_valid helper and use this instead of is_aperture_set
+
+v7 -> v8:
+- The API is retargetted for MSI: renamed msi-iommu
+  all "dma-reserved" namings removed
+- now implemented upon dma-iommu (get, put, init), ie. reuse iova_cookie,
+  and iova API
+- msi mapping resources now are guaranteed to exist during the whole iommu
+  domain's lifetime. No need to lock to garantee the cookie integrity
+- removed alloc/free_reserved_reserved_iova_domain. We now have a single
+  function that sets the aperture, looking like iommu_dma_init_domain.
+- we now use a list instead of an RB-tree
+- prot is not propagated anymore at domain creation due to the retargetting
+  for MSI
+- iommu_domain pointer removed from doorbell_mapping struct
+- replaced DOMAIN_ATTR_MSI_MAPPING by DOMAIN_ATTR_MSI_GEOMETRY
+
+v6 -> v7:
+- fixed known lock bugs and multiple page sized slots matching
+  (I only have a single MSI frame made of a single page)
+- reserved_iova_cookie now pointing to a struct that encapsulates the
+  iova domain handle + protection attribute passed from VFIO (Alex' req)
+- 2 new functions exposed: iommu_msi_mapping_translate_msg,
+  iommu_msi_mapping_desc_to_domain: not sure this is the right location/proto
+  though
+- iommu_put_reserved_iova now takes a phys_addr_t
+- everything now is cleanup on iommu_domain destruction
+
+RFC v5 -> patch v6:
+- split to ease the review process
+- in dma-reserved-api use a spin lock instead of a mutex (reported by
+  Jean-Philippe)
+- revisit iommu_get_reserved_iova API to pass a size parameter upon
+  Marc's request
+- Consistently use the page order passed when creating the iova domain.
+- init reserved_binding_list (reported by Julien)
+
+RFC v4 -> RFC v5:
+- take into account Thomas' comments on MSI related patches
+  - split "msi: IOMMU map the doorbell address when needed"
+  - increase readability and add comments
+  - fix style issues
+ - split "iommu: Add DOMAIN_ATTR_MSI_MAPPING attribute"
+ - platform ITS now advertises IOMMU_CAP_INTR_REMAP
+ - fix compilation issue with CONFIG_IOMMU API unset
+ - arm-smmu-v3 now advertises DOMAIN_ATTR_MSI_MAPPING
+
+RFC v3 -> v4:
+- Move doorbell mapping/unmapping in msi.c
+- fix ref count issue on set_affinity: in case of a change in the address
+  the previous address is decremented
+- doorbell map/unmap now is done on msi composition. Should allow the use
+  case for platform MSI controllers
+- create dma-reserved-iommu.h/c exposing/implementing a new API dedicated
+  to reserved IOVA management (looking like dma-iommu glue)
+- series reordering to ease the review:
+  - first part is related to IOMMU
+  - second related to MSI sub-system
+  - third related to VFIO (except arm-smmu IOMMU_CAP_INTR_REMAP removal)
+- expose the number of requested IOVA pages through VFIO_IOMMU_GET_INFO
+  [this partially addresses Marc's comments on iommu_get/put_single_reserved
+   size/alignment problematic - which I did not ignore - but I don't know
+   how much I can do at the moment]
+
+RFC v2 -> RFC v3:
+- should fix wrong handling of some CONFIG combinations:
+  CONFIG_IOVA, CONFIG_IOMMU_API, CONFIG_PCI_MSI_IRQ_DOMAIN
+- fix MSI_FLAG_IRQ_REMAPPING setting in GICv3 ITS (although not tested)
+
+PATCH v1 -> RFC v2:
+- reverted to RFC since it looks more reasonable ;-) the code is split
+  between VFIO, IOMMU, MSI controller and I am not sure I did the right
+  choices. Also API need to be further discussed.
+- iova API usage in arm-smmu.c.
+- MSI controller natively programs the MSI addr with either the PA or IOVA.
+  This is not done anymore in vfio-pci driver as suggested by Alex.
+- check irq remapping capability of the group
+
+RFC v1 [2] -> PATCH v1:
+- use the existing dma map/unmap ioctl interface with a flag to register a
+  reserved IOVA range. Use the legacy Rb to store this special vfio_dma.
+- a single reserved IOVA contiguous region now is allowed
+- use of an RB tree indexed by PA to store allocated reserved slots
+- use of a vfio_domain iova_domain to manage iova allocation within the
+  window provided by the userspace
+- vfio alloc_map/unmap_free take a vfio_group handle
+- vfio_group handle is cached in vfio_pci_device
+- add ref counting to bindings
+- user modality enabled at the end of the series
 
 
-On 2016-07-18 18:43, Tobias Jakobi wrote:
-> Marek Szyprowski wrote:
->> On 2016-07-18 13:00, Tobias Jakobi wrote:
->>> Marek Szyprowski wrote:
->>>> On 2016-07-15 15:21, Tobias Jakobi wrote:
->>>>> Tobias Jakobi wrote:
->>>>>> Hello Marek,
->>>>>>
->>>>>> I've tested the patchset on 4.7-rc7 and noticed that it breaks
->>>>>> reboot on
->>>>>> my ODROID-X2.
->>>>>>
->>>>>> Going to check where exactly things break.
->>>>> Sadly it's the last patch where everything comes together:
->>>>> "iommu/exynos: Add proper runtime pm support"
->>>>>
->>>>> I still have to check if forcing runpm status to 'on' makes a
->>>>> difference. I suspect that the aggressive clock gating might be the
->>>>> reason?
->>>> Thanks for testing. I will check this issue. Could you send me your
->>>> .config?
->>> This is the config I'm currently using:
->>> https://github.com/tobiasjakobi/odroid-environment/blob/master/sourcecode/system/vanilla-4.7-debug.conf
->>>
->>>
->>> Do you think checking this with no_console_suspend makes sense?
->> no_console_suspend switch won't provide more information, but I managed
->> to reproduce your issue. I'm really confused how enabling runtime pm can
->> cause problems with usb/smsc95xx ethernet driver (that is the reason for
->> failed reboot). Maybe it is somehow related to the global relations
->> between devices and drivers and the fact that creating the runtime pm
->> links change the order of operations. I will check this again when
->> Rafael send updated patches. Here is the log I got (after waiting some
->> time):
-> thanks for looking into this! I'll try to reproduce this on my board. I
-> have to admit that I didn't wait too long for the hung task message to
-> appear.
->
-> I wonder if this has something to do with regulator code cutting some
-> supplies too early. Is this on a X2 or a U2/U3?
+Eric Auger (8):
+  iommu: Add iommu_domain_msi_geometry and DOMAIN_ATTR_MSI_GEOMETRY
+  iommu/arm-smmu: initialize the msi geometry and advertise iommu-msi
+    support
+  iommu: introduce an msi cookie
+  iommu/msi-iommu: initialization
+  iommu/msi-iommu: iommu_msi_[get,put]_doorbell_iova
+  iommu/msi-iommu: iommu_msi_domain
+  iommu/msi-iommu: iommu_msi_msg_pa_to_va
+  iommu/arm-smmu: get/put the msi cookie
 
-I've reproduced it on U3.
+ drivers/iommu/Kconfig       |   7 +
+ drivers/iommu/Makefile      |   1 +
+ drivers/iommu/arm-smmu-v3.c |  18 ++-
+ drivers/iommu/arm-smmu.c    |  18 ++-
+ drivers/iommu/iommu.c       |   5 +
+ drivers/iommu/msi-iommu.c   | 322 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iommu.h       |  15 +++
+ include/linux/msi-iommu.h   | 144 ++++++++++++++++++++
+ 8 files changed, 522 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/iommu/msi-iommu.c
+ create mode 100644 include/linux/msi-iommu.h
 
-> I'm not sure if we
-> currently model the regulator setup correctly here (IIRC then buck8 is
-> supplying the LAN/USB block on U2/U3).
-
-IMHO it is not really related to regulator operations, but the sequence
-of shutting down logical devices in the system. For some reasons when pm 
-links
-are used, something changes the order of operations in system shutdown
-procedure, what causes smsc95xx to hang. I have no idea why, but I don't 
-have
-time to investigate it further. I will wait for the next release of Rafael's
-pm links patches and then check everything again.
-
-Best regards
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+1.9.1
