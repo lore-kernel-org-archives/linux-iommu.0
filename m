@@ -1,163 +1,83 @@
-From: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v11 05/10] genirq/msi-doorbell: msi_doorbell_pages
-Date: Tue, 19 Jul 2016 16:38:33 +0200 (CEST)
-Message-ID: <alpine.DEB.2.11.1607191624400.3596@nanos>
-References: <1468933367-23159-1-git-send-email-eric.auger@redhat.com>
- <1468933367-23159-6-git-send-email-eric.auger@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
-In-Reply-To: <1468933367-23159-6-git-send-email-eric.auger@redhat.com>
-List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
-List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
-List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
-List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
-List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
- <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
-Errors-To: kvmarm-bounces@lists.cs.columbia.edu
-Sender: kvmarm-bounces@lists.cs.columbia.edu
-To: Eric Auger <eric.auger@redhat.com>
-Cc: kvm@vger.kernel.org, will.deacon@arm.com, kvmarm@lists.cs.columbia.edu, eric.auger.pro@gmail.com, joro@8bytes.org, robert.richter@caviumnetworks.com, jason@lakedaemon.net, marc.zyngier@arm.com, andre.przywara@arm.com, Manish.Jaggi@caviumnetworks.com, alex.williamson@redhat.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, pbonzini@redhat.com, robin.murphy@arm.com
+From: Mitchel Humpherys <mitchelh@codeaurora.org>
+Subject: [PATCH v3 0/6] Add support for privileged mappings
+Date: Tue, 19 Jul 2016 13:36:49 -0700
+Message-ID: <20160719203655.16629-1-mitchelh@codeaurora.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Jordan Crouse <jcrouse@codeaurora.org>, Jeremy Gebben <jgebben@codeaurora.org>, Patrick Daly <pdaly@codeaurora.org>, Pratik Patel <pratikp@codeaurora.org>, Thomas Zeng <tzeng@codeaurora.org>, Mitchel Humpherys <mitchelh@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 19 Jul 2016, Eric Auger wrote:
-> msi_doorbell_pages sum up the number of iommu pages of a given order
+The following patch to the ARM SMMU driver:
 
-adding () to the function name would make it immediately clear that
-msi_doorbell_pages is a function.
+    commit d346180e70b91b3d5a1ae7e5603e65593d4622bc
+    Author: Robin Murphy <robin.murphy@arm.com>
+    Date:   Tue Jan 26 18:06:34 2016 +0000
+    
+        iommu/arm-smmu: Treat all device transactions as unprivileged
 
-> +/**
-> + * msi_doorbell_pages: compute the number of iommu pages of size 1 << order
-> + * requested to map all the registered doorbells
-> + *
-> + * @order: iommu page order
-> + */
+started forcing all SMMU transactions to come through as "unprivileged".
+The rationale given was that:
 
-Why are you adding the kernel doc to the header and not to the implementation?
+  (1) There is no way in the IOMMU API to even request privileged mappings.
 
-> +int msi_doorbell_pages(unsigned int order);
-> +
->  #else
->  
->  static inline struct irq_chip_msi_doorbell_info *
-> @@ -47,6 +55,12 @@ msi_doorbell_register_global(phys_addr_t base, size_t size,
->  static inline void
->  msi_doorbell_unregister_global(struct irq_chip_msi_doorbell_info *db) {}
->  
-> +static inline int
-> +msi_doorbell_pages(unsigned int order)
+  (2) It's difficult to implement a DMA mapper that correctly models the
+      ARM VMSAv8 behavior of unprivileged-writeable =>
+      privileged-execute-never.
 
-What's the point of this line break? 
+This series rectifies (1) by introducing an IOMMU API for privileged
+mappings and implements it in io-pgtable-arm.
 
-> +{
-> +	return 0;
-> +}
-> +
->  #endif /* CONFIG_MSI_DOORBELL */
->  
->  #endif
-> diff --git a/kernel/irq/msi-doorbell.c b/kernel/irq/msi-doorbell.c
-> index 0ff541e..a5bde37 100644
-> --- a/kernel/irq/msi-doorbell.c
-> +++ b/kernel/irq/msi-doorbell.c
-> @@ -60,3 +60,55 @@ void msi_doorbell_unregister_global(struct irq_chip_msi_doorbell_info *dbinfo)
->  	mutex_unlock(&irqchip_doorbell_mutex);
->  }
->  EXPORT_SYMBOL_GPL(msi_doorbell_unregister_global);
-> +
-> +static int compute_db_mapping_requirements(phys_addr_t addr, size_t size,
-> +					   unsigned int order)
-> +{
-> +	phys_addr_t offset, granule;
-> +	unsigned int nb_pages;
-> +
-> +	granule = (uint64_t)(1 << order);
-> +	offset = addr & (granule - 1);
-> +	size = ALIGN(size + offset, granule);
-> +	nb_pages = size >> order;
-> +
-> +	return nb_pages;
-> +}
-> +
-> +static int
-> +compute_dbinfo_mapping_requirements(struct irq_chip_msi_doorbell_info *dbinfo,
-> +				    unsigned int order)
+This series rectifies (2) by introducing a new dma attribute
+(DMA_ATTR_PRIVILEGED) for users of the DMA API that need privileged
+mappings which are inaccessible to lesser-privileged execution levels, and
+implements it in the arm64 IOMMU DMA mapper.  The one known user (pl330.c)
+is converted over to the new attribute.
 
-I'm sure you can find even longer function names which require more line
-breaks.
+Jordan and Jeremy can provide more info on the use case if needed, but the
+high level is that it's a security feature to prevent attacks such as [1].
 
-> +{
-> +	int ret = 0;
-> +
-> +	if (!dbinfo->doorbell_is_percpu) {
-> +		ret = compute_db_mapping_requirements(dbinfo->global_doorbell,
-> +						      dbinfo->size, order);
-> +	} else {
-> +		phys_addr_t __percpu *pbase;
-> +		int cpu;
-> +
-> +		for_each_possible_cpu(cpu) {
-> +			pbase = per_cpu_ptr(dbinfo->percpu_doorbells, cpu);
-> +			ret += compute_db_mapping_requirements(*pbase,
-> +							       dbinfo->size,
-> +							       order);
-> +		}
-> +	}
-> +	return ret;
-> +}
-> +
-> +int msi_doorbell_pages(unsigned int order)
-> +{
-> +	struct irqchip_doorbell *db;
-> +	int ret = 0;
-> +
-> +	mutex_lock(&irqchip_doorbell_mutex);
-> +	list_for_each_entry(db, &irqchip_doorbell_list, next) {
+[1] https://github.com/robclark/kilroy
 
-Pointless braces
+Changelog:
 
-> +		ret += compute_dbinfo_mapping_requirements(&db->info, order);
-> +	}
-> +	mutex_unlock(&irqchip_doorbell_mutex);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(msi_doorbell_pages);
+  v2..v3
 
-So here is a general rant about your naming choices.
+    - Incorporated feedback from Robin:
+      * Various comments and re-wordings.
+      * Use existing bit definitions for IOMMU_PRIV implementation
+        in io-pgtable-arm.
+      * Renamed and redocumented dma_direction_to_prot.
+      * Don't worry about executability in new DMA attr.
 
-   struct irqchip_doorbell
-   struct irq_chip_msi_doorbell_info
+  v1..v2
 
-   struct irq_chip {
-   	  ....	  *(*msi_doorbell_info);
-   }
+    - Added a new DMA attribute to make executable privileged mappings
+      work, and use that in the pl330 driver (suggested by Will).
 
-   irqchip_doorbell_mutex
 
-   msi_doorbell_register_global
-   msi_doorbell_unregister_global
+Jeremy Gebben (1):
+  iommu/io-pgtable-arm: add support for the IOMMU_PRIV flag
 
-   msi_doorbell_pages
+Mitchel Humpherys (5):
+  iommu: add IOMMU_PRIV attribute
+  common: DMA-mapping: add DMA_ATTR_PRIVILEGED attribute
+  arm64/dma-mapping: Implement DMA_ATTR_PRIVILEGED
+  dmaengine: pl330: Make sure microcode is privileged
+  Revert "iommu/arm-smmu: Treat all device transactions as unprivileged"
 
-This really sucks. Your public functions start sensibly with msi_doorbell.
+ Documentation/DMA-attributes.txt | 10 ++++++++++
+ arch/arm64/mm/dma-mapping.c      |  6 +++---
+ drivers/dma/pl330.c              |  7 +++++--
+ drivers/iommu/arm-smmu.c         |  5 +----
+ drivers/iommu/dma-iommu.c        | 16 +++++++++++-----
+ drivers/iommu/io-pgtable-arm.c   |  5 ++++-
+ include/linux/dma-attrs.h        |  1 +
+ include/linux/dma-iommu.h        |  3 ++-
+ include/linux/iommu.h            |  1 +
+ 9 files changed, 38 insertions(+), 16 deletions(-)
 
-Though what is the _global postfix for the register/unregister functions for?
-Are there _private functions in the pipeline?
-
-msi_doorbell_pages() is not telling me what it does. msi_calc_doorbell_pages()
-would describe it right away.
-
-You doorbell info structure can really do with:
-
-    struct msi_doorbell_info;
-
-And the wrapper struct around it is fine with:
-
-    struct msi_doorbell;
-
-Thanks,
-
-	tglx
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
