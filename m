@@ -1,7 +1,8 @@
 From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v3 5/6] dmaengine: pl330: Make sure microcode is privileged
-Date: Tue, 19 Jul 2016 13:36:54 -0700
-Message-ID: <20160719203655.16629-6-mitchelh@codeaurora.org>
+Subject: [PATCH v3 6/6] Revert "iommu/arm-smmu: Treat all device transactions
+	as unprivileged"
+Date: Tue, 19 Jul 2016 13:36:55 -0700
+Message-ID: <20160719203655.16629-7-mitchelh@codeaurora.org>
 References: <20160719203655.16629-1-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,47 +19,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Jassi Brar <jassi.brar-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Thomas Zeng <tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Thomas Zeng <tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The PL330 performs privileged instruction fetches.  This can result in
-SMMU permission faults on SMMUs that implement the ARMv8 VMSA, which
-specifies that mappings that are writeable at one execution level shall
-not be executable at any higher-privileged level.  Fix this by using the
-DMA_ATTR_PRIVILEGED attribute, which will ensure that the microcode
-IOMMU mapping is only accessible to the privileged level.
+This reverts commit d346180e70b9 ("iommu/arm-smmu: Treat all device
+transactions as unprivileged") since some platforms actually make use of
+privileged transactions.
 
-Cc: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Jassi Brar <jassi.brar-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- drivers/dma/pl330.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
-index 372b4359da97..7297cd1d03c8 100644
---- a/drivers/dma/pl330.c
-+++ b/drivers/dma/pl330.c
-@@ -1854,14 +1854,17 @@ static int dmac_alloc_resources(struct pl330_dmac *pl330)
- {
- 	int chans = pl330->pcfg.num_chan;
- 	int ret;
-+	DEFINE_DMA_ATTRS(attrs);
+Notes:
+    v2..v3
+    
+      - Moved to the end of the series.
+
+ drivers/iommu/arm-smmu.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 9345a3fcb706..d0627ef26b05 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -178,9 +178,6 @@
+ #define S2CR_TYPE_BYPASS		(1 << S2CR_TYPE_SHIFT)
+ #define S2CR_TYPE_FAULT			(2 << S2CR_TYPE_SHIFT)
  
-+	dma_set_attr(DMA_ATTR_PRIVILEGED, &attrs);
- 	/*
- 	 * Alloc MicroCode buffer for 'chans' Channel threads.
- 	 * A channel's buffer offset is (Channel_Id * MCODE_BUFF_PERCHAN)
- 	 */
--	pl330->mcode_cpu = dma_alloc_coherent(pl330->ddma.dev,
-+	pl330->mcode_cpu = dma_alloc_attrs(pl330->ddma.dev,
- 				chans * pl330->mcbufsz,
--				&pl330->mcode_bus, GFP_KERNEL);
-+				&pl330->mcode_bus, GFP_KERNEL,
-+				&attrs);
- 	if (!pl330->mcode_cpu) {
- 		dev_err(pl330->ddma.dev, "%s:%d Can't allocate memory!\n",
- 			__func__, __LINE__);
+-#define S2CR_PRIVCFG_SHIFT		24
+-#define S2CR_PRIVCFG_UNPRIV		(2 << S2CR_PRIVCFG_SHIFT)
+-
+ /* Context bank attribute registers */
+ #define ARM_SMMU_GR1_CBAR(n)		(0x0 + ((n) << 2))
+ #define CBAR_VMID_SHIFT			0
+@@ -1175,7 +1172,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ 		u32 idx, s2cr;
+ 
+ 		idx = cfg->smrs ? cfg->smrs[i].idx : cfg->streamids[i];
+-		s2cr = S2CR_TYPE_TRANS | S2CR_PRIVCFG_UNPRIV |
++		s2cr = S2CR_TYPE_TRANS |
+ 		       (smmu_domain->cfg.cbndx << S2CR_CBNDX_SHIFT);
+ 		writel_relaxed(s2cr, gr0_base + ARM_SMMU_GR0_S2CR(idx));
+ 	}
 -- 
 Qualcomm Innovation Center, Inc.
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
