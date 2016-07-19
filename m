@@ -1,82 +1,41 @@
 From: Mitchel Humpherys <mitchelh@codeaurora.org>
-Subject: [PATCH v3 0/6] Add support for privileged mappings
-Date: Tue, 19 Jul 2016 13:36:49 -0700
-Message-ID: <20160719203655.16629-1-mitchelh@codeaurora.org>
+Subject: [PATCH v3 1/6] iommu: add IOMMU_PRIV attribute
+Date: Tue, 19 Jul 2016 13:36:50 -0700
+Message-ID: <20160719203655.16629-2-mitchelh@codeaurora.org>
+References: <20160719203655.16629-1-mitchelh@codeaurora.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160719203655.16629-1-mitchelh@codeaurora.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
 Cc: Jordan Crouse <jcrouse@codeaurora.org>, Jeremy Gebben <jgebben@codeaurora.org>, Patrick Daly <pdaly@codeaurora.org>, Pratik Patel <pratikp@codeaurora.org>, Thomas Zeng <tzeng@codeaurora.org>, Mitchel Humpherys <mitchelh@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The following patch to the ARM SMMU driver:
+Add the IOMMU_PRIV attribute, which is used to indicate privileged
+mappings.
 
-    commit d346180e70b91b3d5a1ae7e5603e65593d4622bc
-    Author: Robin Murphy <robin.murphy@arm.com>
-    Date:   Tue Jan 26 18:06:34 2016 +0000
+Signed-off-by: Mitchel Humpherys <mitchelh@codeaurora.org>
+---
+
+Notes:
+    v2..v3
     
-        iommu/arm-smmu: Treat all device transactions as unprivileged
+      - Added comment
 
-started forcing all SMMU transactions to come through as "unprivileged".
-The rationale given was that:
+ include/linux/iommu.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-  (1) There is no way in the IOMMU API to even request privileged mappings.
-
-  (2) It's difficult to implement a DMA mapper that correctly models the
-      ARM VMSAv8 behavior of unprivileged-writeable =>
-      privileged-execute-never.
-
-This series rectifies (1) by introducing an IOMMU API for privileged
-mappings and implements it in io-pgtable-arm.
-
-This series rectifies (2) by introducing a new dma attribute
-(DMA_ATTR_PRIVILEGED) for users of the DMA API that need privileged
-mappings which are inaccessible to lesser-privileged execution levels, and
-implements it in the arm64 IOMMU DMA mapper.  The one known user (pl330.c)
-is converted over to the new attribute.
-
-Jordan and Jeremy can provide more info on the use case if needed, but the
-high level is that it's a security feature to prevent attacks such as [1].
-
-[1] https://github.com/robclark/kilroy
-
-Changelog:
-
-  v2..v3
-
-    - Incorporated feedback from Robin:
-      * Various comments and re-wordings.
-      * Use existing bit definitions for IOMMU_PRIV implementation
-        in io-pgtable-arm.
-      * Renamed and redocumented dma_direction_to_prot.
-      * Don't worry about executability in new DMA attr.
-
-  v1..v2
-
-    - Added a new DMA attribute to make executable privileged mappings
-      work, and use that in the pl330 driver (suggested by Will).
-
-
-Jeremy Gebben (1):
-  iommu/io-pgtable-arm: add support for the IOMMU_PRIV flag
-
-Mitchel Humpherys (5):
-  iommu: add IOMMU_PRIV attribute
-  common: DMA-mapping: add DMA_ATTR_PRIVILEGED attribute
-  arm64/dma-mapping: Implement DMA_ATTR_PRIVILEGED
-  dmaengine: pl330: Make sure microcode is privileged
-  Revert "iommu/arm-smmu: Treat all device transactions as unprivileged"
-
- Documentation/DMA-attributes.txt | 10 ++++++++++
- arch/arm64/mm/dma-mapping.c      |  6 +++---
- drivers/dma/pl330.c              |  7 +++++--
- drivers/iommu/arm-smmu.c         |  5 +----
- drivers/iommu/dma-iommu.c        | 16 +++++++++++-----
- drivers/iommu/io-pgtable-arm.c   |  5 ++++-
- include/linux/dma-attrs.h        |  1 +
- include/linux/dma-iommu.h        |  3 ++-
- include/linux/iommu.h            |  1 +
- 9 files changed, 38 insertions(+), 16 deletions(-)
-
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 664683aedcce..4ae46254b915 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -31,6 +31,7 @@
+ #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
+ #define IOMMU_NOEXEC	(1 << 3)
+ #define IOMMU_MMIO	(1 << 4) /* e.g. things like MSI doorbells */
++#define IOMMU_PRIV	(1 << 5) /* privileged */
+ 
+ struct iommu_ops;
+ struct iommu_group;
 -- 
 Qualcomm Innovation Center, Inc.
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
