@@ -1,206 +1,160 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v11 0/8] KVM PCIe/MSI passthrough on ARM/ARM64: kernel
- part 1/3: iommu changes
-Date: Wed, 20 Jul 2016 13:03:00 +0200
-Message-ID: <27715cdb-9f39-7860-465b-e533f4a5c03c@redhat.com>
-References: <1468932911-23062-1-git-send-email-eric.auger@redhat.com>
- <20160720095624.GA1915@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <20160720095624.GA1915@arm.com>
-Sender: kvm-owner@vger.kernel.org
-To: Dennis Chen <dennis.chen@arm.com>
-Cc: eric.auger.pro@gmail.com, marc.zyngier@arm.com, christoffer.dall@linaro.org, andre.przywara@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org, Manish.Jaggi@caviumnetworks.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, pbonzini@redhat.com, kvmarm@lists.cs.columbia.edu, robert.richter@caviumnetworks.com, nd@arm.com
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [RFC PATCH v3 00/13] ACPI IORT ARM SMMU v3 support
+Date: Wed, 20 Jul 2016 12:23:22 +0100
+Message-ID: <1469013815-24380-1-git-send-email-lorenzo.pieralisi@arm.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Hanjun Guo <hanjun.guo@linaro.org>, Jon Masters <jcm@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Dennis
-On 20/07/2016 11:56, Dennis Chen wrote:
-> Hi Eric,
-> 
-> On Tue, Jul 19, 2016 at 12:55:03PM +0000, Eric Auger wrote:
->> This series introduces the msi-iommu api used to:
->>
->> - allocate/free resources for MSI IOMMU mapping
->> - set the MSI iova window aperture
->> - map/unmap physical addresses onto MSI IOVAs.
->> - determine whether an msi needs to be iommu mapped
->> - overwrite an msi_msg PA address with its pre-allocated/mapped IOVA
->>
->> Also a new iommu domain attribute, DOMAIN_ATTR_MSI_GEOMETRY is introduced
->> to report the MSI iova window geometry (aperture and iommu-msi API support).
->>
->> Currently:
->> - iommu driver is supposed to allocate/free MSI mapping resources
->> - VFIO subsystem is supposed to set the MSI IOVA aperture.
->> - The MSI layer is supposed to allocate/free iova mappings and overwrite
->>   msi_msg with IOVA at composition time
->>
->> More details & context can be found at:
->> http://www.linaro.org/blog/core-dump/kvm-pciemsi-passthrough-armarm64/
->>
->> Best Regards
->>
->> Eric
->>
->> Git: complete series available at
->> https://github.com/eauger/linux/tree/v4.7-rc7-passthrough-v11
->>
-> Why can't I find this new series on your git tree:
-> https://git.linaro.org/people/eric.auger/linux.git
-you are not looking at the right git repo: see github one above.
-> ?
-> Also, do I need to download all the 3-part patches to test the PCIe NIC passthru
-> as I did on your v9 series?
-Yes you need to take the 3 parts. You should have everything that is
-needed on the above branch. In case you do not work on Cavium, you
-should not cherry-pick
-"vfio: pci: HACK! workaround thunderx pci_try_reset_bus crash"
+This RFC patch series is v3 of a previous posting:
 
-Thanks
+https://lkml.org/lkml/2016/6/7/523
 
-Eric
-> 
-> Thanks,
-> Dennis 
->>
->> see part III for wrap-up details.
->>
->> History:
->> v10 -> v11:
->> - no change in the series, just incremented for consistency
->> - added a temporary patch in the branch:
->>   "iommu/iova: FIXUP! validate iova_domain input to put_iova_domain"
->>   originally sent by Nate and adapted for this use case. This is currently
->>   under discussion on the ML. The crash typically occurs in case unsafe
->>   interrupts are discovered while allow_unsafe_interrupts is not set.
->>
->> v9 -> v10:
->> - split error management in iommu_msi_set_aperture
->>
->> v8 -> v9:
->> - rename iommu_domain_msi_geometry programmable flag into iommu_msi_supported
->> - introduce msi_apperture_valid helper and use this instead of is_aperture_set
->>
->> v7 -> v8:
->> - The API is retargetted for MSI: renamed msi-iommu
->>   all "dma-reserved" namings removed
->> - now implemented upon dma-iommu (get, put, init), ie. reuse iova_cookie,
->>   and iova API
->> - msi mapping resources now are guaranteed to exist during the whole iommu
->>   domain's lifetime. No need to lock to garantee the cookie integrity
->> - removed alloc/free_reserved_reserved_iova_domain. We now have a single
->>   function that sets the aperture, looking like iommu_dma_init_domain.
->> - we now use a list instead of an RB-tree
->> - prot is not propagated anymore at domain creation due to the retargetting
->>   for MSI
->> - iommu_domain pointer removed from doorbell_mapping struct
->> - replaced DOMAIN_ATTR_MSI_MAPPING by DOMAIN_ATTR_MSI_GEOMETRY
->>
->> v6 -> v7:
->> - fixed known lock bugs and multiple page sized slots matching
->>   (I only have a single MSI frame made of a single page)
->> - reserved_iova_cookie now pointing to a struct that encapsulates the
->>   iova domain handle + protection attribute passed from VFIO (Alex' req)
->> - 2 new functions exposed: iommu_msi_mapping_translate_msg,
->>   iommu_msi_mapping_desc_to_domain: not sure this is the right location/proto
->>   though
->> - iommu_put_reserved_iova now takes a phys_addr_t
->> - everything now is cleanup on iommu_domain destruction
->>
->> RFC v5 -> patch v6:
->> - split to ease the review process
->> - in dma-reserved-api use a spin lock instead of a mutex (reported by
->>   Jean-Philippe)
->> - revisit iommu_get_reserved_iova API to pass a size parameter upon
->>   Marc's request
->> - Consistently use the page order passed when creating the iova domain.
->> - init reserved_binding_list (reported by Julien)
->>
->> RFC v4 -> RFC v5:
->> - take into account Thomas' comments on MSI related patches
->>   - split "msi: IOMMU map the doorbell address when needed"
->>   - increase readability and add comments
->>   - fix style issues
->>  - split "iommu: Add DOMAIN_ATTR_MSI_MAPPING attribute"
->>  - platform ITS now advertises IOMMU_CAP_INTR_REMAP
->>  - fix compilation issue with CONFIG_IOMMU API unset
->>  - arm-smmu-v3 now advertises DOMAIN_ATTR_MSI_MAPPING
->>
->> RFC v3 -> v4:
->> - Move doorbell mapping/unmapping in msi.c
->> - fix ref count issue on set_affinity: in case of a change in the address
->>   the previous address is decremented
->> - doorbell map/unmap now is done on msi composition. Should allow the use
->>   case for platform MSI controllers
->> - create dma-reserved-iommu.h/c exposing/implementing a new API dedicated
->>   to reserved IOVA management (looking like dma-iommu glue)
->> - series reordering to ease the review:
->>   - first part is related to IOMMU
->>   - second related to MSI sub-system
->>   - third related to VFIO (except arm-smmu IOMMU_CAP_INTR_REMAP removal)
->> - expose the number of requested IOVA pages through VFIO_IOMMU_GET_INFO
->>   [this partially addresses Marc's comments on iommu_get/put_single_reserved
->>    size/alignment problematic - which I did not ignore - but I don't know
->>    how much I can do at the moment]
->>
->> RFC v2 -> RFC v3:
->> - should fix wrong handling of some CONFIG combinations:
->>   CONFIG_IOVA, CONFIG_IOMMU_API, CONFIG_PCI_MSI_IRQ_DOMAIN
->> - fix MSI_FLAG_IRQ_REMAPPING setting in GICv3 ITS (although not tested)
->>
->> PATCH v1 -> RFC v2:
->> - reverted to RFC since it looks more reasonable ;-) the code is split
->>   between VFIO, IOMMU, MSI controller and I am not sure I did the right
->>   choices. Also API need to be further discussed.
->> - iova API usage in arm-smmu.c.
->> - MSI controller natively programs the MSI addr with either the PA or IOVA.
->>   This is not done anymore in vfio-pci driver as suggested by Alex.
->> - check irq remapping capability of the group
->>
->> RFC v1 [2] -> PATCH v1:
->> - use the existing dma map/unmap ioctl interface with a flag to register a
->>   reserved IOVA range. Use the legacy Rb to store this special vfio_dma.
->> - a single reserved IOVA contiguous region now is allowed
->> - use of an RB tree indexed by PA to store allocated reserved slots
->> - use of a vfio_domain iova_domain to manage iova allocation within the
->>   window provided by the userspace
->> - vfio alloc_map/unmap_free take a vfio_group handle
->> - vfio_group handle is cached in vfio_pci_device
->> - add ref counting to bindings
->> - user modality enabled at the end of the series
->>
->>
->> Eric Auger (8):
->>   iommu: Add iommu_domain_msi_geometry and DOMAIN_ATTR_MSI_GEOMETRY
->>   iommu/arm-smmu: initialize the msi geometry and advertise iommu-msi
->>     support
->>   iommu: introduce an msi cookie
->>   iommu/msi-iommu: initialization
->>   iommu/msi-iommu: iommu_msi_[get,put]_doorbell_iova
->>   iommu/msi-iommu: iommu_msi_domain
->>   iommu/msi-iommu: iommu_msi_msg_pa_to_va
->>   iommu/arm-smmu: get/put the msi cookie
->>
->>  drivers/iommu/Kconfig       |   7 +
->>  drivers/iommu/Makefile      |   1 +
->>  drivers/iommu/arm-smmu-v3.c |  18 ++-
->>  drivers/iommu/arm-smmu.c    |  18 ++-
->>  drivers/iommu/iommu.c       |   5 +
->>  drivers/iommu/msi-iommu.c   | 322 ++++++++++++++++++++++++++++++++++++++++++++
->>  include/linux/iommu.h       |  15 +++
->>  include/linux/msi-iommu.h   | 144 ++++++++++++++++++++
->>  8 files changed, 522 insertions(+), 8 deletions(-)
->>  create mode 100644 drivers/iommu/msi-iommu.c
->>  create mode 100644 include/linux/msi-iommu.h
->>
->> -- 
->> 1.9.1
->>
->> _______________________________________________
->> kvmarm mailing list
->> kvmarm@lists.cs.columbia.edu
->> https://lists.cs.columbia.edu/mailman/listinfo/kvmarm
->>
-> 
+v2 -> v3
+	- Rebased on top of dependencies series [1][2][3](v4.7-rc3)
+	- Added back reliance on ACPI early probing infrastructure
+	- Patch[1-3] merged through other dependent series
+	- Added back IOMMU fwnode generalization
+	- Move SMMU v3 static functions configuration to IORT code
+	- Implemented generic IOMMU fwspec API
+	- Added code to implement fwnode platform device look-up
+
+v1 -> v2:
+	- Rebased on top of dependencies series [1][2][3](v4.7-rc1)
+	- Removed IOMMU fwnode generalization
+	- Implemented ARM SMMU v3 ACPI probing instead of ARM SMMU v2
+	  owing to patch series dependencies [1]
+	- Moved platform device creation logic to IORT code to
+	  generalize its usage for ARM SMMU v1-v2-v3 components
+	- Removed reliance on ACPI early device probing
+	- Created IORT specific iommu_xlate() translation hook leaving
+	  OF code unchanged according to v1 reviews
+
+The ACPI IORT table provides information that allows instantiating
+ARM SMMU devices and carrying out id mappings between components on
+ARM based systems (devices, IOMMUs, interrupt controllers).
+
+http://infocenter.arm.com/help/topic/com.arm.doc.den0049b/DEN0049B_IO_Remapping_Table.pdf
+
+Building on basic IORT support, available through [2]:
+
+this patchset enables ARM SMMU v3 support on ACPI systems.
+
+Most of the code is aimed at building the required generic ACPI
+infrastructure to create and enable IOMMU components and to bring
+the IOMMU infrastructure for ACPI on par with DT, which is going to
+make future ARM SMMU components easier to integrate.
+
+PATCH (1) adds a FWNODE_IOMMU type to the struct fwnode_handle type.
+          It is required to attach a fwnode identifier to platform
+          devices allocated/detected through IORT tables entries;
+          IOMMU devices have to have an identifier to look them up
+          eg IOMMU core layer carrying out id translation. This can be
+          done through a fwnode_handle (ie IOMMU platform devices created
+          out of IORT tables are not ACPI devices hence they can't be
+          allocated as such, otherwise they would have a fwnode_handle of
+          type FWNODE_ACPI). This patch requires discussion and it is key
+          to the RFC.
+
+PATCH (2) makes use of the ACPI early probing API to add a linker script
+          section for probing devices via IORT ACPI kernel code.
+
+PATCH (3) provides IORT support for registering IOMMU IORT node through
+          their fwnode handle.
+
+PATCH (4) implements core code fwnode based platform devices look-up.
+
+PATCH (5) extends iommu_fwspec so that it can be used on ACPI based
+          system by creating a generic IOMMU fwspec kernel layer.
+
+PATCH (6) implements the of_dma_configure() API in ACPI world -
+          acpi_dma_configure() - and patches PCI and ACPI core code to
+          start making use of it.
+
+PATCH (7) provides an IORT function to detect existence of specific type
+          of IORT components.
+
+PATCH (8) creates the kernel infrastructure required to create ARM SMMU
+          platform devices for IORT nodes.
+
+PATCH (9) refactors the ARM SMMU v3 driver so that the init functions are
+          split in a way that groups together code that probes through DT
+          and code that carries out HW registers FW agnostic probing, in
+          preparation for adding the ACPI probing path.
+
+PATCH (10) rework ARM SMMU v3 platform driver registration to make it work
+           on ACPI systems.
+
+PATCH (11) Building on patch (8), it adds ARM SMMU v3 IORT IOMMU
+           operations to create and probe ARM SMMU v3 components.
+
+PATCH (12) Extend the IORT iort_node_map_rid() to work on a type mask
+           instead of a single type so that the translation API can
+           be used on a range of components.
+
+PATCH (13) provides IORT infrastructure to carry out IOMMU configuration
+           for devices and hook it up to the previously introduced ACPI
+           DMA configure API.
+
+This patchset is built on top and depends on these three patch series:
+
+[1] R.Murphy "Generic DT bindings for PCI and ARM SMMU v3" v4
+    https://marc.info/?l=devicetree&m=146739193215518&w=2
+
+[2] T.Nowicki "Introduce ACPI world to ITS irqchip" v7
+    https://marc.info/?l=linux-arm-kernel&m=146642080022289&w=2
+
+[3] T.Nowicki "Support for ARM64 ACPI based PCI host controller" v8
+    http://marc.info/?l=linux-acpi&m=146462129816292&w=2
+
+and is provided for early review/testing purposes here:
+
+git://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git acpi/iort-smmu-v3
+
+Tested on FVP models for ARM SMMU v3 probing path.
+
+Lorenzo Pieralisi (13):
+  drivers: iommu: add FWNODE_IOMMU fwnode type
+  drivers: acpi: iort: introduce linker section for IORT entries probing
+  drivers: acpi: iort: add support for IOMMU fwnode registration
+  drivers: platform: add fwnode base platform devices retrieval
+  drivers: iommu: make iommu_fwspec OF agnostic
+  drivers: acpi: implement acpi_dma_configure
+  drivers: acpi: iort: add node match function
+  drivers: acpi: iort: add support for ARM SMMU platform devices
+    creation
+  drivers: iommu: arm-smmu-v3: split probe functions into DT/generic
+    portions
+  drivers: iommu: arm-smmu-v3: enable ACPI driver initialization
+  drivers: iommu: arm-smmu-v3: add IORT platform device creation
+  drivers: acpi: iort: replace rid map type with type mask
+  drivers: acpi: iort: introduce iort_iommu_configure
+
+ drivers/acpi/glue.c               |   4 +-
+ drivers/acpi/iort.c               | 360 +++++++++++++++++++++++++++++++++++++-
+ drivers/acpi/scan.c               |  29 +++
+ drivers/base/platform.c           |  23 +++
+ drivers/iommu/Kconfig             |   4 +
+ drivers/iommu/Makefile            |   1 +
+ drivers/iommu/arm-smmu-v3.c       | 147 ++++++++++++++--
+ drivers/iommu/iommu-fwspec.c      | 114 ++++++++++++
+ drivers/iommu/of_iommu.c          |  52 ------
+ drivers/pci/probe.c               |   3 +-
+ include/acpi/acpi_bus.h           |   2 +
+ include/asm-generic/vmlinux.lds.h |   1 +
+ include/linux/acpi.h              |   5 +
+ include/linux/fwnode.h            |   1 +
+ include/linux/iommu-fwspec.h      |  60 +++++++
+ include/linux/iommu.h             |  25 +++
+ include/linux/iort.h              |  19 ++
+ include/linux/of_iommu.h          |  24 +--
+ include/linux/platform_device.h   |   3 +
+ 19 files changed, 782 insertions(+), 95 deletions(-)
+ create mode 100644 drivers/iommu/iommu-fwspec.c
+ create mode 100644 include/linux/iommu-fwspec.h
+
+-- 
+2.6.4
+
