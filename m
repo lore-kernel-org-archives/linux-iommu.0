@@ -1,8 +1,8 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH v3 04/13] drivers: platform: add fwnode base platform
-	devices retrieval
-Date: Wed, 20 Jul 2016 12:23:26 +0100
-Message-ID: <1469013815-24380-5-git-send-email-lorenzo.pieralisi@arm.com>
+Subject: [RFC PATCH v3 02/13] drivers: acpi: iort: introduce linker section
+	for IORT entries probing
+Date: Wed, 20 Jul 2016 12:23:24 +0100
+Message-ID: <1469013815-24380-3-git-send-email-lorenzo.pieralisi@arm.com>
 References: <1469013815-24380-1-git-send-email-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,76 +19,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The platform device kernel API does not provide functions to
-retrieve a platform device through the corresponding struct
-device fwnode pointer.
+Since commit e647b532275b ("ACPI: Add early device probing
+infrastructure") the kernel has gained the infrastructure that allows
+adding linker script section entries to execute ACPI driver callbacks
+(ie probe routines) for all subsystems that register a table entry
+in the respective kernel section (eg clocksource, irqchip).
 
-Implement the fwnode platform_device look-up in drivers core
-code by using the bus_find_device() API and a corresponding
-matching function. The OF equivalent (eg of_find_device_by_node())
-will reuse the newly introduced function when OF code will
-take care of setting up the device->fwnode value that is
-currently left dangling for platform devices instantiated out
-of device tree nodes.
+Since ARM IOMMU devices data is described through IORT tables when
+booting with ACPI, the ARM IOMMU drivers must be made able to hook ACPI
+callback routines that are called to probe IORT entries and initialize
+the respective IOMMU devices.
+
+To avoid adding driver specific hooks into IORT table initialization
+code (breaking therefore code modularity - ie ACPI IORT code must be made
+aware of ARM SMMU drivers ACPI init callbacks), this patch adds code
+that allows ARM SMMU drivers to take advantage of the ACPI early probing
+infrastructure, so that they can add linker script section entries
+containing drivers callback to be executed on IORT tables detection.
+
+Since IORT nodes are differentiated by a type, the callback routines
+can easily parse the IORT table entries, check the IORT nodes and
+carry out some actions whenever the IORT node type associated with
+the driver specific callback is matched.
 
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
 Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+Cc: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/base/platform.c         | 23 +++++++++++++++++++++++
- include/linux/platform_device.h |  3 +++
- 2 files changed, 26 insertions(+)
+ drivers/acpi/iort.c               | 2 ++
+ include/asm-generic/vmlinux.lds.h | 1 +
+ include/linux/iort.h              | 3 +++
+ 3 files changed, 6 insertions(+)
 
-diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index 6482d47..3ef150d 100644
---- a/drivers/base/platform.c
-+++ b/drivers/base/platform.c
-@@ -760,6 +760,29 @@ err_out:
+diff --git a/drivers/acpi/iort.c b/drivers/acpi/iort.c
+index 6611607..1f440d2 100644
+--- a/drivers/acpi/iort.c
++++ b/drivers/acpi/iort.c
+@@ -383,4 +383,6 @@ void __init iort_table_detect(void)
+ 		const char *msg = acpi_format_exception(status);
+ 		pr_err("Failed to get table, %s\n", msg);
+ 	}
++
++	acpi_probe_device_table(iort);
  }
- EXPORT_SYMBOL_GPL(__platform_create_bundle);
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index 6a67ab9..b896ab2 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -538,6 +538,7 @@
+ 	IRQCHIP_OF_MATCH_TABLE()					\
+ 	ACPI_PROBE_TABLE(irqchip)					\
+ 	ACPI_PROBE_TABLE(clksrc)					\
++	ACPI_PROBE_TABLE(iort)						\
+ 	EARLYCON_TABLE()
  
-+static int fwnode_dev_match(struct device *dev, void *data)
-+{
-+	return dev->fwnode == data;
-+}
-+
-+/**
-+ * platform_find_device_by_fwnode() - Find the platform_device associated
-+ *				      with a fwnode
-+ * @fwnode: Pointer to firmware node
-+ *
-+ * Returns platform_device pointer, or NULL if not found
-+ */
-+struct platform_device *
-+platform_find_device_by_fwnode(struct fwnode_handle *fwnode)
-+{
-+	struct device *dev;
-+
-+	dev = bus_find_device(&platform_bus_type, NULL, fwnode,
-+			      fwnode_dev_match);
-+	return dev ? to_platform_device(dev) : NULL;
-+}
-+EXPORT_SYMBOL(platform_find_device_by_fwnode);
-+
- /**
-  * __platform_register_drivers - register an array of platform drivers
-  * @drivers: an array of drivers to register
-diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
-index 98c2a7c..01a3eb2 100644
---- a/include/linux/platform_device.h
-+++ b/include/linux/platform_device.h
-@@ -276,6 +276,9 @@ extern struct platform_device *__platform_create_bundle(
- 	struct resource *res, unsigned int n_res,
- 	const void *data, size_t size, struct module *module);
+ #define INIT_TEXT							\
+diff --git a/include/linux/iort.h b/include/linux/iort.h
+index d7daba1..9bb30c5 100644
+--- a/include/linux/iort.h
++++ b/include/linux/iort.h
+@@ -38,4 +38,7 @@ static inline struct irq_domain *
+ iort_get_device_domain(struct device *dev, u32 req_id) { return NULL; }
+ #endif
  
-+extern struct platform_device *
-+platform_find_device_by_fwnode(struct fwnode_handle *fwnode);
++#define IORT_ACPI_DECLARE(name, table_id, fn)		\
++	ACPI_DECLARE_PROBE_ENTRY(iort, name, table_id, 0, NULL, 0, fn)
 +
- int __platform_register_drivers(struct platform_driver * const *drivers,
- 				unsigned int count, struct module *owner);
- void platform_unregister_drivers(struct platform_driver * const *drivers,
+ #endif /* __IORT_H__ */
 -- 
 2.6.4
