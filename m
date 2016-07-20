@@ -1,18 +1,16 @@
-From: Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH v2 02/10] driver core: Functional dependencies tracking
-	support
-Date: Wed, 20 Jul 2016 08:24:50 +0200
-Message-ID: <20160720062450.GA8066@wunner.de>
-References: <1466144820-6286-1-git-send-email-m.szyprowski@samsung.com>
-	<CAJZ5v0h71xxvzex2D6s9W8Qvq3+BqOQnTJRKy32gMu=tuQLxDA@mail.gmail.com>
-	<20160617140738.GA1809@wunner.de>
-	<1975118.iO8UCAENoH@vostro.rjw.lan>
+From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v11 04/10] genirq/msi-doorbell: allow MSI doorbell
+	(un)registration
+Date: Wed, 20 Jul 2016 09:50:14 +0200
+Message-ID: <cfd24f24-a7ff-2657-f88b-43537f6316dd@redhat.com>
+References: <1468933367-23159-1-git-send-email-eric.auger@redhat.com>
+	<1468933367-23159-5-git-send-email-eric.auger@redhat.com>
+	<alpine.DEB.2.11.1607191617071.3596@nanos>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1975118.iO8UCAENoH-sKB8Sp2ER+y1GS7QM15AGw@public.gmane.org>
+In-Reply-To: <alpine.DEB.2.11.1607191617071.3596@nanos>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,71 +20,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Andreas Noever <andreas.noever-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, robert.richter-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, andre.przywara-5wv7dgnIgG8@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jul 20, 2016 at 02:33:18AM +0200, Rafael J. Wysocki wrote:
-> On Friday, June 17, 2016 04:07:38 PM Lukas Wunner wrote:
-> > On Fri, Jun 17, 2016 at 02:54:56PM +0200, Rafael J. Wysocki wrote:
-> > > On Fri, Jun 17, 2016 at 12:36 PM, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org> wrote:
-> > > > On Fri, Jun 17, 2016 at 08:26:52AM +0200, Marek Szyprowski wrote:
-> > > > > From: "Rafael J. Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> > > > We also have such a functional dependency for Thunderbolt on Macs:
-> > > > On resume from system sleep, the PCIe hotplug ports may not resume
-> > > > before the thunderbolt driver has reestablished the PCI tunnels.
-> > > > Currently this is enforced by quirk_apple_wait_for_thunderbolt()
-> > > > in drivers/pci/quirks.c. It would be good if we could represent
-> > > > this dependency using something like Rafael's approach instead of
-> > > > open coding it, however one detail in Rafael's patches is problematic:
-> > > >
-> > > > > New links are added by calling device_link_add() which may happen
-> > > > > either before the consumer device is probed or when probing it, in
-> > > > > which case the caller needs to ensure that the driver of the
-> > > > > supplier device is present and functional and the DEVICE_LINK_PROBE_TIME
-> > > > > flag should be passed to device_link_add() to reflect that.
-> > > >
-> > > > The thunderbolt driver cannot call device_link_add() before the
-> > > > PCIe hotplug ports are bound to a driver unless we amend portdrv
-> > > > to return -EPROBE_DEFER for Thunderbolt hotplug ports on Macs
-> > > > if the thunderbolt driver isn't loaded.
-> > > >
-> > > > It would therefore be beneficial if device_link_add() can be
-> > > > called even *after* the consumer is bound.
-> > > 
-> > > I don't quite follow.
-> > > 
-> > > Who's the provider and who's the consumer here?
-> > 
-> > thunderbolt.ko is the supplier.
+Hi Thomas,
+On 19/07/2016 16:22, Thomas Gleixner wrote:
+> On Tue, 19 Jul 2016, Eric Auger wrote:
+>> +
+>> +#include <linux/slab.h>
+>> +#include <linux/irq.h>
+>> +#include <linux/msi-doorbell.h>
+>> +
+>> +struct irqchip_doorbell {
+>> +	struct irq_chip_msi_doorbell_info info;
+>> +	struct list_head next;
 > 
-> But it binds to the children of the ports that are supposed to be its
-> consumers?
+> Again, please align the struct members.
 > 
-> Why is that even expected to work?
+>> +};
+>> +
+>> +static LIST_HEAD(irqchip_doorbell_list);
+>> +static DEFINE_MUTEX(irqchip_doorbell_mutex);
+>> +
+>> +struct irq_chip_msi_doorbell_info *
+>> +msi_doorbell_register_global(phys_addr_t base, size_t size,
+>> +			     int prot, bool irq_remapping)
+>> +{
+>> +	struct irqchip_doorbell *db;
+>> +
+>> +	db = kmalloc(sizeof(*db), GFP_KERNEL);
+>> +	if (!db)
+>> +		return ERR_PTR(-ENOMEM);
+>> +
+>> +	db->info.doorbell_is_percpu = false;
+> 
+> Please use kzalloc and get rid of zero initialization. If you add stuff to the
+> struct then initialization will be automatically 0.
+OK
+> 
+>> +void msi_doorbell_unregister_global(struct irq_chip_msi_doorbell_info *dbinfo)
+>> +{
+>> +	struct irqchip_doorbell *db, *tmp;
+>> +
+>> +	mutex_lock(&irqchip_doorbell_mutex);
+>> +	list_for_each_entry_safe(db, tmp, &irqchip_doorbell_list, next) {
+> 
+> Why do you need that iterator? 
+> 
+>     db = container_of(dbinfo, struct ....., info);
+> 
+> Hmm?
 
-No, the consumers are aunts (or uncles) of the supplier, if you will. :-)
+definitively
+> 
+>> +		if (dbinfo == &db->info) {
+>> +			list_del(&db->next);
+>> +			kfree(db);
+> 
+> Please move the kfree() outside of the lock region. It does not matter much
+> here, but we really should stop doing random crap in locked regions.
+OK
 
-The consumers are the hotplug ports (named "Downstream Bridge 1 / 2" in
-the drawing below). The supplier is the NHI:
+Thanks
 
-      (Root Port) ---- Upstream Bridge --+-- Downstream Bridge 0 ---- NHI
-                                         +-- Downstream Bridge 1 --
-                                         +-- Downstream Bridge 2 --
-                                         ...
-
-We're calling pci_power_up() and pci_restore_state() from
-pci_pm_resume_noirq(). And that will fail for devices below
-the hotplug ports if the PCI tunnels haven't been re-established
-yet by the NHI.
-
-Currently we achieve that via quirk_apple_wait_for_thunderbolt() in
-drivers/pci/quirks.c. It would be more elegant if we could make this
-relationship explicit with "device links" and let the core handle it.
-
-Or am I mistaken and this particular use case is not what "device links"
-are intended for?
-
-Thanks,
-
-Lukas
+Eric
+> 
+> Thanks,
+> 
+> 	tglx
+> 
