@@ -1,66 +1,56 @@
-From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v3 6/6] Revert "iommu/arm-smmu: Treat all device transactions
-	as unprivileged"
-Date: Tue, 19 Jul 2016 13:36:55 -0700
-Message-ID: <20160719203655.16629-7-mitchelh@codeaurora.org>
-References: <20160719203655.16629-1-mitchelh@codeaurora.org>
+From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [PATCH v2 02/10] driver core: Functional dependencies tracking support
+Date: Wed, 20 Jul 2016 02:33:18 +0200
+Message-ID: <1975118.iO8UCAENoH@vostro.rjw.lan>
+References: <1466144820-6286-1-git-send-email-m.szyprowski@samsung.com> <CAJZ5v0h71xxvzex2D6s9W8Qvq3+BqOQnTJRKy32gMu=tuQLxDA@mail.gmail.com> <20160617140738.GA1809@wunner.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160719203655.16629-1-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Thomas Zeng <tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-pm-owner@vger.kernel.org>
+In-Reply-To: <20160617140738.GA1809@wunner.de>
+Sender: linux-pm-owner@vger.kernel.org
+To: Lukas Wunner <lukas@wunner.de>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, linux-samsung-soc@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, Andreas Noever <andreas.noever@gmail.com>, linux-pci@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-This reverts commit d346180e70b9 ("iommu/arm-smmu: Treat all device
-transactions as unprivileged") since some platforms actually make use of
-privileged transactions.
+On Friday, June 17, 2016 04:07:38 PM Lukas Wunner wrote:
+> On Fri, Jun 17, 2016 at 02:54:56PM +0200, Rafael J. Wysocki wrote:
+> > On Fri, Jun 17, 2016 at 12:36 PM, Lukas Wunner <lukas@wunner.de> wrote:
+> > > On Fri, Jun 17, 2016 at 08:26:52AM +0200, Marek Szyprowski wrote:
+> > > > From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+> > > We also have such a functional dependency for Thunderbolt on Macs:
+> > > On resume from system sleep, the PCIe hotplug ports may not resume
+> > > before the thunderbolt driver has reestablished the PCI tunnels.
+> > > Currently this is enforced by quirk_apple_wait_for_thunderbolt()
+> > > in drivers/pci/quirks.c. It would be good if we could represent
+> > > this dependency using something like Rafael's approach instead of
+> > > open coding it, however one detail in Rafael's patches is problematic:
+> > >
+> > > > New links are added by calling device_link_add() which may happen
+> > > > either before the consumer device is probed or when probing it, in
+> > > > which case the caller needs to ensure that the driver of the
+> > > > supplier device is present and functional and the DEVICE_LINK_PROBE_TIME
+> > > > flag should be passed to device_link_add() to reflect that.
+> > >
+> > > The thunderbolt driver cannot call device_link_add() before the
+> > > PCIe hotplug ports are bound to a driver unless we amend portdrv
+> > > to return -EPROBE_DEFER for Thunderbolt hotplug ports on Macs
+> > > if the thunderbolt driver isn't loaded.
+> > >
+> > > It would therefore be beneficial if device_link_add() can be
+> > > called even *after* the consumer is bound.
+> > 
+> > I don't quite follow.
+> > 
+> > Who's the provider and who's the consumer here?
+> 
+> thunderbolt.ko is the supplier.
 
-Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
+But it binds to the children of the ports that are supposed to be its
+consumers?
 
-Notes:
-    v2..v3
-    
-      - Moved to the end of the series.
+Why is that even expected to work?
 
- drivers/iommu/arm-smmu.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+Thanks,
+Rafael
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 9345a3fcb706..d0627ef26b05 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -178,9 +178,6 @@
- #define S2CR_TYPE_BYPASS		(1 << S2CR_TYPE_SHIFT)
- #define S2CR_TYPE_FAULT			(2 << S2CR_TYPE_SHIFT)
- 
--#define S2CR_PRIVCFG_SHIFT		24
--#define S2CR_PRIVCFG_UNPRIV		(2 << S2CR_PRIVCFG_SHIFT)
--
- /* Context bank attribute registers */
- #define ARM_SMMU_GR1_CBAR(n)		(0x0 + ((n) << 2))
- #define CBAR_VMID_SHIFT			0
-@@ -1175,7 +1172,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- 		u32 idx, s2cr;
- 
- 		idx = cfg->smrs ? cfg->smrs[i].idx : cfg->streamids[i];
--		s2cr = S2CR_TYPE_TRANS | S2CR_PRIVCFG_UNPRIV |
-+		s2cr = S2CR_TYPE_TRANS |
- 		       (smmu_domain->cfg.cbndx << S2CR_CBNDX_SHIFT);
- 		writel_relaxed(s2cr, gr0_base + ARM_SMMU_GR0_S2CR(idx));
- 	}
--- 
-Qualcomm Innovation Center, Inc.
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
