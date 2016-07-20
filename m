@@ -1,160 +1,114 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [RFC PATCH v3 00/13] ACPI IORT ARM SMMU v3 support
-Date: Wed, 20 Jul 2016 12:23:22 +0100
-Message-ID: <1469013815-24380-1-git-send-email-lorenzo.pieralisi@arm.com>
+Subject: [RFC PATCH v3 03/13] drivers: acpi: iort: add support for IOMMU fwnode registration
+Date: Wed, 20 Jul 2016 12:23:25 +0100
+Message-ID: <1469013815-24380-4-git-send-email-lorenzo.pieralisi@arm.com>
+References: <1469013815-24380-1-git-send-email-lorenzo.pieralisi@arm.com>
 Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1469013815-24380-1-git-send-email-lorenzo.pieralisi@arm.com>
 Sender: linux-acpi-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Hanjun Guo <hanjun.guo@linaro.org>, Jon Masters <jcm@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Tomasz Nowicki <tn@semihalf.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jon Masters <jcm@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-This RFC patch series is v3 of a previous posting:
+The ACPI IORT table provide entries for IOMMU (aka SMMU in ARM world)
+components that allow creating the kernel data structures required to
+probe and initialize the IOMMU devices.
 
-https://lkml.org/lkml/2016/6/7/523
+This patch provides support in the IORT kernel code to register IOMMU
+components and their respective fwnode.
 
-v2 -> v3
-	- Rebased on top of dependencies series [1][2][3](v4.7-rc3)
-	- Added back reliance on ACPI early probing infrastructure
-	- Patch[1-3] merged through other dependent series
-	- Added back IOMMU fwnode generalization
-	- Move SMMU v3 static functions configuration to IORT code
-	- Implemented generic IOMMU fwspec API
-	- Added code to implement fwnode platform device look-up
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Hanjun Guo <hanjun.guo@linaro.org>
+Cc: Tomasz Nowicki <tn@semihalf.com>
+Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+---
+ drivers/acpi/iort.c | 65 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 65 insertions(+)
 
-v1 -> v2:
-	- Rebased on top of dependencies series [1][2][3](v4.7-rc1)
-	- Removed IOMMU fwnode generalization
-	- Implemented ARM SMMU v3 ACPI probing instead of ARM SMMU v2
-	  owing to patch series dependencies [1]
-	- Moved platform device creation logic to IORT code to
-	  generalize its usage for ARM SMMU v1-v2-v3 components
-	- Removed reliance on ACPI early device probing
-	- Created IORT specific iommu_xlate() translation hook leaving
-	  OF code unchanged according to v1 reviews
-
-The ACPI IORT table provides information that allows instantiating
-ARM SMMU devices and carrying out id mappings between components on
-ARM based systems (devices, IOMMUs, interrupt controllers).
-
-http://infocenter.arm.com/help/topic/com.arm.doc.den0049b/DEN0049B_IO_Remapping_Table.pdf
-
-Building on basic IORT support, available through [2]:
-
-this patchset enables ARM SMMU v3 support on ACPI systems.
-
-Most of the code is aimed at building the required generic ACPI
-infrastructure to create and enable IOMMU components and to bring
-the IOMMU infrastructure for ACPI on par with DT, which is going to
-make future ARM SMMU components easier to integrate.
-
-PATCH (1) adds a FWNODE_IOMMU type to the struct fwnode_handle type.
-          It is required to attach a fwnode identifier to platform
-          devices allocated/detected through IORT tables entries;
-          IOMMU devices have to have an identifier to look them up
-          eg IOMMU core layer carrying out id translation. This can be
-          done through a fwnode_handle (ie IOMMU platform devices created
-          out of IORT tables are not ACPI devices hence they can't be
-          allocated as such, otherwise they would have a fwnode_handle of
-          type FWNODE_ACPI). This patch requires discussion and it is key
-          to the RFC.
-
-PATCH (2) makes use of the ACPI early probing API to add a linker script
-          section for probing devices via IORT ACPI kernel code.
-
-PATCH (3) provides IORT support for registering IOMMU IORT node through
-          their fwnode handle.
-
-PATCH (4) implements core code fwnode based platform devices look-up.
-
-PATCH (5) extends iommu_fwspec so that it can be used on ACPI based
-          system by creating a generic IOMMU fwspec kernel layer.
-
-PATCH (6) implements the of_dma_configure() API in ACPI world -
-          acpi_dma_configure() - and patches PCI and ACPI core code to
-          start making use of it.
-
-PATCH (7) provides an IORT function to detect existence of specific type
-          of IORT components.
-
-PATCH (8) creates the kernel infrastructure required to create ARM SMMU
-          platform devices for IORT nodes.
-
-PATCH (9) refactors the ARM SMMU v3 driver so that the init functions are
-          split in a way that groups together code that probes through DT
-          and code that carries out HW registers FW agnostic probing, in
-          preparation for adding the ACPI probing path.
-
-PATCH (10) rework ARM SMMU v3 platform driver registration to make it work
-           on ACPI systems.
-
-PATCH (11) Building on patch (8), it adds ARM SMMU v3 IORT IOMMU
-           operations to create and probe ARM SMMU v3 components.
-
-PATCH (12) Extend the IORT iort_node_map_rid() to work on a type mask
-           instead of a single type so that the translation API can
-           be used on a range of components.
-
-PATCH (13) provides IORT infrastructure to carry out IOMMU configuration
-           for devices and hook it up to the previously introduced ACPI
-           DMA configure API.
-
-This patchset is built on top and depends on these three patch series:
-
-[1] R.Murphy "Generic DT bindings for PCI and ARM SMMU v3" v4
-    https://marc.info/?l=devicetree&m=146739193215518&w=2
-
-[2] T.Nowicki "Introduce ACPI world to ITS irqchip" v7
-    https://marc.info/?l=linux-arm-kernel&m=146642080022289&w=2
-
-[3] T.Nowicki "Support for ARM64 ACPI based PCI host controller" v8
-    http://marc.info/?l=linux-acpi&m=146462129816292&w=2
-
-and is provided for early review/testing purposes here:
-
-git://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git acpi/iort-smmu-v3
-
-Tested on FVP models for ARM SMMU v3 probing path.
-
-Lorenzo Pieralisi (13):
-  drivers: iommu: add FWNODE_IOMMU fwnode type
-  drivers: acpi: iort: introduce linker section for IORT entries probing
-  drivers: acpi: iort: add support for IOMMU fwnode registration
-  drivers: platform: add fwnode base platform devices retrieval
-  drivers: iommu: make iommu_fwspec OF agnostic
-  drivers: acpi: implement acpi_dma_configure
-  drivers: acpi: iort: add node match function
-  drivers: acpi: iort: add support for ARM SMMU platform devices
-    creation
-  drivers: iommu: arm-smmu-v3: split probe functions into DT/generic
-    portions
-  drivers: iommu: arm-smmu-v3: enable ACPI driver initialization
-  drivers: iommu: arm-smmu-v3: add IORT platform device creation
-  drivers: acpi: iort: replace rid map type with type mask
-  drivers: acpi: iort: introduce iort_iommu_configure
-
- drivers/acpi/glue.c               |   4 +-
- drivers/acpi/iort.c               | 360 +++++++++++++++++++++++++++++++++++++-
- drivers/acpi/scan.c               |  29 +++
- drivers/base/platform.c           |  23 +++
- drivers/iommu/Kconfig             |   4 +
- drivers/iommu/Makefile            |   1 +
- drivers/iommu/arm-smmu-v3.c       | 147 ++++++++++++++--
- drivers/iommu/iommu-fwspec.c      | 114 ++++++++++++
- drivers/iommu/of_iommu.c          |  52 ------
- drivers/pci/probe.c               |   3 +-
- include/acpi/acpi_bus.h           |   2 +
- include/asm-generic/vmlinux.lds.h |   1 +
- include/linux/acpi.h              |   5 +
- include/linux/fwnode.h            |   1 +
- include/linux/iommu-fwspec.h      |  60 +++++++
- include/linux/iommu.h             |  25 +++
- include/linux/iort.h              |  19 ++
- include/linux/of_iommu.h          |  24 +--
- include/linux/platform_device.h   |   3 +
- 19 files changed, 782 insertions(+), 95 deletions(-)
- create mode 100644 drivers/iommu/iommu-fwspec.c
- create mode 100644 include/linux/iommu-fwspec.h
-
+diff --git a/drivers/acpi/iort.c b/drivers/acpi/iort.c
+index 1f440d2..86f6985 100644
+--- a/drivers/acpi/iort.c
++++ b/drivers/acpi/iort.c
+@@ -20,7 +20,9 @@
+ 
+ #include <linux/iort.h>
+ #include <linux/kernel.h>
++#include <linux/list.h>
+ #include <linux/pci.h>
++#include <linux/slab.h>
+ 
+ struct iort_its_msi_chip {
+ 	struct list_head	list;
+@@ -28,6 +30,69 @@ struct iort_its_msi_chip {
+ 	u32			translation_id;
+ };
+ 
++struct iort_fwnode {
++	struct list_head list;
++	struct acpi_iort_node *iort_node;
++	struct fwnode_handle *fwnode;
++};
++static LIST_HEAD(iort_fwnode_list);
++static DEFINE_SPINLOCK(iort_fwnode_lock);
++
++/**
++ * iort_set_fwnode() - Create iort_fwnode and use it to register
++ *		       iommu data in the iort_fwnode_list
++ *
++ * @node: IORT table node associated with the IOMMU
++ * @fwnode: fwnode associated with the IORT node
++ *
++ * Returns: 0 on success
++ *          -ENOMEM on failure
++ */
++static inline int iort_set_fwnode(struct acpi_iort_node *iort_node,
++				  struct fwnode_handle *fwnode)
++{
++	struct iort_fwnode *np;
++
++	np = kzalloc(sizeof(struct iort_fwnode), GFP_KERNEL);
++
++	if (WARN_ON(!np))
++		return -ENOMEM;
++
++	INIT_LIST_HEAD(&np->list);
++	np->iort_node = iort_node;
++	np->fwnode = fwnode;
++
++	spin_lock(&iort_fwnode_lock);
++	list_add_tail(&np->list, &iort_fwnode_list);
++	spin_unlock(&iort_fwnode_lock);
++
++	return 0;
++}
++
++/**
++ * iort_get_fwnode() - Retrieve fwnode associated with an IORT node
++ *
++ * @node: IORT table node to be looked-up
++ *
++ * Returns: fwnode_handle pointer on success NULL on failure
++*/
++static inline struct fwnode_handle *
++iort_get_fwnode(struct acpi_iort_node *node)
++{
++	struct iort_fwnode *curr, *iommu_fwnode = NULL;
++
++	spin_lock(&iort_fwnode_lock);
++	list_for_each_entry(curr, &iort_fwnode_list, list) {
++		if (curr->iort_node == node) {
++			iommu_fwnode = curr;
++			break;
++		}
++	}
++	spin_unlock(&iort_fwnode_lock);
++
++	return iommu_fwnode ? iommu_fwnode->fwnode : NULL;
++}
++
+ typedef acpi_status (*iort_find_node_callback)
+ 	(struct acpi_iort_node *node, void *context);
+ 
 -- 
 2.6.4
 
