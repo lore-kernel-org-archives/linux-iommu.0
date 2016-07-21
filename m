@@ -1,115 +1,176 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCH v2 02/10] driver core: Functional dependencies tracking support
-Date: Thu, 21 Jul 2016 02:25:15 +0200
-Message-ID: <4258432.JNKr9zJtMp@vostro.rjw.lan>
-References: <1466144820-6286-1-git-send-email-m.szyprowski@samsung.com> <1735644.0mfUjJQtul@vostro.rjw.lan> <20160720232553.GA8460@wunner.de>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v11 05/10] genirq/msi-doorbell: msi_doorbell_pages
+Date: Thu, 21 Jul 2016 15:38:42 +0200
+Message-ID: <8b053222-3721-7f16-5de9-ee17c04d8dee@redhat.com>
+References: <1468933367-23159-1-git-send-email-eric.auger@redhat.com>
+ <1468933367-23159-6-git-send-email-eric.auger@redhat.com>
+ <alpine.DEB.2.11.1607191624400.3596@nanos>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-pm-owner@vger.kernel.org>
-In-Reply-To: <20160720232553.GA8460@wunner.de>
-Sender: linux-pm-owner@vger.kernel.org
-To: Lukas Wunner <lukas@wunner.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, linux-samsung-soc@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andreas Noever <andreas.noever@gmail.com>, linux-pci@vger.kernel.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <alpine.DEB.2.11.1607191624400.3596@nanos>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: eric.auger.pro@gmail.com, marc.zyngier@arm.com, christoffer.dall@linaro.org, andre.przywara@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org, drjones@redhat.com, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, pbonzini@redhat.com, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, yehuday@marvell.com, Manish.Jaggi@caviumnetworks.com, robert.richter@caviumnetworks.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Thursday, July 21, 2016 01:25:53 AM Lukas Wunner wrote:
-> On Thu, Jul 21, 2016 at 12:51:31AM +0200, Rafael J. Wysocki wrote:
-> > On Wednesday, July 20, 2016 05:23:40 PM Lukas Wunner wrote:
-> > > On Wed, Jul 20, 2016 at 02:52:42PM +0200, Rafael J. Wysocki wrote:
-> > > > On Wednesday, July 20, 2016 08:24:50 AM Lukas Wunner wrote:
-> > > > > On Wed, Jul 20, 2016 at 02:33:18AM +0200, Rafael J. Wysocki wrote:
-> > > > > > On Friday, June 17, 2016 04:07:38 PM Lukas Wunner wrote:
-> > > > > > > On Fri, Jun 17, 2016 at 02:54:56PM +0200, Rafael J. Wysocki wrote:
-> > > > > > > > On Fri, Jun 17, 2016 at 12:36 PM, Lukas Wunner <lukas@wunner.de> wrote:
-> > > > > > > > > On Fri, Jun 17, 2016 at 08:26:52AM +0200, Marek Szyprowski wrote:
-> > > > > > > > > > From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-> > > > > > > > > We also have such a functional dependency for Thunderbolt on Macs:
-> > > > > > > > > On resume from system sleep, the PCIe hotplug ports may not resume
-> > > > > > > > > before the thunderbolt driver has reestablished the PCI tunnels.
-> > > > > > > > > Currently this is enforced by quirk_apple_wait_for_thunderbolt()
-> > > > > > > > > in drivers/pci/quirks.c. It would be good if we could represent
-> > > > > > > > > this dependency using something like Rafael's approach instead of
-> > > > > > > > > open coding it, however one detail in Rafael's patches is problematic:
-> > > > > > > > >
-> > > > > > > > > > New links are added by calling device_link_add() which may happen
-> > > > > > > > > > either before the consumer device is probed or when probing it, in
-> > > > > > > > > > which case the caller needs to ensure that the driver of the
-> > > > > > > > > > supplier device is present and functional and the DEVICE_LINK_PROBE_TIME
-> > > > > > > > > > flag should be passed to device_link_add() to reflect that.
-> > > > > > > > >
-> > > > > > > > > The thunderbolt driver cannot call device_link_add() before the
-> > > > > > > > > PCIe hotplug ports are bound to a driver unless we amend portdrv
-> > > > > > > > > to return -EPROBE_DEFER for Thunderbolt hotplug ports on Macs
-> > > > > > > > > if the thunderbolt driver isn't loaded.
-> > > > > > > > >
-> > > > > > > > > It would therefore be beneficial if device_link_add() can be
-> > > > > > > > > called even *after* the consumer is bound.
-> > > > > > > > 
-> > > > > > > > I don't quite follow.
-> > > > > > > > 
-> > > > > > > > Who's the provider and who's the consumer here?
-> > > > > > > 
-> > > > > > > thunderbolt.ko is the supplier.
-> > > > > > 
-> > > > > > But it binds to the children of the ports that are supposed to be its
-> > > > > > consumers?
-> > > > > > 
-> > > > > > Why is that even expected to work?
-> > > > > 
-> > > > > No, the consumers are aunts (or uncles) of the supplier, if you will. :-)
-> > > > > 
-> > > > > The consumers are the hotplug ports (named "Downstream Bridge 1 / 2" in
-> > > > > the drawing below). The supplier is the NHI:
-> > > > > 
-> > > > >       (Root Port) ---- Upstream Bridge --+-- Downstream Bridge 0 ---- NHI
-> > > > >                                          +-- Downstream Bridge 1 --
-> > > > >                                          +-- Downstream Bridge 2 --
-> > > > >                                          ...
-> > > > > 
-> > > > > We're calling pci_power_up() and pci_restore_state() from
-> > > > > pci_pm_resume_noirq(). And that will fail for devices below
-> > > > > the hotplug ports if the PCI tunnels haven't been re-established
-> > > > > yet by the NHI.
-> > > > 
-> > > > So the NHI is a PCIe device, right?
-> > > > 
-> > > > Does the Thunderbolt driver bind to that device?
-> > > 
-> > > The NHI is a PCI device but not a bridge. It has class 0x88000.
-> > > Yes, thunderbolt.ko binds to the NHI.
-> > > 
-> > > And portdrv binds to the upstream bridge and downstream bridges.
-> > > Those have class 0x60400.
-> > 
-> > OK, so why would there be a problem with creating links from the NHI
-> > (producer) to the ports (consumers) before binding portdrv to them?
+Hi Thomas,
+
+On 19/07/2016 16:38, Thomas Gleixner wrote:
+> On Tue, 19 Jul 2016, Eric Auger wrote:
+>> msi_doorbell_pages sum up the number of iommu pages of a given order
 > 
-> Because the ordering in which drivers bind isn't guaranteed. At least
-> on my machine (Debian), portdrv always binds before thunderbolt.
-
-But what drivers have to do with that really?  Do you need drivers to
-know that the dependency is there?
-
-Just add likns *before* even probing for drivers (yes, you can do that)
-and the core will handle that for you.
-
-> I guess I could amend portdrv to return -EPROBE_DEFER on Macs if
-> no driver is bound to the NHI. Doesn't feel pretty to me though.
+> adding () to the function name would make it immediately clear that
+> msi_doorbell_pages is a function.
 > 
-> Ultimately this seems to be the same issue as with calling
-> dev_pm_domain_set() for a bound device. Perhaps device_link_add()
-> can likewise be allowed if a runtime PM ref is held for the devices
-> and the call happens under lock_system_sleep()?
+>> +/**
+>> + * msi_doorbell_pages: compute the number of iommu pages of size 1 << order
+>> + * requested to map all the registered doorbells
+>> + *
+>> + * @order: iommu page order
+>> + */
+> 
+> Why are you adding the kernel doc to the header and not to the implementation?
 
-No, the whole synchronization scheme in the links code would have had to be
-changed for that to really work.
+I am confused by this comment. I was told in the past that it was better
+to put the comments in the API header. On your side do you want me to
+move all function kernel-doc comments to the implementation.
 
-And it really is about what is needed (at least in principle) to run your
-device.  If you think you need device X with a driver to handle device Y
-correctly, then either you need it all the time, from probe to remove, or
-you just don't really need it at all.
+Looking at kernel-doc-nano-HOWTO.txt, I was not able to find any
+indication about the best choice.
 
-Thanks,
-Rafael
+I will now run the kernel-doc script to check the conformance of my
+comments.
 
+Thank you for your patience!
+
+Best Regards
+
+Eric
+> 
+>> +int msi_doorbell_pages(unsigned int order);
+>> +
+>>  #else
+>>  
+>>  static inline struct irq_chip_msi_doorbell_info *
+>> @@ -47,6 +55,12 @@ msi_doorbell_register_global(phys_addr_t base, size_t size,
+>>  static inline void
+>>  msi_doorbell_unregister_global(struct irq_chip_msi_doorbell_info *db) {}
+>>  
+>> +static inline int
+>> +msi_doorbell_pages(unsigned int order)
+> 
+> What's the point of this line break? 
+> 
+>> +{
+>> +	return 0;
+>> +}
+>> +
+>>  #endif /* CONFIG_MSI_DOORBELL */
+>>  
+>>  #endif
+>> diff --git a/kernel/irq/msi-doorbell.c b/kernel/irq/msi-doorbell.c
+>> index 0ff541e..a5bde37 100644
+>> --- a/kernel/irq/msi-doorbell.c
+>> +++ b/kernel/irq/msi-doorbell.c
+>> @@ -60,3 +60,55 @@ void msi_doorbell_unregister_global(struct irq_chip_msi_doorbell_info *dbinfo)
+>>  	mutex_unlock(&irqchip_doorbell_mutex);
+>>  }
+>>  EXPORT_SYMBOL_GPL(msi_doorbell_unregister_global);
+>> +
+>> +static int compute_db_mapping_requirements(phys_addr_t addr, size_t size,
+>> +					   unsigned int order)
+>> +{
+>> +	phys_addr_t offset, granule;
+>> +	unsigned int nb_pages;
+>> +
+>> +	granule = (uint64_t)(1 << order);
+>> +	offset = addr & (granule - 1);
+>> +	size = ALIGN(size + offset, granule);
+>> +	nb_pages = size >> order;
+>> +
+>> +	return nb_pages;
+>> +}
+>> +
+>> +static int
+>> +compute_dbinfo_mapping_requirements(struct irq_chip_msi_doorbell_info *dbinfo,
+>> +				    unsigned int order)
+> 
+> I'm sure you can find even longer function names which require more line
+> breaks.
+> 
+>> +{
+>> +	int ret = 0;
+>> +
+>> +	if (!dbinfo->doorbell_is_percpu) {
+>> +		ret = compute_db_mapping_requirements(dbinfo->global_doorbell,
+>> +						      dbinfo->size, order);
+>> +	} else {
+>> +		phys_addr_t __percpu *pbase;
+>> +		int cpu;
+>> +
+>> +		for_each_possible_cpu(cpu) {
+>> +			pbase = per_cpu_ptr(dbinfo->percpu_doorbells, cpu);
+>> +			ret += compute_db_mapping_requirements(*pbase,
+>> +							       dbinfo->size,
+>> +							       order);
+>> +		}
+>> +	}
+>> +	return ret;
+>> +}
+>> +
+>> +int msi_doorbell_pages(unsigned int order)
+>> +{
+>> +	struct irqchip_doorbell *db;
+>> +	int ret = 0;
+>> +
+>> +	mutex_lock(&irqchip_doorbell_mutex);
+>> +	list_for_each_entry(db, &irqchip_doorbell_list, next) {
+> 
+> Pointless braces
+> 
+>> +		ret += compute_dbinfo_mapping_requirements(&db->info, order);
+>> +	}
+>> +	mutex_unlock(&irqchip_doorbell_mutex);
+>> +
+>> +	return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(msi_doorbell_pages);
+> 
+> So here is a general rant about your naming choices.
+> 
+>    struct irqchip_doorbell
+>    struct irq_chip_msi_doorbell_info
+> 
+>    struct irq_chip {
+>    	  ....	  *(*msi_doorbell_info);
+>    }
+> 
+>    irqchip_doorbell_mutex
+> 
+>    msi_doorbell_register_global
+>    msi_doorbell_unregister_global
+> 
+>    msi_doorbell_pages
+> 
+> This really sucks. Your public functions start sensibly with msi_doorbell.
+> 
+> Though what is the _global postfix for the register/unregister functions for?
+> Are there _private functions in the pipeline?
+> 
+> msi_doorbell_pages() is not telling me what it does. msi_calc_doorbell_pages()
+> would describe it right away.
+> 
+> You doorbell info structure can really do with:
+> 
+>     struct msi_doorbell_info;
+> 
+> And the wrapper struct around it is fine with:
+> 
+>     struct msi_doorbell;
+> 
+> Thanks,
+> 
+> 	tglx
+> 
