@@ -1,158 +1,135 @@
-From: Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>
-Subject: Re: [PATCH v2 00/10] Exynos IOMMU: proper runtime PM support (use
-	device dependencies)
-Date: Sun, 24 Jul 2016 20:02:59 +0200
-Message-ID: <579502D3.7090004@math.uni-bielefeld.de>
+From: Lukas Wunner <lukas@wunner.de>
+Subject: Re: [PATCH v2 02/10] driver core: Functional dependencies tracking
+ support
+Date: Mon, 25 Jul 2016 00:48:32 +0200
+Message-ID: <20160724224832.GB9516@wunner.de>
 References: <1466144820-6286-1-git-send-email-m.szyprowski@samsung.com>
-	<5787B2B0.9020809@math.uni-bielefeld.de>
-	<5788E352.3040801@math.uni-bielefeld.de>
-	<a15e438a-7fa0-3a4d-e6e2-13425512dddd@samsung.com>
-	<578CB6DB.90608@math.uni-bielefeld.de>
-	<6939949e-4c8e-cba0-9858-b37d1ba01869@samsung.com>
-	<578D0716.6060106@math.uni-bielefeld.de>
-	<7c770ff5-2b22-adf6-b8d0-e94d1d7d7550@samsung.com>
+ <1735644.0mfUjJQtul@vostro.rjw.lan>
+ <20160720232553.GA8460@wunner.de>
+ <4258432.JNKr9zJtMp@vostro.rjw.lan>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <7c770ff5-2b22-adf6-b8d0-e94d1d7d7550-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <4258432.JNKr9zJtMp@vostro.rjw.lan>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, linux-samsung-soc@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andreas Noever <andreas.noever@gmail.com>, linux-pci@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek,
-
-
-Marek Szyprowski wrote:
-> Hi Tobias
+On Thu, Jul 21, 2016 at 02:25:15AM +0200, Rafael J. Wysocki wrote:
+> On Thursday, July 21, 2016 01:25:53 AM Lukas Wunner wrote:
+> > On Thu, Jul 21, 2016 at 12:51:31AM +0200, Rafael J. Wysocki wrote:
+> > > On Wednesday, July 20, 2016 05:23:40 PM Lukas Wunner wrote:
+> > > > On Wed, Jul 20, 2016 at 02:52:42PM +0200, Rafael J. Wysocki wrote:
+> > > > > On Wednesday, July 20, 2016 08:24:50 AM Lukas Wunner wrote:
+> > > > > > On Wed, Jul 20, 2016 at 02:33:18AM +0200, Rafael J. Wysocki wrote:
+> > > > > > > On Friday, June 17, 2016 04:07:38 PM Lukas Wunner wrote:
+> > > > > > > > On Fri, Jun 17, 2016 at 02:54:56PM +0200, Rafael J. Wysocki wrote:
+> > > > > > > > > On Fri, Jun 17, 2016 at 12:36 PM, Lukas Wunner <lukas@wunner.de> wrote:
+> > > > > > > > > > On Fri, Jun 17, 2016 at 08:26:52AM +0200, Marek Szyprowski wrote:
+> > > > > > > > > > > From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+> > > > > > > > > > We also have such a functional dependency for Thunderbolt on Macs:
+> > > > > > > > > > On resume from system sleep, the PCIe hotplug ports may not resume
+> > > > > > > > > > before the thunderbolt driver has reestablished the PCI tunnels.
+> > > > > > > > > > Currently this is enforced by quirk_apple_wait_for_thunderbolt()
+> > > > > > > > > > in drivers/pci/quirks.c. It would be good if we could represent
+> > > > > > > > > > this dependency using something like Rafael's approach instead of
+> > > > > > > > > > open coding it, however one detail in Rafael's patches is problematic:
+> > > > > > > > > >
+> > > > > > > > > > > New links are added by calling device_link_add() which may happen
+> > > > > > > > > > > either before the consumer device is probed or when probing it, in
+> > > > > > > > > > > which case the caller needs to ensure that the driver of the
+> > > > > > > > > > > supplier device is present and functional and the DEVICE_LINK_PROBE_TIME
+> > > > > > > > > > > flag should be passed to device_link_add() to reflect that.
+> > > > > > > > > >
+> > > > > > > > > > The thunderbolt driver cannot call device_link_add() before the
+> > > > > > > > > > PCIe hotplug ports are bound to a driver unless we amend portdrv
+> > > > > > > > > > to return -EPROBE_DEFER for Thunderbolt hotplug ports on Macs
+> > > > > > > > > > if the thunderbolt driver isn't loaded.
+> > > > > > > > > >
+> > > > > > > > > > It would therefore be beneficial if device_link_add() can be
+> > > > > > > > > > called even *after* the consumer is bound.
+> > > > > > > > > 
+> > > > > > > > > I don't quite follow.
+> > > > > > > > > 
+> > > > > > > > > Who's the provider and who's the consumer here?
+> > > > > > > > 
+> > > > > > > > thunderbolt.ko is the supplier.
+> > > > > > > 
+> > > > > > > But it binds to the children of the ports that are supposed to be its
+> > > > > > > consumers?
+> > > > > > > 
+> > > > > > > Why is that even expected to work?
+> > > > > > 
+> > > > > > No, the consumers are aunts (or uncles) of the supplier, if you will. :-)
+> > > > > > 
+> > > > > > The consumers are the hotplug ports (named "Downstream Bridge 1 / 2" in
+> > > > > > the drawing below). The supplier is the NHI:
+> > > > > > 
+> > > > > >       (Root Port) ---- Upstream Bridge --+-- Downstream Bridge 0 ---- NHI
+> > > > > >                                          +-- Downstream Bridge 1 --
+> > > > > >                                          +-- Downstream Bridge 2 --
+> > > > > >                                          ...
+> > > > > > 
+> > > > > > We're calling pci_power_up() and pci_restore_state() from
+> > > > > > pci_pm_resume_noirq(). And that will fail for devices below
+> > > > > > the hotplug ports if the PCI tunnels haven't been re-established
+> > > > > > yet by the NHI.
+> > > > > 
+> > > > > So the NHI is a PCIe device, right?
+> > > > > 
+> > > > > Does the Thunderbolt driver bind to that device?
+> > > > 
+> > > > The NHI is a PCI device but not a bridge. It has class 0x88000.
+> > > > Yes, thunderbolt.ko binds to the NHI.
+> > > > 
+> > > > And portdrv binds to the upstream bridge and downstream bridges.
+> > > > Those have class 0x60400.
+> > > 
+> > > OK, so why would there be a problem with creating links from the NHI
+> > > (producer) to the ports (consumers) before binding portdrv to them?
+> > 
+> > Because the ordering in which drivers bind isn't guaranteed. At least
+> > on my machine (Debian), portdrv always binds before thunderbolt.
 > 
+> But what drivers have to do with that really?  Do you need drivers to
+> know that the dependency is there?
 > 
-> On 2016-07-18 18:43, Tobias Jakobi wrote:
->> Marek Szyprowski wrote:
->>> On 2016-07-18 13:00, Tobias Jakobi wrote:
->>>> Marek Szyprowski wrote:
->>>>> On 2016-07-15 15:21, Tobias Jakobi wrote:
->>>>>> Tobias Jakobi wrote:
->>>>>>> Hello Marek,
->>>>>>>
->>>>>>> I've tested the patchset on 4.7-rc7 and noticed that it breaks
->>>>>>> reboot on
->>>>>>> my ODROID-X2.
->>>>>>>
->>>>>>> Going to check where exactly things break.
->>>>>> Sadly it's the last patch where everything comes together:
->>>>>> "iommu/exynos: Add proper runtime pm support"
->>>>>>
->>>>>> I still have to check if forcing runpm status to 'on' makes a
->>>>>> difference. I suspect that the aggressive clock gating might be the
->>>>>> reason?
->>>>> Thanks for testing. I will check this issue. Could you send me your
->>>>> .config?
->>>> This is the config I'm currently using:
->>>> https://github.com/tobiasjakobi/odroid-environment/blob/master/sourcecode/system/vanilla-4.7-debug.conf
->>>>
->>>>
->>>>
->>>> Do you think checking this with no_console_suspend makes sense?
->>> no_console_suspend switch won't provide more information, but I managed
->>> to reproduce your issue. I'm really confused how enabling runtime pm can
->>> cause problems with usb/smsc95xx ethernet driver (that is the reason for
->>> failed reboot). Maybe it is somehow related to the global relations
->>> between devices and drivers and the fact that creating the runtime pm
->>> links change the order of operations. I will check this again when
->>> Rafael send updated patches. Here is the log I got (after waiting some
->>> time):
->> thanks for looking into this! I'll try to reproduce this on my board. I
->> have to admit that I didn't wait too long for the hung task message to
->> appear.
->>
->> I wonder if this has something to do with regulator code cutting some
->> supplies too early. Is this on a X2 or a U2/U3?
+> Just add likns *before* even probing for drivers (yes, you can do that)
+> and the core will handle that for you.
+
+Forgive me for being dense: How do you suggest to add links before
+probing drivers? Only way I could think of is with a PCI quirk.
+
+Which is what we're already doing right now (see drivers/pci/quirk.c:
+quirk_apple_wait_for_thunderbolt()). And it ain't pretty.
+
+
+> > I guess I could amend portdrv to return -EPROBE_DEFER on Macs if
+> > no driver is bound to the NHI. Doesn't feel pretty to me though.
+> > 
+> > Ultimately this seems to be the same issue as with calling
+> > dev_pm_domain_set() for a bound device. Perhaps device_link_add()
+> > can likewise be allowed if a runtime PM ref is held for the devices
+> > and the call happens under lock_system_sleep()?
 > 
-> I've reproduced it on U3.
-Here's what I get on my X2.
-
->  * Remounting remaining filesystems read-only ...
->  *   Remounting / read only ...
-> [   59.695857] EXT4-fs (mmcblk0p2): re-mounted. Opts: (null)
->  [ ok ]
->  [ ok ]
-> [   59.858672] sd 0:0:0:0: [sda] Synchronizing SCSI cache
-> [   66.537116] smsc95xx 1-2.1.1:1.0 eth0: Failed to read reg index 0x00000114: -110
-> [   66.538887] smsc95xx 1-2.1.1:1.0 eth0: Error reading MII_ACCESS
-> [   66.544803] smsc95xx 1-2.1.1:1.0 eth0: MII is busy in smsc95xx_mdio_read
-> [   66.551487] smsc95xx 1-2.1.1:1.0 eth0: Failed to read MII_BMSR
-> [   93.597127] usb 1-2-port2: cannot reset (err = -110)
-> [   94.596714] usb 1-2-port2: cannot reset (err = -110)
-> [   95.596737] usb 1-2-port2: cannot reset (err = -110)
-> [   96.596722] usb 1-2-port2: cannot reset (err = -110)
-> [   97.596735] usb 1-2-port2: cannot reset (err = -110)
-> [   97.596800] usb 1-2-port2: Cannot enable. Maybe the USB cable is bad?
-> [   98.602116] usb 1-2-port2: cannot disable (err = -110)
-> [   99.601744] usb 1-2-port2: cannot reset (err = -110)
-> [  100.601730] usb 1-2-port2: cannot reset (err = -110)
-> [  101.601743] usb 1-2-port2: cannot reset (err = -110)
-> [  102.601729] usb 1-2-port2: cannot reset (err = -110)
-> [  103.601746] usb 1-2-port2: cannot reset (err = -110)
-> [  103.601811] usb 1-2-port2: Cannot enable. Maybe the USB cable is bad?
-> [  104.606737] usb 1-2-port2: cannot disable (err = -110)
-> [  105.606756] usb 1-2-port2: cannot reset (err = -110)
-> [  106.606742] usb 1-2-port2: cannot reset (err = -110)
-> [  107.606758] usb 1-2-port2: cannot reset (err = -110)
-> [  108.606747] usb 1-2-port2: cannot reset (err = -110)
-> [  109.606763] usb 1-2-port2: cannot reset (err = -110)
-> [  109.606835] usb 1-2-port2: Cannot enable. Maybe the USB cable is bad?
-> [  110.611748] usb 1-2-port2: cannot disable (err = -110)
-> [  111.611766] usb 1-2-port2: cannot reset (err = -110)
-> [  112.611758] usb 1-2-port2: cannot reset (err = -110)
-> [  113.611769] usb 1-2-port2: cannot reset (err = -110)
-> [  114.611758] usb 1-2-port2: cannot reset (err = -110)
-> [  115.611776] usb 1-2-port2: cannot reset (err = -110)
-> [  115.611846] usb 1-2-port2: Cannot enable. Maybe the USB cable is bad?
-> [  116.616764] usb 1-2-port2: cannot disable (err = -110)
-> [  117.617148] usb 1-2-port2: cannot disable (err = -110)
-> [  122.616775] hub 1-2:1.0: hub_ext_port_status failed (err = -110)
-
-Output stops there, I don't see any more output with respect to hung
-tasks (even though hung task detection is on and I've waited for like 10
-minutes).
-
-Anyway, I looks like that smsc95xx_unbind() is never called, and hence
-the check_carrier() delayed work queue isn't cancelled.
-
-However I'm not convinced that this is the real problem. I have manually
-triggered the unbind before shutdown, and while the error message from
-the smsc95xx driver have disappeared, the other messages are still produced.
-
-My guess is that we are seeing these messages because reboot is not
-working, and not the other way round.
-
-
-- Tobias
-
-
+> No, the whole synchronization scheme in the links code would have had to be
+> changed for that to really work.
 > 
->> I'm not sure if we
->> currently model the regulator setup correctly here (IIRC then buck8 is
->> supplying the LAN/USB block on U2/U3).
-> 
-> IMHO it is not really related to regulator operations, but the sequence
-> of shutting down logical devices in the system. For some reasons when pm
-> links
-> are used, something changes the order of operations in system shutdown
-> procedure, what causes smsc95xx to hang. I have no idea why, but I don't
-> have
-> time to investigate it further. I will wait for the next release of
-> Rafael's
-> pm links patches and then check everything again.
-> 
-> Best regards
+> And it really is about what is needed (at least in principle) to run your
+> device.  If you think you need device X with a driver to handle device Y
+> correctly, then either you need it all the time, from probe to remove, or
+> you just don't really need it at all.
+
+Real life isn't as simple as that.
+
+In this case, we have consumers (hotplug ports) which are doing fine
+if the driver for the supplier (NHI) is not loaded. But once it loads,
+the links must be in place. Seems only logical to put the links in
+place when they're needed, i.e. at load time of the supplier's driver.
+Which the patch set doesn't allow right now.
+
+Best regards,
+
+Lukas
