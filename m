@@ -1,15 +1,14 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v3 00/13] ACPI IORT ARM SMMU v3 support
-Date: Mon, 25 Jul 2016 09:36:41 +0100
-Message-ID: <20160725083641.GA20044@red-moon>
-References: <1469013815-24380-1-git-send-email-lorenzo.pieralisi@arm.com>
-	<20160725055330.GA21004@arm.com>
+From: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 1/3] memory: mediatek: Add a new interface
+	mtk_smi_larb_is_ready
+Date: Mon, 25 Jul 2016 10:39:52 +0200
+Message-ID: <cd01b829-f869-606b-5c1a-8077fbddb085@gmail.com>
+References: <1468983721-3627-1-git-send-email-yong.wu@mediatek.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160725055330.GA21004-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1468983721-3627-1-git-send-email-yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,123 +18,66 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, nd-5wv7dgnIgG8@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, Philipp Zabel <p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Hans Verkuil <hans.verkuil-FYB4Gu1CFyUAvxtiuMwx3w@public.gmane.org>
+Cc: youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Mauro Carvalho Chehab <mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, CK Hu <ck.hu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, Tomasz Figa <tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Daniel Kurtz <djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Bibby Hsieh <bibby.hsieh-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, YT Shen <yt.shen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Tiffany Lin <tiffany.lin-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 25, 2016 at 01:53:32PM +0800, Dennis Chen wrote:
-> Hi
-> On Wed, Jul 20, 2016 at 12:23:22PM +0100, Lorenzo Pieralisi wrote:
-> > This RFC patch series is v3 of a previous posting:
-> > 
-> > https://lkml.org/lkml/2016/6/7/523
-> > 
-> > v2 -> v3
-> > 	- Rebased on top of dependencies series [1][2][3](v4.7-rc3)
-> > 	- Added back reliance on ACPI early probing infrastructure
-> > 	- Patch[1-3] merged through other dependent series
-> > 	- Added back IOMMU fwnode generalization
-> > 	- Move SMMU v3 static functions configuration to IORT code
-> > 	- Implemented generic IOMMU fwspec API
-> > 	- Added code to implement fwnode platform device look-up
-> > 
-> > v1 -> v2:
-> > 	- Rebased on top of dependencies series [1][2][3](v4.7-rc1)
-> > 	- Removed IOMMU fwnode generalization
-> > 	- Implemented ARM SMMU v3 ACPI probing instead of ARM SMMU v2
-> > 	  owing to patch series dependencies [1]
-> > 	- Moved platform device creation logic to IORT code to
-> > 	  generalize its usage for ARM SMMU v1-v2-v3 components
-> > 	- Removed reliance on ACPI early device probing
-> > 	- Created IORT specific iommu_xlate() translation hook leaving
-> > 	  OF code unchanged according to v1 reviews
-> > 
-> > The ACPI IORT table provides information that allows instantiating
-> > ARM SMMU devices and carrying out id mappings between components on
-> > ARM based systems (devices, IOMMUs, interrupt controllers).
-> > 
-> > http://infocenter.arm.com/help/topic/com.arm.doc.den0049b/DEN0049B_IO_Remapping_Table.pdf
-> > 
-> > Building on basic IORT support, available through [2]:
-> > 
-> > this patchset enables ARM SMMU v3 support on ACPI systems.
-> > 
-> > Most of the code is aimed at building the required generic ACPI
-> > infrastructure to create and enable IOMMU components and to bring
-> > the IOMMU infrastructure for ACPI on par with DT, which is going to
-> > make future ARM SMMU components easier to integrate.
-> > 
-> > PATCH (1) adds a FWNODE_IOMMU type to the struct fwnode_handle type.
-> >           It is required to attach a fwnode identifier to platform
-> >           devices allocated/detected through IORT tables entries;
-> >           IOMMU devices have to have an identifier to look them up
-> >           eg IOMMU core layer carrying out id translation. This can be
-> >           done through a fwnode_handle (ie IOMMU platform devices created
-> >           out of IORT tables are not ACPI devices hence they can't be
-> >           allocated as such, otherwise they would have a fwnode_handle of
-> >           type FWNODE_ACPI). This patch requires discussion and it is key
-> >           to the RFC.
-> > 
-> > PATCH (2) makes use of the ACPI early probing API to add a linker script
-> >           section for probing devices via IORT ACPI kernel code.
-> > 
-> > PATCH (3) provides IORT support for registering IOMMU IORT node through
-> >           their fwnode handle.
-> > 
-> > PATCH (4) implements core code fwnode based platform devices look-up.
-> > 
-> > PATCH (5) extends iommu_fwspec so that it can be used on ACPI based
-> >           system by creating a generic IOMMU fwspec kernel layer.
-> > 
-> > PATCH (6) implements the of_dma_configure() API in ACPI world -
-> >           acpi_dma_configure() - and patches PCI and ACPI core code to
-> >           start making use of it.
-> > 
-> > PATCH (7) provides an IORT function to detect existence of specific type
-> >           of IORT components.
-> > 
-> > PATCH (8) creates the kernel infrastructure required to create ARM SMMU
-> >           platform devices for IORT nodes.
-> > 
-> > PATCH (9) refactors the ARM SMMU v3 driver so that the init functions are
-> >           split in a way that groups together code that probes through DT
-> >           and code that carries out HW registers FW agnostic probing, in
-> >           preparation for adding the ACPI probing path.
-> > 
-> > PATCH (10) rework ARM SMMU v3 platform driver registration to make it work
-> >            on ACPI systems.
-> > 
-> > PATCH (11) Building on patch (8), it adds ARM SMMU v3 IORT IOMMU
-> >            operations to create and probe ARM SMMU v3 components.
-> > 
-> > PATCH (12) Extend the IORT iort_node_map_rid() to work on a type mask
-> >            instead of a single type so that the translation API can
-> >            be used on a range of components.
-> > 
-> > PATCH (13) provides IORT infrastructure to carry out IOMMU configuration
-> >            for devices and hook it up to the previously introduced ACPI
-> >            DMA configure API.
-> > 
-> > This patchset is built on top and depends on these three patch series:
-> > 
-> > [1] R.Murphy "Generic DT bindings for PCI and ARM SMMU v3" v4
-> >     https://marc.info/?l=devicetree&m=146739193215518&w=2
-> > 
-> > [2] T.Nowicki "Introduce ACPI world to ITS irqchip" v7
-> >     https://marc.info/?l=linux-arm-kernel&m=146642080022289&w=2
-> > 
-> > [3] T.Nowicki "Support for ARM64 ACPI based PCI host controller" v8
-> >     http://marc.info/?l=linux-acpi&m=146462129816292&w=2
-> > 
-> > and is provided for early review/testing purposes here:
-> > 
-> > git://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git acpi/iort-smmu-v3i
-> >
-> I thought I can got all the 13 patches applied with the above git
-> tree, but I can't find any ACPI related stuff after I cloned the git
-> repos to my local machine, am I missing something here?
 
-Have you pulled the acpi/iort-smmu-v3 branch ?
 
-Thanks,
-Lorenzo
+On 20/07/16 05:01, Yong Wu wrote:
+> Currently the iommu consumer always call iommu_present to get whether
+> the iommu is ready. But in MTK IOMMU, this function can't indicate
+> this. The IOMMU call bus_set_iommu->mtk_iommu_add_device->
+> mtk_iommu_attach_device to parse the iommu data, then it's able to
+> transfer "struct mtk_smi_iommu" to SMI-LARB, and the iommu uses the
+> larbs as compoents, the iommu will finish its probe until all the larbs
+> probe done.
+>
+> If the iommu consumer(like DRM) begin to probe after the time of
+> calling bus_set_iommu and before the time of SMI probe finish, it
+> will hang like this:
+>
+> [    7.832359] Call trace:
+> [    7.834778] [<ffffffc000764424>] mtk_smi_larb_get+0x24/0xa8
+> [    7.840300] [<ffffffc0005a1390>] mtk_drm_crtc_enable+0x6c/0x450
+>
+> Because the larb->mmu is NULL at that time.
+>
+> In order to avoid this issue, we add a new interface
+> (mtk_smi_larb_is_ready) for checking whether the IOMMU and SMI have
+> finished their probe. If it return false, the iommu consumer should
+> probe-defer for the IOMMU and SMI.
+>
+
+Can't we just skip the functions in the probe and call bus_set_iommu 
+only if we were able to bind all components?
+Something like this:
+
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index c3043d8..0bef49b 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -649,10 +649,14 @@ static int mtk_iommu_probe(struct platform_device 
+*pdev)
+         if (ret)
+                 return ret;
+
++       ret = component_master_add_with_match(dev, &mtk_iommu_com_ops, 
+match);
++       if (ret)
++               return ret;
++
+         if (!iommu_present(&platform_bus_type))
+                 bus_set_iommu(&platform_bus_type, &mtk_iommu_ops);
+
+-       return component_master_add_with_match(dev, &mtk_iommu_com_ops, 
+match);
++       return ret;
+  } 
+
+ 
+
+  static int mtk_iommu_remove(struct platform_device *pdev)
+
+Regards,
+Matthias
