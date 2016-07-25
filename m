@@ -1,7 +1,7 @@
 From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v4 4/6] arm64/dma-mapping: Implement DMA_ATTR_PRIVILEGED
-Date: Mon, 25 Jul 2016 12:16:47 -0700
-Message-ID: <20160725191649.13414-5-mitchelh@codeaurora.org>
+Subject: [PATCH v4 1/6] iommu: add IOMMU_PRIV attribute
+Date: Mon, 25 Jul 2016 12:16:44 -0700
+Message-ID: <20160725191649.13414-2-mitchelh@codeaurora.org>
 References: <20160725191649.13414-1-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,115 +21,32 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwB
 Cc: Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Thomas Zeng <tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The newly added DMA_ATTR_PRIVILEGED is useful for creating mappings that
-are only accessible to privileged DMA engines.  Implement it in
-dma-iommu.c so that the ARM64 DMA IOMMU mapper can make use of it.
+Add the IOMMU_PRIV attribute, which is used to indicate privileged
+mappings.
 
 Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
 
 Notes:
-    v3..v4
-    
-      - Reworked against the new dma attrs format
-    
     v2..v3
     
-      - Renamed and redocumented dma_direction_to_prot.
-      - Dropped the stuff making all privileged mappings read-only.
+      - Added comment
 
- arch/arm64/mm/dma-mapping.c |  6 +++---
- drivers/iommu/dma-iommu.c   | 16 +++++++++++-----
- include/linux/dma-iommu.h   |  3 ++-
- 3 files changed, 16 insertions(+), 9 deletions(-)
+ include/linux/iommu.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index c4284c432ae8..1c6f85c56115 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -556,7 +556,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
- 				 unsigned long attrs)
- {
- 	bool coherent = is_device_dma_coherent(dev);
--	int ioprot = dma_direction_to_prot(DMA_BIDIRECTIONAL, coherent);
-+	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
- 	size_t iosize = size;
- 	void *addr;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index a35fb8b42e1a..35804abbd6cf 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -31,6 +31,7 @@
+ #define IOMMU_CACHE	(1 << 2) /* DMA cache coherency */
+ #define IOMMU_NOEXEC	(1 << 3)
+ #define IOMMU_MMIO	(1 << 4) /* e.g. things like MSI doorbells */
++#define IOMMU_PRIV	(1 << 5) /* privileged */
  
-@@ -710,7 +710,7 @@ static dma_addr_t __iommu_map_page(struct device *dev, struct page *page,
- 				   unsigned long attrs)
- {
- 	bool coherent = is_device_dma_coherent(dev);
--	int prot = dma_direction_to_prot(dir, coherent);
-+	int prot = dma_info_to_prot(dir, coherent, attrs);
- 	dma_addr_t dev_addr = iommu_dma_map_page(dev, page, offset, size, prot);
- 
- 	if (!iommu_dma_mapping_error(dev, dev_addr) &&
-@@ -768,7 +768,7 @@ static int __iommu_map_sg_attrs(struct device *dev, struct scatterlist *sgl,
- 		__iommu_sync_sg_for_device(dev, sgl, nelems, dir);
- 
- 	return iommu_dma_map_sg(dev, sgl, nelems,
--			dma_direction_to_prot(dir, coherent));
-+				dma_info_to_prot(dir, coherent, attrs));
- }
- 
- static void __iommu_unmap_sg_attrs(struct device *dev,
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 08a1e2f3690f..5e1e495b35f8 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -129,26 +129,32 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size
- EXPORT_SYMBOL(iommu_dma_init_domain);
- 
- /**
-- * dma_direction_to_prot - Translate DMA API directions to IOMMU API page flags
-+ * dma_info_to_prot - Translate DMA API directions and attributes to IOMMU API
-+ *                    page flags.
-  * @dir: Direction of DMA transfer
-  * @coherent: Is the DMA master cache-coherent?
-+ * @attrs: DMA attributes for the mapping
-  *
-  * Return: corresponding IOMMU API page protection flags
-  */
--int dma_direction_to_prot(enum dma_data_direction dir, bool coherent)
-+int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
-+		     unsigned long attrs)
- {
- 	int prot = coherent ? IOMMU_CACHE : 0;
- 
- 	switch (dir) {
- 	case DMA_BIDIRECTIONAL:
--		return prot | IOMMU_READ | IOMMU_WRITE;
-+		prot |= IOMMU_READ | IOMMU_WRITE;
- 	case DMA_TO_DEVICE:
--		return prot | IOMMU_READ;
-+		prot |= IOMMU_READ;
- 	case DMA_FROM_DEVICE:
--		return prot | IOMMU_WRITE;
-+		prot |= IOMMU_WRITE;
- 	default:
- 		return 0;
- 	}
-+	if (attrs & DMA_ATTR_PRIVILEGED)
-+		prot |= IOMMU_PRIV;
-+	return prot;
- }
- 
- static struct iova *__alloc_iova(struct iova_domain *iovad, size_t size,
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index 81c5c8d167ad..b367613d49ba 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -32,7 +32,8 @@ void iommu_put_dma_cookie(struct iommu_domain *domain);
- int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size);
- 
- /* General helpers for DMA-API <-> IOMMU-API interaction */
--int dma_direction_to_prot(enum dma_data_direction dir, bool coherent);
-+int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
-+		     unsigned long attrs);
- 
- /*
-  * These implement the bulk of the relevant DMA mapping callbacks, but require
+ struct iommu_ops;
+ struct iommu_group;
 -- 
 Qualcomm Innovation Center, Inc.
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
