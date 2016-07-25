@@ -1,65 +1,137 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v3 0/6] Add support for privileged mappings
-Date: Mon, 25 Jul 2016 10:50:13 +0100
-Message-ID: <20160725095012.GC15864@arm.com>
-References: <20160719203655.16629-1-mitchelh@codeaurora.org>
- <20160722165107.GH16837@arm.com>
- <vnkweg6l9zla.fsf@codeaurora.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC PATCH v3 05/13] drivers: iommu: make iommu_fwspec OF
+ agnostic
+Date: Mon, 25 Jul 2016 16:09:55 +0100
+Message-ID: <1499f802-5f98-b0c0-d3aa-dabcac81e84e@arm.com>
+References: <1469013815-24380-1-git-send-email-lorenzo.pieralisi@arm.com>
+ <1469013815-24380-6-git-send-email-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <vnkweg6l9zla.fsf@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Mitchel Humpherys <mitchelh@codeaurora.org>
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Jordan Crouse <jcrouse@codeaurora.org>, Jeremy Gebben <jgebben@codeaurora.org>, Patrick Daly <pdaly@codeaurora.org>, Pratik Patel <pratikp@codeaurora.org>, Thomas Zeng <tzeng@codeaurora.org>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1469013815-24380-6-git-send-email-lorenzo.pieralisi@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org
+Cc: Will Deacon <will.deacon@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Joerg Roedel <joro@8bytes.org>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jul 22, 2016 at 01:39:45PM -0700, Mitchel Humpherys wrote:
-> On Fri, Jul 22 2016 at 05:51:07 PM, Will Deacon <will.deacon@arm.com> wrote:
-> > On Tue, Jul 19, 2016 at 01:36:49PM -0700, Mitchel Humpherys wrote:
-> >> The following patch to the ARM SMMU driver:
-> >> 
-> >>     commit d346180e70b91b3d5a1ae7e5603e65593d4622bc
-> >>     Author: Robin Murphy <robin.murphy@arm.com>
-> >>     Date:   Tue Jan 26 18:06:34 2016 +0000
-> >>     
-> >>         iommu/arm-smmu: Treat all device transactions as unprivileged
-> >> 
-> >> started forcing all SMMU transactions to come through as "unprivileged".
-> >> The rationale given was that:
-> >> 
-> >>   (1) There is no way in the IOMMU API to even request privileged mappings.
-> >> 
-> >>   (2) It's difficult to implement a DMA mapper that correctly models the
-> >>       ARM VMSAv8 behavior of unprivileged-writeable =>
-> >>       privileged-execute-never.
-> >> 
-> >> This series rectifies (1) by introducing an IOMMU API for privileged
-> >> mappings and implements it in io-pgtable-arm.
-> >> 
-> >> This series rectifies (2) by introducing a new dma attribute
-> >> (DMA_ATTR_PRIVILEGED) for users of the DMA API that need privileged
-> >> mappings which are inaccessible to lesser-privileged execution levels, and
-> >> implements it in the arm64 IOMMU DMA mapper.  The one known user (pl330.c)
-> >> is converted over to the new attribute.
-> >> 
-> >> Jordan and Jeremy can provide more info on the use case if needed, but the
-> >> high level is that it's a security feature to prevent attacks such as [1].
-> >
-> > This all looks good to me:
-> >
-> > Acked-by: Will Deacon <will.deacon@arm.com>
-> >
-> > It looks pretty fiddly to merge, however. How are you planning to get
-> > this upstream?
+Hi Lorenzo,
+
+On 20/07/16 12:23, Lorenzo Pieralisi wrote:
+> The iommu_fwspec structure, used to hold per device iommu configuration
+> data is not OF specific and therefore can be moved to a generic
+> and OF independent compilation unit.
 > 
-> Fiddly in what way?  Do you mean in relation to "dma-mapping: Use
-> unsigned long for dma_attrs" [1]?  I admit I wasn't aware of that
-> activity until Robin mentioned it.  It looks like it's merged on
-> next/master, shall I rebase/rework on that and resend?
+> In particular, the iommu_fwspec handling hinges on the device_node
+> pointer to identify the IOMMU device associated with the iommu_fwspec
+> structure, that is easily converted to a more generic fwnode_handle
+> pointer that can cater for OF and non-OF (ie ACPI) systems.
+> 
+> Create the files and related Kconfig entry to decouple iommu_fwspec
+> structure from the OF iommu kernel layer.
+> 
+> Given that the current iommu_fwspec implementation relies on
+> the arch specific struct device.archdata.iommu field in its
+> implementation, by making the code standalone and independent
+> of the OF layer this patch makes sure that the iommu_fwspec
+> kernel code can be selected only on arches implementing the
+> struct device.archdata.iommu field by adding an explicit
+> arch dependency in its config entry.
+> 
+> Current drivers using the iommu_fwspec for streamid translation
+> are converted to the new iommu_fwspec API by simply converting
+> the device_node to its fwnode_handle pointer.
+> 
+> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> Cc: Will Deacon <will.deacon@arm.com>
+> Cc: Hanjun Guo <hanjun.guo@linaro.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> ---
+>  drivers/iommu/Kconfig        |   4 ++
+>  drivers/iommu/Makefile       |   1 +
+>  drivers/iommu/arm-smmu-v3.c  |  13 +++--
+>  drivers/iommu/iommu-fwspec.c | 114 +++++++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/of_iommu.c     |  52 --------------------
+>  include/linux/iommu-fwspec.h |  60 +++++++++++++++++++++++
+>  include/linux/of_iommu.h     |  24 +++------
+>  7 files changed, 196 insertions(+), 72 deletions(-)
+>  create mode 100644 drivers/iommu/iommu-fwspec.c
+>  create mode 100644 include/linux/iommu-fwspec.h
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index d1c66af..2b26bfb 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -67,6 +67,10 @@ config OF_IOMMU
+>         def_bool y
+>         depends on OF && IOMMU_API
+>  
+> +config IOMMU_FWSPEC
+> +       def_bool y
+> +       depends on ARM64 && IOMMU_API
 
-Fiddly in that it touches multiple subsystems. I guess routing it via
-the iommu tree (Joerg) might be the best bet.
+I think that could be at least (ARM || ARM64).
 
-Will
+> +
+>  # IOMMU-agnostic DMA-mapping layer
+>  config IOMMU_DMA
+>  	bool
+
+[...]
+
+> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+> index 308791f..2362232 100644
+> --- a/include/linux/of_iommu.h
+> +++ b/include/linux/of_iommu.h
+> @@ -15,13 +15,8 @@ extern void of_iommu_init(void);
+>  extern const struct iommu_ops *of_iommu_configure(struct device *dev,
+>  					struct device_node *master_np);
+>  
+> -struct iommu_fwspec {
+> -	const struct iommu_ops	*iommu_ops;
+> -	struct device_node	*iommu_np;
+> -	void			*iommu_priv;
+> -	unsigned int		num_ids;
+> -	u32			ids[];
+> -};
+> +void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops);
+> +const struct iommu_ops *of_iommu_get_ops(struct device_node *np);
+
+Is there some reason we need to retain the existing definitions of
+these? I was assuming we'd be able to move the entire implementation
+over to the fwspec code and leave behind nothing more than trivial
+wrappers, e.g.:
+
+#define of_iommu_get_ops(np) iommu_fwspec_get_ops(&(np)->fwnode_handle)
+
+Robin.
+
+>  #else
+>  
+> @@ -39,17 +34,14 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
+>  	return NULL;
+>  }
+>  
+> -struct iommu_fwspec;
+> -
+> -#endif	/* CONFIG_OF_IOMMU */
+> +static inline void of_iommu_set_ops(struct device_node *np,
+> +				    const struct iommu_ops *ops)
+> +{ }
+>  
+> -int iommu_fwspec_init(struct device *dev, struct device_node *iommu_np);
+> -void iommu_fwspec_free(struct device *dev);
+> -int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
+> -struct iommu_fwspec *dev_iommu_fwspec(struct device *dev);
+> +static inline const struct iommu_ops *
+> +of_iommu_get_ops(struct device_node *np) { return NULL; }
+>  
+> -void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops);
+> -const struct iommu_ops *of_iommu_get_ops(struct device_node *np);
+> +#endif	/* CONFIG_OF_IOMMU */
+>  
+>  extern struct of_device_id __iommu_of_table;
+>  
+> 
+
