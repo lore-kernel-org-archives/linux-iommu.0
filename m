@@ -1,7 +1,7 @@
 From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH v4 3/6] common: DMA-mapping: add DMA_ATTR_PRIVILEGED attribute
-Date: Mon, 25 Jul 2016 12:16:46 -0700
-Message-ID: <20160725191649.13414-4-mitchelh@codeaurora.org>
+Subject: [PATCH v4 4/6] arm64/dma-mapping: Implement DMA_ATTR_PRIVILEGED
+Date: Mon, 25 Jul 2016 12:16:47 -0700
+Message-ID: <20160725191649.13414-5-mitchelh@codeaurora.org>
 References: <20160725191649.13414-1-mitchelh@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,20 +18,13 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Thomas Zeng <tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Thomas Zeng <tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds the DMA_ATTR_PRIVILEGED attribute to the DMA-mapping
-subsystem.
+The newly added DMA_ATTR_PRIVILEGED is useful for creating mappings that
+are only accessible to privileged DMA engines.  Implement it in
+dma-iommu.c so that the ARM64 DMA IOMMU mapper can make use of it.
 
-Some advanced peripherals such as remote processors and GPUs perform
-accesses to DMA buffers in both privileged "supervisor" and unprivileged
-"user" modes.  This attribute is used to indicate to the DMA-mapping
-subsystem that the buffer is fully accessible at the elevated privilege
-level (and ideally inaccessible or at least read-only at the
-lesser-privileged levels).
-
-Cc: linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
 
@@ -39,50 +32,104 @@ Notes:
     v3..v4
     
       - Reworked against the new dma attrs format
-
+    
     v2..v3
     
-      - Not worrying about executability.
+      - Renamed and redocumented dma_direction_to_prot.
+      - Dropped the stuff making all privileged mappings read-only.
 
- Documentation/DMA-attributes.txt | 10 ++++++++++
- include/linux/dma-mapping.h      |  6 ++++++
- 2 files changed, 16 insertions(+)
+ arch/arm64/mm/dma-mapping.c |  6 +++---
+ drivers/iommu/dma-iommu.c   | 16 +++++++++++-----
+ include/linux/dma-iommu.h   |  3 ++-
+ 3 files changed, 16 insertions(+), 9 deletions(-)
 
-diff --git a/Documentation/DMA-attributes.txt b/Documentation/DMA-attributes.txt
-index 2d455a5cf671..7728bda278c9 100644
---- a/Documentation/DMA-attributes.txt
-+++ b/Documentation/DMA-attributes.txt
-@@ -126,3 +126,13 @@ means that we won't try quite as hard to get them.
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index c4284c432ae8..1c6f85c56115 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -556,7 +556,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+ 				 unsigned long attrs)
+ {
+ 	bool coherent = is_device_dma_coherent(dev);
+-	int ioprot = dma_direction_to_prot(DMA_BIDIRECTIONAL, coherent);
++	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
+ 	size_t iosize = size;
+ 	void *addr;
  
- NOTE: At the moment DMA_ATTR_ALLOC_SINGLE_PAGES is only implemented on ARM,
- though ARM64 patches will likely be posted soon.
-+
-+DMA_ATTR_PRIVILEGED
-+------------------------------
-+
-+Some advanced peripherals such as remote processors and GPUs perform
-+accesses to DMA buffers in both privileged "supervisor" and unprivileged
-+"user" modes.  This attribute is used to indicate to the DMA-mapping
-+subsystem that the buffer is fully accessible at the elevated privilege
-+level (and ideally inaccessible or at least read-only at the
-+lesser-privileged levels).
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 66533e18276c..73f477609262 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -56,6 +56,12 @@
-  * that gives better TLB efficiency.
+@@ -710,7 +710,7 @@ static dma_addr_t __iommu_map_page(struct device *dev, struct page *page,
+ 				   unsigned long attrs)
+ {
+ 	bool coherent = is_device_dma_coherent(dev);
+-	int prot = dma_direction_to_prot(dir, coherent);
++	int prot = dma_info_to_prot(dir, coherent, attrs);
+ 	dma_addr_t dev_addr = iommu_dma_map_page(dev, page, offset, size, prot);
+ 
+ 	if (!iommu_dma_mapping_error(dev, dev_addr) &&
+@@ -768,7 +768,7 @@ static int __iommu_map_sg_attrs(struct device *dev, struct scatterlist *sgl,
+ 		__iommu_sync_sg_for_device(dev, sgl, nelems, dir);
+ 
+ 	return iommu_dma_map_sg(dev, sgl, nelems,
+-			dma_direction_to_prot(dir, coherent));
++				dma_info_to_prot(dir, coherent, attrs));
+ }
+ 
+ static void __iommu_unmap_sg_attrs(struct device *dev,
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 08a1e2f3690f..5e1e495b35f8 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -129,26 +129,32 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size
+ EXPORT_SYMBOL(iommu_dma_init_domain);
+ 
+ /**
+- * dma_direction_to_prot - Translate DMA API directions to IOMMU API page flags
++ * dma_info_to_prot - Translate DMA API directions and attributes to IOMMU API
++ *                    page flags.
+  * @dir: Direction of DMA transfer
+  * @coherent: Is the DMA master cache-coherent?
++ * @attrs: DMA attributes for the mapping
+  *
+  * Return: corresponding IOMMU API page protection flags
   */
- #define DMA_ATTR_ALLOC_SINGLE_PAGES	(1UL << 7)
-+/*
-+ * DMA_ATTR_PRIVILEGED: used to indicate that the buffer is fully
-+ * accessible at an elevated privilege level (and ideally inaccessible or
-+ * at least read-only at lesser-privileged levels).
-+ */
-+#define DMA_ATTR_PRIVILEGED		(1UL << 8)
+-int dma_direction_to_prot(enum dma_data_direction dir, bool coherent)
++int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
++		     unsigned long attrs)
+ {
+ 	int prot = coherent ? IOMMU_CACHE : 0;
+ 
+ 	switch (dir) {
+ 	case DMA_BIDIRECTIONAL:
+-		return prot | IOMMU_READ | IOMMU_WRITE;
++		prot |= IOMMU_READ | IOMMU_WRITE;
+ 	case DMA_TO_DEVICE:
+-		return prot | IOMMU_READ;
++		prot |= IOMMU_READ;
+ 	case DMA_FROM_DEVICE:
+-		return prot | IOMMU_WRITE;
++		prot |= IOMMU_WRITE;
+ 	default:
+ 		return 0;
+ 	}
++	if (attrs & DMA_ATTR_PRIVILEGED)
++		prot |= IOMMU_PRIV;
++	return prot;
+ }
+ 
+ static struct iova *__alloc_iova(struct iova_domain *iovad, size_t size,
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index 81c5c8d167ad..b367613d49ba 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -32,7 +32,8 @@ void iommu_put_dma_cookie(struct iommu_domain *domain);
+ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size);
+ 
+ /* General helpers for DMA-API <-> IOMMU-API interaction */
+-int dma_direction_to_prot(enum dma_data_direction dir, bool coherent);
++int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
++		     unsigned long attrs);
  
  /*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.
+  * These implement the bulk of the relevant DMA mapping callbacks, but require
 -- 
 Qualcomm Innovation Center, Inc.
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
