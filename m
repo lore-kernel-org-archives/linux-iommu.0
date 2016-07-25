@@ -1,74 +1,62 @@
-From: Mitchel Humpherys <mitchelh@codeaurora.org>
-Subject: Re: [PATCH v3 0/6] Add support for privileged mappings
-Date: Mon, 25 Jul 2016 12:01:05 -0700
-Message-ID: <vnkwoa5l8rv2.fsf@codeaurora.org>
-References: <20160719203655.16629-1-mitchelh@codeaurora.org>
-	<20160722165107.GH16837@arm.com> <vnkweg6l9zla.fsf@codeaurora.org>
-	<20160725095012.GC15864@arm.com>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH v4 2/6] iommu/io-pgtable-arm: add support for the IOMMU_PRIV
+	flag
+Date: Mon, 25 Jul 2016 12:16:45 -0700
+Message-ID: <20160725191649.13414-3-mitchelh@codeaurora.org>
+References: <20160725191649.13414-1-mitchelh@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160725095012.GC15864@arm.com> (Will Deacon's message of "Mon,
-	25 Jul 2016 10:50:13 +0100")
-Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Jordan Crouse <jcrouse@codeaurora.org>, Jeremy Gebben <jgebben@codeaurora.org>, Patrick Daly <pdaly@codeaurora.org>, Pratik Patel <pratikp@codeaurora.org>, Thomas Zeng <tzeng@codeaurora.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160725191649.13414-1-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Thomas Zeng <tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jul 25 2016 at 10:50:13 AM, Will Deacon <will.deacon@arm.com> wrote:
-> On Fri, Jul 22, 2016 at 01:39:45PM -0700, Mitchel Humpherys wrote:
->> On Fri, Jul 22 2016 at 05:51:07 PM, Will Deacon <will.deacon@arm.com> wrote:
->> > On Tue, Jul 19, 2016 at 01:36:49PM -0700, Mitchel Humpherys wrote:
->> >> The following patch to the ARM SMMU driver:
->> >> 
->> >>     commit d346180e70b91b3d5a1ae7e5603e65593d4622bc
->> >>     Author: Robin Murphy <robin.murphy@arm.com>
->> >>     Date:   Tue Jan 26 18:06:34 2016 +0000
->> >>     
->> >>         iommu/arm-smmu: Treat all device transactions as unprivileged
->> >> 
->> >> started forcing all SMMU transactions to come through as "unprivileged".
->> >> The rationale given was that:
->> >> 
->> >>   (1) There is no way in the IOMMU API to even request privileged mappings.
->> >> 
->> >>   (2) It's difficult to implement a DMA mapper that correctly models the
->> >>       ARM VMSAv8 behavior of unprivileged-writeable =>
->> >>       privileged-execute-never.
->> >> 
->> >> This series rectifies (1) by introducing an IOMMU API for privileged
->> >> mappings and implements it in io-pgtable-arm.
->> >> 
->> >> This series rectifies (2) by introducing a new dma attribute
->> >> (DMA_ATTR_PRIVILEGED) for users of the DMA API that need privileged
->> >> mappings which are inaccessible to lesser-privileged execution levels, and
->> >> implements it in the arm64 IOMMU DMA mapper.  The one known user (pl330.c)
->> >> is converted over to the new attribute.
->> >> 
->> >> Jordan and Jeremy can provide more info on the use case if needed, but the
->> >> high level is that it's a security feature to prevent attacks such as [1].
->> >
->> > This all looks good to me:
->> >
->> > Acked-by: Will Deacon <will.deacon@arm.com>
->> >
->> > It looks pretty fiddly to merge, however. How are you planning to get
->> > this upstream?
->> 
->> Fiddly in what way?  Do you mean in relation to "dma-mapping: Use
->> unsigned long for dma_attrs" [1]?  I admit I wasn't aware of that
->> activity until Robin mentioned it.  It looks like it's merged on
->> next/master, shall I rebase/rework on that and resend?
->
-> Fiddly in that it touches multiple subsystems. I guess routing it via
-> the iommu tree (Joerg) might be the best bet.
+From: Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 
-Sounds good.  I'm going to rebase on linux-next as well anyways to get
-the new dma attrs format and resend.
+Allow the creation of privileged mode mappings, for stage 1 only.
 
+Signed-off-by: Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
 
--Mitch
+Notes:
+    v2..v3
+    
+      - Use existing bit definitions.
 
+ drivers/iommu/io-pgtable-arm.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index f5c90e1366ce..69ba83a135f1 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -350,11 +350,14 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+ 
+ 	if (data->iop.fmt == ARM_64_LPAE_S1 ||
+ 	    data->iop.fmt == ARM_32_LPAE_S1) {
+-		pte = ARM_LPAE_PTE_AP_UNPRIV | ARM_LPAE_PTE_nG;
++		pte = ARM_LPAE_PTE_nG;
+ 
+ 		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
+ 			pte |= ARM_LPAE_PTE_AP_RDONLY;
+ 
++		if (!(prot & IOMMU_PRIV))
++			pte |= ARM_LPAE_PTE_AP_UNPRIV;
++
+ 		if (prot & IOMMU_MMIO)
+ 			pte |= (ARM_LPAE_MAIR_ATTR_IDX_DEV
+ 				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
 -- 
 Qualcomm Innovation Center, Inc.
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
