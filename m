@@ -1,90 +1,75 @@
-From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v11 10/10] genirq/msi: use the MSI doorbell's IOVA when
-	requested
-Date: Mon, 25 Jul 2016 18:31:55 +0200
-Message-ID: <08a930f2-8cc9-7d99-78c0-77d08ee40db3@redhat.com>
-References: <1468933367-23159-1-git-send-email-eric.auger@redhat.com>
-	<1468933367-23159-11-git-send-email-eric.auger@redhat.com>
-	<alpine.DEB.2.11.1607201105310.3564@nanos>
+From: Mitchel Humpherys <mitchelh@codeaurora.org>
+Subject: Re: [PATCH v3 0/6] Add support for privileged mappings
+Date: Mon, 25 Jul 2016 12:01:05 -0700
+Message-ID: <vnkwoa5l8rv2.fsf@codeaurora.org>
+References: <20160719203655.16629-1-mitchelh@codeaurora.org>
+	<20160722165107.GH16837@arm.com> <vnkweg6l9zla.fsf@codeaurora.org>
+	<20160725095012.GC15864@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <alpine.DEB.2.11.1607201105310.3564@nanos>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, kvmarm-FPEHb7Xf0XXUo1n7N8X6UoWGPAHP3yOg@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, robert.richter-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, andre.przywara-5wv7dgnIgG8@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20160725095012.GC15864@arm.com> (Will Deacon's message of "Mon,
+	25 Jul 2016 10:50:13 +0100")
+Sender: linux-kernel-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Jordan Crouse <jcrouse@codeaurora.org>, Jeremy Gebben <jgebben@codeaurora.org>, Patrick Daly <pdaly@codeaurora.org>, Pratik Patel <pratikp@codeaurora.org>, Thomas Zeng <tzeng@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thomas,
+On Mon, Jul 25 2016 at 10:50:13 AM, Will Deacon <will.deacon@arm.com> wrote:
+> On Fri, Jul 22, 2016 at 01:39:45PM -0700, Mitchel Humpherys wrote:
+>> On Fri, Jul 22 2016 at 05:51:07 PM, Will Deacon <will.deacon@arm.com> wrote:
+>> > On Tue, Jul 19, 2016 at 01:36:49PM -0700, Mitchel Humpherys wrote:
+>> >> The following patch to the ARM SMMU driver:
+>> >> 
+>> >>     commit d346180e70b91b3d5a1ae7e5603e65593d4622bc
+>> >>     Author: Robin Murphy <robin.murphy@arm.com>
+>> >>     Date:   Tue Jan 26 18:06:34 2016 +0000
+>> >>     
+>> >>         iommu/arm-smmu: Treat all device transactions as unprivileged
+>> >> 
+>> >> started forcing all SMMU transactions to come through as "unprivileged".
+>> >> The rationale given was that:
+>> >> 
+>> >>   (1) There is no way in the IOMMU API to even request privileged mappings.
+>> >> 
+>> >>   (2) It's difficult to implement a DMA mapper that correctly models the
+>> >>       ARM VMSAv8 behavior of unprivileged-writeable =>
+>> >>       privileged-execute-never.
+>> >> 
+>> >> This series rectifies (1) by introducing an IOMMU API for privileged
+>> >> mappings and implements it in io-pgtable-arm.
+>> >> 
+>> >> This series rectifies (2) by introducing a new dma attribute
+>> >> (DMA_ATTR_PRIVILEGED) for users of the DMA API that need privileged
+>> >> mappings which are inaccessible to lesser-privileged execution levels, and
+>> >> implements it in the arm64 IOMMU DMA mapper.  The one known user (pl330.c)
+>> >> is converted over to the new attribute.
+>> >> 
+>> >> Jordan and Jeremy can provide more info on the use case if needed, but the
+>> >> high level is that it's a security feature to prevent attacks such as [1].
+>> >
+>> > This all looks good to me:
+>> >
+>> > Acked-by: Will Deacon <will.deacon@arm.com>
+>> >
+>> > It looks pretty fiddly to merge, however. How are you planning to get
+>> > this upstream?
+>> 
+>> Fiddly in what way?  Do you mean in relation to "dma-mapping: Use
+>> unsigned long for dma_attrs" [1]?  I admit I wasn't aware of that
+>> activity until Robin mentioned it.  It looks like it's merged on
+>> next/master, shall I rebase/rework on that and resend?
+>
+> Fiddly in that it touches multiple subsystems. I guess routing it via
+> the iommu tree (Joerg) might be the best bet.
 
-On 20/07/2016 11:09, Thomas Gleixner wrote:
-> On Tue, 19 Jul 2016, Eric Auger wrote:
-> 
-> First of all - valid for all patches:
-> 
-> Subject: sys/subsys: Sentence starts with an uppercase letter
-OK understood.
-> 
-> Now for this particular one:
-> 
-> genirq/msi: use the MSI doorbell's IOVA when requested
-> 
->> On MSI message composition we now use the MSI doorbell's IOVA in
->> place of the doorbell's PA in case the device is upstream to an
->> IOMMU that requires MSI addresses to be mapped. The doorbell's
->> allocation and mapping happened on an early stage (pci_enable_msi).
-> 
-> This changelog is completely useless. At least I cannot figure out what that
-> patch actually does. And the implementation is not self explaining either.
+Sounds good.  I'm going to rebase on linux-next as well anyways to get
+the new dma attrs format and resend.
 
->  
->> @@ -63,10 +63,18 @@ static int msi_compose(struct irq_data *irq_data,
->>  {
->>  	int ret = 0;
->>  
->> -	if (erase)
->> +	if (erase) {
->>  		memset(msg, 0, sizeof(*msg));
->> -	else
->> +	} else {
->> +		struct device *dev;
->> +
->>  		ret = irq_chip_compose_msi_msg(irq_data, msg);
->> +		if (ret)
->> +			return ret;
->> +
->> +		dev = msi_desc_to_dev(irq_data_get_msi_desc(irq_data));
->> +		WARN_ON(iommu_msi_msg_pa_to_va(dev, msg));
-> 
-> What the heck is this call doing? And why is there only a WARN_ON and not a
-> proper error return code handling?
 
-iommu_msi_msg_pa_to_va is part of the new iommu-msi API introduced in PART I of
-this series. This helper function detects the physical address found in the
-MSI message has a corresponding allocated IOVA. This happens if the MSI doorbell
-is accessed through an IOMMU and this IOMMU do not bypass the MSI addresses
-(ARM case). Allocation of this IOVA was performed in the previous patch.
+-Mitch
 
-So, if this is the case, the physical address is swapped with the IOVA
-address. That way the PCIe device will send the MSI with this IOVA and
-the address will be translated by the IOMMU into the target MSI doorbell PA.
-
-Hope this clarifies
-
-Thanks
-
-Eric 
-> 
-> Thanks,
-> 
-> 	tglx
-> 
+-- 
+Qualcomm Innovation Center, Inc.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
