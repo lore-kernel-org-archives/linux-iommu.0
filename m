@@ -1,93 +1,88 @@
-From: Mitchel Humpherys <mitchelh@codeaurora.org>
-Subject: [PATCH v4 0/6] Add support for privileged mappings
-Date: Mon, 25 Jul 2016 12:16:43 -0700
-Message-ID: <20160725191649.13414-1-mitchelh@codeaurora.org>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Jordan Crouse <jcrouse@codeaurora.org>, Jeremy Gebben <jgebben@codeaurora.org>, Patrick Daly <pdaly@codeaurora.org>, Pratik Patel <pratikp@codeaurora.org>, Thomas Zeng <tzeng@codeaurora.org>, Mitchel Humpherys <mitchelh@codeaurora.org>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH v4 3/6] common: DMA-mapping: add DMA_ATTR_PRIVILEGED attribute
+Date: Mon, 25 Jul 2016 12:16:46 -0700
+Message-ID: <20160725191649.13414-4-mitchelh@codeaurora.org>
+References: <20160725191649.13414-1-mitchelh@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160725191649.13414-1-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Thomas Zeng <tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The following patch to the ARM SMMU driver:
+This patch adds the DMA_ATTR_PRIVILEGED attribute to the DMA-mapping
+subsystem.
 
-    commit d346180e70b91b3d5a1ae7e5603e65593d4622bc
-    Author: Robin Murphy <robin.murphy@arm.com>
-    Date:   Tue Jan 26 18:06:34 2016 +0000
+Some advanced peripherals such as remote processors and GPUs perform
+accesses to DMA buffers in both privileged "supervisor" and unprivileged
+"user" modes.  This attribute is used to indicate to the DMA-mapping
+subsystem that the buffer is fully accessible at the elevated privilege
+level (and ideally inaccessible or at least read-only at the
+lesser-privileged levels).
+
+Cc: linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+
+Notes:
+    v3..v4
     
-        iommu/arm-smmu: Treat all device transactions as unprivileged
+      - Reworked against the new dma attrs format
 
-started forcing all SMMU transactions to come through as "unprivileged".
-The rationale given was that:
-
-  (1) There is no way in the IOMMU API to even request privileged mappings.
-
-  (2) It's difficult to implement a DMA mapper that correctly models the
-      ARM VMSAv8 behavior of unprivileged-writeable =>
-      privileged-execute-never.
-
-This series rectifies (1) by introducing an IOMMU API for privileged
-mappings and implements it in io-pgtable-arm.
-
-This series rectifies (2) by introducing a new dma attribute
-(DMA_ATTR_PRIVILEGED) for users of the DMA API that need privileged
-mappings which are inaccessible to lesser-privileged execution levels, and
-implements it in the arm64 IOMMU DMA mapper.  The one known user (pl330.c)
-is converted over to the new attribute.
-
-Jordan and Jeremy can provide more info on the use case if needed, but the
-high level is that it's a security feature to prevent attacks such as [1].
-
-Joerg, the v3 series was previously acked by Will [2].  He also recommended
-that we take all of this through your tree since it's touching multiple
-subsystems [3].  Can you please take a look?  Thanks!
-
-[1] https://github.com/robclark/kilroy
-[2] http://article.gmane.org/gmane.linux.kernel.iommu/14617
-[3] http://article.gmane.org/gmane.linux.kernel/2272531
-
-Changelog:
-
-  v3..v4
-
-    - Rebased and reworked on linux next due to the dma attrs rework going
-      on over there.  Patches changed: 3/6, 4/6, and 5/6.
-
-  v2..v3
-
-    - Incorporated feedback from Robin:
-      * Various comments and re-wordings.
-      * Use existing bit definitions for IOMMU_PRIV implementation
-        in io-pgtable-arm.
-      * Renamed and redocumented dma_direction_to_prot.
-      * Don't worry about executability in new DMA attr.
-
-  v1..v2
-
-    - Added a new DMA attribute to make executable privileged mappings
-      work, and use that in the pl330 driver (suggested by Will).
-
-
-Jeremy Gebben (1):
-  iommu/io-pgtable-arm: add support for the IOMMU_PRIV flag
-
-Mitchel Humpherys (5):
-  iommu: add IOMMU_PRIV attribute
-  common: DMA-mapping: add DMA_ATTR_PRIVILEGED attribute
-  arm64/dma-mapping: Implement DMA_ATTR_PRIVILEGED
-  dmaengine: pl330: Make sure microcode is privileged
-  Revert "iommu/arm-smmu: Treat all device transactions as unprivileged"
+    v2..v3
+    
+      - Not worrying about executability.
 
  Documentation/DMA-attributes.txt | 10 ++++++++++
- arch/arm64/mm/dma-mapping.c      |  6 +++---
- drivers/dma/pl330.c              |  6 ++++--
- drivers/iommu/arm-smmu.c         |  5 +----
- drivers/iommu/dma-iommu.c        | 16 +++++++++++-----
- drivers/iommu/io-pgtable-arm.c   |  5 ++++-
- include/linux/dma-iommu.h        |  3 ++-
  include/linux/dma-mapping.h      |  6 ++++++
- include/linux/iommu.h            |  1 +
- 9 files changed, 42 insertions(+), 16 deletions(-)
+ 2 files changed, 16 insertions(+)
 
+diff --git a/Documentation/DMA-attributes.txt b/Documentation/DMA-attributes.txt
+index 2d455a5cf671..7728bda278c9 100644
+--- a/Documentation/DMA-attributes.txt
++++ b/Documentation/DMA-attributes.txt
+@@ -126,3 +126,13 @@ means that we won't try quite as hard to get them.
+ 
+ NOTE: At the moment DMA_ATTR_ALLOC_SINGLE_PAGES is only implemented on ARM,
+ though ARM64 patches will likely be posted soon.
++
++DMA_ATTR_PRIVILEGED
++------------------------------
++
++Some advanced peripherals such as remote processors and GPUs perform
++accesses to DMA buffers in both privileged "supervisor" and unprivileged
++"user" modes.  This attribute is used to indicate to the DMA-mapping
++subsystem that the buffer is fully accessible at the elevated privilege
++level (and ideally inaccessible or at least read-only at the
++lesser-privileged levels).
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 66533e18276c..73f477609262 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -56,6 +56,12 @@
+  * that gives better TLB efficiency.
+  */
+ #define DMA_ATTR_ALLOC_SINGLE_PAGES	(1UL << 7)
++/*
++ * DMA_ATTR_PRIVILEGED: used to indicate that the buffer is fully
++ * accessible at an elevated privilege level (and ideally inaccessible or
++ * at least read-only at lesser-privileged levels).
++ */
++#define DMA_ATTR_PRIVILEGED		(1UL << 8)
+ 
+ /*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.
 -- 
 Qualcomm Innovation Center, Inc.
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
