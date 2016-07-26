@@ -1,84 +1,48 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v11 10/10] genirq/msi: use the MSI doorbell's IOVA when
- requested
-Date: Tue, 26 Jul 2016 12:02:28 +0200
-Message-ID: <33b72799-2408-054b-bbe6-2b7e3b67948f@redhat.com>
-References: <1468933367-23159-1-git-send-email-eric.auger@redhat.com>
- <1468933367-23159-11-git-send-email-eric.auger@redhat.com>
- <alpine.DEB.2.11.1607201105310.3564@nanos>
- <08a930f2-8cc9-7d99-78c0-77d08ee40db3@redhat.com>
- <alpine.DEB.2.11.1607261101340.19896@nanos>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v11 09/10] genirq/msi: map/unmap the MSI doorbells on
+ msi_domain_alloc/free_irqs
+Date: Tue, 26 Jul 2016 13:01:59 +0200 (CEST)
+Message-ID: <alpine.DEB.2.11.1607261202250.19896@nanos>
+References: <1468933367-23159-1-git-send-email-eric.auger@redhat.com> <1468933367-23159-10-git-send-email-eric.auger@redhat.com> <alpine.DEB.2.11.1607201016060.3564@nanos> <75f5e846-6ca4-4178-e7aa-fed90e45e546@redhat.com> <alpine.DEB.2.11.1607261022330.19896@nanos>
+ <f8e83628-5fb0-70d4-c32c-237d190ec98f@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <alpine.DEB.2.11.1607261101340.19896@nanos>
+In-Reply-To: <f8e83628-5fb0-70d4-c32c-237d190ec98f@redhat.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: eric.auger.pro@gmail.com, marc.zyngier@arm.com, christoffer.dall@linaro.org, andre.przywara@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org, drjones@redhat.com, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, pbonzini@redhat.com, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, yehuday@marvell.com, Manish.Jaggi@caviumnetworks.com, robert.richter@caviumnetworks.com
+To: Auger Eric <eric.auger@redhat.com>
+Cc: eric.auger.pro@gmail.com, Marc Zyngier <marc.zyngier@arm.com>, christoffer.dall@linaro.org, andre.przywara@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, Jason Cooper <jason@lakedaemon.net>, LAK <linux-arm-kernel@lists.infradead.org>, drjones@redhat.com, kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org, pbonzini@redhat.com, LKML <linux-kernel@vger.kernel.org>, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, yehuday@marvell.com, Manish.Jaggi@caviumnetworks.com, robert.richter@caviumnetworks.com, Bjorn Helgaas <bhelgaas@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thomas,
+On Tue, 26 Jul 2016, Auger Eric wrote:
+> On 26/07/2016 11:00, Thomas Gleixner wrote:
+> > In your case you don't want to have a partial allocation, so instead of
+> > playing silly games with desc->irq you should add a flag which tells the PCI
+> > code that you are not interested in a partial allocation and that it should
+> > return an error code instead.
+> 
 
-On 26/07/2016 11:04, Thomas Gleixner wrote:
-> Eric,
+> In that case can we consider we even succeeded in allocating 1 MSI? In case
+> the IOMMU mapping fails, the MSI transaction will never reach the target MSI
+> frame so it is not usable. So when you mean "partial" I understand we did
+> not succeed in allocating maxvec IRQs, correct? Here we succeeded in
+> allocating 0 IRQ and still msi_capability_init returns 1.
+>
+> msi_capability_init doc-comment says "a positive return value indicates the
+> number of interrupts which could have been allocated."
 > 
-> On Mon, 25 Jul 2016, Auger Eric wrote:
->> On 20/07/2016 11:09, Thomas Gleixner wrote:
->>> On Tue, 19 Jul 2016, Eric Auger wrote:
->>>> @@ -63,10 +63,18 @@ static int msi_compose(struct irq_data *irq_data,
->>>>  {
->>>>  	int ret = 0;
->>>>  
->>>> -	if (erase)
->>>> +	if (erase) {
->>>>  		memset(msg, 0, sizeof(*msg));
->>>> -	else
->>>> +	} else {
->>>> +		struct device *dev;
->>>> +
->>>>  		ret = irq_chip_compose_msi_msg(irq_data, msg);
->>>> +		if (ret)
->>>> +			return ret;
->>>> +
->>>> +		dev = msi_desc_to_dev(irq_data_get_msi_desc(irq_data));
->>>> +		WARN_ON(iommu_msi_msg_pa_to_va(dev, msg));
->>>
->>> What the heck is this call doing? And why is there only a WARN_ON and not a
->>> proper error return code handling?
->>
->> iommu_msi_msg_pa_to_va is part of the new iommu-msi API introduced in PART I
->> of this series. This helper function detects the physical address found in
->> the MSI message has a corresponding allocated IOVA. This happens if the MSI
->> doorbell is accessed through an IOMMU and this IOMMU do not bypass the MSI
->> addresses (ARM case). Allocation of this IOVA was performed in the previous
->> patch.
->>
->> So, if this is the case, the physical address is swapped with the IOVA
->> address. That way the PCIe device will send the MSI with this IOVA and
->> the address will be translated by the IOMMU into the target MSI doorbell PA.
->>
->> Hope this clarifies
-> 
-> No, it does not. You are explaining in great length what that function is
-> doing, but you are not explaining WHY your don't do a proper return code
-> handling and just do a WARN_ON() and happily proceed. If that function fails
-> then the interrupt will not be functional, so WHY on earth are you continuing?
-Oh sorry I focused on the function's goal. Originally I could not return an
-error since there is a BUG_ON(ret) afterwards. And typically the userspace can
-willingly omit to pass IPA range that map MSIs. But now we have this 2 phases where
-we first map the MSIs on pci_enable_msi_range and use the IOVA at compose time
-I need to analyze again if the userspace can induce a BUG_ON.
+> I understand allocation success currently only depends on the fact virq was
+> allocated and set to desc->irq. But with that IOMMU stuff doesn't the
+> criteria changes?
 
-Thanks
+Right. But then you need to express it differently in a consistent way. Not by
+hacking around it by setting desc->irq to 0.
 
-Eric
-> 
-> Thanks,
-> 
-> 	tglx
-> --
-> To unsubscribe from this list: send the line "unsubscribe kvm" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Something like a flag field in msi_desc which denotes various properties would
+be a possible solution. MSI_IRQ_ALLOCATED and MSI_IRQ_REMAPPED would be
+sufficient for now. And the deallocation/cleanup would rely on those flags
+rather than checking desc->irq.
+
+Thanks,
+
+	tglx
