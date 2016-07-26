@@ -1,66 +1,75 @@
-From: Tomasz Figa <tfiga@google.com>
-Subject: Re: [PATCH 1/3] memory: mediatek: Add a new interface mtk_smi_larb_is_ready
-Date: Tue, 26 Jul 2016 11:30:42 +0900
-Message-ID: <CAAFQd5AXXpVQU7+ek0Jb_aNm5md=1GVrysEDD5GO7erLUByzrw@mail.gmail.com>
-References: <1468983721-3627-1-git-send-email-yong.wu@mediatek.com> <cd01b829-f869-606b-5c1a-8077fbddb085@gmail.com>
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v11 09/10] genirq/msi: map/unmap the MSI doorbells on
+ msi_domain_alloc/free_irqs
+Date: Tue, 26 Jul 2016 11:00:21 +0200 (CEST)
+Message-ID: <alpine.DEB.2.11.1607261022330.19896@nanos>
+References: <1468933367-23159-1-git-send-email-eric.auger@redhat.com>
+ <1468933367-23159-10-git-send-email-eric.auger@redhat.com>
+ <alpine.DEB.2.11.1607201016060.3564@nanos>
+ <75f5e846-6ca4-4178-e7aa-fed90e45e546@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <cd01b829-f869-606b-5c1a-8077fbddb085@gmail.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Yong Wu <yong.wu@mediatek.com>, David Airlie <airlied@linux.ie>, Philipp Zabel <p.zabel@pengutronix.de>, Hans Verkuil <hans.verkuil@cisco.com>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Tiffany Lin <tiffany.lin@mediatek.com>, Honghui Zhang <honghui.zhang@mediatek.com>, Bibby Hsieh <bibby.hsieh@mediatek.com>, YT Shen <yt.shen@mediatek.com>, CK Hu <ck.hu@mediatek.com>, Daniel Kurtz <djkurtz@google.com>, Arnd Bergmann <arnd@arndb.de>, Lucas Stach <l.stach@pengutronix.de>, youlin.pei@mediatek.com, linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <kvmarm-bounces@lists.cs.columbia.edu>
+In-Reply-To: <75f5e846-6ca4-4178-e7aa-fed90e45e546@redhat.com>
+List-Unsubscribe: <https://lists.cs.columbia.edu/mailman/options/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=unsubscribe>
+List-Archive: <https://lists.cs.columbia.edu/pipermail/kvmarm>
+List-Post: <mailto:kvmarm@lists.cs.columbia.edu>
+List-Help: <mailto:kvmarm-request@lists.cs.columbia.edu?subject=help>
+List-Subscribe: <https://lists.cs.columbia.edu/mailman/listinfo/kvmarm>,
+ <mailto:kvmarm-request@lists.cs.columbia.edu?subject=subscribe>
+Errors-To: kvmarm-bounces@lists.cs.columbia.edu
+Sender: kvmarm-bounces@lists.cs.columbia.edu
+To: Auger Eric <eric.auger@redhat.com>
+Cc: kvm@vger.kernel.org, will.deacon@arm.com, kvmarm@lists.cs.columbia.edu, eric.auger.pro@gmail.com, joro@8bytes.org, robert.richter@caviumnetworks.com, Jason Cooper <jason@lakedaemon.net>, Marc Zyngier <marc.zyngier@arm.com>, andre.przywara@arm.com, Manish.Jaggi@caviumnetworks.com, alex.williamson@redhat.com, Bjorn Helgaas <bhelgaas@google.com>, LAK <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, pbonzini@redhat.com, robin.murphy@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+B1;2802;0cEric,
 
-On Mon, Jul 25, 2016 at 5:39 PM, Matthias Brugger
-<matthias.bgg@gmail.com> wrote:
+On Mon, 25 Jul 2016, Auger Eric wrote:
+> On 20/07/2016 11:04, Thomas Gleixner wrote:
+> > On Tue, 19 Jul 2016, Eric Auger wrote:
+> >> +		if (ret) {
+> >> +			for (; i >= 0; i--) {
+> >> +				struct irq_data *d = irq_get_irq_data(virq + i);
+> >> +
+> >> +				msi_handle_doorbell_mappings(d, false);
+> >> +			}
+> >> +			irq_domain_free_irqs(virq, desc->nvec_used);
+> >> +			desc->irq = 0;
+> >> +			goto error;
+> > 
+> > How is that supposed to work? You clear desc->irq and then you call
+> > ops->handle_error.
 >
+> if I don't clear the desc->irq I enter an infinite loop in
+> pci_enable_msix_range.
 >
-> On 20/07/16 05:01, Yong Wu wrote:
->>
->> Currently the iommu consumer always call iommu_present to get whether
->> the iommu is ready. But in MTK IOMMU, this function can't indicate
->> this. The IOMMU call bus_set_iommu->mtk_iommu_add_device->
->> mtk_iommu_attach_device to parse the iommu data, then it's able to
->> transfer "struct mtk_smi_iommu" to SMI-LARB, and the iommu uses the
->> larbs as compoents, the iommu will finish its probe until all the larbs
->> probe done.
->>
->> If the iommu consumer(like DRM) begin to probe after the time of
->> calling bus_set_iommu and before the time of SMI probe finish, it
->> will hang like this:
->>
->> [    7.832359] Call trace:
->> [    7.834778] [<ffffffc000764424>] mtk_smi_larb_get+0x24/0xa8
->> [    7.840300] [<ffffffc0005a1390>] mtk_drm_crtc_enable+0x6c/0x450
->>
->> Because the larb->mmu is NULL at that time.
->>
->> In order to avoid this issue, we add a new interface
->> (mtk_smi_larb_is_ready) for checking whether the IOMMU and SMI have
->> finished their probe. If it return false, the iommu consumer should
->> probe-defer for the IOMMU and SMI.
->>
+> This happens because msix_capability_init and pcie_enable_msix returns 1.
+> In msix_capability_init, at out_avail: we enumerate the msi_desc which have
+> a non zero irq, hence the returned value equal to 1.
 >
-> Can't we just skip the functions in the probe and call bus_set_iommu only if
-> we were able to bind all components?
-> Something like this:
+> Currently the only handle_error ops I found, pci_msi_domain_handle_error
+> does not use irq field so works although questionable.
 
-Note that we have to call bus_set_iommu() and actually have
-.add_device() and .attach_device() called before any of the slave
-devices probe. I found a similar problem with rockchip IOMMU after
-adding power domain and runtime PM handling there. I also found that
-current design of IOMMU core and related DMA mapping code is utterly
-broken regarding the device add/probe ordering (no support for
-deferring things properly).
+The logic here is: If the allocation does not succeed for the requested number
+of interrupts, we tell the caller how many interrupts we were able to set up.
+So the caller can decide what to do.
 
-So my idea is to keep .add_device() as is, since typically it doesn't
-seem to require anything from the IOMMU hardware and just initializes
-some per-device data, but make .attach_device() being able to defer
-probe of that device if respective IOMMU has not probed yet. I'm still
-in process of figuring out the right way to achieve it, though...
+In your case you don't want to have a partial allocation, so instead of
+playing silly games with desc->irq you should add a flag which tells the PCI
+code that you are not interested in a partial allocation and that it should
+return an error code instead.
 
-Best regards,
-Tomasz
+Something like PCI_DEV_FLAGS_MSI_NO_PARTIAL_ALLOC should do the trick.
+
+> As for the irq_domain_free_irqs I think I can remove it since handled later.
+
+Not only the free_irqs(). You should let the teardown function handle
+everything including your doorbell mapping teardown. It's nothing special and
+free_msi_irqs() at the end of msix_capability_init() will take care of it.
+
+Thanks,
+
+	tglx
