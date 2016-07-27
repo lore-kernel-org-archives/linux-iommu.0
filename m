@@ -1,14 +1,11 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 4/6] arm64/dma-mapping: Implement DMA_ATTR_PRIVILEGED
-Date: Tue, 26 Jul 2016 16:05:17 +0100
-Message-ID: <f6fa75a9-ce70-e6c5-fd51-2af502bc2f67@arm.com>
-References: <20160725191649.13414-1-mitchelh@codeaurora.org>
-	<20160725191649.13414-5-mitchelh@codeaurora.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 1/2] iommu/amd: Update Alias-DTE in update_device_table()
+Date: Wed, 27 Jul 2016 10:30:34 +0200
+Message-ID: <1469608235-6294-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160725191649.13414-5-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,141 +15,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Thomas Zeng <tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Mitch,
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-On 25/07/16 20:16, Mitchel Humpherys wrote:
-> The newly added DMA_ATTR_PRIVILEGED is useful for creating mappings that
-> are only accessible to privileged DMA engines.  Implement it in
-> dma-iommu.c so that the ARM64 DMA IOMMU mapper can make use of it.
-> 
-> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
-> 
-> Notes:
->     v3..v4
->     
->       - Reworked against the new dma attrs format
->     
->     v2..v3
->     
->       - Renamed and redocumented dma_direction_to_prot.
->       - Dropped the stuff making all privileged mappings read-only.
-> 
->  arch/arm64/mm/dma-mapping.c |  6 +++---
->  drivers/iommu/dma-iommu.c   | 16 +++++++++++-----
->  include/linux/dma-iommu.h   |  3 ++-
->  3 files changed, 16 insertions(+), 9 deletions(-)
-> 
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index c4284c432ae8..1c6f85c56115 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -556,7 +556,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
->  				 unsigned long attrs)
->  {
->  	bool coherent = is_device_dma_coherent(dev);
-> -	int ioprot = dma_direction_to_prot(DMA_BIDIRECTIONAL, coherent);
-> +	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
->  	size_t iosize = size;
->  	void *addr;
->  
-> @@ -710,7 +710,7 @@ static dma_addr_t __iommu_map_page(struct device *dev, struct page *page,
->  				   unsigned long attrs)
->  {
->  	bool coherent = is_device_dma_coherent(dev);
-> -	int prot = dma_direction_to_prot(dir, coherent);
-> +	int prot = dma_info_to_prot(dir, coherent, attrs);
->  	dma_addr_t dev_addr = iommu_dma_map_page(dev, page, offset, size, prot);
->  
->  	if (!iommu_dma_mapping_error(dev, dev_addr) &&
-> @@ -768,7 +768,7 @@ static int __iommu_map_sg_attrs(struct device *dev, struct scatterlist *sgl,
->  		__iommu_sync_sg_for_device(dev, sgl, nelems, dir);
->  
->  	return iommu_dma_map_sg(dev, sgl, nelems,
-> -			dma_direction_to_prot(dir, coherent));
-> +				dma_info_to_prot(dir, coherent, attrs));
->  }
->  
->  static void __iommu_unmap_sg_attrs(struct device *dev,
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 08a1e2f3690f..5e1e495b35f8 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -129,26 +129,32 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size
->  EXPORT_SYMBOL(iommu_dma_init_domain);
->  
->  /**
-> - * dma_direction_to_prot - Translate DMA API directions to IOMMU API page flags
-> + * dma_info_to_prot - Translate DMA API directions and attributes to IOMMU API
-> + *                    page flags.
->   * @dir: Direction of DMA transfer
->   * @coherent: Is the DMA master cache-coherent?
-> + * @attrs: DMA attributes for the mapping
->   *
->   * Return: corresponding IOMMU API page protection flags
->   */
-> -int dma_direction_to_prot(enum dma_data_direction dir, bool coherent)
-> +int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
-> +		     unsigned long attrs)
->  {
->  	int prot = coherent ? IOMMU_CACHE : 0;
->  
+Not doing so might cause IO-Page-Faults when a device uses
+an alias request-id and the alias-dte is left in a lower
+page-mode which does not cover the address allocated from
+the iova-allocator.
 
-+	if (attrs & DMA_ATTR_PRIVILEGED)
-+		prot |= IOMMU_PRIV;
+Fixes: 492667dacc0a ('x86/amd-iommu: Remove amd_iommu_pd_table')
+Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index fb43cc5..9703913 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2239,8 +2239,15 @@ static void update_device_table(struct protection_domain *domain)
+ {
+ 	struct iommu_dev_data *dev_data;
+ 
+-	list_for_each_entry(dev_data, &domain->dev_list, list)
++	list_for_each_entry(dev_data, &domain->dev_list, list) {
+ 		set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled);
 +
-
-then drop the rest of the changes to the switch statement below. It's
-taken me an embarrassingly long time to work out why things were blowing
-up in __iommu_sync_single_for_device() all with a VA of phys_to_virt(0) ;)
-
-With that change, for the whole series:
-
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
-I guess at this point it may be worth waiting to repost based on -rc1.
-Be sure to CC patch 5 to Vinod as the current dmaengine maintainer, as
-it's his ack we'll need on that.
-
-Cheers,
-Robin.
-
->  	switch (dir) {
->  	case DMA_BIDIRECTIONAL:
-> -		return prot | IOMMU_READ | IOMMU_WRITE;
-> +		prot |= IOMMU_READ | IOMMU_WRITE;
->  	case DMA_TO_DEVICE:
-> -		return prot | IOMMU_READ;
-> +		prot |= IOMMU_READ;
->  	case DMA_FROM_DEVICE:
-> -		return prot | IOMMU_WRITE;
-> +		prot |= IOMMU_WRITE;
->  	default:
->  		return 0;
->  	}
-> +	if (attrs & DMA_ATTR_PRIVILEGED)
-> +		prot |= IOMMU_PRIV;
-> +	return prot;
->  }
->  
->  static struct iova *__alloc_iova(struct iova_domain *iovad, size_t size,
-> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-> index 81c5c8d167ad..b367613d49ba 100644
-> --- a/include/linux/dma-iommu.h
-> +++ b/include/linux/dma-iommu.h
-> @@ -32,7 +32,8 @@ void iommu_put_dma_cookie(struct iommu_domain *domain);
->  int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size);
->  
->  /* General helpers for DMA-API <-> IOMMU-API interaction */
-> -int dma_direction_to_prot(enum dma_data_direction dir, bool coherent);
-> +int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
-> +		     unsigned long attrs);
->  
->  /*
->   * These implement the bulk of the relevant DMA mapping callbacks, but require
-> 
++		if (dev_data->devid == dev_data->alias)
++			continue;
++
++		/* There is an alias, update device table entry for it */
++		set_dte_entry(dev_data->alias, domain, dev_data->ats.enabled);
++	}
+ }
+ 
+ static void update_domain(struct protection_domain *domain)
+-- 
+2.6.6
