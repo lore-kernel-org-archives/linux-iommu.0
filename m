@@ -1,7 +1,8 @@
 From: Wei Yongjun <weiyj.lk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH -next] iommu/amd: Fix non static symbol warning
-Date: Thu, 28 Jul 2016 02:09:53 +0000
-Message-ID: <1469671793-13052-1-git-send-email-weiyj.lk@gmail.com>
+Subject: [PATCH -next] iommu/amd: Fix error return code in
+	irq_remapping_alloc()
+Date: Thu, 28 Jul 2016 02:10:26 +0000
+Message-ID: <1469671826-13144-1-git-send-email-weiyj.lk@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -19,26 +20,22 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Wei Yongjun <weiyj.lk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Fixes the following sparse warning:
-
-drivers/iommu/amd_iommu.c:106:1: warning:
- symbol '__pcpu_scope_flush_queue' was not declared. Should it be static?
+Fix to return a negative error code from the alloc_irq_index() error
+handling case instead of 0, as done elsewhere in this function.
 
 Signed-off-by: Wei Yongjun <weiyj.lk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/amd_iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 96de97a..bf5ec0c 100644
+index 96de97a..71e94f3 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -103,7 +103,7 @@ struct flush_queue {
- 	struct flush_queue_entry *entries;
- };
- 
--DEFINE_PER_CPU(struct flush_queue, flush_queue);
-+static DEFINE_PER_CPU(struct flush_queue, flush_queue);
- 
- static atomic_t queue_timer_on;
- static struct timer_list queue_timer;
+@@ -3886,6 +3886,7 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
+ 	}
+ 	if (index < 0) {
+ 		pr_warn("Failed to allocate IRTE\n");
++		ret = index;
+ 		goto out_free_parent;
+ 	}
