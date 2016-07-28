@@ -1,8 +1,7 @@
-From: Wei Yongjun <weiyj.lk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH -next] iommu/amd: Fix error return code in
-	irq_remapping_alloc()
-Date: Thu, 28 Jul 2016 02:10:26 +0000
-Message-ID: <1469671826-13144-1-git-send-email-weiyj.lk@gmail.com>
+From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] iommu: narrow the search range by iterating on current bus
+Date: Thu, 28 Jul 2016 14:52:59 +0000
+Message-ID: <1469717579-8244-1-git-send-email-richard.weiyang@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,26 +15,83 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Wei Yongjun <weiyj.lk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: jroedel-l3A5Bk7waGM@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Fix to return a negative error code from the alloc_irq_index() error
-handling case instead of 0, as done elsewhere in this function.
+According to the comments and code, get_pci_function_alias_group() and
+get_pci_alias_group() do the search on the same pci bus. This means we can
+just iterate on the bus the pci device attaches to.
 
-Signed-off-by: Wei Yongjun <weiyj.lk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+This patch narrows the search range by just iterating on the current bus
+and fix one typo in comment.
+
+Signed-off-by: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/iommu.c |   22 ++++++++--------------
+ 1 file changed, 8 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 96de97a..71e94f3 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3886,6 +3886,7 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3000051..0338a81 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -643,17 +643,15 @@ static struct iommu_group *get_pci_function_alias_group(struct pci_dev *pdev,
+ 	if (!pdev->multifunction || pci_acs_enabled(pdev, REQ_ACS_FLAGS))
+ 		return NULL;
+ 
+-	for_each_pci_dev(tmp) {
+-		if (tmp == pdev || tmp->bus != pdev->bus ||
++	list_for_each_entry(tmp, &pdev->bus->devices, bus_list) {
++		if (tmp == pdev ||
+ 		    PCI_SLOT(tmp->devfn) != PCI_SLOT(pdev->devfn) ||
+ 		    pci_acs_enabled(tmp, REQ_ACS_FLAGS))
+ 			continue;
+ 
+ 		group = get_pci_alias_group(tmp, devfns);
+-		if (group) {
+-			pci_dev_put(tmp);
++		if (group)
+ 			return group;
+-		}
  	}
- 	if (index < 0) {
- 		pr_warn("Failed to allocate IRTE\n");
-+		ret = index;
- 		goto out_free_parent;
+ 
+ 	return NULL;
+@@ -681,23 +679,19 @@ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+ 	if (group)
+ 		return group;
+ 
+-	for_each_pci_dev(tmp) {
+-		if (tmp == pdev || tmp->bus != pdev->bus)
++	list_for_each_entry(tmp, &pdev->bus->devices, bus_list) {
++		if (tmp == pdev)
+ 			continue;
+ 
+ 		/* We alias them or they alias us */
+ 		if (pci_devs_are_dma_aliases(pdev, tmp)) {
+ 			group = get_pci_alias_group(tmp, devfns);
+-			if (group) {
+-				pci_dev_put(tmp);
++			if (group)
+ 				return group;
+-			}
+ 
+ 			group = get_pci_function_alias_group(tmp, devfns);
+-			if (group) {
+-				pci_dev_put(tmp);
++			if (group)
+ 				return group;
+-			}
+ 		}
  	}
+ 
+@@ -794,7 +788,7 @@ struct iommu_group *pci_device_group(struct device *dev)
+ 
+ 	/*
+ 	 * Look for existing groups on non-isolated functions on the same
+-	 * slot and aliases of those funcions, if any.  No need to clear
++	 * slot and aliases of those functions, if any. No need to clear
+ 	 * the search bitmap, the tested devfns are still valid.
+ 	 */
+ 	group = get_pci_function_alias_group(pdev, (unsigned long *)devfns);
+-- 
+1.7.9.5
