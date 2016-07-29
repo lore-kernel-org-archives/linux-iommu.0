@@ -1,101 +1,63 @@
-From: Lukas Wunner <lukas@wunner.de>
-Subject: Re: [PATCH v2 02/10] driver core: Functional dependencies tracking
- support
-Date: Thu, 28 Jul 2016 17:28:31 +0200
-Message-ID: <20160728152831.GA1929@wunner.de>
-References: <1466144820-6286-1-git-send-email-m.szyprowski@samsung.com>
- <4258432.JNKr9zJtMp@vostro.rjw.lan>
- <20160724224832.GB9516@wunner.de>
- <2841548.NIYVpJFBcH@vostro.rjw.lan>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v5 0/6] Add support for privileged mappings
+Date: Fri, 29 Jul 2016 11:06:53 +0100
+Message-ID: <20160729100653.GC16593@arm.com>
+References: <20160727234208.2101-1-mitchelh@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <2841548.NIYVpJFBcH@vostro.rjw.lan>
-Sender: linux-pci-owner@vger.kernel.org
-To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, linux-samsung-soc@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Ulf Hansson <ulf.hansson@linaro.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Andreas Noever <andreas.noever@gmail.com>, linux-pci@vger.kernel.org
+In-Reply-To: <20160727234208.2101-1-mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Patrick Daly <pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Pratik Patel <pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Thomas Zeng <tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jul 28, 2016 at 02:30:31AM +0200, Rafael J. Wysocki wrote:
-> On Monday, July 25, 2016 12:48:32 AM Lukas Wunner wrote:
-> > On Thu, Jul 21, 2016 at 02:25:15AM +0200, Rafael J. Wysocki wrote:
-> > > On Thursday, July 21, 2016 01:25:53 AM Lukas Wunner wrote:
-> > > > I guess I could amend portdrv to return -EPROBE_DEFER on Macs if
-> > > > no driver is bound to the NHI. Doesn't feel pretty to me though.
-> > > > 
-> > > > Ultimately this seems to be the same issue as with calling
-> > > > dev_pm_domain_set() for a bound device. Perhaps device_link_add()
-> > > > can likewise be allowed if a runtime PM ref is held for the devices
-> > > > and the call happens under lock_system_sleep()?
-> > > 
-> > > No, the whole synchronization scheme in the links code would have had to be
-> > > changed for that to really work.
-> > > 
-> > > And it really is about what is needed (at least in principle) to run your
-> > > device.  If you think you need device X with a driver to handle device Y
-> > > correctly, then either you need it all the time, from probe to remove, or
-> > > you just don't really need it at all.
-> > 
-> > Real life isn't as simple as that.
-> > 
-> > In this case, we have consumers (hotplug ports) which are doing fine
-> > if the driver for the supplier (NHI) is not loaded. But once it loads,
-> > the links must be in place.
+On Wed, Jul 27, 2016 at 04:42:02PM -0700, Mitchel Humpherys wrote:
+> The following patch to the ARM SMMU driver:
 > 
-> Hmm.
+>     commit d346180e70b91b3d5a1ae7e5603e65593d4622bc
+>     Author: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>     Date:   Tue Jan 26 18:06:34 2016 +0000
+>     
+>         iommu/arm-smmu: Treat all device transactions as unprivileged
 > 
-> What if it is not loaded and the system suspends.  Will everything work
-> as expected after the subsequent resume?
+> started forcing all SMMU transactions to come through as "unprivileged".
+> The rationale given was that:
+> 
+>   (1) There is no way in the IOMMU API to even request privileged mappings.
+> 
+>   (2) It's difficult to implement a DMA mapper that correctly models the
+>       ARM VMSAv8 behavior of unprivileged-writeable =>
+>       privileged-execute-never.
+> 
+> This series rectifies (1) by introducing an IOMMU API for privileged
+> mappings and implements it in io-pgtable-arm.
+> 
+> This series rectifies (2) by introducing a new dma attribute
+> (DMA_ATTR_PRIVILEGED) for users of the DMA API that need privileged
+> mappings which are inaccessible to lesser-privileged execution levels, and
+> implements it in the arm64 IOMMU DMA mapper.  The one known user (pl330.c)
+> is converted over to the new attribute.
+> 
+> Jordan and Jeremy can provide more info on the use case if needed, but the
+> high level is that it's a security feature to prevent attacks such as [1].
+> 
+> Joerg, the v3 series was previously acked by Will [2].  He also recommended
+> that we take all of this through your tree since it's touching multiple
+> subsystems [3].  Can you please take a look?  Thanks!
 
-The short answer is yes.
+You forgot to add my ack to the patches, so if you need it again:
 
-Long answer:
+Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 
-With Thunderbolt, the switch fabric is told to set up PCI tunnels
-through the NHI (Native Host Interface). Once set up, the tunnels
-stay as they are and attached devices are reachable. However after
-a power cycle of the controller (suspend/resume), the tunnels are
-gone and need to be re-established.
-
-On Macs, there are two software components communicating with the
-NHI: The first one is an EFI driver which sets up tunnels to all
-devices present on boot and lights up all attached DP-over-Thunderbolt
-displays. Once ExitBootServices is called, the EFI driver is shut
-down but the configured tunnels stay as they are. The kernel is thus
-able to enumerate attached PCI devices.
-
-The second component is the OS driver, thunderbolt.ko. It is needed
-to set up tunnels to hot-plugged devices (i.e., not present at boot).
-It is also needed to re-establish tunnels after suspend/resume.
-
-The necessity of quirk_apple_wait_for_thunderbolt() arises because
-we walk the entire PCI hierarchy during ->resume_noirq and call
-pci_power_up() and pci_restore_state() for each device. Now remember,
-the PCI tunnels are gone after a power cycle, so the attached devices
-aren't reachable. Waking them and restoring their state will fail
-unless the thunderbolt driver reconfigures the switch fabric first.
-
-=> So if there are no devices attached and thunderbolt.ko isn't loaded,
-   everything is fine. No device link needed.
-
-=> If devices are attached and thunderbolt.ko is loaded, then the hotplug
-   ports need to wait for re-establishment of the PCI tunnels.
-   Device link is needed.
-
-=> If devices were attached on boot and thunderbolt.ko isn't loaded, they
-   will be unreachable after resume. Nothing we can do about that.
-   No device link needed.
-
-So this is a case of a "weak" device link, "weak" referring to the fact
-that it's only needed if the supplier is bound.
-
-All that said, I don't know if this case exists often enough that it's
-worth making allowances for it in the driver core.
-
-Sorry for the wall of text, just want to make sure we're on the same page
-and all possible use cases of device links are discussed and considered.
-
-Thanks,
-
-Lukas
+Will
