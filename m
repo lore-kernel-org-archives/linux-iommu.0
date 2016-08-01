@@ -1,153 +1,66 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 6/8] iommu/arm-smmu: Implement of_xlate() for SMMUv3
-Date: Fri, 29 Jul 2016 19:55:33 +0100
-Message-ID: <1d570682-d815-657e-2119-b706e0034e2c@arm.com>
-References: <cover.1467388950.git.robin.murphy@arm.com>
- <925b054b1e96dc83c0b1dc9607785d0346187366.1467388950.git.robin.murphy@arm.com>
- <20160729144655.GA3359@e106794-lin.localdomain>
+From: Amitoj Kaur Chawla <amitoj1606@gmail.com>
+Subject: [PATCH] iommu/exynos: Modify error handling
+Date: Mon, 1 Aug 2016 11:48:38 +0530
+Message-ID: <20160801061838.GA17805@amitoj-Inspiron-3542>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20160729144655.GA3359-lfHAr0XZR/FyySVAYrpuPyZi+YwRKgec@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: joro@8bytes.org, kgene@kernel.org, k.kozlowski@samsung.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: julia.lawall@lip6.fr
 List-Id: iommu@lists.linux-foundation.org
 
-On 29/07/16 15:46, Jean-Philippe Brucker wrote:
-> Hi Robin,
-> 
-> Very sorry about the delay, I forgot about this minor comment, below
-> 
-> On Fri, Jul 01, 2016 at 05:50:15PM +0100, Robin Murphy wrote:
->> Now that we can properly describe the mapping between PCI RIDs and
->> stream IDs via "iommu-map", and have it fed it to the driver
->> automatically via of_xlate(), rework the SMMUv3 driver to benefit from
->> that, and get rid of the current misuse of the "iommus" binding.
->>
->> Since having of_xlate wired up means that masters will now be given the
->> appropriate DMA ops, we also need to make sure that default domains work
->> properly. This necessitates dispensing with the "whole group at a time"
->> notion for attaching to a domain, as devices which share a group get
->> attached to the group's default domain one by one as they are initially
->> probed.
->>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
->>
->> v4: Add explicit device probe in of_init callback.
->>
->>  drivers/iommu/arm-smmu-v3.c | 278 +++++++++++++++++++-------------------------
->>  1 file changed, 121 insertions(+), 157 deletions(-)
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index 94b68213c50d..fb438664b9f0 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
-> [...]
->> @@ -1800,94 +1752,74 @@ static bool arm_smmu_sid_in_range(struct arm_smmu_device *smmu, u32 sid)
->>  	return sid < limit;
->>  }
->>  
->> +static struct iommu_ops arm_smmu_ops;
->> +
->>  static int arm_smmu_add_device(struct device *dev)
->>  {
->>  	int i, ret;
->> -	u32 sid, *sids;
->> -	struct pci_dev *pdev;
->> -	struct iommu_group *group;
->> -	struct arm_smmu_group *smmu_group;
->>  	struct arm_smmu_device *smmu;
->> +	struct arm_smmu_master_data *master;
->> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec(dev);
->> +	struct iommu_group *group;
->>  
->> -	/* We only support PCI, for now */
->> -	if (!dev_is_pci(dev))
->> +	if (!fwspec || fwspec->iommu_ops != &arm_smmu_ops)
->>  		return -ENODEV;
->> -
->> -	pdev = to_pci_dev(dev);
->> -	group = iommu_group_get_for_dev(dev);
->> -	if (IS_ERR(group))
->> -		return PTR_ERR(group);
->> -
->> -	smmu_group = iommu_group_get_iommudata(group);
->> -	if (!smmu_group) {
->> -		smmu = arm_smmu_get_for_pci_dev(pdev);
->> -		if (!smmu) {
->> -			ret = -ENOENT;
->> -			goto out_remove_dev;
->> -		}
->> -
->> -		smmu_group = kzalloc(sizeof(*smmu_group), GFP_KERNEL);
->> -		if (!smmu_group) {
->> -			ret = -ENOMEM;
->> -			goto out_remove_dev;
->> -		}
->> -
->> -		smmu_group->ste.valid	= true;
->> -		smmu_group->smmu	= smmu;
->> -		iommu_group_set_iommudata(group, smmu_group,
->> -					  __arm_smmu_release_pci_iommudata);
->> +	/*
->> +	 * We _can_ actually withstand dodgy bus code re-calling add_device()
->> +	 * without an intervening remove_device()/of_xlate() sequence, but
->> +	 * we're not going to do so quietly...
->> +	 */
->> +	if (WARN_ON_ONCE(fwspec->iommu_priv)) {
->> +		master = fwspec->iommu_priv;
->> +		smmu = master->smmu;
->>  	} else {
->> -		smmu = smmu_group->smmu;
->> +		smmu = arm_smmu_get_by_node(fwspec->iommu_np);
->> +		if (!smmu)
->> +			return -ENODEV;
->> +		master = kzalloc(sizeof(*master), GFP_KERNEL);
->> +		if (!master)
->> +			return -ENOMEM;
->> +
->> +		master->smmu = smmu;
->> +		fwspec->iommu_priv = master;
-> 
-> It's probably best to initialise master->ste.bypass = true here, to
-> reflect the initial state of STEs. Otherwise attach_dev always calls
-> detach_dev first for nothing.
+of_platform_device_create returns NULL on error so an IS_ERR test is
+incorrect here and a NULL check is required.
 
-I'm actually now thinking that that check in attach_dev() should be for
-ste->valid, rather than ste->bypass. That matches the similar check in
-remove_device(), and looking at old local branches I apparently did have
-it that way at some point, and I now can't quite remember why it ended
-up differently. I'll have a proper dig into it next week.
+The Coccinelle semantic patch used to make this change is as follows:
+@@
+expression e;
+@@
 
-> Apart from that, this version works fine with my twisted setup. Note
-> that we might have to add a master->fwspec reference in the future, to
-> access those SIDs from various places. If I understood correctly, it
-> should be fine as those objects have the same lifetime after the
-> add_device call.
+  e = of_platform_device_create(...);
+if(
+-    IS_ERR(e)
++    !e
+    )
+    {
+  <+...
+  return
+- PTR_ERR(e)
++ -ENODEV
+  ;
+  ...+>
+  }
 
-That sounds reasonable, although I can't think offhand where we might
-have a master_data without having got it via the containing device
-(unless we also add some other means of keeping track of them). Since
-this series doesn't need any kind of reverse-lookup capabilities I'm
-just keeping things as simple as possible for the time being.
+Signed-off-by: Amitoj Kaur Chawla <amitoj1606@gmail.com>
+---
+ drivers/iommu/exynos-iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Robin.
-
-> 
-> Thanks,
-> Jean-Philippe
-> 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 97c41b8..2888bbf 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1242,8 +1242,8 @@ static int __init exynos_iommu_of_setup(struct device_node *np)
+ 		exynos_iommu_init();
+ 
+ 	pdev = of_platform_device_create(np, NULL, platform_bus_type.dev_root);
+-	if (IS_ERR(pdev))
+-		return PTR_ERR(pdev);
++	if (!pdev)
++		return -ENODEV;
+ 
+ 	of_iommu_set_ops(np, &exynos_iommu_ops);
+ 	return 0;
+-- 
+1.9.1
