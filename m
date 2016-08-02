@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v12 07/11] irqchip/gic-v2m: Register the MSI global doorbell
-Date: Tue,  2 Aug 2016 17:23:33 +0000
-Message-ID: <1470158617-7022-8-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v12 09/11] genirq/msi: Introduce msi_desc flags
+Date: Tue,  2 Aug 2016 17:23:35 +0000
+Message-ID: <1470158617-7022-10-git-send-email-eric.auger@redhat.com>
 References: <1470158617-7022-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,109 +21,110 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, dennis.chen-5wv7dgnIgG8@public.gmane.org, robert.richter-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Use the msi-doorbell API to register the global doorbell
-and implement the irq_get_msi_doorbell_info
+This new flags member is meant to store additional information about
+the msi descriptor, starting with allocation status information.
+
+MSI_DESC_FLAG_ALLOCATED bit tells the associated base IRQ is allocated.
+This information is currently used at deallocation time. We also
+introduce MSI_DESC_FLAG_FUNCTIONAL telling the MSIs are functional.
+
+For the time being ALLOCATED and FUNCTIONAL are set at the same time
+but this is going to change in subsequent patch. Indeed in some situations
+some additional tasks need to be carried out for the MSI to be functional.
+For instance the MSI doorbell may need to be mapped in an IOMMU.
+
+FUNCTIONAL value already gets used when enumerating the usable MSIs in
+msix_capability_init.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
-v11 -> v12:
-- use irq_get_msi_doorbell_info new name
-- simplify error handling
 
-v10 -> v11:
-- use the new registration API and re-implement the msi_doorbell_info
-  ops
-
-v9 -> v10:
-- introduce the registration concept in place of msi_doorbell_info
-  callback
-
-v8 -> v9:
-- use global_doorbell instead of percpu_doorbells
-
-v7 -> v8:
-- gicv2m_msi_doorbell_info does not return a pointer to const
-- remove spurious !v2m check
-- add IOMMU_MMIO flag
-
-v7: creation
+v12: new
 ---
- drivers/irqchip/irq-gic-v2m.c | 35 ++++++++++++++++++++++++++++-------
- 1 file changed, 28 insertions(+), 7 deletions(-)
+ drivers/pci/msi.c   |  2 +-
+ include/linux/msi.h | 14 ++++++++++++++
+ kernel/irq/msi.c    |  7 ++++++-
+ 3 files changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/irqchip/irq-gic-v2m.c b/drivers/irqchip/irq-gic-v2m.c
-index ad0d296..37d8437 100644
---- a/drivers/irqchip/irq-gic-v2m.c
-+++ b/drivers/irqchip/irq-gic-v2m.c
-@@ -24,6 +24,8 @@
- #include <linux/of_pci.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
-+#include <linux/iommu.h>
-+#include <linux/msi-doorbell.h>
+diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+index a080f44..d7733ea 100644
+--- a/drivers/pci/msi.c
++++ b/drivers/pci/msi.c
+@@ -793,7 +793,7 @@ out_avail:
+ 		int avail = 0;
  
- /*
- * MSI_TYPER:
-@@ -68,6 +70,7 @@ struct v2m_data {
- 	u32 spi_offset;		/* offset to be subtracted from SPI number */
- 	unsigned long *bm;	/* MSI vector bitmap */
- 	u32 flags;		/* v2m flags for specific implementation */
-+	struct msi_doorbell_info *doorbell_info; /* MSI doorbell */
+ 		for_each_pci_msi_entry(entry, dev) {
+-			if (entry->irq != 0)
++			if (entry->flags & MSI_DESC_FLAG_FUNCTIONAL)
+ 				avail++;
+ 		}
+ 		if (avail != 0)
+diff --git a/include/linux/msi.h b/include/linux/msi.h
+index 8b425c6..18f894f 100644
+--- a/include/linux/msi.h
++++ b/include/linux/msi.h
+@@ -47,6 +47,7 @@ struct fsl_mc_msi_desc {
+  * @nvec_used:	The number of vectors used
+  * @dev:	Pointer to the device which uses this descriptor
+  * @msg:	The last set MSI message cached for reuse
++ * @flags:	flags to describe the MSI descriptor status or features
+  *
+  * @masked:	[PCI MSI/X] Mask bits
+  * @is_msix:	[PCI MSI/X] True if MSI-X
+@@ -67,6 +68,7 @@ struct msi_desc {
+ 	unsigned int			nvec_used;
+ 	struct device			*dev;
+ 	struct msi_msg			msg;
++	u32						flags;
+ 
+ 	union {
+ 		/* PCI MSI/X specific data */
+@@ -99,6 +101,18 @@ struct msi_desc {
+ 	};
  };
  
- static void gicv2m_mask_msi_irq(struct irq_data *d)
-@@ -109,13 +112,22 @@ static void gicv2m_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- 		msg->data -= v2m->spi_offset;
- }
- 
-+static struct msi_doorbell_info *
-+gicv2m_irq_get_msi_doorbell_info(struct irq_data *data)
-+{
-+	struct v2m_data *v2m = irq_data_get_irq_chip_data(data);
++/* Flags for msi_desc */
++enum {
++	/* the base IRQ is allocated */
++	MSI_DESC_FLAG_ALLOCATED	=	(1 << 0),
++	/**
++	 * the MSI is functional; in some cases the fact the base IRQ is
++	 * allocated is not sufficient for the MSIs to be functional: for
++	 * example the MSI doorbell(s) may need to be IOMMU mapped.
++	 */
++	MSI_DESC_FLAG_FUNCTIONAL =	(1 << 1),
++};
 +
-+	return v2m->doorbell_info;
-+}
-+
- static struct irq_chip gicv2m_irq_chip = {
--	.name			= "GICv2m",
--	.irq_mask		= irq_chip_mask_parent,
--	.irq_unmask		= irq_chip_unmask_parent,
--	.irq_eoi		= irq_chip_eoi_parent,
--	.irq_set_affinity	= irq_chip_set_affinity_parent,
--	.irq_compose_msi_msg	= gicv2m_compose_msi_msg,
-+	.name				= "GICv2m",
-+	.irq_mask			= irq_chip_mask_parent,
-+	.irq_unmask			= irq_chip_unmask_parent,
-+	.irq_eoi			= irq_chip_eoi_parent,
-+	.irq_set_affinity		= irq_chip_set_affinity_parent,
-+	.irq_compose_msi_msg		= gicv2m_compose_msi_msg,
-+	.irq_get_msi_doorbell_info	= gicv2m_irq_get_msi_doorbell_info,
- };
+ /* Helpers to hide struct msi_desc implementation details */
+ #define msi_desc_to_dev(desc)		((desc)->dev)
+ #define dev_to_msi_list(dev)		(&(dev)->msi_list)
+diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+index 72bf4d6..9b93766 100644
+--- a/kernel/irq/msi.c
++++ b/kernel/irq/msi.c
+@@ -361,6 +361,9 @@ int msi_domain_alloc_irqs(struct irq_domain *domain, struct device *dev,
+ 			return ret;
+ 		}
  
- static int gicv2m_irq_gic_domain_alloc(struct irq_domain *domain,
-@@ -366,12 +378,21 @@ static int __init gicv2m_init_one(struct fwnode_handle *fwnode,
- 		goto err_iounmap;
++		desc->flags |= MSI_DESC_FLAG_ALLOCATED;
++		desc->flags |= MSI_DESC_FLAG_FUNCTIONAL;
++
+ 		for (i = 0; i < desc->nvec_used; i++)
+ 			irq_set_msi_desc_off(virq, i, desc);
  	}
- 
-+	v2m->doorbell_info =
-+		msi_doorbell_register_global(v2m->res.start, sizeof(u32),
-+					     IOMMU_WRITE | IOMMU_MMIO, false);
-+	if (!v2m->doorbell_info) {
-+		ret = -ENOMEM;
-+		goto err_free_bm;
-+	}
-+
- 	list_add_tail(&v2m->entry, &v2m_nodes);
- 
- 	pr_info("range%pR, SPI[%d:%d]\n", res,
- 		v2m->spi_start, (v2m->spi_start + v2m->nr_spis - 1));
- 	return 0;
--
-+err_free_bm:
-+	kfree(v2m->bm);
- err_iounmap:
- 	iounmap(v2m->base);
- err_free_v2m:
+@@ -395,9 +398,11 @@ void msi_domain_free_irqs(struct irq_domain *domain, struct device *dev)
+ 		 * enough that there is no IRQ associated to this
+ 		 * entry. If that's the case, don't do anything.
+ 		 */
+-		if (desc->irq) {
++		if (desc->flags & MSI_DESC_FLAG_ALLOCATED) {
+ 			irq_domain_free_irqs(desc->irq, desc->nvec_used);
+ 			desc->irq = 0;
++			desc->flags &= ~MSI_DESC_FLAG_ALLOCATED;
++			desc->flags &= ~MSI_DESC_FLAG_FUNCTIONAL;
+ 		}
+ 	}
+ }
 -- 
 1.9.1
