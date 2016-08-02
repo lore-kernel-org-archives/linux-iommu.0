@@ -1,9 +1,11 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Updates for Linux v4.8
-Date: Mon, 1 Aug 2016 10:59:16 +0200
-Message-ID: <20160801085908.GA4105@8bytes.org>
+From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v12 0/8] KVM PCIe/MSI passthrough on ARM/ARM64: kernel part
+	1/3: iommu changes
+Date: Tue,  2 Aug 2016 17:15:29 +0000
+Message-ID: <1470158137-6931-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5508049342788403946=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -14,230 +16,169 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, dennis.chen-5wv7dgnIgG8@public.gmane.org, robert.richter-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+This series introduces the msi-iommu api used to:
 
---===============5508049342788403946==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="tThc/1wpZn/ma/RB"
-Content-Disposition: inline
+- allocate/free resources for MSI IOMMU mapping
+- set the MSI iova window aperture
+- map/unmap physical addresses onto MSI IOVAs.
+- determine whether an msi needs to be iommu mapped
+- overwrite an msi_msg PA address with its pre-allocated/mapped IOVA
 
+Also a new iommu domain attribute, DOMAIN_ATTR_MSI_GEOMETRY is introduced
+to report the MSI iova window geometry (aperture and iommu-msi API support).
 
---tThc/1wpZn/ma/RB
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Currently:
+- iommu driver is supposed to allocate/free MSI mapping resources
+- VFIO subsystem is supposed to set the MSI IOVA aperture.
+- The MSI layer is supposed to allocate/free iova mappings and overwrite
+  msi_msg with IOVA at composition time
 
-Hi Linus,
+More details & context can be found at:
+http://www.linaro.org/blog/core-dump/kvm-pciemsi-passthrough-armarm64/
 
-The following changes since commit 523d939ef98fd712632d93a5a2b588e477a7565e:
+Best Regards
 
-  Linux 4.7 (2016-07-24 12:23:50 -0700)
+Eric
 
-are available in the git repository at:
+Git: complete series available at
+https://github.com/eauger/linux/tree/v4.7-rc7-passthrough-v12
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v4.8
+see part III for wrap-up details.
 
-for you to fetch changes up to f360d3241f5557f241d55b959e6e65070e77992e:
+History:
+v11 -> v12:
+- in iommu/msi-iommu: initialization, handle dmi allocation failure
 
-  Merge branches 'x86/amd', 'x86/vt-d', 'arm/exynos', 'arm/mediatek', 'arm/msm', 'arm/rockchip', 'arm/smmu' and 'core' into next (2016-07-26 16:02:37 +0200)
+v10 -> v11:
+- no change in the series, just incremented for consistency
+- added a temporary patch in the branch:
+  "iommu/iova: FIXUP! validate iova_domain input to put_iova_domain"
+  originally sent by Nate and adapted for this use case. This is currently
+  under discussion on the ML. The crash typically occurs in case unsafe
+  interrupts are discovered while allow_unsafe_interrupts is not set.
 
-----------------------------------------------------------------
-IOMMU Updates for Linux v4.8
+v9 -> v10:
+- split error management in iommu_msi_set_aperture
 
-In the updates:
+v8 -> v9:
+- rename iommu_domain_msi_geometry programmable flag into iommu_msi_supported
+- introduce msi_apperture_valid helper and use this instead of is_aperture_set
 
-	* Big endian support and preparation for defered probing for the
-	  Exynos IOMMU driver
+v7 -> v8:
+- The API is retargetted for MSI: renamed msi-iommu
+  all "dma-reserved" namings removed
+- now implemented upon dma-iommu (get, put, init), ie. reuse iova_cookie,
+  and iova API
+- msi mapping resources now are guaranteed to exist during the whole iommu
+  domain's lifetime. No need to lock to garantee the cookie integrity
+- removed alloc/free_reserved_reserved_iova_domain. We now have a single
+  function that sets the aperture, looking like iommu_dma_init_domain.
+- we now use a list instead of an RB-tree
+- prot is not propagated anymore at domain creation due to the retargetting
+  for MSI
+- iommu_domain pointer removed from doorbell_mapping struct
+- replaced DOMAIN_ATTR_MSI_MAPPING by DOMAIN_ATTR_MSI_GEOMETRY
 
-	* Simplifications in iommu-group id handling
+v6 -> v7:
+- fixed known lock bugs and multiple page sized slots matching
+  (I only have a single MSI frame made of a single page)
+- reserved_iova_cookie now pointing to a struct that encapsulates the
+  iova domain handle + protection attribute passed from VFIO (Alex' req)
+- 2 new functions exposed: iommu_msi_mapping_translate_msg,
+  iommu_msi_mapping_desc_to_domain: not sure this is the right location/proto
+  though
+- iommu_put_reserved_iova now takes a phys_addr_t
+- everything now is cleanup on iommu_domain destruction
 
-	* Support for Mediatek generation one IOMMU hardware
+RFC v5 -> patch v6:
+- split to ease the review process
+- in dma-reserved-api use a spin lock instead of a mutex (reported by
+  Jean-Philippe)
+- revisit iommu_get_reserved_iova API to pass a size parameter upon
+  Marc's request
+- Consistently use the page order passed when creating the iova domain.
+- init reserved_binding_list (reported by Julien)
 
-	* Conversion of the AMD IOMMU driver to use the generic IOVA
-	  allocator. This driver now also benefits from the recent
-	  scalability improvements in the IOVA code.
+RFC v4 -> RFC v5:
+- take into account Thomas' comments on MSI related patches
+  - split "msi: IOMMU map the doorbell address when needed"
+  - increase readability and add comments
+  - fix style issues
+ - split "iommu: Add DOMAIN_ATTR_MSI_MAPPING attribute"
+ - platform ITS now advertises IOMMU_CAP_INTR_REMAP
+ - fix compilation issue with CONFIG_IOMMU API unset
+ - arm-smmu-v3 now advertises DOMAIN_ATTR_MSI_MAPPING
 
-	* Preparations to use generic DMA mapping code in the Rockchip
-	  IOMMU driver
+RFC v3 -> v4:
+- Move doorbell mapping/unmapping in msi.c
+- fix ref count issue on set_affinity: in case of a change in the address
+  the previous address is decremented
+- doorbell map/unmap now is done on msi composition. Should allow the use
+  case for platform MSI controllers
+- create dma-reserved-iommu.h/c exposing/implementing a new API dedicated
+  to reserved IOVA management (looking like dma-iommu glue)
+- series reordering to ease the review:
+  - first part is related to IOMMU
+  - second related to MSI sub-system
+  - third related to VFIO (except arm-smmu IOMMU_CAP_INTR_REMAP removal)
+- expose the number of requested IOVA pages through VFIO_IOMMU_GET_INFO
+  [this partially addresses Marc's comments on iommu_get/put_single_reserved
+   size/alignment problematic - which I did not ignore - but I don't know
+   how much I can do at the moment]
 
-	* Device tree adaption and conversion to use generic page-table
-	  code for the MSM IOMMU driver
+RFC v2 -> RFC v3:
+- should fix wrong handling of some CONFIG combinations:
+  CONFIG_IOVA, CONFIG_IOMMU_API, CONFIG_PCI_MSI_IRQ_DOMAIN
+- fix MSI_FLAG_IRQ_REMAPPING setting in GICv3 ITS (although not tested)
 
-	* An iova_to_phys optimization in the ARM-SMMU driver to greatly
-	  improve page-table teardown performance with VFIO
+PATCH v1 -> RFC v2:
+- reverted to RFC since it looks more reasonable ;-) the code is split
+  between VFIO, IOMMU, MSI controller and I am not sure I did the right
+  choices. Also API need to be further discussed.
+- iova API usage in arm-smmu.c.
+- MSI controller natively programs the MSI addr with either the PA or IOVA.
+  This is not done anymore in vfio-pci driver as suggested by Alex.
+- check irq remapping capability of the group
 
-	* Various other small fixes and conversions
-
-----------------------------------------------------------------
-Andrea Gelmini (1):
-      iommu/arm-smmu: Fix typo in devicetree binding introductory text
-
-Ben Dooks (1):
-      iommu/exynos: update to use iommu big-endian
-
-Bhaktipriya Shridhar (1):
-      iommu/amd: Remove create_workqueue
-
-Geert Uytterhoeven (1):
-      MAINTAINERS: Add file patterns for iommu device tree bindings
-
-Heiner Kallweit (2):
-      iommu: Simplify init function
-      iommu: Simplify and fix ida handling
-
-Honghui Zhang (5):
-      iommu/mediatek: Do not call of_node_put in mtk_iommu_of_xlate
-      dt-bindings: mediatek: add descriptions for mediatek mt2701 iommu and smi
-      iommu/mediatek: move the common struct into header file
-      memory/mediatek: add support for mt2701
-      iommu/mediatek: add support for mtk iommu generation one HW
-
-Joerg Roedel (26):
-      iommu/mediatek: Make mtk_iommu_pm_ops static
-      Merge branch 'for-joerg/arm-smmu/updates' of git://git.kernel.org/.../will/linux into arm/smmu
-      iommu/amd: Init unity mappings only for dma_ops domains
-      iommu: Add apply_dm_region call-back to iommu-ops
-      iommu/amd: Select IOMMU_IOVA for AMD IOMMU
-      iommu/amd: Allocate iova_domain for dma_ops_domain
-      iommu/amd: Create a list of reserved iova addresses
-      iommu/amd: Implement apply_dm_region call-back
-      iommu/amd: Pass gfp-flags to iommu_map_page()
-      iommu/amd: Remove special mapping code for dma_ops path
-      iommu/amd: Make use of the generic IOVA allocator
-      iommu/amd: Remove other remains of old address allocator
-      iommu/amd: Remove align-parameter from __map_single()
-      iommu/amd: Set up data structures for flush queue
-      iommu/amd: Allow NULL pointer parameter for domain_flush_complete()
-      iommu/amd: Implement flush queue
-      iommu/amd: Implement timeout to flush unmap queues
-      iommu/amd: Introduce dir2prot() helper
-      iommu/amd: Optimize map_sg and unmap_sg
-      iommu/amd: Use dev_data->domain in get_domain()
-      iommu/amd: Handle IOMMU_DOMAIN_DMA in ops->domain_free call-back
-      iommu/amd: Flush iova queue before releasing dma_ops_domain
-      iommu/amd: Use container_of to get dma_ops_domain
-      iommu/amd: Update Alias-DTE in update_device_table()
-      iommu/amd: Initialize dma-ops domains with 3-level page-table
-      Merge branches 'x86/amd', 'x86/vt-d', 'arm/exynos', 'arm/mediatek', 'arm/msm', 'arm/rockchip', 'arm/smmu' and 'core' into next
-
-Marek Szyprowski (5):
-      iommu/exynos: Suppress unbinding to prevent system failure
-      iommu/exynos: Return proper errors from getting clocks
-      iommu/exynos: Fix master clock management for inactive SYSMMU
-      iommu/exynos: Prepare clocks when needed, not in driver probe
-      iommu/exynos: Prepare for deferred probe support
-
-Nadav Amit (1):
-      iommu/vt-d: Remove unnecassary qi clflushes
-
-Peng Fan (1):
-      iommu/arm-smmu: Use devm_request_irq and devm_free_irq
-
-Roland Dreier (1):
-      iommu/vt-d: Don't reject NTB devices due to scope mismatch
-
-Shunqian Zheng (3):
-      iommu/rockchip: Fix allocation of bases array in driver probe
-      iommu/rockchip: Use DMA API to manage coherency
-      iommu/rockchip: Prepare to support generic DMA mapping
-
-Simon Xue (2):
-      iommu/rockchip: Fix devm_{request,free}_irq parameter
-      iommu/rockchip: Add map_sg callback for rk_iommu_ops
-
-Sricharan R (6):
-      iommu/msm: Add DT adaptation
-      documentation: iommu: Add bindings for msm,iommu-v0 ip
-      iommu/msm: Move the contents from msm_iommu_dev.c to msm_iommu.c
-      iommu/msm: Add support for generic master bindings
-      iommu/msm: use generic ARMV7S short descriptor pagetable ops
-      iommu/msm: Remove driver BROKEN
-
-Wan Zongshun (1):
-      iommu/amd: Set AMD iommu callbacks for platform bus driver
-
-Wei Chen (1):
-      iommu/arm-smmu: request pcie devices to enable ACS
-
-Wei Yang (2):
-      iommu/vt-d: Reduce extra first level entry in iommu->domains
-      iommu/vt-d: Return error code in domain_context_mapping_one()
-
-Will Deacon (1):
-      iommu/io-pgtable-arm: Fix iova_to_phys for block entries
-
- .../devicetree/bindings/iommu/arm,smmu-v3.txt      |    2 +-
- .../devicetree/bindings/iommu/mediatek,iommu.txt   |   13 +-
- .../devicetree/bindings/iommu/msm,iommu-v0.txt     |   64 ++
- .../memory-controllers/mediatek,smi-common.txt     |   21 +-
- .../memory-controllers/mediatek,smi-larb.txt       |    4 +-
- MAINTAINERS                                        |    1 +
- drivers/iommu/Kconfig                              |   21 +-
- drivers/iommu/Makefile                             |    3 +-
- drivers/iommu/amd_iommu.c                          | 1032 ++++++++------------
- drivers/iommu/amd_iommu_types.h                    |    1 -
- drivers/iommu/amd_iommu_v2.c                       |    2 +-
- drivers/iommu/arm-smmu-v3.c                        |    2 +
- drivers/iommu/arm-smmu.c                           |   28 +-
- drivers/iommu/dmar.c                               |   21 +-
- drivers/iommu/exynos-iommu.c                       |  107 +-
- drivers/iommu/intel-iommu.c                        |    6 +-
- drivers/iommu/io-pgtable-arm.c                     |    2 +-
- drivers/iommu/iommu.c                              |   32 +-
- drivers/iommu/msm_iommu.c                          |  870 +++++++++--------
- drivers/iommu/msm_iommu.h                          |   73 +-
- drivers/iommu/msm_iommu_dev.c                      |  381 --------
- drivers/iommu/mtk_iommu.c                          |   49 +-
- drivers/iommu/mtk_iommu.h                          |   77 ++
- drivers/iommu/mtk_iommu_v1.c                       |  727 ++++++++++++++
- drivers/iommu/rockchip-iommu.c                     |  181 +++-
- drivers/memory/mtk-smi.c                           |  167 +++-
- include/dt-bindings/memory/mt2701-larb-port.h      |   85 ++
- include/linux/iommu.h                              |    3 +
- 28 files changed, 2316 insertions(+), 1659 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
- delete mode 100644 drivers/iommu/msm_iommu_dev.c
- create mode 100644 drivers/iommu/mtk_iommu.h
- create mode 100644 drivers/iommu/mtk_iommu_v1.c
- create mode 100644 include/dt-bindings/memory/mt2701-larb-port.h
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---tThc/1wpZn/ma/RB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJXnw9cAAoJECvwRC2XARrjFQ0QAJRg3VjgN4xWEHYGh2zJZTri
-mW2N1uYzUjjDp93E5gYpIfm7vXrwPuTW8Cif3hYOoatjReqFSVL9bzt/xuw8Znzw
-2hdPjegGSDUEdUc/Gz1Dwo0bHMgnmVBFmnsZxetzVRIRFQ7t+/fJn1+ddNggdgBg
-RvUT9EUM+1XrOIs06Fw+P0qGPNW8jShHYjhjxE54oBb9RRrNV7IHkud3CNJMah04
-AUyP4utj9Hv9Wuj8kkgv+x9hPmXOrqOPgTuHqXmW34nSFx1snwAmZy21HB4AaagC
-CqLaO4fFaG1ctLYx/dAFwz+b1YQ7boY2nvsDfv4JMG8x5IAo1EyHB8iwEfle/lz+
-eeQNUDQTgZS4WUm9NPoDCth/CySyZtYOWQ/cHkksqIeIduDx1Yuh8ja1VM686TkE
-b3aJPKVdbAYtDJc0TUpehiDSnRsNhKZh/1Khvg3Ue7GagrHzm70SWMFOyLHp/QM2
-JE/667MzGfvn+PkBSKjMNvD/S918S4G5a/VcsO+2fJJA67DIFVIwtTxZIe4ouWib
-DtweYMzjJP9Ia9VzdkVq9L6w4osb38P8s/Ru1SdZRkXJqcr58SWmxZRL6S/KAOFv
-7w6t4ueZKTW0fsuG4vmors3zirv/qqhR9e0CUH08hyWRl2yTjWE6v3qH27KtnsbX
-pSjLnDPu+7fDaTNxRHPn
-=e+th
------END PGP SIGNATURE-----
-
---tThc/1wpZn/ma/RB--
-
---===============5508049342788403946==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+RFC v1 [2] -> PATCH v1:
+- use the existing dma map/unmap ioctl interface with a flag to register a
+  reserved IOVA range. Use the legacy Rb to store this special vfio_dma.
+- a single reserved IOVA contiguous region now is allowed
+- use of an RB tree indexed by PA to store allocated reserved slots
+- use of a vfio_domain iova_domain to manage iova allocation within the
+  window provided by the userspace
+- vfio alloc_map/unmap_free take a vfio_group handle
+- vfio_group handle is cached in vfio_pci_device
+- add ref counting to bindings
+- user modality enabled at the end of the series
 
 
---===============5508049342788403946==--
+Eric Auger (8):
+  iommu: Add iommu_domain_msi_geometry and DOMAIN_ATTR_MSI_GEOMETRY
+  iommu/arm-smmu: initialize the msi geometry and advertise iommu-msi
+    support
+  iommu: introduce an msi cookie
+  iommu/msi-iommu: initialization
+  iommu/msi-iommu: iommu_msi_[get,put]_doorbell_iova
+  iommu/msi-iommu: iommu_msi_domain
+  iommu/msi-iommu: iommu_msi_msg_pa_to_va
+  iommu/arm-smmu: get/put the msi cookie
+
+ drivers/iommu/Kconfig       |   7 +
+ drivers/iommu/Makefile      |   1 +
+ drivers/iommu/arm-smmu-v3.c |  18 ++-
+ drivers/iommu/arm-smmu.c    |  18 ++-
+ drivers/iommu/iommu.c       |   5 +
+ drivers/iommu/msi-iommu.c   | 326 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iommu.h       |  15 ++
+ include/linux/msi-iommu.h   | 143 +++++++++++++++++++
+ 8 files changed, 525 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/iommu/msi-iommu.c
+ create mode 100644 include/linux/msi-iommu.h
+
+-- 
+1.9.1
