@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v12 4/8] iommu/msi-iommu: initialization
-Date: Tue,  2 Aug 2016 17:15:33 +0000
-Message-ID: <1470158137-6931-5-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v12 5/8] iommu/msi-iommu: iommu_msi_[get,put]_doorbell_iova
+Date: Tue,  2 Aug 2016 17:15:34 +0000
+Message-ID: <1470158137-6931-6-git-send-email-eric.auger@redhat.com>
 References: <1470158137-6931-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,287 +21,277 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, dennis.chen-5wv7dgnIgG8@public.gmane.org, robert.richter-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-iommu_get/put_msi_cookie allocates/frees the resource used to store
-and ref count the MSI doorbell mappings. iommu_msi_set_aperture
-initializes the iova domain used for MSI IOVA allocation and sets the
-iommu domain's msi geometry.
+iommu_msi_get_doorbell_iova allows to iommu map an MSI doorbell contiguous
+physical region onto a reserved contiguous IOVA region. The physical
+region base address does not need to be iommu page size aligned. iova
+pages are allocated and mapped so that they cover all the physical region.
+This mapping is tracked as a whole (and cannot be split).
 
-The implementation relies on dma-iommu API and iova API.
+In case a mapping already exists for the physical pages, the IOVA mapped
+to the PA base is directly returned.
 
-New msi functions are fully implemented if CONFIG_IOMMU_MSI is set.
+Each time the get succeeds a binding ref count is incremented.
+
+iommu_put_reserved_iova decrements the ref count and when this latter
+is null, the mapping is destroyed and the IOVAs are released.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
-v11 -> v12:
-- handle allocation failure in iommu_get_msi_cookie
-
-v10:
-- split error management in iommu_msi_set_aperture
-
 v9:
-- remove is_aperture_set and use iommu_domain_msi_aperture_valid helper
-  instead
-- set iommu domain's msi geometry
+- use iommu_domain_msi_aperture_valid
 
 v8:
-- new design where msi-iommu relies on dma-iommu
-- remove the iommu_domain * from the doorbell_mapping struct
-- added is_aperture_set
+- function renaming
+- new design based on the assumption the iova domain cannot disappear
+- free_iova outside of doorbell_mapping_release (iommu_domain * was
+  removed from doorbell_mapping)
 
 v7:
+- change title and rework commit message with new name of the functions
+  and size parameter
 - fix locking
-- add iova_cache_get/put
-- static inline functions when CONFIG_IOMMU_DMA_RESERVED is not set
-- introduce struct reserved_iova_domain to encapsulate prot info &
-  add prot parameter in alloc_reserved_iova_domain
+- rework header doc comments
+- put now takes a phys_addr_t
+- check prot argument against reserved_iova_domain prot flags
 
 v5 -> v6:
-- use spin lock instead of mutex
+- revisit locking with spin_lock instead of mutex
+- do not kref_get on 1st get
+- add size parameter to the get function following Marc's request
+- use the iova domain shift instead of using the smallest supported page siz
 
 v3 -> v4:
-- formerly in "iommu/arm-smmu: implement alloc/free_reserved_iova_domain" &
-  "iommu: add alloc/free_reserved_iova_domain"
+- formerly in iommu: iommu_get/put_single_reserved &
+  iommu/arm-smmu: implement iommu_get/put_single_reserved
+- Attempted to address Marc's doubts about missing size/alignment
+  at VFIO level (user-space knows the IOMMU page size and the number
+  of IOVA pages to provision)
 
 v2 -> v3:
-- remove iommu_alloc_reserved_iova_domain & iommu_free_reserved_iova_domain
-  static implementation in case CONFIG_IOMMU_API is not set
+- remove static implementation of iommu_get_single_reserved &
+  iommu_put_single_reserved when CONFIG_IOMMU_API is not set
 
 v1 -> v2:
-- moved from vfio API to IOMMU API
+- previously a VFIO API, named vfio_alloc_map/unmap_free_reserved_iova
 ---
- drivers/iommu/Kconfig     |   7 ++++
- drivers/iommu/Makefile    |   1 +
- drivers/iommu/msi-iommu.c | 104 ++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/msi-iommu.h |  65 +++++++++++++++++++++++++++++
- 4 files changed, 177 insertions(+)
- create mode 100644 drivers/iommu/msi-iommu.c
- create mode 100644 include/linux/msi-iommu.h
+ drivers/iommu/msi-iommu.c | 150 ++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/msi-iommu.h |  39 ++++++++++++
+ 2 files changed, 189 insertions(+)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index ad08603..5ea1610 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -74,6 +74,11 @@ config IOMMU_DMA
- 	select IOMMU_IOVA
- 	select NEED_SG_DMA_LENGTH
- 
-+# IOMMU MSI mapping
-+config IOMMU_MSI
-+	bool
-+	select IOMMU_DMA
-+
- config FSL_PAMU
- 	bool "Freescale IOMMU support"
- 	depends on PPC_E500MC || (COMPILE_TEST && PPC)
-@@ -296,6 +301,7 @@ config SPAPR_TCE_IOMMU
- config ARM_SMMU
- 	bool "ARM Ltd. System MMU (SMMU) Support"
- 	depends on (ARM64 || ARM) && MMU
-+	select IOMMU_MSI
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU if ARM
-@@ -309,6 +315,7 @@ config ARM_SMMU
- config ARM_SMMU_V3
- 	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
- 	depends on ARM64 && PCI
-+	select IOMMU_MSI
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select GENERIC_MSI_IRQ_DOMAIN
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index c6edb31..a381e66 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -2,6 +2,7 @@ obj-$(CONFIG_IOMMU_API) += iommu.o
- obj-$(CONFIG_IOMMU_API) += iommu-traces.o
- obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
- obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
-+obj-$(CONFIG_IOMMU_MSI) += msi-iommu.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
 diff --git a/drivers/iommu/msi-iommu.c b/drivers/iommu/msi-iommu.c
-new file mode 100644
-index 0000000..26aa502f
---- /dev/null
+index 26aa502f..4dd0fdf 100644
+--- a/drivers/iommu/msi-iommu.c
 +++ b/drivers/iommu/msi-iommu.c
-@@ -0,0 +1,104 @@
-+/*
-+ * Reserved IOVA Management
-+ *
-+ * Copyright (c) 2015 Linaro Ltd.
-+ *              www.linaro.org
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/iommu.h>
-+#include <linux/dma-iommu.h>
-+#include <linux/msi-iommu.h>
-+#include <linux/spinlock.h>
-+#include <linux/iova.h>
-+
-+struct doorbell_mapping {
-+	struct kref		kref;
-+	struct list_head	next;
-+	phys_addr_t		addr;
-+	dma_addr_t		iova;
-+	size_t			size;
-+};
-+
-+struct doorbell_mapping_info {
-+	struct list_head list; /* list of doorbell mapping entries */
-+	spinlock_t lock;
-+};
-+
-+int iommu_get_msi_cookie(struct iommu_domain *domain)
+@@ -102,3 +102,153 @@ int iommu_msi_set_aperture(struct iommu_domain *domain,
+ }
+ EXPORT_SYMBOL_GPL(iommu_msi_set_aperture);
+ 
++/* called with info->lock held */
++static struct doorbell_mapping *
++search_msi_doorbell_mapping(struct doorbell_mapping_info *info,
++			    phys_addr_t addr, size_t size)
 +{
-+	struct doorbell_mapping_info *dmi;
-+	int ret;
++	struct doorbell_mapping *mapping;
 +
-+	if (domain->msi_cookie || domain->iova_cookie)
-+		return -EINVAL;
-+
-+	ret = iommu_get_dma_cookie(domain);
-+	if (ret)
-+		return ret;
-+
-+	dmi = kzalloc(sizeof(*dmi), GFP_KERNEL);
-+	if (!dmi) {
-+		iommu_put_dma_cookie(domain);
-+		return -ENOMEM;
++	list_for_each_entry(mapping, &info->list, next) {
++		if ((addr >= mapping->addr) &&
++		    (addr + size <= mapping->addr + mapping->size))
++			return mapping;
 +	}
-+
-+	INIT_LIST_HEAD(&dmi->list);
-+	spin_lock_init(&dmi->lock);
-+	iova_cache_get();
-+
-+	domain->msi_cookie = dmi;
-+
-+	return 0;
++	return NULL;
 +}
-+EXPORT_SYMBOL(iommu_get_msi_cookie);
 +
-+void iommu_put_msi_cookie(struct iommu_domain *domain)
++int iommu_msi_get_doorbell_iova(struct iommu_domain *domain,
++				phys_addr_t addr, size_t size, int prot,
++				dma_addr_t *iova)
 +{
 +	struct doorbell_mapping_info *dmi = domain->msi_cookie;
-+
-+	if (!dmi)
-+		return;
-+
-+	domain->msi_cookie = NULL;
-+
-+	WARN_ON(!list_empty(&dmi->list));
-+
-+	kfree(dmi);
-+	iommu_put_dma_cookie(domain);
-+	iova_cache_put();
-+}
-+EXPORT_SYMBOL(iommu_put_msi_cookie);
-+
-+int iommu_msi_set_aperture(struct iommu_domain *domain,
-+			   dma_addr_t start, dma_addr_t end)
-+{
-+	struct doorbell_mapping_info *dmi = domain->msi_cookie;
-+	int ret;
++	struct iova_domain *iovad = domain->iova_cookie;
++	struct doorbell_mapping *new_mapping, *mapping;
++	phys_addr_t aligned_base, offset;
++	size_t binding_size;
++	struct iova *p_iova;
++	dma_addr_t new_iova;
++	int ret = -EINVAL;
++	bool unmap = false;
 +
 +	if (!dmi)
 +		return -ENODEV;
 +
-+	if (iommu_domain_msi_aperture_valid(domain))
++	if (!iommu_domain_msi_aperture_valid(domain))
 +		return -EINVAL;
 +
-+	ret = iommu_dma_init_domain(domain, start, end - start + 1);
++	offset = iova_offset(iovad, addr);
++	aligned_base = addr - offset;
++	binding_size = iova_align(iovad, size + offset);
 +
-+	if (!ret) {
-+		domain->msi_geometry.aperture_start = start;
-+		domain->msi_geometry.aperture_end = end;
++	spin_lock(&dmi->lock);
++
++	mapping = search_msi_doorbell_mapping(dmi, aligned_base, binding_size);
++	if (mapping) {
++		*iova = mapping->iova + offset + aligned_base - mapping->addr;
++		kref_get(&mapping->kref);
++		ret = 0;
++		goto unlock;
 +	}
 +
++	spin_unlock(&dmi->lock);
++
++	new_mapping = kzalloc(sizeof(*new_mapping), GFP_KERNEL);
++	if (!new_mapping)
++		return -ENOMEM;
++
++	p_iova = alloc_iova(iovad, binding_size >> iova_shift(iovad),
++			    iovad->dma_32bit_pfn, true);
++	if (!p_iova) {
++		kfree(new_mapping);
++		return -ENOMEM;
++	}
++
++	new_iova = iova_dma_addr(iovad, p_iova);
++	*iova = new_iova;
++
++	/* iommu_map is not supposed to be atomic */
++	ret = iommu_map(domain, *iova, aligned_base, binding_size, prot);
++
++	spin_lock(&dmi->lock);
++
++	if (ret)
++		goto free_iova;
++	/*
++	 * check again the doorbell mapping was not added while the lock
++	 * was released
++	 */
++	mapping = search_msi_doorbell_mapping(dmi, aligned_base, binding_size);
++	if (mapping) {
++		*iova = mapping->iova + offset + aligned_base - mapping->addr;
++		kref_get(&mapping->kref);
++		ret = 0;
++		unmap = true;
++		goto free_iova;
++	}
++
++	kref_init(&new_mapping->kref);
++	new_mapping->addr = aligned_base;
++	new_mapping->iova = *iova;
++	new_mapping->size = binding_size;
++
++	list_add(&new_mapping->next, &dmi->list);
++
++	*iova += offset;
++	goto unlock;
++free_iova:
++	free_iova(iovad, p_iova->pfn_lo);
++	kfree(new_mapping);
++unlock:
++	spin_unlock(&dmi->lock);
++	if (unmap)
++		iommu_unmap(domain, new_iova, binding_size);
 +	return ret;
 +}
-+EXPORT_SYMBOL_GPL(iommu_msi_set_aperture);
++EXPORT_SYMBOL_GPL(iommu_msi_get_doorbell_iova);
 +
++static void doorbell_mapping_release(struct kref *kref)
++{
++	struct doorbell_mapping *mapping =
++		container_of(kref, struct doorbell_mapping, kref);
++
++	list_del(&mapping->next);
++	kfree(mapping);
++}
++
++void iommu_msi_put_doorbell_iova(struct iommu_domain *domain, phys_addr_t addr)
++{
++	struct doorbell_mapping_info *dmi = domain->msi_cookie;
++	struct iova_domain *iovad = domain->iova_cookie;
++	phys_addr_t aligned_addr, page_size, offset;
++	struct doorbell_mapping *mapping;
++	dma_addr_t iova;
++	size_t size;
++	int ret = 0;
++
++	if (!dmi)
++		return;
++
++	page_size = (uint64_t)1 << iova_shift(iovad);
++	offset = iova_offset(iovad, addr);
++	aligned_addr = addr - offset;
++
++	spin_lock(&dmi->lock);
++
++	mapping = search_msi_doorbell_mapping(dmi, aligned_addr, page_size);
++	if (!mapping)
++		goto unlock;
++
++	iova = mapping->iova;
++	size = mapping->size;
++
++	ret = kref_put(&mapping->kref, doorbell_mapping_release);
++
++unlock:
++	spin_unlock(&dmi->lock);
++	if (ret) {
++		iommu_unmap(domain, iova, size);
++		free_iova(iovad, iova_pfn(iovad, iova));
++	}
++}
++EXPORT_SYMBOL_GPL(iommu_msi_put_doorbell_iova);
 diff --git a/include/linux/msi-iommu.h b/include/linux/msi-iommu.h
-new file mode 100644
-index 0000000..fe5859a
---- /dev/null
+index fe5859a..940683f 100644
+--- a/include/linux/msi-iommu.h
 +++ b/include/linux/msi-iommu.h
-@@ -0,0 +1,65 @@
-+/*
-+ * Copyright (c) 2015 Linaro Ltd.
-+ *              www.linaro.org
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+#ifndef __MSI_IOMMU_H
-+#define __MSI_IOMMU_H
-+
-+#include <linux/types.h>
-+#include <linux/kernel.h>
-+
-+struct iommu_domain;
-+
-+#ifdef CONFIG_IOMMU_MSI
-+
+@@ -52,6 +52,35 @@ void iommu_put_msi_cookie(struct iommu_domain *domain);
+ int iommu_msi_set_aperture(struct iommu_domain *domain,
+ 			   dma_addr_t start, dma_addr_t end);
+ 
 +/**
-+ * iommu_get_msi_cookie - Acquire MSI mapping resources for a domain
-+ * @domain: IOMMU domain to prepare for MSI mapping
-+ *
-+ * IOMMU drivers which require MSI mapping should normally call this
-+ * from their domain_alloc callback when domain->type ==
-+ * IOMMU_DOMAIN_UNMANAGED.
-+ */
-+int iommu_get_msi_cookie(struct iommu_domain *domain);
-+
-+/**
-+ * iommu_put_msi_cookie - Release a domain's MSI mapping resources
-+ * @domain: IOMMU domain previously prepared by iommu_get_msi_cookie()
-+ *
-+ * IOMMU drivers requesting MSI mapping should normally call this from
-+ * their domain_free callback.
-+ */
-+void iommu_put_msi_cookie(struct iommu_domain *domain);
-+
-+/**
-+ * iommu_msi_set_aperture - allocate the msi iova domain
-+ * according to the specified start/end IOVAs
++ * iommu_msi_get_doorbell_iova - allocate a contiguous set of iova pages and
++ * map them to the MSI doorbell's physical range defined by @addr and @size.
 + *
 + * @domain: iommu domain handle
-+ * @start: MSI iova start address
-+ * @end: MSI iova end address
++ * @addr: physical address to bind
++ * @size: size of the binding
++ * @prot: mapping protection attribute
++ * @iova: returned iova
++ *
++ * Mapped physical pfns are within [@addr >> order, (@addr + size -1) >> order]
++ * where order corresponds to the iova domain order.
++ * This mapping is tracked and reference counted with the minimal granularity
++ * of @size.
 + */
-+int iommu_msi_set_aperture(struct iommu_domain *domain,
-+			   dma_addr_t start, dma_addr_t end);
++int iommu_msi_get_doorbell_iova(struct iommu_domain *domain,
++				phys_addr_t addr, size_t size, int prot,
++				dma_addr_t *iova);
 +
-+#else
++/**
++ * iommu_msi_put_doorbell_iova - decrement a ref count of the doorbell's mapping
++ *
++ * @domain: iommu domain handle
++ * @addr: physical address whose binding ref count is decremented
++ *
++ * if the binding ref count is null, destroy the MSI doorbell's mapping
++ */
++void iommu_msi_put_doorbell_iova(struct iommu_domain *domain, phys_addr_t addr);
 +
-+static inline int
-+iommu_msi_set_aperture(struct iommu_domain *domain,
-+		       dma_addr_t start, dma_addr_t end)
+ #else
+ 
+ static inline int
+@@ -61,5 +90,15 @@ iommu_msi_set_aperture(struct iommu_domain *domain,
+ 	return -ENOENT;
+ }
+ 
++static inline int iommu_msi_get_doorbell_iova(struct iommu_domain *domain,
++					      phys_addr_t addr, size_t size,
++					      int prot, dma_addr_t *iova)
 +{
 +	return -ENOENT;
 +}
 +
-+#endif	/* CONFIG_IOMMU_MSI */
-+#endif	/* __MSI_IOMMU_H */
++static inline void iommu_msi_put_doorbell_iova(struct iommu_domain *domain,
++					       phys_addr_t addr) {}
++
+ #endif	/* CONFIG_IOMMU_MSI */
+ #endif	/* __MSI_IOMMU_H */
 -- 
 1.9.1
