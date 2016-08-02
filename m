@@ -1,8 +1,8 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v12 3/8] vfio/type1: implement recursive
-	vfio_find_dma_from_node
-Date: Tue,  2 Aug 2016 17:30:06 +0000
-Message-ID: <1470159012-7110-4-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v12 4/8] vfio/type1: handle unmap/unpin and replay for
+	VFIO_IOVA_RESERVED slots
+Date: Tue,  2 Aug 2016 17:30:07 +0000
+Message-ID: <1470159012-7110-5-git-send-email-eric.auger@redhat.com>
 References: <1470159012-7110-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,44 +22,68 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, dennis.chen-5wv7dgnIgG8@public.gmane.org, robert.richter-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch handles the case where a node is encountered, matching
-@start and @size arguments but not matching the @type argument.
-In that case, we need to skip that node and pursue the search in the
-node's leaves. In case @start is inferior to the node's base, we
-resume the search on the left leaf. If the recursive search on the left
-leaves did not produce any match, we search the right leaves recursively.
+Before allowing the end-user to create VFIO_IOVA_RESERVED dma slots,
+let's implement the expected behavior for removal and replay.
+
+As opposed to user dma slots, reserved IOVAs are not systematically bound
+to PAs and PAs are not pinned. VFIO just initializes the IOVA "aperture".
+IOVAs are allocated outside of the VFIO framework, by the MSI layer which
+is responsible to free and unmap them. The MSI mapping resources are freeed
+by the IOMMU driver on domain destruction.
+
+On the creation of a new domain, the "replay" of a reserved slot simply
+needs to set the MSI aperture on the new domain.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
 
-v10: creation
+v9 -> v10:
+- replay of a reserved slot sets the MSI aperture on the new domain
+- use VFIO_IOVA_RESERVED_MSI enum value instead of VFIO_IOVA_RESERVED
+
+v7 -> v8:
+- do no destroy anything anymore, just bypass unmap/unpin and iommu_map
+  on replay
 ---
- drivers/vfio/vfio_iommu_type1.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/vfio/vfio_iommu_type1.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index cb7267a..65a4038 100644
+index 65a4038..69c775e 100644
 --- a/drivers/vfio/vfio_iommu_type1.c
 +++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -125,7 +125,17 @@ static struct vfio_dma *vfio_find_dma_from_node(struct rb_node *top,
- 	if (type == VFIO_IOVA_ANY || dma->type == type)
- 		return dma;
+@@ -36,6 +36,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/vfio.h>
+ #include <linux/workqueue.h>
++#include <linux/msi-iommu.h>
  
--	return NULL;
-+	/* restart 2 searches skipping the current node */
-+	if (start < dma->iova) {
-+		dma = vfio_find_dma_from_node(node->rb_left, start,
-+					      size, type);
-+		if (dma)
-+			return dma;
-+	}
-+	if (start + size > dma->iova + dma->size)
-+		dma = vfio_find_dma_from_node(node->rb_right, start,
-+					      size, type);
-+	return dma;
- }
+ #define DRIVER_VERSION  "0.2"
+ #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
+@@ -387,7 +388,7 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
+ 	struct vfio_domain *domain, *d;
+ 	long unlocked = 0;
  
- /**
+-	if (!dma->size)
++	if (!dma->size || dma->type != VFIO_IOVA_USER)
+ 		return;
+ 	/*
+ 	 * We use the IOMMU to track the physical addresses, otherwise we'd
+@@ -724,6 +725,14 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+ 		dma = rb_entry(n, struct vfio_dma, node);
+ 		iova = dma->iova;
+ 
++		if (dma->type == VFIO_IOVA_RESERVED_MSI) {
++			ret = iommu_msi_set_aperture(domain->domain,
++						     dma->iova,
++						     iova + dma->size - 1);
++			WARN_ON(ret);
++			continue;
++		}
++
+ 		while (iova < dma->iova + dma->size) {
+ 			phys_addr_t phys = iommu_iova_to_phys(d->domain, iova);
+ 			size_t size;
 -- 
 1.9.1
