@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v12 05/11] genirq/msi: msi_doorbell_calc_pages
-Date: Tue,  2 Aug 2016 17:23:31 +0000
-Message-ID: <1470158617-7022-6-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v12 06/11] genirq/msi: msi_doorbell_safe
+Date: Tue,  2 Aug 2016 17:23:32 +0000
+Message-ID: <1470158617-7022-7-git-send-email-eric.auger@redhat.com>
 References: <1470158617-7022-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,130 +21,72 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, dennis.chen-5wv7dgnIgG8@public.gmane.org, robert.richter-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-msi_doorbell_calc_pages() sum up the number of iommu pages of a given order
-requested to map all the registered doorbells. This function will allow
-to dimension the intermediate physical address (IPA) aperture requested
-to map the MSI doorbells.
+msi_doorbell_safe returns whether all the registered doorbells
+implement irq_remapping.
+
+IRQ remapping is the x86 terminology (IRQ translation used on ARM).
+The MSI controller topology is safe if all the registered doorbells
+implement IRQ remapping.
+
+This safety notion is used on ARM when assigning PCIe devices. If
+any of the MSI doorbell is unsafe, the MSI assignment gets considered
+unsafe.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
-v11 -> v12:
-- fix style issues: remove useless line break, remove pointless braces,
-  fix kernel-doc comments
-- reword commit message
-- rename msi_doorbell_pages into msi_doorbell_calc_pages
-- rename static compute* functions
 
-v10: creation
+v11 -> v12:
+- reword the commit message
 ---
- include/linux/msi-doorbell.h | 14 ++++++++++
- kernel/irq/msi-doorbell.c    | 64 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 78 insertions(+)
+ include/linux/msi-doorbell.h | 13 +++++++++++++
+ kernel/irq/msi-doorbell.c    |  6 ++++++
+ 2 files changed, 19 insertions(+)
 
 diff --git a/include/linux/msi-doorbell.h b/include/linux/msi-doorbell.h
-index a2a033b..bbedb3b 100644
+index bbedb3b..696e0bd 100644
 --- a/include/linux/msi-doorbell.h
 +++ b/include/linux/msi-doorbell.h
-@@ -38,6 +38,15 @@ msi_doorbell_register_global(phys_addr_t base, size_t size,
+@@ -47,6 +47,14 @@ void msi_doorbell_unregister_global(struct msi_doorbell_info *db);
   */
- void msi_doorbell_unregister_global(struct msi_doorbell_info *db);
+ int msi_doorbell_calc_pages(unsigned int order);
  
 +/**
-+ * msi_doorbell_calc_pages - compute the number of pages
-+ * requested to map all the registered doorbells
-+ * @order: iommu page order
++ * msi_doorbell_safe - return whether all registered doorbells are safe
 + *
-+ * Return: the number of requested pages
++ * Safe doorbells are those which implement irq remapping
++ * Return: true if all doorbells are safe, false otherwise
 + */
-+int msi_doorbell_calc_pages(unsigned int order);
++bool msi_doorbell_safe(void);
 +
  #else
  
  static inline struct msi_doorbell_info *
-@@ -50,6 +59,11 @@ msi_doorbell_register_global(phys_addr_t base, size_t size,
- static inline void
- msi_doorbell_unregister_global(struct msi_doorbell_info *db) {}
+@@ -64,6 +72,11 @@ static inline int msi_doorbell_calc_pages(unsigned int order)
+ 	return 0;
+ }
  
-+static inline int msi_doorbell_calc_pages(unsigned int order)
++static inline bool
++msi_doorbell_safe(void)
 +{
-+	return 0;
++	return true;
 +}
-+
  #endif /* CONFIG_MSI_DOORBELL */
  
  #endif
 diff --git a/kernel/irq/msi-doorbell.c b/kernel/irq/msi-doorbell.c
-index e3e0d95..5c6c2aa 100644
+index 5c6c2aa..f8f0d24 100644
 --- a/kernel/irq/msi-doorbell.c
 +++ b/kernel/irq/msi-doorbell.c
-@@ -66,3 +66,67 @@ void msi_doorbell_unregister_global(struct msi_doorbell_info *dbinfo)
- 	kfree(db);
+@@ -130,3 +130,9 @@ int msi_doorbell_calc_pages(unsigned int order)
+ 	return ret;
  }
- EXPORT_SYMBOL_GPL(msi_doorbell_unregister_global);
+ EXPORT_SYMBOL_GPL(msi_doorbell_calc_pages);
 +
-+/**
-+ * calc_region_reqs - compute the number of pages requested to map a region
-+ *
-+ * @addr: physical base address of the region
-+ * @size: size of the region
-+ * @order: the page order
-+ *
-+ * Return: the number of requested pages to map this region
-+ */
-+static int calc_region_reqs(phys_addr_t addr, size_t size, unsigned int order)
++bool msi_doorbell_safe(void)
 +{
-+	phys_addr_t offset, granule;
-+	unsigned int nb_pages;
-+
-+	granule = (uint64_t)(1 << order);
-+	offset = addr & (granule - 1);
-+	size = ALIGN(size + offset, granule);
-+	nb_pages = size >> order;
-+
-+	return nb_pages;
++	return !nb_unsafe_doorbells;
 +}
-+
-+/**
-+ * calc_dbinfo_reqs - compute the number of pages requested to map a given
-+ * MSI doorbell
-+ *
-+ * @dbi: doorbell info descriptor
-+ * @order: page order
-+ *
-+ * Return: the number of requested pages to map this doorbell
-+ */
-+static int calc_dbinfo_reqs(struct msi_doorbell_info *dbi, unsigned int order)
-+{
-+	int ret = 0;
-+
-+	if (!dbi->doorbell_is_percpu) {
-+		ret = calc_region_reqs(dbi->global_doorbell, dbi->size, order);
-+	} else {
-+		phys_addr_t __percpu *pbase;
-+		int cpu;
-+
-+		for_each_possible_cpu(cpu) {
-+			pbase = per_cpu_ptr(dbi->percpu_doorbells, cpu);
-+			ret += calc_region_reqs(*pbase, dbi->size, order);
-+		}
-+	}
-+	return ret;
-+}
-+
-+int msi_doorbell_calc_pages(unsigned int order)
-+{
-+	struct msi_doorbell *db;
-+	int ret = 0;
-+
-+	mutex_lock(&msi_doorbell_mutex);
-+	list_for_each_entry(db, &msi_doorbell_list, next)
-+		ret += calc_dbinfo_reqs(&db->info, order);
-+
-+	mutex_unlock(&msi_doorbell_mutex);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(msi_doorbell_calc_pages);
++EXPORT_SYMBOL_GPL(msi_doorbell_safe);
 -- 
 1.9.1
