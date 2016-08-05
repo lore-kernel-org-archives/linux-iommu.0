@@ -1,15 +1,13 @@
-From: nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Subject: Re: [RFC PATCH v3 13/13] drivers: acpi: iort: introduce
-	iort_iommu_configure
-Date: Wed, 03 Aug 2016 10:19:43 -0400
-Message-ID: <016fb1080595ef61ec7a91da15ef2430@codeaurora.org>
-References: <1469013815-24380-1-git-send-email-lorenzo.pieralisi@arm.com>
-	<1469013815-24380-14-git-send-email-lorenzo.pieralisi@arm.com>
+From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 1/2] PCI: add a function to walk on local bus
+Date: Fri,  5 Aug 2016 13:47:46 +0000
+Message-ID: <1470404867-26783-1-git-send-email-richard.weiyang@gmail.com>
+References: <20160728090132.42c6ebc1@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1469013815-24380-14-git-send-email-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20160728090132.42c6ebc1-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,237 +17,90 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jroedel-l3A5Bk7waGM@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2016-07-20 07:23, Lorenzo Pieralisi wrote:
-> DT based systems have a generic kernel API to configure IOMMUs
-> for devices (ie of_iommu_configure()).
-> 
-> On ARM based ACPI systems, the of_iommu_configure() equivalent can
-> be implemented atop ACPI IORT kernel API, with the corresponding
-> functions to map device identifiers to IOMMUs and retrieve the
-> corresponding IOMMU operations necessary for DMA operations set-up.
-> 
-> By relying on the iommu_fwspec generic kernel infrastructure,
-> implement the IORT based IOMMU configuration for ARM ACPI systems
-> and hook it up in the ACPI kernel layer that implements DMA
-> configuration for a device.
-> 
-> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-> Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-> Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-> ---
->  drivers/acpi/iort.c  | 64 
-> ++++++++++++++++++++++++++++++++++++++++++++++++++++
->  drivers/acpi/scan.c  |  7 +++++-
->  include/linux/iort.h |  4 ++++
->  3 files changed, 74 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/acpi/iort.c b/drivers/acpi/iort.c
-> index c116b68..a12a4ff 100644
-> --- a/drivers/acpi/iort.c
-> +++ b/drivers/acpi/iort.c
-> @@ -18,6 +18,7 @@
-> 
->  #define pr_fmt(fmt)	"ACPI: IORT: " fmt
-> 
-> +#include <linux/iommu-fwspec.h>
->  #include <linux/iort.h>
->  #include <linux/kernel.h>
->  #include <linux/list.h>
-> @@ -27,6 +28,8 @@
-> 
->  #define IORT_TYPE_MASK(type)	(1 << (type))
->  #define IORT_MSI_TYPE		(1 << ACPI_IORT_NODE_ITS_GROUP)
-> +#define IORT_IOMMU_TYPE		((1 << ACPI_IORT_NODE_SMMU) |	\
-> +				(1 << ACPI_IORT_NODE_SMMU_V3))
-> 
->  struct iort_its_msi_chip {
->  	struct list_head	list;
-> @@ -458,6 +461,67 @@ iort_get_device_domain(struct device *dev, u32 
-> req_id)
->  	return irq_find_matching_fwnode(handle, DOMAIN_BUS_PCI_MSI);
->  }
-> 
-> +static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
-> +{
-> +	u32 *rid = data;
-> +
-> +	*rid = alias;
-> +	return 0;
-> +}
-> +
-> +static int arm_smmu_iort_xlate(struct device *dev, u32 streamid,
-> +			       struct fwnode_handle *fwnode)
-> +{
-> +	int ret = iommu_fwspec_init(dev, fwnode);
-> +
-> +	if (!ret)
-> +		ret = iommu_fwspec_add_ids(dev, &streamid, 1);
-> +
-> +	return 0;
+Add a function to just walk on the local bus.
 
-Are you intentionally returning 0 instead of ret? How about doing this 
-instead?
+Signed-off-by: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/pci/bus.c   | 26 +++++++++++++++++++++-----
+ include/linux/pci.h |  2 ++
+ 2 files changed, 23 insertions(+), 5 deletions(-)
 
-	return ret ? ret : iommu_fwspec_add_ids(dev, &streamid, 1);
-
-> +}
-> +
-> +/**
-> + * iort_iommu_configure - Set-up IOMMU configuration for a device.
-> + *
-> + * @dev: device to configure
-> + *
-> + * Returns: iommu_ops pointer on configuration success
-> + *          NULL on configuration failure
-> + */
-> +const struct iommu_ops *iort_iommu_configure(struct device *dev)
-> +{
-> +	struct acpi_iort_node *node, *parent;
-> +	struct fwnode_handle *iort_fwnode;
-> +	u32 rid = 0, devid = 0;
-
-Since this routine maps the RID space of a device to the StreamID space 
-of its
-parent smmu, would you consider renaming the devid variable to some form 
-of sid
-or streamid?
-
-> +
-> +	if (dev_is_pci(dev)) {
-> +		struct pci_bus *bus = to_pci_dev(dev)->bus;
-> +
-> +		pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid,
-> +				       &rid);
-> +
-> +		node = iort_scan_node(ACPI_IORT_NODE_PCI_ROOT_COMPLEX,
-> +				      iort_match_node_callback, &bus->dev);
-> +	} else {
-> +		node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
-> +				      iort_match_node_callback, dev);
-> +	}
-> +
-> +	if (!node)
-> +		return NULL;
-> +
-> +	parent = iort_node_map_rid(node, rid, &devid, IORT_IOMMU_TYPE);
-> +	if (parent) {
-> +		iort_fwnode = iort_get_fwnode(parent);
-> +		if (iort_fwnode) {
-> +			arm_smmu_iort_xlate(dev, devid, iort_fwnode);
-
-What about named components with multiple stream ids? Since establishing 
-the
-relationship between a named component and its parent smmu is already 
-dependent
-on there being an appropriate mapping of rid 0, it stands to reason that 
-all of
-the stream ids for a named component could be enumerated by mapping 
-increasing
-rid values until the output parent no longer matches that returned for 
-rid 0.
-
-> +			return fwspec_iommu_get_ops(iort_fwnode);
-> +		}
-> +	}
-> +
-> +	return NULL;
-> +}
-
-It should be noted that while trying out the approach described above, I 
-noticed
-that each of the smmu attached named components described in my iort 
-were ending
-up with an extra stream id. The culprit appears to be that the range 
-checking in
-iort_id_map() is overly permissive on the upper bounds. For example, 
-mappings
-with input_base=N and id_count=1 were matching both N and N+1. The 
-following
-change fixed the issue.
-
-@@ -296,7 +296,7 @@ iort_id_map(struct acpi_iort_id_mapping *map, u8 
-type, u32 rid_in, u32 *rid_out)
-         }
-
-         if (rid_in < map->input_base ||
--           (rid_in > map->input_base + map->id_count))
-+           (rid_in >= map->input_base + map->id_count))
-                 return -ENXIO;
-
-         *rid_out = map->output_base + (rid_in - map->input_base);
-
-> +
->  static void acpi_smmu_v3_register_irq(int hwirq, const char *name,
->  				      struct resource *res)
->  {
-> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> index b4b9064..de28825 100644
-> --- a/drivers/acpi/scan.c
-> +++ b/drivers/acpi/scan.c
-> @@ -7,6 +7,7 @@
->  #include <linux/slab.h>
->  #include <linux/kernel.h>
->  #include <linux/acpi.h>
-> +#include <linux/iort.h>
->  #include <linux/signal.h>
->  #include <linux/kthread.h>
->  #include <linux/dmi.h>
-> @@ -1365,11 +1366,15 @@ enum dev_dma_attr acpi_get_dma_attr(struct
-> acpi_device *adev)
->   */
->  void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
->  {
-> +	const struct iommu_ops *iommu;
-> +
-> +	iommu = iort_iommu_configure(dev);
-> +
->  	/*
->  	 * Assume dma valid range starts at 0 and covers the whole
->  	 * coherent_dma_mask.
->  	 */
-> -	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, NULL,
-> +	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
->  			   attr == DEV_DMA_COHERENT);
-
-If dev has a matching named component iort entry with a non-zero value 
-for
-memory_address_limit, why not use that as the size input to 
-arch_setup_dma_ops?
-
->  }
-> 
-> diff --git a/include/linux/iort.h b/include/linux/iort.h
-> index 18e6836..bbe08ef 100644
-> --- a/include/linux/iort.h
-> +++ b/include/linux/iort.h
-> @@ -34,6 +34,8 @@ struct irq_domain *iort_get_device_domain(struct
-> device *dev, u32 req_id);
->  /* IOMMU interface */
->  int iort_add_smmu_platform_device(struct fwnode_handle *fwnode,
->  				  struct acpi_iort_node *node);
-> +
-> +const struct iommu_ops *iort_iommu_configure(struct device *dev);
->  #else
->  static inline bool iort_node_match(u8 type) { return false; }
->  static inline void iort_table_detect(void) { }
-> @@ -48,6 +50,8 @@ iort_add_smmu_platform_device(struct fwnode_handle 
-> *fwnode,
->  {
->  	return -ENODEV;
->  }
-> +static inline const struct iommu_ops *
-> +iort_iommu_configure(struct device *dev) { return NULL; }
->  #endif
-> 
->  #define IORT_ACPI_DECLARE(name, table_id, fn)		\
-
+diff --git a/drivers/pci/bus.c b/drivers/pci/bus.c
+index dd7cdbe..ccf4290 100644
+--- a/drivers/pci/bus.c
++++ b/drivers/pci/bus.c
+@@ -338,17 +338,19 @@ EXPORT_SYMBOL(pci_bus_add_devices);
+  *  @top      bus whose devices should be walked
+  *  @cb       callback to be called for each device found
+  *  @userdata arbitrary pointer to be passed to callback.
++ *  @local    whether it just walk on the local bus
+  *
+  *  Walk the given bus, including any bridged devices
+- *  on buses under this bus.  Call the provided callback
+- *  on each device found.
++ *  on buses under this bus if "local" is false.
++ *  Call the provided callback on each device found.
+  *
+  *  We check the return of @cb each time. If it returns anything
+  *  other than 0, we break out.
+  *
+  */
+-void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
+-		  void *userdata)
++static void __pci_walk_bus(struct pci_bus *top,
++			   int (*cb)(struct pci_dev *, void *),
++			   void *userdata, bool local)
+ {
+ 	struct pci_dev *dev;
+ 	struct pci_bus *bus;
+@@ -368,7 +370,7 @@ void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
+ 			continue;
+ 		}
+ 		dev = list_entry(next, struct pci_dev, bus_list);
+-		if (dev->subordinate) {
++		if (dev->subordinate && !local) {
+ 			/* this is a pci-pci bridge, do its devices next */
+ 			next = dev->subordinate->devices.next;
+ 			bus = dev->subordinate;
+@@ -381,8 +383,22 @@ void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
+ 	}
+ 	up_read(&pci_bus_sem);
+ }
++
++void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
++		  void *userdata)
++{
++	__pci_walk_bus(top, cb, userdata, false);
++}
+ EXPORT_SYMBOL_GPL(pci_walk_bus);
+ 
++void pci_walk_bus_local(struct pci_bus *top,
++			int (*cb)(struct pci_dev *, void *),
++			void *userdata)
++{
++	__pci_walk_bus(top, cb, userdata, true);
++}
++EXPORT_SYMBOL_GPL(pci_walk_bus_local);
++
+ struct pci_bus *pci_bus_get(struct pci_bus *bus)
+ {
+ 	if (bus)
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index b67e4df..e43df8c 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -1224,6 +1224,8 @@ int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
+ 
+ void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
+ 		  void *userdata);
++void pci_walk_bus_local(struct pci_bus *top,
++		  int (*cb)(struct pci_dev *, void *), void *userdata);
+ int pci_cfg_space_size(struct pci_dev *dev);
+ unsigned char pci_bus_max_busnr(struct pci_bus *bus);
+ void pci_setup_bridge(struct pci_bus *bus);
 -- 
-Qualcomm Datacenter Technologies, Inc. on behalf of Qualcomm 
-Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a 
-Linux Foundation Collaborative Project.
+2.5.0
