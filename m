@@ -1,13 +1,14 @@
 From: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 1/2] PCI: add a function to walk on local bus
-Date: Fri,  5 Aug 2016 13:47:46 +0000
-Message-ID: <1470404867-26783-1-git-send-email-richard.weiyang@gmail.com>
+Subject: [PATCH 2/2] iommu: narrow the search range by iterating on current bus
+Date: Fri,  5 Aug 2016 13:47:47 +0000
+Message-ID: <1470404867-26783-2-git-send-email-richard.weiyang@gmail.com>
 References: <20160728090132.42c6ebc1@t450s.home>
+	<1470404867-26783-1-git-send-email-richard.weiyang@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160728090132.42c6ebc1-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <1470404867-26783-1-git-send-email-richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,86 +22,162 @@ To: alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jroedel-l3A5Bk7waGM
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add a function to just walk on the local bus.
+According to the comments and code, get_pci_function_alias_group() and
+get_pci_alias_group() do the search on the same pci bus. This means we can
+just iterate on the bus the pci device attaches to.
+
+This patch narrows the search range by just iterating on the current bus
+and fix one typo in comment.
 
 Signed-off-by: Wei Yang <richard.weiyang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/pci/bus.c   | 26 +++++++++++++++++++++-----
- include/linux/pci.h |  2 ++
- 2 files changed, 23 insertions(+), 5 deletions(-)
+ drivers/iommu/iommu.c | 100 +++++++++++++++++++++++++++++++-------------------
+ 1 file changed, 63 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/pci/bus.c b/drivers/pci/bus.c
-index dd7cdbe..ccf4290 100644
---- a/drivers/pci/bus.c
-+++ b/drivers/pci/bus.c
-@@ -338,17 +338,19 @@ EXPORT_SYMBOL(pci_bus_add_devices);
-  *  @top      bus whose devices should be walked
-  *  @cb       callback to be called for each device found
-  *  @userdata arbitrary pointer to be passed to callback.
-+ *  @local    whether it just walk on the local bus
-  *
-  *  Walk the given bus, including any bridged devices
-- *  on buses under this bus.  Call the provided callback
-- *  on each device found.
-+ *  on buses under this bus if "local" is false.
-+ *  Call the provided callback on each device found.
-  *
-  *  We check the return of @cb each time. If it returns anything
-  *  other than 0, we break out.
-  *
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3000051..2fae2c6 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -634,29 +634,45 @@ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+  * each function, we also need to look for aliases to or from other devices
+  * that may already have a group.
   */
--void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
--		  void *userdata)
-+static void __pci_walk_bus(struct pci_bus *top,
-+			   int (*cb)(struct pci_dev *, void *),
-+			   void *userdata, bool local)
++
++struct alias_group_cb_data {
++	struct pci_dev *pdev;
++	struct iommu_group *group;
++	unsigned long *devfns;
++};
++
++static int __get_pci_function_alias_group(struct pci_dev *tmp, void *data)
++{
++	struct alias_group_cb_data *cb_data =
++		(struct alias_group_cb_data *)data;
++	struct pci_dev *pdev = cb_data->pdev;
++
++	if (tmp == pdev ||
++	    PCI_SLOT(tmp->devfn) != PCI_SLOT(pdev->devfn) ||
++	    pci_acs_enabled(tmp, REQ_ACS_FLAGS))
++		return 0;
++
++	cb_data->group = get_pci_alias_group(tmp, cb_data->devfns);
++	if (cb_data->group)
++		return 1;
++	else
++		return 0;
++}
++
+ static struct iommu_group *get_pci_function_alias_group(struct pci_dev *pdev,
+ 							unsigned long *devfns)
  {
- 	struct pci_dev *dev;
- 	struct pci_bus *bus;
-@@ -368,7 +370,7 @@ void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
- 			continue;
- 		}
- 		dev = list_entry(next, struct pci_dev, bus_list);
--		if (dev->subordinate) {
-+		if (dev->subordinate && !local) {
- 			/* this is a pci-pci bridge, do its devices next */
- 			next = dev->subordinate->devices.next;
- 			bus = dev->subordinate;
-@@ -381,8 +383,22 @@ void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
- 	}
- 	up_read(&pci_bus_sem);
+-	struct pci_dev *tmp = NULL;
+-	struct iommu_group *group;
++	struct alias_group_cb_data data;
+ 
+ 	if (!pdev->multifunction || pci_acs_enabled(pdev, REQ_ACS_FLAGS))
+ 		return NULL;
+ 
+-	for_each_pci_dev(tmp) {
+-		if (tmp == pdev || tmp->bus != pdev->bus ||
+-		    PCI_SLOT(tmp->devfn) != PCI_SLOT(pdev->devfn) ||
+-		    pci_acs_enabled(tmp, REQ_ACS_FLAGS))
+-			continue;
+-
+-		group = get_pci_alias_group(tmp, devfns);
+-		if (group) {
+-			pci_dev_put(tmp);
+-			return group;
+-		}
+-	}
++	data.pdev = pdev;
++	data.group = NULL;
++	data.devfns = devfns;
++	pci_walk_bus_local(pdev->bus, __get_pci_function_alias_group, &data);
+ 
+-	return NULL;
++	return data.group;
  }
-+
-+void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
-+		  void *userdata)
-+{
-+	__pci_walk_bus(top, cb, userdata, false);
-+}
- EXPORT_SYMBOL_GPL(pci_walk_bus);
  
-+void pci_walk_bus_local(struct pci_bus *top,
-+			int (*cb)(struct pci_dev *, void *),
-+			void *userdata)
+ /*
+@@ -668,11 +684,36 @@ static struct iommu_group *get_pci_function_alias_group(struct pci_dev *pdev,
+  * multifunction devices could have aliases between them that would cause a
+  * loop.  To prevent this, we use a bitmap to track where we've been.
+  */
++static int __get_pci_alias_group(struct pci_dev *tmp, void *data)
 +{
-+	__pci_walk_bus(top, cb, userdata, true);
-+}
-+EXPORT_SYMBOL_GPL(pci_walk_bus_local);
++	struct alias_group_cb_data *cb_data =
++		(struct alias_group_cb_data *)data;
++	struct pci_dev *pdev = cb_data->pdev;
 +
- struct pci_bus *pci_bus_get(struct pci_bus *bus)
++	if (tmp == pdev)
++		return 0;
++
++	/* We alias them or they alias us */
++	if (pci_devs_are_dma_aliases(pdev, tmp)) {
++		cb_data->group = get_pci_alias_group(tmp, cb_data->devfns);
++		if (cb_data->group)
++			return 1;
++
++		cb_data->group = get_pci_function_alias_group(tmp,
++					cb_data->devfns);
++		if (cb_data->group)
++			return 1;
++	}
++
++	return 0;
++}
++
++
+ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+ 					       unsigned long *devfns)
  {
- 	if (bus)
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index b67e4df..e43df8c 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1224,6 +1224,8 @@ int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
+-	struct pci_dev *tmp = NULL;
+ 	struct iommu_group *group;
++	struct alias_group_cb_data data;
  
- void pci_walk_bus(struct pci_bus *top, int (*cb)(struct pci_dev *, void *),
- 		  void *userdata);
-+void pci_walk_bus_local(struct pci_bus *top,
-+		  int (*cb)(struct pci_dev *, void *), void *userdata);
- int pci_cfg_space_size(struct pci_dev *dev);
- unsigned char pci_bus_max_busnr(struct pci_bus *bus);
- void pci_setup_bridge(struct pci_bus *bus);
+ 	if (test_and_set_bit(pdev->devfn & 0xff, devfns))
+ 		return NULL;
+@@ -681,27 +722,12 @@ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+ 	if (group)
+ 		return group;
+ 
+-	for_each_pci_dev(tmp) {
+-		if (tmp == pdev || tmp->bus != pdev->bus)
+-			continue;
+-
+-		/* We alias them or they alias us */
+-		if (pci_devs_are_dma_aliases(pdev, tmp)) {
+-			group = get_pci_alias_group(tmp, devfns);
+-			if (group) {
+-				pci_dev_put(tmp);
+-				return group;
+-			}
+-
+-			group = get_pci_function_alias_group(tmp, devfns);
+-			if (group) {
+-				pci_dev_put(tmp);
+-				return group;
+-			}
+-		}
+-	}
++	data.pdev = pdev;
++	data.group = NULL;
++	data.devfns = devfns;
++	pci_walk_bus_local(pdev->bus, __get_pci_alias_group, &data);
+ 
+-	return NULL;
++	return data.group;
+ }
+ 
+ struct group_for_pci_data {
+@@ -794,7 +820,7 @@ struct iommu_group *pci_device_group(struct device *dev)
+ 
+ 	/*
+ 	 * Look for existing groups on non-isolated functions on the same
+-	 * slot and aliases of those funcions, if any.  No need to clear
++	 * slot and aliases of those functions, if any.  No need to clear
+ 	 * the search bitmap, the tested devfns are still valid.
+ 	 */
+ 	group = get_pci_function_alias_group(pdev, (unsigned long *)devfns);
 -- 
 2.5.0
