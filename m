@@ -1,17 +1,11 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH v3 13/13] drivers: acpi: iort: introduce
-	iort_iommu_configure
-Date: Mon, 8 Aug 2016 17:16:18 +0100
-Message-ID: <20160808161618.GC22306@red-moon>
-References: <1469013815-24380-1-git-send-email-lorenzo.pieralisi@arm.com>
-	<1469013815-24380-14-git-send-email-lorenzo.pieralisi@arm.com>
-	<016fb1080595ef61ec7a91da15ef2430@codeaurora.org>
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH 0/8] IOMMU Probe deferral support
+Date: Tue,  9 Aug 2016 04:19:02 +0530
+Message-ID: <1470696550-3416-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <016fb1080595ef61ec7a91da15ef2430-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,220 +15,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
+Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Nate,
+This is on top initial post from Laurent Pinchart[1]. This is
+a try to see if the iommu ops configuration for the devices
+can be called at a generic place so that it works for all
+busses. The dma_configure_ops for a device is now called during
+the device_attach callback just before the probe of the
+bus/driver is called. Similarly dma_deconfigure is called during
+device_detach. of_configure_dma_masks is still called for each
+of the busses separately, but that can be combined with calling
+dma_configure_ops if its safe to have masks not set till probe time.
 
-thanks for having a look.
+Also based on comments [2] from last post [3], add_device callback
+is called at the point when the ops for that iommu is found.
 
-On Wed, Aug 03, 2016 at 10:19:43AM -0400, nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org wrote:
-> On 2016-07-20 07:23, Lorenzo Pieralisi wrote:
-> >DT based systems have a generic kernel API to configure IOMMUs
-> >for devices (ie of_iommu_configure()).
-> >
-> >On ARM based ACPI systems, the of_iommu_configure() equivalent can
-> >be implemented atop ACPI IORT kernel API, with the corresponding
-> >functions to map device identifiers to IOMMUs and retrieve the
-> >corresponding IOMMU operations necessary for DMA operations set-up.
-> >
-> >By relying on the iommu_fwspec generic kernel infrastructure,
-> >implement the IORT based IOMMU configuration for ARM ACPI systems
-> >and hook it up in the ACPI kernel layer that implements DMA
-> >configuration for a device.
-> >
-> >Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-> >Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> >Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-> >Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-> >---
-> > drivers/acpi/iort.c  | 64
-> >++++++++++++++++++++++++++++++++++++++++++++++++++++
-> > drivers/acpi/scan.c  |  7 +++++-
-> > include/linux/iort.h |  4 ++++
-> > 3 files changed, 74 insertions(+), 1 deletion(-)
-> >
-> >diff --git a/drivers/acpi/iort.c b/drivers/acpi/iort.c
-> >index c116b68..a12a4ff 100644
-> >--- a/drivers/acpi/iort.c
-> >+++ b/drivers/acpi/iort.c
-> >@@ -18,6 +18,7 @@
-> >
-> > #define pr_fmt(fmt)	"ACPI: IORT: " fmt
-> >
-> >+#include <linux/iommu-fwspec.h>
-> > #include <linux/iort.h>
-> > #include <linux/kernel.h>
-> > #include <linux/list.h>
-> >@@ -27,6 +28,8 @@
-> >
-> > #define IORT_TYPE_MASK(type)	(1 << (type))
-> > #define IORT_MSI_TYPE		(1 << ACPI_IORT_NODE_ITS_GROUP)
-> >+#define IORT_IOMMU_TYPE		((1 << ACPI_IORT_NODE_SMMU) |	\
-> >+				(1 << ACPI_IORT_NODE_SMMU_V3))
-> >
-> > struct iort_its_msi_chip {
-> > 	struct list_head	list;
-> >@@ -458,6 +461,67 @@ iort_get_device_domain(struct device *dev,
-> >u32 req_id)
-> > 	return irq_find_matching_fwnode(handle, DOMAIN_BUS_PCI_MSI);
-> > }
-> >
-> >+static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
-> >+{
-> >+	u32 *rid = data;
-> >+
-> >+	*rid = alias;
-> >+	return 0;
-> >+}
-> >+
-> >+static int arm_smmu_iort_xlate(struct device *dev, u32 streamid,
-> >+			       struct fwnode_handle *fwnode)
-> >+{
-> >+	int ret = iommu_fwspec_init(dev, fwnode);
-> >+
-> >+	if (!ret)
-> >+		ret = iommu_fwspec_add_ids(dev, &streamid, 1);
-> >+
-> >+	return 0;
-> 
-> Are you intentionally returning 0 instead of ret? How about doing
-> this instead?
-> 
-> 	return ret ? ret : iommu_fwspec_add_ids(dev, &streamid, 1);
+Have tested this with arm-smmu on platform bus and yet to test for
+other busses (pci, amba), but those busses go through the same path
+as well.
 
-No, that's a bug, I will return ret as the of_xlate() function in
-the ARM SMMU v3 driver does, thanks.
+[1] http://lists.linuxfoundation.org/pipermail/iommu/2015-May/013016.html
+[2] http://www.spinics.net/lists/arm-kernel/msg499962.html,
+[3] http://www.spinics.net/lists/arm-kernel/msg506072.html
 
-> >+}
-> >+
-> >+/**
-> >+ * iort_iommu_configure - Set-up IOMMU configuration for a device.
-> >+ *
-> >+ * @dev: device to configure
-> >+ *
-> >+ * Returns: iommu_ops pointer on configuration success
-> >+ *          NULL on configuration failure
-> >+ */
-> >+const struct iommu_ops *iort_iommu_configure(struct device *dev)
-> >+{
-> >+	struct acpi_iort_node *node, *parent;
-> >+	struct fwnode_handle *iort_fwnode;
-> >+	u32 rid = 0, devid = 0;
-> 
-> Since this routine maps the RID space of a device to the StreamID
-> space of its parent smmu, would you consider renaming the devid
-> variable to some form of sid or streamid?
+Laurent Pinchart (5):
+  arm: dma-mapping: Don't override dma_ops in arch_setup_dma_ops()
+  of: dma: Move range size workaround to of_dma_get_range()
+  of: dma: Make of_dma_deconfigure() public
+  of: dma: Split of_configure_dma() into mask and ops configuration
+  iommu: of: Handle IOMMU lookup failure with deferred probing or error
 
-Yes, I will do.
+Sricharan R (3):
+  drivers: platform: Configure dma operations at probe time
+  drivers: platform: Remove call to of_dma_(con/decon)figure_ops
+  drivers: iommu: arm-smmu: Set iommu_ops in probe
 
-> >+	if (dev_is_pci(dev)) {
-> >+		struct pci_bus *bus = to_pci_dev(dev)->bus;
-> >+
-> >+		pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid,
-> >+				       &rid);
-> >+
-> >+		node = iort_scan_node(ACPI_IORT_NODE_PCI_ROOT_COMPLEX,
-> >+				      iort_match_node_callback, &bus->dev);
-> >+	} else {
-> >+		node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
-> >+				      iort_match_node_callback, dev);
-> >+	}
-> >+
-> >+	if (!node)
-> >+		return NULL;
-> >+
-> >+	parent = iort_node_map_rid(node, rid, &devid, IORT_IOMMU_TYPE);
-> >+	if (parent) {
-> >+		iort_fwnode = iort_get_fwnode(parent);
-> >+		if (iort_fwnode) {
-> >+			arm_smmu_iort_xlate(dev, devid, iort_fwnode);
-> 
-> What about named components with multiple stream ids? Since
-> establishing the relationship between a named component and its parent
-> smmu is already dependent on there being an appropriate mapping of rid
-> 0, it stands to reason that all of the stream ids for a named
-> component could be enumerated by mapping increasing rid values until
-> the output parent no longer matches that returned for rid 0.
+ arch/arm/mm/dma-mapping.c   |  9 ++++++
+ drivers/base/dd.c           | 11 +++++++
+ drivers/base/dma-mapping.c  | 11 +++++++
+ drivers/iommu/arm-smmu.c    | 17 ++--------
+ drivers/iommu/of_iommu.c    | 21 ++++++++++---
+ drivers/of/address.c        | 20 ++++++++++--
+ drivers/of/device.c         | 77 ++++++++++++++++++++++++++++-----------------
+ drivers/of/platform.c       | 11 ++-----
+ drivers/pci/probe.c         |  3 +-
+ include/linux/dma-mapping.h |  3 ++
+ include/linux/of_device.h   | 14 +++++++--
+ 11 files changed, 136 insertions(+), 61 deletions(-)
 
-Yes, that's a good point, what I am doing currently for named
-components is not correct I will update the handling in the next
-version. In particular, I think that we should support only
-single mappings for named components for the time being and add
-code to carry out the mapping as it is done in DT through the
-iommus property handling in of_iommu_configure().
-
-> >+			return fwspec_iommu_get_ops(iort_fwnode);
-> >+		}
-> >+	}
-> >+
-> >+	return NULL;
-> >+}
-> 
-> It should be noted that while trying out the approach described above,
-> I noticed that each of the smmu attached named components described in
-> my iort were ending up with an extra stream id. The culprit appears to
-> be that the range checking in iort_id_map() is overly permissive on
-> the upper bounds. For example, mappings with input_base=N and
-> id_count=1 were matching both N and N+1. The following change fixed
-> the issue.
-
-I will ask Tomasz to fix it up.
-
-> @@ -296,7 +296,7 @@ iort_id_map(struct acpi_iort_id_mapping *map, u8
-> type, u32 rid_in, u32 *rid_out)
->         }
-> 
->         if (rid_in < map->input_base ||
-> -           (rid_in > map->input_base + map->id_count))
-> +           (rid_in >= map->input_base + map->id_count))
->                 return -ENXIO;
-> 
->         *rid_out = map->output_base + (rid_in - map->input_base);
-> 
-> >+
-> > static void acpi_smmu_v3_register_irq(int hwirq, const char *name,
-> > 				      struct resource *res)
-> > {
-> >diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> >index b4b9064..de28825 100644
-> >--- a/drivers/acpi/scan.c
-> >+++ b/drivers/acpi/scan.c
-> >@@ -7,6 +7,7 @@
-> > #include <linux/slab.h>
-> > #include <linux/kernel.h>
-> > #include <linux/acpi.h>
-> >+#include <linux/iort.h>
-> > #include <linux/signal.h>
-> > #include <linux/kthread.h>
-> > #include <linux/dmi.h>
-> >@@ -1365,11 +1366,15 @@ enum dev_dma_attr acpi_get_dma_attr(struct
-> >acpi_device *adev)
-> >  */
-> > void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
-> > {
-> >+	const struct iommu_ops *iommu;
-> >+
-> >+	iommu = iort_iommu_configure(dev);
-> >+
-> > 	/*
-> > 	 * Assume dma valid range starts at 0 and covers the whole
-> > 	 * coherent_dma_mask.
-> > 	 */
-> >-	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, NULL,
-> >+	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
-> > 			   attr == DEV_DMA_COHERENT);
-> 
-> If dev has a matching named component iort entry with a non-zero value
-> for memory_address_limit, why not use that as the size input to
-> arch_setup_dma_ops?
-
-I was hoping to address this through something more generic (ie
-_DMA object - I am not sure it was ever used in x86 world though)
-in ACPI rather than relying on IORT named component specific
-firmware data (similar to "dma-ranges" handling in DT), I will
-certainly keep this in mind though.
-
-Thanks !
-Lorenzo
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
