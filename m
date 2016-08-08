@@ -1,8 +1,7 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 1/8] arm: dma-mapping: Don't override dma_ops in
-	arch_setup_dma_ops()
-Date: Tue,  9 Aug 2016 04:19:03 +0530
-Message-ID: <1470696550-3416-2-git-send-email-sricharan@codeaurora.org>
+Subject: [PATCH 2/8] of: dma: Move range size workaround to of_dma_get_range()
+Date: Tue,  9 Aug 2016 04:19:04 +0530
+Message-ID: <1470696550-3416-3-git-send-email-sricharan@codeaurora.org>
 References: <1470696550-3416-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,48 +23,81 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
-The arch_setup_dma_ops() function is in charge of setting dma_ops with a
-call to set_dma_ops(). set_dma_ops() is also called from
-
-- highbank and mvebu bus notifiers
-- dmabounce (to be replaced with swiotlb)
-- arm_iommu_attach_device
-
-(arm_iommu_attach_device is itself called from IOMMU and bus master
-device drivers)
-
-To allow the arch_setup_dma_ops() call to be moved from device add time
-to device probe time we must ensure that dma_ops already setup by any of
-the above callers will not be overridden.
-
-Aftering replacing dmabounce with swiotlb, converting IOMMU drivers to
-of_xlate and taking care of highbank and mvebu, the workaround should be
-removed.
+Invalid dma-ranges values should be worked around when retrieving the
+DMA range in of_dma_get_range(), not by all callers of the function.
+This isn't much of a problem now that we have a single caller, but that
+situation will change when moving DMA configuration to device probe
+time.
 
 Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 ---
- arch/arm/mm/dma-mapping.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/of/address.c | 20 ++++++++++++++++++--
+ drivers/of/device.c  | 15 ---------------
+ 2 files changed, 18 insertions(+), 17 deletions(-)
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index ff7ed56..4686d66 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -2259,6 +2259,15 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
- 	struct dma_map_ops *dma_ops;
+diff --git a/drivers/of/address.c b/drivers/of/address.c
+index 0a553c0..8cb1aee 100644
+--- a/drivers/of/address.c
++++ b/drivers/of/address.c
+@@ -817,8 +817,8 @@ EXPORT_SYMBOL(of_io_request_and_map);
+  *	CPU addr (phys_addr_t)	: pna cells
+  *	size			: nsize cells
+  *
+- * It returns -ENODEV if "dma-ranges" property was not found
+- * for this device in DT.
++ * Return 0 on success, -ENODEV if the "dma-ranges" property was not found for
++ * this device in DT, or -EINVAL if the CPU address or size is invalid.
+  */
+ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
+ {
+@@ -879,6 +879,22 @@ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *siz
+ 	*dma_addr = dmaaddr;
  
- 	dev->archdata.dma_coherent = coherent;
-+
+ 	*size = of_read_number(ranges + naddr + pna, nsize);
 +	/*
-+	 * Don't override the dma_ops if they have already been set. Ideally
-+	 * this should be the only location where dma_ops are set, remove this
-+	 * check when all other callers of set_dma_ops will have disappeared.
++	 * DT nodes sometimes incorrectly set the size as a mask. Work around
++	 * those incorrect DT by computing the size as mask + 1.
 +	 */
-+	if (dev->archdata.dma_ops)
-+		return;
++	if (*size & 1) {
++		pr_warn("%s: size 0x%llx for dma-range in node(%s) set as mask\n",
++			__func__, *size, np->full_name);
++		*size = *size + 1;
++	}
 +
- 	if (arm_setup_iommu_dma_ops(dev, dma_base, size, iommu))
- 		dma_ops = arm_get_iommu_dma_map_ops(coherent);
- 	else
++	if (!*size) {
++		pr_err("%s: invalid size zero for dma-range in node(%s)\n",
++		       __func__, np->full_name);
++		ret = -EINVAL;
++		goto out;
++	}
+ 
+ 	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
+ 		 *dma_addr, *paddr, *size);
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index fd5cfad..d9898d9 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -110,21 +110,6 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+ 		size = dev->coherent_dma_mask + 1;
+ 	} else {
+ 		offset = PFN_DOWN(paddr - dma_addr);
+-
+-		/*
+-		 * Add a work around to treat the size as mask + 1 in case
+-		 * it is defined in DT as a mask.
+-		 */
+-		if (size & 1) {
+-			dev_warn(dev, "Invalid size 0x%llx for dma-range\n",
+-				 size);
+-			size = size + 1;
+-		}
+-
+-		if (!size) {
+-			dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
+-			return;
+-		}
+ 		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
+ 	}
+ 
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
