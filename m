@@ -1,8 +1,8 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 6/8] drivers: platform: Remove call to
-	of_dma_(con/decon)figure_ops
-Date: Tue,  9 Aug 2016 04:19:08 +0530
-Message-ID: <1470696550-3416-7-git-send-email-sricharan@codeaurora.org>
+Subject: [PATCH 7/8] iommu: of: Handle IOMMU lookup failure with deferred
+	probing or error
+Date: Tue,  9 Aug 2016 04:19:09 +0530
+Message-ID: <1470696550-3416-8-git-send-email-sricharan@codeaurora.org>
 References: <1470696550-3416-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,47 +22,103 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gm
 Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The dma_ops gets configured for the device generically during
-the device_attach call. So remove it from the platform bus probe.
-Similarly remove the deconfigure calls as well, since it is
-now called form the device_detach path.
+From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
+Failures to look up an IOMMU when parsing the DT iommus property need to
+be handled separately from the .of_xlate() failures to support deferred
+probing.
+
+The lack of a registered IOMMU can be caused by the lack of a driver for
+the IOMMU, the IOMMU device probe not having been performed yet, having
+been deferred, or having failed.
+
+The first case occurs when the device tree describes the bus master and
+IOMMU topology correctly but no device driver exists for the IOMMU yet
+or the device driver has not been compiled in. Return NULL, the caller
+will configure the device without an IOMMU.
+
+The second and third cases are handled by deferring the probe of the bus
+master device which will eventually get reprobed after the IOMMU.
+
+The last case is currently handled by deferring the probe of the bus
+master device as well. A mechanism to either configure the bus master
+device without an IOMMU or to fail the bus master device probe depending
+on whether the IOMMU is optional or mandatory would be a good
+enhancement.
+
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- drivers/of/platform.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/iommu/of_iommu.c | 21 +++++++++++++++++----
+ drivers/of/device.c      |  2 ++
+ 2 files changed, 19 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-index af3b291..b2872be 100644
---- a/drivers/of/platform.c
-+++ b/drivers/of/platform.c
-@@ -180,11 +180,9 @@ static struct platform_device *of_platform_device_create_pdata(
- 	dev->dev.bus = &platform_bus_type;
- 	dev->dev.platform_data = platform_data;
- 	of_dma_configure_masks(&dev->dev, dev->dev.of_node);
--	of_dma_configure_ops(&dev->dev, dev->dev.of_node);
- 	of_msi_configure(&dev->dev, dev->dev.of_node);
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 4c4219d..3994cf5 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -149,7 +149,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ {
+ 	struct of_phandle_args iommu_spec;
+ 	struct device_node *np = NULL;
+-	struct iommu_ops *ops = NULL;
++	const struct iommu_ops *ops = NULL;
+ 	int idx = 0;
  
- 	if (of_device_add(dev) != 0) {
--		of_dma_deconfigure(&dev->dev);
- 		platform_device_put(dev);
- 		goto err_clear_flag;
+ 	if (dev_is_pci(dev)) {
+@@ -189,8 +189,21 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 		np = iommu_spec.np;
+ 		ops = of_iommu_get_ops(np);
+ 
+-		if (!ops || !ops->of_xlate || ops->of_xlate(dev, &iommu_spec))
++		if (!ops) {
++			const struct of_device_id *oid;
++
++			oid = of_match_node(&__iommu_of_table, np);
++			ops = oid ? ERR_PTR(-EPROBE_DEFER) : NULL;
+ 			goto err_put_node;
++		}
++
++		if (!ops->of_xlate || ops->of_xlate(dev, &iommu_spec)) {
++			ops = NULL;
++			goto err_put_node;
++		}
++
++		if (ops->add_device)
++			ops = ops->add_device(dev) ? ops : NULL;
+ 
+ 		of_node_put(np);
+ 		idx++;
+@@ -200,7 +213,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 
+ err_put_node:
+ 	of_node_put(np);
+-	return NULL;
++	return ops;
+ }
+ 
+ void __init of_iommu_init(void)
+@@ -211,7 +224,7 @@ void __init of_iommu_init(void)
+ 	for_each_matching_node_and_match(np, matches, &match) {
+ 		const of_iommu_init_fn init_fn = match->data;
+ 
+-		if (init_fn(np))
++		if (init_fn && init_fn(np))
+ 			pr_err("Failed to initialise IOMMU %s\n",
+ 				of_node_full_name(np));
  	}
-@@ -245,7 +243,6 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
- 	else
- 		of_device_make_bus_id(&dev->dev);
- 	of_dma_configure_masks(&dev->dev, dev->dev.of_node);
--	of_dma_configure_ops(&dev->dev, dev->dev.of_node);
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index e1fad50..92e02dc 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -149,6 +149,8 @@ int of_dma_configure_ops(struct device *dev, struct device_node *np)
+ 		coherent ? " " : " not ");
  
- 	/* Allow the HW Peripheral ID to be overridden */
- 	prop = of_get_property(node, "arm,primecell-periphid", NULL);
-@@ -503,7 +500,6 @@ static int of_platform_device_destroy(struct device *dev, void *data)
- 		amba_device_unregister(to_amba_device(dev));
- #endif
+ 	iommu = of_iommu_configure(dev, np);
++	if (IS_ERR(iommu))
++		return PTR_ERR(iommu);
+ 	dev_dbg(dev, "device is%sbehind an iommu\n",
+ 		iommu ? " " : " not ");
  
--	of_dma_deconfigure(dev);
- 	of_node_clear_flag(dev->of_node, OF_POPULATED);
- 	of_node_clear_flag(dev->of_node, OF_POPULATED_BUS);
- 	return 0;
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
