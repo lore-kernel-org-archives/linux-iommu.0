@@ -1,11 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH] iommu/mediatek: Mark static functions in headers inline
-Date: Tue,  9 Aug 2016 15:59:01 +0200
-Message-ID: <1470751141-6898-1-git-send-email-joro@8bytes.org>
+Subject: Re: [PATCH] iommu/dma: Don't put uninitialised IOVA domains
+Date: Tue, 9 Aug 2016 17:01:57 +0200
+Message-ID: <20160809150157.GF1437@8bytes.org>
+References: <d88eb3dc42377b8aa7947d2b0141f28589ae645f.1469634042.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <d88eb3dc42377b8aa7947d2b0141f28589ae645f.1469634042.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,47 +18,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+On Wed, Jul 27, 2016 at 04:46:06PM +0100, Robin Murphy wrote:
+> Due to the limitations of having to wait until we see a device's DMA
+> restrictions before we know how we want an IOVA domain initialised,
+> there is a window for error if a DMA ops domain is allocated but later
+> freed without ever being used. In that case, init_iova_domain() was
+> never called, so calling put_iova_domain() from iommu_put_dma_cookie()
+> ends up trying to take an uninitialised lock and crashing.
+> 
+> Make things robust by skipping the call unless the IOVA domain actually
+> has been initialised, as we probably should have done from the start.
+>
 
-This was an oversight while merging these functions. Fix it.
+Missing 'Fixes:' and probably 'Cc: stable' lines?
 
-Cc: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Fixes: 9ca340c98c0d ('iommu/mediatek: move the common struct into header file')
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/mtk_iommu.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> Reported-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+> 
+> I'm not sure this warrants a cc stable, as with the code currently in
+> mainline it's only at all likely if other things have already failed
+> elsewhere in a manner they should not be expected to.
 
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index 9ed0a84..3dab13b 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -55,19 +55,19 @@ struct mtk_iommu_data {
- 	bool                            enable_4GB;
- };
- 
--static int compare_of(struct device *dev, void *data)
-+static inline int compare_of(struct device *dev, void *data)
- {
- 	return dev->of_node == data;
- }
- 
--static int mtk_iommu_bind(struct device *dev)
-+static inline int mtk_iommu_bind(struct device *dev)
- {
- 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
- 
- 	return component_bind_all(dev, &data->smi_imu);
- }
- 
--static void mtk_iommu_unbind(struct device *dev)
-+static inline void mtk_iommu_unbind(struct device *dev)
- {
- 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
- 
--- 
-2.6.6
+Yes, I think this qualifies for stable. Please re-send with the Acks and
+Reviewed-by lines too. I'll queue this in my fixes branch and send it
+upstream asap.
+
+
+	Joerg
