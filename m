@@ -1,59 +1,61 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH 3/3] iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
-Date: Tue, 09 Aug 2016 16:19:01 +0300
-Message-ID: <14156780.DZdbshsptM@avalon>
-References: <20160607033918.28687.98260.sendpatchset@little-apple> <CANqRtoSfzZhMXwLpbwr2k22qgcA=GJ5pxV82FPLkB4FKOqsX4g@mail.gmail.com> <7796705.iS1mBl6Cq9@avalon>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH] iommu/mediatek: Mark static functions in headers inline
+Date: Tue,  9 Aug 2016 15:59:01 +0200
+Message-ID: <1470751141-6898-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <7796705.iS1mBl6Cq9@avalon>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>, iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <joro@8bytes.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-renesas-soc@vger.kernel.org, Simon Horman <horms+renesas@verge.net.au>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tuesday 09 Aug 2016 16:17:57 Laurent Pinchart wrote:
-> On Wednesday 08 Jun 2016 18:12:31 Magnus Damm wrote:
-> > On Wed, Jun 8, 2016 at 5:48 PM, Laurent Pinchart wrote:
-> >> On Wednesday 08 Jun 2016 09:04:17 Geert Uytterhoeven wrote:
-> >>> On Wed, Jun 8, 2016 at 2:18 AM, Laurent Pinchart wrote:
-> >>>>> --- 0031/drivers/iommu/ipmmu-vmsa.c
-> >>>>> +++ work/drivers/iommu/ipmmu-vmsa.c   2016-06-06 11:19:40.210607110
-> 
-> [snip]
-> 
-> >>>>> @@ -1268,6 +1271,8 @@ IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "r
-> >>>>>                ipmmu_vmsa_iommu_of_setup);
-> >>>>>  IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795",
-> >>>>>                ipmmu_vmsa_iommu_of_setup);
-> >>>>> +IOMMU_OF_DECLARE(ipmmu_r8a7796_iommu_of, "renesas,ipmmu-r8a7796",
-> >>>>> +              ipmmu_vmsa_iommu_of_setup);
-> >>>> 
-> >>>> How about a Gen3 generic compatible string in addition to the
-> >>>> SoC-specific ones ?
-> >>> 
-> >>> Do we want to specify the number of utlbs here?
-> >>> Does it differ between r8a7795, r8a7796, and future members?
-> >> 
-> >> It differs between IPMMU instances on a given SoC, so if we want to
-> >> specify it it should be a DT property.
-> > 
-> > Can you please point out which documentation that says it varies with
-> > IPMMU instance?
-> > 
-> > Based on IMUCTRn register description "H3-ES1" has 0-31 range while
-> > "Others" have 0-47.
-> 
-> The maximum number of uTLBs is indeed the same according to that part of the
-> documentation, but not all uTLBs are available in all IPMMU instances. We
-> even have holes in the uTLB ranges, maybe a mask would be more appropriate.
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-And the other option is of course to ignore that and accept any uTLB number, 
-in which case we will rely on the IOMMU bus master node providing correct 
-information.
+This was an oversight while merging these functions. Fix it.
 
+Cc: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Fixes: 9ca340c98c0d ('iommu/mediatek: move the common struct into header file')
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/mtk_iommu.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index 9ed0a84..3dab13b 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -55,19 +55,19 @@ struct mtk_iommu_data {
+ 	bool                            enable_4GB;
+ };
+ 
+-static int compare_of(struct device *dev, void *data)
++static inline int compare_of(struct device *dev, void *data)
+ {
+ 	return dev->of_node == data;
+ }
+ 
+-static int mtk_iommu_bind(struct device *dev)
++static inline int mtk_iommu_bind(struct device *dev)
+ {
+ 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
+ 
+ 	return component_bind_all(dev, &data->smi_imu);
+ }
+ 
+-static void mtk_iommu_unbind(struct device *dev)
++static inline void mtk_iommu_unbind(struct device *dev)
+ {
+ 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
+ 
 -- 
-Regards,
-
-Laurent Pinchart
+2.6.6
