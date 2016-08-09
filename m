@@ -1,53 +1,45 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 2/2] iommu/dma: Respect IOMMU aperture when allocating
-Date: Tue,  9 Aug 2016 16:23:18 +0100
-Message-ID: <6d73ab5fb671089057b31beb73667c09147a0f0e.1470755555.git.robin.murphy@arm.com>
-References: <3feb8016c2def4aabc5513b548e17bbf57c27959.1470755555.git.robin.murphy@arm.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu/exynos: Modify error handling
+Date: Tue, 9 Aug 2016 17:29:02 +0200
+Message-ID: <20160809152902.GC29650@8bytes.org>
+References: <20160801061838.GA17805@amitoj-Inspiron-3542>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3feb8016c2def4aabc5513b548e17bbf57c27959.1470755555.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160801061838.GA17805@amitoj-Inspiron-3542>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Amitoj Kaur Chawla <amitoj1606@gmail.com>
+Cc: kgene@kernel.org, k.kozlowski@samsung.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org, julia.lawall@lip6.fr
 List-Id: iommu@lists.linux-foundation.org
 
-Where a device driver has set a 64-bit DMA mask to indicate the absence
-of addressing limitations, we still need to ensure that we don't
-allocate IOVAs beyond the actual input size of the IOMMU. The reported
-aperture is the most reliable way we have of inferring that input
-address size, so use that to enforce a hard upper limit.
+On Mon, Aug 01, 2016 at 11:48:38AM +0530, Amitoj Kaur Chawla wrote:
+> of_platform_device_create returns NULL on error so an IS_ERR test is
+> incorrect here and a NULL check is required.
+> 
+> The Coccinelle semantic patch used to make this change is as follows:
+> @@
+> expression e;
+> @@
+> 
+>   e = of_platform_device_create(...);
+> if(
+> -    IS_ERR(e)
+> +    !e
+>     )
+>     {
+>   <+...
+>   return
+> - PTR_ERR(e)
+> + -ENODEV
+>   ;
+>   ...+>
+>   }
+> 
+> Signed-off-by: Amitoj Kaur Chawla <amitoj1606@gmail.com>
+> ---
+>  drivers/iommu/exynos-iommu.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
-
-This is the only other thing I currently have which could perhaps be
-considered a fix; otherwise I'll pull it into the PCI/SMMU series.
-
- drivers/iommu/dma-iommu.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 7d991c81c4fa..092d781f5f35 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -158,6 +158,8 @@ static struct iova *__alloc_iova(struct iova_domain *iovad, size_t size,
- 	unsigned long shift = iova_shift(iovad);
- 	unsigned long length = iova_align(iovad, size) >> shift;
- 
-+	if (domain->geometry.force_aperture)
-+		dma_limit &= domain->geometry.aperture_end;
- 	/*
- 	 * Enforce size-alignment to be safe - there could perhaps be an
- 	 * attribute to control this per-device, or at least per-domain...
--- 
-2.8.1.dirty
+Patch didn't apply cleanly against v4.8-rc1, but I fixed it up and it is
+now in my tree, thanks.
