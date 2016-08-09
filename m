@@ -1,60 +1,41 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu/dma: Respect IOMMU aperture when allocating
-Date: Tue, 9 Aug 2016 17:36:02 +0200
-Message-ID: <20160809153602.GD29650@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 1/2] iommu/dma: Don't put uninitialised IOVA domains
+Date: Tue, 9 Aug 2016 17:36:39 +0200
+Message-ID: <20160809153639.GE29650@8bytes.org>
 References: <3feb8016c2def4aabc5513b548e17bbf57c27959.1470755555.git.robin.murphy@arm.com>
-	<6d73ab5fb671089057b31beb73667c09147a0f0e.1470755555.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <stable-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <6d73ab5fb671089057b31beb73667c09147a0f0e.1470755555.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+In-Reply-To: <3feb8016c2def4aabc5513b548e17bbf57c27959.1470755555.git.robin.murphy@arm.com>
+Sender: stable-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org, stable@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 09, 2016 at 04:23:18PM +0100, Robin Murphy wrote:
-> Where a device driver has set a 64-bit DMA mask to indicate the absence
-> of addressing limitations, we still need to ensure that we don't
-> allocate IOVAs beyond the actual input size of the IOMMU. The reported
-> aperture is the most reliable way we have of inferring that input
-> address size, so use that to enforce a hard upper limit.
+On Tue, Aug 09, 2016 at 04:23:17PM +0100, Robin Murphy wrote:
+> Due to the limitations of having to wait until we see a device's DMA
+> restrictions before we know how we want an IOVA domain initialised,
+> there is a window for error if a DMA ops domain is allocated but later
+> freed without ever being used. In that case, init_iova_domain() was
+> never called, so calling put_iova_domain() from iommu_put_dma_cookie()
+> ends up trying to take an uninitialised lock and crashing.
 > 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
-Also missing 'Fixes:' line.
-
+> Make things robust by skipping the call unless the IOVA domain actually
+> has been initialised, as we probably should have done from the start.
+> 
+> Fixes: 0db2e5d18f76 ("iommu: Implement common IOMMU ops for DMA mapping")
+> Cc: stable@vger.kernel.org
+> Reported-by: Nate Watterson <nwatters@codeaurora.org>
+> Reviewed-by: Nate Watterson <nwatters@codeaurora.org>
+> Tested-by: Nate Watterson <nwatters@codeaurora.org>
+> Reviewed-by: Eric Auger <eric.auger@redhat.com>
+> Tested-by: Eric Auger <eric.auger@redhat.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
-> 
-> This is the only other thing I currently have which could perhaps be
-> considered a fix; otherwise I'll pull it into the PCI/SMMU series.
-> 
->  drivers/iommu/dma-iommu.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 7d991c81c4fa..092d781f5f35 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -158,6 +158,8 @@ static struct iova *__alloc_iova(struct iova_domain *iovad, size_t size,
->  	unsigned long shift = iova_shift(iovad);
->  	unsigned long length = iova_align(iovad, size) >> shift;
->  
-> +	if (domain->geometry.force_aperture)
-> +		dma_limit &= domain->geometry.aperture_end;
+>  drivers/iommu/dma-iommu.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 
-This might work, but is misleading as limits and aperture_end are
-neither a mask nor a bitfield. It is more descriptive to use min()
-here:
+Wow, that was quick :)
 
-	dma_limit = min(dma_limit, omain->geometry.aperture_end);
+Applied to iommu/fixes, thanks.
