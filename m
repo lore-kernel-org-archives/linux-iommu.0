@@ -1,110 +1,64 @@
-From: =?UTF-8?q?Niklas=20S=C3=B6derlund?=
- <niklas.soderlund+renesas@ragnatech.se>
-Subject: [PATCHv9 6/6] dmaengine: rcar-dmac: add iommu support for slave
- transfers
-Date: Wed, 10 Aug 2016 13:22:19 +0200
-Message-ID: <20160810112219.17964-7-niklas.soderlund+renesas@ragnatech.se>
+From: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCHv9 0/6] dmaengine: rcar-dmac: add iommu support for slave
+	transfers
+Date: Wed, 10 Aug 2016 23:07:10 +0530
+Message-ID: <20160810173710.GK9681@localhost>
 References: <20160810112219.17964-1-niklas.soderlund+renesas@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20160810112219.17964-1-niklas.soderlund+renesas@ragnatech.se>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, linux@armlinux.org.uk
-Cc: =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>, arnd@arndb.de, vinod.koul@intel.com, linus.walleij@linaro.org, hch@infradead.org, laurent.pinchart@ideasonboard.com, dan.j.williams@intel.com, robin.murphy@arm.com
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20160810112219.17964-1-niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+Cc: hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-RW5hYmxlIHNsYXZlIHRyYW5zZmVycyB0byBhIGRldmljZSBiZWhpbmQgYSBJUE1NVSBieSBtYXBw
-aW5nIHRoZSBzbGF2ZQphZGRyZXNzZXMgdXNpbmcgdGhlIGRtYS1tYXBwaW5nIEFQSS4KClNpZ25l
-ZC1vZmYtYnk6IE5pa2xhcyBTw7ZkZXJsdW5kIDxuaWtsYXMuc29kZXJsdW5kK3JlbmVzYXNAcmFn
-bmF0ZWNoLnNlPgotLS0KIGRyaXZlcnMvZG1hL3NoL3JjYXItZG1hYy5jIHwgODIgKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tLQogMSBmaWxlIGNoYW5nZWQsIDc0
-IGluc2VydGlvbnMoKyksIDggZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9kbWEv
-c2gvcmNhci1kbWFjLmMgYi9kcml2ZXJzL2RtYS9zaC9yY2FyLWRtYWMuYwppbmRleCBjZjk4M2E5
-Li4yMmE1ZTQwIDEwMDY0NAotLS0gYS9kcml2ZXJzL2RtYS9zaC9yY2FyLWRtYWMuYworKysgYi9k
-cml2ZXJzL2RtYS9zaC9yY2FyLWRtYWMuYwpAQCAtMTI4LDYgKzEyOCwxOCBAQCBzdHJ1Y3QgcmNh
-cl9kbWFjX2NoYW5fc2xhdmUgewogfTsKIAogLyoKKyAqIHN0cnVjdCByY2FyX2RtYWNfY2hhbl9t
-YXAgLSBNYXAgb2Ygc2xhdmUgZGV2aWNlIHBoeXMgdG8gZG1hIGFkZHJlc3MKKyAqIEBhZGRyOiBz
-bGF2ZSBkbWEgYWRkcmVzcworICogQGRpcjogZGlyZWN0aW9uIG9mIG1hcHBpbmcKKyAqIEBzbGF2
-ZTogc2xhdmUgY29uZmlndXJhdGlvbiB0aGF0IGlzIG1hcHBlZAorICovCitzdHJ1Y3QgcmNhcl9k
-bWFjX2NoYW5fbWFwIHsKKwlkbWFfYWRkcl90IGFkZHI7CisJZW51bSBkbWFfZGF0YV9kaXJlY3Rp
-b24gZGlyOworCXN0cnVjdCByY2FyX2RtYWNfY2hhbl9zbGF2ZSBzbGF2ZTsKK307CisKKy8qCiAg
-KiBzdHJ1Y3QgcmNhcl9kbWFjX2NoYW4gLSBSLUNhciBHZW4yIERNQSBDb250cm9sbGVyIENoYW5u
-ZWwKICAqIEBjaGFuOiBiYXNlIERNQSBjaGFubmVsIG9iamVjdAogICogQGlvbWVtOiBjaGFubmVs
-IEkvTyBtZW1vcnkgYmFzZQpAQCAtMTUyLDYgKzE2NCw3IEBAIHN0cnVjdCByY2FyX2RtYWNfY2hh
-biB7CiAKIAlzdHJ1Y3QgcmNhcl9kbWFjX2NoYW5fc2xhdmUgc3JjOwogCXN0cnVjdCByY2FyX2Rt
-YWNfY2hhbl9zbGF2ZSBkc3Q7CisJc3RydWN0IHJjYXJfZG1hY19jaGFuX21hcCBtYXA7CiAJaW50
-IG1pZF9yaWQ7CiAKIAlzcGlubG9ja190IGxvY2s7CkBAIC0xMDI5LDEzICsxMDQyLDY1IEBAIHJj
-YXJfZG1hY19wcmVwX2RtYV9tZW1jcHkoc3RydWN0IGRtYV9jaGFuICpjaGFuLCBkbWFfYWRkcl90
-IGRtYV9kZXN0LAogCQkJCSAgICAgIERNQV9NRU1fVE9fTUVNLCBmbGFncywgZmFsc2UpOwogfQog
-CitzdGF0aWMgaW50IHJjYXJfZG1hY19tYXBfc2xhdmVfYWRkcihzdHJ1Y3QgZG1hX2NoYW4gKmNo
-YW4sCisJCQkJICAgIGVudW0gZG1hX3RyYW5zZmVyX2RpcmVjdGlvbiBkaXIpCit7CisJc3RydWN0
-IHJjYXJfZG1hY19jaGFuICpyY2hhbiA9IHRvX3JjYXJfZG1hY19jaGFuKGNoYW4pOworCXN0cnVj
-dCByY2FyX2RtYWNfY2hhbl9tYXAgKm1hcCA9ICZyY2hhbi0+bWFwOworCXBoeXNfYWRkcl90IGRl
-dl9hZGRyOworCXNpemVfdCBkZXZfc2l6ZTsKKwllbnVtIGRtYV9kYXRhX2RpcmVjdGlvbiBkZXZf
-ZGlyOworCisJaWYgKGRpciA9PSBETUFfREVWX1RPX01FTSkgeworCQlkZXZfYWRkciA9IHJjaGFu
-LT5zcmMuc2xhdmVfYWRkcjsKKwkJZGV2X3NpemUgPSByY2hhbi0+c3JjLnhmZXJfc2l6ZTsKKwkJ
-ZGV2X2RpciA9IERNQV9UT19ERVZJQ0U7CisJfSBlbHNlIHsKKwkJZGV2X2FkZHIgPSByY2hhbi0+
-ZHN0LnNsYXZlX2FkZHI7CisJCWRldl9zaXplID0gcmNoYW4tPmRzdC54ZmVyX3NpemU7CisJCWRl
-dl9kaXIgPSBETUFfRlJPTV9ERVZJQ0U7CisJfQorCisJLyogUmV1c2UgY3VycmVudCBtYXAgaWYg
-cG9zc2libGUuICovCisJaWYgKGRldl9hZGRyID09IG1hcC0+c2xhdmUuc2xhdmVfYWRkciAmJgor
-CSAgICBkZXZfc2l6ZSA9PSBtYXAtPnNsYXZlLnhmZXJfc2l6ZSAmJgorCSAgICBkZXZfZGlyID09
-IG1hcC0+ZGlyKQorCQlyZXR1cm4gMDsKKworCS8qIFJlbW92ZSBvbGQgbWFwcGluZyBpZiBwcmVz
-ZW50LiAqLworCWlmIChtYXAtPnNsYXZlLnhmZXJfc2l6ZSkKKwkJZG1hX3VubWFwX3Jlc291cmNl
-KGNoYW4tPmRldmljZS0+ZGV2LCBtYXAtPmFkZHIsCisJCQkJICAgbWFwLT5zbGF2ZS54ZmVyX3Np
-emUsIG1hcC0+ZGlyLCAwKTsKKwltYXAtPnNsYXZlLnhmZXJfc2l6ZSA9IDA7CisKKwkvKiBDcmVh
-dGUgbmV3IHNsYXZlIGFkZHJlc3MgbWFwLiAqLworCW1hcC0+YWRkciA9IGRtYV9tYXBfcmVzb3Vy
-Y2UoY2hhbi0+ZGV2aWNlLT5kZXYsIGRldl9hZGRyLCBkZXZfc2l6ZSwKKwkJCQkgICAgIGRldl9k
-aXIsIDApOworCisJaWYgKGRtYV9tYXBwaW5nX2Vycm9yKGNoYW4tPmRldmljZS0+ZGV2LCBtYXAt
-PmFkZHIpKSB7CisJCWRldl9lcnIoY2hhbi0+ZGV2aWNlLT5kZXYsCisJCQkiY2hhbiV1OiBmYWls
-ZWQgdG8gbWFwICV6eEAlcGFwIiwgcmNoYW4tPmluZGV4LAorCQkJZGV2X3NpemUsICZkZXZfYWRk
-cik7CisJCXJldHVybiAtRUlPOworCX0KKworCWRldl9kYmcoY2hhbi0+ZGV2aWNlLT5kZXYsICJj
-aGFuJXU6IG1hcCAlenhAJXBhcCB0byAlcGFkIGRpcjogJXNcbiIsCisJCXJjaGFuLT5pbmRleCwg
-ZGV2X3NpemUsICZkZXZfYWRkciwgJm1hcC0+YWRkciwKKwkJZGV2X2RpciA9PSBETUFfVE9fREVW
-SUNFID8gIkRNQV9UT19ERVZJQ0UiIDogIkRNQV9GUk9NX0RFVklDRSIpOworCisJbWFwLT5zbGF2
-ZS5zbGF2ZV9hZGRyID0gZGV2X2FkZHI7CisJbWFwLT5zbGF2ZS54ZmVyX3NpemUgPSBkZXZfc2l6
-ZTsKKwltYXAtPmRpciA9IGRldl9kaXI7CisKKwlyZXR1cm4gMDsKK30KKwogc3RhdGljIHN0cnVj
-dCBkbWFfYXN5bmNfdHhfZGVzY3JpcHRvciAqCiByY2FyX2RtYWNfcHJlcF9zbGF2ZV9zZyhzdHJ1
-Y3QgZG1hX2NoYW4gKmNoYW4sIHN0cnVjdCBzY2F0dGVybGlzdCAqc2dsLAogCQkJdW5zaWduZWQg
-aW50IHNnX2xlbiwgZW51bSBkbWFfdHJhbnNmZXJfZGlyZWN0aW9uIGRpciwKIAkJCXVuc2lnbmVk
-IGxvbmcgZmxhZ3MsIHZvaWQgKmNvbnRleHQpCiB7CiAJc3RydWN0IHJjYXJfZG1hY19jaGFuICpy
-Y2hhbiA9IHRvX3JjYXJfZG1hY19jaGFuKGNoYW4pOwotCWRtYV9hZGRyX3QgZGV2X2FkZHI7CiAK
-IAkvKiBTb21lb25lIGNhbGxpbmcgc2xhdmUgRE1BIG9uIGEgZ2VuZXJpYyBjaGFubmVsPyAqLwog
-CWlmIChyY2hhbi0+bWlkX3JpZCA8IDAgfHwgIXNnX2xlbikgewpAQCAtMTA0NSw5ICsxMTEwLDEw
-IEBAIHJjYXJfZG1hY19wcmVwX3NsYXZlX3NnKHN0cnVjdCBkbWFfY2hhbiAqY2hhbiwgc3RydWN0
-IHNjYXR0ZXJsaXN0ICpzZ2wsCiAJCXJldHVybiBOVUxMOwogCX0KIAotCWRldl9hZGRyID0gZGly
-ID09IERNQV9ERVZfVE9fTUVNCi0JCSA/IHJjaGFuLT5zcmMuc2xhdmVfYWRkciA6IHJjaGFuLT5k
-c3Quc2xhdmVfYWRkcjsKLQlyZXR1cm4gcmNhcl9kbWFjX2NoYW5fcHJlcF9zZyhyY2hhbiwgc2ds
-LCBzZ19sZW4sIGRldl9hZGRyLAorCWlmIChyY2FyX2RtYWNfbWFwX3NsYXZlX2FkZHIoY2hhbiwg
-ZGlyKSkKKwkJcmV0dXJuIE5VTEw7CisKKwlyZXR1cm4gcmNhcl9kbWFjX2NoYW5fcHJlcF9zZyhy
-Y2hhbiwgc2dsLCBzZ19sZW4sIHJjaGFuLT5tYXAuYWRkciwKIAkJCQkgICAgICBkaXIsIGZsYWdz
-LCBmYWxzZSk7CiB9CiAKQEAgLTEwNjEsNyArMTEyNyw2IEBAIHJjYXJfZG1hY19wcmVwX2RtYV9j
-eWNsaWMoc3RydWN0IGRtYV9jaGFuICpjaGFuLCBkbWFfYWRkcl90IGJ1Zl9hZGRyLAogCXN0cnVj
-dCByY2FyX2RtYWNfY2hhbiAqcmNoYW4gPSB0b19yY2FyX2RtYWNfY2hhbihjaGFuKTsKIAlzdHJ1
-Y3QgZG1hX2FzeW5jX3R4X2Rlc2NyaXB0b3IgKmRlc2M7CiAJc3RydWN0IHNjYXR0ZXJsaXN0ICpz
-Z2w7Ci0JZG1hX2FkZHJfdCBkZXZfYWRkcjsKIAl1bnNpZ25lZCBpbnQgc2dfbGVuOwogCXVuc2ln
-bmVkIGludCBpOwogCkBAIC0xMDczLDYgKzExMzgsOSBAQCByY2FyX2RtYWNfcHJlcF9kbWFfY3lj
-bGljKHN0cnVjdCBkbWFfY2hhbiAqY2hhbiwgZG1hX2FkZHJfdCBidWZfYWRkciwKIAkJcmV0dXJu
-IE5VTEw7CiAJfQogCisJaWYgKHJjYXJfZG1hY19tYXBfc2xhdmVfYWRkcihjaGFuLCBkaXIpKQor
-CQlyZXR1cm4gTlVMTDsKKwogCXNnX2xlbiA9IGJ1Zl9sZW4gLyBwZXJpb2RfbGVuOwogCWlmIChz
-Z19sZW4gPiBSQ0FSX0RNQUNfTUFYX1NHX0xFTikgewogCQlkZXZfZXJyKGNoYW4tPmRldmljZS0+
-ZGV2LApAQCAtMTEwMCw5ICsxMTY4LDcgQEAgcmNhcl9kbWFjX3ByZXBfZG1hX2N5Y2xpYyhzdHJ1
-Y3QgZG1hX2NoYW4gKmNoYW4sIGRtYV9hZGRyX3QgYnVmX2FkZHIsCiAJCXNnX2RtYV9sZW4oJnNn
-bFtpXSkgPSBwZXJpb2RfbGVuOwogCX0KIAotCWRldl9hZGRyID0gZGlyID09IERNQV9ERVZfVE9f
-TUVNCi0JCSA/IHJjaGFuLT5zcmMuc2xhdmVfYWRkciA6IHJjaGFuLT5kc3Quc2xhdmVfYWRkcjsK
-LQlkZXNjID0gcmNhcl9kbWFjX2NoYW5fcHJlcF9zZyhyY2hhbiwgc2dsLCBzZ19sZW4sIGRldl9h
-ZGRyLAorCWRlc2MgPSByY2FyX2RtYWNfY2hhbl9wcmVwX3NnKHJjaGFuLCBzZ2wsIHNnX2xlbiwg
-cmNoYW4tPm1hcC5hZGRyLAogCQkJCSAgICAgIGRpciwgZmxhZ3MsIHRydWUpOwogCiAJa2ZyZWUo
-c2dsKTsKLS0gCjIuOS4yCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KbGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBs
-aXN0cy5pbmZyYWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlz
-dGluZm8vbGludXgtYXJtLWtlcm5lbAo=
+On Wed, Aug 10, 2016 at 01:22:13PM +0200, Niklas S=F6derlund wrote:
+> Hi,
+> =
+
+> This series tries to solve the problem with DMA with device registers
+> (MMIO registers) that are behind an IOMMU for the rcar-dmac driver. A
+> recent patch '9575632 (dmaengine: make slave address physical)'
+> clarifies that DMA slave address provided by clients is the physical
+> address. This puts the task of mapping the DMA slave address from a
+> phys_addr_t to a dma_addr_t on the DMA engine.
+> =
+
+> Without an IOMMU this is easy since the phys_addr_t and dma_addr_t are
+> the same and no special care is needed. However if you have a IOMMU you
+> need to map the DMA slave phys_addr_t to a dma_addr_t using something
+> like this.
+> =
+
+> This series is based on top of v4.8-rc1. And I'm hoping to be able to col=
+lect a
+> Ack from Russell King on patch 4/6 that adds the ARM specific part and th=
+en be
+> able to take the whole series through the dmaengine tree. If this is not =
+the
+> best route I'm more then happy to do it another way.
+> =
+
+> It's tested on a Koelsch with CONFIG_IPMMU_VMSA and by enabling the
+> ipmmu_ds node in r8a7791.dtsi. I verified operation by interacting with
+> /dev/mmcblk1, i2c and the serial console which are devices behind the
+> iommu.
+
+As I said in last one, the dmaengine parts look fine to me. But to go thru
+dmaengine tree I would need ACK on non dmaengine patches.
+
+
+-- =
+
+~Vinod
