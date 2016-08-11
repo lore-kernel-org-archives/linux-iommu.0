@@ -1,176 +1,93 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 2/2] iommu/arm-smmu: Support v7s context format
-Date: Thu, 11 Aug 2016 17:44:06 +0100
-Message-ID: <fa63429c5c2e57f3d5809921e8130e17fe5716c8.1470933167.git.robin.murphy@arm.com>
-References: <e1733d2c426f73441abc12a386d23ab2546c536a.1470933167.git.robin.murphy@arm.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH V6 0/6] iommu/msm: Add DT adaptation and generic bindings support
+Date: Thu, 11 Aug 2016 16:11:58 -0400
+Message-ID: <CAF6AEGsF5M1sfwaXKW0x=Mu=nQJR-9+xqrtXd=7Vz_+6G_u25A@mail.gmail.com>
+References: <1465817767-9856-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e1733d2c426f73441abc12a386d23ab2546c536a.1470933167.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1465817767-9856-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Srinivas Kandagatla <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Thierry Reding <treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, stepanm-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Fill in the last bits of machinery required to drive a stage 1 context
-bank in v7 short descriptor format. By default we'll prefer to use it
-only when the CPUs are also using the same format, such that we're
-guaranteed that everything will be strictly 32-bit.
+On Mon, Jun 13, 2016 at 7:36 AM, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+> The msm_iommu.c driver currently works based on platform data.
+> A single master device can be connected to more than one iommu and multiple
+> contexts in each of the iommu. This association between master and iommus was
+> represented from platform data using parent/child devices. The master drivers
+> were responsible for attaching all of the iommus/context to a domain. Now the
+> platform data support is removed and DT support is added. The master/iommus are
+> added through generic iommu bindings.
+>
+> This is essentially rework of the patch posted earlier by
+> Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>. This series folds the changes in to the
+> existing driver with the addition of generic bindings.
+>
+>         http://www.spinics.net/lists/linux-arm-msm/msg10077.html
+>
+> Tested this series on ifc6410 board.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+btw, the current state, at least on linaro integration branch, fault
+handling doesn't work so well (ie. device never gets resumed).. which
+is a bit unfortunate for a gpu (and results in a *lot* of rebooting on
+my part when debugging userspace).  I haven't had time yet to compare
+to the ancient downstream driver, but not sure if you have any ideas?
 
-I can't quite remember why I've had this sat locally for ages and not
-posted it - probably some long-gone merge conflict - but I've rebased
-it and given it a spin on an MMU-500 model and it all still seems to
-work OK.
+I guess probably disabling stall on fault would help.  But I'm not
+even getting the "Fault occurred in context.." prints.  Seeing the
+fault iova is pretty useful since that plus gpu cmdstream trace helps
+me figure out which texture/etc is being accessed out of bounds.
 
- drivers/iommu/arm-smmu.c | 67 +++++++++++++++++++++++++++++++++---------------
- 1 file changed, 46 insertions(+), 21 deletions(-)
+BR,
+-R
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 069b2ea89113..4b1c87e947fd 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -217,6 +217,7 @@
- #define ARM_SMMU_CB_TTBR0		0x20
- #define ARM_SMMU_CB_TTBR1		0x28
- #define ARM_SMMU_CB_TTBCR		0x30
-+#define ARM_SMMU_CB_CONTEXTIDR		0x34
- #define ARM_SMMU_CB_S1_MAIR0		0x38
- #define ARM_SMMU_CB_S1_MAIR1		0x3c
- #define ARM_SMMU_CB_PAR			0x50
-@@ -239,7 +240,6 @@
- #define SCTLR_AFE			(1 << 2)
- #define SCTLR_TRE			(1 << 1)
- #define SCTLR_M				(1 << 0)
--#define SCTLR_EAE_SBOP			(SCTLR_AFE | SCTLR_TRE)
- 
- #define ARM_MMU500_ACTLR_CPRE		(1 << 1)
- 
-@@ -738,7 +738,7 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
- static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 				       struct io_pgtable_cfg *pgtbl_cfg)
- {
--	u32 reg;
-+	u32 reg, reg2;
- 	u64 reg64;
- 	bool stage1;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-@@ -781,14 +781,22 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 
- 	/* TTBRs */
- 	if (stage1) {
--		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-+		u16 asid = ARM_SMMU_CB_ASID(smmu, cfg);
- 
--		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
--		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
--
--		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
--		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
--		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR1);
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-+			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
-+			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0);
-+			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
-+			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR1);
-+			writel_relaxed(asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
-+		} else {
-+			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-+			reg64 |= (u64)asid << TTBRn_ASID_SHIFT;
-+			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
-+			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
-+			reg64 |= (u64)asid << TTBRn_ASID_SHIFT;
-+			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR1);
-+		}
- 	} else {
- 		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
- 		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
-@@ -796,28 +804,36 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 
- 	/* TTBCR */
- 	if (stage1) {
--		reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
--		if (smmu->version > ARM_SMMU_V1) {
--			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
--			reg |= TTBCR2_SEP_UPSTREAM;
--			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR2);
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-+			reg = pgtbl_cfg->arm_v7s_cfg.tcr;
-+			reg2 = 0;
-+		} else {
-+			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
-+			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
-+			reg2 |= TTBCR2_SEP_UPSTREAM;
- 		}
-+		if (smmu->version > ARM_SMMU_V1)
-+			writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
- 	} else {
- 		reg = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
- 	}
-+	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
- 
- 	/* MAIRs (stage-1 only) */
- 	if (stage1) {
--		reg = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
-+		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-+			reg = pgtbl_cfg->arm_v7s_cfg.prrr;
-+			reg2 = pgtbl_cfg->arm_v7s_cfg.nmrr;
-+		} else {
-+			reg = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
-+			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
-+		}
- 		writel_relaxed(reg, cb_base + ARM_SMMU_CB_S1_MAIR0);
--		reg = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
--		writel_relaxed(reg, cb_base + ARM_SMMU_CB_S1_MAIR1);
-+		writel_relaxed(reg2, cb_base + ARM_SMMU_CB_S1_MAIR1);
- 	}
- 
- 	/* SCTLR */
--	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_M | SCTLR_EAE_SBOP;
-+	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
- 	if (stage1)
- 		reg |= SCTLR_S1_ASIDPNE;
- #ifdef __BIG_ENDIAN
-@@ -880,6 +896,11 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	 */
- 	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_L)
- 		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH32_L;
-+	if (IS_ENABLED(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) &&
-+	    !IS_ENABLED(CONFIG_64BIT) && !IS_ENABLED(CONFIG_ARM_LPAE) &&
-+	    (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_S) &&
-+	    (smmu_domain->stage == ARM_SMMU_DOMAIN_S1))
-+		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH32_S;
- 	if ((IS_ENABLED(CONFIG_64BIT) || cfg->fmt == ARM_SMMU_CTX_FMT_NONE) &&
- 	    (smmu->features & (ARM_SMMU_FEAT_FMT_AARCH64_64K |
- 			       ARM_SMMU_FEAT_FMT_AARCH64_16K |
-@@ -899,10 +920,14 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		oas = smmu->ipa_size;
- 		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
- 			fmt = ARM_64_LPAE_S1;
--		} else {
-+		} else if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_L) {
- 			fmt = ARM_32_LPAE_S1;
- 			ias = min(ias, 32UL);
- 			oas = min(oas, 40UL);
-+		} else {
-+			fmt = ARM_V7S;
-+			ias = min(ias, 32UL);
-+			oas = min(oas, 32UL);
- 		}
- 		break;
- 	case ARM_SMMU_DOMAIN_NESTED:
--- 
-2.8.1.dirty
+> [V6] After some discussions on patch 6 [1] from previous post,
+>      it was concluded that the changes for using relaxed writes
+>      in all places should not be a part of this series, so should
+>      be moved it. So removed that patch and added Acked/Tested tags.
+>      [1] https://patchwork.kernel.org/patch/9129231/
+>
+> [V5] Changed the compatible binding name as per comments, added comments
+>      for usage of barriers in patch 6.
+>
+> [V4] Addressed comments for making the iommu compatible binding more soc
+>      specific and updated the documentation for the iommu clocks.
+>
+> [V3] Addressed comments to correct the usage
+>      of the #iommu-cells binding, improve the flush_iotlb_range function,
+>      added a new patch to use writel_relaxed for register access and split
+>      up the documentation patch.
+>
+> [V2] Adapted the driver to use generic ARMV7S short descriptor pagetable ops
+>      and addressed comments.
+>
+> [V1]
+>    https://lists.linuxfoundation.org/pipermail/iommu/2015-August/014074.html
+>
+> Sricharan R (6):
+>   iommu/msm: Add DT adaptation
+>   documentation: iommu: Add bindings for msm,iommu-v0 ip
+>   iommu/msm: Move the contents from msm_iommu_dev.c to msm_iommu.c
+>   iommu/msm: Add support for generic master bindings
+>   iommu/msm: use generic ARMV7S short descriptor pagetable ops
+>   iommu/msm: Remove driver BROKEN
+>
+>  .../devicetree/bindings/iommu/msm,iommu-v0.txt     |  64 ++
+>  drivers/iommu/Kconfig                              |   2 +-
+>  drivers/iommu/Makefile                             |   2 +-
+>  drivers/iommu/msm_iommu.c                          | 870 +++++++++++----------
+>  drivers/iommu/msm_iommu.h                          |  73 +-
+>  drivers/iommu/msm_iommu_dev.c                      | 381 ---------
+>  6 files changed, 564 insertions(+), 828 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+>  delete mode 100644 drivers/iommu/msm_iommu_dev.c
+>
+> --
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+>
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
