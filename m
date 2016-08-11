@@ -1,12 +1,13 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 1/2] iommu/io-pgtable-arm-v7s: Fix attributes when splitting
-	blocks
-Date: Thu, 11 Aug 2016 17:44:05 +0100
-Message-ID: <e1733d2c426f73441abc12a386d23ab2546c536a.1470933167.git.robin.murphy@arm.com>
+Subject: [PATCH 2/2] iommu/arm-smmu: Support v7s context format
+Date: Thu, 11 Aug 2016 17:44:06 +0100
+Message-ID: <fa63429c5c2e57f3d5809921e8130e17fe5716c8.1470933167.git.robin.murphy@arm.com>
+References: <e1733d2c426f73441abc12a386d23ab2546c536a.1470933167.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <e1733d2c426f73441abc12a386d23ab2546c536a.1470933167.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,43 +21,156 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Due to the attribute bits being all over the place in the different
-types of short-descriptor PTEs, when remapping an existing entry, e.g.
-splitting a section into pages, we take the approach of decomposing
-the PTE attributes back to the IOMMU API flags to start from scratch.
-
-On inspection, though, the existing code seems to have got the read-only
-bit backwards and ignored the XN bit. How embarrassing...
-
-Fortunately the primary user so far, the Mediatek IOMMU, both never
-splits blocks (because it only serves non-overlapping DMA API calls) and
-also ignores permissions anyway, but let's put things right before any
-future users trip up.
+Fill in the last bits of machinery required to drive a stage 1 context
+bank in v7 short descriptor format. By default we'll prefer to use it
+only when the CPUs are also using the same format, such that we're
+guaranteed that everything will be strictly 32-bit.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/io-pgtable-arm-v7s.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 8c6139986d7d..def8ca1c982d 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -286,12 +286,14 @@ static int arm_v7s_pte_to_prot(arm_v7s_iopte pte, int lvl)
- 	int prot = IOMMU_READ;
- 	arm_v7s_iopte attr = pte >> ARM_V7S_ATTR_SHIFT(lvl);
+I can't quite remember why I've had this sat locally for ages and not
+posted it - probably some long-gone merge conflict - but I've rebased
+it and given it a spin on an MMU-500 model and it all still seems to
+work OK.
+
+ drivers/iommu/arm-smmu.c | 67 +++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 46 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 069b2ea89113..4b1c87e947fd 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -217,6 +217,7 @@
+ #define ARM_SMMU_CB_TTBR0		0x20
+ #define ARM_SMMU_CB_TTBR1		0x28
+ #define ARM_SMMU_CB_TTBCR		0x30
++#define ARM_SMMU_CB_CONTEXTIDR		0x34
+ #define ARM_SMMU_CB_S1_MAIR0		0x38
+ #define ARM_SMMU_CB_S1_MAIR1		0x3c
+ #define ARM_SMMU_CB_PAR			0x50
+@@ -239,7 +240,6 @@
+ #define SCTLR_AFE			(1 << 2)
+ #define SCTLR_TRE			(1 << 1)
+ #define SCTLR_M				(1 << 0)
+-#define SCTLR_EAE_SBOP			(SCTLR_AFE | SCTLR_TRE)
  
--	if (attr & ARM_V7S_PTE_AP_RDONLY)
-+	if (!(attr & ARM_V7S_PTE_AP_RDONLY))
- 		prot |= IOMMU_WRITE;
- 	if ((attr & (ARM_V7S_TEX_MASK << ARM_V7S_TEX_SHIFT)) == 0)
- 		prot |= IOMMU_MMIO;
- 	else if (pte & ARM_V7S_ATTR_C)
- 		prot |= IOMMU_CACHE;
-+	if (pte & ARM_V7S_ATTR_XN(lvl))
-+		prot |= IOMMU_NOEXEC;
+ #define ARM_MMU500_ACTLR_CPRE		(1 << 1)
  
- 	return prot;
- }
+@@ -738,7 +738,7 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 				       struct io_pgtable_cfg *pgtbl_cfg)
+ {
+-	u32 reg;
++	u32 reg, reg2;
+ 	u64 reg64;
+ 	bool stage1;
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+@@ -781,14 +781,22 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 
+ 	/* TTBRs */
+ 	if (stage1) {
+-		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
++		u16 asid = ARM_SMMU_CB_ASID(smmu, cfg);
+ 
+-		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
+-		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+-
+-		reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+-		reg64 |= ((u64)ARM_SMMU_CB_ASID(smmu, cfg)) << TTBRn_ASID_SHIFT;
+-		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR1);
++		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
++			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
++			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR0);
++			reg = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
++			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBR1);
++			writel_relaxed(asid, cb_base + ARM_SMMU_CB_CONTEXTIDR);
++		} else {
++			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
++			reg64 |= (u64)asid << TTBRn_ASID_SHIFT;
++			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
++			reg64 = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
++			reg64 |= (u64)asid << TTBRn_ASID_SHIFT;
++			writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR1);
++		}
+ 	} else {
+ 		reg64 = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+ 		writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+@@ -796,28 +804,36 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 
+ 	/* TTBCR */
+ 	if (stage1) {
+-		reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+-		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
+-		if (smmu->version > ARM_SMMU_V1) {
+-			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+-			reg |= TTBCR2_SEP_UPSTREAM;
+-			writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR2);
++		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
++			reg = pgtbl_cfg->arm_v7s_cfg.tcr;
++			reg2 = 0;
++		} else {
++			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
++			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
++			reg2 |= TTBCR2_SEP_UPSTREAM;
+ 		}
++		if (smmu->version > ARM_SMMU_V1)
++			writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
+ 	} else {
+ 		reg = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
+-		writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
+ 	}
++	writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
+ 
+ 	/* MAIRs (stage-1 only) */
+ 	if (stage1) {
+-		reg = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
++		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
++			reg = pgtbl_cfg->arm_v7s_cfg.prrr;
++			reg2 = pgtbl_cfg->arm_v7s_cfg.nmrr;
++		} else {
++			reg = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
++			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
++		}
+ 		writel_relaxed(reg, cb_base + ARM_SMMU_CB_S1_MAIR0);
+-		reg = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
+-		writel_relaxed(reg, cb_base + ARM_SMMU_CB_S1_MAIR1);
++		writel_relaxed(reg2, cb_base + ARM_SMMU_CB_S1_MAIR1);
+ 	}
+ 
+ 	/* SCTLR */
+-	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_M | SCTLR_EAE_SBOP;
++	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
+ 	if (stage1)
+ 		reg |= SCTLR_S1_ASIDPNE;
+ #ifdef __BIG_ENDIAN
+@@ -880,6 +896,11 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	 */
+ 	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_L)
+ 		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH32_L;
++	if (IS_ENABLED(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) &&
++	    !IS_ENABLED(CONFIG_64BIT) && !IS_ENABLED(CONFIG_ARM_LPAE) &&
++	    (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_S) &&
++	    (smmu_domain->stage == ARM_SMMU_DOMAIN_S1))
++		cfg->fmt = ARM_SMMU_CTX_FMT_AARCH32_S;
+ 	if ((IS_ENABLED(CONFIG_64BIT) || cfg->fmt == ARM_SMMU_CTX_FMT_NONE) &&
+ 	    (smmu->features & (ARM_SMMU_FEAT_FMT_AARCH64_64K |
+ 			       ARM_SMMU_FEAT_FMT_AARCH64_16K |
+@@ -899,10 +920,14 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 		oas = smmu->ipa_size;
+ 		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
+ 			fmt = ARM_64_LPAE_S1;
+-		} else {
++		} else if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_L) {
+ 			fmt = ARM_32_LPAE_S1;
+ 			ias = min(ias, 32UL);
+ 			oas = min(oas, 40UL);
++		} else {
++			fmt = ARM_V7S;
++			ias = min(ias, 32UL);
++			oas = min(oas, 32UL);
+ 		}
+ 		break;
+ 	case ARM_SMMU_DOMAIN_NESTED:
 -- 
 2.8.1.dirty
