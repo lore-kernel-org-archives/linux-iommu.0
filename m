@@ -1,15 +1,15 @@
 From: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Subject: Re: [PATCH 4/8] of: dma: Split of_configure_dma() into mask and ops
-	configuration
-Date: Fri, 12 Aug 2016 16:31:47 +0900
-Message-ID: <CAAFQd5BkpHrF=2=UXFA2mPKe0VQAD3J_XSNrZYHP0br5hw=Gsw@mail.gmail.com>
+Subject: Re: [PATCH 6/8] drivers: platform: Remove call to
+	of_dma_(con/decon)figure_ops
+Date: Fri, 12 Aug 2016 16:33:09 +0900
+Message-ID: <CAAFQd5DZ0ZpW2eEm8Bvh8=di6kOgUG4bGY_iTNbVBHsj0KPmeg@mail.gmail.com>
 References: <1470696550-3416-1-git-send-email-sricharan@codeaurora.org>
-	<1470696550-3416-5-git-send-email-sricharan@codeaurora.org>
+	<1470696550-3416-7-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1470696550-3416-5-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <1470696550-3416-7-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,17 +26,14 @@ List-Id: iommu@lists.linux-foundation.org
 Hi,
 
 On Tue, Aug 9, 2016 at 7:49 AM, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
-> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
->
-> The of_configure_dma() function configures both the DMA masks and ops.
-> Moving DMA ops configuration to probe time would thus also delay
-> configuration of the DMA masks, which might not be safe. To avoid issues
+> The dma_ops gets configured for the device generically during
+> the device_attach call. So remove it from the platform bus probe.
+> Similarly remove the deconfigure calls as well, since it is
+> now called form the device_detach path.
 
-Do we know any example cases when it might be unsafe? I think we kind
-of rely on the fact that DMA mapping (and so DMA masks as well) is not
-used before probing the device anyway, because we let the IOMMU
-attachment happen at probe time, which essentially makes any earlier
-attempts to use DMA mapping on such device incorrect.
+Doesn't this patch need to be squashed with previous one to avoid
+breaking things in between by having the of_dma_configure_ops() called
+two times?
 
 Best regards,
 Tomasz
