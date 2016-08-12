@@ -1,16 +1,13 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH 4/8] of: dma: Split of_configure_dma() into mask and ops
-	configuration
-Date: Fri, 12 Aug 2016 18:18:04 +0300
-Message-ID: <1651151.fes0RShRSW@avalon>
-References: <1470696550-3416-1-git-send-email-sricharan@codeaurora.org>
-	<1470696550-3416-5-git-send-email-sricharan@codeaurora.org>
-	<CAAFQd5BkpHrF=2=UXFA2mPKe0VQAD3J_XSNrZYHP0br5hw=Gsw@mail.gmail.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 2/2] iommu/msm: wire up fault handling
+Date: Fri, 12 Aug 2016 11:29:07 -0400
+Message-ID: <1471015747-569-2-git-send-email-robdclark@gmail.com>
+References: <1471015747-569-1-git-send-email-robdclark@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAAFQd5BkpHrF=2=UXFA2mPKe0VQAD3J_XSNrZYHP0br5hw=Gsw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <1471015747-569-1-git-send-email-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,36 +17,84 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "open list:IOMMU DRIVERS" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tomasz,
+When things go wrong on the gpu, we can get *thousands* of faults.  With
+so many pr_err() prints, which were slowing down resuming the iommu,
+drm/msm would think the GPU had actually hung and reset it.
 
-On Friday 12 Aug 2016 16:31:47 Tomasz Figa wrote:
-> On Tue, Aug 9, 2016 at 7:49 AM, Sricharan R wrote:
-> > From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> > 
-> > The of_configure_dma() function configures both the DMA masks and ops.
-> > Moving DMA ops configuration to probe time would thus also delay
-> > configuration of the DMA masks, which might not be safe. To avoid issues
-> 
-> Do we know any example cases when it might be unsafe? I think we kind
-> of rely on the fact that DMA mapping (and so DMA masks as well) is not
-> used before probing the device anyway, because we let the IOMMU
-> attachment happen at probe time, which essentially makes any earlier
-> attempts to use DMA mapping on such device incorrect.
+Wire up the fault reporting, so instead we get a small ratelimited print
+of the fault address from drm/msm's fault handler instead.
 
-I don't know of any such situation, but (if I remember correctly) when I 
-discussed the IOMMU rework with Arnd Bergman and Will Deacon there was a 
-concern that someone, somewhere was relying on the mask being set early.
+Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/iommu/msm_iommu.c | 16 +++++++++++-----
+ drivers/iommu/msm_iommu.h |  3 +++
+ 2 files changed, 14 insertions(+), 5 deletions(-)
 
-I personally would like to drop this patch, but it might be difficult to 
-ensure this wouldn't cause a regression. There should certainly be no DMA 
-mapping created before IOMMU attachment, but the DMA mask could possibly be 
-used somewhere else.
-
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index f6f596f..1110b72 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -411,6 +411,7 @@ static int msm_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 			}
+ 			__disable_clocks(iommu);
+ 			list_add(&iommu->dom_node, &priv->list_attached);
++			iommu->domain = domain;
+ 		}
+ 	}
+ 
+@@ -614,8 +615,8 @@ irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id)
+ 		goto fail;
+ 	}
+ 
+-	pr_err("Unexpected IOMMU page fault!\n");
+-	pr_err("base = %08x\n", (unsigned int)iommu->base);
++	pr_debug("Unexpected IOMMU page fault!\n");
++	pr_debug("base = %08x\n", (unsigned int)iommu->base);
+ 
+ 	ret = __enable_clocks(iommu);
+ 	if (ret)
+@@ -624,9 +625,14 @@ irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id)
+ 	for (i = 0; i < iommu->ncb; i++) {
+ 		fsr = GET_FSR(iommu->base, i);
+ 		if (fsr) {
+-			pr_err("Fault occurred in context %d.\n", i);
+-			pr_err("Interesting registers:\n");
+-			print_ctx_regs(iommu->base, i);
++			int ret = report_iommu_fault(iommu->domain,
++					to_msm_priv(iommu->domain)->dev,
++					GET_FAR(iommu->base, i), 0);
++			if (ret == -ENOSYS) {
++				pr_err("Fault occurred in context %d.\n", i);
++				pr_err("Interesting registers:\n");
++				print_ctx_regs(iommu->base, i);
++			}
+ 			SET_FSR(iommu->base, i, 0x4000000F);
+ 			SET_RESUME(iommu->base, i, 1);
+ 		}
+diff --git a/drivers/iommu/msm_iommu.h b/drivers/iommu/msm_iommu.h
+index 4ca25d5..c53016c 100644
+--- a/drivers/iommu/msm_iommu.h
++++ b/drivers/iommu/msm_iommu.h
+@@ -56,6 +56,8 @@
+  * dom_node:	list head for domain
+  * ctx_list:	list of 'struct msm_iommu_ctx_dev'
+  * context_map: Bitmap to track allocated context banks
++ * domain:	iommu domain that this iommu dev is a member of,
++ * 		ie. whose msm_priv::list_attached are we on?
+  */
+ struct msm_iommu_dev {
+ 	void __iomem *base;
+@@ -68,6 +70,7 @@ struct msm_iommu_dev {
+ 	struct list_head dom_node;
+ 	struct list_head ctx_list;
+ 	DECLARE_BITMAP(context_map, IOMMU_MAX_CBS);
++	struct iommu_domain *domain;
+ };
+ 
+ /**
 -- 
-Regards,
-
-Laurent Pinchart
+2.7.4
