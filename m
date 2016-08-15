@@ -1,109 +1,180 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.8-rc2
-Date: Mon, 15 Aug 2016 12:01:30 +0200
-Message-ID: <20160815100121.GA15241@8bytes.org>
-Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============5201861222144043933=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH v4 00/15] ACPI IORT ARM SMMU v3 support
+Date: Mon, 15 Aug 2016 16:23:25 +0100
+Message-ID: <1471274620-20754-1-git-send-email-lorenzo.pieralisi@arm.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Hanjun Guo <hanjun.guo@linaro.org>, Jon Masters <jcm@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
+This patch series is v4 of a previous posting:
 
---===============5201861222144043933==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="KsGdsel6WgEHnImy"
-Content-Disposition: inline
+https://lkml.org/lkml/2016/7/20/248
 
+v3 -> v4
+	- Added single mapping API (for IORT named components)
+	- Fixed arm_smmu_iort_xlate() return value
+	- Reworked fwnode registration and platform device creation
+	  ordering to fix probe ordering dependencies
+	- Added code to keep device_node ref count with new iommu
+	  fwspec API
+	- Added patch to make iommu_fwspec arch agnostic
+	- Dropped RFC status
+	- Rebased against v4.8-rc2
 
---KsGdsel6WgEHnImy
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+v2 -> v3
+	- Rebased on top of dependencies series [1][2][3](v4.7-rc3)
+	- Added back reliance on ACPI early probing infrastructure
+	- Patch[1-3] merged through other dependent series
+	- Added back IOMMU fwnode generalization
+	- Move SMMU v3 static functions configuration to IORT code
+	- Implemented generic IOMMU fwspec API
+	- Added code to implement fwnode platform device look-up
 
-Hi Linus,
+v1 -> v2:
+	- Rebased on top of dependencies series [1][2][3](v4.7-rc1)
+	- Removed IOMMU fwnode generalization
+	- Implemented ARM SMMU v3 ACPI probing instead of ARM SMMU v2
+	  owing to patch series dependencies [1]
+	- Moved platform device creation logic to IORT code to
+	  generalize its usage for ARM SMMU v1-v2-v3 components
+	- Removed reliance on ACPI early device probing
+	- Created IORT specific iommu_xlate() translation hook leaving
+	  OF code unchanged according to v1 reviews
 
-The following changes since commit 29b4817d4018df78086157ea3a55c1d9424a7cfc:
+The ACPI IORT table provides information that allows instantiating
+ARM SMMU devices and carrying out id mappings between components on
+ARM based systems (devices, IOMMUs, interrupt controllers).
 
-  Linux 4.8-rc1 (2016-08-07 18:18:00 -0700)
+http://infocenter.arm.com/help/topic/com.arm.doc.den0049b/DEN0049B_IO_Remapping_Table.pdf
 
-are available in the git repository at:
+Building on basic IORT support, available through [2],
+this patchset enables ARM SMMU v3 support on ACPI systems.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.8-rc2
+Most of the code is aimed at building the required generic ACPI
+infrastructure to create and enable IOMMU components and to bring
+the IOMMU infrastructure for ACPI on par with DT, which is going to
+make future ARM SMMU components easier to integrate.
 
-for you to fetch changes up to c987ff0d3cb37d7fe1ddaa370811dfd9f73643fa:
+PATCH (1) adds a FWNODE_IOMMU type to the struct fwnode_handle type.
+          It is required to attach a fwnode identifier to platform
+          devices allocated/detected through IORT tables entries;
+          IOMMU devices have to have an identifier to look them up
+          eg IOMMU core layer carrying out id translation. This can be
+          done through a fwnode_handle (ie IOMMU platform devices created
+          out of IORT tables are not ACPI devices hence they can't be
+          allocated as such, otherwise they would have a fwnode_handle of
+          type FWNODE_ACPI).
 
-  iommu/dma: Respect IOMMU aperture when allocating (2016-08-10 12:02:02 +0200)
+PATCH (2) Add kernel infrastructure to make the struct iommu_fwspec
+          handling arch agnostic and generic.
 
-----------------------------------------------------------------
-IOMMU Fixes for Linux v4.8-rc2
+PATCH (3) makes use of the ACPI early probing API to add a linker script
+          section for probing devices via IORT ACPI kernel code.
 
-Including:
+PATCH (4) provides IORT support for registering IOMMU IORT node through
+          their fwnode handle.
 
-	* Some functions defined in a header file for the mediatek
-	  driver were not marked inline. Fix that oversight.
+PATCH (5) implements core code fwnode based platform devices look-up.
 
-	* Fix a potential crash in the ARM64 dma-mapping code when
-	  freeing a partially initialized domain.
+PATCH (6) extends iommu_fwspec so that it can be used on ACPI based
+          system by creating a generic IOMMU fwspec kernel layer.
 
-	* Another fix for ARM64 dma-mapping to respect IOMMU mapping
-	  constraints when allocating IOVA addresses.
+PATCH (7) implements the of_dma_configure() API in ACPI world -
+          acpi_dma_configure() - and patches PCI and ACPI core code to
+          start making use of it.
 
-----------------------------------------------------------------
-Joerg Roedel (1):
-      iommu/mediatek: Mark static functions in headers inline
+PATCH (8) provides an IORT function to detect existence of specific type
+          of IORT components.
 
-Robin Murphy (2):
-      iommu/dma: Don't put uninitialised IOVA domains
-      iommu/dma: Respect IOMMU aperture when allocating
+PATCH (9) creates the kernel infrastructure required to create ARM SMMU
+          platform devices for IORT nodes.
 
- drivers/iommu/dma-iommu.c | 14 +++++++++-----
- drivers/iommu/mtk_iommu.h |  6 +++---
- 2 files changed, 12 insertions(+), 8 deletions(-)
+PATCH (10) refactors the ARM SMMU v3 driver so that the init functions are
+           split in a way that groups together code that probes through DT
+           and code that carries out HW registers FW agnostic probing, in
+           preparation for adding the ACPI probing path.
 
-Please pull.
+PATCH (11) rework ARM SMMU v3 platform driver registration to make it work
+           on ACPI systems.
 
-Thanks,
+PATCH (12) Building on patch (9), it adds ARM SMMU v3 IORT IOMMU
+           operations to create and probe ARM SMMU v3 components.
 
-	Joerg
+PATCH (13) Extend the IORT iort_node_map_rid() to work on a type mask
+           instead of a single type so that the translation API can
+           be used on a range of components.
 
---KsGdsel6WgEHnImy
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+PATCH (14) Add IORT API to carry out id mappings for components that do
+           do not have an input identifier/RIDs (ie named components).
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+PATCH (15) provides IORT infrastructure to carry out IOMMU configuration
+           for devices and hook it up to the previously introduced ACPI
+           DMA configure API.
 
-iQIcBAEBAgAGBQJXsZLxAAoJECvwRC2XARrjyFkP+wQcNJwpV6njClt6Q3pzPR4e
-y56+OgcFLkR1w74qH5IEPeuQhBmZPRKjHnj80p7Me1aFpSB9CzDKncV7FWJZsojE
-oLM50ZGKLyjZ51FjjO00GDkto79tpVSAGV9qftaEA+u6FWY9up1TK84jL6Ase7Nx
-dU9G9wvUN7fWzAS6dL87trBgoyZ9LG9JfjI/hQc1HP3IKLC9ZXFBn+mrmg4jMZlL
-7CpbiSbYdcelWQf0wMuzH4Jnuu9OUV/xOXcRL1wG2kokEhrfEzg2Gd/l3YBXduOo
-KHmjhtgXW1udBx8DDU+Rq4TIbcEZgjxAADxyP5fbk7t2CFxZQxZ22KsqyMdkwekG
-r+6iGgRnS1MKJwW+SfTY/PciOChKWYjXHqBtn5dm+SUO03v3krpOAaR+Sbb6l5L5
-un4j46c0TdVry/swTjk2+SvwuWTSmFnsKbEtGmKIK4YKk8HEYKHvlDdpJ0Uv+E/u
-gu/gj53/QXeii/4/r4c9+mMYOywGogoMC+KwArWB54+4+DN7sOqN+vXxMizXdJxV
-IUHEeBFJb0orEawe+wKUwWi1QRfFged77tBjsz6f+d3DrpsOKXyv2FlpUevDCCvk
-8FboG3hyDKAVO9n6SGXHBNVud7RMbaHPw7SsmZSy486yPpLAMW5cndH+vPr08I/K
-eWukDeHIP+CY+HQrpQnj
-=ufff
------END PGP SIGNATURE-----
+This patchset is built on top and depends on these two patch series:
 
---KsGdsel6WgEHnImy--
+[1] R.Murphy "Generic DT bindings for PCI and ARM SMMU v3" v4
+    https://marc.info/?l=devicetree&m=146739193215518&w=2
 
---===============5201861222144043933==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+[2] T.Nowicki "Introduce ACPI world to ITS irqchip" v8
+    https://marc.info/?l=linux-kernel&m=147091000919640&w=2
 
+and is provided for early review/testing purposes here:
 
---===============5201861222144043933==--
+git://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git acpi/iort-smmu-v4
+
+Tested on FVP models for ARM SMMU v3 probing path.
+
+Lorenzo Pieralisi (15):
+  drivers: iommu: add FWNODE_IOMMU fwnode type
+  drivers: iommu: implement arch_{set/get}_iommu_fwspec API
+  drivers: acpi: iort: introduce linker section for IORT entries probing
+  drivers: acpi: iort: add support for IOMMU fwnode registration
+  drivers: platform: add fwnode base platform devices retrieval
+  drivers: iommu: make iommu_fwspec OF agnostic
+  drivers: acpi: implement acpi_dma_configure
+  drivers: acpi: iort: add node match function
+  drivers: acpi: iort: add support for ARM SMMU platform devices
+    creation
+  drivers: iommu: arm-smmu-v3: split probe functions into DT/generic
+    portions
+  drivers: iommu: arm-smmu-v3: enable ACPI driver initialization
+  drivers: iommu: arm-smmu-v3: add IORT configuration
+  drivers: acpi: iort: replace rid map type with type mask
+  drivers: acpi: iort: add single mapping function
+  drivers: acpi: iort: introduce iort_iommu_configure
+
+ arch/arm/Kconfig                      |   1 +
+ arch/arm/include/asm/iommu-fwspec.h   |  30 +++
+ arch/arm64/Kconfig                    |   1 +
+ arch/arm64/include/asm/iommu-fwspec.h |  30 +++
+ drivers/acpi/arm64/iort.c             | 481 +++++++++++++++++++++++++++++++++-
+ drivers/acpi/glue.c                   |   4 +-
+ drivers/acpi/scan.c                   |  29 ++
+ drivers/base/platform.c               |  23 ++
+ drivers/iommu/Kconfig                 |   7 +
+ drivers/iommu/Makefile                |   1 +
+ drivers/iommu/arm-smmu-v3.c           | 150 +++++++++--
+ drivers/iommu/iommu-fwspec.c          | 126 +++++++++
+ drivers/iommu/of_iommu.c              |  91 -------
+ drivers/pci/probe.c                   |   3 +-
+ include/acpi/acpi_bus.h               |   2 +
+ include/asm-generic/vmlinux.lds.h     |   1 +
+ include/linux/acpi.h                  |   5 +
+ include/linux/fwnode.h                |   1 +
+ include/linux/iommu-fwspec.h          |  70 +++++
+ include/linux/iommu.h                 |  25 ++
+ include/linux/iort.h                  |  18 ++
+ include/linux/of_iommu.h              |  28 +-
+ include/linux/platform_device.h       |   3 +
+ 23 files changed, 995 insertions(+), 135 deletions(-)
+ create mode 100644 arch/arm/include/asm/iommu-fwspec.h
+ create mode 100644 arch/arm64/include/asm/iommu-fwspec.h
+ create mode 100644 drivers/iommu/iommu-fwspec.c
+ create mode 100644 include/linux/iommu-fwspec.h
+
+-- 
+2.6.4
+
