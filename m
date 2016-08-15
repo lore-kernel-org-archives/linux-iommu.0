@@ -1,7 +1,7 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v4 14/15] drivers: acpi: iort: add single mapping function
-Date: Mon, 15 Aug 2016 16:23:39 +0100
-Message-ID: <1471274620-20754-15-git-send-email-lorenzo.pieralisi@arm.com>
+Subject: [PATCH v4 15/15] drivers: acpi: iort: introduce iort_iommu_configure
+Date: Mon, 15 Aug 2016 16:23:40 +0100
+Message-ID: <1471274620-20754-16-git-send-email-lorenzo.pieralisi@arm.com>
 References: <1471274620-20754-1-git-send-email-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,80 +21,201 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The current IORT id mapping API requires components to provide
-an input requester ID (a Bus-Device-Function (BDF) identifier for
-PCI devices) to translate an input identifier to an output
-identifier through an IORT range mapping.
+DT based systems have a generic kernel API to configure IOMMUs
+for devices (ie of_iommu_configure()).
 
-Named components do not have an identifiable source ID therefore
-their respective input/output mapping can only be defined in
-IORT tables through single mappings, that provide a translation
-that does not require any input identifier.
+On ARM based ACPI systems, the of_iommu_configure() equivalent can
+be implemented atop ACPI IORT kernel API, with the corresponding
+functions to map device identifiers to IOMMUs and retrieve the
+corresponding IOMMU operations necessary for DMA operations set-up.
 
-Current IORT interface for requester id mappings (iort_node_map_rid())
-is not suitable for components that do not provide a requester id,
-so it cannot be used for IORT named components.
-
-Add an interface to the IORT API to enable retrieval of id
-by allowing an indexed walk of the single mappings array for
-a given component, therefore completing the IORT mapping API.
+By relying on the iommu_fwspec generic kernel infrastructure,
+implement the IORT based IOMMU configuration for ARM ACPI systems
+and hook it up in the ACPI kernel layer that implements DMA
+configuration for a device.
 
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
 Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
 ---
- drivers/acpi/arm64/iort.c | 38 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ drivers/acpi/arm64/iort.c | 96 +++++++++++++++++++++++++++++++++++++++++++++++
+ drivers/acpi/scan.c       |  7 +++-
+ include/linux/iort.h      |  5 +++
+ 3 files changed, 107 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index a04a1d2..e68ed2c 100644
+index e68ed2c..c231629 100644
 --- a/drivers/acpi/arm64/iort.c
 +++ b/drivers/acpi/arm64/iort.c
-@@ -301,6 +301,44 @@ iort_id_map(struct acpi_iort_id_mapping *map, u8 type, u32 rid_in, u32 *rid_out)
+@@ -18,6 +18,7 @@
+ 
+ #define pr_fmt(fmt)	"ACPI: IORT: " fmt
+ 
++#include <linux/iommu-fwspec.h>
+ #include <linux/iort.h>
+ #include <linux/kernel.h>
+ #include <linux/list.h>
+@@ -27,6 +28,8 @@
+ 
+ #define IORT_TYPE_MASK(type)	(1 << (type))
+ #define IORT_MSI_TYPE		(1 << ACPI_IORT_NODE_ITS_GROUP)
++#define IORT_IOMMU_TYPE		((1 << ACPI_IORT_NODE_SMMU) |	\
++				(1 << ACPI_IORT_NODE_SMMU_V3))
+ 
+ struct iort_its_msi_chip {
+ 	struct list_head	list;
+@@ -496,6 +499,99 @@ iort_get_device_domain(struct device *dev, u32 req_id)
+ 	return irq_find_matching_fwnode(handle, DOMAIN_BUS_PCI_MSI);
  }
  
- static struct acpi_iort_node *
-+iort_node_get_id(struct acpi_iort_node *node, u32 *id_out,
-+		 u8 type_mask, int index)
++static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
 +{
-+	struct acpi_iort_node *parent;
-+	struct acpi_iort_id_mapping *map;
++	u32 *rid = data;
 +
-+	if (!node->mapping_offset || !node->mapping_count ||
-+				     index >= node->mapping_count)
-+		return NULL;
++	*rid = alias;
++	return 0;
++}
 +
-+	map = ACPI_ADD_PTR(struct acpi_iort_id_mapping, node,
-+			   node->mapping_offset);
++static int arm_smmu_iort_xlate(struct device *dev, u32 streamid,
++			       struct fwnode_handle *fwnode)
++{
++	int ret = iommu_fwspec_init(dev, fwnode);
 +
-+	/* Firmware bug! */
-+	if (!map->output_reference) {
-+		pr_err(FW_BUG "[node %p type %d] ID map has NULL parent reference\n",
-+		       node, node->type);
-+		return NULL;
-+	}
++	if (!ret)
++		ret = iommu_fwspec_add_ids(dev, &streamid, 1);
 +
-+	parent = ACPI_ADD_PTR(struct acpi_iort_node, iort_table,
-+			       map->output_reference);
++	return ret;
++}
 +
-+	if (!(IORT_TYPE_MASK(parent->type) & type_mask))
-+		return NULL;
++static const struct iommu_ops *
++iort_iommu_xlate(struct device *dev, struct acpi_iort_node *node,
++		 u32 streamid)
++{
++	struct fwnode_handle *iort_fwnode = NULL;
++	int ret;
 +
-+	if (map[index].flags & ACPI_IORT_ID_SINGLE_MAPPING) {
-+		if (node->type == ACPI_IORT_NODE_NAMED_COMPONENT ||
-+		    node->type == ACPI_IORT_NODE_PCI_ROOT_COMPLEX) {
-+			*id_out = map[index].output_base;
-+			return parent;
-+		}
++	if (node) {
++		iort_fwnode = iort_get_fwnode(node);
++		if (!iort_fwnode)
++			return NULL;
++
++		ret = arm_smmu_iort_xlate(dev, streamid,
++					  iort_fwnode);
++		if (!ret)
++			return fwspec_iommu_get_ops(iort_fwnode);
 +	}
 +
 +	return NULL;
 +}
 +
-+static struct acpi_iort_node *
- iort_node_map_rid(struct acpi_iort_node *node, u32 rid_in,
- 		  u32 *rid_out, u8 type_mask)
++/**
++ * iort_iommu_configure - Set-up IOMMU configuration for a device.
++ *
++ * @dev: device to configure
++ *
++ * Returns: iommu_ops pointer on configuration success
++ *          NULL on configuration failure
++ */
++const struct iommu_ops *iort_iommu_configure(struct device *dev)
++{
++	struct acpi_iort_node *node, *parent;
++	const struct iommu_ops *ops = NULL;
++	u32 streamid = 0;
++
++	if (dev_is_pci(dev)) {
++		struct pci_bus *bus = to_pci_dev(dev)->bus;
++		u32 rid;
++
++		pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid,
++				       &rid);
++
++		node = iort_scan_node(ACPI_IORT_NODE_PCI_ROOT_COMPLEX,
++				      iort_match_node_callback, &bus->dev);
++		if (!node)
++			return NULL;
++
++		parent = iort_node_map_rid(node, rid, &streamid,
++					   IORT_IOMMU_TYPE);
++
++		ops = iort_iommu_xlate(dev, parent, streamid);
++
++	} else {
++		int i = 0;
++
++		node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
++				      iort_match_node_callback, dev);
++		if (!node)
++			return NULL;
++
++		parent = iort_node_get_id(node, &streamid,
++					  IORT_IOMMU_TYPE, i++);
++
++		while (parent) {
++			ops = iort_iommu_xlate(dev, parent, streamid);
++
++			parent = iort_node_get_id(node, &streamid,
++						  IORT_IOMMU_TYPE, i++);
++		}
++	}
++
++	return ops;
++}
++
+ static void __init acpi_iort_register_irq(int hwirq, const char *name,
+ 					  int trigger,
+ 					  struct resource *res)
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 0bdc98e..e875537 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -7,6 +7,7 @@
+ #include <linux/slab.h>
+ #include <linux/kernel.h>
+ #include <linux/acpi.h>
++#include <linux/iort.h>
+ #include <linux/signal.h>
+ #include <linux/kthread.h>
+ #include <linux/dmi.h>
+@@ -1377,11 +1378,15 @@ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
+  */
+ void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
  {
++	const struct iommu_ops *iommu;
++
++	iommu = iort_iommu_configure(dev);
++
+ 	/*
+ 	 * Assume dma valid range starts at 0 and covers the whole
+ 	 * coherent_dma_mask.
+ 	 */
+-	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, NULL,
++	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
+ 			   attr == DEV_DMA_COHERENT);
+ }
+ 
+diff --git a/include/linux/iort.h b/include/linux/iort.h
+index bf37aaf..1b6c50d 100644
+--- a/include/linux/iort.h
++++ b/include/linux/iort.h
+@@ -34,6 +34,8 @@ struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id);
+ int iort_set_fwnode(struct acpi_iort_node *iort_node,
+ 		    struct fwnode_handle *fwnode);
+ struct fwnode_handle *iort_get_fwnode(struct acpi_iort_node *node);
++/* IOMMU interface */
++const struct iommu_ops *iort_iommu_configure(struct device *dev);
+ #else
+ static inline bool iort_node_match(u8 type) { return false; }
+ static inline void iort_table_detect(void) { }
+@@ -46,6 +48,9 @@ static inline int iort_set_fwnode(struct acpi_iort_node *iort_node,
+ { return -ENODEV; }
+ static inline struct fwnode_handle *
+ iort_get_fwnode(struct acpi_iort_node *node) { return NULL; }
++/* IOMMU interface */
++static inline const struct iommu_ops *
++iort_iommu_configure(struct device *dev) { return NULL; }
+ #endif
+ 
+ #define IORT_ACPI_DECLARE(name, table_id, fn)		\
 -- 
 2.6.4
