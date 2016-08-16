@@ -1,13 +1,15 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v4 15/15] drivers: acpi: iort: introduce iort_iommu_configure
-Date: Mon, 15 Aug 2016 16:23:40 +0100
-Message-ID: <1471274620-20754-16-git-send-email-lorenzo.pieralisi@arm.com>
-References: <1471274620-20754-1-git-send-email-lorenzo.pieralisi@arm.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH 5/8] drivers: platform: Configure dma operations at probe
+	time
+Date: Tue, 16 Aug 2016 12:25:02 +0300
+Message-ID: <14864888.EhQqoi8buh@avalon>
+References: <1470696550-3416-1-git-send-email-sricharan@codeaurora.org>
+	<1470696550-3416-6-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1471274620-20754-1-git-send-email-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1470696550-3416-6-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,205 +19,135 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>
+To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-DT based systems have a generic kernel API to configure IOMMUs
-for devices (ie of_iommu_configure()).
+Hi Sricharan,
 
-On ARM based ACPI systems, the of_iommu_configure() equivalent can
-be implemented atop ACPI IORT kernel API, with the corresponding
-functions to map device identifiers to IOMMUs and retrieve the
-corresponding IOMMU operations necessary for DMA operations set-up.
+Thank you for the patch.
 
-By relying on the iommu_fwspec generic kernel infrastructure,
-implement the IORT based IOMMU configuration for ARM ACPI systems
-and hook it up in the ACPI kernel layer that implements DMA
-configuration for a device.
+On Tuesday 09 Aug 2016 04:19:07 Sricharan R wrote:
+> Configuring DMA ops at probe time will allow deferring device probe when
+> the IOMMU isn't available yet.
+> 
+> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ---
+>  drivers/base/dd.c           | 11 +++++++++++
+>  drivers/base/dma-mapping.c  | 11 +++++++++++
+>  include/linux/dma-mapping.h |  3 +++
+>  3 files changed, 25 insertions(+)
+> 
+> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+> index 16688f5..b9978af 100644
+> --- a/drivers/base/dd.c
+> +++ b/drivers/base/dd.c
+> @@ -19,6 +19,7 @@
+> 
+>  #include <linux/device.h>
+>  #include <linux/delay.h>
+> +#include <linux/dma-mapping.h>
+>  #include <linux/module.h>
+>  #include <linux/kthread.h>
+>  #include <linux/wait.h>
+> @@ -353,6 +354,10 @@ static int really_probe(struct device *dev, struct
+> device_driver *drv) if (ret)
+>  		goto pinctrl_bind_failed;
+> 
+> +	ret = dma_configure_ops(dev);
 
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
----
- drivers/acpi/arm64/iort.c | 96 +++++++++++++++++++++++++++++++++++++++++++++++
- drivers/acpi/scan.c       |  7 +++-
- include/linux/iort.h      |  5 +++
- 3 files changed, 107 insertions(+), 1 deletion(-)
+Your patch doesn't remove the of_dma_configure_ops() from 
+of_platform_device_create_pdata(). Unless I'm mistaken, you will then end up 
+configuring the DMA ops twice, which at least on ARM will be a no-op the 
+second time:
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index e68ed2c..c231629 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -18,6 +18,7 @@
- 
- #define pr_fmt(fmt)	"ACPI: IORT: " fmt
- 
-+#include <linux/iommu-fwspec.h>
- #include <linux/iort.h>
- #include <linux/kernel.h>
- #include <linux/list.h>
-@@ -27,6 +28,8 @@
- 
- #define IORT_TYPE_MASK(type)	(1 << (type))
- #define IORT_MSI_TYPE		(1 << ACPI_IORT_NODE_ITS_GROUP)
-+#define IORT_IOMMU_TYPE		((1 << ACPI_IORT_NODE_SMMU) |	\
-+				(1 << ACPI_IORT_NODE_SMMU_V3))
- 
- struct iort_its_msi_chip {
- 	struct list_head	list;
-@@ -496,6 +499,99 @@ iort_get_device_domain(struct device *dev, u32 req_id)
- 	return irq_find_matching_fwnode(handle, DOMAIN_BUS_PCI_MSI);
- }
- 
-+static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
-+{
-+	u32 *rid = data;
-+
-+	*rid = alias;
-+	return 0;
-+}
-+
-+static int arm_smmu_iort_xlate(struct device *dev, u32 streamid,
-+			       struct fwnode_handle *fwnode)
-+{
-+	int ret = iommu_fwspec_init(dev, fwnode);
-+
-+	if (!ret)
-+		ret = iommu_fwspec_add_ids(dev, &streamid, 1);
-+
-+	return ret;
-+}
-+
-+static const struct iommu_ops *
-+iort_iommu_xlate(struct device *dev, struct acpi_iort_node *node,
-+		 u32 streamid)
-+{
-+	struct fwnode_handle *iort_fwnode = NULL;
-+	int ret;
-+
-+	if (node) {
-+		iort_fwnode = iort_get_fwnode(node);
-+		if (!iort_fwnode)
-+			return NULL;
-+
-+		ret = arm_smmu_iort_xlate(dev, streamid,
-+					  iort_fwnode);
-+		if (!ret)
-+			return fwspec_iommu_get_ops(iort_fwnode);
-+	}
-+
-+	return NULL;
-+}
-+
-+/**
-+ * iort_iommu_configure - Set-up IOMMU configuration for a device.
-+ *
-+ * @dev: device to configure
-+ *
-+ * Returns: iommu_ops pointer on configuration success
-+ *          NULL on configuration failure
-+ */
-+const struct iommu_ops *iort_iommu_configure(struct device *dev)
-+{
-+	struct acpi_iort_node *node, *parent;
-+	const struct iommu_ops *ops = NULL;
-+	u32 streamid = 0;
-+
-+	if (dev_is_pci(dev)) {
-+		struct pci_bus *bus = to_pci_dev(dev)->bus;
-+		u32 rid;
-+
-+		pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid,
-+				       &rid);
-+
-+		node = iort_scan_node(ACPI_IORT_NODE_PCI_ROOT_COMPLEX,
-+				      iort_match_node_callback, &bus->dev);
-+		if (!node)
-+			return NULL;
-+
-+		parent = iort_node_map_rid(node, rid, &streamid,
-+					   IORT_IOMMU_TYPE);
-+
-+		ops = iort_iommu_xlate(dev, parent, streamid);
-+
-+	} else {
-+		int i = 0;
-+
-+		node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
-+				      iort_match_node_callback, dev);
-+		if (!node)
-+			return NULL;
-+
-+		parent = iort_node_get_id(node, &streamid,
-+					  IORT_IOMMU_TYPE, i++);
-+
-+		while (parent) {
-+			ops = iort_iommu_xlate(dev, parent, streamid);
-+
-+			parent = iort_node_get_id(node, &streamid,
-+						  IORT_IOMMU_TYPE, i++);
-+		}
-+	}
-+
-+	return ops;
-+}
-+
- static void __init acpi_iort_register_irq(int hwirq, const char *name,
- 					  int trigger,
- 					  struct resource *res)
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 0bdc98e..e875537 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -7,6 +7,7 @@
- #include <linux/slab.h>
- #include <linux/kernel.h>
- #include <linux/acpi.h>
-+#include <linux/iort.h>
- #include <linux/signal.h>
- #include <linux/kthread.h>
- #include <linux/dmi.h>
-@@ -1377,11 +1378,15 @@ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
-  */
- void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
- {
-+	const struct iommu_ops *iommu;
-+
-+	iommu = iort_iommu_configure(dev);
-+
- 	/*
- 	 * Assume dma valid range starts at 0 and covers the whole
- 	 * coherent_dma_mask.
- 	 */
--	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, NULL,
-+	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
- 			   attr == DEV_DMA_COHERENT);
- }
- 
-diff --git a/include/linux/iort.h b/include/linux/iort.h
-index bf37aaf..1b6c50d 100644
---- a/include/linux/iort.h
-+++ b/include/linux/iort.h
-@@ -34,6 +34,8 @@ struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id);
- int iort_set_fwnode(struct acpi_iort_node *iort_node,
- 		    struct fwnode_handle *fwnode);
- struct fwnode_handle *iort_get_fwnode(struct acpi_iort_node *node);
-+/* IOMMU interface */
-+const struct iommu_ops *iort_iommu_configure(struct device *dev);
- #else
- static inline bool iort_node_match(u8 type) { return false; }
- static inline void iort_table_detect(void) { }
-@@ -46,6 +48,9 @@ static inline int iort_set_fwnode(struct acpi_iort_node *iort_node,
- { return -ENODEV; }
- static inline struct fwnode_handle *
- iort_get_fwnode(struct acpi_iort_node *node) { return NULL; }
-+/* IOMMU interface */
-+static inline const struct iommu_ops *
-+iort_iommu_configure(struct device *dev) { return NULL; }
- #endif
- 
- #define IORT_ACPI_DECLARE(name, table_id, fn)		\
+(arch_setup_dma_ops)
+
+        /*
+         * Don't override the dma_ops if they have already been set. Ideally
+         * this should be the only location where dma_ops are set, remove this
+         * check when all other callers of set_dma_ops will have disappeared.
+         */
+        if (dev->archdata.dma_ops)
+                return;
+
+For the same reason I'm wondering whether you shouldn't also remove the 
+of_dma_configure_ops() call from of_amba_device_create() (I don't remember why 
+I left it there in my original patch series).
+
+> +	if (ret)
+> +		goto dma_failed;
+> +
+>  	if (driver_sysfs_add(dev)) {
+>  		printk(KERN_ERR "%s: driver_sysfs_add(%s) failed\n",
+>  			__func__, dev_name(dev));
+> @@ -394,7 +399,10 @@ static int really_probe(struct device *dev, struct
+> device_driver *drv) drv->bus->name, __func__, dev_name(dev), drv->name);
+>  	goto done;
+> 
+> +
+>  probe_failed:
+> +	dma_deconfigure(dev);
+> +dma_failed:
+>  	if (dev->bus)
+>  		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
+>  					     BUS_NOTIFY_DRIVER_NOT_BOUND, 
+dev);
+> @@ -780,6 +788,9 @@ static void __device_release_driver(struct device *dev)
+>  			dev->bus->remove(dev);
+>  		else if (drv->remove)
+>  			drv->remove(dev);
+> +
+> +		dma_deconfigure(dev);
+> +
+>  		devres_release_all(dev);
+>  		dev->driver = NULL;
+>  		dev_set_drvdata(dev, NULL);
+> diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+> index d799662..ccc1c6e 100644
+> --- a/drivers/base/dma-mapping.c
+> +++ b/drivers/base/dma-mapping.c
+> @@ -10,6 +10,7 @@
+>  #include <linux/dma-mapping.h>
+>  #include <linux/export.h>
+>  #include <linux/gfp.h>
+> +#include <linux/of_device.h>
+>  #include <linux/slab.h>
+>  #include <linux/vmalloc.h>
+> 
+> @@ -166,6 +167,16 @@ void dmam_free_noncoherent(struct device *dev, size_t
+> size, void *vaddr, }
+>  EXPORT_SYMBOL(dmam_free_noncoherent);
+> 
+> +int dma_configure_ops(struct device *dev)
+> +{
+> +	return of_dma_configure_ops(dev, dev->of_node);
+> +}
+> +
+> +void dma_deconfigure(struct device *dev)
+> +{
+> +	of_dma_deconfigure(dev);
+> +}
+> +
+>  #ifdef CONFIG_HAVE_GENERIC_DMA_COHERENT
+> 
+>  static void dmam_coherent_decl_release(struct device *dev, void *res)
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 71c1b21..a49aac9 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -613,6 +613,9 @@ dma_mark_declared_memory_occupied(struct device *dev,
+>  }
+>  #endif /* CONFIG_HAVE_GENERIC_DMA_COHERENT */
+> 
+> +int dma_configure_ops(struct device *dev);
+> +void dma_deconfigure(struct device *dev);
+> +
+>  /*
+>   * Managed DMA API
+>   */
+
 -- 
-2.6.4
+Regards,
+
+Laurent Pinchart
