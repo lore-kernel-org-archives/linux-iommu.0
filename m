@@ -1,7 +1,7 @@
 From: Will Deacon <will.deacon@arm.com>
-Subject: [PATCH 3/4] iommu/arm-smmu: Disable stalling faults for all endpoints
-Date: Thu, 18 Aug 2016 14:05:41 +0100
-Message-ID: <1471525542-14969-4-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 2/4] iommu/arm-smmu: Fix CMDQ error handling
+Date: Thu, 18 Aug 2016 14:05:40 +0100
+Message-ID: <1471525542-14969-3-git-send-email-will.deacon@arm.com>
 References: <1471525542-14969-1-git-send-email-will.deacon@arm.com>
 Return-path: <stable-owner@vger.kernel.org>
 In-Reply-To: <1471525542-14969-1-git-send-email-will.deacon@arm.com>
@@ -10,89 +10,51 @@ To: iommu@lists.linux-foundation.org
 Cc: linux-arm-kernel@lists.infradead.org, robin.murphy@arm.com, joro@8bytes.org, Will Deacon <will.deacon@arm.com>, stable@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Enabling stalling faults can result in hardware deadlock on poorly
-designed systems, particularly those with a PCI root complex upstream of
-the SMMU.
+In the unlikely event of a global command queue error, the ARM SMMUv3
+driver attempts to convert the problematic command into a CMD_SYNC and
+resume the command queue. Unfortunately, this code is pretty badly
+broken:
 
-Although it's not really Linux's job to save hardware integrators from
-their own misfortune, it *is* our job to stop userspace (e.g. VFIO
-clients) from hosing the system for everybody else, even if they might
-already be required to have elevated privileges.
+  1. It uses the index into the error string table as the CMDQ index,
+     so we probably read the wrong entry out of the queue
 
-Given that the fault handling code currently executes entirely in IRQ
-context, there is nothing that can sensibly be done to recover from
-things like page faults anyway, so let's rip this code out for now and
-avoid the potential for deadlock.
+  2. The arguments to queue_write are the wrong way round, so we end up
+     writing from the queue onto the stack.
+
+These happily cancel out, so the kernel is likely to stay alive, but
+the command queue will probably fault again when we resume.
+
+This patch fixes the error handling code to use the correct queue index
+and write back the CMD_SYNC to the faulting entry.
 
 Cc: <stable@vger.kernel.org>
-Reported-by: Matt Evans <matt.evans@arm.com>
+Reported-by: Diwakar Subraveti <Diwakar.Subraveti@arm.com>
 Signed-off-by: Will Deacon <will.deacon@arm.com>
 ---
- drivers/iommu/arm-smmu.c | 34 +++++++---------------------------
- 1 file changed, 7 insertions(+), 27 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 4f49fe29f202..2db74ebc3240 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -686,8 +686,7 @@ static struct iommu_gather_ops arm_smmu_gather_ops = {
- 
- static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- {
--	int flags, ret;
--	u32 fsr, fsynr, resume;
-+	u32 fsr, fsynr;
- 	unsigned long iova;
- 	struct iommu_domain *domain = dev;
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-@@ -701,34 +700,15 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	if (!(fsr & FSR_FAULT))
- 		return IRQ_NONE;
- 
--	if (fsr & FSR_IGN)
--		dev_err_ratelimited(smmu->dev,
--				    "Unexpected context fault (fsr 0x%x)\n",
--				    fsr);
--
- 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
--	flags = fsynr & FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ;
--
- 	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
--	if (!report_iommu_fault(domain, smmu->dev, iova, flags)) {
--		ret = IRQ_HANDLED;
--		resume = RESUME_RETRY;
--	} else {
--		dev_err_ratelimited(smmu->dev,
--		    "Unhandled context fault: iova=0x%08lx, fsynr=0x%x, cb=%d\n",
--		    iova, fsynr, cfg->cbndx);
--		ret = IRQ_NONE;
--		resume = RESUME_TERMINATE;
--	}
--
--	/* Clear the faulting FSR */
--	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
- 
--	/* Retry or terminate any stalled transactions */
--	if (fsr & FSR_SS)
--		writel_relaxed(resume, cb_base + ARM_SMMU_CB_RESUME);
-+	dev_err_ratelimited(smmu->dev,
-+	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
-+			    fsr, iova, fsynr, cfg->cbndx);
- 
--	return ret;
-+	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
-+	return IRQ_HANDLED;
- }
- 
- static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
-@@ -837,7 +817,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index ce801170d5f2..330623f8e344 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -879,7 +879,7 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
+ 	 * We may have concurrent producers, so we need to be careful
+ 	 * not to touch any of the shadow cmdq state.
+ 	 */
+-	queue_read(cmd, Q_ENT(q, idx), q->ent_dwords);
++	queue_read(cmd, Q_ENT(q, cons), q->ent_dwords);
+ 	dev_err(smmu->dev, "skipping command in error state:\n");
+ 	for (i = 0; i < ARRAY_SIZE(cmd); ++i)
+ 		dev_err(smmu->dev, "\t0x%016llx\n", (unsigned long long)cmd[i]);
+@@ -890,7 +890,7 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
+ 		return;
  	}
  
- 	/* SCTLR */
--	reg = SCTLR_CFCFG | SCTLR_CFIE | SCTLR_CFRE | SCTLR_M | SCTLR_EAE_SBOP;
-+	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_M | SCTLR_EAE_SBOP;
- 	if (stage1)
- 		reg |= SCTLR_S1_ASIDPNE;
- #ifdef __BIG_ENDIAN
+-	queue_write(cmd, Q_ENT(q, idx), q->ent_dwords);
++	queue_write(Q_ENT(q, cons), cmd, q->ent_dwords);
+ }
+ 
+ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
 -- 
 2.1.4
