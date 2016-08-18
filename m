@@ -1,60 +1,56 @@
 From: Will Deacon <will.deacon@arm.com>
-Subject: [PATCH 2/4] iommu/arm-smmu: Fix CMDQ error handling
-Date: Thu, 18 Aug 2016 14:05:40 +0100
-Message-ID: <1471525542-14969-3-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 1/4] iommu/io-pgtable-arm-v7s: Fix attributes when splitting blocks
+Date: Thu, 18 Aug 2016 14:05:39 +0100
+Message-ID: <1471525542-14969-2-git-send-email-will.deacon@arm.com>
 References: <1471525542-14969-1-git-send-email-will.deacon@arm.com>
 Return-path: <stable-owner@vger.kernel.org>
 In-Reply-To: <1471525542-14969-1-git-send-email-will.deacon@arm.com>
 Sender: stable-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
-Cc: linux-arm-kernel@lists.infradead.org, robin.murphy@arm.com, joro@8bytes.org, Will Deacon <will.deacon@arm.com>, stable@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, robin.murphy@arm.com, joro@8bytes.org, stable@vger.kernel.org, Will Deacon <will.deacon@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-In the unlikely event of a global command queue error, the ARM SMMUv3
-driver attempts to convert the problematic command into a CMD_SYNC and
-resume the command queue. Unfortunately, this code is pretty badly
-broken:
+From: Robin Murphy <robin.murphy@arm.com>
 
-  1. It uses the index into the error string table as the CMDQ index,
-     so we probably read the wrong entry out of the queue
+Due to the attribute bits being all over the place in the different
+types of short-descriptor PTEs, when remapping an existing entry, e.g.
+splitting a section into pages, we take the approach of decomposing
+the PTE attributes back to the IOMMU API flags to start from scratch.
 
-  2. The arguments to queue_write are the wrong way round, so we end up
-     writing from the queue onto the stack.
+On inspection, though, the existing code seems to have got the read-only
+bit backwards and ignored the XN bit. How embarrassing...
 
-These happily cancel out, so the kernel is likely to stay alive, but
-the command queue will probably fault again when we resume.
-
-This patch fixes the error handling code to use the correct queue index
-and write back the CMD_SYNC to the faulting entry.
+Fortunately the primary user so far, the Mediatek IOMMU, both never
+splits blocks (because it only serves non-overlapping DMA API calls) and
+also ignores permissions anyway, but let's put things right before any
+future users trip up.
 
 Cc: <stable@vger.kernel.org>
-Reported-by: Diwakar Subraveti <Diwakar.Subraveti@arm.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Will Deacon <will.deacon@arm.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/io-pgtable-arm-v7s.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index ce801170d5f2..330623f8e344 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -879,7 +879,7 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
- 	 * We may have concurrent producers, so we need to be careful
- 	 * not to touch any of the shadow cmdq state.
- 	 */
--	queue_read(cmd, Q_ENT(q, idx), q->ent_dwords);
-+	queue_read(cmd, Q_ENT(q, cons), q->ent_dwords);
- 	dev_err(smmu->dev, "skipping command in error state:\n");
- 	for (i = 0; i < ARRAY_SIZE(cmd); ++i)
- 		dev_err(smmu->dev, "\t0x%016llx\n", (unsigned long long)cmd[i]);
-@@ -890,7 +890,7 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
- 		return;
- 	}
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index 8c6139986d7d..def8ca1c982d 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -286,12 +286,14 @@ static int arm_v7s_pte_to_prot(arm_v7s_iopte pte, int lvl)
+ 	int prot = IOMMU_READ;
+ 	arm_v7s_iopte attr = pte >> ARM_V7S_ATTR_SHIFT(lvl);
  
--	queue_write(cmd, Q_ENT(q, idx), q->ent_dwords);
-+	queue_write(Q_ENT(q, cons), cmd, q->ent_dwords);
+-	if (attr & ARM_V7S_PTE_AP_RDONLY)
++	if (!(attr & ARM_V7S_PTE_AP_RDONLY))
+ 		prot |= IOMMU_WRITE;
+ 	if ((attr & (ARM_V7S_TEX_MASK << ARM_V7S_TEX_SHIFT)) == 0)
+ 		prot |= IOMMU_MMIO;
+ 	else if (pte & ARM_V7S_ATTR_C)
+ 		prot |= IOMMU_CACHE;
++	if (pte & ARM_V7S_ATTR_XN(lvl))
++		prot |= IOMMU_NOEXEC;
+ 
+ 	return prot;
  }
- 
- static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
 -- 
 2.1.4
