@@ -1,15 +1,16 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 01/15] drivers: iommu: add FWNODE_IOMMU fwnode type
-Date: Tue, 23 Aug 2016 14:49:38 +0100
-Message-ID: <20160823134938.GA9953@red-moon>
-References: <1471274620-20754-1-git-send-email-lorenzo.pieralisi@arm.com>
-	<1471274620-20754-2-git-send-email-lorenzo.pieralisi@arm.com>
+From: "Niklas =?iso-8859-1?Q?S=F6derlund?=" <niklas.soderlund-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+Subject: Re: [PATCHv9 4/6] arm: dma-mapping: add {map,unmap}_resource for
+	iommu ops
+Date: Tue, 23 Aug 2016 17:31:36 +0200
+Message-ID: <20160823153136.GH2951@bigcity.dyn.berto.se>
+References: <20160810112219.17964-1-niklas.soderlund+renesas@ragnatech.se>
+	<20160810112219.17964-5-niklas.soderlund+renesas@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1471274620-20754-2-git-send-email-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20160810112219.17964-5-niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,111 +20,135 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>
+To: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org
+Cc: arnd-r2nGTMty4D4@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Rafael,
+Hi Russell,
 
-On Mon, Aug 15, 2016 at 04:23:26PM +0100, Lorenzo Pieralisi wrote:
-> On systems booting with a device tree, every struct device is
-> associated with a struct device_node, that represents its DT
-> representation. The device node can be used in generic kernel
-> contexts (eg IRQ translation, IOMMU streamid mapping), to
-> retrieve the properties associated with the device and carry
-> out kernel operation accordingly. Owing to the 1:1 relationship
-> between the device and its device_node, the device_node can also
-> be used as a look-up token for the device (eg looking up a device
-> through its device_node), to retrieve the device in kernel paths
-> where the device_node is available.
-> 
-> On systems booting with ACPI, the same abstraction provided by
-> the device_node is required to provide look-up functionality.
-> 
-> Therefore, mirroring the approach implemented in the IRQ domain
-> kernel layer, this patch adds an additional fwnode type FWNODE_IOMMU.
-> 
-> This patch also implements a glue kernel layer that allows to
-> allocate/free FWNODE_IOMMU fwnode_handle structures and associate
-> them with IOMMU devices.
-> 
-> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+If you have the time can you please have a look at this patch? This =
+
+series have been out for some time now and Vinod is willing to take it =
+
+through the dmaengine tree but a ACK is needed on this patch from you =
+
+first.
+
+On 2016-08-10 13:22:17 +0200, Niklas S=F6derlund wrote:
+> Add methods to map/unmap device resources addresses for dma_map_ops that
+> are IOMMU aware. This is needed to map a device MMIO register from a
+> physical address.
+> =
+
+> Signed-off-by: Niklas S=F6derlund <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+> Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 > ---
->  include/linux/fwnode.h |  1 +
->  include/linux/iommu.h  | 25 +++++++++++++++++++++++++
->  2 files changed, 26 insertions(+)
-> 
-> diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
-> index 8516717..6e10050 100644
-> --- a/include/linux/fwnode.h
-> +++ b/include/linux/fwnode.h
-> @@ -19,6 +19,7 @@ enum fwnode_type {
->  	FWNODE_ACPI_DATA,
->  	FWNODE_PDATA,
->  	FWNODE_IRQCHIP,
-> +	FWNODE_IOMMU,
->  };
+>  arch/arm/mm/dma-mapping.c | 63 +++++++++++++++++++++++++++++++++++++++++=
+++++++
+>  1 file changed, 63 insertions(+)
+> =
 
-Are you ok with this fwnode usage ? It is quite key to the rest
-of this series and I would need to know in order to make progress
-on it please.
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index c6834c0..746eb29 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -2014,6 +2014,63 @@ static void arm_iommu_unmap_page(struct device *de=
+v, dma_addr_t handle,
+>  	__free_iova(mapping, iova, len);
+>  }
+>  =
 
-Platform devices created out of IORT tables are not ACPI devices
-(I could create fake ones as we do for FADT power button, I do not
-see any particular reason to prefer that approach over this one) and
-in order to identify the device through a fwnode_handle (that, as for
-IRQCHIP is nothing but a token used for look-up) that's what I came
-up with.
-
-Any feedback on the rest of the series is very welcome and needed
-too, thanks.
-
-Lorenzo
-
->  struct fwnode_handle {
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index a35fb8b..6f703cb 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -38,6 +38,7 @@ struct bus_type;
->  struct device;
->  struct iommu_domain;
->  struct notifier_block;
-> +struct fwnode_handle;
->  
->  /* iommu fault flags */
->  #define IOMMU_FAULT_READ	0x0
-> @@ -543,4 +544,28 @@ static inline void iommu_device_unlink(struct device *dev, struct device *link)
->  
->  #endif /* CONFIG_IOMMU_API */
->  
-> +/* IOMMU fwnode handling */
-> +static inline bool is_fwnode_iommu(struct fwnode_handle *fwnode)
+> +/**
+> + * arm_iommu_map_resource - map a device resource for DMA
+> + * @dev: valid struct device pointer
+> + * @phys_addr: physical address of resource
+> + * @size: size of resource to map
+> + * @dir: DMA transfer direction
+> + */
+> +static dma_addr_t arm_iommu_map_resource(struct device *dev,
+> +		phys_addr_t phys_addr, size_t size,
+> +		enum dma_data_direction dir, unsigned long attrs)
 > +{
-> +	return fwnode && fwnode->type == FWNODE_IOMMU;
+> +	struct dma_iommu_mapping *mapping =3D to_dma_iommu_mapping(dev);
+> +	dma_addr_t dma_addr;
+> +	int ret, prot;
+> +	phys_addr_t addr =3D phys_addr & PAGE_MASK;
+> +	unsigned int offset =3D phys_addr & ~PAGE_MASK;
+> +	size_t len =3D PAGE_ALIGN(size + offset);
+> +
+> +	dma_addr =3D __alloc_iova(mapping, len);
+> +	if (dma_addr =3D=3D DMA_ERROR_CODE)
+> +		return dma_addr;
+> +
+> +	prot =3D __dma_direction_to_prot(dir) | IOMMU_MMIO;
+> +
+> +	ret =3D iommu_map(mapping->domain, dma_addr, addr, len, prot);
+> +	if (ret < 0)
+> +		goto fail;
+> +
+> +	return dma_addr + offset;
+> +fail:
+> +	__free_iova(mapping, dma_addr, len);
+> +	return DMA_ERROR_CODE;
 > +}
 > +
-> +static inline struct fwnode_handle *iommu_alloc_fwnode(void)
+> +/**
+> + * arm_iommu_unmap_resource - unmap a device DMA resource
+> + * @dev: valid struct device pointer
+> + * @dma_handle: DMA address to resource
+> + * @size: size of resource to map
+> + * @dir: DMA transfer direction
+> + */
+> +static void arm_iommu_unmap_resource(struct device *dev, dma_addr_t dma_=
+handle,
+> +		size_t size, enum dma_data_direction dir,
+> +		unsigned long attrs)
 > +{
-> +	struct fwnode_handle *fwnode;
+> +	struct dma_iommu_mapping *mapping =3D to_dma_iommu_mapping(dev);
+> +	dma_addr_t iova =3D dma_handle & PAGE_MASK;
+> +	unsigned int offset =3D dma_handle & ~PAGE_MASK;
+> +	size_t len =3D PAGE_ALIGN(size + offset);
 > +
-> +	fwnode = kzalloc(sizeof(struct fwnode_handle), GFP_ATOMIC);
-> +	fwnode->type = FWNODE_IOMMU;
-> +
-> +	return fwnode;
-> +}
-> +
-> +static inline void iommu_free_fwnode(struct fwnode_handle *fwnode)
-> +{
-> +	if (WARN_ON(!is_fwnode_iommu(fwnode)))
+> +	if (!iova)
 > +		return;
 > +
-> +	kfree(fwnode);
+> +	iommu_unmap(mapping->domain, iova, len);
+> +	__free_iova(mapping, iova, len);
 > +}
 > +
->  #endif /* __LINUX_IOMMU_H */
-> -- 
-> 2.6.4
-> 
+>  static void arm_iommu_sync_single_for_cpu(struct device *dev,
+>  		dma_addr_t handle, size_t size, enum dma_data_direction dir)
+>  {
+> @@ -2057,6 +2114,9 @@ struct dma_map_ops iommu_ops =3D {
+>  	.unmap_sg		=3D arm_iommu_unmap_sg,
+>  	.sync_sg_for_cpu	=3D arm_iommu_sync_sg_for_cpu,
+>  	.sync_sg_for_device	=3D arm_iommu_sync_sg_for_device,
+> +
+> +	.map_resource		=3D arm_iommu_map_resource,
+> +	.unmap_resource		=3D arm_iommu_unmap_resource,
+>  };
+>  =
+
+>  struct dma_map_ops iommu_coherent_ops =3D {
+> @@ -2070,6 +2130,9 @@ struct dma_map_ops iommu_coherent_ops =3D {
+>  =
+
+>  	.map_sg		=3D arm_coherent_iommu_map_sg,
+>  	.unmap_sg	=3D arm_coherent_iommu_unmap_sg,
+> +
+> +	.map_resource	=3D arm_iommu_map_resource,
+> +	.unmap_resource	=3D arm_iommu_unmap_resource,
+>  };
+>  =
+
+>  /**
+> -- =
+
+> 2.9.2
+> =
+
+
+-- =
+
+Regards,
+Niklas S=F6derlund
