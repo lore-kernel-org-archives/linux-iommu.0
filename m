@@ -1,357 +1,112 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v5 15/19] iommu/arm-smmu: Convert to iommu_fwspec
-Date: Tue, 23 Aug 2016 20:05:26 +0100
-Message-ID: <221f668d606abdfb4d6ee6da2c5f568c57ceccdd.1471975357.git.robin.murphy@arm.com>
+Subject: [PATCH v5 16/19] Docs: dt: document ARM SMMU generic binding usage
+Date: Tue, 23 Aug 2016 20:05:27 +0100
+Message-ID: <b4f0eca93ac944c3430297b97c703e1bc54846d7.1471975357.git.robin.murphy@arm.com>
 References: <cover.1471975357.git.robin.murphy@arm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1471975357.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-In the final step of preparation for full generic configuration support,
-swap our fixed-size master_cfg for the generic iommu_fwspec. For the
-legacy DT bindings, the driver simply gets to act as its own 'firmware'.
-Farewell, arbitrary MAX_MASTER_STREAMIDS!
+Document how the generic "iommus" binding should be used to describe ARM
+SMMU stream IDs instead of the old "mmu-masters" binding.
 
+CC: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+CC: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 139 ++++++++++++++++++++++++++---------------------
- 1 file changed, 77 insertions(+), 62 deletions(-)
+ .../devicetree/bindings/iommu/arm,smmu.txt         | 63 ++++++++++++++++------
+ 1 file changed, 48 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 88f82eb8d1fe..ea22beb58b59 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -42,6 +42,7 @@
- #include <linux/of.h>
- #include <linux/of_address.h>
- #include <linux/of_device.h>
-+#include <linux/of_iommu.h>
- #include <linux/pci.h>
- #include <linux/platform_device.h>
- #include <linux/slab.h>
-@@ -51,9 +52,6 @@
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+index 19fe6f2c83f6..e9d447cf3a76 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+@@ -35,12 +35,16 @@ conditions.
+                   interrupt per context bank. In the case of a single,
+                   combined interrupt, it must be listed multiple times.
  
- #include "io-pgtable.h"
+-- mmu-masters   : A list of phandles to device nodes representing bus
+-                  masters for which the SMMU can provide a translation
+-                  and their corresponding StreamIDs (see example below).
+-                  Each device node linked from this list must have a
+-                  "#stream-id-cells" property, indicating the number of
+-                  StreamIDs associated with it.
++- #iommu-cells  : See Documentation/devicetree/bindings/iommu/iommu.txt
++                  for details. With a value of 1, each "iommus" entry
++                  represents a distinct stream ID emitted by that device
++                  into the relevant SMMU.
++
++                  SMMUs with stream matching support and complex masters
++                  may use a value of 2, where the second cell represents
++                  an SMR mask to combine with the ID in the first cell.
++                  Care must be taken to ensure the set of matched IDs
++                  does not result in conflicts.
  
--/* Maximum number of stream IDs assigned to a single device */
--#define MAX_MASTER_STREAMIDS		128
+ ** System MMU optional properties:
+ 
+@@ -56,9 +60,20 @@ conditions.
+                   aliases of secure registers have to be used during
+                   SMMU configuration.
+ 
+-Example:
++** Deprecated properties:
+ 
+-        smmu {
++- mmu-masters (deprecated in favour of the generic "iommus" binding) :
++                  A list of phandles to device nodes representing bus
++                  masters for which the SMMU can provide a translation
++                  and their corresponding StreamIDs (see example below).
++                  Each device node linked from this list must have a
++                  "#stream-id-cells" property, indicating the number of
++                  StreamIDs associated with it.
++
++** Examples:
++
++        /* SMMU with stream matching or stream indexing */
++        smmu1: iommu {
+                 compatible = "arm,smmu-v1";
+                 reg = <0xba5e0000 0x10000>;
+                 #global-interrupts = <2>;
+@@ -68,11 +83,29 @@ Example:
+                              <0 35 4>,
+                              <0 36 4>,
+                              <0 37 4>;
 -
- /* Maximum number of context banks per SMMU */
- #define ARM_SMMU_MAX_CBS		128
- 
-@@ -321,13 +319,13 @@ struct arm_smmu_smr {
- 
- struct arm_smmu_master_cfg {
- 	struct arm_smmu_device		*smmu;
--	int				num_streamids;
--	u16				streamids[MAX_MASTER_STREAMIDS];
--	s16				smendx[MAX_MASTER_STREAMIDS];
-+	s16				smendx[];
- };
- #define INVALID_SMENDX			-1
--#define for_each_cfg_sme(cfg, i, idx) \
--	for (i = 0; idx = cfg->smendx[i], i < cfg->num_streamids; ++i)
-+#define __fwspec_cfg(fw) ((struct arm_smmu_master_cfg *)fw->iommu_priv)
-+#define fwspec_smmu(fw)  (__fwspec_cfg(fw)->smmu)
-+#define for_each_cfg_sme(fw, i, idx) \
-+	for (i = 0; idx = __fwspec_cfg(fw)->smendx[i], i < fw->num_ids; ++i)
- 
- struct arm_smmu_device {
- 	struct device			*dev;
-@@ -481,13 +479,14 @@ static int __find_legacy_master_phandle(struct device *dev, void *data)
- 
- static struct platform_driver arm_smmu_driver;
- 
--static int arm_smmu_register_legacy_master(struct device *dev)
-+static int arm_smmu_register_legacy_master(struct device *dev,
-+					   struct arm_smmu_device **smmu)
- {
--	struct arm_smmu_device *smmu;
--	struct arm_smmu_master_cfg *cfg;
-+	struct device *smmu_dev;
- 	struct device_node *np;
- 	struct of_phandle_iterator it;
- 	void *data = &it;
-+	u32 *sids;
- 	__be32 pci_sid;
- 	int err;
- 
-@@ -500,20 +499,13 @@ static int arm_smmu_register_legacy_master(struct device *dev)
- 	it.node = np;
- 	err = driver_for_each_device(&arm_smmu_driver.driver, NULL, &data,
- 				     __find_legacy_master_phandle);
-+	smmu_dev = data;
- 	of_node_put(np);
- 	if (err == 0)
- 		return -ENODEV;
- 	if (err < 0)
- 		return err;
- 
--	smmu = dev_get_drvdata(data);
--
--	if (it.cur_count > MAX_MASTER_STREAMIDS) {
--		dev_err(smmu->dev,
--			"reached maximum number (%d) of stream IDs for master device %s\n",
--			MAX_MASTER_STREAMIDS, dev_name(dev));
--		return -ENOSPC;
--	}
- 	if (dev_is_pci(dev)) {
- 		/* "mmu-masters" assumes Stream ID == Requester ID */
- 		pci_for_each_dma_alias(to_pci_dev(dev), __arm_smmu_get_pci_sid,
-@@ -522,17 +514,19 @@ static int arm_smmu_register_legacy_master(struct device *dev)
- 		it.cur_count = 1;
- 	}
- 
--	cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
--	if (!cfg)
-+	err = iommu_fwspec_init(dev, smmu_dev->of_node);
-+	if (err)
-+		return err;
+-                /*
+-                 * Two DMA controllers, the first with two StreamIDs (0xd01d
+-                 * and 0xd01e) and the second with only one (0xd11c).
+-                 */
+-                mmu-masters = <&dma0 0xd01d 0xd01e>,
+-                              <&dma1 0xd11c>;
++                #iommu-cells = <1>;
++        };
 +
-+	sids = kcalloc(it.cur_count, sizeof(*sids), GFP_KERNEL);
-+	if (!sids)
- 		return -ENOMEM;
- 
--	cfg->smmu = smmu;
--	dev->archdata.iommu = cfg;
--
--	while (it.cur_count--)
--		cfg->streamids[cfg->num_streamids++] = be32_to_cpup(it.cur++);
--
--	return 0;
-+	*smmu = dev_get_drvdata(smmu_dev);
-+	of_phandle_iterator_args(&it, sids, it.cur_count);
-+	err = iommu_fwspec_add_ids(dev, sids, it.cur_count);
-+	kfree(sids);
-+	return err;
- }
- 
- static int __arm_smmu_alloc_bitmap(unsigned long *map, int start, int end)
-@@ -1097,7 +1091,8 @@ static bool arm_smmu_free_sme(struct arm_smmu_device *smmu, int idx)
- 
- static int arm_smmu_master_alloc_smes(struct device *dev)
- {
--	struct arm_smmu_master_cfg *cfg = dev->archdata.iommu;
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec(dev);
-+	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
- 	struct arm_smmu_device *smmu = cfg->smmu;
- 	struct arm_smmu_smr *smrs = smmu->smrs;
- 	struct iommu_group *group;
-@@ -1105,19 +1100,19 @@ static int arm_smmu_master_alloc_smes(struct device *dev)
- 
- 	mutex_lock(&smmu->stream_map_mutex);
- 	/* Figure out a viable stream map entry allocation */
--	for_each_cfg_sme(cfg, i, idx) {
-+	for_each_cfg_sme(fwspec, i, idx) {
- 		if (idx >= 0) {
- 			ret = -EEXIST;
- 			goto out_err;
- 		}
- 
--		ret = arm_smmu_find_sme(smmu, cfg->streamids[i], 0);
-+		ret = arm_smmu_find_sme(smmu, fwspec->ids[i], 0);
- 		if (ret < 0)
- 			goto out_err;
- 
- 		idx = ret;
- 		if (smrs && smmu->s2crs[idx].count == 0) {
--			smrs[idx].id = cfg->streamids[i];
-+			smrs[idx].id = fwspec->ids[i];
- 			smrs[idx].mask = 0; /* We don't currently share SMRs */
- 			smrs[idx].valid = true;
- 		}
-@@ -1135,7 +1130,7 @@ static int arm_smmu_master_alloc_smes(struct device *dev)
- 	iommu_group_put(group);
- 
- 	/* It worked! Now, poke the actual hardware */
--	for_each_cfg_sme(cfg, i, idx) {
-+	for_each_cfg_sme(fwspec, i, idx) {
- 		arm_smmu_write_sme(smmu, idx);
- 		smmu->s2crs[idx].group = group;
- 	}
-@@ -1152,13 +1147,14 @@ out_err:
- 	return ret;
- }
- 
--static void arm_smmu_master_free_smes(struct arm_smmu_master_cfg *cfg)
-+static void arm_smmu_master_free_smes(struct iommu_fwspec *fwspec)
- {
--	struct arm_smmu_device *smmu = cfg->smmu;
-+	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
-+	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
- 	int i, idx;
- 
- 	mutex_lock(&smmu->stream_map_mutex);
--	for_each_cfg_sme(cfg, i, idx) {
-+	for_each_cfg_sme(fwspec, i, idx) {
- 		if (arm_smmu_free_sme(smmu, idx))
- 			arm_smmu_write_sme(smmu, idx);
- 		cfg->smendx[i] = INVALID_SMENDX;
-@@ -1167,7 +1163,7 @@ static void arm_smmu_master_free_smes(struct arm_smmu_master_cfg *cfg)
- }
- 
- static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
--				      struct arm_smmu_master_cfg *cfg)
-+				      struct iommu_fwspec *fwspec)
- {
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	struct arm_smmu_s2cr *s2cr = smmu->s2crs;
-@@ -1184,7 +1180,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- 	if (smmu_domain->domain.type == IOMMU_DOMAIN_DMA)
- 		type = S2CR_TYPE_BYPASS;
- 
--	for_each_cfg_sme(cfg, i, idx) {
-+	for_each_cfg_sme(fwspec, i, idx) {
- 		if (type == s2cr[idx].type && cbndx == s2cr[idx].cbndx)
- 			continue;
- 
-@@ -1196,19 +1192,22 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- 	return 0;
- }
- 
-+static struct iommu_ops arm_smmu_ops;
++        /* device with two stream IDs, 0 and 7 */
++        master1 {
++                iommus = <&smmu1 0>,
++                         <&smmu1 7>;
++        };
 +
- static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
- 	int ret;
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec(dev);
-+	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--	struct arm_smmu_master_cfg *cfg = dev->archdata.iommu;
- 
--	if (!cfg) {
-+	if (!fwspec || fwspec->iommu_ops != &arm_smmu_ops) {
- 		dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
- 		return -ENXIO;
- 	}
- 
- 	/* Ensure that the domain is finalised */
--	ret = arm_smmu_init_domain_context(domain, cfg->smmu);
-+	ret = arm_smmu_init_domain_context(domain, smmu);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -1216,15 +1215,15 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	 * Sanity check the domain. We don't support domains across
- 	 * different SMMUs.
- 	 */
--	if (smmu_domain->smmu != cfg->smmu) {
-+	if (smmu_domain->smmu != smmu) {
- 		dev_err(dev,
- 			"cannot attach to SMMU %s whilst already attached to domain on SMMU %s\n",
--			dev_name(smmu_domain->smmu->dev), dev_name(cfg->smmu->dev));
-+			dev_name(smmu_domain->smmu->dev), dev_name(smmu->dev));
- 		return -EINVAL;
- 	}
- 
- 	/* Looks ok, so add the device to the domain */
--	return arm_smmu_domain_add_master(smmu_domain, cfg);
-+	return arm_smmu_domain_add_master(smmu_domain, fwspec);
- }
- 
- static int arm_smmu_map(struct iommu_domain *domain, unsigned long iova,
-@@ -1345,57 +1344,72 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- 
- static int arm_smmu_add_device(struct device *dev)
- {
-+	struct arm_smmu_device *smmu;
- 	struct arm_smmu_master_cfg *cfg;
-+	struct iommu_fwspec *fwspec;
- 	int i, ret;
- 
--	ret = arm_smmu_register_legacy_master(dev);
--	cfg = dev->archdata.iommu;
-+	ret = arm_smmu_register_legacy_master(dev, &smmu);
-+	fwspec = dev_iommu_fwspec(dev);
- 	if (ret)
- 		goto out_free;
- 
- 	ret = -EINVAL;
--	for (i = 0; i < cfg->num_streamids; i++) {
--		u16 sid = cfg->streamids[i];
-+	for (i = 0; i < fwspec->num_ids; i++) {
-+		u16 sid = fwspec->ids[i];
- 
--		if (sid & ~cfg->smmu->streamid_mask) {
-+		if (sid & ~smmu->streamid_mask) {
- 			dev_err(dev, "stream ID 0x%x out of range for SMMU (0x%x)\n",
- 				sid, cfg->smmu->streamid_mask);
- 			goto out_free;
- 		}
--		cfg->smendx[i] = INVALID_SMENDX;
- 	}
- 
-+	ret = -ENOMEM;
-+	cfg = kzalloc(offsetof(struct arm_smmu_master_cfg, smendx[i]),
-+		      GFP_KERNEL);
-+	if (!cfg)
-+		goto out_free;
 +
-+	cfg->smmu = smmu;
-+	fwspec->iommu_priv = cfg;
-+	while (i--)
-+		cfg->smendx[i] = INVALID_SMENDX;
++        /* SMMU with stream matching */
++        smmu2: iommu {
++                ...
++                #iommu-cells = <2>;
++        };
 +
- 	ret = arm_smmu_master_alloc_smes(dev);
--	if (!ret)
--		return ret;
-+	if (ret)
-+		goto out_free;
++        /* device with stream IDs 0 and 7 */
++        master2 {
++                iommus = <&smmu2 0 0>,
++                         <&smmu2 7 0>;
++        };
 +
-+	return 0;
- 
- out_free:
--	kfree(cfg);
--	dev->archdata.iommu = NULL;
-+	if (fwspec)
-+		kfree(fwspec->iommu_priv);
-+	iommu_fwspec_free(dev);
- 	return ret;
- }
- 
- static void arm_smmu_remove_device(struct device *dev)
- {
--	struct arm_smmu_master_cfg *cfg = dev->archdata.iommu;
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec(dev);
- 
--	if (!cfg)
-+	if (!fwspec || fwspec->iommu_ops != &arm_smmu_ops)
- 		return;
- 
--	arm_smmu_master_free_smes(cfg);
-+	arm_smmu_master_free_smes(fwspec);
- 	iommu_group_remove_device(dev);
--	kfree(cfg);
--	dev->archdata.iommu = NULL;
-+	kfree(fwspec->iommu_priv);
-+	iommu_fwspec_free(dev);
- }
- 
- static struct iommu_group *arm_smmu_device_group(struct device *dev)
- {
--	struct arm_smmu_master_cfg *cfg = dev->archdata.iommu;
--	struct arm_smmu_device *smmu = cfg->smmu;
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec(dev);
-+	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
- 	struct iommu_group *group = NULL;
- 	int i, idx;
- 
--	for_each_cfg_sme(cfg, i, idx) {
-+	for_each_cfg_sme(fwspec, i, idx) {
- 		if (group && smmu->s2crs[idx].group &&
- 		    group != smmu->s2crs[idx].group)
- 			return ERR_PTR(-EINVAL);
-@@ -1906,6 +1920,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+	of_iommu_set_ops(dev->of_node, &arm_smmu_ops);
- 	platform_set_drvdata(pdev, smmu);
- 	arm_smmu_device_reset(smmu);
- 	return 0;
++        /* device with stream IDs 1, 17, 33 and 49 */
++        master3 {
++                iommus = <&smmu2 1 0x30>;
+         };
 -- 
 2.8.1.dirty
 
