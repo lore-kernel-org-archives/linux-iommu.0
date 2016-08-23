@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v5 06/19] iommu/arm-smmu: Support non-PCI devices with SMMUv3
-Date: Tue, 23 Aug 2016 20:05:17 +0100
-Message-ID: <207d0ae38c5b01b7cf7e48231a4d01bac453b57c.1471975357.git.robin.murphy@arm.com>
+Subject: [PATCH v5 07/19] iommu/arm-smmu: Set PRIVCFG in stage 1 STEs
+Date: Tue, 23 Aug 2016 20:05:18 +0100
+Message-ID: <1cda9861ce3ede6c2de9c6c4f2294549808b421b.1471975357.git.robin.murphy@arm.com>
 References: <cover.1471975357.git.robin.murphy@arm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1471975357.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
@@ -10,111 +10,41 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public
 Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-With the device <-> stream ID relationship suitably abstracted and
-of_xlate() hooked up, the PCI dependency now looks, and is, entirely
-arbitrary. Any bus using the of_dma_configure() mechanism will work,
-so extend support to the platform and AMBA buses which do just that.
+Implement the SMMUv3 equivalent of d346180e70b9 ("iommu/arm-smmu: Treat
+all device transactions as unprivileged"), so that once again those
+pesky DMA controllers with their privileged instruction fetches don't
+unexpectedly fault in stage 1 domains due to VMSAv8 rules.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/Kconfig       |  2 +-
- drivers/iommu/arm-smmu-v3.c | 40 ++++++++++++++++++++++++++++++++--------
- 2 files changed, 33 insertions(+), 9 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index d432ca828472..8ee54d71c7eb 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -309,7 +309,7 @@ config ARM_SMMU
- 
- config ARM_SMMU_V3
- 	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
--	depends on ARM64 && PCI
-+	depends on ARM64
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select GENERIC_MSI_IRQ_DOMAIN
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 094babff64a6..e0384f7afb03 100644
+index e0384f7afb03..72b996aa7460 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -35,6 +35,8 @@
- #include <linux/pci.h>
- #include <linux/platform_device.h>
+@@ -263,6 +263,9 @@
+ #define STRTAB_STE_1_SHCFG_INCOMING	1UL
+ #define STRTAB_STE_1_SHCFG_SHIFT	44
  
-+#include <linux/amba/bus.h>
++#define STRTAB_STE_1_PRIVCFG_UNPRIV	2UL
++#define STRTAB_STE_1_PRIVCFG_SHIFT	48
 +
- #include "io-pgtable.h"
+ #define STRTAB_STE_2_S2VMID_SHIFT	0
+ #define STRTAB_STE_2_S2VMID_MASK	0xffffUL
+ #define STRTAB_STE_2_VTCR_SHIFT		32
+@@ -1073,7 +1076,9 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ #ifdef CONFIG_PCI_ATS
+ 			 STRTAB_STE_1_EATS_TRANS << STRTAB_STE_1_EATS_SHIFT |
+ #endif
+-			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT);
++			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT |
++			 STRTAB_STE_1_PRIVCFG_UNPRIV <<
++			 STRTAB_STE_1_PRIVCFG_SHIFT);
  
- /* MMIO registers */
-@@ -1830,6 +1832,23 @@ static void arm_smmu_remove_device(struct device *dev)
- 	iommu_fwspec_free(dev);
- }
- 
-+static struct iommu_group *arm_smmu_device_group(struct device *dev)
-+{
-+	struct iommu_group *group;
-+
-+	/*
-+	 * We don't support devices sharing stream IDs other than PCI RID
-+	 * aliases, since the necessary ID-to-device lookup becomes rather
-+	 * impractical given a potential sparse 32-bit stream ID space.
-+	 */
-+	if (dev_is_pci(dev))
-+		group = pci_device_group(dev);
-+	else
-+		group = generic_device_group(dev);
-+
-+	return group;
-+}
-+
- static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- 				    enum iommu_attr attr, void *data)
- {
-@@ -1876,13 +1895,8 @@ out_unlock:
- 
- static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- {
--	int ret;
-+	int ret = iommu_fwspec_init(dev, args->np);
- 
--	/* We only support PCI, for now */
--	if (!dev_is_pci(dev))
--		return -ENODEV;
--
--	ret = iommu_fwspec_init(dev, args->np);
- 	if (!ret)
- 		ret = iommu_fwspec_add_ids(dev, &args->args[0], 1);
- 
-@@ -1900,7 +1914,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.iova_to_phys		= arm_smmu_iova_to_phys,
- 	.add_device		= arm_smmu_add_device,
- 	.remove_device		= arm_smmu_remove_device,
--	.device_group		= pci_device_group,
-+	.device_group		= arm_smmu_device_group,
- 	.domain_get_attr	= arm_smmu_domain_get_attr,
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
- 	.of_xlate		= arm_smmu_of_xlate,
-@@ -2608,8 +2622,18 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 
- 	/* And we're up. Go go go! */
- 	of_iommu_set_ops(dev->of_node, &arm_smmu_ops);
-+#ifdef CONFIG_PCI
- 	pci_request_acs();
--	return bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
-+	ret = bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
-+	if (ret)
-+		return ret;
-+#endif
-+#ifdef CONFIG_ARM_AMBA
-+	ret = bus_set_iommu(&amba_bustype, &arm_smmu_ops);
-+	if (ret)
-+		return ret;
-+#endif
-+	return bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
- }
- 
- static int arm_smmu_device_remove(struct platform_device *pdev)
+ 		if (smmu->features & ARM_SMMU_FEAT_STALLS)
+ 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
 -- 
 2.8.1.dirty
 
