@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v5 02/19] of/irq: Break out msi-map lookup (again)
-Date: Tue, 23 Aug 2016 20:05:13 +0100
-Message-ID: <1b640d765de70013be4244e3871d65fed7bfbccb.1471975357.git.robin.murphy@arm.com>
+Subject: [PATCH v5 01/19] Docs: dt: add PCI IOMMU map bindings
+Date: Tue, 23 Aug 2016 20:05:12 +0100
+Message-ID: <77357d7f1f43f575bda4f2a77810c7b444ecfd80.1471975357.git.robin.murphy@arm.com>
 References: <cover.1471975357.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,268 +18,206 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The PCI msi-map code is already doing double-duty translating IDs and
-retrieving MSI parents, which unsurprisingly is the same functionality
-we need for the identically-formatted PCI iommu-map property. Drag the
-core parsing routine up yet another layer into the general OF-PCI code,
-and further generalise it for either kind of lookup in either flavour
-of map property.
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 
-Acked-by: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Acked-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+The existing IOMMU bindings are able to specify the relationship between
+masters and IOMMUs, but they are insufficient for describing the general
+case of hotpluggable busses such as PCI where the set of masters is not
+known until runtime, and the relationship between masters and IOMMUs is
+a property of the integration of the system.
+
+This patch adds a generic binding for mapping PCI devices to IOMMUs,
+using a new iommu-map property (specific to PCI*) which may be used to
+map devices (identified by their Requester ID) to sideband data for the
+IOMMU which they master through.
+
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 ---
+ .../devicetree/bindings/pci/pci-iommu.txt          | 171 +++++++++++++++++++++
+ 1 file changed, 171 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pci/pci-iommu.txt
 
-v5: +Rob's ack
-
- drivers/of/irq.c       |  78 ++-----------------------------------
- drivers/of/of_pci.c    | 102 +++++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/of_pci.h |  10 +++++
- 3 files changed, 116 insertions(+), 74 deletions(-)
-
-diff --git a/drivers/of/irq.c b/drivers/of/irq.c
-index a2e68f740eda..393fea85eb4e 100644
---- a/drivers/of/irq.c
-+++ b/drivers/of/irq.c
-@@ -26,6 +26,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_irq.h>
-+#include <linux/of_pci.h>
- #include <linux/string.h>
- #include <linux/slab.h>
- 
-@@ -592,87 +593,16 @@ static u32 __of_msi_map_rid(struct device *dev, struct device_node **np,
- 			    u32 rid_in)
- {
- 	struct device *parent_dev;
--	struct device_node *msi_controller_node;
--	struct device_node *msi_np = *np;
--	u32 map_mask, masked_rid, rid_base, msi_base, rid_len, phandle;
--	int msi_map_len;
--	bool matched;
- 	u32 rid_out = rid_in;
--	const __be32 *msi_map = NULL;
- 
- 	/*
- 	 * Walk up the device parent links looking for one with a
- 	 * "msi-map" property.
- 	 */
--	for (parent_dev = dev; parent_dev; parent_dev = parent_dev->parent) {
--		if (!parent_dev->of_node)
--			continue;
--
--		msi_map = of_get_property(parent_dev->of_node,
--					  "msi-map", &msi_map_len);
--		if (!msi_map)
--			continue;
--
--		if (msi_map_len % (4 * sizeof(__be32))) {
--			dev_err(parent_dev, "Error: Bad msi-map length: %d\n",
--				msi_map_len);
--			return rid_out;
--		}
--		/* We have a good parent_dev and msi_map, let's use them. */
--		break;
--	}
--	if (!msi_map)
--		return rid_out;
--
--	/* The default is to select all bits. */
--	map_mask = 0xffffffff;
--
--	/*
--	 * Can be overridden by "msi-map-mask" property.  If
--	 * of_property_read_u32() fails, the default is used.
--	 */
--	of_property_read_u32(parent_dev->of_node, "msi-map-mask", &map_mask);
--
--	masked_rid = map_mask & rid_in;
--	matched = false;
--	while (!matched && msi_map_len >= 4 * sizeof(__be32)) {
--		rid_base = be32_to_cpup(msi_map + 0);
--		phandle = be32_to_cpup(msi_map + 1);
--		msi_base = be32_to_cpup(msi_map + 2);
--		rid_len = be32_to_cpup(msi_map + 3);
--
--		if (rid_base & ~map_mask) {
--			dev_err(parent_dev,
--				"Invalid msi-map translation - msi-map-mask (0x%x) ignores rid-base (0x%x)\n",
--				map_mask, rid_base);
--			return rid_out;
--		}
--
--		msi_controller_node = of_find_node_by_phandle(phandle);
--
--		matched = (masked_rid >= rid_base &&
--			   masked_rid < rid_base + rid_len);
--		if (msi_np)
--			matched &= msi_np == msi_controller_node;
--
--		if (matched && !msi_np) {
--			*np = msi_np = msi_controller_node;
-+	for (parent_dev = dev; parent_dev; parent_dev = parent_dev->parent)
-+		if (!of_pci_map_rid(parent_dev->of_node, rid_in, "msi-map",
-+				    "msi-map-mask", np, &rid_out))
- 			break;
--		}
--
--		of_node_put(msi_controller_node);
--		msi_map_len -= 4 * sizeof(__be32);
--		msi_map += 4;
--	}
--	if (!matched)
--		return rid_out;
--
--	rid_out = masked_rid - rid_base + msi_base;
--	dev_dbg(dev,
--		"msi-map at: %s, using mask %08x, rid-base: %08x, msi-base: %08x, length: %08x, rid: %08x -> %08x\n",
--		dev_name(parent_dev), map_mask, rid_base, msi_base,
--		rid_len, rid_in, rid_out);
--
- 	return rid_out;
- }
- 
-diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
-index 589b30c68e14..b58be12ab277 100644
---- a/drivers/of/of_pci.c
-+++ b/drivers/of/of_pci.c
-@@ -308,3 +308,105 @@ struct msi_controller *of_pci_find_msi_chip_by_node(struct device_node *of_node)
- EXPORT_SYMBOL_GPL(of_pci_find_msi_chip_by_node);
- 
- #endif /* CONFIG_PCI_MSI */
+diff --git a/Documentation/devicetree/bindings/pci/pci-iommu.txt b/Documentation/devicetree/bindings/pci/pci-iommu.txt
+new file mode 100644
+index 000000000000..56c829621b9a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pci/pci-iommu.txt
+@@ -0,0 +1,171 @@
++This document describes the generic device tree binding for describing the
++relationship between PCI(e) devices and IOMMU(s).
 +
-+/**
-+ * of_pci_map_rid - Translate a requester ID through a downstream mapping.
-+ * @np: root complex device node.
-+ * @rid: PCI requester ID to map.
-+ * @map_name: property name of the map to use.
-+ * @map_mask_name: optional property name of the mask to use.
-+ * @target: optional pointer to a target device node.
-+ * @id_out: optional pointer to receive the translated ID.
-+ *
-+ * Given a PCI requester ID, look up the appropriate implementation-defined
-+ * platform ID and/or the target device which receives transactions on that
-+ * ID, as per the "iommu-map" and "msi-map" bindings. Either of @target or
-+ * @id_out may be NULL if only the other is required. If @target points to
-+ * a non-NULL device node pointer, only entries targeting that node will be
-+ * matched; if it points to a NULL value, it will receive the device node of
-+ * the first matching target phandle, with a reference held.
-+ *
-+ * Return: 0 on success or a standard error code on failure.
-+ */
-+int of_pci_map_rid(struct device_node *np, u32 rid,
-+		   const char *map_name, const char *map_mask_name,
-+		   struct device_node **target, u32 *id_out)
-+{
-+	u32 map_mask, masked_rid;
-+	int map_len;
-+	const __be32 *map = NULL;
++Each PCI(e) device under a root complex is uniquely identified by its Requester
++ID (AKA RID). A Requester ID is a triplet of a Bus number, Device number, and
++Function number.
 +
-+	if (!np || !map_name || (!target && !id_out))
-+		return -EINVAL;
++For the purpose of this document, when treated as a numeric value, a RID is
++formatted such that:
 +
-+	map = of_get_property(np, map_name, &map_len);
-+	if (!map) {
-+		if (target)
-+			return -ENODEV;
-+		/* Otherwise, no map implies no translation */
-+		*id_out = rid;
-+		return 0;
-+	}
++* Bits [15:8] are the Bus number.
++* Bits [7:3] are the Device number.
++* Bits [2:0] are the Function number.
++* Any other bits required for padding must be zero.
 +
-+	if (!map_len || map_len % (4 * sizeof(*map))) {
-+		pr_err("%s: Error: Bad %s length: %d\n", np->full_name,
-+			map_name, map_len);
-+		return -EINVAL;
-+	}
++IOMMUs may distinguish PCI devices through sideband data derived from the
++Requester ID. While a given PCI device can only master through one IOMMU, a
++root complex may split masters across a set of IOMMUs (e.g. with one IOMMU per
++bus).
 +
-+	/* The default is to select all bits. */
-+	map_mask = 0xffffffff;
++The generic 'iommus' property is insufficient to describe this relationship,
++and a mechanism is required to map from a PCI device to its IOMMU and sideband
++data.
 +
-+	/*
-+	 * Can be overridden by "{iommu,msi}-map-mask" property.
-+	 * If of_property_read_u32() fails, the default is used.
-+	 */
-+	if (map_mask_name)
-+		of_property_read_u32(np, map_mask_name, &map_mask);
++For generic IOMMU bindings, see
++Documentation/devicetree/bindings/iommu/iommu.txt.
 +
-+	masked_rid = map_mask & rid;
-+	for ( ; map_len > 0; map_len -= 4 * sizeof(*map), map += 4) {
-+		struct device_node *phandle_node;
-+		u32 rid_base = be32_to_cpup(map + 0);
-+		u32 phandle = be32_to_cpup(map + 1);
-+		u32 out_base = be32_to_cpup(map + 2);
-+		u32 rid_len = be32_to_cpup(map + 3);
 +
-+		if (rid_base & ~map_mask) {
-+			pr_err("%s: Invalid %s translation - %s-mask (0x%x) ignores rid-base (0x%x)\n",
-+				np->full_name, map_name, map_name,
-+				map_mask, rid_base);
-+			return -EFAULT;
-+		}
++PCI root complex
++================
 +
-+		if (masked_rid < rid_base || masked_rid >= rid_base + rid_len)
-+			continue;
++Optional properties
++-------------------
 +
-+		phandle_node = of_find_node_by_phandle(phandle);
-+		if (!phandle_node)
-+			return -ENODEV;
++- iommu-map: Maps a Requester ID to an IOMMU and associated iommu-specifier
++  data.
 +
-+		if (target) {
-+			if (*target)
-+				of_node_put(phandle_node);
-+			else
-+				*target = phandle_node;
++  The property is an arbitrary number of tuples of
++  (rid-base,iommu,iommu-base,length).
 +
-+			if (*target != phandle_node)
-+				continue;
-+		}
++  Any RID r in the interval [rid-base, rid-base + length) is associated with
++  the listed IOMMU, with the iommu-specifier (r - rid-base + iommu-base).
 +
-+		if (id_out)
-+			*id_out = masked_rid - rid_base + out_base;
++- iommu-map-mask: A mask to be applied to each Requester ID prior to being
++  mapped to an iommu-specifier per the iommu-map property.
 +
-+		pr_debug("%s: %s, using mask %08x, rid-base: %08x, out-base: %08x, length: %08x, rid: %08x -> %08x\n",
-+			np->full_name, map_name, map_mask, rid_base, out_base,
-+			rid_len, rid, *id_out);
-+		return 0;
-+	}
 +
-+	pr_err("%s: Invalid %s translation - no match for rid 0x%x on %s\n",
-+		np->full_name, map_name, rid,
-+		target && *target ? (*target)->full_name : "any target");
-+	return -EFAULT;
-+}
-diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
-index b969e9443962..7fd5cfce9140 100644
---- a/include/linux/of_pci.h
-+++ b/include/linux/of_pci.h
-@@ -17,6 +17,9 @@ int of_irq_parse_and_map_pci(const struct pci_dev *dev, u8 slot, u8 pin);
- int of_pci_parse_bus_range(struct device_node *node, struct resource *res);
- int of_get_pci_domain_nr(struct device_node *node);
- void of_pci_check_probe_only(void);
-+int of_pci_map_rid(struct device_node *np, u32 rid,
-+		   const char *map_name, const char *map_mask_name,
-+		   struct device_node **target, u32 *id_out);
- #else
- static inline int of_irq_parse_pci(const struct pci_dev *pdev, struct of_phandle_args *out_irq)
- {
-@@ -52,6 +55,13 @@ of_get_pci_domain_nr(struct device_node *node)
- 	return -1;
- }
- 
-+static inline int of_pci_map_rid(struct device_node *np, u32 rid,
-+			const char *map_name, const char *map_mask_name,
-+			struct device_node **target, u32 *id_out)
-+{
-+	return -EINVAL;
-+}
++Example (1)
++===========
 +
- static inline void of_pci_check_probe_only(void) { }
- #endif
- 
++/ {
++	#address-cells = <1>;
++	#size-cells = <1>;
++
++	iommu: iommu@a {
++		reg = <0xa 0x1>;
++		compatible = "vendor,some-iommu";
++		#iommu-cells = <1>;
++	};
++
++	pci: pci@f {
++		reg = <0xf 0x1>;
++		compatible = "vendor,pcie-root-complex";
++		device_type = "pci";
++
++		/*
++		 * The sideband data provided to the IOMMU is the RID,
++		 * identity-mapped.
++		 */
++		iommu-map = <0x0 &iommu 0x0 0x10000>;
++	};
++};
++
++
++Example (2)
++===========
++
++/ {
++	#address-cells = <1>;
++	#size-cells = <1>;
++
++	iommu: iommu@a {
++		reg = <0xa 0x1>;
++		compatible = "vendor,some-iommu";
++		#iommu-cells = <1>;
++	};
++
++	pci: pci@f {
++		reg = <0xf 0x1>;
++		compatible = "vendor,pcie-root-complex";
++		device_type = "pci";
++
++		/*
++		 * The sideband data provided to the IOMMU is the RID with the
++		 * function bits masked out.
++		 */
++		iommu-map = <0x0 &iommu 0x0 0x10000>;
++		iommu-map-mask = <0xfff8>;
++	};
++};
++
++
++Example (3)
++===========
++
++/ {
++	#address-cells = <1>;
++	#size-cells = <1>;
++
++	iommu: iommu@a {
++		reg = <0xa 0x1>;
++		compatible = "vendor,some-iommu";
++		#iommu-cells = <1>;
++	};
++
++	pci: pci@f {
++		reg = <0xf 0x1>;
++		compatible = "vendor,pcie-root-complex";
++		device_type = "pci";
++
++		/*
++		 * The sideband data provided to the IOMMU is the RID,
++		 * but the high bits of the bus number are flipped.
++		 */
++		iommu-map = <0x0000 &iommu 0x8000 0x8000>,
++			    <0x8000 &iommu 0x0000 0x8000>;
++	};
++};
++
++
++Example (4)
++===========
++
++/ {
++	#address-cells = <1>;
++	#size-cells = <1>;
++
++	iommu_a: iommu@a {
++		reg = <0xa 0x1>;
++		compatible = "vendor,some-iommu";
++		#iommu-cells = <1>;
++	};
++
++	iommu_b: iommu@b {
++		reg = <0xb 0x1>;
++		compatible = "vendor,some-iommu";
++		#iommu-cells = <1>;
++	};
++
++	iommu_c: iommu@c {
++		reg = <0xc 0x1>;
++		compatible = "vendor,some-iommu";
++		#iommu-cells = <1>;
++	};
++
++	pci: pci@f {
++		reg = <0xf 0x1>;
++		compatible = "vendor,pcie-root-complex";
++		device_type = "pci";
++
++		/*
++		 * Devices with bus number 0-127 are mastered via IOMMU
++		 * a, with sideband data being RID[14:0].
++		 * Devices with bus number 128-255 are mastered via
++		 * IOMMU b, with sideband data being RID[14:0].
++		 * No devices master via IOMMU c.
++		 */
++		iommu-map = <0x0000 &iommu_a 0x0000 0x8000>,
++			    <0x8000 &iommu_b 0x0000 0x8000>;
++	};
++};
 -- 
 2.8.1.dirty
