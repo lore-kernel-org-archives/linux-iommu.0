@@ -1,154 +1,88 @@
-From: "Niklas =?iso-8859-1?Q?S=F6derlund?=" <niklas.soderlund-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
-Subject: Re: [PATCHv9 4/6] arm: dma-mapping: add {map,unmap}_resource for
-	iommu ops
-Date: Tue, 23 Aug 2016 17:31:36 +0200
-Message-ID: <20160823153136.GH2951@bigcity.dyn.berto.se>
-References: <20160810112219.17964-1-niklas.soderlund+renesas@ragnatech.se>
-	<20160810112219.17964-5-niklas.soderlund+renesas@ragnatech.se>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160810112219.17964-5-niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org
-Cc: arnd-r2nGTMty4D4@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v5 00/19] Generic DT bindings for PCI IOMMUs and ARM SMMU
+Date: Tue, 23 Aug 2016 20:05:11 +0100
+Message-ID: <cover.1471975357.git.robin.murphy@arm.com>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Russell,
+Hi all,
 
-If you have the time can you please have a look at this patch? This =
+At long last I've finished the big SMMUv2 rework, so here's everything
+all together for a v5. As a quick breakdown:
 
-series have been out for some time now and Vinod is willing to take it =
+Patches 1-3 are the core PCI part, all acked and ready to go. No code
+changes from v4.
 
-through the dmaengine tree but a ACK is needed on this patch from you =
+Patch 4 is merely bugfixed from v4 for simplicity, as I've not yet
+managed to take as close a look at Lorenzo's follow-on work as I'd like.
 
-first.
+Patches 5-7 (SMMUv3) are mostly unchanged beyond a slight tweak to #5.
 
-On 2016-08-10 13:22:17 +0200, Niklas S=F6derlund wrote:
-> Add methods to map/unmap device resources addresses for dma_map_ops that
-> are IOMMU aware. This is needed to map a device MMIO register from a
-> physical address.
-> =
+Patches 8-17 are the all-new SMMUv2 rework.
 
-> Signed-off-by: Niklas S=F6derlund <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
-> Reviewed-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> ---
->  arch/arm/mm/dma-mapping.c | 63 +++++++++++++++++++++++++++++++++++++++++=
-++++++
->  1 file changed, 63 insertions(+)
-> =
+Patch 18 goes along with the fix already in 4.8-rc3 to help avoid 64-bit
+DMA masks going wrong now that DMA ops will be enabled.
 
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index c6834c0..746eb29 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -2014,6 +2014,63 @@ static void arm_iommu_unmap_page(struct device *de=
-v, dma_addr_t handle,
->  	__free_iova(mapping, iova, len);
->  }
->  =
+Finally, patch 19 addresses the previous problem of having to choose
+between DMA ops or working MSIs. This is currently at the end as
+moving it before #17 would require a further interim SMMUv2 patch, and
+a 19-patch series is already quite enough...
 
-> +/**
-> + * arm_iommu_map_resource - map a device resource for DMA
-> + * @dev: valid struct device pointer
-> + * @phys_addr: physical address of resource
-> + * @size: size of resource to map
-> + * @dir: DMA transfer direction
-> + */
-> +static dma_addr_t arm_iommu_map_resource(struct device *dev,
-> +		phys_addr_t phys_addr, size_t size,
-> +		enum dma_data_direction dir, unsigned long attrs)
-> +{
-> +	struct dma_iommu_mapping *mapping =3D to_dma_iommu_mapping(dev);
-> +	dma_addr_t dma_addr;
-> +	int ret, prot;
-> +	phys_addr_t addr =3D phys_addr & PAGE_MASK;
-> +	unsigned int offset =3D phys_addr & ~PAGE_MASK;
-> +	size_t len =3D PAGE_ALIGN(size + offset);
-> +
-> +	dma_addr =3D __alloc_iova(mapping, len);
-> +	if (dma_addr =3D=3D DMA_ERROR_CODE)
-> +		return dma_addr;
-> +
-> +	prot =3D __dma_direction_to_prot(dir) | IOMMU_MMIO;
-> +
-> +	ret =3D iommu_map(mapping->domain, dma_addr, addr, len, prot);
-> +	if (ret < 0)
-> +		goto fail;
-> +
-> +	return dma_addr + offset;
-> +fail:
-> +	__free_iova(mapping, dma_addr, len);
-> +	return DMA_ERROR_CODE;
-> +}
-> +
-> +/**
-> + * arm_iommu_unmap_resource - unmap a device DMA resource
-> + * @dev: valid struct device pointer
-> + * @dma_handle: DMA address to resource
-> + * @size: size of resource to map
-> + * @dir: DMA transfer direction
-> + */
-> +static void arm_iommu_unmap_resource(struct device *dev, dma_addr_t dma_=
-handle,
-> +		size_t size, enum dma_data_direction dir,
-> +		unsigned long attrs)
-> +{
-> +	struct dma_iommu_mapping *mapping =3D to_dma_iommu_mapping(dev);
-> +	dma_addr_t iova =3D dma_handle & PAGE_MASK;
-> +	unsigned int offset =3D dma_handle & ~PAGE_MASK;
-> +	size_t len =3D PAGE_ALIGN(size + offset);
-> +
-> +	if (!iova)
-> +		return;
-> +
-> +	iommu_unmap(mapping->domain, iova, len);
-> +	__free_iova(mapping, iova, len);
-> +}
-> +
->  static void arm_iommu_sync_single_for_cpu(struct device *dev,
->  		dma_addr_t handle, size_t size, enum dma_data_direction dir)
->  {
-> @@ -2057,6 +2114,9 @@ struct dma_map_ops iommu_ops =3D {
->  	.unmap_sg		=3D arm_iommu_unmap_sg,
->  	.sync_sg_for_cpu	=3D arm_iommu_sync_sg_for_cpu,
->  	.sync_sg_for_device	=3D arm_iommu_sync_sg_for_device,
-> +
-> +	.map_resource		=3D arm_iommu_map_resource,
-> +	.unmap_resource		=3D arm_iommu_unmap_resource,
->  };
->  =
+I've pushed out a branch based on iommu/next to the usual place:
 
->  struct dma_map_ops iommu_coherent_ops =3D {
-> @@ -2070,6 +2130,9 @@ struct dma_map_ops iommu_coherent_ops =3D {
->  =
+git://linux-arm.org/linux-rm iommu/generic-v5
 
->  	.map_sg		=3D arm_coherent_iommu_map_sg,
->  	.unmap_sg	=3D arm_coherent_iommu_unmap_sg,
-> +
-> +	.map_resource	=3D arm_iommu_map_resource,
-> +	.unmap_resource	=3D arm_iommu_unmap_resource,
->  };
->  =
+Thanks,
+Robin.
+---
 
->  /**
-> -- =
+Mark Rutland (1):
+  Docs: dt: add PCI IOMMU map bindings
 
-> 2.9.2
-> =
+Robin Murphy (18):
+  of/irq: Break out msi-map lookup (again)
+  iommu/of: Handle iommu-map property for PCI
+  iommu/of: Introduce iommu_fwspec
+  iommu/arm-smmu: Implement of_xlate() for SMMUv3
+  iommu/arm-smmu: Support non-PCI devices with SMMUv3
+  iommu/arm-smmu: Set PRIVCFG in stage 1 STEs
+  iommu/arm-smmu: Handle stream IDs more dynamically
+  iommu/arm-smmu: Consolidate stream map entry state
+  iommu/arm-smmu: Keep track of S2CR state
+  iommu/arm-smmu: Refactor mmu-masters handling
+  iommu/arm-smmu: Streamline SMMU data lookups
+  iommu/arm-smmu: Add a stream map entry iterator
+  iommu/arm-smmu: Intelligent SMR allocation
+  iommu/arm-smmu: Convert to iommu_fwspec
+  Docs: dt: document ARM SMMU generic binding usage
+  iommu/arm-smmu: Wire up generic configuration support
+  iommu/arm-smmu: Set domain geometry
+  iommu/dma: Add support for mapping MSIs
 
+ .../devicetree/bindings/iommu/arm,smmu.txt         |  63 +-
+ .../devicetree/bindings/pci/pci-iommu.txt          | 171 ++++
+ drivers/iommu/Kconfig                              |   2 +-
+ drivers/iommu/arm-smmu-v3.c                        | 347 ++++----
+ drivers/iommu/arm-smmu.c                           | 952 ++++++++++-----------
+ drivers/iommu/dma-iommu.c                          | 141 ++-
+ drivers/iommu/of_iommu.c                           |  95 +-
+ drivers/irqchip/irq-gic-v2m.c                      |   3 +
+ drivers/irqchip/irq-gic-v3-its.c                   |   3 +
+ drivers/of/irq.c                                   |  78 +-
+ drivers/of/of_pci.c                                | 102 +++
+ include/linux/dma-iommu.h                          |   9 +
+ include/linux/of_iommu.h                           |  15 +
+ include/linux/of_pci.h                             |  10 +
+ 14 files changed, 1208 insertions(+), 783 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pci/pci-iommu.txt
 
--- =
+-- 
+2.8.1.dirty
 
-Regards,
-Niklas S=F6derlund
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
