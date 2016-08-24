@@ -1,120 +1,110 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 19/19] iommu/dma: Add support for mapping MSIs
-Date: Wed, 24 Aug 2016 11:06:59 +0100
-Message-ID: <21fcb927-f0e9-6409-38d8-ddebed7522df@arm.com>
-References: <cover.1471975357.git.robin.murphy@arm.com>
-	<4c901ff0f6355039de55b0bc0df283065f02efa1.1471975357.git.robin.murphy@arm.com>
-	<alpine.DEB.2.20.1608240950500.5714@nanos>
+Subject: Re: [PATCH v4 6/8] iommu/arm-smmu: Implement of_xlate() for SMMUv3
+Date: Wed, 24 Aug 2016 16:08:18 +0100
+Message-ID: <09911a58-1566-9a32-c911-f61e690d354a@arm.com>
+References: <cover.1467388950.git.robin.murphy@arm.com>
+ <925b054b1e96dc83c0b1dc9607785d0346187366.1467388950.git.robin.murphy@arm.com>
+ <20160729144655.GA3359@e106794-lin.localdomain>
+ <1d570682-d815-657e-2119-b706e0034e2c@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <alpine.DEB.2.20.1608240950500.5714@nanos>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, punit.agrawal-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <1d570682-d815-657e-2119-b706e0034e2c-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 24/08/16 09:16, Thomas Gleixner wrote:
-> On Tue, 23 Aug 2016, Robin Murphy wrote:
->> +	cookie = domain->iova_cookie;
->> +	iovad = &cookie->iovad;
->> +
->> +	spin_lock(&cookie->msi_lock);
->> +	list_for_each_entry(msi_page, &cookie->msi_page_list, list)
->> +		if (msi_page->phys_hi == msg->address_hi &&
->> +		    msi_page->phys_lo - msg->address_lo < iovad->granule)
->> +			goto unlock;
->> +
->> +	ret = __iommu_dma_map_msi_page(dev, msg, domain, &msi_page);
->> +unlock:
->> +	spin_unlock(&cookie->msi_lock);
->> +
->> +	if (!ret) {
->> +		msg->address_hi = upper_32_bits(msi_page->iova);
->> +		msg->address_lo &= iova_mask(iovad);
->> +		msg->address_lo += lower_32_bits(msi_page->iova);
->> +	} else {
->> +		/*
->> +		 * We're called from a void callback, so the best we can do is
->> +		 * 'fail' by filling the message with obviously bogus values.
->> +		 * Since we got this far due to an IOMMU being present, it's
->> +		 * not like the existing address would have worked anyway...
->> +		 */
->> +		msg->address_hi = ~0U;
->> +		msg->address_lo = ~0U;
->> +		msg->data = ~0U;
->> +	}
+On 29/07/16 19:55, Robin Murphy wrote:
+> On 29/07/16 15:46, Jean-Philippe Brucker wrote:
+>> Hi Robin,
+>>
+>> Very sorry about the delay, I forgot about this minor comment, below
+>>
+>> On Fri, Jul 01, 2016 at 05:50:15PM +0100, Robin Murphy wrote:
+[...]
+>>> +		smmu = arm_smmu_get_by_node(fwspec->iommu_np);
+>>> +		if (!smmu)
+>>> +			return -ENODEV;
+>>> +		master = kzalloc(sizeof(*master), GFP_KERNEL);
+>>> +		if (!master)
+>>> +			return -ENOMEM;
+>>> +
+>>> +		master->smmu = smmu;
+>>> +		fwspec->iommu_priv = master;
+>>
+>> It's probably best to initialise master->ste.bypass = true here, to
+>> reflect the initial state of STEs. Otherwise attach_dev always calls
+>> detach_dev first for nothing.
 > 
-> The above is really horrible to parse. I had to read it five times to
-> understand the logic.
+> I'm actually now thinking that that check in attach_dev() should be for
+> ste->valid, rather than ste->bypass. That matches the similar check in
+> remove_device(), and looking at old local branches I apparently did have
+> it that way at some point, and I now can't quite remember why it ended
+> up differently. I'll have a proper dig into it next week.
 
-Yeah, on reflection it is needlessly hideous. I think we should take
-this as a clear lesson that whenever you find yourself thinking "Man, I
-wish I had Python's for...else construct here", you're doing it wrong ;)
+[for a value of "next week" relative to "last week", at least...]
 
-> static struct iommu_dma_msi_page *
-> find_or_map_msi_page(struct iommu_dma_cookie *cookie, struct msi_msg *msg)
-> {
-> 	struct iova_domain *iovad = &cookie->iovad;
->        	struct iommu_dma_msi_page *page;
-> 
-> 	list_for_each_entry(*page, &cookie->msi_page_list, list) {
-> 		if (page->phys_hi == msg->address_hi &&
-> 		    page->phys_lo - msg->address_lo < iovad->granule)
-> 		    	return page;
-> 	}
-> 
-> 	/*
-> 	 * FIXME: __iommu_dma_map_msi_page() should return a page or NULL.
-> 	 * The integer return value is pretty pointless. If seperate error
-> 	 * codes are required that's what ERR_PTR() is for ....
-> 	 */
-> 	ret = __iommu_dma_map_msi_page(dev, msg, domain, &page);
-> 	return ret ? ERR_PTR(ret) : page;
-> }
-> 
-> So now the code in iommu_dma_map_msi_msg() becomes:
-> 
-> 	spin_lock(&cookie->msi_lock);
-> 	msi_page = find_or_map_msi_page(cookie, msg);
-> 	spin_unlock(&cookie->msi_lock);
-> 
-> 	if (!IS_ERR_OR_NULL(msi_page)) {
-> 		msg->address_hi = upper_32_bits(msi_page->iova);
-> 		msg->address_lo &= iova_mask(iovad);
-> 		msg->address_lo += lower_32_bits(msi_page->iova);
-> 	} else {
-> 		/*
-> 		 * We're called from a void callback, so the best we can do is
-> 		 * 'fail' by filling the message with obviously bogus values.
-> 		 * Since we got this far due to an IOMMU being present, it's
-> 		 * not like the existing address would have worked anyway...
-> 		 */
-> 		msg->address_hi = ~0U;
-> 		msg->address_lo = ~0U;
-> 		msg->data = ~0U;
-> 	}
-> 
-> Hmm? 
+Having now remembered, the reason it is this way is a subtle concession
+to the nasty PCI RID alias case. When you come to probe the second
+device behind a non-transparent bridge, the first device is already
+attached to the default domain so the underlying STE is no longer a
+bypass entry, but we've got no way of knowing that - we can't tell we're
+going to be in an alias group until we call iommu_group_get_for_dev(),
+and by the time that returns it's already too late, since the attach to
+the default domain (and thus the attempt to write a now-valid STE with
+the same data again) will have happened.
 
-OK, I've turned map_msi_page into get_msi_page (returning a page) and
-just hoisted the list lookup into that, which leads to knock-on
-simplifications throughout and is _much_ nicer. I now can't imagine why
-I didn't get that far in the first place - thanks for the reality check!
+The least complicated ways around that that I can think of are 1)
+inspect the stream table itself on attach, 2) maintain a semi-redundant
+list within the group of exactly which ID is attached to which domain at
+any point in time, 3) treat the initial per-device state as undefined
+(!valid, !bypass) so that the initial domain attach is always a safe
+break-before-make on the stream table, or 4) disallow aliasing IDs
+entirely and just let the BUG() in write_strtab_ent() fire if a
+non-transparent bridge ever comes along.
+
+Discounting #4 as unreasonable, #3 is by far the least complicated, so
+I've kept this as it is for now. #2 might seem reasonable at a glance,
+but it wouldn't be useful for anything _except_ this specific situation,
+which in practice we'd expect to encounter rarely if ever.
 
 Robin.
 
+>> Apart from that, this version works fine with my twisted setup. Note
+>> that we might have to add a master->fwspec reference in the future, to
+>> access those SIDs from various places. If I understood correctly, it
+>> should be fine as those objects have the same lifetime after the
+>> add_device call.
 > 
-> Thanks,
+> That sounds reasonable, although I can't think offhand where we might
+> have a master_data without having got it via the containing device
+> (unless we also add some other means of keeping track of them). Since
+> this series doesn't need any kind of reverse-lookup capabilities I'm
+> just keeping things as simple as possible for the time being.
 > 
-> 	tglx
+> Robin.
 > 
+>>
+>> Thanks,
+>> Jean-Philippe
+>>
+>>
+>> _______________________________________________
+>> linux-arm-kernel mailing list
+>> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>>
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
