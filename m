@@ -1,25 +1,26 @@
-From: Lutz Vieweg <lvml@5t9.de>
-Subject: Re: AMD-Vi: Event logged IO_PAGE_FAULT - ixgbe
- Detected Tx Unit Hang - Reset adapter - master disable timed out
-Date: Mon, 29 Aug 2016 14:30:09 +0200
-Message-ID: <57C42AD1.407@5t9.de>
+From: Lutz Vieweg <lvml-i6VILw57VWU@public.gmane.org>
+Subject: Re: [E1000-devel] AMD-Vi: Event logged IO_PAGE_FAULT - ixgbe Detected
+	Tx Unit Hang - Reset adapter - master disable timed out
+Date: Mon, 29 Aug 2016 14:30:16 +0200
+Message-ID: <57C42AD8.9080302@5t9.de>
 References: <loom.20160606T232112-817@post.gmane.org>	<CAKgT0UfEGS_QzM1phGKRV1hDgcnAwX-BqMkyQ6KJUOv82_kCiA@mail.gmail.com>	<nj64hf$9v5$1@ger.gmane.org>	<CAKgT0UfKUkrsXqLm4KdjXgLZ6QXZp5Rf-yYA3pBSzc1=ghJ4CQ@mail.gmail.com>	<njbvjb$40r$1@ger.gmane.org>	<CAKgT0UeFM1jYTU83YFohxUHWuJeTYfWDpdFM2CDQCutmf_vXvA@mail.gmail.com>	<5759A009.8040200@5t9.de>	<CAKT61h9cNnGDNugoWXYcpN1VjVK3Hn-VOW+TwHahj5EXzfsXgA@mail.gmail.com>
 	<575EEFFB.20004@5t9.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <e1000-devel-bounces@lists.sourceforge.net>
-In-Reply-To: <575EEFFB.20004@5t9.de>
-List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/e1000-devel>,
-	<mailto:e1000-devel-request@lists.sourceforge.net?subject=unsubscribe>
-List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=e1000-devel>
-List-Post: <mailto:e1000-devel@lists.sourceforge.net>
-List-Help: <mailto:e1000-devel-request@lists.sourceforge.net?subject=help>
-List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/e1000-devel>,
-	<mailto:e1000-devel-request@lists.sourceforge.net?subject=subscribe>
-Errors-To: e1000-devel-bounces@lists.sourceforge.net
-To: e1000-devel@lists.sourceforge.net
-Cc: iommu@lists.linux-foundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <575EEFFB.20004-i6VILw57VWU@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: e1000-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 On 06/13/2016 07:40 PM, Lutz Vieweg wrote:
@@ -188,11 +189,3 @@ Lutz Vieweg
 >
 > Lutz Vieweg
 >
-
-
-------------------------------------------------------------------------------
-_______________________________________________
-E1000-devel mailing list
-E1000-devel@lists.sourceforge.net
-https://lists.sourceforge.net/lists/listinfo/e1000-devel
-To learn more about Intel&#174; Ethernet, visit http://communities.intel.com/community/wired
