@@ -1,120 +1,198 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.8-rc3
-Date: Fri, 26 Aug 2016 17:33:27 +0200
-Message-ID: <20160826153318.GA8351@8bytes.org>
+From: Lutz Vieweg <lvml@5t9.de>
+Subject: Re: AMD-Vi: Event logged IO_PAGE_FAULT - ixgbe
+ Detected Tx Unit Hang - Reset adapter - master disable timed out
+Date: Mon, 29 Aug 2016 14:30:09 +0200
+Message-ID: <57C42AD1.407@5t9.de>
+References: <loom.20160606T232112-817@post.gmane.org>	<CAKgT0UfEGS_QzM1phGKRV1hDgcnAwX-BqMkyQ6KJUOv82_kCiA@mail.gmail.com>	<nj64hf$9v5$1@ger.gmane.org>	<CAKgT0UfKUkrsXqLm4KdjXgLZ6QXZp5Rf-yYA3pBSzc1=ghJ4CQ@mail.gmail.com>	<njbvjb$40r$1@ger.gmane.org>	<CAKgT0UeFM1jYTU83YFohxUHWuJeTYfWDpdFM2CDQCutmf_vXvA@mail.gmail.com>	<5759A009.8040200@5t9.de>	<CAKT61h9cNnGDNugoWXYcpN1VjVK3Hn-VOW+TwHahj5EXzfsXgA@mail.gmail.com>
+	<575EEFFB.20004@5t9.de>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============9181132423086379007=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <e1000-devel-bounces@lists.sourceforge.net>
+In-Reply-To: <575EEFFB.20004@5t9.de>
+List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/e1000-devel>,
+	<mailto:e1000-devel-request@lists.sourceforge.net?subject=unsubscribe>
+List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=e1000-devel>
+List-Post: <mailto:e1000-devel@lists.sourceforge.net>
+List-Help: <mailto:e1000-devel-request@lists.sourceforge.net?subject=help>
+List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/e1000-devel>,
+	<mailto:e1000-devel-request@lists.sourceforge.net?subject=subscribe>
+Errors-To: e1000-devel-bounces@lists.sourceforge.net
+To: e1000-devel@lists.sourceforge.net
+Cc: iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
+On 06/13/2016 07:40 PM, Lutz Vieweg wrote:
+> On 06/13/2016 04:46 AM, Wan ZongShun wrote:
+>> Firstly, I need to know if your ethernet card works well now or not
+>> after you set iommu=pt.
+>
+> Too early to tell - the NIC worked for the last 4 days now without
+> failing, however, that is only about the same time as it took after
+> the upgrade to linux-4.6.1 before the bug was encountered, first.
 
---===============9181132423086379007==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="KsGdsel6WgEHnImy"
-Content-Disposition: inline
+I can now say that after using the option iommu=pt with linux-4.6.1,
+the machine ran for > 2 months without problems.
 
+For other reasons (btrfs-stuff) I had to upgrade the machine to
+linux-4.7.2 last week, and the "iommu=pt" option wasn't active
+after this upgrade.
+It only took 4 days until the
+  "AMD-Vi: Event logged IO_PAGE_FAULT...  ixgbe Detected Tx Unit Hang"
+issue occured again.
 
---KsGdsel6WgEHnImy
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+So this evening, I'll reboot linux-4.7.2 with "iommu=pt" again,
+as that really seemed to help.
 
-Hi Linus,
+Regards,
 
-The following changes since commit fa8410b355251fd30341662a40ac6b22d3e38468:
-
-  Linux 4.8-rc3 (2016-08-21 16:14:10 -0700)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-f=
-ixes-v4.8-rc3
-
-for you to fetch changes up to 4df36185bb364f9727d1c0816acac3b9a5ae2603:
-
-  Merge branch 'for-joerg/arm-smmu/fixes' of git://git.kernel.org/pub/scm/l=
-inux/kernel/git/will/linux into iommu/fixes (2016-08-22 12:33:56 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v4.8-rc3:
-
-=46rom Will Deacon:
-
-	* Fix a couple of thinkos in the CMDQ error handling and
-          short-descriptor page table code that have been there since
-          day one
-
-	* Disable stalling faults, since they may result in hardware
-          deadlock
-
-	* Fix an accidental BUG() when passing disable_bypass=3D1 on
-          the cmdline
-
-----------------------------------------------------------------
-Joerg Roedel (1):
-      Merge branch 'for-joerg/arm-smmu/fixes' of git://git.kernel.org/.../w=
-ill/linux into iommu/fixes
-
-Robin Murphy (1):
-      iommu/io-pgtable-arm-v7s: Fix attributes when splitting blocks
-
-Will Deacon (3):
-      iommu/arm-smmu: Fix CMDQ error handling
-      iommu/arm-smmu: Disable stalling faults for all endpoints
-      iommu/arm-smmu: Don't BUG() if we find aborting STEs with disable_byp=
-ass
-
- drivers/iommu/arm-smmu-v3.c        |  7 +++++--
- drivers/iommu/arm-smmu.c           | 34 +++++++---------------------------
- drivers/iommu/io-pgtable-arm-v7s.c |  4 +++-
- 3 files changed, 15 insertions(+), 30 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---KsGdsel6WgEHnImy
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJXwGE+AAoJECvwRC2XARrjPaQQAKMLsO3G6hbYqZhh/KCz8Yfa
-mewj8RJXmvPf2yg9q+XMIK1SIdxzVFvwV4718j4kmcmeVkf0KuPC9f24JuocxuYh
-fd14vPxVs68nXKtnEzkiosQmehWpz1HK3mDW4PuifHEgQ6a7mm8f/CIFSlzu4Dvc
-w885KYBxbb513JaZEUIQogBm5is+S0gCvdh13DX6UquikpEHyjo+NEGaFisxqZs4
-Ab/iveUwz0bMUwXUv+RtrabhXI+S721cqb6x/D4jGSlhvyxCIx/AKfbD7j67H/y8
-rpKEekJp2ER4tfu2Y2h26qEKkQHdPxSuRNN+IxtUqM6SmGjA78FIaFn4AAGMVbkP
-JNsiekjPyA3O+UN4MvZIobFukT/39AtGlZPriiO8fJlKpdy4Ph1eMF9Kd+1uJRAv
-ciET3YAC/8uEbbruuJQuKlDNlxxv0W0uOkUubNl7NGWgoTwHX65Z1me3rOUGGbFs
-hQvkOzpGLMc2N96pHorrB8LloF8pqh8xdrdOBIZHaDQ50AXR3aFa/GTeJ9XoYzy8
-otD5vyyPSUEWAAKT1H0tgXU3xU2VlacxF/pDX80qiMIopvF+dtABwo3kpXTXyO9b
-KFTeXHcGXgJk/eSOirizz7BVl6nVaVgZBHGl4xjkXYGZ1Aas40Jx8lgxW3O96dh9
-dLULT4paUQ3wVykmBaYj
-=pVrC
------END PGP SIGNATURE-----
-
---KsGdsel6WgEHnImy--
-
---===============9181132423086379007==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Lutz Vieweg
 
 
---===============9181132423086379007==--
+
+>> If your ethernet card with 64bit(not 32bit) DMA addressable cap, that
+>> is ok, you will not be impacted by bounce buffer.
+>
+>> But iommu=pt is a terrible option, that make all devices bypass the iommu.
+>
+> Why is that terrible? The documentation I found on what iommu=pt actually
+> means were pretty scarce, but I noticed how many places recommended to use
+> this option for 10G NICs.
+>
+>> If you want to get further help, Please try:
+>>
+>> (1)Please add 'amd_iommu_dump' option in your kernel boot option, and
+>> send your full kernel logs, lspci info, don't add iommu=pt.
+>> (2) Add amd_iommu=fullflush option to kernel boot option, just try it.
+>
+> Will try that when the NIC becomes unavailable again.
+>
+>>> One more thing I find curious, but this didn't change with "iommu=pt":
+>>>>
+>>>> [    0.000000] AGP: Checking aperture...
+>>>> [    0.000000] AGP: No AGP bridge found
+>>>> [    0.000000] AGP: Node 0: aperture [bus addr 0x00000000-0x01ffffff]
+>>>> (32MB)
+>>>> [    0.000000] AGP: Your BIOS doesn't leave an aperture memory hole
+>>>> [    0.000000] AGP: Please enable the IOMMU option in the BIOS setup
+>>>> [    0.000000] AGP: This costs you 64MB of RAM
+>>>> [    0.000000] AGP: Mapping aperture over RAM [mem 0xcc000000-0xcfffffff]
+>>>> (65536KB)
+>>>
+>>> I checked and the IOMMU-option is definitely enabled in the BIOS setup.
+>>> So I assume right that these message are irrelevant (since AGP as a whole
+>>> is irrelevant on this server)?
+>>
+>> Please cat /proc/iomem, send the information.
+>
+> Here it is:
+>> 00000000-00000fff : reserved
+>> 00001000-00097bff : System RAM
+>> 00097c00-0009ffff : reserved
+>> 000a0000-000bffff : PCI Bus 0000:00
+>> 000c0000-000c7fff : Video ROM
+>> 000ce800-000d43ff : Adapter ROM
+>> 000d4800-000d57ff : Adapter ROM
+>> 000e6000-000fffff : reserved
+>>   000f0000-000fffff : System ROM
+>> 00100000-d7e7ffff : System RAM
+>>   01000000-01688c05 : Kernel code
+>>   01688c06-01d4f53f : Kernel data
+>>   01eea000-02174fff : Kernel bss
+>> d7e80000-d7e8dfff : RAM buffer
+>> d7e8e000-d7e8ffff : reserved
+>> d7e90000-d7eb3fff : ACPI Tables
+>> d7eb4000-d7edffff : ACPI Non-volatile Storage
+>> d7ee0000-d7ffffff : reserved
+>> d9000000-daffffff : PCI Bus 0000:40
+>>   d9000000-d90003ff : IOAPIC 2
+>>   d9010000-d9013fff : amd_iommu
+>> db000000-dcffffff : PCI Bus 0000:00
+>>   db000000-dbffffff : PCI Bus 0000:01
+>>     db000000-dbffffff : 0000:01:04.0
+>>       db000000-dbffffff : mgadrmfb_vram
+>>   dcd00000-dcffffff : PCI Bus 0000:04
+>>     dcdfc000-dcdfffff : 0000:04:00.0
+>>       dcdfc000-dcdfffff : ixgbe
+>>     dce00000-dcffffff : 0000:04:00.0
+>>       dce00000-dcffffff : ixgbe
+>> dd000000-dfffffff : PCI Bus 0000:00
+>>   def00000-df7fffff : PCI Bus 0000:01
+>>     deffc000-deffffff : 0000:01:04.0
+>>       deffc000-deffffff : mgadrmfb_mmio
+>>     df000000-df7fffff : 0000:01:04.0
+>>   dfaf6000-dfaf6fff : 0000:00:12.1
+>>     dfaf6000-dfaf6fff : ohci_hcd
+>>   dfaf7000-dfaf7fff : 0000:00:12.0
+>>     dfaf7000-dfaf7fff : ohci_hcd
+>>   dfaf8400-dfaf87ff : 0000:00:11.0
+>>     dfaf8400-dfaf87ff : ahci
+>>   dfaf8800-dfaf88ff : 0000:00:12.2
+>>     dfaf8800-dfaf88ff : ehci_hcd
+>>   dfaf8c00-dfaf8cff : 0000:00:13.2
+>>     dfaf8c00-dfaf8cff : ehci_hcd
+>>   dfaf9000-dfaf9fff : 0000:00:13.1
+>>     dfaf9000-dfaf9fff : ohci_hcd
+>>   dfafa000-dfafafff : 0000:00:13.0
+>>     dfafa000-dfafafff : ohci_hcd
+>>   dfafb000-dfafbfff : 0000:00:14.5
+>>     dfafb000-dfafbfff : ohci_hcd
+>>   dfb00000-dfbfffff : PCI Bus 0000:02
+>>     dfb1c000-dfb1ffff : 0000:02:00.1
+>>       dfb1c000-dfb1ffff : igb
+>>     dfb20000-dfb3ffff : 0000:02:00.1
+>>     dfb40000-dfb5ffff : 0000:02:00.1
+>>       dfb40000-dfb5ffff : igb
+>>     dfb60000-dfb7ffff : 0000:02:00.1
+>>       dfb60000-dfb7ffff : igb
+>>     dfb9c000-dfb9ffff : 0000:02:00.0
+>>       dfb9c000-dfb9ffff : igb
+>>     dfba0000-dfbbffff : 0000:02:00.0
+>>     dfbc0000-dfbdffff : 0000:02:00.0
+>>       dfbc0000-dfbdffff : igb
+>>     dfbe0000-dfbfffff : 0000:02:00.0
+>>       dfbe0000-dfbfffff : igb
+>>   dfc00000-dfcfffff : PCI Bus 0000:03
+>>     dfc3c000-dfc3ffff : 0000:03:00.0
+>>       dfc3c000-dfc3ffff : mpt2sas
+>>     dfc40000-dfc7ffff : 0000:03:00.0
+>>       dfc40000-dfc7ffff : mpt2sas
+>>     dfc80000-dfcfffff : 0000:03:00.0
+>>   dfd00000-dfdfffff : PCI Bus 0000:04
+>>     dfd80000-dfdfffff : 0000:04:00.0
+>>   dfe00000-dfffffff : PCI Bus 0000:05
+>>     dfeb0000-dfebffff : 0000:05:00.0
+>>       dfeb0000-dfebffff : mpt2sas
+>>     dfec0000-dfefffff : 0000:05:00.0
+>>       dfec0000-dfefffff : mpt2sas
+>>     dff00000-dfffffff : 0000:05:00.0
+>> e0000000-efffffff : PCI MMCONFIG 0000 [bus 00-ff]
+>>   e0000000-efffffff : reserved
+>>     e0000000-efffffff : pnp 00:0a
+>> f6000000-f6003fff : amd_iommu
+>> fec00000-fec003ff : IOAPIC 0
+>> fec10000-fec1001f : pnp 00:04
+>> fec20000-fec203ff : IOAPIC 1
+>> fed00000-fed003ff : HPET 2
+>>   fed00000-fed003ff : PNP0103:00
+>> fed40000-fed44fff : PCI Bus 0000:00
+>> fee00000-fee00fff : Local APIC
+>>   fee00000-fee00fff : pnp 00:03
+>> ffb80000-ffbfffff : pnp 00:04
+>> ffe00000-ffffffff : reserved
+>>   ffe50000-ffe5e05f : pnp 00:04
+>> 100000000-2026ffffff : System RAM
+>> 2027000000-2027ffffff : RAM buffer
+>
+> Regards,
+>
+> Lutz Vieweg
+>
+
+
+------------------------------------------------------------------------------
+_______________________________________________
+E1000-devel mailing list
+E1000-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/e1000-devel
+To learn more about Intel&#174; Ethernet, visit http://communities.intel.com/community/wired
