@@ -1,15 +1,15 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 05/19] iommu/arm-smmu: Implement of_xlate() for SMMUv3
-Date: Thu, 1 Sep 2016 18:40:57 +0100
-Message-ID: <31dc6a30-570d-db5f-d177-6b6393257133@arm.com>
+Subject: Re: [PATCH v5 14/19] iommu/arm-smmu: Intelligent SMR allocation
+Date: Thu, 1 Sep 2016 18:59:40 +0100
+Message-ID: <382ae80f-9cd7-95e7-8d12-06abf282e581@arm.com>
 References: <cover.1471975357.git.robin.murphy@arm.com>
-	<6088007f60a24b36a3bf965b62521f99cd908019.1471975357.git.robin.murphy@arm.com>
-	<20160901170604.GP6721@arm.com>
+	<693b7fdd58be254297eb43ac8f5e035beb5226b2.1471975357.git.robin.murphy@arm.com>
+	<20160901151702.GC28180@red-moon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160901170604.GP6721-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20160901151702.GC28180@red-moon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,59 +19,104 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/09/16 18:06, Will Deacon wrote:
-> Hi Robin,
-> 
-> On Tue, Aug 23, 2016 at 08:05:16PM +0100, Robin Murphy wrote:
->> Now that we can properly describe the mapping between PCI RIDs and
->> stream IDs via "iommu-map", and have it fed it to the driver
->> automatically via of_xlate(), rework the SMMUv3 driver to benefit from
->> that, and get rid of the current misuse of the "iommus" binding.
->>
->> Since having of_xlate wired up means that masters will now be given the
->> appropriate DMA ops, we also need to make sure that default domains work
->> properly. This necessitates dispensing with the "whole group at a time"
->> notion for attaching to a domain, as devices which share a group get
->> attached to the group's default domain one by one as they are initially
->> probed.
->>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
->>
->> v5: Simplify init code, use firmware-agnostic (and more efficient)
->>     driver-based instance lookup
-> 
-> I'm largely happy with this, just one question below...
-> 
->> @@ -2649,7 +2602,14 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
->>  	platform_set_drvdata(pdev, smmu);
+On 01/09/16 16:17, Lorenzo Pieralisi wrote:
+[...]
+>> +static int arm_smmu_find_sme(struct arm_smmu_device *smmu, u16 id, u16 mask)
+>>  {
+>>  	struct arm_smmu_smr *smrs = smmu->smrs;
+>> -	int i, idx;
+>> +	int i, idx = -ENOSPC;
 >>  
->>  	/* Reset the device */
->> -	return arm_smmu_device_reset(smmu);
->> +	ret = arm_smmu_device_reset(smmu);
->> +	if (ret)
->> +		return ret;
+>> -	/* Allocate the SMRs on the SMMU */
+>> -	for_each_cfg_sme(cfg, i, idx) {
+>> -		if (idx >= 0)
+>> -			return -EEXIST;
+>> +	/* Stream indexing is blissfully easy */
+>> +	if (!smrs)
+>> +		return id;
+>>  
+>> -		/* ...except on stream indexing hardware, of course */
+>> -		if (!smrs) {
+>> -			cfg->smendx[i] = cfg->streamids[i];
+>> +	/* Validating SMRs is... less so */
+>> +	for (i = 0; i < smmu->num_mapping_groups; ++i) {
+>> +		if (!smrs[i].valid) {
+>> +			if (idx < 0)
+>> +				idx = i;
 > 
-> ... if we fail the probe at this point, the drvdata remains set. Do you
-> need to clear it, or we can we guarantee that nobody is going to try
-> arm_smmu_get_by_node with the (failed) SMMU's device node?
+> This is to stash an "empty" entry index in case none matches, right ?
+> Let me say it is not that obvious, that deserves a comment since it
+> is hard to follow.
 
-The device only gets added to the driver's list by driver_bound(), and
-really_probe() will bail before it calls that if we return nonzero from
-the probe function here. Since get_by_node() is thus safe, and .remove()
-shouldn't be called given that .probe() failed, I can't see a legitimate
-situation in which leaving behind a stale pointer in the drvdata of an
-unbound device might be problematic.
+Yes, since we have to iterate through every SMR anyway, this just keeps
+a note of the first free entry we see along the way. It _could_ be
+simplified slightly further by being made unconditional so that we end
+up allocating top-down instead, although that would pessimize the
+early-out cases below. I'll certainly comment it, though.
+
+>>  			continue;
+>>  		}
+>>  
+>> -		idx = arm_smmu_alloc_smr(smmu);
+>> -		if (idx < 0) {
+>> -			dev_err(smmu->dev, "failed to allocate free SMR\n");
+>> -			goto err_free_smrs;
+>> -		}
+>> -		cfg->smendx[i] = idx;
+>> +		/* Exact matches are good */
+>> +		if (mask == smrs[i].mask && id == smrs[i].id)
+>> +			return i;
+>>  
+>> -		smrs[idx].id = cfg->streamids[i];
+>> -		smrs[idx].mask = 0; /* We don't currently share SMRs */
+>> +		/* New unmasked IDs matching existing masks we can cope with */
+>> +		if (!mask && !((smrs[i].id ^ id) & ~smrs[i].mask))
+>> +			return i;
+>> +
+>> +		/* Overlapping masks are right out */
+>> +		if (mask & smrs[i].mask)
+>> +			return -EINVAL;
+>> +
+>> +		/* Distinct masks must match unambiguous ranges */
+>> +		if (mask && !((smrs[i].id ^ id) & ~(smrs[i].mask | mask)))
+>> +			return -EINVAL;
+> 
+> And this is to _prevent_ an entry to match the input streamid
+> range (masked streamid) because it would create an ambiguous match ?
+
+Indeed; say we have the (ID,mask) pair (0x0100,0x000f) already in an
+SMR, then we'd allow (0x0000,0x00f0), since bit 8 still uniquely matches
+one or the other, but we'd have to reject (0x0100,0x00f0) as that would
+create a conflict for ID 0x0100. In general, unless there are distinct
+bits outside both masks then there will always exist at least one ID
+capable of causing a conflict.
+
+> Basically here you keep looping because this function is at the
+> same time allocating and validating the SMRS (ie you want to make
+> sure there are no valid entries that clash with the streamid you
+> are currently allocating).
+> 
+> It is a tad complicated and a bit hard to parse. I wonder if it would
+> not be better to split into two SMRS validation and allocation
+> functions, I think I fully grasped what you want to achieve but it is
+> not that trivial.
+
+Things were actually considerably more complicated until I realised the
+neatness of hoisting the allocation (which itself is all of 4 lines
+here) up into the same function. A real logical separation of concerns
+would involve iterating through the whole array two-and-a-bit times,
+first validating against conflicts, then looking to return an existing
+entry which already matches, then finally falling back to allocating a
+free entry. Even disregarding the efficiency angle, I'm not convinced
+that having more code spread about with similar but subtly different
+repetition would actually be any easier to follow (unfortunately earlier
+implementations of this have been rebased into oblivion so I can't pull
+one out to demonstrate). I'll definitely beef up the comments here - on
+reflection these are more notes to myself than actual explanations for
+others...
 
 Robin.
-
-> 
-> Alternatively, we could postpone setting the drvdata until the very end
-> of probe.
-> 
-> Will
-> 
