@@ -1,18 +1,15 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 09/19] iommu/arm-smmu: Consolidate stream map entry
-	state
-Date: Thu, 1 Sep 2016 19:54:19 +0100
-Message-ID: <20160901185419.GX6721@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v5 10/19] iommu/arm-smmu: Keep track of S2CR state
+Date: Thu, 1 Sep 2016 20:00:52 +0100
+Message-ID: <96f135e8-cad1-23ef-5313-0eb3f4ec5a5f@arm.com>
 References: <cover.1471975357.git.robin.murphy@arm.com>
-	<26fcf7d3138816b9546a3dcc2bbbc2f229f34c91.1471975357.git.robin.murphy@arm.com>
-	<20160901183257.GT6721@arm.com>
-	<6d3209ff-51ad-30ca-867b-ce62105e6699@arm.com>
+	<e086741acfd0959671d184203ef758c824c8d7da.1471975357.git.robin.murphy@arm.com>
+	<20160901184259.GU6721@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <6d3209ff-51ad-30ca-867b-ce62105e6699-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20160901184259.GU6721-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,26 +19,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCBTZXAgMDEsIDIwMTYgYXQgMDc6NDU6NTFQTSArMDEwMCwgUm9iaW4gTXVycGh5IHdy
-b3RlOgo+IE9uIDAxLzA5LzE2IDE5OjMyLCBXaWxsIERlYWNvbiB3cm90ZToKPiA+IE9uIFR1ZSwg
-QXVnIDIzLCAyMDE2IGF0IDA4OjA1OjIwUE0gKzAxMDAsIFJvYmluIE11cnBoeSB3cm90ZToKPiA+
-PiAtCXdoaWxlICgtLWkgPj0gMCkKPiA+PiAtCQlfX2FybV9zbW11X2ZyZWVfYml0bWFwKHNtbXUt
-PnNtcl9tYXAsIHNtcnNbaV0uaWR4KTsKPiA+PiAtCWtmcmVlKHNtcnMpOwo+ID4+ICsJd2hpbGUg
-KGktLSkgewo+ID4+ICsJCWFybV9zbW11X2ZyZWVfc21yKHNtbXUsIGNmZy0+c21lbmR4W2ldKTsK
-PiA+PiArCQljZmctPnNtZW5keFtpXSA9IElOVkFMSURfU01FTkRYOwo+ID4+ICsJfQo+ID4gCj4g
-PiBIbW0sIGRvbid0IHlvdSBoYXZlIGFuIG9mZi1ieS1vbmUgaGVyZT8gQXQgbGVhc3QsIGxvb2tp
-bmcgYXQgdGhlIGZpbmFsCj4gPiBjb2RlLCB3ZSBicmFuY2ggdG8gb3V0X2VyciBmcm9tIHdpdGhp
-biB0aGUgZm9yX2VhY2hfY2ZnX3NtZSBsb29wLCBidXQKPiA+IGJlZm9yZSB3ZSd2ZSBpbmNyZW1l
-bnRlZCBzbW11LT5zMmNyc1tpZHhdLmNvdW50LCBzbyB0aGUgYXJtX3NtbXVfZnJlZV9zbXIKPiA+
-IHdpbGwgZXJyb25lb3VzbHkgZGVjcmVtZW50IHRoYXQuCj4gCj4gR2l2ZW4gdGhhdCBzMmNycyBv
-bmx5IGRvZXNuJ3QgZXhpc3QgdW50aWwgcGF0Y2ggMTAsIGFuZCBzMmNycy0+Y291bnQKPiBkb2Vz
-bid0IGV4aXN0IHVudGlsIHBhdGNoIDE0LCBJJ2QgaGF2ZSB0byBzYXkgcGljayBvbmUgb2Y6Cj4g
-Cj4gYSkgbm8KPiAKPiBiKSDCr1xfKOODhClfL8KvCgpZb3UgZm9yZ290OgoKYykgSSBjb21wbGV0
-ZWx5IG1pc3JlYWQgdGhlIGNvZGUKClNvIGl0J3MgYWxsIGZpbmUhCgpXaWxsCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
-b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
-dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On 01/09/16 19:42, Will Deacon wrote:
+> On Tue, Aug 23, 2016 at 08:05:21PM +0100, Robin Murphy wrote:
+>> Making S2CRs first-class citizens within the driver with a high-level
+>> representation of their state offers a neat solution to a few problems:
+>>
+>> Firstly, the information about which context a device's stream IDs are
+>> associated with is already present by necessity in the S2CR. With that
+>> state easily accessible we can refer directly to it and obviate the need
+>> to track an IOMMU domain in each device's archdata (its earlier purpose
+>> of enforcing correct attachment of multi-device groups now being handled
+>> by the IOMMU core itself).
+>>
+>> Secondly, the core API now deprecates explicit domain detach and expects
+>> domain attach to move devices smoothly from one domain to another; for
+>> SMMUv2, this notion maps directly to simply rewriting the S2CRs assigned
+>> to the device. By giving the driver a suitable abstraction of those
+>> S2CRs to work with, we can massively reduce the overhead of the current
+>> heavy-handed "detach, free resources, reallocate resources, attach"
+>> approach.
+>>
+>> Thirdly, making the software state hardware-shaped and attached to the
+>> SMMU instance once again makes suspend/resume of this register group
+>> that much simpler to implement in future.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>  drivers/iommu/arm-smmu.c | 159 +++++++++++++++++++++++++++--------------------
+>>  1 file changed, 93 insertions(+), 66 deletions(-)
+> 
+> [...]
+> 
+>> @@ -1145,9 +1198,16 @@ static void arm_smmu_master_free_smes(struct arm_smmu_device *smmu,
+>>  static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+>>  				      struct arm_smmu_master_cfg *cfg)
+>>  {
+>> -	int i, ret;
+>> +	int i, ret = 0;
+>>  	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>> -	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+>> +	struct arm_smmu_s2cr *s2cr = smmu->s2crs;
+>> +	enum arm_smmu_s2cr_type type = S2CR_TYPE_TRANS;
+>> +	u8 cbndx = smmu_domain->cfg.cbndx;
+>> +
+>> +	if (cfg->smendx[0] < 0)
+> 
+> Shouldn't that be INVALID_SMENDX?
+
+...which is defined as -1, and thus less than zero. I have no objection,
+however, to changing this (and equivalent instances) to an explicit "if
+(foo == INVALID_SMENDX" if that's clearer, as I can't foresee any
+reasonable need for additional "invalid" values.
+
+Robin.
+
+> 
+> Will
+> 
