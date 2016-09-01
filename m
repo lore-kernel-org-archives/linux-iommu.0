@@ -1,15 +1,16 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 10/19] iommu/arm-smmu: Keep track of S2CR state
-Date: Thu, 1 Sep 2016 19:42:59 +0100
-Message-ID: <20160901184259.GU6721@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v5 09/19] iommu/arm-smmu: Consolidate stream map entry
+	state
+Date: Thu, 1 Sep 2016 19:45:51 +0100
+Message-ID: <6d3209ff-51ad-30ca-867b-ce62105e6699@arm.com>
 References: <cover.1471975357.git.robin.murphy@arm.com>
-	<e086741acfd0959671d184203ef758c824c8d7da.1471975357.git.robin.murphy@arm.com>
+	<26fcf7d3138816b9546a3dcc2bbbc2f229f34c91.1471975357.git.robin.murphy@arm.com>
+	<20160901183257.GT6721@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <e086741acfd0959671d184203ef758c824c8d7da.1471975357.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20160901183257.GT6721-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,54 +20,72 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 23, 2016 at 08:05:21PM +0100, Robin Murphy wrote:
-> Making S2CRs first-class citizens within the driver with a high-level
-> representation of their state offers a neat solution to a few problems:
-> 
-> Firstly, the information about which context a device's stream IDs are
-> associated with is already present by necessity in the S2CR. With that
-> state easily accessible we can refer directly to it and obviate the need
-> to track an IOMMU domain in each device's archdata (its earlier purpose
-> of enforcing correct attachment of multi-device groups now being handled
-> by the IOMMU core itself).
-> 
-> Secondly, the core API now deprecates explicit domain detach and expects
-> domain attach to move devices smoothly from one domain to another; for
-> SMMUv2, this notion maps directly to simply rewriting the S2CRs assigned
-> to the device. By giving the driver a suitable abstraction of those
-> S2CRs to work with, we can massively reduce the overhead of the current
-> heavy-handed "detach, free resources, reallocate resources, attach"
-> approach.
-> 
-> Thirdly, making the software state hardware-shaped and attached to the
-> SMMU instance once again makes suspend/resume of this register group
-> that much simpler to implement in future.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu.c | 159 +++++++++++++++++++++++++++--------------------
->  1 file changed, 93 insertions(+), 66 deletions(-)
-
-[...]
-
-> @@ -1145,9 +1198,16 @@ static void arm_smmu_master_free_smes(struct arm_smmu_device *smmu,
->  static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
->  				      struct arm_smmu_master_cfg *cfg)
->  {
-> -	int i, ret;
-> +	int i, ret = 0;
->  	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> -	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
-> +	struct arm_smmu_s2cr *s2cr = smmu->s2crs;
-> +	enum arm_smmu_s2cr_type type = S2CR_TYPE_TRANS;
-> +	u8 cbndx = smmu_domain->cfg.cbndx;
-> +
-> +	if (cfg->smendx[0] < 0)
-
-Shouldn't that be INVALID_SMENDX?
-
-Will
+T24gMDEvMDkvMTYgMTk6MzIsIFdpbGwgRGVhY29uIHdyb3RlOgo+IE9uIFR1ZSwgQXVnIDIzLCAy
+MDE2IGF0IDA4OjA1OjIwUE0gKzAxMDAsIFJvYmluIE11cnBoeSB3cm90ZToKPj4gSW4gb3JkZXIg
+dG8gY29uc2lkZXIgU01SIG1hc2tpbmcsIHdlIHJlYWxseSB3YW50IHRvIGJlIGFibGUgdG8gdmFs
+aWRhdGUKPj4gSUQvbWFzayBwYWlycyBhZ2FpbnN0IGV4aXN0aW5nIFNNUiBjb250ZW50cyB0byBw
+cmV2ZW50IHN0cmVhbSBtYXRjaAo+PiBjb25mbGljdHMsIHdoaWNoIGF0IGJlc3Qgd291bGQgY2F1
+c2UgdHJhbnNhY3Rpb25zIHRvIGZhdWx0IHVuZXhwZWN0ZWRseSwKPj4gYW5kIGF0IHdvcnN0IGxl
+YWQgdG8gc2lsZW50IHVucHJlZGljdGFibGUgYmVoYXZpb3VyLiBXaXRoIG91ciBTTU1VCj4+IGlu
+c3RhbmNlIGRhdGEgaG9sZGluZyBvbmx5IGFuIGFsbG9jYXRvciBiaXRtYXAsIGFuZCB0aGUgU01S
+IHZhbHVlcwo+PiB0aGVtc2VsdmVzIHNjYXR0ZXJlZCBhY3Jvc3MgbWFzdGVyIGNvbmZpZ3MgaGFu
+Z2luZyBvZmYgZGV2aWNlcyB3aGljaCB3ZQo+PiBtYXkgaGF2ZSBubyB3YXkgb2YgZmluZGluZywg
+dGhlcmUncyBlc3NlbnRpYWxseSBubyB3YXkgc2hvcnQgb2YgZGlnZ2luZwo+PiBldmVyeXRoaW5n
+IGJhY2sgb3V0IG9mIHRoZSBoYXJkd2FyZS4gU2ltaWxhcmx5LCB0aGUgdGhvdWdodCBvZiBwb3dl
+cgo+PiBtYW5hZ2VtZW50IG9wcyB0byBzdXBwb3J0IHN1c3BlbmQvcmVzdW1lIGZhY2VzIHRoZSBl
+eGFjdCBzYW1lIHByb2JsZW0uCj4+Cj4+IEJ5IG1hc3NhZ2luZyB0aGUgc29mdHdhcmUgc3RhdGUg
+aW50byBhIGNsb3NlciBzaGFwZSB0byB0aGUgdW5kZXJseWluZwo+PiBoYXJkd2FyZSwgZXZlcnl0
+aGluZyBjb21lcyB0b2dldGhlciBxdWl0ZSBuaWNlbHk7IHRoZSBhbGxvY2F0b3IgYW5kIHRoZQo+
+PiBoaWdoLWxldmVsIHZpZXcgb2YgdGhlIGRhdGEgYmVjb21lIGEgc2luZ2xlIGNlbnRyYWxpc2Vk
+IHN0YXRlIHdoaWNoIHdlCj4+IGNhbiBlYXNpbHkga2VlcCB0cmFjayBvZiwgYW5kIHRvIHdoaWNo
+IGFueSB1cGRhdGVzIGNhbiBiZSB2YWxpZGF0ZWQgaW4KPj4gZnVsbCBiZWZvcmUgYmVpbmcgc3lu
+Y2hyb25pc2VkIHRvIHRoZSBoYXJkd2FyZSBpdHNlbGYuCj4+Cj4+IFNpZ25lZC1vZmYtYnk6IFJv
+YmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+Cj4+IC0tLQo+PiAgZHJpdmVycy9pb21t
+dS9hcm0tc21tdS5jIHwgMTQ3ICsrKysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0t
+LS0tLS0tLS0tCj4+ICAxIGZpbGUgY2hhbmdlZCwgODYgaW5zZXJ0aW9ucygrKSwgNjEgZGVsZXRp
+b25zKC0pCj4gCj4gWy4uLl0KPiAKPj4gK3N0YXRpYyBpbnQgYXJtX3NtbXVfbWFzdGVyX2FsbG9j
+X3NtZXMoc3RydWN0IGFybV9zbW11X2RldmljZSAqc21tdSwKPj4gKwkJCQkgICAgICBzdHJ1Y3Qg
+YXJtX3NtbXVfbWFzdGVyX2NmZyAqY2ZnKQo+PiArewo+PiArCXN0cnVjdCBhcm1fc21tdV9zbXIg
+KnNtcnMgPSBzbW11LT5zbXJzOwo+PiArCWludCBpLCBpZHg7Cj4+ICAKPj4gIAkvKiBBbGxvY2F0
+ZSB0aGUgU01ScyBvbiB0aGUgU01NVSAqLwo+PiAgCWZvciAoaSA9IDA7IGkgPCBjZmctPm51bV9z
+dHJlYW1pZHM7ICsraSkgewo+PiAtCQlpbnQgaWR4ID0gX19hcm1fc21tdV9hbGxvY19iaXRtYXAo
+c21tdS0+c21yX21hcCwgMCwKPj4gLQkJCQkJCSAgc21tdS0+bnVtX21hcHBpbmdfZ3JvdXBzKTsK
+Pj4gKwkJaWYgKGNmZy0+c21lbmR4W2ldID49IDApCj4+ICsJCQlyZXR1cm4gLUVFWElTVDsKPj4g
+Kwo+PiArCQkvKiAuLi5leGNlcHQgb24gc3RyZWFtIGluZGV4aW5nIGhhcmR3YXJlLCBvZiBjb3Vy
+c2UgKi8KPj4gKwkJaWYgKCFzbXJzKSB7Cj4+ICsJCQljZmctPnNtZW5keFtpXSA9IGNmZy0+c3Ry
+ZWFtaWRzW2ldOwo+PiArCQkJY29udGludWU7Cj4+ICsJCX0KPj4gKwo+PiArCQlpZHggPSBhcm1f
+c21tdV9hbGxvY19zbXIoc21tdSk7Cj4+ICAJCWlmIChpZHggPCAwKSB7Cj4+ICAJCQlkZXZfZXJy
+KHNtbXUtPmRldiwgImZhaWxlZCB0byBhbGxvY2F0ZSBmcmVlIFNNUlxuIik7Cj4+ICAJCQlnb3Rv
+IGVycl9mcmVlX3NtcnM7Cj4+ICAJCX0KPj4gKwkJY2ZnLT5zbWVuZHhbaV0gPSBpZHg7Cj4+ICAK
+Pj4gLQkJc21yc1tpXSA9IChzdHJ1Y3QgYXJtX3NtbXVfc21yKSB7Cj4+IC0JCQkuaWR4CT0gaWR4
+LAo+PiAtCQkJLm1hc2sJPSAwLCAvKiBXZSBkb24ndCBjdXJyZW50bHkgc2hhcmUgU01ScyAqLwo+
+PiAtCQkJLmlkCT0gY2ZnLT5zdHJlYW1pZHNbaV0sCj4+IC0JCX07Cj4+ICsJCXNtcnNbaWR4XS5p
+ZCA9IGNmZy0+c3RyZWFtaWRzW2ldOwo+PiArCQlzbXJzW2lkeF0ubWFzayA9IDA7IC8qIFdlIGRv
+bid0IGN1cnJlbnRseSBzaGFyZSBTTVJzICovCj4+ICAJfQo+PiAgCj4+ICsJaWYgKCFzbXJzKQo+
+PiArCQlyZXR1cm4gMDsKPj4gKwo+PiAgCS8qIEl0IHdvcmtlZCEgTm93LCBwb2tlIHRoZSBhY3R1
+YWwgaGFyZHdhcmUgKi8KPj4gLQlmb3IgKGkgPSAwOyBpIDwgY2ZnLT5udW1fc3RyZWFtaWRzOyAr
+K2kpIHsKPj4gLQkJdTMyIHJlZyA9IFNNUl9WQUxJRCB8IHNtcnNbaV0uaWQgPDwgU01SX0lEX1NI
+SUZUIHwKPj4gLQkJCSAgc21yc1tpXS5tYXNrIDw8IFNNUl9NQVNLX1NISUZUOwo+PiAtCQl3cml0
+ZWxfcmVsYXhlZChyZWcsIGdyMF9iYXNlICsgQVJNX1NNTVVfR1IwX1NNUihzbXJzW2ldLmlkeCkp
+Owo+PiAtCX0KPj4gKwlmb3IgKGkgPSAwOyBpIDwgY2ZnLT5udW1fc3RyZWFtaWRzOyArK2kpCj4+
+ICsJCWFybV9zbW11X3dyaXRlX3NtcihzbW11LCBjZmctPnNtZW5keFtpXSk7Cj4+ICAKPj4gLQlj
+ZmctPnNtcnMgPSBzbXJzOwo+PiAgCXJldHVybiAwOwo+PiAgCj4+ICBlcnJfZnJlZV9zbXJzOgo+
+PiAtCXdoaWxlICgtLWkgPj0gMCkKPj4gLQkJX19hcm1fc21tdV9mcmVlX2JpdG1hcChzbW11LT5z
+bXJfbWFwLCBzbXJzW2ldLmlkeCk7Cj4+IC0Ja2ZyZWUoc21ycyk7Cj4+ICsJd2hpbGUgKGktLSkg
+ewo+PiArCQlhcm1fc21tdV9mcmVlX3NtcihzbW11LCBjZmctPnNtZW5keFtpXSk7Cj4+ICsJCWNm
+Zy0+c21lbmR4W2ldID0gSU5WQUxJRF9TTUVORFg7Cj4+ICsJfQo+IAo+IEhtbSwgZG9uJ3QgeW91
+IGhhdmUgYW4gb2ZmLWJ5LW9uZSBoZXJlPyBBdCBsZWFzdCwgbG9va2luZyBhdCB0aGUgZmluYWwK
+PiBjb2RlLCB3ZSBicmFuY2ggdG8gb3V0X2VyciBmcm9tIHdpdGhpbiB0aGUgZm9yX2VhY2hfY2Zn
+X3NtZSBsb29wLCBidXQKPiBiZWZvcmUgd2UndmUgaW5jcmVtZW50ZWQgc21tdS0+czJjcnNbaWR4
+XS5jb3VudCwgc28gdGhlIGFybV9zbW11X2ZyZWVfc21yCj4gd2lsbCBlcnJvbmVvdXNseSBkZWNy
+ZW1lbnQgdGhhdC4KCkdpdmVuIHRoYXQgczJjcnMgb25seSBkb2Vzbid0IGV4aXN0IHVudGlsIHBh
+dGNoIDEwLCBhbmQgczJjcnMtPmNvdW50CmRvZXNuJ3QgZXhpc3QgdW50aWwgcGF0Y2ggMTQsIEkn
+ZCBoYXZlIHRvIHNheSBwaWNrIG9uZSBvZjoKCmEpIG5vCgpiKSDCr1xfKOODhClfL8KvCgpSb2Jp
+bi4KCj4gCj4gV2lsbAo+IAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
+bW11
