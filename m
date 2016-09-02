@@ -1,15 +1,16 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 1/8] arm: dma-mapping: Don't override dma_ops in
-	arch_setup_dma_ops()
-Date: Fri, 02 Sep 2016 10:16:22 +0200
-Message-ID: <16c9743e-e531-25aa-76f1-8746a6b8ef11@samsung.com>
-References: <1470696550-3416-1-git-send-email-sricharan@codeaurora.org>
-	<1470696550-3416-2-git-send-email-sricharan@codeaurora.org>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [RFC PATCH v2 01/20] x86: Documentation for AMD Secure Memory
+	Encryption (SME)
+Date: Fri, 2 Sep 2016 10:50:45 +0200
+Message-ID: <20160902085045.GG17338@nazgul.tnic>
+References: <20160822223529.29880.50884.stgit@tlendack-t1.amdoffice.net>
+	<20160822223539.29880.96739.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1470696550-3416-2-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20160822223539.29880.96739.stgit-qCXWGYdRb2BnqfbPTmsdiZQ+2ll4COg0XqFh9Ls21Oc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,75 +20,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
+To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Sricharan and Laurent,
-
-
-On 2016-08-09 00:49, Sricharan R wrote:
-> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
->
-> The arch_setup_dma_ops() function is in charge of setting dma_ops with a
-> call to set_dma_ops(). set_dma_ops() is also called from
->
-> - highbank and mvebu bus notifiers
-> - dmabounce (to be replaced with swiotlb)
-> - arm_iommu_attach_device
->
-> (arm_iommu_attach_device is itself called from IOMMU and bus master
-> device drivers)
->
-> To allow the arch_setup_dma_ops() call to be moved from device add time
-> to device probe time we must ensure that dma_ops already setup by any of
-> the above callers will not be overridden.
->
-> Aftering replacing dmabounce with swiotlb, converting IOMMU drivers to
-> of_xlate and taking care of highbank and mvebu, the workaround should be
-> removed.
->
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+On Mon, Aug 22, 2016 at 05:35:39PM -0500, Tom Lendacky wrote:
+> This patch adds a Documenation entry to decribe the AMD Secure Memory
+> Encryption (SME) feature.
+> 
+> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
 > ---
->   arch/arm/mm/dma-mapping.c | 9 +++++++++
->   1 file changed, 9 insertions(+)
->
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index ff7ed56..4686d66 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -2259,6 +2259,15 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
->   	struct dma_map_ops *dma_ops;
->   
->   	dev->archdata.dma_coherent = coherent;
+>  Documentation/x86/amd-memory-encryption.txt |   35 +++++++++++++++++++++++++++
+>  1 file changed, 35 insertions(+)
+>  create mode 100644 Documentation/x86/amd-memory-encryption.txt
+> 
+> diff --git a/Documentation/x86/amd-memory-encryption.txt b/Documentation/x86/amd-memory-encryption.txt
+> new file mode 100644
+> index 0000000..f19c555
+> --- /dev/null
+> +++ b/Documentation/x86/amd-memory-encryption.txt
+> @@ -0,0 +1,35 @@
+> +Secure Memory Encryption (SME) is a feature found on AMD processors.
 > +
-> +	/*
-> +	 * Don't override the dma_ops if they have already been set. Ideally
-> +	 * this should be the only location where dma_ops are set, remove this
-> +	 * check when all other callers of set_dma_ops will have disappeared.
-> +	 */
-> +	if (dev->archdata.dma_ops)
-> +		return;
+> +SME provides the ability to mark individual pages of memory as encrypted using
+> +the standard x86 page tables.  A page that is marked encrpyted will be
+
+s/encrpyted/encrypted/
+
+> +automatically decrypted when read from DRAM and encrypted when written to
+> +DRAM.  SME can therefore be used to protect the contents of DRAM from physical
+> +attacks on the system.
 > +
->   	if (arm_setup_iommu_dma_ops(dev, dma_base, size, iommu))
->   		dma_ops = arm_get_iommu_dma_map_ops(coherent);
->   	else
+> +Support for SME can be determined through the CPUID instruction. The CPUID
+> +function 0x8000001f reports information related to SME:
+> +
+> +	0x8000001f[eax]:
+> +		Bit[0] indicates support for SME
+> +	0x8000001f[ebx]:
+> +		Bit[5:0]  pagetable bit number used to enable memory encryption
+> +		Bit[11:6] reduction in physical address space, in bits, when
+> +			  memory encryption is enabled (this only affects system
+> +			  physical addresses, not guest physical addresses)
+> +
+> +If support for SME is present, MSR 0xc00100010 (SYS_CFG) can be used to
+> +determine if SME is enabled and/or to enable memory encryption:
+> +
+> +	0xc0010010:
+> +		Bit[23]   0 = memory encryption features are disabled
+> +			  1 = memory encryption features are enabled
+> +
+> +Linux relies on BIOS to set this bit if BIOS has determined that the reduction
+> +in the physical address space as a result of enabling memory encryption (see
+> +CPUID information above) will not conflict with the address space resource
+> +requirements for the system.  If this bit is not set upon Linux startup then
+> +Linux itself will not set it and memory encryption will not be possible.
+> +
+> +SME support is configurable in the kernel through the AMD_MEM_ENCRYPT config
+> +option.
 
-Please add also set_dma_ops(dev, NULL) to arm_teardown_iommu_dma_ops() 
-function
-to this patch, because otherwise dma_ops won't be configured properly if 
-deferred
-probe of the given device happens: iommu dma ops will be set for the 
-first probe
-try, then iommu structures will be teared down after EPROBEDEFER error, 
-and then
-before next probe ties dma_ops will be already set, but no iommu 
-structures are
-available.
+" ... is configurable through CONFIG_AMD_MEM_ENCRYPT."
 
-For a convenience, this a fixup patch:
-https://git.linaro.org/people/marek.szyprowski/linux-srpol.git/commitdiff/55adefd43cee9d4beb15cb1bbd805c5059b56b4f
+> Additionally, the mem_encrypt=on command line parameter is required
+> +to activate memory encryption.
 
-Best regards
+I think you want to rewrite the logic here to say that people should use
+the BIOS option and if none is present for whatever reason, resort to
+the alternative "mem_encrypt=on" kernel command line option, no?
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Regards/Gruss,
+    Boris.
+
+ECO tip #101: Trim your mails when you reply.
+--
