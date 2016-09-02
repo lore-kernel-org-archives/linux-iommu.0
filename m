@@ -1,14 +1,17 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 00/19] Generic DT bindings for PCI IOMMUs and ARM SMMU
-Date: Thu, 1 Sep 2016 20:05:19 +0100
-Message-ID: <20160901190518.GZ6721@arm.com>
-References: <cover.1471975357.git.robin.murphy@arm.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 7/8] iommu: of: Handle IOMMU lookup failure with deferred
+	probing or error
+Date: Fri, 02 Sep 2016 10:09:55 +0200
+Message-ID: <1c5dde1d-1ffb-d045-c090-032b9f1c7de2@samsung.com>
+References: <1470696550-3416-1-git-send-email-sricharan@codeaurora.org>
+	<1470696550-3416-8-git-send-email-sricharan@codeaurora.org>
+	<CAAFQd5C8BuOCc5ySw_3tVELDG4S+r_5VyDvOPnBBuVr-6CBfxg@mail.gmail.com>
+	<000901d1f4af$e26b6c00$a7424400$@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <cover.1471975357.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-reply-to: <000901d1f4af$e26b6c00$a7424400$@codeaurora.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,37 +21,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, 'Tomasz Figa' <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: "'open list:IOMMU DRIVERS'" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Will Deacon' <will.deacon-5wv7dgnIgG8@public.gmane.org>, 'Laurent Pinchart' <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 23, 2016 at 08:05:11PM +0100, Robin Murphy wrote:
-> At long last I've finished the big SMMUv2 rework, so here's everything
-> all together for a v5. As a quick breakdown:
-> 
-> Patches 1-3 are the core PCI part, all acked and ready to go. No code
-> changes from v4.
-> 
-> Patch 4 is merely bugfixed from v4 for simplicity, as I've not yet
-> managed to take as close a look at Lorenzo's follow-on work as I'd like.
-> 
-> Patches 5-7 (SMMUv3) are mostly unchanged beyond a slight tweak to #5.
-> 
-> Patches 8-17 are the all-new SMMUv2 rework.
-> 
-> Patch 18 goes along with the fix already in 4.8-rc3 to help avoid 64-bit
-> DMA masks going wrong now that DMA ops will be enabled.
-> 
-> Finally, patch 19 addresses the previous problem of having to choose
-> between DMA ops or working MSIs. This is currently at the end as
-> moving it before #17 would require a further interim SMMUv2 patch, and
-> a 19-patch series is already quite enough...
+Hi Sricharan,
 
-So this is all looking pretty good to me, modulo the handful of comments
-to address. The arm-smmu.c changes are pretty tough to review, given the
-necessary amount of refactoring to get where you want to get, but the
-end result looks good and the series does bisect.
 
-Thanks,
+On 2016-08-12 17:40, Sricharan wrote:
+> Hi Tomaz,
+>
+>>> +               if (ops->add_device)
+>>> +                       ops = ops->add_device(dev) ? ops : NULL;
+>> Patch description fails to mention anything about this change. Also it
+>> looks slightly incorrect to lose the error condition here. I think we
+>> should at least print some error message here and tell the user that
+>> we are falling back to non-IOMMU setup.
+>      Ok, will have to improve the patch description to add this and will
+>      fix the error value as well. Will also add the remove_device during
+>       deconfigure as well.
+>
+>>
+>>>                  of_node_put(np);
+>>>                  idx++;
+>>> @@ -200,7 +213,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+>>>
+>>>   err_put_node:
+>>>          of_node_put(np);
+>>> -       return NULL;
+>>> +       return ops;
+>>>   }
+>>>
+>>>   void __init of_iommu_init(void)
+>>> @@ -211,7 +224,7 @@ void __init of_iommu_init(void)
+>>>          for_each_matching_node_and_match(np, matches, &match) {
+>>>                  const of_iommu_init_fn init_fn = match->data;
+>>>
+>>> -               if (init_fn(np))
+>>> +               if (init_fn && init_fn(np))
+>> When is it possible to have NULL init_fn?
+>     ya wrong, should not be needed.
 
-Will
+init_fn can be NULL if you convert IOMMU driver to use platform device
+infrastructure based initialization and you don't need to do anything
+before the driver gets probed, so please keep this check.
+
+I used this approach here:
+https://git.linaro.org/people/marek.szyprowski/linux-srpol.git/commitdiff/a30735973573128b14bb4a25cf4debaa0979a655
+(this commit is a part of v4.8-clocks-pm branch)
+
+IOMMU_OF_DECLARE() with NULL init_fn is needed to notify IOMMU core that
+this IOMMU driver is available in the system and core has to defer
+probing of drivers before the IOMMU driver gets initialized from its
+controller's platform device.
+
+>
+>>
+>>>                          pr_err("Failed to initialise IOMMU %s\n",
+>>>                                  of_node_full_name(np));
+>>>          }
+>>> diff --git a/drivers/of/device.c b/drivers/of/device.c
+>>> index e1fad50..92e02dc 100644
+>>> --- a/drivers/of/device.c
+>>> +++ b/drivers/of/device.c
+>>> @@ -149,6 +149,8 @@ int of_dma_configure_ops(struct device *dev, struct device_node *np)
+>>>                  coherent ? " " : " not ");
+>>>
+>>>          iommu = of_iommu_configure(dev, np);
+>>> +       if (IS_ERR(iommu))
+>>> +               return PTR_ERR(iommu);
+>> nit: Would be good to add a blank line here for improved readability.
+>     ok, will add.
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
