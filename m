@@ -1,16 +1,11 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [RFC PATCH v2 07/20] x86: Provide general kernel support for
-	memory encryption
-Date: Mon, 5 Sep 2016 17:22:12 +0200
-Message-ID: <20160905152211.GD18856@pd.tnic>
-References: <20160822223529.29880.50884.stgit@tlendack-t1.amdoffice.net>
-	<20160822223646.29880.28794.stgit@tlendack-t1.amdoffice.net>
+From: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
+Subject: [v11, 0/8] Fix eSDHC host version register bug
+Date: Tue, 6 Sep 2016 16:28:15 +0800
+Message-ID: <1473150503-9550-1-git-send-email-yangbo.lu@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160822223646.29880.28794.stgit-qCXWGYdRb2BnqfbPTmsdiZQ+2ll4COg0XqFh9Ls21Oc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,57 +15,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Scott Wood <oss-fOR+EgIDQEHk1uMJSBkQmQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, xiaobo.xie-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, leoyang.li-3arQi8VN3Tc@public.gmane.org, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Qiang Zhao <qiang.zhao-3arQi8VN3Tc@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 22, 2016 at 05:36:46PM -0500, Tom Lendacky wrote:
-> Adding general kernel support for memory encryption includes:
-> - Modify and create some page table macros to include the Secure Memory
->   Encryption (SME) memory encryption mask
-> - Update kernel boot support to call an SME routine that checks for and
->   sets the SME capability (the SME routine will grow later and for now
->   is just a stub routine)
-> - Update kernel boot support to call an SME routine that encrypts the
->   kernel (the SME routine will grow later and for now is just a stub
->   routine)
-> - Provide an SME initialization routine to update the protection map with
->   the memory encryption mask so that it is used by default
-> 
-> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+This patchset is used to fix a host version register bug in the T4240-R1.0-R2.0
+eSDHC controller. To match the SoC version and revision, 10 previous version
+patchsets had tried many methods but all of them were rejected by reviewers.
+Such as
+	- dts compatible method
+	- syscon method
+	- ifdef PPC method
+	- GUTS driver getting SVR method
+Anrd suggested a soc_device_match method in v10, and this is the only available
+method left now. This v11 patchset introduces the soc_device_match interface in
+soc driver.
 
-...
+The first six patches are to add the GUTS driver. This is used to register a
+soc device which contain soc version and revision information.
+The following two patches introduce the soc_device_match method in soc driver
+and apply it on esdhc driver to fix this bug.
 
-> diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-> index c98a559..30f7715 100644
-> --- a/arch/x86/kernel/head_64.S
-> +++ b/arch/x86/kernel/head_64.S
-> @@ -95,6 +95,13 @@ startup_64:
->  	jnz	bad_address
->  
->  	/*
-> +	 * Enable memory encryption (if available). Add the memory encryption
-> +	 * mask to %rbp to include it in the the page table fixup.
-> +	 */
-> +	call	sme_enable
-> +	addq	sme_me_mask(%rip), %rbp
-> +
-> +	/*
->  	 * Fixup the physical addresses in the page table
->  	 */
->  	addq	%rbp, early_level4_pgt + (L4_START_KERNEL*8)(%rip)
-> @@ -116,7 +123,8 @@ startup_64:
->  	movq	%rdi, %rax
->  	shrq	$PGDIR_SHIFT, %rax
->  
-> -	leaq	(4096 + _KERNPG_TABLE)(%rbx), %rdx
-> +	leaq	(4096 + __KERNPG_TABLE)(%rbx), %rdx
-> +	addq	sme_me_mask(%rip), %rdx		/* Apply mem encryption mask */
+Yangbo Lu (8):
+  dt: bindings: update Freescale DCFG compatible
+  ARM64: dts: ls2080a: add device configuration node
+  dt: bindings: move guts devicetree doc out of powerpc directory
+  powerpc/fsl: move mpc85xx.h to include/linux/fsl
+  soc: fsl: add GUTS driver for QorIQ platforms
+  MAINTAINERS: add entry for Freescale SoC drivers
+  base: soc: introduce soc_device_match() interface
+  mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
 
-Please add comments over the line and not at the side...
+ Documentation/devicetree/bindings/arm/fsl.txt      |   6 +-
+ .../bindings/{powerpc => soc}/fsl/guts.txt         |   3 +
+ MAINTAINERS                                        |  11 +-
+ arch/arm64/boot/dts/freescale/fsl-ls2080a.dtsi     |   6 +
+ arch/powerpc/kernel/cpu_setup_fsl_booke.S          |   2 +-
+ arch/powerpc/sysdev/fsl_pci.c                      |   2 +-
+ drivers/base/Kconfig                               |   1 +
+ drivers/base/soc.c                                 |  61 +++
+ drivers/clk/clk-qoriq.c                            |   3 +-
+ drivers/i2c/busses/i2c-mpc.c                       |   2 +-
+ drivers/iommu/fsl_pamu.c                           |   3 +-
+ drivers/mmc/host/Kconfig                           |   1 +
+ drivers/mmc/host/sdhci-of-esdhc.c                  |  20 +
+ drivers/net/ethernet/freescale/gianfar.c           |   2 +-
+ drivers/soc/Kconfig                                |   2 +-
+ drivers/soc/fsl/Kconfig                            |  20 +
+ drivers/soc/fsl/Makefile                           |   1 +
+ drivers/soc/fsl/guts.c                             | 483 +++++++++++++++++++++
+ include/linux/fsl/guts.h                           | 127 ++++--
+ .../asm/mpc85xx.h => include/linux/fsl/svr.h       |   4 +-
+ include/linux/sys_soc.h                            |   3 +
+ 21 files changed, 702 insertions(+), 61 deletions(-)
+ rename Documentation/devicetree/bindings/{powerpc => soc}/fsl/guts.txt (91%)
+ create mode 100644 drivers/soc/fsl/Kconfig
+ create mode 100644 drivers/soc/fsl/guts.c
+ rename arch/powerpc/include/asm/mpc85xx.h => include/linux/fsl/svr.h (97%)
 
 -- 
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
+2.1.0.27.g96db324
