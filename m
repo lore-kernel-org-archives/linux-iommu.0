@@ -1,16 +1,15 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [RFC PATCH v2 09/20] x86: Add support for early
-	encryption/decryption of memory
-Date: Tue, 6 Sep 2016 18:12:49 +0200
-Message-ID: <20160906161249.3ckotvocwuukhjws@pd.tnic>
-References: <20160822223529.29880.50884.stgit@tlendack-t1.amdoffice.net>
-	<20160822223710.29880.23936.stgit@tlendack-t1.amdoffice.net>
+From: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+Subject: Re: [PATCH v2 06/10] driver core: Avoid endless recursion if device
+	has more than one link
+Date: Wed, 07 Sep 2016 01:09:36 +0200
+Message-ID: <1633380.7F0afK1dbG@vostro.rjw.lan>
+References: <1466144820-6286-1-git-send-email-m.szyprowski@samsung.com>
+	<1466144820-6286-7-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160822223710.29880.23936.stgit-qCXWGYdRb2BnqfbPTmsdiZQ+2ll4COg0XqFh9Ls21Oc@public.gmane.org>
+In-Reply-To: <1466144820-6286-7-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,104 +19,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 22, 2016 at 05:37:10PM -0500, Tom Lendacky wrote:
-> This adds support to be able to either encrypt or decrypt data during
-> the early stages of booting the kernel. This does not change the memory
-> encryption attribute - it is used for ensuring that data present in
-> either an encrypted or un-encrypted memory area is in the proper state
-> (for example the initrd will have been loaded by the boot loader and
-> will not be encrypted, but the memory that it resides in is marked as
-> encrypted).
+On Friday, June 17, 2016 08:26:56 AM Marek Szyprowski wrote:
+> This patch fixes endless recursion, which happends when device has
+> more than one link.
 > 
-> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 > ---
-
-...
-
-> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-> index 00eb705..f35a646 100644
-> --- a/arch/x86/mm/mem_encrypt.c
-> +++ b/arch/x86/mm/mem_encrypt.c
-> @@ -14,6 +14,107 @@
->  #include <linux/mm.h>
+>  drivers/base/core.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/base/core.c b/drivers/base/core.c
+> index 215cd44de761..4e778539b750 100644
+> --- a/drivers/base/core.c
+> +++ b/drivers/base/core.c
+> @@ -57,7 +57,8 @@ static int device_reorder_to_tail(struct device *dev, void *not_used)
+>  	device_pm_move_last(dev);
+>  	device_for_each_child(dev, NULL, device_reorder_to_tail);
+>  	list_for_each_entry(link, &dev->consumer_links, c_node)
+> -		device_reorder_to_tail(link->consumer, NULL);
+> +		if (link->consumer != dev)
+> +			device_reorder_to_tail(link->consumer, NULL);
 >  
->  #include <asm/mem_encrypt.h>
-> +#include <asm/tlbflush.h>
-> +#include <asm/fixmap.h>
-> +
-> +/* Buffer used for early in-place encryption by BSP, no locking needed */
-> +static char me_early_buffer[PAGE_SIZE] __aligned(PAGE_SIZE);
-> +
-> +/*
-> + * This routine does not change the underlying encryption setting of the
-> + * page(s) that map this memory. It assumes that eventually the memory is
-> + * meant to be accessed as encrypted but the contents are currently not
-> + * encyrpted.
+>  	return 0;
+>  }
+> 
 
-s/encyrpted/encrypted/
+If I'm not mistaken, this should not be necessary unless dev has a link
+pointing to itself as a consumer.  That would be a bug, though.
 
-Ditto below.
+I can add a WARN_ON() to catch this case, but then if there's a link from
+a consumer of dev pointing back to dev as a consumer, that still will loop
+forever.
 
-> + */
-> +void __init sme_early_mem_enc(resource_size_t paddr, unsigned long size)
-> +{
-> +	void *src, *dst;
-> +	size_t len;
-> +
-> +	if (!sme_me_mask)
-> +		return;
-> +
-> +	local_flush_tlb();
-> +	wbinvd();
-> +
-> +	/*
-> +	 * There are limited number of early mapping slots, so map (at most)
-> +	 * one page at time.
-> +	 */
-> +	while (size) {
-> +		len = min_t(size_t, sizeof(me_early_buffer), size);
-> +
-> +		/* Create a mapping for non-encrypted write-protected memory */
-> +		src = early_memremap_dec_wp(paddr, len);
-> +
-> +		/* Create a mapping for encrypted memory */
-> +		dst = early_memremap_enc(paddr, len);
-> +
-> +		/*
-> +		 * If a mapping can't be obtained to perform the encryption,
-> +		 * then encrypted access to that area will end up causing
-> +		 * a crash.
-> +		 */
-> +		BUG_ON(!src || !dst);
-> +
-> +		memcpy(me_early_buffer, src, len);
-> +		memcpy(dst, me_early_buffer, len);
-> +
-> +		early_memunmap(dst, len);
-> +		early_memunmap(src, len);
-> +
-> +		paddr += len;
-> +		size -= len;
-> +	}
-> +}
-> +
-> +/*
-> + * This routine does not change the underlying encryption setting of the
-> + * page(s) that map this memory. It assumes that eventually the memory is
-> + * meant to be accessed as not encrypted but the contents are currently
-> + * encyrpted.
-> + */
-> +void __init sme_early_mem_dec(resource_size_t paddr, unsigned long size)
-> +{
+I guess we need to detect circular dependencies and fail link creation in
+such cases.  Oh well.
 
-...
-
--- 
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
+Thanks,
+Rafael
