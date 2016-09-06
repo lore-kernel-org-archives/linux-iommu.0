@@ -1,213 +1,52 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v6 01/20] Docs: dt: add PCI IOMMU map bindings
-Date: Tue,  6 Sep 2016 16:33:34 +0100
-Message-ID: <c5d3a02811b84e4bee398aee3d898fbc1768a9de.1473173789.git.robin.murphy@arm.com>
+Subject: [PATCH v6 07/20] iommu/arm-smmu: Set PRIVCFG in stage 1 STEs
+Date: Tue,  6 Sep 2016 16:33:40 +0100
+Message-ID: <df5e1a0f2a2d779ad467a691203bcbc74d75690e.1473173789.git.robin.murphy@arm.com>
 References: <cover.1473173789.git.robin.murphy@arm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1473173789.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Implement the SMMUv3 equivalent of d346180e70b9 ("iommu/arm-smmu: Treat
+all device transactions as unprivileged"), so that once again those
+pesky DMA controllers with their privileged instruction fetches don't
+unexpectedly fault in stage 1 domains due to VMSAv8 rules.
 
-The existing IOMMU bindings are able to specify the relationship between
-masters and IOMMUs, but they are insufficient for describing the general
-case of hotpluggable busses such as PCI where the set of masters is not
-known until runtime, and the relationship between masters and IOMMUs is
-a property of the integration of the system.
-
-This patch adds a generic binding for mapping PCI devices to IOMMUs,
-using a new iommu-map property (specific to PCI*) which may be used to
-map devices (identified by their Requester ID) to sideband data for the
-IOMMU which they master through.
-
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Tested-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- .../devicetree/bindings/pci/pci-iommu.txt          | 171 +++++++++++++++++++++
- 1 file changed, 171 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pci/pci-iommu.txt
+ drivers/iommu/arm-smmu-v3.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/pci/pci-iommu.txt b/Documentation/devicetree/bindings/pci/pci-iommu.txt
-new file mode 100644
-index 000000000000..56c829621b9a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pci/pci-iommu.txt
-@@ -0,0 +1,171 @@
-+This document describes the generic device tree binding for describing the
-+relationship between PCI(e) devices and IOMMU(s).
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index d294a0aea253..1f350a50b35d 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -263,6 +263,9 @@
+ #define STRTAB_STE_1_SHCFG_INCOMING	1UL
+ #define STRTAB_STE_1_SHCFG_SHIFT	44
+ 
++#define STRTAB_STE_1_PRIVCFG_UNPRIV	2UL
++#define STRTAB_STE_1_PRIVCFG_SHIFT	48
 +
-+Each PCI(e) device under a root complex is uniquely identified by its Requester
-+ID (AKA RID). A Requester ID is a triplet of a Bus number, Device number, and
-+Function number.
-+
-+For the purpose of this document, when treated as a numeric value, a RID is
-+formatted such that:
-+
-+* Bits [15:8] are the Bus number.
-+* Bits [7:3] are the Device number.
-+* Bits [2:0] are the Function number.
-+* Any other bits required for padding must be zero.
-+
-+IOMMUs may distinguish PCI devices through sideband data derived from the
-+Requester ID. While a given PCI device can only master through one IOMMU, a
-+root complex may split masters across a set of IOMMUs (e.g. with one IOMMU per
-+bus).
-+
-+The generic 'iommus' property is insufficient to describe this relationship,
-+and a mechanism is required to map from a PCI device to its IOMMU and sideband
-+data.
-+
-+For generic IOMMU bindings, see
-+Documentation/devicetree/bindings/iommu/iommu.txt.
-+
-+
-+PCI root complex
-+================
-+
-+Optional properties
-+-------------------
-+
-+- iommu-map: Maps a Requester ID to an IOMMU and associated iommu-specifier
-+  data.
-+
-+  The property is an arbitrary number of tuples of
-+  (rid-base,iommu,iommu-base,length).
-+
-+  Any RID r in the interval [rid-base, rid-base + length) is associated with
-+  the listed IOMMU, with the iommu-specifier (r - rid-base + iommu-base).
-+
-+- iommu-map-mask: A mask to be applied to each Requester ID prior to being
-+  mapped to an iommu-specifier per the iommu-map property.
-+
-+
-+Example (1)
-+===========
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	iommu: iommu@a {
-+		reg = <0xa 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	pci: pci@f {
-+		reg = <0xf 0x1>;
-+		compatible = "vendor,pcie-root-complex";
-+		device_type = "pci";
-+
-+		/*
-+		 * The sideband data provided to the IOMMU is the RID,
-+		 * identity-mapped.
-+		 */
-+		iommu-map = <0x0 &iommu 0x0 0x10000>;
-+	};
-+};
-+
-+
-+Example (2)
-+===========
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	iommu: iommu@a {
-+		reg = <0xa 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	pci: pci@f {
-+		reg = <0xf 0x1>;
-+		compatible = "vendor,pcie-root-complex";
-+		device_type = "pci";
-+
-+		/*
-+		 * The sideband data provided to the IOMMU is the RID with the
-+		 * function bits masked out.
-+		 */
-+		iommu-map = <0x0 &iommu 0x0 0x10000>;
-+		iommu-map-mask = <0xfff8>;
-+	};
-+};
-+
-+
-+Example (3)
-+===========
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	iommu: iommu@a {
-+		reg = <0xa 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	pci: pci@f {
-+		reg = <0xf 0x1>;
-+		compatible = "vendor,pcie-root-complex";
-+		device_type = "pci";
-+
-+		/*
-+		 * The sideband data provided to the IOMMU is the RID,
-+		 * but the high bits of the bus number are flipped.
-+		 */
-+		iommu-map = <0x0000 &iommu 0x8000 0x8000>,
-+			    <0x8000 &iommu 0x0000 0x8000>;
-+	};
-+};
-+
-+
-+Example (4)
-+===========
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	iommu_a: iommu@a {
-+		reg = <0xa 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	iommu_b: iommu@b {
-+		reg = <0xb 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	iommu_c: iommu@c {
-+		reg = <0xc 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	pci: pci@f {
-+		reg = <0xf 0x1>;
-+		compatible = "vendor,pcie-root-complex";
-+		device_type = "pci";
-+
-+		/*
-+		 * Devices with bus number 0-127 are mastered via IOMMU
-+		 * a, with sideband data being RID[14:0].
-+		 * Devices with bus number 128-255 are mastered via
-+		 * IOMMU b, with sideband data being RID[14:0].
-+		 * No devices master via IOMMU c.
-+		 */
-+		iommu-map = <0x0000 &iommu_a 0x0000 0x8000>,
-+			    <0x8000 &iommu_b 0x0000 0x8000>;
-+	};
-+};
+ #define STRTAB_STE_2_S2VMID_SHIFT	0
+ #define STRTAB_STE_2_S2VMID_MASK	0xffffUL
+ #define STRTAB_STE_2_VTCR_SHIFT		32
+@@ -1063,7 +1066,9 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ #ifdef CONFIG_PCI_ATS
+ 			 STRTAB_STE_1_EATS_TRANS << STRTAB_STE_1_EATS_SHIFT |
+ #endif
+-			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT);
++			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT |
++			 STRTAB_STE_1_PRIVCFG_UNPRIV <<
++			 STRTAB_STE_1_PRIVCFG_SHIFT);
+ 
+ 		if (smmu->features & ARM_SMMU_FEAT_STALLS)
+ 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
 -- 
 2.8.1.dirty
 
