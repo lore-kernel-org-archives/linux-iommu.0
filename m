@@ -1,112 +1,153 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v6 03/20] iommu/of: Handle iommu-map property for PCI
-Date: Tue,  6 Sep 2016 16:33:36 +0100
-Message-ID: <bccaa06e5b64d338d7f171fa50e27d6ef05d4c7d.1473173789.git.robin.murphy@arm.com>
+Subject: [PATCH v6 12/20] iommu/arm-smmu: Streamline SMMU data lookups
+Date: Tue,  6 Sep 2016 16:33:45 +0100
+Message-ID: <5a73b1090f3645b0cb67e3752b1a0f565ddddf9f.1473173789.git.robin.murphy@arm.com>
 References: <cover.1473173789.git.robin.murphy@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1473173789.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now that we have a way to pick up the RID translation and target IOMMU,
-hook up of_iommu_configure() to bring PCI devices into the of_xlate
-mechanism and allow them IOMMU-backed DMA ops without the need for
-driver-specific handling.
+Simplify things somewhat by stashing our arm_smmu_device instance in
+drvdata, so that it's readily available to our driver model callbacks.
+Then we can excise the private list entirely, since the driver core
+already has a perfectly good list of SMMU devices we can use in the one
+instance we actually need to. Finally, make a further modest code saving
+with the relatively new of_device_get_match_data() helper.
 
-Reviewed-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Tested-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
 ---
+ drivers/iommu/arm-smmu.c | 44 +++++++++++---------------------------------
+ 1 file changed, 11 insertions(+), 33 deletions(-)
 
-- Split PCI handling into a separate function
----
- drivers/iommu/of_iommu.c | 46 +++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 41 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 57f23eaaa2f9..19e1e8f2f871 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -22,6 +22,7 @@
- #include <linux/limits.h>
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 0a628f2c9297..3962add0c33b 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -41,6 +41,7 @@
+ #include <linux/module.h>
  #include <linux/of.h>
- #include <linux/of_iommu.h>
-+#include <linux/of_pci.h>
+ #include <linux/of_address.h>
++#include <linux/of_device.h>
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
  #include <linux/slab.h>
+@@ -370,8 +371,6 @@ struct arm_smmu_device {
+ 	u32				num_context_irqs;
+ 	unsigned int			*irqs;
  
- static const struct of_device_id __iommu_of_table_sentinel
-@@ -134,6 +135,45 @@ const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
- 	return ops;
+-	struct list_head		list;
+-
+ 	u32				cavium_id_base; /* Specific to Cavium */
+ };
+ 
+@@ -409,9 +408,6 @@ struct arm_smmu_domain {
+ 	struct iommu_domain		domain;
+ };
+ 
+-static DEFINE_SPINLOCK(arm_smmu_devices_lock);
+-static LIST_HEAD(arm_smmu_devices);
+-
+ struct arm_smmu_option_prop {
+ 	u32 opt;
+ 	const char *prop;
+@@ -478,6 +474,8 @@ static int __find_legacy_master_phandle(struct device *dev, void *data)
+ 	return err;
  }
  
-+static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
-+{
-+	struct of_phandle_args *iommu_spec = data;
++static struct platform_driver arm_smmu_driver;
 +
-+	iommu_spec->args[0] = alias;
-+	return iommu_spec->np == pdev->bus->dev.of_node;
-+}
-+
-+static const struct iommu_ops
-+*of_pci_iommu_configure(struct pci_dev *pdev, struct device_node *bridge_np)
-+{
-+	const struct iommu_ops *ops;
-+	struct of_phandle_args iommu_spec;
-+
-+	/*
-+	 * Start by tracing the RID alias down the PCI topology as
-+	 * far as the host bridge whose OF node we have...
-+	 * (we're not even attempting to handle multi-alias devices yet)
-+	 */
-+	iommu_spec.args_count = 1;
-+	iommu_spec.np = bridge_np;
-+	pci_for_each_dma_alias(pdev, __get_pci_rid, &iommu_spec);
-+	/*
-+	 * ...then find out what that becomes once it escapes the PCI
-+	 * bus into the system beyond, and which IOMMU it ends up at.
-+	 */
-+	iommu_spec.np = NULL;
-+	if (of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
-+			   "iommu-map-mask", &iommu_spec.np, iommu_spec.args))
-+		return NULL;
-+
-+	ops = of_iommu_get_ops(iommu_spec.np);
-+	if (!ops || !ops->of_xlate || ops->of_xlate(&pdev->dev, &iommu_spec))
-+		ops = NULL;
-+
-+	of_node_put(iommu_spec.np);
-+	return ops;
-+}
-+
- const struct iommu_ops *of_iommu_configure(struct device *dev,
- 					   struct device_node *master_np)
+ static int arm_smmu_register_legacy_master(struct device *dev)
  {
-@@ -142,12 +182,8 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 	const struct iommu_ops *ops = NULL;
- 	int idx = 0;
+ 	struct arm_smmu_device *smmu;
+@@ -495,19 +493,16 @@ static int arm_smmu_register_legacy_master(struct device *dev)
+ 	}
  
--	/*
--	 * We can't do much for PCI devices without knowing how
--	 * device IDs are wired up from the PCI bus to the IOMMU.
--	 */
- 	if (dev_is_pci(dev))
--		return NULL;
-+		return of_pci_iommu_configure(to_pci_dev(dev), master_np);
+ 	it.node = np;
+-	spin_lock(&arm_smmu_devices_lock);
+-	list_for_each_entry(smmu, &arm_smmu_devices, list) {
+-		err = __find_legacy_master_phandle(smmu->dev, &data);
+-		if (err)
+-			break;
+-	}
+-	spin_unlock(&arm_smmu_devices_lock);
++	err = driver_for_each_device(&arm_smmu_driver.driver, NULL, &data,
++				     __find_legacy_master_phandle);
+ 	of_node_put(np);
+ 	if (err == 0)
+ 		return -ENODEV;
+ 	if (err < 0)
+ 		return err;
  
- 	/*
- 	 * We don't currently walk up the tree looking for a parent IOMMU.
++	smmu = dev_get_drvdata(data);
++
+ 	if (it.cur_count > MAX_MASTER_STREAMIDS) {
+ 		dev_err(smmu->dev,
+ 			"reached maximum number (%d) of stream IDs for master device %s\n",
+@@ -1816,7 +1811,6 @@ MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+ 
+ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ {
+-	const struct of_device_id *of_id;
+ 	const struct arm_smmu_match_data *data;
+ 	struct resource *res;
+ 	struct arm_smmu_device *smmu;
+@@ -1830,8 +1824,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	}
+ 	smmu->dev = dev;
+ 
+-	of_id = of_match_node(arm_smmu_of_match, dev->of_node);
+-	data = of_id->data;
++	data = of_device_get_match_data(dev);
+ 	smmu->version = data->version;
+ 	smmu->model = data->model;
+ 
+@@ -1904,35 +1897,20 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
+-	INIT_LIST_HEAD(&smmu->list);
+-	spin_lock(&arm_smmu_devices_lock);
+-	list_add(&smmu->list, &arm_smmu_devices);
+-	spin_unlock(&arm_smmu_devices_lock);
+-
++	platform_set_drvdata(pdev, smmu);
+ 	arm_smmu_device_reset(smmu);
+ 	return 0;
+ }
+ 
+ static int arm_smmu_device_remove(struct platform_device *pdev)
+ {
+-	struct device *dev = &pdev->dev;
+-	struct arm_smmu_device *curr, *smmu = NULL;
+-
+-	spin_lock(&arm_smmu_devices_lock);
+-	list_for_each_entry(curr, &arm_smmu_devices, list) {
+-		if (curr->dev == dev) {
+-			smmu = curr;
+-			list_del(&smmu->list);
+-			break;
+-		}
+-	}
+-	spin_unlock(&arm_smmu_devices_lock);
++	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+ 
+ 	if (!smmu)
+ 		return -ENODEV;
+ 
+ 	if (!bitmap_empty(smmu->context_map, ARM_SMMU_MAX_CBS))
+-		dev_err(dev, "removing device with active domains!\n");
++		dev_err(&pdev->dev, "removing device with active domains!\n");
+ 
+ 	/* Turn the thing off */
+ 	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
 -- 
 2.8.1.dirty
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
