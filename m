@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v6 12/20] iommu/arm-smmu: Streamline SMMU data lookups
-Date: Tue,  6 Sep 2016 16:33:45 +0100
-Message-ID: <5a73b1090f3645b0cb67e3752b1a0f565ddddf9f.1473173789.git.robin.murphy@arm.com>
+Subject: [PATCH v6 13/20] iommu/arm-smmu: Add a stream map entry iterator
+Date: Tue,  6 Sep 2016 16:33:46 +0100
+Message-ID: <70eeefd78d7d2a093f7f118c2959c4dbc19bbc3d.1473173789.git.robin.murphy@arm.com>
 References: <cover.1473173789.git.robin.murphy@arm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1473173789.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
@@ -10,140 +10,101 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public
 Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Simplify things somewhat by stashing our arm_smmu_device instance in
-drvdata, so that it's readily available to our driver model callbacks.
-Then we can excise the private list entirely, since the driver core
-already has a perfectly good list of SMMU devices we can use in the one
-instance we actually need to. Finally, make a further modest code saving
-with the relatively new of_device_get_match_data() helper.
+We iterate over the SMEs associated with a master config quite a lot in
+various places, and are about to do so even more. Let's wrap the idiom
+in a handy iterator macro before the repetition gets out of hand.
 
 Tested-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 44 +++++++++++---------------------------------
- 1 file changed, 11 insertions(+), 33 deletions(-)
+ drivers/iommu/arm-smmu.c | 26 ++++++++++++--------------
+ 1 file changed, 12 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 0a628f2c9297..3962add0c33b 100644
+index 3962add0c33b..7a0edef34a22 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -41,6 +41,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_address.h>
-+#include <linux/of_device.h>
- #include <linux/pci.h>
- #include <linux/platform_device.h>
- #include <linux/slab.h>
-@@ -370,8 +371,6 @@ struct arm_smmu_device {
- 	u32				num_context_irqs;
- 	unsigned int			*irqs;
- 
--	struct list_head		list;
--
- 	u32				cavium_id_base; /* Specific to Cavium */
+@@ -324,6 +324,8 @@ struct arm_smmu_master_cfg {
+ 	s16				smendx[MAX_MASTER_STREAMIDS];
  };
+ #define INVALID_SMENDX			-1
++#define for_each_cfg_sme(cfg, i, idx) \
++	for (i = 0; idx = cfg->smendx[i], i < cfg->num_streamids; ++i)
  
-@@ -409,9 +408,6 @@ struct arm_smmu_domain {
- 	struct iommu_domain		domain;
- };
+ struct arm_smmu_device {
+ 	struct device			*dev;
+@@ -1090,8 +1092,8 @@ static int arm_smmu_master_alloc_smes(struct arm_smmu_device *smmu,
+ 	int i, idx;
  
--static DEFINE_SPINLOCK(arm_smmu_devices_lock);
--static LIST_HEAD(arm_smmu_devices);
--
- struct arm_smmu_option_prop {
- 	u32 opt;
- 	const char *prop;
-@@ -478,6 +474,8 @@ static int __find_legacy_master_phandle(struct device *dev, void *data)
- 	return err;
- }
+ 	/* Allocate the SMRs on the SMMU */
+-	for (i = 0; i < cfg->num_streamids; ++i) {
+-		if (cfg->smendx[i] != INVALID_SMENDX)
++	for_each_cfg_sme(cfg, i, idx) {
++		if (idx != INVALID_SMENDX)
+ 			return -EEXIST;
  
-+static struct platform_driver arm_smmu_driver;
-+
- static int arm_smmu_register_legacy_master(struct device *dev)
- {
- 	struct arm_smmu_device *smmu;
-@@ -495,19 +493,16 @@ static int arm_smmu_register_legacy_master(struct device *dev)
- 	}
+ 		/* ...except on stream indexing hardware, of course */
+@@ -1115,8 +1117,8 @@ static int arm_smmu_master_alloc_smes(struct arm_smmu_device *smmu,
+ 		return 0;
  
- 	it.node = np;
--	spin_lock(&arm_smmu_devices_lock);
--	list_for_each_entry(smmu, &arm_smmu_devices, list) {
--		err = __find_legacy_master_phandle(smmu->dev, &data);
--		if (err)
--			break;
--	}
--	spin_unlock(&arm_smmu_devices_lock);
-+	err = driver_for_each_device(&arm_smmu_driver.driver, NULL, &data,
-+				     __find_legacy_master_phandle);
- 	of_node_put(np);
- 	if (err == 0)
- 		return -ENODEV;
- 	if (err < 0)
- 		return err;
+ 	/* It worked! Now, poke the actual hardware */
+-	for (i = 0; i < cfg->num_streamids; ++i)
+-		arm_smmu_write_smr(smmu, cfg->smendx[i]);
++	for_each_cfg_sme(cfg, i, idx)
++		arm_smmu_write_smr(smmu, idx);
  
-+	smmu = dev_get_drvdata(data);
-+
- 	if (it.cur_count > MAX_MASTER_STREAMIDS) {
- 		dev_err(smmu->dev,
- 			"reached maximum number (%d) of stream IDs for master device %s\n",
-@@ -1816,7 +1811,6 @@ MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
- 
- static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- {
--	const struct of_device_id *of_id;
- 	const struct arm_smmu_match_data *data;
- 	struct resource *res;
- 	struct arm_smmu_device *smmu;
-@@ -1830,8 +1824,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	}
- 	smmu->dev = dev;
- 
--	of_id = of_match_node(arm_smmu_of_match, dev->of_node);
--	data = of_id->data;
-+	data = of_device_get_match_data(dev);
- 	smmu->version = data->version;
- 	smmu->model = data->model;
- 
-@@ -1904,35 +1897,20 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	INIT_LIST_HEAD(&smmu->list);
--	spin_lock(&arm_smmu_devices_lock);
--	list_add(&smmu->list, &arm_smmu_devices);
--	spin_unlock(&arm_smmu_devices_lock);
--
-+	platform_set_drvdata(pdev, smmu);
- 	arm_smmu_device_reset(smmu);
  	return 0;
- }
  
- static int arm_smmu_device_remove(struct platform_device *pdev)
+@@ -1131,15 +1133,13 @@ err_free_smrs:
+ static void arm_smmu_master_free_smes(struct arm_smmu_master_cfg *cfg)
  {
--	struct device *dev = &pdev->dev;
--	struct arm_smmu_device *curr, *smmu = NULL;
+ 	struct arm_smmu_device *smmu = cfg->smmu;
+-	int i;
++	int i, idx;
+ 
+ 	/*
+ 	 * We *must* clear the S2CR first, because freeing the SMR means
+ 	 * that it can be re-allocated immediately.
+ 	 */
+-	for (i = 0; i < cfg->num_streamids; ++i) {
+-		int idx = cfg->smendx[i];
 -
--	spin_lock(&arm_smmu_devices_lock);
--	list_for_each_entry(curr, &arm_smmu_devices, list) {
--		if (curr->dev == dev) {
--			smmu = curr;
--			list_del(&smmu->list);
--			break;
--		}
--	}
--	spin_unlock(&arm_smmu_devices_lock);
-+	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
++	for_each_cfg_sme(cfg, i, idx) {
+ 		/* An IOMMU group is torn down by the first device to be removed */
+ 		if (idx == INVALID_SMENDX)
+ 			return;
+@@ -1151,9 +1151,9 @@ static void arm_smmu_master_free_smes(struct arm_smmu_master_cfg *cfg)
+ 	__iowmb();
  
- 	if (!smmu)
- 		return -ENODEV;
+ 	/* Invalidate the SMRs before freeing back to the allocator */
+-	for (i = 0; i < cfg->num_streamids; ++i) {
++	for_each_cfg_sme(cfg, i, idx) {
+ 		if (smmu->smrs)
+-			arm_smmu_free_smr(smmu, cfg->smendx[i]);
++			arm_smmu_free_smr(smmu, idx);
  
- 	if (!bitmap_empty(smmu->context_map, ARM_SMMU_MAX_CBS))
--		dev_err(dev, "removing device with active domains!\n");
-+		dev_err(&pdev->dev, "removing device with active domains!\n");
+ 		cfg->smendx[i] = INVALID_SMENDX;
+ 	}
+@@ -1162,7 +1162,7 @@ static void arm_smmu_master_free_smes(struct arm_smmu_master_cfg *cfg)
+ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ 				      struct arm_smmu_master_cfg *cfg)
+ {
+-	int i, ret = 0;
++	int i, idx, ret = 0;
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 	struct arm_smmu_s2cr *s2cr = smmu->s2crs;
+ 	enum arm_smmu_s2cr_type type = S2CR_TYPE_TRANS;
+@@ -1182,9 +1182,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ 	if (smmu_domain->domain.type == IOMMU_DOMAIN_DMA)
+ 		type = S2CR_TYPE_BYPASS;
  
- 	/* Turn the thing off */
- 	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+-	for (i = 0; i < cfg->num_streamids; ++i) {
+-		int idx = cfg->smendx[i];
+-
++	for_each_cfg_sme(cfg, i, idx) {
+ 		/* Devices in an IOMMU group may already be configured */
+ 		if (type == s2cr[idx].type && cbndx == s2cr[idx].cbndx)
+ 			break;
 -- 
 2.8.1.dirty
 
