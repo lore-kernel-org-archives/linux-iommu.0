@@ -1,113 +1,338 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v6 08/20] iommu/arm-smmu: Handle stream IDs more dynamically
-Date: Tue,  6 Sep 2016 16:33:41 +0100
-Message-ID: <4d0ab35d98351a549adc9c394ade3fdccce0d547.1473173789.git.robin.murphy@arm.com>
+Subject: [PATCH v6 19/20] iommu/dma: Add support for mapping MSIs
+Date: Tue,  6 Sep 2016 16:33:52 +0100
+Message-ID: <2da5fca62886afd46cd2a5f7da1da872ee4a833d.1473173789.git.robin.murphy@arm.com>
 References: <cover.1473173789.git.robin.murphy@arm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1473173789.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Rather than assuming fixed worst-case values for stream IDs and SMR
-masks, keep track of whatever implemented bits the hardware actually
-reports. This also obviates the slightly questionable validation of SMR
-fields in isolation - rather than aborting the whole SMMU probe for a
-hardware configuration which is still architecturally valid, we can
-simply refuse masters later if they try to claim an unrepresentable ID
-or mask (which almost certainly implies a DT error anyway).
+When an MSI doorbell is located downstream of an IOMMU, attaching
+devices to a DMA ops domain and switching on translation leads to a rude
+shock when their attempt to write to the physical address returned by
+the irqchip driver faults (or worse, writes into some already-mapped
+buffer) and no interrupt is forthcoming.
 
-Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Tested-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Address this by adding a hook for relevant irqchip drivers to call from
+their compose_msi_msg() callback, to swizzle the physical address with
+an appropriatly-mapped IOVA for any device attached to one of our DMA
+ops domains.
+
+CC: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+CC: Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>
+CC: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+CC: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 43 ++++++++++++++++++++++---------------------
- 1 file changed, 22 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 4b1c87e947fd..f86d7887f69a 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -165,9 +165,7 @@
- #define ARM_SMMU_GR0_SMR(n)		(0x800 + ((n) << 2))
- #define SMR_VALID			(1 << 31)
- #define SMR_MASK_SHIFT			16
--#define SMR_MASK_MASK			0x7fff
- #define SMR_ID_SHIFT			0
--#define SMR_ID_MASK			0x7fff
+---
+
+- Rework map_page() helper function plus insane lookup logic into
+  straightforward get_page() helper
+- Use phys_addr_t to further simplify address matching
+- Fix the bit where I neglected to actually round the doorbell
+  address to a page boundary (oops!)
+---
+ drivers/iommu/dma-iommu.c        | 130 ++++++++++++++++++++++++++++++++++-----
+ drivers/irqchip/irq-gic-v2m.c    |   3 +
+ drivers/irqchip/irq-gic-v3-its.c |   3 +
+ include/linux/dma-iommu.h        |   9 +++
+ 4 files changed, 130 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 00c8a08d56e7..90f9c6b7d472 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -25,10 +25,28 @@
+ #include <linux/huge_mm.h>
+ #include <linux/iommu.h>
+ #include <linux/iova.h>
++#include <linux/irq.h>
+ #include <linux/mm.h>
+ #include <linux/scatterlist.h>
+ #include <linux/vmalloc.h>
  
- #define ARM_SMMU_GR0_S2CR(n)		(0xc00 + ((n) << 2))
- #define S2CR_CBNDX_SHIFT		0
-@@ -346,6 +344,8 @@ struct arm_smmu_device {
- 	atomic_t			irptndx;
++struct iommu_dma_msi_page {
++	struct list_head	list;
++	dma_addr_t		iova;
++	phys_addr_t		phys;
++};
++
++struct iommu_dma_cookie {
++	struct iova_domain	iovad;
++	struct list_head	msi_page_list;
++	spinlock_t		msi_lock;
++};
++
++static inline struct iova_domain *cookie_iovad(struct iommu_domain *domain)
++{
++	return &((struct iommu_dma_cookie *)domain->iova_cookie)->iovad;
++}
++
+ int iommu_dma_init(void)
+ {
+ 	return iova_cache_get();
+@@ -43,15 +61,19 @@ int iommu_dma_init(void)
+  */
+ int iommu_get_dma_cookie(struct iommu_domain *domain)
+ {
+-	struct iova_domain *iovad;
++	struct iommu_dma_cookie *cookie;
  
- 	u32				num_mapping_groups;
-+	u16				streamid_mask;
-+	u16				smr_mask_mask;
- 	DECLARE_BITMAP(smr_map, ARM_SMMU_MAX_SMRS);
+ 	if (domain->iova_cookie)
+ 		return -EEXIST;
  
- 	unsigned long			va_size;
-@@ -1715,39 +1715,40 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 		dev_notice(smmu->dev,
- 			   "\t(IDR0.CTTW overridden by dma-coherent property)\n");
+-	iovad = kzalloc(sizeof(*iovad), GFP_KERNEL);
+-	domain->iova_cookie = iovad;
++	cookie = kzalloc(sizeof(*cookie), GFP_KERNEL);
++	if (!cookie)
++		return -ENOMEM;
  
-+	/* Max. number of entries we have for stream matching/indexing */
-+	size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
-+	smmu->streamid_mask = size - 1;
- 	if (id & ID0_SMS) {
--		u32 smr, sid, mask;
-+		u32 smr;
+-	return iovad ? 0 : -ENOMEM;
++	spin_lock_init(&cookie->msi_lock);
++	INIT_LIST_HEAD(&cookie->msi_page_list);
++	domain->iova_cookie = cookie;
++	return 0;
+ }
+ EXPORT_SYMBOL(iommu_get_dma_cookie);
  
- 		smmu->features |= ARM_SMMU_FEAT_STREAM_MATCH;
--		smmu->num_mapping_groups = (id >> ID0_NUMSMRG_SHIFT) &
--					   ID0_NUMSMRG_MASK;
--		if (smmu->num_mapping_groups == 0) {
-+		size = (id >> ID0_NUMSMRG_SHIFT) & ID0_NUMSMRG_MASK;
-+		if (size == 0) {
- 			dev_err(smmu->dev,
- 				"stream-matching supported, but no SMRs present!\n");
- 			return -ENODEV;
- 		}
+@@ -63,14 +85,20 @@ EXPORT_SYMBOL(iommu_get_dma_cookie);
+  */
+ void iommu_put_dma_cookie(struct iommu_domain *domain)
+ {
+-	struct iova_domain *iovad = domain->iova_cookie;
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iommu_dma_msi_page *msi, *tmp;
  
--		smr = SMR_MASK_MASK << SMR_MASK_SHIFT;
--		smr |= (SMR_ID_MASK << SMR_ID_SHIFT);
+-	if (!iovad)
++	if (!cookie)
+ 		return;
+ 
+-	if (iovad->granule)
+-		put_iova_domain(iovad);
+-	kfree(iovad);
++	if (cookie->iovad.granule)
++		put_iova_domain(&cookie->iovad);
++
++	list_for_each_entry_safe(msi, tmp, &cookie->msi_page_list, list) {
++		list_del(&msi->list);
++		kfree(msi);
++	}
++	kfree(cookie);
+ 	domain->iova_cookie = NULL;
+ }
+ EXPORT_SYMBOL(iommu_put_dma_cookie);
+@@ -88,7 +116,7 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
+  */
+ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size)
+ {
+-	struct iova_domain *iovad = domain->iova_cookie;
++	struct iova_domain *iovad = cookie_iovad(domain);
+ 	unsigned long order, base_pfn, end_pfn;
+ 
+ 	if (!iovad)
+@@ -155,7 +183,7 @@ int dma_direction_to_prot(enum dma_data_direction dir, bool coherent)
+ static struct iova *__alloc_iova(struct iommu_domain *domain, size_t size,
+ 		dma_addr_t dma_limit)
+ {
+-	struct iova_domain *iovad = domain->iova_cookie;
++	struct iova_domain *iovad = cookie_iovad(domain);
+ 	unsigned long shift = iova_shift(iovad);
+ 	unsigned long length = iova_align(iovad, size) >> shift;
+ 
+@@ -171,7 +199,7 @@ static struct iova *__alloc_iova(struct iommu_domain *domain, size_t size,
+ /* The IOVA allocator knows what we mapped, so just unmap whatever that was */
+ static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr)
+ {
+-	struct iova_domain *iovad = domain->iova_cookie;
++	struct iova_domain *iovad = cookie_iovad(domain);
+ 	unsigned long shift = iova_shift(iovad);
+ 	unsigned long pfn = dma_addr >> shift;
+ 	struct iova *iova = find_iova(iovad, pfn);
+@@ -294,7 +322,7 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+ 		void (*flush_page)(struct device *, const void *, phys_addr_t))
+ {
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+-	struct iova_domain *iovad = domain->iova_cookie;
++	struct iova_domain *iovad = cookie_iovad(domain);
+ 	struct iova *iova;
+ 	struct page **pages;
+ 	struct sg_table sgt;
+@@ -386,7 +414,7 @@ dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+ {
+ 	dma_addr_t dma_addr;
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+-	struct iova_domain *iovad = domain->iova_cookie;
++	struct iova_domain *iovad = cookie_iovad(domain);
+ 	phys_addr_t phys = page_to_phys(page) + offset;
+ 	size_t iova_off = iova_offset(iovad, phys);
+ 	size_t len = iova_align(iovad, size + iova_off);
+@@ -495,7 +523,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 		int nents, int prot)
+ {
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+-	struct iova_domain *iovad = domain->iova_cookie;
++	struct iova_domain *iovad = cookie_iovad(domain);
+ 	struct iova *iova;
+ 	struct scatterlist *s, *prev = NULL;
+ 	dma_addr_t dma_addr;
+@@ -587,3 +615,75 @@ int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+ {
+ 	return dma_addr == DMA_ERROR_CODE;
+ }
++
++static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
++		phys_addr_t msi_addr, struct iommu_domain *domain)
++{
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iommu_dma_msi_page *msi_page;
++	struct iova_domain *iovad = &cookie->iovad;
++	struct iova *iova;
++	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
++
++	msi_addr &= ~(phys_addr_t)iova_mask(iovad);
++	list_for_each_entry(msi_page, &cookie->msi_page_list, list)
++		if (msi_page->phys == msi_addr)
++			return msi_page;
++
++	msi_page = kzalloc(sizeof(*msi_page), GFP_ATOMIC);
++	if (!msi_page)
++		return NULL;
++
++	iova = __alloc_iova(domain, iovad->granule, dma_get_mask(dev));
++	if (!iova)
++		goto out_free_page;
++
++	msi_page->phys = msi_addr;
++	msi_page->iova = iova_dma_addr(iovad, iova);
++	if (iommu_map(domain, msi_page->iova, msi_addr, iovad->granule, prot))
++		goto out_free_iova;
++
++	INIT_LIST_HEAD(&msi_page->list);
++	list_add(&msi_page->list, &cookie->msi_page_list);
++	return msi_page;
++
++out_free_iova:
++	__free_iova(iovad, iova);
++out_free_page:
++	kfree(msi_page);
++	return NULL;
++}
++
++void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
++{
++	struct device *dev = msi_desc_to_dev(irq_get_msi_desc(irq));
++	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	struct iommu_dma_cookie *cookie;
++	struct iommu_dma_msi_page *msi_page;
++	phys_addr_t msi_addr = (u64)msg->address_hi << 32 | msg->address_lo;
++
++	if (!domain || !domain->iova_cookie)
++		return;
++
++	cookie = domain->iova_cookie;
++
++	spin_lock(&cookie->msi_lock);
++	msi_page = iommu_dma_get_msi_page(dev, msi_addr, domain);
++	spin_unlock(&cookie->msi_lock);
++
++	if (WARN_ON(!msi_page)) {
 +		/*
-+		 * SMR.ID bits may not be preserved if the corresponding MASK
-+		 * bits are set, so check each one separately. We can reject
-+		 * masters later if they try to claim IDs outside these masks.
++		 * We're called from a void callback, so the best we can do is
++		 * 'fail' by filling the message with obviously bogus values.
++		 * Since we got this far due to an IOMMU being present, it's
++		 * not like the existing address would have worked anyway...
 +		 */
-+		smr = smmu->streamid_mask << SMR_ID_SHIFT;
- 		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
- 		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-+		smmu->streamid_mask = smr >> SMR_ID_SHIFT;
++		msg->address_hi = ~0U;
++		msg->address_lo = ~0U;
++		msg->data = ~0U;
++	} else {
++		msg->address_hi = upper_32_bits(msi_page->iova);
++		msg->address_lo &= iova_mask(&cookie->iovad);
++		msg->address_lo += lower_32_bits(msi_page->iova);
++	}
++}
+diff --git a/drivers/irqchip/irq-gic-v2m.c b/drivers/irqchip/irq-gic-v2m.c
+index 35eb7ac5d21f..863e073c6f7f 100644
+--- a/drivers/irqchip/irq-gic-v2m.c
++++ b/drivers/irqchip/irq-gic-v2m.c
+@@ -16,6 +16,7 @@
+ #define pr_fmt(fmt) "GICv2m: " fmt
  
--		mask = (smr >> SMR_MASK_SHIFT) & SMR_MASK_MASK;
--		sid = (smr >> SMR_ID_SHIFT) & SMR_ID_MASK;
--		if ((mask & sid) != sid) {
--			dev_err(smmu->dev,
--				"SMR mask bits (0x%x) insufficient for ID field (0x%x)\n",
--				mask, sid);
--			return -ENODEV;
--		}
-+		smr = smmu->streamid_mask << SMR_MASK_SHIFT;
-+		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-+		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-+		smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
+ #include <linux/acpi.h>
++#include <linux/dma-iommu.h>
+ #include <linux/irq.h>
+ #include <linux/irqdomain.h>
+ #include <linux/kernel.h>
+@@ -108,6 +109,8 @@ static void gicv2m_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
  
- 		dev_notice(smmu->dev,
--			   "\tstream matching with %u register groups, mask 0x%x",
--			   smmu->num_mapping_groups, mask);
--	} else {
--		smmu->num_mapping_groups = (id >> ID0_NUMSIDB_SHIFT) &
--					   ID0_NUMSIDB_MASK;
-+			   "\tstream matching with %lu register groups, mask 0x%x",
-+			   size, smmu->smr_mask_mask);
- 	}
-+	smmu->num_mapping_groups = size;
+ 	if (v2m->flags & GICV2M_NEEDS_SPI_OFFSET)
+ 		msg->data -= v2m->spi_offset;
++
++	iommu_dma_map_msi_msg(data->irq, msg);
+ }
  
- 	if (smmu->version < ARM_SMMU_V2 || !(id & ID0_PTFS_NO_AARCH32)) {
- 		smmu->features |= ARM_SMMU_FEAT_FMT_AARCH32_L;
+ static struct irq_chip gicv2m_irq_chip = {
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+index 36b9c28a5c91..98ff669d5962 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -18,6 +18,7 @@
+ #include <linux/bitmap.h>
+ #include <linux/cpu.h>
+ #include <linux/delay.h>
++#include <linux/dma-iommu.h>
+ #include <linux/interrupt.h>
+ #include <linux/log2.h>
+ #include <linux/mm.h>
+@@ -655,6 +656,8 @@ static void its_irq_compose_msi_msg(struct irq_data *d, struct msi_msg *msg)
+ 	msg->address_lo		= addr & ((1UL << 32) - 1);
+ 	msg->address_hi		= addr >> 32;
+ 	msg->data		= its_get_event_id(d);
++
++	iommu_dma_map_msi_msg(d->irq, msg);
+ }
+ 
+ static struct irq_chip its_irq_chip = {
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index 81c5c8d167ad..5ee806e41b5c 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -21,6 +21,7 @@
+ 
+ #ifdef CONFIG_IOMMU_DMA
+ #include <linux/iommu.h>
++#include <linux/msi.h>
+ 
+ int iommu_dma_init(void);
+ 
+@@ -62,9 +63,13 @@ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+ int iommu_dma_supported(struct device *dev, u64 mask);
+ int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
+ 
++/* The DMA API isn't _quite_ the whole story, though... */
++void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
++
+ #else
+ 
+ struct iommu_domain;
++struct msi_msg;
+ 
+ static inline int iommu_dma_init(void)
+ {
+@@ -80,6 +85,10 @@ static inline void iommu_put_dma_cookie(struct iommu_domain *domain)
+ {
+ }
+ 
++static inline void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
++{
++}
++
+ #endif	/* CONFIG_IOMMU_DMA */
+ #endif	/* __KERNEL__ */
+ #endif	/* __DMA_IOMMU_H */
 -- 
 2.8.1.dirty
 
