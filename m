@@ -1,148 +1,86 @@
-From: "Y.B. Lu" <yangbo.lu@nxp.com>
-Subject: RE: [v11, 7/8] base: soc: introduce soc_device_match() interface
-Date: Wed, 7 Sep 2016 04:10:32 +0000
-Message-ID: <HE1PR04MB088939A28A68035F3393A441F8F80@HE1PR04MB0889.eurprd04.prod.outlook.com>
-References: <1473150503-9550-1-git-send-email-yangbo.lu@nxp.com>
- <1473150503-9550-8-git-send-email-yangbo.lu@nxp.com>
- <CAPDyKFrvg3Qr5m3xXvywsCoVvaiF7ggHAj0Aw=WCOXg65Pt0PQ@mail.gmail.com>
- <6515108.aCEls7dUuW@wuerfel>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH 7/8] iommu: of: Handle IOMMU lookup failure with deferred
+	probing or error
+Date: Wed, 7 Sep 2016 11:46:13 +0530
+Message-ID: <002c01d208cf$598d4a50$0ca7def0$@codeaurora.org>
+References: <1470696550-3416-1-git-send-email-sricharan@codeaurora.org>
+	<1470696550-3416-8-git-send-email-sricharan@codeaurora.org>
+	<CAAFQd5C8BuOCc5ySw_3tVELDG4S+r_5VyDvOPnBBuVr-6CBfxg@mail.gmail.com>
+	<000901d1f4af$e26b6c00$a7424400$@codeaurora.org>
+	<1c5dde1d-1ffb-d045-c090-032b9f1c7de2@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-mmc-owner@vger.kernel.org>
-In-Reply-To: <6515108.aCEls7dUuW@wuerfel>
-Content-Language: en-US
-Sender: linux-mmc-owner@vger.kernel.org
-To: Arnd Bergmann <arnd@arndb.de>, Ulf Hansson <ulf.hansson@linaro.org>
-Cc: linux-mmc <linux-mmc@vger.kernel.org>, Scott Wood <oss@buserror.net>, "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, linux-clk <linux-clk@vger.kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Jochen Friedrich <jochen@scram.de>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@free>
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1c5dde1d-1ffb-d045-c090-032b9f1c7de2-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Content-Language: en-us
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Marek Szyprowski' <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Tomasz Figa' <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: "'open list:IOMMU DRIVERS'" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Will Deacon' <will.deacon-5wv7dgnIgG8@public.gmane.org>, 'Laurent Pinchart' <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Anrd and Uffe,
+Hi Marek,
 
-Thank you for your comment.
-Please see my comment inline.
+>Hi Sricharan,
+>
+>
+>On 2016-08-12 17:40, Sricharan wrote:
+>> Hi Tomaz,
+>>
+>>>> +               if (ops->add_device)
+>>>> +                       ops = ops->add_device(dev) ? ops : NULL;
+>>> Patch description fails to mention anything about this change. Also it
+>>> looks slightly incorrect to lose the error condition here. I think we
+>>> should at least print some error message here and tell the user that
+>>> we are falling back to non-IOMMU setup.
+>>      Ok, will have to improve the patch description to add this and will
+>>      fix the error value as well. Will also add the remove_device during
+>>       deconfigure as well.
+>>
+>>>
+>>>>                  of_node_put(np);
+>>>>                  idx++;
+>>>> @@ -200,7 +213,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+>>>>
+>>>>   err_put_node:
+>>>>          of_node_put(np);
+>>>> -       return NULL;
+>>>> +       return ops;
+>>>>   }
+>>>>
+>>>>   void __init of_iommu_init(void)
+>>>> @@ -211,7 +224,7 @@ void __init of_iommu_init(void)
+>>>>          for_each_matching_node_and_match(np, matches, &match) {
+>>>>                  const of_iommu_init_fn init_fn = match->data;
+>>>>
+>>>> -               if (init_fn(np))
+>>>> +               if (init_fn && init_fn(np))
+>>> When is it possible to have NULL init_fn?
+>>     ya wrong, should not be needed.
+>
+>init_fn can be NULL if you convert IOMMU driver to use platform device
+>infrastructure based initialization and you don't need to do anything
+>before the driver gets probed, so please keep this check.
+>
+>I used this approach here:
+>https://git.linaro.org/people/marek.szyprowski/linux-srpol.git/commitdiff/a30735973573128b14bb4a25cf4debaa0979a655
+>(this commit is a part of v4.8-clocks-pm branch)
+>
+>IOMMU_OF_DECLARE() with NULL init_fn is needed to notify IOMMU core that
+>this IOMMU driver is available in the system and core has to defer
+>probing of drivers before the IOMMU driver gets initialized from its
+>controller's platform device.
+>
+   ok, thanks, understand. I was not thinking about the non-dt case.
+I will keep this check then.
 
-
-
-Best regards,
-Yangbo Lu
-
-> -----Original Message-----
-> From: Arnd Bergmann [mailto:arnd@arndb.de]
-> Sent: Tuesday, September 06, 2016 8:46 PM
-> To: Ulf Hansson
-> Cc: Y.B. Lu; linux-mmc; Scott Wood; linuxppc-dev@lists.ozlabs.org;
-> devicetree@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
-> kernel@vger.kernel.org; linux-clk; linux-i2c@vger.kernel.org;
-> iommu@lists.linux-foundation.org; netdev@vger.kernel.org; Mark Rutland;
-> Rob Herring; Russell King; Jochen Friedrich; Joerg Roedel; Claudiu Manoil=
-;
-> Bhupesh Sharma; Qiang Zhao; Kumar Gala; Santosh Shilimkar; Leo Li; X.B.
-> Xie
-> Subject: Re: [v11, 7/8] base: soc: introduce soc_device_match() interface
->=20
-> On Tuesday, September 6, 2016 1:44:23 PM CEST Ulf Hansson wrote:
-> > On 6 September 2016 at 10:28, Yangbo Lu <yangbo.lu@nxp.com> wrote:
-> > > We keep running into cases where device drivers want to know the
-> > > exact version of the a SoC they are currently running on. In the
-> > > past, this has usually been done through a vendor specific API that
-> > > can be called by a driver, or by directly accessing some kind of
-> > > version register that is not part of the device itself but that
-> > > belongs to a global register area of the chip.
->=20
-> Please add "From: Arnd Bergmann <arnd@arndb.de>" as the first line, to
-> preserve authorship. If you use "git send-email" or "git format-patch",
-> that should happen automatically if the author field is set right (if not=
-,
-> use 'git commit --amend --author=3D"Arnd Bergmann <arnd@arndb.de>"'
-> to fix it).
->=20
-
-[Lu Yangbo-B47093] Oh, I'm sorry for my careless. Will correct it in next v=
-ersion.
-
-> > > +
-> > > +/*
-> > > + * soc_device_match - identify the SoC in the machine
-> > > + * @matches: zero-terminated array of possible matches
-> >
-> > Perhaps also express the constraint on the matching entries. As you
-> > need at least one of the ->machine(), ->family(), ->revision() or
-> > ->soc_id() callbacks implemented, right!?
->=20
-> They are not callbacks, just strings. Having an empty entry indicates the
-> end of the array, and this is not called.
->=20
-> > > + *
-> > > + * returns the first matching entry of the argument array, or NULL
-> > > + * if none of them match.
-> > > + *
-> > > + * This function is meant as a helper in place of of_match_node()
-> > > + * in cases where either no device tree is available or the
-> > > + information
-> > > + * in a device node is insufficient to identify a particular
-> > > + variant
-> > > + * by its compatible strings or other properties. For new devices,
-> > > + * the DT binding should always provide unique compatible strings
-> > > + * that allow the use of of_match_node() instead.
-> > > + *
-> > > + * The calling function can use the .data entry of the
-> > > + * soc_device_attribute to pass a structure or function pointer for
-> > > + * each entry.
-> >
-> > I don't get the use case behind this, could you elaborate?
-> >
-> > Perhaps we should postpone adding the .data entry until we actually
-> > see a need for it?
->=20
-> I think the interface is rather useless without a way to figure out which
-> entry you got. Almost all users of of_match_node() actually use the
-> returned ->data field, and I expect this to be the same here.
->=20
-> > > + */
-> > > +const struct soc_device_attribute *soc_device_match(
-> > > +       const struct soc_device_attribute *matches) {
-> > > +       struct device *dev;
-> > > +       int ret;
-> > > +
-> > > +       for (ret =3D 0; ret =3D=3D 0; matches++) {
-> >
-> > This loop looks a bit weird and unsafe.
->=20
-> Ah, and I thought I was being clever ;-)
->=20
-> > 1) Perhaps using a while loop makes this more readable?
-> > 2) As this is an exported API, I guess validation of the ->matches
-> > pointer needs to be done before accessing it.
->=20
-> Sounds fine.
-
-[Lu Yangbo-B47093] Ok, Will change this according to Uffe.=20
-And actually there is issue with this for() when I verified it again this m=
-orning.
-We will get matches++ rather than matches which is correct finally :)
-
->=20
-> > > +               if (!(matches->machine || matches->family ||
-> > > +                     matches->revision || matches->soc_id))
-> > > +                       return NULL;
-> > > +               dev =3D NULL;
-> >
-> > There's no need to use a struct device just to assign it to NULL.
-> > Instead just provide the function below with NULL.
-> >
-> > > +               ret =3D bus_for_each_dev(&soc_bus_type, dev, (void
-> *)matches,
-> > > +                                      soc_device_match_one);
->=20
->=20
-> I don't remember what led to this, I think you are right, we should just
-> pass NULL as most other callers.
-
-[Lu Yangbo-B47093] Will correct it. Thanks. :)
-
->=20
-> Thanks for the review.
->=20
-> 	ARnd
-
+Regards,
+ Sricharan     
