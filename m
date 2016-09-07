@@ -1,18 +1,16 @@
 From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: RE: [PATCH 7/8] iommu: of: Handle IOMMU lookup failure with deferred
-	probing or error
-Date: Wed, 7 Sep 2016 11:46:13 +0530
-Message-ID: <002c01d208cf$598d4a50$0ca7def0$@codeaurora.org>
+Subject: RE: [PATCH 1/8] arm: dma-mapping: Don't override dma_ops in
+	arch_setup_dma_ops()
+Date: Wed, 7 Sep 2016 11:54:00 +0530
+Message-ID: <002e01d208d0$70263e60$5072bb20$@codeaurora.org>
 References: <1470696550-3416-1-git-send-email-sricharan@codeaurora.org>
-	<1470696550-3416-8-git-send-email-sricharan@codeaurora.org>
-	<CAAFQd5C8BuOCc5ySw_3tVELDG4S+r_5VyDvOPnBBuVr-6CBfxg@mail.gmail.com>
-	<000901d1f4af$e26b6c00$a7424400$@codeaurora.org>
-	<1c5dde1d-1ffb-d045-c090-032b9f1c7de2@samsung.com>
+	<1470696550-3416-2-git-send-email-sricharan@codeaurora.org>
+	<16c9743e-e531-25aa-76f1-8746a6b8ef11@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1c5dde1d-1ffb-d045-c090-032b9f1c7de2-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <16c9743e-e531-25aa-76f1-8746a6b8ef11-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -23,64 +21,77 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Marek Szyprowski' <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Tomasz Figa' <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
-Cc: "'open list:IOMMU DRIVERS'" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, 'Will Deacon' <will.deacon-5wv7dgnIgG8@public.gmane.org>, 'Laurent Pinchart' <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: 'Marek Szyprowski' <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Marek,
 
->Hi Sricharan,
+>Hi Sricharan and Laurent,
 >
 >
->On 2016-08-12 17:40, Sricharan wrote:
->> Hi Tomaz,
+>On 2016-08-09 00:49, Sricharan R wrote:
+>> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 >>
->>>> +               if (ops->add_device)
->>>> +                       ops = ops->add_device(dev) ? ops : NULL;
->>> Patch description fails to mention anything about this change. Also it
->>> looks slightly incorrect to lose the error condition here. I think we
->>> should at least print some error message here and tell the user that
->>> we are falling back to non-IOMMU setup.
->>      Ok, will have to improve the patch description to add this and will
->>      fix the error value as well. Will also add the remove_device during
->>       deconfigure as well.
+>> The arch_setup_dma_ops() function is in charge of setting dma_ops with a
+>> call to set_dma_ops(). set_dma_ops() is also called from
 >>
->>>
->>>>                  of_node_put(np);
->>>>                  idx++;
->>>> @@ -200,7 +213,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
->>>>
->>>>   err_put_node:
->>>>          of_node_put(np);
->>>> -       return NULL;
->>>> +       return ops;
->>>>   }
->>>>
->>>>   void __init of_iommu_init(void)
->>>> @@ -211,7 +224,7 @@ void __init of_iommu_init(void)
->>>>          for_each_matching_node_and_match(np, matches, &match) {
->>>>                  const of_iommu_init_fn init_fn = match->data;
->>>>
->>>> -               if (init_fn(np))
->>>> +               if (init_fn && init_fn(np))
->>> When is it possible to have NULL init_fn?
->>     ya wrong, should not be needed.
+>> - highbank and mvebu bus notifiers
+>> - dmabounce (to be replaced with swiotlb)
+>> - arm_iommu_attach_device
+>>
+>> (arm_iommu_attach_device is itself called from IOMMU and bus master
+>> device drivers)
+>>
+>> To allow the arch_setup_dma_ops() call to be moved from device add time
+>> to device probe time we must ensure that dma_ops already setup by any of
+>> the above callers will not be overridden.
+>>
+>> Aftering replacing dmabounce with swiotlb, converting IOMMU drivers to
+>> of_xlate and taking care of highbank and mvebu, the workaround should be
+>> removed.
+>>
+>> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+>> ---
+>>   arch/arm/mm/dma-mapping.c | 9 +++++++++
+>>   1 file changed, 9 insertions(+)
+>>
+>> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+>> index ff7ed56..4686d66 100644
+>> --- a/arch/arm/mm/dma-mapping.c
+>> +++ b/arch/arm/mm/dma-mapping.c
+>> @@ -2259,6 +2259,15 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+>>   	struct dma_map_ops *dma_ops;
+>>
+>>   	dev->archdata.dma_coherent = coherent;
+>> +
+>> +	/*
+>> +	 * Don't override the dma_ops if they have already been set. Ideally
+>> +	 * this should be the only location where dma_ops are set, remove this
+>> +	 * check when all other callers of set_dma_ops will have disappeared.
+>> +	 */
+>> +	if (dev->archdata.dma_ops)
+>> +		return;
+>> +
+>>   	if (arm_setup_iommu_dma_ops(dev, dma_base, size, iommu))
+>>   		dma_ops = arm_get_iommu_dma_map_ops(coherent);
+>>   	else
 >
->init_fn can be NULL if you convert IOMMU driver to use platform device
->infrastructure based initialization and you don't need to do anything
->before the driver gets probed, so please keep this check.
+>Please add also set_dma_ops(dev, NULL) to arm_teardown_iommu_dma_ops()
+>function
+>to this patch, because otherwise dma_ops won't be configured properly if
+>deferred
+>probe of the given device happens: iommu dma ops will be set for the
+>first probe
+>try, then iommu structures will be teared down after EPROBEDEFER error,
+>and then
+>before next probe ties dma_ops will be already set, but no iommu
+>structures are
+>available.
 >
->I used this approach here:
->https://git.linaro.org/people/marek.szyprowski/linux-srpol.git/commitdiff/a30735973573128b14bb4a25cf4debaa0979a655
->(this commit is a part of v4.8-clocks-pm branch)
+>For a convenience, this a fixup patch:
+>https://git.linaro.org/people/marek.szyprowski/linux-srpol.git/commitdiff/55adefd43cee9d4beb15cb1bbd805c5059b56b4f
 >
->IOMMU_OF_DECLARE() with NULL init_fn is needed to notify IOMMU core that
->this IOMMU driver is available in the system and core has to defer
->probing of drivers before the IOMMU driver gets initialized from its
->controller's platform device.
->
-   ok, thanks, understand. I was not thinking about the non-dt case.
-I will keep this check then.
+ Right, this and will also add the remove_device during deconfigure as well.
 
 Regards,
- Sricharan     
+ Sricharan
