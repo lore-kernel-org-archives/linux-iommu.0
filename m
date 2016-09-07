@@ -1,356 +1,94 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v6.1] iommu/dma: Add support for mapping MSIs
-Date: Wed,  7 Sep 2016 10:55:41 +0100
-Message-ID: <33fb440d91a5fe8c3e7dc8a5e12d83a5253911dd.1473242018.git.robin.murphy@arm.com>
-References: <cover.1473173789.git.robin.murphy@arm.com>
-	<2da5fca62886afd46cd2a5f7da1da872ee4a833d.1473173789.git.robin.murphy@arm.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [RFC PATCH v2 01/20] x86: Documentation for AMD Secure Memory
+ Encryption (SME)
+Date: Wed, 7 Sep 2016 09:02:38 -0500
+Message-ID: <3fbb0763-5f9f-6ff7-2266-7478fb12642e@amd.com>
+References: <20160822223529.29880.50884.stgit@tlendack-t1.amdoffice.net>
+ <20160822223539.29880.96739.stgit@tlendack-t1.amdoffice.net>
+ <20160902085045.GG17338@nazgul.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <2da5fca62886afd46cd2a5f7da1da872ee4a833d.1473173789.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20160902085045.GG17338@nazgul.tnic>
+Sender: linux-doc-owner@vger.kernel.org
+To: Borislav Petkov <bp@alien8.de>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Paolo Bonzini <pbonzini@redhat.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dm
 List-Id: iommu@lists.linux-foundation.org
 
-When an MSI doorbell is located downstream of an IOMMU, attaching
-devices to a DMA ops domain and switching on translation leads to a rude
-shock when their attempt to write to the physical address returned by
-the irqchip driver faults (or worse, writes into some already-mapped
-buffer) and no interrupt is forthcoming.
+On 09/02/2016 03:50 AM, Borislav Petkov wrote:
+> On Mon, Aug 22, 2016 at 05:35:39PM -0500, Tom Lendacky wrote:
+>> This patch adds a Documenation entry to decribe the AMD Secure Memory
+>> Encryption (SME) feature.
+>>
+>> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+>> ---
+>>  Documentation/x86/amd-memory-encryption.txt |   35 +++++++++++++++++++++++++++
+>>  1 file changed, 35 insertions(+)
+>>  create mode 100644 Documentation/x86/amd-memory-encryption.txt
+>>
+>> diff --git a/Documentation/x86/amd-memory-encryption.txt b/Documentation/x86/amd-memory-encryption.txt
+>> new file mode 100644
+>> index 0000000..f19c555
+>> --- /dev/null
+>> +++ b/Documentation/x86/amd-memory-encryption.txt
+>> @@ -0,0 +1,35 @@
+>> +Secure Memory Encryption (SME) is a feature found on AMD processors.
+>> +
+>> +SME provides the ability to mark individual pages of memory as encrypted using
+>> +the standard x86 page tables.  A page that is marked encrpyted will be
+> 
+> s/encrpyted/encrypted/
 
-Address this by adding a hook for relevant irqchip drivers to call from
-their compose_msi_msg() callback, to swizzle the physical address with
-an appropriatly-mapped IOVA for any device attached to one of our DMA
-ops domains.
+Ugh..  I thought I caught all of these.  Obviously not.  I'll go through
+all the patches on this.
 
-CC: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-CC: Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>
-CC: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-CC: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> 
+>> +automatically decrypted when read from DRAM and encrypted when written to
+>> +DRAM.  SME can therefore be used to protect the contents of DRAM from physical
+>> +attacks on the system.
+>> +
+>> +Support for SME can be determined through the CPUID instruction. The CPUID
+>> +function 0x8000001f reports information related to SME:
+>> +
+>> +	0x8000001f[eax]:
+>> +		Bit[0] indicates support for SME
+>> +	0x8000001f[ebx]:
+>> +		Bit[5:0]  pagetable bit number used to enable memory encryption
+>> +		Bit[11:6] reduction in physical address space, in bits, when
+>> +			  memory encryption is enabled (this only affects system
+>> +			  physical addresses, not guest physical addresses)
+>> +
+>> +If support for SME is present, MSR 0xc00100010 (SYS_CFG) can be used to
+>> +determine if SME is enabled and/or to enable memory encryption:
+>> +
+>> +	0xc0010010:
+>> +		Bit[23]   0 = memory encryption features are disabled
+>> +			  1 = memory encryption features are enabled
+>> +
+>> +Linux relies on BIOS to set this bit if BIOS has determined that the reduction
+>> +in the physical address space as a result of enabling memory encryption (see
+>> +CPUID information above) will not conflict with the address space resource
+>> +requirements for the system.  If this bit is not set upon Linux startup then
+>> +Linux itself will not set it and memory encryption will not be possible.
+>> +
+>> +SME support is configurable in the kernel through the AMD_MEM_ENCRYPT config
+>> +option.
+> 
+> " ... is configurable through CONFIG_AMD_MEM_ENCRYPT."
 
----
+Ok.
 
-- Rework map_page() helper function plus insane lookup logic into
-  straightforward get_page() helper
-- Use phys_addr_t to further simplify address matching
-- Fix the bit where I neglected to actually round the doorbell
-  address to a page boundary (oops!)
-- Make the locking hardirq-safe to satisfy lockdep
----
- drivers/iommu/dma-iommu.c        | 136 ++++++++++++++++++++++++++++++++++-----
- drivers/irqchip/irq-gic-v2m.c    |   3 +
- drivers/irqchip/irq-gic-v3-its.c |   3 +
- include/linux/dma-iommu.h        |   9 +++
- 4 files changed, 136 insertions(+), 15 deletions(-)
+> 
+>> Additionally, the mem_encrypt=on command line parameter is required
+>> +to activate memory encryption.
+> 
+> I think you want to rewrite the logic here to say that people should use
+> the BIOS option and if none is present for whatever reason, resort to
+> the alternative "mem_encrypt=on" kernel command line option, no?
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 00c8a08d56e7..4329d18080cf 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -25,10 +25,28 @@
- #include <linux/huge_mm.h>
- #include <linux/iommu.h>
- #include <linux/iova.h>
-+#include <linux/irq.h>
- #include <linux/mm.h>
- #include <linux/scatterlist.h>
- #include <linux/vmalloc.h>
- 
-+struct iommu_dma_msi_page {
-+	struct list_head	list;
-+	dma_addr_t		iova;
-+	phys_addr_t		phys;
-+};
-+
-+struct iommu_dma_cookie {
-+	struct iova_domain	iovad;
-+	struct list_head	msi_page_list;
-+	spinlock_t		msi_lock;
-+};
-+
-+static inline struct iova_domain *cookie_iovad(struct iommu_domain *domain)
-+{
-+	return &((struct iommu_dma_cookie *)domain->iova_cookie)->iovad;
-+}
-+
- int iommu_dma_init(void)
- {
- 	return iova_cache_get();
-@@ -43,15 +61,19 @@ int iommu_dma_init(void)
-  */
- int iommu_get_dma_cookie(struct iommu_domain *domain)
- {
--	struct iova_domain *iovad;
-+	struct iommu_dma_cookie *cookie;
- 
- 	if (domain->iova_cookie)
- 		return -EEXIST;
- 
--	iovad = kzalloc(sizeof(*iovad), GFP_KERNEL);
--	domain->iova_cookie = iovad;
-+	cookie = kzalloc(sizeof(*cookie), GFP_KERNEL);
-+	if (!cookie)
-+		return -ENOMEM;
- 
--	return iovad ? 0 : -ENOMEM;
-+	spin_lock_init(&cookie->msi_lock);
-+	INIT_LIST_HEAD(&cookie->msi_page_list);
-+	domain->iova_cookie = cookie;
-+	return 0;
- }
- EXPORT_SYMBOL(iommu_get_dma_cookie);
- 
-@@ -63,14 +85,20 @@ EXPORT_SYMBOL(iommu_get_dma_cookie);
-  */
- void iommu_put_dma_cookie(struct iommu_domain *domain)
- {
--	struct iova_domain *iovad = domain->iova_cookie;
-+	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-+	struct iommu_dma_msi_page *msi, *tmp;
- 
--	if (!iovad)
-+	if (!cookie)
- 		return;
- 
--	if (iovad->granule)
--		put_iova_domain(iovad);
--	kfree(iovad);
-+	if (cookie->iovad.granule)
-+		put_iova_domain(&cookie->iovad);
-+
-+	list_for_each_entry_safe(msi, tmp, &cookie->msi_page_list, list) {
-+		list_del(&msi->list);
-+		kfree(msi);
-+	}
-+	kfree(cookie);
- 	domain->iova_cookie = NULL;
- }
- EXPORT_SYMBOL(iommu_put_dma_cookie);
-@@ -88,7 +116,7 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
-  */
- int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size)
- {
--	struct iova_domain *iovad = domain->iova_cookie;
-+	struct iova_domain *iovad = cookie_iovad(domain);
- 	unsigned long order, base_pfn, end_pfn;
- 
- 	if (!iovad)
-@@ -155,7 +183,7 @@ int dma_direction_to_prot(enum dma_data_direction dir, bool coherent)
- static struct iova *__alloc_iova(struct iommu_domain *domain, size_t size,
- 		dma_addr_t dma_limit)
- {
--	struct iova_domain *iovad = domain->iova_cookie;
-+	struct iova_domain *iovad = cookie_iovad(domain);
- 	unsigned long shift = iova_shift(iovad);
- 	unsigned long length = iova_align(iovad, size) >> shift;
- 
-@@ -171,7 +199,7 @@ static struct iova *__alloc_iova(struct iommu_domain *domain, size_t size,
- /* The IOVA allocator knows what we mapped, so just unmap whatever that was */
- static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr)
- {
--	struct iova_domain *iovad = domain->iova_cookie;
-+	struct iova_domain *iovad = cookie_iovad(domain);
- 	unsigned long shift = iova_shift(iovad);
- 	unsigned long pfn = dma_addr >> shift;
- 	struct iova *iova = find_iova(iovad, pfn);
-@@ -294,7 +322,7 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
- 		void (*flush_page)(struct device *, const void *, phys_addr_t))
- {
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
--	struct iova_domain *iovad = domain->iova_cookie;
-+	struct iova_domain *iovad = cookie_iovad(domain);
- 	struct iova *iova;
- 	struct page **pages;
- 	struct sg_table sgt;
-@@ -386,7 +414,7 @@ dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
- {
- 	dma_addr_t dma_addr;
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
--	struct iova_domain *iovad = domain->iova_cookie;
-+	struct iova_domain *iovad = cookie_iovad(domain);
- 	phys_addr_t phys = page_to_phys(page) + offset;
- 	size_t iova_off = iova_offset(iovad, phys);
- 	size_t len = iova_align(iovad, size + iova_off);
-@@ -495,7 +523,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 		int nents, int prot)
- {
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
--	struct iova_domain *iovad = domain->iova_cookie;
-+	struct iova_domain *iovad = cookie_iovad(domain);
- 	struct iova *iova;
- 	struct scatterlist *s, *prev = NULL;
- 	dma_addr_t dma_addr;
-@@ -587,3 +615,81 @@ int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
- {
- 	return dma_addr == DMA_ERROR_CODE;
- }
-+
-+static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
-+		phys_addr_t msi_addr, struct iommu_domain *domain)
-+{
-+	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-+	struct iommu_dma_msi_page *msi_page;
-+	struct iova_domain *iovad = &cookie->iovad;
-+	struct iova *iova;
-+	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-+
-+	msi_addr &= ~(phys_addr_t)iova_mask(iovad);
-+	list_for_each_entry(msi_page, &cookie->msi_page_list, list)
-+		if (msi_page->phys == msi_addr)
-+			return msi_page;
-+
-+	msi_page = kzalloc(sizeof(*msi_page), GFP_ATOMIC);
-+	if (!msi_page)
-+		return NULL;
-+
-+	iova = __alloc_iova(domain, iovad->granule, dma_get_mask(dev));
-+	if (!iova)
-+		goto out_free_page;
-+
-+	msi_page->phys = msi_addr;
-+	msi_page->iova = iova_dma_addr(iovad, iova);
-+	if (iommu_map(domain, msi_page->iova, msi_addr, iovad->granule, prot))
-+		goto out_free_iova;
-+
-+	INIT_LIST_HEAD(&msi_page->list);
-+	list_add(&msi_page->list, &cookie->msi_page_list);
-+	return msi_page;
-+
-+out_free_iova:
-+	__free_iova(iovad, iova);
-+out_free_page:
-+	kfree(msi_page);
-+	return NULL;
-+}
-+
-+void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
-+{
-+	struct device *dev = msi_desc_to_dev(irq_get_msi_desc(irq));
-+	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-+	struct iommu_dma_cookie *cookie;
-+	struct iommu_dma_msi_page *msi_page;
-+	phys_addr_t msi_addr = (u64)msg->address_hi << 32 | msg->address_lo;
-+	unsigned long flags;
-+
-+	if (!domain || !domain->iova_cookie)
-+		return;
-+
-+	cookie = domain->iova_cookie;
-+
-+	/*
-+	 * We disable IRQs to rule out a possible inversion against
-+	 * irq_desc_lock if, say, someone tries to retarget the affinity
-+	 * of an MSI from within an IPI handler.
-+	 */
-+	spin_lock_irqsave(&cookie->msi_lock, flags);
-+	msi_page = iommu_dma_get_msi_page(dev, msi_addr, domain);
-+	spin_unlock_irqrestore(&cookie->msi_lock, flags);
-+
-+	if (WARN_ON(!msi_page)) {
-+		/*
-+		 * We're called from a void callback, so the best we can do is
-+		 * 'fail' by filling the message with obviously bogus values.
-+		 * Since we got this far due to an IOMMU being present, it's
-+		 * not like the existing address would have worked anyway...
-+		 */
-+		msg->address_hi = ~0U;
-+		msg->address_lo = ~0U;
-+		msg->data = ~0U;
-+	} else {
-+		msg->address_hi = upper_32_bits(msi_page->iova);
-+		msg->address_lo &= iova_mask(&cookie->iovad);
-+		msg->address_lo += lower_32_bits(msi_page->iova);
-+	}
-+}
-diff --git a/drivers/irqchip/irq-gic-v2m.c b/drivers/irqchip/irq-gic-v2m.c
-index 35eb7ac5d21f..863e073c6f7f 100644
---- a/drivers/irqchip/irq-gic-v2m.c
-+++ b/drivers/irqchip/irq-gic-v2m.c
-@@ -16,6 +16,7 @@
- #define pr_fmt(fmt) "GICv2m: " fmt
- 
- #include <linux/acpi.h>
-+#include <linux/dma-iommu.h>
- #include <linux/irq.h>
- #include <linux/irqdomain.h>
- #include <linux/kernel.h>
-@@ -108,6 +109,8 @@ static void gicv2m_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- 
- 	if (v2m->flags & GICV2M_NEEDS_SPI_OFFSET)
- 		msg->data -= v2m->spi_offset;
-+
-+	iommu_dma_map_msi_msg(data->irq, msg);
- }
- 
- static struct irq_chip gicv2m_irq_chip = {
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index 36b9c28a5c91..98ff669d5962 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -18,6 +18,7 @@
- #include <linux/bitmap.h>
- #include <linux/cpu.h>
- #include <linux/delay.h>
-+#include <linux/dma-iommu.h>
- #include <linux/interrupt.h>
- #include <linux/log2.h>
- #include <linux/mm.h>
-@@ -655,6 +656,8 @@ static void its_irq_compose_msi_msg(struct irq_data *d, struct msi_msg *msg)
- 	msg->address_lo		= addr & ((1UL << 32) - 1);
- 	msg->address_hi		= addr >> 32;
- 	msg->data		= its_get_event_id(d);
-+
-+	iommu_dma_map_msi_msg(d->irq, msg);
- }
- 
- static struct irq_chip its_irq_chip = {
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index 81c5c8d167ad..5ee806e41b5c 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -21,6 +21,7 @@
- 
- #ifdef CONFIG_IOMMU_DMA
- #include <linux/iommu.h>
-+#include <linux/msi.h>
- 
- int iommu_dma_init(void);
- 
-@@ -62,9 +63,13 @@ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
- int iommu_dma_supported(struct device *dev, u64 mask);
- int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
- 
-+/* The DMA API isn't _quite_ the whole story, though... */
-+void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
-+
- #else
- 
- struct iommu_domain;
-+struct msi_msg;
- 
- static inline int iommu_dma_init(void)
- {
-@@ -80,6 +85,10 @@ static inline void iommu_put_dma_cookie(struct iommu_domain *domain)
- {
- }
- 
-+static inline void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
-+{
-+}
-+
- #endif	/* CONFIG_IOMMU_DMA */
- #endif	/* __KERNEL__ */
- #endif	/* __DMA_IOMMU_H */
--- 
-2.8.1.dirty
+Yes, I'll work on rewording this section.
+
+Thanks,
+Tom
+> 
