@@ -1,53 +1,160 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [RFC PATCH v2 07/20] x86: Provide general kernel support for
- memory encryption
-Date: Thu, 8 Sep 2016 15:55:51 +0200
-Message-ID: <20160908135551.3gtbwezbb7xpyud2@pd.tnic>
-References: <20160822223529.29880.50884.stgit@tlendack-t1.amdoffice.net>
- <20160822223646.29880.28794.stgit@tlendack-t1.amdoffice.net>
- <20160906093113.GA18319@pd.tnic>
- <f4125cae-63af-f8c7-086f-e297ce480a07@amd.com>
- <20160907155535.i7wh46uxxa2bj3ik@pd.tnic>
- <bc8f22db-b6f9-951f-145c-fed919098cbe@amd.com>
+From: Kalle Valo <kvalo@codeaurora.org>
+Subject: Re: Stability connection problems in ath9k kernel 4.7
+Date: Thu, 08 Sep 2016 20:25:45 +0300
+Message-ID: <87d1kes3qe.fsf@kamboji.qca.qualcomm.com>
+References: <1798564.U2X6r5Zons@automatix> <87wpio155z.fsf@purkki.adurom.net>
+        <2596121.7secQ7hYiJ@automatix>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Return-path: <linux-efi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <bc8f22db-b6f9-951f-145c-fed919098cbe-5C7GfCeVMHo@public.gmane.org>
-Sender: linux-efi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov@google.>
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <2596121.7secQ7hYiJ@automatix> (Valerio Passini's message of
+        "Thu, 08 Sep 2016 16:11:49 +0200")
+Sender: linux-kernel-owner@vger.kernel.org
+To: Valerio Passini <valerio.passini@unicam.it>
+Cc: linux-wireless@vger.kernel.org, Omer Peleg <omer@cs.technion.ac.il>, Adam Morrison <mad@cs.technion.ac.il>, David Woodhouse <David.Woodhouse@intel.com>, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 08, 2016 at 08:26:27AM -0500, Tom Lendacky wrote:
-> When does this value get initialized?  Since _PAGE_ENC is #defined to
-> sme_me_mask, which is not set until the boot process begins, I'm afraid
-> we'd end up using the initial value of sme_me_mask, which is zero.  Do
-> I have that right?
+Valerio Passini <valerio.passini@unicam.it> writes:
 
-Hmm, but then that would hold true for all the other defines where you
-OR-in _PAGE_ENC, no?
+> On mercoledì 7 settembre 2016 11:32:24 CEST Kalle Valo wrote:
+>> Valerio Passini <valerio.passini@unicam.it> writes:
+>> > I have found some connection problems since 4.7 release using ath9k that
+>> > turn the wifi pretty useless, I think it might be something in the power
+>> > management because the signal seems really low. Previously, up to kernel
+>> > 4.6.7 everything worked very well.
+>> > 
+>> > This is a sample of dmesg in kernel 4.7.2:
+>> >  239.898935] wlp4s0: authenticate with XX:XX:XX:XX:XX:XX
+>> > 
+>> > [  239.919995] wlp4s0: send auth to XX:XX:XX:XX:XX:XX  (try 1/3)
+>> > [  239.931877] wlp4s0: authenticated
+>> > [  239.932357] wlp4s0: associate with XX:XX:XX:XX:XX:XX  (try 1/3)
+>> > [  239.942171] wlp4s0: RX AssocResp from XX:XX:XX:XX:XX:XX  (capab=0x431
+>> > status=0 aid=2)
+>> > [  239.942301] wlp4s0: associated
+>> > [  244.802853] ath: phy0: DMA failed to stop in 10 ms AR_CR=0x00000024
+>> > AR_DIAG_SW=0x02000020 DMADBG_7=0x0000
+>> > 6100
+>> > [  245.931832] wlp4s0: authenticate with XX:XX:XX:XX:XX:XX
+>> > [  245.953028] wlp4s0: send auth to XX:XX:XX:XX:XX:XX  (try 1/3)
+>> > [  245.958702] wlp4s0: authenticated
+>> > [  245.960386] wlp4s0: associate withXX:XX:XX:XX:XX:XX  (try 1/3)
+>> > [  245.980543] wlp4s0: RX AssocResp from XX:XX:XX:XX:XX:XX  (capab=0x431
+>> > status=0 aid=2)
+>> > 
+>> > lspci on 4.6.7 kernel:
+>> > 04:00.0 Network controller: Qualcomm Atheros AR9485 Wireless Network
+>> > Adapter (rev 01)
+>> > 
+>> >         Subsystem: AzureWave AR9485 Wireless Network Adapter
+>> >         Flags: bus master, fast devsel, latency 0, IRQ 18
+>> >         Memory at f7900000 (64-bit, non-prefetchable) [size=512K]
+>> >         Expansion ROM at f7980000 [disabled] [size=64K]
+>> >         Capabilities: [40] Power Management version 2
+>> >         Capabilities: [50] MSI: Enable- Count=1/4 Maskable+ 64bit+
+>> >         Capabilities: [70] Express Endpoint, MSI 00
+>> >         Capabilities: [100] Advanced Error Reporting
+>> >         Capabilities: [140] Virtual Channel
+>> >         Capabilities: [160] Device Serial Number 00-00-00-00-00-00-00-00
+>> >         Kernel driver in use: ath9k
+>> >         Kernel modules: ath9k
+>> > 
+>> > Probably you need some debugging output, but before recompiling the kernel
+>> > I would like to know if you are interested in any kind of help from me
+>> > and what steps I should take (I'm able to help in testing patches but I'm
+>> > not familiar with git). Thank you
+>> 
+>> Usually it's really helpful if you can find the commit id which broke
+>> it. 'git bisect' is a great tool to do that and this seems to be a nice
+>> tutorial how to use it:
+>> 
+>> http://webchick.net/node/99
+>> 
+>> Instead of commit ids you can use release tags like v4.6 and v4.7 to
+>> make it easier to start the bisect. Just make sure that v4.7 is really
+>> broken and v4.6 works before you start the bisection.
+>
+> Hi Kalle,
+>
+> I tried to understand the whole procedure related to git and git bisect, and 
+> this is the first time I try it, so I can have done some mistake. In the git 
+> log you'll find the commit that could be guilty for the behaviour I reported 
+> yesterday. Anyhow, the resulting commit doesn't make any sense to me.
 
-In any case, the preprocessed source looks like this:
+So your bisect found this as the bad commit:
 
-pmdval_t early_pmd_flags = (((((((pteval_t)(1)) << 0) | (((pteval_t)(1)) << 1) | (((pteval_t)(1)) << 6) | (((pteval_t)(1)) << 5) | (((pteval_t)(1)) << 8)) | (((pteval_t)(1)) << 63)) | (((pteval_t)(1)) << 7)) | sme_me_mask) & ~((((pteval_t)(1)) << 8) | (((pteval_t)(1)) << 63));
+commit 9257b4a206fc0229dd5f84b78e4d1ebf3f91d270
+Author: Omer Peleg <omer@cs.technion.ac.il>
+Date:   Wed Apr 20 11:34:11 2016 +0300
 
-but the problem is later, when building:
+    iommu/iova: introduce per-cpu caching to iova allocation
 
-arch/x86/kernel/head64.c:39:28: error: initializer element is not constant
- pmdval_t early_pmd_flags = (__PAGE_KERNEL_LARGE | _PAGE_ENC) & ~(_PAGE_GLOBAL | _PAGE_NX);
-                            ^
-scripts/Makefile.build:153: recipe for target 'arch/x86/kernel/head64.s' failed
+The ath9k log you provided has a DMA warning and iommu problems can
+cause DMA problems but I cannot make any conclusions yet. To confirm
+that this commit really is the problem you could try to revert it with
+'git revert -n 9257b4a206fc0229dd5f84b78e4d1ebf3f91d270'. For some
+reason I got conflicts but if you are good enough with C you could try
+to fix those yourself. Another option is that you disable iommu and see
+if that helps.
 
-so I guess not. :-\
+I'm adding more people and mailing lists related to this commit,
+hopefully they have better ideas.
 
-Ok, then at least please put the early_pmd_flags init after
-sme_early_init() along with a small comment explaning what happens.
+This is Valerio's bisect log:
 
-Thanks.
+git bisect start
+# good: [2dcd0af568b0cf583645c8a317dd12e344b1c72a] Linux 4.6
+git bisect good 2dcd0af568b0cf583645c8a317dd12e344b1c72a
+# bad: [523d939ef98fd712632d93a5a2b588e477a7565e] Linux 4.7
+git bisect bad 523d939ef98fd712632d93a5a2b588e477a7565e
+# good: [0694f0c9e20c47063e4237e5f6649ae5ce5a369a] radix tree test suite: 
+remove dependencies on height
+git bisect good 0694f0c9e20c47063e4237e5f6649ae5ce5a369a
+# good: [e4f7bdc2ec0d0dcc27f7d70db27a620dfdc1f697] Merge branch 'for-4.7-zac' 
+of git://git.kernel.org/pub/scm/linux/kernel/git/tj/libata
+git bisect good e4f7bdc2ec0d0dcc27f7d70db27a620dfdc1f697
+# bad: [049ec1b5a76d34a6980cccdb7c0baeb4eed7a993] Merge tag 'drm-fixes-for-
+v4.7-rc2' of git://people.freedesktop.org/~airlied/linux
+git bisect bad 049ec1b5a76d34a6980cccdb7c0baeb4eed7a993
+# good: [a10c38a4f385f5d7c173a263ff6bb2d36021b3bb] Merge branch 'for-linus' of 
+git://git.kernel.org/pub/scm/linux/kernel/git/sage/ceph-client
+git bisect good a10c38a4f385f5d7c173a263ff6bb2d36021b3bb
+# bad: [9ba55cf7cfbfd12a7e914d0d55b7581e896b3f0d] Merge branch 'for-next' of 
+git://git.kernel.org/pub/scm/linux/kernel/git/nab/target-pending
+git bisect bad 9ba55cf7cfbfd12a7e914d0d55b7581e896b3f0d
+# bad: [c61b49c79e1c1d4bc0c2fdc053ef56e65759b5fd] Merge tag 'drm-fixes-v4.7-
+rc1' of git://people.freedesktop.org/~airlied/linux
+git bisect bad c61b49c79e1c1d4bc0c2fdc053ef56e65759b5fd
+# good: [dc03c0f9d12d85286d5e3623aa96d5c2a271b8e6] Merge branch 'misc' of 
+git://git.kernel.org/pub/scm/linux/kernel/git/mmarek/kbuild
+git bisect good dc03c0f9d12d85286d5e3623aa96d5c2a271b8e6
+# good: [e28e909c36bb5d6319953822d84df00fce7cbd18] Merge tag 'for-linus' of 
+git://git.kernel.org/pub/scm/virt/kvm/kvm
+git bisect good e28e909c36bb5d6319953822d84df00fce7cbd18
+# good: [79b3c7164c18e2fe9e69b0dcc0d45bab7ae3c968] Merge branch 'drm-next-4.7' 
+of git://people.freedesktop.org/~agd5f/linux into drm-next
+git bisect good 79b3c7164c18e2fe9e69b0dcc0d45bab7ae3c968
+# bad: [1e8143db755f745a9842984de5e8b423f583aea2] Merge tag 'platform-drivers-
+x86-v4.7-1' of git://git.infradead.org/users/dvhart/linux-platform-drivers-x86
+git bisect bad 1e8143db755f745a9842984de5e8b423f583aea2
+# good: [afcedebc6a094224973534f43b396bbbf33fe44e] thinkpad_acpi: save 
+kbdlight state on suspend and restore it on resume
+git bisect good afcedebc6a094224973534f43b396bbbf33fe44e
+# good: [2aac630429d986a43ac59525a4cff47a624dc58e] iommu/vt-d: change intel-
+iommu to use IOVA frame numbers
+git bisect good 2aac630429d986a43ac59525a4cff47a624dc58e
+# bad: [2566278551d3db875bc3bbfc41b42f2e80392108] Merge git://
+git.infradead.org/intel-iommu
+git bisect bad 2566278551d3db875bc3bbfc41b42f2e80392108
+# bad: [22e2f9fa63b092923873fc8a52955151f4d83274] iommu/vt-d: Use per-cpu IOVA 
+caching
+git bisect bad 22e2f9fa63b092923873fc8a52955151f4d83274
+# bad: [9257b4a206fc0229dd5f84b78e4d1ebf3f91d270] iommu/iova: introduce per-
+cpu caching to iova allocation
+git bisect bad 9257b4a206fc0229dd5f84b78e4d1ebf3f91d270
+# first bad commit: [9257b4a206fc0229dd5f84b78e4d1ebf3f91d270] iommu/iova: 
+introduce per-cpu caching to iova allocation
 
 -- 
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
+Kalle Valo
