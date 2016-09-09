@@ -1,15 +1,17 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 4/8] of: dma: Split of_configure_dma() into mask and ops
-	configuration
-Date: Fri, 9 Sep 2016 15:53:41 +0900
-Message-ID: <CANqRtoRVRrP9dc3qc-xSE_Wct2HPznzzi1hdrHeC8h2gA=JcKg@mail.gmail.com>
-References: <1470696550-3416-1-git-send-email-sricharan@codeaurora.org>
-	<1470696550-3416-5-git-send-email-sricharan@codeaurora.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: Stability connection problems in ath9k kernel 4.7
+Date: Fri, 9 Sep 2016 10:38:32 +0200
+Message-ID: <20160909083832.GX1437@8bytes.org>
+References: <1798564.U2X6r5Zons@automatix> <87wpio155z.fsf@purkki.adurom.net>
+	<2596121.7secQ7hYiJ@automatix>
+	<87d1kes3qe.fsf@kamboji.qca.qualcomm.com>
+	<CAC6K2=_Hdkgc_6igoC59J_Cn9=bdye827zbEK7PWtZY6ebh-6Q@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1470696550-3416-5-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAC6K2=_Hdkgc_6igoC59J_Cn9=bdye827zbEK7PWtZY6ebh-6Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,74 +21,23 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Valerio Passini <valerio.passini-vbqOIlEVYMdeoWH0uzbU5w@public.gmane.org>
+Cc: Omer Peleg <omer-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, David Woodhouse <David.Woodhouse-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-wireless-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Adam Morrison <mad-FrESSTt7Abv7r6psnUbsSmZHpeb/A1Y/@public.gmane.org>, Kalle Valo <kvalo-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Aug 9, 2016 at 7:49 AM, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
-> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
->
-> The of_configure_dma() function configures both the DMA masks and ops.
-> Moving DMA ops configuration to probe time would thus also delay
-> configuration of the DMA masks, which might not be safe. To avoid issues
-> split the configuration in two to allow keeping masks configuration at
-> device add time and move ops configuration to device probe time.
+Hi Valerio,
 
-Hi Sricharan, Laurent, everyone,
+On Thu, Sep 08, 2016 at 09:07:56PM +0200, Valerio Passini wrote:
+> I'm hoping having done it right and I can try your first suggestion, but I
+> really cannot solve this problem by myself: sorry, I have no capabilities in
+> programming in any known and unknown computer language. Surely, I can test all
+> the patches you want and report the results but this is the best I can do. Best
+> regards
 
-I'm currently having a look at this series. Want to give it a spin
-with the IPMMU driver, however it takes a bit of time to wrap around
-my head on init ordering issues with both OF method and standard
-platform device setup on two different architectures...
-
-FWIW, here's some cosmetic feedback for this patch to begin with:
-
-In the patch title and commit message you probably want to do perform
-a s/of_configure_dma()/of_dma_configure()/g.
-
-> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-> ---
->  drivers/of/device.c       | 48 ++++++++++++++++++++++++++++++++++-------------
->  drivers/of/platform.c     |  6 ++++--
->  drivers/pci/probe.c       |  3 ++-
->  include/linux/of_device.h | 11 +++++++++--
->  4 files changed, 50 insertions(+), 18 deletions(-)
->
-> diff --git a/drivers/of/device.c b/drivers/of/device.c
-> index 1c843e2..e1fad50 100644
-> --- a/drivers/of/device.c
-> +++ b/drivers/of/device.c
-> @@ -71,7 +71,7 @@ int of_device_add(struct platform_device *ofdev)
->  }
->
->  /**
-> - * of_dma_configure - Setup DMA configuration
-> + * of_dma_configure - Setup DMA masks and offset
->   * @dev:       Device to apply DMA configuration
->   * @np:                Pointer to OF node having DMA configuration
->   *
-
-The hunk above should be "of_dma_configure_masks" to make the
-documentation match the function name.
-
-> @@ -82,13 +82,11 @@ int of_device_add(struct platform_device *ofdev)
->   * can use a platform bus notifier and handle BUS_NOTIFY_ADD_DEVICE events
->   * to fix up DMA configuration.
->   */
-> -void of_dma_configure(struct device *dev, struct device_node *np)
-> +void of_dma_configure_masks(struct device *dev, struct device_node *np)
->  {
-> -       u64 dma_addr, paddr, size;
-> -       int ret;
-> -       bool coherent;
-> +       u64 dma_addr, paddr, size, range_mask;
->         unsigned long offset;
-> -       const struct iommu_ops *iommu;
-> +       int ret;
->
->         /*
->          * Set default coherent_dma_mask to 32 bit.  Drivers are expected to
+Can you please send me the full dmesg after boot? The Intel-IOMMU is not
+enabled by default, so I want to check if it is either enabled by
+kernel-config or kernel command-line.
 
 Thanks,
 
-/ magnus
+	Joerg
