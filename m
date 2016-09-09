@@ -1,7 +1,8 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v5 01/14] drivers: iommu: add FWNODE_IOMMU fwnode type
-Date: Fri,  9 Sep 2016 15:23:30 +0100
-Message-ID: <20160909142343.13314-2-lorenzo.pieralisi@arm.com>
+Subject: [PATCH v5 04/14] drivers: acpi: iort: add support for IOMMU fwnode
+	registration
+Date: Fri,  9 Sep 2016 15:23:33 +0100
+Message-ID: <20160909142343.13314-5-lorenzo.pieralisi@arm.com>
 References: <20160909142343.13314-1-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,91 +19,136 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On systems booting with a device tree, every struct device is
-associated with a struct device_node, that represents its DT
-representation. The device node can be used in generic kernel
-contexts (eg IRQ translation, IOMMU streamid mapping), to
-retrieve the properties associated with the device and carry
-out kernel operation accordingly. Owing to the 1:1 relationship
-between the device and its device_node, the device_node can also
-be used as a look-up token for the device (eg looking up a device
-through its device_node), to retrieve the device in kernel paths
-where the device_node is available.
+The ACPI IORT table provide entries for IOMMU (aka SMMU in ARM world)
+components that allow creating the kernel data structures required to
+probe and initialize the IOMMU devices.
 
-On systems booting with ACPI, the same abstraction provided by
-the device_node is required to provide look-up functionality.
-
-Therefore, mirroring the approach implemented in the IRQ domain
-kernel layer, this patch adds an additional fwnode type FWNODE_IOMMU.
-
-This patch also implements a glue kernel layer that allows to
-allocate/free FWNODE_IOMMU fwnode_handle structures and associate
-them with IOMMU devices.
+This patch provides support in the IORT kernel code to register IOMMU
+components and their respective fwnode.
 
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 Reviewed-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
 Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
 ---
- include/linux/fwnode.h |  1 +
- include/linux/iommu.h  | 25 +++++++++++++++++++++++++
- 2 files changed, 26 insertions(+)
+ drivers/acpi/arm64/iort.c | 65 +++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/acpi_iort.h |  9 +++++++
+ 2 files changed, 74 insertions(+)
 
-diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
-index 8516717..6e10050 100644
---- a/include/linux/fwnode.h
-+++ b/include/linux/fwnode.h
-@@ -19,6 +19,7 @@ enum fwnode_type {
- 	FWNODE_ACPI_DATA,
- 	FWNODE_PDATA,
- 	FWNODE_IRQCHIP,
-+	FWNODE_IOMMU,
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 4cbeb707..b89b3d3 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -20,7 +20,9 @@
+ 
+ #include <linux/acpi_iort.h>
+ #include <linux/kernel.h>
++#include <linux/list.h>
+ #include <linux/pci.h>
++#include <linux/slab.h>
+ 
+ struct iort_its_msi_chip {
+ 	struct list_head	list;
+@@ -28,6 +30,69 @@ struct iort_its_msi_chip {
+ 	u32			translation_id;
  };
  
- struct fwnode_handle {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a35fb8b..6456528 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -38,6 +38,7 @@ struct bus_type;
- struct device;
- struct iommu_domain;
- struct notifier_block;
-+struct fwnode_handle;
- 
- /* iommu fault flags */
- #define IOMMU_FAULT_READ	0x0
-@@ -543,4 +544,28 @@ static inline void iommu_device_unlink(struct device *dev, struct device *link)
- 
- #endif /* CONFIG_IOMMU_API */
- 
-+/* IOMMU fwnode handling */
-+static inline bool is_fwnode_iommu(struct fwnode_handle *fwnode)
++struct iort_fwnode {
++	struct list_head list;
++	struct acpi_iort_node *iort_node;
++	struct fwnode_handle *fwnode;
++};
++static LIST_HEAD(iort_fwnode_list);
++static DEFINE_SPINLOCK(iort_fwnode_lock);
++
++/**
++ * iort_set_fwnode() - Create iort_fwnode and use it to register
++ *		       iommu data in the iort_fwnode_list
++ *
++ * @node: IORT table node associated with the IOMMU
++ * @fwnode: fwnode associated with the IORT node
++ *
++ * Returns: 0 on success
++ *          <0 on failure
++ */
++int iort_set_fwnode(struct acpi_iort_node *iort_node,
++		    struct fwnode_handle *fwnode)
 +{
-+	return fwnode && fwnode->type == FWNODE_IOMMU;
++	struct iort_fwnode *np;
++
++	np = kzalloc(sizeof(struct iort_fwnode), GFP_ATOMIC);
++
++	if (WARN_ON(!np))
++		return -ENOMEM;
++
++	INIT_LIST_HEAD(&np->list);
++	np->iort_node = iort_node;
++	np->fwnode = fwnode;
++
++	spin_lock(&iort_fwnode_lock);
++	list_add_tail(&np->list, &iort_fwnode_list);
++	spin_unlock(&iort_fwnode_lock);
++
++	return 0;
 +}
 +
-+static inline struct fwnode_handle *iommu_alloc_fwnode(void)
++/**
++ * iort_get_fwnode() - Retrieve fwnode associated with an IORT node
++ *
++ * @node: IORT table node to be looked-up
++ *
++ * Returns: fwnode_handle pointer on success, NULL on failure
++*/
++struct fwnode_handle *iort_get_fwnode(struct acpi_iort_node *node)
 +{
-+	struct fwnode_handle *fwnode;
++	struct iort_fwnode *curr;
++	struct fwnode_handle *fwnode = NULL;
 +
-+	fwnode = kzalloc(sizeof(struct fwnode_handle), GFP_KERNEL);
-+	fwnode->type = FWNODE_IOMMU;
++	spin_lock(&iort_fwnode_lock);
++	list_for_each_entry(curr, &iort_fwnode_list, list) {
++		if (curr->iort_node == node) {
++			fwnode = curr->fwnode;
++			break;
++		}
++	}
++	spin_unlock(&iort_fwnode_lock);
 +
 +	return fwnode;
 +}
 +
-+static inline void iommu_free_fwnode(struct fwnode_handle *fwnode)
-+{
-+	if (WARN_ON(!is_fwnode_iommu(fwnode)))
-+		return;
-+
-+	kfree(fwnode);
-+}
-+
- #endif /* __LINUX_IOMMU_H */
+ typedef acpi_status (*iort_find_node_callback)
+ 	(struct acpi_iort_node *node, void *context);
+ 
+diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+index d16fdda..c851646 100644
+--- a/include/linux/acpi_iort.h
++++ b/include/linux/acpi_iort.h
+@@ -30,6 +30,9 @@ struct fwnode_handle *iort_find_domain_token(int trans_id);
+ void acpi_iort_init(void);
+ u32 iort_msi_map_rid(struct device *dev, u32 req_id);
+ struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id);
++int iort_set_fwnode(struct acpi_iort_node *iort_node,
++		    struct fwnode_handle *fwnode);
++struct fwnode_handle *iort_get_fwnode(struct acpi_iort_node *node);
+ #else
+ static inline void acpi_iort_init(void) { }
+ static inline u32 iort_msi_map_rid(struct device *dev, u32 req_id)
+@@ -37,6 +40,12 @@ static inline u32 iort_msi_map_rid(struct device *dev, u32 req_id)
+ static inline struct irq_domain *iort_get_device_domain(struct device *dev,
+ 							u32 req_id)
+ { return NULL; }
++static inline int iort_set_fwnode(struct acpi_iort_node *iort_node,
++				  struct fwnode_handle *fwnode)
++{ return -ENODEV; }
++static inline
++struct fwnode_handle *iort_get_fwnode(struct acpi_iort_node *node)
++{ return NULL; }
+ #endif
+ 
+ #define IORT_ACPI_DECLARE(name, table_id, fn)		\
 -- 
 2.10.0
