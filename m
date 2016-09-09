@@ -1,13 +1,12 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v6 00/20] Generic DT bindings for PCI IOMMUs and ARM SMMU
-Date: Fri, 9 Sep 2016 18:37:36 +0100
-Message-ID: <20160909173736.GF11418@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 22/20] iommu/arm-smmu: Fall back to global bypass
+Date: Fri,  9 Sep 2016 19:17:47 +0100
+Message-ID: <9c467662ca0fb562cff6d5c9443d77eacb257060.1473443407.git.robin.murphy@arm.com>
 References: <cover.1473173789.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
 In-Reply-To: <cover.1473173789.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -18,41 +17,91 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgUm9iaW4sCgpPbiBUdWUsIFNlcCAwNiwgMjAxNiBhdCAwNDozMzozM1BNICswMTAwLCBSb2Jp
-biBNdXJwaHkgd3JvdGU6Cj4gSGVyZSdzIHY2IHRvIGFkZHJlc3MgbGFzdCB3ZWVrJ3MgY29tbWVu
-dHMuIEZvciB0aGUgc2FrZSBvZiBob25lc3R5IEkndmUKPiBsZWZ0IExvcmVuem8ncyB0ZXN0ZWQt
-Ynkgb2ZmIGV2ZXJ5dGhpbmcgSSd2ZSBjaGFuZ2VkIHNpbmNlLCBhbmQgRXJpYydzCj4gcmV2aWV3
-ZWQtYnkgb2ZmIHBhdGNoIDE5IGhhdmluZyBub24tdHJpdmlhbGx5IHJld29ya2VkIHRoZSBndXRz
-IG9mIGl0Lgo+IAo+IFBhdGNoIDIwIGlzIG5ldywgYnV0IGFzIGl0J3MgY3VycmVudGx5IGEgc29s
-dXRpb24gd2FpdGluZyBmb3IgYSBwcm9ibGVtCj4gYXMgZmFyIGFzIHdlJ3JlIGF3YXJlLCBvdWdo
-dG4ndCB0byBnZXQgaW4gdGhlIHdheTsgaG9wZWZ1bGx5IHRoZSByZXN0IGlzCj4gaW4gZ29vZCBz
-aGFwZSBmb3IgNC45IG5vdy4KPiAKPiBCcmFuY2ggaGVyZSwgYmFzZWQgb24gV2lsbCdzIGlvbW11
-L2RldmVsIHF1ZXVlOgo+IAo+IGdpdDovL2xpbnV4LWFybS5vcmcvbGludXgtcm0gaW9tbXUvZ2Vu
-ZXJpYy12NgoKSSdtIHByZXR0eSBoYXBweSB3aXRoIHRoaXMgKG1vZHVsbyB0aGUgYmluZGluZyBk
-b2NzIHVwZGF0ZSBldGMgd2UKZGlzY3Vzc2VkIG9mZiBsaXN0KSwgaG93ZXZlciBJJ20gc2VlaW5n
-IGFuIGFsbG1vZGNvbmZpZyBidWlsZCBmYWlsdXJlCndpdGggdGhpcyBhcHBsaWVkLiBFcnJvciBi
-ZWxvdy4KClBsZWFzZSBjYW4geW91IHRha2UgYSBsb29rIGFuZCBzZW5kIGEgZml4dXAgcGF0Y2g/
-CgpDaGVlcnMsCgpXaWxsCgotLS0+OAoKSW4gZmlsZSBpbmNsdWRlZCBmcm9tIGRyaXZlcnMvZ3B1
-L2RybS9leHlub3MvZXh5bm9zX2RybV9kcnYuYzozMzowOgpkcml2ZXJzL2dwdS9kcm0vZXh5bm9z
-L2V4eW5vc19kcm1faW9tbXUuaDogSW4gZnVuY3Rpb24g4oCYX19leHlub3NfaW9tbXVfY3JlYXRl
-X21hcHBpbmfigJk6CmRyaXZlcnMvZ3B1L2RybS9leHlub3MvZXh5bm9zX2RybV9pb21tdS5oOjY5
-Ojg6IGVycm9yOiB0b28gZmV3IGFyZ3VtZW50cyB0byBmdW5jdGlvbiDigJhpb21tdV9kbWFfaW5p
-dF9kb21haW7igJkKICByZXQgPSBpb21tdV9kbWFfaW5pdF9kb21haW4oZG9tYWluLCBzdGFydCwg
-c2l6ZSk7CiAgICAgICAgXgpJbiBmaWxlIGluY2x1ZGVkIGZyb20gZHJpdmVycy9ncHUvZHJtL2V4
-eW5vcy9leHlub3NfZHJtX2lvbW11Lmg6NTM6MCwKICAgICAgICAgICAgICAgICBmcm9tIGRyaXZl
-cnMvZ3B1L2RybS9leHlub3MvZXh5bm9zX2RybV9kcnYuYzozMzoKLi9pbmNsdWRlL2xpbnV4L2Rt
-YS1pb21tdS5oOjMzOjU6IG5vdGU6IGRlY2xhcmVkIGhlcmUKIGludCBpb21tdV9kbWFfaW5pdF9k
-b21haW4oc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLCBkbWFfYWRkcl90IGJhc2UsCiAgICAg
-XgptYWtlWzRdOiAqKiogW2RyaXZlcnMvZ3B1L2RybS9leHlub3MvZXh5bm9zX2RybV9kcnYub10g
-RXJyb3IgMQptYWtlWzNdOiAqKiogW2RyaXZlcnMvZ3B1L2RybS9leHlub3NdIEVycm9yIDIKbWFr
-ZVszXTogKioqIFdhaXRpbmcgZm9yIHVuZmluaXNoZWQgam9icy4uLi4KbWFrZVsyXTogKioqIFtk
-cml2ZXJzL2dwdS9kcm1dIEVycm9yIDIKbWFrZVsxXTogKioqIFtkcml2ZXJzL2dwdV0gRXJyb3Ig
-MgptYWtlWzFdOiAqKiogV2FpdGluZyBmb3IgdW5maW5pc2hlZCBqb2JzLi4uLgptYWtlOiAqKiog
-W2RyaXZlcnNdIEVycm9yIDIKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
-b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
-bW11
+Unlike SMMUv2, SMMUv3 has no easy way to bypass unknown stream IDs,
+other than allocating and filling in the entire stream table with bypass
+entries, which for some configurations would waste *gigabytes* of RAM.
+Otherwise, all transactions on unknown stream IDs will simply be aborted
+with a C_BAD_STREAMID event.
+
+Rather than render the system unusable in the case of an invalid DT,
+avoid enabling the SMMU altogether such that everything bypasses
+(though letting the explicit disable_bypass option take precedence).
+
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 28 +++++++++++++++++++++++-----
+ 1 file changed, 23 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index be293b5aa896..859b80c83946 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -126,6 +126,9 @@
+ #define CR2_RECINVSID			(1 << 1)
+ #define CR2_E2H				(1 << 0)
+ 
++#define ARM_SMMU_GBPA			0x44
++#define GBPA_ABORT			(1 << 20)
++
+ #define ARM_SMMU_IRQ_CTRL		0x50
+ #define IRQ_CTRL_EVTQ_IRQEN		(1 << 2)
+ #define IRQ_CTRL_PRIQ_IRQEN		(1 << 1)
+@@ -2242,7 +2245,7 @@ static int arm_smmu_device_disable(struct arm_smmu_device *smmu)
+ 	return ret;
+ }
+ 
+-static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
++static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+ {
+ 	int ret;
+ 	u32 reg, enables;
+@@ -2343,8 +2346,14 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 		return ret;
+ 	}
+ 
+-	/* Enable the SMMU interface */
+-	enables |= CR0_SMMUEN;
++
++	/* Enable the SMMU interface, or ensure bypass */
++	if (!bypass || disable_bypass) {
++		enables |= CR0_SMMUEN;
++	} else {
++		reg = readl_relaxed(smmu->base + ARM_SMMU_GBPA);
++		writel_relaxed(reg & ~GBPA_ABORT, smmu->base + ARM_SMMU_GBPA);
++	}
+ 	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+ 				      ARM_SMMU_CR0ACK);
+ 	if (ret) {
+@@ -2543,6 +2552,15 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	struct resource *res;
+ 	struct arm_smmu_device *smmu;
+ 	struct device *dev = &pdev->dev;
++	bool bypass = true;
++	u32 cells;
++
++	if (of_property_read_u32(dev->of_node, "#iommu-cells", &cells))
++		dev_err(dev, "missing #iommu-cells property\n");
++	else if (cells != 1)
++		dev_err(dev, "invalid #iommu-cells value (%d)\n", cells);
++	else
++		bypass = false;
+ 
+ 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+ 	if (!smmu) {
+@@ -2595,8 +2613,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 	platform_set_drvdata(pdev, smmu);
+ 
+ 	/* Reset the device */
+-	ret = arm_smmu_device_reset(smmu);
+-	if (ret)
++	ret = arm_smmu_device_reset(smmu, bypass);
++	if (ret || bypass)
+ 		return ret;
+ 
+ 	/* And we're up. Go go go! */
+-- 
+2.8.1.dirty
