@@ -1,7 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 21/20] drm/exynos: Fix iommu_dma_init_domain prototype change
-Date: Fri,  9 Sep 2016 19:17:46 +0100
-Message-ID: <47cdafe035630f29aa1e8ff121c5a5306a2f1eb2.1473444220.git.robin.murphy@arm.com>
+Subject: [PATCH 4.5/20] Docs: dt: document ARM SMMUv3 generic binding usage
+Date: Fri,  9 Sep 2016 19:17:48 +0100
+Message-ID: <6067fc2b12b3bc681687753eedd941c8244c22fa.1473443407.git.robin.murphy@arm.com>
 References: <cover.1473173789.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,38 +18,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, David Airlie <airlied-cv59FeDIM0c@public.gmane.org>, punit.agrawal-5wv7dgnIgG8@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When adding an extra argument to a function, one really should try a bit
-harder to catch *all* the callers...
+Now that we've ratified SMMUv3's use of the generic binding, document it.
 
-CC: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-CC: Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-CC: David Airlie <airlied-cv59FeDIM0c@public.gmane.org>
-CC: dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+CC: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+CC: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
 ---
+ Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Ideally, this should be squashed into "iommu/dma: Avoid PCI host bridge
-windows" to avoid potential bisection breakage. Sorry!
-
- drivers/gpu/drm/exynos/exynos_drm_iommu.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/exynos/exynos_drm_iommu.h b/drivers/gpu/drm/exynos/exynos_drm_iommu.h
-index c8de4913fdbe..87f6b5672e11 100644
---- a/drivers/gpu/drm/exynos/exynos_drm_iommu.h
-+++ b/drivers/gpu/drm/exynos/exynos_drm_iommu.h
-@@ -66,7 +66,7 @@ static inline int __exynos_iommu_create_mapping(struct exynos_drm_private *priv,
- 	if (ret)
- 		goto free_domain;
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+index 7b94c88cf2ee..69a694f70bea 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
+@@ -27,6 +27,12 @@ the PCIe specification.
+                       * "cmdq-sync" - CMD_SYNC complete
+                       * "gerror"    - Global Error activated
  
--	ret = iommu_dma_init_domain(domain, start, size);
-+	ret = iommu_dma_init_domain(domain, start, size, NULL);
- 	if (ret)
- 		goto put_cookie;
++- #iommu-cells      : See the generic IOMMU binding described in
++                        devicetree/bindings/iommu/iommu.txt
++                      for details. For SMMUv3, must be 1, with each cell
++                      describing a single stream ID. All possible stream
++                      ID which a device may emit must be described.
++
+ ** SMMUv3 optional properties:
  
+ - dma-coherent      : Present if DMA operations made by the SMMU (page
+@@ -54,6 +60,6 @@ the PCIe specification.
+                              <GIC_SPI 79 IRQ_TYPE_EDGE_RISING>;
+                 interrupt-names = "eventq", "priq", "cmdq-sync", "gerror";
+                 dma-coherent;
+-                #iommu-cells = <0>;
++                #iommu-cells = <1>;
+                 msi-parent = <&its 0xff0000>;
+         };
 -- 
 2.8.1.dirty
