@@ -1,11 +1,14 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v5 00/14] ACPI IORT ARM SMMU support
-Date: Fri,  9 Sep 2016 15:23:29 +0100
-Message-ID: <20160909142343.13314-1-lorenzo.pieralisi@arm.com>
+Subject: [PATCH v5 02/14] drivers: iommu: implement
+	arch_{set/get}_iommu_fwspec API
+Date: Fri,  9 Sep 2016 15:23:31 +0100
+Message-ID: <20160909142343.13314-3-lorenzo.pieralisi@arm.com>
+References: <20160909142343.13314-1-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160909142343.13314-1-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,179 +19,231 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch series is v5 of a previous posting:
+The iommu fwspec configuration mechanism currently relies on
+the arch specific struct dev_archdata.iommu member to stash
+the struct iommu_fwspec pointer set-up for streamid translation.
 
-https://lkml.org/lkml/2016/8/15/394
+The struct dev_archdata.iommu member is arch specific and is not present
+on all arches that make use of the struct iommu_fwspec infrastructure,
+hence an arch specific kernel API is required to set-up and retrieve
+struct iommu_fwspec pointers safely from generic iommu code, hiding
+the arch specific details.
 
-v4 -> v5
-	- Added SMMUv1/v2 support
-	- Rebased against v4.8-rc5 and dependencies series
-	- Consolidated IORT platform devices creation
+Implement the arch_{set/get}_iommu_fwspec() generic kernel infrastructure
+and add the ARM/ARM64 back-end implementations.
 
-v3 -> v4
-	- Added single mapping API (for IORT named components)
-	- Fixed arm_smmu_iort_xlate() return value
-	- Reworked fwnode registration and platform device creation
-	  ordering to fix probe ordering dependencies
-	- Added code to keep device_node ref count with new iommu
-	  fwspec API
-	- Added patch to make iommu_fwspec arch agnostic
-	- Dropped RFC status
-	- Rebased against v4.8-rc2
-
-v2 -> v3
-	- Rebased on top of dependencies series [1][2][3](v4.7-rc3)
-	- Added back reliance on ACPI early probing infrastructure
-	- Patch[1-3] merged through other dependent series
-	- Added back IOMMU fwnode generalization
-	- Move SMMU v3 static functions configuration to IORT code
-	- Implemented generic IOMMU fwspec API
-	- Added code to implement fwnode platform device look-up
-
-v1 -> v2:
-	- Rebased on top of dependencies series [1][2][3](v4.7-rc1)
-	- Removed IOMMU fwnode generalization
-	- Implemented ARM SMMU v3 ACPI probing instead of ARM SMMU v2
-	  owing to patch series dependencies [1]
-	- Moved platform device creation logic to IORT code to
-	  generalize its usage for ARM SMMU v1-v2-v3 components
-	- Removed reliance on ACPI early device probing
-	- Created IORT specific iommu_xlate() translation hook leaving
-	  OF code unchanged according to v1 reviews
-
-The ACPI IORT table provides information that allows instantiating
-ARM SMMU devices and carrying out id mappings between components on
-ARM based systems (devices, IOMMUs, interrupt controllers).
-
-http://infocenter.arm.com/help/topic/com.arm.doc.den0049b/DEN0049B_IO_Remapping_Table.pdf
-
-Building on basic IORT support, available through [2],
-this patchset enables ARM SMMUs support on ACPI systems.
-
-Most of the code is aimed at building the required generic ACPI
-infrastructure to create and enable IOMMU components and to bring
-the IOMMU infrastructure for ACPI on par with DT, which is going to
-make future ARM SMMU components easier to integrate.
-
-PATCH (1) adds a FWNODE_IOMMU type to the struct fwnode_handle type.
-          It is required to attach a fwnode identifier to platform
-          devices allocated/detected through IORT tables entries;
-          IOMMU devices have to have an identifier to look them up
-          eg IOMMU core layer carrying out id translation. This can be
-          done through a fwnode_handle (ie IOMMU platform devices created
-          out of IORT tables are not ACPI devices hence they can't be
-          allocated as such, otherwise they would have a fwnode_handle of
-          type FWNODE_ACPI).
-
-PATCH (2) Add kernel infrastructure to make the struct iommu_fwspec
-          handling arch agnostic and generic.
-
-PATCH (3) makes use of the ACPI early probing API to add a linker script
-          section for probing devices via IORT ACPI kernel code.
-
-PATCH (4) provides IORT support for registering IOMMU IORT node through
-          their fwnode handle.
-
-PATCH (5) extends iommu_fwspec so that it can be used on ACPI based
-          system by creating a generic IOMMU fwspec kernel layer.
-
-PATCH (6) implements the of_dma_configure() API in ACPI world -
-          acpi_dma_configure() - and patches PCI and ACPI core code to
-          start making use of it.
-
-PATCH (7) creates the kernel infrastructure required to create ARM SMMU
-          platform devices for IORT nodes.
-
-PATCH (8) refactors the ARM SMMU v3 driver so that the init functions are
-          split in a way that groups together code that probes through DT
-          and code that carries out HW registers FW agnostic probing, in
-          preparation for adding the ACPI probing path.
-
-PATCH (9) Building on patch (7), it adds ARM SMMU v3 IORT IOMMU
-          operations to create and probe ARM SMMU v3 components.
-
-PATCH (10) refactors the ARM SMMU v1/v2 driver so that the init functions
-           are split in a way that groups together code that probes
-           through DT and code that carries out HW registers FW agnostic
-           probing, in preparation for adding the ACPI probing path.
-
-PATCH (11) Building on patch (7), it adds ARM SMMU v1/v2 IORT IOMMU
-           operations to create and probe ARM SMMU v1/v2 components.
-
-PATCH (12) Extend the IORT iort_node_map_rid() to work on a type mask
-           instead of a single type so that the translation API can
-           be used on a range of components.
-
-PATCH (13) Add IORT API to carry out id mappings for components that do
-           do not have an input identifier/RIDs (ie named components).
-
-PATCH (14) provides IORT infrastructure to carry out IOMMU configuration
-           for devices and hook it up to the previously introduced ACPI
-           DMA configure API.
-
-This patchset is built on top and depends on these two patch series:
-
-[1] R.Murphy "Generic DT bindings for PCI IOMMUS and ARM SMMU" v6
-    https://marc.info/?l=devicetree&m=147317605521320&w=2
-
-[2] T.Nowicki "Introduce ACPI world to ITS irqchip" v10
-    https://marc.info/?l=linux-acpi&m=147315429713512&w=2
-
-and is provided for review/testing purposes here:
-
-git://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git acpi/iort-smmu-v5
-
-Tested on Juno and FVP models for ARM SMMU v1 and v3 probing path.
-
-Lorenzo Pieralisi (14):
-  drivers: iommu: add FWNODE_IOMMU fwnode type
-  drivers: iommu: implement arch_{set/get}_iommu_fwspec API
-  drivers: acpi: iort: introduce linker section for IORT entries probing
-  drivers: acpi: iort: add support for IOMMU fwnode registration
-  drivers: iommu: make iommu_fwspec OF agnostic
-  drivers: acpi: implement acpi_dma_configure
-  drivers: acpi: iort: add support for ARM SMMU platform devices
-    creation
-  drivers: iommu: arm-smmu-v3: split probe functions into DT/generic
-    portions
-  drivers: iommu: arm-smmu-v3: add IORT configuration
-  drivers: iommu: arm-smmu: split probe functions into DT/generic
-    portions
-  drivers: iommu: arm-smmu: add IORT configuration
-  drivers: acpi: iort: replace rid map type with type mask
-  drivers: acpi: iort: add single mapping function
-  drivers: acpi: iort: introduce iort_iommu_configure
-
- arch/arm/Kconfig                      |   1 +
- arch/arm/include/asm/iommu-fwspec.h   |  30 ++
- arch/arm64/Kconfig                    |   1 +
- arch/arm64/include/asm/iommu-fwspec.h |  30 ++
- drivers/acpi/arm64/iort.c             | 525 +++++++++++++++++++++++++++++++++-
- drivers/acpi/glue.c                   |   4 +-
- drivers/acpi/scan.c                   |  29 ++
- drivers/iommu/Kconfig                 |   7 +
- drivers/iommu/Makefile                |   1 +
- drivers/iommu/arm-smmu-v3.c           | 141 +++++++--
- drivers/iommu/arm-smmu.c              | 209 +++++++++++---
- drivers/iommu/iommu-fwspec.c          | 126 ++++++++
- drivers/iommu/of_iommu.c              |  93 ------
- drivers/pci/probe.c                   |   3 +-
- include/acpi/acpi_bus.h               |   2 +
- include/asm-generic/vmlinux.lds.h     |   1 +
- include/linux/acpi.h                  |   5 +
- include/linux/acpi_iort.h             |  21 ++
- include/linux/fwnode.h                |   1 +
- include/linux/iommu-fwspec.h          |  70 +++++
- include/linux/iommu.h                 |  25 ++
- include/linux/of_iommu.h              |  28 +-
- 22 files changed, 1187 insertions(+), 166 deletions(-)
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+---
+ arch/arm/Kconfig                      |  1 +
+ arch/arm/include/asm/iommu-fwspec.h   | 30 ++++++++++++++++++++++++++++++
+ arch/arm64/Kconfig                    |  1 +
+ arch/arm64/include/asm/iommu-fwspec.h | 30 ++++++++++++++++++++++++++++++
+ drivers/iommu/Kconfig                 |  3 +++
+ drivers/iommu/of_iommu.c              | 14 +++++++-------
+ include/linux/of_iommu.h              | 10 ++++++++++
+ 7 files changed, 82 insertions(+), 7 deletions(-)
  create mode 100644 arch/arm/include/asm/iommu-fwspec.h
  create mode 100644 arch/arm64/include/asm/iommu-fwspec.h
- create mode 100644 drivers/iommu/iommu-fwspec.c
- create mode 100644 include/linux/iommu-fwspec.h
 
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index a9c4e48..e84f62e 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -59,6 +59,7 @@ config ARM
+ 	select HAVE_GENERIC_DMA_COHERENT
+ 	select HAVE_HW_BREAKPOINT if (PERF_EVENTS && (CPU_V6 || CPU_V6K || CPU_V7))
+ 	select HAVE_IDE if PCI || ISA || PCMCIA
++	select HAVE_IOMMU_FWSPEC if IOMMU_API
+ 	select HAVE_IRQ_TIME_ACCOUNTING
+ 	select HAVE_KERNEL_GZIP
+ 	select HAVE_KERNEL_LZ4
+diff --git a/arch/arm/include/asm/iommu-fwspec.h b/arch/arm/include/asm/iommu-fwspec.h
+new file mode 100644
+index 0000000..2e87d8b
+--- /dev/null
++++ b/arch/arm/include/asm/iommu-fwspec.h
+@@ -0,0 +1,30 @@
++/*
++ * Copyright (C) 2016 ARM Ltd.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++#ifndef __ASM_IOMMU_FWSPEC_H
++#define __ASM_IOMMU_FWSPEC_H
++
++static inline void arch_set_iommu_fwspec(struct device *dev,
++					 struct iommu_fwspec *fwspec)
++{
++	dev->archdata.iommu = fwspec;
++}
++
++static inline struct iommu_fwspec *arch_get_iommu_fwspec(struct device *dev)
++{
++	return dev->archdata.iommu;
++}
++#endif
++
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index bc3f00f..10c9b3d 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -83,6 +83,7 @@ config ARM64
+ 	select HAVE_GCC_PLUGINS
+ 	select HAVE_GENERIC_DMA_COHERENT
+ 	select HAVE_HW_BREAKPOINT if PERF_EVENTS
++	select HAVE_IOMMU_FWSPEC if IOMMU_API
+ 	select HAVE_IRQ_TIME_ACCOUNTING
+ 	select HAVE_MEMBLOCK
+ 	select HAVE_MEMBLOCK_NODE_MAP if NUMA
+diff --git a/arch/arm64/include/asm/iommu-fwspec.h b/arch/arm64/include/asm/iommu-fwspec.h
+new file mode 100644
+index 0000000..2e87d8b
+--- /dev/null
++++ b/arch/arm64/include/asm/iommu-fwspec.h
+@@ -0,0 +1,30 @@
++/*
++ * Copyright (C) 2016 ARM Ltd.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++#ifndef __ASM_IOMMU_FWSPEC_H
++#define __ASM_IOMMU_FWSPEC_H
++
++static inline void arch_set_iommu_fwspec(struct device *dev,
++					 struct iommu_fwspec *fwspec)
++{
++	dev->archdata.iommu = fwspec;
++}
++
++static inline struct iommu_fwspec *arch_get_iommu_fwspec(struct device *dev)
++{
++	return dev->archdata.iommu;
++}
++#endif
++
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 8ee54d7..101cb17 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -67,6 +67,9 @@ config OF_IOMMU
+        def_bool y
+        depends on OF && IOMMU_API
+ 
++config HAVE_IOMMU_FWSPEC
++	bool
++
+ # IOMMU-agnostic DMA-mapping layer
+ config IOMMU_DMA
+ 	bool
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 04d616d..38669b8 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -229,7 +229,7 @@ postcore_initcall_sync(of_iommu_init);
+ 
+ int iommu_fwspec_init(struct device *dev, struct device_node *iommu_np)
+ {
+-	struct iommu_fwspec *fwspec = dev->archdata.iommu;
++	struct iommu_fwspec *fwspec = arch_get_iommu_fwspec(dev);
+ 
+ 	if (fwspec)
+ 		return 0;
+@@ -240,13 +240,13 @@ int iommu_fwspec_init(struct device *dev, struct device_node *iommu_np)
+ 
+ 	fwspec->iommu_np = of_node_get(iommu_np);
+ 	fwspec->iommu_ops = of_iommu_get_ops(iommu_np);
+-	dev->archdata.iommu = fwspec;
++	arch_set_iommu_fwspec(dev, fwspec);
+ 	return 0;
+ }
+ 
+ void iommu_fwspec_free(struct device *dev)
+ {
+-	struct iommu_fwspec *fwspec = dev->archdata.iommu;
++	struct iommu_fwspec *fwspec = arch_get_iommu_fwspec(dev);
+ 
+ 	if (fwspec) {
+ 		of_node_put(fwspec->iommu_np);
+@@ -256,7 +256,7 @@ void iommu_fwspec_free(struct device *dev)
+ 
+ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
+ {
+-	struct iommu_fwspec *fwspec = dev->archdata.iommu;
++	struct iommu_fwspec *fwspec = arch_get_iommu_fwspec(dev);
+ 	size_t size;
+ 	int i;
+ 
+@@ -264,7 +264,7 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
+ 		return -EINVAL;
+ 
+ 	size = offsetof(struct iommu_fwspec, ids[fwspec->num_ids + num_ids]);
+-	fwspec = krealloc(dev->archdata.iommu, size, GFP_KERNEL);
++	fwspec = krealloc(fwspec, size, GFP_KERNEL);
+ 	if (!fwspec)
+ 		return -ENOMEM;
+ 
+@@ -272,11 +272,11 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
+ 		fwspec->ids[fwspec->num_ids + i] = ids[i];
+ 
+ 	fwspec->num_ids += num_ids;
+-	dev->archdata.iommu = fwspec;
++	arch_set_iommu_fwspec(dev, fwspec);
+ 	return 0;
+ }
+ 
+ inline struct iommu_fwspec *dev_iommu_fwspec(struct device *dev)
+ {
+-	return dev->archdata.iommu;
++	return arch_get_iommu_fwspec(dev);
+ }
+diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+index accdc05..358db49 100644
+--- a/include/linux/of_iommu.h
++++ b/include/linux/of_iommu.h
+@@ -46,6 +46,16 @@ void iommu_fwspec_free(struct device *dev);
+ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
+ struct iommu_fwspec *dev_iommu_fwspec(struct device *dev);
+ 
++#ifdef CONFIG_HAVE_IOMMU_FWSPEC
++#include <asm/iommu-fwspec.h>
++#else /* !CONFIG_HAVE_IOMMU_FWSPEC */
++static inline void arch_set_iommu_fwspec(struct device *dev,
++					 struct iommu_fwspec *fwspec) {}
++
++static inline struct iommu_fwspec *
++arch_get_iommu_fwspec(struct device *dev) { return NULL; }
++#endif
++
+ void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops);
+ const struct iommu_ops *of_iommu_get_ops(struct device_node *np);
+ 
 -- 
 2.10.0
