@@ -1,153 +1,123 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v7 14/22] iommu/arm-smmu: Streamline SMMU data lookups
-Date: Mon, 12 Sep 2016 17:13:52 +0100
-Message-ID: <b93f589c46d56a602733b02f96b90457c8bb1da0.1473695704.git.robin.murphy@arm.com>
+Subject: [PATCH v7 10/22] iommu/arm-smmu: Handle stream IDs more dynamically
+Date: Mon, 12 Sep 2016 17:13:48 +0100
+Message-ID: <6d635a9764d072ce1b1081f087cc743ba0ec1f56.1473695704.git.robin.murphy@arm.com>
 References: <cover.1473695704.git.robin.murphy@arm.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 In-Reply-To: <cover.1473695704.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Simplify things somewhat by stashing our arm_smmu_device instance in
-drvdata, so that it's readily available to our driver model callbacks.
-Then we can excise the private list entirely, since the driver core
-already has a perfectly good list of SMMU devices we can use in the one
-instance we actually need to. Finally, make a further modest code saving
-with the relatively new of_device_get_match_data() helper.
+Rather than assuming fixed worst-case values for stream IDs and SMR
+masks, keep track of whatever implemented bits the hardware actually
+reports. This also obviates the slightly questionable validation of SMR
+fields in isolation - rather than aborting the whole SMMU probe for a
+hardware configuration which is still architecturally valid, we can
+simply refuse masters later if they try to claim an unrepresentable ID
+or mask (which almost certainly implies a DT error anyway).
 
+Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Tested-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 44 +++++++++++---------------------------------
- 1 file changed, 11 insertions(+), 33 deletions(-)
+ drivers/iommu/arm-smmu.c | 43 ++++++++++++++++++++++---------------------
+ 1 file changed, 22 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 0a628f2c9297..3962add0c33b 100644
+index 4b1c87e947fd..f86d7887f69a 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -41,6 +41,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_address.h>
-+#include <linux/of_device.h>
- #include <linux/pci.h>
- #include <linux/platform_device.h>
- #include <linux/slab.h>
-@@ -370,8 +371,6 @@ struct arm_smmu_device {
- 	u32				num_context_irqs;
- 	unsigned int			*irqs;
+@@ -165,9 +165,7 @@
+ #define ARM_SMMU_GR0_SMR(n)		(0x800 + ((n) << 2))
+ #define SMR_VALID			(1 << 31)
+ #define SMR_MASK_SHIFT			16
+-#define SMR_MASK_MASK			0x7fff
+ #define SMR_ID_SHIFT			0
+-#define SMR_ID_MASK			0x7fff
  
--	struct list_head		list;
--
- 	u32				cavium_id_base; /* Specific to Cavium */
- };
+ #define ARM_SMMU_GR0_S2CR(n)		(0xc00 + ((n) << 2))
+ #define S2CR_CBNDX_SHIFT		0
+@@ -346,6 +344,8 @@ struct arm_smmu_device {
+ 	atomic_t			irptndx;
  
-@@ -409,9 +408,6 @@ struct arm_smmu_domain {
- 	struct iommu_domain		domain;
- };
+ 	u32				num_mapping_groups;
++	u16				streamid_mask;
++	u16				smr_mask_mask;
+ 	DECLARE_BITMAP(smr_map, ARM_SMMU_MAX_SMRS);
  
--static DEFINE_SPINLOCK(arm_smmu_devices_lock);
--static LIST_HEAD(arm_smmu_devices);
--
- struct arm_smmu_option_prop {
- 	u32 opt;
- 	const char *prop;
-@@ -478,6 +474,8 @@ static int __find_legacy_master_phandle(struct device *dev, void *data)
- 	return err;
- }
+ 	unsigned long			va_size;
+@@ -1715,39 +1715,40 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ 		dev_notice(smmu->dev,
+ 			   "\t(IDR0.CTTW overridden by dma-coherent property)\n");
  
-+static struct platform_driver arm_smmu_driver;
-+
- static int arm_smmu_register_legacy_master(struct device *dev)
- {
- 	struct arm_smmu_device *smmu;
-@@ -495,19 +493,16 @@ static int arm_smmu_register_legacy_master(struct device *dev)
- 	}
++	/* Max. number of entries we have for stream matching/indexing */
++	size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
++	smmu->streamid_mask = size - 1;
+ 	if (id & ID0_SMS) {
+-		u32 smr, sid, mask;
++		u32 smr;
  
- 	it.node = np;
--	spin_lock(&arm_smmu_devices_lock);
--	list_for_each_entry(smmu, &arm_smmu_devices, list) {
--		err = __find_legacy_master_phandle(smmu->dev, &data);
--		if (err)
--			break;
--	}
--	spin_unlock(&arm_smmu_devices_lock);
-+	err = driver_for_each_device(&arm_smmu_driver.driver, NULL, &data,
-+				     __find_legacy_master_phandle);
- 	of_node_put(np);
- 	if (err == 0)
- 		return -ENODEV;
- 	if (err < 0)
- 		return err;
- 
-+	smmu = dev_get_drvdata(data);
-+
- 	if (it.cur_count > MAX_MASTER_STREAMIDS) {
- 		dev_err(smmu->dev,
- 			"reached maximum number (%d) of stream IDs for master device %s\n",
-@@ -1816,7 +1811,6 @@ MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
- 
- static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- {
--	const struct of_device_id *of_id;
- 	const struct arm_smmu_match_data *data;
- 	struct resource *res;
- 	struct arm_smmu_device *smmu;
-@@ -1830,8 +1824,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	}
- 	smmu->dev = dev;
- 
--	of_id = of_match_node(arm_smmu_of_match, dev->of_node);
--	data = of_id->data;
-+	data = of_device_get_match_data(dev);
- 	smmu->version = data->version;
- 	smmu->model = data->model;
- 
-@@ -1904,35 +1897,20 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 		smmu->features |= ARM_SMMU_FEAT_STREAM_MATCH;
+-		smmu->num_mapping_groups = (id >> ID0_NUMSMRG_SHIFT) &
+-					   ID0_NUMSMRG_MASK;
+-		if (smmu->num_mapping_groups == 0) {
++		size = (id >> ID0_NUMSMRG_SHIFT) & ID0_NUMSMRG_MASK;
++		if (size == 0) {
+ 			dev_err(smmu->dev,
+ 				"stream-matching supported, but no SMRs present!\n");
+ 			return -ENODEV;
  		}
- 	}
  
--	INIT_LIST_HEAD(&smmu->list);
--	spin_lock(&arm_smmu_devices_lock);
--	list_add(&smmu->list, &arm_smmu_devices);
--	spin_unlock(&arm_smmu_devices_lock);
--
-+	platform_set_drvdata(pdev, smmu);
- 	arm_smmu_device_reset(smmu);
- 	return 0;
- }
+-		smr = SMR_MASK_MASK << SMR_MASK_SHIFT;
+-		smr |= (SMR_ID_MASK << SMR_ID_SHIFT);
++		/*
++		 * SMR.ID bits may not be preserved if the corresponding MASK
++		 * bits are set, so check each one separately. We can reject
++		 * masters later if they try to claim IDs outside these masks.
++		 */
++		smr = smmu->streamid_mask << SMR_ID_SHIFT;
+ 		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
+ 		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
++		smmu->streamid_mask = smr >> SMR_ID_SHIFT;
  
- static int arm_smmu_device_remove(struct platform_device *pdev)
- {
--	struct device *dev = &pdev->dev;
--	struct arm_smmu_device *curr, *smmu = NULL;
--
--	spin_lock(&arm_smmu_devices_lock);
--	list_for_each_entry(curr, &arm_smmu_devices, list) {
--		if (curr->dev == dev) {
--			smmu = curr;
--			list_del(&smmu->list);
--			break;
+-		mask = (smr >> SMR_MASK_SHIFT) & SMR_MASK_MASK;
+-		sid = (smr >> SMR_ID_SHIFT) & SMR_ID_MASK;
+-		if ((mask & sid) != sid) {
+-			dev_err(smmu->dev,
+-				"SMR mask bits (0x%x) insufficient for ID field (0x%x)\n",
+-				mask, sid);
+-			return -ENODEV;
 -		}
--	}
--	spin_unlock(&arm_smmu_devices_lock);
-+	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
++		smr = smmu->streamid_mask << SMR_MASK_SHIFT;
++		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
++		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
++		smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
  
- 	if (!smmu)
- 		return -ENODEV;
+ 		dev_notice(smmu->dev,
+-			   "\tstream matching with %u register groups, mask 0x%x",
+-			   smmu->num_mapping_groups, mask);
+-	} else {
+-		smmu->num_mapping_groups = (id >> ID0_NUMSIDB_SHIFT) &
+-					   ID0_NUMSIDB_MASK;
++			   "\tstream matching with %lu register groups, mask 0x%x",
++			   size, smmu->smr_mask_mask);
+ 	}
++	smmu->num_mapping_groups = size;
  
- 	if (!bitmap_empty(smmu->context_map, ARM_SMMU_MAX_CBS))
--		dev_err(dev, "removing device with active domains!\n");
-+		dev_err(&pdev->dev, "removing device with active domains!\n");
- 
- 	/* Turn the thing off */
- 	writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+ 	if (smmu->version < ARM_SMMU_V2 || !(id & ID0_PTFS_NO_AARCH32)) {
+ 		smmu->features |= ARM_SMMU_FEAT_FMT_AARCH32_L;
 -- 
 2.8.1.dirty
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
