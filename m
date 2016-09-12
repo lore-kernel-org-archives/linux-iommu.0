@@ -1,59 +1,37 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 4.5/20] Docs: dt: document ARM SMMUv3 generic binding usage
-Date: Fri,  9 Sep 2016 19:17:48 +0100
-Message-ID: <6067fc2b12b3bc681687753eedd941c8244c22fa.1473443407.git.robin.murphy@arm.com>
-References: <cover.1473173789.git.robin.murphy@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1473173789.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+From: Xunlei Pang <xlpang@redhat.com>
+Subject: [PATCH] iommu/vt-d: Fix the size calculation of pasid table
+Date: Mon, 12 Sep 2016 10:49:11 +0800
+Message-ID: <1473648551-10025-1-git-send-email-xlpang@redhat.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Xunlei Pang <xlpang@redhat.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Now that we've ratified SMMUv3's use of the generic binding, document it.
+According to the vt-d spec, the size of pasid (state) entry is 8B
+which equals 3 in power of 2, the number of pasid (state) entries
+is (ecap_pss + 1) in power of 2.
 
-CC: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-CC: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Thus the right size of pasid (state) table in power of 2 should be
+ecap_pss(iommu->ecap) plus "1+3=4" other than 7.
+
+Signed-off-by: Xunlei Pang <xlpang@redhat.com>
 ---
- Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/iommu/intel-svm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-index 7b94c88cf2ee..69a694f70bea 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-@@ -27,6 +27,12 @@ the PCIe specification.
-                       * "cmdq-sync" - CMD_SYNC complete
-                       * "gerror"    - Global Error activated
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 8ebb353..cfa75c2 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -39,7 +39,7 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+ 	struct page *pages;
+ 	int order;
  
-+- #iommu-cells      : See the generic IOMMU binding described in
-+                        devicetree/bindings/iommu/iommu.txt
-+                      for details. For SMMUv3, must be 1, with each cell
-+                      describing a single stream ID. All possible stream
-+                      ID which a device may emit must be described.
-+
- ** SMMUv3 optional properties:
+-	order = ecap_pss(iommu->ecap) + 7 - PAGE_SHIFT;
++	order = ecap_pss(iommu->ecap) + 4 - PAGE_SHIFT;
+ 	if (order < 0)
+ 		order = 0;
  
- - dma-coherent      : Present if DMA operations made by the SMMU (page
-@@ -54,6 +60,6 @@ the PCIe specification.
-                              <GIC_SPI 79 IRQ_TYPE_EDGE_RISING>;
-                 interrupt-names = "eventq", "priq", "cmdq-sync", "gerror";
-                 dma-coherent;
--                #iommu-cells = <0>;
-+                #iommu-cells = <1>;
-                 msi-parent = <&its 0xff0000>;
-         };
 -- 
-2.8.1.dirty
+1.8.3.1
