@@ -1,223 +1,236 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v7 01/22] Docs: dt: add PCI IOMMU map bindings
-Date: Mon, 12 Sep 2016 17:13:39 +0100
-Message-ID: <78de747525b995011b7af6e23c484041f08e303d.1473695704.git.robin.murphy@arm.com>
+Subject: [PATCH v7 04/22] iommu: Introduce iommu_fwspec
+Date: Mon, 12 Sep 2016 17:13:42 +0100
+Message-ID: <742a71630de502ac5a7a8641c6ed368d8409324d.1473695704.git.robin.murphy@arm.com>
 References: <cover.1473695704.git.robin.murphy@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1473695704.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Introduce a common structure to hold the per-device firmware data that
+most IOMMU drivers need to keep track of. This enables us to configure
+much of that data from common firmware code, and consolidate a lot of
+the equivalent implementations, device look-up tables, etc. which are
+currently strewn across IOMMU drivers.
 
-The existing IOMMU bindings are able to specify the relationship between
-masters and IOMMUs, but they are insufficient for describing the general
-case of hotpluggable busses such as PCI where the set of masters is not
-known until runtime, and the relationship between masters and IOMMUs is
-a property of the integration of the system.
+This will also be enable us to address the outstanding "multiple IOMMUs
+on the platform bus" problem by tweaking IOMMU API calls to prefer
+dev->fwspec->ops before falling back to dev->bus->iommu_ops, and thus
+gracefully handle those troublesome systems which we currently cannot.
 
-This patch adds a generic binding for mapping PCI devices to IOMMUs,
-using a new iommu-map property (specific to PCI*) which may be used to
-map devices (identified by their Requester ID) to sideband data for the
-IOMMU which they master through.
+As the first user, hook up the OF IOMMU configuration mechanism. The
+driver-defined nature of DT cells means that we still need the drivers
+to translate and add the IDs themselves, but future users such as the
+much less free-form ACPI IORT will be much simpler and self-contained.
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+CC: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Suggested-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
 ---
- .../devicetree/bindings/pci/pci-iommu.txt          | 171 +++++++++++++++++++++
- 1 file changed, 171 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pci/pci-iommu.txt
 
-diff --git a/Documentation/devicetree/bindings/pci/pci-iommu.txt b/Documentation/devicetree/bindings/pci/pci-iommu.txt
-new file mode 100644
-index 000000000000..56c829621b9a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pci/pci-iommu.txt
-@@ -0,0 +1,171 @@
-+This document describes the generic device tree binding for describing the
-+relationship between PCI(e) devices and IOMMU(s).
+- Drop the 'gradual introduction' fiddling and go straight to struct
+  device and common code, as it prevents all the silly build issues
+  and ultimately makes life simpler for everyone
+---
+ drivers/iommu/iommu.c    | 56 ++++++++++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/of_iommu.c |  8 +++++--
+ include/linux/device.h   |  3 +++
+ include/linux/iommu.h    | 38 ++++++++++++++++++++++++++++++++
+ 4 files changed, 103 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index b06d93594436..816e320d3ad8 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -31,6 +31,7 @@
+ #include <linux/err.h>
+ #include <linux/pci.h>
+ #include <linux/bitops.h>
++#include <linux/property.h>
+ #include <trace/events/iommu.h>
+ 
+ static struct kset *iommu_group_kset;
+@@ -1613,3 +1614,58 @@ out:
+ 
+ 	return ret;
+ }
 +
-+Each PCI(e) device under a root complex is uniquely identified by its Requester
-+ID (AKA RID). A Requester ID is a triplet of a Bus number, Device number, and
-+Function number.
++int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
++		      const struct iommu_ops *ops)
++{
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
 +
-+For the purpose of this document, when treated as a numeric value, a RID is
-+formatted such that:
++	if (fwspec)
++		return ops == fwspec->ops ? 0 : -EINVAL;
 +
-+* Bits [15:8] are the Bus number.
-+* Bits [7:3] are the Device number.
-+* Bits [2:0] are the Function number.
-+* Any other bits required for padding must be zero.
++	fwspec = kzalloc(sizeof(*fwspec), GFP_KERNEL);
++	if (!fwspec)
++		return -ENOMEM;
 +
-+IOMMUs may distinguish PCI devices through sideband data derived from the
-+Requester ID. While a given PCI device can only master through one IOMMU, a
-+root complex may split masters across a set of IOMMUs (e.g. with one IOMMU per
-+bus).
++	of_node_get(to_of_node(iommu_fwnode));
++	fwspec->iommu_fwnode = iommu_fwnode;
++	fwspec->ops = ops;
++	dev->iommu_fwspec = fwspec;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(iommu_fwspec_init);
 +
-+The generic 'iommus' property is insufficient to describe this relationship,
-+and a mechanism is required to map from a PCI device to its IOMMU and sideband
-+data.
++void iommu_fwspec_free(struct device *dev)
++{
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
 +
-+For generic IOMMU bindings, see
-+Documentation/devicetree/bindings/iommu/iommu.txt.
++	if (fwspec) {
++		fwnode_handle_put(fwspec->iommu_fwnode);
++		kfree(fwspec);
++		dev->iommu_fwspec = NULL;
++	}
++}
++EXPORT_SYMBOL_GPL(iommu_fwspec_free);
 +
++int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
++{
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	size_t size;
++	int i;
 +
-+PCI root complex
-+================
++	if (!fwspec)
++		return -EINVAL;
 +
-+Optional properties
-+-------------------
++	size = offsetof(struct iommu_fwspec, ids[fwspec->num_ids + num_ids]);
++	fwspec = krealloc(dev->iommu_fwspec, size, GFP_KERNEL);
++	if (!fwspec)
++		return -ENOMEM;
 +
-+- iommu-map: Maps a Requester ID to an IOMMU and associated iommu-specifier
-+  data.
++	for (i = 0; i < num_ids; i++)
++		fwspec->ids[fwspec->num_ids + i] = ids[i];
 +
-+  The property is an arbitrary number of tuples of
-+  (rid-base,iommu,iommu-base,length).
-+
-+  Any RID r in the interval [rid-base, rid-base + length) is associated with
-+  the listed IOMMU, with the iommu-specifier (r - rid-base + iommu-base).
-+
-+- iommu-map-mask: A mask to be applied to each Requester ID prior to being
-+  mapped to an iommu-specifier per the iommu-map property.
-+
-+
-+Example (1)
-+===========
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	iommu: iommu@a {
-+		reg = <0xa 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	pci: pci@f {
-+		reg = <0xf 0x1>;
-+		compatible = "vendor,pcie-root-complex";
-+		device_type = "pci";
-+
-+		/*
-+		 * The sideband data provided to the IOMMU is the RID,
-+		 * identity-mapped.
-+		 */
-+		iommu-map = <0x0 &iommu 0x0 0x10000>;
-+	};
++	fwspec->num_ids += num_ids;
++	dev->iommu_fwspec = fwspec;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 19e1e8f2f871..5b82862f571f 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -167,7 +167,9 @@ static const struct iommu_ops
+ 		return NULL;
+ 
+ 	ops = of_iommu_get_ops(iommu_spec.np);
+-	if (!ops || !ops->of_xlate || ops->of_xlate(&pdev->dev, &iommu_spec))
++	if (!ops || !ops->of_xlate ||
++	    iommu_fwspec_init(&pdev->dev, &iommu_spec.np->fwnode, ops) ||
++	    ops->of_xlate(&pdev->dev, &iommu_spec))
+ 		ops = NULL;
+ 
+ 	of_node_put(iommu_spec.np);
+@@ -196,7 +198,9 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 		np = iommu_spec.np;
+ 		ops = of_iommu_get_ops(np);
+ 
+-		if (!ops || !ops->of_xlate || ops->of_xlate(dev, &iommu_spec))
++		if (!ops || !ops->of_xlate ||
++		    iommu_fwspec_init(dev, &np->fwnode, ops) ||
++		    ops->of_xlate(dev, &iommu_spec))
+ 			goto err_put_node;
+ 
+ 		of_node_put(np);
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 38f02814d53a..bc41e87a969b 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -41,6 +41,7 @@ struct device_node;
+ struct fwnode_handle;
+ struct iommu_ops;
+ struct iommu_group;
++struct iommu_fwspec;
+ 
+ struct bus_attribute {
+ 	struct attribute	attr;
+@@ -765,6 +766,7 @@ struct device_dma_parameters {
+  * 		gone away. This should be set by the allocator of the
+  * 		device (i.e. the bus driver that discovered the device).
+  * @iommu_group: IOMMU group the device belongs to.
++ * @iommu_fwspec: IOMMU-specific properties supplied by firmware.
+  *
+  * @offline_disabled: If set, the device is permanently online.
+  * @offline:	Set after successful invocation of bus type's .offline().
+@@ -849,6 +851,7 @@ struct device {
+ 
+ 	void	(*release)(struct device *dev);
+ 	struct iommu_group	*iommu_group;
++	struct iommu_fwspec	*iommu_fwspec;
+ 
+ 	bool			offline_disabled:1;
+ 	bool			offline:1;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index a35fb8b42e1a..2ea15842e9f6 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -331,10 +331,32 @@ extern struct iommu_group *pci_device_group(struct device *dev);
+ /* Generic device grouping function */
+ extern struct iommu_group *generic_device_group(struct device *dev);
+ 
++/**
++ * struct iommu_fwspec - per-device IOMMU instance data
++ * @ops: ops for this device's IOMMU
++ * @iommu_fwnode: firmware handle for this device's IOMMU
++ * @iommu_priv: IOMMU driver private data for this device
++ * @num_ids: number of associated device IDs
++ * @ids: IDs which this device may present to the IOMMU
++ */
++struct iommu_fwspec {
++	const struct iommu_ops	*ops;
++	struct fwnode_handle	*iommu_fwnode;
++	void			*iommu_priv;
++	unsigned int		num_ids;
++	u32			ids[];
 +};
 +
++int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
++		      const struct iommu_ops *ops);
++void iommu_fwspec_free(struct device *dev);
++int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
 +
-+Example (2)
-+===========
+ #else /* CONFIG_IOMMU_API */
+ 
+ struct iommu_ops {};
+ struct iommu_group {};
++struct iommu_fwspec {};
+ 
+ static inline bool iommu_present(struct bus_type *bus)
+ {
+@@ -541,6 +563,22 @@ static inline void iommu_device_unlink(struct device *dev, struct device *link)
+ {
+ }
+ 
++static inline int iommu_fwspec_init(struct device *dev,
++				    struct fwnode_handle *iommu_fwnode,
++				    const struct iommu_ops *ops)
++{
++	return -ENODEV;
++}
 +
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
++void iommu_fwspec_free(struct device *dev)
++{
++}
 +
-+	iommu: iommu@a {
-+		reg = <0xa 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
++int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
++{
++	return -ENODEV;
++}
 +
-+	pci: pci@f {
-+		reg = <0xf 0x1>;
-+		compatible = "vendor,pcie-root-complex";
-+		device_type = "pci";
-+
-+		/*
-+		 * The sideband data provided to the IOMMU is the RID with the
-+		 * function bits masked out.
-+		 */
-+		iommu-map = <0x0 &iommu 0x0 0x10000>;
-+		iommu-map-mask = <0xfff8>;
-+	};
-+};
-+
-+
-+Example (3)
-+===========
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	iommu: iommu@a {
-+		reg = <0xa 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	pci: pci@f {
-+		reg = <0xf 0x1>;
-+		compatible = "vendor,pcie-root-complex";
-+		device_type = "pci";
-+
-+		/*
-+		 * The sideband data provided to the IOMMU is the RID,
-+		 * but the high bits of the bus number are flipped.
-+		 */
-+		iommu-map = <0x0000 &iommu 0x8000 0x8000>,
-+			    <0x8000 &iommu 0x0000 0x8000>;
-+	};
-+};
-+
-+
-+Example (4)
-+===========
-+
-+/ {
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+
-+	iommu_a: iommu@a {
-+		reg = <0xa 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	iommu_b: iommu@b {
-+		reg = <0xb 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	iommu_c: iommu@c {
-+		reg = <0xc 0x1>;
-+		compatible = "vendor,some-iommu";
-+		#iommu-cells = <1>;
-+	};
-+
-+	pci: pci@f {
-+		reg = <0xf 0x1>;
-+		compatible = "vendor,pcie-root-complex";
-+		device_type = "pci";
-+
-+		/*
-+		 * Devices with bus number 0-127 are mastered via IOMMU
-+		 * a, with sideband data being RID[14:0].
-+		 * Devices with bus number 128-255 are mastered via
-+		 * IOMMU b, with sideband data being RID[14:0].
-+		 * No devices master via IOMMU c.
-+		 */
-+		iommu-map = <0x0000 &iommu_a 0x0000 0x8000>,
-+			    <0x8000 &iommu_b 0x0000 0x8000>;
-+	};
-+};
+ #endif /* CONFIG_IOMMU_API */
+ 
+ #endif /* __LINUX_IOMMU_H */
 -- 
 2.8.1.dirty
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
