@@ -1,232 +1,273 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v7 04/22] iommu: Introduce iommu_fwspec
-Date: Mon, 12 Sep 2016 17:13:42 +0100
-Message-ID: <742a71630de502ac5a7a8641c6ed368d8409324d.1473695704.git.robin.murphy@arm.com>
+Subject: [PATCH v7 02/22] of/irq: Break out msi-map lookup (again)
+Date: Mon, 12 Sep 2016 17:13:40 +0100
+Message-ID: <6c2a550f23a7bf6e906c0ba7a6568b6fce935a8a.1473695704.git.robin.murphy@arm.com>
 References: <cover.1473695704.git.robin.murphy@arm.com>
 Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1473695704.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce a common structure to hold the per-device firmware data that
-most IOMMU drivers need to keep track of. This enables us to configure
-much of that data from common firmware code, and consolidate a lot of
-the equivalent implementations, device look-up tables, etc. which are
-currently strewn across IOMMU drivers.
+The PCI msi-map code is already doing double-duty translating IDs and
+retrieving MSI parents, which unsurprisingly is the same functionality
+we need for the identically-formatted PCI iommu-map property. Drag the
+core parsing routine up yet another layer into the general OF-PCI code,
+and further generalise it for either kind of lookup in either flavour
+of map property.
 
-This will also be enable us to address the outstanding "multiple IOMMUs
-on the platform bus" problem by tweaking IOMMU API calls to prefer
-dev->fwspec->ops before falling back to dev->bus->iommu_ops, and thus
-gracefully handle those troublesome systems which we currently cannot.
-
-As the first user, hook up the OF IOMMU configuration mechanism. The
-driver-defined nature of DT cells means that we still need the drivers
-to translate and add the IDs themselves, but future users such as the
-much less free-form ACPI IORT will be much simpler and self-contained.
-
-CC: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Suggested-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Acked-by: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Acked-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Tested-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
 ---
+ drivers/of/irq.c       |  78 ++-----------------------------------
+ drivers/of/of_pci.c    | 102 +++++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/of_pci.h |  10 +++++
+ 3 files changed, 116 insertions(+), 74 deletions(-)
 
-- Drop the 'gradual introduction' fiddling and go straight to struct
-  device and common code, as it prevents all the silly build issues
-  and ultimately makes life simpler for everyone
----
- drivers/iommu/iommu.c    | 56 ++++++++++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/of_iommu.c |  8 +++++--
- include/linux/device.h   |  3 +++
- include/linux/iommu.h    | 38 ++++++++++++++++++++++++++++++++
- 4 files changed, 103 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index b06d93594436..816e320d3ad8 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -31,6 +31,7 @@
- #include <linux/err.h>
- #include <linux/pci.h>
- #include <linux/bitops.h>
-+#include <linux/property.h>
- #include <trace/events/iommu.h>
+diff --git a/drivers/of/irq.c b/drivers/of/irq.c
+index a2e68f740eda..393fea85eb4e 100644
+--- a/drivers/of/irq.c
++++ b/drivers/of/irq.c
+@@ -26,6 +26,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_irq.h>
++#include <linux/of_pci.h>
+ #include <linux/string.h>
+ #include <linux/slab.h>
  
- static struct kset *iommu_group_kset;
-@@ -1613,3 +1614,58 @@ out:
+@@ -592,87 +593,16 @@ static u32 __of_msi_map_rid(struct device *dev, struct device_node **np,
+ 			    u32 rid_in)
+ {
+ 	struct device *parent_dev;
+-	struct device_node *msi_controller_node;
+-	struct device_node *msi_np = *np;
+-	u32 map_mask, masked_rid, rid_base, msi_base, rid_len, phandle;
+-	int msi_map_len;
+-	bool matched;
+ 	u32 rid_out = rid_in;
+-	const __be32 *msi_map = NULL;
  
- 	return ret;
+ 	/*
+ 	 * Walk up the device parent links looking for one with a
+ 	 * "msi-map" property.
+ 	 */
+-	for (parent_dev = dev; parent_dev; parent_dev = parent_dev->parent) {
+-		if (!parent_dev->of_node)
+-			continue;
+-
+-		msi_map = of_get_property(parent_dev->of_node,
+-					  "msi-map", &msi_map_len);
+-		if (!msi_map)
+-			continue;
+-
+-		if (msi_map_len % (4 * sizeof(__be32))) {
+-			dev_err(parent_dev, "Error: Bad msi-map length: %d\n",
+-				msi_map_len);
+-			return rid_out;
+-		}
+-		/* We have a good parent_dev and msi_map, let's use them. */
+-		break;
+-	}
+-	if (!msi_map)
+-		return rid_out;
+-
+-	/* The default is to select all bits. */
+-	map_mask = 0xffffffff;
+-
+-	/*
+-	 * Can be overridden by "msi-map-mask" property.  If
+-	 * of_property_read_u32() fails, the default is used.
+-	 */
+-	of_property_read_u32(parent_dev->of_node, "msi-map-mask", &map_mask);
+-
+-	masked_rid = map_mask & rid_in;
+-	matched = false;
+-	while (!matched && msi_map_len >= 4 * sizeof(__be32)) {
+-		rid_base = be32_to_cpup(msi_map + 0);
+-		phandle = be32_to_cpup(msi_map + 1);
+-		msi_base = be32_to_cpup(msi_map + 2);
+-		rid_len = be32_to_cpup(msi_map + 3);
+-
+-		if (rid_base & ~map_mask) {
+-			dev_err(parent_dev,
+-				"Invalid msi-map translation - msi-map-mask (0x%x) ignores rid-base (0x%x)\n",
+-				map_mask, rid_base);
+-			return rid_out;
+-		}
+-
+-		msi_controller_node = of_find_node_by_phandle(phandle);
+-
+-		matched = (masked_rid >= rid_base &&
+-			   masked_rid < rid_base + rid_len);
+-		if (msi_np)
+-			matched &= msi_np == msi_controller_node;
+-
+-		if (matched && !msi_np) {
+-			*np = msi_np = msi_controller_node;
++	for (parent_dev = dev; parent_dev; parent_dev = parent_dev->parent)
++		if (!of_pci_map_rid(parent_dev->of_node, rid_in, "msi-map",
++				    "msi-map-mask", np, &rid_out))
+ 			break;
+-		}
+-
+-		of_node_put(msi_controller_node);
+-		msi_map_len -= 4 * sizeof(__be32);
+-		msi_map += 4;
+-	}
+-	if (!matched)
+-		return rid_out;
+-
+-	rid_out = masked_rid - rid_base + msi_base;
+-	dev_dbg(dev,
+-		"msi-map at: %s, using mask %08x, rid-base: %08x, msi-base: %08x, length: %08x, rid: %08x -> %08x\n",
+-		dev_name(parent_dev), map_mask, rid_base, msi_base,
+-		rid_len, rid_in, rid_out);
+-
+ 	return rid_out;
  }
+ 
+diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
+index 589b30c68e14..b58be12ab277 100644
+--- a/drivers/of/of_pci.c
++++ b/drivers/of/of_pci.c
+@@ -308,3 +308,105 @@ struct msi_controller *of_pci_find_msi_chip_by_node(struct device_node *of_node)
+ EXPORT_SYMBOL_GPL(of_pci_find_msi_chip_by_node);
+ 
+ #endif /* CONFIG_PCI_MSI */
 +
-+int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
-+		      const struct iommu_ops *ops)
++/**
++ * of_pci_map_rid - Translate a requester ID through a downstream mapping.
++ * @np: root complex device node.
++ * @rid: PCI requester ID to map.
++ * @map_name: property name of the map to use.
++ * @map_mask_name: optional property name of the mask to use.
++ * @target: optional pointer to a target device node.
++ * @id_out: optional pointer to receive the translated ID.
++ *
++ * Given a PCI requester ID, look up the appropriate implementation-defined
++ * platform ID and/or the target device which receives transactions on that
++ * ID, as per the "iommu-map" and "msi-map" bindings. Either of @target or
++ * @id_out may be NULL if only the other is required. If @target points to
++ * a non-NULL device node pointer, only entries targeting that node will be
++ * matched; if it points to a NULL value, it will receive the device node of
++ * the first matching target phandle, with a reference held.
++ *
++ * Return: 0 on success or a standard error code on failure.
++ */
++int of_pci_map_rid(struct device_node *np, u32 rid,
++		   const char *map_name, const char *map_mask_name,
++		   struct device_node **target, u32 *id_out)
 +{
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	u32 map_mask, masked_rid;
++	int map_len;
++	const __be32 *map = NULL;
 +
-+	if (fwspec)
-+		return ops == fwspec->ops ? 0 : -EINVAL;
-+
-+	fwspec = kzalloc(sizeof(*fwspec), GFP_KERNEL);
-+	if (!fwspec)
-+		return -ENOMEM;
-+
-+	of_node_get(to_of_node(iommu_fwnode));
-+	fwspec->iommu_fwnode = iommu_fwnode;
-+	fwspec->ops = ops;
-+	dev->iommu_fwspec = fwspec;
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(iommu_fwspec_init);
-+
-+void iommu_fwspec_free(struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+
-+	if (fwspec) {
-+		fwnode_handle_put(fwspec->iommu_fwnode);
-+		kfree(fwspec);
-+		dev->iommu_fwspec = NULL;
-+	}
-+}
-+EXPORT_SYMBOL_GPL(iommu_fwspec_free);
-+
-+int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
-+{
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	size_t size;
-+	int i;
-+
-+	if (!fwspec)
++	if (!np || !map_name || (!target && !id_out))
 +		return -EINVAL;
 +
-+	size = offsetof(struct iommu_fwspec, ids[fwspec->num_ids + num_ids]);
-+	fwspec = krealloc(dev->iommu_fwspec, size, GFP_KERNEL);
-+	if (!fwspec)
-+		return -ENOMEM;
++	map = of_get_property(np, map_name, &map_len);
++	if (!map) {
++		if (target)
++			return -ENODEV;
++		/* Otherwise, no map implies no translation */
++		*id_out = rid;
++		return 0;
++	}
 +
-+	for (i = 0; i < num_ids; i++)
-+		fwspec->ids[fwspec->num_ids + i] = ids[i];
++	if (!map_len || map_len % (4 * sizeof(*map))) {
++		pr_err("%s: Error: Bad %s length: %d\n", np->full_name,
++			map_name, map_len);
++		return -EINVAL;
++	}
 +
-+	fwspec->num_ids += num_ids;
-+	dev->iommu_fwspec = fwspec;
-+	return 0;
++	/* The default is to select all bits. */
++	map_mask = 0xffffffff;
++
++	/*
++	 * Can be overridden by "{iommu,msi}-map-mask" property.
++	 * If of_property_read_u32() fails, the default is used.
++	 */
++	if (map_mask_name)
++		of_property_read_u32(np, map_mask_name, &map_mask);
++
++	masked_rid = map_mask & rid;
++	for ( ; map_len > 0; map_len -= 4 * sizeof(*map), map += 4) {
++		struct device_node *phandle_node;
++		u32 rid_base = be32_to_cpup(map + 0);
++		u32 phandle = be32_to_cpup(map + 1);
++		u32 out_base = be32_to_cpup(map + 2);
++		u32 rid_len = be32_to_cpup(map + 3);
++
++		if (rid_base & ~map_mask) {
++			pr_err("%s: Invalid %s translation - %s-mask (0x%x) ignores rid-base (0x%x)\n",
++				np->full_name, map_name, map_name,
++				map_mask, rid_base);
++			return -EFAULT;
++		}
++
++		if (masked_rid < rid_base || masked_rid >= rid_base + rid_len)
++			continue;
++
++		phandle_node = of_find_node_by_phandle(phandle);
++		if (!phandle_node)
++			return -ENODEV;
++
++		if (target) {
++			if (*target)
++				of_node_put(phandle_node);
++			else
++				*target = phandle_node;
++
++			if (*target != phandle_node)
++				continue;
++		}
++
++		if (id_out)
++			*id_out = masked_rid - rid_base + out_base;
++
++		pr_debug("%s: %s, using mask %08x, rid-base: %08x, out-base: %08x, length: %08x, rid: %08x -> %08x\n",
++			np->full_name, map_name, map_mask, rid_base, out_base,
++			rid_len, rid, *id_out);
++		return 0;
++	}
++
++	pr_err("%s: Invalid %s translation - no match for rid 0x%x on %s\n",
++		np->full_name, map_name, rid,
++		target && *target ? (*target)->full_name : "any target");
++	return -EFAULT;
 +}
-+EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 19e1e8f2f871..5b82862f571f 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -167,7 +167,9 @@ static const struct iommu_ops
- 		return NULL;
- 
- 	ops = of_iommu_get_ops(iommu_spec.np);
--	if (!ops || !ops->of_xlate || ops->of_xlate(&pdev->dev, &iommu_spec))
-+	if (!ops || !ops->of_xlate ||
-+	    iommu_fwspec_init(&pdev->dev, &iommu_spec.np->fwnode, ops) ||
-+	    ops->of_xlate(&pdev->dev, &iommu_spec))
- 		ops = NULL;
- 
- 	of_node_put(iommu_spec.np);
-@@ -196,7 +198,9 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 		np = iommu_spec.np;
- 		ops = of_iommu_get_ops(np);
- 
--		if (!ops || !ops->of_xlate || ops->of_xlate(dev, &iommu_spec))
-+		if (!ops || !ops->of_xlate ||
-+		    iommu_fwspec_init(dev, &np->fwnode, ops) ||
-+		    ops->of_xlate(dev, &iommu_spec))
- 			goto err_put_node;
- 
- 		of_node_put(np);
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 38f02814d53a..bc41e87a969b 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -41,6 +41,7 @@ struct device_node;
- struct fwnode_handle;
- struct iommu_ops;
- struct iommu_group;
-+struct iommu_fwspec;
- 
- struct bus_attribute {
- 	struct attribute	attr;
-@@ -765,6 +766,7 @@ struct device_dma_parameters {
-  * 		gone away. This should be set by the allocator of the
-  * 		device (i.e. the bus driver that discovered the device).
-  * @iommu_group: IOMMU group the device belongs to.
-+ * @iommu_fwspec: IOMMU-specific properties supplied by firmware.
-  *
-  * @offline_disabled: If set, the device is permanently online.
-  * @offline:	Set after successful invocation of bus type's .offline().
-@@ -849,6 +851,7 @@ struct device {
- 
- 	void	(*release)(struct device *dev);
- 	struct iommu_group	*iommu_group;
-+	struct iommu_fwspec	*iommu_fwspec;
- 
- 	bool			offline_disabled:1;
- 	bool			offline:1;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a35fb8b42e1a..2ea15842e9f6 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -331,10 +331,32 @@ extern struct iommu_group *pci_device_group(struct device *dev);
- /* Generic device grouping function */
- extern struct iommu_group *generic_device_group(struct device *dev);
- 
-+/**
-+ * struct iommu_fwspec - per-device IOMMU instance data
-+ * @ops: ops for this device's IOMMU
-+ * @iommu_fwnode: firmware handle for this device's IOMMU
-+ * @iommu_priv: IOMMU driver private data for this device
-+ * @num_ids: number of associated device IDs
-+ * @ids: IDs which this device may present to the IOMMU
-+ */
-+struct iommu_fwspec {
-+	const struct iommu_ops	*ops;
-+	struct fwnode_handle	*iommu_fwnode;
-+	void			*iommu_priv;
-+	unsigned int		num_ids;
-+	u32			ids[];
-+};
-+
-+int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
-+		      const struct iommu_ops *ops);
-+void iommu_fwspec_free(struct device *dev);
-+int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
-+
- #else /* CONFIG_IOMMU_API */
- 
- struct iommu_ops {};
- struct iommu_group {};
-+struct iommu_fwspec {};
- 
- static inline bool iommu_present(struct bus_type *bus)
+diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
+index b969e9443962..7fd5cfce9140 100644
+--- a/include/linux/of_pci.h
++++ b/include/linux/of_pci.h
+@@ -17,6 +17,9 @@ int of_irq_parse_and_map_pci(const struct pci_dev *dev, u8 slot, u8 pin);
+ int of_pci_parse_bus_range(struct device_node *node, struct resource *res);
+ int of_get_pci_domain_nr(struct device_node *node);
+ void of_pci_check_probe_only(void);
++int of_pci_map_rid(struct device_node *np, u32 rid,
++		   const char *map_name, const char *map_mask_name,
++		   struct device_node **target, u32 *id_out);
+ #else
+ static inline int of_irq_parse_pci(const struct pci_dev *pdev, struct of_phandle_args *out_irq)
  {
-@@ -541,6 +563,22 @@ static inline void iommu_device_unlink(struct device *dev, struct device *link)
- {
+@@ -52,6 +55,13 @@ of_get_pci_domain_nr(struct device_node *node)
+ 	return -1;
  }
  
-+static inline int iommu_fwspec_init(struct device *dev,
-+				    struct fwnode_handle *iommu_fwnode,
-+				    const struct iommu_ops *ops)
++static inline int of_pci_map_rid(struct device_node *np, u32 rid,
++			const char *map_name, const char *map_mask_name,
++			struct device_node **target, u32 *id_out)
 +{
-+	return -ENODEV;
++	return -EINVAL;
 +}
 +
-+void iommu_fwspec_free(struct device *dev)
-+{
-+}
-+
-+int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
-+{
-+	return -ENODEV;
-+}
-+
- #endif /* CONFIG_IOMMU_API */
+ static inline void of_pci_check_probe_only(void) { }
+ #endif
  
- #endif /* __LINUX_IOMMU_H */
 -- 
 2.8.1.dirty
 
