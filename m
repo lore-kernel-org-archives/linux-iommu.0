@@ -1,142 +1,43 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v7 22/22] iommu/dma: Avoid PCI host bridge windows
-Date: Mon, 12 Sep 2016 17:14:00 +0100
-Message-ID: <5f7bfee298f98d29a35933d3e0252d32b83d62b8.1473695704.git.robin.murphy@arm.com>
-References: <cover.1473695704.git.robin.murphy@arm.com>
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <cover.1473695704.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [RFC PATCH v2 10/20] x86: Insure that memory areas are encrypted
+ when possible
+Date: Mon, 12 Sep 2016 18:33:49 +0200
+Message-ID: <20160912163349.exnuvr7svsq7fmui@pd.tnic>
+References: <20160822223529.29880.50884.stgit@tlendack-t1.amdoffice.net>
+ <20160822223722.29880.94331.stgit@tlendack-t1.amdoffice.net>
+ <20160909155305.bmm2fvw7ndjjhqvo@pd.tnic>
+ <23855fb4-05b0-4c12-d34f-4d5f45f3b015@amd.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <23855fb4-05b0-4c12-d34f-4d5f45f3b015@amd.com>
+Sender: linux-arch-owner@vger.kernel.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Paolo Bonzini <pbonzini@redhat.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.>
 List-Id: iommu@lists.linux-foundation.org
 
-With our DMA ops enabled for PCI devices, we should avoid allocating
-IOVAs which a host bridge might misinterpret as peer-to-peer DMA and
-lead to faults, corruption or other badness. To be safe, punch out holes
-for all of the relevant host bridge's windows when initialising a DMA
-domain for a PCI device.
+On Mon, Sep 12, 2016 at 10:05:36AM -0500, Tom Lendacky wrote:
+> I can look into that.  The reason I put this here is this is all the
+> early page fault support that is very specific to this file. I modified
+> an existing static function to take advantage of the mapping support.
 
-CC: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-CC: Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Reported-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Yeah, but all this code is SME-specific and doesn't belong there.
+AFAICT, it uses global/public symbols so there shouldn't be a problem to
+have it in mem_encrypt.c.
 
----
+> Hmmm, maybe... With the change to the early_memremap() the initrd is now
+> identified as BOOT_DATA in relocate_initrd() and so it will be mapped
+> and copied as non-encyrpted data. But since it was encrypted before the
+> call to relocate_initrd() it will copy encrypted bytes which will later
+> be accessed encrypted. That isn't clear though, so I'll rework
+> reserve_initrd() to perform the sme_early_mem_enc() once at the end
+> whether the initrd is re-located or not.
 
-- Squash in the previous drm/exynos fixup
-- If need be, this one can probably wait
----
- arch/arm64/mm/dma-mapping.c               |  2 +-
- drivers/gpu/drm/exynos/exynos_drm_iommu.h |  2 +-
- drivers/iommu/dma-iommu.c                 | 25 ++++++++++++++++++++++++-
- include/linux/dma-iommu.h                 |  3 ++-
- 4 files changed, 28 insertions(+), 4 deletions(-)
+Makes sense.
 
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index c4284c432ae8..610d8e53011e 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -827,7 +827,7 @@ static bool do_iommu_attach(struct device *dev, const struct iommu_ops *ops,
- 	 * then the IOMMU core will have already configured a group for this
- 	 * device, and allocated the default domain for that group.
- 	 */
--	if (!domain || iommu_dma_init_domain(domain, dma_base, size)) {
-+	if (!domain || iommu_dma_init_domain(domain, dma_base, size, dev)) {
- 		pr_warn("Failed to set up IOMMU for device %s; retaining platform DMA ops\n",
- 			dev_name(dev));
- 		return false;
-diff --git a/drivers/gpu/drm/exynos/exynos_drm_iommu.h b/drivers/gpu/drm/exynos/exynos_drm_iommu.h
-index c8de4913fdbe..87f6b5672e11 100644
---- a/drivers/gpu/drm/exynos/exynos_drm_iommu.h
-+++ b/drivers/gpu/drm/exynos/exynos_drm_iommu.h
-@@ -66,7 +66,7 @@ static inline int __exynos_iommu_create_mapping(struct exynos_drm_private *priv,
- 	if (ret)
- 		goto free_domain;
- 
--	ret = iommu_dma_init_domain(domain, start, size);
-+	ret = iommu_dma_init_domain(domain, start, size, NULL);
- 	if (ret)
- 		goto put_cookie;
- 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 4329d18080cf..c5ab8667e6f2 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -27,6 +27,7 @@
- #include <linux/iova.h>
- #include <linux/irq.h>
- #include <linux/mm.h>
-+#include <linux/pci.h>
- #include <linux/scatterlist.h>
- #include <linux/vmalloc.h>
- 
-@@ -103,18 +104,38 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
- }
- EXPORT_SYMBOL(iommu_put_dma_cookie);
- 
-+static void iova_reserve_pci_windows(struct pci_dev *dev,
-+		struct iova_domain *iovad)
-+{
-+	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
-+	struct resource_entry *window;
-+	unsigned long lo, hi;
-+
-+	resource_list_for_each_entry(window, &bridge->windows) {
-+		if (resource_type(window->res) != IORESOURCE_MEM &&
-+		    resource_type(window->res) != IORESOURCE_IO)
-+			continue;
-+
-+		lo = iova_pfn(iovad, window->res->start - window->offset);
-+		hi = iova_pfn(iovad, window->res->end - window->offset);
-+		reserve_iova(iovad, lo, hi);
-+	}
-+}
-+
- /**
-  * iommu_dma_init_domain - Initialise a DMA mapping domain
-  * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
-  * @base: IOVA at which the mappable address space starts
-  * @size: Size of IOVA space
-+ * @dev: Device the domain is being initialised for
-  *
-  * @base and @size should be exact multiples of IOMMU page granularity to
-  * avoid rounding surprises. If necessary, we reserve the page at address 0
-  * to ensure it is an invalid IOVA. It is safe to reinitialise a domain, but
-  * any change which could make prior IOVAs invalid will fail.
-  */
--int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size)
-+int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
-+		u64 size, struct device *dev)
- {
- 	struct iova_domain *iovad = cookie_iovad(domain);
- 	unsigned long order, base_pfn, end_pfn;
-@@ -152,6 +173,8 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size
- 		iovad->dma_32bit_pfn = end_pfn;
- 	} else {
- 		init_iova_domain(iovad, 1UL << order, base_pfn, end_pfn);
-+		if (dev && dev_is_pci(dev))
-+			iova_reserve_pci_windows(to_pci_dev(dev), iovad);
- 	}
- 	return 0;
- }
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index 5ee806e41b5c..32c589062bd9 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -30,7 +30,8 @@ int iommu_get_dma_cookie(struct iommu_domain *domain);
- void iommu_put_dma_cookie(struct iommu_domain *domain);
- 
- /* Setup call for arch DMA mapping code */
--int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size);
-+int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
-+		u64 size, struct device *dev);
- 
- /* General helpers for DMA-API <-> IOMMU-API interaction */
- int dma_direction_to_prot(enum dma_data_direction dir, bool coherent);
 -- 
-2.8.1.dirty
+Regards/Gruss,
+    Boris.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ECO tip #101: Trim your mails when you reply.
