@@ -1,16 +1,16 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [RFC PATCH v2 20/20] x86: Add support to make use of Secure
-	Memory Encryption
-Date: Mon, 12 Sep 2016 19:08:56 +0200
-Message-ID: <20160912170856.2uklaoc4vxmkgnkq@pd.tnic>
-References: <20160822223529.29880.50884.stgit@tlendack-t1.amdoffice.net>
-	<20160822223908.29880.50365.stgit@tlendack-t1.amdoffice.net>
+From: Scott Wood <oss-fOR+EgIDQEHk1uMJSBkQmQ@public.gmane.org>
+Subject: Re: [v11, 5/8] soc: fsl: add GUTS driver for QorIQ platforms
+Date: Mon, 12 Sep 2016 18:25:14 -0500
+Message-ID: <1473722714.30217.196.camel@buserror.net>
+References: <1473150503-9550-1-git-send-email-yangbo.lu@nxp.com>
+	<1473150503-9550-6-git-send-email-yangbo.lu@nxp.com>
+	<1473392840.30217.170.camel@buserror.net>
+	<HE1PR04MB08892D8354E38EC32F549E98F8FF0@HE1PR04MB0889.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20160822223908.29880.50365.stgit-qCXWGYdRb2BnqfbPTmsdiZQ+2ll4COg0XqFh9Ls21Oc@public.gmane.org>
+In-Reply-To: <HE1PR04MB08892D8354E38EC32F549E98F8FF0-6LN7OEpIatX1kPMWxTxe+c9NdZoXdze2vxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,171 +20,112 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: "Y.B. Lu" <yangbo.lu-3arQi8VN3Tc@public.gmane.org>, "linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, "X.B. Xie" <xiaobo.xie-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Aug 22, 2016 at 05:39:08PM -0500, Tom Lendacky wrote:
-> This patch adds the support to check if SME has been enabled and if the
-> mem_encrypt=on command line option is set. If both of these conditions
-> are true, then the encryption mask is set and the kernel is encrypted
-> "in place."
-> 
-> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-> ---
->  Documentation/kernel-parameters.txt |    3 
->  arch/x86/kernel/asm-offsets.c       |    2 
->  arch/x86/kernel/mem_encrypt.S       |  302 +++++++++++++++++++++++++++++++++++
->  arch/x86/mm/mem_encrypt.c           |    2 
->  4 files changed, 309 insertions(+)
-> 
-> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
-> index 46c030a..a1986c8 100644
-> --- a/Documentation/kernel-parameters.txt
-> +++ b/Documentation/kernel-parameters.txt
-> @@ -2268,6 +2268,9 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
->  			memory contents and reserves bad memory
->  			regions that are detected.
->  
-> +	mem_encrypt=on	[X86_64] Enable memory encryption on processors
-> +			that support this feature.
-> +
->  	meye.*=		[HW] Set MotionEye Camera parameters
->  			See Documentation/video4linux/meye.txt.
->  
-> diff --git a/arch/x86/kernel/asm-offsets.c b/arch/x86/kernel/asm-offsets.c
-> index 2bd5c6f..e485ada 100644
-> --- a/arch/x86/kernel/asm-offsets.c
-> +++ b/arch/x86/kernel/asm-offsets.c
-> @@ -85,6 +85,8 @@ void common(void) {
->  	OFFSET(BP_init_size, boot_params, hdr.init_size);
->  	OFFSET(BP_pref_address, boot_params, hdr.pref_address);
->  	OFFSET(BP_code32_start, boot_params, hdr.code32_start);
-> +	OFFSET(BP_cmd_line_ptr, boot_params, hdr.cmd_line_ptr);
-> +	OFFSET(BP_ext_cmd_line_ptr, boot_params, ext_cmd_line_ptr);
->  
->  	BLANK();
->  	DEFINE(PTREGS_SIZE, sizeof(struct pt_regs));
-> diff --git a/arch/x86/kernel/mem_encrypt.S b/arch/x86/kernel/mem_encrypt.S
-> index f2e0536..bf9f6a9 100644
-> --- a/arch/x86/kernel/mem_encrypt.S
-> +++ b/arch/x86/kernel/mem_encrypt.S
-> @@ -12,13 +12,230 @@
->  
->  #include <linux/linkage.h>
->  
-> +#include <asm/processor-flags.h>
-> +#include <asm/pgtable.h>
-> +#include <asm/page.h>
-> +#include <asm/msr.h>
-> +#include <asm/asm-offsets.h>
-> +
->  	.text
->  	.code64
->  ENTRY(sme_enable)
-> +#ifdef CONFIG_AMD_MEM_ENCRYPT
-> +	/* Check for AMD processor */
-> +	xorl	%eax, %eax
-> +	cpuid
-> +	cmpl    $0x68747541, %ebx	# AuthenticAMD
-> +	jne     .Lmem_encrypt_exit
-> +	cmpl    $0x69746e65, %edx
-> +	jne     .Lmem_encrypt_exit
-> +	cmpl    $0x444d4163, %ecx
-> +	jne     .Lmem_encrypt_exit
-> +
-> +	/* Check for memory encryption leaf */
-> +	movl	$0x80000000, %eax
-> +	cpuid
-> +	cmpl	$0x8000001f, %eax
-> +	jb	.Lmem_encrypt_exit
-> +
-> +	/*
-> +	 * Check for memory encryption feature:
-> +	 *   CPUID Fn8000_001F[EAX] - Bit 0
-> +	 *     Secure Memory Encryption support
-> +	 *   CPUID Fn8000_001F[EBX] - Bits 5:0
-> +	 *     Pagetable bit position used to indicate encryption
-> +	 *   CPUID Fn8000_001F[EBX] - Bits 11:6
-> +	 *     Reduction in physical address space (in bits) when enabled
-> +	 */
-> +	movl	$0x8000001f, %eax
-> +	cpuid
-> +	bt	$0, %eax
-> +	jnc	.Lmem_encrypt_exit
-> +
-> +	/* Check if BIOS/UEFI has allowed memory encryption */
-> +	movl	$MSR_K8_SYSCFG, %ecx
-> +	rdmsr
-> +	bt	$MSR_K8_SYSCFG_MEM_ENCRYPT_BIT, %eax
-> +	jnc	.Lmem_encrypt_exit
-
-Like other people suggested, it would be great if this were in C. Should be
-actually readable :)
-
-> +
-> +	/* Check for the mem_encrypt=on command line option */
-> +	push	%rsi			/* Save RSI (real_mode_data) */
-> +	push	%rbx			/* Save CPUID information */
-> +	movl	BP_ext_cmd_line_ptr(%rsi), %ecx
-> +	shlq	$32, %rcx
-> +	movl	BP_cmd_line_ptr(%rsi), %edi
-> +	addq	%rcx, %rdi
-> +	leaq	mem_encrypt_enable_option(%rip), %rsi
-> +	call	cmdline_find_option_bool
-> +	pop	%rbx			/* Restore CPUID information */
-> +	pop	%rsi			/* Restore RSI (real_mode_data) */
-> +	testl	%eax, %eax
-> +	jz	.Lno_mem_encrypt
-
-This too.
-
-> +
-> +	/* Set memory encryption mask */
-> +	movl	%ebx, %ecx
-> +	andl	$0x3f, %ecx
-> +	bts	%ecx, sme_me_mask(%rip)
-> +
-> +.Lno_mem_encrypt:
-> +	/*
-> +	 * BIOS/UEFI has allowed memory encryption so we need to set
-> +	 * the amount of physical address space reduction even if
-> +	 * the user decides not to use memory encryption.
-> +	 */
-> +	movl	%ebx, %ecx
-> +	shrl	$6, %ecx
-> +	andl	$0x3f, %ecx
-> +	movb	%cl, sme_me_loss(%rip)
-> +
-> +.Lmem_encrypt_exit:
-> +#endif	/* CONFIG_AMD_MEM_ENCRYPT */
-> +
->  	ret
->  ENDPROC(sme_enable)
->  
->  ENTRY(sme_encrypt_kernel)
-
-This should be doable too but I guess you'll have to try it to see.
-
-...
-
-> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-> index 2f28d87..1154353 100644
-> --- a/arch/x86/mm/mem_encrypt.c
-> +++ b/arch/x86/mm/mem_encrypt.c
-> @@ -183,6 +183,8 @@ void __init mem_encrypt_init(void)
->  
->  	/* Make SWIOTLB use an unencrypted DMA area */
->  	swiotlb_clear_encryption();
-> +
-> +	pr_info("memory encryption active\n");
-
-Let's make it more official with nice caps and so on...
-
-	pr_info("AMD Secure Memory Encryption active.\n");
-
--- 
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
+T24gTW9uLCAyMDE2LTA5LTEyIGF0IDA2OjM5ICswMDAwLCBZLkIuIEx1IHdyb3RlOgo+IEhpIFNj
+b3R0LAo+IAo+IFRoYW5rcyBmb3IgeW91ciByZXZpZXcgOikKPiBTZWUgbXkgY29tbWVudCBpbmxp
+bmUuCj4gCj4gPiAKPiA+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tCj4gPiBGcm9tOiBTY290
+dCBXb29kIFttYWlsdG86b3NzQGJ1c2Vycm9yLm5ldF0KPiA+IFNlbnQ6IEZyaWRheSwgU2VwdGVt
+YmVyIDA5LCAyMDE2IDExOjQ3IEFNCj4gPiBUbzogWS5CLiBMdTsgbGludXgtbW1jQHZnZXIua2Vy
+bmVsLm9yZzsgdWxmLmhhbnNzb25AbGluYXJvLm9yZzsgQXJuZAo+ID4gQmVyZ21hbm4KPiA+IENj
+OiBsaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZzsgZGV2aWNldHJlZUB2Z2VyLmtlcm5lbC5v
+cmc7IGxpbnV4LWFybS0KPiA+IGtlcm5lbEBsaXN0cy5pbmZyYWRlYWQub3JnOyBsaW51eC1rZXJu
+ZWxAdmdlci5rZXJuZWwub3JnOyBsaW51eC0KPiA+IGNsa0B2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4
+LWkyY0B2Z2VyLmtlcm5lbC5vcmc7IGlvbW11QGxpc3RzLmxpbnV4LQo+ID4gZm91bmRhdGlvbi5v
+cmc7IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IE1hcmsgUnV0bGFuZDsgUm9iIEhlcnJpbmc7Cj4g
+PiBSdXNzZWxsIEtpbmc7IEpvY2hlbiBGcmllZHJpY2g7IEpvZXJnIFJvZWRlbDsgQ2xhdWRpdSBN
+YW5vaWw7IEJodXBlc2gKPiA+IFNoYXJtYTsgUWlhbmcgWmhhbzsgS3VtYXIgR2FsYTsgU2FudG9z
+aCBTaGlsaW1rYXI7IExlbyBMaTsgWC5CLiBYaWUKPiA+IFN1YmplY3Q6IFJlOiBbdjExLCA1Lzhd
+IHNvYzogZnNsOiBhZGQgR1VUUyBkcml2ZXIgZm9yIFFvcklRIHBsYXRmb3Jtcwo+ID4gCj4gPiBP
+biBUdWUsIDIwMTYtMDktMDYgYXQgMTY6MjggKzA4MDAsIFlhbmdibyBMdSB3cm90ZToKPiA+ID4g
+Cj4gPiA+IFRoZSBnbG9iYWwgdXRpbGl0aWVzIGJsb2NrIGNvbnRyb2xzIHBvd2VyIG1hbmFnZW1l
+bnQsIEkvTyBkZXZpY2UKPiA+ID4gZW5hYmxpbmcsIHBvd2VyLW9ucmVzZXQoUE9SKSBjb25maWd1
+cmF0aW9uIG1vbml0b3JpbmcsIGFsdGVybmF0ZQo+ID4gPiBmdW5jdGlvbiBzZWxlY3Rpb24gZm9y
+IG11bHRpcGxleGVkIHNpZ25hbHMsYW5kIGNsb2NrIGNvbnRyb2wuCj4gPiA+IAo+ID4gPiBUaGlz
+IHBhdGNoIGFkZHMgYSBkcml2ZXIgdG8gbWFuYWdlIGFuZCBhY2Nlc3MgZ2xvYmFsIHV0aWxpdGll
+cyBibG9jay4KPiA+ID4gSW5pdGlhbGx5IG9ubHkgcmVhZGluZyBTVlIgYW5kIHJlZ2lzdGVyaW5n
+IHNvYyBkZXZpY2UgYXJlIHN1cHBvcnRlZC4KPiA+ID4gT3RoZXIgZ3V0cyBhY2Nlc3Nlcywgc3Vj
+aCBhcyByZWFkaW5nIFJDVywgc2hvdWxkIGV2ZW50dWFsbHkgYmUgbW92ZWQKPiA+ID4gaW50byB0
+aGlzIGRyaXZlciBhcyB3ZWxsLgo+ID4gPiAKPiA+ID4gU2lnbmVkLW9mZi1ieTogWWFuZ2JvIEx1
+IDx5YW5nYm8ubHVAbnhwLmNvbT4KPiA+ID4gU2lnbmVkLW9mZi1ieTogU2NvdHQgV29vZCA8b3Nz
+QGJ1c2Vycm9yLm5ldD4KPiA+IERvbid0IHB1dCBteSBzaWdub2ZmIG9uIHBhdGNoZXMgdGhhdCBJ
+IGRpZG4ndCBwdXQgaXQgb24KPiA+IG15c2VsZi4gwqBEZWZpbml0ZWx5IGRvbid0IHB1dCBtaW5l
+ICphZnRlciogeW91cnMgb24gcGF0Y2hlcyB0aGF0IHdlcmUKPiA+IGxhc3QgbW9kaWZpZWQgYnkg
+eW91Lgo+ID4gCj4gPiBJZiB5b3Ugd2FudCB0byBtZW50aW9uIHRoYXQgdGhlIHNvY19pZCBlbmNv
+ZGluZyB3YXMgbXkgc3VnZ2VzdGlvbiwgdGhlbgo+ID4gZG8gc28gZXhwbGljaXRseS4KPiA+IAo+
+IFtMdSBZYW5nYm8tQjQ3MDkzXSBJIGZvdW5kIHlvdXIgJ3NpZ25vZmYnIG9uIHRoaXMgcGF0Y2gg
+YXQgYmVsb3cgbGluay4KPiBodHRwOi8vcGF0Y2h3b3JrLm96bGFicy5vcmcvcGF0Y2gvNjQ5MjEx
+Lwo+IAo+IFNvLCBsZXQgbWUganVzdCBjaGFuZ2UgdGhlIG9yZGVyIGluIG5leHQgdmVyc2lvbiA/
+Cj4gU2lnbmVkLW9mZi1ieTogU2NvdHQgV29vZCA8b3NzQGJ1c2Vycm9yLm5ldD4KPiBTaWduZWQt
+b2ZmLWJ5OiBZYW5nYm8gTHUgPHlhbmdiby5sdUBueHAuY29tPgoKTm8uIMKgVGhpcyBpc24ndCBt
+eSBwYXRjaCBzbyBteSBzaWdub2ZmIHNob3VsZG4ndCBiZSBvbiBpdC4KCj4gW0x1IFlhbmdiby1C
+NDcwOTNdIEl0J3MgYSBnb29kIGlkZWEgdG8gbW92ZSBkaWUgaW50byAuZmFtaWx5IEkgdGhpbmsu
+Cj4gSW4gbXkgb3BpbmlvbiwgaXQncyBiZXR0ZXIgdG8ga2VlcCBzdnIgYW5kIG5hbWUgaW4gc29j
+X2lkIGp1c3QgbGlrZSB5b3VyCj4gc3VnZ2VzdGlvbiBhYm92ZS4KPiA+IAo+ID4gCXsKPiA+IAkJ
+LnNvY19pZCA9ICJzdnI6MHg4NTQ5MDAxMCxuYW1lOlQxMDIzRSwiLAo+ID4gCQkuZmFtaWx5ID0g
+IlFvcklRIFQxMDI0IiwKPiA+IAl9Cj4gVGhlIHVzZXIgcHJvYmFibHkgZG9u4oCZdCBsaWtlIHRv
+IGxlYXJuIHRoZSBzdnIgdmFsdWUuIFdoYXQgdGhleSB3YW50IGlzIGp1c3QKPiB0byBtYXRjaCB0
+aGUgc29jIHRoZXkgdXNlLgo+IEl0J3MgY29udmVuaWVudCB0byB1c2UgbmFtZStyZXYgZm9yIHRo
+ZW0gdG8gbWF0Y2ggYSBzb2MuCgpXaGF0IHRoZSB1c2VyIHNob3VsZCB3YW50IDk5JSBvZiB0aGUg
+dGltZSBpcyB0byBtYXRjaCB0aGUgZGllIChwbHVzIHJldmlzaW9uKSwKbm90IHRoZSBzb2MuCgo+
+IFJlZ2FyZGluZyBzaHJpbmtpbmcgdGhlIHRhYmxlLCBJIHRoaW5rIGl0J3MgaGFyZCB0byB1c2Ug
+c3ZyK21hc2suIEJlY2F1c2UgSQo+IGZpbmQgbWFueSBwbGF0Zm9ybXMgdXNlIGRpZmZlcmVudCBt
+YXNrcy4KPiBXZSBjb3VsZG7igJl0IGtub3cgdGhlIG1hc2sgYWNjb3JkaW5nIHN2ciB2YWx1ZS4K
+ClRoZSBtYXNrIHdvdWxkIGJlIHBhcnQgb2YgdGhlIHRhYmxlOgoKewoJewoJCS5kaWUgPSAiVDEw
+MjQiLAoJCS5zdnIgPSAweDg1NDAwMDAwLAoJCS5tYXNrID0gMHhmZmYwMDAwMCwKCX0sCgl7CgkJ
+LmRpZSA9ICJUMTA0MCIsCgkJLnN2ciA9IDB4ODUyMDAwMDAsCgkJLm1hc2sgPSAweGZmZjAwMDAw
+LAoJfSwKCXsKCQkuZGllID0gIkxTMTA4OEEiLAoJCS5zdnIgPSAweDg3MDMwMDAwLAoJCS5tYXNr
+ID0gMHhmZmZmMDAwMCwKCX0sCgkuLi4KfQoKVGhlcmUncyBhIHNtYWxsIHJpc2sgdGhhdCB3ZSBn
+ZXQgdGhlIG1hc2sgd3JvbmcgYW5kIGEgZGlmZmVyZW50IGRpZSBpcyBjcmVhdGVkCnRoYXQgbWF0
+Y2hlcyBhbiBleGlzdGluZyB0YWJsZSwgYnV0IGl0IGRvZXNuJ3Qgc2VlbSB0b28gbGlrZWx5LCBh
+bmQgY2FuIGVhc2lseQpiZSBmaXhlZCB3aXRoIGEga2VybmVsIHVwZGF0ZSBpZiBpdCBoYXBwZW5z
+LgoKQlRXLCBhcmVuJ3QgbHMyMDgwYSBhbmQgbHMyMDg1YSB0aGUgc2FtZSBkaWU/IMKgQW5kIGlz
+IHRoZXJlIG5vIG5vbi1FIHZlcnNpb24Kb2YgTFMyMDgwQS9MUzIwNDBBPwoKPiA+ID4gKwlkbyB7
+Cj4gPiA+ICsJCWlmICghbWF0Y2hlcy0+c29jX2lkKQo+ID4gPiArCQkJcmV0dXJuIE5VTEw7Cj4g
+PiA+ICsJCWlmIChnbG9iX21hdGNoKHN2cl9tYXRjaCwgbWF0Y2hlcy0+c29jX2lkKSkKPiA+ID4g
+KwkJCWJyZWFrOwo+ID4gPiArCX0gd2hpbGUgKG1hdGNoZXMrKyk7Cj4gPiBBcmUgeW91IGV4cGVj
+dGluZyAibWF0Y2hlcysrIiB0byBldmVyIGV2YWx1YXRlIGFzIGZhbHNlPwo+IFtMdSBZYW5nYm8t
+QjQ3MDkzXSBZZXMsIHRoaXMgaXMgdXNlZCB0byBtYXRjaCB0aGUgc29jIHdlIHVzZSBpbiBxb3Jp
+cV9zb2MKPiBhcnJheSB1bnRpbCBnZXR0aW5nIHRydWUuwqAKPiBXZSBuZWVkIHRvIGdldCB0aGUg
+bmFtZSBhbmQgZGllIGluZm9ybWF0aW9uIGRlZmluZWQgaW4gYXJyYXkuCgpJJ20gbm90IGFza2lu
+ZyB3aGV0aGVyIHRoZSBnbG9iX21hdGNoIHdpbGwgZXZlciByZXR1cm4gdHJ1ZS4gwqBJJ20gc2F5
+aW5nIHRoYXQKIm1hdGNoZXMrKyIgd2lsbCBuZXZlciBiZWNvbWUgTlVMTC4KCj4gPiA+ICsJLyog
+UmVnaXN0ZXIgc29jIGRldmljZSAqLwo+ID4gPiArCXNvY19kZXZfYXR0ciA9IGt6YWxsb2Moc2l6
+ZW9mKCpzb2NfZGV2X2F0dHIpLCBHRlBfS0VSTkVMKTsKPiA+ID4gKwlpZiAoIXNvY19kZXZfYXR0
+cikgewo+ID4gPiArCQlyZXQgPSAtRU5PTUVNOwo+ID4gPiArCQlnb3RvIG91dF91bm1hcDsKPiA+
+ID4gKwl9Cj4gPiBDb3VsZG4ndCB0aGlzIGJlIHN0YXRpY2FsbHkgYWxsb2NhdGVkPwo+IFtMdSBZ
+YW5nYm8tQjQ3MDkzXSBEbyB5b3UgbWVhbiB3ZSBkZWZpbmUgdGhpcyBzdHJ1Y3Qgc3RhdGljYWxs
+eSA/Cj4gCj4gc3RhdGljIHN0cnVjdCBzb2NfZGV2aWNlX2F0dHJpYnV0ZSBzb2NfZGV2X2F0dHI7
+CgpZZXMuCgo+ID4gPiArCj4gPiA+ICsJc29jX2RldiA9IHNvY19kZXZpY2VfcmVnaXN0ZXIoc29j
+X2Rldl9hdHRyKTsKPiA+ID4gKwlpZiAoSVNfRVJSKHNvY19kZXYpKSB7Cj4gPiA+ICsJCXJldCA9
+IC1FTk9ERVY7Cj4gPiBXaHkgYXJlIHlvdSBjaGFuZ2luZyB0aGUgZXJyb3IgY29kZT8KPiBbTHUg
+WWFuZ2JvLUI0NzA5M10gV2hhdCBlcnJvciBjb2RlIHNob3VsZCB3ZSB1c2UgPyA6KQoKcmV0ID0g
+UFRSX0VSUihzb2NfZGV2KTsKCisJfQo+ID4gPiArCXJldHVybiAwOwo+ID4gPiArb3V0Ogo+ID4g
+PiArCWtmcmVlKHNvY19kZXZfYXR0ci0+bWFjaGluZSk7Cj4gPiA+ICsJa2ZyZWUoc29jX2Rldl9h
+dHRyLT5mYW1pbHkpOwo+ID4gPiArCWtmcmVlKHNvY19kZXZfYXR0ci0+c29jX2lkKTsKPiA+ID4g
+KwlrZnJlZShzb2NfZGV2X2F0dHItPnJldmlzaW9uKTsKPiA+ID4gKwlrZnJlZShzb2NfZGV2X2F0
+dHIpOwo+ID4gPiArb3V0X3VubWFwOgo+ID4gPiArCWlvdW5tYXAoZ3V0cy0+cmVncyk7Cj4gPiA+
+ICtvdXRfZnJlZToKPiA+ID4gKwlrZnJlZShndXRzKTsKPiA+IGRldm0KPiBbTHUgWWFuZ2JvLUI0
+NzA5M10gV2hhdCdzIHRoZSBkZXZtIG1lYW5pbmcgaGVyZSA6KQoKSWYgeW91IGFsbG9jYXRlIHRo
+ZXNlIHdpdGggZGV2bV9remFsbG9jKCksIGRldm1fa2FzcHJpbnRmKCksIGRldm1fa3N0cmR1cCgp
+LApldGMuIHRoZW4gdGhleSB3aWxsIGJlIGZyZWVkIGF1dG9tYXRpY2FsbHkgd2hlbiB0aGUgZGV2
+aWNlIGlzIHVuYm91bmQuCgo+IMKgCj4gPiAKPiA+IAo+ID4gPiAKPiA+ID4gK3N0YXRpYyBpbnQg
+ZnNsX2d1dHNfcmVtb3ZlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKmRldikgewo+ID4gPiArCWtm
+cmVlKHNvY19kZXZfYXR0ci0+bWFjaGluZSk7Cj4gPiA+ICsJa2ZyZWUoc29jX2Rldl9hdHRyLT5m
+YW1pbHkpOwo+ID4gPiArCWtmcmVlKHNvY19kZXZfYXR0ci0+c29jX2lkKTsKPiA+ID4gKwlrZnJl
+ZShzb2NfZGV2X2F0dHItPnJldmlzaW9uKTsKPiA+ID4gKwlrZnJlZShzb2NfZGV2X2F0dHIpOwo+
+ID4gPiArCXNvY19kZXZpY2VfdW5yZWdpc3Rlcihzb2NfZGV2KTsKPiA+ID4gKwlpb3VubWFwKGd1
+dHMtPnJlZ3MpOwo+ID4gPiArCWtmcmVlKGd1dHMpOwo+ID4gPiArCXJldHVybiAwOwo+ID4gPiAr
+fQo+ID4gRG9uJ3QgZnJlZSB0aGUgbWVtb3J5IGJlZm9yZSB5b3UgdW5yZWdpc3RlciB0aGUgZGV2
+aWNlIHRoYXQgdXNlcyBpdCAobW9vdAo+ID4gaWYgeW91IHVzZSBkZXZtKS4KPiBbTHUgWWFuZ2Jv
+LUI0NzA5M10gVGhlIHNvYy5jIGRyaXZlciBtZW50aW9ucyB0aGF0Lgo+IEVuc3VyZSBzb2NfZGV2
+LT5hdHRyIGlzIGZyZWVkIHByaW9yIHRvIGNhbGxpbmcgc29jX2RldmljZV91bnJlZ2lzdGVyLgoK
+VGhhdCBjb21tZW50IGlzIHdyb25nLiDCoEZyZWVpbmcgdGhlIG1lbW9yeSBmaXJzdCBjcmVhdGVz
+IGEgcmFjZSBjb25kaXRpb24gdGhhdApjb3VsZCByZXN1bHQgaW4gYWNjZXNzaW5nIGZyZWVkIG1l
+bW9yeSwgaWYgc29tZXRoaW5nIGFjY2Vzc2VzIHRoZSBzb2MgZGV2aWNlCmluIHBhcmFsbGVsIHdp
+dGggdW5iaW5kaW5nLgoKLVNjb3R0CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
+dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
+Zm8vaW9tbXU=
