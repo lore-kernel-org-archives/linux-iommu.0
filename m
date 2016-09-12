@@ -1,123 +1,119 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v7 10/22] iommu/arm-smmu: Handle stream IDs more dynamically
-Date: Mon, 12 Sep 2016 17:13:48 +0100
-Message-ID: <6d635a9764d072ce1b1081f087cc743ba0ec1f56.1473695704.git.robin.murphy@arm.com>
+Subject: [PATCH v7 18/22] Docs: dt: document ARM SMMU generic binding usage
+Date: Mon, 12 Sep 2016 17:13:56 +0100
+Message-ID: <145a4e2cd695af51c32d907e305f9c605c819cea.1473695704.git.robin.murphy@arm.com>
 References: <cover.1473695704.git.robin.murphy@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 In-Reply-To: <cover.1473695704.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Rather than assuming fixed worst-case values for stream IDs and SMR
-masks, keep track of whatever implemented bits the hardware actually
-reports. This also obviates the slightly questionable validation of SMR
-fields in isolation - rather than aborting the whole SMMU probe for a
-hardware configuration which is still architecturally valid, we can
-simply refuse masters later if they try to claim an unrepresentable ID
-or mask (which almost certainly implies a DT error anyway).
+Document how the generic "iommus" binding should be used to describe ARM
+SMMU stream IDs instead of the old "mmu-masters" binding.
 
-Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Tested-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 43 ++++++++++++++++++++++---------------------
- 1 file changed, 22 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 4b1c87e947fd..f86d7887f69a 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -165,9 +165,7 @@
- #define ARM_SMMU_GR0_SMR(n)		(0x800 + ((n) << 2))
- #define SMR_VALID			(1 << 31)
- #define SMR_MASK_SHIFT			16
--#define SMR_MASK_MASK			0x7fff
- #define SMR_ID_SHIFT			0
--#define SMR_ID_MASK			0x7fff
+---
+
+- Remove missed reference to old "mmu-masters" example
+---
+ .../devicetree/bindings/iommu/arm,smmu.txt         | 63 ++++++++++++++++------
+ 1 file changed, 48 insertions(+), 15 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+index 19fe6f2c83f6..e862d1485205 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+@@ -35,12 +35,16 @@ conditions.
+                   interrupt per context bank. In the case of a single,
+                   combined interrupt, it must be listed multiple times.
  
- #define ARM_SMMU_GR0_S2CR(n)		(0xc00 + ((n) << 2))
- #define S2CR_CBNDX_SHIFT		0
-@@ -346,6 +344,8 @@ struct arm_smmu_device {
- 	atomic_t			irptndx;
+-- mmu-masters   : A list of phandles to device nodes representing bus
+-                  masters for which the SMMU can provide a translation
+-                  and their corresponding StreamIDs (see example below).
+-                  Each device node linked from this list must have a
+-                  "#stream-id-cells" property, indicating the number of
+-                  StreamIDs associated with it.
++- #iommu-cells  : See Documentation/devicetree/bindings/iommu/iommu.txt
++                  for details. With a value of 1, each "iommus" entry
++                  represents a distinct stream ID emitted by that device
++                  into the relevant SMMU.
++
++                  SMMUs with stream matching support and complex masters
++                  may use a value of 2, where the second cell represents
++                  an SMR mask to combine with the ID in the first cell.
++                  Care must be taken to ensure the set of matched IDs
++                  does not result in conflicts.
  
- 	u32				num_mapping_groups;
-+	u16				streamid_mask;
-+	u16				smr_mask_mask;
- 	DECLARE_BITMAP(smr_map, ARM_SMMU_MAX_SMRS);
+ ** System MMU optional properties:
  
- 	unsigned long			va_size;
-@@ -1715,39 +1715,40 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 		dev_notice(smmu->dev,
- 			   "\t(IDR0.CTTW overridden by dma-coherent property)\n");
+@@ -56,9 +60,20 @@ conditions.
+                   aliases of secure registers have to be used during
+                   SMMU configuration.
  
-+	/* Max. number of entries we have for stream matching/indexing */
-+	size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
-+	smmu->streamid_mask = size - 1;
- 	if (id & ID0_SMS) {
--		u32 smr, sid, mask;
-+		u32 smr;
+-Example:
++** Deprecated properties:
  
- 		smmu->features |= ARM_SMMU_FEAT_STREAM_MATCH;
--		smmu->num_mapping_groups = (id >> ID0_NUMSMRG_SHIFT) &
--					   ID0_NUMSMRG_MASK;
--		if (smmu->num_mapping_groups == 0) {
-+		size = (id >> ID0_NUMSMRG_SHIFT) & ID0_NUMSMRG_MASK;
-+		if (size == 0) {
- 			dev_err(smmu->dev,
- 				"stream-matching supported, but no SMRs present!\n");
- 			return -ENODEV;
- 		}
- 
--		smr = SMR_MASK_MASK << SMR_MASK_SHIFT;
--		smr |= (SMR_ID_MASK << SMR_ID_SHIFT);
-+		/*
-+		 * SMR.ID bits may not be preserved if the corresponding MASK
-+		 * bits are set, so check each one separately. We can reject
-+		 * masters later if they try to claim IDs outside these masks.
-+		 */
-+		smr = smmu->streamid_mask << SMR_ID_SHIFT;
- 		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
- 		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-+		smmu->streamid_mask = smr >> SMR_ID_SHIFT;
- 
--		mask = (smr >> SMR_MASK_SHIFT) & SMR_MASK_MASK;
--		sid = (smr >> SMR_ID_SHIFT) & SMR_ID_MASK;
--		if ((mask & sid) != sid) {
--			dev_err(smmu->dev,
--				"SMR mask bits (0x%x) insufficient for ID field (0x%x)\n",
--				mask, sid);
--			return -ENODEV;
--		}
-+		smr = smmu->streamid_mask << SMR_MASK_SHIFT;
-+		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-+		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-+		smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
- 
- 		dev_notice(smmu->dev,
--			   "\tstream matching with %u register groups, mask 0x%x",
--			   smmu->num_mapping_groups, mask);
--	} else {
--		smmu->num_mapping_groups = (id >> ID0_NUMSIDB_SHIFT) &
--					   ID0_NUMSIDB_MASK;
-+			   "\tstream matching with %lu register groups, mask 0x%x",
-+			   size, smmu->smr_mask_mask);
- 	}
-+	smmu->num_mapping_groups = size;
- 
- 	if (smmu->version < ARM_SMMU_V2 || !(id & ID0_PTFS_NO_AARCH32)) {
- 		smmu->features |= ARM_SMMU_FEAT_FMT_AARCH32_L;
+-        smmu {
++- mmu-masters (deprecated in favour of the generic "iommus" binding) :
++                  A list of phandles to device nodes representing bus
++                  masters for which the SMMU can provide a translation
++                  and their corresponding Stream IDs. Each device node
++                  linked from this list must have a "#stream-id-cells"
++                  property, indicating the number of Stream ID
++                  arguments associated with its phandle.
++
++** Examples:
++
++        /* SMMU with stream matching or stream indexing */
++        smmu1: iommu {
+                 compatible = "arm,smmu-v1";
+                 reg = <0xba5e0000 0x10000>;
+                 #global-interrupts = <2>;
+@@ -68,11 +83,29 @@ Example:
+                              <0 35 4>,
+                              <0 36 4>,
+                              <0 37 4>;
+-
+-                /*
+-                 * Two DMA controllers, the first with two StreamIDs (0xd01d
+-                 * and 0xd01e) and the second with only one (0xd11c).
+-                 */
+-                mmu-masters = <&dma0 0xd01d 0xd01e>,
+-                              <&dma1 0xd11c>;
++                #iommu-cells = <1>;
++        };
++
++        /* device with two stream IDs, 0 and 7 */
++        master1 {
++                iommus = <&smmu1 0>,
++                         <&smmu1 7>;
++        };
++
++
++        /* SMMU with stream matching */
++        smmu2: iommu {
++                ...
++                #iommu-cells = <2>;
++        };
++
++        /* device with stream IDs 0 and 7 */
++        master2 {
++                iommus = <&smmu2 0 0>,
++                         <&smmu2 7 0>;
++        };
++
++        /* device with stream IDs 1, 17, 33 and 49 */
++        master3 {
++                iommus = <&smmu2 1 0x30>;
+         };
 -- 
 2.8.1.dirty
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
