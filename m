@@ -1,169 +1,55 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v5 07/14] drivers: acpi: iort: add support for ARM SMMU
- platform devices creation
-Date: Tue, 13 Sep 2016 17:29:25 +0100
-Message-ID: <20160913162925.GC2436@red-moon>
-References: <20160909142343.13314-1-lorenzo.pieralisi@arm.com>
- <20160909142343.13314-8-lorenzo.pieralisi@arm.com>
- <b0de32c2-01a5-2437-daa0-13044526b474@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v2] iommu/io-pgtable-arm: Check for v7s-incapable systems
+Date: Tue, 13 Sep 2016 18:02:02 +0100
+Message-ID: <7f89c687b96bec17f11c4ccfde5211eba2f1d2f2.1473785823.git.robin.murphy@arm.com>
+References: <2e473e263ac469bd6d3b09e7756c138325e10969.1473773198.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <b0de32c2-01a5-2437-daa0-13044526b474@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux-foundation.org, Hanjun Guo <hanjun.guo@linaro.org>, Tomasz Nowicki <tn@semihalf.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Joerg Roedel <joro@8bytes.org>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <2e473e263ac469bd6d3b09e7756c138325e10969.1473773198.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 13, 2016 at 04:25:55PM +0100, Robin Murphy wrote:
+On machines with no 32-bit addressable RAM whatsoever, we shouldn't
+even touch the v7s format as it's never going to work.
 
-[...]
+Fixes: e5fc9753b1a8 ("iommu/io-pgtable: Add ARMv7 short descriptor support")
+Reported-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Tested-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
 
-> > +/**
-> > + * iort_add_smmu_platform_device() - Allocate a platform device for SMMU
-> > + * @fwnode: IORT node associated fwnode handle
-> > + * @node: Pointer to SMMU ACPI IORT node
-> > + *
-> > + * Returns: 0 on success, <0 failure
-> > + */
-> > +static int __init iort_add_smmu_platform_device(struct fwnode_handle *fwnode,
-> > +						struct acpi_iort_node *node)
-> > +{
-> > +	struct platform_device *pdev;
-> > +	struct resource *r;
-> > +	enum dev_dma_attr attr;
-> > +	int ret, count;
-> > +	const struct iort_iommu_config *ops = iort_get_iommu_cfg(node);
-> > +
-> > +	if (!ops)
-> > +		return -ENODEV;
-> > +
-> > +	pdev = platform_device_alloc(ops->name, PLATFORM_DEVID_AUTO);
-> > +	if (!pdev)
-> > +		return PTR_ERR(pdev);
-> > +
-> > +	count = ops->iommu_count_resources(node);
-> > +
-> > +	r = kcalloc(count, sizeof(*r), GFP_KERNEL);
-> > +	if (!r) {
-> > +		ret = -ENOMEM;
-> > +		goto dev_put;
-> > +	}
-> > +
-> > +	ops->iommu_init_resources(r, node);
-> > +
-> > +	ret = platform_device_add_resources(pdev, r, count);
-> > +	/*
-> > +	 * Resources are duplicated in platform_device_add_resources,
-> > +	 * free their allocated memory
-> > +	 */
-> > +	kfree(r);
-> > +
-> > +	if (ret)
-> > +		goto dev_put;
-> > +
-> > +	/*
-> > +	 * Add a copy of IORT node pointer to platform_data to
-> > +	 * be used to retrieve IORT data information.
-> > +	 */
-> > +	ret = platform_device_add_data(pdev, &node, sizeof(node));
-> > +	if (ret)
-> > +		goto dev_put;
-> > +
-> > +	pdev->dev.dma_mask = kmalloc(sizeof(*pdev->dev.dma_mask), GFP_KERNEL);
-> > +	if (!pdev->dev.dma_mask) {
-> > +		ret = -ENOMEM;
-> > +		goto dev_put;
-> > +	}
-> 
-> Since this is exclusively for creating SMMUs, and we know they should
-> never have weird shenanigans going on requiring different masks, I'd be
-> inclined to just point dev.dma_mask at dev.coherent_dma_mask and be done
-> with it.
+Apparently, in my haste, I overlooked that not everything that can do
+COMPILE_TEST also has a PHYS_OFFSET.
 
-That sounds reasonable yes, I will do.
+ drivers/iommu/io-pgtable-arm-v7s.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-> > +
-> > +	pdev->dev.fwnode = fwnode;
-> > +
-> > +	/*
-> > +	 * Set default dma mask value for the table walker,
-> > +	 * to be overridden on probing with correct value.
-> > +	 */
-> > +	*pdev->dev.dma_mask = DMA_BIT_MASK(32);
-> > +	pdev->dev.coherent_dma_mask = *pdev->dev.dma_mask;
-> > +
-> > +	attr = ops->iommu_is_coherent(node) ?
-> > +			     DEV_DMA_COHERENT : DEV_DMA_NON_COHERENT;
-> > +
-> > +	/* Configure DMA for the page table walker */
-> > +	acpi_dma_configure(&pdev->dev, attr);
-> 
-> Oh look, some more code which would be simpler if acpi_dma_configure()
-> set the default mask itself ;)
-
-Eheh I have no objections, apart from the effect that change can
-have on non-ARM probing paths, it could also help remove some code
-from ACPI core while at it.
-
-Thanks !
-Lorenzo
-
-> 
-> Robin.
-> 
-> > +
-> > +	ret = platform_device_add(pdev);
-> > +	if (ret)
-> > +		goto dma_deconfigure;
-> > +
-> > +	return 0;
-> > +
-> > +dma_deconfigure:
-> > +	acpi_dma_deconfigure(&pdev->dev);
-> > +	kfree(pdev->dev.dma_mask);
-> > +
-> > +dev_put:
-> > +	platform_device_put(pdev);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static acpi_status __init iort_match_iommu_callback(struct acpi_iort_node *node,
-> > +						    void *context)
-> > +{
-> > +	int ret;
-> > +	struct fwnode_handle *fwnode;
-> > +
-> > +	fwnode = iort_get_fwnode(node);
-> > +
-> > +	if (!fwnode)
-> > +		return AE_NOT_FOUND;
-> > +
-> > +	ret = iort_add_smmu_platform_device(fwnode, node);
-> > +	if (ret) {
-> > +		pr_err("Error in platform device creation\n");
-> > +		return AE_ERROR;
-> > +	}
-> > +
-> > +	return AE_OK;
-> > +}
-> > +
-> > +static void __init iort_smmu_init(void)
-> > +{
-> > +	iort_scan_node(ACPI_IORT_NODE_SMMU, iort_match_iommu_callback, NULL);
-> > +	iort_scan_node(ACPI_IORT_NODE_SMMU_V3, iort_match_iommu_callback, NULL);
-> > +}
-> > +
-> >  void __init acpi_iort_init(void)
-> >  {
-> >  	acpi_status status;
-> > @@ -436,4 +566,5 @@ void __init acpi_iort_init(void)
-> >  	}
-> >  
-> >  	acpi_probe_device_table(iort);
-> > +	iort_smmu_init();
-> >  }
-> > 
-> 
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index def8ca1c982d..f50e51c1a9c8 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -633,6 +633,10 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ {
+ 	struct arm_v7s_io_pgtable *data;
+ 
++#ifdef PHYS_OFFSET
++	if (upper_32_bits(PHYS_OFFSET))
++		return NULL;
++#endif
+ 	if (cfg->ias > ARM_V7S_ADDR_BITS || cfg->oas > ARM_V7S_ADDR_BITS)
+ 		return NULL;
+ 
+-- 
+2.8.1.dirty
