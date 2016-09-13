@@ -1,341 +1,87 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v5 09/14] drivers: iommu: arm-smmu-v3: add IORT
- configuration
-Date: Tue, 13 Sep 2016 18:30:18 +0100
-Message-ID: <d2aa2068-56d1-13d7-c9d4-80139e4dd3f6@arm.com>
-References: <20160909142343.13314-1-lorenzo.pieralisi@arm.com>
- <20160909142343.13314-10-lorenzo.pieralisi@arm.com>
+From: Scott Wood <oss-fOR+EgIDQEHk1uMJSBkQmQ@public.gmane.org>
+Subject: Re: [v11, 5/8] soc: fsl: add GUTS driver for QorIQ platforms
+Date: Tue, 13 Sep 2016 17:24:23 -0500
+Message-ID: <1473805463.30217.206.camel@buserror.net>
+References: <1473150503-9550-1-git-send-email-yangbo.lu@nxp.com>
+	<1473150503-9550-6-git-send-email-yangbo.lu@nxp.com>
+	<1473392840.30217.170.camel@buserror.net>
+	<HE1PR04MB08892D8354E38EC32F549E98F8FF0@HE1PR04MB0889.eurprd04.prod.outlook.com>
+	<1473722714.30217.196.camel@buserror.net>
+	<HE1PR04MB08892E63EB2D579D6F0A7550F8FE0@HE1PR04MB0889.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20160909142343.13314-10-lorenzo.pieralisi@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org
-Cc: Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Hanjun Guo <hanjun.guo@linaro.org>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <HE1PR04MB08892E63EB2D579D6F0A7550F8FE0-6LN7OEpIatX1kPMWxTxe+c9NdZoXdze2vxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Y.B. Lu" <yangbo.lu-3arQi8VN3Tc@public.gmane.org>, "linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, "X.B. Xie" <xiaobo.xie-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, "linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org" <linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org>, "linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/09/16 15:23, Lorenzo Pieralisi wrote:
-> In ACPI bases systems, in order to be able to create platform
-> devices and initialize them for ARM SMMU v3 components, the IORT
-> kernel implementation requires a set of static functions to be
-> used by the IORT kernel layer to configure platform devices for
-> ARM SMMU v3 components.
-> 
-> Add static configuration functions to the IORT kernel layer for
-> the ARM SMMU v3 components, so that the ARM SMMU v3 driver can
-> initialize its respective platform device by relying on the IORT
-> kernel infrastructure and by adding a corresponding ACPI device
-> early probe section entry.
-> 
-> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: Will Deacon <will.deacon@arm.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> ---
->  drivers/acpi/arm64/iort.c   | 103 +++++++++++++++++++++++++++++++++++++++++++-
->  drivers/iommu/arm-smmu-v3.c |  95 +++++++++++++++++++++++++++++++++++++++-
->  2 files changed, 195 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index e0a9b16..a2ad102 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -425,6 +425,95 @@ struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id)
->  	return irq_find_matching_fwnode(handle, DOMAIN_BUS_PCI_MSI);
->  }
->  
-> +static void __init acpi_iort_register_irq(int hwirq, const char *name,
-> +					  int trigger,
-> +					  struct resource *res)
-> +{
-> +	int irq = acpi_register_gsi(NULL, hwirq, trigger,
-> +				    ACPI_ACTIVE_HIGH);
-> +
-> +	if (irq < 0) {
-
-irq <= 0 ?
-
-> +		pr_err("could not register gsi hwirq %d name [%s]\n", hwirq,
-> +								      name);
-> +		return;
-> +	}
-> +
-> +	res->start = irq;
-> +	res->end = irq;
-> +	res->flags = IORESOURCE_IRQ;
-> +	res->name = name;
-> +}
-> +
-> +static int __init arm_smmu_v3_count_resources(struct acpi_iort_node *node)
-> +{
-> +	struct acpi_iort_smmu_v3 *smmu;
-> +	/* Always present mem resource */
-> +	int num_res = 1;
-> +
-> +	/* Retrieve SMMUv3 specific data */
-> +	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-> +
-> +	if (smmu->event_gsiv)
-> +		num_res++;
-> +
-> +	if (smmu->pri_gsiv)
-> +		num_res++;
-> +
-> +	if (smmu->gerr_gsiv)
-> +		num_res++;
-> +
-> +	if (smmu->sync_gsiv)
-> +		num_res++;
-> +
-> +	return num_res;
-> +}
-> +
-> +static void __init arm_smmu_v3_init_resources(struct resource *res,
-> +					      struct acpi_iort_node *node)
-> +{
-> +	struct acpi_iort_smmu_v3 *smmu;
-> +	int num_res = 0;
-> +
-> +	/* Retrieve SMMUv3 specific data */
-> +	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-> +
-> +	res[num_res].start = smmu->base_address;
-> +	res[num_res].end = smmu->base_address + SZ_128K - 1;
-> +	res[num_res].flags = IORESOURCE_MEM;
-> +
-> +	num_res++;
-> +
-> +	if (smmu->event_gsiv)
-> +		acpi_iort_register_irq(smmu->event_gsiv, "eventq",
-> +				       ACPI_EDGE_SENSITIVE,
-> +				       &res[num_res++]);
-> +
-> +	if (smmu->pri_gsiv)
-> +		acpi_iort_register_irq(smmu->pri_gsiv, "priq",
-> +				       ACPI_EDGE_SENSITIVE,
-> +				       &res[num_res++]);
-> +
-> +	if (smmu->gerr_gsiv)
-> +		acpi_iort_register_irq(smmu->gerr_gsiv, "gerror",
-> +				       ACPI_EDGE_SENSITIVE,
-> +				       &res[num_res++]);
-> +
-> +	if (smmu->sync_gsiv)
-> +		acpi_iort_register_irq(smmu->sync_gsiv, "cmdq-sync",
-> +				       ACPI_EDGE_SENSITIVE,
-> +				       &res[num_res++]);
-> +}
-> +
-> +static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
-> +{
-> +	struct acpi_iort_smmu_v3 *smmu;
-> +
-> +	/* Retrieve SMMUv3 specific data */
-> +	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-> +
-> +	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
-> +}
-> +
->  struct iort_iommu_config {
->  	const char *name;
->  	int (*iommu_init)(struct acpi_iort_node *node);
-> @@ -434,10 +523,22 @@ struct iort_iommu_config {
->  				     struct acpi_iort_node *node);
->  };
->  
-> +static const struct iort_iommu_config iort_arm_smmu_v3_cfg __initconst = {
-> +	.name = "arm-smmu-v3",
-> +	.iommu_is_coherent = arm_smmu_v3_is_coherent,
-> +	.iommu_count_resources = arm_smmu_v3_count_resources,
-> +	.iommu_init_resources = arm_smmu_v3_init_resources
-> +};
-> +
->  static __init
->  const struct iort_iommu_config *iort_get_iommu_cfg(struct acpi_iort_node *node)
->  {
-> -	return NULL;
-> +	switch (node->type) {
-> +	case ACPI_IORT_NODE_SMMU_V3:
-> +		return &iort_arm_smmu_v3_cfg;
-> +	default:
-> +		return NULL;
-> +	}
->  }
->  
->  /**
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index dbc21e3..9463f3f 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -20,6 +20,8 @@
->   * This driver is powered by bad coffee and bombay mix.
->   */
->  
-> +#include <linux/acpi.h>
-> +#include <linux/acpi_iort.h>
->  #include <linux/delay.h>
->  #include <linux/dma-iommu.h>
->  #include <linux/err.h>
-> @@ -2539,6 +2541,32 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
->  	return 0;
->  }
->  
-> +#ifdef CONFIG_ACPI
-> +static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
-> +				      struct arm_smmu_device *smmu)
-> +{
-> +	struct acpi_iort_smmu_v3 *iort_smmu;
-> +	struct device *dev = smmu->dev;
-> +	struct acpi_iort_node *node;
-> +
-> +	node = *(struct acpi_iort_node **)dev_get_platdata(dev);
-> +
-> +	/* Retrieve SMMUv3 specific data */
-> +	iort_smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-> +
-> +	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
-> +		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
-> +
-> +	return 0;
-> +}
-> +#else
-> +static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
-> +				      struct arm_smmu_device *smmu)
-> +{
-> +	return -ENODEV;
-> +}
-> +#endif
-> +
->  static int arm_smmu_device_dt_probe(struct platform_device *pdev,
->  				    struct arm_smmu_device *smmu)
->  {
-> @@ -2556,6 +2584,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	struct resource *res;
->  	struct arm_smmu_device *smmu;
->  	struct device *dev = &pdev->dev;
-> +	struct fwnode_handle *fwnode;
->  
->  	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
->  	if (!smmu) {
-> @@ -2592,7 +2621,10 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	if (irq > 0)
->  		smmu->gerr_irq = irq;
->  
-> -	ret = arm_smmu_device_dt_probe(pdev, smmu);
-> +	if (dev->of_node)
-> +		ret = arm_smmu_device_dt_probe(pdev, smmu);
-> +	else
-> +		ret = arm_smmu_device_acpi_probe(pdev, smmu);
->  
->  	if (ret)
->  		return ret;
-> @@ -2615,8 +2647,12 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	if (ret)
->  		return ret;
->  
-> +	/* FIXME: DT code path does not set up dev->fwnode pointer */
-> +	fwnode = dev->of_node ? &dev->of_node->fwnode : dev->fwnode;
-> +
-
-You're right, this is getting annoying. For a sample of n=1, I've just
-booted a Juno with the below and nothing blew up - I'll do a bit more
-homework and probably spin it into a proper patch:
----8<---
-diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-index f39ccd5aa701..f811d2796437 100644
---- a/drivers/of/platform.c
-+++ b/drivers/of/platform.c
-@@ -142,6 +142,7 @@ struct platform_device *of_device_alloc(struct
-device_node *np,
- 	}
-
- 	dev->dev.of_node = of_node_get(np);
-+	dev->dev.fwnode = &np->fwnode;
- 	dev->dev.parent = parent ? : &platform_bus;
-
- 	if (bus_id)
-@@ -241,6 +242,7 @@ static struct amba_device
-*of_amba_device_create(struct device_node *node,
-
- 	/* setup generic device info */
- 	dev->dev.of_node = of_node_get(node);
-+	dev->dev.fwnode = &node->fwnode;
- 	dev->dev.parent = parent ? : &platform_bus;
- 	dev->dev.platform_data = platform_data;
- 	if (bus_id)
---->8---
-
-Robin.
-
->  	/* And we're up. Go go go! */
-> -	fwspec_iommu_set_ops(&dev->of_node->fwnode, &arm_smmu_ops);
-> +	fwspec_iommu_set_ops(fwnode, &arm_smmu_ops);
-> +
->  #ifdef CONFIG_PCI
->  	pci_request_acs();
->  	ret = bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
-> @@ -2688,6 +2724,61 @@ static int __init arm_smmu_of_init(struct device_node *np)
->  }
->  IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3", arm_smmu_of_init);
->  
-> +#ifdef CONFIG_ACPI
-> +static int __init acpi_smmu_v3_init(struct acpi_table_header *table)
-> +{
-> +	struct acpi_iort_node *iort_node, *iort_end;
-> +	struct acpi_table_iort *iort;
-> +	struct fwnode_handle *fwnode;
-> +	int i, ret;
-> +
-> +	/*
-> +	 * table and iort will both point to the start of IORT table, but
-> +	 * have different struct types
-> +	 */
-> +	iort = (struct acpi_table_iort *)table;
-> +
-> +	/* Get the first IORT node */
-> +	iort_node = ACPI_ADD_PTR(struct acpi_iort_node, table,
-> +				 iort->node_offset);
-> +	iort_end = ACPI_ADD_PTR(struct acpi_iort_node, table,
-> +				table->length);
-> +
-> +	for (i = 0; i < iort->node_count; i++) {
-> +
-> +		if (iort_node >= iort_end) {
-> +			pr_err("iort node pointer overflows, bad table\n");
-> +			return -EINVAL;
-> +		}
-> +
-> +		if (iort_node->type == ACPI_IORT_NODE_SMMU_V3) {
-> +			ret = arm_smmu_init();
-> +			if (ret)
-> +				return ret;
-> +
-> +			fwnode = iommu_alloc_fwnode();
-> +
-> +			if (!fwnode)
-> +				return -ENOMEM;
-> +
-> +			ret = iort_set_fwnode(iort_node, fwnode);
-> +			if (ret)
-> +				goto free;
-> +		}
-> +
-> +		iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort_node,
-> +					 iort_node->length);
-> +	}
-> +
-> +	return 0;
-> +free:
-> +	iommu_free_fwnode(fwnode);
-> +	return ret;
-> +
-> +}
-> +IORT_ACPI_DECLARE(arm_smmu_v3, ACPI_SIG_IORT, acpi_smmu_v3_init);
-> +#endif
-> +
->  MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
->  MODULE_AUTHOR("Will Deacon <will.deacon@arm.com>");
->  MODULE_LICENSE("GPL v2");
-> 
-
+T24gVHVlLCAyMDE2LTA5LTEzIGF0IDA3OjIzICswMDAwLCBZLkIuIEx1IHdyb3RlOgo+ID4gCgoK
+PiA+IAo+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0KPiA+IEZyb206IGxpbnV4LW1tYy1v
+d25lckB2Z2VyLmtlcm5lbC5vcmcgW21haWx0bzpsaW51eC1tbWMtCj4gPiBvd25lckB2Z2VyLmtl
+cm5lbC5vcmddIE9uIEJlaGFsZiBPZiBTY290dCBXb29kCj4gPiBTZW50OiBUdWVzZGF5LCBTZXB0
+ZW1iZXIgMTMsIDIwMTYgNzoyNSBBTQo+ID4gVG86IFkuQi4gTHU7IGxpbnV4LW1tY0B2Z2VyLmtl
+cm5lbC5vcmc7IHVsZi5oYW5zc29uQGxpbmFyby5vcmc7IEFybmQKPiA+IEJlcmdtYW5uCj4gPiBD
+YzogbGludXhwcGMtZGV2QGxpc3RzLm96bGFicy5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJuZWwu
+b3JnOyBsaW51eC1hcm0tCj4gPiBrZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsgbGludXgta2Vy
+bmVsQHZnZXIua2VybmVsLm9yZzsgbGludXgtCj4gPiBjbGtAdmdlci5rZXJuZWwub3JnOyBsaW51
+eC1pMmNAdmdlci5rZXJuZWwub3JnOyBpb21tdUBsaXN0cy5saW51eC0KPiA+IGZvdW5kYXRpb24u
+b3JnOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBNYXJrIFJ1dGxhbmQ7IFJvYiBIZXJyaW5nOwo+
+ID4gUnVzc2VsbCBLaW5nOyBKb2NoZW4gRnJpZWRyaWNoOyBKb2VyZyBSb2VkZWw7IENsYXVkaXUg
+TWFub2lsOyBCaHVwZXNoCj4gPiBTaGFybWE7IFFpYW5nIFpoYW87IEt1bWFyIEdhbGE7IFNhbnRv
+c2ggU2hpbGlta2FyOyBMZW8gTGk7IFguQi4gWGllCj4gPiBTdWJqZWN0OiBSZTogW3YxMSwgNS84
+XSBzb2M6IGZzbDogYWRkIEdVVFMgZHJpdmVyIGZvciBRb3JJUSBwbGF0Zm9ybXMKPiA+IAo+ID4g
+QlRXLCBhcmVuJ3QgbHMyMDgwYSBhbmQgbHMyMDg1YSB0aGUgc2FtZSBkaWU/IMKgQW5kIGlzIHRo
+ZXJlIG5vIG5vbi1FCj4gPiB2ZXJzaW9uIG9mIExTMjA4MEEvTFMyMDQwQT8KPiBbTHUgWWFuZ2Jv
+LUI0NzA5M10gSSBjaGVja2VkIGFsbCB0aGUgc3ZyIHZhbHVlcyBpbiBjaGlwIGVycmF0YSBkb2Mg
+IlJldmlzaW9uCj4gbGV2ZWwgdG8gcGFydCBtYXJraW5nIGNyb3NzLXJlZmVyZW5jZSIgdGFibGUu
+Cj4gSSBmb3VuZCBsczIwODBhIGFuZCBsczIwODVhIHdlcmUgaW4gdHdvIHNlcGFyYXRlIGRvYy4g
+QW5kIEkgZGlkbuKAmXQgZmluZCBub24tCj4gRSB2ZXJzaW9uIG9mIExTMjA4MEEvTFMyMDQwQSBp
+biBjaGlwIGVycmF0YSBkb2MuCj4gRG8geW91IGtub3cgaXMgdGhlcmUgYW55IG90aGVyIGRvYyB3
+ZSBjYW4gY29uZmlybSB0aGlzPwoKTm8uIMKgVHJhZGl0aW9uYWxseSB3ZSd2ZSBhbHdheXMgaGFk
+IEUgYW5kIG5vbi1FIHZlcnNpb25zIG9mIGVhY2ggY2hpcCwgYnV0IEkKaGF2ZSBubyBrbm93bGVk
+Z2Ugb2Ygd2hldGhlciB0aGF0IGhhcyBjaGFuZ2VkIChJIGRvIG5vdGUgdGhhdCB0aGUgd2F5IHRo
+YXQgRS0Kc3RhdHVzIGlzIGluZGljYXRlZCBpbiBTVlIgaGFzIGNoYW5nZWQpLgoKQnV0IHBsZWFz
+ZSBsYWJlbCBMUzIwODBBIGFuZCBMUzIwODVBIGFzIHRoZSBzYW1lIGRpZSAob3IgcHJvdmlkZSBz
+dHJvbmcKZXZpZGVuY2UgdGhhdCB0aGV5IGFyZSBub3QpLgoKPiAKPiA+IAo+ID4gCj4gPiA+IAo+
+ID4gPiA+ID4gCj4gPiA+ID4gPiArCWRvIHsKPiA+ID4gPiA+ICsJCWlmICghbWF0Y2hlcy0+c29j
+X2lkKQo+ID4gPiA+ID4gKwkJCXJldHVybiBOVUxMOwo+ID4gPiA+ID4gKwkJaWYgKGdsb2JfbWF0
+Y2goc3ZyX21hdGNoLCBtYXRjaGVzLT5zb2NfaWQpKQo+ID4gPiA+ID4gKwkJCWJyZWFrOwo+ID4g
+PiA+ID4gKwl9IHdoaWxlIChtYXRjaGVzKyspOwo+ID4gPiA+IEFyZSB5b3UgZXhwZWN0aW5nICJt
+YXRjaGVzKysiIHRvIGV2ZXIgZXZhbHVhdGUgYXMgZmFsc2U/Cj4gPiA+IFtMdSBZYW5nYm8tQjQ3
+MDkzXSBZZXMsIHRoaXMgaXMgdXNlZCB0byBtYXRjaCB0aGUgc29jIHdlIHVzZSBpbgo+ID4gPiBx
+b3JpcV9zb2MgYXJyYXkgdW50aWwgZ2V0dGluZyB0cnVlLgo+ID4gPiBXZSBuZWVkIHRvIGdldCB0
+aGUgbmFtZSBhbmQgZGllIGluZm9ybWF0aW9uIGRlZmluZWQgaW4gYXJyYXkuCj4gPiBJJ20gbm90
+IGFza2luZyB3aGV0aGVyIHRoZSBnbG9iX21hdGNoIHdpbGwgZXZlciByZXR1cm4gdHJ1ZS4gwqBJ
+J20gc2F5aW5nCj4gPiB0aGF0ICJtYXRjaGVzKysiIHdpbGwgbmV2ZXIgYmVjb21lIE5VTEwuCj4g
+W0x1IFlhbmdiby1CNDcwOTNdIFRoZSBtYXRjaGVzKysgd2lsbCBuZXZlciBiZWNvbWUgTlVMTCB3
+aGlsZSBpdCB3aWxsIHJldHVybgo+IE5VTEwgYWZ0ZXIgbWF0Y2hpbmcgZm9yIGFsbCB0aGUgbWVt
+YmVycyBpbiBhcnJheS4KCiJtYXRjaGVzKysiIHdpbGwgbmV2ZXIgInJldHVybiBOVUxMIi4gwqBJ
+dCdzIGp1c3QgYW4gaW5jcmVtZW50aW5nIGFkZHJlc3MuIMKgSXQKd29uJ3QgYmUgbnVsbCB1bnRp
+bCB5b3Ugd3JhcCBhcm91bmQgdGhlIGFkZHJlc3Mgc3BhY2UsIGFuZCBldmVuIGlmIHRoZSBvdGhl
+cgpsb29wIHRlcm1pbmF0b3JzIG5ldmVyIGtpY2tlZCBpbiB5b3UnZCBjcmFzaCBsb25nIGJlZm9y
+ZSB0aGF0IGhhcHBlbnMuCgpQbGVhc2UgcmV3cml0ZSB0aGUgbG9vcCBhcyBzb21ldGhpbmcgbGlr
+ZToKCgl3aGlsZSAobWF0Y2hlcy0+c29jX2lkKSB7CgkJaWYgKGdsb2JfbWF0Y2goLi4uKSkKCQkJ
+cmV0dXJuIG1hdGNoZXM7CgoJCW1hdGNoZXMrKzsKCX0KCglyZXR1cm4gTlVMTDsKCgo+ID4gPiA+
+ID4gKwkvKiBSZWdpc3RlciBzb2MgZGV2aWNlICovCj4gPiA+ID4gPiArCXNvY19kZXZfYXR0ciA9
+IGt6YWxsb2Moc2l6ZW9mKCpzb2NfZGV2X2F0dHIpLCBHRlBfS0VSTkVMKTsKPiA+ID4gPiA+ICsJ
+aWYgKCFzb2NfZGV2X2F0dHIpIHsKPiA+ID4gPiA+ICsJCXJldCA9IC1FTk9NRU07Cj4gPiA+ID4g
+PiArCQlnb3RvIG91dF91bm1hcDsKPiA+ID4gPiA+ICsJfQo+ID4gPiA+IENvdWxkbid0IHRoaXMg
+YmUgc3RhdGljYWxseSBhbGxvY2F0ZWQ/Cj4gPiA+IFtMdSBZYW5nYm8tQjQ3MDkzXSBEbyB5b3Ug
+bWVhbiB3ZSBkZWZpbmUgdGhpcyBzdHJ1Y3Qgc3RhdGljYWxseSA/Cj4gPiA+IAo+ID4gPiBzdGF0
+aWMgc3RydWN0IHNvY19kZXZpY2VfYXR0cmlidXRlIHNvY19kZXZfYXR0cjsKPiA+IFllcy4KPiA+
+IAo+IFtMdSBZYW5nYm8tQjQ3MDkzXSBJdCdzIG9rIHRvIGRlZmluZSBpdCBzdGF0aWNhbGx5LiBJ
+cyB0aGVyZSBhbnkgbmVlZCB0byBkbwo+IHRoYXQ/CgpJdCdzIHNpbXBsZXIuCgotU2NvdHQKCl9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxp
+bmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxp
+bnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
