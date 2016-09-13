@@ -1,18 +1,14 @@
-From: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v5 07/14] drivers: acpi: iort: add support for ARM SMMU
-	platform devices creation
-Date: Tue, 13 Sep 2016 16:48:15 +0800
-Message-ID: <93e202e3-2f61-a79e-2592-9f0e0355767e@linaro.org>
-References: <20160909142343.13314-1-lorenzo.pieralisi@arm.com>
-	<20160909142343.13314-8-lorenzo.pieralisi@arm.com>
-	<7a63cf312b6e9714cdce1d0aca88cf4d@codeaurora.org>
-	<fb4acfd5-b7fd-636f-53f3-13dc6fb8b713@linaro.org>
-	<20160913082441.GA28804@red-moon>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v7.1 04/22] iommu: Introduce iommu_fwspec
+Date: Tue, 13 Sep 2016 10:54:14 +0100
+Message-ID: <0050305e05655fd34eb7134dd7fb800f48e4d1ac.1473760250.git.robin.murphy@arm.com>
+References: <cover.1473695704.git.robin.murphy@arm.com>
+	<742a71630de502ac5a7a8641c6ed368d8409324d.1473695704.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160913082441.GA28804@red-moon>
+In-Reply-To: <742a71630de502ac5a7a8641c6ed368d8409324d.1473695704.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,60 +18,231 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2016/9/13 16:24, Lorenzo Pieralisi wrote:
-> On Tue, Sep 13, 2016 at 04:15:31PM +0800, Hanjun Guo wrote:
->
-> [...]
->
->>>> +static acpi_status __init iort_match_iommu_callback(struct
->>>> acpi_iort_node *node,
->>>> +                            void *context)
->>>> +{
->>>> +    int ret;
->>>> +    struct fwnode_handle *fwnode;
->>>> +
->>>> +    fwnode = iort_get_fwnode(node);
->>>> +
->>>> +    if (!fwnode)
->>>> +        return AE_NOT_FOUND;
->>>> +
->>>> +    ret = iort_add_smmu_platform_device(fwnode, node);
->>>> +    if (ret) {
->>>> +        pr_err("Error in platform device creation\n");
->>>> +        return AE_ERROR;
->>>> +    }
->>>> +
->>>> +    return AE_OK;
->>>> +}
->>>> +
->>>> +static void __init iort_smmu_init(void)
->>>> +{
->>>> +    iort_scan_node(ACPI_IORT_NODE_SMMU, iort_match_iommu_callback,
->>>> NULL);
->>>> +    iort_scan_node(ACPI_IORT_NODE_SMMU_V3, iort_match_iommu_callback,
->>>> NULL);
->>>
->>> Since iort_scan_node() returns after the first successful match it finds,
->>> only the first SMMU_V3 in my IORT is being enumerated. I think you need
->>> to go back to the "iterator" like approach you had been using or make
->>> iort_match_iommu_callback() always return a non-AE_OK value so the scan
->>> continues and has a chance to visit all of the SMMU_V3 nodes.
->>
->> Please use the updated version of IORT patch (aka Tomasz's v11)
->> then things will work fine.
->
-> Nate is right, I was too keen on using iort_scan_node(), it does
-> not really work here (unless as he said I return a value !AE_OK in
-> the callback, which is horrible), I reverted back to the iterator
-> approach and I can push out a fixed up branch if useful before next
-> posting.
+Introduce a common structure to hold the per-device firmware data that
+most IOMMU drivers need to keep track of. This enables us to configure
+much of that data from common firmware code, and consolidate a lot of
+the equivalent implementations, device look-up tables, etc. which are
+currently strewn across IOMMU drivers.
 
-Ah, sorry, I just noticed "the first SMMU_V3" which is pretty similar
-with the second problem which is noticed by Nate...
+This will also be enable us to address the outstanding "multiple IOMMUs
+on the platform bus" problem by tweaking IOMMU API calls to prefer
+dev->fwspec->ops before falling back to dev->bus->iommu_ops, and thus
+gracefully handle those troublesome systems which we currently cannot.
 
-Thanks
-Hanjun
+As the first user, hook up the OF IOMMU configuration mechanism. The
+driver-defined nature of DT cells means that we still need the drivers
+to translate and add the IDs themselves, but future users such as the
+much less free-form ACPI IORT will be much simpler and self-contained.
+
+CC: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Suggested-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+---
+
+- Drop the 'gradual introduction' fiddling and go straight to struct
+  device and common code, as it prevents all the silly build issues
+  and ultimately makes life simpler for everyone
+- This time without missing "static inline"s on the stubs...
+
+---
+ drivers/iommu/iommu.c    | 58 ++++++++++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/of_iommu.c |  8 +++++--
+ include/linux/device.h   |  3 +++
+ include/linux/iommu.h    | 39 ++++++++++++++++++++++++++++++++
+ 4 files changed, 106 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index b06d93594436..9a2f1960873b 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -31,6 +31,7 @@
+ #include <linux/err.h>
+ #include <linux/pci.h>
+ #include <linux/bitops.h>
++#include <linux/property.h>
+ #include <trace/events/iommu.h>
+ 
+ static struct kset *iommu_group_kset;
+@@ -1613,3 +1614,60 @@ out:
+ 
+ 	return ret;
+ }
++
++int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
++		      const struct iommu_ops *ops)
++{
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++
++	if (fwspec)
++		return ops == fwspec->ops ? 0 : -EINVAL;
++
++	fwspec = kzalloc(sizeof(*fwspec), GFP_KERNEL);
++	if (!fwspec)
++		return -ENOMEM;
++
++	of_node_get(to_of_node(iommu_fwnode));
++	fwspec->iommu_fwnode = iommu_fwnode;
++	fwspec->ops = ops;
++	dev->iommu_fwspec = fwspec;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(iommu_fwspec_init);
++
++void iommu_fwspec_free(struct device *dev)
++{
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++
++	if (fwspec) {
++		fwnode_handle_put(fwspec->iommu_fwnode);
++		kfree(fwspec);
++		dev->iommu_fwspec = NULL;
++	}
++}
++EXPORT_SYMBOL_GPL(iommu_fwspec_free);
++
++int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
++{
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	size_t size;
++	int i;
++
++	if (!fwspec)
++		return -EINVAL;
++
++	size = offsetof(struct iommu_fwspec, ids[fwspec->num_ids + num_ids]);
++	if (size > sizeof(*fwspec)) {
++		fwspec = krealloc(dev->iommu_fwspec, size, GFP_KERNEL);
++		if (!fwspec)
++			return -ENOMEM;
++	}
++
++	for (i = 0; i < num_ids; i++)
++		fwspec->ids[fwspec->num_ids + i] = ids[i];
++
++	fwspec->num_ids += num_ids;
++	dev->iommu_fwspec = fwspec;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 19e1e8f2f871..5b82862f571f 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -167,7 +167,9 @@ static const struct iommu_ops
+ 		return NULL;
+ 
+ 	ops = of_iommu_get_ops(iommu_spec.np);
+-	if (!ops || !ops->of_xlate || ops->of_xlate(&pdev->dev, &iommu_spec))
++	if (!ops || !ops->of_xlate ||
++	    iommu_fwspec_init(&pdev->dev, &iommu_spec.np->fwnode, ops) ||
++	    ops->of_xlate(&pdev->dev, &iommu_spec))
+ 		ops = NULL;
+ 
+ 	of_node_put(iommu_spec.np);
+@@ -196,7 +198,9 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 		np = iommu_spec.np;
+ 		ops = of_iommu_get_ops(np);
+ 
+-		if (!ops || !ops->of_xlate || ops->of_xlate(dev, &iommu_spec))
++		if (!ops || !ops->of_xlate ||
++		    iommu_fwspec_init(dev, &np->fwnode, ops) ||
++		    ops->of_xlate(dev, &iommu_spec))
+ 			goto err_put_node;
+ 
+ 		of_node_put(np);
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 38f02814d53a..bc41e87a969b 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -41,6 +41,7 @@ struct device_node;
+ struct fwnode_handle;
+ struct iommu_ops;
+ struct iommu_group;
++struct iommu_fwspec;
+ 
+ struct bus_attribute {
+ 	struct attribute	attr;
+@@ -765,6 +766,7 @@ struct device_dma_parameters {
+  * 		gone away. This should be set by the allocator of the
+  * 		device (i.e. the bus driver that discovered the device).
+  * @iommu_group: IOMMU group the device belongs to.
++ * @iommu_fwspec: IOMMU-specific properties supplied by firmware.
+  *
+  * @offline_disabled: If set, the device is permanently online.
+  * @offline:	Set after successful invocation of bus type's .offline().
+@@ -849,6 +851,7 @@ struct device {
+ 
+ 	void	(*release)(struct device *dev);
+ 	struct iommu_group	*iommu_group;
++	struct iommu_fwspec	*iommu_fwspec;
+ 
+ 	bool			offline_disabled:1;
+ 	bool			offline:1;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index a35fb8b42e1a..436dc21318af 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -331,10 +331,32 @@ extern struct iommu_group *pci_device_group(struct device *dev);
+ /* Generic device grouping function */
+ extern struct iommu_group *generic_device_group(struct device *dev);
+ 
++/**
++ * struct iommu_fwspec - per-device IOMMU instance data
++ * @ops: ops for this device's IOMMU
++ * @iommu_fwnode: firmware handle for this device's IOMMU
++ * @iommu_priv: IOMMU driver private data for this device
++ * @num_ids: number of associated device IDs
++ * @ids: IDs which this device may present to the IOMMU
++ */
++struct iommu_fwspec {
++	const struct iommu_ops	*ops;
++	struct fwnode_handle	*iommu_fwnode;
++	void			*iommu_priv;
++	unsigned int		num_ids;
++	u32			ids[1];
++};
++
++int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
++		      const struct iommu_ops *ops);
++void iommu_fwspec_free(struct device *dev);
++int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
++
+ #else /* CONFIG_IOMMU_API */
+ 
+ struct iommu_ops {};
+ struct iommu_group {};
++struct iommu_fwspec {};
+ 
+ static inline bool iommu_present(struct bus_type *bus)
+ {
+@@ -541,6 +563,23 @@ static inline void iommu_device_unlink(struct device *dev, struct device *link)
+ {
+ }
+ 
++static inline int iommu_fwspec_init(struct device *dev,
++				    struct fwnode_handle *iommu_fwnode,
++				    const struct iommu_ops *ops)
++{
++	return -ENODEV;
++}
++
++static inline void iommu_fwspec_free(struct device *dev)
++{
++}
++
++static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
++				       int num_ids)
++{
++	return -ENODEV;
++}
++
+ #endif /* CONFIG_IOMMU_API */
+ 
+ #endif /* __LINUX_IOMMU_H */
+-- 
+2.8.1.dirty
