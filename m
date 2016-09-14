@@ -1,136 +1,160 @@
 From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v3 2/2] iommu/exynos: Add proper runtime pm support
-Date: Wed, 14 Sep 2016 12:50:46 +0200
-Message-ID: <6f5e9bd4-10f6-e9cb-3e2a-ef6ff8a38bc5@samsung.com>
-References: <CGME20160913124918eucas1p29f49efbb142d416215482c29b53daff8@eucas1p2.samsung.com>
-	<1473770941-8337-1-git-send-email-m.szyprowski@samsung.com>
-	<1473770941-8337-3-git-send-email-m.szyprowski@samsung.com>
-	<CAPDyKFo5D3kGRt=4mBH9-XpLU6eOm4jah1xjyR3disFiJfXjoA@mail.gmail.com>
-	<ca6b2547-dc67-bb3c-e5af-7f5eeddfd54d@samsung.com>
-	<CAPDyKFqtBhA6kv-DFmeCiWbn0q0g2hFR5-+9M7CgvbzNH2iOzQ@mail.gmail.com>
+Subject: Re: [PATCH v7 22/22] iommu/dma: Avoid PCI host bridge windows
+Date: Wed, 14 Sep 2016 12:55:45 +0200
+Message-ID: <ab8693f6-20d6-2a95-9f1f-0607e72bc012@samsung.com>
+References: <cover.1473695704.git.robin.murphy@arm.com>
+ <CGME20160912161514eucas1p10818019bf2302609421ad9c35d1af4b8@eucas1p1.samsung.com>
+ <5f7bfee298f98d29a35933d3e0252d32b83d62b8.1473695704.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <CAPDyKFqtBhA6kv-DFmeCiWbn0q0g2hFR5-+9M7CgvbzNH2iOzQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-samsung-soc <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, "linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-reply-to: <5f7bfee298f98d29a35933d3e0252d32b83d62b8.1473695704.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Ulf,
+Hi Robin,
 
 
-On 2016-09-14 12:28, Ulf Hansson wrote:
-> [...]
+On 2016-09-12 18:14, Robin Murphy wrote:
+> With our DMA ops enabled for PCI devices, we should avoid allocating
+> IOVAs which a host bridge might misinterpret as peer-to-peer DMA and
+> lead to faults, corruption or other badness. To be safe, punch out holes
+> for all of the relevant host bridge's windows when initialising a DMA
+> domain for a PCI device.
 >
->> There are some similarities between IOMMU and DMA engine devices (serial
->> drivers are imho completely different case). Both hw blocks do their work
->> on behalf of some other hardware block, which I will call master device.
->> DMA engine performs some DMA transaction on master's device request, while
->> IOMMU usually sits between system memory and master's device memory
->> interface, remapping addresses of each DMA transaction according to its
->> configuration and provided mapping tables (master device has some kind
->> of internal DMA controller and performs DMA transactions on their own).
->> IOMMU is usually used for a) mapping physically discontinuous memory into
->> contiguous DMA addresses and b) isolating devices, so they can access
->> only memory, which is dedicated or allocated for them.
->>
->> DMA engine devices provide explicit API for their master's device drivers,
->> while IOMMU drivers are usually hidden behind DMA-mapping API (for most
->> use cases, although it would be possible for master's device driver to
->> call IOMMU API directly and some GPU/DRM drivers do that).
->>
->> However from runtime pm perspective the DMA engine and IOMMU devices are
->> a bit different.
->>
->> DMA engine drivers have well defined start and end of operation (queuing
->> dma request and irq from hw about having it finished). During that time
->> the device has to be runtime active all the time. The problem with using
->> current implementation of runtime pm is the fact that both start and end
->> of operation can be triggered from atomic context, what is not really
->> suitable for runtime pm. So the problem is mainly about API
->> incompatibility and lack of something like dma_engine_prepare()/unprepare()
->> (as an analogy to clocks api).
-> That's also a viable option. Although, DMA clients would then need to
-> invoke such APIs from non-atomic contexts. Typically that would be
-> from client driver's runtime PM callbacks.
+> CC: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> CC: Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Reported-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+I don't know much about PCI and their IOMMU integration, but can't we use
+the direct mapping region feature of iommu core for it? There are already
+iommu_get_dm_regions(), iommu_put_dm_regions() and 
+iommu_request_dm_for_dev()
+functions for handling them...
+
+> ---
 >
-> Me personally would rather avoid such solution, as it would sprinkle
-> lots of drivers to deal with this. Although, perhaps this is the only
-> option that actually works.
-
-One might also introduce optional functions and notify DMA engine core with
-some flag that the client driver wants to use them or not. If not core will
-prepare dma engine on initialization. This is not really nice from the API
-clearness perspective, but it would allow to have some time for transition
-to the new approach till all clients gets updated.
-
->> In case of IOMMU the main problem is determining weather IOMMU controller
->> has to be activated. There is no calls in IOMMU and DMA-mapping API, which
->> would bracket all DMA transactions performed by the master device. Someone
->> proposed to keep IOMMU runtime active when there exist at least one
->> mapping created by the IOMMU/DMA-mapping layers. This however does not
->> cover all the cases. In case of our IOMMU, when it is disabled or runtime
->> suspended, it enters "pass-thought" mode, so master device can still
->> perform DMA operations with identity mappings (so DMA address equals to
->> physical memory address). Till now Exynos IOMMU called pm_runtime_get()
->> on attaching to the iommu domain (what happens during initialization of
->> dma-mapping structures for given master device) and kept it active all
->> the time.
->>
->> This patch series tries to address Exynos IOMMU runtime pm issue by forcing
->> IOMMU controller to follow runtime pm status of its master device. This way
->> we ensure that anytime when master's device is runtime activated, the iommu
->> will be also active and master device won't be able to bypass during its
->> DMA transactions mappings created by the IOMMU layer.
->>
->> Quite long answer, but I hope I managed to give you a bit more background
->> on this topic.
-> Yes, indeed. Thank you for taking the time to respond!
+> - Squash in the previous drm/exynos fixup
+> - If need be, this one can probably wait
+> ---
+>   arch/arm64/mm/dma-mapping.c               |  2 +-
+>   drivers/gpu/drm/exynos/exynos_drm_iommu.h |  2 +-
+>   drivers/iommu/dma-iommu.c                 | 25 ++++++++++++++++++++++++-
+>   include/linux/dma-iommu.h                 |  3 ++-
+>   4 files changed, 28 insertions(+), 4 deletions(-)
 >
->>> As we know, using the pm_runtime_irq_safe() option comes with some
->>> limitations, such as the runtime PM callbacks is not allowed to sleep.
->>> For a PM domain (genpd) that is attached to the device, this also
->>> means it must not be powered off.
->>
->> Right, if possible I would like to avoid using pm_runtime_irq_safe()
->> option, because it is really impractical.
->>
->>> To solve this problem, I was thinking we could convert to use the
->>> asynchronous pm_runtime_get() API, when trying to runtime resume the
->>> device from atomic contexts.
->> I'm not sure if this will work for DMA engine devices. If I understand
->> correctly some client's of DMA engine device might rely on the DMA
->> engine being configured and operational after queuing a request and
->> they might lock up if the DMA engine device activation if postponed
->> because of async runtime pm activation.
-> I didn't know about this. If you have an example from the top of your
-> head, could you perhaps point me to it?
-
-No, I don't have any example. This is just my fear that there might be some
-hardware which works this way. I can imagine a driver, which queue dma 
-engine
-request and then triggers 'start' command to its hw block. HW blocks usually
-uses some additional signal lines for DMA, so the HW block might check 
-if all
-needed signals from DMA engine HW are ready. If not it will fail to start
-avoid lockup of starting without DMA engine HW being ready.
-
-However I don't have much experience with DMA engine and drivers. I only
-helped in adding DMA engine support to Samsung UART driver and in the
-hardware manual there is information about additional lines between DMA
-controller and UART module, which are used in the DMA mode.
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index c4284c432ae8..610d8e53011e 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -827,7 +827,7 @@ static bool do_iommu_attach(struct device *dev, const struct iommu_ops *ops,
+>   	 * then the IOMMU core will have already configured a group for this
+>   	 * device, and allocated the default domain for that group.
+>   	 */
+> -	if (!domain || iommu_dma_init_domain(domain, dma_base, size)) {
+> +	if (!domain || iommu_dma_init_domain(domain, dma_base, size, dev)) {
+>   		pr_warn("Failed to set up IOMMU for device %s; retaining platform DMA ops\n",
+>   			dev_name(dev));
+>   		return false;
+> diff --git a/drivers/gpu/drm/exynos/exynos_drm_iommu.h b/drivers/gpu/drm/exynos/exynos_drm_iommu.h
+> index c8de4913fdbe..87f6b5672e11 100644
+> --- a/drivers/gpu/drm/exynos/exynos_drm_iommu.h
+> +++ b/drivers/gpu/drm/exynos/exynos_drm_iommu.h
+> @@ -66,7 +66,7 @@ static inline int __exynos_iommu_create_mapping(struct exynos_drm_private *priv,
+>   	if (ret)
+>   		goto free_domain;
+>   
+> -	ret = iommu_dma_init_domain(domain, start, size);
+> +	ret = iommu_dma_init_domain(domain, start, size, NULL);
+>   	if (ret)
+>   		goto put_cookie;
+>   
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 4329d18080cf..c5ab8667e6f2 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -27,6 +27,7 @@
+>   #include <linux/iova.h>
+>   #include <linux/irq.h>
+>   #include <linux/mm.h>
+> +#include <linux/pci.h>
+>   #include <linux/scatterlist.h>
+>   #include <linux/vmalloc.h>
+>   
+> @@ -103,18 +104,38 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+>   }
+>   EXPORT_SYMBOL(iommu_put_dma_cookie);
+>   
+> +static void iova_reserve_pci_windows(struct pci_dev *dev,
+> +		struct iova_domain *iovad)
+> +{
+> +	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
+> +	struct resource_entry *window;
+> +	unsigned long lo, hi;
+> +
+> +	resource_list_for_each_entry(window, &bridge->windows) {
+> +		if (resource_type(window->res) != IORESOURCE_MEM &&
+> +		    resource_type(window->res) != IORESOURCE_IO)
+> +			continue;
+> +
+> +		lo = iova_pfn(iovad, window->res->start - window->offset);
+> +		hi = iova_pfn(iovad, window->res->end - window->offset);
+> +		reserve_iova(iovad, lo, hi);
+> +	}
+> +}
+> +
+>   /**
+>    * iommu_dma_init_domain - Initialise a DMA mapping domain
+>    * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
+>    * @base: IOVA at which the mappable address space starts
+>    * @size: Size of IOVA space
+> + * @dev: Device the domain is being initialised for
+>    *
+>    * @base and @size should be exact multiples of IOMMU page granularity to
+>    * avoid rounding surprises. If necessary, we reserve the page at address 0
+>    * to ensure it is an invalid IOVA. It is safe to reinitialise a domain, but
+>    * any change which could make prior IOVAs invalid will fail.
+>    */
+> -int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size)
+> +int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+> +		u64 size, struct device *dev)
+>   {
+>   	struct iova_domain *iovad = cookie_iovad(domain);
+>   	unsigned long order, base_pfn, end_pfn;
+> @@ -152,6 +173,8 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size
+>   		iovad->dma_32bit_pfn = end_pfn;
+>   	} else {
+>   		init_iova_domain(iovad, 1UL << order, base_pfn, end_pfn);
+> +		if (dev && dev_is_pci(dev))
+> +			iova_reserve_pci_windows(to_pci_dev(dev), iovad);
+>   	}
+>   	return 0;
+>   }
+> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+> index 5ee806e41b5c..32c589062bd9 100644
+> --- a/include/linux/dma-iommu.h
+> +++ b/include/linux/dma-iommu.h
+> @@ -30,7 +30,8 @@ int iommu_get_dma_cookie(struct iommu_domain *domain);
+>   void iommu_put_dma_cookie(struct iommu_domain *domain);
+>   
+>   /* Setup call for arch DMA mapping code */
+> -int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base, u64 size);
+> +int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+> +		u64 size, struct device *dev);
+>   
+>   /* General helpers for DMA-API <-> IOMMU-API interaction */
+>   int dma_direction_to_prot(enum dma_data_direction dir, bool coherent);
 
 Best regards
 -- 
 Marek Szyprowski, PhD
 Samsung R&D Institute Poland
+
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
