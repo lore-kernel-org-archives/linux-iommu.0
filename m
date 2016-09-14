@@ -1,40 +1,61 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [RFC PATCH v2 19/20] x86: Access the setup data through debugfs
- un-encrypted
-Date: Wed, 14 Sep 2016 16:51:01 +0200
-Message-ID: <20160914145101.GB9295@nazgul.tnic>
-References: <20160822223529.29880.50884.stgit@tlendack-t1.amdoffice.net>
- <20160822223859.29880.60652.stgit@tlendack-t1.amdoffice.net>
- <20160912165944.rpqbwxz2biathnt3@pd.tnic>
- <4a357b9b-7d53-5bd6-81db-9d8cc63a6c72@amd.com>
+From: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: Don't put completion-wait semaphore on stack
+Date: Wed, 14 Sep 2016 17:26:48 +0200
+Message-ID: <20160914152647.GA13814@gmail.com>
+References: <1473846119-9527-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <4a357b9b-7d53-5bd6-81db-9d8cc63a6c72@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Paolo Bonzini <pbonzini@redhat.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.>
+In-Reply-To: <1473846119-9527-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Sep 14, 2016 at 09:29:41AM -0500, Tom Lendacky wrote:
-> This is still required because just using the __va() would still cause
-> the mapping created to have the encryption bit set. The ioremap call
-> will result in the mapping not having the encryption bit set.
 
-I meant this: https://lkml.kernel.org/r/20160902181447.GA25328@nazgul.tnic
+* Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
 
-Wouldn't simply clearing the SME mask work?
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> 
+> The semaphore used by the AMD IOMMU to signal command
+> completion lived on the stack until now, which was safe as
+> the driver busy-waited on the semaphore with IRQs disabled,
+> so the stack can't go away under the driver.
+> 
+> But the recently introduced vmap-based stacks break this as
+> the physical address of the semaphore can't be determinded
+> easily anymore. The driver used the __pa() macro, but that
+> only works in the direct-mapping. The result were
+> Completion-Wait timeout errors seen by the IOMMU driver,
+> breaking system boot.
+> 
+> Since putting the semaphore on the stack is bad design
+> anyway, move the semaphore into 'struct amd_iommu'. It is
+> protected by the per-iommu lock and now in the direct
+> mapping again. This fixes the Completion-Wait timeout errors
+> and makes AMD IOMMU systems boot again with vmap-based
+> stacks enabled.
+> 
+> Reported-by: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> ---
+>  drivers/iommu/amd_iommu.c       | 14 ++++++++------
+>  drivers/iommu/amd_iommu_types.h |  2 ++
+>  2 files changed, 10 insertions(+), 6 deletions(-)
 
-#define __va(x)			((void *)(((unsigned long)(x)+PAGE_OFFSET) & ~sme_me_mask))
+Cool, thanks! I'll put this into tip:x86/asm which has the virtually mapped stack 
+patches - ok?
 
-Or are you saying, one needs the whole noodling through ioremap_cache()
-because the data is already encrypted and accessing it with sme_me_mask
-cleared would simply give you the encrypted garbage?
+Thanks,
 
--- 
-Regards/Gruss,
-    Boris.
-
-ECO tip #101: Trim your mails when you reply.
---
+	Ingo
