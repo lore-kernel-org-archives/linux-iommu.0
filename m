@@ -1,112 +1,111 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH] iommu/amd: Don't put completion-wait semaphore on stack
-Date: Wed, 14 Sep 2016 11:41:59 +0200
-Message-ID: <1473846119-9527-1-git-send-email-joro@8bytes.org>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v3 2/2] iommu/exynos: Add proper runtime pm support
+Date: Wed, 14 Sep 2016 12:28:31 +0200
+Message-ID: <CAPDyKFqtBhA6kv-DFmeCiWbn0q0g2hFR5-+9M7CgvbzNH2iOzQ@mail.gmail.com>
+References: <CGME20160913124918eucas1p29f49efbb142d416215482c29b53daff8@eucas1p2.samsung.com>
+ <1473770941-8337-1-git-send-email-m.szyprowski@samsung.com>
+ <1473770941-8337-3-git-send-email-m.szyprowski@samsung.com>
+ <CAPDyKFo5D3kGRt=4mBH9-XpLU6eOm4jah1xjyR3disFiJfXjoA@mail.gmail.com> <ca6b2547-dc67-bb3c-e5af-7f5eeddfd54d@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-pm-owner@vger.kernel.org>
+In-Reply-To: <ca6b2547-dc67-bb3c-e5af-7f5eeddfd54d@samsung.com>
+Sender: linux-pm-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org, linux-samsung-soc <linux-samsung-soc@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Mark Brown <broonie@kernel.org>, "Luis R. Rodriguez" <mcgrof@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Lukas Wunner <lukas@wunner.de>, Kevin Hilman <khilman@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+[...]
 
-The semaphore used by the AMD IOMMU to signal command
-completion lived on the stack until now, which was safe as
-the driver busy-waited on the semaphore with IRQs disabled,
-so the stack can't go away under the driver.
+>
+>
+> There are some similarities between IOMMU and DMA engine devices (serial
+> drivers are imho completely different case). Both hw blocks do their work
+> on behalf of some other hardware block, which I will call master device.
+> DMA engine performs some DMA transaction on master's device request, while
+> IOMMU usually sits between system memory and master's device memory
+> interface, remapping addresses of each DMA transaction according to its
+> configuration and provided mapping tables (master device has some kind
+> of internal DMA controller and performs DMA transactions on their own).
+> IOMMU is usually used for a) mapping physically discontinuous memory into
+> contiguous DMA addresses and b) isolating devices, so they can access
+> only memory, which is dedicated or allocated for them.
+>
+> DMA engine devices provide explicit API for their master's device drivers,
+> while IOMMU drivers are usually hidden behind DMA-mapping API (for most
+> use cases, although it would be possible for master's device driver to
+> call IOMMU API directly and some GPU/DRM drivers do that).
+>
+> However from runtime pm perspective the DMA engine and IOMMU devices are
+> a bit different.
+>
+> DMA engine drivers have well defined start and end of operation (queuing
+> dma request and irq from hw about having it finished). During that time
+> the device has to be runtime active all the time. The problem with using
+> current implementation of runtime pm is the fact that both start and end
+> of operation can be triggered from atomic context, what is not really
+> suitable for runtime pm. So the problem is mainly about API
+> incompatibility and lack of something like dma_engine_prepare()/unprepare()
+> (as an analogy to clocks api).
 
-But the recently introduced vmap-based stacks break this as
-the physical address of the semaphore can't be determinded
-easily anymore. The driver used the __pa() macro, but that
-only works in the direct-mapping. The result were
-Completion-Wait timeout errors seen by the IOMMU driver,
-breaking system boot.
+That's also a viable option. Although, DMA clients would then need to
+invoke such APIs from non-atomic contexts. Typically that would be
+from client driver's runtime PM callbacks.
 
-Since putting the semaphore on the stack is bad design
-anyway, move the semaphore into 'struct amd_iommu'. It is
-protected by the per-iommu lock and now in the direct
-mapping again. This fixes the Completion-Wait timeout errors
-and makes AMD IOMMU systems boot again with vmap-based
-stacks enabled.
+Me personally would rather avoid such solution, as it would sprinkle
+lots of drivers to deal with this. Although, perhaps this is the only
+option that actually works.
 
-Reported-by: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
----
- drivers/iommu/amd_iommu.c       | 14 ++++++++------
- drivers/iommu/amd_iommu_types.h |  2 ++
- 2 files changed, 10 insertions(+), 6 deletions(-)
+>
+> In case of IOMMU the main problem is determining weather IOMMU controller
+> has to be activated. There is no calls in IOMMU and DMA-mapping API, which
+> would bracket all DMA transactions performed by the master device. Someone
+> proposed to keep IOMMU runtime active when there exist at least one
+> mapping created by the IOMMU/DMA-mapping layers. This however does not
+> cover all the cases. In case of our IOMMU, when it is disabled or runtime
+> suspended, it enters "pass-thought" mode, so master device can still
+> perform DMA operations with identity mappings (so DMA address equals to
+> physical memory address). Till now Exynos IOMMU called pm_runtime_get()
+> on attaching to the iommu domain (what happens during initialization of
+> dma-mapping structures for given master device) and kept it active all
+> the time.
+>
+> This patch series tries to address Exynos IOMMU runtime pm issue by forcing
+> IOMMU controller to follow runtime pm status of its master device. This way
+> we ensure that anytime when master's device is runtime activated, the iommu
+> will be also active and master device won't be able to bypass during its
+> DMA transactions mappings created by the IOMMU layer.
+>
+> Quite long answer, but I hope I managed to give you a bit more background
+> on this topic.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 96de97a..1307e73 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -957,15 +957,16 @@ again:
- 
- 	if (left <= 2) {
- 		struct iommu_cmd sync_cmd;
--		volatile u64 sem = 0;
- 		int ret;
- 
--		build_completion_wait(&sync_cmd, (u64)&sem);
-+		iommu->cmd_sem = 0;
-+
-+		build_completion_wait(&sync_cmd, (u64)&iommu->cmd_sem);
- 		copy_cmd_to_buffer(iommu, &sync_cmd, tail);
- 
- 		spin_unlock_irqrestore(&iommu->lock, flags);
- 
--		if ((ret = wait_on_sem(&sem)) != 0)
-+		if ((ret = wait_on_sem(&iommu->cmd_sem)) != 0)
- 			return ret;
- 
- 		goto again;
-@@ -993,19 +994,20 @@ static int iommu_queue_command(struct amd_iommu *iommu, struct iommu_cmd *cmd)
- static int iommu_completion_wait(struct amd_iommu *iommu)
- {
- 	struct iommu_cmd cmd;
--	volatile u64 sem = 0;
- 	int ret;
- 
- 	if (!iommu->need_sync)
- 		return 0;
- 
--	build_completion_wait(&cmd, (u64)&sem);
-+	iommu->cmd_sem = 0;
-+
-+	build_completion_wait(&cmd, (u64)&iommu->cmd_sem);
- 
- 	ret = iommu_queue_command_sync(iommu, &cmd, false);
- 	if (ret)
- 		return ret;
- 
--	return wait_on_sem(&sem);
-+	return wait_on_sem(&iommu->cmd_sem);
- }
- 
- static int iommu_flush_dte(struct amd_iommu *iommu, u16 devid)
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index caf5e38..9652848 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -524,6 +524,8 @@ struct amd_iommu {
- 	struct irq_domain *ir_domain;
- 	struct irq_domain *msi_domain;
- #endif
-+
-+	volatile u64 __aligned(8) cmd_sem;
- };
- 
- #define ACPIHID_UID_LEN 256
--- 
-2.6.2
+Yes, indeed. Thank you for taking the time to respond!
+
+>
+>> As we know, using the pm_runtime_irq_safe() option comes with some
+>> limitations, such as the runtime PM callbacks is not allowed to sleep.
+>> For a PM domain (genpd) that is attached to the device, this also
+>> means it must not be powered off.
+>
+>
+> Right, if possible I would like to avoid using pm_runtime_irq_safe()
+> option, because it is really impractical.
+>
+>> To solve this problem, I was thinking we could convert to use the
+>> asynchronous pm_runtime_get() API, when trying to runtime resume the
+>> device from atomic contexts.
+>
+>
+> I'm not sure if this will work for DMA engine devices. If I understand
+> correctly some client's of DMA engine device might rely on the DMA
+> engine being configured and operational after queuing a request and
+> they might lock up if the DMA engine device activation if postponed
+> because of async runtime pm activation.
+
+I didn't know about this. If you have an example from the top of your
+head, could you perhaps point me to it?
+
+[...]
+
+Kind regards
+Uffe
