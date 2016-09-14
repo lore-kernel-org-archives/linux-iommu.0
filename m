@@ -1,126 +1,47 @@
-From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [PATCH v7 00/22] Generic DT bindings for PCI IOMMUs and ARM SMMU
-Date: Wed, 14 Sep 2016 10:41:57 +0200
-Message-ID: <11ebd81e-2ea5-5ff3-35b3-be95f03e05bd@redhat.com>
+Date: Wed, 14 Sep 2016 10:20:52 +0100
+Message-ID: <20160914092051.GB19622@arm.com>
 References: <cover.1473695704.git.robin.murphy@arm.com>
+	<11ebd81e-2ea5-5ff3-35b3-be95f03e05bd@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <cover.1473695704.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <11ebd81e-2ea5-5ff3-35b3-be95f03e05bd-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On Wed, Sep 14, 2016 at 10:41:57AM +0200, Auger Eric wrote:
+> Hi,
 
-On 12/09/2016 18:13, Robin Murphy wrote:
-> Hi all,
+Hi Eric,
+
+> On 12/09/2016 18:13, Robin Murphy wrote:
+> > To any more confusing fixups and crazily numbered extra patches, here's
+> > a quick v7 with everything rebased into the right order. The significant
+> > change this time is to implement iommu_fwspec properly from the start,
+> > which ends up being far simpler and more robust than faffing about
+> > introducing it somewhere 'less intrusive' to move toward core code later.
+> > 
+> > New branch in the logical place:
+> > 
+> > git://linux-arm.org/linux-rm iommu/generic-v7
 > 
-> To any more confusing fixups and crazily numbered extra patches, here's
-> a quick v7 with everything rebased into the right order. The significant
-> change this time is to implement iommu_fwspec properly from the start,
-> which ends up being far simpler and more robust than faffing about
-> introducing it somewhere 'less intrusive' to move toward core code later.
-> 
-> New branch in the logical place:
-> 
-> git://linux-arm.org/linux-rm iommu/generic-v7
+> For information, as discussed privately with Robin I experience some
+> regressions with the former and now deprecated dt description.
 
-For information, as discussed privately with Robin I experience some
-regressions with the former and now deprecated dt description.
+Please can you share the DT you're using so we can reproduce this locally?
 
-on my AMD Overdrive board and my old dt description I now only see a
-single group:
-
-/sys/kernel/iommu_groups/
-/sys/kernel/iommu_groups/0
-/sys/kernel/iommu_groups/0/devices
-/sys/kernel/iommu_groups/0/devices/e0700000.xgmac
-
-whereas I formerly see
-
-/sys/kernel/iommu_groups/
-/sys/kernel/iommu_groups/3
-/sys/kernel/iommu_groups/3/devices
-/sys/kernel/iommu_groups/3/devices/0000:00:00.0
-/sys/kernel/iommu_groups/1
-/sys/kernel/iommu_groups/1/devices
-/sys/kernel/iommu_groups/1/devices/e0700000.xgmac
-/sys/kernel/iommu_groups/4
-/sys/kernel/iommu_groups/4/devices
-/sys/kernel/iommu_groups/4/devices/0000:00:02.2
-/sys/kernel/iommu_groups/4/devices/0000:01:00.1
-/sys/kernel/iommu_groups/4/devices/0000:00:02.0
-/sys/kernel/iommu_groups/4/devices/0000:01:00.0
-/sys/kernel/iommu_groups/2
-/sys/kernel/iommu_groups/2/devices
-/sys/kernel/iommu_groups/2/devices/e0900000.xgmac
-/sys/kernel/iommu_groups/0
-/sys/kernel/iommu_groups/0/devices
-/sys/kernel/iommu_groups/0/devices/f0000000.pcie
-
-This is the group topology without ACS override. Applying the non
-upstreamed "pci: Enable overrides for missing ACS capabilities" I used
-to see separate groups for each PCIe components. Now I don't see any
-difference with and without ACS override.
-
-Thanks
-
-Eric
-> 
-> Robin.
-> 
-> Mark Rutland (1):
->   Docs: dt: add PCI IOMMU map bindings
-> 
-> Robin Murphy (21):
->   of/irq: Break out msi-map lookup (again)
->   iommu/of: Handle iommu-map property for PCI
->   iommu: Introduce iommu_fwspec
->   Docs: dt: document ARM SMMUv3 generic binding usage
->   iommu/arm-smmu: Fall back to global bypass
->   iommu/arm-smmu: Implement of_xlate() for SMMUv3
->   iommu/arm-smmu: Support non-PCI devices with SMMUv3
->   iommu/arm-smmu: Set PRIVCFG in stage 1 STEs
->   iommu/arm-smmu: Handle stream IDs more dynamically
->   iommu/arm-smmu: Consolidate stream map entry state
->   iommu/arm-smmu: Keep track of S2CR state
->   iommu/arm-smmu: Refactor mmu-masters handling
->   iommu/arm-smmu: Streamline SMMU data lookups
->   iommu/arm-smmu: Add a stream map entry iterator
->   iommu/arm-smmu: Intelligent SMR allocation
->   iommu/arm-smmu: Convert to iommu_fwspec
->   Docs: dt: document ARM SMMU generic binding usage
->   iommu/arm-smmu: Wire up generic configuration support
->   iommu/arm-smmu: Set domain geometry
->   iommu/dma: Add support for mapping MSIs
->   iommu/dma: Avoid PCI host bridge windows
-> 
->  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |   8 +-
->  .../devicetree/bindings/iommu/arm,smmu.txt         |  63 +-
->  .../devicetree/bindings/pci/pci-iommu.txt          | 171 ++++
->  arch/arm64/mm/dma-mapping.c                        |   2 +-
->  drivers/gpu/drm/exynos/exynos_drm_iommu.h          |   2 +-
->  drivers/iommu/Kconfig                              |   2 +-
->  drivers/iommu/arm-smmu-v3.c                        | 386 +++++----
->  drivers/iommu/arm-smmu.c                           | 962 ++++++++++-----------
->  drivers/iommu/dma-iommu.c                          | 161 +++-
->  drivers/iommu/iommu.c                              |  56 ++
->  drivers/iommu/of_iommu.c                           |  52 +-
->  drivers/irqchip/irq-gic-v2m.c                      |   3 +
->  drivers/irqchip/irq-gic-v3-its.c                   |   3 +
->  drivers/of/irq.c                                   |  78 +-
->  drivers/of/of_pci.c                                | 102 +++
->  include/linux/device.h                             |   3 +
->  include/linux/dma-iommu.h                          |  12 +-
->  include/linux/iommu.h                              |  38 +
->  include/linux/of_pci.h                             |  10 +
->  19 files changed, 1323 insertions(+), 791 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/pci/pci-iommu.txt
-> 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Will
