@@ -1,14 +1,16 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v5 8/8] iommu/amd: Update domain into to dte entry during
-	device driver init
-Date: Thu, 15 Sep 2016 23:03:26 +0800
-Message-ID: <1473951806-25511-9-git-send-email-bhe@redhat.com>
-References: <1473951806-25511-1-git-send-email-bhe@redhat.com>
+From: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCHv9 0/6] dmaengine: rcar-dmac: add iommu support for slave
+	transfers
+Date: Thu, 15 Sep 2016 21:56:51 +0530
+Message-ID: <20160915162650.GZ13920@localhost>
+References: <20160810112219.17964-1-niklas.soderlund+renesas@ragnatech.se>
+	<20160810173710.GK9681@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1473951806-25511-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20160810173710.GK9681@localhost>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,72 +20,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+To: Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+Cc: hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-All devices are supposed to reset themselves at device driver initialization
-stage. At this time if in kdump kernel those on-flight DMA will be stopped
-because of device reset. It's best time to update the protection domain info,
-especially pte_root, to dte entry which the device relates to.
+On Wed, Aug 10, 2016 at 11:07:10PM +0530, Vinod Koul wrote:
+> On Wed, Aug 10, 2016 at 01:22:13PM +0200, Niklas S=F6derlund wrote:
+> > Hi,
+> > =
 
-Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/amd_iommu.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+> > This series tries to solve the problem with DMA with device registers
+> > (MMIO registers) that are behind an IOMMU for the rcar-dmac driver. A
+> > recent patch '9575632 (dmaengine: make slave address physical)'
+> > clarifies that DMA slave address provided by clients is the physical
+> > address. This puts the task of mapping the DMA slave address from a
+> > phys_addr_t to a dma_addr_t on the DMA engine.
+> > =
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 6c37300..00b64ee 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2310,6 +2310,10 @@ static dma_addr_t __map_single(struct device *dev,
- 	unsigned int pages;
- 	int prot = 0;
- 	int i;
-+	struct iommu_dev_data *dev_data = get_dev_data(dev);
-+	struct protection_domain *domain = get_domain(dev);
-+	u16 alias = amd_iommu_alias_table[dev_data->devid];
-+	struct amd_iommu *iommu = amd_iommu_rlookup_table[dev_data->devid];
- 
- 	pages = iommu_num_pages(paddr, size, PAGE_SIZE);
- 	paddr &= PAGE_MASK;
-@@ -2319,6 +2323,13 @@ static dma_addr_t __map_single(struct device *dev,
- 		goto out;
- 
- 	prot = dir2prot(direction);
-+	if (translation_pre_enabled(iommu) && !dev_data->domain_updated) {
-+               dev_data->domain_updated = true;
-+               set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled);
-+               if (alias != dev_data->devid)
-+                       set_dte_entry(alias, domain, dev_data->ats.enabled);
-+               device_flush_dte(dev_data);
-+       }
- 
- 	start = address;
- 	for (i = 0; i < pages; ++i) {
-@@ -2470,6 +2481,9 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
- 	struct scatterlist *s;
- 	unsigned long address;
- 	u64 dma_mask;
-+	struct iommu_dev_data *dev_data = get_dev_data(dev);
-+	u16 alias = amd_iommu_alias_table[dev_data->devid];
-+	struct amd_iommu *iommu = amd_iommu_rlookup_table[dev_data->devid];
- 
- 	domain = get_domain(dev);
- 	if (IS_ERR(domain))
-@@ -2485,6 +2499,13 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
- 		goto out_err;
- 
- 	prot = dir2prot(direction);
-+	if (translation_pre_enabled(iommu) && !dev_data->domain_updated) {
-+               dev_data->domain_updated = true;
-+               set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled);
-+               if (alias != dev_data->devid)
-+                       set_dte_entry(alias, domain, dev_data->ats.enabled);
-+               device_flush_dte(dev_data);
-+       }
- 
- 	/* Map all sg entries */
- 	for_each_sg(sglist, s, nelems, i) {
--- 
-2.5.5
+> > Without an IOMMU this is easy since the phys_addr_t and dma_addr_t are
+> > the same and no special care is needed. However if you have a IOMMU you
+> > need to map the DMA slave phys_addr_t to a dma_addr_t using something
+> > like this.
+> > =
+
+> > This series is based on top of v4.8-rc1. And I'm hoping to be able to c=
+ollect a
+> > Ack from Russell King on patch 4/6 that adds the ARM specific part and =
+then be
+> > able to take the whole series through the dmaengine tree. If this is no=
+t the
+> > best route I'm more then happy to do it another way.
+> > =
+
+> > It's tested on a Koelsch with CONFIG_IPMMU_VMSA and by enabling the
+> > ipmmu_ds node in r8a7791.dtsi. I verified operation by interacting with
+> > /dev/mmcblk1, i2c and the serial console which are devices behind the
+> > iommu.
+> =
+
+> As I said in last one, the dmaengine parts look fine to me. But to go thru
+> dmaengine tree I would need ACK on non dmaengine patches.
+
+I havent heard back from this one and I am inclined to merge this one now.
+If anyone has any objects, please speak up now...
+
+Also ACKs welcome...
+
+-- =
+
+~Vinod
