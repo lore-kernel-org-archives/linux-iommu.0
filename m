@@ -1,8 +1,7 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 3/4] iommu/amd: Free domain id when free a domain of struct
-	dma_ops_domain
-Date: Thu, 15 Sep 2016 16:50:52 +0800
-Message-ID: <1473929453-3533-4-git-send-email-bhe@redhat.com>
+Subject: [PATCH 2/4] iommu/amd: Use standard bitmap operation to set bitmap
+Date: Thu, 15 Sep 2016 16:50:51 +0800
+Message-ID: <1473929453-3533-3-git-send-email-bhe@redhat.com>
 References: <1473929453-3533-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,27 +21,33 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The current code missed freeing domain id when free a domain of
-struct dma_ops_domain.
+It will be more readable and safer than the old setting.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/amd_iommu_init.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 160fc6a..a9f78c2 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1655,6 +1655,9 @@ static void dma_ops_domain_free(struct dma_ops_domain *dom)
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 59741ea..3e810c6 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -20,6 +20,7 @@
+ #include <linux/pci.h>
+ #include <linux/acpi.h>
+ #include <linux/list.h>
++#include <linux/bitmap.h>
+ #include <linux/slab.h>
+ #include <linux/syscore_ops.h>
+ #include <linux/interrupt.h>
+@@ -2136,7 +2137,7 @@ static int __init early_amd_iommu_init(void)
+ 	 * never allocate domain 0 because its used as the non-allocated and
+ 	 * error value placeholder
+ 	 */
+-	amd_iommu_pd_alloc_bitmap[0] = 1;
++	__set_bit(0, amd_iommu_pd_alloc_bitmap);
  
- 	free_pagetable(&dom->domain);
- 
-+	if (dom->domain.id)
-+		domain_id_free(dom->domain.id);
-+
- 	kfree(dom);
- }
+ 	spin_lock_init(&amd_iommu_pd_lock);
  
 -- 
 2.5.5
