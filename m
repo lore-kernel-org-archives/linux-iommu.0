@@ -1,88 +1,185 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v7 22/22] iommu/dma: Avoid PCI host bridge windows
-Date: Thu, 15 Sep 2016 09:08:10 +0200
-Message-ID: <a7082074-0492-7522-6ddc-f7f95c6e0db6@samsung.com>
-References: <cover.1473695704.git.robin.murphy@arm.com>
- <CGME20160912161514eucas1p10818019bf2302609421ad9c35d1af4b8@eucas1p1.samsung.com>
- <5f7bfee298f98d29a35933d3e0252d32b83d62b8.1473695704.git.robin.murphy@arm.com>
- <ab8693f6-20d6-2a95-9f1f-0607e72bc012@samsung.com>
- <49c51c4f-cb00-445d-b8f8-b632babf2b3e@arm.com>
- <dc9f945f-2756-ab70-d061-9fdc7c5afdee@samsung.com>
- <bbdc42fa-ea35-945f-3e2a-e0ab03fc997d@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH v2] iommu/amd: Don't put completion-wait semaphore on stack
+Date: Thu, 15 Sep 2016 10:29:31 +0200
+Message-ID: <20160915082931.GF1437@8bytes.org>
+References: <1473846119-9527-1-git-send-email-joro@8bytes.org>
+	<20160914152647.GA13814@gmail.com>
+	<20160914212712.GD1437@8bytes.org> <20160914213835.GA28800@suse.de>
+	<20160915054435.GA25155@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-reply-to: <bbdc42fa-ea35-945f-3e2a-e0ab03fc997d-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20160915054435.GA25155-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Ingo Molnar <mingo-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hi Ingo,
 
+On Thu, Sep 15, 2016 at 07:44:35AM +0200, Ingo Molnar wrote:
+> Yeah, I can still remove it - just zapped it in fact.
 
-On 2016-09-14 15:25, Robin Murphy wrote:
-> On 14/09/16 13:35, Marek Szyprowski wrote:
->> On 2016-09-14 13:10, Robin Murphy wrote:
->>> On 14/09/16 11:55, Marek Szyprowski wrote:
->>>> On 2016-09-12 18:14, Robin Murphy wrote:
->>>>> With our DMA ops enabled for PCI devices, we should avoid allocating
->>>>> IOVAs which a host bridge might misinterpret as peer-to-peer DMA and
->>>>> lead to faults, corruption or other badness. To be safe, punch out
->>>>> holes
->>>>> for all of the relevant host bridge's windows when initialising a DMA
->>>>> domain for a PCI device.
->>>>>
->>>>> CC: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->>>>> CC: Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->>>>> Reported-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
->>>>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->>>> I don't know much about PCI and their IOMMU integration, but can't we
->>>> use
->>>> the direct mapping region feature of iommu core for it? There are
->>>> already
->>>> iommu_get_dm_regions(), iommu_put_dm_regions() and
->>>> iommu_request_dm_for_dev()
->>>> functions for handling them...
->>> It's rather the opposite problem - in the direct-mapping case, we're
->>> making sure the iommu_domain has translations installed for the given
->>> IOVAs (which are also the corresponding physical address) before it goes
->>> live, whereas what we need to do here is make sure the these addresses
->>> never get used as IOVAs at all, because any attempt to do so them will
->>> likely go wrong. Thus we carve them out of the iova_domain such that
->>> they will never get near an actual IOMMU API call.
->>>
->>> This is a slightly generalised equivalent of e.g. amd_iommu.c's
->>> init_reserved_iova_ranges().
->> Hmmm. Each dm_region have protection parameter. Can't we reuse them to
->> create prohibited/reserved regions by setting it to 0 (no read / no write)
->> and mapping to physical 0 address? That's just a quick idea, because
->> dm_regions and the proposed code for pci looks a bit similar for me...
-> It might look similar, but at different levels (iommu_domain vs.
-> iova_domain) and with the opposite intent. The dm_region prot flag is
-> just the standard flag as passed to iommu_map() - trying to map a region
-> with no access in an empty pagetable isn't going to achieve anything
-> anyway (it's effectively unmapping addresses that are already unmapped).
->
-> But for this case, even if you _did_ map something in the pagetable
-> (i.e. the iommu_domain), it wouldn't make any difference, because the
-> thing we're mitigating against is handing out addresses which are going
-> to cause a device's accesses to blow up inside the PCI root complex
-> without ever even reaching the IOMMU. In short, dm_regions are about
-> "these addresses are already being used for DMA, so make sure the IOMMU
-> API doesn't block them", whereas reserved ranges are about "these
-> addresses are unusable for DMA, so make sure the DMA API can't allocate
-> them".
+Thanks, and sorry for the hassle. Here is the v2 patch that has the
+correct locking. I tested it with and without lockdep enabled and also
+under some load. Looks all fine.
 
-Okay, thanks for the explanation.
+So here is the patch:
 
-Best regards
+>From 9becedb853c682c3fc3dd5574b933df216d91acd Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Date: Wed, 14 Sep 2016 11:41:59 +0200
+Subject: [PATCH] iommu/amd: Don't put completion-wait semaphore on stack
+
+The semaphore used by the AMD IOMMU to signal command
+completion lived on the stack until now, which was safe as
+the driver busy-waited on the semaphore with IRQs disabled,
+so the stack can't go away under the driver.
+
+But the recently introduced vmap-based stacks break this as
+the physical address of the semaphore can't be determinded
+easily anymore. The driver used the __pa() macro, but that
+only works in the direct-mapping. The result were
+Completion-Wait timeout errors seen by the IOMMU driver,
+breaking system boot.
+
+Since putting the semaphore on the stack is bad design
+anyway, move the semaphore into 'struct amd_iommu'. It is
+protected by the per-iommu lock and now in the direct
+mapping again. This fixes the Completion-Wait timeout errors
+and makes AMD IOMMU systems boot again with vmap-based
+stacks enabled.
+
+Reported-by: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c       | 51 ++++++++++++++++++++++++++++-------------
+ drivers/iommu/amd_iommu_types.h |  2 ++
+ 2 files changed, 37 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 96de97a..4025291 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -940,15 +940,13 @@ static void build_inv_irt(struct iommu_cmd *cmd, u16 devid)
+  * Writes the command to the IOMMUs command buffer and informs the
+  * hardware about the new command.
+  */
+-static int iommu_queue_command_sync(struct amd_iommu *iommu,
+-				    struct iommu_cmd *cmd,
+-				    bool sync)
++static int __iommu_queue_command_sync(struct amd_iommu *iommu,
++				      struct iommu_cmd *cmd,
++				      bool sync)
+ {
+ 	u32 left, tail, head, next_tail;
+-	unsigned long flags;
+ 
+ again:
+-	spin_lock_irqsave(&iommu->lock, flags);
+ 
+ 	head      = readl(iommu->mmio_base + MMIO_CMD_HEAD_OFFSET);
+ 	tail      = readl(iommu->mmio_base + MMIO_CMD_TAIL_OFFSET);
+@@ -957,15 +955,14 @@ again:
+ 
+ 	if (left <= 2) {
+ 		struct iommu_cmd sync_cmd;
+-		volatile u64 sem = 0;
+ 		int ret;
+ 
+-		build_completion_wait(&sync_cmd, (u64)&sem);
+-		copy_cmd_to_buffer(iommu, &sync_cmd, tail);
++		iommu->cmd_sem = 0;
+ 
+-		spin_unlock_irqrestore(&iommu->lock, flags);
++		build_completion_wait(&sync_cmd, (u64)&iommu->cmd_sem);
++		copy_cmd_to_buffer(iommu, &sync_cmd, tail);
+ 
+-		if ((ret = wait_on_sem(&sem)) != 0)
++		if ((ret = wait_on_sem(&iommu->cmd_sem)) != 0)
+ 			return ret;
+ 
+ 		goto again;
+@@ -976,9 +973,21 @@ again:
+ 	/* We need to sync now to make sure all commands are processed */
+ 	iommu->need_sync = sync;
+ 
++	return 0;
++}
++
++static int iommu_queue_command_sync(struct amd_iommu *iommu,
++				    struct iommu_cmd *cmd,
++				    bool sync)
++{
++	unsigned long flags;
++	int ret;
++
++	spin_lock_irqsave(&iommu->lock, flags);
++	ret = __iommu_queue_command_sync(iommu, cmd, sync);
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static int iommu_queue_command(struct amd_iommu *iommu, struct iommu_cmd *cmd)
+@@ -993,19 +1002,29 @@ static int iommu_queue_command(struct amd_iommu *iommu, struct iommu_cmd *cmd)
+ static int iommu_completion_wait(struct amd_iommu *iommu)
+ {
+ 	struct iommu_cmd cmd;
+-	volatile u64 sem = 0;
++	unsigned long flags;
+ 	int ret;
+ 
+ 	if (!iommu->need_sync)
+ 		return 0;
+ 
+-	build_completion_wait(&cmd, (u64)&sem);
+ 
+-	ret = iommu_queue_command_sync(iommu, &cmd, false);
++	build_completion_wait(&cmd, (u64)&iommu->cmd_sem);
++
++	spin_lock_irqsave(&iommu->lock, flags);
++
++	iommu->cmd_sem = 0;
++
++	ret = __iommu_queue_command_sync(iommu, &cmd, false);
+ 	if (ret)
+-		return ret;
++		goto out_unlock;
++
++	ret = wait_on_sem(&iommu->cmd_sem);
+ 
+-	return wait_on_sem(&sem);
++out_unlock:
++	spin_unlock_irqrestore(&iommu->lock, flags);
++
++	return ret;
+ }
+ 
+ static int iommu_flush_dte(struct amd_iommu *iommu, u16 devid)
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index caf5e38..9652848 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -524,6 +524,8 @@ struct amd_iommu {
+ 	struct irq_domain *ir_domain;
+ 	struct irq_domain *msi_domain;
+ #endif
++
++	volatile u64 __aligned(8) cmd_sem;
+ };
+ 
+ #define ACPIHID_UID_LEN 256
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+2.6.2
