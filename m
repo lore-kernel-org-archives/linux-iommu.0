@@ -1,7 +1,8 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 1/4] iommu/amd: clean up the cmpxchg64 invocation
-Date: Thu, 15 Sep 2016 16:50:50 +0800
-Message-ID: <1473929453-3533-2-git-send-email-bhe@redhat.com>
+Subject: [PATCH 3/4] iommu/amd: Free domain id when free a domain of struct
+	dma_ops_domain
+Date: Thu, 15 Sep 2016 16:50:52 +0800
+Message-ID: <1473929453-3533-4-git-send-email-bhe@redhat.com>
 References: <1473929453-3533-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,27 +22,27 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Change it as it's designed for and keep it consistent with other
-places.
+The current code missed freeing domain id when free a domain of
+struct dma_ops_domain.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iommu/amd_iommu.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 96de97a..160fc6a 100644
+index 160fc6a..a9f78c2 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -1274,7 +1274,8 @@ static u64 *alloc_pte(struct protection_domain *domain,
+@@ -1655,6 +1655,9 @@ static void dma_ops_domain_free(struct dma_ops_domain *dom)
  
- 			__npte = PM_LEVEL_PDE(level, virt_to_phys(page));
+ 	free_pagetable(&dom->domain);
  
--			if (cmpxchg64(pte, __pte, __npte)) {
-+			/* pte could have been changed somewhere. */
-+			if (cmpxchg64(pte, __pte, __npte) != __pte) {
- 				free_page((unsigned long)page);
- 				continue;
- 			}
++	if (dom->domain.id)
++		domain_id_free(dom->domain.id);
++
+ 	kfree(dom);
+ }
+ 
 -- 
 2.5.5
