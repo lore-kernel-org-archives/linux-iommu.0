@@ -1,13 +1,11 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v5 2/8] iommu/amd: add early_enable_iommu() wrapper function
-Date: Thu, 15 Sep 2016 23:03:20 +0800
-Message-ID: <1473951806-25511-3-git-send-email-bhe@redhat.com>
-References: <1473951806-25511-1-git-send-email-bhe@redhat.com>
+Subject: [PATCH v5 0/8] Fix kdump faults on system with amd iommu
+Date: Thu, 15 Sep 2016 23:03:18 +0800
+Message-ID: <1473951806-25511-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1473951806-25511-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,55 +19,40 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Move per iommu enabling code into a wrapper function early_enable_iommu().
-This can make later kdump change easier.
+This is v5 post. In fact in v3 the solution is correct. Just unluckily 
+I got a AMD machine with bnx2 NIC which can't reset itself during driver
+init. It made me very unconfident with my understanding about the fix.
+Now with below fix the AMD machine with bnx2 NIC can also work well
+to dump and there's no IO_PAGE_FAULT seen any more. Now network maintainer
+has picked it up.
 
-Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/amd_iommu_init.c | 24 ++++++++++++++----------
- 1 file changed, 14 insertions(+), 10 deletions(-)
+bnx2: Reset device during driver initialization
+https://www.mail-archive.com/netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg127336.html
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 9bf1a04..77c44c8 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1887,6 +1887,18 @@ static void iommu_apply_resume_quirks(struct amd_iommu *iommu)
- 			       iommu->stored_addr_lo | 1);
- }
- 
-+static void early_enable_iommu(struct amd_iommu *iommu)
-+{
-+	iommu_disable(iommu);
-+	iommu_init_flags(iommu);
-+	iommu_set_device_table(iommu);
-+	iommu_enable_command_buffer(iommu);
-+	iommu_enable_event_buffer(iommu);
-+	iommu_set_exclusion_range(iommu);
-+	iommu_enable(iommu);
-+	iommu_flush_all_caches(iommu);
-+}
-+
- /*
-  * This function finally enables all IOMMUs found in the system after
-  * they have been initialized
-@@ -1895,16 +1907,8 @@ static void early_enable_iommus(void)
- {
- 	struct amd_iommu *iommu;
- 
--	for_each_iommu(iommu) {
--		iommu_disable(iommu);
--		iommu_init_flags(iommu);
--		iommu_set_device_table(iommu);
--		iommu_enable_command_buffer(iommu);
--		iommu_enable_event_buffer(iommu);
--		iommu_set_exclusion_range(iommu);
--		iommu_enable(iommu);
--		iommu_flush_all_caches(iommu);
--	}
-+	for_each_iommu(iommu)
-+		early_enable_iommu(iommu);
- }
- 
- static void enable_iommus_v2(void)
+The principle of the fix is similar to intel iommu. Just defer the assignment
+of device to domain to device driver init. But there's difference than
+intel iommu. AMD iommu create protection domain and assign device to
+domain in iommu driver init stage. So in this patchset I just allow the
+assignment of device to domain in software level, but defer updating the
+domain info, especially the pte_root to dev table entry to device driver
+init stage.
+
+
+Baoquan He (8):
+  iommu/amd: Detect pre enabled translation
+  iommu/amd: add early_enable_iommu() wrapper function
+  iommu/amd: Define bit fields for DTE particularly
+  iommu/amd: Add function copy_dev_tables
+  iommu/amd: copy old trans table from old kernel
+  iommu/amd: Do not re-enable dev table entries in kdump
+  iommu/amd: Don't update domain info to dte entry at iommu init stage
+  iommu/amd: Update domain into to dte entry during device driver init
+
+ drivers/iommu/amd_iommu.c       |  49 +++++++++++++--
+ drivers/iommu/amd_iommu_init.c  | 135 ++++++++++++++++++++++++++++++++++++----
+ drivers/iommu/amd_iommu_proto.h |   1 +
+ drivers/iommu/amd_iommu_types.h |  23 +++++--
+ 4 files changed, 187 insertions(+), 21 deletions(-)
+
 -- 
 2.5.5
