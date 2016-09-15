@@ -1,232 +1,85 @@
-From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v7 00/22] Generic DT bindings for PCI IOMMUs and ARM SMMU
-Date: Thu, 15 Sep 2016 18:46:47 +0200
-Message-ID: <1838c65d-5944-8946-781c-b420bea1acab@redhat.com>
-References: <cover.1473695704.git.robin.murphy@arm.com>
- <11ebd81e-2ea5-5ff3-35b3-be95f03e05bd@redhat.com>
- <d03ea5e7-59f1-8b49-4ba2-d05fc2030ebc@arm.com>
- <04a0a682-4fdc-8d62-57cd-efdf730582c6@redhat.com>
- <c2645c5e-edd3-2b31-4311-0ca621a915e2@arm.com>
- <4d87d5f2-0350-b5f8-ffc3-4e9377cf1f87@redhat.com>
- <fc4ce398-4eeb-f2ca-b964-e9f466be79c4@arm.com>
+From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [RFC PATCH v2 11/20] mm: Access BOOT related data in the clear
+Date: Thu, 15 Sep 2016 11:52:05 -0500
+Message-ID: <d25531f2-cc17-aa65-c6b9-f72e97b69b00@amd.com>
+References: <20160822223529.29880.50884.stgit@tlendack-t1.amdoffice.net>
+	<20160822223738.29880.6909.stgit@tlendack-t1.amdoffice.net>
+	<CALCETrUk2kRSzKfwhio6KV3iuYaSV2uxybd-e95kK3vY=yTSfg@mail.gmail.com>
+	<e30ddb53-df6c-28ee-54fe-f3e52e515acb@amd.com>
+	<20160915095709.GB16797@codeblueprint.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <fc4ce398-4eeb-f2ca-b964-e9f466be79c4-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160915095709.GB16797-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>
+Cc: "linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, kvm list <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org" <linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, linux-arch <linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, X86 ML <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, kasan-dev <kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Andy Lutomirski <luto-kltTT9wpgjJwATOyAt5JVQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-On 15/09/2016 12:15, Robin Murphy wrote:
-> On 15/09/16 10:29, Auger Eric wrote:
->> Hi Robin,
->>
->> On 14/09/2016 14:53, Robin Murphy wrote:
->>> On 14/09/16 13:32, Auger Eric wrote:
->>>> Hi,
->>>> On 14/09/2016 12:35, Robin Murphy wrote:
->>>>> On 14/09/16 09:41, Auger Eric wrote:
->>>>>> Hi,
->>>>>>
->>>>>> On 12/09/2016 18:13, Robin Murphy wrote:
->>>>>>> Hi all,
->>>>>>>
->>>>>>> To any more confusing fixups and crazily numbered extra patches, here's
->>>>>>> a quick v7 with everything rebased into the right order. The significant
->>>>>>> change this time is to implement iommu_fwspec properly from the start,
->>>>>>> which ends up being far simpler and more robust than faffing about
->>>>>>> introducing it somewhere 'less intrusive' to move toward core code later.
->>>>>>>
->>>>>>> New branch in the logical place:
->>>>>>>
->>>>>>> git://linux-arm.org/linux-rm iommu/generic-v7
->>>>>>
->>>>>> For information, as discussed privately with Robin I experience some
->>>>>> regressions with the former and now deprecated dt description.
->>>>>>
->>>>>> on my AMD Overdrive board and my old dt description I now only see a
->>>>>> single group:
->>>>>>
->>>>>> /sys/kernel/iommu_groups/
->>>>>> /sys/kernel/iommu_groups/0
->>>>>> /sys/kernel/iommu_groups/0/devices
->>>>>> /sys/kernel/iommu_groups/0/devices/e0700000.xgmac
->>>>>>
->>>>>> whereas I formerly see
->>>>>>
->>>>>> /sys/kernel/iommu_groups/
->>>>>> /sys/kernel/iommu_groups/3
->>>>>> /sys/kernel/iommu_groups/3/devices
->>>>>> /sys/kernel/iommu_groups/3/devices/0000:00:00.0
->>>>>> /sys/kernel/iommu_groups/1
->>>>>> /sys/kernel/iommu_groups/1/devices
->>>>>> /sys/kernel/iommu_groups/1/devices/e0700000.xgmac
->>>>>> /sys/kernel/iommu_groups/4
->>>>>> /sys/kernel/iommu_groups/4/devices
->>>>>> /sys/kernel/iommu_groups/4/devices/0000:00:02.2
->>>>>> /sys/kernel/iommu_groups/4/devices/0000:01:00.1
->>>>>> /sys/kernel/iommu_groups/4/devices/0000:00:02.0
->>>>>> /sys/kernel/iommu_groups/4/devices/0000:01:00.0
->>>>>> /sys/kernel/iommu_groups/2
->>>>>> /sys/kernel/iommu_groups/2/devices
->>>>>> /sys/kernel/iommu_groups/2/devices/e0900000.xgmac
->>>>>> /sys/kernel/iommu_groups/0
->>>>>> /sys/kernel/iommu_groups/0/devices
->>>>>> /sys/kernel/iommu_groups/0/devices/f0000000.pcie
->>>>>>
->>>>>> This is the group topology without ACS override. Applying the non
->>>>>> upstreamed "pci: Enable overrides for missing ACS capabilities" I used
->>>>>> to see separate groups for each PCIe components. Now I don't see any
->>>>>> difference with and without ACS override.
->>>>>
->>>>> OK, having reproduced on my Juno, the problem looks to be that
->>>>> of_for_each_phandle() leaves err set to -ENOENT after successfully
->>>>> walking a phandle list, which makes __find_legacy_master_phandle()
->>>>> always bail out after the first SMMU.
->>>>>
->>>>> Can you confirm that the following diff fixes things for you?
+On 09/15/2016 04:57 AM, Matt Fleming wrote:
+> On Wed, 14 Sep, at 09:20:44AM, Tom Lendacky wrote:
+>> On 09/12/2016 11:55 AM, Andy Lutomirski wrote:
+>>> On Aug 22, 2016 6:53 PM, "Tom Lendacky" <thomas.lendacky-5C7GfCeVMHo@public.gmane.org> wrote:
 >>>>
->>>> Well it improves but there are still differences in the group topology.
->>>> The PFs now are in group 0.
->>>>
->>>> root@trusty:~# lspci -nk
->>>> 00:00.0 0600: 1022:1a00
->>>>         Subsystem: 1022:1a00
->>>> 00:02.0 0600: 1022:1a01
->>>> 00:02.2 0604: 1022:1a02
->>>>         Kernel driver in use: pcieport
->>>> 01:00.0 0200: 8086:1521 (rev 01)
->>>>         Subsystem: 8086:0002
->>>>         Kernel driver in use: igb
->>>> 01:00.1 0200: 8086:1521 (rev 01)
->>>>         Subsystem: 8086:0002
->>>>         Kernel driver in use: igb
->>>>
->>>>
->>>> with your series + fix:
->>>> /sys/kernel/iommu_groups/
->>>> /sys/kernel/iommu_groups/3
->>>> /sys/kernel/iommu_groups/3/devices
->>>> /sys/kernel/iommu_groups/3/devices/0000:00:00.0
->>>> /sys/kernel/iommu_groups/1
->>>> /sys/kernel/iommu_groups/1/devices
->>>> /sys/kernel/iommu_groups/1/devices/e0700000.xgmac
->>>> /sys/kernel/iommu_groups/4
->>>> /sys/kernel/iommu_groups/4/devices
->>>> /sys/kernel/iommu_groups/4/devices/0000:00:02.2
->>>> /sys/kernel/iommu_groups/4/devices/0000:00:02.0
->>>> /sys/kernel/iommu_groups/2
->>>> /sys/kernel/iommu_groups/2/devices
->>>> /sys/kernel/iommu_groups/2/devices/e0900000.xgmac
->>>> /sys/kernel/iommu_groups/0
->>>> /sys/kernel/iommu_groups/0/devices
->>>> /sys/kernel/iommu_groups/0/devices/0000:01:00.1
->>>> /sys/kernel/iommu_groups/0/devices/f0000000.pcie
->>>> /sys/kernel/iommu_groups/0/devices/0000:01:00.0
->>>>
->>>> Before (4.8-rc5):
->>>>
->>>> /sys/kernel/iommu_groups/
->>>> /sys/kernel/iommu_groups/3
->>>> /sys/kernel/iommu_groups/3/devices
->>>> /sys/kernel/iommu_groups/3/devices/0000:00:00.0
->>>> /sys/kernel/iommu_groups/1
->>>> /sys/kernel/iommu_groups/1/devices
->>>> /sys/kernel/iommu_groups/1/devices/e0700000.xgmac
->>>> /sys/kernel/iommu_groups/4
->>>> /sys/kernel/iommu_groups/4/devices
->>>> /sys/kernel/iommu_groups/4/devices/0000:00:02.2
->>>> /sys/kernel/iommu_groups/4/devices/0000:01:00.1
->>>> /sys/kernel/iommu_groups/4/devices/0000:00:02.0
->>>> /sys/kernel/iommu_groups/4/devices/0000:01:00.0
->>>> /sys/kernel/iommu_groups/2
->>>> /sys/kernel/iommu_groups/2/devices
->>>> /sys/kernel/iommu_groups/2/devices/e0900000.xgmac
->>>> /sys/kernel/iommu_groups/0
->>>> /sys/kernel/iommu_groups/0/devices
->>>> /sys/kernel/iommu_groups/0/devices/f0000000.pcie
+>>>> BOOT data (such as EFI related data) is not encyrpted when the system is
+>>>> booted and needs to be accessed as non-encrypted.  Add support to the
+>>>> early_memremap API to identify the type of data being accessed so that
+>>>> the proper encryption attribute can be applied.  Currently, two types
+>>>> of data are defined, KERNEL_DATA and BOOT_DATA.
 >>>
->>> Your DT claims that f0000000.pcie (i.e. the "platform device" side of
->>> the host controller) owns the IDs 0x100 0x101 0x102 0x103 0x200 0x201
->>> 0x202 0x203 0x300 0x301 0x302 0x303 0x400 0x401 0x402 0x403. Thus when
->>> new devices (the PCI PFs) come along *also* claiming those IDs (via the
->>> RID-to-SID assumption), we now detect the aliasing and assign them to
->>> the existing group.
+>>> What happens when you memremap boot services data outside of early
+>>> boot?  Matt just added code that does this.
 >>>
->>> The only way that DT worked without SMR conflicts before is that
->>> f0000000.pcie wasn't actually getting attached to a domain, thus wasn't
->>> getting SMRs allocated (ISTR you _did_ get conflicts back when we first
->>> tried to switch on default domains; that was probably the reason).
+>>> IMO this API is not so great.  It scatters a specialized consideration
+>>> all over the place.  Could early_memremap not look up the PA to figure
+>>> out what to do?
 >>
->> Thanks for your explanations. meanwhile I converted the overdrive dt to
->> the new syntax and it works properly.
+>> Yes, I could see if the PA falls outside of the kernel usable area and,
+>> if so, remove the memory encryption attribute from the mapping (for both
+>> early_memremap and memremap).
+>>
+>> Let me look into that, I would prefer something along that line over
+>> this change.
 > 
-> Yay!
+> So, the last time we talked about using the address to figure out
+> whether to encrypt/decrypt you said,
 > 
->> However I noticed there are MSI frame iommu mapping although the
->> device's domain is the default one. There is no check currently in
->> 21/22. I guess this isn't needed?
+>  "I looked into this and this would be a large change also to parse
+>   tables and build lists."
 > 
-> Au contraire ;)
-;-)
+> Has something changed that makes this approach easier?
 
- With the generic binding, default domains are properly
-> implemented, i.e. they have translation, so anything not mapped will
-> fault. I *had* to write patch 21 as part of this series, since having
-> DMA ops for PCI devices at the cost of breaking all MSIs was clearly not
-> a viable solution. If you see mappings, then it's because someone is
-> using MSIs - so if you fancy, you can try rewinding back to patch 19 or
-> 20 to watch them get stuck.
-Hum OK; thanks for the explanation. With that implementation however,
-don't we face back the issue we encountered in early stage of default
-domain implementation:
-
-With this sample config (AMD overdrive + I350-T2 + 2VFs per PF) I fill
-the 8 context banks. Whereas practically we didn't need them before?
-
-00:00.0 0600: 1022:1a00
-	Subsystem: 1022:1a00
-00:02.0 0600: 1022:1a01
-00:02.2 0604: 1022:1a02
-	Kernel driver in use: pcieport
-01:00.0 0200: 8086:1521 (rev 01)
-	Subsystem: 8086:0002
-	Kernel driver in use: igb
-01:00.1 0200: 8086:1521 (rev 01)
-	Subsystem: 8086:0002
-	Kernel driver in use: igb
-01:10.0 0200: 8086:1520 (rev 01) -> context 5
-	Subsystem: 8086:0002
-	Kernel driver in use: vfio-pci
-01:10.1 0200: 8086:1520 (rev 01) -> context 7
-	Subsystem: 8086:0002
-	Kernel driver in use: igbvf
-01:10.4 0200: 8086:1520 (rev 01) -> context 6
-	Subsystem: 8086:0002
-	Kernel driver in use: igbvf
-01:10.5 0200: 8086:1520 (rev 01) -> shortage
-	Subsystem: 8086:0002
-	Kernel driver in use: igbvf
-
-So I can't even do passthrough anymore with that config. Is there
-anything wrong in my setup/understanding?
-
-Thanks
-
-Eric
+The original idea of parsing the tables and building a list was
+a large change.  This approach would be simpler by just checking if
+the PA is outside the kernel usable area, and if so, removing the
+encryption bit.
 
 > 
-> Robin.
+> And again, you need to be careful with the EFI kexec code paths, since
+> you've got a mixture of boot and kernel data being passed. In
+> particular the EFI memory map is allocated by the firmware on first
+> boot (BOOT_DATA) but by the kernel on kexec (KERNEL_DATA).
 > 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> That's one of the reasons I suggested requiring the caller to decide
+> on BOOT_DATA vs KERNEL_DATA - when you start looking at kexec the
+> distinction isn't easily made.
+
+Yeah, for kexec I think I'll need to make sure that everything looks
+like it came from the BIOS/UEFI/bootloader.  If all of the kexec
+pieces are allocated with un-encrypted memory, then the boot path
+should remain the same.  That's the piece I need to investigate
+further.
+
+Thanks,
+Tom
+
 > 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
