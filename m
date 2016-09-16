@@ -1,52 +1,68 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [RFC PATCH v2 19/20] x86: Access the setup data through debugfs
-	un-encrypted
-Date: Fri, 16 Sep 2016 09:11:47 +0200
-Message-ID: <20160916071147.GB23229@nazgul.tnic>
-References: <20160822223529.29880.50884.stgit@tlendack-t1.amdoffice.net>
-	<20160822223859.29880.60652.stgit@tlendack-t1.amdoffice.net>
-	<20160912165944.rpqbwxz2biathnt3@pd.tnic>
-	<4a357b9b-7d53-5bd6-81db-9d8cc63a6c72@amd.com>
-	<20160914145101.GB9295@nazgul.tnic>
-	<b734c2da-fee4-efae-fda2-bbcd74abbb33@amd.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCHv9 0/6] dmaengine: rcar-dmac: add iommu support for slave transfers
+Date: Fri, 16 Sep 2016 11:07:48 +0200
+Message-ID: <3152956.IVRykDnfF6@wuerfel>
+References: <20160810112219.17964-1-niklas.soderlund+renesas@ragnatech.se> <20160810173710.GK9681@localhost> <20160915162650.GZ13920@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <b734c2da-fee4-efae-fda2-bbcd74abbb33-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <20160915162650.GZ13920@localhost>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Vinod Koul <vinod.koul@intel.com>
+Cc: Niklas =?ISO-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas@ragnatech.se>, linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, linux@armlinux.org.uk, hch@infradead.org, dan.j.williams@intel.com, robin.murphy@arm.com, laurent.pinchart@ideasonboard.com, linus.walleij@linaro.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 15, 2016 at 12:08:04PM -0500, Tom Lendacky wrote:
-> The problem is that this physical address does not contain the
-> encryption bit, and even if it did, it wouldn't matter.  The __va()
-> define creates a virtual address that will be mapped as encrypted given
-> the current approach (which is how I found this).  It's only ioremap()
-> that would create a mapping without the encryption attribute and since
-> this is unencrypted data it needs to be access accordingly.
+On Thursday, September 15, 2016 9:56:51 PM CEST Vinod Koul wrote:
+> On Wed, Aug 10, 2016 at 11:07:10PM +0530, Vinod Koul wrote:
+> > On Wed, Aug 10, 2016 at 01:22:13PM +0200, Niklas Söderlund wrote:
+> > > Hi,
+> > > 
+> > > This series tries to solve the problem with DMA with device registers
+> > > (MMIO registers) that are behind an IOMMU for the rcar-dmac driver. A
+> > > recent patch '9575632 (dmaengine: make slave address physical)'
+> > > clarifies that DMA slave address provided by clients is the physical
+> > > address. This puts the task of mapping the DMA slave address from a
+> > > phys_addr_t to a dma_addr_t on the DMA engine.
+> > > 
+> > > Without an IOMMU this is easy since the phys_addr_t and dma_addr_t are
+> > > the same and no special care is needed. However if you have a IOMMU you
+> > > need to map the DMA slave phys_addr_t to a dma_addr_t using something
+> > > like this.
+> > > 
+> > > This series is based on top of v4.8-rc1. And I'm hoping to be able to collect a
+> > > Ack from Russell King on patch 4/6 that adds the ARM specific part and then be
+> > > able to take the whole series through the dmaengine tree. If this is not the
+> > > best route I'm more then happy to do it another way.
+> > > 
+> > > It's tested on a Koelsch with CONFIG_IPMMU_VMSA and by enabling the
+> > > ipmmu_ds node in r8a7791.dtsi. I verified operation by interacting with
+> > > /dev/mmcblk1, i2c and the serial console which are devices behind the
+> > > iommu.
+> > 
+> > As I said in last one, the dmaengine parts look fine to me. But to go thru
+> > dmaengine tree I would need ACK on non dmaengine patches.
+> 
+> I havent heard back from this one and I am inclined to merge this one now.
+> If anyone has any objects, please speak up now...
+> 
+> Also ACKs welcome...
+> 
 
-I see. So since this is not obvious, please add this explanation to maybe
 
-Documentation/x86/amd-memory-encryption.txt
+I had not looked at the series earlier, but this version looks entirely
+reasonable to me, so
 
-and point in there to an example or so so.
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 
-Thanks.
 
--- 
-Regards/Gruss,
-    Boris.
+One concern I have is that we might get an awkward situation if we
+ever encounter one DMA engine hardware that is used in different
+systems that all have an IOMMU, but on some of them the connection
+between the DMA master and the slave FIFO bypasses the IOMMU
+while on others the IOMMU is required. I don't have any idea for
+how this could be handled in a generic way, so my best answer
+here is to hope we never get there, and if we do, handle it
+using some local hack in the driver.
 
-ECO tip #101: Trim your mails when you reply.
---
+	Arnd
