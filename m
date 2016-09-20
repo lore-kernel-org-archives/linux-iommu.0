@@ -1,85 +1,121 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v5 4/8] iommu/amd: Add function copy_dev_tables
-Date: Tue, 20 Sep 2016 13:58:04 +0200
-Message-ID: <20160920115804.GC3541@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v5 5/8] iommu/amd: copy old trans table from old kernel
+Date: Tue, 20 Sep 2016 14:40:31 +0200
+Message-ID: <20160920124031.GD3541@8bytes.org>
 References: <1473951806-25511-1-git-send-email-bhe@redhat.com>
- <1473951806-25511-5-git-send-email-bhe@redhat.com>
+	<1473951806-25511-6-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1473951806-25511-5-git-send-email-bhe@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Baoquan He <bhe@redhat.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kexec@lists.infradead.org, dyoung@redhat.com, xlpang@redhat.com, Vincent.Wan@amd.com
+In-Reply-To: <1473951806-25511-6-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Baoquan,
+On Thu, Sep 15, 2016 at 11:03:23PM +0800, Baoquan He wrote:
+> Here several things need be done:
+> 1) If iommu is pre-enabled in a normal kernel, just disable it and print
+>    warning.
+> 2) If failed to copy dev table of old kernel, continue to proceed as
+>    it does in normal kernel.
+> 3) Re-enable event/cmd buffer and install the new DTE table to reg.
+> 4) Flush all caches
+> 
+> Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/amd_iommu_init.c | 44 +++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 41 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> index ce49641..47a8fc9 100644
+> --- a/drivers/iommu/amd_iommu_init.c
+> +++ b/drivers/iommu/amd_iommu_init.c
+> @@ -34,7 +34,7 @@
+>  #include <asm/iommu_table.h>
+>  #include <asm/io_apic.h>
+>  #include <asm/irq_remapping.h>
+> -
+> +#include <linux/crash_dump.h>
 
-On Thu, Sep 15, 2016 at 11:03:22PM +0800, Baoquan He wrote:
-> +static int copy_dev_tables(void)
-> +{
-> +	u64 entry;
-> +	u32 lo, hi, devid;
-> +	phys_addr_t old_devtb_phys;
-> +	struct dev_table_entry *old_devtb = NULL;
-> +	u16 dom_id, dte_v;
-> +	struct amd_iommu *iommu;
-> +	static int copied;
+Please keep that empty line, it is there for readability.
 
-Please order this by line-length, longer lines first.
+>  #include "amd_iommu_proto.h"
+>  #include "amd_iommu_types.h"
+>  #include "irq_remapping.h"
+> @@ -1344,6 +1344,12 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+>  	iommu->int_enabled = false;
+>  
+>  	init_translation_status(iommu);
+> +	if (translation_pre_enabled(iommu) && !is_kdump_kernel()) {
+> +		iommu_disable(iommu);
+> +		clear_translation_pre_enabled(iommu);
+> +		pr_warn("Translation was enabled for IOMMU:%d but we are not in kdump mode\n",
+> +			iommu->index);
+> +	}
+>  
+>  	if (translation_pre_enabled(iommu))
+>  		pr_warn("Translation is already enabled - trying to copy translation structures\n");
+> @@ -1946,9 +1952,41 @@ static void early_enable_iommu(struct amd_iommu *iommu)
+>  static void early_enable_iommus(void)
+>  {
+>  	struct amd_iommu *iommu;
+> +	bool is_pre_enabled=false;
+>  
+> -	for_each_iommu(iommu)
+> -		early_enable_iommu(iommu);
+> +	for_each_iommu(iommu) {
+> +		if ( translation_pre_enabled(iommu) ) {
 
-> +        for_each_iommu(iommu) {
-> +		if (!translation_pre_enabled(iommu)) {
-> +			pr_err("IOMMU:%d is not pre-enabled!/n", iommu->index);
-> +			return -1;
+Coding style, too many spaces. There is more of that below.
+
+> +			is_pre_enabled = true;
+> +			break;
 > +		}
+> +	}
 > +
-> +		if (copied)
-> +			continue;
-> +
-> +                lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
-> +                hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
-> +                entry = (((u64) hi) << 32) + lo;
-> +                old_devtb_phys = entry & PAGE_MASK;
-> +                old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
-> +		if (!old_devtb)
-> +			return -1;
-> +                for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
-> +                        amd_iommu_dev_table[devid] = old_devtb[devid];
-> +                        dom_id = amd_iommu_dev_table[devid].data[1] & DEV_DOMID_MASK;
-> +			dte_v = amd_iommu_dev_table[devid].data[0] & DTE_FLAG_V;
-> +			if (!dte_v || !dom_id)
-> +				continue;
-> +                        __set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
-> +                }
-> +		memunmap(old_devtb);
-> +		copied = 1;
-> +        }
+> +	if ( !is_pre_enabled) {
+> +		for_each_iommu(iommu)
+> +			early_enable_iommu(iommu);
+> +	} else {
+> +		if (copy_dev_tables()) {
+> +			pr_err("Failed to copy DEV table from previous kernel.\n");
+> +			/*
+> +			 * If failed to copy dev tables from old kernel, continue to proceed
+> +			 * as it does in normal kernel.
+> +			 */
+> +			for_each_iommu(iommu) {
+> +				clear_translation_pre_enabled(iommu);
+> +				early_enable_iommu(iommu);
+> +			}
+> +		} else {
+> +			pr_info("Copied DEV table from previous kernel.\n");
+> +			for_each_iommu(iommu) {
+> +				iommu_feature_disable(iommu, CONTROL_CMDBUF_EN);
+> +		                iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN);
 
-This loop need more refinement and sanity checking code. I suggest using
-two loops and do the sanity checking in the first one. The sanity checks
-should do:
+Could you move that into new helpers (iommu_disable_command_buffer...)?
 
-	* Check whether all IOMMUs actually use the same device table
-	  with the same size
-
-	* Verify that the size of the old device table is the expected
-	  size.
-
-	* Also sanity check the irq-remapping information and remapping
-	  table sizes.
-
-If any of these checks fail, just bail out of copying.
-
-What is further needed it some more selection on what is copied from the
-old kernel. There is no need to copy all the GCR3 root-pointer
-information. If a device is set up with guest translations (DTE.GV=1),
-then don't copy that information but move the device over to an empty
-guest-cr3 table and handle the faults in the PPR log (which should just
-answer them with INVALID). After all these PPR faults are recoverable
-for the device and we should not allow the device to change old-kernels
-data when we don't have to.
-
-
-	Joerg
+> +		                iommu_enable_command_buffer(iommu);
+> +		                iommu_enable_event_buffer(iommu);
+> +		                iommu_set_device_table(iommu);
+> +		                iommu_flush_all_caches(iommu);
+> +			}
+> +		}
+> +	}
+>  }
+>  
+>  static void enable_iommus_v2(void)
+> -- 
+> 2.5.5
+> 
