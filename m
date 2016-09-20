@@ -1,13 +1,11 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH/RFC] iommu/ipmmu-vmsa: Update ->add_device() return value
-Date: Tue, 20 Sep 2016 14:18:47 +0100
-Message-ID: <3759bb9c-c482-4fae-d588-7c946ebeecae@arm.com>
-References: <20160920124144.8629.22575.sendpatchset@little-apple>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v5 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V5
+Date: Tue, 20 Sep 2016 22:43:55 +0900
+Message-ID: <20160920134355.25470.93701.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160920124144.8629.22575.sendpatchset@little-apple>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,66 +15,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Magnus,
+iommu/ipmmu-vmsa: IPMMU multi-arch update V5
 
-On 20/09/16 13:41, Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-> 
-> Update the IPMMU driver to return -ENODEV when adding devices
-> not hooked up a particular IPMMU instance.
-> 
-> Currently the ->add_device() callback implementation in the IPMMU
-> driver returns -ENODEV for devices with no "iommus" property,
-> however the function ipmmu_find_utlbs() may return -EINVAL.
+[PATCH v5 01/07] iommu/ipmmu-vmsa: Remove platform data handling
+[PATCH v5 02/07] iommu/ipmmu-vmsa: Rework interrupt code and use bitmap for context
+[PATCH v5 03/07] iommu/ipmmu-vmsa: Break out utlb parsing code
+[PATCH v5 04/07] iommu/ipmmu-vmsa: Break out domain allocation code
+[PATCH v5 05/07] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
+[PATCH v5 06/07] iommu/ipmmu-vmsa: ARM and ARM64 archdata access
+[PATCH v5 07/07] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
 
-If there were no "iommus" property at all, of_parse_phandle_with_args()
-should return -ENOENT - that probably does want to be caught and passed
-back as -ENODEV to imply an untranslated device. On the other hand,
--EINVAL would stem from the existence of the property, but in a somehow
-erroneous manner - other than the "args.np != mmu->dev->of_node" check
-(which could legitimately fail and be safely ignored if there are
-multiple IOMMUs in the system), any other reason implies a DT error
-which probably shouldn't be papered over.
+These patches update the IPMMU driver with a couple of changes
+to support build on multiple architectures. In the process of
+doing so the interrupt code gets reworked and the foundation
+for supporting multiple contexts are added.
 
-Robin.
+Changes since V4:
+ - Updated patch 3/7 to work on top on the following commit in next-20160920:
+   b1e2afc iommu/ipmmu-vmsa: Fix wrong error handle of ipmmu_add_device
+ - Add Kconfig hunk to patch 5/7 to avoid undeclared ipmmu_ops if COMPILE_TEST
+ - Rebased patch 7/7 to fit on top of new Kconfig bits in 5/7
 
-> This patch updates the ipmmu_find_utlbs() return value to -ENODEV
-> for the case when multiple IPMMU instances exist. That way the
-> code matches the expected behaviour described in the comment of
-> the add_iommu_group() function in iommu.c:
-> 
->  /*
->   * We ignore -ENODEV errors for now, as they just mean that the
->   * device is not translated by an IOMMU. We still care about
->   * other errors and fail to initialize when they happen.
->   */
-> 
-> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-> ---
-> 
->  Applies to next-20160920 on top of:
->  b1e2afc iommu/ipmmu-vmsa: Fix wrong error handle of ipmmu_add_device
-> 
->  drivers/iommu/ipmmu-vmsa.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> --- 0002/drivers/iommu/ipmmu-vmsa.c
-> +++ work/drivers/iommu/ipmmu-vmsa.c	2016-09-08 18:20:06.270607110 +0900
-> @@ -781,7 +781,7 @@ static int ipmmu_find_utlbs(struct ipmmu
->  		of_node_put(args.np);
->  
->  		if (args.np != mmu->dev->of_node || args.args_count != 1)
-> -			return -EINVAL;
-> +			return -ENODEV;
->  
->  		utlbs[i] = args.args[0];
->  	}
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
+Changes since V3:
+ - Updated patch 3/7 to fix hang-on-boot issue on 32-bit ARM - thanks Geert!
+ - Reworked group parameter handling in patch 3/7 and 5/7.
+ - Added patch 6/7 to fix build of the driver on s390/tile/um architectures
+
+Changes since V2:
+ - Got rid of patch 3 from the V2 however patch 1, 2 and 4 are kept.
+ - V3 patch 3, 4 and 5 come from
+   [PATCH 00/04] iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
+ - Patch 5 has been reworked to include patch 3 of the V1 of this series 
+
+Changes since V1:
+ - Got rid of patch 2 and 3 from initial series
+ - Updated bitmap code locking and also used lighter bitop functions
+ - Updated the Kconfig bits to apply on top of ARCH_RENESAS
+
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+---
+
+ Built on top next-20160920 as well as the optional fast-track patch
+ [PATCH/RFC] iommu/ipmmu-vmsa: Update ->add_device() return value
+
+ drivers/iommu/Kconfig      |    2 
+ drivers/iommu/ipmmu-vmsa.c |  300 +++++++++++++++++++++++++++++++++++---------
+ 2 files changed, 243 insertions(+), 59 deletions(-)
