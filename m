@@ -1,28 +1,32 @@
-From: Joerg Roedel <joro@8bytes.org>
+From: Baoquan He <bhe@redhat.com>
 Subject: Re: [PATCH RESEND 4/4] iommu/amd: No need to wait iommu completion
  if no dte irq entry change
-Date: Tue, 20 Sep 2016 11:56:32 +0200
-Message-ID: <20160920095631.GA14627@8bytes.org>
+Date: Tue, 20 Sep 2016 18:14:38 +0800
+Message-ID: <20160920101438.GA3873@x1.redhat.com>
 References: <1473929453-3533-1-git-send-email-bhe@redhat.com>
  <1473929453-3533-5-git-send-email-bhe@redhat.com>
  <20160920010534.GA11495@x1.redhat.com>
+ <20160920095631.GA14627@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160920010534.GA11495@x1.redhat.com>
+In-Reply-To: <20160920095631.GA14627@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Baoquan He <bhe@redhat.com>
+To: Joerg Roedel <joro@8bytes.org>
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, dyoung@redhat.com, xlpang@redhat.com, Vincent.Wan@amd.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Sep 20, 2016 at 09:05:34AM +0800, Baoquan He wrote:
-> This is a clean up. In get_irq_table() only if DTE entry is changed
-> iommu_completion_wait() need be called. Otherwise no need to do it.
+On 09/20/16 at 11:56am, Joerg Roedel wrote:
+> On Tue, Sep 20, 2016 at 09:05:34AM +0800, Baoquan He wrote:
+> > This is a clean up. In get_irq_table() only if DTE entry is changed
+> > iommu_completion_wait() need be called. Otherwise no need to do it.
+> > 
+> > Signed-off-by: Baoquan He <bhe@redhat.com>
+> > ---
+> >  drivers/iommu/amd_iommu.c | 6 +++---
+> >  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> Signed-off-by: Baoquan He <bhe@redhat.com>
-> ---
->  drivers/iommu/amd_iommu.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+> Applied, thanks.
 
-Applied, thanks.
+Thanks!
