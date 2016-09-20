@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v5 04/07] iommu/ipmmu-vmsa: Break out domain allocation code
-Date: Tue, 20 Sep 2016 22:44:36 +0900
-Message-ID: <20160920134436.25470.94761.sendpatchset@little-apple>
+Subject: [PATCH v5 05/07] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
+Date: Tue, 20 Sep 2016 22:44:46 +0900
+Message-ID: <20160920134446.25470.22322.sendpatchset@little-apple>
 References: <20160920134355.25470.93701.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,44 +23,88 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Break out the domain allocation code into a separate function.
-This is preparation for future code sharing.
+Introduce an alternative set of iommu_ops suitable for 64-bit ARM
+as well as 32-bit ARM when CONFIG_IOMMU_DMA=y. Also adjust the
+Kconfig to depend on ARM or IOMMU_DMA.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
  Changes since V4:
- - None
+ - Added Kconfig hunk to depend on ARM or IOMMU_DMA
 
  Changes since V3:
- - None
+ - Removed group parameter from ipmmu_init_platform_device()
 
  Changes since V2:
- - Included this new patch as-is from the following series:
+ - Included this new patch from the following series:
    [PATCH 00/04] iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
+ - Use only a single iommu_ops structure with #ifdef CONFIG_IOMMU_DMA
+ - Folded in #ifdefs to handle CONFIG_ARM and CONFIG_IOMMU_DMA
+ - of_xlate() is now used without #ifdefs
+ - Made sure code compiles on both 32-bit and 64-bit ARM.
 
- drivers/iommu/ipmmu-vmsa.c |   13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/iommu/Kconfig      |    1 
+ drivers/iommu/ipmmu-vmsa.c |  111 ++++++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 104 insertions(+), 8 deletions(-)
 
---- 0008/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2016-09-20 21:56:59.220607110 +0900
-@@ -507,13 +507,10 @@ static irqreturn_t ipmmu_irq(int irq, vo
-  * IOMMU Operations
-  */
+--- 0001/drivers/iommu/Kconfig
++++ work/drivers/iommu/Kconfig	2016-09-20 22:10:15.280607110 +0900
+@@ -274,6 +274,7 @@ config EXYNOS_IOMMU_DEBUG
+ 
+ config IPMMU_VMSA
+ 	bool "Renesas VMSA-compatible IPMMU"
++	depends on ARM || IOMMU_DMA
+ 	depends on ARM_LPAE
+ 	depends on ARCH_RENESAS || COMPILE_TEST
+ 	select IOMMU_API
+--- 0006/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-09-20 22:08:58.300607110 +0900
+@@ -10,6 +10,7 @@
+ 
+ #include <linux/bitmap.h>
+ #include <linux/delay.h>
++#include <linux/dma-iommu.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/err.h>
+ #include <linux/export.h>
+@@ -22,8 +23,10 @@
+ #include <linux/sizes.h>
+ #include <linux/slab.h>
+ 
++#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
+ #include <asm/dma-iommu.h>
+ #include <asm/pgalloc.h>
++#endif
+ 
+ #include "io-pgtable.h"
+ 
+@@ -520,14 +523,6 @@ static struct iommu_domain *__ipmmu_doma
+ 	return &domain->io_domain;
+ }
  
 -static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
-+static struct iommu_domain *__ipmmu_domain_alloc(unsigned type)
- {
- 	struct ipmmu_vmsa_domain *domain;
- 
+-{
 -	if (type != IOMMU_DOMAIN_UNMANAGED)
 -		return NULL;
 -
- 	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
- 	if (!domain)
- 		return NULL;
-@@ -523,6 +520,14 @@ static struct iommu_domain *ipmmu_domain
- 	return &domain->io_domain;
+-	return __ipmmu_domain_alloc(type);
+-}
+-
+ static void ipmmu_domain_free(struct iommu_domain *io_domain)
+ {
+ 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+@@ -714,6 +709,8 @@ error:
+ 	return ret;
+ }
+ 
++#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
++
+ static int ipmmu_add_device(struct device *dev)
+ {
+ 	struct ipmmu_vmsa_archdata *archdata;
+@@ -807,6 +804,14 @@ static void ipmmu_remove_device(struct d
+ 	dev->archdata.iommu = NULL;
  }
  
 +static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
@@ -71,6 +115,111 @@ Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org
 +	return __ipmmu_domain_alloc(type);
 +}
 +
- static void ipmmu_domain_free(struct iommu_domain *io_domain)
- {
- 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+ static const struct iommu_ops ipmmu_ops = {
+ 	.domain_alloc = ipmmu_domain_alloc,
+ 	.domain_free = ipmmu_domain_free,
+@@ -821,6 +826,94 @@ static const struct iommu_ops ipmmu_ops
+ 	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
+ };
+ 
++#endif /* !CONFIG_ARM && CONFIG_IOMMU_DMA */
++
++#ifdef CONFIG_IOMMU_DMA
++
++static struct iommu_domain *ipmmu_domain_alloc_dma(unsigned type)
++{
++	struct iommu_domain *io_domain;
++
++	if (type != IOMMU_DOMAIN_DMA)
++		return NULL;
++
++	io_domain = __ipmmu_domain_alloc(type);
++	if (io_domain)
++		iommu_get_dma_cookie(io_domain);
++
++	return io_domain;
++}
++
++static void ipmmu_domain_free_dma(struct iommu_domain *io_domain)
++{
++	iommu_put_dma_cookie(io_domain);
++	ipmmu_domain_free(io_domain);
++}
++
++static int ipmmu_add_device_dma(struct device *dev)
++{
++	struct iommu_group *group;
++
++	/* only accept devices with iommus property */
++	if (of_count_phandle_with_args(dev->of_node, "iommus",
++				       "#iommu-cells") < 0)
++		return -ENODEV;
++
++	group = iommu_group_get_for_dev(dev);
++	if (IS_ERR(group))
++		return PTR_ERR(group);
++
++	return 0;
++}
++
++static void ipmmu_remove_device_dma(struct device *dev)
++{
++	iommu_group_remove_device(dev);
++}
++
++static struct iommu_group *ipmmu_device_group_dma(struct device *dev)
++{
++	struct iommu_group *group;
++	int ret;
++
++	group = generic_device_group(dev);
++	if (IS_ERR(group))
++		return group;
++
++	ret = ipmmu_init_platform_device(dev);
++	if (ret) {
++		iommu_group_put(group);
++		group = ERR_PTR(ret);
++	}
++
++	return group;
++}
++
++static int ipmmu_of_xlate_dma(struct device *dev,
++			      struct of_phandle_args *spec)
++{
++	/* dummy callback to satisfy of_iommu_configure() */
++	return 0;
++}
++
++static const struct iommu_ops ipmmu_ops = {
++	.domain_alloc = ipmmu_domain_alloc_dma,
++	.domain_free = ipmmu_domain_free_dma,
++	.attach_dev = ipmmu_attach_device,
++	.detach_dev = ipmmu_detach_device,
++	.map = ipmmu_map,
++	.unmap = ipmmu_unmap,
++	.map_sg = default_iommu_map_sg,
++	.iova_to_phys = ipmmu_iova_to_phys,
++	.add_device = ipmmu_add_device_dma,
++	.remove_device = ipmmu_remove_device_dma,
++	.device_group = ipmmu_device_group_dma,
++	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
++	.of_xlate = ipmmu_of_xlate_dma,
++};
++
++#endif /* CONFIG_IOMMU_DMA */
++
+ /* -----------------------------------------------------------------------------
+  * Probe/remove and init
+  */
+@@ -910,7 +1003,9 @@ static int ipmmu_remove(struct platform_
+ 	list_del(&mmu->list);
+ 	spin_unlock(&ipmmu_devices_lock);
+ 
++#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
+ 	arm_iommu_release_mapping(mmu->mapping);
++#endif
+ 
+ 	ipmmu_device_reset(mmu);
+ 
