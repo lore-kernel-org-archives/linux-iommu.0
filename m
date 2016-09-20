@@ -1,42 +1,60 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v7 05/22] Docs: dt: document ARM SMMUv3 generic binding
-	usage
-Date: Tue, 20 Sep 2016 09:46:45 -0500
-Message-ID: <20160920144645.GA27580@rob-hp-laptop>
-References: <cover.1473695704.git.robin.murphy@arm.com>
-	<2273645f1fa5c76b6b98b5fd03804ab8b55a7691.1473695704.git.robin.murphy@arm.com>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: Re: [PATCH/RFC] iommu/ipmmu-vmsa: Update ->add_device() return value
+Date: Wed, 21 Sep 2016 00:03:15 +0900
+Message-ID: <CANqRtoQ_3PNobXuSd9hxMw2uZepErLoVadXbq6G4UZXnrPiEpA@mail.gmail.com>
+References: <20160920124144.8629.22575.sendpatchset@little-apple> <3759bb9c-c482-4fae-d588-7c946ebeecae@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <2273645f1fa5c76b6b98b5fd03804ab8b55a7691.1473695704.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <3759bb9c-c482-4fae-d588-7c946ebeecae@arm.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Sep 12, 2016 at 05:13:43PM +0100, Robin Murphy wrote:
-> We're about to ratify our use of the generic binding, so document it.
-> 
-> CC: Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-> CC: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> 
-> ---
-> 
-> - Reference PCI "iommu-map" binding instead, as that's our main concern
-> - Fix "IDs" typo
-> ---
->  Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
+Hi Robin,
 
-Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Thanks for your feedback!!
+
+On Tue, Sep 20, 2016 at 10:18 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+> Hi Magnus,
+>
+> On 20/09/16 13:41, Magnus Damm wrote:
+>> From: Magnus Damm <damm+renesas@opensource.se>
+>>
+>> Update the IPMMU driver to return -ENODEV when adding devices
+>> not hooked up a particular IPMMU instance.
+>>
+>> Currently the ->add_device() callback implementation in the IPMMU
+>> driver returns -ENODEV for devices with no "iommus" property,
+>> however the function ipmmu_find_utlbs() may return -EINVAL.
+>
+> If there were no "iommus" property at all, of_parse_phandle_with_args()
+> should return -ENOENT - that probably does want to be caught and passed
+> back as -ENODEV to imply an untranslated device. On the other hand,
+> -EINVAL would stem from the existence of the property, but in a somehow
+> erroneous manner - other than the "args.np != mmu->dev->of_node" check
+> (which could legitimately fail and be safely ignored if there are
+> multiple IOMMUs in the system), any other reason implies a DT error
+> which probably shouldn't be papered over.
+
+Regarding -ENOENT to -ENODEV, I agree but I believe this case is
+already handled. The ->add_device() callback seems to be using
+of_count_phandle_with_args() to check for the presence of "iommus"
+property before calling ipmmu_find_utlbs(). So for the case with no
+"iommus" property at all it is returned as -ENODEV as you suggest.
+
+The ->add_device() callback has the ret variable initialised to
+-ENODEV by default. In case there is only one IPMMU device on the
+ipmmu_device list and it matches the struct device passed to the
+ipmmu_add_device() function then all is fine. However when there are
+more than one IPMMU device on the ipmmu_device list then
+ipmmu_find_utlbs() may return -EINVAL. Judging by the code this seems
+to happen when the order of the IPMMU devices on the "iommus" property
+does not match the IPMMU order on the ipmmu_device list.
+
+Hm, I wonder if all this should be replaced with ->xlate() somehow?
+
+Thanks,
+
+/ magnus
