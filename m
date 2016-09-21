@@ -1,54 +1,117 @@
-From: Peter Rosin <peda@axentia.se>
-Subject: Re: [v12, 7/8] base: soc: introduce soc_device_match() interface
-Date: Wed, 21 Sep 2016 10:25:08 +0200
-Message-ID: <aa53da4f-205d-cfa1-c85c-00e82e928bbc@axentia.se>
-References: <1474441040-11946-1-git-send-email-yangbo.lu@nxp.com>
- <1474441040-11946-8-git-send-email-yangbo.lu@nxp.com>
- <1474444574.270880035@f136.i.mail.ru>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 4/8] iommu/amd: Add function copy_dev_tables
+Date: Wed, 21 Sep 2016 18:17:09 +0800
+Message-ID: <20160921101709.GA13350@x1.redhat.com>
+References: <1473951806-25511-1-git-send-email-bhe@redhat.com>
+	<1473951806-25511-5-git-send-email-bhe@redhat.com>
+	<20160920115804.GC3541@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <1474444574.270880035@f136.i.mail.ru>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Alexander Shiyan <shc_work@mail.ru>, Yangbo Lu <yangbo.lu@nxp.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, ulf.hansson@linaro.org, Xiaobo Xie <xiaobo.xie@nxp.com>, Minghuan Lian <minghuan.lian@nxp.com>, linux-i2c@vger.kernel.org, linux-clk@vger.kernel.org, Qiang Zhao <qiang.zhao@nxp.com>, Russell King <linux@arm.linux.org.uk>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Joerg Roedel <joro@8bytes.org>, Jochen Friedrich <jochen@scram.de>, Claudiu Manoil <claudiu.manoil@freescale.com>, devicetree@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>, Scott Wood <oss@buserror.net>, Rob Herring <robh+dt@kernel.org>, Santosh Shilimkar <ssantosh@kernel.org>, linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org, linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, Leo Li <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org, Kumar Gala <galak@codeaurora.org>, linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20160920115804.GC3541-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjAxNi0wOS0yMSAwOTo1NiwgQWxleGFuZGVyIFNoaXlhbiB3cm90ZToKPj4g0KHRgNC10LTQ
-sCwgMjEg0YHQtdC90YLRj9Cx0YDRjyAyMDE2LCA5OjU3ICswMzowMCDQvtGCIFlhbmdibyBMdSA8
-eWFuZ2JvLmx1QG54cC5jb20+Ogo+Pgo+PiBGcm9tOiBBcm5kIEJlcmdtYW5uIDwgYXJuZEBhcm5k
-Yi5kZSA+Cj4+Cj4+IFdlIGtlZXAgcnVubmluZyBpbnRvIGNhc2VzIHdoZXJlIGRldmljZSBkcml2
-ZXJzIHdhbnQgdG8ga25vdyB0aGUgZXhhY3QKPj4gdmVyc2lvbiBvZiB0aGUgYSBTb0MgdGhleSBh
-cmUgY3VycmVudGx5IHJ1bm5pbmcgb24uIEluIHRoZSBwYXN0LCB0aGlzIGhhcwo+PiB1c3VhbGx5
-IGJlZW4gZG9uZSB0aHJvdWdoIGEgdmVuZG9yIHNwZWNpZmljIEFQSSB0aGF0IGNhbiBiZSBjYWxs
-ZWQgYnkgYQo+PiBkcml2ZXIsIG9yIGJ5IGRpcmVjdGx5IGFjY2Vzc2luZyBzb21lIGtpbmQgb2Yg
-dmVyc2lvbiByZWdpc3RlciB0aGF0IGlzCj4+IG5vdCBwYXJ0IG9mIHRoZSBkZXZpY2UgaXRzZWxm
-IGJ1dCB0aGF0IGJlbG9uZ3MgdG8gYSBnbG9iYWwgcmVnaXN0ZXIgYXJlYQo+PiBvZiB0aGUgY2hp
-cC4KPiAuLi4KPj4gK2NvbnN0IHN0cnVjdCBzb2NfZGV2aWNlX2F0dHJpYnV0ZSAqc29jX2Rldmlj
-ZV9tYXRjaCgKPj4gK2NvbnN0IHN0cnVjdCBzb2NfZGV2aWNlX2F0dHJpYnV0ZSAqbWF0Y2hlcykK
-Pj4gK3sKPj4gK2ludCByZXQgPSAwOwo+PiArCj4+ICtpZiAoIW1hdGNoZXMpCj4+ICtyZXR1cm4g
-TlVMTDsKPj4gKwo+PiArd2hpbGUgKCFyZXQpIHsKPj4gK2lmICghKG1hdGNoZXMtPm1hY2hpbmUg
-fHwgbWF0Y2hlcy0+ZmFtaWx5IHx8Cj4+ICsgICAgICBtYXRjaGVzLT5yZXZpc2lvbiB8fCBtYXRj
-aGVzLT5zb2NfaWQpKQo+PiArYnJlYWs7Cj4+ICtyZXQgPSBidXNfZm9yX2VhY2hfZGV2KCZzb2Nf
-YnVzX3R5cGUsIE5VTEwsICh2b2lkICopbWF0Y2hlcywKPj4gKyAgICAgICBzb2NfZGV2aWNlX21h
-dGNoX29uZSk7Cj4+ICtpZiAoIXJldCkKPj4gK21hdGNoZXMrKzsKPiAKPiBTbywgd2hhdCBoYXBw
-ZW4gaWYgbmV4dCAibWF0Y2hlcyIgKGFmdGVyIGluY3JlbWVudCkgd2lsbCBiZSBOVUxMPwoKQSBj
-cmFzaD8KCj4gSSB0aGluayB5b3Ugc2hvdWxkIHVzZSB3aGlsZShtYXRjaGVzKSBhdCB0aGUgc3Rh
-cnQgb2YgdGhpcyBwcm9jZWR1cmUuCgoqYXJyZ2gqCgoqSWYqIG1hdGNoZXMgd3JhcCwgeW91IGlu
-ZGVlZCBoYXZlICpiaWcqIHByb2JsZW1zLiAqRWxzZXdoZXJlKgoKSGludDogUGxlYXNlIHJlYWQg
-dGhlIHJldmlldyBjb21tZW50cyBvbiB0aGUgcHJldmlvdXMgdmVyc2lvbiBvZiB0aGlzCnNlcmll
-cyBbMV0gYmVmb3JlIGNvbW1lbnRpbmcgZnVydGhlci4KCkNoZWVycywKUGV0ZXIKClsxXSBodHRw
-czovL3d3dy5tYWlsLWFyY2hpdmUuY29tL25ldGRldkB2Z2VyLmtlcm5lbC5vcmcvbXNnMTI2NjE3
-Lmh0bWwKCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-bGludXgtYXJtLWtlcm5lbCBtYWlsaW5nIGxpc3QKbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZy
-YWRlYWQub3JnCmh0dHA6Ly9saXN0cy5pbmZyYWRlYWQub3JnL21haWxtYW4vbGlzdGluZm8vbGlu
-dXgtYXJtLWtlcm5lbAo=
+Hi Joerg,
+
+Thanks for your reviewing and great suggestion!
+
+On 09/20/16 at 01:58pm, Joerg Roedel wrote:
+> Hi Baoquan,
+> 
+> On Thu, Sep 15, 2016 at 11:03:22PM +0800, Baoquan He wrote:
+> > +static int copy_dev_tables(void)
+> > +{
+> > +	u64 entry;
+> > +	u32 lo, hi, devid;
+> > +	phys_addr_t old_devtb_phys;
+> > +	struct dev_table_entry *old_devtb = NULL;
+> > +	u16 dom_id, dte_v;
+> > +	struct amd_iommu *iommu;
+> > +	static int copied;
+> 
+> Please order this by line-length, longer lines first.
+
+Will do.
+
+> 
+> > +        for_each_iommu(iommu) {
+> > +		if (!translation_pre_enabled(iommu)) {
+> > +			pr_err("IOMMU:%d is not pre-enabled!/n", iommu->index);
+> > +			return -1;
+> > +		}
+> > +
+> > +		if (copied)
+> > +			continue;
+> > +
+> > +                lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
+> > +                hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
+> > +                entry = (((u64) hi) << 32) + lo;
+> > +                old_devtb_phys = entry & PAGE_MASK;
+> > +                old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
+> > +		if (!old_devtb)
+> > +			return -1;
+> > +                for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
+> > +                        amd_iommu_dev_table[devid] = old_devtb[devid];
+> > +                        dom_id = amd_iommu_dev_table[devid].data[1] & DEV_DOMID_MASK;
+> > +			dte_v = amd_iommu_dev_table[devid].data[0] & DTE_FLAG_V;
+> > +			if (!dte_v || !dom_id)
+> > +				continue;
+> > +                        __set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
+> > +                }
+> > +		memunmap(old_devtb);
+> > +		copied = 1;
+> > +        }
+> 
+> This loop need more refinement and sanity checking code. I suggest using
+> two loops and do the sanity checking in the first one. The sanity checks
+> should do:
+> 
+> 	* Check whether all IOMMUs actually use the same device table
+> 	  with the same size
+> 
+> 	* Verify that the size of the old device table is the expected
+> 	  size.
+
+Will do.
+
+> 
+> 	* Also sanity check the irq-remapping information and remapping
+> 	  table sizes.
+
+Will do. Since this need those irq DTE_IRQ_xxxx MACRO which is defined
+in amd_iommu.c , I plan to move them into amd_iommu_types.h, and then do
+irq-remapping. These can be made in another patch.
+
+> 
+> If any of these checks fail, just bail out of copying.
+> 
+> What is further needed it some more selection on what is copied from the
+> old kernel. There is no need to copy all the GCR3 root-pointer
+> information. If a device is set up with guest translations (DTE.GV=1),
+> then don't copy that information but move the device over to an empty
+> guest-cr3 table and handle the faults in the PPR log (which should just
+> answer them with INVALID). After all these PPR faults are recoverable
+> for the device and we should not allow the device to change old-kernels
+> data when we don't have to.
+
+The current fix is simplest and cleanest. Because the on-flight DMAs
+continue transferring data since system crash, including guest
+translations, we may not need to care about it and just let it continue
+flying a little more time until device is reset. Since you have suggested,
+I will try to make another patch for this issue, we can see the effect.
+
+Thanks
+Baoquan
