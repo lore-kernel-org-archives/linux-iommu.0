@@ -1,60 +1,79 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: Re: [PATCH/RFC] iommu/ipmmu-vmsa: Update ->add_device() return value
-Date: Wed, 21 Sep 2016 00:03:15 +0900
-Message-ID: <CANqRtoQ_3PNobXuSd9hxMw2uZepErLoVadXbq6G4UZXnrPiEpA@mail.gmail.com>
-References: <20160920124144.8629.22575.sendpatchset@little-apple> <3759bb9c-c482-4fae-d588-7c946ebeecae@arm.com>
+From: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
+Subject: [v12, 0/8] Fix eSDHC host version register bug
+Date: Wed, 21 Sep 2016 14:57:12 +0800
+Message-ID: <1474441040-11946-1-git-send-email-yangbo.lu@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <3759bb9c-c482-4fae-d588-7c946ebeecae@arm.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux-foundation.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, Scott Wood <oss-fOR+EgIDQEHk1uMJSBkQmQ@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Xiaobo Xie <xiaobo.xie-3arQi8VN3Tc@public.gmane.org>, Minghuan Lian <minghuan.lian-3arQi8VN3Tc@public.gmane.org>, linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Qiang Zhao <qiang.zhao-3arQi8VN3Tc@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>, linuxppc-dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+This patchset is used to fix a host version register bug in the T4240-R1.0-R2.0
+eSDHC controller. To match the SoC version and revision, 10 previous version
+patchsets had tried many methods but all of them were rejected by reviewers.
+Such as
+	- dts compatible method
+	- syscon method
+	- ifdef PPC method
+	- GUTS driver getting SVR method
+Anrd suggested a soc_device_match method in v10, and this is the only available
+method left now. This v11 patchset introduces the soc_device_match interface in
+soc driver.
 
-Thanks for your feedback!!
+The first six patches of Yangbo are to add the GUTS driver. This is used to
+register a soc device which contain soc version and revision information.
+The other two patches introduce the soc_device_match method in soc driver
+and apply it on esdhc driver to fix this bug.
 
-On Tue, Sep 20, 2016 at 10:18 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> Hi Magnus,
->
-> On 20/09/16 13:41, Magnus Damm wrote:
->> From: Magnus Damm <damm+renesas@opensource.se>
->>
->> Update the IPMMU driver to return -ENODEV when adding devices
->> not hooked up a particular IPMMU instance.
->>
->> Currently the ->add_device() callback implementation in the IPMMU
->> driver returns -ENODEV for devices with no "iommus" property,
->> however the function ipmmu_find_utlbs() may return -EINVAL.
->
-> If there were no "iommus" property at all, of_parse_phandle_with_args()
-> should return -ENOENT - that probably does want to be caught and passed
-> back as -ENODEV to imply an untranslated device. On the other hand,
-> -EINVAL would stem from the existence of the property, but in a somehow
-> erroneous manner - other than the "args.np != mmu->dev->of_node" check
-> (which could legitimately fail and be safely ignored if there are
-> multiple IOMMUs in the system), any other reason implies a DT error
-> which probably shouldn't be papered over.
+Arnd Bergmann (1):
+  base: soc: introduce soc_device_match() interface
 
-Regarding -ENOENT to -ENODEV, I agree but I believe this case is
-already handled. The ->add_device() callback seems to be using
-of_count_phandle_with_args() to check for the presence of "iommus"
-property before calling ipmmu_find_utlbs(). So for the case with no
-"iommus" property at all it is returned as -ENODEV as you suggest.
+Yangbo Lu (7):
+  dt: bindings: update Freescale DCFG compatible
+  ARM64: dts: ls2080a: add device configuration node
+  dt: bindings: move guts devicetree doc out of powerpc directory
+  powerpc/fsl: move mpc85xx.h to include/linux/fsl
+  soc: fsl: add GUTS driver for QorIQ platforms
+  MAINTAINERS: add entry for Freescale SoC drivers
+  mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
 
-The ->add_device() callback has the ret variable initialised to
--ENODEV by default. In case there is only one IPMMU device on the
-ipmmu_device list and it matches the struct device passed to the
-ipmmu_add_device() function then all is fine. However when there are
-more than one IPMMU device on the ipmmu_device list then
-ipmmu_find_utlbs() may return -EINVAL. Judging by the code this seems
-to happen when the order of the IPMMU devices on the "iommus" property
-does not match the IPMMU order on the ipmmu_device list.
+ Documentation/devicetree/bindings/arm/fsl.txt      |   6 +-
+ .../bindings/{powerpc => soc}/fsl/guts.txt         |   3 +
+ MAINTAINERS                                        |  11 +-
+ arch/arm64/boot/dts/freescale/fsl-ls2080a.dtsi     |   6 +
+ arch/powerpc/kernel/cpu_setup_fsl_booke.S          |   2 +-
+ arch/powerpc/sysdev/fsl_pci.c                      |   2 +-
+ drivers/base/Kconfig                               |   1 +
+ drivers/base/soc.c                                 |  66 ++++++
+ drivers/clk/clk-qoriq.c                            |   3 +-
+ drivers/i2c/busses/i2c-mpc.c                       |   2 +-
+ drivers/iommu/fsl_pamu.c                           |   3 +-
+ drivers/mmc/host/Kconfig                           |   1 +
+ drivers/mmc/host/sdhci-of-esdhc.c                  |  20 ++
+ drivers/net/ethernet/freescale/gianfar.c           |   2 +-
+ drivers/soc/Kconfig                                |   2 +-
+ drivers/soc/fsl/Kconfig                            |  19 ++
+ drivers/soc/fsl/Makefile                           |   1 +
+ drivers/soc/fsl/guts.c                             | 257 +++++++++++++++++++++
+ include/linux/fsl/guts.h                           | 125 ++++++----
+ .../asm/mpc85xx.h => include/linux/fsl/svr.h       |   4 +-
+ include/linux/sys_soc.h                            |   3 +
+ 21 files changed, 478 insertions(+), 61 deletions(-)
+ rename Documentation/devicetree/bindings/{powerpc => soc}/fsl/guts.txt (91%)
+ create mode 100644 drivers/soc/fsl/Kconfig
+ create mode 100644 drivers/soc/fsl/guts.c
+ rename arch/powerpc/include/asm/mpc85xx.h => include/linux/fsl/svr.h (97%)
 
-Hm, I wonder if all this should be replaced with ->xlate() somehow?
-
-Thanks,
-
-/ magnus
+-- 
+2.1.0.27.g96db324
