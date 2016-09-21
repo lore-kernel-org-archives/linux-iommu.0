@@ -1,89 +1,80 @@
-From: Baoquan He <bhe@redhat.com>
-Subject: Re: [PATCH v5 7/8] iommu/amd: Don't update domain info to dte entry
- at iommu init stage
-Date: Wed, 21 Sep 2016 18:26:13 +0800
-Message-ID: <20160921102613.GD13350@x1.redhat.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 8/8] iommu/amd: Update domain into to dte entry during
+	device driver init
+Date: Wed, 21 Sep 2016 18:31:15 +0800
+Message-ID: <20160921103115.GE13350@x1.redhat.com>
 References: <1473951806-25511-1-git-send-email-bhe@redhat.com>
- <1473951806-25511-8-git-send-email-bhe@redhat.com>
- <20160920125004.GF3541@8bytes.org>
+	<1473951806-25511-9-git-send-email-bhe@redhat.com>
+	<20160920125330.GG3541@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20160920125004.GF3541@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kexec@lists.infradead.org, dyoung@redhat.com, xlpang@redhat.com, Vincent.Wan@amd.com
+In-Reply-To: <20160920125330.GG3541-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/20/16 at 02:50pm, Joerg Roedel wrote:
-> On Thu, Sep 15, 2016 at 11:03:25PM +0800, Baoquan He wrote:
-> > AMD iommu creates protection domain and assign each device to it during
-> > iommu driver initialization stage. This happened just after system pci
-> > bus scanning stage, and much earlier than device driver init stage. So
-> > at this time if in kdump kernel the domain info, especially pte_root,
-> > can't be updated to dte entry. We should wait until device driver init
-> > stage.
+On 09/20/16 at 02:53pm, Joerg Roedel wrote:
+> On Thu, Sep 15, 2016 at 11:03:26PM +0800, Baoquan He wrote:
+> > All devices are supposed to reset themselves at device driver initialization
+> > stage. At this time if in kdump kernel those on-flight DMA will be stopped
+> > because of device reset. It's best time to update the protection domain info,
+> > especially pte_root, to dte entry which the device relates to.
 > > 
-> > Signed-off-by: Baoquan He <bhe@redhat.com>
+> > Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 > > ---
-> >  drivers/iommu/amd_iommu.c | 18 ++++++++++++++++++
-> >  1 file changed, 18 insertions(+)
+> >  drivers/iommu/amd_iommu.c | 21 +++++++++++++++++++++
+> >  1 file changed, 21 insertions(+)
 > > 
 > > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> > index fcb69ff..6c37300 100644
+> > index 6c37300..00b64ee 100644
 > > --- a/drivers/iommu/amd_iommu.c
 > > +++ b/drivers/iommu/amd_iommu.c
-> > @@ -137,6 +137,7 @@ struct iommu_dev_data {
-> >  	bool pri_tlp;			  /* PASID TLB required for
-> >  					     PPR completions */
-> >  	u32 errata;			  /* Bitmap for errata to apply */
-> > +	bool domain_updated;
-> >  };
+> > @@ -2310,6 +2310,10 @@ static dma_addr_t __map_single(struct device *dev,
+> >  	unsigned int pages;
+> >  	int prot = 0;
+> >  	int i;
+> > +	struct iommu_dev_data *dev_data = get_dev_data(dev);
+> > +	struct protection_domain *domain = get_domain(dev);
+> > +	u16 alias = amd_iommu_alias_table[dev_data->devid];
+> > +	struct amd_iommu *iommu = amd_iommu_rlookup_table[dev_data->devid];
 > >  
-> >  /*
-> > @@ -1708,6 +1709,15 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
-> >  {
-> >  	u64 pte_root = 0;
-> >  	u64 flags = 0;
-> > +	struct iommu_dev_data *dev_data;
-> > +	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
-> > +
-> > +	dev_data = find_dev_data(devid);
-> > +        if (!dev_data)
-> > +                return;
-> > +
-> > +	if (translation_pre_enabled(iommu) && !dev_data->domain_updated)
-> > +		return;
+> >  	pages = iommu_num_pages(paddr, size, PAGE_SIZE);
+> >  	paddr &= PAGE_MASK;
+> > @@ -2319,6 +2323,13 @@ static dma_addr_t __map_single(struct device *dev,
+> >  		goto out;
 > >  
-> >  	if (domain->mode != PAGE_MODE_NONE)
-> >  		pte_root = virt_to_phys(domain->pt_root);
-> > @@ -1756,6 +1766,14 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
-> >  
-> >  static void clear_dte_entry(u16 devid)
-> >  {
-> > +	struct iommu_dev_data *dev_data;
-> > +	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
-> > +
-> > +	dev_data = find_dev_data(devid);
-> > +        if (!dev_data)
-> > +                return;
-> > +	if (translation_pre_enabled(iommu) && !dev_data->domain_updated)
-> > +		return;
+> >  	prot = dir2prot(direction);
+> > +	if (translation_pre_enabled(iommu) && !dev_data->domain_updated) {
+> > +               dev_data->domain_updated = true;
+> > +               set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled);
+> > +               if (alias != dev_data->devid)
+> > +                       set_dte_entry(alias, domain, dev_data->ats.enabled);
+> > +               device_flush_dte(dev_data);
+> > +       }
 > 
-> This should be moved to do_attach/do_detach. There you also already have
-> the dev_data you need here.
+> Hmm, have you tried hooking this into the set_dma_mask call-back? Every
+> driver should call it for its device, so that should be a better
+> indicator to now map a new domain.
 
-For amd-vi v1, checking in do_attach/do_detach is enough. But for v2
-amd_iommu_domain_direct_map and amd_iommu_domain_enable_v2 also call it
-to install pte_root into dev table. So finally, I move them into these
-two lowest level functions to prevent any pte_root changing during iommu
-init stage. It involves the least code change.
+Very earlier you mentioned this, and I tried, but failed. I guess that
+is because of the bnx2 NIC resetting problem. Let me try it again. In
+theory it should be better. Just sometime people probably don't call
+set_dma_mask explicitly, then default dma mask is used. This could be
+seen in those simple device. For those complicated device like sata disk
+and ethernet NIC, set_dma_mask should be called. So I would like to try
+and use set_dma_mask. Thanks for your great suggestion.
 
-> 
-> >  	/* remove entry from the device table seen by the hardware */
-> >  	amd_iommu_dev_table[devid].data[0]  = DTE_FLAG_V | DTE_FLAG_TV;
-> >  	amd_iommu_dev_table[devid].data[1] &= DTE_FLAG_MASK;
-> > -- 
-> > 2.5.5
-> > 
+Thanks
+Baoquan
