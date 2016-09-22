@@ -1,103 +1,59 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v5 7/8] iommu/amd: Don't update domain info to dte entry
-	at iommu init stage
-Date: Wed, 21 Sep 2016 21:21:13 +0800
-Message-ID: <20160921132113.GF13350@x1.redhat.com>
-References: <1473951806-25511-1-git-send-email-bhe@redhat.com>
-	<1473951806-25511-8-git-send-email-bhe@redhat.com>
-	<20160920125004.GF3541@8bytes.org>
-	<20160921102613.GD13350@x1.redhat.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v5 05/07] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
+Date: Thu, 22 Sep 2016 16:45:06 +0200
+Message-ID: <20160922144506.GK3541@8bytes.org>
+References: <20160920134355.25470.93701.sendpatchset@little-apple>
+ <20160920134446.25470.22322.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20160921102613.GD13350-ejN7fcUYdH/by3iVrkZq2A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+In-Reply-To: <20160920134446.25470.22322.sendpatchset@little-apple>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: iommu@lists.linux-foundation.org, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au, robin.murphy@arm.com, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/21/16 at 06:26pm, Baoquan He wrote:
-> On 09/20/16 at 02:50pm, Joerg Roedel wrote:
-> > On Thu, Sep 15, 2016 at 11:03:25PM +0800, Baoquan He wrote:
-> > > AMD iommu creates protection domain and assign each device to it during
-> > > iommu driver initialization stage. This happened just after system pci
-> > > bus scanning stage, and much earlier than device driver init stage. So
-> > > at this time if in kdump kernel the domain info, especially pte_root,
-> > > can't be updated to dte entry. We should wait until device driver init
-> > > stage.
-> > > 
-> > > Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> > > ---
-> > >  drivers/iommu/amd_iommu.c | 18 ++++++++++++++++++
-> > >  1 file changed, 18 insertions(+)
-> > > 
-> > > diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> > > index fcb69ff..6c37300 100644
-> > > --- a/drivers/iommu/amd_iommu.c
-> > > +++ b/drivers/iommu/amd_iommu.c
-> > > @@ -137,6 +137,7 @@ struct iommu_dev_data {
-> > >  	bool pri_tlp;			  /* PASID TLB required for
-> > >  					     PPR completions */
-> > >  	u32 errata;			  /* Bitmap for errata to apply */
-> > > +	bool domain_updated;
-> > >  };
-> > >  
-> > >  /*
-> > > @@ -1708,6 +1709,15 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
-> > >  {
-> > >  	u64 pte_root = 0;
-> > >  	u64 flags = 0;
-> > > +	struct iommu_dev_data *dev_data;
-> > > +	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
-> > > +
-> > > +	dev_data = find_dev_data(devid);
-> > > +        if (!dev_data)
-> > > +                return;
-> > > +
-> > > +	if (translation_pre_enabled(iommu) && !dev_data->domain_updated)
-> > > +		return;
-> > >  
-> > >  	if (domain->mode != PAGE_MODE_NONE)
-> > >  		pte_root = virt_to_phys(domain->pt_root);
-> > > @@ -1756,6 +1766,14 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
-> > >  
-> > >  static void clear_dte_entry(u16 devid)
-> > >  {
-> > > +	struct iommu_dev_data *dev_data;
-> > > +	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
-> > > +
-> > > +	dev_data = find_dev_data(devid);
-> > > +        if (!dev_data)
-> > > +                return;
-> > > +	if (translation_pre_enabled(iommu) && !dev_data->domain_updated)
-> > > +		return;
-> > 
-> > This should be moved to do_attach/do_detach. There you also already have
-> > the dev_data you need here.
-> 
-> For amd-vi v1, checking in do_attach/do_detach is enough. But for v2
-> amd_iommu_domain_direct_map and amd_iommu_domain_enable_v2 also call it
-Here I means amd_iommu_domain_direct_map and amd_iommu_domain_enable_v2
-will call set_dte_entry to change pte_root setting.
+On Tue, Sep 20, 2016 at 10:44:46PM +0900, Magnus Damm wrote:
+> +#ifdef CONFIG_IOMMU_DMA
+> +
+> +static struct iommu_domain *ipmmu_domain_alloc_dma(unsigned type)
+> +{
+> +	struct iommu_domain *io_domain;
+> +
+> +	if (type != IOMMU_DOMAIN_DMA)
+> +		return NULL;
+> +
+> +	io_domain = __ipmmu_domain_alloc(type);
+> +	if (io_domain)
+> +		iommu_get_dma_cookie(io_domain);
+> +
+> +	return io_domain;
+> +}
+> +
+> +static void ipmmu_domain_free_dma(struct iommu_domain *io_domain)
+> +{
+> +	iommu_put_dma_cookie(io_domain);
+> +	ipmmu_domain_free(io_domain);
+> +}
 
-> to install pte_root into dev table. So finally, I move them into these
-> two lowest level functions to prevent any pte_root changing during iommu
-> init stage. It involves the least code change.
-> 
-> > 
-> > >  	/* remove entry from the device table seen by the hardware */
-> > >  	amd_iommu_dev_table[devid].data[0]  = DTE_FLAG_V | DTE_FLAG_TV;
-> > >  	amd_iommu_dev_table[devid].data[1] &= DTE_FLAG_MASK;
-> > > -- 
-> > > 2.5.5
-> > > 
+> [...]
+
+> +static const struct iommu_ops ipmmu_ops = {
+> +	.domain_alloc = ipmmu_domain_alloc_dma,
+> +	.domain_free = ipmmu_domain_free_dma,
+
+Okay, so when CONFIG_IOMMU_DMA is enabled, you only support allocation
+of DMA domains, not UNMANAGED domains anymore. Is there a reason for
+that?
+
+You can reduce the #ifdef'ed coded by supporting both types of domains
+and call into allocation-subfunctions for DMA and UNMANAGED domains. The
+#ifdef could then only let the dma-allocation function return NULL.
+
+This would be much more compatible to what other IOMMU drivers do and
+will allow VFIO usage in the future.
+
+
+
+	Joerg
