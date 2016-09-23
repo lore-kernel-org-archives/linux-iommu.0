@@ -1,83 +1,90 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH/RFC] iommu/ipmmu-vmsa: Update ->add_device() return value
-Date: Thu, 22 Sep 2016 16:56:43 +0100
-Message-ID: <12f65b42-2113-9036-dfe7-c12ec28f172e@arm.com>
-References: <20160920124144.8629.22575.sendpatchset@little-apple>
- <3759bb9c-c482-4fae-d588-7c946ebeecae@arm.com>
- <CANqRtoQ_3PNobXuSd9hxMw2uZepErLoVadXbq6G4UZXnrPiEpA@mail.gmail.com>
+From: "Niklas =?iso-8859-1?Q?S=F6derlund?=" <niklas.soderlund-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+Subject: Re: [PATCHv9 0/6] dmaengine: rcar-dmac: add iommu support for slave
+	transfers
+Date: Fri, 23 Sep 2016 09:25:00 +0200
+Message-ID: <20160923072459.GJ19172@bigcity.dyn.berto.se>
+References: <20160810112219.17964-1-niklas.soderlund+renesas@ragnatech.se>
+	<20160810173710.GK9681@localhost>
+	<20160915162650.GZ13920@localhost>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <CANqRtoQ_3PNobXuSd9hxMw2uZepErLoVadXbq6G4UZXnrPiEpA@mail.gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: iommu@lists.linux-foundation.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20160915162650.GZ13920@localhost>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 20/09/16 16:03, Magnus Damm wrote:
-> Hi Robin,
-> 
-> Thanks for your feedback!!
-> 
-> On Tue, Sep 20, 2016 at 10:18 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->> Hi Magnus,
->>
->> On 20/09/16 13:41, Magnus Damm wrote:
->>> From: Magnus Damm <damm+renesas@opensource.se>
->>>
->>> Update the IPMMU driver to return -ENODEV when adding devices
->>> not hooked up a particular IPMMU instance.
->>>
->>> Currently the ->add_device() callback implementation in the IPMMU
->>> driver returns -ENODEV for devices with no "iommus" property,
->>> however the function ipmmu_find_utlbs() may return -EINVAL.
->>
->> If there were no "iommus" property at all, of_parse_phandle_with_args()
->> should return -ENOENT - that probably does want to be caught and passed
->> back as -ENODEV to imply an untranslated device. On the other hand,
->> -EINVAL would stem from the existence of the property, but in a somehow
->> erroneous manner - other than the "args.np != mmu->dev->of_node" check
->> (which could legitimately fail and be safely ignored if there are
->> multiple IOMMUs in the system), any other reason implies a DT error
->> which probably shouldn't be papered over.
-> 
-> Regarding -ENOENT to -ENODEV, I agree but I believe this case is
-> already handled. The ->add_device() callback seems to be using
-> of_count_phandle_with_args() to check for the presence of "iommus"
-> property before calling ipmmu_find_utlbs(). So for the case with no
-> "iommus" property at all it is returned as -ENODEV as you suggest.
+Hi Vinod,
 
-Ah, right you are, I missed that there was a separate check earlier.
+On 2016-09-15 21:56:51 +0530, Vinod Koul wrote:
+> On Wed, Aug 10, 2016 at 11:07:10PM +0530, Vinod Koul wrote:
+> > On Wed, Aug 10, 2016 at 01:22:13PM +0200, Niklas S=F6derlund wrote:
+> > > Hi,
+> > > =
 
-> The ->add_device() callback has the ret variable initialised to
-> -ENODEV by default. In case there is only one IPMMU device on the
-> ipmmu_device list and it matches the struct device passed to the
-> ipmmu_add_device() function then all is fine. However when there are
-> more than one IPMMU device on the ipmmu_device list then
-> ipmmu_find_utlbs() may return -EINVAL. Judging by the code this seems
-> to happen when the order of the IPMMU devices on the "iommus" property
-> does not match the IPMMU order on the ipmmu_device list.
-> 
-> Hm, I wonder if all this should be replaced with ->xlate() somehow?
+> > > This series tries to solve the problem with DMA with device registers
+> > > (MMIO registers) that are behind an IOMMU for the rcar-dmac driver. A
+> > > recent patch '9575632 (dmaengine: make slave address physical)'
+> > > clarifies that DMA slave address provided by clients is the physical
+> > > address. This puts the task of mapping the DMA slave address from a
+> > > phys_addr_t to a dma_addr_t on the DMA engine.
+> > > =
 
-Ideally, yes - the core code already has most of this covered, so taking
-advantage of it would be good. I think the only slight hiccup is that
-the 32-bit DMA code is then going to call attach_dev() with a domain you
-probably don't want, before you get your add_device() call. Other than
-handling that vs. group-based default domains for 64-bit, though, there
-shouldn't be anything else to special-case, I don't think.
+> > > Without an IOMMU this is easy since the phys_addr_t and dma_addr_t are
+> > > the same and no special care is needed. However if you have a IOMMU y=
+ou
+> > > need to map the DMA slave phys_addr_t to a dma_addr_t using something
+> > > like this.
+> > > =
 
-I'm finally starting to have a look into converting the arch/arm code
-over to use groups and default domains sensibly, but I suspect that's
-ultimately going to have some dependency on the probe deferral stuff,
-rather than introduce the same bus notifier bodge we currently have on
-arm64.
+> > > This series is based on top of v4.8-rc1. And I'm hoping to be able to=
+ collect a
+> > > Ack from Russell King on patch 4/6 that adds the ARM specific part an=
+d then be
+> > > able to take the whole series through the dmaengine tree. If this is =
+not the
+> > > best route I'm more then happy to do it another way.
+> > > =
 
-Robin.
+> > > It's tested on a Koelsch with CONFIG_IPMMU_VMSA and by enabling the
+> > > ipmmu_ds node in r8a7791.dtsi. I verified operation by interacting wi=
+th
+> > > /dev/mmcblk1, i2c and the serial console which are devices behind the
+> > > iommu.
+> > =
 
-> 
-> Thanks,
-> 
-> / magnus
-> 
+> > As I said in last one, the dmaengine parts look fine to me. But to go t=
+hru
+> > dmaengine tree I would need ACK on non dmaengine patches.
+> =
+
+> I havent heard back from this one and I am inclined to merge this one now.
+> If anyone has any objects, please speak up now...
+
+I'm just curios, do you plan to merge this series with Arnds Ack? If not =
+
+is there anything I can do to help move the series in the right =
+
+direction?
+
+> =
+
+> Also ACKs welcome...
+> =
+
+
+-- =
+
+Regards,
+Niklas S=F6derlund
