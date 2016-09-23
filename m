@@ -1,16 +1,11 @@
-From: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-Subject: Re: [PATCH v3 0/2] Exynos IOMMU: proper runtime PM support (use
-	device dependencies)
-Date: Fri, 23 Sep 2016 14:49:20 +0200
-Message-ID: <6114649.EDczdxzVVo@vostro.rjw.lan>
-References: <CGME20160913124917eucas1p23425d2cb1c24e73ae3c2927ec141fd30@eucas1p2.samsung.com>
-	<57E05C68.80804@math.uni-bielefeld.de>
-	<ef63bd8c-1797-cbf7-5c9e-ee2855c9e395@samsung.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu: Work around ARM DMA configuration
+Date: Fri, 23 Sep 2016 14:11:00 +0100
+Message-ID: <f52377644766e4fd5920b8981d9b77872defb436.1474635876.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <ef63bd8c-1797-cbf7-5c9e-ee2855c9e395-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,83 +15,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tuesday, September 20, 2016 10:51:13 AM Marek Szyprowski wrote:
-> Hi All,
-> 
-> On 2016-09-19 23:45, Tobias Jakobi wrote:
-> > I did some tests with the new version today. Sadly the reboot/shutdown
-> > issues are still present.
-> 
-> Thanks for the report. I've managed to reproduce this issue and it is again
-> caused by modifying device on devices_kset list before it will be finally
-> added by device_add(). I thought that the new patchset allows creating links
-> to a device, which has not been yet added to system device list.
-> 
-> Rafael:
-> What is your opinion?
+The 32-bit ARM DMA configuration code predates the IOMMU core's default
+domain functionality, and instead relies on allocating its own domains
+and attaching any devices using the generic IOMMU binding to them.
+Unfortunately, it does this relatively early on in the creation of the
+device, before we've seen our add_device callback, which leads us to
+attempt to operate on a half-configured master.
 
-Well, this is a problem. :-)
+To avoid a crash, check for this situation on attach, but refuse to
+play, as there's nothing we can do. This at least allows VFIO to keep
+working for people who update their 32-bit DTs to the generic binding,
+albeit with a few (innocuous) warnings from the DMA layer on boot.
 
-> Should it be allowed to create a link to device, which
-> has not yet been added to system device list by device_add()?
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-While it would be easy to require both the consumer and producer devices to
-be registered for creating a link between them, that would just make it harder
-to use links in the first place.
-
-So ideally, it should be possible to create links between devices before
-registering them, but since I didn't take that into account in the current
-patch series, some quite substantial changes are needed to cover that.
-
-Additional link states come to mind, but then the "stateless" links are
-affected by this problem too.
-
-> My code used to do that, because IOMMUs are configured from 
-> of_platform_device_create_pdata()
-> of_dma_configure() of_iommu_configure(), which happens before device_add().
-> 
-> To solve the reported corruption of devices_kset list, following change is
-> needed:
-> 
-> diff --git a/drivers/base/core.c b/drivers/base/core.c
-> index aa8196508db9..4542ba9f60d4 100644
-> --- a/drivers/base/core.c
-> +++ b/drivers/base/core.c
-> @@ -1039,11 +1039,18 @@ static void devices_kset_move_after(struct 
-> device *deva, struct device *devb)
->    */
->   void devices_kset_move_last(struct device *dev)
->   {
-> +       struct device *d;
-> +
->          if (!devices_kset)
->                  return;
->          pr_debug("devices_kset: Moving %s to end of list\n", 
-> dev_name(dev));
->          spin_lock(&devices_kset->list_lock);
-> -       list_move_tail(&dev->kobj.entry, &devices_kset->list);
-> +       list_for_each_entry(d, &devices_kset->list, kobj.entry) {
-> +               if (d == dev) {
-> +                       list_move_tail(&dev->kobj.entry, 
-> &devices_kset->list);
-> +                       break;
-> +               }
-> +       }
->          spin_unlock(&devices_kset->list_lock);
->   }
-> 
-> 
-> If you think that links can be created only to a device, which has been 
-> fully
-> added to the system, I will register a bus notifier and create a link on 
-> consumers
-> device probe then.
-
-That would be a workaround for a coverage gap, so not particularly attractive.
-
-Thanks,
-Rafael
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index c841eb7a1a74..3af7f8f62d0a 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1228,6 +1228,16 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		return -ENXIO;
+ 	}
+ 
++	/*
++	 * FIXME: The arch/arm DMA API code tries to attach devices to its own
++	 * domains between of_xlate() and add_device() - we have no way to cope
++	 * with that, so until ARM gets converted to rely on groups and default
++	 * domains, just say no (but more politely than by dereferencing NULL).
++	 * This should be at least a WARN_ON once that's sorted.
++	 */
++	if (!fwspec->iommu_priv)
++		return -ENODEV;
++
+ 	smmu = fwspec_smmu(fwspec);
+ 	/* Ensure that the domain is finalised */
+ 	ret = arm_smmu_init_domain_context(domain, smmu);
+-- 
+2.8.1.dirty
