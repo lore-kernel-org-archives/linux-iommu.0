@@ -1,121 +1,52 @@
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCH v3 0/2] Exynos IOMMU: proper runtime PM support (use device dependencies)
-Date: Mon, 26 Sep 2016 14:34:21 +0200
-Message-ID: <1958329.ZbBNWMVSoR@vostro.rjw.lan>
-References: <CGME20160913124917eucas1p23425d2cb1c24e73ae3c2927ec141fd30@eucas1p2.samsung.com> <1514800.L7P1tHiLfo@vostro.rjw.lan> <3c1016f0-fa8d-0874-adfc-4cb9cfad3f02@samsung.com>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCHv9 0/6] dmaengine: rcar-dmac: add iommu support for slave
+ transfers
+Date: Mon, 26 Sep 2016 22:17:22 +0530
+Message-ID: <20160926164722.GB2467@localhost>
+References: <20160810112219.17964-1-niklas.soderlund+renesas@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <3c1016f0-fa8d-0874-adfc-4cb9cfad3f02@samsung.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Lukas Wunner <lukas@wunner.de>, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <k.kozlowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Mark Brown <broonie@kernel.org>, "Luis R. Rodriguez" <mcgrof@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Kevin Hilman <khilman@kernel.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160810112219.17964-1-niklas.soderlund+renesas@ragnatech.se>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas@ragnatech.se>
+Cc: linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, linux@armlinux.org.uk, hch@infradead.org, dan.j.williams@intel.com, robin.murphy@arm.com, laurent.pinchart@ideasonboard.com, linus.walleij@linaro.org, arnd@arndb.de
 List-Id: iommu@lists.linux-foundation.org
 
-On Monday, September 26, 2016 10:15:24 AM Marek Szyprowski wrote:
-> Hi Rafael,
+On Wed, Aug 10, 2016 at 01:22:13PM +0200, Niklas Söderlund wrote:
+> Hi,
 > 
+> This series tries to solve the problem with DMA with device registers
+> (MMIO registers) that are behind an IOMMU for the rcar-dmac driver. A
+> recent patch '9575632 (dmaengine: make slave address physical)'
+> clarifies that DMA slave address provided by clients is the physical
+> address. This puts the task of mapping the DMA slave address from a
+> phys_addr_t to a dma_addr_t on the DMA engine.
 > 
-> On 2016-09-24 03:25, Rafael J. Wysocki wrote:
-> > On Friday, September 23, 2016 03:50:02 PM Lukas Wunner wrote:
-> >> On Fri, Sep 23, 2016 at 02:49:20PM +0200, Rafael J. Wysocki wrote:
-> >>> On Tuesday, September 20, 2016 10:51:13 AM Marek Szyprowski wrote:
-> >>>> On 2016-09-19 23:45, Tobias Jakobi wrote:
-> >>>>> I did some tests with the new version today. Sadly the reboot/shutdown
-> >>>>> issues are still present.
-> >>>> Thanks for the report. I've managed to reproduce this issue and it is again
-> >>>> caused by modifying device on devices_kset list before it will be finally
-> >>>> added by device_add(). I thought that the new patchset allows creating
-> >>>> links to a device, which has not been yet added to system device list.
-> >> Hm, Marek, why isn't it possible to set up the links from the consumer's
-> >> ->probe hook in this case?
+> Without an IOMMU this is easy since the phys_addr_t and dma_addr_t are
+> the same and no special care is needed. However if you have a IOMMU you
+> need to map the DMA slave phys_addr_t to a dma_addr_t using something
+> like this.
 > 
-> Because consumers are unaware of the IOMMU presence, so they are also 
-> unaware
-> of the links that have to be created.
+> This series is based on top of v4.8-rc1. And I'm hoping to be able to collect a
+> Ack from Russell King on patch 4/6 that adds the ARM specific part and then be
+> able to take the whole series through the dmaengine tree. If this is not the
+> best route I'm more then happy to do it another way.
 > 
-> >>>> Should it be allowed to create a link to device, which
-> >>>> has not yet been added to system device list by device_add()?
-> >>> While it would be easy to require both the consumer and producer devices to
-> >>> be registered for creating a link between them, that would just make it
-> >>> harder to use links in the first place.
-> >>>
-> >>> So ideally, it should be possible to create links between devices before
-> >>> registering them, but since I didn't take that into account in the current
-> >>> patch series, some quite substantial changes are needed to cover that.
-> >>>
-> >>> Additional link states come to mind, but then the "stateless" links are
-> >>> affected by this problem too.
-> >> device_link_add() could be changed to call device_reorder_to_tail()
-> >> only if device_is_registered(consumer) returns true.
-> >>
-> >> That's an inline function defined in <linux/device.h> which returns
-> >> dev->kobj.state_in_sysfs, a flag which is set in kobject_add().
-> > I know what that function is, but using it alone is not sufficient,
-> > because dev->kobj.state_in_sysfs is set before the device is added to
-> > dpm_list.
+> It's tested on a Koelsch with CONFIG_IPMMU_VMSA and by enabling the
+> ipmmu_ds node in r8a7791.dtsi. I verified operation by interacting with
+> /dev/mmcblk1, i2c and the serial console which are devices behind the
+> iommu.
 > 
-> I found that checking for dev->p was enough to check if device has been
-> added to system or not, but this seems to be some kind of ugly workaround:
-> 
-> diff --git a/drivers/base/core.c b/drivers/base/core.c
-> index 4542ba9f60d4..780495918b53 100644
-> --- a/drivers/base/core.c
-> +++ b/drivers/base/core.c
-> @@ -180,9 +180,11 @@ struct device_link *device_link_add(struct device 
-> *consumer,
->           * It is necessary to hold dpm_list locked throughout all that 
-> or else
->           * we may end up suspending with a wrong ordering of it.
->           */
-> -       device_pm_lock();
-> -       device_reorder_to_tail(consumer, NULL);
-> -       device_pm_unlock();
-> +       if (consumer->p) {
-> +               device_pm_lock();
-> +               device_reorder_to_tail(consumer, NULL);
-> +               device_pm_unlock();
-> +       }
+> Furthermore I have audited to the best of my ability all call paths
+> involved to make sure that the dma_addr_t obtained from
+> dma_map_resource() to is not used in a way where it would be expected
+> for the mapping to be RAM (have a struct page). Many thanks to Christoph
+> Hellwig and Laurent Pinchart for there input in this effort.
 
-This still is somewhat racy, because the device may not be in dpm_list yet
-even if consumer->p is set.
+Applied, thanks
 
-There needs to be something checked and set under device_pm_lock() to avoid
-that race.
-
-Let me add it to the patchset and we'll see.
-
-> 
->          list_add_tail_rcu(&link->s_node, &supplier->links_to_consumers);
->          list_add_tail_rcu(&link->c_node, &consumer->links_to_suppliers);
-> 
-> 
-> >
-> >> Then device_add() would have to check if any links are already
-> >> set up and reorder the consumer behind the suppliers.
-> >>
-> >> Doesn't seem to be *that* complex, but probably I'm missing something,
-> >> this is just off the cuff...
-> > There are some cases to consider and some races to avoid AFAICS.
-> >
-> > It all gets a lot simpler if device_link_add() is allowed to return NULL when
-> > the supplier device passed to it has not been registered yet.  That looks like
-> > a reasonable thing to do to me, but I wonder if someone has a use case in which
-> > it would be a substantial limitation.
-> 
-> Hmmm, you are talking here about the supplier, but my case is that 
-> supplier is
-> already registered and probed, but the consumer is about to be created. 
-
-Right.
-
-> If you
-> think that supporting such case makes no sense,
-
-I think that it does make sense.
-
-I only was wondering if that was going to be sufficient. :-)
-
-Thanks,
-Rafael
+-- 
+~Vinod
