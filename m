@@ -1,7 +1,8 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 10/11] iommu/arm-smmu: Do not advertise IOMMU_CAP_INTR_REMAP
-Date: Tue, 27 Sep 2016 20:48:37 +0000
-Message-ID: <1475009318-2617-11-git-send-email-eric.auger@redhat.com>
+Subject: [RFC 08/11] vfio/type1: Sets the IOVA window in case MSI IOVA need to
+	be allocated
+Date: Tue, 27 Sep 2016 20:48:35 +0000
+Message-ID: <1475009318-2617-9-git-send-email-eric.auger@redhat.com>
 References: <1475009318-2617-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,51 +22,39 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Do not advertise IOMMU_CAP_INTR_REMAP for arm-smmu(-v3). Indeed the
-irq_remapping capability is abstracted on irqchip side for ARM as
-opposed to Intel IOMMU featuring IRQ remapping HW.
-
-So for the time being assignement is considered as unsafe on ARM,
-until we get an accurate description of whether the MSI controllers
-are downstream to smmus.
-
-This commit affects platform and PCIe device assignment use cases.
+In case the IOMMU translates MSI, MSI IOVA will need to be transparently
+allocated by the kernel in unused GPA space. Let's initialize a DMA domain
+where some slots will be reserved "unmanaged" slots and rest is left
+available for IOVA allocation.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
 ---
----
- drivers/iommu/arm-smmu-v3.c | 3 ++-
- drivers/iommu/arm-smmu.c    | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/vfio/vfio_iommu_type1.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index e825679..c86ba84 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1371,7 +1371,8 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- 	case IOMMU_CAP_CACHE_COHERENCY:
- 		return true;
- 	case IOMMU_CAP_INTR_REMAP:
--		return true; /* MSIs are just memory writes */
-+		/* interrupt translation handled at MSI controller level */
-+		return false;
- 	case IOMMU_CAP_NOEXEC:
- 		return true;
- 	default:
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 707c09b..7af1dd0 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1359,7 +1359,8 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- 		 */
- 		return true;
- 	case IOMMU_CAP_INTR_REMAP:
--		return true; /* MSIs are just memory writes */
-+		/* interrupt translation handled at MSI controller level */
-+		return false;
- 	case IOMMU_CAP_NOEXEC:
- 		return true;
- 	default:
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 2ba1942..ad08fd0 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -36,6 +36,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/vfio.h>
+ #include <linux/workqueue.h>
++#include <linux/dma-iommu.h>
+ 
+ #define DRIVER_VERSION  "0.2"
+ #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
+@@ -829,6 +830,11 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 
+ 	vfio_test_domain_fgsp(domain);
+ 
++	/* sets the IOVA window */
++	if (iommu_capable(bus, IOMMU_CAP_TRANSLATE_MSI) &&
++	    iommu_get_dma_msi_region_cookie(domain->domain, 0, ULONG_MAX))
++		goto out_detach;
++
+ 	/* replay mappings on new domains */
+ 	ret = vfio_iommu_replay(iommu, domain);
+ 	if (ret)
 -- 
 1.9.1
