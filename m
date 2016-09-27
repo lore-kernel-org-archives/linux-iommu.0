@@ -1,14 +1,12 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 01/11] iommu: Add iommu_domain_msi_geometry and
-	DOMAIN_ATTR_MSI_GEOMETRY
-Date: Tue, 27 Sep 2016 20:48:28 +0000
-Message-ID: <1475009318-2617-2-git-send-email-eric.auger@redhat.com>
-References: <1475009318-2617-1-git-send-email-eric.auger@redhat.com>
+Subject: [RFC 00/11] KVM PCIe/MSI passthrough on ARM/ARM64: re-design with
+	transparent MSI mapping
+Date: Tue, 27 Sep 2016 20:48:27 +0000
+Message-ID: <1475009318-2617-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1475009318-2617-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,90 +20,79 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce a new DOMAIN_ATTR_MSI_GEOMETRY domain attribute. It enables
-to query the aperture of the IOVA window dedicated to MSIs.
+Following Robin's series [1] addressing MSI IOMMU mapping for devices
+attached to a DMA ops domain, my previous 3 part series (v12) lost most
+of its consistency. msi-iommu API role now is handled at dma-iommu level
+while MSI doorbell registration API only is used for security assessment.
+Also MSI layer part is not needed anymore since mapping directly is
+done in the compose callback.
 
-x86 IOMMUs will typically expose an MSI aperture matching the 1MB
-region [FEE0_0000h - FEF0_000h] corresponding to the APIC configuration
- space and no support for MSI translation.
+Here I propose an alternative approach, based on [1]. This approach
+was discussed at the KVM forum with Christoffer Dall and Marc Zyngier,
+and was suggested by Christoffer. The idea is we could let the iommu
+layer transparently allocate MSI frame IOVAs in the holes left between
+UNMANAGED iova slots, set by the iommu-api user.
 
-On ARM, arm-smmu(-v3) translate MSIs. Aperture is not set indicating
-MSI IOVA can live everywhere in the IOVA address space
+This series introduces a new IOMMU domain type that allows mixing of
+unmanaged and managed IOVA slots. We define an IOVA domain whose
+aperture covers the GPA address range. Each time the IOMMU-API
+user maps iova/pa, we reserve the IOVA range to prevent the iova
+allocator from using it for MSI mapping.
 
-Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Suggested-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/iommu.c |  5 +++++
- include/linux/iommu.h | 13 +++++++++++++
- 2 files changed, 18 insertions(+)
+This simplifies the user part which does not need anymore to provide an
+IOVA aperture anymore.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 9a2f196..617cb2b 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1485,6 +1485,7 @@ int iommu_domain_get_attr(struct iommu_domain *domain,
- 			  enum iommu_attr attr, void *data)
- {
- 	struct iommu_domain_geometry *geometry;
-+	struct iommu_domain_msi_geometry *msi_geometry;
- 	bool *paging;
- 	int ret = 0;
- 	u32 *count;
-@@ -1495,6 +1496,10 @@ int iommu_domain_get_attr(struct iommu_domain *domain,
- 		*geometry = domain->geometry;
- 
- 		break;
-+	case DOMAIN_ATTR_MSI_GEOMETRY:
-+		msi_geometry  = data;
-+		*msi_geometry = domain->msi_geometry;
-+		break;
- 	case DOMAIN_ATTR_PAGING:
- 		paging  = data;
- 		*paging = (domain->pgsize_bitmap != 0UL);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 436dc21..ef6e047 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -52,6 +52,11 @@ struct iommu_domain_geometry {
- 	bool force_aperture;       /* DMA only allowed in mappable range? */
- };
- 
-+struct iommu_domain_msi_geometry {
-+	dma_addr_t aperture_start; /* First address usable for MSI IOVA     */
-+	dma_addr_t aperture_end;   /* Last address usable for MSI IOVA      */
-+};
-+
- /* Domain feature flags */
- #define __IOMMU_DOMAIN_PAGING	(1U << 0)  /* Support for iommu_map/unmap */
- #define __IOMMU_DOMAIN_DMA_API	(1U << 1)  /* Domain for use in DMA-API
-@@ -83,6 +88,7 @@ struct iommu_domain {
- 	iommu_fault_handler_t handler;
- 	void *handler_token;
- 	struct iommu_domain_geometry geometry;
-+	struct iommu_domain_msi_geometry msi_geometry;
- 	void *iova_cookie;
- };
- 
-@@ -108,6 +114,7 @@ enum iommu_cap {
- 
- enum iommu_attr {
- 	DOMAIN_ATTR_GEOMETRY,
-+	DOMAIN_ATTR_MSI_GEOMETRY,
- 	DOMAIN_ATTR_PAGING,
- 	DOMAIN_ATTR_WINDOWS,
- 	DOMAIN_ATTR_FSL_PAMU_STASH,
-@@ -352,6 +359,12 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- void iommu_fwspec_free(struct device *dev);
- int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
- 
-+static inline bool iommu_domain_msi_aperture_valid(struct iommu_domain *domain)
-+{
-+	return (domain->msi_geometry.aperture_end >
-+		domain->msi_geometry.aperture_start);
-+}
-+
- #else /* CONFIG_IOMMU_API */
- 
- struct iommu_ops {};
+The current series does not address the interrupt safety assessment,
+which may be considered as a separate issue. Currently the assignemnt
+is considered as unsafe, on ARM (even with a GICv3 ITS).
+
+Please let me know what is your feeling wrt this alternative approach.
+
+dependency:
+[1] [PATCH v7 00/22] Generic DT bindings for PCI IOMMUs and ARM SMMU
+http://www.spinics.net/lists/arm-kernel/msg531110.html
+
+Best Regards
+
+Eric
+
+Testing:
+- functional on ARM64 AMD Overdrive HW (single GICv2m frame). Lack of contexts
+  prevents me from testing multiple assignment.
+
+Git: complete series available at
+https://github.com/eauger/linux/tree/generic-v7-pcie-passthru-redesign-rfc
+previous: https://github.com/eauger/linux/tree/v4.7-rc7-passthrough-v12
+
+the above branch includes a temporary patch to work around a ThunderX pci
+bus reset crash (which I think unrelated to this series):
+"vfio: pci: HACK! workaround thunderx pci_try_reset_bus crash"
+Do not take this one for other platforms.
+
+
+Eric Auger (10):
+  iommu: Add iommu_domain_msi_geometry and DOMAIN_ATTR_MSI_GEOMETRY
+  iommu: Introduce IOMMU_CAP_TRANSLATE_MSI capability
+  iommu: Introduce IOMMU_DOMAIN_MIXED
+  iommu/dma: iommu_dma_(un)map_mixed
+  iommu/arm-smmu: Allow IOMMU_DOMAIN_MIXED domain allocation
+  iommu: Use IOMMU_DOMAIN_MIXED typed domain when IOMMU translates MSI
+  vfio/type1: Sets the IOVA window in case MSI IOVA need to be allocated
+  vfio/type1: Reserve IOVAs for IOMMU_DOMAIN_MIXED domains
+  iommu/arm-smmu: Do not advertise IOMMU_CAP_INTR_REMAP
+  iommu/arm-smmu: Advertise IOMMU_CAP_TRANSLATE_MSI
+
+Robin Murphy (1):
+  iommu/dma: Allow MSI-only cookies
+
+ drivers/iommu/arm-smmu-v3.c     |  8 +++-
+ drivers/iommu/arm-smmu.c        |  8 +++-
+ drivers/iommu/dma-iommu.c       | 91 +++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/iommu.c           | 10 ++++-
+ drivers/vfio/vfio_iommu_type1.c | 48 ++++++++++++++++++----
+ include/linux/dma-iommu.h       | 27 ++++++++++++
+ include/linux/iommu.h           | 23 +++++++++++
+ 7 files changed, 203 insertions(+), 12 deletions(-)
+
 -- 
 1.9.1
