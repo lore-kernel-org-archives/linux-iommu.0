@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 05/11] iommu/dma: iommu_dma_(un)map_mixed
-Date: Tue, 27 Sep 2016 20:48:32 +0000
-Message-ID: <1475009318-2617-6-git-send-email-eric.auger@redhat.com>
+Subject: [RFC 09/11] vfio/type1: Reserve IOVAs for IOMMU_DOMAIN_MIXED domains
+Date: Tue, 27 Sep 2016 20:48:36 +0000
+Message-ID: <1475009318-2617-10-git-send-email-eric.auger@redhat.com>
 References: <1475009318-2617-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,108 +21,127 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-iommu_dma_map_mixed and iommu_dma_unmap_mixed operate on
-IOMMU_DOMAIN_MIXED typed domains. On top of standard iommu_map/unmap
-they reserve the IOVA window to prevent the iova allocator to
-allocate in those areas.
+For IOMMU_DOMAIN_MIXED domain types, the user space defines most
+of the IOVA regions (UNMANAGED) and map them. Since we want to allow
+the kernel to allocate spare IOVAs within the holes we need to reserve
+the user space defined IOVA regions.
+
+in vfio_test_domain_fgsp, we keep the original iommu_(un)map since
+the purpose just is to try map/unmap and not to keep it.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/dma-iommu.c | 48 +++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/dma-iommu.h | 18 ++++++++++++++++++
- 2 files changed, 66 insertions(+)
+ drivers/vfio/vfio_iommu_type1.c | 42 ++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 35 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 04bbc85..db21143 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -759,3 +759,51 @@ int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
- 	return 0;
- }
- EXPORT_SYMBOL(iommu_get_dma_msi_region_cookie);
-+
-+int iommu_dma_map_mixed(struct iommu_domain *domain, unsigned long iova,
-+			phys_addr_t paddr, size_t size, int prot)
-+{
-+	struct iova_domain *iovad;
-+	unsigned long lo, hi;
-+	int ret;
-+
-+	if (domain->type != IOMMU_DOMAIN_MIXED)
-+		return -EINVAL;
-+
-+	if (!domain->iova_cookie)
-+		return -EINVAL;
-+
-+	iovad = cookie_iovad(domain);
-+
-+	lo = iova_pfn(iovad, iova);
-+	hi = iova_pfn(iovad, iova + size - 1);
-+	reserve_iova(iovad, lo, hi);
-+	ret = iommu_map(domain, iova, paddr, size, prot);
-+	if (ret)
-+		free_iova(iovad, lo);
-+	return ret;
-+}
-+EXPORT_SYMBOL(iommu_dma_map_mixed);
-+
-+size_t iommu_dma_unmap_mixed(struct iommu_domain *domain, unsigned long iova,
-+			     size_t size)
-+{
-+	struct iova_domain *iovad;
-+	unsigned long lo;
-+	size_t ret;
-+
-+	if (domain->type != IOMMU_DOMAIN_MIXED)
-+		return -EINVAL;
-+
-+	if (!domain->iova_cookie)
-+		return -EINVAL;
-+
-+	iovad = cookie_iovad(domain);
-+	lo = iova_pfn(iovad, iova);
-+
-+	ret = iommu_unmap(domain, iova, size);
-+	if (ret == size)
-+		free_iova(iovad, lo);
-+	return ret;
-+}
-+EXPORT_SYMBOL(iommu_dma_unmap_mixed);
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index 1c55413..f2aa855 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -70,6 +70,12 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
- int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
- 		dma_addr_t base, u64 size);
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index ad08fd0..2d1eede 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -37,6 +37,7 @@
+ #include <linux/vfio.h>
+ #include <linux/workqueue.h>
+ #include <linux/dma-iommu.h>
++#include <linux/iova.h>
  
-+int iommu_dma_map_mixed(struct iommu_domain *domain, unsigned long iova,
-+			phys_addr_t paddr, size_t size, int prot);
-+
-+size_t iommu_dma_unmap_mixed(struct iommu_domain *domain, unsigned long iova,
-+			     size_t size);
-+
- #else
- 
- struct iommu_domain;
-@@ -99,6 +105,18 @@ static inline int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
- 	return -ENODEV;
+ #define DRIVER_VERSION  "0.2"
+ #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
+@@ -255,6 +256,32 @@ static int vaddr_get_pfn(unsigned long vaddr, int prot, unsigned long *pfn)
+ 	return ret;
  }
  
-+int iommu_dma_map_mixed(struct iommu_domain *domain, unsigned long iova,
-+			phys_addr_t paddr, size_t size, int prot)
++static int iommu_dma_map(struct iommu_domain *domain, unsigned long iova,
++			 phys_addr_t paddr, size_t size, int prot)
 +{
-+	return -ENODEV;
++	switch (domain->type) {
++	case IOMMU_DOMAIN_UNMANAGED:
++		return iommu_map(domain, iova, paddr, size, prot);
++	case IOMMU_DOMAIN_MIXED:
++		return iommu_dma_map_mixed(domain, iova, paddr, size, prot);
++	default:
++		return -ENOENT;
++	}
 +}
 +
-+size_t iommu_dma_unmap_mixed(struct iommu_domain *domain, unsigned long iova,
-+			     size_t size)
++static size_t iommu_dma_unmap(struct iommu_domain *domain, unsigned long iova,
++			      size_t size)
 +{
-+	return -ENODEV;
++	switch (domain->type) {
++	case IOMMU_DOMAIN_UNMANAGED:
++		return iommu_unmap(domain, iova, size);
++	case IOMMU_DOMAIN_MIXED:
++		return iommu_dma_unmap_mixed(domain, iova, size);
++	default:
++		return -ENOENT;
++	}
 +}
 +
- #endif	/* CONFIG_IOMMU_DMA */
- #endif	/* __KERNEL__ */
- #endif	/* __DMA_IOMMU_H */
+ /*
+  * Attempt to pin pages.  We really don't want to track all the pfns and
+  * the iommu can only map chunks of consecutive pfns anyway, so get the
+@@ -353,7 +380,7 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
+ 				      struct vfio_domain, next);
+ 
+ 	list_for_each_entry_continue(d, &iommu->domain_list, next) {
+-		iommu_unmap(d->domain, dma->iova, dma->size);
++		iommu_dma_unmap(d->domain, dma->iova, dma->size);
+ 		cond_resched();
+ 	}
+ 
+@@ -379,7 +406,7 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
+ 				break;
+ 		}
+ 
+-		unmapped = iommu_unmap(domain->domain, iova, len);
++		unmapped = iommu_dma_unmap(domain->domain, iova, len);
+ 		if (WARN_ON(!unmapped))
+ 			break;
+ 
+@@ -519,7 +546,7 @@ static int map_try_harder(struct vfio_domain *domain, dma_addr_t iova,
+ 	int ret = 0;
+ 
+ 	for (i = 0; i < npage; i++, pfn++, iova += PAGE_SIZE) {
+-		ret = iommu_map(domain->domain, iova,
++		ret = iommu_dma_map(domain->domain, iova,
+ 				(phys_addr_t)pfn << PAGE_SHIFT,
+ 				PAGE_SIZE, prot | domain->prot);
+ 		if (ret)
+@@ -527,7 +554,7 @@ static int map_try_harder(struct vfio_domain *domain, dma_addr_t iova,
+ 	}
+ 
+ 	for (; i < npage && i > 0; i--, iova -= PAGE_SIZE)
+-		iommu_unmap(domain->domain, iova, PAGE_SIZE);
++		iommu_dma_unmap(domain->domain, iova, PAGE_SIZE);
+ 
+ 	return ret;
+ }
+@@ -539,7 +566,8 @@ static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
+ 	int ret;
+ 
+ 	list_for_each_entry(d, &iommu->domain_list, next) {
+-		ret = iommu_map(d->domain, iova, (phys_addr_t)pfn << PAGE_SHIFT,
++		ret = iommu_dma_map(d->domain, iova,
++				(phys_addr_t)pfn << PAGE_SHIFT,
+ 				npage << PAGE_SHIFT, prot | d->prot);
+ 		if (ret) {
+ 			if (ret != -EBUSY ||
+@@ -554,7 +582,7 @@ static int vfio_iommu_map(struct vfio_iommu *iommu, dma_addr_t iova,
+ 
+ unwind:
+ 	list_for_each_entry_continue_reverse(d, &iommu->domain_list, next)
+-		iommu_unmap(d->domain, iova, npage << PAGE_SHIFT);
++		iommu_dma_unmap(d->domain, iova, npage << PAGE_SHIFT);
+ 
+ 	return ret;
+ }
+@@ -690,7 +718,7 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+ 								 iova + size))
+ 				size += PAGE_SIZE;
+ 
+-			ret = iommu_map(domain->domain, iova, phys,
++			ret = iommu_dma_map(domain->domain, iova, phys,
+ 					size, dma->prot | domain->prot);
+ 			if (ret)
+ 				return ret;
 -- 
 1.9.1
