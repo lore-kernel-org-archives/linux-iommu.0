@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 03/11] iommu: Introduce IOMMU_DOMAIN_MIXED
-Date: Tue, 27 Sep 2016 20:48:30 +0000
-Message-ID: <1475009318-2617-4-git-send-email-eric.auger@redhat.com>
+Subject: [RFC 02/11] iommu: Introduce IOMMU_CAP_TRANSLATE_MSI capability
+Date: Tue, 27 Sep 2016 20:48:29 +0000
+Message-ID: <1475009318-2617-3-git-send-email-eric.auger@redhat.com>
 References: <1475009318-2617-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,51 +21,27 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We introduce a new IOMMU domain type, dubbed IOMMU_DOMAIN_MIXED.
-It is bound to be used as a replacement of IOMMU_DOMAIN_UNMANAGED
-when the IOMMU translates MSI addresses. Such domain hosts
-"unmanaged" reserved IOVA ranges chosen by the iommu-api user,
-dished out as part of alloc_iova. Rest if available for internal
-iova needs such as MSI frame IOVA allocation.
+Introduce a new IOMMU_CAP_TRANSLATE_MSI capability to check whether
+the IOMMU translates MSI write transactions. This capability will be
+checked on domain allocation to check the type of the domain that
+shall be used.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- include/linux/iommu.h | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ include/linux/iommu.h | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 5c2673a..44fe213 100644
+index ef6e047..5c2673a 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -62,6 +62,9 @@ struct iommu_domain_msi_geometry {
- #define __IOMMU_DOMAIN_DMA_API	(1U << 1)  /* Domain for use in DMA-API
- 					      implementation              */
- #define __IOMMU_DOMAIN_PT	(1U << 2)  /* Domain is identity mapped   */
-+#define __IOMMU_DOMAIN_MIXED	(1U << 3)  /* Domain mixing unmanaged and
-+					    * managed IOVAS
-+					    */
+@@ -97,6 +97,7 @@ enum iommu_cap {
+ 					   transactions */
+ 	IOMMU_CAP_INTR_REMAP,		/* IOMMU supports interrupt isolation */
+ 	IOMMU_CAP_NOEXEC,		/* IOMMU_NOEXEC flag */
++	IOMMU_CAP_TRANSLATE_MSI,	/* IOMMU translates MSI transactions */
+ };
  
  /*
-  * This are the possible domain-types
-@@ -71,6 +74,9 @@ struct iommu_domain_msi_geometry {
-  *	IOMMU_DOMAIN_IDENTITY	- DMA addresses are system physical addresses
-  *	IOMMU_DOMAIN_UNMANAGED	- DMA mappings managed by IOMMU-API user, used
-  *				  for VMs
-+ *	IOMMU_DOMAIN_MIXED	- Most DMA mappings are managed by IOMMU-API
-+ *				  users and holes are left available for
-+				  internal use such as MSI frame IOVA allocation
-  *	IOMMU_DOMAIN_DMA	- Internally used for DMA-API implementations.
-  *				  This flag allows IOMMU drivers to implement
-  *				  certain optimizations for these domains
-@@ -80,6 +86,9 @@ struct iommu_domain_msi_geometry {
- #define IOMMU_DOMAIN_UNMANAGED	(__IOMMU_DOMAIN_PAGING)
- #define IOMMU_DOMAIN_DMA	(__IOMMU_DOMAIN_PAGING |	\
- 				 __IOMMU_DOMAIN_DMA_API)
-+#define IOMMU_DOMAIN_MIXED	(__IOMMU_DOMAIN_MIXED |		\
-+				 __IOMMU_DOMAIN_PAGING |	\
-+				 __IOMMU_DOMAIN_DMA_API)
- 
- struct iommu_domain {
- 	unsigned type;
 -- 
 1.9.1
