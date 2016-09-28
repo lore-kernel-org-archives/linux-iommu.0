@@ -1,13 +1,16 @@
-From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 11/11] iommu/arm-smmu: Advertise IOMMU_CAP_TRANSLATE_MSI
-Date: Tue, 27 Sep 2016 20:48:38 +0000
-Message-ID: <1475009318-2617-12-git-send-email-eric.auger@redhat.com>
-References: <1475009318-2617-1-git-send-email-eric.auger@redhat.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 5/8] iommu/amd: copy old trans table from old kernel
+Date: Wed, 28 Sep 2016 09:37:02 +0800
+Message-ID: <20160928013702.GH14155@x1.redhat.com>
+References: <1473951806-25511-1-git-send-email-bhe@redhat.com>
+	<1473951806-25511-6-git-send-email-bhe@redhat.com>
+	<20160920124031.GD3541@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1475009318-2617-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20160920124031.GD3541-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,45 +20,59 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-arm-smmu and arm-smmu-v3 do translate MSI write transactions
-emitted by downstream devices. Advertise this property through
-the capable operation.
+Hi Joerg,
 
-Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 2 ++
- drivers/iommu/arm-smmu.c    | 2 ++
- 2 files changed, 4 insertions(+)
+On 09/20/16 at 02:40pm, Joerg Roedel wrote:
+> > +	if ( !is_pre_enabled) {
+> > +		for_each_iommu(iommu)
+> > +			early_enable_iommu(iommu);
+> > +	} else {
+> > +		if (copy_dev_tables()) {
+> > +			pr_err("Failed to copy DEV table from previous kernel.\n");
+> > +			/*
+> > +			 * If failed to copy dev tables from old kernel, continue to proceed
+> > +			 * as it does in normal kernel.
+> > +			 */
+> > +			for_each_iommu(iommu) {
+> > +				clear_translation_pre_enabled(iommu);
+> > +				early_enable_iommu(iommu);
+> > +			}
+> > +		} else {
+> > +			pr_info("Copied DEV table from previous kernel.\n");
+> > +			for_each_iommu(iommu) {
+> > +				iommu_feature_disable(iommu, CONTROL_CMDBUF_EN);
+> > +		                iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN);
+> 
+> Could you move that into new helpers (iommu_disable_command_buffer...)?
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index c86ba84..431ba8c 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1375,6 +1375,8 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- 		return false;
- 	case IOMMU_CAP_NOEXEC:
- 		return true;
-+	case IOMMU_CAP_TRANSLATE_MSI:
-+		return true;
- 	default:
- 		return false;
- 	}
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7af1dd0..b862a1c 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1363,6 +1363,8 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- 		return false;
- 	case IOMMU_CAP_NOEXEC:
- 		return true;
-+	case IOMMU_CAP_TRANSLATE_MSI:
-+		return true;
- 	default:
- 		return false;
- 	}
--- 
-1.9.1
+Did you mean wraping iommu_feature_disable(iommu, CONTROL_CMDBUF_EN) into a
+helper function like iommu_disable_command_buffer(), and wraping
+iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN) into
+iommu_disable_event_buffer()?
+
+I retest with not disabling command buffer and event log here, it works
+on amd iommu v1 and v2 systems. So if I understand your comment
+correctly, there's no need to add "iommu_feature_disable(iommu,
+CONTROL_CMDBUF_EN)"  and "iommu_feature_disable(iommu,
+CONTROL_EVT_LOG_EN)" here. I remember I added them here because more
+IO_PAGE_FAULT messages are printed without them. But now it seems not to
+related to them. So I will remove above two lines of code.
+
+> 
+> > +		                iommu_enable_command_buffer(iommu);
+> > +		                iommu_enable_event_buffer(iommu);
+> > +		                iommu_set_device_table(iommu);
+> > +		                iommu_flush_all_caches(iommu);
+> > +			}
+> > +		}
+> > +	}
+> >  }
+> >  
+> >  static void enable_iommus_v2(void)
+> > -- 
+> > 2.5.5
+> > 
