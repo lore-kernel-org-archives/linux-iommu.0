@@ -1,49 +1,35 @@
-From: =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
-Subject: [PATCH 1/2] dma-mapping: fix ia64 build, use PHYS_PFN
-Date: Thu, 29 Sep 2016 12:02:39 +0200
-Message-ID: <20160929100240.7955-2-niklas.soderlund@ragnatech.se>
+From: Vinod Koul <vinod.koul@intel.com>
+Subject: Re: [PATCH 0/2] dma-mapping: fix ia64 and m32r build error and
+ warnings
+Date: Thu, 29 Sep 2016 17:40:04 +0530
+Message-ID: <20160929121004.GT2467@localhost>
 References: <20160929100240.7955-1-niklas.soderlund@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20160929100240.7955-1-niklas.soderlund-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20160929100240.7955-1-niklas.soderlund@ragnatech.se>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund@ragnatech.se>
+Cc: linux-renesas-soc@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org, robin.murphy@arm.com, arnd@arndb.de, Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas@ragnatech.se>
 List-Id: iommu@lists.linux-foundation.org
 
-RnJvbTogTmlrbGFzIFPDtmRlcmx1bmQgPG5pa2xhcy5zb2Rlcmx1bmQrcmVuZXNhc0ByYWduYXRl
-Y2guc2U+CgprYnVpbGQgdGVzdCByb2JvdCByZXBvcnRzOgoKICAgSW4gZmlsZSBpbmNsdWRlZCBm
-cm9tIGluY2x1ZGUvbGludXgvc2tidWZmLmg6MzQ6MCwKICAgICAgICAgICAgICAgICAgICBmcm9t
-IGluY2x1ZGUvbGludXgvdGNwLmg6MjEsCiAgICAgICAgICAgICAgICAgICAgZnJvbSBkcml2ZXJz
-L25ldC9ldGhlcm5ldC9hbWQveGdiZS94Z2JlLWRydi5jOjExOToKICAgaW5jbHVkZS9saW51eC9k
-bWEtbWFwcGluZy5oOiBJbiBmdW5jdGlvbiAnZG1hX21hcF9yZXNvdXJjZSc6Cj4+IGluY2x1ZGUv
-bGludXgvZG1hLW1hcHBpbmcuaDoyNzQ6MjI6IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBv
-ZiBmdW5jdGlvbiAnX19waHlzX3RvX3BmbicgWy1XZXJyb3I9aW1wbGljaXQtZnVuY3Rpb24tZGVj
-bGFyYXRpb25dCiAgICAgdW5zaWduZWQgbG9uZyBwZm4gPSBfX3BoeXNfdG9fcGZuKHBoeXNfYWRk
-cik7CiAgICAgICAgICAgICAgICAgICAgICAgICBefn5+fn5+fn5+fn5+CgppYTY0IGRvZXMgbm90
-IHByb3ZpZGUgX19waHlzX3RvX3BmbigpLCB1c2UgdGhlIFBIWVNfUEZOKCkgYWxpYXMuCgpTaWdu
-ZWQtb2ZmLWJ5OiBOaWtsYXMgU8O2ZGVybHVuZCA8bmlrbGFzLnNvZGVybHVuZCtyZW5lc2FzQHJh
-Z25hdGVjaC5zZT4KLS0tCiBpbmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmggfCAyICstCiAxIGZp
-bGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9p
-bmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmggYi9pbmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmgK
-aW5kZXggNmUwMGM3Zi4uZmY3Yzg3ZiAxMDA2NDQKLS0tIGEvaW5jbHVkZS9saW51eC9kbWEtbWFw
-cGluZy5oCisrKyBiL2luY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaApAQCAtMjcxLDcgKzI3MSw3
-IEBAIHN0YXRpYyBpbmxpbmUgZG1hX2FkZHJfdCBkbWFfbWFwX3Jlc291cmNlKHN0cnVjdCBkZXZp
-Y2UgKmRldiwKIAkJCQkJICB1bnNpZ25lZCBsb25nIGF0dHJzKQogewogCXN0cnVjdCBkbWFfbWFw
-X29wcyAqb3BzID0gZ2V0X2RtYV9vcHMoZGV2KTsKLQl1bnNpZ25lZCBsb25nIHBmbiA9IF9fcGh5
-c190b19wZm4ocGh5c19hZGRyKTsKKwl1bnNpZ25lZCBsb25nIHBmbiA9IFBIWVNfUEZOKHBoeXNf
-YWRkcik7CiAJZG1hX2FkZHJfdCBhZGRyOwogCiAJQlVHX09OKCF2YWxpZF9kbWFfZGlyZWN0aW9u
-KGRpcikpOwotLSAKMi45LjMKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
-Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
-b21tdQ==
+On Thu, Sep 29, 2016 at 12:02:38PM +0200, Niklas Söderlund wrote:
+> From: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+> 
+> Hi Vindo,
+
+:(
+
+> 
+> This small series fixes the build error and warnings for ia64 and m32r 
+> which kbuild test robot found and where introduced in the series 
+> '[PATCHv9 0/6] dmaengine: rcar-dmac: add iommu support for slave 
+> transfers'.
+
+Applied both
+
+Thanks
+-- 
+~Vinod
