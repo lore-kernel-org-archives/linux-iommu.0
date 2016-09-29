@@ -1,127 +1,44 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH 1/1] arch/x86: Add CONFIG_IOMMU_DEFAULT_PT for iommu=pt
-Date: Thu, 29 Sep 2016 13:01:22 -0600
-Message-ID: <20160929130122.401aa85d@t450s.home>
-References: <2ebef311-b346-f3ed-2fca-ce4715b84c9d@brocade.com>
-	<20160929123115.7afcc88e@t450s.home>
-	<66f8f023-41a6-17e0-2df0-190cf5edb7ec@brocade.com>
+From: =?UTF-8?q?Niklas=20S=C3=B6derlund?=
+        <niklas.soderlund+renesas@ragnatech.se>
+Subject: [PATCH] dma-debug: fix ia64 build, use PHYS_PFN
+Date: Thu, 29 Sep 2016 21:59:15 +0200
+Message-ID: <20160929195915.22963-1-niklas.soderlund+renesas@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <66f8f023-41a6-17e0-2df0-190cf5edb7ec-43mecJUBy8ZBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Glenn Serre <gserre-yk0uUPyXz1dBDgjK7y7TUQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: vinod.koul@intel.com, linux-renesas-soc@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: robin.murphy@arm.com, arnd@arndb.de, =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 29 Sep 2016 11:41:53 -0700
-Glenn Serre <gserre-yk0uUPyXz1dBDgjK7y7TUQ@public.gmane.org> wrote:
+kbuild test robot reports:
 
-> Good morning,
-> 
-> On 09/29/2016 11:31 AM, Alex Williamson wrote:
-> > On Thu, 29 Sep 2016 09:58:55 -0700
-> > Glenn Serre <gserre-43mecJUBy8ZBDgjK7y7TUQ@public.gmane.org> wrote:
-> >  
-> >> Add CONFIG_IOMMU_DEFAULT_PT for iommu=pt
-> >>
-> >> Allow default to iommu=pt without adding to command line.
-> >> Add iommu=nopt to turn off default.
-> >>
-> >> Signed-off-by: Glenn Serre <gserre-43mecJUBy8ZBDgjK7y7TUQ@public.gmane.org>
-> >> ---
-> >>   Documentation/kernel-parameters.txt | 3 ++-
-> >>   arch/x86/Kconfig                    | 7 +++++++
-> >>   arch/x86/kernel/pci-dma.c           | 6 ++++++
-> >>   3 files changed, 15 insertions(+), 1 deletion(-)
-> >>
-> >> --- a/Documentation/kernel-parameters.txt
-> >> +++ b/Documentation/kernel-parameters.txt
-> >> @@ -1607,7 +1607,8 @@
-> >>   		nomerge
-> >>   		forcesac
-> >>   		soft
-> >> -		pt		[x86, IA-64]
-> >> +		pt		[x86]
-> >> +		nopt		[x86]
-> >>   		nobypass	[PPC/POWERNV]
-> >>   			Disable IOMMU bypass, using IOMMU for PCI devices.
-> >>
-> >> --- a/arch/x86/Kconfig
-> >> +++ b/arch/x86/Kconfig
-> >> @@ -845,6 +845,15 @@
-> >>   	def_bool y
-> >>   	depends on CALGARY_IOMMU || GART_IOMMU || SWIOTLB || AMD_IOMMU
-> >>
-> >> +config IOMMU_DEFAULT_PT
-> >> +	int "Default iommu pt value (0-1)"
-> >> +	range 0 1
-> >> +	default "0"
-> >> +	prompt "Set to 1 to default to iommu=pt"  
-> >
-> > An integer that can be either zero or one... IOW a bool.  There's
-> > support for bools in Kconfig.  
-> 
-> We had discussion about that during in-house code review.  My initial 
-> take was bool like INTEL_IOMMU_DEFAULT_ON, but reviewers thought the 
-> current "right" way was range 0-1 like MTRR_SANITIZER_ENABLE_DEFAULT to 
-> avoid an ifdef, else, endif:
-> 
-> #ifdef CONFIG_IOMMU_DEFAULT_PT
-> int iommu_pass_through __read_mostly = 1;
-> #else
-> int iommu_pass_through __read_mostly;
-> #endif /* CONFIG_IOMMU_DEFAULT_PT */
-> 
-> I'll go with whatever y'all prefer.
+   lib/dma-debug.c: In function 'debug_dma_map_resource':
+>> lib/dma-debug.c:1541:16: error: implicit declaration of function '__phys_to_pfn' [-Werror=implicit-function-declaration]
+     entry->pfn  = __phys_to_pfn(addr);
+                   ^~~~~~~~~~~~~
 
-Ok, I didn't really think it all the way through I guess.  Still, my
-opinion is that it's strange to have a yes/no Kconfig option take a 0/1
-parameter and I'd probably rather have the slightly uglier code for the
-benefit of a more intuitive Kconfig.  Maybe others disagree.  Thanks,
+ia64 does not provide __phys_to_pfn(), use the PHYS_PFN() alias.
 
-Alex
+Fixes: 0e74b34dfc3318bf ("dma-debug: add support for resource mappings")
+Signed-off-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+---
+ lib/dma-debug.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> >  
-> >> +	help
-> >> +	  Setting this option to 1 will set iommu passthrough (iommu=pt)
-> >> +	  by default.  Use iommu=nopt to override.
-> >> +
-> >>   config MAXSMP
-> >>   	bool "Enable Maximum number of SMP Processors and NUMA Nodes"
-> >>   	depends on X86_64 && SMP && DEBUG_KERNEL
-> >> --- a/arch/x86/kernel/pci-dma.c
-> >> +++ b/arch/x86/kernel/pci-dma.c
-> >> @@ -43,7 +43,7 @@
-> >>    * useful if a user wants to use an IOMMU only for KVM device
-> >> assignment to
-> >>    * guests and not for driver dma translation.
-> >>    */
-> >> -int iommu_pass_through __read_mostly;
-> >> +int iommu_pass_through __read_mostly = CONFIG_IOMMU_DEFAULT_PT;
-> >>
-> >>   extern struct iommu_table_entry __iommu_table[], __iommu_table_end[];
-> >>
-> >> @@ -196,6 +196,8 @@
-> >>   #endif
-> >>   		if (!strncmp(p, "pt", 2))
-> >>   			iommu_pass_through = 1;
-> >> +		if (!strncmp(p, "nopt", 4))
-> >> +			iommu_pass_through = 0;
-> >>
-> >>   		gart_parse_options(p);
-> >>
-> >> _______________________________________________
-> >> iommu mailing list
-> >> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> >> https://urldefense.proofpoint.com/v2/url?u=https-3A__lists.linuxfoundation.org_mailman_listinfo_iommu&d=DQICAg&c=IL_XqQWOjubgfqINi2jTzg&r=3biwyMBB1JD9rm0R5wqz7zcDVkNif9HJ5Pflrr18dkw&m=6weXbuobXVwdVUVGUJUzgHf_32Tr95Ey128v4XLFPjs&s=XTyH-JkxzIj-W47wN4KHobMOdUQjXNnrngKhCndmG9I&e=  
-> >  
+diff --git a/lib/dma-debug.c b/lib/dma-debug.c
+index 2ba086b..59e7586 100644
+--- a/lib/dma-debug.c
++++ b/lib/dma-debug.c
+@@ -1514,7 +1514,7 @@ void debug_dma_map_resource(struct device *dev, phys_addr_t addr, size_t size,
+ 
+ 	entry->type		= dma_debug_resource;
+ 	entry->dev		= dev;
+-	entry->pfn		= __phys_to_pfn(addr);
++	entry->pfn		= PHYS_PFN(addr);
+ 	entry->offset		= offset_in_page(addr);
+ 	entry->size		= size;
+ 	entry->dev_addr		= dma_addr;
+-- 
+2.9.3
