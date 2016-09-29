@@ -1,48 +1,62 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v4 1/2] iommu/exynos: Remove excessive, useless debug
-Date: Thu, 29 Sep 2016 10:12:30 +0200
-Message-ID: <1475136751-31340-2-git-send-email-m.szyprowski@samsung.com>
-References: <1475136751-31340-1-git-send-email-m.szyprowski@samsung.com>
-	<CGME20160929081239eucas1p19c6a5cce5e010996fd3da9dd0b5912da@eucas1p1.samsung.com>
+From: =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>
+Subject: [PATCH 2/2] dma-mapping: fix m32r build warning
+Date: Thu, 29 Sep 2016 12:02:40 +0200
+Message-ID: <20160929100240.7955-3-niklas.soderlund@ragnatech.se>
+References: <20160929100240.7955-1-niklas.soderlund@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1475136751-31340-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <20160929100240.7955-1-niklas.soderlund@ragnatech.se>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: vinod.koul@intel.com, linux-renesas-soc@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org
+Cc: robin.murphy@arm.com, arnd@arndb.de, =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>
 List-Id: iommu@lists.linux-foundation.org
 
-Remove excessive, useless debug about skipping TLB invalidation, which
-is a normal situation when more aggressive power management is enabled.
+From: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+kbuild test robot reports:
+
+   In file included from include/linux/skbuff.h:34:0,
+                    from include/linux/icmpv6.h:4,
+                    from include/linux/ipv6.h:75,
+                    from include/net/ipv6.h:16,
+                    from include/linux/sunrpc/clnt.h:27,
+                    from include/linux/nfs_fs.h:30,
+                    from fs/lockd/clntlock.c:13:
+   include/linux/dma-mapping.h: In function 'dma_map_resource':
+>> include/linux/dma-mapping.h:274:16: warning: unused variable 'pfn' [-Wunused-variable]
+     unsigned long pfn = __phys_to_pfn(phys_addr);
+                   ^~~
+
+The pfn value is only used once in the call to pfn_valid(), remove the
+variable and calculate the pfn when it's needed. Note that the kbuild
+report is old and PHYS_PFN() is now used instead of __phys_to_pfn() to
+calculate the pfn.
+
+Signed-off-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
 ---
- drivers/iommu/exynos-iommu.c | 3 ---
- 1 file changed, 3 deletions(-)
+ include/linux/dma-mapping.h | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 33dcc29ec200..dfb44034b4ee 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -578,9 +578,6 @@ static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
- 			sysmmu_unblock(data);
- 		}
- 		clk_disable(data->clk_master);
--	} else {
--		dev_dbg(data->master,
--			"disabled. Skipping TLB invalidation @ %#x\n", iova);
- 	}
- 	spin_unlock_irqrestore(&data->lock, flags);
- }
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index ff7c87f..642cb4c 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -271,13 +271,12 @@ static inline dma_addr_t dma_map_resource(struct device *dev,
+ 					  unsigned long attrs)
+ {
+ 	struct dma_map_ops *ops = get_dma_ops(dev);
+-	unsigned long pfn = PHYS_PFN(phys_addr);
+ 	dma_addr_t addr;
+ 
+ 	BUG_ON(!valid_dma_direction(dir));
+ 
+ 	/* Don't allow RAM to be mapped */
+-	BUG_ON(pfn_valid(pfn));
++	BUG_ON(pfn_valid(PHYS_PFN(phys_addr)));
+ 
+ 	addr = phys_addr;
+ 	if (ops->map_resource)
 -- 
-1.9.1
+2.9.3
