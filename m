@@ -1,63 +1,49 @@
-From: =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>
-Subject: [PATCH 0/2] dma-mapping: fix ia64 and m32r build error and warnings
-Date: Thu, 29 Sep 2016 12:02:38 +0200
-Message-ID: <20160929100240.7955-1-niklas.soderlund@ragnatech.se>
+From: =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+Subject: [PATCH 1/2] dma-mapping: fix ia64 build, use PHYS_PFN
+Date: Thu, 29 Sep 2016 12:02:39 +0200
+Message-ID: <20160929100240.7955-2-niklas.soderlund@ragnatech.se>
+References: <20160929100240.7955-1-niklas.soderlund@ragnatech.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: vinod.koul@intel.com, linux-renesas-soc@vger.kernel.org, dmaengine@vger.kernel.org, iommu@lists.linux-foundation.org
-Cc: robin.murphy@arm.com, arnd@arndb.de, =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160929100240.7955-1-niklas.soderlund-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-
-Hi Vindo,
-
-This small series fixes the build error and warnings for ia64 and m32r 
-which kbuild test robot found and where introduced in the series 
-'[PATCHv9 0/6] dmaengine: rcar-dmac: add iommu support for slave 
-transfers'.
-
-It is based ontop of:
-
-git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/slave-dma.git next
-
-The fixes are only compile tested for the ia64 and m32r architecture to 
-show that the error and warnings are fixed. It is tested on ARM to prove 
-that the intended functionality still works.
-
-Kbuild test robot found one more class of warnings for the patch series 
-mentioned above for the balackfin arch.
-
-   include/linux/dma-mapping.h: In function 'dma_map_resource':
->> include/asm-generic/page.h:90:32: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
-    #define pfn_valid(pfn)  ((pfn) >= ARCH_PFN_OFFSET && ((pfn) - ARCH_PFN_OFFSET) < max_mapnr)
-                                   ^
-
-These warnings are not addressed in this series since they are not new 
-or unique to original patch. They come from how pfn_valid() is 
-implemented in include/asm-generic/page.h, if ARCH_PFN_OFFSET is 0 the 
-warning is triggered. On the kbuild blackfin build it is defined as 
-'(0x0 >> 12)' so any invocation of pfn_valid() will trigger it.
-
-I tried to fix it but was unable to find a good solution. There is a 
-MIPS specific fix for this in commit 95486e4 (MIPS: Fix flood of 
-warnings about comparsion being always true.), but a similar fix for 
-asm-generic seems to tricky for me to attempt since the macro needs to 
-be turned into a static inline function and that might be harmful.  I 
-also toyed with the solution of '#if ARCH_PFN_OFFSET == 0' to provided 
-an alternative pfn_valid() macro, but since ARCH_PFN_OFFSET is defined 
-as an expression and not a constant that wont work. If you can think of 
-another way I be happy to try that out and see if I can make it work.
-
-Niklas Söderlund (2):
-  dma-mapping: fix ia64 build, use PHYS_PFN
-  dma-mapping: fix m32r build warning
-
- include/linux/dma-mapping.h | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
--- 
-2.9.3
+RnJvbTogTmlrbGFzIFPDtmRlcmx1bmQgPG5pa2xhcy5zb2Rlcmx1bmQrcmVuZXNhc0ByYWduYXRl
+Y2guc2U+CgprYnVpbGQgdGVzdCByb2JvdCByZXBvcnRzOgoKICAgSW4gZmlsZSBpbmNsdWRlZCBm
+cm9tIGluY2x1ZGUvbGludXgvc2tidWZmLmg6MzQ6MCwKICAgICAgICAgICAgICAgICAgICBmcm9t
+IGluY2x1ZGUvbGludXgvdGNwLmg6MjEsCiAgICAgICAgICAgICAgICAgICAgZnJvbSBkcml2ZXJz
+L25ldC9ldGhlcm5ldC9hbWQveGdiZS94Z2JlLWRydi5jOjExOToKICAgaW5jbHVkZS9saW51eC9k
+bWEtbWFwcGluZy5oOiBJbiBmdW5jdGlvbiAnZG1hX21hcF9yZXNvdXJjZSc6Cj4+IGluY2x1ZGUv
+bGludXgvZG1hLW1hcHBpbmcuaDoyNzQ6MjI6IGVycm9yOiBpbXBsaWNpdCBkZWNsYXJhdGlvbiBv
+ZiBmdW5jdGlvbiAnX19waHlzX3RvX3BmbicgWy1XZXJyb3I9aW1wbGljaXQtZnVuY3Rpb24tZGVj
+bGFyYXRpb25dCiAgICAgdW5zaWduZWQgbG9uZyBwZm4gPSBfX3BoeXNfdG9fcGZuKHBoeXNfYWRk
+cik7CiAgICAgICAgICAgICAgICAgICAgICAgICBefn5+fn5+fn5+fn5+CgppYTY0IGRvZXMgbm90
+IHByb3ZpZGUgX19waHlzX3RvX3BmbigpLCB1c2UgdGhlIFBIWVNfUEZOKCkgYWxpYXMuCgpTaWdu
+ZWQtb2ZmLWJ5OiBOaWtsYXMgU8O2ZGVybHVuZCA8bmlrbGFzLnNvZGVybHVuZCtyZW5lc2FzQHJh
+Z25hdGVjaC5zZT4KLS0tCiBpbmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmggfCAyICstCiAxIGZp
+bGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9p
+bmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmggYi9pbmNsdWRlL2xpbnV4L2RtYS1tYXBwaW5nLmgK
+aW5kZXggNmUwMGM3Zi4uZmY3Yzg3ZiAxMDA2NDQKLS0tIGEvaW5jbHVkZS9saW51eC9kbWEtbWFw
+cGluZy5oCisrKyBiL2luY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaApAQCAtMjcxLDcgKzI3MSw3
+IEBAIHN0YXRpYyBpbmxpbmUgZG1hX2FkZHJfdCBkbWFfbWFwX3Jlc291cmNlKHN0cnVjdCBkZXZp
+Y2UgKmRldiwKIAkJCQkJICB1bnNpZ25lZCBsb25nIGF0dHJzKQogewogCXN0cnVjdCBkbWFfbWFw
+X29wcyAqb3BzID0gZ2V0X2RtYV9vcHMoZGV2KTsKLQl1bnNpZ25lZCBsb25nIHBmbiA9IF9fcGh5
+c190b19wZm4ocGh5c19hZGRyKTsKKwl1bnNpZ25lZCBsb25nIHBmbiA9IFBIWVNfUEZOKHBoeXNf
+YWRkcik7CiAJZG1hX2FkZHJfdCBhZGRyOwogCiAJQlVHX09OKCF2YWxpZF9kbWFfZGlyZWN0aW9u
+KGRpcikpOwotLSAKMi45LjMKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
+Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
+b21tdQ==
