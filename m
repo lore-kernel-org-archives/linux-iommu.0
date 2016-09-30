@@ -1,114 +1,141 @@
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v5 01/14] drivers: iommu: add FWNODE_IOMMU fwnode type
-Date: Fri, 30 Sep 2016 17:48:01 +0200
-Message-ID: <CAJZ5v0hK2Ryo32u4S9K=78-Oot13vvVNB+p6N2YC1UMqYW9g7A@mail.gmail.com>
-References: <20160909142343.13314-1-lorenzo.pieralisi@arm.com>
- <20160909142343.13314-2-lorenzo.pieralisi@arm.com> <20160929141520.GA29244@red-moon>
- <3178073.UTpgCTN6if@vostro.rjw.lan> <20160930090702.GA7725@red-moon>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/1] arch/x86: Add CONFIG_IOMMU_DEFAULT_PT for iommu=pt
+Date: Fri, 30 Sep 2016 17:19:18 +0100
+Message-ID: <36ee18e0-5950-75fd-ac00-fb84ebcb0ebb@arm.com>
+References: <2ebef311-b346-f3ed-2fca-ce4715b84c9d@brocade.com>
+	<20160929123115.7afcc88e@t450s.home>
+	<66f8f023-41a6-17e0-2df0-190cf5edb7ec@brocade.com>
+	<20160929130122.401aa85d@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20160930090702.GA7725@red-moon>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Tomasz Nowicki <tn@semihalf.com>, Hanjun Guo <hanjun.guo@linaro.org>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Linux PCI <linux-pci@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lis>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160929130122.401aa85d-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Glenn Serre <gserre-yk0uUPyXz1dBDgjK7y7TUQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Sep 30, 2016 at 11:07 AM, Lorenzo Pieralisi
-<lorenzo.pieralisi@arm.com> wrote:
-> On Thu, Sep 29, 2016 at 10:59:40PM +0200, Rafael J. Wysocki wrote:
->> On Thursday, September 29, 2016 03:15:20 PM Lorenzo Pieralisi wrote:
->> > Hi Rafael,
->> >
->> > On Fri, Sep 09, 2016 at 03:23:30PM +0100, Lorenzo Pieralisi wrote:
->> > > On systems booting with a device tree, every struct device is
->> > > associated with a struct device_node, that represents its DT
->> > > representation. The device node can be used in generic kernel
->> > > contexts (eg IRQ translation, IOMMU streamid mapping), to
->> > > retrieve the properties associated with the device and carry
->> > > out kernel operation accordingly. Owing to the 1:1 relationship
->> > > between the device and its device_node, the device_node can also
->> > > be used as a look-up token for the device (eg looking up a device
->> > > through its device_node), to retrieve the device in kernel paths
->> > > where the device_node is available.
->> > >
->> > > On systems booting with ACPI, the same abstraction provided by
->> > > the device_node is required to provide look-up functionality.
->> > >
->> > > Therefore, mirroring the approach implemented in the IRQ domain
->> > > kernel layer, this patch adds an additional fwnode type FWNODE_IOMMU.
->> > >
->> > > This patch also implements a glue kernel layer that allows to
->> > > allocate/free FWNODE_IOMMU fwnode_handle structures and associate
->> > > them with IOMMU devices.
->> > >
->> > > Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
->> > > Reviewed-by: Hanjun Guo <hanjun.guo@linaro.org>
->> > > Cc: Joerg Roedel <joro@8bytes.org>
->> > > Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
->> > > ---
->> > >  include/linux/fwnode.h |  1 +
->> > >  include/linux/iommu.h  | 25 +++++++++++++++++++++++++
->> > >  2 files changed, 26 insertions(+)
->> > >
->> > > diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
->> > > index 8516717..6e10050 100644
->> > > --- a/include/linux/fwnode.h
->> > > +++ b/include/linux/fwnode.h
->> > > @@ -19,6 +19,7 @@ enum fwnode_type {
->> > >   FWNODE_ACPI_DATA,
->> > >   FWNODE_PDATA,
->> > >   FWNODE_IRQCHIP,
->> > > + FWNODE_IOMMU,
->> >
->> > This patch provides groundwork for this series and it is key for
->> > the rest of it, basically the point here is that we need a fwnode
->> > to differentiate platform devices created out of static ACPI tables
->> > entries (ie IORT), that represent IOMMU components.
->> >
->> > The corresponding device is not an ACPI device (I could fabricate one as
->> > it is done for other static tables entries eg FADT power button, but I
->> > do not necessarily see the reason for doing that given that all we need
->> > the fwnode for is a token identifier), so FWNODE_ACPI does not apply
->> > here.
->> >
->> > Please let me know if it is reasonable how I sorted this out (it
->> > is basically identical to IRQCHIP, just another enum entry), the
->> > remainder of the code depends on this.
+On 29/09/16 20:01, Alex Williamson wrote:
+> On Thu, 29 Sep 2016 11:41:53 -0700
+> Glenn Serre <gserre-yk0uUPyXz1dBDgjK7y7TUQ@public.gmane.org> wrote:
+> 
+>> Good morning,
 >>
->> I'm not familiar with the use case, so I don't see anything unreasonable
->> in it.
->
-> The use case is pretty simple: on ARM SMMU devices are platform devices.
-> When booting with DT they are identified through an of_node and related
-> FWNODE_OF type. When booting with ACPI, the ARM SMMU platform devices,
-> to be equivalent to DT booting path, should be created out of static
-> IORT table entries (that's how we describe SMMUs); we need to create
-> a fwnode "token" to associate with those platform devices and that's
-> not a FWNODE_ACPI (that is for an ACPI device firmware object, here we
-> really do not need one), so this patch.
->
->> If you're asking about whether or not I mind adding more fwnode types in
->> principle, then no, I don't. :-)
->
-> Yes, that's what I was asking, the only point that bugs me is that for
-> both FWNODE_IRQCHIP and FWNODE_IOMMU the fwnode is just a "token" (ie a
-> valid pointer) used for look-up and the type in the fwnode_handle is
-> mostly there for error checking, I was wondering if we could create a
-> specific fwnode_type for this specific usage (eg FWNODE_TAG and then add
-> a type to it as part of its container struct) instead of adding an enum
-> value per subsystem - it seems there are other fwnode types in the
-> pipeline :), so I am asking:
->
-> lkml.kernel.org/r/3D1468514043-21081-3-git-send-email-minyard@acm.org
+>> On 09/29/2016 11:31 AM, Alex Williamson wrote:
+>>> On Thu, 29 Sep 2016 09:58:55 -0700
+>>> Glenn Serre <gserre-43mecJUBy8ZBDgjK7y7TUQ@public.gmane.org> wrote:
+>>>  
+>>>> Add CONFIG_IOMMU_DEFAULT_PT for iommu=pt
+>>>>
+>>>> Allow default to iommu=pt without adding to command line.
+>>>> Add iommu=nopt to turn off default.
+>>>>
+>>>> Signed-off-by: Glenn Serre <gserre-43mecJUBy8ZBDgjK7y7TUQ@public.gmane.org>
+>>>> ---
+>>>>   Documentation/kernel-parameters.txt | 3 ++-
+>>>>   arch/x86/Kconfig                    | 7 +++++++
+>>>>   arch/x86/kernel/pci-dma.c           | 6 ++++++
+>>>>   3 files changed, 15 insertions(+), 1 deletion(-)
+>>>>
+>>>> --- a/Documentation/kernel-parameters.txt
+>>>> +++ b/Documentation/kernel-parameters.txt
+>>>> @@ -1607,7 +1607,8 @@
+>>>>   		nomerge
+>>>>   		forcesac
+>>>>   		soft
+>>>> -		pt		[x86, IA-64]
+>>>> +		pt		[x86]
+>>>> +		nopt		[x86]
+>>>>   		nobypass	[PPC/POWERNV]
+>>>>   			Disable IOMMU bypass, using IOMMU for PCI devices.
+>>>>
+>>>> --- a/arch/x86/Kconfig
+>>>> +++ b/arch/x86/Kconfig
+>>>> @@ -845,6 +845,15 @@
+>>>>   	def_bool y
+>>>>   	depends on CALGARY_IOMMU || GART_IOMMU || SWIOTLB || AMD_IOMMU
+>>>>
+>>>> +config IOMMU_DEFAULT_PT
+>>>> +	int "Default iommu pt value (0-1)"
+>>>> +	range 0 1
+>>>> +	default "0"
+>>>> +	prompt "Set to 1 to default to iommu=pt"  
+>>>
+>>> An integer that can be either zero or one... IOW a bool.  There's
+>>> support for bools in Kconfig.  
+>>
+>> We had discussion about that during in-house code review.  My initial 
+>> take was bool like INTEL_IOMMU_DEFAULT_ON, but reviewers thought the 
+>> current "right" way was range 0-1 like MTRR_SANITIZER_ENABLE_DEFAULT to 
+>> avoid an ifdef, else, endif:
+>>
+>> #ifdef CONFIG_IOMMU_DEFAULT_PT
+>> int iommu_pass_through __read_mostly = 1;
+>> #else
+>> int iommu_pass_through __read_mostly;
+>> #endif /* CONFIG_IOMMU_DEFAULT_PT */
+>>
+>> I'll go with whatever y'all prefer.
+> 
+> Ok, I didn't really think it all the way through I guess.  Still, my
+> opinion is that it's strange to have a yes/no Kconfig option take a 0/1
+> parameter and I'd probably rather have the slightly uglier code for the
+> benefit of a more intuitive Kconfig.  Maybe others disagree.  Thanks,
 
-OK, I see your concern now, so thanks for presenting it so clearly.
+Actually, there's no need for ugly code *or* an unintuitive Kconfig
+type. See e.g. __pat_enabled in arch/x86/mm/pat.c ;)
 
-While I don't see anything wrong with having per-subsystem fwnode
-types in principle, I agree that if the only purpose of them is to
-mean "this comes from ACPI, but from a static table, not from the
-namespace", it would be better to have a single fwnode type for that,
-like FWNODE_ACPI_STATIC or similar.
+Robin.
 
-Thanks,
-Rafael
+> 
+> Alex
+> 
+>>>  
+>>>> +	help
+>>>> +	  Setting this option to 1 will set iommu passthrough (iommu=pt)
+>>>> +	  by default.  Use iommu=nopt to override.
+>>>> +
+>>>>   config MAXSMP
+>>>>   	bool "Enable Maximum number of SMP Processors and NUMA Nodes"
+>>>>   	depends on X86_64 && SMP && DEBUG_KERNEL
+>>>> --- a/arch/x86/kernel/pci-dma.c
+>>>> +++ b/arch/x86/kernel/pci-dma.c
+>>>> @@ -43,7 +43,7 @@
+>>>>    * useful if a user wants to use an IOMMU only for KVM device
+>>>> assignment to
+>>>>    * guests and not for driver dma translation.
+>>>>    */
+>>>> -int iommu_pass_through __read_mostly;
+>>>> +int iommu_pass_through __read_mostly = CONFIG_IOMMU_DEFAULT_PT;
+>>>>
+>>>>   extern struct iommu_table_entry __iommu_table[], __iommu_table_end[];
+>>>>
+>>>> @@ -196,6 +196,8 @@
+>>>>   #endif
+>>>>   		if (!strncmp(p, "pt", 2))
+>>>>   			iommu_pass_through = 1;
+>>>> +		if (!strncmp(p, "nopt", 4))
+>>>> +			iommu_pass_through = 0;
+>>>>
+>>>>   		gart_parse_options(p);
+>>>>
+>>>> _______________________________________________
+>>>> iommu mailing list
+>>>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>>>> https://urldefense.proofpoint.com/v2/url?u=https-3A__lists.linuxfoundation.org_mailman_listinfo_iommu&d=DQICAg&c=IL_XqQWOjubgfqINi2jTzg&r=3biwyMBB1JD9rm0R5wqz7zcDVkNif9HJ5Pflrr18dkw&m=6weXbuobXVwdVUVGUJUzgHf_32Tr95Ey128v4XLFPjs&s=XTyH-JkxzIj-W47wN4KHobMOdUQjXNnrngKhCndmG9I&e=  
+>>>  
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
