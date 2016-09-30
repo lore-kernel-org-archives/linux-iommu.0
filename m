@@ -1,17 +1,14 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v5 01/14] drivers: iommu: add FWNODE_IOMMU fwnode type
-Date: Fri, 30 Sep 2016 10:07:02 +0100
-Message-ID: <20160930090702.GA7725@red-moon>
-References: <20160909142343.13314-1-lorenzo.pieralisi@arm.com>
-	<20160909142343.13314-2-lorenzo.pieralisi@arm.com>
-	<20160929141520.GA29244@red-moon>
-	<3178073.UTpgCTN6if@vostro.rjw.lan>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC 05/11] iommu/dma: iommu_dma_(un)map_mixed
+Date: Fri, 30 Sep 2016 14:24:40 +0100
+Message-ID: <1b1b30b3-4199-9e18-362c-b8bc9d45277d@arm.com>
+References: <1475009318-2617-1-git-send-email-eric.auger@redhat.com>
+	<1475009318-2617-6-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <3178073.UTpgCTN6if-sKB8Sp2ER+y1GS7QM15AGw@public.gmane.org>
+In-Reply-To: <1475009318-2617-6-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,99 +18,146 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+To: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Sep 29, 2016 at 10:59:40PM +0200, Rafael J. Wysocki wrote:
-> On Thursday, September 29, 2016 03:15:20 PM Lorenzo Pieralisi wrote:
-> > Hi Rafael,
-> > 
-> > On Fri, Sep 09, 2016 at 03:23:30PM +0100, Lorenzo Pieralisi wrote:
-> > > On systems booting with a device tree, every struct device is
-> > > associated with a struct device_node, that represents its DT
-> > > representation. The device node can be used in generic kernel
-> > > contexts (eg IRQ translation, IOMMU streamid mapping), to
-> > > retrieve the properties associated with the device and carry
-> > > out kernel operation accordingly. Owing to the 1:1 relationship
-> > > between the device and its device_node, the device_node can also
-> > > be used as a look-up token for the device (eg looking up a device
-> > > through its device_node), to retrieve the device in kernel paths
-> > > where the device_node is available.
-> > > 
-> > > On systems booting with ACPI, the same abstraction provided by
-> > > the device_node is required to provide look-up functionality.
-> > > 
-> > > Therefore, mirroring the approach implemented in the IRQ domain
-> > > kernel layer, this patch adds an additional fwnode type FWNODE_IOMMU.
-> > > 
-> > > This patch also implements a glue kernel layer that allows to
-> > > allocate/free FWNODE_IOMMU fwnode_handle structures and associate
-> > > them with IOMMU devices.
-> > > 
-> > > Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-> > > Reviewed-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-> > > Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> > > Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
-> > > ---
-> > >  include/linux/fwnode.h |  1 +
-> > >  include/linux/iommu.h  | 25 +++++++++++++++++++++++++
-> > >  2 files changed, 26 insertions(+)
-> > > 
-> > > diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
-> > > index 8516717..6e10050 100644
-> > > --- a/include/linux/fwnode.h
-> > > +++ b/include/linux/fwnode.h
-> > > @@ -19,6 +19,7 @@ enum fwnode_type {
-> > >  	FWNODE_ACPI_DATA,
-> > >  	FWNODE_PDATA,
-> > >  	FWNODE_IRQCHIP,
-> > > +	FWNODE_IOMMU,
-> > 
-> > This patch provides groundwork for this series and it is key for
-> > the rest of it, basically the point here is that we need a fwnode
-> > to differentiate platform devices created out of static ACPI tables
-> > entries (ie IORT), that represent IOMMU components.
-> > 
-> > The corresponding device is not an ACPI device (I could fabricate one as
-> > it is done for other static tables entries eg FADT power button, but I
-> > do not necessarily see the reason for doing that given that all we need
-> > the fwnode for is a token identifier), so FWNODE_ACPI does not apply
-> > here.
-> > 
-> > Please let me know if it is reasonable how I sorted this out (it
-> > is basically identical to IRQCHIP, just another enum entry), the
-> > remainder of the code depends on this.
+Hi Eric,
+
+On 27/09/16 21:48, Eric Auger wrote:
+> iommu_dma_map_mixed and iommu_dma_unmap_mixed operate on
+> IOMMU_DOMAIN_MIXED typed domains. On top of standard iommu_map/unmap
+> they reserve the IOVA window to prevent the iova allocator to
+> allocate in those areas.
 > 
-> I'm not familiar with the use case, so I don't see anything unreasonable
-> in it.
+> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/dma-iommu.c | 48 +++++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/dma-iommu.h | 18 ++++++++++++++++++
+>  2 files changed, 66 insertions(+)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 04bbc85..db21143 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -759,3 +759,51 @@ int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
+>  	return 0;
+>  }
+>  EXPORT_SYMBOL(iommu_get_dma_msi_region_cookie);
+> +
+> +int iommu_dma_map_mixed(struct iommu_domain *domain, unsigned long iova,
+> +			phys_addr_t paddr, size_t size, int prot)
+> +{
+> +	struct iova_domain *iovad;
+> +	unsigned long lo, hi;
+> +	int ret;
+> +
+> +	if (domain->type != IOMMU_DOMAIN_MIXED)
+> +		return -EINVAL;
+> +
+> +	if (!domain->iova_cookie)
+> +		return -EINVAL;
+> +
+> +	iovad = cookie_iovad(domain);
+> +
+> +	lo = iova_pfn(iovad, iova);
+> +	hi = iova_pfn(iovad, iova + size - 1);
+> +	reserve_iova(iovad, lo, hi);
 
-The use case is pretty simple: on ARM SMMU devices are platform devices.
-When booting with DT they are identified through an of_node and related
-FWNODE_OF type. When booting with ACPI, the ARM SMMU platform devices,
-to be equivalent to DT booting path, should be created out of static
-IORT table entries (that's how we describe SMMUs); we need to create
-a fwnode "token" to associate with those platform devices and that's
-not a FWNODE_ACPI (that is for an ACPI device firmware object, here we
-really do not need one), so this patch.
+This can't work reliably - reserve_iova() will (for good reason) merge
+any adjacent or overlapping entries, so any unmap is liable to free more
+IOVA space than actually gets unmapped, and things will get subtly out
+of sync and go wrong later.
 
-> If you're asking about whether or not I mind adding more fwnode types in
-> principle, then no, I don't. :-) 
+The more general issue with this whole approach, though, is that it
+effectively rules out userspace doing guest memory hotplug or similar,
+and I'm not we want to paint ourselves into that corner. Basically, as
+soon as a device is attached to a guest, the entirety of the unallocated
+IPA space becomes reserved, and userspace can never add anything further
+to it, because any given address *might* be in use for an MSI mapping.
 
-Yes, that's what I was asking, the only point that bugs me is that for
-both FWNODE_IRQCHIP and FWNODE_IOMMU the fwnode is just a "token" (ie a
-valid pointer) used for look-up and the type in the fwnode_handle is
-mostly there for error checking, I was wondering if we could create a
-specific fwnode_type for this specific usage (eg FWNODE_TAG and then add
-a type to it as part of its container struct) instead of adding an enum
-value per subsystem - it seems there are other fwnode types in the
-pipeline :), so I am asking:
+I think it still makes most sense to stick with the original approach of
+cooperating with userspace to reserve a bounded area - it's just that we
+can then let automatic mapping take care of itself within that area.
 
-lkml.kernel.org/r/3D1468514043-21081-3-git-send-email-minyard-HInyCGIudOg@public.gmane.org
+Speaking of which, I've realised the same fundamental reservation
+problem already applies to PCI without ACS, regardless of MSIs. I just
+tried on my Juno with guest memory placed at 0x4000000000, (i.e.
+matching the host PA of the 64-bit PCI window), and sure enough when the
+guest kicks off some DMA on the passed-through NIC, the root complex
+interprets the guest IPA as (unsupported) peer-to-peer DMA to a BAR
+claimed by the video card, and it fails. I guess this doesn't get hit in
+practice on x86 because the guest memory map is unlikely to be much
+different from the host's.
 
-If it is ok for you and Joerg I will go ahead with current patch
-keeping in mind that the above should not be that complicated to
-implement if we deem it reasonable.
+It seems like we basically need a general way of communicating fixed and
+movable host reservations to userspace :/
 
-Thanks,
-Lorenzo
+Robin.
+
+> +	ret = iommu_map(domain, iova, paddr, size, prot);
+> +	if (ret)
+> +		free_iova(iovad, lo);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(iommu_dma_map_mixed);
+> +
+> +size_t iommu_dma_unmap_mixed(struct iommu_domain *domain, unsigned long iova,
+> +			     size_t size)
+> +{
+> +	struct iova_domain *iovad;
+> +	unsigned long lo;
+> +	size_t ret;
+> +
+> +	if (domain->type != IOMMU_DOMAIN_MIXED)
+> +		return -EINVAL;
+> +
+> +	if (!domain->iova_cookie)
+> +		return -EINVAL;
+> +
+> +	iovad = cookie_iovad(domain);
+> +	lo = iova_pfn(iovad, iova);
+> +
+> +	ret = iommu_unmap(domain, iova, size);
+> +	if (ret == size)
+> +		free_iova(iovad, lo);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(iommu_dma_unmap_mixed);
+> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+> index 1c55413..f2aa855 100644
+> --- a/include/linux/dma-iommu.h
+> +++ b/include/linux/dma-iommu.h
+> @@ -70,6 +70,12 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
+>  int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
+>  		dma_addr_t base, u64 size);
+>  
+> +int iommu_dma_map_mixed(struct iommu_domain *domain, unsigned long iova,
+> +			phys_addr_t paddr, size_t size, int prot);
+> +
+> +size_t iommu_dma_unmap_mixed(struct iommu_domain *domain, unsigned long iova,
+> +			     size_t size);
+> +
+>  #else
+>  
+>  struct iommu_domain;
+> @@ -99,6 +105,18 @@ static inline int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
+>  	return -ENODEV;
+>  }
+>  
+> +int iommu_dma_map_mixed(struct iommu_domain *domain, unsigned long iova,
+> +			phys_addr_t paddr, size_t size, int prot)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +size_t iommu_dma_unmap_mixed(struct iommu_domain *domain, unsigned long iova,
+> +			     size_t size)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+>  #endif	/* CONFIG_IOMMU_DMA */
+>  #endif	/* __KERNEL__ */
+>  #endif	/* __DMA_IOMMU_H */
+> 
