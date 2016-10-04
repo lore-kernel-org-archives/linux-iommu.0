@@ -1,17 +1,14 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v1 1/1] arch/x86: Add CONFIG_IOMMU_DEFAULT_PT for iommu=pt
-Date: Tue, 4 Oct 2016 13:03:58 -0400
-Message-ID: <20161004170358.GE2428@localhost.localdomain>
-References: <2ebef311-b346-f3ed-2fca-ce4715b84c9d@brocade.com>
-	<6b2c6f0b-cce8-b8f6-37c2-d4cc453bd603@brocade.com>
-	<20161004165232.GD2428@localhost.localdomain>
-	<04ab568e-8088-cf23-facb-7ef3fecf4bb6@brocade.com>
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH V3 1/8] arm: dma-mapping: Don't override dma_ops in
+	arch_setup_dma_ops()
+Date: Tue,  4 Oct 2016 22:33:45 +0530
+Message-ID: <1475600632-21289-2-git-send-email-sricharan@codeaurora.org>
+References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <04ab568e-8088-cf23-facb-7ef3fecf4bb6-43mecJUBy8ZBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <1475600632-21289-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,101 +18,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Glenn Serre <gserre-yk0uUPyXz1dBDgjK7y7TUQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Oct 04, 2016 at 10:00:50AM -0700, Glenn Serre wrote:
-> Good afternoon,
-> 
-> On 10/04/2016 09:52 AM, Konrad Rzeszutek Wilk wrote:
-> > On Tue, Oct 04, 2016 at 09:11:39AM -0700, Glenn Serre wrote:
-> > > Add CONFIG_IOMMU_DEFAULT_PT for iommu=pt
-> > > 
-> > > Allow default to iommu=pt without adding to command line.
-> > > Add iommu=nopt to turn off default.
-> > > 
-> > > The reason we use iommu=pt is to support using the DPDK igb_uio driver,
-> > > which we need to do on servers that have an iommu but lack ACS.
-> > > 
-> > > Signed-off-by: Glenn Serre <gserre-43mecJUBy8ZBDgjK7y7TUQ@public.gmane.org>
-> > > ---
-> > >  Documentation/kernel-parameters.txt | 3 ++-
-> > >  arch/x86/Kconfig                    | 7 +++++++
-> > >  arch/x86/kernel/pci-dma.c           | 6 ++++++
-> > >  3 files changed, 15 insertions(+), 1 deletion(-)
-> > > 
-> > > --- a/Documentation/kernel-parameters.txt
-> > > +++ b/Documentation/kernel-parameters.txt
-> > > @@ -1607,7 +1607,8 @@
-> > >  		nomerge
-> > >  		forcesac
-> > >  		soft
-> > > -		pt		[x86, IA-64]
-> > > +		pt		[x86]
-> > 
-> > What about adding IA-64 back on?
-> 
-> As far as I can see, IA-64 doesn't pay any attention at all to the iommu
-> parameter.  In arch/ia64/kernel/pci-dma.c, I see
-> 
-> int iommu_pass_through;
-> 
-> but no early_param("iommu"), other occurrence of "iommu", or reference to
-> iommu_pass_through.
+From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
-That ought to be a seperate patch - one functional change per patch (see
-Documentation/SubmittingPatches).
+The arch_setup_dma_ops() function is in charge of setting dma_ops with a
+call to set_dma_ops(). set_dma_ops() is also called from
 
-Or you can mention this in the commit description..
-> 
-> Thanks,
-> --Glenn S.
-> 
-> > 
-> > > +		nopt		[x86]
-> > 
-> > Or here?
-> > >  		nobypass	[PPC/POWERNV]
-> > >  			Disable IOMMU bypass, using IOMMU for PCI devices.
-> > > 
-> > > --- a/arch/x86/Kconfig
-> > > +++ b/arch/x86/Kconfig
-> > > @@ -845,6 +845,13 @@
-> > >  	def_bool y
-> > >  	depends on CALGARY_IOMMU || GART_IOMMU || SWIOTLB || AMD_IOMMU
-> > > 
-> > > +config IOMMU_DEFAULT_PT
-> > > +	def_bool n
-> > > +	prompt "Set iommu=pt by default"
-> > > +	help
-> > > +	  Selecting this option will set iommu passthrough (iommu=pt)
-> > > +	  by default.  Use iommu=nopt to override.
-> > > +
-> > >  config MAXSMP
-> > >  	bool "Enable Maximum number of SMP Processors and NUMA Nodes"
-> > >  	depends on X86_64 && SMP && DEBUG_KERNEL
-> > > --- a/arch/x86/kernel/pci-dma.c
-> > > +++ b/arch/x86/kernel/pci-dma.c
-> > > @@ -43,7 +43,7 @@
-> > >   * useful if a user wants to use an IOMMU only for KVM device assignment to
-> > >   * guests and not for driver dma translation.
-> > >   */
-> > > -int iommu_pass_through __read_mostly;
-> > > +int iommu_pass_through __read_mostly = IS_ENABLED(CONFIG_IOMMU_DEFAULT_PT);
-> > > 
-> > >  extern struct iommu_table_entry __iommu_table[], __iommu_table_end[];
-> > > 
-> > > @@ -196,6 +196,8 @@
-> > >  #endif
-> > >  		if (!strncmp(p, "pt", 2))
-> > >  			iommu_pass_through = 1;
-> > > +		if (!strncmp(p, "nopt", 4))
-> > > +			iommu_pass_through = 0;
-> > > 
-> > >  		gart_parse_options(p);
-> > > 
-> > > _______________________________________________
-> > > iommu mailing list
-> > > iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> > > https://urldefense.proofpoint.com/v2/url?u=https-3A__lists.linuxfoundation.org_mailman_listinfo_iommu&d=DQIBAg&c=IL_XqQWOjubgfqINi2jTzg&r=3biwyMBB1JD9rm0R5wqz7zcDVkNif9HJ5Pflrr18dkw&m=sJQfEY5rZcAq-0QEyNvDxZkeujsoeiY8B_gabGOkyv8&s=ctQKeFfmQJ0ET8hJNBJmeRxdv_gwYgvysgku7sxdV4o&e=
+- highbank and mvebu bus notifiers
+- dmabounce (to be replaced with swiotlb)
+- arm_iommu_attach_device
+
+(arm_iommu_attach_device is itself called from IOMMU and bus master
+device drivers)
+
+To allow the arch_setup_dma_ops() call to be moved from device add time
+to device probe time we must ensure that dma_ops already setup by any of
+the above callers will not be overridden.
+
+Aftering replacing dmabounce with swiotlb, converting IOMMU drivers to
+of_xlate and taking care of highbank and mvebu, the workaround should be
+removed.
+
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+---
+ arch/arm/mm/dma-mapping.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index c6834c0..dde6514 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -2322,6 +2322,15 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ 	struct dma_map_ops *dma_ops;
+ 
+ 	dev->archdata.dma_coherent = coherent;
++
++	/*
++	 * Don't override the dma_ops if they have already been set. Ideally
++	 * this should be the only location where dma_ops are set, remove this
++	 * check when all other callers of set_dma_ops will have disappeared.
++	 */
++	if (dev->archdata.dma_ops)
++		return;
++
+ 	if (arm_setup_iommu_dma_ops(dev, dma_base, size, iommu))
+ 		dma_ops = arm_get_iommu_dma_map_ops(coherent);
+ 	else
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
