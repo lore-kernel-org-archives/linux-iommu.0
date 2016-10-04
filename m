@@ -1,7 +1,7 @@
 From: Sricharan R <sricharan@codeaurora.org>
-Subject: [PATCH V3 2/8] of: dma: Move range size workaround to of_dma_get_range()
-Date: Tue,  4 Oct 2016 22:33:46 +0530
-Message-ID: <1475600632-21289-3-git-send-email-sricharan@codeaurora.org>
+Subject: [PATCH V3 7/8] arm/arm64: dma-mapping: Call iommu's remove_device callback during device detach
+Date: Tue,  4 Oct 2016 22:33:51 +0530
+Message-ID: <1475600632-21289-8-git-send-email-sricharan@codeaurora.org>
 References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
 Return-path: <linux-arm-msm-owner@vger.kernel.org>
 In-Reply-To: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
@@ -10,83 +10,60 @@ To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org, iommu@lists.linu
 Cc: sricharan@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+dma_deconfigure calls arch_teardown_dma_ops in the device_detach path,
+which is called when the device gets detached from the driver.
+When the device was added, iommu's add_device callback was used to
+add the device in to its iommu_group and setup the device to be ready
+to use its iommu. Similarly, call remove_device callback to remove the
+device from the group and reset any other device's iommu configurations.
 
-Invalid dma-ranges values should be worked around when retrieving the
-DMA range in of_dma_get_range(), not by all callers of the function.
-This isn't much of a problem now that we have a single caller, but that
-situation will change when moving DMA configuration to device probe
-time.
-
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Signed-off-by: Sricharan R <sricharan@codeaurora.org>
 ---
- drivers/of/address.c | 20 ++++++++++++++++++--
- drivers/of/device.c  | 15 ---------------
- 2 files changed, 18 insertions(+), 17 deletions(-)
+ arch/arm/mm/dma-mapping.c   | 8 ++++++++
+ arch/arm64/mm/dma-mapping.c | 7 +++++++
+ 2 files changed, 15 insertions(+)
 
-diff --git a/drivers/of/address.c b/drivers/of/address.c
-index 02b2903..6aeb816 100644
---- a/drivers/of/address.c
-+++ b/drivers/of/address.c
-@@ -819,8 +819,8 @@ EXPORT_SYMBOL(of_io_request_and_map);
-  *	CPU addr (phys_addr_t)	: pna cells
-  *	size			: nsize cells
-  *
-- * It returns -ENODEV if "dma-ranges" property was not found
-- * for this device in DT.
-+ * Return 0 on success, -ENODEV if the "dma-ranges" property was not found for
-+ * this device in DT, or -EINVAL if the CPU address or size is invalid.
-  */
- int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index b9191f0..cbe22de 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -2289,11 +2289,19 @@ static bool arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ static void arm_teardown_iommu_dma_ops(struct device *dev)
  {
-@@ -880,6 +880,22 @@ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *siz
- 	*dma_addr = dmaaddr;
+ 	struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
++	const struct iommu_ops *ops;
  
- 	*size = of_read_number(ranges + naddr + pna, nsize);
-+	/*
-+	 * DT nodes sometimes incorrectly set the size as a mask. Work around
-+	 * those incorrect DT by computing the size as mask + 1.
-+	 */
-+	if (*size & 1) {
-+		pr_warn("%s: size 0x%llx for dma-range in node(%s) set as mask\n",
-+			__func__, *size, np->full_name);
-+		*size = *size + 1;
+ 	if (!mapping)
+ 		return;
+ 
+ 	__arm_iommu_detach_device(dev);
++
++	if (dev->iommu_fwspec) {
++		ops = dev->iommu_fwspec->ops;
++		if (ops->remove_device)
++			ops->remove_device(dev);
 +	}
 +
-+	if (!*size) {
-+		pr_err("%s: invalid size zero for dma-range in node(%s)\n",
-+		       __func__, np->full_name);
-+		ret = -EINVAL;
-+		goto out;
+ 	arm_iommu_release_mapping(mapping);
+ 	set_dma_ops(dev, NULL);
+ }
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 610d8e5..faf4b92 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -938,6 +938,13 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ void arch_teardown_dma_ops(struct device *dev)
+ {
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	const struct iommu_ops *ops;
++
++	if (dev->iommu_fwspec) {
++		ops = dev->iommu_fwspec->ops;
++		if (ops->remove_device)
++			ops->remove_device(dev);
 +	}
  
- 	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
- 		 *dma_addr, *paddr, *size);
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index fd5cfad..d9898d9 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -110,21 +110,6 @@ void of_dma_configure(struct device *dev, struct device_node *np)
- 		size = dev->coherent_dma_mask + 1;
- 	} else {
- 		offset = PFN_DOWN(paddr - dma_addr);
--
--		/*
--		 * Add a work around to treat the size as mask + 1 in case
--		 * it is defined in DT as a mask.
--		 */
--		if (size & 1) {
--			dev_warn(dev, "Invalid size 0x%llx for dma-range\n",
--				 size);
--			size = size + 1;
--		}
--
--		if (!size) {
--			dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
--			return;
--		}
- 		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
- 	}
- 
+ 	if (WARN_ON(domain))
+ 		iommu_detach_device(domain, dev);
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
