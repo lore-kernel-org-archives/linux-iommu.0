@@ -1,113 +1,115 @@
-From: Glenn Serre <gserre-43mecJUBy8ZBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v1 1/1] arch/x86: Add CONFIG_IOMMU_DEFAULT_PT for iommu=pt
-Date: Tue, 4 Oct 2016 10:00:50 -0700
-Message-ID: <04ab568e-8088-cf23-facb-7ef3fecf4bb6@brocade.com>
-References: <2ebef311-b346-f3ed-2fca-ce4715b84c9d@brocade.com>
-	<6b2c6f0b-cce8-b8f6-37c2-d4cc453bd603@brocade.com>
-	<20161004165232.GD2428@localhost.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161004165232.GD2428-bi+AKbBUZKY6gyzm1THtWbp2dZbC/Bob@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+From: Sricharan R <sricharan@codeaurora.org>
+Subject: [PATCH V3 0/8] IOMMU probe deferral support
+Date: Tue,  4 Oct 2016 22:33:44 +0530
+Message-ID: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, laurent.pinchart@ideasonboard.com, m.szyprowski@samsung.com, tfiga@chromium.org, srinivas.kandagatla@linaro.org
+Cc: sricharan@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-Good afternoon,
+Initial post from Laurent Pinchart[1]. This is
+series calls the dma ops configuration for the devices
+at a generic place so that it works for all busses.
+The dma_configure_ops for a device is now called during
+the device_attach callback just before the probe of the
+bus/driver is called. Similarly dma_deconfigure is called during
+device/driver_detach path.
 
-On 10/04/2016 09:52 AM, Konrad Rzeszutek Wilk wrote:
-> On Tue, Oct 04, 2016 at 09:11:39AM -0700, Glenn Serre wrote:
->> Add CONFIG_IOMMU_DEFAULT_PT for iommu=pt
->>
->> Allow default to iommu=pt without adding to command line.
->> Add iommu=nopt to turn off default.
->>
->> The reason we use iommu=pt is to support using the DPDK igb_uio driver,
->> which we need to do on servers that have an iommu but lack ACS.
->>
->> Signed-off-by: Glenn Serre <gserre-43mecJUBy8ZBDgjK7y7TUQ@public.gmane.org>
->> ---
->>  Documentation/kernel-parameters.txt | 3 ++-
->>  arch/x86/Kconfig                    | 7 +++++++
->>  arch/x86/kernel/pci-dma.c           | 6 ++++++
->>  3 files changed, 15 insertions(+), 1 deletion(-)
->>
->> --- a/Documentation/kernel-parameters.txt
->> +++ b/Documentation/kernel-parameters.txt
->> @@ -1607,7 +1607,8 @@
->>  		nomerge
->>  		forcesac
->>  		soft
->> -		pt		[x86, IA-64]
->> +		pt		[x86]
->
-> What about adding IA-64 back on?
 
-As far as I can see, IA-64 doesn't pay any attention at all to the iommu 
-parameter.  In arch/ia64/kernel/pci-dma.c, I see
+pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
+       |                         |
+pci_bus_add_device     (device_add/driver_register)
+       |                         |
+device_attach           device_initial_probe
+       |                         |
+__device_attach_driver    __device_attach_driver
+       |
+driver_probe_device
+       |
+really_probe
+       |
+dma_configure
 
-int iommu_pass_through;
+ Similarly on the device/driver_unregister path __device_release_driver is
+ called which inturn calls dma_deconfigure.
 
-but no early_param("iommu"), other occurrence of "iommu", or reference to 
-iommu_pass_through.
+ If the ACPI bus code follows the same, we can add acpi_dma_configure
+ at the same place as of_dma_configure.
 
-Thanks,
---Glenn S.
+ This series is based on the recently merged Generic DT bindings for
+ PCI IOMMUs and ARM SMMU from Robin Murphy robin.murphy@arm.com [2]
 
->
->> +		nopt		[x86]
->
-> Or here?
->>  		nobypass	[PPC/POWERNV]
->>  			Disable IOMMU bypass, using IOMMU for PCI devices.
->>
->> --- a/arch/x86/Kconfig
->> +++ b/arch/x86/Kconfig
->> @@ -845,6 +845,13 @@
->>  	def_bool y
->>  	depends on CALGARY_IOMMU || GART_IOMMU || SWIOTLB || AMD_IOMMU
->>
->> +config IOMMU_DEFAULT_PT
->> +	def_bool n
->> +	prompt "Set iommu=pt by default"
->> +	help
->> +	  Selecting this option will set iommu passthrough (iommu=pt)
->> +	  by default.  Use iommu=nopt to override.
->> +
->>  config MAXSMP
->>  	bool "Enable Maximum number of SMP Processors and NUMA Nodes"
->>  	depends on X86_64 && SMP && DEBUG_KERNEL
->> --- a/arch/x86/kernel/pci-dma.c
->> +++ b/arch/x86/kernel/pci-dma.c
->> @@ -43,7 +43,7 @@
->>   * useful if a user wants to use an IOMMU only for KVM device assignment to
->>   * guests and not for driver dma translation.
->>   */
->> -int iommu_pass_through __read_mostly;
->> +int iommu_pass_through __read_mostly = IS_ENABLED(CONFIG_IOMMU_DEFAULT_PT);
->>
->>  extern struct iommu_table_entry __iommu_table[], __iommu_table_end[];
->>
->> @@ -196,6 +196,8 @@
->>  #endif
->>  		if (!strncmp(p, "pt", 2))
->>  			iommu_pass_through = 1;
->> +		if (!strncmp(p, "nopt", 4))
->> +			iommu_pass_through = 0;
->>
->>  		gart_parse_options(p);
->>
->> _______________________________________________
->> iommu mailing list
->> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->> https://urldefense.proofpoint.com/v2/url?u=https-3A__lists.linuxfoundation.org_mailman_listinfo_iommu&d=DQIBAg&c=IL_XqQWOjubgfqINi2jTzg&r=3biwyMBB1JD9rm0R5wqz7zcDVkNif9HJ5Pflrr18dkw&m=sJQfEY5rZcAq-0QEyNvDxZkeujsoeiY8B_gabGOkyv8&s=ctQKeFfmQJ0ET8hJNBJmeRxdv_gwYgvysgku7sxdV4o&e=
+ This time tested this with platform and pci device for probe deferral
+ and reprobe on arm64 based platform. There is an issue on the cleanup
+ path for arm64 though, where there is WARN_ON if the dma_ops is reset while
+ device is attached to an domain in arch_teardown_dma_ops.
+ But with iommu_groups created from the iommu driver, the device is always
+ attached to a domain/default_domain. So so the WARN has to be removed/handled
+ probably.
+
+ Previous post of this series [3].
+
+ [V3]
+     * Removed the patch to split dma_masks/dma_ops configuration separately
+       based on review comments that both masks and ops are required only
+       during the device probe time.
+
+     * Reworked the series based on Generic DT bindings series [2].
+
+     * Added call to iommu's remove_device in the cleanup path for arm and arm64.
+
+     * Removed the notifier trick in arm64 to handle early device registration.
+
+     * Added reset of dma_ops in cleanup path for arm based on comments.
+
+     * Fixed the pci_iommu_configure path and tested with PCI device as well.
+ 
+     * Fixed a bug to return the correct iommu_ops from patch 7 [4] in last post.
+
+     * Fixed few other cosmetic comments.
+  
+ [V2]
+     * Updated the Initial post to call dma_configure/deconfigure from generic code
+ 
+     * Added iommu add_device callback from of_iommu_configure path
+
+ [V1]
+     * Initial post
+
+[1] http://lists.linuxfoundation.org/pipermail/iommu/2015-May/013016.html
+[2] http://www.spinics.net/lists/devicetree/msg142943.html
+[3] https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg13941.html
+[4] https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg13940.html
+
+
+
+Laurent Pinchart (4):
+  arm: dma-mapping: Don't override dma_ops in arch_setup_dma_ops()
+  of: dma: Move range size workaround to of_dma_get_range()
+  of: dma: Make of_dma_deconfigure() public
+  iommu: of: Handle IOMMU lookup failure with deferred probing or error
+
+Sricharan R (4):
+  drivers: platform: Configure dma operations at probe time
+  arm: dma-mapping: Reset the device's dma_ops
+  arm/arm64: dma-mapping: Call iommu's remove_device callback during
+    device detach
+  arm64: dma-mapping: Remove the notifier trick to handle early setting
+    of dma_ops
+
+ arch/arm/mm/dma-mapping.c   |  18 ++++++++
+ arch/arm64/mm/dma-mapping.c | 107 +++++---------------------------------------
+ drivers/base/dd.c           |  10 +++++
+ drivers/base/dma-mapping.c  |  11 +++++
+ drivers/iommu/of_iommu.c    |  47 +++++++++++++++++--
+ drivers/of/address.c        |  20 ++++++++-
+ drivers/of/device.c         |  34 +++++++-------
+ drivers/of/platform.c       |   9 ----
+ drivers/pci/probe.c         |   5 +--
+ include/linux/dma-mapping.h |   3 ++
+ include/linux/of_device.h   |   7 ++-
+ 11 files changed, 138 insertions(+), 133 deletions(-)
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
