@@ -1,17 +1,15 @@
-From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [PATCH v7 21/22] iommu/dma: Add support for mapping MSIs
-Date: Wed, 5 Oct 2016 11:31:43 +0000
-Message-ID: <DB6PR0402MB26943799B4B9E50BC5A93D65E6C40@DB6PR0402MB2694.eurprd04.prod.outlook.com>
-References: <cover.1473695704.git.robin.murphy@arm.com>
-	<2273af20d844bd618c6a90b57e639700328ebf7f.1473695704.git.robin.murphy@arm.com>
-	<DB6PR0402MB2694B2E5AE266F138784D2C2E6C40@DB6PR0402MB2694.eurprd04.prod.outlook.com>
-	<6ec9519b-01df-3be8-2967-7556bd306909@arm.com>
+From: Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>
+Subject: Re: [PATCH v4 0/2] Exynos IOMMU: proper runtime PM support (use
+	device dependencies)
+Date: Thu, 6 Oct 2016 00:42:05 +0200
+Message-ID: <57F581BD.3070208@math.uni-bielefeld.de>
+References: <CGME20160929081238eucas1p1a064e5371ce549f860d6cff4bd43b557@eucas1p1.samsung.com>
+	<1475136751-31340-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6ec9519b-01df-3be8-2967-7556bd306909-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1475136751-31340-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,388 +19,125 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "punit.agrawal-5wv7dgnIgG8@public.gmane.org" <punit.agrawal-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Krzysztof Kozlowski <k.kozlowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hello Marek,
+
+I have applied the new version onto 4.8.0 but I'm seeing this Oops on
+shutdown/reboot. However it only shows up with my non-debug config.
 
 
-> -----Original Message-----
-> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
-> Sent: Wednesday, October 05, 2016 15:26
-> To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-> Cc: will.deacon-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> foundation.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org;
-> devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; punit.agrawal-5wv7dgnIgG8@public.gmane.org;
-> thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
-> Subject: Re: [PATCH v7 21/22] iommu/dma: Add support for mapping MSIs
-> 
-> On 05/10/16 08:00, Nipun Gupta wrote:
-> >
-> >
-> >> -----Original Message-----
-> >> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
-> >> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Robin Murphy
-> >> Sent: Monday, September 12, 2016 21:44
-> >> To: will.deacon-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> >> foundation.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> >> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; punit.agrawal-5wv7dgnIgG8@public.gmane.org;
-> >> thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org
-> >> Subject: [PATCH v7 21/22] iommu/dma: Add support for mapping MSIs
-> >>
-> >> When an MSI doorbell is located downstream of an IOMMU, attaching
-> >> devices to a DMA ops domain and switching on translation leads to a
-> >> rude shock when their attempt to write to the physical address
-> >> returned by the irqchip driver faults (or worse, writes into some
-> >> already-mapped
-> >> buffer) and no interrupt is forthcoming.
-> >>
-> >> Address this by adding a hook for relevant irqchip drivers to call
-> >> from their
-> >> compose_msi_msg() callback, to swizzle the physical address with an
-> >> appropriatly-mapped IOVA for any device attached to one of our DMA
-> >> ops domains.
-> >>
-> >> Acked-by: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
-> >> Acked-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-> >> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> >> ---
-> >>  drivers/iommu/dma-iommu.c        | 136
-> >> ++++++++++++++++++++++++++++++++++-----
-> >>  drivers/irqchip/irq-gic-v2m.c    |   3 +
-> >>  drivers/irqchip/irq-gic-v3-its.c |   3 +
-> >>  include/linux/dma-iommu.h        |   9 +++
-> >>  4 files changed, 136 insertions(+), 15 deletions(-)
-> >>
-> >> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> >> index 00c8a08d56e7..4329d18080cf 100644
-> >> --- a/drivers/iommu/dma-iommu.c
-> >> +++ b/drivers/iommu/dma-iommu.c
-> >> @@ -25,10 +25,28 @@
-> >>  #include <linux/huge_mm.h>
-> >>  #include <linux/iommu.h>
-> >>  #include <linux/iova.h>
-> >> +#include <linux/irq.h>
-> >>  #include <linux/mm.h>
-> >>  #include <linux/scatterlist.h>
-> >>  #include <linux/vmalloc.h>
-> >>
-> >> +struct iommu_dma_msi_page {
-> >> +	struct list_head	list;
-> >> +	dma_addr_t		iova;
-> >> +	phys_addr_t		phys;
-> >> +};
-> >> +
-> >> +struct iommu_dma_cookie {
-> >> +	struct iova_domain	iovad;
-> >> +	struct list_head	msi_page_list;
-> >> +	spinlock_t		msi_lock;
-> >> +};
-> >> +
-> >> +static inline struct iova_domain *cookie_iovad(struct iommu_domain
-> >> +*domain) {
-> >> +	return &((struct iommu_dma_cookie *)domain->iova_cookie)->iovad; }
-> >> +
-> >>  int iommu_dma_init(void)
-> >>  {
-> >>  	return iova_cache_get();
-> >> @@ -43,15 +61,19 @@ int iommu_dma_init(void)
-> >>   */
-> >>  int iommu_get_dma_cookie(struct iommu_domain *domain)  {
-> >> -	struct iova_domain *iovad;
-> >> +	struct iommu_dma_cookie *cookie;
-> >>
-> >>  	if (domain->iova_cookie)
-> >>  		return -EEXIST;
-> >>
-> >> -	iovad = kzalloc(sizeof(*iovad), GFP_KERNEL);
-> >> -	domain->iova_cookie = iovad;
-> >> +	cookie = kzalloc(sizeof(*cookie), GFP_KERNEL);
-> >> +	if (!cookie)
-> >> +		return -ENOMEM;
-> >>
-> >> -	return iovad ? 0 : -ENOMEM;
-> >> +	spin_lock_init(&cookie->msi_lock);
-> >> +	INIT_LIST_HEAD(&cookie->msi_page_list);
-> >> +	domain->iova_cookie = cookie;
-> >> +	return 0;
-> >>  }
-> >>  EXPORT_SYMBOL(iommu_get_dma_cookie);
-> >>
-> >> @@ -63,14 +85,20 @@ EXPORT_SYMBOL(iommu_get_dma_cookie);
-> >>   */
-> >>  void iommu_put_dma_cookie(struct iommu_domain *domain)  {
-> >> -	struct iova_domain *iovad = domain->iova_cookie;
-> >> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> >> +	struct iommu_dma_msi_page *msi, *tmp;
-> >>
-> >> -	if (!iovad)
-> >> +	if (!cookie)
-> >>  		return;
-> >>
-> >> -	if (iovad->granule)
-> >> -		put_iova_domain(iovad);
-> >> -	kfree(iovad);
-> >> +	if (cookie->iovad.granule)
-> >> +		put_iova_domain(&cookie->iovad);
-> >> +
-> >> +	list_for_each_entry_safe(msi, tmp, &cookie->msi_page_list, list) {
-> >> +		list_del(&msi->list);
-> >> +		kfree(msi);
-> >> +	}
-> >> +	kfree(cookie);
-> >>  	domain->iova_cookie = NULL;
-> >>  }
-> >>  EXPORT_SYMBOL(iommu_put_dma_cookie);
-> >> @@ -88,7 +116,7 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
-> >>   */
-> >>  int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t
-> >> base, u64 size)  {
-> >> -	struct iova_domain *iovad = domain->iova_cookie;
-> >> +	struct iova_domain *iovad = cookie_iovad(domain);
-> >>  	unsigned long order, base_pfn, end_pfn;
-> >>
-> >>  	if (!iovad)
-> >> @@ -155,7 +183,7 @@ int dma_direction_to_prot(enum
-> dma_data_direction
-> >> dir, bool coherent)  static struct iova *__alloc_iova(struct
-> >> iommu_domain *domain, size_t size,
-> >>  		dma_addr_t dma_limit)
-> >>  {
-> >> -	struct iova_domain *iovad = domain->iova_cookie;
-> >> +	struct iova_domain *iovad = cookie_iovad(domain);
-> >>  	unsigned long shift = iova_shift(iovad);
-> >>  	unsigned long length = iova_align(iovad, size) >> shift;
-> >>
-> >> @@ -171,7 +199,7 @@ static struct iova *__alloc_iova(struct
-> >> iommu_domain *domain, size_t size,
-> >>  /* The IOVA allocator knows what we mapped, so just unmap whatever
-> >> that was */  static void __iommu_dma_unmap(struct iommu_domain
-> >> *domain, dma_addr_t dma_addr)  {
-> >> -	struct iova_domain *iovad = domain->iova_cookie;
-> >> +	struct iova_domain *iovad = cookie_iovad(domain);
-> >>  	unsigned long shift = iova_shift(iovad);
-> >>  	unsigned long pfn = dma_addr >> shift;
-> >>  	struct iova *iova = find_iova(iovad, pfn); @@ -294,7 +322,7 @@
-> >> struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
-> >>  		void (*flush_page)(struct device *, const void *, phys_addr_t))  {
-> >>  	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> >> -	struct iova_domain *iovad = domain->iova_cookie;
-> >> +	struct iova_domain *iovad = cookie_iovad(domain);
-> >>  	struct iova *iova;
-> >>  	struct page **pages;
-> >>  	struct sg_table sgt;
-> >> @@ -386,7 +414,7 @@ dma_addr_t iommu_dma_map_page(struct device
-> *dev,
-> >> struct page *page,  {
-> >>  	dma_addr_t dma_addr;
-> >>  	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> >> -	struct iova_domain *iovad = domain->iova_cookie;
-> >> +	struct iova_domain *iovad = cookie_iovad(domain);
-> >>  	phys_addr_t phys = page_to_phys(page) + offset;
-> >>  	size_t iova_off = iova_offset(iovad, phys);
-> >>  	size_t len = iova_align(iovad, size + iova_off); @@ -495,7 +523,7
-> >> @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
-> >>  		int nents, int prot)
-> >>  {
-> >>  	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> >> -	struct iova_domain *iovad = domain->iova_cookie;
-> >> +	struct iova_domain *iovad = cookie_iovad(domain);
-> >>  	struct iova *iova;
-> >>  	struct scatterlist *s, *prev = NULL;
-> >>  	dma_addr_t dma_addr;
-> >> @@ -587,3 +615,81 @@ int iommu_dma_mapping_error(struct device *dev,
-> >> dma_addr_t dma_addr)  {
-> >>  	return dma_addr == DMA_ERROR_CODE;
-> >>  }
-> >> +
-> >> +static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct
-> >> +device
-> >> *dev,
-> >> +		phys_addr_t msi_addr, struct iommu_domain *domain) {
-> >> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> >> +	struct iommu_dma_msi_page *msi_page;
-> >> +	struct iova_domain *iovad = &cookie->iovad;
-> >> +	struct iova *iova;
-> >> +	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> >> +
-> >> +	msi_addr &= ~(phys_addr_t)iova_mask(iovad);
-> >> +	list_for_each_entry(msi_page, &cookie->msi_page_list, list)
-> >> +		if (msi_page->phys == msi_addr)
-> >> +			return msi_page;
-> >> +
-> >> +	msi_page = kzalloc(sizeof(*msi_page), GFP_ATOMIC);
-> >> +	if (!msi_page)
-> >> +		return NULL;
-> >> +
-> >> +	iova = __alloc_iova(domain, iovad->granule, dma_get_mask(dev));
-> >
-> > I think this should be 'iova = __alloc_iova(domain, iovad->granule,
-> dma_get_mask(dev));'
-> 
-> Er, yes... I fully agree. That's why it is exactly that.
-> 
-> > as __alloc_iova takes input parameter as 'struct iova_domain *'
-> 
-> Joking aside, though, I guess you've overlooked the change introduced by
-> c987ff0d3cb3 ("iommu/dma: Respect IOMMU aperture when allocating")?
+> [  897.046373] Internal error: Oops: 80000005 [#1] PREEMPT SMP ARM
+> [  897.046652] Modules linked in: bridge stp llc bnep btrfs xor xor_neon zlib_inflate zlib_deflate raid6_pq s5p_mfc extcon_odroid_usbotg btusb btbcm btintel s5p_jpeg videobuf2_dma_contig v4l2_mem2mem videobuf2_memops videobuf2_v4l2 videobuf2_core
+> [  897.068174] CPU: 2 PID: 9437 Comm: reboot Not tainted 4.8.0-vanilla+ #2
+> [  897.074772] Hardware name: SAMSUNG EXYNOS (Flattened Device Tree)
+> [  897.080848] task: eea02100 task.stack: cb488000
+> [  897.085363] PC is at 0xb886c672
+> [  897.088489] LR is at device_shutdown+0x134/0x1c0
+> [  897.093087] pc : [<b886c672>]    lr : [<c0405b14>]    psr: 600a0073
+> [  897.093087] sp : cb489e28  ip : 00000000  fp : cb489e4c
+> [  897.104547] r10: 00000000  r9 : ee0cfe44  r8 : c0a39020
+> [  897.109752] r7 : c0a6d774  r6 : ee0cfe10  r5 : ee08b810  r4 : ee0cfe1c
+> [  897.116262] r3 : b886c673  r2 : 00000000  r1 : 00000002  r0 : ee0cfe10
+> [  897.122773] Flags: nZCv  IRQs on  FIQs off  Mode SVC_32  ISA Thumb  Segment none
+> [  897.130151] Control: 10c5387d  Table: 6a24404a  DAC: 00000051
+> [  897.135879] Process reboot (pid: 9437, stack limit = 0xcb488218)
+> [  897.141868] Stack: (0xcb489e28 to 0xcb48a000)
+> [  897.146209] 9e20:                   00000000 00000000 01234567 c0a09d4c 00000010 c0a09a88
+> [  897.154371] 9e40: cb489e5c cb489e50 c013eb5c c04059ec cb489e74 cb489e60 c013ec38 c013eb2c
+> [  897.162530] 9e60: 01234567 c0a02448 cb489fa4 cb489e78 c013ef08 c013ec30 eb87ca80 00c0d000
+> [  897.170698] 9e80: cb489ea4 cb489e90 c01c9660 c01c9434 ef026000 00000000 cb489eb4 cb489ea8
+> [  897.178855] 9ea0: c01c977c c01c961c cb489ec4 cb489eb8 c01c9798 c01c9760 cb489f3c cb489ec8
+> [  897.187014] 9ec0: c01eeaa4 c01c978c eb87ca80 00000000 ec421210 00c0d000 ed8af3c0 eefd5140
+> [  897.195173] 9ee0: ee84a140 eea11e40 cb489f14 cb489ef8 c022bc58 c016cfa0 ed8afa80 ee665c38
+> [  897.203333] 9f00: 00000000 eea11e50 cb489f24 cb489f18 c022be1c c022bc20 cb489f5c cb489f28
+> [  897.211492] 9f20: c020ce88 c022bdfc 00000020 00000000 cb489f54 eea024f8 c0a39f7c 00000000
+> [  897.219651] 9f40: eea02100 c0107ee4 cb488000 00000000 cb489f6c cb489f60 c020cf80 c020cd5c
+> [  897.227810] 9f60: cb489f8c cb489f70 c013aa40 c06dd2dc cb488010 c0107ee4 cb489fb0 00040800
+> [  897.235969] 9f80: 00000001 be966ce0 00bec008 00000058 c0107ee4 cb488000 00000000 cb489fa8
+> [  897.244129] 9fa0: c0107d20 c013ee04 00000001 be966ce0 fee1dead 28121969 01234567 00000010
+> [  897.252287] 9fc0: 00000001 be966ce0 00bec008 00000058 00000000 000230e4 00000000 00000000
+> [  897.260447] 9fe0: 00023030 be966cc4 00010e9c b6f3f290 200a0050 fee1dead 00000000 00000000
+> [  897.268603] Backtrace: 
+> [  897.271033] [<c04059e0>] (device_shutdown) from [<c013eb5c>] (kernel_restart_prepare+0x3c/0x40)
+> [  897.279715]  r9:c0a09a88 r8:00000010 r7:c0a09d4c r6:01234567 r5:00000000 r4:00000000
+> [  897.287439] [<c013eb20>] (kernel_restart_prepare) from [<c013ec38>] (kernel_restart+0x14/0x58)
+> [  897.296036] [<c013ec24>] (kernel_restart) from [<c013ef08>] (SyS_reboot+0x110/0x1f8)
+> [  897.303757]  r4:c0a02448 r3:01234567
+> [  897.307314] [<c013edf8>] (SyS_reboot) from [<c0107d20>] (ret_fast_syscall+0x0/0x3c)
+> [  897.314955]  r9:cb488000 r8:c0107ee4 r7:00000058 r6:00bec008 r5:be966ce0 r4:00000001
+> [  897.322680] Code: bad PC value
+> [  897.325940] ---[ end trace 861fd282a7bdc01e ]---
 
-Ooops!! My bad. That's right, I missed out this change.
 
-Thanks,
-Nipun
+The corresponding config:
+https://github.com/tobiasjakobi/odroid-environment/blob/master/sourcecode/system/vanilla-4.8.conf
 
+
+With best wishes,
+Tobias
+
+
+
+
+Marek Szyprowski wrote:
+> Hello,
 > 
-> Robin.
+> This patch series finally implements proper runtime PM support in Exynos
+> IOMMU driver. This has been achieved by using recently introduce device
+> links, which lets SYSMMU controller's runtime PM to follow master's device
+> runtime PM state (the device which actually performs DMA transaction).
+> The main idea behind this solution is an observation that any DMA activity
+> from master device can be done only when master device is active, thus when
+> master device is suspended SYSMMU controller device can also be suspended.
 > 
-> >
-> > Regards,
-> > Nipun
-> >
-> >> +	if (!iova)
-> >> +		goto out_free_page;
-> >> +
-> >> +	msi_page->phys = msi_addr;
-> >> +	msi_page->iova = iova_dma_addr(iovad, iova);
-> >> +	if (iommu_map(domain, msi_page->iova, msi_addr, iovad->granule,
-> >> prot))
-> >> +		goto out_free_iova;
-> >> +
-> >> +	INIT_LIST_HEAD(&msi_page->list);
-> >> +	list_add(&msi_page->list, &cookie->msi_page_list);
-> >> +	return msi_page;
-> >> +
-> >> +out_free_iova:
-> >> +	__free_iova(iovad, iova);
-> >> +out_free_page:
-> >> +	kfree(msi_page);
-> >> +	return NULL;
-> >> +}
-> >> +
-> >> +void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg) {
-> >> +	struct device *dev = msi_desc_to_dev(irq_get_msi_desc(irq));
-> >> +	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> >> +	struct iommu_dma_cookie *cookie;
-> >> +	struct iommu_dma_msi_page *msi_page;
-> >> +	phys_addr_t msi_addr = (u64)msg->address_hi << 32 | msg->address_lo;
-> >> +	unsigned long flags;
-> >> +
-> >> +	if (!domain || !domain->iova_cookie)
-> >> +		return;
-> >> +
-> >> +	cookie = domain->iova_cookie;
-> >> +
-> >> +	/*
-> >> +	 * We disable IRQs to rule out a possible inversion against
-> >> +	 * irq_desc_lock if, say, someone tries to retarget the affinity
-> >> +	 * of an MSI from within an IPI handler.
-> >> +	 */
-> >> +	spin_lock_irqsave(&cookie->msi_lock, flags);
-> >> +	msi_page = iommu_dma_get_msi_page(dev, msi_addr, domain);
-> >> +	spin_unlock_irqrestore(&cookie->msi_lock, flags);
-> >> +
-> >> +	if (WARN_ON(!msi_page)) {
-> >> +		/*
-> >> +		 * We're called from a void callback, so the best we can do is
-> >> +		 * 'fail' by filling the message with obviously bogus values.
-> >> +		 * Since we got this far due to an IOMMU being present, it's
-> >> +		 * not like the existing address would have worked anyway...
-> >> +		 */
-> >> +		msg->address_hi = ~0U;
-> >> +		msg->address_lo = ~0U;
-> >> +		msg->data = ~0U;
-> >> +	} else {
-> >> +		msg->address_hi = upper_32_bits(msi_page->iova);
-> >> +		msg->address_lo &= iova_mask(&cookie->iovad);
-> >> +		msg->address_lo += lower_32_bits(msi_page->iova);
-> >> +	}
-> >> +}
-> >> diff --git a/drivers/irqchip/irq-gic-v2m.c
-> >> b/drivers/irqchip/irq-gic-v2m.c index 35eb7ac5d21f..863e073c6f7f
-> >> 100644
-> >> --- a/drivers/irqchip/irq-gic-v2m.c
-> >> +++ b/drivers/irqchip/irq-gic-v2m.c
-> >> @@ -16,6 +16,7 @@
-> >>  #define pr_fmt(fmt) "GICv2m: " fmt
-> >>
-> >>  #include <linux/acpi.h>
-> >> +#include <linux/dma-iommu.h>
-> >>  #include <linux/irq.h>
-> >>  #include <linux/irqdomain.h>
-> >>  #include <linux/kernel.h>
-> >> @@ -108,6 +109,8 @@ static void gicv2m_compose_msi_msg(struct
-> >> irq_data *data, struct msi_msg *msg)
-> >>
-> >>  	if (v2m->flags & GICV2M_NEEDS_SPI_OFFSET)
-> >>  		msg->data -= v2m->spi_offset;
-> >> +
-> >> +	iommu_dma_map_msi_msg(data->irq, msg);
-> >>  }
-> >>
-> >>  static struct irq_chip gicv2m_irq_chip = { diff --git
-> >> a/drivers/irqchip/irq-gic-v3- its.c
-> >> b/drivers/irqchip/irq-gic-v3-its.c
-> >> index 36b9c28a5c91..98ff669d5962 100644
-> >> --- a/drivers/irqchip/irq-gic-v3-its.c
-> >> +++ b/drivers/irqchip/irq-gic-v3-its.c
-> >> @@ -18,6 +18,7 @@
-> >>  #include <linux/bitmap.h>
-> >>  #include <linux/cpu.h>
-> >>  #include <linux/delay.h>
-> >> +#include <linux/dma-iommu.h>
-> >>  #include <linux/interrupt.h>
-> >>  #include <linux/log2.h>
-> >>  #include <linux/mm.h>
-> >> @@ -655,6 +656,8 @@ static void its_irq_compose_msi_msg(struct
-> >> irq_data *d, struct msi_msg *msg)
-> >>  	msg->address_lo		= addr & ((1UL << 32) - 1);
-> >>  	msg->address_hi		= addr >> 32;
-> >>  	msg->data		= its_get_event_id(d);
-> >> +
-> >> +	iommu_dma_map_msi_msg(d->irq, msg);
-> >>  }
-> >>
-> >>  static struct irq_chip its_irq_chip = { diff --git
-> >> a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h index
-> >> 81c5c8d167ad..5ee806e41b5c 100644
-> >> --- a/include/linux/dma-iommu.h
-> >> +++ b/include/linux/dma-iommu.h
-> >> @@ -21,6 +21,7 @@
-> >>
-> >>  #ifdef CONFIG_IOMMU_DMA
-> >>  #include <linux/iommu.h>
-> >> +#include <linux/msi.h>
-> >>
-> >>  int iommu_dma_init(void);
-> >>
-> >> @@ -62,9 +63,13 @@ void iommu_dma_unmap_sg(struct device *dev,
-> struct
-> >> scatterlist *sg, int nents,  int iommu_dma_supported(struct device
-> >> *dev, u64 mask);  int iommu_dma_mapping_error(struct device *dev,
-> >> dma_addr_t dma_addr);
-> >>
-> >> +/* The DMA API isn't _quite_ the whole story, though... */ void
-> >> +iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
-> >> +
-> >>  #else
-> >>
-> >>  struct iommu_domain;
-> >> +struct msi_msg;
-> >>
-> >>  static inline int iommu_dma_init(void)  { @@ -80,6 +85,10 @@ static
-> >> inline void iommu_put_dma_cookie(struct iommu_domain *domain)  {  }
-> >>
-> >> +static inline void iommu_dma_map_msi_msg(int irq, struct msi_msg
-> >> +*msg) { }
-> >> +
-> >>  #endif	/* CONFIG_IOMMU_DMA */
-> >>  #endif	/* __KERNEL__ */
-> >>  #endif	/* __DMA_IOMMU_H */
-> >> --
-> >> 2.8.1.dirty
-> >>
-> >> _______________________________________________
-> >> iommu mailing list
-> >> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> >> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> >
+> This patchset solves the situation that power domains are always enabled,
+> because all SYSMMU controllers (which belongs to those domains) are
+> permanently active (because existing driver was simplified and kept
+> SYSMMU device active all the time after initialization).
+> 
+> Patch requires fourth version of Rafeal's "Functional dependencies
+> between devices" patchset, which is available here:
+> https://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1241473.html
+> 
+> If one wants to test this patchset, I've provided a branch with all needed
+> patches (some fixes for Exynos4 FIMC-IS driver are needed):
+> https://git.linaro.org/people/marek.szyprowski/linux-srpol.git v4.8-iommu-pm-v4
+> 
+> Patches are based on vanilla v4.8-rc8 kernel with Rafael's device
+> dependencies v4 patchset applied.
+> 
+> Best regards
+> Marek Szyprowski
+> Samsung R&D Institute Poland
+> 
+> 
+> Changelog:
+> v4:
+> - rebased on top of v4 of device dependencies/links patchset, what resolved
+>   system hang on reboot
+> 
+> v3: http://www.spinics.net/lists/linux-samsung-soc/msg55256.html
+> - rebased on top of latest device dependencies/links patchset
+> - added proper locking between runtime pm, iommu_attach/detach and sysmmu
+>   enable/disable(added per iommu owner device's rpm lock)
+> 
+> v2: http://www.spinics.net/lists/arm-kernel/msg512082.html
+> - replaced PM notifiers with generic device dependencies/links developped
+>   by Rafael J. Wysocki
+> 
+> v1: http://www.spinics.net/lists/arm-kernel/msg509600.html
+> - initial version
+> 
+> 
+> Patch summary:
+> 
+> Marek Szyprowski (2):
+>   iommu/exynos: Remove excessive, useless debug
+>   iommu/exynos: Add proper runtime pm support
+> 
+>  drivers/iommu/exynos-iommu.c | 228 ++++++++++++++++++-------------------------
+>  1 file changed, 94 insertions(+), 134 deletions(-)
+> 
