@@ -1,16 +1,15 @@
 From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v13 11/15] vfio/type1: Handle unmap/unpin and replay for
-	VFIO_IOVA_RESERVED slots
-Date: Fri, 7 Oct 2016 19:11:55 +0200
-Message-ID: <5fe76a21-15d5-61e3-21c9-33046592a04c@redhat.com>
+Subject: Re: [PATCH v13 04/15] genirq/msi: Introduce the MSI doorbell API
+Date: Fri, 7 Oct 2016 19:13:34 +0200
+Message-ID: <4806f73f-269b-4ad1-b6db-53c32c4ddd13@redhat.com>
 References: <1475743531-4780-1-git-send-email-eric.auger@redhat.com>
-	<1475743531-4780-12-git-send-email-eric.auger@redhat.com>
-	<20161006141918.67928391@t450s.home>
+	<1475743531-4780-5-git-send-email-eric.auger@redhat.com>
+	<20161006141750.1e209e26@t450s.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161006141918.67928391-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <20161006141750.1e209e26-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,99 +25,326 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Alex,
 
-On 06/10/2016 22:19, Alex Williamson wrote:
-> On Thu,  6 Oct 2016 08:45:27 +0000
+On 06/10/2016 22:17, Alex Williamson wrote:
+> On Thu,  6 Oct 2016 08:45:20 +0000
 > Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
 > 
->> Before allowing the end-user to create VFIO_IOVA_RESERVED dma slots,
->> let's implement the expected behavior for removal and replay.
+>> We introduce a new msi-doorbell API that allows msi controllers
+>> to allocate and register their doorbells. This is useful when
+>> those doorbells are likely to be iommu mapped (typically on ARM).
+>> The VFIO layer will need to gather information about those doorbells:
+>> whether they are safe (ie. they implement irq remapping) and how
+>> many IOMMU pages are requested to map all of them.
 >>
->> As opposed to user dma slots, reserved IOVAs are not systematically bound
->> to PAs and PAs are not pinned. VFIO just initializes the IOVA "aperture".
->> IOVAs are allocated outside of the VFIO framework, by the MSI layer which
->> is responsible to free and unmap them. The MSI mapping resources are freeed
-> 
-> nit, extra 'e', "freed"
-> 
->> by the IOMMU driver on domain destruction.
+>> This patch first introduces the dedicated msi_doorbell_info struct
+>> and the registration/unregistration functions.
 >>
->> On the creation of a new domain, the "replay" of a reserved slot simply
->> needs to set the MSI aperture on the new domain.
+>> A doorbell region is characterized by its physical address base, size,
+>> and whether it its safe (ie. it implements IRQ remapping). A doorbell
+>> can be per-cpu of global. We currently only care about global doorbells.
+>                  ^^ s/of/or/
+OK
+> 
+>>
+>> A function returns whether all doorbells are safe.
 >>
 >> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 >>
 >> ---
 >> v12 -> v13:
->> - use dma-iommu iommu_get_dma_msi_region_cookie
+>> - directly select MSI_DOORBELL in ARM_SMMU and ARM_SMMU_V3 configs
+>> - remove prot attribute
+>> - move msi_doorbell_info struct definition in msi-doorbell.c
+>> - change the commit title
+>> - change proto of the registration function
+>> - msi_doorbell_safe now in this patch
 >>
->> v9 -> v10:
->> - replay of a reserved slot sets the MSI aperture on the new domain
->> - use VFIO_IOVA_RESERVED_MSI enum value instead of VFIO_IOVA_RESERVED
+>> v11 -> v12:
+>> - rename irqchip_doorbell into msi_doorbell, irqchip_doorbell_list
+>>   into msi_doorbell_list and irqchip_doorbell_mutex into
+>>   msi_doorbell_mutex
+>> - fix style issues: align msi_doorbell struct members, kernel-doc comments
+>> - use kzalloc
+>> - use container_of in msi_doorbell_unregister_global
+>> - compute nb_unsafe_doorbells on registration/unregistration
+>> - registration simply returns NULL if allocation failed
 >>
->> v7 -> v8:
->> - do no destroy anything anymore, just bypass unmap/unpin and iommu_map
->>   on replay
+>> v10 -> v11:
+>> - remove void *chip_data argument from register/unregister function
+>> - remove lookup funtions since we restored the struct irq_chip
+>>   msi_doorbell_info ops to realize this function
+>> - reword commit message and title
+>>
+>> Conflicts:
+>> 	kernel/irq/Makefile
+>>
+>> Conflicts:
+>> 	drivers/iommu/Kconfig
 >> ---
->>  drivers/vfio/Kconfig            |  1 +
->>  drivers/vfio/vfio_iommu_type1.c | 10 +++++++++-
->>  2 files changed, 10 insertions(+), 1 deletion(-)
+>>  drivers/iommu/Kconfig        |  2 +
+>>  include/linux/msi-doorbell.h | 77 ++++++++++++++++++++++++++++++++++
+>>  kernel/irq/Kconfig           |  4 ++
+>>  kernel/irq/Makefile          |  1 +
+>>  kernel/irq/msi-doorbell.c    | 98 ++++++++++++++++++++++++++++++++++++++++++++
+>>  5 files changed, 182 insertions(+)
+>>  create mode 100644 include/linux/msi-doorbell.h
+>>  create mode 100644 kernel/irq/msi-doorbell.c
 >>
->> diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
->> index da6e2ce..673ec79 100644
->> --- a/drivers/vfio/Kconfig
->> +++ b/drivers/vfio/Kconfig
->> @@ -1,6 +1,7 @@
->>  config VFIO_IOMMU_TYPE1
->>  	tristate
->>  	depends on VFIO
->> +	select IOMMU_DMA
->>  	default n
->>  
->>  config VFIO_IOMMU_SPAPR_TCE
->> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> index 65a4038..5bc5fc9 100644
->> --- a/drivers/vfio/vfio_iommu_type1.c
->> +++ b/drivers/vfio/vfio_iommu_type1.c
->> @@ -36,6 +36,7 @@
->>  #include <linux/uaccess.h>
->>  #include <linux/vfio.h>
->>  #include <linux/workqueue.h>
->> +#include <linux/dma-iommu.h>
->>  
->>  #define DRIVER_VERSION  "0.2"
->>  #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
->> @@ -387,7 +388,7 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
->>  	struct vfio_domain *domain, *d;
->>  	long unlocked = 0;
->>  
->> -	if (!dma->size)
->> +	if (!dma->size || dma->type != VFIO_IOVA_USER)
->>  		return;
->>  	/*
->>  	 * We use the IOMMU to track the physical addresses, otherwise we'd
->> @@ -724,6 +725,13 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
->>  		dma = rb_entry(n, struct vfio_dma, node);
->>  		iova = dma->iova;
->>  
->> +		if (dma->type == VFIO_IOVA_RESERVED_MSI) {
->> +			ret = iommu_get_dma_msi_region_cookie(domain->domain,
->> +						     dma->iova, dma->size);
->> +			WARN_ON(ret);
->> +			continue;
->> +		}
+>> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+>> index 8ee54d7..0cc7fac 100644
+>> --- a/drivers/iommu/Kconfig
+>> +++ b/drivers/iommu/Kconfig
+>> @@ -297,6 +297,7 @@ config SPAPR_TCE_IOMMU
+>>  config ARM_SMMU
+>>  	bool "ARM Ltd. System MMU (SMMU) Support"
+>>  	depends on (ARM64 || ARM) && MMU
+>> +	select MSI_DOORBELL
+>>  	select IOMMU_API
+>>  	select IOMMU_IO_PGTABLE_LPAE
+>>  	select ARM_DMA_USE_IOMMU if ARM
+>> @@ -310,6 +311,7 @@ config ARM_SMMU
+>>  config ARM_SMMU_V3
+>>  	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
+>>  	depends on ARM64
+>> +	select MSI_DOORBELL
+>>  	select IOMMU_API
+>>  	select IOMMU_IO_PGTABLE_LPAE
+>>  	select GENERIC_MSI_IRQ_DOMAIN
+>> diff --git a/include/linux/msi-doorbell.h b/include/linux/msi-doorbell.h
+>> new file mode 100644
+>> index 0000000..c18a382
+>> --- /dev/null
+>> +++ b/include/linux/msi-doorbell.h
+>> @@ -0,0 +1,77 @@
+>> +/*
+>> + * API to register/query MSI doorbells likely to be IOMMU mapped
+>> + *
+>> + * Copyright (C) 2016 Red Hat, Inc.
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License version 2 as
+>> + * published by the Free Software Foundation.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + * GNU General Public License for more details.
+>> + *
+>> + * You should have received a copy of the GNU General Public License
+>> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+>> + */
+>> +
+>> +#ifndef _LINUX_MSI_DOORBELL_H
+>> +#define _LINUX_MSI_DOORBELL_H
+>> +
+>> +struct msi_doorbell_info;
+>> +
+>> +#ifdef CONFIG_MSI_DOORBELL
+>> +
+>> +/**
+>> + * msi_doorbell_register - allocate and register a global doorbell
+>> + * @base: physical base address of the global doorbell
+>> + * @size: size of the global doorbell
+>> + * @prot: protection/memory attributes
+>> + * @safe: true is irq_remapping implemented for this doorbell
+>> + * @dbinfo: returned doorbell info
+>> + *
+>> + * Return: 0 on success, -ENOMEM on allocation failure
+>> + */
+>> +int msi_doorbell_register_global(phys_addr_t base, size_t size,
+>> +				 bool safe,
+>> +				 struct msi_doorbell_info **dbinfo);
+>> +
 > 
-> Why is this a passable error?  We consider an iommu_map() error on any
-> entry a failure.
-Yes I agree.
+> Seems like alloc/free behavior vs register/unregister.  Also seems
+> cleaner to just return a struct msi_doorbell_info* and use PTR_ERR for
+> return codes.  These are of course superficial changes that could be
+> addressed in the future.
+Sure
+> 
+>> +/**
+>> + * msi_doorbell_unregister_global - unregister a global doorbell
+>> + * @db: doorbell info to unregister
+>> + *
+>> + * remove the doorbell descriptor from the list of registered doorbells
+>> + * and deallocates it
+>> + */
+>> +void msi_doorbell_unregister_global(struct msi_doorbell_info *db);
+>> +
+>> +/**
+>> + * msi_doorbell_safe - return whether all registered doorbells are safe
+>> + *
+>> + * Safe doorbells are those which implement irq remapping
+>> + * Return: true if all doorbells are safe, false otherwise
+>> + */
+>> +bool msi_doorbell_safe(void);
+>> +
+>> +#else
+>> +
+>> +static inline int
+>> +msi_doorbell_register_global(phys_addr_t base, size_t size,
+>> +			     int prot, bool safe,
+>> +			     struct msi_doorbell_info **dbinfo)
+>> +{
+>> +	*dbinfo = NULL;
+>> +	return 0;
+> 
+> If we return a struct*
+> 
+> return NULL;
+Yep
+> 
+>> +}
+>> +
+>> +static inline void
+>> +msi_doorbell_unregister_global(struct msi_doorbell_info *db) {}
+>> +
+>> +static inline bool msi_doorbell_safe(void)
+>> +{
+>> +	return true;
+>> +}
+> 
+> Is it?
+Yes I will return false and change the safety check in vfio_iommu_type1.c
 
 Thanks
 
 Eric
 > 
+>> +#endif /* CONFIG_MSI_DOORBELL */
 >> +
->>  		while (iova < dma->iova + dma->size) {
->>  			phys_addr_t phys = iommu_iova_to_phys(d->domain, iova);
->>  			size_t size;
+>> +#endif
+>> diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
+>> index 3bbfd6a..d4faaaa 100644
+>> --- a/kernel/irq/Kconfig
+>> +++ b/kernel/irq/Kconfig
+>> @@ -72,6 +72,10 @@ config GENERIC_IRQ_IPI
+>>  config GENERIC_MSI_IRQ
+>>  	bool
+>>  
+>> +# MSI doorbell support (for doorbell IOMMU mapping)
+>> +config MSI_DOORBELL
+>> +	bool
+>> +
+>>  # Generic MSI hierarchical interrupt domain support
+>>  config GENERIC_MSI_IRQ_DOMAIN
+>>  	bool
+>> diff --git a/kernel/irq/Makefile b/kernel/irq/Makefile
+>> index 1d3ee31..5b04dd1 100644
+>> --- a/kernel/irq/Makefile
+>> +++ b/kernel/irq/Makefile
+>> @@ -10,3 +10,4 @@ obj-$(CONFIG_PM_SLEEP) += pm.o
+>>  obj-$(CONFIG_GENERIC_MSI_IRQ) += msi.o
+>>  obj-$(CONFIG_GENERIC_IRQ_IPI) += ipi.o
+>>  obj-$(CONFIG_SMP) += affinity.o
+>> +obj-$(CONFIG_MSI_DOORBELL) += msi-doorbell.o
+>> diff --git a/kernel/irq/msi-doorbell.c b/kernel/irq/msi-doorbell.c
+>> new file mode 100644
+>> index 0000000..60a262a
+>> --- /dev/null
+>> +++ b/kernel/irq/msi-doorbell.c
+>> @@ -0,0 +1,98 @@
+>> +/*
+>> + * API to register/query MSI doorbells likely to be IOMMU mapped
+>> + *
+>> + * Copyright (C) 2016 Red Hat, Inc.
+>> + * Author: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License version 2 as
+>> + * published by the Free Software Foundation.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + * GNU General Public License for more details.
+>> + *
+>> + * You should have received a copy of the GNU General Public License
+>> + * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+>> + */
+>> +
+>> +#include <linux/slab.h>
+>> +#include <linux/irq.h>
+>> +#include <linux/msi-doorbell.h>
+>> +
+>> +/**
+>> + * struct msi_doorbell_info - MSI doorbell region descriptor
+>> + * @percpu_doorbells: per cpu doorbell base address
+>> + * @global_doorbell: base address of the doorbell
+>> + * @doorbell_is_percpu: is the doorbell per cpu or global?
+>> + * @safe: true if irq remapping is implemented
+>> + * @size: size of the doorbell
+>> + */
+>> +struct msi_doorbell_info {
+>> +	union {
+>> +		phys_addr_t __percpu    *percpu_doorbells;
+>> +		phys_addr_t             global_doorbell;
+>> +	};
+>> +	bool    doorbell_is_percpu;
+>> +	bool    safe;
+>> +	size_t  size;
+>> +};
+>> +
+>> +struct msi_doorbell {
+>> +	struct msi_doorbell_info	info;
+>> +	struct list_head		next;
+>> +};
+>> +
+>> +/* list of registered MSI doorbells */
+>> +static LIST_HEAD(msi_doorbell_list);
+>> +
+>> +/* counts the number of unsafe registered doorbells */
+>> +static uint nb_unsafe_doorbells;
+>> +
+>> +/* protects the list and nb__unsafe_doorbells */
+> 
+> Extra underscore
+> 
+>> +static DEFINE_MUTEX(msi_doorbell_mutex);
+>> +
+>> +int msi_doorbell_register_global(phys_addr_t base, size_t size, bool safe,
+>> +				 struct msi_doorbell_info **dbinfo)
+>> +{
+>> +	struct msi_doorbell *db;
+>> +
+>> +	db = kzalloc(sizeof(*db), GFP_KERNEL);
+>> +	if (!db)
+>> +		return -ENOMEM;
+>> +
+>> +	db->info.global_doorbell = base;
+>> +	db->info.size = size;
+>> +	db->info.safe = safe;
+>> +
+>> +	mutex_lock(&msi_doorbell_mutex);
+>> +	list_add(&db->next, &msi_doorbell_list);
+>> +	if (!db->info.safe)
+>> +		nb_unsafe_doorbells++;
+>> +	mutex_unlock(&msi_doorbell_mutex);
+>> +	*dbinfo = &db->info;
+>> +	return 0;
+>> +}
+>> +EXPORT_SYMBOL_GPL(msi_doorbell_register_global);
+>> +
+>> +void msi_doorbell_unregister_global(struct msi_doorbell_info *dbinfo)
+>> +{
+>> +	struct msi_doorbell *db;
+>> +
+>> +	db = container_of(dbinfo, struct msi_doorbell, info);
+>> +
+>> +	mutex_lock(&msi_doorbell_mutex);
+>> +	list_del(&db->next);
+>> +	if (!db->info.safe)
+>> +		nb_unsafe_doorbells--;
+>> +	mutex_unlock(&msi_doorbell_mutex);
+>> +	kfree(db);
+>> +}
+>> +EXPORT_SYMBOL_GPL(msi_doorbell_unregister_global);
+>> +
+>> +bool msi_doorbell_safe(void)
+>> +{
+>> +	return !nb_unsafe_doorbells;
+>> +}
+>> +EXPORT_SYMBOL_GPL(msi_doorbell_safe);
 > 
 > 
 > _______________________________________________
