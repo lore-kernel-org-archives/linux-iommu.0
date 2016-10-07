@@ -1,16 +1,17 @@
-From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: RE: [PATCH V3 8/8] arm64: dma-mapping: Remove the notifier trick to
-	handle early setting of dma_ops
-Date: Fri, 7 Oct 2016 21:10:20 +0530
-Message-ID: <004201d220b1$20a79700$61f6c500$@codeaurora.org>
-References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
-	<1475600632-21289-9-git-send-email-sricharan@codeaurora.org>
+From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v13 15/15] vfio/type1: Return the MSI geometry through
+	VFIO_IOMMU_GET_INFO capability chains
+Date: Fri, 7 Oct 2016 19:10:27 +0200
+Message-ID: <4adea280-4bdf-7d0e-be2f-88e7f6219b9c@redhat.com>
+References: <1475743531-4780-1-git-send-email-eric.auger@redhat.com>
+	<1475743531-4780-16-git-send-email-eric.auger@redhat.com>
+	<20161006142040.13cbdb8f@t450s.home>
+	<20161006144251.46b45117@t450s.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1475600632-21289-9-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-us
+In-Reply-To: <20161006144251.46b45117-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,193 +21,294 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
-Cc: 'Sricharan' <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Alex,
 
->-----Original Message-----
->From: linux-arm-kernel [mailto:linux-arm-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org] On Behalf Of Sricharan R
->Sent: Tuesday, October 04, 2016 10:34 PM
->To: will.deacon-5wv7dgnIgG8@public.gmane.org; robin.murphy-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-
->kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org;
->tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org; srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
->Cc: sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
->Subject: [PATCH V3 8/8] arm64: dma-mapping: Remove the notifier trick to handle early setting of dma_ops
->
->With arch_setup_dma_ops now being called late during device's probe after the
->device's iommu is probed, the notifier trick required to handle the early
->setup of dma_ops before the iommu group gets created is not required.
->So removing the notifier's here.
->
->Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->---
-> arch/arm64/mm/dma-mapping.c | 100 ++------------------------------------------
-> 1 file changed, 3 insertions(+), 97 deletions(-)
->
->diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
->index faf4b92..eb593af 100644
->--- a/arch/arm64/mm/dma-mapping.c
->+++ b/arch/arm64/mm/dma-mapping.c
->@@ -799,24 +799,6 @@ static struct dma_map_ops iommu_dma_ops = {
-> 	.mapping_error = iommu_dma_mapping_error,
-> };
->
->-/*
->- * TODO: Right now __iommu_setup_dma_ops() gets called too early to do
->- * everything it needs to - the device is only partially created and the
->- * IOMMU driver hasn't seen it yet, so it can't have a group. Thus we
->- * need this delayed attachment dance. Once IOMMU probe ordering is sorted
->- * to move the arch_setup_dma_ops() call later, all the notifier bits below
->- * become unnecessary, and will go away.
->- */
->-struct iommu_dma_notifier_data {
->-	struct list_head list;
->-	struct device *dev;
->-	const struct iommu_ops *ops;
->-	u64 dma_base;
->-	u64 size;
->-};
->-static LIST_HEAD(iommu_dma_masters);
->-static DEFINE_MUTEX(iommu_dma_notifier_lock);
->-
-> static bool do_iommu_attach(struct device *dev, const struct iommu_ops *ops,
-> 			   u64 dma_base, u64 size)
-> {
->@@ -837,79 +819,9 @@ static bool do_iommu_attach(struct device *dev, const struct iommu_ops *ops,
-> 	return true;
-> }
->
->-static void queue_iommu_attach(struct device *dev, const struct iommu_ops *ops,
->-			      u64 dma_base, u64 size)
->-{
->-	struct iommu_dma_notifier_data *iommudata;
->-
->-	iommudata = kzalloc(sizeof(*iommudata), GFP_KERNEL);
->-	if (!iommudata)
->-		return;
->-
->-	iommudata->dev = dev;
->-	iommudata->ops = ops;
->-	iommudata->dma_base = dma_base;
->-	iommudata->size = size;
->-
->-	mutex_lock(&iommu_dma_notifier_lock);
->-	list_add(&iommudata->list, &iommu_dma_masters);
->-	mutex_unlock(&iommu_dma_notifier_lock);
->-}
->-
->-static int __iommu_attach_notifier(struct notifier_block *nb,
->-				   unsigned long action, void *data)
->-{
->-	struct iommu_dma_notifier_data *master, *tmp;
->-
->-	if (action != BUS_NOTIFY_BIND_DRIVER)
->-		return 0;
->-
->-	mutex_lock(&iommu_dma_notifier_lock);
->-	list_for_each_entry_safe(master, tmp, &iommu_dma_masters, list) {
->-		if (data == master->dev && do_iommu_attach(master->dev,
->-				master->ops, master->dma_base, master->size)) {
->-			list_del(&master->list);
->-			kfree(master);
->-			break;
->-		}
->-	}
->-	mutex_unlock(&iommu_dma_notifier_lock);
->-	return 0;
->-}
->-
->-static int __init register_iommu_dma_ops_notifier(struct bus_type *bus)
->-{
->-	struct notifier_block *nb = kzalloc(sizeof(*nb), GFP_KERNEL);
->-	int ret;
->-
->-	if (!nb)
->-		return -ENOMEM;
->-
->-	nb->notifier_call = __iommu_attach_notifier;
->-
->-	ret = bus_register_notifier(bus, nb);
->-	if (ret) {
->-		pr_warn("Failed to register DMA domain notifier; IOMMU DMA ops unavailable on bus '%s'\n",
->-			bus->name);
->-		kfree(nb);
->-	}
->-	return ret;
->-}
->-
-> static int __init __iommu_dma_init(void)
-> {
->-	int ret;
->-
->-	ret = iommu_dma_init();
->-	if (!ret)
->-		ret = register_iommu_dma_ops_notifier(&platform_bus_type);
->-	if (!ret)
->-		ret = register_iommu_dma_ops_notifier(&amba_bustype);
->-#ifdef CONFIG_PCI
->-	if (!ret)
->-		ret = register_iommu_dma_ops_notifier(&pci_bus_type);
->-#endif
->-	return ret;
->+	return iommu_dma_init();
-> }
-> arch_initcall(__iommu_dma_init);
->
->@@ -920,18 +832,12 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
->
-> 	if (!ops)
-> 		return;
->-	/*
->-	 * TODO: As a concession to the future, we're ready to handle being
->-	 * called both early and late (i.e. after bus_add_device). Once all
->-	 * the platform bus code is reworked to call us late and the notifier
->-	 * junk above goes away, move the body of do_iommu_attach here.
->-	 */
->+
-> 	group = iommu_group_get(dev);
->+
-> 	if (group) {
-> 		do_iommu_attach(dev, ops, dma_base, size);
-> 		iommu_group_put(group);
->-	} else {
->-		queue_iommu_attach(dev, ops, dma_base, size);
-> 	}
-> }
->
-I should have has this as well for being removed,
+On 06/10/2016 22:42, Alex Williamson wrote:
+> On Thu, 6 Oct 2016 14:20:40 -0600
+> Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+> 
+>> On Thu,  6 Oct 2016 08:45:31 +0000
+>> Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+>>
+>>> This patch allows the user-space to retrieve the MSI geometry. The
+>>> implementation is based on capability chains, now also added to
+>>> VFIO_IOMMU_GET_INFO.
+>>>
+>>> The returned info comprise:
+>>> - whether the MSI IOVA are constrained to a reserved range (x86 case) and
+>>>   in the positive, the start/end of the aperture,
+>>> - or whether the IOVA aperture need to be set by the userspace. In that
+>>>   case, the size and alignment of the IOVA window to be provided are
+>>>   returned.
+>>>
+>>> In case the userspace must provide the IOVA aperture, we currently report
+>>> a size/alignment based on all the doorbells registered by the host kernel.
+>>> This may exceed the actual needs.
+>>>
+>>> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>>>
+>>> ---
+>>> v11 -> v11:
+>>> - msi_doorbell_pages was renamed msi_doorbell_calc_pages
+>>>
+>>> v9 -> v10:
+>>> - move cap_offset after iova_pgsizes
+>>> - replace __u64 alignment by __u32 order
+>>> - introduce __u32 flags in vfio_iommu_type1_info_cap_msi_geometry and
+>>>   fix alignment
+>>> - call msi-doorbell API to compute the size/alignment
+>>>
+>>> v8 -> v9:
+>>> - use iommu_msi_supported flag instead of programmable
+>>> - replace IOMMU_INFO_REQUIRE_MSI_MAP flag by a more sophisticated
+>>>   capability chain, reporting the MSI geometry
+>>>
+>>> v7 -> v8:
+>>> - use iommu_domain_msi_geometry
+>>>
+>>> v6 -> v7:
+>>> - remove the computation of the number of IOVA pages to be provisionned.
+>>>   This number depends on the domain/group/device topology which can
+>>>   dynamically change. Let's rely instead rely on an arbitrary max depending
+>>>   on the system
+>>>
+>>> v4 -> v5:
+>>> - move msi_info and ret declaration within the conditional code
+>>>
+>>> v3 -> v4:
+>>> - replace former vfio_domains_require_msi_mapping by
+>>>   more complex computation of MSI mapping requirements, especially the
+>>>   number of pages to be provided by the user-space.
+>>> - reword patch title
+>>>
+>>> RFC v1 -> v1:
+>>> - derived from
+>>>   [RFC PATCH 3/6] vfio: Extend iommu-info to return MSIs automap state
+>>> - renamed allow_msi_reconfig into require_msi_mapping
+>>> - fixed VFIO_IOMMU_GET_INFO
+>>> ---
+>>>  drivers/vfio/vfio_iommu_type1.c | 78 ++++++++++++++++++++++++++++++++++++++++-
+>>>  include/uapi/linux/vfio.h       | 32 ++++++++++++++++-
+>>>  2 files changed, 108 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+>>> index dc3ee5d..ce5e7eb 100644
+>>> --- a/drivers/vfio/vfio_iommu_type1.c
+>>> +++ b/drivers/vfio/vfio_iommu_type1.c
+>>> @@ -38,6 +38,8 @@
+>>>  #include <linux/workqueue.h>
+>>>  #include <linux/dma-iommu.h>
+>>>  #include <linux/msi-doorbell.h>
+>>> +#include <linux/irqdomain.h>
+>>> +#include <linux/msi.h>
+>>>  
+>>>  #define DRIVER_VERSION  "0.2"
+>>>  #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
+>>> @@ -1101,6 +1103,55 @@ static int vfio_domains_have_iommu_cache(struct vfio_iommu *iommu)
+>>>  	return ret;
+>>>  }
+>>>  
+>>> +static int compute_msi_geometry_caps(struct vfio_iommu *iommu,
+>>> +				     struct vfio_info_cap *caps)
+>>> +{
+>>> +	struct vfio_iommu_type1_info_cap_msi_geometry *vfio_msi_geometry;
+>>> +	unsigned long order = __ffs(vfio_pgsize_bitmap(iommu));
+>>> +	struct iommu_domain_msi_geometry msi_geometry;
+>>> +	struct vfio_info_cap_header *header;
+>>> +	struct vfio_domain *d;
+>>> +	bool reserved;
+>>> +	size_t size;
+>>> +
+>>> +	mutex_lock(&iommu->lock);
+>>> +	/* All domains have same require_msi_map property, pick first */
+>>> +	d = list_first_entry(&iommu->domain_list, struct vfio_domain, next);
+>>> +	iommu_domain_get_attr(d->domain, DOMAIN_ATTR_MSI_GEOMETRY,
+>>> +			      &msi_geometry);
+>>> +	reserved = !msi_geometry.iommu_msi_supported;
+>>> +
+>>> +	mutex_unlock(&iommu->lock);
+>>> +
+>>> +	size = sizeof(*vfio_msi_geometry);
+>>> +	header = vfio_info_cap_add(caps, size,
+>>> +				   VFIO_IOMMU_TYPE1_INFO_CAP_MSI_GEOMETRY, 1);
+>>> +
+>>> +	if (IS_ERR(header))
+>>> +		return PTR_ERR(header);
+>>> +
+>>> +	vfio_msi_geometry = container_of(header,
+>>> +				struct vfio_iommu_type1_info_cap_msi_geometry,
+>>> +				header);
+>>> +
+>>> +	vfio_msi_geometry->flags = reserved;  
+>>
+>> Use the bit flag VFIO_IOMMU_MSI_GEOMETRY_RESERVED
+>>
+>>> +	if (reserved) {
+>>> +		vfio_msi_geometry->aperture_start = msi_geometry.aperture_start;
+>>> +		vfio_msi_geometry->aperture_end = msi_geometry.aperture_end;  
+>>
+>> But maybe nobody has set these, did you intend to use
+>> iommu_domain_msi_aperture_valid(), which you defined early on but never
+>> used?
+>>
+>>> +		return 0;
+>>> +	}
+>>> +
+>>> +	vfio_msi_geometry->order = order;  
+>>
+>> I'm tempted to suggest that a user could do the same math on their own
+>> since we provide the supported bitmap already... could it ever not be
+>> the same? 
+>>
+>>> +	/*
+>>> +	 * we compute a system-wide requirement based on all the registered
+>>> +	 * doorbells
+>>> +	 */
+>>> +	vfio_msi_geometry->size =
+>>> +		msi_doorbell_calc_pages(order) * ((uint64_t) 1 << order);
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>>  static long vfio_iommu_type1_ioctl(void *iommu_data,
+>>>  				   unsigned int cmd, unsigned long arg)
+>>>  {
+>>> @@ -1122,8 +1173,10 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+>>>  		}
+>>>  	} else if (cmd == VFIO_IOMMU_GET_INFO) {
+>>>  		struct vfio_iommu_type1_info info;
+>>> +		struct vfio_info_cap caps = { .buf = NULL, .size = 0 };
+>>> +		int ret;
+>>>  
+>>> -		minsz = offsetofend(struct vfio_iommu_type1_info, iova_pgsizes);
+>>> +		minsz = offsetofend(struct vfio_iommu_type1_info, cap_offset);
+>>>  
+>>>  		if (copy_from_user(&info, (void __user *)arg, minsz))
+>>>  			return -EFAULT;
+>>> @@ -1135,6 +1188,29 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+>>>  
+>>>  		info.iova_pgsizes = vfio_pgsize_bitmap(iommu);
+>>>  
+>>> +		ret = compute_msi_geometry_caps(iommu, &caps);
+>>> +		if (ret)
+>>> +			return ret;
+>>> +
+>>> +		if (caps.size) {
+>>> +			info.flags |= VFIO_IOMMU_INFO_CAPS;
+>>> +			if (info.argsz < sizeof(info) + caps.size) {
+>>> +				info.argsz = sizeof(info) + caps.size;
+>>> +				info.cap_offset = 0;
+>>> +			} else {
+>>> +				vfio_info_cap_shift(&caps, sizeof(info));
+>>> +				if (copy_to_user((void __user *)arg +
+>>> +						sizeof(info), caps.buf,
+>>> +						caps.size)) {
+>>> +					kfree(caps.buf);
+>>> +					return -EFAULT;
+>>> +				}
+>>> +				info.cap_offset = sizeof(info);
+>>> +			}
+>>> +
+>>> +			kfree(caps.buf);
+>>> +		}
+>>> +
+>>>  		return copy_to_user((void __user *)arg, &info, minsz) ?
+>>>  			-EFAULT : 0;
+>>>  
+>>> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+>>> index 4a9dbc2..8dae013 100644
+>>> --- a/include/uapi/linux/vfio.h
+>>> +++ b/include/uapi/linux/vfio.h
+>>> @@ -488,7 +488,35 @@ struct vfio_iommu_type1_info {
+>>>  	__u32	argsz;
+>>>  	__u32	flags;
+>>>  #define VFIO_IOMMU_INFO_PGSIZES (1 << 0)	/* supported page sizes info */
+>>> -	__u64	iova_pgsizes;		/* Bitmap of supported page sizes */
+>>> +#define VFIO_IOMMU_INFO_CAPS	(1 << 1)	/* Info supports caps */
+>>> +	__u64	iova_pgsizes;	/* Bitmap of supported page sizes */
+>>> +	__u32	__resv;
+>>> +	__u32   cap_offset;	/* Offset within info struct of first cap */
+>>> +};  
+>>
+>> I understand the padding, but not the ordering.  Why not end with
+>> padding?
+>>
+>>> +
+>>> +#define VFIO_IOMMU_TYPE1_INFO_CAP_MSI_GEOMETRY	1
+>>> +
+>>> +/*
+>>> + * The MSI geometry capability allows to report the MSI IOVA geometry:
+>>> + * - either the MSI IOVAs are constrained within a reserved IOVA aperture
+>>> + *   whose boundaries are given by [@aperture_start, @aperture_end].
+>>> + *   this is typically the case on x86 host. The userspace is not allowed
+>>> + *   to map userspace memory at IOVAs intersecting this range using
+>>> + *   VFIO_IOMMU_MAP_DMA.
+>>> + * - or the MSI IOVAs are not requested to belong to any reserved range;
+>>> + *   in that case the userspace must provide an IOVA window characterized by
+>>> + *   @size and @alignment using VFIO_IOMMU_MAP_DMA with RESERVED_MSI_IOVA flag.
+>>> + */
+>>> +struct vfio_iommu_type1_info_cap_msi_geometry {
+>>> +	struct vfio_info_cap_header header;
+>>> +	__u32 flags;
+>>> +#define VFIO_IOMMU_MSI_GEOMETRY_RESERVED (1 << 0) /* reserved geometry */
+>>> +	/* not reserved */
+>>> +	__u32 order; /* iommu page order used for aperture alignment*/
+>>> +	__u64 size; /* IOVA aperture size (bytes) the userspace must provide */
+>>> +	/* reserved */
+>>> +	__u64 aperture_start;
+>>> +	__u64 aperture_end;  
+>>
+>> Should these be a union?  We never set them both.  Should the !reserved
+>> case have a flag as well, so the user can positively identify what's
+>> being provided?
+> 
+> Actually, is there really any need to fit both of these within the same
+> structure?  Part of the idea of the capability chains is we can create
+> a capability for each new thing we want to describe.  So, we could
+> simply define a generic reserved IOVA range capability with a 'start'
+> and 'end' and then another capability to define MSI mapping
+> requirements.  Thanks,
+Yes your suggested approach makes sense to me.
 
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Date: Fri, 7 Oct 2016 19:20:21 +0530
-Subject: [PATCH] iommu:/arm-smmu: Avoid early iommu device registration
+One reason why I proceeded that way is we are mixing things at iommu.h
+level too. Personally I would have preferred to separate things:
+1) add a new IOMMU_CAP_TRANSLATE_MSI capability in iommu_cap
+2) rename iommu_msi_supported into "programmable" bool: reporting
+whether the aperture is reserved or programmable.
 
-of_platform_device_create was called early in the init
-to have the smmu probed before the master. But now with
-the probe deferral, this is not needed.
+In the early releases I think it was as above but slightly we moved to a
+mixed description.
 
-Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 3 ---
- 1 file changed, 3 deletions(-)
+What do you think?
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index c841eb7..083489e4 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -2066,9 +2066,6 @@ static int __init arm_smmu_of_init(struct device_node *np)
- 	if (ret)
- 		return ret;
- 
--	if (!of_platform_device_create(np, NULL, platform_bus_type.dev_root))
--		return -ENODEV;
--
- 	return 0;
- }
- IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1", arm_smmu_of_init);
--- 
-1.8.2.1
+Thank you for the whole review!
 
-Regards,
- Sricharan
+Eric
+
+> 
+> Alex
+>  
+>>>  };
+>>>  
+>>>  #define VFIO_IOMMU_GET_INFO _IO(VFIO_TYPE, VFIO_BASE + 12)
+>>> @@ -503,6 +531,8 @@ struct vfio_iommu_type1_info {
+>>>   * IOVA region that will be used on some platforms to map the host MSI frames.
+>>>   * In that specific case, vaddr is ignored. Once registered, an MSI reserved
+>>>   * IOVA region stays until the container is closed.
+>>> + * The requirement for provisioning such reserved IOVA range can be checked by
+>>> + * checking the VFIO_IOMMU_TYPE1_INFO_CAP_MSI_GEOMETRY capability.
+>>>   */
+>>>  struct vfio_iommu_type1_dma_map {
+>>>  	__u32	argsz;  
+>>
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
