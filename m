@@ -1,120 +1,123 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v13 12/15] vfio: Allow reserved msi iova registration
-Date: Fri, 7 Oct 2016 14:45:17 -0600
-Message-ID: <20161007144517.74d876bb@t450s.home>
-References: <1475743531-4780-1-git-send-email-eric.auger@redhat.com>
-	<1475743531-4780-13-git-send-email-eric.auger@redhat.com>
-	<20161006141932.0a193f9b@t450s.home>
-	<27e4db66-7df2-16b4-c3d9-982d6ea845b0@redhat.com>
+From: "Y.B. Lu" <yangbo.lu@nxp.com>
+Subject: RE: [v12, 0/8] Fix eSDHC host version register bug
+Date: Sat, 8 Oct 2016 03:28:01 +0000
+Message-ID: <DB6PR0401MB2536F6224B12A62D0A0FBCBAF8D90@DB6PR0401MB2536.eurprd04.prod.outlook.com>
+References: <1474441040-11946-1-git-send-email-yangbo.lu@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <27e4db66-7df2-16b4-c3d9-982d6ea845b0-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-clk-owner@vger.kernel.org>
+Content-Language: en-US
+Sender: linux-clk-owner@vger.kernel.org
+To: "Y.B. Lu" <yangbo.lu@nxp.com>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>, Scott Wood <oss@buserror.net>, Arnd Bergmann <arnd@arndb.de>
+Cc: "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Jochen Friedrich <jochen@scram.de>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, Bhupesh Sharma <bhupesh.sharma@freescale.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 7 Oct 2016 19:11:43 +0200
-Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+Hi Uffe, Arnd and Scott,
 
-> Hi Alex,
-> 
-> On 06/10/2016 22:19, Alex Williamson wrote:
-> > On Thu,  6 Oct 2016 08:45:28 +0000
-> > Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-> >   
-> >> The user is allowed to register a reserved MSI IOVA range by using the
-> >> DMA MAP API and setting the new flag: VFIO_DMA_MAP_FLAG_MSI_RESERVED_IOVA.
-> >> This region is stored in the vfio_dma rb tree. At that point the iova
-> >> range is not mapped to any target address yet. The host kernel will use
-> >> those iova when needed, typically when MSIs are allocated.
-> >>
-> >> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> >> Signed-off-by: Bharat Bhushan <Bharat.Bhushan-KZfg59tc24xl57MIdRCFDg@public.gmane.org>
-> >>
-> >> ---
-> >> v12 -> v13:
-> >> - use iommu_get_dma_msi_region_cookie
-> >>
-> >> v9 -> v10
-> >> - use VFIO_IOVA_RESERVED_MSI enum value
-> >>
-> >> v7 -> v8:
-> >> - use iommu_msi_set_aperture function. There is no notion of
-> >>   unregistration anymore since the reserved msi slot remains
-> >>   until the container gets closed.
-> >>
-> >> v6 -> v7:
-> >> - use iommu_free_reserved_iova_domain
-> >> - convey prot attributes downto dma-reserved-iommu iova domain creation
-> >> - reserved bindings teardown now performed on iommu domain destruction
-> >> - rename VFIO_DMA_MAP_FLAG_MSI_RESERVED_IOVA into
-> >>          VFIO_DMA_MAP_FLAG_RESERVED_MSI_IOVA
-> >> - change title
-> >> - pass the protection attribute to dma-reserved-iommu API
-> >>
-> >> v3 -> v4:
-> >> - use iommu_alloc/free_reserved_iova_domain exported by dma-reserved-iommu
-> >> - protect vfio_register_reserved_iova_range implementation with
-> >>   CONFIG_IOMMU_DMA_RESERVED
-> >> - handle unregistration by user-space and on vfio_iommu_type1 release
-> >>
-> >> v1 -> v2:
-> >> - set returned value according to alloc_reserved_iova_domain result
-> >> - free the iova domains in case any error occurs
-> >>
-> >> RFC v1 -> v1:
-> >> - takes into account Alex comments, based on
-> >>   [RFC PATCH 1/6] vfio: Add interface for add/del reserved iova region:
-> >> - use the existing dma map/unmap ioctl interface with a flag to register
-> >>   a reserved IOVA range. A single reserved iova region is allowed.
-> >> ---
-> >>  drivers/vfio/vfio_iommu_type1.c | 77 ++++++++++++++++++++++++++++++++++++++++-
-> >>  include/uapi/linux/vfio.h       | 10 +++++-
-> >>  2 files changed, 85 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> >> index 5bc5fc9..c2f8bd9 100644
-> >> --- a/drivers/vfio/vfio_iommu_type1.c
-> >> +++ b/drivers/vfio/vfio_iommu_type1.c
-> >> @@ -442,6 +442,20 @@ static void vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma)
-> >>  	vfio_lock_acct(-unlocked);
-> >>  }
-> >>  
-> >> +static int vfio_set_msi_aperture(struct vfio_iommu *iommu,
-> >> +				dma_addr_t iova, size_t size)
-> >> +{
-> >> +	struct vfio_domain *d;
-> >> +	int ret = 0;
-> >> +
-> >> +	list_for_each_entry(d, &iommu->domain_list, next) {
-> >> +		ret = iommu_get_dma_msi_region_cookie(d->domain, iova, size);
-> >> +		if (ret)
-> >> +			break;
-> >> +	}
-> >> +	return ret;  
-> > 
-> > Doesn't this need an unwind on failure loop?  
-> At the moment the de-allocation is done by the smmu driver, on
-> domain_free ops, which calls iommu_put_dma_cookie. In case,
-> iommu_get_dma_msi_region_cookie fails on a given VFIO domain currently
-> there is no other way but destroying all VFIO domains and redo everything.
-> 
-> So yes I plan to unfold everything, ie call iommu_put_dma_cookie for
-> each domain.
+Any comments on this latest patcheset?
+Could we consider to merge it if no any other changes needed?
+:)
 
-That's a pretty harsh user experience isn't it?  They potentially have
-some domains where the cookie is setup and others without and they have
-no means to recover except to tear it all down and start over?  Thanks,
 
-Alex
+Thanks.
+
+Best regards,
+Yangbo Lu
+
+> -----Original Message-----
+> From: Y.B. Lu
+> Sent: Monday, September 26, 2016 11:15 AM
+> To: linux-mmc@vger.kernel.org; ulf.hansson@linaro.org; Scott Wood; Arnd
+> Bergmann
+> Cc: linuxppc-dev@lists.ozlabs.org; devicetree@vger.kernel.org; linux-arm-
+> kernel@lists.infradead.org; linux-kernel@vger.kernel.org; linux-
+> clk@vger.kernel.org; linux-i2c@vger.kernel.org; iommu@lists.linux-
+> foundation.org; netdev@vger.kernel.org; Mark Rutland; Rob Herring;
+> Russell King; Jochen Friedrich; Joerg Roedel; Claudiu Manoil; Bhupesh
+> Sharma; Qiang Zhao; Kumar Gala; Santosh Shilimkar; Leo Li; X.B. Xie; M.H.
+> Lian
+> Subject: RE: [v12, 0/8] Fix eSDHC host version register bug
+>=20
+> Any comments about this version patchset ?
+>=20
+> :)
+>=20
+>=20
+> > -----Original Message-----
+> > From: Yangbo Lu [mailto:yangbo.lu@nxp.com]
+> > Sent: Wednesday, September 21, 2016 2:57 PM
+> > To: linux-mmc@vger.kernel.org; ulf.hansson@linaro.org; Scott Wood;
+> > Arnd Bergmann
+> > Cc: linuxppc-dev@lists.ozlabs.org; devicetree@vger.kernel.org;
+> > linux-arm- kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
+> > linux- clk@vger.kernel.org; linux-i2c@vger.kernel.org;
+> > iommu@lists.linux- foundation.org; netdev@vger.kernel.org; Mark
+> > Rutland; Rob Herring; Russell King; Jochen Friedrich; Joerg Roedel;
+> > Claudiu Manoil; Bhupesh Sharma; Qiang Zhao; Kumar Gala; Santosh
+> Shilimkar; Leo Li; X.B. Xie; M.H.
+> > Lian; Y.B. Lu
+> > Subject: [v12, 0/8] Fix eSDHC host version register bug
+> >
+> > This patchset is used to fix a host version register bug in the T4240-
+> > R1.0-R2.0 eSDHC controller. To match the SoC version and revision, 10
+> > previous version patchsets had tried many methods but all of them were
+> > rejected by reviewers.
+> > Such as
+> > 	- dts compatible method
+> > 	- syscon method
+> > 	- ifdef PPC method
+> > 	- GUTS driver getting SVR method
+> > Anrd suggested a soc_device_match method in v10, and this is the only
+> > available method left now. This v11 patchset introduces the
+> > soc_device_match interface in soc driver.
+> >
+> > The first six patches of Yangbo are to add the GUTS driver. This is
+> > used to register a soc device which contain soc version and revision
+> > information.
+> > The other two patches introduce the soc_device_match method in soc
+> > driver and apply it on esdhc driver to fix this bug.
+> >
+> > Arnd Bergmann (1):
+> >   base: soc: introduce soc_device_match() interface
+> >
+> > Yangbo Lu (7):
+> >   dt: bindings: update Freescale DCFG compatible
+> >   ARM64: dts: ls2080a: add device configuration node
+> >   dt: bindings: move guts devicetree doc out of powerpc directory
+> >   powerpc/fsl: move mpc85xx.h to include/linux/fsl
+> >   soc: fsl: add GUTS driver for QorIQ platforms
+> >   MAINTAINERS: add entry for Freescale SoC drivers
+> >   mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
+> >
+> >  Documentation/devicetree/bindings/arm/fsl.txt      |   6 +-
+> >  .../bindings/{powerpc =3D> soc}/fsl/guts.txt         |   3 +
+> >  MAINTAINERS                                        |  11 +-
+> >  arch/arm64/boot/dts/freescale/fsl-ls2080a.dtsi     |   6 +
+> >  arch/powerpc/kernel/cpu_setup_fsl_booke.S          |   2 +-
+> >  arch/powerpc/sysdev/fsl_pci.c                      |   2 +-
+> >  drivers/base/Kconfig                               |   1 +
+> >  drivers/base/soc.c                                 |  66 ++++++
+> >  drivers/clk/clk-qoriq.c                            |   3 +-
+> >  drivers/i2c/busses/i2c-mpc.c                       |   2 +-
+> >  drivers/iommu/fsl_pamu.c                           |   3 +-
+> >  drivers/mmc/host/Kconfig                           |   1 +
+> >  drivers/mmc/host/sdhci-of-esdhc.c                  |  20 ++
+> >  drivers/net/ethernet/freescale/gianfar.c           |   2 +-
+> >  drivers/soc/Kconfig                                |   2 +-
+> >  drivers/soc/fsl/Kconfig                            |  19 ++
+> >  drivers/soc/fsl/Makefile                           |   1 +
+> >  drivers/soc/fsl/guts.c                             | 257
+> > +++++++++++++++++++++
+> >  include/linux/fsl/guts.h                           | 125 ++++++----
+> >  .../asm/mpc85xx.h =3D> include/linux/fsl/svr.h       |   4 +-
+> >  include/linux/sys_soc.h                            |   3 +
+> >  21 files changed, 478 insertions(+), 61 deletions(-)  rename
+> > Documentation/devicetree/bindings/{powerpc =3D> soc}/fsl/guts.txt (91%)
+> > create mode 100644 drivers/soc/fsl/Kconfig  create mode 100644
+> > drivers/soc/fsl/guts.c  rename arch/powerpc/include/asm/mpc85xx.h =3D>
+> > include/linux/fsl/svr.h (97%)
+> >
+> > --
+> > 2.1.0.27.g96db324
+
