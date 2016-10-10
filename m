@@ -1,123 +1,187 @@
-From: "Y.B. Lu" <yangbo.lu@nxp.com>
-Subject: RE: [v12, 0/8] Fix eSDHC host version register bug
-Date: Sat, 8 Oct 2016 03:28:01 +0000
-Message-ID: <DB6PR0401MB2536F6224B12A62D0A0FBCBAF8D90@DB6PR0401MB2536.eurprd04.prod.outlook.com>
-References: <1474441040-11946-1-git-send-email-yangbo.lu@nxp.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH V3 0/8] IOMMU probe deferral support
+Date: Mon, 10 Oct 2016 14:36:41 +0200
+Message-ID: <12cfb59f-f7ca-d4df-eb7f-42348e357979@samsung.com>
+References: <CGME20161004170414eucas1p141bebe16e1bf241862833e7ad0270c72@eucas1p1.samsung.com>
+	<1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Return-path: <linux-clk-owner@vger.kernel.org>
-Content-Language: en-US
-Sender: linux-clk-owner@vger.kernel.org
-To: "Y.B. Lu" <yangbo.lu@nxp.com>, "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>, "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>, Scott Wood <oss@buserror.net>, Arnd Bergmann <arnd@arndb.de>
-Cc: "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>, "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "netdev@vger.kernel.org" <netdev@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Jochen Friedrich <jochen@scram.de>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, Bhupesh Sharma <bhupesh.sharma@freescale.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <1475600632-21289-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Uffe, Arnd and Scott,
-
-Any comments on this latest patcheset?
-Could we consider to merge it if no any other changes needed?
-:)
+Hi Sricharan,
 
 
-Thanks.
+On 2016-10-04 19:03, Sricharan R wrote:
+> Initial post from Laurent Pinchart[1]. This is
+> series calls the dma ops configuration for the devices
+> at a generic place so that it works for all busses.
+> The dma_configure_ops for a device is now called during
+> the device_attach callback just before the probe of the
+> bus/driver is called. Similarly dma_deconfigure is called during
+> device/driver_detach path.
+>
+>
+> pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
+>         |                         |
+> pci_bus_add_device     (device_add/driver_register)
+>         |                         |
+> device_attach           device_initial_probe
+>         |                         |
+> __device_attach_driver    __device_attach_driver
+>         |
+> driver_probe_device
+>         |
+> really_probe
+>         |
+> dma_configure
+>
+>   Similarly on the device/driver_unregister path __device_release_driver is
+>   called which inturn calls dma_deconfigure.
+>
+>   If the ACPI bus code follows the same, we can add acpi_dma_configure
+>   at the same place as of_dma_configure.
+>
+>   This series is based on the recently merged Generic DT bindings for
+>   PCI IOMMUs and ARM SMMU from Robin Murphy robin.murphy-5wv7dgnIgG8@public.gmane.org [2]
+>
+>   This time tested this with platform and pci device for probe deferral
+>   and reprobe on arm64 based platform. There is an issue on the cleanup
+>   path for arm64 though, where there is WARN_ON if the dma_ops is reset while
+>   device is attached to an domain in arch_teardown_dma_ops.
+>   But with iommu_groups created from the iommu driver, the device is always
+>   attached to a domain/default_domain. So so the WARN has to be removed/handled
+>   probably.
 
-Best regards,
-Yangbo Lu
+Thanks for continuing work on this feature! Your can add my:
 
-> -----Original Message-----
-> From: Y.B. Lu
-> Sent: Monday, September 26, 2016 11:15 AM
-> To: linux-mmc@vger.kernel.org; ulf.hansson@linaro.org; Scott Wood; Arnd
-> Bergmann
-> Cc: linuxppc-dev@lists.ozlabs.org; devicetree@vger.kernel.org; linux-arm-
-> kernel@lists.infradead.org; linux-kernel@vger.kernel.org; linux-
-> clk@vger.kernel.org; linux-i2c@vger.kernel.org; iommu@lists.linux-
-> foundation.org; netdev@vger.kernel.org; Mark Rutland; Rob Herring;
-> Russell King; Jochen Friedrich; Joerg Roedel; Claudiu Manoil; Bhupesh
-> Sharma; Qiang Zhao; Kumar Gala; Santosh Shilimkar; Leo Li; X.B. Xie; M.H.
-> Lian
-> Subject: RE: [v12, 0/8] Fix eSDHC host version register bug
->=20
-> Any comments about this version patchset ?
->=20
-> :)
->=20
->=20
-> > -----Original Message-----
-> > From: Yangbo Lu [mailto:yangbo.lu@nxp.com]
-> > Sent: Wednesday, September 21, 2016 2:57 PM
-> > To: linux-mmc@vger.kernel.org; ulf.hansson@linaro.org; Scott Wood;
-> > Arnd Bergmann
-> > Cc: linuxppc-dev@lists.ozlabs.org; devicetree@vger.kernel.org;
-> > linux-arm- kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
-> > linux- clk@vger.kernel.org; linux-i2c@vger.kernel.org;
-> > iommu@lists.linux- foundation.org; netdev@vger.kernel.org; Mark
-> > Rutland; Rob Herring; Russell King; Jochen Friedrich; Joerg Roedel;
-> > Claudiu Manoil; Bhupesh Sharma; Qiang Zhao; Kumar Gala; Santosh
-> Shilimkar; Leo Li; X.B. Xie; M.H.
-> > Lian; Y.B. Lu
-> > Subject: [v12, 0/8] Fix eSDHC host version register bug
-> >
-> > This patchset is used to fix a host version register bug in the T4240-
-> > R1.0-R2.0 eSDHC controller. To match the SoC version and revision, 10
-> > previous version patchsets had tried many methods but all of them were
-> > rejected by reviewers.
-> > Such as
-> > 	- dts compatible method
-> > 	- syscon method
-> > 	- ifdef PPC method
-> > 	- GUTS driver getting SVR method
-> > Anrd suggested a soc_device_match method in v10, and this is the only
-> > available method left now. This v11 patchset introduces the
-> > soc_device_match interface in soc driver.
-> >
-> > The first six patches of Yangbo are to add the GUTS driver. This is
-> > used to register a soc device which contain soc version and revision
-> > information.
-> > The other two patches introduce the soc_device_match method in soc
-> > driver and apply it on esdhc driver to fix this bug.
-> >
-> > Arnd Bergmann (1):
-> >   base: soc: introduce soc_device_match() interface
-> >
-> > Yangbo Lu (7):
-> >   dt: bindings: update Freescale DCFG compatible
-> >   ARM64: dts: ls2080a: add device configuration node
-> >   dt: bindings: move guts devicetree doc out of powerpc directory
-> >   powerpc/fsl: move mpc85xx.h to include/linux/fsl
-> >   soc: fsl: add GUTS driver for QorIQ platforms
-> >   MAINTAINERS: add entry for Freescale SoC drivers
-> >   mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
-> >
-> >  Documentation/devicetree/bindings/arm/fsl.txt      |   6 +-
-> >  .../bindings/{powerpc =3D> soc}/fsl/guts.txt         |   3 +
-> >  MAINTAINERS                                        |  11 +-
-> >  arch/arm64/boot/dts/freescale/fsl-ls2080a.dtsi     |   6 +
-> >  arch/powerpc/kernel/cpu_setup_fsl_booke.S          |   2 +-
-> >  arch/powerpc/sysdev/fsl_pci.c                      |   2 +-
-> >  drivers/base/Kconfig                               |   1 +
-> >  drivers/base/soc.c                                 |  66 ++++++
-> >  drivers/clk/clk-qoriq.c                            |   3 +-
-> >  drivers/i2c/busses/i2c-mpc.c                       |   2 +-
-> >  drivers/iommu/fsl_pamu.c                           |   3 +-
-> >  drivers/mmc/host/Kconfig                           |   1 +
-> >  drivers/mmc/host/sdhci-of-esdhc.c                  |  20 ++
-> >  drivers/net/ethernet/freescale/gianfar.c           |   2 +-
-> >  drivers/soc/Kconfig                                |   2 +-
-> >  drivers/soc/fsl/Kconfig                            |  19 ++
-> >  drivers/soc/fsl/Makefile                           |   1 +
-> >  drivers/soc/fsl/guts.c                             | 257
-> > +++++++++++++++++++++
-> >  include/linux/fsl/guts.h                           | 125 ++++++----
-> >  .../asm/mpc85xx.h =3D> include/linux/fsl/svr.h       |   4 +-
-> >  include/linux/sys_soc.h                            |   3 +
-> >  21 files changed, 478 insertions(+), 61 deletions(-)  rename
-> > Documentation/devicetree/bindings/{powerpc =3D> soc}/fsl/guts.txt (91%)
-> > create mode 100644 drivers/soc/fsl/Kconfig  create mode 100644
-> > drivers/soc/fsl/guts.c  rename arch/powerpc/include/asm/mpc85xx.h =3D>
-> > include/linux/fsl/svr.h (97%)
-> >
-> > --
-> > 2.1.0.27.g96db324
+Tested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 
+It works fine with Exynos SYSMMU driver, although a patch is needed to fix
+infinite loop due to list corruption (same element is added twice if master
+device fails with deferred probe):
+
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Date: Mon, 10 Oct 2016 14:22:42 +0200
+Subject: [PATCH] iommu/exynos: ensure that sysmmu is added only once to its
+  master
+
+Since adding IOMMU deferred probing support, of_xlate() callback might
+be called more than once for given master device (for example it happens
+when masters device driver fails with EPROBE_DEFER), so ensure that
+SYSMMU controller is added to its master device (owner) only once.
+
+Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+---
+  drivers/iommu/exynos-iommu.c | 6 +++++-
+  1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 30808e91b775..1525a86eb829 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1253,7 +1253,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
+  {
+      struct exynos_iommu_owner *owner = dev->archdata.iommu;
+      struct platform_device *sysmmu = of_find_device_by_node(spec->np);
+-    struct sysmmu_drvdata *data;
++    struct sysmmu_drvdata *data, *entry;
+
+      if (!sysmmu)
+          return -ENODEV;
+@@ -1271,6 +1271,10 @@ static int exynos_iommu_of_xlate(struct device *dev,
+          dev->archdata.iommu = owner;
+      }
+
++    list_for_each_entry(entry, &owner->controllers, owner_node)
++        if (entry == data)
++            return 0;
++
+      list_add_tail(&data->owner_node, &owner->controllers);
+      return 0;
+  }
+-- 
+1.9.1
+
+
+>
+>   Previous post of this series [3].
+>
+>   [V3]
+>       * Removed the patch to split dma_masks/dma_ops configuration separately
+>         based on review comments that both masks and ops are required only
+>         during the device probe time.
+>
+>       * Reworked the series based on Generic DT bindings series [2].
+>
+>       * Added call to iommu's remove_device in the cleanup path for arm and arm64.
+>
+>       * Removed the notifier trick in arm64 to handle early device registration.
+>
+>       * Added reset of dma_ops in cleanup path for arm based on comments.
+>
+>       * Fixed the pci_iommu_configure path and tested with PCI device as well.
+>   
+>       * Fixed a bug to return the correct iommu_ops from patch 7 [4] in last post.
+>
+>       * Fixed few other cosmetic comments.
+>    
+>   [V2]
+>       * Updated the Initial post to call dma_configure/deconfigure from generic code
+>   
+>       * Added iommu add_device callback from of_iommu_configure path
+>
+>   [V1]
+>       * Initial post
+>
+> [1] http://lists.linuxfoundation.org/pipermail/iommu/2015-May/013016.html
+> [2] http://www.spinics.net/lists/devicetree/msg142943.html
+> [3] https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg13941.html
+> [4] https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg13940.html
+>
+>
+>
+> Laurent Pinchart (4):
+>    arm: dma-mapping: Don't override dma_ops in arch_setup_dma_ops()
+>    of: dma: Move range size workaround to of_dma_get_range()
+>    of: dma: Make of_dma_deconfigure() public
+>    iommu: of: Handle IOMMU lookup failure with deferred probing or error
+>
+> Sricharan R (4):
+>    drivers: platform: Configure dma operations at probe time
+>    arm: dma-mapping: Reset the device's dma_ops
+>    arm/arm64: dma-mapping: Call iommu's remove_device callback during
+>      device detach
+>    arm64: dma-mapping: Remove the notifier trick to handle early setting
+>      of dma_ops
+>
+>   arch/arm/mm/dma-mapping.c   |  18 ++++++++
+>   arch/arm64/mm/dma-mapping.c | 107 +++++---------------------------------------
+>   drivers/base/dd.c           |  10 +++++
+>   drivers/base/dma-mapping.c  |  11 +++++
+>   drivers/iommu/of_iommu.c    |  47 +++++++++++++++++--
+>   drivers/of/address.c        |  20 ++++++++-
+>   drivers/of/device.c         |  34 +++++++-------
+>   drivers/of/platform.c       |   9 ----
+>   drivers/pci/probe.c         |   5 +--
+>   include/linux/dma-mapping.h |   3 ++
+>   include/linux/of_device.h   |   7 ++-
+>   11 files changed, 138 insertions(+), 133 deletions(-)
+>
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
