@@ -1,17 +1,10 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v13 03/15] iommu/dma: Allow MSI-only cookies
-Date: Mon, 10 Oct 2016 16:52:37 +0100
-Message-ID: <8ee2dda7-2513-16c3-ccdf-f60f03e06b99@arm.com>
-References: <1475743531-4780-1-git-send-email-eric.auger@redhat.com>
-	<1475743531-4780-4-git-send-email-eric.auger@redhat.com>
-	<20161006141717.13c9c111@t450s.home>
-	<6b944a74-7429-caf2-507d-30d6ae336bec@arm.com>
-	<b6771e0c-6f2d-21c1-05ac-8258b2bec462@redhat.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Updates for Linux v4.9
+Date: Tue, 11 Oct 2016 16:56:41 +0200
+Message-ID: <20161011145631.GA14209@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============3685016353421596644=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <b6771e0c-6f2d-21c1-05ac-8258b2bec462-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,177 +14,199 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org, drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/10/16 15:47, Auger Eric wrote:
-> Hi Robin,
-> 
-> On 10/10/2016 16:26, Robin Murphy wrote:
->> Hi Alex, Eric,
->>
->> On 06/10/16 21:17, Alex Williamson wrote:
->>> On Thu,  6 Oct 2016 08:45:19 +0000
->>> Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
->>>
->>>> From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->>>>
->>>> IOMMU domain users such as VFIO face a similar problem to DMA API ops
->>>> with regard to mapping MSI messages in systems where the MSI write is
->>>> subject to IOMMU translation. With the relevant infrastructure now in
->>>> place for managed DMA domains, it's actually really simple for other
->>>> users to piggyback off that and reap the benefits without giving up
->>>> their own IOVA management, and without having to reinvent their own
->>>> wheel in the MSI layer.
->>>>
->>>> Allow such users to opt into automatic MSI remapping by dedicating a
->>>> region of their IOVA space to a managed cookie.
->>>>
->>>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->>>> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->>>>
->>>> ---
->>>>
->>>> v1 -> v2:
->>>> - compared to Robin's version
->>>> - add NULL last param to iommu_dma_init_domain
->>>> - set the msi_geometry aperture
->>>> - I removed
->>>>   if (base < U64_MAX - size)
->>>>      reserve_iova(iovad, iova_pfn(iovad, base + size), ULONG_MAX);
->>>>   don't get why we would reserve something out of the scope of the iova domain?
->>>>   what do I miss?
->>>> ---
->>>>  drivers/iommu/dma-iommu.c | 40 ++++++++++++++++++++++++++++++++++++++++
->>>>  include/linux/dma-iommu.h |  9 +++++++++
->>>>  2 files changed, 49 insertions(+)
->>>>
->>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->>>> index c5ab866..11da1a0 100644
->>>> --- a/drivers/iommu/dma-iommu.c
->>>> +++ b/drivers/iommu/dma-iommu.c
->>>> @@ -716,3 +716,43 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
->>>>  		msg->address_lo += lower_32_bits(msi_page->iova);
->>>>  	}
->>>>  }
->>>> +
->>>> +/**
->>>> + * iommu_get_dma_msi_region_cookie - Configure a domain for MSI remapping only
->>>
->>> Should this perhaps be iommu_setup_dma_msi_region_cookie, or something
->>> along those lines.  I'm not sure what we're get'ing.  Thanks,
->>
->> What we're getting is private third-party resources for the iommu_domain
->> given in the argument. It's a get/put rather than alloc/free model since
->> we operate opaquely on the domain as a container, rather than on the
->> actual resource in question (an IOVA allocator).
->>
->> Since this particular use case is slightly different from the normal
->> flow and has special initialisation requirements, it seemed a lot
->> cleaner to simply combine that initialisation operation with the
->> prerequisite "get" into a single call. Especially as it helps emphasise
->> that this is not 'normal' DMA cookie usage.
-> 
-> I renamed iommu_get_dma_msi_region_cookie into
-> iommu_setup_dma_msi_region. Is it a problem for you?
 
-I'd still prefer not to completely disguise the fact that it's
-performing a get_cookie(), which ultimately still needs to be matched by
-a put_cookie() somewhere. Really, VFIO should be doing the latter itself
-before freeing the domain, as there's not strictly any guarantee that
-the underlying IOMMU driver knows anything about this.
+--===============3685016353421596644==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="xHFwDpU9dbj6ez1V"
+Content-Disposition: inline
 
-Robin.
 
->>
->>>
->>> Alex
->>>
->>>> + * @domain: IOMMU domain to prepare
->>>> + * @base: Base address of IOVA region to use as the MSI remapping aperture
->>>> + * @size: Size of the desired MSI aperture
->>>> + *
->>>> + * Users who manage their own IOVA allocation and do not want DMA API support,
->>>> + * but would still like to take advantage of automatic MSI remapping, can use
->>>> + * this to initialise their own domain appropriately.
->>>> + */
->>>> +int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
->>>> +		dma_addr_t base, u64 size)
->>>> +{
->>>> +	struct iommu_dma_cookie *cookie;
->>>> +	struct iova_domain *iovad;
->>>> +	int ret;
->>>> +
->>>> +	if (domain->type == IOMMU_DOMAIN_DMA)
->>>> +		return -EINVAL;
->>>> +
->>>> +	ret = iommu_get_dma_cookie(domain);
->>>> +	if (ret)
->>>> +		return ret;
->>>> +
->>>> +	ret = iommu_dma_init_domain(domain, base, size, NULL);
->>>> +	if (ret) {
->>>> +		iommu_put_dma_cookie(domain);
->>>> +		return ret;
->>>> +	}
->>
->> It *is* necessary to explicitly reserve the upper part of the IOVA
->> domain here - the aforementioned "special initialisation" - because
->> dma_32bit_pfn is only an optimisation hint to prevent the allocator
->> walking down from the very top of the the tree every time when devices
->> with different DMA masks share a domain (I'm in two minds as to whether
->> to tweak the way the iommu-dma code uses it in this respect, now that I
->> fully understand things). The only actual upper limit to allocation is
->> the DMA mask passed into each alloc_iova() call, so if we want to ensure
->> IOVAs are really allocated within this specific region, we have to carve
->> out everything above it.
-> 
-> thank you for the explanation. So I will restore the reserve then.
-> 
-> Thanks
-> 
-> Eric
->>
->> Robin.
->>
->>>> +
->>>> +	domain->msi_geometry.aperture_start = base;
->>>> +	domain->msi_geometry.aperture_end = base + size - 1;
->>>> +
->>>> +	cookie = domain->iova_cookie;
->>>> +	iovad = &cookie->iovad;
->>>> +
->>>> +	return 0;
->>>> +}
->>>> +EXPORT_SYMBOL(iommu_get_dma_msi_region_cookie);
->>>> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
->>>> index 32c5890..1c55413 100644
->>>> --- a/include/linux/dma-iommu.h
->>>> +++ b/include/linux/dma-iommu.h
->>>> @@ -67,6 +67,9 @@ int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
->>>>  /* The DMA API isn't _quite_ the whole story, though... */
->>>>  void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
->>>>  
->>>> +int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
->>>> +		dma_addr_t base, u64 size);
->>>> +
->>>>  #else
->>>>  
->>>>  struct iommu_domain;
->>>> @@ -90,6 +93,12 @@ static inline void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
->>>>  {
->>>>  }
->>>>  
->>>> +static inline int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
->>>> +		dma_addr_t base, u64 size)
->>>> +{
->>>> +	return -ENODEV;
->>>> +}
->>>> +
->>>>  #endif	/* CONFIG_IOMMU_DMA */
->>>>  #endif	/* __KERNEL__ */
->>>>  #endif	/* __DMA_IOMMU_H */
->>>
->>
-> 
+--xHFwDpU9dbj6ez1V
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit 3be7988674ab33565700a37b210f502563d932e6:
+
+  Linux 4.8-rc7 (2016-09-18 17:27:41 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v4.9
+
+for you to fetch changes up to 13a08259187c5cd3f63d98efa159ab42976d85a4:
+
+  Merge branches 'x86/amd', 'x86/vt-d', 'arm/exynos', 'arm/mediatek', 'arm/renesas' and 'arm/smmu' into next (2016-09-20 13:27:09 +0200)
+
+----------------------------------------------------------------
+IOMMU Updates for Linux v4.9
+
+Including:
+
+	* Support for interrupt virtualization in the AMD IOMMU driver.
+	  These patches were shared with the KVM tree and are already
+	  merged through that tree.
+
+	* Generic DT-binding support for the ARM-SMMU driver. With this
+	  the driver now makes use of the generic DMA-API code. This
+	  also required some changes outside of the IOMMU code, but
+	  these are acked by the respective maintainers.
+
+	* More cleanups and fixes all over the place.
+
+----------------------------------------------------------------
+Amitoj Kaur Chawla (1):
+      iommu/exynos: Fix error handling for of_platform_device_create
+
+Baoquan He (4):
+      iommu/amd: Clean up the cmpxchg64 invocation
+      iommu/amd: Use standard bitmap operation to set bitmap
+      iommu/amd: Free domain id when free a domain of struct dma_ops_domain
+      iommu/amd: No need to wait iommu completion if no dte irq entry change
+
+Fabian Frederick (1):
+      iommu/amd: Remove AMD_IOMMU_STATS
+
+Honghui Zhang (1):
+      iommu/mediatek: dt-binding: Correct the larb port offset defines for mt2701
+
+Jean-Philippe Brucker (2):
+      iommu/arm-smmu: Fix event queues synchronization
+      iommu/arm-smmu: Fix polling of command queue
+
+Joerg Roedel (5):
+      Merge branch 'x86/amd-avic' into x86/amd
+      iommu/vt-d: Split up get_domain_for_dev function
+      iommu/vt-d: Make sure RMRRs are mapped before domain goes public
+      Merge branch 'for-joerg/arm-smmu/updates' of git://git.kernel.org/.../will/linux into arm/smmu
+      Merge branches 'x86/amd', 'x86/vt-d', 'arm/exynos', 'arm/mediatek', 'arm/renesas' and 'arm/smmu' into next
+
+Mark Rutland (1):
+      Docs: dt: add PCI IOMMU map bindings
+
+Peng Fan (1):
+      iommu/arm-smmu: Drop devm_free_irq when driver detach
+
+Robin Murphy (23):
+      iommu/arm-smmu: Support v7s context format
+      of/irq: Break out msi-map lookup (again)
+      iommu/of: Handle iommu-map property for PCI
+      iommu: Introduce iommu_fwspec
+      Docs: dt: document ARM SMMUv3 generic binding usage
+      iommu/arm-smmu: Fall back to global bypass
+      iommu/arm-smmu: Implement of_xlate() for SMMUv3
+      iommu/arm-smmu: Support non-PCI devices with SMMUv3
+      iommu/arm-smmu: Set PRIVCFG in stage 1 STEs
+      iommu/arm-smmu: Handle stream IDs more dynamically
+      iommu/arm-smmu: Consolidate stream map entry state
+      iommu/arm-smmu: Keep track of S2CR state
+      iommu/arm-smmu: Refactor mmu-masters handling
+      iommu/arm-smmu: Streamline SMMU data lookups
+      iommu/arm-smmu: Add a stream map entry iterator
+      iommu/arm-smmu: Intelligent SMR allocation
+      iommu/arm-smmu: Convert to iommu_fwspec
+      Docs: dt: document ARM SMMU generic binding usage
+      iommu/arm-smmu: Wire up generic configuration support
+      iommu/arm-smmu: Set domain geometry
+      iommu/dma: Add support for mapping MSIs
+      iommu/dma: Avoid PCI host bridge windows
+      iommu/io-pgtable-arm: Check for v7s-incapable systems
+
+Shawn Lin (1):
+      iommu/ipmmu-vmsa: Fix wrong error handle of ipmmu_add_device
+
+Suravee Suthikulpanit (9):
+      iommu/amd: Detect and enable guest vAPIC support
+      iommu/amd: Move and introduce new IRTE-related unions and structures
+      iommu/amd: Introduce interrupt remapping ops structure
+      iommu/amd: Add support for multiple IRTE formats
+      iommu/amd: Detect and initialize guest vAPIC log
+      iommu/amd: Adding GALOG interrupt handler
+      iommu/amd: Introduce amd_iommu_update_ga()
+      iommu/amd: Implements irq_set_vcpu_affinity() hook to setup vapic mode for pass-through devices
+      iommu/amd: Enable vAPIC interrupt remapping mode by default
+
+Wei Yongjun (2):
+      iommu/amd: Fix non static symbol warning
+      iommu/amd: Fix error return code in irq_remapping_alloc()
+
+Will Deacon (1):
+      iommu/arm-smmu: Disable interrupts whilst holding the cmdq lock
+
+ .../devicetree/bindings/iommu/arm,smmu-v3.txt      |   8 +-
+ .../devicetree/bindings/iommu/arm,smmu.txt         |  61 +-
+ .../devicetree/bindings/pci/pci-iommu.txt          | 171 ++++
+ Documentation/kernel-parameters.txt                |   9 +
+ arch/arm64/mm/dma-mapping.c                        |   2 +-
+ arch/x86/configs/x86_64_defconfig                  |   1 -
+ drivers/gpu/drm/exynos/exynos_drm_iommu.h          |   2 +-
+ drivers/iommu/Kconfig                              |   2 +-
+ drivers/iommu/amd_iommu.c                          | 499 +++++++++--
+ drivers/iommu/amd_iommu_init.c                     | 184 +++-
+ drivers/iommu/amd_iommu_proto.h                    |   7 +-
+ drivers/iommu/amd_iommu_types.h                    | 149 +++
+ drivers/iommu/arm-smmu-v3.c                        | 561 ++++++------
+ drivers/iommu/arm-smmu.c                           | 995 ++++++++++-----------
+ drivers/iommu/dma-iommu.c                          | 161 +++-
+ drivers/iommu/exynos-iommu.c                       |   4 +-
+ drivers/iommu/intel-iommu.c                        | 103 ++-
+ drivers/iommu/io-pgtable-arm-v7s.c                 |   4 +
+ drivers/iommu/iommu.c                              |  58 ++
+ drivers/iommu/ipmmu-vmsa.c                         |   2 +-
+ drivers/iommu/of_iommu.c                           |  52 +-
+ drivers/irqchip/irq-gic-v2m.c                      |   3 +
+ drivers/irqchip/irq-gic-v3-its.c                   |   3 +
+ drivers/of/irq.c                                   |  78 +-
+ drivers/of/of_pci.c                                | 102 +++
+ include/dt-bindings/memory/mt2701-larb-port.h      |   2 +-
+ include/linux/amd-iommu.h                          |  43 +-
+ include/linux/device.h                             |   3 +
+ include/linux/dma-iommu.h                          |  12 +-
+ include/linux/iommu.h                              |  39 +
+ include/linux/of_pci.h                             |  10 +
+ 31 files changed, 2322 insertions(+), 1008 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/pci/pci-iommu.txt
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--xHFwDpU9dbj6ez1V
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJX/P2fAAoJECvwRC2XARrjTNMQAOAJslnaq7bdcWdkX3N11sQn
+VpSO4Fl+UaGrJQmdi/mKOcMw1EK2JjouW72A8c8AA68H8U6Cf7treYLu2/aH7y51
+moQv1M5eQBlaJN4g4oaP1sF3RzcL2wAHLjN9s97QFhdtLHb/SpZBn4Hs0cj6kDX+
+W+jYwP/YKVex+JbNChUR4ZiKpSerk5qA8Xt6+B7rdrdBLp57YJkR7y1jGS3EdRje
+2yyaC5mw43U/We8w1IZbYcMZLEn8/0z7ap5YNjdhR1k8kkNZSmkJ2kbc4MyjTV1z
+KaFH8J+QQ0SY+BtWTYDkT36IPFO3NPQxN4azNWYdFuqFjLZTrtReWmYJJls321ct
+4Uf6NBPo4L9C4tcpjAbdYBTNpSqL08D8vNovhGxUqY5e+m+0KgnvpJovDbSxYaId
+MyAGgUeAhnSNLU/aGdOLwpoKGYV2mSuGicUrd/HXDidrETxu5DxRb0QZhCfOx5gD
+V9/XN9D3dzPzXkED4GbBfkxX/nCz63n/JjJUdrktAtOsiy7TVCF/P0EAqa6tdgmj
+WF3GD2cB8Xe6C0tKrNuihGH46na9ytGdJTx7KLZlF6vy4Aclepb5eqYRi+sw0e5C
+90tvWxIt3uyP9PvOdr08+OBgxk1rjPf1MaD7fVMKafVbkfhj0MqjazKeWtHRbSOf
+MHJLGkQPZ59Y6nlh0nLG
+=Dx/O
+-----END PGP SIGNATURE-----
+
+--xHFwDpU9dbj6ez1V--
+
+--===============3685016353421596644==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============3685016353421596644==--
