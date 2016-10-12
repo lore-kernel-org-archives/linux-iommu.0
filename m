@@ -1,114 +1,123 @@
-From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v14 06/16] iommu/arm-smmu: Implement domain_get_attr for
-	DOMAIN_ATTR_MSI_RESV
-Date: Wed, 12 Oct 2016 13:22:14 +0000
-Message-ID: <1476278544-3397-7-git-send-email-eric.auger@redhat.com>
+From: Eric Auger <eric.auger@redhat.com>
+Subject: [PATCH v14 03/16] iommu/dma: Allow MSI-only cookies
+Date: Wed, 12 Oct 2016 13:22:11 +0000
+Message-ID: <1476278544-3397-4-git-send-email-eric.auger@redhat.com>
 References: <1476278544-3397-1-git-send-email-eric.auger@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1476278544-3397-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1476278544-3397-1-git-send-email-eric.auger@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: eric.auger@redhat.com, eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org
+Cc: kvm@vger.kernel.org, drjones@redhat.com, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, yehuday@marvell.com, Manish.Jaggi@caviumnetworks.com
 List-Id: iommu@lists.linux-foundation.org
 
-ARM smmu and smmu-v3 translate MSI transactions so their driver
-are must implement domain_get_attr for DOMAIN_ATTR_MSI_RESV.
+From: Robin Murphy <robin.murphy@arm.com>
 
-This allows to retrieve the size and alignment requirements of
-the MSI reserved IOVA window.
+IOMMU domain users such as VFIO face a similar problem to DMA API ops
+with regard to mapping MSI messages in systems where the MSI write is
+subject to IOMMU translation. With the relevant infrastructure now in
+place for managed DMA domains, it's actually really simple for other
+users to piggyback off that and reap the benefits without giving up
+their own IOVA management, and without having to reinvent their own
+wheel in the MSI layer.
 
-Also IOMMU_DMA gets selected since it exposes the API to map the
-MSIs.
+Allow such users to opt into automatic MSI remapping by dedicating a
+region of their IOVA space to a managed cookie.
 
-Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
+
 ---
- drivers/iommu/Kconfig       | 4 ++--
- drivers/iommu/arm-smmu-v3.c | 7 +++++++
- drivers/iommu/arm-smmu.c    | 7 +++++++
- 3 files changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 8ee54d7..f5e5e4b 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -297,7 +297,7 @@ config SPAPR_TCE_IOMMU
- config ARM_SMMU
- 	bool "ARM Ltd. System MMU (SMMU) Support"
- 	depends on (ARM64 || ARM) && MMU
--	select IOMMU_API
-+	select IOMMU_DMA
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU if ARM
- 	help
-@@ -310,7 +310,7 @@ config ARM_SMMU
- config ARM_SMMU_V3
- 	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
- 	depends on ARM64
--	select IOMMU_API
-+	select IOMMU_DMA
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select GENERIC_MSI_IRQ_DOMAIN
- 	help
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 15c01c3..572cad8 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1559,6 +1559,9 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
- 	if (ret < 0)
- 		free_io_pgtable_ops(pgtbl_ops);
- 
-+	if (domain->type == IOMMU_DOMAIN_UNMANAGED)
-+		iommu_calc_msi_resv(domain);
+v13 -> v14:
+- restore reserve_iova for iova >= base + size
+
+v1 -> v13 incorpration:
+- compared to Robin's version
+- add NULL last param to iommu_dma_init_domain
+- set the msi_geometry aperture
+- I removed
+  if (base < U64_MAX - size)
+     reserve_iova(iovad, iova_pfn(iovad, base + size), ULONG_MAX);
+  don't get why we would reserve something out of the scope of the iova domain?
+  what do I miss?
+---
+ drivers/iommu/dma-iommu.c | 39 +++++++++++++++++++++++++++++++++++++++
+ include/linux/dma-iommu.h |  9 +++++++++
+ 2 files changed, 48 insertions(+)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index c5ab866..d45f9a0 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -716,3 +716,42 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
+ 		msg->address_lo += lower_32_bits(msi_page->iova);
+ 	}
+ }
 +
- 	return ret;
++/**
++ * iommu_get_dma_msi_region_cookie - Configure a domain for MSI remapping only
++ * @domain: IOMMU domain to prepare
++ * @base: Base address of IOVA region to use as the MSI remapping aperture
++ * @size: Size of the desired MSI aperture
++ *
++ * Users who manage their own IOVA allocation and do not want DMA API support,
++ * but would still like to take advantage of automatic MSI remapping, can use
++ * this to initialise their own domain appropriately.
++ */
++int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
++			       dma_addr_t base, u64 size)
++{
++	struct iommu_dma_cookie *cookie;
++	struct iova_domain *iovad;
++	int ret;
++
++	if (domain->type == IOMMU_DOMAIN_DMA)
++		return -EINVAL;
++
++	ret = iommu_get_dma_cookie(domain);
++	if (ret)
++		return ret;
++
++	ret = iommu_dma_init_domain(domain, base, size, NULL);
++	if (ret) {
++		iommu_put_dma_cookie(domain);
++		return ret;
++	}
++
++	cookie = domain->iova_cookie;
++	iovad = &cookie->iovad;
++	if (base < U64_MAX - size)
++		reserve_iova(iovad, iova_pfn(iovad, base + size), ULONG_MAX);
++
++	return 0;
++}
++EXPORT_SYMBOL(iommu_get_dma_msi_region_cookie);
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index 32c5890..05ab5b4 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -67,6 +67,9 @@ int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
+ /* The DMA API isn't _quite_ the whole story, though... */
+ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
+ 
++int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
++				    dma_addr_t base, u64 size);
++
+ #else
+ 
+ struct iommu_domain;
+@@ -90,6 +93,12 @@ static inline void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
+ {
  }
  
-@@ -1840,6 +1843,10 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- 	case DOMAIN_ATTR_NESTING:
- 		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
- 		return 0;
-+	case DOMAIN_ATTR_MSI_RESV:
-+		*(struct iommu_domain_msi_resv *)data =
-+			smmu_domain->domain.msi_resv;
-+		return 0;
- 	default:
- 		return -ENODEV;
- 	}
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index ac4aab9..ae20b9c 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -943,6 +943,9 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	domain->geometry.aperture_end = (1UL << ias) - 1;
- 	domain->geometry.force_aperture = true;
- 
-+	if (domain->type == IOMMU_DOMAIN_UNMANAGED)
-+		iommu_calc_msi_resv(domain);
++static inline int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
++						  dma_addr_t base, u64 size)
++{
++	return -ENODEV;
++}
 +
- 	/* Initialise the context bank with our page table cfg */
- 	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
- 
-@@ -1486,6 +1489,10 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- 	case DOMAIN_ATTR_NESTING:
- 		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
- 		return 0;
-+	case DOMAIN_ATTR_MSI_RESV:
-+		*(struct iommu_domain_msi_resv *)data =
-+			smmu_domain->domain.msi_resv;
-+		return 0;
- 	default:
- 		return -ENODEV;
- 	}
+ #endif	/* CONFIG_IOMMU_DMA */
+ #endif	/* __KERNEL__ */
+ #endif	/* __DMA_IOMMU_H */
 -- 
 1.9.1
