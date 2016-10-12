@@ -1,123 +1,104 @@
-From: Eric Auger <eric.auger@redhat.com>
-Subject: [PATCH v14 03/16] iommu/dma: Allow MSI-only cookies
-Date: Wed, 12 Oct 2016 13:22:11 +0000
-Message-ID: <1476278544-3397-4-git-send-email-eric.auger@redhat.com>
+From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v14 07/16] irqchip/gic-v2m: Register the MSI doorbell
+Date: Wed, 12 Oct 2016 13:22:15 +0000
+Message-ID: <1476278544-3397-8-git-send-email-eric.auger@redhat.com>
 References: <1476278544-3397-1-git-send-email-eric.auger@redhat.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1476278544-3397-1-git-send-email-eric.auger@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: eric.auger@redhat.com, eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org
-Cc: kvm@vger.kernel.org, drjones@redhat.com, linux-kernel@vger.kernel.org, Bharat.Bhushan@freescale.com, pranav.sawargaonkar@gmail.com, p.fedin@samsung.com, iommu@lists.linux-foundation.org, Jean-Philippe.Brucker@arm.com, yehuday@marvell.com, Manish.Jaggi@caviumnetworks.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1476278544-3397-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+Register the GIC V2M global doorbell. The registered information
+are used to set up the KVM passthrough use case.
 
-IOMMU domain users such as VFIO face a similar problem to DMA API ops
-with regard to mapping MSI messages in systems where the MSI write is
-subject to IOMMU translation. With the relevant infrastructure now in
-place for managed DMA domains, it's actually really simple for other
-users to piggyback off that and reap the benefits without giving up
-their own IOVA management, and without having to reinvent their own
-wheel in the MSI layer.
-
-Allow such users to opt into automatic MSI remapping by dedicating a
-region of their IOVA space to a managed cookie.
-
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
+Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
-
 v13 -> v14:
-- restore reserve_iova for iova >= base + size
+- use iommu_msi_doorbell_alloc/free
 
-v1 -> v13 incorpration:
-- compared to Robin's version
-- add NULL last param to iommu_dma_init_domain
-- set the msi_geometry aperture
-- I removed
-  if (base < U64_MAX - size)
-     reserve_iova(iovad, iova_pfn(iovad, base + size), ULONG_MAX);
-  don't get why we would reserve something out of the scope of the iova domain?
-  what do I miss?
+v12 -> v13:
+- use new msi doorbell registration prototype
+- remove iommu protection attributes
+- add unregistration in teardown
+
+v11 -> v12:
+- use irq_get_msi_doorbell_info new name
+- simplify error handling
+
+v10 -> v11:
+- use the new registration API and re-implement the msi_doorbell_info
+  ops
+
+v9 -> v10:
+- introduce the registration concept in place of msi_doorbell_info
+  callback
+
+v8 -> v9:
+- use global_doorbell instead of percpu_doorbells
+
+v7 -> v8:
+- gicv2m_msi_doorbell_info does not return a pointer to const
+- remove spurious !v2m check
+- add IOMMU_MMIO flag
+
+v7: creation
 ---
- drivers/iommu/dma-iommu.c | 39 +++++++++++++++++++++++++++++++++++++++
- include/linux/dma-iommu.h |  9 +++++++++
- 2 files changed, 48 insertions(+)
+ drivers/irqchip/irq-gic-v2m.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index c5ab866..d45f9a0 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -716,3 +716,42 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
- 		msg->address_lo += lower_32_bits(msi_page->iova);
+diff --git a/drivers/irqchip/irq-gic-v2m.c b/drivers/irqchip/irq-gic-v2m.c
+index 863e073..33acfe0 100644
+--- a/drivers/irqchip/irq-gic-v2m.c
++++ b/drivers/irqchip/irq-gic-v2m.c
+@@ -70,6 +70,7 @@ struct v2m_data {
+ 	u32 spi_offset;		/* offset to be subtracted from SPI number */
+ 	unsigned long *bm;	/* MSI vector bitmap */
+ 	u32 flags;		/* v2m flags for specific implementation */
++	struct iommu_msi_doorbell_info *doorbell_info; /* MSI doorbell */
+ };
+ 
+ static void gicv2m_mask_msi_irq(struct irq_data *d)
+@@ -254,6 +255,7 @@ static void gicv2m_teardown(void)
+ 	struct v2m_data *v2m, *tmp;
+ 
+ 	list_for_each_entry_safe(v2m, tmp, &v2m_nodes, entry) {
++		iommu_msi_doorbell_free(v2m->doorbell_info);
+ 		list_del(&v2m->entry);
+ 		kfree(v2m->bm);
+ 		iounmap(v2m->base);
+@@ -370,12 +372,18 @@ static int __init gicv2m_init_one(struct fwnode_handle *fwnode,
+ 		goto err_iounmap;
  	}
- }
-+
-+/**
-+ * iommu_get_dma_msi_region_cookie - Configure a domain for MSI remapping only
-+ * @domain: IOMMU domain to prepare
-+ * @base: Base address of IOVA region to use as the MSI remapping aperture
-+ * @size: Size of the desired MSI aperture
-+ *
-+ * Users who manage their own IOVA allocation and do not want DMA API support,
-+ * but would still like to take advantage of automatic MSI remapping, can use
-+ * this to initialise their own domain appropriately.
-+ */
-+int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
-+			       dma_addr_t base, u64 size)
-+{
-+	struct iommu_dma_cookie *cookie;
-+	struct iova_domain *iovad;
-+	int ret;
-+
-+	if (domain->type == IOMMU_DOMAIN_DMA)
-+		return -EINVAL;
-+
-+	ret = iommu_get_dma_cookie(domain);
-+	if (ret)
-+		return ret;
-+
-+	ret = iommu_dma_init_domain(domain, base, size, NULL);
-+	if (ret) {
-+		iommu_put_dma_cookie(domain);
-+		return ret;
-+	}
-+
-+	cookie = domain->iova_cookie;
-+	iovad = &cookie->iovad;
-+	if (base < U64_MAX - size)
-+		reserve_iova(iovad, iova_pfn(iovad, base + size), ULONG_MAX);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(iommu_get_dma_msi_region_cookie);
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index 32c5890..05ab5b4 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -67,6 +67,9 @@ int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
- /* The DMA API isn't _quite_ the whole story, though... */
- void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
  
-+int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
-+				    dma_addr_t base, u64 size);
++	v2m->doorbell_info = iommu_msi_doorbell_alloc(v2m->res.start,
++						      sizeof(u32), false);
++	if (IS_ERR(v2m->doorbell_info))
++		goto err_free_bm;
 +
- #else
+ 	list_add_tail(&v2m->entry, &v2m_nodes);
  
- struct iommu_domain;
-@@ -90,6 +93,12 @@ static inline void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
- {
- }
- 
-+static inline int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
-+						  dma_addr_t base, u64 size)
-+{
-+	return -ENODEV;
-+}
-+
- #endif	/* CONFIG_IOMMU_DMA */
- #endif	/* __KERNEL__ */
- #endif	/* __DMA_IOMMU_H */
+ 	pr_info("range%pR, SPI[%d:%d]\n", res,
+ 		v2m->spi_start, (v2m->spi_start + v2m->nr_spis - 1));
+ 	return 0;
+-
++err_free_bm:
++	kfree(v2m->bm);
+ err_iounmap:
+ 	iounmap(v2m->base);
+ err_free_v2m:
 -- 
 1.9.1
