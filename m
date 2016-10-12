@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v14 11/16] vfio/type1: Implement recursive
-	vfio_find_dma_from_node
-Date: Wed, 12 Oct 2016 13:22:19 +0000
-Message-ID: <1476278544-3397-12-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v14 10/16] vfio/type1: vfio_find_dma accepting a type argument
+Date: Wed, 12 Oct 2016 13:22:18 +0000
+Message-ID: <1476278544-3397-11-git-send-email-eric.auger@redhat.com>
 References: <1476278544-3397-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,45 +21,130 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch handles the case where a node is encountered, matching
-@start and @size arguments but not matching the @type argument.
-In that case, we need to skip that node and pursue the search in the
-node's leaves. In case @start is inferior to the node's base, we
-resume the search on the left leaf. If the recursive search on the left
-leaves did not produce any match, we search the right leaves recursively.
+In our RB-tree we get prepared to insert slots of different types
+(USER and RESERVED). It becomes useful to be able to search for dma
+slots of a specific type or any type.
+
+This patch introduces vfio_find_dma_from_node which starts the
+search from a given node and stops on the first node that matches
+the @start and @size parameters. If this node also matches the
+@type parameter, the node is returned else NULL is returned.
+
+At the moment we only have USER SLOTS so the type will always match.
+
+In a separate patch, this function will be enhanced to pursue the
+search recursively in case a node with a different type is
+encountered.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Acked-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
 
-v10: creation
+v13 -> v14:
+- remove top_node variable
 ---
- drivers/vfio/vfio_iommu_type1.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/vfio/vfio_iommu_type1.c | 52 +++++++++++++++++++++++++++++++++--------
+ 1 file changed, 42 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 1bd16ff..1f120f9 100644
+index a9f8b93..1bd16ff 100644
 --- a/drivers/vfio/vfio_iommu_type1.c
 +++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -125,7 +125,17 @@ static struct vfio_dma *vfio_find_dma_from_node(struct rb_node *top,
- 	if (type == VFIO_IOVA_ANY || dma->type == type)
- 		return dma;
+@@ -94,25 +94,55 @@ struct vfio_group {
+  * into DMA'ble space using the IOMMU
+  */
  
--	return NULL;
-+	/* restart 2 searches skipping the current node */
-+	if (start < dma->iova) {
-+		dma = vfio_find_dma_from_node(node->rb_left, start,
-+					      size, type);
-+		if (dma)
-+			return dma;
-+	}
-+	if (start + size > dma->iova + dma->size)
-+		dma = vfio_find_dma_from_node(node->rb_right, start,
-+					      size, type);
-+	return dma;
+-static struct vfio_dma *vfio_find_dma(struct vfio_iommu *iommu,
+-				      dma_addr_t start, size_t size)
++/**
++ * vfio_find_dma_from_node: looks for a dma slot intersecting a window
++ * from a given rb tree node
++ * @top: top rb tree node where the search starts (including this node)
++ * @start: window start
++ * @size: window size
++ * @type: window type
++ */
++static struct vfio_dma *vfio_find_dma_from_node(struct rb_node *top,
++						dma_addr_t start, size_t size,
++						enum vfio_iova_type type)
+ {
+-	struct rb_node *node = iommu->dma_list.rb_node;
++	struct rb_node *node = top;
++	struct vfio_dma *dma;
+ 
+ 	while (node) {
+-		struct vfio_dma *dma = rb_entry(node, struct vfio_dma, node);
+-
++		dma = rb_entry(node, struct vfio_dma, node);
+ 		if (start + size <= dma->iova)
+ 			node = node->rb_left;
+ 		else if (start >= dma->iova + dma->size)
+ 			node = node->rb_right;
+ 		else
+-			return dma;
++			break;
+ 	}
++	if (!node)
++		return NULL;
++
++	/* a dma slot intersects our window, check the type also matches */
++	if (type == VFIO_IOVA_ANY || dma->type == type)
++		return dma;
+ 
+ 	return NULL;
  }
  
- /**
++/**
++ * vfio_find_dma: find a dma slot intersecting a given window
++ * @iommu: vfio iommu handle
++ * @start: window base iova
++ * @size: window size
++ * @type: window type
++ */
++static struct vfio_dma *vfio_find_dma(struct vfio_iommu *iommu,
++				      dma_addr_t start, size_t size,
++				      enum vfio_iova_type type)
++{
++	return vfio_find_dma_from_node(iommu->dma_list.rb_node,
++				       start, size, type);
++}
++
+ static void vfio_link_dma(struct vfio_iommu *iommu, struct vfio_dma *new)
+ {
+ 	struct rb_node **link = &iommu->dma_list.rb_node, *parent = NULL;
+@@ -484,19 +514,21 @@ static int vfio_dma_do_unmap(struct vfio_iommu *iommu,
+ 	 * mappings within the range.
+ 	 */
+ 	if (iommu->v2) {
+-		dma = vfio_find_dma(iommu, unmap->iova, 0);
++		dma = vfio_find_dma(iommu, unmap->iova, 0, VFIO_IOVA_USER);
+ 		if (dma && dma->iova != unmap->iova) {
+ 			ret = -EINVAL;
+ 			goto unlock;
+ 		}
+-		dma = vfio_find_dma(iommu, unmap->iova + unmap->size - 1, 0);
++		dma = vfio_find_dma(iommu, unmap->iova + unmap->size - 1, 0,
++				    VFIO_IOVA_USER);
+ 		if (dma && dma->iova + dma->size != unmap->iova + unmap->size) {
+ 			ret = -EINVAL;
+ 			goto unlock;
+ 		}
+ 	}
+ 
+-	while ((dma = vfio_find_dma(iommu, unmap->iova, unmap->size))) {
++	while ((dma = vfio_find_dma(iommu, unmap->iova, unmap->size,
++				    VFIO_IOVA_USER))) {
+ 		if (!iommu->v2 && unmap->iova > dma->iova)
+ 			break;
+ 		unmapped += dma->size;
+@@ -600,7 +632,7 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+ 
+ 	mutex_lock(&iommu->lock);
+ 
+-	if (vfio_find_dma(iommu, iova, size)) {
++	if (vfio_find_dma(iommu, iova, size, VFIO_IOVA_ANY)) {
+ 		mutex_unlock(&iommu->lock);
+ 		return -EEXIST;
+ 	}
 -- 
 1.9.1
