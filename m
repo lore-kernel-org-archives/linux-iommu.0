@@ -1,7 +1,8 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v14 09/16] vfio: Introduce a vfio_dma type field
-Date: Wed, 12 Oct 2016 13:22:17 +0000
-Message-ID: <1476278544-3397-10-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v14 15/16] iommu/arm-smmu: Do not advertise
+	IOMMU_CAP_INTR_REMAP
+Date: Wed, 12 Oct 2016 13:22:23 +0000
+Message-ID: <1476278544-3397-16-git-send-email-eric.auger@redhat.com>
 References: <1476278544-3397-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,58 +22,56 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We introduce a vfio_dma type since we will need to discriminate
-different types of dma slots:
-- VFIO_IOVA_USER: IOVA region used to map user vaddr
-- VFIO_IOVA_RESERVED_MSI: IOVA region reserved to map MSI doorbells
+Do not advertise IOMMU_CAP_INTR_REMAP for arm-smmu(-v3). Indeed the
+irq_remapping capability is abstracted on irqchip side for ARM as
+opposed to Intel IOMMU featuring IRQ remapping HW.
+
+So to check IRQ remapping capability, the msi domain needs to be
+checked instead.
+
+This commit affects platform and PCIe device assignment use cases
+on any platform featuring an unsafe MSI controller (currently the
+ARM GICv2m). For those platforms the VFIO module must be loaded with
+allow_unsafe_interrupts set to 1.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Acked-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
+
 v9 -> v10:
-- renamed VFIO_IOVA_RESERVED into VFIO_IOVA_RESERVED_MSI
-- explicitly set type to VFIO_IOVA_USER on dma_map
-
-v6 -> v7:
-- add VFIO_IOVA_ANY
-- do not introduce yet any VFIO_IOVA_RESERVED handling
+- reword the commit message (allow_unsafe_interrupts)
 ---
- drivers/vfio/vfio_iommu_type1.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 3 ++-
+ drivers/iommu/arm-smmu.c    | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 2ba1942..a9f8b93 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -53,6 +53,12 @@ module_param_named(disable_hugepages,
- MODULE_PARM_DESC(disable_hugepages,
- 		 "Disable VFIO IOMMU support for IOMMU hugepages.");
- 
-+enum vfio_iova_type {
-+	VFIO_IOVA_USER = 0,	/* standard IOVA used to map user vaddr */
-+	VFIO_IOVA_RESERVED_MSI,	/* reserved to map MSI doorbells */
-+	VFIO_IOVA_ANY,		/* matches any IOVA type */
-+};
-+
- struct vfio_iommu {
- 	struct list_head	domain_list;
- 	struct mutex		lock;
-@@ -75,6 +81,7 @@ struct vfio_dma {
- 	unsigned long		vaddr;		/* Process virtual addr */
- 	size_t			size;		/* Map size (bytes) */
- 	int			prot;		/* IOMMU_READ/WRITE */
-+	enum vfio_iova_type	type;		/* type of IOVA */
- };
- 
- struct vfio_group {
-@@ -607,6 +614,7 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
- 	dma->iova = iova;
- 	dma->vaddr = vaddr;
- 	dma->prot = prot;
-+	dma->type = VFIO_IOVA_USER;
- 
- 	/* Insert zero-sized and grow as we map chunks of it */
- 	vfio_link_dma(iommu, dma);
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 572cad8..d71a955 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1371,7 +1371,8 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 	case IOMMU_CAP_CACHE_COHERENCY:
+ 		return true;
+ 	case IOMMU_CAP_INTR_REMAP:
+-		return true; /* MSIs are just memory writes */
++		/* interrupt translation handled at MSI controller level */
++		return false;
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index ae20b9c..becad89 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1361,7 +1361,8 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 		 */
+ 		return true;
+ 	case IOMMU_CAP_INTR_REMAP:
+-		return true; /* MSIs are just memory writes */
++		/* interrupt translation handled at MSI controller level */
++		return false;
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
 -- 
 1.9.1
