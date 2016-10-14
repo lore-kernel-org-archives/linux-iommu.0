@@ -1,184 +1,130 @@
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v5 01/14] drivers: iommu: add FWNODE_IOMMU fwnode type
-Date: Thu, 13 Oct 2016 22:53:27 +0200
-Message-ID: <CAJZ5v0hi7ak3VtTO4f8z7G-Fr5MeotGkbNByQEHq-CHcyg6JzQ@mail.gmail.com>
-References: <20160909142343.13314-1-lorenzo.pieralisi@arm.com>
- <20160909142343.13314-2-lorenzo.pieralisi@arm.com> <20160929141520.GA29244@red-moon>
- <3178073.UTpgCTN6if@vostro.rjw.lan> <20160930090702.GA7725@red-moon>
- <CAJZ5v0hK2Ryo32u4S9K=78-Oot13vvVNB+p6N2YC1UMqYW9g7A@mail.gmail.com> <20161013163229.GA24568@red-moon>
+From: Punit Agrawal <punit.agrawal@arm.com>
+Subject: Re: [PATCH v14 00/16] KVM PCIe/MSI passthrough on ARM/ARM64
+Date: Fri, 14 Oct 2016 12:24:40 +0100
+Message-ID: <87mvi7qikn.fsf@e105922-lin.cambridge.arm.com>
+References: <1476278544-3397-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20161013163229.GA24568@red-moon>
-Sender: linux-pci-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Tomasz Nowicki <tn@semihalf.com>, Hanjun Guo <hanjun.guo@linaro.org>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Linux PCI <linux-pci@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, linux-arm-kernel@li
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1476278544-3397-1-git-send-email-eric.auger@redhat.com> (Eric
+ Auger's message of "Wed, 12 Oct 2016 13:22:08 +0000")
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Eric Auger <eric.auger@redhat.com>
+Cc: yehuday@marvell.com, drjones@redhat.com, jason@lakedaemon.net, kvm@vger.kernel.org, marc.zyngier@arm.com, p.fedin@samsung.com, joro@8bytes.org, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, pranav.sawargaonkar@gmail.com, linux-arm-kernel@lists.infradead.org, tglx@linutronix.de, robin.murphy@arm.com, Manish.Jaggi@caviumnetworks.com, christoffer.dall@linaro.org, eric.auger.pro@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Eric,
 
-On Thu, Oct 13, 2016 at 6:32 PM, Lorenzo Pieralisi
-<lorenzo.pieralisi@arm.com> wrote:
-> Hi Rafael,
+I am a bit late in joining, but I've tried to familiarise
+myself with earlier discussions on the series.
+
+Eric Auger <eric.auger@redhat.com> writes:
+
+> This is the second respin on top of Robin's series [1], addressing Alex' comments.
 >
-> On Fri, Sep 30, 2016 at 05:48:01PM +0200, Rafael J. Wysocki wrote:
->> On Fri, Sep 30, 2016 at 11:07 AM, Lorenzo Pieralisi
->> <lorenzo.pieralisi@arm.com> wrote:
->> > On Thu, Sep 29, 2016 at 10:59:40PM +0200, Rafael J. Wysocki wrote:
->> >> On Thursday, September 29, 2016 03:15:20 PM Lorenzo Pieralisi wrote:
->> >> > Hi Rafael,
->> >> >
->> >> > On Fri, Sep 09, 2016 at 03:23:30PM +0100, Lorenzo Pieralisi wrote:
->> >> > > On systems booting with a device tree, every struct device is
->> >> > > associated with a struct device_node, that represents its DT
->> >> > > representation. The device node can be used in generic kernel
->> >> > > contexts (eg IRQ translation, IOMMU streamid mapping), to
->> >> > > retrieve the properties associated with the device and carry
->> >> > > out kernel operation accordingly. Owing to the 1:1 relationship
->> >> > > between the device and its device_node, the device_node can also
->> >> > > be used as a look-up token for the device (eg looking up a device
->> >> > > through its device_node), to retrieve the device in kernel paths
->> >> > > where the device_node is available.
->> >> > >
->> >> > > On systems booting with ACPI, the same abstraction provided by
->> >> > > the device_node is required to provide look-up functionality.
->> >> > >
->> >> > > Therefore, mirroring the approach implemented in the IRQ domain
->> >> > > kernel layer, this patch adds an additional fwnode type FWNODE_IOMMU.
->> >> > >
->> >> > > This patch also implements a glue kernel layer that allows to
->> >> > > allocate/free FWNODE_IOMMU fwnode_handle structures and associate
->> >> > > them with IOMMU devices.
->> >> > >
->> >> > > Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
->> >> > > Reviewed-by: Hanjun Guo <hanjun.guo@linaro.org>
->> >> > > Cc: Joerg Roedel <joro@8bytes.org>
->> >> > > Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
->> >> > > ---
->> >> > >  include/linux/fwnode.h |  1 +
->> >> > >  include/linux/iommu.h  | 25 +++++++++++++++++++++++++
->> >> > >  2 files changed, 26 insertions(+)
->> >> > >
->> >> > > diff --git a/include/linux/fwnode.h b/include/linux/fwnode.h
->> >> > > index 8516717..6e10050 100644
->> >> > > --- a/include/linux/fwnode.h
->> >> > > +++ b/include/linux/fwnode.h
->> >> > > @@ -19,6 +19,7 @@ enum fwnode_type {
->> >> > >   FWNODE_ACPI_DATA,
->> >> > >   FWNODE_PDATA,
->> >> > >   FWNODE_IRQCHIP,
->> >> > > + FWNODE_IOMMU,
->> >> >
->> >> > This patch provides groundwork for this series and it is key for
->> >> > the rest of it, basically the point here is that we need a fwnode
->> >> > to differentiate platform devices created out of static ACPI tables
->> >> > entries (ie IORT), that represent IOMMU components.
->> >> >
->> >> > The corresponding device is not an ACPI device (I could fabricate one as
->> >> > it is done for other static tables entries eg FADT power button, but I
->> >> > do not necessarily see the reason for doing that given that all we need
->> >> > the fwnode for is a token identifier), so FWNODE_ACPI does not apply
->> >> > here.
->> >> >
->> >> > Please let me know if it is reasonable how I sorted this out (it
->> >> > is basically identical to IRQCHIP, just another enum entry), the
->> >> > remainder of the code depends on this.
->> >>
->> >> I'm not familiar with the use case, so I don't see anything unreasonable
->> >> in it.
->> >
->> > The use case is pretty simple: on ARM SMMU devices are platform devices.
->> > When booting with DT they are identified through an of_node and related
->> > FWNODE_OF type. When booting with ACPI, the ARM SMMU platform devices,
->> > to be equivalent to DT booting path, should be created out of static
->> > IORT table entries (that's how we describe SMMUs); we need to create
->> > a fwnode "token" to associate with those platform devices and that's
->> > not a FWNODE_ACPI (that is for an ACPI device firmware object, here we
->> > really do not need one), so this patch.
->> >
->> >> If you're asking about whether or not I mind adding more fwnode types in
->> >> principle, then no, I don't. :-)
->> >
->> > Yes, that's what I was asking, the only point that bugs me is that for
->> > both FWNODE_IRQCHIP and FWNODE_IOMMU the fwnode is just a "token" (ie a
->> > valid pointer) used for look-up and the type in the fwnode_handle is
->> > mostly there for error checking, I was wondering if we could create a
->> > specific fwnode_type for this specific usage (eg FWNODE_TAG and then add
->> > a type to it as part of its container struct) instead of adding an enum
->> > value per subsystem - it seems there are other fwnode types in the
->> > pipeline :), so I am asking:
->> >
->> > lkml.kernel.org/r/3D1468514043-21081-3-git-send-email-minyard@acm.org
->>
->> OK, I see your concern now, so thanks for presenting it so clearly.
->>
->> While I don't see anything wrong with having per-subsystem fwnode
->> types in principle, I agree that if the only purpose of them is to
->> mean "this comes from ACPI, but from a static table, not from the
->> namespace", it would be better to have a single fwnode type for that,
->> like FWNODE_ACPI_STATIC or similar.
+> Major changes are:
+> - MSI-doorbell API now is moved to DMA IOMMU API following Alex suggestion
+>   to put all API pieces at the same place (so eventually in the IOMMU
+>   subsystem)
+
+IMHO, this is headed in the opposite direction, i.e., away from the
+owner of the information - the doorbells are the property of the MSI
+controller. The MSI controllers know the location, size and interrupt
+remapping capability as well. On the consumer side, VFIO needs access to
+the doorbells to allow userspace to carve out a region in the IOVA.
+
+I quite liked what you had in v13, though I think you can go further
+though. Instead of adding new doorbell API [un]registration calls, how
+about adding a callback to the irq_domain_ops? The callback will be
+populated for irqdomains registered by MSI controllers.
+
+>From VFIO, we can calculate the required aperture reservation by
+iterating over the irqdomains (something like irq_domain_for_each). The
+same callback can also provide information about support for interrupt
+remapping.
+
+For systems where there are no separate MSI controllers, i.e., the IOMMU
+has a fixed reservation, no MSI callbacks will be populated - which
+tells userspace that no separate MSI reservation is required. IIUC, this
+was one of Alex' concerns on the prior version.
+
+Thoughts, opinions?
+
+Punit
+
+> - new iommu_domain_msi_resv struct and accessor through DOMAIN_ATTR_MSI_RESV
+>   domain with mirror VFIO capability
+> - more robustness I think in the VFIO layer
+> - added "iommu/iova: fix __alloc_and_insert_iova_range" since with the current
+>   code I failed allocating an IOVA page in a single page domain with upper part
+>   reserved
 >
-> Coming back to this, I updated the series with new fwnode type
-> FWNODE_ACPI_STATIC, which IMHO makes more sense (because that
-> represents the FW interface it was obtained from rather than
-> its content and plays better with upcoming extension above - DMI is a
-> different firmware interface so it will be represented with a different
-> fwnode type). Thanks.
-
-OK
-
-> However, I still have a question. The approach I took (create platform
-> devices out of static IORT table entries for SMMUs) is common in ACPI
-> (eg GHES, ACPI watchdog) even though those subsystems ignore the fwnode,
-> but I think that's a detail.
+> IOVA range exclusion will be handled in a separate series
 >
-> Still, fixed HW like power button and sleep button took a different
-> approach, which consists in creating struct acpi_device objects out
-> of FADT fixed HW features (with a NULL ACPI handle because there is
-> no real ACPI object in the namespace for them).
-
-That's how it was done in the past and the code is not functionally
-problematic, so I saw no reason to re-implement it (which might
-introduce regressions).
-
-> I would like to understand the reasoning behind the difference (I
-> think it is related to notification events and the need for an
-> ACPI object for them - and sysfs userspace HID IF exposure ?).
-
-I don't think there is a real need for that model and that's why it is
-not used any more.  It's legacy mostly.
-
-> In theory (but looks crazy to me that's why I did not do it), I could
-> fabricate a Device object in the ACPI namespace (?) (with _HID, _CRS and
-> related properties - is that doable ?) out of the static table entry in
-> the IORT table that provides the ARM SMMU component data (ie its MMIO
-> space, IRQs and SMMU properties like cache coherency), this would
-> allow the kernel to create a struct acpi_device (and related fwnode)
-> + its physical node platform device but that looks insanely complicated
-> (if feasible and more importantly if correct from an ACPI standpoint).
+> The priority really is to discuss and freeze the API and especially the MSI
+> doorbell's handling. Do we agree to put that in DMA IOMMU?
 >
-> This approach would allow me to match the SMMU driver with an _HID,
-> the kernel would create a physical_node (ie platform_device) for
-> me out of the namespace ACPI device object and I would get the
-> FWNODE_ACPI for free (out of the struct acpi_device) instead of having
-> to fiddle about with a new fwnode_handle type.
+> Note: the size computation does not take into account possible page overlaps
+> between doorbells but it would add quite a lot of complexity i think.
 >
-> I think this alternative approach (if doable at all) creates more issues
-> than it solves but I wanted to make sure what I am doing is kosher
-> from an ACPI perspective so I am asking.
-
-That's most likely how I would do it, so fine by me. :-)
-
-> I definitely think the current approach I took is much better, with its
-> own downsides (eg matching the ARM SMMU driver by name instead of
-> acpi_device_id/_HID), but I wanted to ask.
+> Tested on AMD Overdrive (single GICv2m frame) with I350 VF assignment.
 >
-> The point is: ARM SMMU drivers are platform drivers. In DT the SMMUs
-> are represented through DT nodes, in ACPI through _static_ IORT table
-> entries, somehow a platform device must be created for them, so
-> this whole series (and related fwnode issues).
-
-Right.  No disagreement.
-
-Thanks,
-Rafael
+> dependency:
+> the series depends on Robin's generic-v7 branch:
+> [1] [PATCH v7 00/22] Generic DT bindings for PCI IOMMUs and ARM SMMU
+> http://www.spinics.net/lists/arm-kernel/msg531110.html
+>
+> Best Regards
+>
+> Eric
+>
+> Git: complete series available at
+> https://github.com/eauger/linux/tree/generic-v7-pcie-passthru-v14
+>
+> the above branch includes a temporary patch to work around a ThunderX pci
+> bus reset crash (which I think unrelated to this series):
+> "vfio: pci: HACK! workaround thunderx pci_try_reset_bus crash"
+> Do not take this one for other platforms.
+>
+>
+> Eric Auger (15):
+>   iommu/iova: fix __alloc_and_insert_iova_range
+>   iommu: Introduce DOMAIN_ATTR_MSI_RESV
+>   iommu/dma: MSI doorbell alloc/free
+>   iommu/dma: Introduce iommu_calc_msi_resv
+>   iommu/arm-smmu: Implement domain_get_attr for DOMAIN_ATTR_MSI_RESV
+>   irqchip/gic-v2m: Register the MSI doorbell
+>   irqchip/gicv3-its: Register the MSI doorbell
+>   vfio: Introduce a vfio_dma type field
+>   vfio/type1: vfio_find_dma accepting a type argument
+>   vfio/type1: Implement recursive vfio_find_dma_from_node
+>   vfio/type1: Handle unmap/unpin and replay for VFIO_IOVA_RESERVED slots
+>   vfio: Allow reserved msi iova registration
+>   vfio/type1: Check doorbell safety
+>   iommu/arm-smmu: Do not advertise IOMMU_CAP_INTR_REMAP
+>   vfio/type1: Introduce MSI_RESV capability
+>
+> Robin Murphy (1):
+>   iommu/dma: Allow MSI-only cookies
+>
+>  drivers/iommu/Kconfig            |   4 +-
+>  drivers/iommu/arm-smmu-v3.c      |  10 +-
+>  drivers/iommu/arm-smmu.c         |  10 +-
+>  drivers/iommu/dma-iommu.c        | 184 ++++++++++++++++++++++++++
+>  drivers/iommu/iova.c             |   2 +-
+>  drivers/irqchip/irq-gic-v2m.c    |  10 +-
+>  drivers/irqchip/irq-gic-v3-its.c |  13 ++
+>  drivers/vfio/vfio_iommu_type1.c  | 279 +++++++++++++++++++++++++++++++++++++--
+>  include/linux/dma-iommu.h        |  59 +++++++++
+>  include/linux/iommu.h            |   8 ++
+>  include/uapi/linux/vfio.h        |  30 ++++-
+>  11 files changed, 587 insertions(+), 22 deletions(-)
