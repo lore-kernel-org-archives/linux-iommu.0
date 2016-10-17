@@ -1,11 +1,13 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 1/2] iommu/mediatek: Convert M4Uv2 to iommu_fwspec
-Date: Mon, 17 Oct 2016 12:49:20 +0100
-Message-ID: <0205bf6404b16bdebe8039bfc65570a2a6f9f960.1476704508.git.robin.murphy@arm.com>
+Subject: [PATCH 2/2] iommu/mediatek: Convert M4Uv1 to iommu_fwspec
+Date: Mon, 17 Oct 2016 12:49:21 +0100
+Message-ID: <a40dbcc1ff40bf09483316354d2fdcb2d432eb81.1476704508.git.robin.murphy@arm.com>
+References: <0205bf6404b16bdebe8039bfc65570a2a6f9f960.1476704508.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <0205bf6404b16bdebe8039bfc65570a2a6f9f960.1476704508.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,27 +23,40 @@ List-Id: iommu@lists.linux-foundation.org
 
 Our per-device data consists of the M4U instance and firmware-provided
 list of LARB IDs, which is a perfect fit for the generic iommu_fwspec
-machinery. Use that directly as a simpler alternative to the custom
-archdata code.
+machinery. Use that directly instead of the custom archdata code - while
+we can't rely on the of_xlate() mechanism to initialise things until the
+32-bit ARM DMA code learns about groups and default domains, it still
+results in a reasonable simplification overall.
 
-CC: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+CC: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
+ drivers/iommu/mtk_iommu.h    |  6 ---
+ drivers/iommu/mtk_iommu_v1.c | 95 +++++++++++++++++---------------------------
+ 2 files changed, 36 insertions(+), 65 deletions(-)
 
-These are fairly mechanical cleanups, so I'm pretty confident, but it
-still bears mentioning that they're only compile-tested as I don't have
-the relevant hardware.
-
-Robin.
-
- drivers/iommu/mtk_iommu.c | 75 ++++++++++++-----------------------------------
- 1 file changed, 18 insertions(+), 57 deletions(-)
-
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index b12c12d74c33..13bb57995cd3 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -195,14 +195,14 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index 3dab13b4a211..f59609f20270 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -34,12 +34,6 @@ struct mtk_iommu_suspend_reg {
+ 	u32				int_main_control;
+ };
+ 
+-struct mtk_iommu_client_priv {
+-	struct list_head		client;
+-	unsigned int			mtk_m4u_id;
+-	struct device			*m4udev;
+-};
+-
+ struct mtk_iommu_domain;
+ 
+ struct mtk_iommu_data {
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index b8aeb0768483..884c80cb795e 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -204,14 +204,14 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
  static void mtk_iommu_config(struct mtk_iommu_data *data,
  			     struct device *dev, bool enable)
  {
@@ -53,15 +68,15 @@ index b12c12d74c33..13bb57995cd3 100644
  
 -	head = dev->archdata.iommu;
 -	list_for_each_entry_safe(cur, next, &head->client, client) {
--		larbid = MTK_M4U_TO_LARB(cur->mtk_m4u_id);
--		portid = MTK_M4U_TO_PORT(cur->mtk_m4u_id);
+-		larbid = mt2701_m4u_to_larb(cur->mtk_m4u_id);
+-		portid = mt2701_m4u_to_port(cur->mtk_m4u_id);
 +	for (i = 0; i < fwspec->num_ids; ++i) {
-+		larbid = MTK_M4U_TO_LARB(fwspec->ids[i]);
-+		portid = MTK_M4U_TO_PORT(fwspec->ids[i]);
++		larbid = mt2701_m4u_to_larb(fwspec->ids[i]);
++		portid = mt2701_m4u_to_port(fwspec->ids[i]);
  		larb_mmu = &data->smi_imu.larb_imu[larbid];
  
  		dev_dbg(dev, "%s iommu port: %d\n",
-@@ -282,14 +282,12 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+@@ -271,14 +271,12 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
  				   struct device *dev)
  {
  	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
@@ -78,7 +93,7 @@ index b12c12d74c33..13bb57995cd3 100644
  	if (!data->m4u_dom) {
  		data->m4u_dom = dom;
  		ret = mtk_iommu_domain_finalise(data);
-@@ -310,13 +308,11 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+@@ -295,13 +293,11 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
  static void mtk_iommu_detach_device(struct iommu_domain *domain,
  				    struct device *dev)
  {
@@ -94,9 +109,99 @@ index b12c12d74c33..13bb57995cd3 100644
  	mtk_iommu_config(data, dev, false);
  }
  
-@@ -366,8 +362,8 @@ static int mtk_iommu_add_device(struct device *dev)
+@@ -366,6 +362,8 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	return pa;
+ }
+ 
++static struct iommu_ops mtk_iommu_ops;
++
+ /*
+  * MTK generation one iommu HW only support one iommu domain, and all the client
+  * sharing the same iova address space.
+@@ -373,7 +371,7 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ static int mtk_iommu_create_mapping(struct device *dev,
+ 				    struct of_phandle_args *args)
  {
- 	struct iommu_group *group;
+-	struct mtk_iommu_client_priv *head, *priv, *next;
++	struct mtk_iommu_data *data;
+ 	struct platform_device *m4updev;
+ 	struct dma_iommu_mapping *mtk_mapping;
+ 	struct device *m4udev;
+@@ -385,41 +383,37 @@ static int mtk_iommu_create_mapping(struct device *dev,
+ 		return -EINVAL;
+ 	}
+ 
+-	if (!dev->archdata.iommu) {
++	if (!dev->iommu_fwspec) {
++		ret = iommu_fwspec_init(dev, &args->np->fwnode, &mtk_iommu_ops);
++		if (ret)
++			return ret;
++	} else if (dev->iommu_fwspec->ops != &mtk_iommu_ops) {
++		return -EINVAL;
++	}
++
++	if (!dev->iommu_fwspec->iommu_priv) {
+ 		/* Get the m4u device */
+ 		m4updev = of_find_device_by_node(args->np);
+ 		if (WARN_ON(!m4updev))
+ 			return -EINVAL;
+ 
+-		head = kzalloc(sizeof(*head), GFP_KERNEL);
+-		if (!head)
+-			return -ENOMEM;
+-
+-		dev->archdata.iommu = head;
+-		INIT_LIST_HEAD(&head->client);
+-		head->m4udev = &m4updev->dev;
+-	} else {
+-		head = dev->archdata.iommu;
++		dev->iommu_fwspec->iommu_priv = platform_get_drvdata(m4updev);
+ 	}
+ 
+-	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+-	if (!priv) {
+-		ret = -ENOMEM;
+-		goto err_free_mem;
+-	}
+-	priv->mtk_m4u_id = args->args[0];
+-	list_add_tail(&priv->client, &head->client);
++	ret = iommu_fwspec_add_ids(dev, args->args, 1);
++	if (ret)
++		return ret;
+ 
+-	m4udev = head->m4udev;
++	data = dev->iommu_fwspec->iommu_priv;
++	m4udev = data->dev;
+ 	mtk_mapping = m4udev->archdata.iommu;
+ 	if (!mtk_mapping) {
+ 		/* MTK iommu support 4GB iova address space. */
+ 		mtk_mapping = arm_iommu_create_mapping(&platform_bus_type,
+ 						0, 1ULL << 32);
+-		if (IS_ERR(mtk_mapping)) {
+-			ret = PTR_ERR(mtk_mapping);
+-			goto err_free_mem;
+-		}
++		if (IS_ERR(mtk_mapping))
++			return PTR_ERR(mtk_mapping);
++
+ 		m4udev->archdata.iommu = mtk_mapping;
+ 	}
+ 
+@@ -432,11 +426,6 @@ static int mtk_iommu_create_mapping(struct device *dev,
+ err_release_mapping:
+ 	arm_iommu_release_mapping(mtk_mapping);
+ 	m4udev->archdata.iommu = NULL;
+-err_free_mem:
+-	list_for_each_entry_safe(priv, next, &head->client, client)
+-		kfree(priv);
+-	kfree(head);
+-	dev->archdata.iommu = NULL;
+ 	return ret;
+ }
+ 
+@@ -458,8 +447,8 @@ static int mtk_iommu_add_device(struct device *dev)
+ 		of_node_put(iommu_spec.np);
+ 	}
  
 -	if (!dev->archdata.iommu) /* Not a iommu client device */
 -		return -ENODEV;
@@ -105,7 +210,7 @@ index b12c12d74c33..13bb57995cd3 100644
  
  	group = iommu_group_get_for_dev(dev);
  	if (IS_ERR(group))
-@@ -379,33 +375,21 @@ static int mtk_iommu_add_device(struct device *dev)
+@@ -471,33 +460,21 @@ static int mtk_iommu_add_device(struct device *dev)
  
  static void mtk_iommu_remove_device(struct device *dev)
  {
@@ -143,55 +248,5 @@ index b12c12d74c33..13bb57995cd3 100644
  	if (!data->m4u_group) {
  		data->m4u_group = iommu_group_alloc();
  		if (IS_ERR(data->m4u_group))
-@@ -416,7 +400,6 @@ static struct iommu_group *mtk_iommu_device_group(struct device *dev)
- 
- static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- {
--	struct mtk_iommu_client_priv *head, *priv, *next;
- 	struct platform_device *m4updev;
- 
- 	if (args->args_count != 1) {
-@@ -425,38 +408,16 @@ static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 		return -EINVAL;
- 	}
- 
--	if (!dev->archdata.iommu) {
-+	if (!dev->iommu_fwspec->iommu_priv) {
- 		/* Get the m4u device */
- 		m4updev = of_find_device_by_node(args->np);
- 		if (WARN_ON(!m4updev))
- 			return -EINVAL;
- 
--		head = kzalloc(sizeof(*head), GFP_KERNEL);
--		if (!head)
--			return -ENOMEM;
--
--		dev->archdata.iommu = head;
--		INIT_LIST_HEAD(&head->client);
--		head->m4udev = &m4updev->dev;
--	} else {
--		head = dev->archdata.iommu;
-+		dev->iommu_fwspec->iommu_priv = platform_get_drvdata(m4updev);
- 	}
- 
--	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
--	if (!priv)
--		goto err_free_mem;
--
--	priv->mtk_m4u_id = args->args[0];
--	list_add_tail(&priv->client, &head->client);
--
--	return 0;
--
--err_free_mem:
--	list_for_each_entry_safe(priv, next, &head->client, client)
--		kfree(priv);
--	kfree(head);
--	dev->archdata.iommu = NULL;
--	return -ENOMEM;
-+	return iommu_fwspec_add_ids(dev, args->args, 1);
- }
- 
- static struct iommu_ops mtk_iommu_ops = {
 -- 
 1.9.1
