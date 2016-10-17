@@ -1,14 +1,15 @@
-From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v14 00/16] KVM PCIe/MSI passthrough on ARM/ARM64
-Date: Mon, 17 Oct 2016 16:19:33 +0200
-Message-ID: <2f919654-f16d-513e-8535-3230db0ad861@redhat.com>
-References: <1476278544-3397-1-git-send-email-eric.auger@redhat.com>
-	<87mvi7qikn.fsf@e105922-lin.cambridge.arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/arm-smmu: Don't inadvertently reject multiple
+	SMMUv3s
+Date: Mon, 17 Oct 2016 15:19:46 +0100
+Message-ID: <f9dfa5a4-f42a-265f-ab84-7599f2de37ed@arm.com>
+References: <5cf1acbf9c42cc99e5cc0dacb50b7a92c3bd0feb.1476702234.git.robin.murphy@arm.com>
+	<20161017132146.GA26341@red-moon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <87mvi7qikn.fsf-Z9gB6HwUD+TZROr8t4l/smS4ubULX0JqMm0uRHvK7Nw@public.gmane.org>
+In-Reply-To: <20161017132146.GA26341@red-moon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,147 +19,77 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Punit Agrawal <punit.agrawal-5wv7dgnIgG8@public.gmane.org>
-Cc: yehuday-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, p.fedin-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, Manish.Jaggi-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Punit,
+Hi Lorenzo,
 
-On 14/10/2016 13:24, Punit Agrawal wrote:
-> Hi Eric,
-> 
-> I am a bit late in joining, but I've tried to familiarise
-> myself with earlier discussions on the series.
-> 
-> Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> writes:
-> 
->> This is the second respin on top of Robin's series [1], addressing Alex' comments.
+On 17/10/16 14:21, Lorenzo Pieralisi wrote:
+> On Mon, Oct 17, 2016 at 12:06:20PM +0100, Robin Murphy wrote:
+>> We now delay installing our per-bus iommu_ops until we know an SMMU has
+>> successfully probed, as they don't serve much purpose beforehand, and
+>> doing so also avoids fights between multiple IOMMU drivers in a single
+>> kernel. However, the upshot of passing the return value of bus_set_iommu()
+>> back from our probe function is that if there happens to be more than
+>> one SMMUv3 device in a system, the second and subsequent probes will
+>> wind up returning -EBUSY to the driver core and getting torn down again.
 >>
->> Major changes are:
->> - MSI-doorbell API now is moved to DMA IOMMU API following Alex suggestion
->>   to put all API pieces at the same place (so eventually in the IOMMU
->>   subsystem)
+>> There are essentially 3 cases in which bus_set_iommu() returns nonzero:
+>> 1. The bus already has iommu_ops installed
+>> 2. One of the add_device callbacks from the initial notifier failed
+>> 3. Allocating or installing the notifier itself failed
+>>
+>> The first two are down to devices other than the SMMU in question, so
+>> shouldn't abort an otherwise-successful SMMU probe, whilst the third is
+>> indicative of the kind of catastrophic system failure which isn't going
+>> to get much further anyway. Consequently, there is little harm in
+>> ignoring the return value either way.
+>>
+>> CC: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>  drivers/iommu/arm-smmu-v3.c | 11 ++++-------
+>>  1 file changed, 4 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index 15c01c3cd540..74fbef384deb 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -2637,16 +2637,13 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>>  	of_iommu_set_ops(dev->of_node, &arm_smmu_ops);
+>>  #ifdef CONFIG_PCI
+>>  	pci_request_acs();
+>> -	ret = bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+>> -	if (ret)
+>> -		return ret;
+>> +	bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+>>  #endif
+>>  #ifdef CONFIG_ARM_AMBA
+>> -	ret = bus_set_iommu(&amba_bustype, &arm_smmu_ops);
+>> -	if (ret)
+>> -		return ret;
+>> +	bus_set_iommu(&amba_bustype, &arm_smmu_ops);
+>>  #endif
+>> -	return bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
+>> +	bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
+>> +	return 0;
 > 
-> IMHO, this is headed in the opposite direction, i.e., away from the
-> owner of the information - the doorbells are the property of the MSI
-> controller. The MSI controllers know the location, size and interrupt
-> remapping capability as well. On the consumer side, VFIO needs access to
-> the doorbells to allow userspace to carve out a region in the IOVA.
-> 
-> I quite liked what you had in v13, though I think you can go further
-> though. Instead of adding new doorbell API [un]registration calls, how
-> about adding a callback to the irq_domain_ops? The callback will be
-> populated for irqdomains registered by MSI controllers.
+> Nit: I do not see why you would not take the same approach as
+> the ARM SMMUv1/v2, namely checking if ops are already set and
+> skip the call if that's the case.
 
-Thank you for jumping into that thread. Any help/feedback is greatly
-appreciated.
+Well, I'd say it really goes the other way around - since the very first
+thing bus_set_iommu() does is check if ops are present, and return if
+so, and the v2 driver already doesn't care about that return value,
+there's not really any need for it to duplicate the check either. I
+didn't change it at the time to avoid cluttering the gigantic rework any
+further, but I could spin a cleanup patch if you like.
 
-Regarding your suggestion, the irq_domain looks dedicated to the
-translation between linux irq and HW irq. I tend to think adding an ops
-to retrieve the MSI doorbell info at that level looks far from the
-original goal of the infrastructure. Obviously the fact there is a list
-of such domain is tempting but I preferred to add a separate struct and
-separate list.
-
-In the v14 release I moved the "doorbell API" in the dma-iommu API since
-Alex recommended to offer a unified API where all pieces would be at the
-same place.
-
-Anyway I will follow the guidance of maintainers.
-
-
+> Anyway:
 > 
-> From VFIO, we can calculate the required aperture reservation by
-> iterating over the irqdomains (something like irq_domain_for_each). The
-> same callback can also provide information about support for interrupt
-> remapping.
-> 
-> For systems where there are no separate MSI controllers, i.e., the IOMMU
-> has a fixed reservation, no MSI callbacks will be populated - which
-> tells userspace that no separate MSI reservation is required. IIUC, this
-> was one of Alex' concerns on the prior version.
+> Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 
-I'am working on a separate series to report to the user-space the usable
-IOVA range(s).
+Thanks!
 
-Thanks
-
-Eric
-> 
-> Thoughts, opinions?
-> 
-> Punit
-> 
->> - new iommu_domain_msi_resv struct and accessor through DOMAIN_ATTR_MSI_RESV
->>   domain with mirror VFIO capability
->> - more robustness I think in the VFIO layer
->> - added "iommu/iova: fix __alloc_and_insert_iova_range" since with the current
->>   code I failed allocating an IOVA page in a single page domain with upper part
->>   reserved
->>
->> IOVA range exclusion will be handled in a separate series
->>
->> The priority really is to discuss and freeze the API and especially the MSI
->> doorbell's handling. Do we agree to put that in DMA IOMMU?
->>
->> Note: the size computation does not take into account possible page overlaps
->> between doorbells but it would add quite a lot of complexity i think.
->>
->> Tested on AMD Overdrive (single GICv2m frame) with I350 VF assignment.
->>
->> dependency:
->> the series depends on Robin's generic-v7 branch:
->> [1] [PATCH v7 00/22] Generic DT bindings for PCI IOMMUs and ARM SMMU
->> http://www.spinics.net/lists/arm-kernel/msg531110.html
->>
->> Best Regards
->>
->> Eric
->>
->> Git: complete series available at
->> https://github.com/eauger/linux/tree/generic-v7-pcie-passthru-v14
->>
->> the above branch includes a temporary patch to work around a ThunderX pci
->> bus reset crash (which I think unrelated to this series):
->> "vfio: pci: HACK! workaround thunderx pci_try_reset_bus crash"
->> Do not take this one for other platforms.
->>
->>
->> Eric Auger (15):
->>   iommu/iova: fix __alloc_and_insert_iova_range
->>   iommu: Introduce DOMAIN_ATTR_MSI_RESV
->>   iommu/dma: MSI doorbell alloc/free
->>   iommu/dma: Introduce iommu_calc_msi_resv
->>   iommu/arm-smmu: Implement domain_get_attr for DOMAIN_ATTR_MSI_RESV
->>   irqchip/gic-v2m: Register the MSI doorbell
->>   irqchip/gicv3-its: Register the MSI doorbell
->>   vfio: Introduce a vfio_dma type field
->>   vfio/type1: vfio_find_dma accepting a type argument
->>   vfio/type1: Implement recursive vfio_find_dma_from_node
->>   vfio/type1: Handle unmap/unpin and replay for VFIO_IOVA_RESERVED slots
->>   vfio: Allow reserved msi iova registration
->>   vfio/type1: Check doorbell safety
->>   iommu/arm-smmu: Do not advertise IOMMU_CAP_INTR_REMAP
->>   vfio/type1: Introduce MSI_RESV capability
->>
->> Robin Murphy (1):
->>   iommu/dma: Allow MSI-only cookies
->>
->>  drivers/iommu/Kconfig            |   4 +-
->>  drivers/iommu/arm-smmu-v3.c      |  10 +-
->>  drivers/iommu/arm-smmu.c         |  10 +-
->>  drivers/iommu/dma-iommu.c        | 184 ++++++++++++++++++++++++++
->>  drivers/iommu/iova.c             |   2 +-
->>  drivers/irqchip/irq-gic-v2m.c    |  10 +-
->>  drivers/irqchip/irq-gic-v3-its.c |  13 ++
->>  drivers/vfio/vfio_iommu_type1.c  | 279 +++++++++++++++++++++++++++++++++++++--
->>  include/linux/dma-iommu.h        |  59 +++++++++
->>  include/linux/iommu.h            |   8 ++
->>  include/uapi/linux/vfio.h        |  30 ++++-
->>  11 files changed, 587 insertions(+), 22 deletions(-)
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+Robin.
