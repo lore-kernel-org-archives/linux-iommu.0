@@ -1,84 +1,93 @@
-From: Punit Agrawal <punit.agrawal@arm.com>
-Subject: Re: [PATCH v14 04/16] iommu/dma: MSI doorbell alloc/free
-Date: Fri, 14 Oct 2016 12:25:11 +0100
-Message-ID: <87lgxrqijs.fsf@e105922-lin.cambridge.arm.com>
-References: <1476278544-3397-1-git-send-email-eric.auger@redhat.com>
-        <1476278544-3397-5-git-send-email-eric.auger@redhat.com>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH V3 0/8] IOMMU probe deferral support
+Date: Mon, 17 Oct 2016 12:28:01 +0530
+Message-ID: <000601d22843$d0efc4e0$72cf4ea0$@codeaurora.org>
+References: <CGME20161004170414eucas1p141bebe16e1bf241862833e7ad0270c72@eucas1p1.samsung.com>
+	<1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
+	<12cfb59f-f7ca-d4df-eb7f-42348e357979@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <1476278544-3397-5-git-send-email-eric.auger@redhat.com> (Eric
-        Auger's message of "Wed, 12 Oct 2016 13:22:12 +0000")
-Sender: kvm-owner@vger.kernel.org
-To: Eric Auger <eric.auger@redhat.com>
-Cc: eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org, drjones@redhat.com, kvm@vger.kernel.org, Manish.Jaggi@caviumnetworks.com, p.fedin@samsung.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, pranav.sawargaonkar@gmail.com, yehuday@marvell.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: 
+Content-Language: en-us
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Marek Szyprowski' <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Eric,
-
-One query and a comment below.
-
-Eric Auger <eric.auger@redhat.com> writes:
-
-> We introduce the capability to (un)register MSI doorbells.
+>-----Original Message-----
+>From: Sricharan [mailto:sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org]
+>Sent: Wednesday, October 12, 2016 11:55 AM
+>To: 'Marek Szyprowski' <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>; 'will.deacon-5wv7dgnIgG8@public.gmane.org' <will.deacon-5wv7dgnIgG8@public.gmane.org>; 'robin.murphy-5wv7dgnIgG8@public.gmane.org'
+><robin.murphy-5wv7dgnIgG8@public.gmane.org>; 'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org' <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>; 'iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org' <iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+>foundation.org>; 'linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org' <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>; 'linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org'
+><linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>; 'laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org' <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>;
+>'tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org' <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>; 'srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org' <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+>Subject: RE: [PATCH V3 0/8] IOMMU probe deferral support
 >
-> A doorbell region is characterized by its physical address base, size,
-> and whether it its safe (ie. it implements IRQ remapping). A doorbell
-> can be per-cpu or global. We currently only care about global doorbells.
+>Hi Marek,
 >
-> A function returns whether all registered doorbells are safe.
->
-> MSI controllers likely to work along with IOMMU that translate MSI
-> transaction must register their doorbells to allow device assignment
-> with MSI support.  Otherwise the MSI transactions will cause IOMMU faults.
->
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->
-> ---
->
-> v13 -> v14:
-> - previously in msi-doorbell.h/c
-> ---
->  drivers/iommu/dma-iommu.c | 75 +++++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/dma-iommu.h | 41 ++++++++++++++++++++++++++
->  2 files changed, 116 insertions(+)
->
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index d45f9a0..d8a7d86 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -43,6 +43,38 @@ struct iommu_dma_cookie {
->  	spinlock_t		msi_lock;
->  };
->  
-> +/**
-> + * struct iommu_msi_doorbell_info - MSI doorbell region descriptor
-> + * @percpu_doorbells: per cpu doorbell base address
-> + * @global_doorbell: base address of the doorbell
-> + * @doorbell_is_percpu: is the doorbell per cpu or global?
-> + * @safe: true if irq remapping is implemented
-> + * @size: size of the doorbell
-> + */
-> +struct iommu_msi_doorbell_info {
-> +	union {
-> +		phys_addr_t __percpu    *percpu_doorbells;
+>>Hi Sricharan,
+>>
+>>
+>>On 2016-10-04 19:03, Sricharan R wrote:
+>>> Initial post from Laurent Pinchart[1]. This is
+>>> series calls the dma ops configuration for the devices
+>>> at a generic place so that it works for all busses.
+>>> The dma_configure_ops for a device is now called during
+>>> the device_attach callback just before the probe of the
+>>> bus/driver is called. Similarly dma_deconfigure is called during
+>>> device/driver_detach path.
+>>>
+>>>
+>>> pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
+>>>         |                         |
+>>> pci_bus_add_device     (device_add/driver_register)
+>>>         |                         |
+>>> device_attach           device_initial_probe
+>>>         |                         |
+>>> __device_attach_driver    __device_attach_driver
+>>>         |
+>>> driver_probe_device
+>>>         |
+>>> really_probe
+>>>         |
+>>> dma_configure
+>>>
+>>>   Similarly on the device/driver_unregister path __device_release_driver is
+>>>   called which inturn calls dma_deconfigure.
+>>>
+>>>   If the ACPI bus code follows the same, we can add acpi_dma_configure
+>>>   at the same place as of_dma_configure.
+>>>
+>>>   This series is based on the recently merged Generic DT bindings for
+>>>   PCI IOMMUs and ARM SMMU from Robin Murphy robin.murphy-5wv7dgnIgG8@public.gmane.org [2]
+>>>
+>>>   This time tested this with platform and pci device for probe deferral
+>>>   and reprobe on arm64 based platform. There is an issue on the cleanup
+>>>   path for arm64 though, where there is WARN_ON if the dma_ops is reset while
+>>>   device is attached to an domain in arch_teardown_dma_ops.
+>>>   But with iommu_groups created from the iommu driver, the device is always
+>>>   attached to a domain/default_domain. So so the WARN has to be removed/handled
+>>>   probably.
+>>
+>>Thanks for continuing work on this feature! Your can add my:
+>>
+>>Tested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>>
+Hi Will,Robin,Joerg,
+       
+       I have tested the probe deferral for platform/pcie bus devices based on latest Generic bindings
+        series merged [1], for pci/arm-smmu.
+       It will good to know from you on whats the right way to take this forward ?
 
-Out of curiosity, have you come across systems that have per-cpu
-doorbells? I couldn't find a system that'd help solidify my
-understanding on it's usage.
-
-> +		phys_addr_t             global_doorbell;
-> +	};
-> +	bool    doorbell_is_percpu;
-> +	bool    safe;
-
-Although you've got the comment above, 'safe' doesn't quite convey it's
-purpose. Can this be renamed to something more descriptive -
-'intr_remapping' or 'intr_isolation' perhaps?
-
-Thanks,
-Punit
-
-
-[...]
-
+Regards,
+ Sricharan
