@@ -1,71 +1,86 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH v6 05/16] drivers: iommu: arm-smmu: convert struct device of_node to fwnode usage
-Date: Tue, 18 Oct 2016 17:04:03 +0100
-Message-ID: <20161018160414.1228-6-lorenzo.pieralisi@arm.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v6 08/16] drivers: acpi: iort: add node match function
+Date: Tue, 18 Oct 2016 17:04:06 +0100
+Message-ID: <20161018160414.1228-9-lorenzo.pieralisi@arm.com>
 References: <20161018160414.1228-1-lorenzo.pieralisi@arm.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20161018160414.1228-1-lorenzo.pieralisi@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Will Deacon <will.deacon@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Robin Murphy <robin.murphy@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Joerg Roedel <joro@8bytes.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20161018160414.1228-1-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Current ARM SMMU driver rely on the struct device.of_node pointer for
-device look-up and iommu_ops retrieval.
+Device drivers (eg ARM SMMU) need to know if a specific component
+is part of the IORT table, so that kernel data structures are not
+initialized at initcalls time if the respective component is not
+part of the IORT table.
 
-In preparation for ACPI probing enablement, convert the driver to use
-the struct device.fwnode member for device and iommu_ops look-up so that
-the driver infrastructure can be used also on systems that do not
-associate an of_node pointer to a struct device (eg ACPI), making the
-device look-up and iommu_ops retrieval firmware agnostic.
+To this end, this patch adds a trivial function that allows detecting
+if a given IORT node type is present or not in the ACPI table, providing
+an ACPI IORT equivalent for of_find_matching_node().
 
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>
-Cc: Hanjun Guo <hanjun.guo@linaro.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/acpi/arm64/iort.c | 15 +++++++++++++++
+ include/linux/acpi_iort.h |  2 ++
+ 2 files changed, 17 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index c841eb7..9b0b501 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1367,13 +1367,14 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- 
- static int arm_smmu_match_node(struct device *dev, void *data)
- {
--	return dev->of_node == data;
-+	return dev->fwnode == data;
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 75ff7fa..1433de3 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -227,6 +227,21 @@ static struct acpi_iort_node *iort_scan_node(enum acpi_iort_node_type type,
+ 	return NULL;
  }
  
--static struct arm_smmu_device *arm_smmu_get_by_node(struct device_node *np)
-+static
-+struct arm_smmu_device *arm_smmu_get_by_fwnode(struct fwnode_handle *fwnode)
++static acpi_status
++iort_match_type_callback(struct acpi_iort_node *node, void *context)
++{
++	return AE_OK;
++}
++
++bool iort_node_match(u8 type)
++{
++	struct acpi_iort_node *node;
++
++	node = iort_scan_node(type, iort_match_type_callback, NULL);
++
++	return node != NULL;
++}
++
+ static acpi_status iort_match_node_callback(struct acpi_iort_node *node,
+ 					    void *context)
  {
- 	struct device *dev = driver_find_device(&arm_smmu_driver.driver, NULL,
--						np, arm_smmu_match_node);
-+						fwnode, arm_smmu_match_node);
- 	put_device(dev);
- 	return dev ? dev_get_drvdata(dev) : NULL;
- }
-@@ -1391,7 +1392,7 @@ static int arm_smmu_add_device(struct device *dev)
- 		if (ret)
- 			goto out_free;
- 	} else if (fwspec) {
--		smmu = arm_smmu_get_by_node(to_of_node(fwspec->iommu_fwnode));
-+		smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
- 	} else {
- 		return -ENODEV;
- 	}
-@@ -1995,7 +1996,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	of_iommu_set_ops(dev->of_node, &arm_smmu_ops);
-+	fwnode_iommu_set_ops(dev->fwnode, &arm_smmu_ops);
- 	platform_set_drvdata(pdev, smmu);
- 	arm_smmu_device_reset(smmu);
- 
+diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+index d16fdda..17bb078 100644
+--- a/include/linux/acpi_iort.h
++++ b/include/linux/acpi_iort.h
+@@ -28,10 +28,12 @@ void iort_deregister_domain_token(int trans_id);
+ struct fwnode_handle *iort_find_domain_token(int trans_id);
+ #ifdef CONFIG_ACPI_IORT
+ void acpi_iort_init(void);
++bool iort_node_match(u8 type);
+ u32 iort_msi_map_rid(struct device *dev, u32 req_id);
+ struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id);
+ #else
+ static inline void acpi_iort_init(void) { }
++static inline bool iort_node_match(u8 type) { return false; }
+ static inline u32 iort_msi_map_rid(struct device *dev, u32 req_id)
+ { return req_id; }
+ static inline struct irq_domain *iort_get_device_domain(struct device *dev,
 -- 
 2.10.0
