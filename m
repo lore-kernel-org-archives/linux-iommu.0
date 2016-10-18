@@ -1,8 +1,7 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v6 04/16] drivers: iommu: make of_iommu_set/get_ops() DT
-	agnostic
-Date: Tue, 18 Oct 2016 17:04:02 +0100
-Message-ID: <20161018160414.1228-5-lorenzo.pieralisi@arm.com>
+Subject: [PATCH v6 07/16] drivers: acpi: implement acpi_dma_configure
+Date: Tue, 18 Oct 2016 17:04:05 +0100
+Message-ID: <20161018160414.1228-8-lorenzo.pieralisi@arm.com>
 References: <20161018160414.1228-1-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,196 +18,164 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The of_iommu_{set/get}_ops() API is used to associate a device
-tree node with a specific set of IOMMU operations. The same
-kernel interface is required on systems booting with ACPI, where
-devices are not associated with a device tree node, therefore
-the interface requires generalization.
+On DT based systems, the of_dma_configure() API implements DMA
+configuration for a given device. On ACPI systems an API equivalent to
+of_dma_configure() is missing which implies that it is currently not
+possible to set-up DMA operations for devices through the ACPI generic
+kernel layer.
 
-The struct device fwnode member represents the fwnode token
-associated with the device and the struct it points at is firmware
-specific; regardless, it is initialized on both ACPI and DT systems
-and makes an ideal candidate to use it to associate a set of IOMMU
-operations to a given device, through its struct device.fwnode member
-pointer.
+This patch fills the gap by introducing acpi_dma_configure/deconfigure()
+calls that for now are just wrappers around arch_setup_dma_ops() and
+arch_teardown_dma_ops() and also updates ACPI and PCI core code to use
+the newly introduced acpi_dma_configure/acpi_dma_deconfigure functions.
 
-Convert the DT specific of_iommu_{set/get}_ops() interface to
-use struct device.fwnode as a look-up token, making the interface
-usable on ACPI systems.
+Since acpi_dma_configure() is used to configure DMA operations, the
+function initializes the dma/coherent_dma masks to sane default values
+if the current masks are uninitialized (also to keep the default values
+consistent with DT systems) to make sure the device has a complete
+default DMA set-up.
+
+The DMA range size passed to arch_setup_dma_ops() is sized according
+to the device coherent_dma_mask (starting at address 0x0), mirroring the
+DT probing path behaviour when a dma-ranges property is not provided
+for the device being probed; this changes the current arch_setup_dma_ops()
+call parameters in the ACPI probing case, but since arch_setup_dma_ops()
+is a NOP on all architectures but ARM/ARM64 this patch does not change
+the current kernel behaviour on them.
 
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org> [pci]
+Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
 Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
 ---
- drivers/iommu/iommu.c    | 43 +++++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/of_iommu.c | 39 ---------------------------------------
- include/linux/iommu.h    | 14 ++++++++++++++
- include/linux/of_iommu.h | 12 ++++++++++--
- 4 files changed, 67 insertions(+), 41 deletions(-)
+ drivers/acpi/glue.c     |  4 ++--
+ drivers/acpi/scan.c     | 40 ++++++++++++++++++++++++++++++++++++++++
+ drivers/pci/probe.c     |  3 +--
+ include/acpi/acpi_bus.h |  2 ++
+ include/linux/acpi.h    |  5 +++++
+ 5 files changed, 50 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 9a2f196..320eb8c 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1615,6 +1615,49 @@ int iommu_request_dm_for_dev(struct device *dev)
- 	return ret;
+diff --git a/drivers/acpi/glue.c b/drivers/acpi/glue.c
+index 5ea5dc2..f8d6564 100644
+--- a/drivers/acpi/glue.c
++++ b/drivers/acpi/glue.c
+@@ -227,8 +227,7 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
+ 
+ 	attr = acpi_get_dma_attr(acpi_dev);
+ 	if (attr != DEV_DMA_NOT_SUPPORTED)
+-		arch_setup_dma_ops(dev, 0, 0, NULL,
+-				   attr == DEV_DMA_COHERENT);
++		acpi_dma_configure(dev, attr);
+ 
+ 	acpi_physnode_link_name(physical_node_name, node_id);
+ 	retval = sysfs_create_link(&acpi_dev->dev.kobj, &dev->kobj,
+@@ -251,6 +250,7 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
+ 	return 0;
+ 
+  err:
++	acpi_dma_deconfigure(dev);
+ 	ACPI_COMPANION_SET(dev, NULL);
+ 	put_device(dev);
+ 	put_device(&acpi_dev->dev);
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 035ac64..694e0b6 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1370,6 +1370,46 @@ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
+ 		return DEV_DMA_NON_COHERENT;
  }
  
-+struct fwnode_iommu_node {
-+	struct list_head list;
-+	struct fwnode_handle *fwnode;
-+	const struct iommu_ops *ops;
-+};
-+static LIST_HEAD(fwnode_iommu_list);
-+static DEFINE_SPINLOCK(fwnode_iommu_lock);
-+
-+void fwnode_iommu_set_ops(struct fwnode_handle *fwnode,
-+			  const struct iommu_ops *ops)
++/**
++ * acpi_dma_configure - Set-up DMA configuration for the device.
++ * @dev: The pointer to the device
++ * @attr: device dma attributes
++ */
++void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
 +{
-+	struct fwnode_iommu_node *iommu =
-+				kzalloc(sizeof(*iommu), GFP_KERNEL);
++	/*
++	 * Set default coherent_dma_mask to 32 bit.  Drivers are expected to
++	 * setup the correct supported mask.
++	 */
++	if (!dev->coherent_dma_mask)
++		dev->coherent_dma_mask = DMA_BIT_MASK(32);
 +
-+	if (WARN_ON(!iommu))
-+		return;
++	/*
++	 * Set it to coherent_dma_mask by default if the architecture
++	 * code has not set it.
++	 */
++	if (!dev->dma_mask)
++		dev->dma_mask = &dev->coherent_dma_mask;
 +
-+	if (is_of_node(fwnode))
-+		of_node_get(to_of_node(fwnode));
-+
-+	INIT_LIST_HEAD(&iommu->list);
-+	iommu->fwnode = fwnode;
-+	iommu->ops = ops;
-+	spin_lock(&fwnode_iommu_lock);
-+	list_add_tail(&iommu->list, &fwnode_iommu_list);
-+	spin_unlock(&fwnode_iommu_lock);
++	/*
++	 * Assume dma valid range starts at 0 and covers the whole
++	 * coherent_dma_mask.
++	 */
++	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, NULL,
++			   attr == DEV_DMA_COHERENT);
 +}
++EXPORT_SYMBOL_GPL(acpi_dma_configure);
 +
-+const struct iommu_ops *fwnode_iommu_get_ops(struct fwnode_handle *fwnode)
++/**
++ * acpi_dma_deconfigure - Tear-down DMA configuration for the device.
++ * @dev: The pointer to the device
++ */
++void acpi_dma_deconfigure(struct device *dev)
 +{
-+	struct fwnode_iommu_node *node;
-+	const struct iommu_ops *ops = NULL;
-+
-+	spin_lock(&fwnode_iommu_lock);
-+	list_for_each_entry(node, &fwnode_iommu_list, list)
-+		if (node->fwnode == fwnode) {
-+			ops = node->ops;
-+			break;
-+		}
-+	spin_unlock(&fwnode_iommu_lock);
-+	return ops;
++	arch_teardown_dma_ops(dev);
 +}
++EXPORT_SYMBOL_GPL(acpi_dma_deconfigure);
 +
- int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- 		      const struct iommu_ops *ops)
+ static void acpi_init_coherency(struct acpi_device *adev)
  {
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 5b82862..0f57ddc 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -96,45 +96,6 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
- }
- EXPORT_SYMBOL_GPL(of_get_dma_window);
+ 	unsigned long long cca = 0;
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index ab00267..c29e07a 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -1738,8 +1738,7 @@ static void pci_dma_configure(struct pci_dev *dev)
+ 		if (attr == DEV_DMA_NOT_SUPPORTED)
+ 			dev_warn(&dev->dev, "DMA not supported.\n");
+ 		else
+-			arch_setup_dma_ops(&dev->dev, 0, 0, NULL,
+-					   attr == DEV_DMA_COHERENT);
++			acpi_dma_configure(&dev->dev, attr);
+ 	}
  
--struct of_iommu_node {
--	struct list_head list;
--	struct device_node *np;
--	const struct iommu_ops *ops;
--};
--static LIST_HEAD(of_iommu_list);
--static DEFINE_SPINLOCK(of_iommu_lock);
--
--void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops)
--{
--	struct of_iommu_node *iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
--
--	if (WARN_ON(!iommu))
--		return;
--
--	of_node_get(np);
--	INIT_LIST_HEAD(&iommu->list);
--	iommu->np = np;
--	iommu->ops = ops;
--	spin_lock(&of_iommu_lock);
--	list_add_tail(&iommu->list, &of_iommu_list);
--	spin_unlock(&of_iommu_lock);
--}
--
--const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
--{
--	struct of_iommu_node *node;
--	const struct iommu_ops *ops = NULL;
--
--	spin_lock(&of_iommu_lock);
--	list_for_each_entry(node, &of_iommu_list, list)
--		if (node->np == np) {
--			ops = node->ops;
--			break;
--		}
--	spin_unlock(&of_iommu_lock);
--	return ops;
--}
--
- static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
- {
- 	struct of_phandle_args *iommu_spec = data;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 436dc21..15d5478 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -351,6 +351,9 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- 		      const struct iommu_ops *ops);
- void iommu_fwspec_free(struct device *dev);
- int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
-+void fwnode_iommu_set_ops(struct fwnode_handle *fwnode,
-+			  const struct iommu_ops *ops);
-+const struct iommu_ops *fwnode_iommu_get_ops(struct fwnode_handle *fwnode);
+ 	pci_put_host_bridge_device(bridge);
+diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
+index c1a524d..4242c31 100644
+--- a/include/acpi/acpi_bus.h
++++ b/include/acpi/acpi_bus.h
+@@ -573,6 +573,8 @@ struct acpi_pci_root {
  
- #else /* CONFIG_IOMMU_API */
+ bool acpi_dma_supported(struct acpi_device *adev);
+ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev);
++void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr);
++void acpi_dma_deconfigure(struct device *dev);
  
-@@ -580,6 +583,17 @@ static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
- 	return -ENODEV;
+ struct acpi_device *acpi_find_child_device(struct acpi_device *parent,
+ 					   u64 address, bool check_children);
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index a284273..3abbf2b 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -763,6 +763,11 @@ static inline enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
+ 	return DEV_DMA_NOT_SUPPORTED;
  }
  
-+static inline void fwnode_iommu_set_ops(struct fwnode_handle *fwnode,
-+					const struct iommu_ops *ops)
-+{
-+}
++static inline void acpi_dma_configure(struct device *dev,
++				      enum dev_dma_attr attr) { }
 +
-+static inline
-+const struct iommu_ops *fwnode_iommu_get_ops(struct fwnode_handle *fwnode)
-+{
-+	return NULL;
-+}
++static inline void acpi_dma_deconfigure(struct device *dev) { }
 +
- #endif /* CONFIG_IOMMU_API */
+ #define ACPI_PTR(_ptr)	(NULL)
  
- #endif /* __LINUX_IOMMU_H */
-diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-index e80b9c7..7681007 100644
---- a/include/linux/of_iommu.h
-+++ b/include/linux/of_iommu.h
-@@ -31,8 +31,16 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
- 
- #endif	/* CONFIG_OF_IOMMU */
- 
--void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops);
--const struct iommu_ops *of_iommu_get_ops(struct device_node *np);
-+static inline void of_iommu_set_ops(struct device_node *np,
-+				    const struct iommu_ops *ops)
-+{
-+	fwnode_iommu_set_ops(&np->fwnode, ops);
-+}
-+
-+static inline const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
-+{
-+	return fwnode_iommu_get_ops(&np->fwnode);
-+}
- 
- extern struct of_device_id __iommu_of_table;
- 
+ static inline void acpi_device_set_enumerated(struct acpi_device *adev)
 -- 
 2.10.0
