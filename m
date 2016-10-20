@@ -1,7 +1,7 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v6 2/9] iommu/amd: add several helper function
-Date: Thu, 20 Oct 2016 19:37:13 +0800
-Message-ID: <1476963440-23039-3-git-send-email-bhe@redhat.com>
+Subject: [PATCH v6 4/9] iommu/amd: Add function copy_dev_tables
+Date: Thu, 20 Oct 2016 19:37:15 +0800
+Message-ID: <1476963440-23039-5-git-send-email-bhe@redhat.com>
 References: <1476963440-23039-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,90 +21,118 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Move per iommu enabling code into a wrapper function early_enable_iommu().
-This can make later kdump change easier.
+Add function copy_dev_tables to copy the old DEV table entries of the panicked
+kernel to the new allocated DEV table. Since all iommus share the same DTE table
+the copy only need be done once as long as the physical address of old DEV table
+is retrieved from iommu reg. Besides, we also need to:
 
-And also add iommu_disable_command_buffer and iommu_disable_event_buffer
-for later usage.
+  - Check whether all IOMMUs actually use the same device table with the same size
+
+  - Verify that the size of the old device table is the expected size.
+
+  - Reserve the old domain id occupied in 1st kernel to avoid touching the old
+    io-page tables. Then on-flight DMA can continue looking it up.
+
+And define MACRO DEV_DOMID_MASK to replace magic number 0xffffULL because
+it need be reused in copy_dev_tables.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 42 +++++++++++++++++++++++++++++++-----------
- 1 file changed, 31 insertions(+), 11 deletions(-)
+ drivers/iommu/amd_iommu.c       |  2 +-
+ drivers/iommu/amd_iommu_init.c  | 55 +++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/amd_iommu_types.h |  1 +
+ 3 files changed, 57 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 0b0e50e..d5aef72 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1838,7 +1838,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+ 		flags    |= tmp;
+ 	}
+ 
+-	flags &= ~(0xffffUL);
++	flags &= ~DEV_DOMID_MASK;
+ 	flags |= domain->id;
+ 
+ 	amd_iommu_dev_table[devid].data[1]  = flags;
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 1628d7e..67f1457 100644
+index 67f1457..d4200e8 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -625,6 +625,14 @@ static void iommu_enable_command_buffer(struct amd_iommu *iommu)
- 	amd_iommu_reset_cmd_buffer(iommu);
+@@ -834,6 +834,61 @@ static int get_dev_entry_bit(u16 devid, u8 bit)
  }
  
-+/*
-+ * This function disables the command buffer
-+ */
-+static void iommu_disable_command_buffer(struct amd_iommu *iommu)
+ 
++static int copy_dev_tables(void)
 +{
-+	iommu_feature_disable(iommu, CONTROL_CMDBUF_EN);
++	struct dev_table_entry *old_devtb = NULL;
++	u32 lo, hi, devid, old_devtb_size;
++	phys_addr_t old_devtb_phys;
++	u64 entry, last_entry = 0;
++	struct amd_iommu *iommu;
++	u16 dom_id, dte_v;
++	static int copied;
++
++	for_each_iommu(iommu) {
++		if (!translation_pre_enabled(iommu)) {
++			pr_err("IOMMU:%d is not pre-enabled!/n",
++				iommu->index);
++			return -1;
++		}
++
++		/* All IOMMUs should use the same device table with the same size */
++		lo = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET);
++		hi = readl(iommu->mmio_base + MMIO_DEV_TABLE_OFFSET + 4);
++		entry = (((u64) hi) << 32) + lo;
++		if (last_entry && last_entry != entry) {
++			pr_err("IOMMU:%d should use the same dev table as others!/n",
++				iommu->index);
++			return -1;
++		}
++		last_entry = entry;
++
++		old_devtb_size = ((entry & ~PAGE_MASK) + 1) << 12;
++		if (old_devtb_size != dev_table_size) {
++			pr_err("The device table size of IOMMU:%d is not expected!/n",
++				iommu->index);
++			return -1;
++		}
++
++		old_devtb_phys = entry & PAGE_MASK;
++		old_devtb = memremap(old_devtb_phys, dev_table_size, MEMREMAP_WB);
++		if (!old_devtb)
++			return -1;
++
++		if (copied)
++			continue;
++		for (devid = 0; devid <= amd_iommu_last_bdf; ++devid) {
++			amd_iommu_dev_table[devid] = old_devtb[devid];
++			dom_id = old_devtb[devid].data[1] & DEV_DOMID_MASK;
++			dte_v = old_devtb[devid].data[0] & DTE_FLAG_V;
++			if (dte_v && dom_id)
++				__set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
++		}
++		memunmap(old_devtb);
++		copied = 1;
++	}
++	return 0;
 +}
 +
- static void __init free_command_buffer(struct amd_iommu *iommu)
+ void amd_iommu_apply_erratum_63(u16 devid)
  {
- 	free_pages((unsigned long)iommu->cmd_buf, get_order(CMD_BUFFER_SIZE));
-@@ -657,6 +665,14 @@ static void iommu_enable_event_buffer(struct amd_iommu *iommu)
- 	iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
- }
+ 	int sysmgt;
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index 6a4378f..454f3bf 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -336,6 +336,7 @@
+ #define DTE_FLAG_MASK	(0x3ffULL << 32)
+ #define DTE_GLX_SHIFT	(56)
+ #define DTE_GLX_MASK	(3)
++#define DEV_DOMID_MASK 	0xffffULL
  
-+/*
-+ * This function disables the command buffer
-+ */
-+static void iommu_disable_event_buffer(struct amd_iommu *iommu)
-+{
-+	iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN);
-+}
-+
- static void __init free_event_buffer(struct amd_iommu *iommu)
- {
- 	free_pages((unsigned long)iommu->evt_buf, get_order(EVT_BUFFER_SIZE));
-@@ -2026,6 +2042,19 @@ static void iommu_enable_ga(struct amd_iommu *iommu)
- #endif
- }
- 
-+static void early_enable_iommu(struct amd_iommu *iommu)
-+{
-+	iommu_disable(iommu);
-+	iommu_init_flags(iommu);
-+	iommu_set_device_table(iommu);
-+	iommu_enable_command_buffer(iommu);
-+	iommu_enable_event_buffer(iommu);
-+	iommu_set_exclusion_range(iommu);
-+	iommu_enable_ga(iommu);
-+	iommu_enable(iommu);
-+	iommu_flush_all_caches(iommu);
-+}
-+
- /*
-  * This function finally enables all IOMMUs found in the system after
-  * they have been initialized
-@@ -2034,17 +2063,8 @@ static void early_enable_iommus(void)
- {
- 	struct amd_iommu *iommu;
- 
--	for_each_iommu(iommu) {
--		iommu_disable(iommu);
--		iommu_init_flags(iommu);
--		iommu_set_device_table(iommu);
--		iommu_enable_command_buffer(iommu);
--		iommu_enable_event_buffer(iommu);
--		iommu_set_exclusion_range(iommu);
--		iommu_enable_ga(iommu);
--		iommu_enable(iommu);
--		iommu_flush_all_caches(iommu);
--	}
-+	for_each_iommu(iommu)
-+		early_enable_iommu(iommu);
- 
- #ifdef CONFIG_IRQ_REMAP
- 	if (AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
+ #define DTE_GCR3_VAL_A(x)	(((x) >> 12) & 0x00007ULL)
+ #define DTE_GCR3_VAL_B(x)	(((x) >> 15) & 0x0ffffULL)
 -- 
 2.5.5
