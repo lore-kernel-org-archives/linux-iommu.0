@@ -1,9 +1,7 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v5 0/7] Exynos IOMMU: proper runtime PM support (use device
-	dependencies)
-Date: Thu, 20 Oct 2016 09:22:46 +0200
-Message-ID: <1476948173-21093-1-git-send-email-m.szyprowski@samsung.com>
-References: <CGME20161020072330eucas1p2b09ad8d091171edbac9449815fdc0fb7@eucas1p2.samsung.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v6 0/9] Fix kdump faults on system with amd iommu
+Date: Thu, 20 Oct 2016 19:37:11 +0800
+Message-ID: <1476963440-23039-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -17,82 +15,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+This is v6 post. 
 
-This is another update of the patchset for adding proper runtime PM
-support to Exynos IOMMU driver. This has been achieved by using recently
-introduced device links, which lets SYSMMU controller's runtime PM to
-follow master's device runtime PM state (the device which actually
-performs DMA transaction). The main idea behind this solution is an
-observation that any DMA activity from master device can be done only
-when master device is active, thus when master device is suspended
-SYSMMU controller device can also be suspended.
+The principle of the fix is similar to intel iommu. Just defer the assignment
+of device to domain to device driver init. But there's difference than
+intel iommu. AMD iommu create protection domain and assign device to
+domain in iommu driver init stage. So in this patchset I just allow the
+assignment of device to domain in software level, but defer updating the
+domain info, especially the pte_root to dev table entry to device driver
+init stage.
 
-This patchset solves the problem of all power domains being always
-enabled. It happened, because all SYSMMU controllers (which belongs to
-the same domains) are permanently kept active, because existing driver
-was simplified and kept SYSMMU device active all the time after
-initialization and attaching to the master device.
+v5: 
+    bnx2 NIC can't reset itself during driver init. Post patch to reset
+    it during driver init. IO_PAGE_FAULT can't be seen anymore.
+    
+    Below is link of v5 post.
+    https://lists.linuxfoundation.org/pipermail/iommu/2016-September/018527.html
 
-Patch requires fifth version of Rafeal's "Functional dependencies
-between devices" patchset, which is available here:
-http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1246897.html
-or as git branch:
-git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git device-links-test
+v5->v6:
+    According to Joerg's comments made several below main changes:
+    - Add sanity check when copy old dev tables. 
 
-If one wants to test this patchset, I've provided a branch with all needed
-patches (a small fix for Exynos4 FIMC-IS DTS is still needed):
-https://git.linaro.org/people/marek.szyprowski/linux-srpol.git v4.9-iommu-pm-v5
+    - Discard the old patch 6/8.
 
-Patches are based on vanilla v4.9-rc1 kernel with Rafael's device
-dependencies v5 patchset applied.
+    - If a device is set up with guest translations (DTE.GV=1), then don't
+      copy that information but move the device over to an empty guest-cr3
+      table and handle the faults in the PPR log (which just answer them
+      with INVALID).
 
-Best regards
-Marek Szyprowski
-Samsung R&D Institute Poland
+Issues need be discussed:
+    - Joerg suggested hooking the behaviour that updates domain info into
+      dte entry into the set_dma_mask call-back. I tried, but on my local
+      machine with amd iommu v2, an ohci pci device doesn't call set_dma_mask.
+      Then IO_PAGE_FAULT printing flooded.
 
+      00:12.0 USB controller: Advanced Micro Devices, Inc. [AMD] FCH USB OHCI Controller (rev 11)
 
-Changelog:
-v5:
-- split main patch into several small changes for easier review (requested
-  by Luis Rodriquez)
-- fixed usage of runtime_pm_active, now it is guarded by pm_runtime_get_noresume()
-  and pm_runtime_put() pair
+    - About GCR3 root pointer copying issue, I don't know how to setup the
+      test environment and haven't tested yet. Hope Joerg or Zongshun can
+      tell what steps should be taken to test it, or help take a test in your
+      test environemnt.
+ 
+Baoquan He (9):
+  iommu/amd: Detect pre enabled translation
+  iommu/amd: add several helper function
+  iommu/amd: Define bit fields for DTE particularly
+  iommu/amd: Add function copy_dev_tables
+  iommu/amd: copy old trans table from old kernel
+  iommu/amd: Don't update domain info to dte entry at iommu init stage
+  iommu/amd: Update domain into to dte entry during device driver init
+  iommu/amd: Add sanity check of irq remap information of old dev table
+    entry
+  iommu/amd: Don't copy GCR3 table root pointer
 
-v4: http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1241601.html
-- rebased on top of v4 of device dependencies/links patchset, what resolved
-  system hang on reboot
-
-v3: http://www.spinics.net/lists/linux-samsung-soc/msg55256.html
-- rebased on top of latest device dependencies/links patchset
-- added proper locking between runtime pm, iommu_attach/detach and sysmmu
-  enable/disable(added per iommu owner device's rpm lock)
-
-v2: http://www.spinics.net/lists/arm-kernel/msg512082.html
-- replaced PM notifiers with generic device dependencies/links developed
-  by Rafael J. Wysocki
-
-v1: http://www.spinics.net/lists/arm-kernel/msg509600.html
-- initial version
-
-
-Patch summary:
-
-Marek Szyprowski (7):
-  iommu/exynos: Remove excessive, useless debug
-  iommu/exynos: Remove dead code
-  iommu/exynos: Simplify internal enable/disable functions
-  iommu/exynos: Set master device once on boot
-  iommu/exynos: Rework and fix internal locking
-  iommu/exynos: Add runtime pm support
-  iommu/exynos: Use device dependency links to control runtime pm
-
- drivers/iommu/exynos-iommu.c | 230 ++++++++++++++++++-------------------------
- 1 file changed, 95 insertions(+), 135 deletions(-)
+ drivers/iommu/amd_iommu.c       |  93 +++++++++++++-------
+ drivers/iommu/amd_iommu_init.c  | 189 +++++++++++++++++++++++++++++++++++++---
+ drivers/iommu/amd_iommu_proto.h |   2 +
+ drivers/iommu/amd_iommu_types.h |  53 ++++++++++-
+ drivers/iommu/amd_iommu_v2.c    |  18 +++-
+ 5 files changed, 307 insertions(+), 48 deletions(-)
 
 -- 
-1.9.1
+2.5.5
