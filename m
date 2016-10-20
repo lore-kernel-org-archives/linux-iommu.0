@@ -1,105 +1,123 @@
-From: Baoquan He <bhe@redhat.com>
-Subject: [PATCH v6 1/9] iommu/amd: Detect pre enabled translation
-Date: Thu, 20 Oct 2016 19:37:12 +0800
-Message-ID: <1476963440-23039-2-git-send-email-bhe@redhat.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v6 8/9] iommu/amd: Add sanity check of irq remap information
+	of old dev table entry
+Date: Thu, 20 Oct 2016 19:37:19 +0800
+Message-ID: <1476963440-23039-9-git-send-email-bhe@redhat.com>
 References: <1476963440-23039-1-git-send-email-bhe@redhat.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1476963440-23039-1-git-send-email-bhe@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, kexec@lists.infradead.org, Vincent.Wan@amd.com, dyoung@redhat.com, xlpang@redhat.com, Baoquan He <bhe@redhat.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1476963440-23039-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add functions to check whether translation is already enabled in IOMMU.
+Firstly split the dev table entry copy into address translation part and
+irq remapping part. Because these two parts could be configured to
+be available indepentently.
 
-Signed-off-by: Baoquan He <bhe@redhat.com>
+Secondly check if IntCtl and IntTabLen are 10b and 1000b if they are
+set.
+
+Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c  | 25 +++++++++++++++++++++++++
- drivers/iommu/amd_iommu_proto.h |  1 +
- drivers/iommu/amd_iommu_types.h |  4 ++++
- 3 files changed, 30 insertions(+)
+ drivers/iommu/amd_iommu.c       |  5 -----
+ drivers/iommu/amd_iommu_init.c  | 25 ++++++++++++++++++++++---
+ drivers/iommu/amd_iommu_types.h |  8 ++++++++
+ 3 files changed, 30 insertions(+), 8 deletions(-)
 
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 3b95904..46f438f 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3658,11 +3658,6 @@ EXPORT_SYMBOL(amd_iommu_device_info);
+ 
+ static struct irq_chip amd_ir_chip;
+ 
+-#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
+-#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
+-#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
+-#define DTE_IRQ_REMAP_ENABLE    1ULL
+-
+ static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
+ {
+ 	u64 dte;
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 157e934..1628d7e 100644
+index bc214fa..d936c40 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -251,6 +251,26 @@ static int amd_iommu_enable_interrupts(void);
- static int __init iommu_go_to_state(enum iommu_init_state state);
- static void init_device_table_dma(void);
+@@ -837,12 +837,12 @@ static int get_dev_entry_bit(u16 devid, u8 bit)
  
-+
-+bool translation_pre_enabled(struct amd_iommu *iommu)
-+{
-+	return (iommu->flags & AMD_IOMMU_FLAG_TRANS_PRE_ENABLED);
-+}
-+
-+static void clear_translation_pre_enabled(struct amd_iommu *iommu)
-+{
-+	iommu->flags &= ~AMD_IOMMU_FLAG_TRANS_PRE_ENABLED;
-+}
-+
-+static void init_translation_status(struct amd_iommu *iommu)
-+{
-+	u32 ctrl;
-+
-+	ctrl = readl(iommu->mmio_base + MMIO_CONTROL_OFFSET);
-+	if (ctrl & (1<<CONTROL_IOMMU_EN))
-+		iommu->flags |= AMD_IOMMU_FLAG_TRANS_PRE_ENABLED;
-+}
-+
- static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
- 				    u8 bank, u8 cntr, u8 fxn,
- 				    u64 *value, bool is_write);
-@@ -1389,6 +1409,11 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
+ static int copy_dev_tables(void)
+ {
++	u64 int_ctl, int_tab_len, entry, last_entry = 0;
+ 	struct dev_table_entry *old_devtb = NULL;
+ 	u32 lo, hi, devid, old_devtb_size;
+ 	phys_addr_t old_devtb_phys;
+-	u64 entry, last_entry = 0;
+ 	struct amd_iommu *iommu;
+-	u16 dom_id, dte_v;
++	u16 dom_id, dte_v, irq_v;
+ 	static int copied;
  
- 	iommu->int_enabled = false;
- 
-+	init_translation_status(iommu);
+ 	for_each_iommu(iommu) {
+@@ -881,8 +881,27 @@ static int copy_dev_tables(void)
+ 			amd_iommu_dev_table[devid] = old_devtb[devid];
+ 			dom_id = old_devtb[devid].data[1] & DEV_DOMID_MASK;
+ 			dte_v = old_devtb[devid].data[0] & DTE_FLAG_V;
+-			if (dte_v && dom_id)
++			if (dte_v && dom_id) {
++				amd_iommu_dev_table[devid].data[0]
++					= old_devtb[devid].data[0];
++				amd_iommu_dev_table[devid].data[1]
++					= old_devtb[devid].data[1];
+ 				__set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
++			}
 +
-+	if (translation_pre_enabled(iommu))
-+		pr_warn("Translation is already enabled - trying to copy translation structures\n");
++			irq_v = old_devtb[devid].data[2] & DTE_IRQ_REMAP_ENABLE;
++			int_ctl = old_devtb[devid].data[2] & DTE_IRQ_REMAP_INTCTL_MASK;
++			int_tab_len = old_devtb[devid].data[2] & DTE_IRQ_TABLE_LEN_MASK;
++			if (irq_v && (int_ctl || int_tab_len)) {
++				if ((int_ctl != DTE_IRQ_REMAP_INTCTL) ||
++					 (int_tab_len != DTE_IRQ_TABLE_LEN)) {
++					pr_err("Wrong old irq remapping flag: %#x\n", devid);
++					return -1;
++				}
 +
- 	ret = init_iommu_from_acpi(iommu, h);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 7eb60c1..9560183 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -93,4 +93,5 @@ static inline bool iommu_feature(struct amd_iommu *iommu, u64 f)
- 	return !!(iommu->features & f);
- }
- 
-+extern bool translation_pre_enabled(struct amd_iommu *iommu);
- #endif /* _ASM_X86_AMD_IOMMU_PROTO_H  */
++				amd_iommu_dev_table[devid].data[2]
++					= old_devtb[devid].data[2];
++			}
+ 		}
+ 		memunmap(old_devtb);
+ 		copied = 1;
 diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 0d91785..2bbc19d 100644
+index 454f3bf..e385d50 100644
 --- a/drivers/iommu/amd_iommu_types.h
 +++ b/drivers/iommu/amd_iommu_types.h
-@@ -416,6 +416,7 @@ extern struct kmem_cache *amd_iommu_irq_cache;
- #define APERTURE_PAGE_INDEX(a)	(((a) >> 21) & 0x3fULL)
+@@ -250,6 +250,14 @@
  
+ #define GA_GUEST_NR		0x1
  
++/* Bit value definition for dte irq remapping fields*/
++#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
++#define DTE_IRQ_REMAP_INTCTL_MASK	(0x3ULL << 60)
++#define DTE_IRQ_TABLE_LEN_MASK	(0xfULL << 1)
++#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
++#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
++#define DTE_IRQ_REMAP_ENABLE    1ULL
 +
- /*
-  * This struct is used to pass information about
-  * incoming PPR faults around.
-@@ -434,6 +435,8 @@ struct iommu_domain;
- struct irq_domain;
- struct amd_irte_ops;
- 
-+#define AMD_IOMMU_FLAG_TRANS_PRE_ENABLED      (1 << 0)
-+
- /*
-  * This structure contains generic data for  IOMMU protection domains
-  * independent of their use.
-@@ -566,6 +569,7 @@ struct amd_iommu {
- 	struct amd_irte_ops *irte_ops;
- #endif
- 
-+	u32 flags;
- 	volatile u64 __aligned(8) cmd_sem;
- };
- 
+ #define PAGE_MODE_NONE    0x00
+ #define PAGE_MODE_1_LEVEL 0x01
+ #define PAGE_MODE_2_LEVEL 0x02
 -- 
 2.5.5
