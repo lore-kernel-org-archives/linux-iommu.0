@@ -1,254 +1,99 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v6 9/9] iommu/amd: Don't copy GCR3 table root pointer
-Date: Thu, 20 Oct 2016 19:37:20 +0800
-Message-ID: <1476963440-23039-10-git-send-email-bhe@redhat.com>
-References: <1476963440-23039-1-git-send-email-bhe@redhat.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v14 00/16] KVM PCIe/MSI passthrough on ARM/ARM64
+Date: Thu, 20 Oct 2016 18:32:24 +0100
+Message-ID: <20161020173224.GA32544@arm.com>
+References: <1476278544-3397-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1476963440-23039-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1476278544-3397-1-git-send-email-eric.auger@redhat.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Eric Auger <eric.auger@redhat.com>
+Cc: yehuday@marvell.com, drjones@redhat.com, jason@lakedaemon.net, kvm@vger.kernel.org, marc.zyngier@arm.com, joro@8bytes.org, p.fedin@samsung.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Bharat.Bhushan@freescale.com, Jean-Philippe.Brucker@arm.com, alex.williamson@redhat.com, pranav.sawargaonkar@gmail.com, linux-arm-kernel@lists.infradead.org, tglx@linutronix.de, robin.murphy@arm.com, Manish.Jaggi@caviumnetworks.com, christoffer.dall@linaro.org, eric.auger.pro@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-If a device is set up with guest translations (DTE.GV=1), then don't
-copy GCR3 table root pointer but move the device over to an empty
-guest-cr3 table and handle the faults in the PPR log (which answer them
-with INVALID). After all these PPR faults are recoverable for the device
-and we should not allow the device to change old-kernels data when we
-don't have to.
+Hi Eric,
 
-And clear the old GV flag when update domain information into dte entry
-if the domain doesn't support IOMMUv2.
+Thanks for posting this.
 
-Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/amd_iommu.c       | 45 ++++++++++++++++++-----------------------
- drivers/iommu/amd_iommu_init.c  | 11 ++++++++++
- drivers/iommu/amd_iommu_proto.h |  1 +
- drivers/iommu/amd_iommu_types.h | 22 ++++++++++++++++++++
- drivers/iommu/amd_iommu_v2.c    | 18 ++++++++++++++++-
- 5 files changed, 71 insertions(+), 26 deletions(-)
+On Wed, Oct 12, 2016 at 01:22:08PM +0000, Eric Auger wrote:
+> This is the second respin on top of Robin's series [1], addressing Alex' comments.
+> 
+> Major changes are:
+> - MSI-doorbell API now is moved to DMA IOMMU API following Alex suggestion
+>   to put all API pieces at the same place (so eventually in the IOMMU
+>   subsystem)
+> - new iommu_domain_msi_resv struct and accessor through DOMAIN_ATTR_MSI_RESV
+>   domain with mirror VFIO capability
+> - more robustness I think in the VFIO layer
+> - added "iommu/iova: fix __alloc_and_insert_iova_range" since with the current
+>   code I failed allocating an IOVA page in a single page domain with upper part
+>   reserved
+> 
+> IOVA range exclusion will be handled in a separate series
+> 
+> The priority really is to discuss and freeze the API and especially the MSI
+> doorbell's handling. Do we agree to put that in DMA IOMMU?
+> 
+> Note: the size computation does not take into account possible page overlaps
+> between doorbells but it would add quite a lot of complexity i think.
+> 
+> Tested on AMD Overdrive (single GICv2m frame) with I350 VF assignment.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 46f438f..af0b9ce 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -120,28 +120,6 @@ int amd_iommu_max_glx_val = -1;
- static struct dma_map_ops amd_iommu_dma_ops;
- 
- /*
-- * This struct contains device specific data for the IOMMU
-- */
--struct iommu_dev_data {
--	struct list_head list;		  /* For domain->dev_list */
--	struct list_head dev_data_list;	  /* For global dev_data_list */
--	struct protection_domain *domain; /* Domain the device is bound to */
--	u16 devid;			  /* PCI Device ID */
--	u16 alias;			  /* Alias Device ID */
--	bool iommu_v2;			  /* Device can make use of IOMMUv2 */
--	bool passthrough;		  /* Device is identity mapped */
--	struct {
--		bool enabled;
--		int qdep;
--	} ats;				  /* ATS state */
--	bool pri_tlp;			  /* PASID TLB required for
--					     PPR completions */
--	u32 errata;			  /* Bitmap for errata to apply */
--	bool use_vapic;			  /* Enable device to use vapic mode */
--	bool domain_updated;
--};
--
--/*
-  * general struct to manage commands send to an IOMMU
-  */
- struct iommu_cmd {
-@@ -350,10 +328,11 @@ static struct iommu_dev_data *find_dev_data(u16 devid)
- 	return dev_data;
- }
- 
--static struct iommu_dev_data *get_dev_data(struct device *dev)
-+struct iommu_dev_data *get_dev_data(struct device *dev)
- {
- 	return dev->archdata.iommu;
- }
-+EXPORT_SYMBOL(get_dev_data);
- 
- /*
- * Find or create an IOMMU group for a acpihid device.
-@@ -2383,6 +2362,12 @@ static int dir2prot(enum dma_data_direction direction)
- 	else
- 		return 0;
- }
-+
-+static void clear_dte_flag_gv(u16 devid)
-+{
-+	amd_iommu_dev_table[devid].data[0] &= (~DTE_FLAG_GV);
-+}
-+
- /*
-  * This function contains common code for mapping of a physically
-  * contiguous memory region into DMA address space. It is used by all
-@@ -2417,8 +2402,13 @@ static dma_addr_t __map_single(struct device *dev,
- 	if (translation_pre_enabled(iommu) && !dev_data->domain_updated) {
- 		dev_data->domain_updated = true;
- 		set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled);
--		if (alias != dev_data->devid)
-+		if (!(domain->flags & PD_IOMMUV2_MASK))
-+			clear_dte_flag_gv(dev_data->devid);
-+		if (alias != dev_data->devid) {
- 			set_dte_entry(alias, domain, dev_data->ats.enabled);
-+			if (!(domain->flags & PD_IOMMUV2_MASK))
-+				clear_dte_flag_gv(alias);
-+		}
- 		device_flush_dte(dev_data);
- 	}
- 
-@@ -2593,8 +2583,13 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
- 	if (translation_pre_enabled(iommu) && !dev_data->domain_updated) {
- 		dev_data->domain_updated = true;
- 		set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled);
--		if (alias != dev_data->devid)
-+		if (!(domain->flags & PD_IOMMUV2_MASK))
-+			clear_dte_flag_gv(dev_data->devid);
-+		if (alias != dev_data->devid) {
- 			set_dte_entry(alias, domain, dev_data->ats.enabled);
-+			if (!(domain->flags & PD_IOMMUV2_MASK))
-+				clear_dte_flag_gv(alias);
-+		}
- 		device_flush_dte(dev_data);
- 	}
- 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index d936c40..9ddce11 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -204,6 +204,7 @@ u16 *amd_iommu_alias_table;
-  * for a specific device. It is also indexed by the PCI device id.
-  */
- struct amd_iommu **amd_iommu_rlookup_table;
-+EXPORT_SYMBOL(amd_iommu_rlookup_table);
- 
- /*
-  * This table is used to find the irq remapping table for a given device id
-@@ -257,6 +258,7 @@ bool translation_pre_enabled(struct amd_iommu *iommu)
- {
- 	return (iommu->flags & AMD_IOMMU_FLAG_TRANS_PRE_ENABLED);
- }
-+EXPORT_SYMBOL(translation_pre_enabled);
- 
- static void clear_translation_pre_enabled(struct amd_iommu *iommu)
- {
-@@ -844,6 +846,7 @@ static int copy_dev_tables(void)
- 	struct amd_iommu *iommu;
- 	u16 dom_id, dte_v, irq_v;
- 	static int copied;
-+	u64 tmp;
- 
- 	for_each_iommu(iommu) {
- 		if (!translation_pre_enabled(iommu)) {
-@@ -887,6 +890,14 @@ static int copy_dev_tables(void)
- 				amd_iommu_dev_table[devid].data[1]
- 					= old_devtb[devid].data[1];
- 				__set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
-+				/* If gcr3 table existed, mask it out */
-+				if (old_devtb[devid].data[0] & DTE_FLAG_GV) {
-+					tmp = DTE_GCR3_VAL_B(~0ULL) << DTE_GCR3_SHIFT_B;
-+					tmp |= DTE_GCR3_VAL_C(~0ULL) << DTE_GCR3_SHIFT_C;
-+					amd_iommu_dev_table[devid].data[1] &= ~tmp;
-+					tmp = DTE_GCR3_VAL_A(~0ULL) << DTE_GCR3_SHIFT_A;
-+					amd_iommu_dev_table[devid].data[0] &= ~tmp;
-+				}
- 			}
- 
- 			irq_v = old_devtb[devid].data[2] & DTE_IRQ_REMAP_ENABLE;
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 9560183..d6a2c36 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -94,4 +94,5 @@ static inline bool iommu_feature(struct amd_iommu *iommu, u64 f)
- }
- 
- extern bool translation_pre_enabled(struct amd_iommu *iommu);
-+extern struct iommu_dev_data *get_dev_data(struct device *dev);
- #endif /* _ASM_X86_AMD_IOMMU_PROTO_H  */
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index e385d50..1d316cd 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -612,6 +612,28 @@ struct devid_map {
- 	bool cmd_line;
- };
- 
-+/*
-+ * This struct contains device specific data for the IOMMU
-+ */
-+struct iommu_dev_data {
-+	struct list_head list;		  /* For domain->dev_list */
-+	struct list_head dev_data_list;	  /* For global dev_data_list */
-+	struct protection_domain *domain; /* Domain the device is bound to */
-+	u16 devid;			  /* PCI Device ID */
-+	u16 alias;			  /* Alias Device ID */
-+	bool iommu_v2;			  /* Device can make use of IOMMUv2 */
-+	bool passthrough;		  /* Device is identity mapped */
-+	struct {
-+		bool enabled;
-+		int qdep;
-+	} ats;				  /* ATS state */
-+	bool pri_tlp;			  /* PASID TLB required for
-+					     PPR completions */
-+	u32 errata;			  /* Bitmap for errata to apply */
-+	bool use_vapic;			  /* Enable device to use vapic mode */
-+	bool domain_updated;
-+};
-+
- /* Map HPET and IOAPIC ids to the devid used by the IOMMU */
- extern struct list_head ioapic_map;
- extern struct list_head hpet_map;
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 594849a..7c4a847 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -561,13 +561,29 @@ static int ppr_notifier(struct notifier_block *nb, unsigned long e, void *data)
- 	unsigned long flags;
- 	struct fault *fault;
- 	bool finish;
--	u16 tag;
-+	u16 tag, devid;
- 	int ret;
-+	struct iommu_dev_data *dev_data;
-+	struct pci_dev *pdev = NULL;
- 
- 	iommu_fault = data;
- 	tag         = iommu_fault->tag & 0x1ff;
- 	finish      = (iommu_fault->tag >> 9) & 1;
- 
-+	devid = iommu_fault->device_id;
-+	pdev = pci_get_bus_and_slot(PCI_BUS_NUM(devid), devid & 0xff);
-+	if (!pdev)
-+		return -ENODEV;
-+	dev_data = get_dev_data(&pdev->dev);
-+
-+	/* In kdump kernel pci dev is not initialized yet -> send INVALID */
-+	if (translation_pre_enabled(amd_iommu_rlookup_table[devid])
-+		&& !dev_data->domain_updated) {
-+		amd_iommu_complete_ppr(pdev, iommu_fault->pasid,
-+				       PPR_INVALID, tag);
-+		goto out;
-+	}
-+
- 	ret = NOTIFY_DONE;
- 	dev_state = get_device_state(iommu_fault->device_id);
- 	if (dev_state == NULL)
--- 
-2.5.5
+Marc, Robin and I sat down and had a look at the series and, whilst it's
+certainly addressing a problem that we desperately want to see fixed, we
+think that it's slightly over-engineering in places and could probably
+be simplified in the interest of getting something upstream that can be
+used as a base, on which the ABI can be extended as concrete use-cases
+become clear.
+
+Stepping back a minute, we're trying to reserve some of the VFIO virtual
+address space so that it can be used by devices to map their MSI doorbells
+using the SMMU. With your patches, this requires that (a) the kernel
+tells userspace about the size and alignment of the doorbell region
+(MSI_RESV) and (b) userspace tells the kernel the VA-range that can be
+used (RESERVED_MSI_IOVA).
+
+However, this is all special-cased for MSI doorbells and there are
+potentially other regions of the VFIO address space that are reserved
+and need to be communicated to userspace as well. We already know of
+hardware where the PCI RC intercepts p2p accesses before they make it
+to the SMMU, and other hardware where the MSI doorbell is at a fixed
+address. This means that we need a mechanism to communicate *fixed*
+regions of virtual address space that are reserved by VFIO. I don't
+even particularly care if VFIO_MAP_DMA enforces that, but we do need
+a way to tell userspace "hey, you don't want to put memory here because
+it won't work well with devices".
+
+In that case, we end up with something like your MSI_RESV capability,
+but actually specifying a virtual address range that is simply not to
+be used by MAP_DMA -- we don't say anything about MSIs. Now, taking this
+to its logical conclusion, we no longer need to distinguish between
+remappable reserved regions and fixed reserved regions in the ABI.
+Instead, we can have the kernel allocate the virtual address space for
+the remappable reserved regions (probably somewhere in the bottom 4GB)
+and expose them via the capability. This simplifies things in the
+following ways:
+
+  * You don't need to keep track of MSI vs DMA addresses in the VFIO rbtree
+  * You don't need to try collapsing doorbells into a single region
+  * You don't need a special MAP flavour to map MSI doorbells
+  * The ABI is reusable for PCI p2p and fixed doorbells
+
+I really think it would make your patch series both generally useful and
+an awful lot smaller, whilst leaving the door open to ABI extension on
+a case-by-case basis when we determine that it's really needed.
+
+Thoughts?
+
+Will
