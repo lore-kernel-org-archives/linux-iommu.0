@@ -1,15 +1,15 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC,v1,2/2] vfio/iommu-type1: set only stage 2 translation
-Date: Fri, 21 Oct 2016 15:48:07 +0100
-Message-ID: <1522b473-5979-0fa1-073f-be0fe7e1aa2c@arm.com>
-References: <1477024764-79882-1-git-send-email-songwenjun@huawei.com>
-	<1477024764-79882-2-git-send-email-songwenjun@huawei.com>
-	<20161021082703.4890c419@t450s.home>
+Subject: Re: [PATCH 1/2] iommu/arm-smmu: Don't inadvertently reject multiple
+	SMMUv3s
+Date: Fri, 21 Oct 2016 17:20:43 +0100
+Message-ID: <7aff47c3-c794-5291-4b2a-44493f398828@arm.com>
+References: <5cf1acbf9c42cc99e5cc0dacb50b7a92c3bd0feb.1476702234.git.robin.murphy@arm.com>
+	<20161019124932.GP9193@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161021082703.4890c419-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <20161019124932.GP9193-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,82 +19,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rick Song <songwenjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 21/10/16 15:27, Alex Williamson wrote:
-> On Fri, 21 Oct 2016 12:39:24 +0800
-> Rick Song <songwenjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org> wrote:
-> 
->> Normally, VFIO should use only stage 2 translation of
->> iommu, to create the address mapping. If nesting translation
->> is disabled from VFIO core, enable iommu domain only stage 2
->> attribute, otherwise, enable iommu domain nesting attribute.
+On 19/10/16 13:49, Will Deacon wrote:
+> On Mon, Oct 17, 2016 at 12:06:20PM +0100, Robin Murphy wrote:
+>> We now delay installing our per-bus iommu_ops until we know an SMMU has
+>> successfully probed, as they don't serve much purpose beforehand, and
+>> doing so also avoids fights between multiple IOMMU drivers in a single
+>> kernel. However, the upshot of passing the return value of bus_set_iommu()
+>> back from our probe function is that if there happens to be more than
+>> one SMMUv3 device in a system, the second and subsequent probes will
+>> wind up returning -EBUSY to the driver core and getting torn down again.
 >>
->> Signed-off-by: Rick Song <songwenjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+>> There are essentially 3 cases in which bus_set_iommu() returns nonzero:
+>> 1. The bus already has iommu_ops installed
+>> 2. One of the add_device callbacks from the initial notifier failed
+>> 3. Allocating or installing the notifier itself failed
+>>
+>> The first two are down to devices other than the SMMU in question, so
+>> shouldn't abort an otherwise-successful SMMU probe, whilst the third is
+>> indicative of the kind of catastrophic system failure which isn't going
+>> to get much further anyway. Consequently, there is little harm in
+>> ignoring the return value either way.
+>>
+>> CC: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 >> ---
->>  drivers/vfio/vfio_iommu_type1.c | 15 ++++++++++++---
->>  1 file changed, 12 insertions(+), 3 deletions(-)
+>>  drivers/iommu/arm-smmu-v3.c | 11 ++++-------
+>>  1 file changed, 4 insertions(+), 7 deletions(-)
 >>
->> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> index 2ba1942..c0265fe 100644
->> --- a/drivers/vfio/vfio_iommu_type1.c
->> +++ b/drivers/vfio/vfio_iommu_type1.c
->> @@ -741,7 +741,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>  	struct vfio_group *group, *g;
->>  	struct vfio_domain *domain, *d;
->>  	struct bus_type *bus = NULL;
->> -	int ret;
->> +	int attr, ret;
->>  
->>  	mutex_lock(&iommu->lock);
->>  
->> @@ -775,13 +775,22 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>  		goto out_free;
->>  	}
->>  
->> +	/*
->> +	 * Set iommu nesting domain attribute if nesting translation
->> +	 * is enabled from iommu vfio, otherwise set iommu only stage
->> +	 * 2 domain attribute.
->> +	 */
->> +	attr = 1;
->>  	if (iommu->nesting) {
->> -		int attr = 1;
->> -
->>  		ret = iommu_domain_set_attr(domain->domain, DOMAIN_ATTR_NESTING,
->>  					    &attr);
->>  		if (ret)
->>  			goto out_domain;
->> +	} else {
->> +		ret = iommu_domain_set_attr(domain->domain, DOMAIN_ATTR_S2,
->> +					    &attr);
->> +		if (ret)
->> +			goto out_domain;
->>  	}
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index 15c01c3cd540..74fbef384deb 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -2637,16 +2637,13 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>>  	of_iommu_set_ops(dev->of_node, &arm_smmu_ops);
+>>  #ifdef CONFIG_PCI
+>>  	pci_request_acs();
+>> -	ret = bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+>> -	if (ret)
+>> -		return ret;
+>> +	bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+>>  #endif
+>>  #ifdef CONFIG_ARM_AMBA
+>> -	ret = bus_set_iommu(&amba_bustype, &arm_smmu_ops);
+>> -	if (ret)
+>> -		return ret;
+>> +	bus_set_iommu(&amba_bustype, &arm_smmu_ops);
+>>  #endif
+>> -	return bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
+>> +	bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
+>> +	return 0;
 > 
-> This attribute is not relevant to the majority of current users, why
-> would we assume that we need to call it for all non-nesting cases?  Why
-> do we need to set the attribute at all, what benefit does it provide?
-> If this is the normal case for an IOMMU API domain, why is there an
-> option for it at all?  Maybe this should be the default and S1
-> (whatever that means) should be the alternate option.  Thanks,
+> In which case, we should probably add an iommu_present check, like we
+> have for the v2 driver.
 
-Indeed, it should be fairly straightforward to make
-arm_smmu_domain_finalise() prefer stage 1/stage 2 based on domain->type
-in the case that both stages are implemented. That would be preferable
-to changing core VFIO code for something that really is SMMU-specific.
-
-To echo Alex, though, what's the motivation for this? Could it be
-addressed by simply implementing a force_stage parameter like the SMMUv2
-driver has?
+As touched upon in the commit message, the first thing bus_set_iommu()
+does is perform that same check and return immediately if any ops are
+already set. Do you really want redundant checks added, or shall I spin
+that cleanup patch removing them from v2 that I proposed to Lorenzo?
 
 Robin.
 
 > 
-> Alex
-> 
->>  
->>  	ret = iommu_attach_group(domain->domain, iommu_group);
+> Will
 > 
