@@ -1,88 +1,77 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/arm-smmu: Don't inadvertently reject multiple
-	SMMUv3s
-Date: Fri, 21 Oct 2016 17:20:43 +0100
-Message-ID: <7aff47c3-c794-5291-4b2a-44493f398828@arm.com>
-References: <5cf1acbf9c42cc99e5cc0dacb50b7a92c3bd0feb.1476702234.git.robin.murphy@arm.com>
-	<20161019124932.GP9193@arm.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 5/5] iommu/vt-d: don't disable preemption while accessing deferred_flush()
+Date: Fri, 21 Oct 2016 19:06:26 +0200
+Message-ID: <20161021170626.31750-5-bigeasy@linutronix.de>
+References: <20161021170626.31750-1-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161019124932.GP9193-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20161021170626.31750-1-bigeasy@linutronix.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Cc: tglx@linutronix.de, Sebastian Andrzej Siewior <bigeasy@linutronix.de>, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 19/10/16 13:49, Will Deacon wrote:
-> On Mon, Oct 17, 2016 at 12:06:20PM +0100, Robin Murphy wrote:
->> We now delay installing our per-bus iommu_ops until we know an SMMU has
->> successfully probed, as they don't serve much purpose beforehand, and
->> doing so also avoids fights between multiple IOMMU drivers in a single
->> kernel. However, the upshot of passing the return value of bus_set_iommu()
->> back from our probe function is that if there happens to be more than
->> one SMMUv3 device in a system, the second and subsequent probes will
->> wind up returning -EBUSY to the driver core and getting torn down again.
->>
->> There are essentially 3 cases in which bus_set_iommu() returns nonzero:
->> 1. The bus already has iommu_ops installed
->> 2. One of the add_device callbacks from the initial notifier failed
->> 3. Allocating or installing the notifier itself failed
->>
->> The first two are down to devices other than the SMMU in question, so
->> shouldn't abort an otherwise-successful SMMU probe, whilst the third is
->> indicative of the kind of catastrophic system failure which isn't going
->> to get much further anyway. Consequently, there is little harm in
->> ignoring the return value either way.
->>
->> CC: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
->>  drivers/iommu/arm-smmu-v3.c | 11 ++++-------
->>  1 file changed, 4 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index 15c01c3cd540..74fbef384deb 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -2637,16 +2637,13 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
->>  	of_iommu_set_ops(dev->of_node, &arm_smmu_ops);
->>  #ifdef CONFIG_PCI
->>  	pci_request_acs();
->> -	ret = bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
->> -	if (ret)
->> -		return ret;
->> +	bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
->>  #endif
->>  #ifdef CONFIG_ARM_AMBA
->> -	ret = bus_set_iommu(&amba_bustype, &arm_smmu_ops);
->> -	if (ret)
->> -		return ret;
->> +	bus_set_iommu(&amba_bustype, &arm_smmu_ops);
->>  #endif
->> -	return bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
->> +	bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
->> +	return 0;
-> 
-> In which case, we should probably add an iommu_present check, like we
-> have for the v2 driver.
+get_cpu() disables preemption and returns the current CPU number. The
+CPU number is later only used once while retrieving the address of the
+local's CPU deferred_flush pointer.
+We can instead use raw_cpu_ptr() while we remain preemptible. The worst
+thing that can happen is that flush_unmaps_timeout() is invoked multiple
+times: once by taskA after seeing HIGH_WATER_MARK and then preempted to
+another CPU and then by taskB which saw HIGH_WATER_MARK on the same CPU
+as taskA. It is also likely that ->size got from HIGH_WATER_MARK to 0
+right after its read because another CPU invoked flush_unmaps_timeout()
+for this CPU.
+The access to flush_data is protected by a spinlock so even if we get
+migrated to another CPU or preempted - the data structure is protected.
 
-As touched upon in the commit message, the first thing bus_set_iommu()
-does is perform that same check and return immediately if any ops are
-already set. Do you really want redundant checks added, or shall I spin
-that cleanup patch removing them from v2 that I proposed to Lorenzo?
+While at it, I marked deferred_flush static since I can't find a
+reference to it outside of this file.
 
-Robin.
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/iommu/intel-iommu.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-> 
-> Will
-> 
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a4407eabf0e6..0dad326a9483 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -479,7 +479,7 @@ struct deferred_flush_data {
+ 	struct deferred_flush_table *tables;
+ };
+=20
+-DEFINE_PER_CPU(struct deferred_flush_data, deferred_flush);
++static DEFINE_PER_CPU(struct deferred_flush_data, deferred_flush);
+=20
+ /* bitmap for indexing intel_iommus */
+ static int g_num_of_iommus;
+@@ -3673,10 +3673,8 @@ static void add_unmap(struct dmar_domain *dom, unsig=
+ned long iova_pfn,
+ 	struct intel_iommu *iommu;
+ 	struct deferred_flush_entry *entry;
+ 	struct deferred_flush_data *flush_data;
+-	unsigned int cpuid;
+=20
+-	cpuid =3D get_cpu();
+-	flush_data =3D per_cpu_ptr(&deferred_flush, cpuid);
++	flush_data =3D raw_cpu_ptr(&deferred_flush);
+=20
+ 	/* Flush all CPUs' entries to avoid deferring too much.  If
+ 	 * this becomes a bottleneck, can just flush us, and rely on
+@@ -3709,8 +3707,6 @@ static void add_unmap(struct dmar_domain *dom, unsign=
+ed long iova_pfn,
+ 	}
+ 	flush_data->size++;
+ 	spin_unlock_irqrestore(&flush_data->lock, flags);
+-
+-	put_cpu();
+ }
+=20
+ static void intel_unmap(struct device *dev, dma_addr_t dev_addr, size_t si=
+ze)
+--=20
+2.9.3
