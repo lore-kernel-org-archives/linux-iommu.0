@@ -1,14 +1,14 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC,v1,2/2] vfio/iommu-type1: set only stage 2 translation
-Date: Fri, 21 Oct 2016 08:27:03 -0600
-Message-ID: <20161021082703.4890c419@t450s.home>
-References: <1477024764-79882-1-git-send-email-songwenjun@huawei.com>
-	<1477024764-79882-2-git-send-email-songwenjun@huawei.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/dma: Implement dma_{map,unmap}_resource()
+Date: Fri, 21 Oct 2016 15:37:12 +0100
+Message-ID: <fb5d86eb-d634-176e-4887-04721f55fbc3@arm.com>
+References: <b6c78e6c18d98069b0fdfa219da51d2aed129aed.1476705500.git.robin.murphy@arm.com>
+	<20161019140252.GR9193@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1477024764-79882-2-git-send-email-songwenjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20161019140252.GR9193-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,68 +18,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rick Song <songwenjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 21 Oct 2016 12:39:24 +0800
-Rick Song <songwenjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org> wrote:
-
-> Normally, VFIO should use only stage 2 translation of
-> iommu, to create the address mapping. If nesting translation
-> is disabled from VFIO core, enable iommu domain only stage 2
-> attribute, otherwise, enable iommu domain nesting attribute.
+On 19/10/16 15:02, Will Deacon wrote:
+> On Mon, Oct 17, 2016 at 01:05:29PM +0100, Robin Murphy wrote:
+>> With the new dma_{map,unmap}_resource() functions added to the DMA API
+>> for the benefit of cases like slave DMA, add suitable implementations to
+>> the arsenal of our generic layer. Since cache maintenance should not be
+>> a concern, these can both be standalone versions without the need for
+>> architecture-specific wrappers.
+>>
+>> CC: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>
+>> Since patch 2 has a build dependency on this one, they should probably
+>> go together through either the arm64 tree or the iommu tree, but I can't
+>> make up my mind which one seems more appropriate...
 > 
-> Signed-off-by: Rick Song <songwenjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 15 ++++++++++++---
->  1 file changed, 12 insertions(+), 3 deletions(-)
+> I can take it via the smmu tree, if you like. However, comment below.
+
+I'm surprised that didn't occur to me - makes sense, thanks.
+
+>>  drivers/iommu/dma-iommu.c | 13 +++++++++++++
+>>  include/linux/dma-iommu.h |  4 ++++
+>>  2 files changed, 17 insertions(+)
+>>
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index c5ab8667e6f2..50acd71915db 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -624,6 +624,19 @@ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+>>  	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), sg_dma_address(sg));
+>>  }
+>>  
+>> +dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
+>> +		size_t size, enum dma_data_direction dir, unsigned long attrs)
+>> +{
+>> +	return iommu_dma_map_page(dev, phys_to_page(phys), offset_in_page(phys),
+>> +			size, dma_direction_to_prot(dir, false) | IOMMU_MMIO);
+>> +}
+>>
+>> +void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+>> +		size_t size, enum dma_data_direction dir, unsigned long attrs)
+>> +{
+>> +	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), handle);
+>> +}
 > 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 2ba1942..c0265fe 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -741,7 +741,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	struct vfio_group *group, *g;
->  	struct vfio_domain *domain, *d;
->  	struct bus_type *bus = NULL;
-> -	int ret;
-> +	int attr, ret;
->  
->  	mutex_lock(&iommu->lock);
->  
-> @@ -775,13 +775,22 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  		goto out_free;
->  	}
->  
-> +	/*
-> +	 * Set iommu nesting domain attribute if nesting translation
-> +	 * is enabled from iommu vfio, otherwise set iommu only stage
-> +	 * 2 domain attribute.
-> +	 */
-> +	attr = 1;
->  	if (iommu->nesting) {
-> -		int attr = 1;
-> -
->  		ret = iommu_domain_set_attr(domain->domain, DOMAIN_ATTR_NESTING,
->  					    &attr);
->  		if (ret)
->  			goto out_domain;
-> +	} else {
-> +		ret = iommu_domain_set_attr(domain->domain, DOMAIN_ATTR_S2,
-> +					    &attr);
-> +		if (ret)
-> +			goto out_domain;
->  	}
+> I think it's better to call iommu_dma_unmap_page instead. That said, are
+> you sure it's safe to ignore the "size" parameter here? Is it permitted
+> to unmap part of a region? If not, why does that parameter exist?
 
-This attribute is not relevant to the majority of current users, why
-would we assume that we need to call it for all non-nesting cases?  Why
-do we need to set the attribute at all, what benefit does it provide?
-If this is the normal case for an IOMMU API domain, why is there an
-option for it at all?  Maybe this should be the default and S1
-(whatever that means) should be the alternate option.  Thanks,
+Actually, "#define iommu_dma_unmap_resource iommu_dma_unmap_page" in the
+header would make life even simpler. Or is that too evil?
 
-Alex
+Glossing over the size parameter is a detail of this particular
+implementation. Equivalently to iommu_dma_unmap_page(), it's there
+(along with dir and attrs) to match the signature of
+dma_unmap_resource(), so that arch code doesn't need yet another wrapper
+for its .unmap_resource callback in dma_ops (see patch 2). As it
+happens, ignoring the size is effectively extra-safe in the sense that
+we're enforcing the API and not even trusting the caller - since we have
+to look up the iova to free it, and that iova records the size
+originally mapped, we simply unmap that original size because it makes
+for simpler code and can't be wrong. See the __iommu_dma_unmap()
+implementation itself.
 
->  
->  	ret = iommu_attach_group(domain->domain, iommu_group);
+Robin.
+
+> 
+> Will
+> 
