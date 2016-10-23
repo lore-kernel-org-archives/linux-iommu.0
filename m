@@ -1,14 +1,15 @@
 From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: RE: [PATCH v5 6/7] iommu/exynos: Add runtime pm support
-Date: Sat, 22 Oct 2016 11:20:12 +0530
-Message-ID: <000701d22c28$2da381d0$88ea8570$@codeaurora.org>
-References: <1476948173-21093-1-git-send-email-m.szyprowski@samsung.com>	<CGME20161020072335eucas1p209675d6fbf39e5045281e8023fa9d234@eucas1p2.samsung.com>
-	<1476948173-21093-7-git-send-email-m.szyprowski@samsung.com>
+Subject: RE: [PATCH v5 7/7] iommu/exynos: Use device dependency links to
+	control	runtime pm
+Date: Sun, 23 Oct 2016 15:19:52 +0530
+Message-ID: <001e01d22d12$d2a4e990$77eebcb0$@codeaurora.org>
+References: <1476948173-21093-1-git-send-email-m.szyprowski@samsung.com>	<CGME20161020072336eucas1p24a2b020f69b6ae1f55e1760e6e0e94f9@eucas1p2.samsung.com>
+	<1476948173-21093-8-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1476948173-21093-7-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <1476948173-21093-8-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -24,90 +25,59 @@ Cc: 'Tomeu Vizoso' <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, 'Kevi
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Marek,
-
->This patch adds runtime pm implementation, which is based on previous
->suspend/resume code. SYSMMU controller is now being enabled/disabled mainly
->from the runtime pm callbacks. System sleep callbacks relies on generic
->pm_runtime_force_suspend/pm_runtime_force_resume helpers. To ensure
->internal state consistency, additional lock for runtime pm transitions
->was introduced.
+>This patch uses recently introduced device dependency links to track the
+>runtime pm state of the master's device. This way each SYSMMU controller
+>is set to runtime active only when its master's device is active and can
+>restore or save its state instead of being activated all the time when
+>attached to the given master device. This way SYSMMU controllers no longer
+>prevents respective power domains to be turned off when master's device
+>is not being used.
 >
 >Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 >---
-> drivers/iommu/exynos-iommu.c | 45 +++++++++++++++++++++++++++++++++++---------
-> 1 file changed, 36 insertions(+), 9 deletions(-)
+> drivers/iommu/exynos-iommu.c | 16 ++++++++--------
+> 1 file changed, 8 insertions(+), 8 deletions(-)
 >
 >diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
->index a959443e6f33..5e6d7bbf9b70 100644
+>index 5e6d7bbf9b70..59b4f2ce4f5f 100644
 >--- a/drivers/iommu/exynos-iommu.c
 >+++ b/drivers/iommu/exynos-iommu.c
->@@ -206,6 +206,7 @@ struct sysmmu_fault_info {
-> struct exynos_iommu_owner {
-> 	struct list_head controllers;	/* list of sysmmu_drvdata.owner_node */
-> 	struct iommu_domain *domain;	/* domain this device is attached */
->+	struct mutex rpm_lock;		/* for runtime pm of all sysmmus */
-> };
+>@@ -781,10 +781,6 @@ static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
+> 	if (!has_sysmmu(dev) || owner->domain != iommu_domain)
+> 		return;
 >
-> /*
->@@ -594,40 +595,46 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
-> 	return 0;
-> }
+>-	list_for_each_entry(data, &owner->controllers, owner_node) {
+>-		pm_runtime_put_sync(data->sysmmu);
+>-	}
+>-
+> 	mutex_lock(&owner->rpm_lock);
 >
->-#ifdef CONFIG_PM_SLEEP
->-static int exynos_sysmmu_suspend(struct device *dev)
->+static int __maybe_unused exynos_sysmmu_suspend(struct device *dev)
-> {
-> 	struct sysmmu_drvdata *data = dev_get_drvdata(dev);
-> 	struct device *master = data->master;
+> 	list_for_each_entry(data, &owner->controllers, owner_node) {
+>@@ -848,10 +844,6 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
 >
-> 	if (master) {
->-		pm_runtime_put(dev);
->+		struct exynos_iommu_owner *owner = master->archdata.iommu;
+> 	mutex_unlock(&owner->rpm_lock);
+>
+>-	list_for_each_entry(data, &owner->controllers, owner_node) {
+>-		pm_runtime_get_sync(data->sysmmu);
+>-	}
+>-
+> 	dev_dbg(dev, "%s: Attached IOMMU with pgtable %pa\n", __func__,
+> 		&pagetable);
+>
+>@@ -1232,6 +1224,14 @@ static int exynos_iommu_of_xlate(struct device *dev,
+>
+> 	list_add_tail(&data->owner_node, &owner->controllers);
+> 	data->master = dev;
 >+
->+		mutex_lock(&owner->rpm_lock);
-More of a device link question,
-To understand, i see that with device link + runtime, the supplier
-callbacks are not called for irqsafe clients, even if supplier is irqsafe.
-Why so ?
-
-> 		if (data->domain) {
-> 			dev_dbg(data->sysmmu, "saving state\n");
-> 			__sysmmu_disable(data);
-> 		}
->+		mutex_unlock(&owner->rpm_lock);
-> 	}
-> 	return 0;
-> }
->
->-static int exynos_sysmmu_resume(struct device *dev)
->+static int __maybe_unused exynos_sysmmu_resume(struct device *dev)
-> {
-> 	struct sysmmu_drvdata *data = dev_get_drvdata(dev);
-> 	struct device *master = data->master;
->
-> 	if (master) {
->-		pm_runtime_get_sync(dev);
->+		struct exynos_iommu_owner *owner = master->archdata.iommu;
+>+	/*
+>+	 * SYSMMU will be runtime activated via device link (dependency) to its
+>+	 * master device, so there are no direct calls to pm_runtime_get/put
+>+	 * in this driver.
+>+	 */
+>+	device_link_add(dev, data->sysmmu, DL_FLAG_PM_RUNTIME);
 >+
->+		mutex_lock(&owner->rpm_lock);
-> 		if (data->domain) {
-> 			dev_dbg(data->sysmmu, "restoring state\n");
-> 			__sysmmu_enable(data);
-> 		}
->+		mutex_unlock(&owner->rpm_lock);
-> 	}
-> 	return 0;
-> }
->-#endif
->
-> static const struct dev_pm_ops sysmmu_pm_ops = {
->-	SET_LATE_SYSTEM_SLEEP_PM_OPS(exynos_sysmmu_suspend, exynos_sysmmu_resume)
->+	SET_RUNTIME_PM_OPS(exynos_sysmmu_suspend, exynos_sysmmu_resume, NULL)
->+	SET_LATE_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
->+				     pm_runtime_force_resume)
-> };
- Is this needed to be LATE_SYSTEM_SLEEP_PM_OPS with device links to take care
-  of the order ?
+  So in the case of master with multiple sids, this would be called multiple times
+  for the same master ?
 
 Regards,
  Sricharan
