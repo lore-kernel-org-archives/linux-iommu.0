@@ -1,555 +1,238 @@
-From: "Akula, Geethasowjanya" <Geethasowjanya.Akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] arm64: SMMU-v2: Workaround for Cavium ThunderX erratum
-	28168
-Date: Mon, 24 Oct 2016 15:29:49 +0000
-Message-ID: <CY4PR07MB3128A4F864133F60D7228AD2E0A90@CY4PR07MB3128.namprd07.prod.outlook.com>
-References: <1> <1477112061-12868-1-git-send-email-gakula@caviumnetworks.com>,
-	<fbc51a32-aaba-0ee6-c0bd-07a02fb2a6b4@arm.com>
+From: Mathieu Poirier <mathieu.poirier@linaro.org>
+Subject: Re: [PATCH 2/4] iommu/arm-smmu: Add pm_runtime/sleep ops
+Date: Mon, 24 Oct 2016 10:40:57 -0600
+Message-ID: <CANLsYkw8Y-5MkeM2U9fLWX951Mo7ErsMCUBjSx3-0689jWD4rQ@mail.gmail.com>
+References: <1477070066-15044-1-git-send-email-sricharan@codeaurora.org> <1477070066-15044-3-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1789806598473194236=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <fbc51a32-aaba-0ee6-c0bd-07a02fb2a6b4-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: "Kapoor, Prasun" <Prasun.Kapoor-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1477070066-15044-3-git-send-email-sricharan@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Sricharan R <sricharan@codeaurora.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will.deacon@arm.com>, robin.murphy@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-arm-msm@vger.kernel.org, Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 List-Id: iommu@lists.linux-foundation.org
 
---===============1789806598473194236==
-Content-Language: en-US
-Content-Type: multipart/alternative;
-	boundary="_000_CY4PR07MB3128A4F864133F60D7228AD2E0A90CY4PR07MB3128namp_"
-
---_000_CY4PR07MB3128A4F864133F60D7228AD2E0A90CY4PR07MB3128namp_
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
-
-Hi Marc, Robin.
-
-
-Thanks for your feedback. I will resend the updated patch soon.
-
-
-
-
-Thank you,
-
-Geetha.
-
-
-________________________________
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Sent: Monday, October 24, 2016 7:14:35 PM
-To: Akula, Geethasowjanya; robin.murphy-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org; mark.=
-rutland-5wv7dgnIgG8@public.gmane.org
-Cc: Kapoor, Prasun; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Chalamarla, Tirumales=
-h; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; Thomas Gleixner; Jason Cooper; lin=
-ux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Subject: Re: [PATCH] arm64: SMMU-v2: Workaround for Cavium ThunderX erratum=
- 28168
-
-Geetha,
-
-On 22/10/16 05:54, Geetha sowjanya wrote:
-> From: Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+On 21 October 2016 at 11:14, Sricharan R <sricharan@codeaurora.org> wrote:
+> The smmu needs to be functional when the respective
+> master/s using it are active. As there is a device_link
+> between the master and smmu, the pm runtime ops for the smmu
+> gets invoked in sync with the master's runtime, thus the
+> smmu remains powered only when needed.
 >
->   This patch implements Cavium ThunderX erratum 28168.
+> There are couple of places in the driver during probe,
+> master attach, where the smmu needs to be clocked without
+> the context of the master. So doing a pm_runtime_get/put sync
+> in those places separately.
 >
->   PCI requires stores complete in order. Due to erratum #28168
->   PCI-inbound MSI-X store to the interrupt controller are delivered
->   to the interrupt controller before older PCI-inbound memory stores
->   are committed.
->   Doing a sync on SMMU will make sure all prior transactions are
->   completed.
->
-> Signed-off-by: Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
 > ---
->  arch/arm64/Kconfig               |   11 +++++++++++
->  drivers/iommu/arm-smmu.c         |   38 ++++++++++++++++++++++++++++++++=
-++++++
->  drivers/irqchip/irq-gic-common.h |    1 +
->  drivers/irqchip/irq-gic-v3-its.c |   22 ++++++++++++++++++++++
->  kernel/irq/chip.c                |    4 ++++
-
-Thanks Robin for looping me in. Geetha, please use get_maintainers.pl to
-keep the relevant people on CC, specially as you're touching some of the
-core infrastructure.
-
->  5 files changed, 76 insertions(+), 0 deletions(-)
->
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index 30398db..57f5c9b 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -474,6 +474,17 @@ config CAVIUM_ERRATUM_27456
->
->          If unsure, say Y.
->
-> +config CAVIUM_ERRATUM_28168
-> +     bool "Cavium erratum 28168: Make sure ITS and SMMU TLB are in sync"
-> +     default y
-> +     help
-> +      Due to erratum #28168 PCI-inbound MSI-X store to the interrupt
-> +      controller are delivered to the interrupt controller before older
-> +      PCI-inbound memory stores are committed. Doing a sync on SMMU
-> +      will make sure all prior transactions are completed.
-> +
-> +      If unsure, say Y.
-
-Please add an entry to Documentation/arm64/silicon-errata.txt.
-
-> +
->  endmenu
->
+>  drivers/iommu/arm-smmu.c | 109 ++++++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 108 insertions(+), 1 deletion(-)
 >
 > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 9740846..20a61c6 100644
+> index 083489e4..45f2762 100644
 > --- a/drivers/iommu/arm-smmu.c
 > +++ b/drivers/iommu/arm-smmu.c
-
-I'll skip the SMMU code on which Robin has commented already, and move
-to the irq part, which is equally entertaining.
-
-[...]
-
-> diff --git a/drivers/irqchip/irq-gic-common.h b/drivers/irqchip/irq-gic-c=
-ommon.h
-> index 205e5fd..0228ba0 100644
-> --- a/drivers/irqchip/irq-gic-common.h
-> +++ b/drivers/irqchip/irq-gic-common.h
-> @@ -38,4 +38,5 @@ void gic_enable_quirks(u32 iidr, const struct gic_quirk=
- *quirks,
+> @@ -45,6 +45,7 @@
+>  #include <linux/of_iommu.h>
+>  #include <linux/pci.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/pm_runtime.h>
+>  #include <linux/slab.h>
+>  #include <linux/spinlock.h>
 >
->  void gic_set_kvm_info(const struct gic_kvm_info *info);
+> @@ -373,6 +374,8 @@ struct arm_smmu_device {
+>         u32                             num_global_irqs;
+>         u32                             num_context_irqs;
+>         unsigned int                    *irqs;
+> +       int                             num_clocks;
+> +       struct clk                      **clocks;
 >
-> +void cavium_smmu_tlb_sync(void *iommu);
->  #endif /* _IRQ_GIC_COMMON_H */
-> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v=
-3-its.c
-> index 003495d..88e9958 100644
-> --- a/drivers/irqchip/irq-gic-v3-its.c
-> +++ b/drivers/irqchip/irq-gic-v3-its.c
-> @@ -112,6 +112,7 @@ struct its_device {
->        struct its_node         *its;
->        struct event_lpi_map    event_map;
->        void                    *itt;
-> +     struct device           *dev;
-
-This doesn't work in the presence of anything that will multiplex
-multiple RequesterIDs onto a single DeviceID (non transparent PCI
-bridge, for example).
-
->        u32                     nr_ites;
->        u32                     device_id;
+>         u32                             cavium_id_base; /* Specific to Cavium */
 >  };
-> @@ -664,10 +665,29 @@ static void its_irq_compose_msi_msg(struct irq_data=
- *d, struct msi_msg *msg)
->        iommu_dma_map_msi_msg(d->irq, msg);
+> @@ -430,6 +433,31 @@ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+>         return container_of(dom, struct arm_smmu_domain, domain);
 >  }
 >
-> +/**
-> + * Due to erratum in ThunderX,
-> + * we need to make sure SMMU is in sync with ITS translations.
-> + **/
-> +static void its_ack_irq(struct irq_data *d)
+> +static int arm_smmu_enable_clocks(struct arm_smmu_device *smmu)
 > +{
-> +     struct its_device *its_dev =3D irq_data_get_irq_chip_data(d);
-> +     struct pci_dev *pdev;
+> +       int i, ret = 0;
 > +
-> +             if (!dev_is_pci(its_dev->dev))
-> +                     return;
-
-How about non PCI devices?
-
+> +       for (i = 0; i < smmu->num_clocks; ++i) {
+> +               ret = clk_prepare_enable(smmu->clocks[i]);
+> +               if (ret) {
+> +                       dev_err(smmu->dev, "Couldn't enable clock #%d\n", i);
+> +                       while (i--)
+> +                               clk_disable_unprepare(smmu->clocks[i]);
+> +                       break;
+> +               }
+> +       }
 > +
-> +             pdev =3D to_pci_dev(its_dev->dev);
-> +             if (pdev->vendor !=3D 0x177d)
-> +                     cavium_smmu_tlb_sync(its_dev->dev);
-
-What makes Cavium devices so special that they do not need to respect
-the PCI memory ordering with respect to MSI delivery?
-
-> +
+> +       return ret;
 > +}
 > +
->  static struct irq_chip its_irq_chip =3D {
->        .name                   =3D "ITS",
->        .irq_mask               =3D its_mask_irq,
->        .irq_unmask             =3D its_unmask_irq,
-> +     .irq_ack                =3D its_ack_irq,
-
-Nice try, but no, thank you. If you really want to go down that road,
-have a look at CONFIG_IRQ_PREFLOW_FASTEOI, and make this workaround a
-per interrupt thing. At least, you won't pollute the core code with
-another hack.
-
-Also, it would be good to find a way for that hack to be confined to the
-SMMU driver, since that's where the oddity is being handled. Something
-that would occur when the device is mapping memory is probably on good spot=
-.
-
->        .irq_eoi                =3D irq_chip_eoi_parent,
->        .irq_set_affinity       =3D its_set_affinity,
->        .irq_compose_msi_msg    =3D its_irq_compose_msi_msg,
-> @@ -1422,6 +1442,8 @@ static int its_msi_prepare(struct irq_domain *domai=
-n, struct device *dev,
->        if (!its_dev)
->                return -ENOMEM;
->
-> +     its_dev->dev =3D dev;
+> +static void arm_smmu_disable_clocks(struct arm_smmu_device *smmu)
+> +{
+> +       int i;
 > +
->        pr_debug("ITT %d entries, %d bits\n", nvec, ilog2(nvec));
->  out:
->        info->scratchpad[0].ptr =3D its_dev;
-> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-> index be3c34e..6add8da 100644
-> --- a/kernel/irq/chip.c
-> +++ b/kernel/irq/chip.c
-> @@ -585,6 +585,10 @@ void handle_fasteoi_irq(struct irq_desc *desc)
->                goto out;
->        }
+> +       for (i = 0; i < smmu->num_clocks; ++i)
+> +               clk_disable_unprepare(smmu->clocks[i]);
+> +}
+> +
+>  static void parse_driver_options(struct arm_smmu_device *smmu)
+>  {
+>         int i = 0;
+> @@ -1187,11 +1215,13 @@ static void arm_smmu_master_free_smes(struct iommu_fwspec *fwspec)
+>         int i, idx;
 >
-> +#ifdef CONFIG_CAVIUM_ERRATUM_28168
-> +     if (chip->irq_ack)
-> +             chip->irq_ack(&desc->irq_data);
+>         mutex_lock(&smmu->stream_map_mutex);
+> +       pm_runtime_get_sync(smmu->dev);
+
+Since this is generic code it is probably a good idea to check the
+return value, same for _put_sync() below.
+
+>         for_each_cfg_sme(fwspec, i, idx) {
+>                 if (arm_smmu_free_sme(smmu, idx))
+>                         arm_smmu_write_sme(smmu, idx);
+>                 cfg->smendx[i] = INVALID_SMENDX;
+>         }
+> +       pm_runtime_put_sync(smmu->dev);
+>         mutex_unlock(&smmu->stream_map_mutex);
+>  }
+>
+> @@ -1424,9 +1454,11 @@ static int arm_smmu_add_device(struct device *dev)
+>         while (i--)
+>                 cfg->smendx[i] = INVALID_SMENDX;
+>
+> +       pm_runtime_get_sync(smmu->dev);
+>         ret = arm_smmu_master_alloc_smes(dev);
+>         if (ret)
+>                 goto out_free;
+> +       pm_runtime_put_sync(smmu->dev);
+>
+>         return 0;
+>
+> @@ -1650,6 +1682,44 @@ static int arm_smmu_id_size_to_bits(int size)
+>         }
+>  }
+>
+> +static int arm_smmu_init_clocks(struct arm_smmu_device *smmu)
+> +{
+> +       const char *cname;
+> +       struct property *prop;
+> +       int i;
+> +       struct device *dev = smmu->dev;
+> +
+> +       smmu->num_clocks =
+> +               of_property_count_strings(dev->of_node, "clock-names");
+> +
+> +       if (smmu->num_clocks < 1)
+> +               return 0;
+> +
+> +       smmu->clocks = devm_kzalloc(dev,
+> +                                   sizeof(*smmu->clocks) * smmu->num_clocks,
+> +                                   GFP_KERNEL);
+> +
+> +       if (!smmu->clocks) {
+> +               dev_err(dev, "Failed to allocate memory for clocks\n");
+> +               return -ENODEV;
+> +       }
+> +
+> +       i = 0;
+
+Please do the initialisation above when you declare the variable.
+
+> +       of_property_for_each_string(dev->of_node, "clock-names", prop, cname) {
+> +               struct clk *c = devm_clk_get(dev, cname);
+> +
+> +               if (IS_ERR(c)) {
+> +                       dev_err(dev, "Couldn't get clock: %s", cname);
+> +                       return -EPROBE_DEFER;
+> +               }
+> +
+> +               smmu->clocks[i] = c;
+> +               ++i;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+>  static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>  {
+>         unsigned long size;
+> @@ -1968,6 +2038,13 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>                 smmu->irqs[i] = irq;
+>         }
+>
+> +       err = arm_smmu_init_clocks(smmu);
+> +       if (err)
+> +               return err;
+> +
+> +       platform_set_drvdata(pdev, smmu);
+> +       pm_runtime_enable(dev);
+> +       pm_runtime_get_sync(dev);
+>         err = arm_smmu_device_cfg_probe(smmu);
+>         if (err)
+>                 return err;
+> @@ -1996,8 +2073,8 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>         }
+>
+>         of_iommu_set_ops(dev->of_node, &arm_smmu_ops);
+> -       platform_set_drvdata(pdev, smmu);
+>         arm_smmu_device_reset(smmu);
+> +       pm_runtime_put_sync(dev);
+>
+>         /* Oh, for a proper bus abstraction */
+>         if (!iommu_present(&platform_bus_type))
+> @@ -2027,13 +2104,43 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+>
+>         /* Turn the thing off */
+>         writel(sCR0_CLIENTPD, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+> +
+> +       pm_runtime_force_suspend(smmu->dev);
+> +
+> +       return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM
+> +static int arm_smmu_resume(struct device *dev)
+> +{
+> +       struct platform_device *pdev = to_platform_device(dev);
+> +       struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+> +
+> +       return arm_smmu_enable_clocks(smmu);
+> +}
+> +
+> +static int arm_smmu_suspend(struct device *dev)
+> +{
+> +       struct platform_device *pdev = to_platform_device(dev);
+> +       struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+> +
+> +       arm_smmu_disable_clocks(smmu);
+> +
+>         return 0;
+>  }
 > +#endif
->        kstat_incr_irqs_this_cpu(desc);
->        if (desc->istate & IRQS_ONESHOT)
->                mask_irq(desc);
+> +
+> +static const struct dev_pm_ops arm_smmu_pm_ops = {
+> +       SET_RUNTIME_PM_OPS(arm_smmu_suspend, arm_smmu_resume, NULL)
+> +       SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+> +                               pm_runtime_force_resume)
+> +};
 >
-
-Overall, this workaround is not acceptable as it is. You need to find
-ways to make it less invasive, and hopefully the above pointers will
-help. Please keep the current distribution list posted once you update
-this patch.
-
-Thanks,
-
-        M.
---
-Jazz is not dead. It just smells funny...
-
---_000_CY4PR07MB3128A4F864133F60D7228AD2E0A90CY4PR07MB3128namp_
-Content-Type: text/html; charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
-
-<html>
-<head>
-<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DWindows-1=
-252">
-<meta name=3D"Generator" content=3D"Microsoft Exchange Server">
-<!-- converted from text --><style><!-- .EmailQuote { margin-left: 1pt; pad=
-ding-left: 4pt; border-left: #800000 2px solid; } --></style>
-</head>
-<body>
-<meta content=3D"text/html; charset=3DUTF-8">
-<style type=3D"text/css" style=3D"">
-<!--
-p
-	{margin-top:0;
-	margin-bottom:0}
--->
-</style>
-<div dir=3D"ltr">
-<div id=3D"x_divtagdefaultwrapper" style=3D"font-size:10pt; color:#000000; =
-font-family:Calibri,Arial,Helvetica,sans-serif">
-<p>Hi Marc, Robin.</p>
-<p><br>
-</p>
-<p>Thanks for your feedback. I will resend the updated patch soon. <br>
-</p>
-<p><br>
-</p>
-<p><br>
-</p>
-<p><br>
-</p>
-<p>Thank you,</p>
-<p>Geetha.<br>
-</p>
-<p><br>
-</p>
-</div>
-<hr tabindex=3D"-1" style=3D"display:inline-block; width:98%">
-<div id=3D"x_divRplyFwdMsg" dir=3D"ltr"><font face=3D"Calibri, sans-serif" =
-color=3D"#000000" style=3D"font-size:11pt"><b>From:</b> Marc Zyngier &lt;ma=
-rc.zyngier-5wv7dgnIgG8@public.gmane.org&gt;<br>
-<b>Sent:</b> Monday, October 24, 2016 7:14:35 PM<br>
-<b>To:</b> Akula, Geethasowjanya; robin.murphy-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org=
-; mark.rutland-5wv7dgnIgG8@public.gmane.org<br>
-<b>Cc:</b> Kapoor, Prasun; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Chalamarla, Ti=
-rumalesh; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; Thomas Gleixner; Jason Coop=
-er; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org<br>
-<b>Subject:</b> Re: [PATCH] arm64: SMMU-v2: Workaround for Cavium ThunderX =
-erratum 28168</font>
-<div>&nbsp;</div>
-</div>
-</div>
-<font size=3D"2"><span style=3D"font-size:10pt;">
-<div class=3D"PlainText">Geetha,<br>
-<br>
-On 22/10/16 05:54, Geetha sowjanya wrote:<br>
-&gt; From: Tirumalesh Chalamarla &lt;Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org&gt;<b=
-r>
-&gt; <br>
-&gt;&nbsp;&nbsp; This patch implements Cavium ThunderX erratum 28168.<br>
-&gt; <br>
-&gt;&nbsp;&nbsp; PCI requires stores complete in order. Due to erratum #281=
-68<br>
-&gt;&nbsp;&nbsp; PCI-inbound MSI-X store to the interrupt controller are de=
-livered<br>
-&gt;&nbsp;&nbsp; to the interrupt controller before older PCI-inbound memor=
-y stores<br>
-&gt;&nbsp;&nbsp; are committed.<br>
-&gt;&nbsp;&nbsp; Doing a sync on SMMU will make sure all prior transactions=
- are<br>
-&gt;&nbsp;&nbsp; completed.<br>
-&gt; <br>
-&gt; Signed-off-by: Tirumalesh Chalamarla &lt;Tirumalesh.Chalamarla@cavium.=
-com&gt;<br>
-&gt; Signed-off-by: Geetha sowjanya &lt;gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org&gt;<br>
-&gt; ---<br>
-&gt;&nbsp; arch/arm64/Kconfig&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp; 11 &#43;&#43;&#43;&#43=
-;&#43;&#43;&#43;&#43;&#43;&#43;&#43;<br>
-&gt;&nbsp; drivers/iommu/arm-smmu.c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp; |&nbsp;&nbsp; 38 &#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43=
-;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43=
-;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;<br>
-&gt;&nbsp; drivers/irqchip/irq-gic-common.h |&nbsp;&nbsp;&nbsp; 1 &#43;<br>
-&gt;&nbsp; drivers/irqchip/irq-gic-v3-its.c |&nbsp;&nbsp; 22 &#43;&#43;&#43=
-;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43;&#43=
-;&#43;&#43;&#43;&#43;<br>
-&gt;&nbsp; kernel/irq/chip.c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |&nbsp;&nbsp;&nbsp; 4 &#43;&#43=
-;&#43;&#43;<br>
-<br>
-Thanks Robin for looping me in. Geetha, please use get_maintainers.pl to<br=
+>  static struct platform_driver arm_smmu_driver = {
+>         .driver = {
+>                 .name           = "arm-smmu",
+>                 .of_match_table = of_match_ptr(arm_smmu_of_match),
+> +               .pm = &arm_smmu_pm_ops,
+>         },
+>         .probe  = arm_smmu_device_dt_probe,
+>         .remove = arm_smmu_device_remove,
+> --
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
 >
-keep the relevant people on CC, specially as you're touching some of the<br=
 >
-core infrastructure.<br>
-<br>
-&gt;&nbsp; 5 files changed, 76 insertions(&#43;), 0 deletions(-)<br>
-&gt; <br>
-&gt; diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig<br>
-&gt; index 30398db..57f5c9b 100644<br>
-&gt; --- a/arch/arm64/Kconfig<br>
-&gt; &#43;&#43;&#43; b/arch/arm64/Kconfig<br>
-&gt; @@ -474,6 &#43;474,17 @@ config CAVIUM_ERRATUM_27456<br>
-&gt;&nbsp; <br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If unsure, say Y=
-.<br>
-&gt;&nbsp; <br>
-&gt; &#43;config CAVIUM_ERRATUM_28168<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; bool &quot;Cavium erratum 28168: Make su=
-re ITS and SMMU TLB are in sync&quot;<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; default y<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; help<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Due to erratum #28168 PCI-inbound =
-MSI-X store to the interrupt<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; controller are delivered to the in=
-terrupt controller before older<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PCI-inbound memory stores are comm=
-itted. Doing a sync on SMMU<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; will make sure all prior transacti=
-ons are completed.<br>
-&gt; &#43;<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If unsure, say Y.<br>
-<br>
-Please add an entry to Documentation/arm64/silicon-errata.txt.<br>
-<br>
-&gt; &#43;<br>
-&gt;&nbsp; endmenu<br>
-&gt;&nbsp; <br>
-&gt;&nbsp; <br>
-&gt; diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c<br>
-&gt; index 9740846..20a61c6 100644<br>
-&gt; --- a/drivers/iommu/arm-smmu.c<br>
-&gt; &#43;&#43;&#43; b/drivers/iommu/arm-smmu.c<br>
-<br>
-I'll skip the SMMU code on which Robin has commented already, and move<br>
-to the irq part, which is equally entertaining.<br>
-<br>
-[...]<br>
-<br>
-&gt; diff --git a/drivers/irqchip/irq-gic-common.h b/drivers/irqchip/irq-gi=
-c-common.h<br>
-&gt; index 205e5fd..0228ba0 100644<br>
-&gt; --- a/drivers/irqchip/irq-gic-common.h<br>
-&gt; &#43;&#43;&#43; b/drivers/irqchip/irq-gic-common.h<br>
-&gt; @@ -38,4 &#43;38,5 @@ void gic_enable_quirks(u32 iidr, const struct gi=
-c_quirk *quirks,<br>
-&gt;&nbsp; <br>
-&gt;&nbsp; void gic_set_kvm_info(const struct gic_kvm_info *info);<br>
-&gt;&nbsp; <br>
-&gt; &#43;void cavium_smmu_tlb_sync(void *iommu);<br>
-&gt;&nbsp; #endif /* _IRQ_GIC_COMMON_H */<br>
-&gt; diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gi=
-c-v3-its.c<br>
-&gt; index 003495d..88e9958 100644<br>
-&gt; --- a/drivers/irqchip/irq-gic-v3-its.c<br>
-&gt; &#43;&#43;&#43; b/drivers/irqchip/irq-gic-v3-its.c<br>
-&gt; @@ -112,6 &#43;112,7 @@ struct its_device {<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct its_node&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *its;<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; struct event_lpi_map&nbsp;&n=
-bsp;&nbsp; event_map;<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; void&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
-sp;&nbsp;&nbsp; *itt;<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; struct device&nbsp;&nbsp;&nbsp;&nbsp;&nb=
-sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *dev;<br>
-<br>
-This doesn't work in the presence of anything that will multiplex<br>
-multiple RequesterIDs onto a single DeviceID (non transparent PCI<br>
-bridge, for example).<br>
-<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp; nr_ites;<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; u32&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp; device_id;<br>
-&gt;&nbsp; };<br>
-&gt; @@ -664,10 &#43;665,29 @@ static void its_irq_compose_msi_msg(struct i=
-rq_data *d, struct msi_msg *msg)<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; iommu_dma_map_msi_msg(d-&gt;=
-irq, msg);<br>
-&gt;&nbsp; }<br>
-&gt;&nbsp; <br>
-&gt; &#43;/**<br>
-&gt; &#43; * Due to erratum in ThunderX,<br>
-&gt; &#43; * we need to make sure SMMU is in sync with ITS translations.<br=
->
-&gt; &#43; **/<br>
-&gt; &#43;static void its_ack_irq(struct irq_data *d)<br>
-&gt; &#43;{<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; struct its_device *its_dev =3D irq_data_=
-get_irq_chip_data(d);<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; struct pci_dev *pdev;<br>
-&gt; &#43;<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp; if (!dev_is_pci(its_dev-&gt;dev))<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return;<br>
-<br>
-How about non PCI devices?<br>
-<br>
-&gt; &#43;<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp; pdev =3D to_pci_dev(its_dev-&gt;dev);<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp; if (pdev-&gt;vendor !=3D 0x177d)<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; cavium_smmu_tlb_syn=
-c(its_dev-&gt;dev);<br>
-<br>
-What makes Cavium devices so special that they do not need to respect<br>
-the PCI memory ordering with respect to MSI delivery?<br>
-<br>
-&gt; &#43;<br>
-&gt; &#43;}<br>
-&gt; &#43;<br>
-&gt;&nbsp; static struct irq_chip its_irq_chip =3D {<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .name&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
-bsp;&nbsp; =3D &quot;ITS&quot;,<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .irq_mask&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =3D its_m=
-ask_irq,<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .irq_unmask&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =3D its_unmask_irq,=
-<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; .irq_ack&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
-bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =3D its_ack_irq,=
-<br>
-<br>
-Nice try, but no, thank you. If you really want to go down that road,<br>
-have a look at CONFIG_IRQ_PREFLOW_FASTEOI, and make this workaround a<br>
-per interrupt thing. At least, you won't pollute the core code with<br>
-another hack.<br>
-<br>
-Also, it would be good to find a way for that hack to be confined to the<br=
->
-SMMU driver, since that's where the oddity is being handled. Something<br>
-that would occur when the device is mapping memory is probably on good spot=
-.<br>
-<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .irq_eoi&nbsp;&nbsp;&nbsp;&n=
-bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =3D =
-irq_chip_eoi_parent,<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .irq_set_affinity&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp; =3D its_set_affinity,<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .irq_compose_msi_msg&nbsp;&n=
-bsp;&nbsp; =3D its_irq_compose_msi_msg,<br>
-&gt; @@ -1422,6 &#43;1442,8 @@ static int its_msi_prepare(struct irq_domain=
- *domain, struct device *dev,<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (!its_dev)<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp; return -ENOMEM;<br>
-&gt;&nbsp; <br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; its_dev-&gt;dev =3D dev;<br>
-&gt; &#43;<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; pr_debug(&quot;ITT %d entrie=
-s, %d bits\n&quot;, nvec, ilog2(nvec));<br>
-&gt;&nbsp; out:<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; info-&gt;scratchpad[0].ptr =
-=3D its_dev;<br>
-&gt; diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c<br>
-&gt; index be3c34e..6add8da 100644<br>
-&gt; --- a/kernel/irq/chip.c<br>
-&gt; &#43;&#43;&#43; b/kernel/irq/chip.c<br>
-&gt; @@ -585,6 &#43;585,10 @@ void handle_fasteoi_irq(struct irq_desc *desc=
-)<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp; goto out;<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>
-&gt;&nbsp; <br>
-&gt; &#43;#ifdef CONFIG_CAVIUM_ERRATUM_28168<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp; if (chip-&gt;irq_ack)<br>
-&gt; &#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp; chip-&gt;irq_ack(&amp;desc-&gt;irq_data);<br>
-&gt; &#43;#endif<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; kstat_incr_irqs_this_cpu(des=
-c);<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (desc-&gt;istate &amp; IR=
-QS_ONESHOT)<br>
-&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp; mask_irq(desc);<br>
-&gt; <br>
-<br>
-Overall, this workaround is not acceptable as it is. You need to find<br>
-ways to make it less invasive, and hopefully the above pointers will<br>
-help. Please keep the current distribution list posted once you update<br>
-this patch.<br>
-<br>
-Thanks,<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; M.<br>
--- <br>
-Jazz is not dead. It just smells funny...<br>
-</div>
-</span></font>
-</body>
-</html>
-
---_000_CY4PR07MB3128A4F864133F60D7228AD2E0A90CY4PR07MB3128namp_--
-
---===============1789806598473194236==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============1789806598473194236==--
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
