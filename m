@@ -1,13 +1,16 @@
-From: Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH V3 0/8] IOMMU probe deferral support
-Date: Tue, 25 Oct 2016 11:55:21 +0530
-Message-ID: <a9e6492d-381b-1175-5867-74f33be99b89@codeaurora.org>
-References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH 2/4] iommu/arm-smmu: Add pm_runtime/sleep ops
+Date: Tue, 25 Oct 2016 11:57:37 +0530
+Message-ID: <008e01d22e88$e575ac90$b06105b0$@codeaurora.org>
+References: <1477070066-15044-1-git-send-email-sricharan@codeaurora.org>
+	<1477070066-15044-3-git-send-email-sricharan@codeaurora.org>
+	<CANLsYkw8Y-5MkeM2U9fLWX951Mo7ErsMCUBjSx3-0689jWD4rQ@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1475600632-21289-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <CANLsYkw8Y-5MkeM2U9fLWX951Mo7ErsMCUBjSx3-0689jWD4rQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,119 +20,146 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: 'Mathieu Poirier' <mathieu.poirier-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, 'Will Deacon' <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, 'Srinivas Kandagatla' <srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi,
 
+>On 21 October 2016 at 11:14, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
+>> The smmu needs to be functional when the respective
+>> master/s using it are active. As there is a device_link
+>> between the master and smmu, the pm runtime ops for the smmu
+>> gets invoked in sync with the master's runtime, thus the
+>> smmu remains powered only when needed.
+>>
+>> There are couple of places in the driver during probe,
+>> master attach, where the smmu needs to be clocked without
+>> the context of the master. So doing a pm_runtime_get/put sync
+>> in those places separately.
+>>
+>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>> ---
+>>  drivers/iommu/arm-smmu.c | 109 ++++++++++++++++++++++++++++++++++++++++++++++-
+>>  1 file changed, 108 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index 083489e4..45f2762 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -45,6 +45,7 @@
+>>  #include <linux/of_iommu.h>
+>>  #include <linux/pci.h>
+>>  #include <linux/platform_device.h>
+>> +#include <linux/pm_runtime.h>
+>>  #include <linux/slab.h>
+>>  #include <linux/spinlock.h>
+>>
+>> @@ -373,6 +374,8 @@ struct arm_smmu_device {
+>>         u32                             num_global_irqs;
+>>         u32                             num_context_irqs;
+>>         unsigned int                    *irqs;
+>> +       int                             num_clocks;
+>> +       struct clk                      **clocks;
+>>
+>>         u32                             cavium_id_base; /* Specific to Cavium */
+>>  };
+>> @@ -430,6 +433,31 @@ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+>>         return container_of(dom, struct arm_smmu_domain, domain);
+>>  }
+>>
+>> +static int arm_smmu_enable_clocks(struct arm_smmu_device *smmu)
+>> +{
+>> +       int i, ret = 0;
+>> +
+>> +       for (i = 0; i < smmu->num_clocks; ++i) {
+>> +               ret = clk_prepare_enable(smmu->clocks[i]);
+>> +               if (ret) {
+>> +                       dev_err(smmu->dev, "Couldn't enable clock #%d\n", i);
+>> +                       while (i--)
+>> +                               clk_disable_unprepare(smmu->clocks[i]);
+>> +                       break;
+>> +               }
+>> +       }
+>> +
+>> +       return ret;
+>> +}
+>> +
+>> +static void arm_smmu_disable_clocks(struct arm_smmu_device *smmu)
+>> +{
+>> +       int i;
+>> +
+>> +       for (i = 0; i < smmu->num_clocks; ++i)
+>> +               clk_disable_unprepare(smmu->clocks[i]);
+>> +}
+>> +
+>>  static void parse_driver_options(struct arm_smmu_device *smmu)
+>>  {
+>>         int i = 0;
+>> @@ -1187,11 +1215,13 @@ static void arm_smmu_master_free_smes(struct iommu_fwspec *fwspec)
+>>         int i, idx;
+>>
+>>         mutex_lock(&smmu->stream_map_mutex);
+>> +       pm_runtime_get_sync(smmu->dev);
+>
+>Since this is generic code it is probably a good idea to check the
+>return value, same for _put_sync() below.
 
-On 10/04/2016 10:33 PM, Sricharan R wrote:
-> Initial post from Laurent Pinchart[1]. This is
-> series calls the dma ops configuration for the devices
-> at a generic place so that it works for all busses.
-> The dma_configure_ops for a device is now called during
-> the device_attach callback just before the probe of the
-> bus/driver is called. Similarly dma_deconfigure is called during
-> device/driver_detach path.
->
->
-> pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
->        |                         |
-> pci_bus_add_device     (device_add/driver_register)
->        |                         |
-> device_attach           device_initial_probe
->        |                         |
-> __device_attach_driver    __device_attach_driver
->        |
-> driver_probe_device
->        |
-> really_probe
->        |
-> dma_configure
->
->  Similarly on the device/driver_unregister path __device_release_driver is
->  called which inturn calls dma_deconfigure.
->
->  If the ACPI bus code follows the same, we can add acpi_dma_configure
->  at the same place as of_dma_configure.
->
->  This series is based on the recently merged Generic DT bindings for
->  PCI IOMMUs and ARM SMMU from Robin Murphy robin.murphy-5wv7dgnIgG8@public.gmane.org [2]
->
->  This time tested this with platform and pci device for probe deferral
->  and reprobe on arm64 based platform. There is an issue on the cleanup
->  path for arm64 though, where there is WARN_ON if the dma_ops is reset while
->  device is attached to an domain in arch_teardown_dma_ops.
->  But with iommu_groups created from the iommu driver, the device is always
->  attached to a domain/default_domain. So so the WARN has to be removed/handled
->  probably.
->
+ Ok, i will do it for V2.
 
-Tested-by: Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>
+>>         for_each_cfg_sme(fwspec, i, idx) {
+>>                 if (arm_smmu_free_sme(smmu, idx))
+>>                         arm_smmu_write_sme(smmu, idx);
+>>                 cfg->smendx[i] = INVALID_SMENDX;
+>>         }
+>> +       pm_runtime_put_sync(smmu->dev);
+>>         mutex_unlock(&smmu->stream_map_mutex);
+>>  }
+>>
+>> @@ -1424,9 +1454,11 @@ static int arm_smmu_add_device(struct device *dev)
+>>         while (i--)
+>>                 cfg->smendx[i] = INVALID_SMENDX;
+>>
+>> +       pm_runtime_get_sync(smmu->dev);
+>>         ret = arm_smmu_master_alloc_smes(dev);
+>>         if (ret)
+>>                 goto out_free;
+>> +       pm_runtime_put_sync(smmu->dev);
+>>
+>>         return 0;
+>>
+>> @@ -1650,6 +1682,44 @@ static int arm_smmu_id_size_to_bits(int size)
+>>         }
+>>  }
+>>
+>> +static int arm_smmu_init_clocks(struct arm_smmu_device *smmu)
+>> +{
+>> +       const char *cname;
+>> +       struct property *prop;
+>> +       int i;
+>> +       struct device *dev = smmu->dev;
+>> +
+>> +       smmu->num_clocks =
+>> +               of_property_count_strings(dev->of_node, "clock-names");
+>> +
+>> +       if (smmu->num_clocks < 1)
+>> +               return 0;
+>> +
+>> +       smmu->clocks = devm_kzalloc(dev,
+>> +                                   sizeof(*smmu->clocks) * smmu->num_clocks,
+>> +                                   GFP_KERNEL);
+>> +
+>> +       if (!smmu->clocks) {
+>> +               dev_err(dev, "Failed to allocate memory for clocks\n");
+>> +               return -ENODEV;
+>> +       }
+>> +
+>> +       i = 0;
+>
+>Please do the initialisation above when you declare the variable.
 
->  Previous post of this series [3].
->
->  [V3]
->      * Removed the patch to split dma_masks/dma_ops configuration separately
->        based on review comments that both masks and ops are required only
->        during the device probe time.
->
->      * Reworked the series based on Generic DT bindings series [2].
->
->      * Added call to iommu's remove_device in the cleanup path for arm and arm64.
->
->      * Removed the notifier trick in arm64 to handle early device registration.
->
->      * Added reset of dma_ops in cleanup path for arm based on comments.
->
->      * Fixed the pci_iommu_configure path and tested with PCI device as well.
->
->      * Fixed a bug to return the correct iommu_ops from patch 7 [4] in last post.
->
->      * Fixed few other cosmetic comments.
->
->  [V2]
->      * Updated the Initial post to call dma_configure/deconfigure from generic code
->
->      * Added iommu add_device callback from of_iommu_configure path
->
->  [V1]
->      * Initial post
->
-> [1] http://lists.linuxfoundation.org/pipermail/iommu/2015-May/013016.html
-> [2] http://www.spinics.net/lists/devicetree/msg142943.html
-> [3] https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg13941.html
-> [4] https://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg13940.html
->
->
->
-> Laurent Pinchart (4):
->   arm: dma-mapping: Don't override dma_ops in arch_setup_dma_ops()
->   of: dma: Move range size workaround to of_dma_get_range()
->   of: dma: Make of_dma_deconfigure() public
->   iommu: of: Handle IOMMU lookup failure with deferred probing or error
->
-> Sricharan R (4):
->   drivers: platform: Configure dma operations at probe time
->   arm: dma-mapping: Reset the device's dma_ops
->   arm/arm64: dma-mapping: Call iommu's remove_device callback during
->     device detach
->   arm64: dma-mapping: Remove the notifier trick to handle early setting
->     of dma_ops
->
->  arch/arm/mm/dma-mapping.c   |  18 ++++++++
->  arch/arm64/mm/dma-mapping.c | 107 +++++---------------------------------------
->  drivers/base/dd.c           |  10 +++++
->  drivers/base/dma-mapping.c  |  11 +++++
->  drivers/iommu/of_iommu.c    |  47 +++++++++++++++++--
->  drivers/of/address.c        |  20 ++++++++-
->  drivers/of/device.c         |  34 +++++++-------
->  drivers/of/platform.c       |   9 ----
->  drivers/pci/probe.c         |   5 +--
->  include/linux/dma-mapping.h |   3 ++
->  include/linux/of_device.h   |   7 ++-
->  11 files changed, 138 insertions(+), 133 deletions(-)
->
+     ok, will change it.
 
--- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Regards,
+ Sricharan
