@@ -1,51 +1,82 @@
-From: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/arm-smmu: Don't inadvertently reject multiple
-	SMMUv3s
-Date: Tue, 25 Oct 2016 23:25:04 +0800
-Message-ID: <61bd096a-cc82-43d3-a99b-5b09252b9e7d@linaro.org>
-References: <5cf1acbf9c42cc99e5cc0dacb50b7a92c3bd0feb.1476702234.git.robin.murphy@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5cf1acbf9c42cc99e5cc0dacb50b7a92c3bd0feb.1476702234.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Bhumika Goyal <bhumirks@gmail.com>
+Subject: [PATCH] drivers: iommu: constify iommu_gather_ops structures
+Date: Tue, 25 Oct 2016 21:03:44 +0530
+Message-ID: <1477409624-30949-1-git-send-email-bhumirks@gmail.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: will.deacon@arm.com, robin.murphy@arm.com, joro@8bytes.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, julia.lawall@lip6.fr
+Cc: Bhumika Goyal <bhumirks@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2016/10/17 19:06, Robin Murphy wrote:
-> We now delay installing our per-bus iommu_ops until we know an SMMU has
-> successfully probed, as they don't serve much purpose beforehand, and
-> doing so also avoids fights between multiple IOMMU drivers in a single
-> kernel. However, the upshot of passing the return value of bus_set_iommu()
-> back from our probe function is that if there happens to be more than
-> one SMMUv3 device in a system, the second and subsequent probes will
-> wind up returning -EBUSY to the driver core and getting torn down again.
->
-> There are essentially 3 cases in which bus_set_iommu() returns nonzero:
-> 1. The bus already has iommu_ops installed
-> 2. One of the add_device callbacks from the initial notifier failed
-> 3. Allocating or installing the notifier itself failed
->
-> The first two are down to devices other than the SMMU in question, so
-> shouldn't abort an otherwise-successful SMMU probe, whilst the third is
-> indicative of the kind of catastrophic system failure which isn't going
-> to get much further anyway. Consequently, there is little harm in
-> ignoring the return value either way.
->
-> CC: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Check for iommu_gather_ops structures that are only stored in the tlb
+field of an io_pgtable_cfg structure. The tlb field is of type
+const struct iommu_gather_ops *, so iommu_gather_ops structures
+having this property can be declared as const.
+Done using Coccinelle:
 
-Tested-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+@r1 disable optional_qualifier @
+identifier i;
+position p;
+@@
+static struct iommu_gather_ops i@p = {...};
 
-Thanks
-Hanjun
+@ok1@
+identifier r1.i;
+position p;
+struct io_pgtable_cfg q;
+@@
+q.tlb=&i@p;
+
+@bad@
+position p!={r1.p,ok1.p};
+identifier r1.i;
+@@
+i@p
+
+@depends on !bad disable optional_qualifier@
+identifier r1.i;
+@@
+static
++const
+struct iommu_gather_ops i={...};
+
+@depends on !bad disable optional_qualifier@
+identifier r1.i;
+@@
++const
+struct iommu_gather_ops i;
+
+Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
+---
+ drivers/iommu/io-pgtable-arm-v7s.c | 2 +-
+ drivers/iommu/ipmmu-vmsa.c         | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index f50e51c..1465bbc 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -741,7 +741,7 @@ static void dummy_tlb_sync(void *cookie)
+ 	WARN_ON(cookie != cfg_cookie);
+ }
+ 
+-static struct iommu_gather_ops dummy_tlb_ops = {
++static const struct iommu_gather_ops dummy_tlb_ops = {
+ 	.tlb_flush_all	= dummy_tlb_flush_all,
+ 	.tlb_add_flush	= dummy_tlb_add_flush,
+ 	.tlb_sync	= dummy_tlb_sync,
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index ace331d..b8bcf18 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -283,7 +283,7 @@ static void ipmmu_tlb_add_flush(unsigned long iova, size_t size,
+ 	/* The hardware doesn't support selective TLB flush. */
+ }
+ 
+-static struct iommu_gather_ops ipmmu_gather_ops = {
++static const struct iommu_gather_ops ipmmu_gather_ops = {
+ 	.tlb_flush_all = ipmmu_tlb_flush_all,
+ 	.tlb_add_flush = ipmmu_tlb_add_flush,
+ 	.tlb_sync = ipmmu_tlb_flush_all,
+-- 
+1.9.1
