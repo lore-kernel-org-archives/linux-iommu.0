@@ -1,142 +1,100 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH 3/4] iommu/arm-smmu: Add context save restore support
-Date: Tue, 25 Oct 2016 12:13:52 +0530
-Message-ID: <009401d22e8b$29eb1610$7dc14230$@codeaurora.org>
-References: <1477070066-15044-1-git-send-email-sricharan@codeaurora.org> <1477070066-15044-4-git-send-email-sricharan@codeaurora.org> <CANLsYkxumkKodObeH9N4KGecsWYpwEo1DfR1WrBctzRY-ESFrg@mail.gmail.com>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH v5 7/7] iommu/exynos: Use device dependency links to
+	control runtime pm
+Date: Tue, 25 Oct 2016 12:23:10 +0530
+Message-ID: <009601d22e8c$786c7a80$69456f80$@codeaurora.org>
+References: <1476948173-21093-1-git-send-email-m.szyprowski@samsung.com>
+	<CGME20161020072336eucas1p24a2b020f69b6ae1f55e1760e6e0e94f9@eucas1p2.samsung.com>
+	<1476948173-21093-8-git-send-email-m.szyprowski@samsung.com>
+	<001e01d22d12$d2a4e990$77eebcb0$@codeaurora.org>
+	<7a69ca4e-e276-1bdc-edf2-b881a91f820a@samsung.com>
+	<004a01d22df2$45ecd450$d1c67cf0$@codeaurora.org>
+	<bff28d5b-3b39-a5bb-b381-2d7626566a2d@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <CANLsYkxumkKodObeH9N4KGecsWYpwEo1DfR1WrBctzRY-ESFrg@mail.gmail.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <bff28d5b-3b39-a5bb-b381-2d7626566a2d-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 Content-Language: en-us
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: 'Mathieu Poirier' <mathieu.poirier@linaro.org>
-Cc: linux-arm-msm@vger.kernel.org, joro@8bytes.org, 'Will Deacon' <will.deacon@arm.com>, iommu@lists.linux-foundation.org, 'Srinivas Kandagatla' <srinivas.kandagatla@linaro.org>, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, 'Marek Szyprowski' <m.szyprowski@samsung.com>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Marek Szyprowski' <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: 'Tomeu Vizoso' <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, 'Kevin Hilman' <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, 'Greg Kroah-Hartman' <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, 'Mark Brown' <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, 'Bartlomiej Zolnierkiewicz' <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "'Rafael J. Wysocki'" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, 'Tomasz Figa' <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, 'Krzysztof Kozlowski' <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, 'Inki Dae' <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, 'Tobias Jakobi' <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, "'Luis R. Rodriguez'" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, 'Kukjin Kim' <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, 'Lukas Wunner' <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Marek,
 
->> The smes registers and the context bank registers are
->> back. The data required to configure the context banks
->> are the master's domain data and pgtable cfgs.
->> So store them as a part of the context banks info
->> the ones that are needs to be saved and restored.
->> Fortunately the smes are already stored as a part
->> of the smmu device structure. So just write that
->> and just reconfigure the context banks on the restore
->> path.
->>
->> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
->> ---
->>  drivers/iommu/arm-smmu.c | 52 +++++++++++++++++++++++++++++++++++++++++++++++-
->>  1 file changed, 51 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index 45f2762..578cdc2 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -328,6 +328,11 @@ struct arm_smmu_master_cfg {
->>  #define for_each_cfg_sme(fw, i, idx) \
->>         for (i = 0; idx = __fwspec_cfg(fw)->smendx[i], i < fw->num_ids; ++i)
->>
->> +struct cbinfo {
->> +       struct arm_smmu_domain          *domain;
->> +       struct io_pgtable_cfg           pgtbl_cfg;
->> +};
->> +
->>  struct arm_smmu_device {
->>         struct device                   *dev;
->>
->> @@ -378,6 +383,9 @@ struct arm_smmu_device {
->>         struct clk                      **clocks;
->>
->>         u32                             cavium_id_base; /* Specific to Cavium */
->> +
->> +       /* For save/restore of context bank registers */
->> +       struct cbinfo                   *cb_saved_ctx;
+>>>>> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+>>>>> index 5e6d7bbf9b70..59b4f2ce4f5f 100644
+>>>>> --- a/drivers/iommu/exynos-iommu.c
+>>>>> +++ b/drivers/iommu/exynos-iommu.c
+>>>>> @@ -781,10 +781,6 @@ static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
+>>>>> 	if (!has_sysmmu(dev) || owner->domain != iommu_domain)
+>>>>> 		return;
+>>>>>
+>>>>> -	list_for_each_entry(data, &owner->controllers, owner_node) {
+>>>>> -		pm_runtime_put_sync(data->sysmmu);
+>>>>> -	}
+>>>>> -
+>>>>> 	mutex_lock(&owner->rpm_lock);
+>>>>>
+>>>>> 	list_for_each_entry(data, &owner->controllers, owner_node) {
+>>>>> @@ -848,10 +844,6 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
+>>>>>
+>>>>> 	mutex_unlock(&owner->rpm_lock);
+>>>>>
+>>>>> -	list_for_each_entry(data, &owner->controllers, owner_node) {
+>>>>> -		pm_runtime_get_sync(data->sysmmu);
+>>>>> -	}
+>>>>> -
+>>>>> 	dev_dbg(dev, "%s: Attached IOMMU with pgtable %pa\n", __func__,
+>>>>> 		&pagetable);
+>>>>>
+>>>>> @@ -1232,6 +1224,14 @@ static int exynos_iommu_of_xlate(struct device *dev,
+>>>>>
+>>>>> 	list_add_tail(&data->owner_node, &owner->controllers);
+>>>>> 	data->master = dev;
+>>>>> +
+>>>>> +	/*
+>>>>> +	 * SYSMMU will be runtime activated via device link (dependency) to its
+>>>>> +	 * master device, so there are no direct calls to pm_runtime_get/put
+>>>>> +	 * in this driver.
+>>>>> +	 */
+>>>>> +	device_link_add(dev, data->sysmmu, DL_FLAG_PM_RUNTIME);
+>>>>> +
+>>>>     So in the case of master with multiple sids, this would be called multiple times
+>>>>     for the same master ?
+>>> I don't know what is "multiple sids" case, but if given SYSMMU master
+>>> device (supplier)
+>>> has multiple SYSMMU controllers (consumers), then links will be created
+>>> for each SYSMMU
+>>> controller. Please note that this code is based on vanilla v4.9-rc1,
+>>> which calls
+>>> of_xlate() callback only once for every iommu for given master device.
+>>> Your IOMMU
+>>> deferred probe patches change this, but I already posted a fix for
+>>> Exynos IOMMU driver
+>>> to handle such case.
+>>   By multiple sids, i meant iommus = <&phandle sid1 sid2 .. sidn> case,
+>>   so xlate would be called multiples for the same master without deferred
+>>   probing also. But the fix that you showed on the other thread would work
+>>   here as well or maybe if you dont have masters with multiple sids you wont
+>>   have any issues as well.
 >
->It's not that clear to me this will become an array - better
->documentation would help reviewing the code.
-
-   ok, will add the doc for this.
-
+>Exynos SYSMMU driver always use "#iommu-cells = <0>", so it doesn't support
+>multiple sids. However there is a case with 2 SYSMMU controllers attached
+>to the same master device: "iommus = <&sysmmu_mfc_l>, <&sysmmu_mfc_r>;".
 >
->>  };
->>
->>  enum arm_smmu_context_fmt {
->> @@ -972,6 +980,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->>
->>         /* Initialise the context bank with our page table cfg */
->>         arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
->> +       smmu->cb_saved_ctx[cfg->cbndx].domain = smmu_domain;
->> +       smmu->cb_saved_ctx[cfg->cbndx].pgtbl_cfg = pgtbl_cfg;
->>
->>         /*
->>          * Request context fault interrupt. Do this last to avoid the
->> @@ -1861,6 +1871,10 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
->>         }
->>         dev_notice(smmu->dev, "\t%u context banks (%u stage-2 only)\n",
->>                    smmu->num_context_banks, smmu->num_s2_context_banks);
->> +
->> +       smmu->cb_saved_ctx = devm_kzalloc(smmu->dev,
->> +                            sizeof(struct cbinfo) * smmu->num_context_banks,
->> +                            GFP_KERNEL);
->>         /*
->>          * Cavium CN88xx erratum #27704.
->>          * Ensure ASID and VMID allocation is unique across all SMMUs in
->> @@ -2115,8 +2129,44 @@ static int arm_smmu_resume(struct device *dev)
->>  {
->>         struct platform_device *pdev = to_platform_device(dev);
->>         struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
->> +       struct arm_smmu_domain *domain = NULL;
->> +       struct io_pgtable_cfg *pgtbl_cfg = NULL;
->> +       struct arm_smmu_smr *smrs = smmu->smrs;
->> +       int i = 0, idx, cb, ret, pcb = 0;
->> +
->> +       ret = arm_smmu_enable_clocks(smmu);
->> +       if (ret)
->> +               return ret;
->> +
->> +       arm_smmu_device_reset(smmu);
->>
->> -       return arm_smmu_enable_clocks(smmu);
->> +       /* Restore the smes and the context banks */
->> +       for (idx = 0; idx < smmu->num_mapping_groups; ++idx) {
->> +               mutex_lock(&smmu->stream_map_mutex);
->> +               if (!smrs[idx].valid) {
->> +                       mutex_unlock(&smmu->stream_map_mutex);
->> +                       continue;
->> +               }
->> +
->> +               arm_smmu_write_sme(smmu, idx);
->> +               cb = smmu->s2crs[idx].cbndx;
->> +               mutex_unlock(&smmu->stream_map_mutex);
->> +
->> +               if (!i || (cb != pcb)) {
->> +                       domain = smmu->cb_saved_ctx[cb].domain;
->> +                       pgtbl_cfg = &smmu->cb_saved_ctx[cb].pgtbl_cfg;
->> +
->> +                       if (domain) {
->> +                               mutex_lock(&domain->init_mutex);
->> +                               arm_smmu_init_context_bank(domain, pgtbl_cfg);
->> +                               mutex_unlock(&domain->init_mutex);
->> +                       }
->> +               }
->> +               pcb = cb;
->> +               i++;
->
->What are you doing with variable 'i'?  Again, some comments would
->greatly help with reviewing.
-
-       hmm, i was using  variable 'i' to pass through the 'if' first time
-       even if cb != pcb, because pcb is uninitialized at that point.
-        But i could just initialize 'pcb' with some -EINVAL and then
-      avoid the extra 'i' itself.  Also check for cb != pcb was required
-      because same context bank could be populated multiple times
-      for different sids in sequence.  I will document these and send V2.
-  
-      Thanks for your time to review this.
+   with iommu-cells = <0> always, its ok. The case of 2 SYSMMU controllers that
+   is shown above is fine, as anyways both the suppliers (symmu) needs to linked
+    seperately. So it looks all fine.
 
 Regards,
- Sricharan
+  Sricharan
