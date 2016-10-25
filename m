@@ -1,66 +1,51 @@
-From: Hanjun Guo <hanjun.guo@linaro.org>
-Subject: Re: [PATCH v6 00/16] ACPI IORT ARM SMMU support
-Date: Tue, 25 Oct 2016 23:24:30 +0800
-Message-ID: <e52c2ad5-08fc-f236-a768-fbf03dd3d552@linaro.org>
-References: <20161018160414.1228-1-lorenzo.pieralisi@arm.com>
+From: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/arm-smmu: Don't inadvertently reject multiple
+	SMMUv3s
+Date: Tue, 25 Oct 2016 23:25:04 +0800
+Message-ID: <61bd096a-cc82-43d3-a99b-5b09252b9e7d@linaro.org>
+References: <5cf1acbf9c42cc99e5cc0dacb50b7a92c3bd0feb.1476702234.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20161018160414.1228-1-lorenzo.pieralisi@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org
-Cc: Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5cf1acbf9c42cc99e5cc0dacb50b7a92c3bd0feb.1476702234.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2016/10/19 0:03, Lorenzo Pieralisi wrote:
-> This patch series is v6 of a previous posting:
+On 2016/10/17 19:06, Robin Murphy wrote:
+> We now delay installing our per-bus iommu_ops until we know an SMMU has
+> successfully probed, as they don't serve much purpose beforehand, and
+> doing so also avoids fights between multiple IOMMU drivers in a single
+> kernel. However, the upshot of passing the return value of bus_set_iommu()
+> back from our probe function is that if there happens to be more than
+> one SMMUv3 device in a system, the second and subsequent probes will
+> wind up returning -EBUSY to the driver core and getting torn down again.
 >
-> https://lkml.org/lkml/2016/9/9/418
+> There are essentially 3 cases in which bus_set_iommu() returns nonzero:
+> 1. The bus already has iommu_ops installed
+> 2. One of the add_device callbacks from the initial notifier failed
+> 3. Allocating or installing the notifier itself failed
 >
-> v5 -> v6
-> 	- Rebased against v4.9-rc1
-> 	- Changed FWNODE_IOMMU to FWNODE_ACPI_STATIC
-> 	- Moved platform devices creation into IORT code
-> 	- Updated fwnode handling
-> 	- Added default dma masks initialization
+> The first two are down to devices other than the SMMU in question, so
+> shouldn't abort an otherwise-successful SMMU probe, whilst the third is
+> indicative of the kind of catastrophic system failure which isn't going
+> to get much further anyway. Consequently, there is little harm in
+> ignoring the return value either way.
 >
-> v4 -> v5
-> 	- Added SMMUv1/v2 support
-> 	- Rebased against v4.8-rc5 and dependencies series
-> 	- Consolidated IORT platform devices creation
->
-[...]
->
-> The ACPI IORT table provides information that allows instantiating
-> ARM SMMU devices and carrying out id mappings between components on
-> ARM based systems (devices, IOMMUs, interrupt controllers).
->
-> http://infocenter.arm.com/help/topic/com.arm.doc.den0049b/DEN0049B_IO_Remapping_Table.pdf
->
-> Building on basic IORT support, this patchset enables ARM SMMUs support
-> on ACPI systems.
->
-> Most of the code is aimed at building the required generic ACPI
-> infrastructure to create and enable IOMMU components and to bring
-> the IOMMU infrastructure for ACPI on par with DT, which is going to
-> make future ARM SMMU components easier to integrate.
->
-[...]
->
-> This patchset is provided for review/testing purposes here:
->
-> git://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git acpi/iort-smmu-v6
->
-> Tested on Juno and FVP models for ARM SMMU v1 and v3 probing path.
+> CC: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-I rebased my platform MSI, interrupt producer and mbi-gen patch set
-on top of yours, and test it on Hisilicon D03 board with SMMv3
-enabled, USB and SAS are working properly with configuration
-in IORT (yes, I need to add patch from Robin - iommu/arm-smmu: Don't
-inadvertently reject multiple SMMUv3s),
-
-Tested-by: Hanjun Guo <hanjun.guo@linaro.org>
+Tested-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 Thanks
 Hanjun
