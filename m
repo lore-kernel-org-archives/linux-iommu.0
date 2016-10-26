@@ -1,7 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 4/5] iommu: Move REQ_ACS_FLAGS out to header and rename
-Date: Wed, 26 Oct 2016 12:01:34 -0600
-Message-ID: <20161026180134.23495.27520.stgit@gimli.home>
+Subject: [PATCH 5/5] PCI: Balance ports to avoid ACS errata on Pericom switches
+Date: Wed, 26 Oct 2016 12:01:40 -0600
+Message-ID: <20161026180140.23495.27388.stgit@gimli.home>
 References: <20161026175156.23495.12980.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,83 +21,234 @@ To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Allow other parts of the kernel to see which PCI ACS flags the IOMMU
-layer considers necessary for isolation.
+As described in the included code comment, this quirk is intended to
+work around an errata in a variety of Pericom 4-lane, 3 and 4 port
+PCIe 2.0 switches.  The switches advertise ACS capabilities, but the
+P2P Request Redirection support includes an errata that PCI_ACS_RR
+effectively doesn't work and results in transactions being queued and
+not delivered within the PCIe switch.  The errata has no planned
+hardware fix.
 
+To workaround this, we can either not enable PCI_ACS_RR, which has
+device isolation and thus IOMMU grouping implications, or we can
+"balance" the links to put the device into a mode where the errata is
+not exposed.  As noted in the comments, we choose the balance route.
+
+For the device where this issue has been observed, the PI7C9X2G404SL
+exposes a x1, 5GT/s capable upstream port and three x1, 5GT/s capable
+downstream ports.  Two of these downstream ports terminate in 2.5GT/s
+capable endpoints, the remaining one is empty.  When installed into
+a slot with a maximum capability of 2.5GT/s, enabling ACS works well.
+The problem arises when the card is installed into a 5.0GT/s capable
+slot, in which case the upstream link negotiates to 5.0GT/s, creating
+an unbalanced configuration which exposes the errata.  We can set a
+target link speed of 2.5GT/s to the upstream port and retrain the
+link to resolve this.
+
+In the above case, the downstream ports are fixed at 2.5GT/s, the
+switch and endpoints are hardwired to a single PCB.  Presumably a
+configuration could also exist where the hardwired endpoint devices
+run at 5.0GT/s and installing the card into a slot that is only
+2.5GT/s could result in exposing the same errata.  The changes here
+are designed to handle this by retraining the switch downstream ports
+to a reduced speed, but it has not been tested.
+
+This balancing proceedure is only performed when ACS capabilities are
+requested for the device.  Furthermore, since we are degrading the
+performance of a link, we only enable this when the downstream port
+connecting the switch is itself ACS capable.  This presumes that ACS
+enabling is primarily intended for ioslation and if isolation has
+already been compromised above, there's no reason to degrade the link
+below.  In this case we'll see output like this to indicate the
+reason ACS controls are not being enabled for the downstream switch
+ports (here 02: devices are the downstream switch ports and 00:01.0 is
+the PCIe root port lacking ACS support):
+
+pci 0000:02:01.0: Ignoring PCI ACS capabilties due to lack of isolation at 0000:00:01.0
+pci 0000:02:02.0: Ignoring PCI ACS capabilties due to lack of isolation at 0000:00:01.0
+pci 0000:02:03.0: Ignoring PCI ACS capabilties due to lack of isolation at 0000:00:01.0
+
+When balancing occurs, we log the balancing operations as:
+
+pci 0000:00:1c.0: Link retrained to 2.5GT/s for PCI ACS support on 0000:03:01.0
+
+00:1c.0 is the root port, 03:01.0 is the first downstream port.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=177471
 Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 ---
- drivers/iommu/iommu.c |   18 +++++-------------
- include/linux/iommu.h |   11 +++++++++++
- 2 files changed, 16 insertions(+), 13 deletions(-)
+ drivers/pci/quirks.c |  147 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 147 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index b06d935..f73e6f4 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -610,16 +610,6 @@ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
- 					       unsigned long *devfns);
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 44e0ff3..b6de69d 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -25,6 +25,7 @@
+ #include <linux/sched.h>
+ #include <linux/ktime.h>
+ #include <linux/mm.h>
++#include <linux/iommu.h>
+ #include <asm/dma.h>	/* isa_dma_bridge_buggy */
+ #include "pci.h"
  
- /*
-- * To consider a PCI device isolated, we require ACS to support Source
-- * Validation, Request Redirection, Completer Redirection, and Upstream
-- * Forwarding.  This effectively means that devices cannot spoof their
-- * requester ID, requests and completions cannot be redirected, and all
-- * transactions are forwarded upstream, even as it passes through a
-- * bridge where the target device is downstream.
-- */
--#define REQ_ACS_FLAGS   (PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
--
--/*
-  * For multifunction devices which are not isolated from each other, find
-  * all the other non-isolated functions and look for existing groups.  For
-  * each function, we also need to look for aliases to or from other devices
-@@ -631,13 +621,14 @@ static struct iommu_group *get_pci_function_alias_group(struct pci_dev *pdev,
- 	struct pci_dev *tmp = NULL;
- 	struct iommu_group *group;
- 
--	if (!pdev->multifunction || pci_acs_enabled(pdev, REQ_ACS_FLAGS))
-+	if (!pdev->multifunction ||
-+	    pci_acs_enabled(pdev, IOMMU_REQ_PCI_ACS_FLAGS))
- 		return NULL;
- 
- 	for_each_pci_dev(tmp) {
- 		if (tmp == pdev || tmp->bus != pdev->bus ||
- 		    PCI_SLOT(tmp->devfn) != PCI_SLOT(pdev->devfn) ||
--		    pci_acs_enabled(tmp, REQ_ACS_FLAGS))
-+		    pci_acs_enabled(tmp, IOMMU_REQ_PCI_ACS_FLAGS))
- 			continue;
- 
- 		group = get_pci_alias_group(tmp, devfns);
-@@ -765,7 +756,8 @@ struct iommu_group *pci_device_group(struct device *dev)
- 		if (!bus->self)
- 			continue;
- 
--		if (pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
-+		if (pci_acs_path_enabled(bus->self, NULL,
-+					 IOMMU_REQ_PCI_ACS_FLAGS))
- 			break;
- 
- 		pdev = bus->self;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index a35fb8b..23f4d1d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -131,6 +131,17 @@ struct iommu_dm_region {
- 	int			prot;
- };
+@@ -4318,6 +4319,151 @@ static int pci_quirk_enable_intel_spt_pch_acs(struct pci_dev *dev)
+ 	return 0;
+ }
  
 +/*
-+ * To consider a PCI device isolated, we require ACS to support Source
-+ * Validation, Request Redirection, Completer Redirection, and Upstream
-+ * Forwarding.  This effectively means that devices cannot spoof their
-+ * requester ID, requests and completions cannot be redirected, and all
-+ * transactions are forwarded upstream, even as it passes through a
-+ * bridge where the target device is downstream.
++ * This quirk is intended to apply to Pericom PCI Express 2.0, 4-lane switches
++ * with 3 or 4 ports, ex. PI7C9X2G404SL.
++ *
++ * These PCIe switches support ACS, but have an errata indicating that when
++ * P2P Request Redirection is enabled and bandwidth between the upstream and
++ * downstream port is unbalanced, packets are queued in the internal buffers
++ * until a "CLPD" packet arrives.  The effect is that the downstream devices
++ * do not work.  In the example in the below bz, a NIC can RX packets, but not
++ * TX.  The queuing issue remains even after clearing RR, a device reset is
++ * required to return to normal operation.  Workarounds for this issue are:
++ *
++ *  a) avoid enabling ACS RR on the downstream ports
++ *  b) balance the ports ourselves
++ *
++ * We attempt to do b), which involves checking whether the link at the
++ * downstream switch port matches the link connecting the upstream switch
++ * port.  If the two differ, pick the faster link and retraing it to match
++ * the slower link.  Once balanced, standard ACS capabilities may be enabled.
++ * If no balancing is required, directly enable ACS.
++ *
++ * NB, some systems will not reset the target link speed on system reboot,
++ * therefore retraining may not be necessary on warm reboots.
++ *
++ * NB, it's unclear whether link width factors into the definition of
++ * "unbalanced", but we have no mechanism to set the width via software, so
++ * we assume we're doing no worse than standard ACS enabling by balancing
++ * only the speed.
++ *
++ * https://bugzilla.kernel.org/show_bug.cgi?id=177471
 + */
-+#define IOMMU_REQ_PCI_ACS_FLAGS   (PCI_ACS_SV | PCI_ACS_RR | \
-+				   PCI_ACS_CR | PCI_ACS_UF)
++static int pci_quirk_match_links_and_enable_acs(struct pci_dev *dev)
++{
++	int acs_pos, ret;
++	u16 acs_cap;
++	enum pci_bus_speed dev_speed, parent_speed;
++	struct pci_dev *parent;
 +
- #ifdef CONFIG_IOMMU_API
++	/* Initiate from downstream switch port */
++	if (!pci_is_pcie(dev) || pci_pcie_type(dev) != PCI_EXP_TYPE_DOWNSTREAM)
++		return -ENOTTY;
++
++	acs_pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ACS);
++	if (!acs_pos)
++		return -ENOTTY;
++
++	pci_read_config_word(dev, acs_pos + PCI_ACS_CAP, &acs_cap);
++
++	/* If the caps we want to enable are not all supported, not our dev */
++	if ((acs_cap & IOMMU_REQ_PCI_ACS_FLAGS) != IOMMU_REQ_PCI_ACS_FLAGS)
++		return -ENOTTY;
++
++	/* Topology sanity check */
++	if (pci_is_root_bus(dev->bus) || pci_is_root_bus(dev->bus->self->bus))
++		return -ENOTTY;
++
++	ret = pcie_get_link(dev, &dev_speed, NULL);
++	if (ret)
++		return ret;
++
++	/*
++	 * From the downstream switch port, traverse two levels up to the
++	 * downsteam port above the upstream port.
++	 */
++	parent = dev->bus->self->bus->self;
++
++	ret = pcie_get_link(parent, &parent_speed, NULL);
++	if (ret)
++		return ret;
++
++	if (dev_speed == PCI_SPEED_UNKNOWN || parent_speed == PCI_SPEED_UNKNOWN)
++		return -EINVAL;
++
++	if (dev_speed != parent_speed) {
++		enum pci_bus_speed tgt_speed, new_speed;
++		struct pci_dev *tgt_dev;
++		u32 lnkcap2;
++		u16 lnkctl2;
++
++		/*
++		 * In order to balance links, we need to degrade one to make
++		 * it match the slower link.  Only do this if there's a chance
++		 * that enabling ACS on this device will actually be useful.
++		 * We won't presume to know where the IOMMU is in the system,
++		 * but we do know that it's not part of this switch.  If the
++		 * downstream port connecting us does not support a useful
++		 * set of ACS features, then degrading the link to enable ACS
++		 * serves no purpose, assuming IOMMU isolation is the primary
++		 * reason for enabling ACS.
++		 */
++		if (!pci_acs_enabled(parent, IOMMU_REQ_PCI_ACS_FLAGS)) {
++			dev_info(&dev->dev,
++				 "Ignoring PCI ACS capabilities due to lack of isolation at %s\n",
++				 pci_name(parent));
++			return 0;
++		}
++
++		/* We can only reduce the faster link to match slower */
++		tgt_dev = (dev_speed > parent_speed) ? dev : parent;
++		tgt_speed = min(dev_speed, parent_speed);
++
++		/* Test if Gen3 devices implement the target link speed */
++		ret = pcie_capability_read_dword(tgt_dev,
++						 PCI_EXP_LNKCAP2, &lnkcap2);
++		if (!ret && lnkcap2) {
++			if (!(lnkcap2 &
++			      (1 << (tgt_speed - PCIE_SPEED_2_5GT + 1))))
++				goto noacs;
++		}
++
++		/* Set target link speed, retrain, & verify result */
++		if (pcie_capability_read_word(tgt_dev,
++					      PCI_EXP_LNKCTL2, &lnkctl2))
++			goto noacs;
++
++		lnkctl2 &= ~PCI_EXP_LNKCAP_SLS;
++		lnkctl2 |= (tgt_speed - PCIE_SPEED_2_5GT + 1);
++
++		pcie_capability_write_word(tgt_dev, PCI_EXP_LNKCTL2, lnkctl2);
++
++		if (pcie_retrain_link(tgt_dev))
++			goto noacs;
++
++		if (pcie_get_link(tgt_dev, &new_speed, NULL))
++			goto noacs;
++
++		if (new_speed != tgt_speed)
++			goto noacs;
++
++		dev_info(&tgt_dev->dev, "Link retrained to %s"
++			 "GT/s for PCI ACS support on %s\n",
++			 tgt_speed == PCIE_SPEED_2_5GT ? "2.5" :
++			 tgt_speed == PCIE_SPEED_5_0GT ? "5.0" :
++			 tgt_speed == PCIE_SPEED_8_0GT ? "8.0" :
++			 "<unknown>", pci_name(dev));
++	}
++
++	pci_std_enable_acs(dev);
++	return 0;
++noacs:
++	dev_warn(&dev->dev,
++		 "Unable to balance links for PCI ACS, ACS not enabled\n");
++	return 0; /* Don't fall through to standard enabling */
++}
++
+ static const struct pci_dev_enable_acs {
+ 	u16 vendor;
+ 	u16 device;
+@@ -4325,6 +4471,7 @@ static int pci_quirk_enable_intel_spt_pch_acs(struct pci_dev *dev)
+ } pci_dev_enable_acs[] = {
+ 	{ PCI_VENDOR_ID_INTEL, PCI_ANY_ID, pci_quirk_enable_intel_pch_acs },
+ 	{ PCI_VENDOR_ID_INTEL, PCI_ANY_ID, pci_quirk_enable_intel_spt_pch_acs },
++	{ 0x12d8, 0x2404, pci_quirk_match_links_and_enable_acs },
+ 	{ 0 }
+ };
  
- /**
