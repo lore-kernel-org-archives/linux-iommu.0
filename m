@@ -1,8 +1,7 @@
 From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 3/5] PCI: Extract link retraining from
-	pcie_aspm_configure_common_clock()
-Date: Wed, 26 Oct 2016 12:01:28 -0600
-Message-ID: <20161026180128.23495.19403.stgit@gimli.home>
+Subject: [PATCH 4/5] iommu: Move REQ_ACS_FLAGS out to header and rename
+Date: Wed, 26 Oct 2016 12:01:34 -0600
+Message-ID: <20161026180134.23495.27520.stgit@gimli.home>
 References: <20161026175156.23495.12980.stgit@gimli.home>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,97 +21,83 @@ To: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/pci/pci.c       |   29 +++++++++++++++++++++++++++++
- drivers/pci/pcie/aspm.c |   17 +----------------
- include/linux/pci.h     |    1 +
- 3 files changed, 31 insertions(+), 16 deletions(-)
+Allow other parts of the kernel to see which PCI ACS flags the IOMMU
+layer considers necessary for isolation.
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 6d6cf89..4d327d4 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -4729,6 +4729,35 @@ int pcie_set_mps(struct pci_dev *dev, int mps)
- }
- EXPORT_SYMBOL(pcie_set_mps);
+Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+---
+ drivers/iommu/iommu.c |   18 +++++-------------
+ include/linux/iommu.h |   11 +++++++++++
+ 2 files changed, 16 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index b06d935..f73e6f4 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -610,16 +610,6 @@ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+ 					       unsigned long *devfns);
  
-+int pcie_retrain_link(struct pci_dev *dev)
-+{
-+	int ret;
-+	u16 lnksta;
-+	unsigned long timeout;
-+
-+	/* Can only retrain from downstream ports */
-+	if (!pci_is_pcie(dev) ||
-+	    (pci_pcie_type(dev) != PCI_EXP_TYPE_DOWNSTREAM &&
-+	     pci_pcie_type(dev) != PCI_EXP_TYPE_ROOT_PORT))
-+		return -EINVAL;
-+
-+	ret = pcie_capability_set_word(dev, PCI_EXP_LNKCTL, PCI_EXP_LNKCTL_RL);
-+	if (ret)
-+		return ret;
-+
-+	timeout = jiffies + HZ; /* Retraining timeout */
-+	for (;;) {
-+		pcie_capability_read_word(dev, PCI_EXP_LNKSTA, &lnksta);
-+		if (!(lnksta & PCI_EXP_LNKSTA_LT) ||
-+		    time_after(jiffies, timeout))
-+			break;
-+		msleep(1);
-+	}
-+
-+	return (lnksta & PCI_EXP_LNKSTA_LT) ? -EBUSY : 0;
-+}
-+EXPORT_SYMBOL(pcie_retrain_link);
-+
- int pcie_get_link(struct pci_dev *dev, enum pci_bus_speed *speed,
- 		  enum pcie_link_width *width)
- {
-diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-index 0ec649d..482d60c 100644
---- a/drivers/pci/pcie/aspm.c
-+++ b/drivers/pci/pcie/aspm.c
-@@ -91,8 +91,6 @@ struct pcie_link_state {
- 	[POLICY_POWERSAVE] = "powersave"
+ /*
+- * To consider a PCI device isolated, we require ACS to support Source
+- * Validation, Request Redirection, Completer Redirection, and Upstream
+- * Forwarding.  This effectively means that devices cannot spoof their
+- * requester ID, requests and completions cannot be redirected, and all
+- * transactions are forwarded upstream, even as it passes through a
+- * bridge where the target device is downstream.
+- */
+-#define REQ_ACS_FLAGS   (PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
+-
+-/*
+  * For multifunction devices which are not isolated from each other, find
+  * all the other non-isolated functions and look for existing groups.  For
+  * each function, we also need to look for aliases to or from other devices
+@@ -631,13 +621,14 @@ static struct iommu_group *get_pci_function_alias_group(struct pci_dev *pdev,
+ 	struct pci_dev *tmp = NULL;
+ 	struct iommu_group *group;
+ 
+-	if (!pdev->multifunction || pci_acs_enabled(pdev, REQ_ACS_FLAGS))
++	if (!pdev->multifunction ||
++	    pci_acs_enabled(pdev, IOMMU_REQ_PCI_ACS_FLAGS))
+ 		return NULL;
+ 
+ 	for_each_pci_dev(tmp) {
+ 		if (tmp == pdev || tmp->bus != pdev->bus ||
+ 		    PCI_SLOT(tmp->devfn) != PCI_SLOT(pdev->devfn) ||
+-		    pci_acs_enabled(tmp, REQ_ACS_FLAGS))
++		    pci_acs_enabled(tmp, IOMMU_REQ_PCI_ACS_FLAGS))
+ 			continue;
+ 
+ 		group = get_pci_alias_group(tmp, devfns);
+@@ -765,7 +756,8 @@ struct iommu_group *pci_device_group(struct device *dev)
+ 		if (!bus->self)
+ 			continue;
+ 
+-		if (pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
++		if (pci_acs_path_enabled(bus->self, NULL,
++					 IOMMU_REQ_PCI_ACS_FLAGS))
+ 			break;
+ 
+ 		pdev = bus->self;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index a35fb8b..23f4d1d 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -131,6 +131,17 @@ struct iommu_dm_region {
+ 	int			prot;
  };
  
--#define LINK_RETRAIN_TIMEOUT HZ
--
- static int policy_to_aspm_state(struct pcie_link_state *link)
- {
- 	switch (aspm_policy) {
-@@ -222,20 +220,7 @@ static void pcie_aspm_configure_common_clock(struct pcie_link_state *link)
- 	pcie_capability_write_word(parent, PCI_EXP_LNKCTL, reg16);
++/*
++ * To consider a PCI device isolated, we require ACS to support Source
++ * Validation, Request Redirection, Completer Redirection, and Upstream
++ * Forwarding.  This effectively means that devices cannot spoof their
++ * requester ID, requests and completions cannot be redirected, and all
++ * transactions are forwarded upstream, even as it passes through a
++ * bridge where the target device is downstream.
++ */
++#define IOMMU_REQ_PCI_ACS_FLAGS   (PCI_ACS_SV | PCI_ACS_RR | \
++				   PCI_ACS_CR | PCI_ACS_UF)
++
+ #ifdef CONFIG_IOMMU_API
  
- 	/* Retrain link */
--	reg16 |= PCI_EXP_LNKCTL_RL;
--	pcie_capability_write_word(parent, PCI_EXP_LNKCTL, reg16);
--
--	/* Wait for link training end. Break out after waiting for timeout */
--	start_jiffies = jiffies;
--	for (;;) {
--		pcie_capability_read_word(parent, PCI_EXP_LNKSTA, &reg16);
--		if (!(reg16 & PCI_EXP_LNKSTA_LT))
--			break;
--		if (time_after(jiffies, start_jiffies + LINK_RETRAIN_TIMEOUT))
--			break;
--		msleep(1);
--	}
--	if (!(reg16 & PCI_EXP_LNKSTA_LT))
-+	if (!pcie_retrain_link(parent))
- 		return;
- 
- 	/* Training failed. Restore common clock configurations */
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index fbfbb40..eb0e9be 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1024,6 +1024,7 @@ static inline int pci_is_managed(struct pci_dev *pdev)
- int pcie_set_readrq(struct pci_dev *dev, int rq);
- int pcie_get_mps(struct pci_dev *dev);
- int pcie_set_mps(struct pci_dev *dev, int mps);
-+int pcie_retrain_link(struct pci_dev *dev);
- int pcie_get_minimum_link(struct pci_dev *dev, enum pci_bus_speed *speed,
- 			  enum pcie_link_width *width);
- int pcie_get_link(struct pci_dev *dev, enum pci_bus_speed *speed,
+ /**
