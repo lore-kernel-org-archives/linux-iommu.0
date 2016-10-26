@@ -1,11 +1,13 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 1/2] iommu/dma: Implement dma_{map,unmap}_resource()
-Date: Wed, 26 Oct 2016 18:43:56 +0100
-Message-ID: <4e84146ae49a4edd5f1226d76617be9aa92a58ee.1477503578.git.robin.murphy@arm.com>
+Subject: [PATCH v2 2/2] arm64: Wire up iommu_dma_{map, unmap}_resource()
+Date: Wed, 26 Oct 2016 18:43:57 +0100
+Message-ID: <44f25ba8a19dcd39479292c3a2da4b5c996e161e.1477503578.git.robin.murphy@arm.com>
+References: <4e84146ae49a4edd5f1226d76617be9aa92a58ee.1477503578.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <4e84146ae49a4edd5f1226d76617be9aa92a58ee.1477503578.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,60 +21,27 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, catalin.marinas-5wv7dgnIgG8@pu
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-With the new dma_{map,unmap}_resource() functions added to the DMA API
-for the benefit of cases like slave DMA, add suitable implementations to
-the arsenal of our generic layer. Since cache maintenance should not be
-a concern, these can both be standalone callback implementations without
-the need for arch code wrappers.
+With no coherency to worry about, just plug'em straight in.
 
-CC: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+CC: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+CC: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
+ arch/arm64/mm/dma-mapping.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-v2: Use iommu_dma_unmap_page for symmetry, instead of being sneaky.
-
- drivers/iommu/dma-iommu.c | 13 +++++++++++++
- include/linux/dma-iommu.h |  4 ++++
- 2 files changed, 17 insertions(+)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index c5ab8667e6f2..a2fd90a6a782 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -624,6 +624,19 @@ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
- 	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), sg_dma_address(sg));
- }
- 
-+dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+{
-+	return iommu_dma_map_page(dev, phys_to_page(phys), offset_in_page(phys),
-+			size, dma_direction_to_prot(dir, false) | IOMMU_MMIO);
-+}
-+
-+void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+{
-+	iommu_dma_unmap_page(dev, handle, size, dir, attrs);
-+}
-+
- int iommu_dma_supported(struct device *dev, u64 mask)
- {
- 	/*
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index 32c589062bd9..7f7e9a7e3839 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -61,6 +61,10 @@ void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
- 		enum dma_data_direction dir, unsigned long attrs);
- void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
- 		enum dma_data_direction dir, unsigned long attrs);
-+dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs);
-+void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs);
- int iommu_dma_supported(struct device *dev, u64 mask);
- int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
- 
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 3f74d0d98de6..5cd0a383b14b 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -796,6 +796,8 @@ static void __iommu_unmap_sg_attrs(struct device *dev,
+ 	.sync_single_for_device = __iommu_sync_single_for_device,
+ 	.sync_sg_for_cpu = __iommu_sync_sg_for_cpu,
+ 	.sync_sg_for_device = __iommu_sync_sg_for_device,
++	.map_resource = iommu_dma_map_resource,
++	.unmap_resource = iommu_dma_unmap_resource,
+ 	.dma_supported = iommu_dma_supported,
+ 	.mapping_error = iommu_dma_mapping_error,
+ };
 -- 
 1.9.1
