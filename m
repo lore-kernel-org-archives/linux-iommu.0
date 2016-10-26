@@ -1,161 +1,143 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 3/4] iommu/arm-smmu: Add context save restore support
-Date: Wed, 26 Oct 2016 17:51:56 +0100
-Message-ID: <ddfbb897-b284-5caf-dab7-9b3de08619bd@arm.com>
-References: <1477070066-15044-1-git-send-email-sricharan@codeaurora.org>
- <1477070066-15044-4-git-send-email-sricharan@codeaurora.org>
+From: Scott Wood <oss@buserror.net>
+Subject: Re: [v12, 5/8] soc: fsl: add GUTS driver for QorIQ platforms
+Date: Wed, 26 Oct 2016 12:06:06 -0500
+Message-ID: <1477501566.6812.9.camel@buserror.net>
+References: <1474441040-11946-1-git-send-email-yangbo.lu@nxp.com>
+         <1474441040-11946-6-git-send-email-yangbo.lu@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1477070066-15044-4-git-send-email-sricharan@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Sricharan R <sricharan@codeaurora.org>, m.szyprowski@samsung.com, will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, srinivas.kandagatla@linaro.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1474441040-11946-6-git-send-email-yangbo.lu@nxp.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Yangbo Lu <yangbo.lu@nxp.com>, linux-mmc@vger.kernel.org, ulf.hansson@linaro.org, Arnd Bergmann <arnd@arndb.de>
+Cc: linuxppc-dev@lists.ozlabs.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Jochen Friedrich <jochen@scram.de>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Qiang Zhao <qiang.zhao@nxp.com>, Kumar Gala <galak@codeaurora.org>, Santosh Shilimkar <ssantosh@kernel.org>, Leo Li <leoyang.li@nxp.com>, Xiaobo Xie <xiaobo.xie@nxp.com>, Minghuan Lian <minghuan.lian@nxp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 21/10/16 18:14, Sricharan R wrote:
-> The smes registers and the context bank registers are
-> the ones that are needs to be saved and restored.
-> Fortunately the smes are already stored as a part
-
-"Fortunately"? Hey, that's by design! :P
-
-I was actually planning to finish off suspend/resume beyond those
-foundations laid by the big rework, so it's nice to see something already.
-
-> of the smmu device structure. So just write that
-> back. The data required to configure the context banks
-> are the master's domain data and pgtable cfgs.
-> So store them as a part of the context banks info
-> and just reconfigure the context banks on the restore
-> path.
-> 
-> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
-> ---
->  drivers/iommu/arm-smmu.c | 52 +++++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 51 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 45f2762..578cdc2 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -328,6 +328,11 @@ struct arm_smmu_master_cfg {
->  #define for_each_cfg_sme(fw, i, idx) \
->  	for (i = 0; idx = __fwspec_cfg(fw)->smendx[i], i < fw->num_ids; ++i)
->  
-> +struct cbinfo {
-> +	struct arm_smmu_domain		*domain;
-> +	struct io_pgtable_cfg		pgtbl_cfg;
-> +};
+On Wed, 2016-09-21 at 14:57 +0800, Yangbo Lu wrote:
+> diff --git a/drivers/soc/fsl/Kconfig b/drivers/soc/fsl/Kconfig
+> new file mode 100644
+> index 0000000..b99764c
+> --- /dev/null
+> +++ b/drivers/soc/fsl/Kconfig
+> @@ -0,0 +1,19 @@
+> +#
+> +# Freescale SOC drivers
+> +#
 > +
->  struct arm_smmu_device {
->  	struct device			*dev;
->  
-> @@ -378,6 +383,9 @@ struct arm_smmu_device {
->  	struct clk                      **clocks;
->  
->  	u32				cavium_id_base; /* Specific to Cavium */
+> +source "drivers/soc/fsl/qe/Kconfig"
 > +
-> +	/* For save/restore of context bank registers */
-> +	struct cbinfo                   *cb_saved_ctx;
-
-I'd prefer to follow the same pattern for context banks as for the
-stream map registers, i.e. keep just the smmu pointer and cbndx in the
-arm_smmu_domain, and move the rest of the context bank state to the
-arm_smmu_device. Yes, it requires rather more refactoring, but it's
-going to result in cleaner and more obvious code in the end.
-
->  };
->  
->  enum arm_smmu_context_fmt {
-> @@ -972,6 +980,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->  
->  	/* Initialise the context bank with our page table cfg */
->  	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
-> +	smmu->cb_saved_ctx[cfg->cbndx].domain = smmu_domain;
-> +	smmu->cb_saved_ctx[cfg->cbndx].pgtbl_cfg = pgtbl_cfg;
->  
->  	/*
->  	 * Request context fault interrupt. Do this last to avoid the
-> @@ -1861,6 +1871,10 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
->  	}
->  	dev_notice(smmu->dev, "\t%u context banks (%u stage-2 only)\n",
->  		   smmu->num_context_banks, smmu->num_s2_context_banks);
+> +config FSL_GUTS
+> +	bool "Freescale QorIQ GUTS driver"
+> +	select SOC_BUS
+> +	help
+> +	  The global utilities block controls power management, I/O device
+> +	  enabling, power-onreset(POR) configuration monitoring, alternate
+> +	  function selection for multiplexed signals,and clock control.
+> +	  This driver is to manage and access global utilities block.
+> +	  Initially only reading SVR and registering soc device are
+> supported.
+> +	  Other guts accesses, such as reading RCW, should eventually be
+> moved
+> +	  into this driver as well.
 > +
-> +	smmu->cb_saved_ctx = devm_kzalloc(smmu->dev,
-> +			     sizeof(struct cbinfo) * smmu->num_context_banks,
-> +			     GFP_KERNEL);
->  	/*
->  	 * Cavium CN88xx erratum #27704.
->  	 * Ensure ASID and VMID allocation is unique across all SMMUs in
-> @@ -2115,8 +2129,44 @@ static int arm_smmu_resume(struct device *dev)
->  {
-[...]
-  	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-[...]
-	int ret = arm_smmu_enable_clocks(smmu);
-> +	if (ret)
-> +		return ret;
+> +	  If you want GUTS driver support, you should say Y here.
+
+This is user-enablable without dependencies, which means it will break some
+randconfigs.  If this is to be enabled via select then remove the text after
+"bool".
+
+> +/* SoC die attribute definition for QorIQ platform */
+> +static const struct fsl_soc_die_attr fsl_soc_die[] = {
+> +#ifdef CONFIG_PPC
+> +	/*
+> +	 * Power Architecture-based SoCs T Series
+> +	 */
 > +
-> +	arm_smmu_device_reset(smmu);
+> +	/* Die: T4240, SoC: T4240/T4160/T4080 */
+> +	{ .die		= "T4240",
+> +	  .svr		= 0x82400000,
+> +	  .mask		= 0xfff00000,
+> +	},
+> +	/* Die: T1040, SoC: T1040/T1020/T1042/T1022 */
+> +	{ .die		= "T1040",
+> +	  .svr		= 0x85200000,
+> +	  .mask		= 0xfff00000,
+> +	},
+> +	/* Die: T2080, SoC: T2080/T2081 */
+> +	{ .die		= "T2080",
+> +	  .svr		= 0x85300000,
+> +	  .mask		= 0xfff00000,
+> +	},
+> +	/* Die: T1024, SoC: T1024/T1014/T1023/T1013 */
+> +	{ .die		= "T1024",
+> +	  .svr		= 0x85400000,
+> +	  .mask		= 0xfff00000,
+> +	},
+> +#endif /* CONFIG_PPC */
+> +#if defined(CONFIG_ARCH_MXC) || defined(CONFIG_ARCH_LAYERSCAPE)
 
-For reference, what I'm aiming for is for that to be the entire resume
-function.
+Will this driver ever be probed on MXC?  Why do we need these ifdefs at all?
 
-> -	return arm_smmu_enable_clocks(smmu);
-> +	/* Restore the smes and the context banks */
-> +	for (idx = 0; idx < smmu->num_mapping_groups; ++idx) {
-> +		mutex_lock(&smmu->stream_map_mutex);
 
-What are we taking this lock to protect against - can we resume one SMMU
-multiple times in parallel?
-
-> +		if (!smrs[idx].valid) {
-> +			mutex_unlock(&smmu->stream_map_mutex);
-> +			continue;
-
-Nope, you can't skip anything, because there's no guarantee the SMRs (or
-anything else) which are invalid in the saved state are also invalid in
-the current hardware state. Consider the case of restoring from hibernate.
-
-> +		}
+> +	/*
+> +	 * ARM-based SoCs LS Series
+> +	 */
 > +
-> +		arm_smmu_write_sme(smmu, idx);
+> +	/* Die: LS1043A, SoC: LS1043A/LS1023A */
+> +	{ .die		= "LS1043A",
+> +	  .svr		= 0x87920000,
+> +	  .mask		= 0xffff0000,
+> +	},
+> +	/* Die: LS2080A, SoC: LS2080A/LS2040A/LS2085A */
+> +	{ .die		= "LS2080A",
+> +	  .svr		= 0x87010000,
+> +	  .mask		= 0xff3f0000,
+> +	},
+> +	/* Die: LS1088A, SoC: LS1088A/LS1048A/LS1084A/LS1044A */
+> +	{ .die		= "LS1088A",
+> +	  .svr		= 0x87030000,
+> +	  .mask		= 0xff3f0000,
+> +	},
+> +	/* Die: LS1012A, SoC: LS1012A */
+> +	{ .die		= "LS1012A",
+> +	  .svr		= 0x87040000,
+> +	  .mask		= 0xffff0000,
+> +	},
+> +	/* Die: LS1046A, SoC: LS1046A/LS1026A */
+> +	{ .die		= "LS1046A",
+> +	  .svr		= 0x87070000,
+> +	  .mask		= 0xffff0000,
+> +	},
+> +	/* Die: LS2088A, SoC: LS2088A/LS2048A/LS2084A/LS2044A */
+> +	{ .die		= "LS2088A",
+> +	  .svr		= 0x87090000,
+> +	  .mask		= 0xff3f0000,
+> +	},
+> +	/* Die: LS1021A, SoC: LS1021A/LS1020A/LS1022A
+> +	 * Note: Put this die at the end in cause of incorrect
+> identification
+> +	 */
+> +	{ .die		= "LS1021A",
+> +	  .svr		= 0x87000000,
+> +	  .mask		= 0xfff00000,
+> +	},
+> +#endif /* CONFIG_ARCH_MXC || CONFIG_ARCH_LAYERSCAPE */
 
-arm_smmu_device_reset() already did that.
+Instead of relying on ordering, add more bits to the mask so that there's no
+overlap.  I think 0xfff70000 would work.
 
-> +		cb = smmu->s2crs[idx].cbndx;
-> +		mutex_unlock(&smmu->stream_map_mutex);
-> +
-> +		if (!i || (cb != pcb)) {
+> +out:
+> +	kfree(soc_dev_attr.machine);
+> +	kfree(soc_dev_attr.family);
+> +	kfree(soc_dev_attr.soc_id);
+> +	kfree(soc_dev_attr.revision);
+> +	iounmap(guts->regs);
+> +out_free:
+> +	kfree(guts);
+> +	return ret;
+> +}
 
-This took a while to figure out, and it seems like an unnecessary
-micro-optimisation since it still doesn't actually prevent initialising
-the same context bank multiple times (there's no guarantee that all
-s2crs targeting that context are consecutive).
+Please use devm.
 
-> +			domain = smmu->cb_saved_ctx[cb].domain;
-> +			pgtbl_cfg = &smmu->cb_saved_ctx[cb].pgtbl_cfg;
-> +
-> +			if (domain) {
-> +				mutex_lock(&domain->init_mutex);
-
-Assuming the device link stuff works as I would expect it to (I've not
-looked in detail), then shouldn't the SMMU be resumed before any of its
-masters are, so what are we taking this lock to protect against?
-
-Robin.
-
-> +				arm_smmu_init_context_bank(domain, pgtbl_cfg);
-> +				mutex_unlock(&domain->init_mutex);
-> +			}
-> +		}
-> +		pcb = cb;
-> +		i++;
-> +	}
-> +
-> +	return 0;
->  }
->  
->  static int arm_smmu_suspend(struct device *dev)
-> 
+-Scott
