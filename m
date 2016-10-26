@@ -1,186 +1,161 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V3 8/8] arm64: dma-mapping: Remove the notifier trick to
-	handle early setting of dma_ops
-Date: Wed, 26 Oct 2016 16:34:10 +0100
-Message-ID: <e4643826-3aa8-1e34-79a8-9e1fcf0fcb69@arm.com>
-References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
-	<1475600632-21289-9-git-send-email-sricharan@codeaurora.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 3/4] iommu/arm-smmu: Add context save restore support
+Date: Wed, 26 Oct 2016 17:51:56 +0100
+Message-ID: <ddfbb897-b284-5caf-dab7-9b3de08619bd@arm.com>
+References: <1477070066-15044-1-git-send-email-sricharan@codeaurora.org>
+ <1477070066-15044-4-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1475600632-21289-9-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1477070066-15044-4-git-send-email-sricharan@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Sricharan R <sricharan@codeaurora.org>, m.szyprowski@samsung.com, will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, srinivas.kandagatla@linaro.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/10/16 18:03, Sricharan R wrote:
-> With arch_setup_dma_ops now being called late during device's probe after the
-> device's iommu is probed, the notifier trick required to handle the early
-> setup of dma_ops before the iommu group gets created is not required.
-> So removing the notifier's here.
+On 21/10/16 18:14, Sricharan R wrote:
+> The smes registers and the context bank registers are
+> the ones that are needs to be saved and restored.
+> Fortunately the smes are already stored as a part
 
-Hooray!
+"Fortunately"? Hey, that's by design! :P
 
-> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
->  arch/arm64/mm/dma-mapping.c | 100 ++------------------------------------------
->  1 file changed, 3 insertions(+), 97 deletions(-)
+I was actually planning to finish off suspend/resume beyond those
+foundations laid by the big rework, so it's nice to see something already.
+
+> of the smmu device structure. So just write that
+> back. The data required to configure the context banks
+> are the master's domain data and pgtable cfgs.
+> So store them as a part of the context banks info
+> and just reconfigure the context banks on the restore
+> path.
 > 
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index faf4b92..eb593af 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -799,24 +799,6 @@ static struct dma_map_ops iommu_dma_ops = {
->  	.mapping_error = iommu_dma_mapping_error,
+> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+> ---
+>  drivers/iommu/arm-smmu.c | 52 +++++++++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 51 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 45f2762..578cdc2 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -328,6 +328,11 @@ struct arm_smmu_master_cfg {
+>  #define for_each_cfg_sme(fw, i, idx) \
+>  	for (i = 0; idx = __fwspec_cfg(fw)->smendx[i], i < fw->num_ids; ++i)
+>  
+> +struct cbinfo {
+> +	struct arm_smmu_domain		*domain;
+> +	struct io_pgtable_cfg		pgtbl_cfg;
+> +};
+> +
+>  struct arm_smmu_device {
+>  	struct device			*dev;
+>  
+> @@ -378,6 +383,9 @@ struct arm_smmu_device {
+>  	struct clk                      **clocks;
+>  
+>  	u32				cavium_id_base; /* Specific to Cavium */
+> +
+> +	/* For save/restore of context bank registers */
+> +	struct cbinfo                   *cb_saved_ctx;
+
+I'd prefer to follow the same pattern for context banks as for the
+stream map registers, i.e. keep just the smmu pointer and cbndx in the
+arm_smmu_domain, and move the rest of the context bank state to the
+arm_smmu_device. Yes, it requires rather more refactoring, but it's
+going to result in cleaner and more obvious code in the end.
+
 >  };
 >  
-> -/*
-> - * TODO: Right now __iommu_setup_dma_ops() gets called too early to do
-> - * everything it needs to - the device is only partially created and the
-> - * IOMMU driver hasn't seen it yet, so it can't have a group. Thus we
-> - * need this delayed attachment dance. Once IOMMU probe ordering is sorted
-> - * to move the arch_setup_dma_ops() call later, all the notifier bits below
-> - * become unnecessary, and will go away.
-> - */
-> -struct iommu_dma_notifier_data {
-> -	struct list_head list;
-> -	struct device *dev;
-> -	const struct iommu_ops *ops;
-> -	u64 dma_base;
-> -	u64 size;
-> -};
-> -static LIST_HEAD(iommu_dma_masters);
-> -static DEFINE_MUTEX(iommu_dma_notifier_lock);
-> -
->  static bool do_iommu_attach(struct device *dev, const struct iommu_ops *ops,
->  			   u64 dma_base, u64 size)
-
-This should go as well...
-
->  {
-> @@ -837,79 +819,9 @@ static bool do_iommu_attach(struct device *dev, const struct iommu_ops *ops,
->  	return true;
->  }
+>  enum arm_smmu_context_fmt {
+> @@ -972,6 +980,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
 >  
-> -static void queue_iommu_attach(struct device *dev, const struct iommu_ops *ops,
-> -			      u64 dma_base, u64 size)
-> -{
-> -	struct iommu_dma_notifier_data *iommudata;
-> -
-> -	iommudata = kzalloc(sizeof(*iommudata), GFP_KERNEL);
-> -	if (!iommudata)
-> -		return;
-> -
-> -	iommudata->dev = dev;
-> -	iommudata->ops = ops;
-> -	iommudata->dma_base = dma_base;
-> -	iommudata->size = size;
-> -
-> -	mutex_lock(&iommu_dma_notifier_lock);
-> -	list_add(&iommudata->list, &iommu_dma_masters);
-> -	mutex_unlock(&iommu_dma_notifier_lock);
-> -}
-> -
-> -static int __iommu_attach_notifier(struct notifier_block *nb,
-> -				   unsigned long action, void *data)
-> -{
-> -	struct iommu_dma_notifier_data *master, *tmp;
-> -
-> -	if (action != BUS_NOTIFY_BIND_DRIVER)
-> -		return 0;
-> -
-> -	mutex_lock(&iommu_dma_notifier_lock);
-> -	list_for_each_entry_safe(master, tmp, &iommu_dma_masters, list) {
-> -		if (data == master->dev && do_iommu_attach(master->dev,
-> -				master->ops, master->dma_base, master->size)) {
-> -			list_del(&master->list);
-> -			kfree(master);
-> -			break;
-> -		}
-> -	}
-> -	mutex_unlock(&iommu_dma_notifier_lock);
-> -	return 0;
-> -}
-> -
-> -static int __init register_iommu_dma_ops_notifier(struct bus_type *bus)
-> -{
-> -	struct notifier_block *nb = kzalloc(sizeof(*nb), GFP_KERNEL);
-> -	int ret;
-> -
-> -	if (!nb)
-> -		return -ENOMEM;
-> -
-> -	nb->notifier_call = __iommu_attach_notifier;
-> -
-> -	ret = bus_register_notifier(bus, nb);
-> -	if (ret) {
-> -		pr_warn("Failed to register DMA domain notifier; IOMMU DMA ops unavailable on bus '%s'\n",
-> -			bus->name);
-> -		kfree(nb);
-> -	}
-> -	return ret;
-> -}
-> -
->  static int __init __iommu_dma_init(void)
->  {
-> -	int ret;
-> -
-> -	ret = iommu_dma_init();
-> -	if (!ret)
-> -		ret = register_iommu_dma_ops_notifier(&platform_bus_type);
-> -	if (!ret)
-> -		ret = register_iommu_dma_ops_notifier(&amba_bustype);
-> -#ifdef CONFIG_PCI
-> -	if (!ret)
-> -		ret = register_iommu_dma_ops_notifier(&pci_bus_type);
-> -#endif
-> -	return ret;
-> +	return iommu_dma_init();
->  }
->  arch_initcall(__iommu_dma_init);
+>  	/* Initialise the context bank with our page table cfg */
+>  	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
+> +	smmu->cb_saved_ctx[cfg->cbndx].domain = smmu_domain;
+> +	smmu->cb_saved_ctx[cfg->cbndx].pgtbl_cfg = pgtbl_cfg;
 >  
-> @@ -920,18 +832,12 @@ static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
->  
->  	if (!ops)
->  		return;
-> -	/*
-> -	 * TODO: As a concession to the future, we're ready to handle being
-> -	 * called both early and late (i.e. after bus_add_device). Once all
-> -	 * the platform bus code is reworked to call us late and the notifier
-> -	 * junk above goes away, move the body of do_iommu_attach here.
-
-...per this commment. It has no need to be a separate function once this
-is the only call site (plus it has a misleadingly inaccurate name anyway).
-
-> -	 */
-> +
->  	group = iommu_group_get(dev);
-> +
->  	if (group) {
->  		do_iommu_attach(dev, ops, dma_base, size);
->  		iommu_group_put(group);
-> -	} else {
-> -		queue_iommu_attach(dev, ops, dma_base, size);
+>  	/*
+>  	 * Request context fault interrupt. Do this last to avoid the
+> @@ -1861,6 +1871,10 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
 >  	}
->  }
+>  	dev_notice(smmu->dev, "\t%u context banks (%u stage-2 only)\n",
+>  		   smmu->num_context_banks, smmu->num_s2_context_banks);
+> +
+> +	smmu->cb_saved_ctx = devm_kzalloc(smmu->dev,
+> +			     sizeof(struct cbinfo) * smmu->num_context_banks,
+> +			     GFP_KERNEL);
+>  	/*
+>  	 * Cavium CN88xx erratum #27704.
+>  	 * Ensure ASID and VMID allocation is unique across all SMMUs in
+> @@ -2115,8 +2129,44 @@ static int arm_smmu_resume(struct device *dev)
+>  {
+[...]
+  	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+[...]
+	int ret = arm_smmu_enable_clocks(smmu);
+> +	if (ret)
+> +		return ret;
+> +
+> +	arm_smmu_device_reset(smmu);
 
-I overlooked it in the last patch as the relevant context was in the
-cover letter, so I'll just add the comment here; the domain check and
-WARN_ON() in arch_teardown_dma_ops() is mostly a left-over from the
-'fake default domain' bodge that was already gone from the final version
-of the arm64 dma_ops series. It's based on the assumption that
-arch_teardown_dma_ops() is called after the device is removed from the
-bus - I'm not convinced that assumption was ever actually true, it now
-doesn't necessarily do anything anyway (since detach_device is
-deprecated). I'll spin a cleanup patch for that myself...
+For reference, what I'm aiming for is for that to be the entire resume
+function.
+
+> -	return arm_smmu_enable_clocks(smmu);
+> +	/* Restore the smes and the context banks */
+> +	for (idx = 0; idx < smmu->num_mapping_groups; ++idx) {
+> +		mutex_lock(&smmu->stream_map_mutex);
+
+What are we taking this lock to protect against - can we resume one SMMU
+multiple times in parallel?
+
+> +		if (!smrs[idx].valid) {
+> +			mutex_unlock(&smmu->stream_map_mutex);
+> +			continue;
+
+Nope, you can't skip anything, because there's no guarantee the SMRs (or
+anything else) which are invalid in the saved state are also invalid in
+the current hardware state. Consider the case of restoring from hibernate.
+
+> +		}
+> +
+> +		arm_smmu_write_sme(smmu, idx);
+
+arm_smmu_device_reset() already did that.
+
+> +		cb = smmu->s2crs[idx].cbndx;
+> +		mutex_unlock(&smmu->stream_map_mutex);
+> +
+> +		if (!i || (cb != pcb)) {
+
+This took a while to figure out, and it seems like an unnecessary
+micro-optimisation since it still doesn't actually prevent initialising
+the same context bank multiple times (there's no guarantee that all
+s2crs targeting that context are consecutive).
+
+> +			domain = smmu->cb_saved_ctx[cb].domain;
+> +			pgtbl_cfg = &smmu->cb_saved_ctx[cb].pgtbl_cfg;
+> +
+> +			if (domain) {
+> +				mutex_lock(&domain->init_mutex);
+
+Assuming the device link stuff works as I would expect it to (I've not
+looked in detail), then shouldn't the SMMU be resumed before any of its
+masters are, so what are we taking this lock to protect against?
 
 Robin.
+
+> +				arm_smmu_init_context_bank(domain, pgtbl_cfg);
+> +				mutex_unlock(&domain->init_mutex);
+> +			}
+> +		}
+> +		pcb = cb;
+> +		i++;
+> +	}
+> +
+> +	return 0;
+>  }
+>  
+>  static int arm_smmu_suspend(struct device *dev)
+> 
