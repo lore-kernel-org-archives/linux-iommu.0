@@ -1,160 +1,49 @@
-From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Fix the size calculation of pasid table
-Date: Sun, 30 Oct 2016 06:18:22 -0600
-Message-ID: <1477829902.4154.9.camel@infradead.org>
-References: <1473648551-10025-1-git-send-email-xlpang@redhat.com>
-	<20160919121827.GB3541@8bytes.org>
-	<1476274674.16627.173.camel@infradead.org>
+From: David Woodhouse <dwmw2@infradead.org>
+Subject: Re: [PATCH] iommu/vt-d: Fix IOMMU lookup for VF's
+Date: Sun, 30 Oct 2016 06:10:06 -0600
+Message-ID: <1477829406.4154.2.camel@infradead.org>
+References: <1477089125-18523-1-git-send-email-ashok.raj@intel.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1548842522557317088=="
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1476274674.16627.173.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Xunlei Pang <xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: Mika Kuoppala <mika.kuoppala-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: multipart/signed; micalg="sha-256"; protocol="application/x-pkcs7-signature"; boundary="=-kvqJu59g+i6Ib+1dtavO"
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1477089125-18523-1-git-send-email-ashok.raj@intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Ashok Raj <ashok.raj@intel.com>, linux-kernel@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>, Sainath Grandhi <sainath.grandhi@intel.com>, iommu@lists.linux-foundation.org, stable@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---===============1548842522557317088==
-Content-Type: multipart/signed; micalg="sha-256"; protocol="application/x-pkcs7-signature"; boundary="=-hk3xPC5NOX2HHRSOpyvU"
-
-
---=-hk3xPC5NOX2HHRSOpyvU
+--=-kvqJu59g+i6Ib+1dtavO
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2016-10-12 at 13:17 +0100, David Woodhouse wrote:
-> Yes, that looks correct. I think we may also need to limit it, because
-> full 20-bit PASID support means we'll attempt an order 11 allocation.
-> But that's certainly correct for now
+On Fri, 2016-10-21 at 15:32 -0700, Ashok Raj wrote:
+> IOMMU driver must pick the same IOMMU as that of a Physical Function (PF)=
+ for
+> any of its Virtual Functions (VF). It is not practical to list all the VF=
+'s
+> in the DMAR scope, as this list could be quite large. Linux also ignores =
+any
+> VF's listed in DMAR. See dmar_pci_bus_notifier() for virtfn handling.
+>=20
+> Since the driver is looking for the bdf of the VF, it will not find one f=
+rom
+> searching the DRHD listed in BIOS.=C2=A0=C2=A0As a result, the IOMMU driv=
+er associates
+> the VF's under the INCLUDE_ALL iommu incorrectly.
+>=20
+> This patch looks up the IOMMU of the PF when handling VF's.
 
-Actually, not quite correct. You fixed the allocation but not the free.
-And Mika had reported that even the *correct* allocation was failing
-because it was too large. So I've done it differently (untested)...
-
------
-Subject: [PATCH] iommu/vt-d: Fix PASID table allocation
-
-Somehow I ended up with an off-by-three error in calculating the size of
-the PASID and PASID State tables, which triggers allocations failures as
-those tables unfortunately have to be physically contiguous.
-
-In fact, even the *correct* maximum size of 8MiB is problematic and is
-wont to lead to allocation failures. Since I have extracted a promise
-that this *will* be fixed in hardware, I'm happy to limit it on the
-current hardware to a maximum of 0x20000 PASIDs, which gives us 1MiB
-tables =E2=80=94 still not ideal, but better than before.
-
-Reported by Mika Kuoppala <mika.kuoppala-VuQAYsv1563Yd54FQh9/CA@public.gmane.org> and also by
-Xunlei Pang <xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> who submitted a simpler patch to fix
-only the allocation (and not the free) to the "correct" limit... which
-was still problematic.
-
-Signed-off-by: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
----
-=C2=A0drivers/iommu/intel-svm.c=C2=A0=C2=A0=C2=A0| 28 +++++++++++++++++----=
--------
-=C2=A0include/linux/intel-iommu.h |=C2=A0=C2=A01 +
-=C2=A02 files changed, 18 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 8ebb353..cb72e00 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -39,10 +39,18 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *io=
-mmu)
-=C2=A0	struct page *pages;
-=C2=A0	int order;
-=C2=A0
--	order =3D ecap_pss(iommu->ecap) + 7 - PAGE_SHIFT;
--	if (order < 0)
--		order =3D 0;
--
-+	/* Start at 2 because it's defined as 1^(1+PSS) */
-+	iommu->pasid_max =3D 2 << ecap_pss(iommu->ecap);
-+
-+	/* Eventually I'm promised we will get a multi-level PASID table
-+	=C2=A0* and it won't have to be physically contiguous. Until then,
-+	=C2=A0* limit the size because 8MiB contiguous allocations can be hard
-+	=C2=A0* to come by. The limit of 0x20000, which is 1MiB for each of
-+	=C2=A0* the PASID and PASID-state tables, is somewhat arbitrary. */
-+	if (iommu->pasid_max > 0x20000)
-+		iommu->pasid_max =3D 0x20000;
-+
-+	order =3D get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
-=C2=A0	pages =3D alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
-=C2=A0	if (!pages) {
-=C2=A0		pr_warn("IOMMU: %s: Failed to allocate PASID table\n",
-@@ -53,6 +61,8 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iomm=
-u)
-=C2=A0	pr_info("%s: Allocated order %d PASID table.\n", iommu->name, order)=
-;
-=C2=A0
-=C2=A0	if (ecap_dis(iommu->ecap)) {
-+		/* Just making it explicit... */
-+		BUILD_BUG_ON(sizeof(struct pasid_entry) !=3D sizeof(struct pasid_state_e=
-ntry));
-=C2=A0		pages =3D alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
-=C2=A0		if (pages)
-=C2=A0			iommu->pasid_state_table =3D page_address(pages);
-@@ -68,11 +78,7 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iom=
-mu)
-=C2=A0
-=C2=A0int intel_svm_free_pasid_tables(struct intel_iommu *iommu)
-=C2=A0{
--	int order;
--
--	order =3D ecap_pss(iommu->ecap) + 7 - PAGE_SHIFT;
--	if (order < 0)
--		order =3D 0;
-+	int order =3D get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
-=C2=A0
-=C2=A0	if (iommu->pasid_table) {
-=C2=A0		free_pages((unsigned long)iommu->pasid_table, order);
-@@ -371,8 +377,8 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, i=
-nt flags, struct svm_dev_
-=C2=A0		}
-=C2=A0		svm->iommu =3D iommu;
-=C2=A0
--		if (pasid_max > 2 << ecap_pss(iommu->ecap))
--			pasid_max =3D 2 << ecap_pss(iommu->ecap);
-+		if (pasid_max > iommu->pasid_max)
-+			pasid_max =3D iommu->pasid_max;
-=C2=A0
-=C2=A0		/* Do not use PASID 0 in caching mode (virtualised IOMMU) */
-=C2=A0		ret =3D idr_alloc(&iommu->pasid_idr, svm,
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 2d9b6500..d49e26c 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -429,6 +429,7 @@ struct intel_iommu {
-=C2=A0	struct page_req_dsc *prq;
-=C2=A0	unsigned char prq_name[16];=C2=A0=C2=A0=C2=A0=C2=A0/* Name for PRQ i=
-nterrupt */
-=C2=A0	struct idr pasid_idr;
-+	u32 pasid_max;
-=C2=A0#endif
-=C2=A0	struct q_inval=C2=A0=C2=A0*qi;=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* Queued invalidation info */
-=C2=A0	u32 *iommu_state; /* Store iommu states between suspend and resume.*=
-/
---=C2=A0
-2.5.5
+I've made some cosmetic fixes=C2=A0=E2=80=94 adding comments, and tweaking =
+the
+commit comment =E2=80=94 and applied this to my tree. Thanks.
 
 --=20
 dwmw2
 
 
 
---=-hk3xPC5NOX2HHRSOpyvU
+--=-kvqJu59g+i6Ib+1dtavO
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -244,33 +133,23 @@ TmYcNZSibv+3Oy6uU+wqMYIEXjCCBFoCAQEwgYkwdTELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0
 YXJ0Q29tIEx0ZC4xKTAnBgNVBAsTIFN0YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MSMw
 IQYDVQQDExpTdGFydENvbSBDbGFzcyAxIENsaWVudCBDQQIQaRjuleoVgt0XsPAUByveJDANBglg
 hkgBZQMEAgEFAKCCAaUwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcN
-MTYxMDMwMTIxODIyWjAvBgkqhkiG9w0BCQQxIgQgw8IpQLkdPJIBIotO13cvKh6nN16w96ENuXZH
-rsoW5/0wgZoGCSsGAQQBgjcQBDGBjDCBiTB1MQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRD
+MTYxMDMwMTIxMDA2WjAvBgkqhkiG9w0BCQQxIgQgQhollsrThBbuqe13usvUfQCKeCld5NwESP4U
+ts8XIPowgZoGCSsGAQQBgjcQBDGBjDCBiTB1MQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRD
 b20gTHRkLjEpMCcGA1UECxMgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkxIzAhBgNV
 BAMTGlN0YXJ0Q29tIENsYXNzIDEgQ2xpZW50IENBAhBpGO6V6hWC3Rew8BQHK94kMIGcBgsqhkiG
 9w0BCRACCzGBjKCBiTB1MQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEpMCcG
 A1UECxMgU3RhcnRDb20gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkxIzAhBgNVBAMTGlN0YXJ0Q29t
-IENsYXNzIDEgQ2xpZW50IENBAhBpGO6V6hWC3Rew8BQHK94kMA0GCSqGSIb3DQEBAQUABIICACBf
-1W/mIUXlQYl6o+YZ7N2pVg9asVfTgGb2vwmFxEUe+uZGP3QehfzaIKEytC+PVinKGYUnFAX9RUfC
-vlYLgM7/bPnXhBzWIcFJfJcFCrz2J9Mtzia9HoukTICIM3qwkxehnauqugAJ5AAZ7+HhHNFZN0sD
-msjtb5bS+8GjMQsZekiZj8F6FYdDqgDjPGqzjLRnItBcIDAz3G/Qx0CvfNmtnN4hI+T8p4L/CfiJ
-ibNYQk3T7t0xXEeqrUlGvDSsM/hr/KTo4Jnbua8mkrLXZUvwtE7jqKysFkfo7zJclN7io9cgtsE/
-2cIeaJoh0Y4Aw0kCc/uGa1VRzeJdjPfUuvc4IPAz8Ljm9oWZ+NgwYAC8RI0Nv99gGwFcVMxwtfnY
-X7eqY52LXIS2x6she92tkVn3Ef7PgTLE5Ubgz1uymV6GrVikCm4GkSINP2A6XqPM1DZqOqx7vFyt
-wLtlzbdiigtRJINiP95g2GcoyUVGPdJWEfVRIJ8IGXg6ACZ/QXSO3ghsUaDMdX/5PRDBLBDaKxgF
-H4Oop8W+i5I5e6txPSTeh2Ft6yr6vfGOFHPO/aHaPKMvnKOUBDTZ0yzPzl3H6Tvv0R7P0Zq6QCC9
-dWffwiMyXxMkYXQ+CZDlGBD+/ubFsvIBKMI7errN+2pELq0nUDZ8l+qCC53AfyC8AZJsesSZAAAA
+IENsYXNzIDEgQ2xpZW50IENBAhBpGO6V6hWC3Rew8BQHK94kMA0GCSqGSIb3DQEBAQUABIICAGi3
+N8B2CuQcVwP2cxacvfeXxh0chVbX3tucKq6eRH3kheYwypSt7j5pi/Q5kzhDFd1QIDOYoXmV6E/2
+ryKtP10+s2t8ftBsQp4g0iTZW7rMdWrklySed2kl3pRip3RzS9G7o9gDRDZlX/eUWH8JDggF7IaI
+ox3ny/BYckrwI7SbdkVSvrSFEH1kBW8jFjAs2CS9lvbOE72H/ZquMmtps/3tfgpA9uo4ycIqBq9Y
+K2mwTCj7VCW5+fQpm1bH059WvNiuSCUdGLvdIVuTBvAC5PfM7DPikRmxTjMCMKa0gSm7AxswYZQD
+iNt9r/DeS4WHOMcg95OdurDvBoRnWO0rBuvHMnzjVbyFzpnOTtAHCpGV1Fe/FNE+jKWY6e/dli14
+IAzRTmZLZLuTvhkgdKyj1emWGZQuAVyplGZKM5BBpEpFNg2UsIMvFEOwS+dym5q2dD1cH0oTfvTP
+8sJdWnZJqquv/KLgd8LZ+o+PsIoUqx168dWTjpZsfBQPhXekIioeGciyE2oSQzJYmhGifWDcbFSM
+hbe9hpNqde++HE81A23d1JYTMaWk5nJ2WQfyBZG9die3EBhHiA/pauExdJ+GOQzQeS9TnRXmlsT3
+35/7NUJBLTXcljYBO5SoeKmLizjFYHt6okL5pwtovvPQdmLPVdyUDftNgCW21fGbksBOtpxBAAAA
 AAAA
 
 
---=-hk3xPC5NOX2HHRSOpyvU--
-
-
---===============1548842522557317088==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============1548842522557317088==--
+--=-kvqJu59g+i6Ib+1dtavO--
