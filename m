@@ -1,69 +1,131 @@
-From: "Y.B. Lu" <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [v15, 0/7] Fix eSDHC host version register bug
-Date: Mon, 31 Oct 2016 09:36:33 +0000
-Message-ID: <DB6PR0401MB25365B15D753E4D60A25C8F8F8AE0@DB6PR0401MB2536.eurprd04.prod.outlook.com>
-References: <1477637418-38938-1-git-send-email-yangbo.lu@nxp.com>
-	<3386858.dvuMhvkN3m@wuerfel>
+From: Xunlei Pang <xpang@redhat.com>
+Subject: Re: [PATCH] iommu/vt-d: Fix the size calculation of pasid table
+Date: Mon, 31 Oct 2016 19:30:32 +0800
+Message-ID: <58172B58.804@redhat.com>
+References: <1473648551-10025-1-git-send-email-xlpang@redhat.com>
+ <20160919121827.GB3541@8bytes.org> <1476274674.16627.173.camel@infradead.org>
+ <1477829902.4154.9.camel@infradead.org>
+Reply-To: xlpang@redhat.com
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <3386858.dvuMhvkN3m@wuerfel>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "M.H. Lian" <minghuan.lian-3arQi8VN3Tc@public.gmane.org>, "linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Qiang Zhao <qiang.zhao-3arQi8VN3Tc@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Scott Wood <oss-fOR+EgIDQEHk1uMJSBkQmQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Santosh Shilimkar <ssantosh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, "linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "X.B. Xie" <xiaobo.xie-3arQi8VN3Tc@public.gmane.org>, Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, iommu@l
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1477829902.4154.9.camel@infradead.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, Xunlei Pang <xlpang@redhat.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Mika Kuoppala <mika.kuoppala@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-> -----Original Message-----
-> From: Arnd Bergmann [mailto:arnd-r2nGTMty4D4@public.gmane.org]
-> Sent: Friday, October 28, 2016 6:54 PM
-> To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Cc: Y.B. Lu; linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; Scott
-> Wood; Mark Rutland; Greg Kroah-Hartman; X.B. Xie; M.H. Lian; linux-
-> i2c-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Qiang Zhao; Russell King;
-> Bhupesh Sharma; Joerg Roedel; Jochen Friedrich; Claudiu Manoil;
-> devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Rob Herring; Santosh Shilimkar;
-> netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Leo Li;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Kumar Gala; linuxppc-
-> dev-uLR06cmDAlY/bJ5BZ2RsiQ@public.gmane.org
-> Subject: Re: [v15, 0/7] Fix eSDHC host version register bug
-> 
-> On Friday, October 28, 2016 2:50:11 PM CEST Yangbo Lu wrote:
-> > This patchset is used to fix a host version register bug in the
-> > T4240-R1.0-R2.0 eSDHC controller. To match the SoC version and
-> > revision, 10 previous version patchsets had tried many methods but all
-> of them were rejected by reviewers.
-> > Such as
-> >         - dts compatible method
-> >         - syscon method
-> >         - ifdef PPC method
-> >         - GUTS driver getting SVR method Anrd suggested a
-> > soc_device_match method in v10, and this is the only available method
-> > left now. This v11 patchset introduces the soc_device_match interface
-> > in soc driver.
-> >
-> > The first five patches of Yangbo are to add the GUTS driver. This is
-> > used to register a soc device which contain soc version and revision
-> information.
-> > The other two patches introduce the soc_device_match method in soc
-> > driver and apply it on esdhc driver to fix this bug.
-> >
-> 
-> Looks good overall. With patch 3 dropped (or an explanation why it's
-> still needed), everything
-> 
-> Acked-by: Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>
->
- 
-[Lu Yangbo-B47093] Thank you very much:) See my explaination in patch 3 email.
+On 2016/10/30 at 20:18, David Woodhouse wrote:
+> On Wed, 2016-10-12 at 13:17 +0100, David Woodhouse wrote:
+>> Yes, that looks correct. I think we may also need to limit it, because
+>> full 20-bit PASID support means we'll attempt an order 11 allocation.
+>> But that's certainly correct for now
+> Actually, not quite correct. You fixed the allocation but not the free.
+> And Mika had reported that even the *correct* allocation was failing
+> because it was too large. So I've done it differently (untested)...
 
-> 	Arnd
+Yes, your fix looks correct.
+
+Thanks,
+Xunlei
+
+> -----
+> Subject: [PATCH] iommu/vt-d: Fix PASID table allocation
+>
+> Somehow I ended up with an off-by-three error in calculating the size of
+> the PASID and PASID State tables, which triggers allocations failures as
+> those tables unfortunately have to be physically contiguous.
+>
+> In fact, even the *correct* maximum size of 8MiB is problematic and is
+> wont to lead to allocation failures. Since I have extracted a promise
+> that this *will* be fixed in hardware, I'm happy to limit it on the
+> current hardware to a maximum of 0x20000 PASIDs, which gives us 1MiB
+> tables — still not ideal, but better than before.
+>
+> Reported by Mika Kuoppala <mika.kuoppala@linux.intel.com> and also by
+> Xunlei Pang <xlpang@redhat.com> who submitted a simpler patch to fix
+> only the allocation (and not the free) to the "correct" limit... which
+> was still problematic.
+>
+> Signed-off-by: David Woodhouse <dwmw2@infradead.org>
+> ---
+>  drivers/iommu/intel-svm.c   | 28 +++++++++++++++++-----------
+>  include/linux/intel-iommu.h |  1 +
+>  2 files changed, 18 insertions(+), 11 deletions(-)
+>
+> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+> index 8ebb353..cb72e00 100644
+> --- a/drivers/iommu/intel-svm.c
+> +++ b/drivers/iommu/intel-svm.c
+> @@ -39,10 +39,18 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+>  	struct page *pages;
+>  	int order;
+>  
+> -	order = ecap_pss(iommu->ecap) + 7 - PAGE_SHIFT;
+> -	if (order < 0)
+> -		order = 0;
+> -
+> +	/* Start at 2 because it's defined as 1^(1+PSS) */
+> +	iommu->pasid_max = 2 << ecap_pss(iommu->ecap);
+> +
+> +	/* Eventually I'm promised we will get a multi-level PASID table
+> +	 * and it won't have to be physically contiguous. Until then,
+> +	 * limit the size because 8MiB contiguous allocations can be hard
+> +	 * to come by. The limit of 0x20000, which is 1MiB for each of
+> +	 * the PASID and PASID-state tables, is somewhat arbitrary. */
+> +	if (iommu->pasid_max > 0x20000)
+> +		iommu->pasid_max = 0x20000;
+> +
+> +	order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
+>  	pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
+>  	if (!pages) {
+>  		pr_warn("IOMMU: %s: Failed to allocate PASID table\n",
+> @@ -53,6 +61,8 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+>  	pr_info("%s: Allocated order %d PASID table.\n", iommu->name, order);
+>  
+>  	if (ecap_dis(iommu->ecap)) {
+> +		/* Just making it explicit... */
+> +		BUILD_BUG_ON(sizeof(struct pasid_entry) != sizeof(struct pasid_state_entry));
+>  		pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
+>  		if (pages)
+>  			iommu->pasid_state_table = page_address(pages);
+> @@ -68,11 +78,7 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+>  
+>  int intel_svm_free_pasid_tables(struct intel_iommu *iommu)
+>  {
+> -	int order;
+> -
+> -	order = ecap_pss(iommu->ecap) + 7 - PAGE_SHIFT;
+> -	if (order < 0)
+> -		order = 0;
+> +	int order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
+>  
+>  	if (iommu->pasid_table) {
+>  		free_pages((unsigned long)iommu->pasid_table, order);
+> @@ -371,8 +377,8 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+>  		}
+>  		svm->iommu = iommu;
+>  
+> -		if (pasid_max > 2 << ecap_pss(iommu->ecap))
+> -			pasid_max = 2 << ecap_pss(iommu->ecap);
+> +		if (pasid_max > iommu->pasid_max)
+> +			pasid_max = iommu->pasid_max;
+>  
+>  		/* Do not use PASID 0 in caching mode (virtualised IOMMU) */
+>  		ret = idr_alloc(&iommu->pasid_idr, svm,
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index 2d9b6500..d49e26c 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -429,6 +429,7 @@ struct intel_iommu {
+>  	struct page_req_dsc *prq;
+>  	unsigned char prq_name[16];    /* Name for PRQ interrupt */
+>  	struct idr pasid_idr;
+> +	u32 pasid_max;
+>  #endif
+>  	struct q_inval  *qi;            /* Queued invalidation info */
+>  	u32 *iommu_state; /* Store iommu states between suspend and resume.*/
+> -- 
+> 2.5.5
+>
