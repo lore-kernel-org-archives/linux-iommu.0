@@ -1,90 +1,127 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH] x86: Allow IOMMU drivers to Hook arch_setup_dma_ops()
-Date: Mon, 31 Oct 2016 17:04:40 +0000
-Message-ID: <d2b36234-df39-da1c-08cb-d85a953d703b@arm.com>
-References: <1477854889.14501.6.camel@woodhou.se>
-	<a95e5fb2-3f5d-5334-c62d-e4b99a52adcb@arm.com>
-	<1477924491.14501.16.camel@infradead.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 2/2] swiotlb: Add swiotlb=nobounce debug option
+Date: Mon, 31 Oct 2016 17:41:58 +0000
+Message-ID: <86c57a18-cb28-8aee-9edb-96da73d4f829@arm.com>
+References: <1477928704-10611-1-git-send-email-geert+renesas@glider.be>
+ <1477928704-10611-3-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1477924491.14501.16.camel-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <1477928704-10611-3-git-send-email-geert+renesas@glider.be>
+Sender: linux-doc-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jonathan Corbet <corbet@lwn.net>
+Cc: linux-doc@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMzEvMTAvMTYgMTQ6MzQsIERhdmlkIFdvb2Rob3VzZSB3cm90ZToKPiBPbiBNb24sIDIwMTYt
-MTAtMzEgYXQgMTE6NDUgKzAwMDAsIFJvYmluIE11cnBoeSB3cm90ZToKPj4gSGkgRGF2aWQsCj4+
-Cj4+IE9uIDMwLzEwLzE2IDE5OjE0LCBEYXZpZCBXb29kaG91c2Ugd3JvdGU6Cj4+Pgo+Pj4gVGhl
-IEludGVsIElPTU1VIGNvZGUgcmVnaXN0ZXJzIGEgbm90aWZpZXIgYW5kIHBsYXlzIG5hc3R5IHRy
-aWNrcyB0byBmaWxsCj4+PiBkZXZpY2UgcG9pbnRlcnMgaW4gd2l0aCBpdHMgRE1BUiBzY29wZSB0
-YWJsZXMgd2hlbiBkZXZpY2VzIGFyZSBkZXRlY3RlZCwKPj4+IHRoZW4gbGF0ZXIgY29tcGFyZXMg
-dGhlIGRldmljZSBwb2ludGVycyBpbiB0aG9zZSB0YWJsZXMgd2hlbiBpdCBuZWVkcyB0bwo+Pj4g
-ZmluZCB0aGUgSU9NTVUgdW5pdCBmb3IgYSBnaXZlbiBkZXZpY2UuCj4+Pgo+Pj4gSWYgd2UgbGV0
-IGl0IHVzZSBhcmNoX3NldHVwX2RtYV9vcHMoKSB0byBtYXRjaCB0aGUgZGV2aWNlIHRvIGFuIElP
-TU1VCj4+PiB1bml0IGF0IGRldmljZV9yZWdpc3RlcigpIHRpbWUsIHRoaXMgZ2V0cyBhIHdob2xl
-IGxvdCBzYW5lci4KPj4KPj4gSSBsaWtlIHRoZSBzb3VuZCBvZiB0aGlzLCBidXQgZG8gYmV3YXJl
-IHRoYXQgdGhlcmUgYXJlIHBsYW5zIGFmb290IHRvCj4+IG1vdmUgdGhlIGFyY2hfc2V0dXBfZG1h
-X29wcygpIGNhbGwgbGF0ZXIsIHRvIGRyaXZlciBwcm9iZSB0aW1lWzFdLCAKPiAKPiBUaGF0J3Mg
-T0suIEkgb25seSBuZWVkIHRoZSBhcmNoX3NldHVwX2RtYV9vcHMoKSBjYWxsIHRvIGhhcHBlbiAq
-YWZ0ZXIqCj4gdGhlIGluaXRpYWwgcGFyc2luZyBvZiB0aGUgRE1BUiB0YWJsZXMgKHdoaWNoIGlz
-IHJlYWxseSBlYXJseSksIGFuZAo+ICpiZWZvcmUqIGFueW9uZSBhY3R1YWxseSB0cmllcyB0byBz
-ZXQgdXAgRE1BIGZvciBhIGdpdmVuIGRldmljZS4KCkNvb2wsIHNvdW5kcyBsaWtlIHRoZXJlIHNo
-b3VsZG4ndCBiZSBhbnkgaGFybSBpbiBnb2luZyBhaGVhZCB3aXRoIHRoaXMKaW1wbGVtZW50YXRp
-b24gdGhlbi4gQnkgbXkgcmVja29uaW5nIElPUlQgYW5kIERNQVIgKGF0IGxlYXN0IHRoZQpEUkhE
-L0RldmljZSBTY29wZSBwYXJ0cyBvZiBpdCkgc2VlbSBicm9hZGx5IHNpbWlsYXIsIHNvIHRoZXJl
-IG1pZ2h0IGV2ZW4KYmUgc2NvcGUgdG8gZHJpdmUgYSBiaXQgbW9yZSBjb252ZXJnZW5jZSBpbiB0
-aGUgQUNQSSBjb2RlIGluIGZ1dHVyZSBvbmNlCnRoZSBkdXN0IHNldHRsZXMuCgo+IFRoZXJlJ3Mg
-YSBzcGVjaWFsIGNhc2UgZm9yIFJNUlJzIHdoZXJlIHdlIGhhdmUgdG8gc2V0IHVwIHRoZSAxOjEK
-PiBtYXBwaW5nIGJlZm9yZSB3ZSBlbmFibGUgdGhlIElPTU1VLCBidXQgdGhhdCBuZWVkcyB3b3Jr
-IGFueXdheSDigJQgaXQKPiBjdXJyZW50bHkgZG9lc24ndCBjb3BlIHdpdGggbm9uLWV4aXN0ZW50
-IGRldmljZXMgKHRoZSBIUCBob3JyaWRuZXNzCj4gd2hlcmUgYSBkZXZpY2UgaXMgZG9pbmcgRE1B
-IGFuZCB3ZSBkb24ndCBldmVuIGtub3cgaXQgKmV4aXN0cyopLgo+IAo+IFNvIEkgd2FudCB0byBm
-aXggdGhlIFJNUlIgdGhpbmcgdG8gYmUgZW50aXJlbHkgZGVjb3VwbGVkIGZyb20gdGhlCj4gYWN0
-dWFsICpkZXZpY2VzKiBhbnl3YXkuCj4gCj4+IEZXSVcsIGFybTY0IGlzIHByb2JhYmx5IHRoZSBu
-aWNlciBleGFtcGxlLiBUaGUgYXJjaCBzaWRlIG9mIHRoZSBETUEgb3BzCj4+IGlzIHB1cmVseSBj
-YWNoZSBtYWludGVuYW5jZSwgYW5kIHRoZSByZXN0IGlzIGp1c3QgZnVubmVsbGVkIHRocm91Z2gg
-dGhlCj4+IGdlbmVyaWMgZG1hLWlvbW11LmMgZ2x1ZSBsYXllci4KPiAKPiBSaWdodCwgdGhhdCdz
-IGV4YWN0bHkgd2hhdCB3ZSdyZSBsb29raW5nIGZvci4KPiAKPiBTbyBkbWFfb3BzIGNhbiBnbyBi
-YWNrIHRvIGJlaW5nIGEgcGxhdGZvcm0td2lkZSB0aGluZzsgaXQncyBvbmx5IHRoZQo+IElPTU1V
-IG9wcyB3aGljaCBhcmUgZGlmZmVyZW50IHBlciBkZXZpY2UuCgpXZWxsLCBpbiBvdXIgY2FzZSB3
-ZSdsbCBwcm9iYWJseSBuZXZlciBlc2NhcGUgdGhlIGtpbmQgb2YgbnV0dHkgU29DCnRvcG9sb2dp
-ZXMgd2hlcmUgb25seSBzb21lIGRldmljZXMgYXJlIGJlaGluZCBJT01NVXMgKHdoaWNoIG1pZ2h0
-CnRoZW1zZWx2ZXMgYmUgaGV0ZXJvZ2VuZW91cyksIG9ubHkgc29tZSBhcmUgY29oZXJlbnQsIGV0
-Yy4sIGJ1dCBpZiB5b3UKZG9uJ3QgaGF2ZSB0byBkZWFsIHdpdGggdGhhdCB0aGVuIGRtYV9vcHMg
-aW5kZWVkIGJlY29tZSBuaWNlIGFuZCBlYXN5LgoKPj4+IEFuZCBJT01NVSBvcHMgc2hvdWxkIGJl
-IHBlci1kZXZpY2Ugb2YgY291cnNlLCBub3QgcGVyLWJ1cy4gQnV0IHRoaXMgaXMKPj4+IGEgc3Rh
-cnQuLi4KPj4gQXMgaXQgaGFwcGVucywgdGhhdCB3YXMgb25lIG9mIHRoZSBhZGRpdGlvbmFsIG1v
-dGl2YXRpb25zIGZvcgo+PiBpbnRyb2R1Y2luZyB0aGUgbmV3IGlvbW11X2Z3c3BlYyAtIHNlZSBb
-M10gZm9yIG15IHRha2Ugb24gdGhlIG1hdHRlci4KPiAKPiBSaWdodC4uLiBpbiBteSBjYXNlIEkg
-ZG9uJ3QgYWN0dWFsbHkgbmVlZCBpb21tdV9vcHMgdG8gY2hhbmdlLiBXZSBoYXZlCj4gbXVsdGlw
-bGUgSU9NTVVzIG9mIHRoZSBzYW1lIHR5cGUsIGFuZCB3ZSBkb24ndCBoYXZlIGEgKnNlcGFyYXRl
-KiBvcHMKPiBzdHJ1Y3R1cmUgZm9yIGVhY2ggb2YgdGhlbS4KPiAKPiBXaGF0IHdlICpkbyogbmVl
-ZCB0byBjaGFuZ2UgaXMgdGhlIGlvbW11LXByaXZhdGUgZGF0YSBwb2ludGVyLCB3aGljaAo+IGlu
-ZGljYXRlcyBzcGVjaWZpY2FsbHkgd2hpY2ggRE1BUiB1bml0IGlzIGJlaW5nIHVzZWQuCj4gCj4g
-VGhhdCdzIGN1cnJlbnRseSBrZXB0IGluIGRldi0+YXJjaGRhdGEgYnV0IHdpdGggYXNzdW1wdGlv
-bnMgdGhhdCB0aGUKPiBkZXZpY2UtPklPTU1VIG1hcHBpbmcgaXMgb25seSBkb25lIHdoZW4gdGhl
-IGRvbWFpbiBpcyBmaXJzdCBzZXQgdXAsIHNvCj4gaXQgbmVlZHMgdG8gYmUgcmVkb25lIGVpdGhl
-ciB3aXRoIGEgbmV3IGZpZWxkIGluIGRldi0+YXJjaGRhdGEgb3Igc29tZQo+IGFkZGl0aW9uYWwg
-Y29tcGxleGl0eS4KPiAKPiBSYXRoZXIgdGhhbiBhIG5ldyBmaWVsZCBpbiBhcmNoZGF0YS4uLi4g
-c2hvdWxkIHdlIG1ha2UgdGhpcyBhIGdlbmVyaWMKPiBpb21tdV9wcml2IHBvaW50ZXIgbGl2aW5n
-IG5leHQgdG8gaW9tbXVfb3BzIGluIHRoZSBkZXZpY2Ugc3RydWN0dXJlPwo+IAo+IENvdWxkIHlv
-dSB1c2UgdGhhdD8KCkFzIGZhciBhcyBJIGNhbiB0ZWxsIGZyb20gbG9va2luZyB0aHJvdWdoIHRo
-ZSB4ODYgZHJpdmVycywgeW91IHNob3VsZAphbHJlYWR5IGJlIGdvb2QgdG8gZ28gdG8gY29udmVy
-dCB0aGUgbGlrZXMgb2YgZGV2aWNlX3RvX2lvbW11KCkgYW5kIHRoZQplcXVpdmFsZW50IEFNRCBs
-b29rdXAgdGFibGVzIG92ZXIgdG8gYSBvbmUtb2ZmIGluaXRpYWxpc2F0aW9uIG9mCmRldi0+aW9t
-bXVfZndzcGVjIGFuZCBzdGFzaGluZyBzdHVmZiBpbiBpb21tdV9md3NwZWM6OmlvbW11X3ByaXYg
-YW5kCmlvbW11X2Z3c3BlYzo6aWRzIGFzIGFwcHJvcHJpYXRlLiBJIGp1c3QgZGlkbid0IGRhcmUg
-dHJ5IHdyaXRpbmcgdGhlCnBhdGNoZXMgbXlzZWxmLi4uCgpSb2Jpbi4KCj4gCj4gLS0gCj4gZHdt
-dzIKPiAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlv
-bW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczov
-L2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Hi Geert,
+
+On 31/10/16 15:45, Geert Uytterhoeven wrote:
+> On architectures like arm64, swiotlb is tied intimately to the core
+> architecture DMA support. In addition, ZONE_DMA cannot be disabled.
+
+To be fair, that only takes a single-character change in
+arch/arm64/Kconfig - in fact, I'm amused to see my stupid patch to fix
+the build if you do just that (86a5906e4d1d) has just had its birthday ;)
+
+> To aid debugging and catch devices not supporting DMA to memory outside
+> the 32-bit address space, add a kernel command line option
+> "swiotlb=nobounce", which disables the use of bounce buffers.
+> If specified, trying to map memory that cannot be used with DMA will
+> fail, and a warning will be printed (rate-limited).
+
+This rationale seems questionable - how useful is non-deterministic
+behaviour for debugging really? What you end up with is DMA sometimes
+working or sometimes not depending on whether allocations happen to
+naturally fall below 4GB or not. In my experience, that in itself can be
+a pain in the arse to debug.
+
+Most of the things you might then do to make things more deterministic
+again (like making the default DMA mask tiny or hacking out all the
+system's 32-bit addressable RAM) are also generally sufficient to make
+DMA fail earlier and make this option moot anyway. What's the specific
+use case motivating this?
+
+Robin.
+
+> Note that io_tlb_nslabs is set to 1, which is the minimal supported
+> value.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  Documentation/kernel-parameters.txt |  3 ++-
+>  lib/swiotlb.c                       | 19 +++++++++++++++++--
+>  2 files changed, 19 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+> index 37babf91f2cb6de2..38556cdceabaf087 100644
+> --- a/Documentation/kernel-parameters.txt
+> +++ b/Documentation/kernel-parameters.txt
+> @@ -3998,10 +3998,11 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+>  			it if 0 is given (See Documentation/cgroup-v1/memory.txt)
+>  
+>  	swiotlb=	[ARM,IA-64,PPC,MIPS,X86]
+> -			Format: { <int> | force }
+> +			Format: { <int> | force | nobounce }
+>  			<int> -- Number of I/O TLB slabs
+>  			force -- force using of bounce buffers even if they
+>  			         wouldn't be automatically used by the kernel
+> +			nobounce -- Never use bounce buffers (for debugging)
+>  
+>  	switches=	[HW,M68k]
+>  
+> diff --git a/lib/swiotlb.c b/lib/swiotlb.c
+> index 6ce764410ae475cc..4550e6b516c2a4c0 100644
+> --- a/lib/swiotlb.c
+> +++ b/lib/swiotlb.c
+> @@ -54,6 +54,7 @@
+>  #define IO_TLB_MIN_SLABS ((1<<20) >> IO_TLB_SHIFT)
+>  
+>  int swiotlb_force;
+> +static int swiotlb_nobounce;
+>  
+>  /*
+>   * Used to do a quick range check in swiotlb_tbl_unmap_single and
+> @@ -106,8 +107,12 @@
+>  	}
+>  	if (*str == ',')
+>  		++str;
+> -	if (!strcmp(str, "force"))
+> +	if (!strcmp(str, "force")) {
+>  		swiotlb_force = 1;
+> +	} else if (!strcmp(str, "nobounce")) {
+> +		swiotlb_nobounce = 1;
+> +		io_tlb_nslabs = 1;
+> +	}
+>  
+>  	return 0;
+>  }
+> @@ -541,8 +546,15 @@ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev,
+>  map_single(struct device *hwdev, phys_addr_t phys, size_t size,
+>  	   enum dma_data_direction dir)
+>  {
+> -	dma_addr_t start_dma_addr = phys_to_dma(hwdev, io_tlb_start);
+> +	dma_addr_t start_dma_addr;
+> +
+> +	if (swiotlb_nobounce) {
+> +		dev_warn_ratelimited(hwdev, "Cannot do DMA to address %pa\n",
+> +				     &phys);
+> +		return SWIOTLB_MAP_ERROR;
+> +	}
+>  
+> +	start_dma_addr = phys_to_dma(hwdev, io_tlb_start);
+>  	return swiotlb_tbl_map_single(hwdev, start_dma_addr, phys, size, dir);
+>  }
+>  
+> @@ -707,6 +719,9 @@ void swiotlb_tbl_sync_single(struct device *hwdev, phys_addr_t tlb_addr,
+>  swiotlb_full(struct device *dev, size_t size, enum dma_data_direction dir,
+>  	     int do_panic)
+>  {
+> +	if (swiotlb_nobounce)
+> +		return;
+> +
+>  	/*
+>  	 * Ran out of IOMMU space for this operation. This is very bad.
+>  	 * Unfortunately the drivers cannot handle this operation properly.
+> 
+
