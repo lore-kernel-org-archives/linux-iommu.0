@@ -1,131 +1,147 @@
-From: Xunlei Pang <xpang@redhat.com>
-Subject: Re: [PATCH] iommu/vt-d: Fix the size calculation of pasid table
-Date: Mon, 31 Oct 2016 19:30:32 +0800
-Message-ID: <58172B58.804@redhat.com>
-References: <1473648551-10025-1-git-send-email-xlpang@redhat.com>
- <20160919121827.GB3541@8bytes.org> <1476274674.16627.173.camel@infradead.org>
- <1477829902.4154.9.camel@infradead.org>
-Reply-To: xlpang@redhat.com
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH] x86: Allow IOMMU drivers to Hook arch_setup_dma_ops()
+Date: Mon, 31 Oct 2016 11:45:15 +0000
+Message-ID: <a95e5fb2-3f5d-5334-c62d-e4b99a52adcb@arm.com>
+References: <1477854889.14501.6.camel@woodhou.se>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1477829902.4154.9.camel@infradead.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, Xunlei Pang <xlpang@redhat.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Mika Kuoppala <mika.kuoppala@linux.intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1477854889.14501.6.camel-1zP8QHzw3cfLoDKTGw+V6w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2016/10/30 at 20:18, David Woodhouse wrote:
-> On Wed, 2016-10-12 at 13:17 +0100, David Woodhouse wrote:
->> Yes, that looks correct. I think we may also need to limit it, because
->> full 20-bit PASID support means we'll attempt an order 11 allocation.
->> But that's certainly correct for now
-> Actually, not quite correct. You fixed the allocation but not the free.
-> And Mika had reported that even the *correct* allocation was failing
-> because it was too large. So I've done it differently (untested)...
+Hi David,
 
-Yes, your fix looks correct.
+On 30/10/16 19:14, David Woodhouse wrote:
+> The Intel IOMMU code registers a notifier and plays nasty tricks to fill
+> device pointers in with its DMAR scope tables when devices are detected,
+> then later compares the device pointers in those tables when it needs to
+> find the IOMMU unit for a given device.
+> 
+> If we let it use arch_setup_dma_ops() to match the device to an IOMMU
+> unit at device_register() time, this gets a whole lot saner.
 
-Thanks,
-Xunlei
+I like the sound of this, but do beware that there are plans afoot to
+move the arch_setup_dma_ops() call later, to driver probe time[1], to
+allow probe deferral in favour of other nasty platform-device-creation
+hacks that we currently have to ensure IOMMUs are up and running before
+any other devices need to interact with them. As it transpires that we
+probably need to keep something like the current of_iommu_configure()
+call prior to device_add(), though, then given Lorenzo's work to
+formalise ACPI DMA configuration along similar lines[2], I think the
+only impact is a slight jiggling such that x86_platform.iommu_setup
+slots in as x86's equivalent of ARM's iort_iommu_configure().
 
-> -----
-> Subject: [PATCH] iommu/vt-d: Fix PASID table allocation
->
-> Somehow I ended up with an off-by-three error in calculating the size of
-> the PASID and PASID State tables, which triggers allocations failures as
-> those tables unfortunately have to be physically contiguous.
->
-> In fact, even the *correct* maximum size of 8MiB is problematic and is
-> wont to lead to allocation failures. Since I have extracted a promise
-> that this *will* be fixed in hardware, I'm happy to limit it on the
-> current hardware to a maximum of 0x20000 PASIDs, which gives us 1MiB
-> tables — still not ideal, but better than before.
->
-> Reported by Mika Kuoppala <mika.kuoppala@linux.intel.com> and also by
-> Xunlei Pang <xlpang@redhat.com> who submitted a simpler patch to fix
-> only the allocation (and not the free) to the "correct" limit... which
-> was still problematic.
->
-> Signed-off-by: David Woodhouse <dwmw2@infradead.org>
+> Signed-off-by: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 > ---
->  drivers/iommu/intel-svm.c   | 28 +++++++++++++++++-----------
->  include/linux/intel-iommu.h |  1 +
->  2 files changed, 18 insertions(+), 11 deletions(-)
->
-> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-> index 8ebb353..cb72e00 100644
-> --- a/drivers/iommu/intel-svm.c
-> +++ b/drivers/iommu/intel-svm.c
-> @@ -39,10 +39,18 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
->  	struct page *pages;
->  	int order;
+> Of course it's still not actually *sane*. We have per-device DMA ops,
+> but per-bus IOMMU ops. What we actually want to do is ditch the DMA ops
+> entirely and simply do it all through the IOMMU ops, like ARM does in
+> its arch/arm/mm/dma-mapping.c.
+
+FWIW, arm64 is probably the nicer example. The arch side of the DMA ops
+is purely cache maintenance, and the rest is just funnelled through the
+generic dma-iommu.c glue layer. ARM still has some extra legacy to clean
+up before it can be converted over to that (I've looked into it, and
+it's effectively blocked on the probe-deferral thing).
+
+> I think we can do an iova-dma-mapping.c
+> with just an additional flag in the IOMMU domain which says that it can
+> do lazy unmaps. 
+
+It should be OK to predicate DMA-ops-specific behaviour on domain->type
+within the driver - I've been playing with vaguely similar ideas for the
+ARM SMMU (namely skipping pagetable locks).
+
+> And IOMMU ops should be per-device of course, not per-bus. But this is
+> a start...
+
+As it happens, that was one of the additional motivations for
+introducing the new iommu_fwspec - see [3] for my take on the matter.
+
+Robin.
+
+[1]:http://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg14491.html
+[2]:http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1251993.html
+[3]:http://www.mail-archive.com/iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org/msg14576.html
+
+>  arch/x86/include/asm/dma-mapping.h | 2 ++
+>  arch/x86/include/asm/x86_init.h    | 3 +++
+>  arch/x86/kernel/x86_init.c         | 3 +++
+>  3 files changed, 8 insertions(+)
+> 
+> diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
+> index 4446162..b3888a0 100644
+> --- a/arch/x86/include/asm/dma-mapping.h
+> +++ b/arch/x86/include/asm/dma-mapping.h
+> @@ -42,6 +42,8 @@ static inline struct dma_map_ops *get_dma_ops(struct device *dev)
+>  bool arch_dma_alloc_attrs(struct device **dev, gfp_t *gfp);
+>  #define arch_dma_alloc_attrs arch_dma_alloc_attrs
 >  
-> -	order = ecap_pss(iommu->ecap) + 7 - PAGE_SHIFT;
-> -	if (order < 0)
-> -		order = 0;
-> -
-> +	/* Start at 2 because it's defined as 1^(1+PSS) */
-> +	iommu->pasid_max = 2 << ecap_pss(iommu->ecap);
+> +#define arch_setup_dma_ops x86_platform.iommu_setup_dma_ops
 > +
-> +	/* Eventually I'm promised we will get a multi-level PASID table
-> +	 * and it won't have to be physically contiguous. Until then,
-> +	 * limit the size because 8MiB contiguous allocations can be hard
-> +	 * to come by. The limit of 0x20000, which is 1MiB for each of
-> +	 * the PASID and PASID-state tables, is somewhat arbitrary. */
-> +	if (iommu->pasid_max > 0x20000)
-> +		iommu->pasid_max = 0x20000;
-> +
-> +	order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
->  	pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
->  	if (!pages) {
->  		pr_warn("IOMMU: %s: Failed to allocate PASID table\n",
-> @@ -53,6 +61,8 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
->  	pr_info("%s: Allocated order %d PASID table.\n", iommu->name, order);
+>  #define HAVE_ARCH_DMA_SUPPORTED 1
+>  extern int dma_supported(struct device *hwdev, u64 mask);
 >  
->  	if (ecap_dis(iommu->ecap)) {
-> +		/* Just making it explicit... */
-> +		BUILD_BUG_ON(sizeof(struct pasid_entry) != sizeof(struct pasid_state_entry));
->  		pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
->  		if (pages)
->  			iommu->pasid_state_table = page_address(pages);
-> @@ -68,11 +78,7 @@ int intel_svm_alloc_pasid_tables(struct intel_iommu *iommu)
+> diff --git a/arch/x86/include/asm/x86_init.h b/arch/x86/include/asm/x86_init.h
+> index 6ba7931..6872dcc 100644
+> --- a/arch/x86/include/asm/x86_init.h
+> +++ b/arch/x86/include/asm/x86_init.h
+> @@ -7,6 +7,7 @@ struct mpc_bus;
+>  struct mpc_cpu;
+>  struct mpc_table;
+>  struct cpuinfo_x86;
+> +struct iommu_ops;
 >  
->  int intel_svm_free_pasid_tables(struct intel_iommu *iommu)
->  {
-> -	int order;
-> -
-> -	order = ecap_pss(iommu->ecap) + 7 - PAGE_SHIFT;
-> -	if (order < 0)
-> -		order = 0;
-> +	int order = get_order(sizeof(struct pasid_entry) * iommu->pasid_max);
+>  /**
+>   * struct x86_init_mpparse - platform specific mpparse ops
+> @@ -207,6 +208,8 @@ struct x86_platform_ops {
+>  	void (*get_wallclock)(struct timespec *ts);
+>  	int (*set_wallclock)(const struct timespec *ts);
+>  	void (*iommu_shutdown)(void);
+> +	void (*iommu_setup_dma_ops)(struct device *dev, u64 dma_base, u64 size,
+> +				    const struct iommu_ops *iommu, bool coherent);
+>  	bool (*is_untracked_pat_range)(u64 start, u64 end);
+>  	void (*nmi_init)(void);
+>  	unsigned char (*get_nmi_reason)(void);
+> diff --git a/arch/x86/kernel/x86_init.c b/arch/x86/kernel/x86_init.c
+> index 0bd9f12..5e54a72 100644
+> --- a/arch/x86/kernel/x86_init.c
+> +++ b/arch/x86/kernel/x86_init.c
+> @@ -28,6 +28,8 @@ void x86_init_noop(void) { }
+>  void __init x86_init_uint_noop(unsigned int unused) { }
+>  int __init iommu_init_noop(void) { return 0; }
+>  void iommu_shutdown_noop(void) { }
+> +void iommu_setup_dma_ops_noop(struct device *dev, u64 dma_base, u64 size,
+> +			      const struct iommu_ops *iommu, bool coherent) { }
 >  
->  	if (iommu->pasid_table) {
->  		free_pages((unsigned long)iommu->pasid_table, order);
-> @@ -371,8 +377,8 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
->  		}
->  		svm->iommu = iommu;
->  
-> -		if (pasid_max > 2 << ecap_pss(iommu->ecap))
-> -			pasid_max = 2 << ecap_pss(iommu->ecap);
-> +		if (pasid_max > iommu->pasid_max)
-> +			pasid_max = iommu->pasid_max;
->  
->  		/* Do not use PASID 0 in caching mode (virtualised IOMMU) */
->  		ret = idr_alloc(&iommu->pasid_idr, svm,
-> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> index 2d9b6500..d49e26c 100644
-> --- a/include/linux/intel-iommu.h
-> +++ b/include/linux/intel-iommu.h
-> @@ -429,6 +429,7 @@ struct intel_iommu {
->  	struct page_req_dsc *prq;
->  	unsigned char prq_name[16];    /* Name for PRQ interrupt */
->  	struct idr pasid_idr;
-> +	u32 pasid_max;
->  #endif
->  	struct q_inval  *qi;            /* Queued invalidation info */
->  	u32 *iommu_state; /* Store iommu states between suspend and resume.*/
+>  /*
+>   * The platform setup functions are preset with the default functions
+> @@ -97,6 +99,7 @@ struct x86_platform_ops x86_platform __ro_after_init = {
+>  	.get_wallclock			= mach_get_cmos_time,
+>  	.set_wallclock			= mach_set_rtc_mmss,
+>  	.iommu_shutdown			= iommu_shutdown_noop,
+> +	.iommu_setup_dma_ops		= iommu_setup_dma_ops_noop,
+>  	.is_untracked_pat_range		= is_ISA_range,
+>  	.nmi_init			= default_nmi_init,
+>  	.get_nmi_reason			= default_get_nmi_reason,
 > -- 
 > 2.5.5
->
+> 
+> 
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
