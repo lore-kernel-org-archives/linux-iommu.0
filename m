@@ -1,49 +1,41 @@
-From: Robin Murphy <robin.murphy@arm.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 Subject: Re: [PATCH 2/2] swiotlb: Add swiotlb=nobounce debug option
-Date: Mon, 31 Oct 2016 17:41:58 +0000
-Message-ID: <86c57a18-cb28-8aee-9edb-96da73d4f829@arm.com>
+Date: Mon, 31 Oct 2016 13:52:52 -0400
+Message-ID: <20161031175252.GA6952@char.us.oracle.com>
 References: <1477928704-10611-1-git-send-email-geert+renesas@glider.be>
  <1477928704-10611-3-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
 In-Reply-To: <1477928704-10611-3-git-send-email-geert+renesas@glider.be>
-Sender: linux-doc-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jonathan Corbet <corbet@lwn.net>
-Cc: linux-doc@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org
+Sender: linux-kernel-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Jonathan Corbet <corbet@lwn.net>, Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Geert,
-
-On 31/10/16 15:45, Geert Uytterhoeven wrote:
+On Mon, Oct 31, 2016 at 04:45:04PM +0100, Geert Uytterhoeven wrote:
 > On architectures like arm64, swiotlb is tied intimately to the core
 > architecture DMA support. In addition, ZONE_DMA cannot be disabled.
-
-To be fair, that only takes a single-character change in
-arch/arm64/Kconfig - in fact, I'm amused to see my stupid patch to fix
-the build if you do just that (86a5906e4d1d) has just had its birthday ;)
-
+> 
 > To aid debugging and catch devices not supporting DMA to memory outside
 > the 32-bit address space, add a kernel command line option
 > "swiotlb=nobounce", which disables the use of bounce buffers.
 > If specified, trying to map memory that cannot be used with DMA will
 > fail, and a warning will be printed (rate-limited).
 
-This rationale seems questionable - how useful is non-deterministic
-behaviour for debugging really? What you end up with is DMA sometimes
-working or sometimes not depending on whether allocations happen to
-naturally fall below 4GB or not. In my experience, that in itself can be
-a pain in the arse to debug.
+I would make the 'swiotlb_force' an enum. And then instead of this
+being 'nobounce' just do the inverse of 'force', that is the
+'noforce' would trigger this no bounce effect.
 
-Most of the things you might then do to make things more deterministic
-again (like making the default DMA mask tiny or hacking out all the
-system's 32-bit addressable RAM) are also generally sufficient to make
-DMA fail earlier and make this option moot anyway. What's the specific
-use case motivating this?
+So:
 
-Robin.
-
+enum {
+	NORMAL,		/* Default - depending on the hardware DMA mask and such. */
+	FORCE,		/* swiotlb=force */
+	NO_FORCE,	/* swiotlb=noforce */
+}
+> 
 > Note that io_tlb_nslabs is set to 1, which is the minimal supported
 > value.
 > 
@@ -123,5 +115,6 @@ Robin.
 >  	/*
 >  	 * Ran out of IOMMU space for this operation. This is very bad.
 >  	 * Unfortunately the drivers cannot handle this operation properly.
+> -- 
+> 1.9.1
 > 
-
