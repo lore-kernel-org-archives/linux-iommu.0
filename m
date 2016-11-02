@@ -1,233 +1,218 @@
-From: Graeme Gregory <gg@slimlogic.co.uk>
-Subject: Re: [PATCH v6 09/16] drivers: acpi: iort: add support for ARM SMMU
- platform devices creation
-Date: Tue, 1 Nov 2016 16:30:22 -0600
-Message-ID: <20161101223022.GA1234@xora-yoga13>
-References: <20161018160414.1228-1-lorenzo.pieralisi@arm.com>
- <20161018160414.1228-10-lorenzo.pieralisi@arm.com>
- <20161028155007.GA19523@red-moon>
+From: "Sricharan" <sricharan@codeaurora.org>
+Subject: RE: [PATCH V3 4/8] drivers: platform: Configure dma operations at probe time
+Date: Wed, 2 Nov 2016 12:35:06 +0530
+Message-ID: <004101d234d7$753c8840$5fb598c0$@codeaurora.org>
+References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org> <1475600632-21289-5-git-send-email-sricharan@codeaurora.org> <a77ab9da-1347-49e8-6c55-071bd712729a@arm.com> <003d01d22f9a$56477b80$02d67280$@codeaurora.org> <20161027104924.GA16905@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20161028155007.GA19523@red-moon>
-Sender: linux-pci-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: iommu@lists.linux-foundation.org, Hanjun Guo <hanjun.guo@linaro.org>, Tomasz Nowicki <tn@semihalf.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20161027104924.GA16905@red-moon>
+Content-Language: en-us
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: 'Lorenzo Pieralisi' <lorenzo.pieralisi@arm.com>
+Cc: 'Robin Murphy' <robin.murphy@arm.com>, will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, laurent.pinchart@ideasonboard.com, m.szyprowski@samsung.com, tfiga@chromium.org, srinivas.kandagatla@linaro.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Oct 28, 2016 at 04:50:07PM +0100, Lorenzo Pieralisi wrote:
-> On Tue, Oct 18, 2016 at 05:04:07PM +0100, Lorenzo Pieralisi wrote:
-> > In ARM ACPI systems, IOMMU components are specified through static
-> > IORT table entries. In order to create platform devices for the
-> > corresponding ARM SMMU components, IORT kernel code should be made
-> > able to parse IORT table entries and create platform devices
-> > dynamically.
-> > 
-> > This patch adds the generic IORT infrastructure required to create
-> > platform devices for ARM SMMUs.
-> > 
-> > ARM SMMU versions have different resources requirement therefore this
-> > patch also introduces an IORT specific structure (ie iort_iommu_config)
-> > that contains hooks (to be defined when the corresponding ARM SMMU
-> > driver support is added to the kernel) to be used to define the
-> > platform devices names, init the IOMMUs, count their resources and
-> > finally initialize them.
-> > 
-> > Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> > Cc: Hanjun Guo <hanjun.guo@linaro.org>
-> > Cc: Tomasz Nowicki <tn@semihalf.com>
-> > Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-> > ---
-> >  drivers/acpi/arm64/iort.c | 151 ++++++++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 151 insertions(+)
-> > 
-> > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> > index 1433de3..2eda2f5 100644
-> > --- a/drivers/acpi/arm64/iort.c
-> > +++ b/drivers/acpi/arm64/iort.c
-> > @@ -19,9 +19,11 @@
-> >  #define pr_fmt(fmt)	"ACPI: IORT: " fmt
-> >  
-> >  #include <linux/acpi_iort.h>
-> > +#include <linux/iommu.h>
-> >  #include <linux/kernel.h>
-> >  #include <linux/list.h>
-> >  #include <linux/pci.h>
-> > +#include <linux/platform_device.h>
-> >  #include <linux/slab.h>
-> >  
-> >  struct iort_its_msi_chip {
-> > @@ -457,6 +459,153 @@ struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id)
-> >  	return irq_find_matching_fwnode(handle, DOMAIN_BUS_PCI_MSI);
-> >  }
-> >  
-> > +struct iort_iommu_config {
-> > +	const char *name;
-> > +	int (*iommu_init)(struct acpi_iort_node *node);
-> > +	bool (*iommu_is_coherent)(struct acpi_iort_node *node);
-> > +	int (*iommu_count_resources)(struct acpi_iort_node *node);
-> > +	void (*iommu_init_resources)(struct resource *res,
-> > +				     struct acpi_iort_node *node);
-> > +};
-> > +
-> > +static __init
-> > +const struct iort_iommu_config *iort_get_iommu_cfg(struct acpi_iort_node *node)
-> > +{
-> > +	return NULL;
-> > +}
-> > +
-> > +/**
-> > + * iort_add_smmu_platform_device() - Allocate a platform device for SMMU
-> > + * @node: Pointer to SMMU ACPI IORT node
-> > + *
-> > + * Returns: 0 on success, <0 failure
-> > + */
-> > +static int __init iort_add_smmu_platform_device(struct acpi_iort_node *node)
-> > +{
-> > +	struct fwnode_handle *fwnode;
-> > +	struct platform_device *pdev;
-> > +	struct resource *r;
-> > +	enum dev_dma_attr attr;
-> > +	int ret, count;
-> > +	const struct iort_iommu_config *ops = iort_get_iommu_cfg(node);
-> > +
-> > +	if (!ops)
-> > +		return -ENODEV;
-> > +
-> > +	pdev = platform_device_alloc(ops->name, PLATFORM_DEVID_AUTO);
-> > +	if (!pdev)
-> > +		return PTR_ERR(pdev);
-> > +
-> > +	count = ops->iommu_count_resources(node);
-> > +
-> > +	r = kcalloc(count, sizeof(*r), GFP_KERNEL);
-> > +	if (!r) {
-> > +		ret = -ENOMEM;
-> > +		goto dev_put;
-> > +	}
-> > +
-> > +	ops->iommu_init_resources(r, node);
-> > +
-> > +	ret = platform_device_add_resources(pdev, r, count);
-> > +	/*
-> > +	 * Resources are duplicated in platform_device_add_resources,
-> > +	 * free their allocated memory
-> > +	 */
-> > +	kfree(r);
-> > +
-> > +	if (ret)
-> > +		goto dev_put;
-> > +
-> > +	/*
-> > +	 * Add a copy of IORT node pointer to platform_data to
-> > +	 * be used to retrieve IORT data information.
-> > +	 */
-> > +	ret = platform_device_add_data(pdev, &node, sizeof(node));
-> > +	if (ret)
-> > +		goto dev_put;
-> > +
-> > +	/*
-> > +	 * We expect the dma masks to be equivalent for
-> > +	 * all SMMUs set-ups
-> > +	 */
-> > +	pdev->dev.dma_mask = &pdev->dev.coherent_dma_mask;
-> > +
-> > +	fwnode = iort_get_fwnode(node);
-> > +
-> > +	if (!fwnode) {
-> > +		ret = -ENODEV;
-> > +		goto dev_put;
-> > +	}
-> > +
-> > +	pdev->dev.fwnode = fwnode;
-> > +
-> > +	attr = ops->iommu_is_coherent(node) ?
-> > +			     DEV_DMA_COHERENT : DEV_DMA_NON_COHERENT;
-> > +
-> > +	/* Configure DMA for the page table walker */
-> > +	acpi_dma_configure(&pdev->dev, attr);
-> > +
-> > +	ret = platform_device_add(pdev);
-> > +	if (ret)
-> > +		goto dma_deconfigure;
-> > +
-> > +	return 0;
-> > +
-> > +dma_deconfigure:
-> > +	acpi_dma_deconfigure(&pdev->dev);
-> > +dev_put:
-> > +	platform_device_put(pdev);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static void __init iort_init_platform_devices(void)
-> > +{
-> > +	struct acpi_iort_node *iort_node, *iort_end;
-> > +	struct acpi_table_iort *iort;
-> > +	struct fwnode_handle *fwnode;
-> > +	int i, ret;
-> > +
-> > +	/*
-> > +	 * iort_table and iort both point to the start of IORT table, but
-> > +	 * have different struct types
-> > +	 */
-> > +	iort = (struct acpi_table_iort *)iort_table;
-> > +
-> > +	/* Get the first IORT node */
-> > +	iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort,
-> > +				 iort->node_offset);
-> > +	iort_end = ACPI_ADD_PTR(struct acpi_iort_node, iort,
-> > +				iort_table->length);
-> > +
-> > +	for (i = 0; i < iort->node_count; i++) {
-> > +		if (iort_node >= iort_end) {
-> > +			pr_err("iort node pointer overflows, bad table\n");
-> > +			return;
-> > +		}
-> > +
-> > +		if ((iort_node->type == ACPI_IORT_NODE_SMMU) ||
-> > +			(iort_node->type == ACPI_IORT_NODE_SMMU_V3)) {
-> > +
-> > +			fwnode = acpi_alloc_fwnode_static();
-> > +			if (!fwnode)
-> > +				return;
-> > +
-> > +			iort_set_fwnode(iort_node, fwnode);
-> > +
-> > +			ret = iort_add_smmu_platform_device(iort_node);
-> > +			if (ret) {
-> > +				iort_delete_fwnode(iort_node);
-> > +				acpi_free_fwnode_static(fwnode);
-> > +				return;
-> > +			}
-> > +		}
-> > +
-> > +		iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort_node,
-> > +					 iort_node->length);
-> > +	}
-> > +}
-> > +
-> >  void __init acpi_iort_init(void)
-> >  {
-> >  	acpi_status status;
-> > @@ -468,5 +617,7 @@ void __init acpi_iort_init(void)
-> >  		return;
-> >  	}
-> >  
-> 
-> Slipped through the cracks while rebasing v6, I should add code that
-> returns if no IORT table found here to prevent calling:
-> 
-> iort_init_platform_devices()
-> 
-> I will update the next version, it is just a heads-up for testers,
-> I can push an updated/fixed branch if needed.
-> 
+Hi Lorenzo,
 
-I could do with the updated branch.
+>-----Original Message-----
+>From: linux-arm-msm-owner@vger.kernel.org [mailto:linux-arm-msm-owner@vger.kernel.org] On Behalf Of Lorenzo Pieralisi
+>Sent: Thursday, October 27, 2016 4:19 PM
+>To: Sricharan <sricharan@codeaurora.org>
+>Cc: 'Robin Murphy' <robin.murphy@arm.com>; will.deacon@arm.com; joro@8bytes.org; iommu@lists.linux-foundation.org; linux-
+>arm-kernel@lists.infradead.org; linux-arm-msm@vger.kernel.org; laurent.pinchart@ideasonboard.com;
+>m.szyprowski@samsung.com; tfiga@chromium.org; srinivas.kandagatla@linaro.org
+>Subject: Re: [PATCH V3 4/8] drivers: platform: Configure dma operations at probe time
+>
+>On Wed, Oct 26, 2016 at 08:34:59PM +0530, Sricharan wrote:
+>> Hi Robin,
+>>
+>> >On 04/10/16 18:03, Sricharan R wrote:
+>> >> Configuring DMA ops at probe time will allow deferring device probe when
+>> >> the IOMMU isn't available yet. The dma_configure for the device is now called
+>> >> from the generic device_attach callback just before the bus/driver probe
+>> >> is called. This way, configuring the dma ops for the device would be called
+>> >> at the same place for all bus_types, hence the deferred probing mechanism
+>> >> should work for all buses as well.
+>> >>
+>> >> pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
+>> >>        |                         |
+>> >> pci_bus_add_device     (device_add/driver_register)
+>> >>        |                         |
+>> >> device_attach           device_initial_probe
+>> >>        |                         |
+>> >> __device_attach_driver    __device_attach_driver
+>> >>        |
+>> >> driver_probe_device
+>> >>        |
+>> >> really_probe
+>> >>        |
+>> >> dma_configure
+>> >>
+>> >>  Similarly on the device/driver_unregister path __device_release_driver is
+>> >>  called which inturn calls dma_deconfigure.
+>> >>
+>> >> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+>> >> ---
+>> >>  drivers/base/dd.c           | 10 ++++++++++
+>> >>  drivers/base/dma-mapping.c  | 11 +++++++++++
+>> >>  drivers/of/platform.c       |  4 ----
+>> >>  drivers/pci/probe.c         |  5 +----
+>> >>  include/linux/dma-mapping.h |  3 +++
+>> >>  5 files changed, 25 insertions(+), 8 deletions(-)
+>> >>
+>> >> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+>> >> index 16688f5..cfebd48 100644
+>> >> --- a/drivers/base/dd.c
+>> >> +++ b/drivers/base/dd.c
+>> >> @@ -19,6 +19,7 @@
+>> >>
+>> >>  #include <linux/device.h>
+>> >>  #include <linux/delay.h>
+>> >> +#include <linux/dma-mapping.h>
+>> >>  #include <linux/module.h>
+>> >>  #include <linux/kthread.h>
+>> >>  #include <linux/wait.h>
+>> >> @@ -353,6 +354,10 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+>> >>  	if (ret)
+>> >>  		goto pinctrl_bind_failed;
+>> >>
+>> >> +	ret = dma_configure(dev);
+>> >> +	if (ret)
+>> >> +		goto dma_failed;
+>> >> +
+>> >>  	if (driver_sysfs_add(dev)) {
+>> >>  		printk(KERN_ERR "%s: driver_sysfs_add(%s) failed\n",
+>> >>  			__func__, dev_name(dev));
+>> >> @@ -395,6 +400,8 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+>> >>  	goto done;
+>> >>
+>> >>  probe_failed:
+>> >> +	dma_deconfigure(dev);
+>> >> +dma_failed:
+>> >>  	if (dev->bus)
+>> >>  		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
+>> >>  					     BUS_NOTIFY_DRIVER_NOT_BOUND, dev);
+>> >> @@ -780,6 +787,9 @@ static void __device_release_driver(struct device *dev)
+>> >>  			dev->bus->remove(dev);
+>> >>  		else if (drv->remove)
+>> >>  			drv->remove(dev);
+>> >> +
+>> >> +		dma_deconfigure(dev);
+>> >> +
+>> >>  		devres_release_all(dev);
+>> >>  		dev->driver = NULL;
+>> >>  		dev_set_drvdata(dev, NULL);
+>> >> diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+>> >> index d799662..54e87f5 100644
+>> >> --- a/drivers/base/dma-mapping.c
+>> >> +++ b/drivers/base/dma-mapping.c
+>> >> @@ -10,6 +10,7 @@
+>> >>  #include <linux/dma-mapping.h>
+>> >>  #include <linux/export.h>
+>> >>  #include <linux/gfp.h>
+>> >> +#include <linux/of_device.h>
+>> >>  #include <linux/slab.h>
+>> >>  #include <linux/vmalloc.h>
+>> >>
+>> >> @@ -166,6 +167,16 @@ void dmam_free_noncoherent(struct device *dev, size_t size, void *vaddr,
+>> >>  }
+>> >>  EXPORT_SYMBOL(dmam_free_noncoherent);
+>> >>
+>> >> +int dma_configure(struct device *dev)
+>> >> +{
+>> >> +	return of_dma_configure(dev, dev->of_node);
+>> >> +}
+>> >> +
+>> >> +void dma_deconfigure(struct device *dev)
+>> >> +{
+>> >> +	of_dma_deconfigure(dev);
+>> >> +}
+>> >> +
+>> >>  #ifdef CONFIG_HAVE_GENERIC_DMA_COHERENT
+>> >>
+>> >>  static void dmam_coherent_decl_release(struct device *dev, void *res)
+>> >> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+>> >> index 9cb7090..adbd77c 100644
+>> >> --- a/drivers/of/platform.c
+>> >> +++ b/drivers/of/platform.c
+>> >> @@ -181,11 +181,9 @@ static struct platform_device *of_platform_device_create_pdata(
+>> >>
+>> >>  	dev->dev.bus = &platform_bus_type;
+>> >>  	dev->dev.platform_data = platform_data;
+>> >> -	of_dma_configure(&dev->dev, dev->dev.of_node);
+>> >>  	of_msi_configure(&dev->dev, dev->dev.of_node);
+>> >>
+>> >>  	if (of_device_add(dev) != 0) {
+>> >> -		of_dma_deconfigure(&dev->dev);
+>> >>  		platform_device_put(dev);
+>> >>  		goto err_clear_flag;
+>> >>  	}
+>> >> @@ -242,7 +240,6 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
+>> >>  		dev_set_name(&dev->dev, "%s", bus_id);
+>> >>  	else
+>> >>  		of_device_make_bus_id(&dev->dev);
+>> >> -	of_dma_configure(&dev->dev, dev->dev.of_node);
+>> >>
+>> >>  	/* Allow the HW Peripheral ID to be overridden */
+>> >>  	prop = of_get_property(node, "arm,primecell-periphid", NULL);
+>> >> @@ -536,7 +533,6 @@ static int of_platform_device_destroy(struct device *dev, void *data)
+>> >>  		amba_device_unregister(to_amba_device(dev));
+>> >>  #endif
+>> >>
+>> >> -	of_dma_deconfigure(dev);
+>> >>  	of_node_clear_flag(dev->of_node, OF_POPULATED);
+>> >>  	of_node_clear_flag(dev->of_node, OF_POPULATED_BUS);
+>> >>  	return 0;
+>> >> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+>> >> index 93f280d..85c9553 100644
+>> >> --- a/drivers/pci/probe.c
+>> >> +++ b/drivers/pci/probe.c
+>> >> @@ -1724,10 +1724,7 @@ static void pci_dma_configure(struct pci_dev *dev)
+>> >>  {
+>> >>  	struct device *bridge = pci_get_host_bridge_device(dev);
+>> >>
+>> >> -	if (IS_ENABLED(CONFIG_OF) &&
+>> >> -		bridge->parent && bridge->parent->of_node) {
+>> >> -			of_dma_configure(&dev->dev, bridge->parent->of_node);
+>> >> -	} else if (has_acpi_companion(bridge)) {
+>> >> +	if (has_acpi_companion(bridge)) {
+>> >>  		struct acpi_device *adev = to_acpi_device_node(bridge->fwnode);
+>> >>  		enum dev_dma_attr attr = acpi_get_dma_attr(adev);
+>> >
+>> >It seems a bit awkward leaving pci_dma_configure here, doing DMA
+>> >configuration at device add, after we've allegedly moved DMA
+>> >configuration to driver probe. Lorenzo, do you foresee any issues if
+>> >this probe-time of_dma_configure() path were to also multiplex
+>> >acpi_dma_configure() in future, such that everything would be back in
+>> >the same place eventually?
+>> >
+>> >Conversely, is there actually any issue with leaving pci_dma_configure()
+>> >unchanged, and simply moving the call from pci_device_add() into
+>> >dma_configure()?
+>>
+>> Ya i removed only the CONFIG_OF part out of this, and was hoping that
+>> the acpi configure can also be called from the dma_configure during
+>> probe later. I did not have an ACPI based platform though.  As you
+>> said, if that looks right to the ACPI world, it can be moved out from
+>> here. I can try mergin series (after fixing the vfio errors part) with
+>> the ACPI IO port and see how it behaves.
+>
+>I do not expect any issue from this change, as long as, as Robin said,
+>it is done consistently which means that I am not ok with this patch
+>as it stands (ie you should defer pci_dma_configure() in its entirety,
+>not just the DT bits, which obviously requires some ACPI testing too).
+>
+>CC me in please in the next posting since this affects the ACPI probing
+>path too, we have to coordinate this series with my ACPI IORT SMMU
+>enablement patches:
+>
+>https://lkml.org/lkml/2016/10/18/506
 
-Thanks
+Ok thanks, i will have you in looped for the V4 i am posting
+and we can have it tested on ACPI as well.
 
-Graeme
+Regards,
+ Sricharan
