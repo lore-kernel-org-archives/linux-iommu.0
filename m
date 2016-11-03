@@ -1,104 +1,55 @@
-From: Eric Auger <eric.auger@redhat.com>
-Subject: [RFC 6/8] iommu: Handle the list of reserved regions
-Date: Thu,  3 Nov 2016 21:39:36 +0000
-Message-ID: <1478209178-3009-7-git-send-email-eric.auger@redhat.com>
-References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: eric.auger@redhat.com, eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org
-Cc: kvm@vger.kernel.org, drjones@redhat.com, linux-kernel@vger.kernel.org, pranav.sawargaonkar@gmail.com, iommu@lists.linux-foundation.org, punit.agrawal@arm.com, diana.craciun@nxp.com
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH V3 0/8] IOMMU probe deferral support
+Date: Fri, 4 Nov 2016 03:55:45 +0530
+Message-ID: <003801d23621$3cb91970$b62b4c50$@codeaurora.org>
+References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
+	<60ee8066-f167-e9df-ae3e-4138f1133bad@arm.com>
+	<003a01d22f97$82534c70$86f9e550$@codeaurora.org>
+	<421e2b14-0231-d376-02a0-097423120b3d@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: 
+Content-Language: en-us
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-A new callback is introduced, add_reserved_regions. This function
-aims at populating the iommu domain reserved region list with
-regions associated with the device. The function is called on
-device attachment. The list is freed on iommu_domain_free().
+Hi Robin,
 
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
----
- drivers/iommu/iommu.c | 23 +++++++++++++++++++++++
- include/linux/iommu.h |  6 ++++++
- 2 files changed, 29 insertions(+)
+>>>> [   39.901592] iommu: Removing device 0000:08:00.0 from group 0
+>>
+>>Yikes, on second look, that definitely shouldn't be happening.
+>>Everything below is probably the resulting fallout.
+>
+>[   40.206703] vfio-pci 0000:08:00.0: Failed to setup iommu ops
+>
+>I think the above print which says "failed to setup iommu_ops"
+>because the call ops->add_device failed in of_pci_iommu_configure
+>is the reason for the failure, in my case i simply do not get this even with
+>your scripts. ops->add_device succeeds in the rebind as well. So still
+>checking what could be happening in your case.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 0af07492..300af44 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1077,6 +1077,10 @@ struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
- 
- void iommu_domain_free(struct iommu_domain *domain)
- {
-+	struct iommu_reserved_region *entry, *next;
-+
-+	list_for_each_entry_safe(entry, next, &domain->reserved_regions, list)
-+		kfree(entry);
- 	domain->ops->domain_free(domain);
- }
- EXPORT_SYMBOL_GPL(iommu_domain_free);
-@@ -1089,6 +1093,15 @@ static int __iommu_attach_device(struct iommu_domain *domain,
- 		return -ENODEV;
- 
- 	ret = domain->ops->attach_dev(domain, dev);
-+	if (ret)
-+		return ret;
-+
-+	if (domain->type == IOMMU_DOMAIN_UNMANAGED) {
-+		mutex_lock(&domain->resv_mutex);
-+		ret = iommu_add_reserved_regions(domain, dev);
-+		mutex_unlock(&domain->resv_mutex);
-+	}
-+
- 	if (!ret)
- 		trace_attach_device_to_domain(dev);
- 	return ret;
-@@ -1548,6 +1561,16 @@ int iommu_domain_set_attr(struct iommu_domain *domain,
- }
- EXPORT_SYMBOL_GPL(iommu_domain_set_attr);
- 
-+int iommu_add_reserved_regions(struct iommu_domain *domain, struct device *dev)
-+{
-+	const struct iommu_ops *ops = dev->bus->iommu_ops;
-+
-+	if (ops && ops->add_reserved_regions)
-+		return ops->add_reserved_regions(domain, dev);
-+	else
-+		return 0;
-+}
-+
- void iommu_get_dm_regions(struct device *dev, struct list_head *list)
- {
- 	const struct iommu_ops *ops = dev->bus->iommu_ops;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 0f2eb64..7748a1b 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -170,6 +170,7 @@ struct iommu_reserved_region {
-  * @get_dm_regions: Request list of direct mapping requirements for a device
-  * @put_dm_regions: Free list of direct mapping requirements for a device
-  * @apply_dm_region: Temporary helper call-back for iova reserved ranges
-+ * @add_reserved_regions: Populate reserved regions for a device
-  * @domain_window_enable: Configure and enable a particular window for a domain
-  * @domain_window_disable: Disable a particular window for a domain
-  * @domain_set_windows: Set the number of windows for a domain
-@@ -207,6 +208,10 @@ struct iommu_ops {
- 	void (*apply_dm_region)(struct device *dev, struct iommu_domain *domain,
- 				struct iommu_dm_region *region);
- 
-+	/* Add reserved regions for a device */
-+	int (*add_reserved_regions)(struct iommu_domain *domain,
-+				     struct device *device);
-+
- 	/* Window handling functions */
- 	int (*domain_window_enable)(struct iommu_domain *domain, u32 wnd_nr,
- 				    phys_addr_t paddr, u64 size, int prot);
-@@ -289,6 +294,7 @@ struct device *iommu_device_create(struct device *parent, void *drvdata,
- void iommu_device_destroy(struct device *dev);
- int iommu_device_link(struct device *dev, struct device *link);
- void iommu_device_unlink(struct device *dev, struct device *link);
-+int iommu_add_reserved_regions(struct iommu_domain *domain, struct device *dev);
- 
- /* Window handling function prototypes */
- extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
--- 
-1.9.1
+I was looking at your code base from [1].The ops->add_device
+callback from of_pci_iommu_configure on the rebind is the
+one which is causing the failure. But not able to spot out
+from code which point is causing the failure. It would be very helpful
+if i can know which is the return value from the add_device callback
+or point inside add_device callback which fails in your setup.
+
+
+[1] git://linux-arm.org/linux-rm iommu/misc
+>
+>
+>Regards,
+>  Sricharan
+>
