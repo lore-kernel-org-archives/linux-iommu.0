@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 2/8] iommu/iova: fix __alloc_and_insert_iova_range
-Date: Thu,  3 Nov 2016 21:39:32 +0000
-Message-ID: <1478209178-3009-3-git-send-email-eric.auger@redhat.com>
+Subject: [RFC 1/8] vfio: fix vfio_info_cap_add/shift
+Date: Thu,  3 Nov 2016 21:39:31 +0000
+Message-ID: <1478209178-3009-2-git-send-email-eric.auger@redhat.com>
 References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,30 +21,40 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Fix the size check within start_pfn and limit_pfn.
+Capability header next field is an offset relative to the start of
+the INFO buffer. tmp->next is assigned the proper value but iterations
+implemented in vfio_info_cap_add and vfio_info_cap_shift use next
+as an offset between the headers. When coping with multiple capabilities
+this leads to an Oops.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
 ---
+ drivers/vfio/vfio.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-the issue was observed when playing with 1 page iova domain with
-higher iova reserved.
----
- drivers/iommu/iova.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index e23001b..ee29dbf 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -147,7 +147,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 	if (!curr) {
- 		if (size_aligned)
- 			pad_size = iova_get_pad_size(size, limit_pfn);
--		if ((iovad->start_pfn + size + pad_size) > limit_pfn) {
-+		if ((iovad->start_pfn + size + pad_size - 1) > limit_pfn) {
- 			spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
- 			return -ENOMEM;
- 		}
+diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+index d1d70e0..1e838d1 100644
+--- a/drivers/vfio/vfio.c
++++ b/drivers/vfio/vfio.c
+@@ -1763,7 +1763,7 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
+ 	header->version = version;
+ 
+ 	/* Add to the end of the capability chain */
+-	for (tmp = caps->buf; tmp->next; tmp = (void *)tmp + tmp->next)
++	for (tmp = buf; tmp->next; tmp = buf + tmp->next)
+ 		; /* nothing */
+ 
+ 	tmp->next = caps->size;
+@@ -1776,8 +1776,9 @@ struct vfio_info_cap_header *vfio_info_cap_add(struct vfio_info_cap *caps,
+ void vfio_info_cap_shift(struct vfio_info_cap *caps, size_t offset)
+ {
+ 	struct vfio_info_cap_header *tmp;
++	void *buf = (void *)caps->buf;
+ 
+-	for (tmp = caps->buf; tmp->next; tmp = (void *)tmp + tmp->next - offset)
++	for (tmp = buf; tmp->next; tmp = buf + tmp->next - offset)
+ 		tmp->next += offset;
+ }
+ EXPORT_SYMBOL_GPL(vfio_info_cap_shift);
 -- 
 1.9.1
