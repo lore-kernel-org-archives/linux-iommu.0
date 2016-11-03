@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC 8/8] iommu/arm-smmu: implement add_reserved_regions callback
-Date: Thu,  3 Nov 2016 21:39:38 +0000
-Message-ID: <1478209178-3009-9-git-send-email-eric.auger@redhat.com>
+Subject: [RFC 3/8] iommu/dma: Allow MSI-only cookies
+Date: Thu,  3 Nov 2016 21:39:33 +0000
+Message-ID: <1478209178-3009-4-git-send-email-eric.auger@redhat.com>
 References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,97 +21,114 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The function populates the list of reserved regions with the
-PCI host bridge windows and the MSI IOVA range.
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-At the moment an arbitray MSI IOVA window is set at 0x8000000
-of size 1MB.
+IOMMU domain users such as VFIO face a similar problem to DMA API ops
+with regard to mapping MSI messages in systems where the MSI write is
+subject to IOMMU translation. With the relevant infrastructure now in
+place for managed DMA domains, it's actually really simple for other
+users to piggyback off that and reap the benefits without giving up
+their own IOVA management, and without having to reinvent their own
+wheel in the MSI layer.
 
+Allow such users to opt into automatic MSI remapping by dedicating a
+region of their IOVA space to a managed cookie.
+
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 63 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 63 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index c841eb7..9d1db19 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1533,6 +1533,68 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	return iommu_fwspec_add_ids(dev, &fwid, 1);
+---
+
+v13 -> v14:
+- restore reserve_iova for iova >= base + size
+
+v1 -> v13 incorpration:
+- compared to Robin's version
+- add NULL last param to iommu_dma_init_domain
+- set the msi_geometry aperture
+- I removed
+  if (base < U64_MAX - size)
+     reserve_iova(iovad, iova_pfn(iovad, base + size), ULONG_MAX);
+  don't get why we would reserve something out of the scope of the iova domain?
+  what do I miss?
+---
+ drivers/iommu/dma-iommu.c | 39 +++++++++++++++++++++++++++++++++++++++
+ include/linux/dma-iommu.h |  9 +++++++++
+ 2 files changed, 48 insertions(+)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index c5ab866..d45f9a0 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -716,3 +716,42 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
+ 		msg->address_lo += lower_32_bits(msi_page->iova);
+ 	}
  }
- 
-+static int add_pci_window_reserved_regions(struct iommu_domain *domain,
-+					   struct pci_dev *dev)
++
++/**
++ * iommu_get_dma_msi_region_cookie - Configure a domain for MSI remapping only
++ * @domain: IOMMU domain to prepare
++ * @base: Base address of IOVA region to use as the MSI remapping aperture
++ * @size: Size of the desired MSI aperture
++ *
++ * Users who manage their own IOVA allocation and do not want DMA API support,
++ * but would still like to take advantage of automatic MSI remapping, can use
++ * this to initialise their own domain appropriately.
++ */
++int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
++			       dma_addr_t base, u64 size)
 +{
-+	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
-+	struct iommu_reserved_region *region;
-+	struct resource_entry *window;
-+	phys_addr_t start;
-+	size_t length;
++	struct iommu_dma_cookie *cookie;
++	struct iova_domain *iovad;
++	int ret;
 +
-+	resource_list_for_each_entry(window, &bridge->windows) {
-+		if (resource_type(window->res) != IORESOURCE_MEM &&
-+		    resource_type(window->res) != IORESOURCE_IO)
-+			continue;
++	if (domain->type == IOMMU_DOMAIN_DMA)
++		return -EINVAL;
 +
-+		start = window->res->start - window->offset;
-+		length = window->res->end - window->res->start + 1;
++	ret = iommu_get_dma_cookie(domain);
++	if (ret)
++		return ret;
 +
-+		iommu_reserved_region_for_each(region, domain) {
-+			if (region->start == start && region->length == length)
-+				continue;
-+		}
-+		region = kzalloc(sizeof(*region), GFP_KERNEL);
-+		if (!region)
-+			return -ENOMEM;
-+
-+		region->start = start;
-+		region->length = length;
-+
-+		list_add_tail(&region->list, &domain->reserved_regions);
++	ret = iommu_dma_init_domain(domain, base, size, NULL);
++	if (ret) {
++		iommu_put_dma_cookie(domain);
++		return ret;
 +	}
++
++	cookie = domain->iova_cookie;
++	iovad = &cookie->iovad;
++	if (base < U64_MAX - size)
++		reserve_iova(iovad, iova_pfn(iovad, base + size), ULONG_MAX);
++
 +	return 0;
 +}
++EXPORT_SYMBOL(iommu_get_dma_msi_region_cookie);
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index 32c5890..05ab5b4 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -67,6 +67,9 @@ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+ /* The DMA API isn't _quite_ the whole story, though... */
+ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg);
+ 
++int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
++				    dma_addr_t base, u64 size);
 +
-+static int arm_smmu_add_reserved_regions(struct iommu_domain *domain,
-+					 struct device *device)
+ #else
+ 
+ struct iommu_domain;
+@@ -90,6 +93,12 @@ static inline void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
+ {
+ }
+ 
++static inline int iommu_get_dma_msi_region_cookie(struct iommu_domain *domain,
++						  dma_addr_t base, u64 size)
 +{
-+	struct iommu_reserved_region *region;
-+	int ret = 0;
-+
-+	/* An arbitrary 1MB region starting at 0x8000000 is reserved for MSIs */
-+	if (!domain->iova_cookie) {
-+
-+		region = kzalloc(sizeof(*region), GFP_KERNEL);
-+		if (!region)
-+			return -ENOMEM;
-+
-+		region->start = 0x8000000;
-+		region->length = 0x100000;
-+		list_add_tail(&region->list, &domain->reserved_regions);
-+
-+		ret = iommu_get_dma_msi_region_cookie(domain,
-+						region->start, region->length);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (dev_is_pci(device))
-+		ret =  add_pci_window_reserved_regions(domain,
-+						       to_pci_dev(device));
-+	return ret;
++	return -ENODEV;
 +}
 +
- static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -1548,6 +1610,7 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	.domain_get_attr	= arm_smmu_domain_get_attr,
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
- 	.of_xlate		= arm_smmu_of_xlate,
-+	.add_reserved_regions	= arm_smmu_add_reserved_regions,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- };
- 
+ #endif	/* CONFIG_IOMMU_DMA */
+ #endif	/* __KERNEL__ */
+ #endif	/* __DMA_IOMMU_H */
 -- 
 1.9.1
