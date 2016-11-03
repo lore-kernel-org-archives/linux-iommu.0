@@ -1,16 +1,12 @@
-From: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [PATCH] iommu: arm-smmu: Set SMTNMB_TLBEN in ACR to enable
-	caching of bypass entries
-Date: Wed, 2 Nov 2016 19:26:02 +0000
-Message-ID: <DB6PR0402MB26942C3D65D70A1C1C84F746E6A00@DB6PR0402MB2694.eurprd04.prod.outlook.com>
-References: <1478093714-17219-1-git-send-email-nipun.gupta@nxp.com>
-	<d1c89f6f-1b7a-6180-a376-27505d3b6c9f@arm.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH] iommu/exynos: Add support for page access protection bits
+Date: Thu, 03 Nov 2016 09:04:45 +0100
+Message-ID: <1478160285-14214-1-git-send-email-m.szyprowski@samsung.com>
+References: <CGME20161103080459eucas1p254076fdf45c72dbc09aee42fe6234c0d@eucas1p2.samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <d1c89f6f-1b7a-6180-a376-27505d3b6c9f-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,146 +16,178 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+This patch add support for page access protection bits. Till now this
+feature was disabled and Exynos SYSMMU always mapped pages as read/write.
+Now page access bits are set according to the protection bits provided
+in iommu_map(), so Exynos SYSMMU is able to detect incorrect access to
+mapped pages. Exynos SYSMMU earlier than v5 doesn't support write-only
+mappings, so pages with such protection bits are mapped as read/write.
 
-Hi Robin,
+Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+---
+ drivers/iommu/exynos-iommu.c | 63 +++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 51 insertions(+), 12 deletions(-)
 
-> -----Original Message-----
-> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
-> Sent: Wednesday, November 02, 2016 16:51
-> To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>; will.deacon-5wv7dgnIgG8@public.gmane.org; linux-arm-
-> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Cc: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>
-> Subject: Re: [PATCH] iommu: arm-smmu: Set SMTNMB_TLBEN in ACR to enable
-> caching of bypass entries
-> 
-> Hi Nipun,
-> 
-> On 02/11/16 13:35, Nipun Gupta wrote:
-> > The SMTNMB_TLBEN in the Auxiliary Configuration Register (ACR)
-> > provides an option to enable the updation of TLB in case of bypass
-> > transactions due to no stream match in the stream match table. This
-> > reduces the latencies of the subsequent transactions with the same stream-id
-> which bypasses the SMMU.
-> > This provides a significant performance benefit for certain networking
-> > workloads.
-> 
-> ...at the cost of increased TLB contention against other workloads.
-> However, in the general case we'd expect the system to be fully described, so if
-> there aren't any unmatched Stream IDs there hopefully shouldn't be an impact
-> to leaving this switched on. I'd be interested to see some actual performance
-> numbers, though - you already know my opinion about unsubstantiated quotes
-> from the MMU-500 TRM.
-
-With this change we have seen substantial performance improvement of ~9-10%
-with DPDK l3fwd application (http://dpdk.org/doc/guides/sample_app_ug/l3_forward.html)
-on NXP's LS2088a platform (single core as well as multi-core). Also, with ODP reflector application
-(loopback mode - NXP in-house) we have seen 5% improvement in performance on
-LS1088 platform.
-
-W.r.t. the read latencies, they are reduced to avg. ~50 platform cycles from avg. ~140
-platform cycles per memory read transactions which follow this bypass path (on LS2088
-with DPDK l3fwd application).
-
-(Apologies, I cannot share the DPDK/ODP exact performance numbers on the mailing list).
-
-> 
-> > Signed-off-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-> > ---
-> >  drivers/iommu/arm-smmu.c | 21 +++++++++++++++------
-> >  1 file changed, 15 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c index
-> > ce2a9d4..7010a5c 100644
-> > --- a/drivers/iommu/arm-smmu.c
-> > +++ b/drivers/iommu/arm-smmu.c
-> > @@ -246,6 +246,7 @@ enum arm_smmu_s2cr_privcfg {
-> >
-> >  #define ARM_MMU500_ACTLR_CPRE		(1 << 1)
-> >
-> > +#define ACR_SMTNMB_TLBEN		(1 << 8)
-> 
-> ACR is entirely implementation-defined, so there are no generic field names.
-> Please follow the naming convention handily demonstrated in the subsequent
-> context line.
-> 
-> >  #define ARM_MMU500_ACR_CACHE_LOCK	(1 << 26)
-> 
-> Actually, can we also please keep these in descending order of bit position like
-> everything else?
-> 
-> >  #define CB_PAR_F			(1 << 0)
-> > @@ -1569,18 +1570,26 @@ static void arm_smmu_device_reset(struct
-> arm_smmu_device *smmu)
-> >  	for (i = 0; i < smmu->num_mapping_groups; ++i)
-> >  		arm_smmu_write_sme(smmu, i);
-> >
-> > +	/* Get the major rev required for configuring ACR */
-> 
-> That comment is nonsense.
-> 
-> > +	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID7);
-> > +	major = (reg >> ID7_MAJOR_SHIFT) & ID7_MAJOR_MASK;
-> > +
-> >  	/*
-> >  	 * Before clearing ARM_MMU500_ACTLR_CPRE, need to
-> >  	 * clear CACHE_LOCK bit of ACR first. And, CACHE_LOCK
-> >  	 * bit is only present in MMU-500r2 onwards.
-> >  	 */
-> > -	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID7);
-> > -	major = (reg >> ID7_MAJOR_SHIFT) & ID7_MAJOR_MASK;
-> > -	if ((smmu->model == ARM_MMU500) && (major >= 2)) {
-> > -		reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sACR);
-> > +	reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sACR);
-> > +	if ((smmu->model == ARM_MMU500) && (major >= 2))
-> >  		reg &= ~ARM_MMU500_ACR_CACHE_LOCK;
-> > -		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_sACR);
-> > -	}
-> > +
-> > +	/*
-> > +	 * Set the SMTNMB_TLBEN in ACR so that the transactions which
-> > +	 * bypass with SMMU due to no stream match found in the SMR table
-> > +	 * are updated in the TLB's.
-> 
-> Or simply, e.g. "Allow unmatched Stream IDs to allocate bypass TLB entries for
-> reduced latency". It's already clear from the code what bit's being set where, we
-> only need to remember *why*.
-> 
-> > +	 */
-> > +	reg |= ACR_SMTNMB_TLBEN;
-> > +	writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_sACR);
-> 
-> Are you sure it's perfectly fine to set that implementation-defined bit on any
-> SMMU implementation other than the two-and-a-half ARM Ltd. ones which
-> happen to share the same meaning? I'm certainly not.
-> 
-> The correct flow would be something like this:
-> 
-> 	if (smmu->model == ARM_MMU500) {
-> 		reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_ID7);
-> 		major = (reg >> ID7_MAJOR_SHIFT) & ID7_MAJOR_MASK;
-> 		reg = readl_relaxed(gr0_base + ARM_SMMU_GR0_sACR);
-> 		if (major >= 2)
-> 	  		reg &= ~ARM_MMU500_ACR_CACHE_LOCK;
-> 		reg |= ACR_SMTNMB_TLBEN;
-> 		writel_relaxed(reg, gr0_base + ARM_SMMU_GR0_sACR);
-> 	}
-> 
-> The shape of the current code avoids an extra level of indentation, but once you
-> have to have the nested conditional anyway, it might as well all be predicated
-> appropriately.
-> 
-
-Thank you for providing the useful comments. I would incorporate them all in next version :).
-
-Regards,
-Nipun
-
-> Robin.
-> 
-> >  	/* Make sure all context banks are disabled and clear CB_FSR  */
-> >  	for (i = 0; i < smmu->num_context_banks; ++i) {
-> >
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 30808e9..e249e2f 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -70,6 +70,36 @@
+ #define SYSMMU_PG_ENT_SHIFT 0
+ #define SYSMMU_V5_PG_ENT_SHIFT 4
+ 
++static const sysmmu_pte_t *LV1_PROT;
++static const sysmmu_pte_t SYSMMU_LV1_PROT[] = {
++	((0 << 15) | (0 << 10)), /* no access */
++	((1 << 15) | (1 << 10)), /* IOMMU_READ only */
++	((0 << 15) | (1 << 10)), /* IOMMU_WRITE not supported, use read/write */
++	((0 << 15) | (1 << 10)), /* IOMMU_READ | IOMMU_WRITE */
++};
++static const sysmmu_pte_t SYSMMU_V5_LV1_PROT[] = {
++	(0 << 4), /* no access */
++	(1 << 4), /* IOMMU_READ only */
++	(2 << 4), /* IOMMU_WRITE only */
++	(3 << 4), /* IOMMU_READ | IOMMU_WRITE */
++};
++
++static const sysmmu_pte_t *LV2_PROT;
++static const sysmmu_pte_t SYSMMU_LV2_PROT[] = {
++	((0 << 9) | (0 << 4)), /* no access */
++	((1 << 9) | (1 << 4)), /* IOMMU_READ only */
++	((0 << 9) | (1 << 4)), /* IOMMU_WRITE not supported, use read/write */
++	((0 << 9) | (1 << 4)), /* IOMMU_READ | IOMMU_WRITE */
++};
++static const sysmmu_pte_t SYSMMU_V5_LV2_PROT[] = {
++	(0 << 2), /* no access */
++	(1 << 2), /* IOMMU_READ only */
++	(2 << 2), /* IOMMU_WRITE only */
++	(3 << 2), /* IOMMU_READ | IOMMU_WRITE */
++};
++
++#define SYSMMU_SUPPORTED_PROT_BITS (IOMMU_READ | IOMMU_WRITE)
++
+ #define sect_to_phys(ent) (((phys_addr_t) ent) << PG_ENT_SHIFT)
+ #define section_phys(sent) (sect_to_phys(*(sent)) & SECT_MASK)
+ #define section_offs(iova) (iova & (SECT_SIZE - 1))
+@@ -97,16 +127,17 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
+ #define SPAGES_PER_LPAGE (LPAGE_SIZE / SPAGE_SIZE)
+ #define lv2table_base(sent) (sect_to_phys(*(sent) & 0xFFFFFFC0))
+ 
+-#define mk_lv1ent_sect(pa) ((pa >> PG_ENT_SHIFT) | 2)
++#define mk_lv1ent_sect(pa, prot) ((pa >> PG_ENT_SHIFT) | LV1_PROT[prot] | 2)
+ #define mk_lv1ent_page(pa) ((pa >> PG_ENT_SHIFT) | 1)
+-#define mk_lv2ent_lpage(pa) ((pa >> PG_ENT_SHIFT) | 1)
+-#define mk_lv2ent_spage(pa) ((pa >> PG_ENT_SHIFT) | 2)
++#define mk_lv2ent_lpage(pa, prot) ((pa >> PG_ENT_SHIFT) | LV2_PROT[prot] | 1)
++#define mk_lv2ent_spage(pa, prot) ((pa >> PG_ENT_SHIFT) | LV2_PROT[prot] | 2)
+ 
+ #define CTRL_ENABLE	0x5
+ #define CTRL_BLOCK	0x7
+ #define CTRL_DISABLE	0x0
+ 
+ #define CFG_LRU		0x1
++#define CFG_EAP		(1 << 2)
+ #define CFG_QOS(n)	((n & 0xF) << 7)
+ #define CFG_ACGEN	(1 << 24) /* System MMU 3.3 only */
+ #define CFG_SYSSEL	(1 << 22) /* System MMU 3.2 only */
+@@ -481,6 +512,8 @@ static void __sysmmu_init_config(struct sysmmu_drvdata *data)
+ 	else
+ 		cfg = CFG_QOS(15) | CFG_FLPDCACHE | CFG_ACGEN;
+ 
++	cfg |= CFG_EAP; /* enable access protection bits check */
++
+ 	writel(cfg, data->sfrbase + REG_MMU_CFG);
+ }
+ 
+@@ -652,10 +685,15 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+ 
+ 	__sysmmu_get_version(data);
+ 	if (PG_ENT_SHIFT < 0) {
+-		if (MMU_MAJ_VER(data->version) < 5)
++		if (MMU_MAJ_VER(data->version) < 5) {
+ 			PG_ENT_SHIFT = SYSMMU_PG_ENT_SHIFT;
+-		else
++			LV1_PROT = SYSMMU_LV1_PROT;
++			LV2_PROT = SYSMMU_LV2_PROT;
++		} else {
+ 			PG_ENT_SHIFT = SYSMMU_V5_PG_ENT_SHIFT;
++			LV1_PROT = SYSMMU_V5_LV1_PROT;
++			LV2_PROT = SYSMMU_V5_LV2_PROT;
++		}
+ 	}
+ 
+ 	pm_runtime_enable(dev);
+@@ -954,7 +992,7 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *domain,
+ 
+ static int lv1set_section(struct exynos_iommu_domain *domain,
+ 			  sysmmu_pte_t *sent, sysmmu_iova_t iova,
+-			  phys_addr_t paddr, short *pgcnt)
++			  phys_addr_t paddr, int prot, short *pgcnt)
+ {
+ 	if (lv1ent_section(sent)) {
+ 		WARN(1, "Trying mapping on 1MiB@%#08x that is mapped",
+@@ -973,7 +1011,7 @@ static int lv1set_section(struct exynos_iommu_domain *domain,
+ 		*pgcnt = 0;
+ 	}
+ 
+-	update_pte(sent, mk_lv1ent_sect(paddr));
++	update_pte(sent, mk_lv1ent_sect(paddr, prot));
+ 
+ 	spin_lock(&domain->lock);
+ 	if (lv1ent_page_zero(sent)) {
+@@ -991,13 +1029,13 @@ static int lv1set_section(struct exynos_iommu_domain *domain,
+ }
+ 
+ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
+-								short *pgcnt)
++		       int prot, short *pgcnt)
+ {
+ 	if (size == SPAGE_SIZE) {
+ 		if (WARN_ON(!lv2ent_fault(pent)))
+ 			return -EADDRINUSE;
+ 
+-		update_pte(pent, mk_lv2ent_spage(paddr));
++		update_pte(pent, mk_lv2ent_spage(paddr, prot));
+ 		*pgcnt -= 1;
+ 	} else { /* size == LPAGE_SIZE */
+ 		int i;
+@@ -1013,7 +1051,7 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
+ 				return -EADDRINUSE;
+ 			}
+ 
+-			*pent = mk_lv2ent_lpage(paddr);
++			*pent = mk_lv2ent_lpage(paddr, prot);
+ 		}
+ 		dma_sync_single_for_device(dma_dev, pent_base,
+ 					   sizeof(*pent) * SPAGES_PER_LPAGE,
+@@ -1061,13 +1099,14 @@ static int exynos_iommu_map(struct iommu_domain *iommu_domain,
+ 	int ret = -ENOMEM;
+ 
+ 	BUG_ON(domain->pgtable == NULL);
++	prot &= SYSMMU_SUPPORTED_PROT_BITS;
+ 
+ 	spin_lock_irqsave(&domain->pgtablelock, flags);
+ 
+ 	entry = section_entry(domain->pgtable, iova);
+ 
+ 	if (size == SECT_SIZE) {
+-		ret = lv1set_section(domain, entry, iova, paddr,
++		ret = lv1set_section(domain, entry, iova, paddr, prot,
+ 				     &domain->lv2entcnt[lv1ent_offset(iova)]);
+ 	} else {
+ 		sysmmu_pte_t *pent;
+@@ -1078,7 +1117,7 @@ static int exynos_iommu_map(struct iommu_domain *iommu_domain,
+ 		if (IS_ERR(pent))
+ 			ret = PTR_ERR(pent);
+ 		else
+-			ret = lv2set_page(pent, paddr, size,
++			ret = lv2set_page(pent, paddr, size, prot,
+ 				       &domain->lv2entcnt[lv1ent_offset(iova)]);
+ 	}
+ 
+-- 
+1.9.1
