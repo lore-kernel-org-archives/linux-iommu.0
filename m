@@ -1,119 +1,139 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC v2 4/8] iommu: Add a list of iommu_reserved_region in
-	iommu_domain
-Date: Fri, 4 Nov 2016 14:00:38 +0000
-Message-ID: <71bfe2a5-455e-9335-ba81-097ef24399ee@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC v2 8/8] iommu/arm-smmu: implement add_reserved_regions
+ callback
+Date: Fri, 4 Nov 2016 14:16:04 +0000
+Message-ID: <f6f93736-a3bb-5eb7-bb0f-afde21f98098@arm.com>
 References: <1478258646-3117-1-git-send-email-eric.auger@redhat.com>
-	<1478258646-3117-5-git-send-email-eric.auger@redhat.com>
+ <1478258646-3117-9-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1478258646-3117-5-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1478258646-3117-9-git-send-email-eric.auger@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Eric Auger <eric.auger@redhat.com>, eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org
+Cc: kvm@vger.kernel.org, drjones@redhat.com, linux-kernel@vger.kernel.org, pranav.sawargaonkar@gmail.com, iommu@lists.linux-foundation.org, punit.agrawal@arm.com, diana.craciun@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Eric,
-
-Thanks for posting this new series - the bottom-up approach is a lot
-easier to reason about :)
-
 On 04/11/16 11:24, Eric Auger wrote:
-> Introduce a new iommu_reserved_region struct. This embodies
-> an IOVA reserved region that cannot be used along with the IOMMU
-> API. The list is protected by a dedicated mutex.
-
-In the light of these patches, I think I'm settling into agreement that
-the iommu_domain is the sweet spot for accessing this information - the
-underlying magic address ranges might be properties of various bits of
-hardware many of which aren't the IOMMU itself, but they only start to
-matter at the point you start wanting to use an IOMMU domain at the
-higher level. Therefore, having a callback in the domain ops to pull
-everything together fits rather neatly.
-
+> The function populates the list of reserved regions with the
+> PCI host bridge windows and the MSI IOVA range.
 > 
-> An iommu domain now owns a list of those.
+> At the moment an arbitray MSI IOVA window is set at 0x8000000
+> of size 1MB.
 > 
-> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Eric Auger <eric.auger@redhat.com>
 > 
 > ---
-> ---
->  drivers/iommu/iommu.c |  2 ++
->  include/linux/iommu.h | 17 +++++++++++++++++
->  2 files changed, 19 insertions(+)
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 9a2f196..0af07492 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1061,6 +1061,8 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+> RFC v1 -> v2: use defines for MSI IOVA base and length
+> ---
+>  drivers/iommu/arm-smmu.c | 66 ++++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 66 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index c841eb7..c07ea41 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -278,6 +278,9 @@ enum arm_smmu_s2cr_privcfg {
 >  
->  	domain->ops  = bus->iommu_ops;
->  	domain->type = type;
-> +	INIT_LIST_HEAD(&domain->reserved_regions);
-> +	mutex_init(&domain->resv_mutex);
->  	/* Assume all sizes by default; the driver may override this later */
->  	domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
+>  #define FSYNR0_WNR			(1 << 4)
 >  
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 436dc21..0f2eb64 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -84,6 +84,8 @@ struct iommu_domain {
->  	void *handler_token;
->  	struct iommu_domain_geometry geometry;
->  	void *iova_cookie;
-> +	struct list_head reserved_regions;
-> +	struct mutex resv_mutex; /* protects the reserved region list */
->  };
+> +#define MSI_IOVA_BASE			0x8000000
+> +#define MSI_IOVA_LENGTH			0x100000
+> +
+>  static int force_stage;
+>  module_param(force_stage, int, S_IRUGO);
+>  MODULE_PARM_DESC(force_stage,
+> @@ -1533,6 +1536,68 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+>  	return iommu_fwspec_add_ids(dev, &fwid, 1);
+>  }
 >  
->  enum iommu_cap {
-> @@ -131,6 +133,21 @@ struct iommu_dm_region {
->  	int			prot;
->  };
->  
-> +/**
-> + * struct iommu_reserved_region - descriptor for a reserved iova region
-> + * @list: Linked list pointers
-> + * @start: IOVA base address of the region
-> + * @length: Length of the region in bytes
-> + */
-> +struct iommu_reserved_region {
-> +	struct list_head	list;
-> +	dma_addr_t		start;
-> +	size_t			length;
-> +};
+> +static int add_pci_window_reserved_regions(struct iommu_domain *domain,
+> +					   struct pci_dev *dev)
+> +{
+> +	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
+> +	struct iommu_reserved_region *region;
+> +	struct resource_entry *window;
+> +	phys_addr_t start;
+> +	size_t length;
+> +
+> +	resource_list_for_each_entry(window, &bridge->windows) {
+> +		if (resource_type(window->res) != IORESOURCE_MEM &&
+> +		    resource_type(window->res) != IORESOURCE_IO)
+> +			continue;
+> +
+> +		start = window->res->start - window->offset;
+> +		length = window->res->end - window->res->start + 1;
+> +
+> +		iommu_reserved_region_for_each(region, domain) {
+> +			if (region->start == start && region->length == length)
+> +				continue;
+> +		}
+> +		region = kzalloc(sizeof(*region), GFP_KERNEL);
+> +		if (!region)
+> +			return -ENOMEM;
+> +
+> +		region->start = start;
+> +		region->length = length;
+> +
+> +		list_add_tail(&region->list, &domain->reserved_regions);
+> +	}
+> +	return 0;
+> +}
 
-Looking at this in context with the dm_region above, though, I come to
-the surprising realisation that these *are* dm_regions, even at the
-fundamental level - on the one hand you've got physical addresses which
-can't be remapped (because something is already using them), while on
-the other you've got physical addresses which can't be remapped (because
-the IOMMU is incapable). In fact for reserved regions *other* than our
-faked-up MSI region there's no harm if the IOMMU were to actually
-identity-map them.
+Per the previous observation, let's just convert
+iova_reserve_pci_windows() into a public iommu_dma_get_dm_regions()
+callback...
 
-Let's just add this to the existing infrastructure, either with some
-kind of IOMMU_NOMAP flag or simply prot = 0. That way it automatically
-gets shared between the VFIO and DMA cases for free!
+> +static int arm_smmu_add_reserved_regions(struct iommu_domain *domain,
+> +					 struct device *device)
+> +{
+> +	struct iommu_reserved_region *region;
+> +	int ret = 0;
+> +
+> +	/* An arbitrary 1MB region starting at 0x8000000 is reserved for MSIs */
+> +	if (!domain->iova_cookie) {
+> +
+> +		region = kzalloc(sizeof(*region), GFP_KERNEL);
+> +		if (!region)
+> +			return -ENOMEM;
+> +
+> +		region->start = MSI_IOVA_BASE;
+> +		region->length = MSI_IOVA_LENGTH;
+> +		list_add_tail(&region->list, &domain->reserved_regions);
+> +
+> +		ret = iommu_get_dma_msi_region_cookie(domain,
+> +						region->start, region->length);
+> +		if (ret)
+> +			return ret;
+
+...and stick this bit in there as well. Then we only need to add code to
+individual IOMMU drivers if there are also regions which bypass
+translation at the IOMMU itself (if someone does ever integrate an SMMU
+with an upstream/parallel ITS, x86-style, I think we'd need to describe
+that with a DT property on the SMMU, so it would have to be the SMMU
+driver's responsibility).
 
 Robin.
 
+> +	}
 > +
-> +#define iommu_reserved_region_for_each(resv, d) \
-> +	list_for_each_entry(resv, &(d)->reserved_regions, list)
+> +	if (dev_is_pci(device))
+> +		ret =  add_pci_window_reserved_regions(domain,
+> +						       to_pci_dev(device));
+> +	return ret;
+> +}
 > +
->  #ifdef CONFIG_IOMMU_API
+>  static struct iommu_ops arm_smmu_ops = {
+>  	.capable		= arm_smmu_capable,
+>  	.domain_alloc		= arm_smmu_domain_alloc,
+> @@ -1548,6 +1613,7 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+>  	.domain_get_attr	= arm_smmu_domain_get_attr,
+>  	.domain_set_attr	= arm_smmu_domain_set_attr,
+>  	.of_xlate		= arm_smmu_of_xlate,
+> +	.add_reserved_regions	= arm_smmu_add_reserved_regions,
+>  	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+>  };
 >  
->  /**
 > 
