@@ -1,13 +1,14 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC 0/8] KVM PCIe/MSI passthrough on ARM/ARM64 (Alt II)
-Date: Thu, 3 Nov 2016 22:02:05 -0600
-Message-ID: <20161103220205.37715b49@t450s.home>
-References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v6 0/9] Fix kdump faults on system with amd iommu
+Date: Fri, 4 Nov 2016 13:14:59 +0800
+Message-ID: <20161104051459.GB4314@x1>
+References: <1476963440-23039-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1478209178-3009-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1476963440-23039-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,112 +18,98 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Vincent.Wan-5C7GfCeVMHo@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu,  3 Nov 2016 21:39:30 +0000
-Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+Hi Joerg,
 
-> Following Will & Robin's suggestions, this series attempts to propose
-> an alternative to [1] where the host would arbitrarily decide the
-> location of the IOVA MSI window and would be able to report to the
-> userspace the list of reserved IOVA regions that cannot be used
-> along with VFIO_IOMMU_MAP_DMA. This would allow the userspace to react
-> in case of conflict.
-> 
-> Userspace can retrieve all the reserved regions through the VFIO_IOMMU_GET_INFO
-> IOCTL by querying the new RESV_IOVA_RANGE chained capability. Each reserved
-> IOVA range is put in a separate capability.
+Ping!
 
-Doesn't it make more sense to describe the non-holes (ie. what I
-can use for DMA) rather the holes (what I can't use for DMA)?  For
-example on VT-d, the IOMMU not only has the block of MSI addresses
-handled through interrupt remapping, but it also has a maximum address
-width.  Rather than describing the reserved space we could describe the
-usable DMA ranges above and below that reserved block.
+About the v6 post, do you have any suggestions?
 
-Anyway, there's also a pretty harsh problem that I came up with in
-talking to Will.  If the platform describes a fixed IOVA range as
-reserved, that's great for the use case when a VM is instantiated with
-a device attached, but it seems like it nearly excludes the case of
-hotplugging a device.  We can't dynamically decide that a set of RAM
-pages in the VM cannot be used as a DMA target.  Does the user need to
-create the VM with a predefined hole that lines up with the reserved
-regions for this platform?  How do they know the reserved regions for
-this platform?  How would we handle migration where an assigned device
-hot-add might not occur until after we've migrated to a slightly
-different platform from the one we started on, that might have
-different reserved memory requirements?
+Because of GCR3 special handling in patch 9/9, I spent several days to
+study the knowledge and change code. Then when I tried to post, the
+virtual interrupt remapping feature caused kernel hang with this pachset
+applied. So it took me days to study spec and find it out. Finally it's
+very late to post.
 
-We can always have QEMU reject hot-adding the device if the reserved
-region overlaps existing guest RAM, but I don't even really see how we
-advise users to give them a reasonable chance of avoiding that
-possibility.  Apparently there are also ARM platforms where MSI pages
-cannot be remapped to support the previous programmable user/VM
-address, is it even worthwhile to support those platforms?  Does that
-decision influence whether user programmable MSI reserved regions are
-really a second class citizen to fixed reserved regions?  I expect
-we'll be talking about this tomorrow morning, but I certainly haven't
-come up with any viable solutions to this.  Thanks,
+Coule it be possibe that we review and merge patch 9/1~8, and leave the
+patch 9/9 which includes GCR3 special handling as 2nd step issue? Then
+I can back port patch 9/1~8 to our distro. Since this bug has been
+discussed so long time, and currently almost all system are deployed
+with amd iommu v1 hardware. It would be great if they can be accepted
+into 4.9 or 4.10-rc phase.
 
-Alex
+About patch 9/9, its code is a little complicated and not being
+reviewed, I am not sure if I understand your suggestion and GCR3 code
+well. What's your opinion?
 
-> At IOMMU level, the reserved regions are stored in an iommu_domain list
-> which is populated on each device attachment. An IOMMU add_reserved_regions
-> callback specializes the registration of the reserved regions.
+Thanks
+Baoquan
+
+
+On 10/20/16 at 07:37pm, Baoquan He wrote:
+> This is v6 post. 
 > 
-> On x86, the [FEE0_0000h - FEF0_000h] MSI window is registered (NOT tested).
+> The principle of the fix is similar to intel iommu. Just defer the assignment
+> of device to domain to device driver init. But there's difference than
+> intel iommu. AMD iommu create protection domain and assign device to
+> domain in iommu driver init stage. So in this patchset I just allow the
+> assignment of device to domain in software level, but defer updating the
+> domain info, especially the pte_root to dev table entry to device driver
+> init stage.
 > 
-> On ARM, the PCI host bridge windows (ACS check to be added?) + the MSI IOVA
-> reserved regions are populated by the arm-smmu driver. Currently the MSI
-> IOVA region is arbitrarily located at 0x8000000 and 1MB sized.  An IOVA domain
-> is created in add_reserved_regions callback. Then MSIs are transparently
-> mapped using this IOVA domain.
+> v5: 
+>     bnx2 NIC can't reset itself during driver init. Post patch to reset
+>     it during driver init. IO_PAGE_FAULT can't be seen anymore.
+>     
+>     Below is link of v5 post.
+>     https://lists.linuxfoundation.org/pipermail/iommu/2016-September/018527.html
 > 
-> This series currently does not address some features addressed in [1]:
-> - MSI IOVA size requirement computation
-> - IRQ safety assessment
+> v5->v6:
+>     According to Joerg's comments made several below main changes:
+>     - Add sanity check when copy old dev tables. 
 > 
-> This RFC was just tested on ARM Overdrive with QEMU and is sent to help
-> potential discussions at LPC. Additionnal development + testing is needed.
+>     - Discard the old patch 6/8.
 > 
-> 2 tentative fixes may be submitted separately:
-> - vfio: fix vfio_info_cap_add/shift
-> - iommu/iova: fix __alloc_and_insert_iova_range
+>     - If a device is set up with guest translations (DTE.GV=1), then don't
+>       copy that information but move the device over to an empty guest-cr3
+>       table and handle the faults in the PPR log (which just answer them
+>       with INVALID).
 > 
-> Best Regards
+> Issues need be discussed:
+>     - Joerg suggested hooking the behaviour that updates domain info into
+>       dte entry into the set_dma_mask call-back. I tried, but on my local
+>       machine with amd iommu v2, an ohci pci device doesn't call set_dma_mask.
+>       Then IO_PAGE_FAULT printing flooded.
 > 
-> Eric
+>       00:12.0 USB controller: Advanced Micro Devices, Inc. [AMD] FCH USB OHCI Controller (rev 11)
 > 
-> [1] [PATCH v14 00/16] KVM PCIe/MSI passthrough on ARM/ARM64
-> https://lkml.org/lkml/2016/10/12/347
+>     - About GCR3 root pointer copying issue, I don't know how to setup the
+>       test environment and haven't tested yet. Hope Joerg or Zongshun can
+>       tell what steps should be taken to test it, or help take a test in your
+>       test environemnt.
+>  
+> Baoquan He (9):
+>   iommu/amd: Detect pre enabled translation
+>   iommu/amd: add several helper function
+>   iommu/amd: Define bit fields for DTE particularly
+>   iommu/amd: Add function copy_dev_tables
+>   iommu/amd: copy old trans table from old kernel
+>   iommu/amd: Don't update domain info to dte entry at iommu init stage
+>   iommu/amd: Update domain into to dte entry during device driver init
+>   iommu/amd: Add sanity check of irq remap information of old dev table
+>     entry
+>   iommu/amd: Don't copy GCR3 table root pointer
 > 
-> Git: complete series available at
-> https://github.com/eauger/linux/tree/v4.9-rc3-reserved-rfc
+>  drivers/iommu/amd_iommu.c       |  93 +++++++++++++-------
+>  drivers/iommu/amd_iommu_init.c  | 189 +++++++++++++++++++++++++++++++++++++---
+>  drivers/iommu/amd_iommu_proto.h |   2 +
+>  drivers/iommu/amd_iommu_types.h |  53 ++++++++++-
+>  drivers/iommu/amd_iommu_v2.c    |  18 +++-
+>  5 files changed, 307 insertions(+), 48 deletions(-)
 > 
-> 
-> Eric Auger (7):
->   vfio: fix vfio_info_cap_add/shift
->   iommu/iova: fix __alloc_and_insert_iova_range
->   iommu: Add a list of iommu_reserved_region in iommu_domain
->   vfio/type1: Introduce RESV_IOVA_RANGE capability
->   iommu: Handle the list of reserved regions
->   iommu/vt-d: Implement add_reserved_regions callback
->   iommu/arm-smmu: implement add_reserved_regions callback
-> 
-> Robin Murphy (1):
->   iommu/dma: Allow MSI-only cookies
-> 
->  drivers/iommu/arm-smmu.c        | 63 +++++++++++++++++++++++++++++++++++++++++
->  drivers/iommu/dma-iommu.c       | 39 +++++++++++++++++++++++++
->  drivers/iommu/intel-iommu.c     | 48 ++++++++++++++++++++++---------
->  drivers/iommu/iommu.c           | 25 ++++++++++++++++
->  drivers/iommu/iova.c            |  2 +-
->  drivers/vfio/vfio.c             |  5 ++--
->  drivers/vfio/vfio_iommu_type1.c | 63 ++++++++++++++++++++++++++++++++++++++++-
->  include/linux/dma-iommu.h       |  9 ++++++
->  include/linux/iommu.h           | 23 +++++++++++++++
->  include/uapi/linux/vfio.h       | 16 ++++++++++-
->  10 files changed, 275 insertions(+), 18 deletions(-)
+> -- 
+> 2.5.5
 > 
