@@ -1,107 +1,104 @@
-From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v2 7/8] iommu/vt-d: Implement add_reserved_regions callback
-Date: Fri,  4 Nov 2016 11:24:05 +0000
-Message-ID: <1478258646-3117-8-git-send-email-eric.auger@redhat.com>
+From: Eric Auger <eric.auger@redhat.com>
+Subject: [RFC v2 6/8] iommu: Handle the list of reserved regions
+Date: Fri,  4 Nov 2016 11:24:04 +0000
+Message-ID: <1478258646-3117-7-git-send-email-eric.auger@redhat.com>
 References: <1478258646-3117-1-git-send-email-eric.auger@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1478258646-3117-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1478258646-3117-1-git-send-email-eric.auger@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: eric.auger@redhat.com, eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org
+Cc: kvm@vger.kernel.org, drjones@redhat.com, linux-kernel@vger.kernel.org, pranav.sawargaonkar@gmail.com, iommu@lists.linux-foundation.org, punit.agrawal@arm.com, diana.craciun@nxp.com
 List-Id: iommu@lists.linux-foundation.org
 
-Implement the add_reserved_regions callback by registering
-the [FEE0_0000h - FEF0_000h] 1MB range as a reserved region
-(MSI address space).
+A new callback is introduced, add_reserved_regions. This function
+aims at populating the iommu domain reserved region list with
+regions associated with the device. The function is called on
+device attachment. The list is freed on iommu_domain_free().
 
-Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
 ---
+ drivers/iommu/iommu.c | 23 +++++++++++++++++++++++
+ include/linux/iommu.h |  6 ++++++
+ 2 files changed, 29 insertions(+)
 
-RFC v1 -> RFC v2:
-- fix intel_iommu_add_reserved_regions name
-- use IOAPIC_RANGE_START and IOAPIC_RANGE_END defines
-- return if the MSI region is already registered;
----
- drivers/iommu/intel-iommu.c | 48 +++++++++++++++++++++++++++++++++------------
- 1 file changed, 35 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index a4407ea..d07dbb4 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -5173,6 +5173,27 @@ static void intel_iommu_remove_device(struct device *dev)
- 	iommu_device_unlink(iommu->iommu_dev, dev);
- }
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 0af07492..300af44 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1077,6 +1077,10 @@ struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
  
-+static int intel_iommu_add_reserved_regions(struct iommu_domain *domain,
-+					    struct device *device)
-+{
-+	struct iommu_reserved_region *region;
-+	size_t msi_length = IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1;
+ void iommu_domain_free(struct iommu_domain *domain)
+ {
++	struct iommu_reserved_region *entry, *next;
 +
-+	iommu_reserved_region_for_each(region, domain) {
-+		if (region->start == IOAPIC_RANGE_START &&
-+		    region->length == msi_length)
-+			return 0;
++	list_for_each_entry_safe(entry, next, &domain->reserved_regions, list)
++		kfree(entry);
+ 	domain->ops->domain_free(domain);
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_free);
+@@ -1089,6 +1093,15 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+ 		return -ENODEV;
+ 
+ 	ret = domain->ops->attach_dev(domain, dev);
++	if (ret)
++		return ret;
++
++	if (domain->type == IOMMU_DOMAIN_UNMANAGED) {
++		mutex_lock(&domain->resv_mutex);
++		ret = iommu_add_reserved_regions(domain, dev);
++		mutex_unlock(&domain->resv_mutex);
 +	}
-+	region = kzalloc(sizeof(*region), GFP_KERNEL);
-+	if (!region)
-+		return -ENOMEM;
 +
-+	region->start  = IOAPIC_RANGE_START;
-+	region->length = msi_length;
-+	list_add_tail(&region->list, &domain->reserved_regions);
-+	return 0;
+ 	if (!ret)
+ 		trace_attach_device_to_domain(dev);
+ 	return ret;
+@@ -1548,6 +1561,16 @@ int iommu_domain_set_attr(struct iommu_domain *domain,
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_set_attr);
+ 
++int iommu_add_reserved_regions(struct iommu_domain *domain, struct device *dev)
++{
++	const struct iommu_ops *ops = dev->bus->iommu_ops;
++
++	if (ops && ops->add_reserved_regions)
++		return ops->add_reserved_regions(domain, dev);
++	else
++		return 0;
 +}
 +
- #ifdef CONFIG_INTEL_IOMMU_SVM
- int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev)
+ void iommu_get_dm_regions(struct device *dev, struct list_head *list)
  {
-@@ -5282,19 +5303,20 @@ struct intel_iommu *intel_svm_device_to_iommu(struct device *dev)
- #endif /* CONFIG_INTEL_IOMMU_SVM */
+ 	const struct iommu_ops *ops = dev->bus->iommu_ops;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 0f2eb64..7748a1b 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -170,6 +170,7 @@ struct iommu_reserved_region {
+  * @get_dm_regions: Request list of direct mapping requirements for a device
+  * @put_dm_regions: Free list of direct mapping requirements for a device
+  * @apply_dm_region: Temporary helper call-back for iova reserved ranges
++ * @add_reserved_regions: Populate reserved regions for a device
+  * @domain_window_enable: Configure and enable a particular window for a domain
+  * @domain_window_disable: Disable a particular window for a domain
+  * @domain_set_windows: Set the number of windows for a domain
+@@ -207,6 +208,10 @@ struct iommu_ops {
+ 	void (*apply_dm_region)(struct device *dev, struct iommu_domain *domain,
+ 				struct iommu_dm_region *region);
  
- static const struct iommu_ops intel_iommu_ops = {
--	.capable	= intel_iommu_capable,
--	.domain_alloc	= intel_iommu_domain_alloc,
--	.domain_free	= intel_iommu_domain_free,
--	.attach_dev	= intel_iommu_attach_device,
--	.detach_dev	= intel_iommu_detach_device,
--	.map		= intel_iommu_map,
--	.unmap		= intel_iommu_unmap,
--	.map_sg		= default_iommu_map_sg,
--	.iova_to_phys	= intel_iommu_iova_to_phys,
--	.add_device	= intel_iommu_add_device,
--	.remove_device	= intel_iommu_remove_device,
--	.device_group   = pci_device_group,
--	.pgsize_bitmap	= INTEL_IOMMU_PGSIZES,
-+	.capable		= intel_iommu_capable,
-+	.domain_alloc		= intel_iommu_domain_alloc,
-+	.domain_free		= intel_iommu_domain_free,
-+	.attach_dev		= intel_iommu_attach_device,
-+	.detach_dev		= intel_iommu_detach_device,
-+	.map			= intel_iommu_map,
-+	.unmap			= intel_iommu_unmap,
-+	.map_sg			= default_iommu_map_sg,
-+	.iova_to_phys		= intel_iommu_iova_to_phys,
-+	.add_device		= intel_iommu_add_device,
-+	.remove_device		= intel_iommu_remove_device,
-+	.add_reserved_regions	= intel_iommu_add_reserved_regions,
-+	.device_group		= pci_device_group,
-+	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
- };
++	/* Add reserved regions for a device */
++	int (*add_reserved_regions)(struct iommu_domain *domain,
++				     struct device *device);
++
+ 	/* Window handling functions */
+ 	int (*domain_window_enable)(struct iommu_domain *domain, u32 wnd_nr,
+ 				    phys_addr_t paddr, u64 size, int prot);
+@@ -289,6 +294,7 @@ struct device *iommu_device_create(struct device *parent, void *drvdata,
+ void iommu_device_destroy(struct device *dev);
+ int iommu_device_link(struct device *dev, struct device *link);
+ void iommu_device_unlink(struct device *dev, struct device *link);
++int iommu_add_reserved_regions(struct iommu_domain *domain, struct device *dev);
  
- static void quirk_iommu_g4x_gfx(struct pci_dev *dev)
+ /* Window handling function prototypes */
+ extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
 -- 
 1.9.1
