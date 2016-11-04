@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v2 8/8] iommu/arm-smmu: implement add_reserved_regions callback
-Date: Fri,  4 Nov 2016 11:24:06 +0000
-Message-ID: <1478258646-3117-9-git-send-email-eric.auger@redhat.com>
+Subject: [RFC v2 7/8] iommu/vt-d: Implement add_reserved_regions callback
+Date: Fri,  4 Nov 2016 11:24:05 +0000
+Message-ID: <1478258646-3117-8-git-send-email-eric.auger@redhat.com>
 References: <1478258646-3117-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,111 +21,87 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The function populates the list of reserved regions with the
-PCI host bridge windows and the MSI IOVA range.
-
-At the moment an arbitray MSI IOVA window is set at 0x8000000
-of size 1MB.
+Implement the add_reserved_regions callback by registering
+the [FEE0_0000h - FEF0_000h] 1MB range as a reserved region
+(MSI address space).
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
 
-RFC v1 -> v2: use defines for MSI IOVA base and length
+RFC v1 -> RFC v2:
+- fix intel_iommu_add_reserved_regions name
+- use IOAPIC_RANGE_START and IOAPIC_RANGE_END defines
+- return if the MSI region is already registered;
 ---
- drivers/iommu/arm-smmu.c | 66 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 66 insertions(+)
+ drivers/iommu/intel-iommu.c | 48 +++++++++++++++++++++++++++++++++------------
+ 1 file changed, 35 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index c841eb7..c07ea41 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -278,6 +278,9 @@ enum arm_smmu_s2cr_privcfg {
- 
- #define FSYNR0_WNR			(1 << 4)
- 
-+#define MSI_IOVA_BASE			0x8000000
-+#define MSI_IOVA_LENGTH			0x100000
-+
- static int force_stage;
- module_param(force_stage, int, S_IRUGO);
- MODULE_PARM_DESC(force_stage,
-@@ -1533,6 +1536,68 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	return iommu_fwspec_add_ids(dev, &fwid, 1);
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a4407ea..d07dbb4 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5173,6 +5173,27 @@ static void intel_iommu_remove_device(struct device *dev)
+ 	iommu_device_unlink(iommu->iommu_dev, dev);
  }
  
-+static int add_pci_window_reserved_regions(struct iommu_domain *domain,
-+					   struct pci_dev *dev)
++static int intel_iommu_add_reserved_regions(struct iommu_domain *domain,
++					    struct device *device)
 +{
-+	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
 +	struct iommu_reserved_region *region;
-+	struct resource_entry *window;
-+	phys_addr_t start;
-+	size_t length;
++	size_t msi_length = IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1;
 +
-+	resource_list_for_each_entry(window, &bridge->windows) {
-+		if (resource_type(window->res) != IORESOURCE_MEM &&
-+		    resource_type(window->res) != IORESOURCE_IO)
-+			continue;
-+
-+		start = window->res->start - window->offset;
-+		length = window->res->end - window->res->start + 1;
-+
-+		iommu_reserved_region_for_each(region, domain) {
-+			if (region->start == start && region->length == length)
-+				continue;
-+		}
-+		region = kzalloc(sizeof(*region), GFP_KERNEL);
-+		if (!region)
-+			return -ENOMEM;
-+
-+		region->start = start;
-+		region->length = length;
-+
-+		list_add_tail(&region->list, &domain->reserved_regions);
++	iommu_reserved_region_for_each(region, domain) {
++		if (region->start == IOAPIC_RANGE_START &&
++		    region->length == msi_length)
++			return 0;
 +	}
++	region = kzalloc(sizeof(*region), GFP_KERNEL);
++	if (!region)
++		return -ENOMEM;
++
++	region->start  = IOAPIC_RANGE_START;
++	region->length = msi_length;
++	list_add_tail(&region->list, &domain->reserved_regions);
 +	return 0;
 +}
 +
-+static int arm_smmu_add_reserved_regions(struct iommu_domain *domain,
-+					 struct device *device)
-+{
-+	struct iommu_reserved_region *region;
-+	int ret = 0;
-+
-+	/* An arbitrary 1MB region starting at 0x8000000 is reserved for MSIs */
-+	if (!domain->iova_cookie) {
-+
-+		region = kzalloc(sizeof(*region), GFP_KERNEL);
-+		if (!region)
-+			return -ENOMEM;
-+
-+		region->start = MSI_IOVA_BASE;
-+		region->length = MSI_IOVA_LENGTH;
-+		list_add_tail(&region->list, &domain->reserved_regions);
-+
-+		ret = iommu_get_dma_msi_region_cookie(domain,
-+						region->start, region->length);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (dev_is_pci(device))
-+		ret =  add_pci_window_reserved_regions(domain,
-+						       to_pci_dev(device));
-+	return ret;
-+}
-+
- static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -1548,6 +1613,7 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	.domain_get_attr	= arm_smmu_domain_get_attr,
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
- 	.of_xlate		= arm_smmu_of_xlate,
-+	.add_reserved_regions	= arm_smmu_add_reserved_regions,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev)
+ {
+@@ -5282,19 +5303,20 @@ struct intel_iommu *intel_svm_device_to_iommu(struct device *dev)
+ #endif /* CONFIG_INTEL_IOMMU_SVM */
+ 
+ static const struct iommu_ops intel_iommu_ops = {
+-	.capable	= intel_iommu_capable,
+-	.domain_alloc	= intel_iommu_domain_alloc,
+-	.domain_free	= intel_iommu_domain_free,
+-	.attach_dev	= intel_iommu_attach_device,
+-	.detach_dev	= intel_iommu_detach_device,
+-	.map		= intel_iommu_map,
+-	.unmap		= intel_iommu_unmap,
+-	.map_sg		= default_iommu_map_sg,
+-	.iova_to_phys	= intel_iommu_iova_to_phys,
+-	.add_device	= intel_iommu_add_device,
+-	.remove_device	= intel_iommu_remove_device,
+-	.device_group   = pci_device_group,
+-	.pgsize_bitmap	= INTEL_IOMMU_PGSIZES,
++	.capable		= intel_iommu_capable,
++	.domain_alloc		= intel_iommu_domain_alloc,
++	.domain_free		= intel_iommu_domain_free,
++	.attach_dev		= intel_iommu_attach_device,
++	.detach_dev		= intel_iommu_detach_device,
++	.map			= intel_iommu_map,
++	.unmap			= intel_iommu_unmap,
++	.map_sg			= default_iommu_map_sg,
++	.iova_to_phys		= intel_iommu_iova_to_phys,
++	.add_device		= intel_iommu_add_device,
++	.remove_device		= intel_iommu_remove_device,
++	.add_reserved_regions	= intel_iommu_add_reserved_regions,
++	.device_group		= pci_device_group,
++	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
  };
  
+ static void quirk_iommu_g4x_gfx(struct pci_dev *dev)
 -- 
 1.9.1
