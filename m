@@ -1,12 +1,15 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH RESEND] iommu/exynos: Improve page fault debug message
-Date: Fri, 04 Nov 2016 08:58:09 +0100
-Message-ID: <1478246289-21525-1-git-send-email-m.szyprowski@samsung.com>
-References: <CGME20161104075817eucas1p2fe178b13386ff0e03592d2a2094c0ac0@eucas1p2.samsung.com>
+From: Iago Abal <iari-YidNj35/HaM@public.gmane.org>
+Subject: Re: [PATCH] iommu: fix double spin_lock_irqsave on
+	`device_domain_lock'
+Date: Fri, 4 Nov 2016 10:38:29 +0100
+Message-ID: <CAGbDTvqDAEcLPNxHa6wvjTwpotDbZSSDL3MocVgj=LTMFG8Okw@mail.gmail.com>
+References: <1476694480-4251-1-git-send-email-iari@itu.dk>
+	<20161103205136.GA4930@suse.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20161103205136.GA4930-l3A5Bk7waGM@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,42 +19,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add master device name to default IOMMU fault message to make easier to
-find which device triggered the fault. While at it, move printing some
-information (like page table base and first level entry addresses) to
-dev_dbg(), because those are typically not very useful for typical device
-driver user/developer not equipped with hardware debugging tools.
+On Thu, Nov 3, 2016 at 9:51 PM, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org> wrote:
+>
+> No, you can't just release the lock to re-aquire it in
+> dmar_remove_one_dev_info(). This introduces new races, as the list your
+> are walking is no longer protected by the lock. The right solution is to
+> call a variant of dmar_remove_one_dev_info() which does not take the
+> lock. It turns out this function already exists, so the patch looks like
+> below. Can you check if this is still correct and resubmit your patch?
+>
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index a4407ea..3cadde2 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -1723,7 +1723,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+>
+>                 domain = info->domain;
+>
+> -               dmar_remove_one_dev_info(domain, info->dev);
+> +               __dmar_remove_one_dev_info(info);
+>
+>                 if (!domain_type_is_vm_or_si(domain))
+>                         domain_exit(domain);
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
----
- drivers/iommu/exynos-iommu.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 30808e9..47f0d67 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -368,13 +368,14 @@ static void show_fault_information(struct sysmmu_drvdata *data,
- {
- 	sysmmu_pte_t *ent;
- 
--	dev_err(data->sysmmu, "%s FAULT occurred at %#x (page table base: %pa)\n",
--		finfo->name, fault_addr, &data->pgtable);
-+	dev_err(data->sysmmu, "%s: %s FAULT occurred at %#x\n",
-+		dev_name(data->master), finfo->name, fault_addr);
-+	dev_dbg(data->sysmmu, "Page table base: %pa\n", &data->pgtable);
- 	ent = section_entry(phys_to_virt(data->pgtable), fault_addr);
--	dev_err(data->sysmmu, "\tLv1 entry: %#x\n", *ent);
-+	dev_dbg(data->sysmmu, "\tLv1 entry: %#x\n", *ent);
- 	if (lv1ent_page(ent)) {
- 		ent = page_entry(ent, fault_addr);
--		dev_err(data->sysmmu, "\t Lv2 entry: %#x\n", *ent);
-+		dev_dbg(data->sysmmu, "\t Lv2 entry: %#x\n", *ent);
- 	}
- }
- 
--- 
-1.9.1
+That patch was actually my first attempt at fixing the problem, but I
+ran the tool and I found a second possibility of deadlock:
+`domain_exit' calls to `domain_remove_dev_info', which also spin_locks
+on `device_domain_lock'.
+
+Alternatively I could add another `__domain_exit' function that
+doesn't take the lock.
+
+Would that be fine?
+
+-- iago
