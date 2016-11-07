@@ -1,11 +1,15 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2] iommu/arm-smmu: Fix out-of-bounds dereference
-Date: Mon,  7 Nov 2016 18:25:09 +0000
-Message-ID: <3e31e04e167e2b12fc814c22a0b6902bd4f926f2.1478543109.git.robin.murphy@arm.com>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [PATCH 2/2] swiotlb: Add swiotlb=nobounce debug option
+Date: Mon, 7 Nov 2016 19:57:11 +0100
+Message-ID: <CAMuHMdXFCVP2L-1jdzxbA6JD2Pm4accCyc57fFXt=g7VgAv53Q@mail.gmail.com>
+References: <1477928704-10611-1-git-send-email-geert+renesas@glider.be>
+	<1477928704-10611-3-git-send-email-geert+renesas@glider.be>
+	<20161031175252.GA6952@char.us.oracle.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20161031175252.GA6952-he5eyhs8q0BAdwtm4QZOy9BPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,43 +19,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, "linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When we iterate a master's config entries, what we generally care
-about is the entry's stream map index, rather than the entry index
-itself, so it's nice to have the iterator automatically assign the
-former from the latter. Unfortunately, booting with KASAN reveals
-the oversight that using a simple comma operator results in the
-entry index being dereferenced before being checked for validity,
-so we always access one element past the end of the fwspec array.
+Hi Konrad,
 
-Flip things around so that the check always happens before the index
-may be dereferenced.
+On Mon, Oct 31, 2016 at 6:52 PM, Konrad Rzeszutek Wilk
+<konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org> wrote:
+> On Mon, Oct 31, 2016 at 04:45:04PM +0100, Geert Uytterhoeven wrote:
+>> On architectures like arm64, swiotlb is tied intimately to the core
+>> architecture DMA support. In addition, ZONE_DMA cannot be disabled.
+>>
+>> To aid debugging and catch devices not supporting DMA to memory outside
+>> the 32-bit address space, add a kernel command line option
+>> "swiotlb=nobounce", which disables the use of bounce buffers.
+>> If specified, trying to map memory that cannot be used with DMA will
+>> fail, and a warning will be printed (rate-limited).
+>
+> I would make the 'swiotlb_force' an enum. And then instead of this
+> being 'nobounce' just do the inverse of 'force', that is the
+> 'noforce' would trigger this no bounce effect.
+>
+> So:
+>
+> enum {
+>         NORMAL,         /* Default - depending on the hardware DMA mask and such. */
+>         FORCE,          /* swiotlb=force */
+>         NO_FORCE,       /* swiotlb=noforce */
 
-Fixes: adfec2e709d2 ("iommu/arm-smmu: Convert to iommu_fwspec")
-Reported-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Fine for me, but swiotlb_force is exported to platform code. Hence all users
+should be updated?
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index f86683eec446..786d33900382 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -324,8 +324,10 @@ struct arm_smmu_master_cfg {
- #define INVALID_SMENDX			-1
- #define __fwspec_cfg(fw) ((struct arm_smmu_master_cfg *)fw->iommu_priv)
- #define fwspec_smmu(fw)  (__fwspec_cfg(fw)->smmu)
-+#define fwspec_smendx(fw, i) \
-+	(i >= fw->num_ids ? INVALID_SMENDX : __fwspec_cfg(fw)->smendx[i])
- #define for_each_cfg_sme(fw, i, idx) \
--	for (i = 0; idx = __fwspec_cfg(fw)->smendx[i], i < fw->num_ids; ++i)
-+	for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
- 
- struct arm_smmu_device {
- 	struct device			*dev;
--- 
-2.10.2.dirty
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
