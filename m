@@ -1,81 +1,112 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH 2/2] swiotlb: Add swiotlb=nobounce debug option
-Date: Mon, 7 Nov 2016 16:41:39 +0100
-Message-ID: <CAMuHMdUiVuZFG8T3US3D5EzBbXgW5VCoYypzAsQJEk4DgtyH5g@mail.gmail.com>
-References: <1477928704-10611-1-git-send-email-geert+renesas@glider.be>
- <1477928704-10611-3-git-send-email-geert+renesas@glider.be>
- <86c57a18-cb28-8aee-9edb-96da73d4f829@arm.com> <CAMuHMdVJC6SF-66t0A1zUKQLeprjLD6X27r5iA7+6F3ii=ZBzQ@mail.gmail.com>
- <967ca71a-61c5-5585-16e7-990409088fa6@arm.com>
+From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: Fix out-of-bounds dereference
+Date: Mon, 7 Nov 2016 15:47:20 +0000
+Message-ID: <20161107154719.GK19796@leverpostej>
+References: <dea89ff1b2bd97b08d72f5c32fcf228bec767142.1478533142.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <967ca71a-61c5-5585-16e7-990409088fa6@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jonathan Corbet <corbet@lwn.net>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <dea89ff1b2bd97b08d72f5c32fcf228bec767142.1478533142.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On Mon, Nov 07, 2016 at 03:39:02PM +0000, Robin Murphy wrote:
+> When we iterate a master's config entries, what we generally care
+> about is the entry's stream map index, rather than the entry index
+> itself, so it's nice to have the iterator automatically assign the
+> former from the latter. Unfortunately, booting with KASAN reveals
+> the oversight that using a simple comma operator results in the
+> entry index being dereferenced before being checked for validity,
+> so we always access one element past the end of the fwspec array.
+> 
+> Flip things around so that the check always happens before the index
+> may be dereferenced.
+> 
+> Fixes: adfec2e709d2 ("iommu/arm-smmu: Convert to iommu_fwspec")
+> Reported-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-On Tue, Nov 1, 2016 at 12:46 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->>>> To aid debugging and catch devices not supporting DMA to memory outside
->>>> the 32-bit address space, add a kernel command line option
->>>> "swiotlb=nobounce", which disables the use of bounce buffers.
->>>> If specified, trying to map memory that cannot be used with DMA will
->>>> fail, and a warning will be printed (rate-limited).
->>>
->>> This rationale seems questionable - how useful is non-deterministic
->>> behaviour for debugging really? What you end up with is DMA sometimes
->>> working or sometimes not depending on whether allocations happen to
->>> naturally fall below 4GB or not. In my experience, that in itself can be
->>> a pain in the arse to debug.
->>
->> It immediately triggered for me, though:
->>
->>     rcar-dmac e7300000.dma-controller: Cannot do DMA to address
->> 0x000000067a9b7000
->>     ravb e6800000.ethernet: Cannot do DMA to address 0x000000067aa07780
->>
->>> Most of the things you might then do to make things more deterministic
->>> again (like making the default DMA mask tiny or hacking out all the
->>> system's 32-bit addressable RAM) are also generally sufficient to make
->>> DMA fail earlier and make this option moot anyway. What's the specific
->>> use case motivating this?
->>
->> My use case is finding which drivers and DMA engines do not support 64-bit
->> memory. There's more info in my series "[PATCH/RFC 0/5] arm64: r8a7796: 64-bit
->> Memory and Ethernet Prototype"
->> (https://www.mail-archive.com/linux-renesas-soc@vger.kernel.org/msg08393.html)
->
-> Thanks for the context. I've done very similar things in the past, and
-> my first instinct would be to change the default DMA mask in
-> of_dma_configure() to something which can't reach RAM (e.g. <30 bits),
-> then instrument dma_set_mask() to catch cleverer drivers. That's a
-> straightforward way to get 100% coverage - the problem with simply
-> disabling bounce buffering is that whilst statistically it almost
-> certainly will catch >95% of cases, there will always be some that it
-> won't; if some driver only ever does a single dma_alloc_coherent() early
-> enough that allocations are still fairly deterministic, and always
-> happens to get a 32-bit address on that platform, it's likely to slip
-> through the net.
->
-> I'm not against the idea of SWIOTLB growing a runtime-disable option,
-> I'm just not sure what situation it's actually the best solution for.
+This patch fixes the KASAN splats as I saw (example below).
 
-If I set the DMA mask to a small value, DMA is never used, and SWIOTLB
-always falls back to bounce buffers (and DMAing from the small pool)?
+With this patch applied, my dmesg is free of errors.
 
-That's the inverse of what I want to achieve: I want to avoid using the
-bounce feature, to make sure the DMA engine is always used with whatever
-kind of memory.
+So feel free to add:
 
-Gr{oetje,eeting}s,
+Tested-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
 
-                        Geert
+Thanks,
+Mark.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+==================================================================
+BUG: KASAN: slab-out-of-bounds in arm_smmu_add_device+0x510/0x960 at addr ffff800935c6e72c
+Read of size 2 by task swapper/0/1
+CPU: 4 PID: 1 Comm: swapper/0 Not tainted 4.9.0-rc3-00005-g8cc374c #79
+Hardware name: ARM Juno development board (r1) (DT)
+Call trace:
+[<ffff20000808b2d8>] dump_backtrace+0x0/0x278
+[<ffff20000808b564>] show_stack+0x14/0x20
+[<ffff2000084e4e4c>] dump_stack+0xa4/0xc8
+[<ffff200008256984>] kasan_object_err+0x24/0x80
+[<ffff200008256c40>] kasan_report_error+0x208/0x4d0
+[<ffff200008257330>] kasan_report+0x40/0x48
+[<ffff200008255624>] __asan_load2+0x84/0x98
+[<ffff200008743e80>] arm_smmu_add_device+0x510/0x960
+[<ffff20000873acf8>] iommu_bus_notifier+0x120/0x160
+[<ffff2000081038e4>] notifier_call_chain+0x6c/0xb8
+[<ffff200008103dfc>] __blocking_notifier_call_chain+0x5c/0xa0
+[<ffff200008103e54>] blocking_notifier_call_chain+0x14/0x20
+[<ffff20000874ef98>] device_add+0x5c8/0x840
+[<ffff20000863d574>] amba_device_try_add+0x1cc/0x298
+[<ffff20000863d7a8>] amba_device_add+0x20/0x148
+[<ffff200008ad4344>] of_platform_bus_create+0x34c/0x428
+[<ffff200008ad4554>] of_platform_populate+0x4c/0xb8
+[<ffff200009389c9c>] of_platform_default_populate_init+0x78/0x8c
+[<ffff200008083a28>] do_one_initcall+0x90/0x1c8
+[<ffff200009331038>] kernel_init_freeable+0x280/0x324
+[<ffff200008cb5d00>] kernel_init+0x10/0x110
+[<ffff200008083680>] ret_from_fork+0x10/0x50
+Object at ffff800935c6e700, in cache kmalloc-128 size: 128
+Allocated:
+PID = 1
+ [<ffff20000808ac90>] save_stack_trace_tsk+0x0/0x180
+ [<ffff20000808ae38>] save_stack_trace+0x28/0x38
+ [<ffff200008255ebc>] kasan_kmalloc+0xdc/0x188
+ [<ffff200008252780>] __kmalloc+0x148/0x238
+ [<ffff200008743b38>] arm_smmu_add_device+0x1c8/0x960
+ [<ffff20000873acf8>] iommu_bus_notifier+0x120/0x160
+ [<ffff2000081038e4>] notifier_call_chain+0x6c/0xb8
+ [<ffff200008103dfc>] __blocking_notifier_call_chain+0x5c/0xa0
+ [<ffff200008103e54>] blocking_notifier_call_chain+0x14/0x20
+ [<ffff20000874ef98>] device_add+0x5c8/0x840
+ [<ffff20000863d574>] amba_device_try_add+0x1cc/0x298
+ [<ffff20000863d7a8>] amba_device_add+0x20/0x148
+ [<ffff200008ad4344>] of_platform_bus_create+0x34c/0x428
+ [<ffff200008ad4554>] of_platform_populate+0x4c/0xb8
+ [<ffff200009389c9c>] of_platform_default_populate_init+0x78/0x8c
+ [<ffff200008083a28>] do_one_initcall+0x90/0x1c8
+ [<ffff200009331038>] kernel_init_freeable+0x280/0x324
+ [<ffff200008cb5d00>] kernel_init+0x10/0x110
+ [<ffff200008083680>] ret_from_fork+0x10/0x50
+Freed:
+PID = 0
+(stack is not available)
+Memory state around the buggy address:
+ ffff800935c6e600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff800935c6e680: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff800935c6e700: 00 00 00 00 00 04 fc fc fc fc fc fc fc fc fc fc
+                                  ^
+ ffff800935c6e780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff800935c6e800: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
