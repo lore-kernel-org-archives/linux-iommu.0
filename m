@@ -1,9 +1,7 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH] iommu/dma-iommu: properly respect configured address space
-	size
-Date: Mon, 07 Nov 2016 14:06:13 +0100
-Message-ID: <1478523973-8828-1-git-send-email-m.szyprowski@samsung.com>
-References: <CGME20161107130625eucas1p2dd23c07010b4f3eddb6c6540ed802246@eucas1p2.samsung.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu: Fix out-of-bounds dereference
+Date: Mon,  7 Nov 2016 15:39:02 +0000
+Message-ID: <dea89ff1b2bd97b08d72f5c32fcf228bec767142.1478533142.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -17,39 +15,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When one called iommu_dma_init_domain() with size smaller than device's
-DMA mask, the alloc_iova() will not respect it and always assume that all
-IOVA addresses will be allocated from the the (base ... dev->dma_mask) range.
+When we iterate a master's config entries, what we generally care
+about is the entry's stream map index, rather than the entry index
+itself, so it's nice to have the iterator automatically assign the
+former from the latter. Unfortunately, booting with KASAN reveals
+the oversight that using a simple comma operator results in the
+entry index being dereferenced before being checked for validity,
+so we always access one element past the end of the fwspec array.
 
-This patch fixes this issue by taking the configured address space size
-parameter into account (if it is smaller than the device's dma_mask).
+Flip things around so that the check always happens before the index
+may be dereferenced.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Fixes: adfec2e709d2 ("iommu/arm-smmu: Convert to iommu_fwspec")
+Reported-by: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/dma-iommu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index c5ab8667e6f2..8b4b72654359 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -212,11 +212,13 @@ static struct iova *__alloc_iova(struct iommu_domain *domain, size_t size,
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index f86683eec446..44ffe3a391d6 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -324,8 +324,10 @@ struct arm_smmu_master_cfg {
+ #define INVALID_SMENDX			-1
+ #define __fwspec_cfg(fw) ((struct arm_smmu_master_cfg *)fw->iommu_priv)
+ #define fwspec_smmu(fw)  (__fwspec_cfg(fw)->smmu)
+-#define for_each_cfg_sme(fw, i, idx) \
+-	for (i = 0; idx = __fwspec_cfg(fw)->smendx[i], i < fw->num_ids; ++i)
++#define for_each_cfg_sme(fw, i, idx)					\
++	for (i = 0;							\
++	     i < fw->num_ids && (idx = __fwspec_cfg(fw)->smendx[i], true); \
++	     ++i)
  
- 	if (domain->geometry.force_aperture)
- 		dma_limit = min(dma_limit, domain->geometry.aperture_end);
-+
-+	dma_limit = min(dma_limit >> shift, (dma_addr_t)iovad->dma_32bit_pfn);
- 	/*
- 	 * Enforce size-alignment to be safe - there could perhaps be an
- 	 * attribute to control this per-device, or at least per-domain...
- 	 */
--	return alloc_iova(iovad, length, dma_limit >> shift, true);
-+	return alloc_iova(iovad, length, dma_limit, true);
- }
- 
- /* The IOVA allocator knows what we mapped, so just unmap whatever that was */
+ struct arm_smmu_device {
+ 	struct device			*dev;
 -- 
-1.9.1
+2.10.2.dirty
