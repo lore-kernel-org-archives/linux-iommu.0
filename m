@@ -1,51 +1,242 @@
-From: Konrad Rzeszutek Wilk <konrad@darnok.org>
-Subject: Re: [PATCH 1/2] swiotlb: Rate-limit printing when running out of
- SW-IOMMU space
-Date: Sat, 5 Nov 2016 15:40:19 -0400
-Message-ID: <20161105194018.GB26349@localhost.localdomain>
-References: <1477928704-10611-1-git-send-email-geert+renesas@glider.be>
- <1477928704-10611-2-git-send-email-geert+renesas@glider.be>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v6 04/16] drivers: iommu: make of_iommu_set/get_ops() DT
+	agnostic
+Date: Mon, 7 Nov 2016 10:56:11 +0000
+Message-ID: <20161107105611.GA7183@red-moon>
+References: <20161018160414.1228-1-lorenzo.pieralisi@arm.com>
+	<20161018160414.1228-5-lorenzo.pieralisi@arm.com>
+	<9e91cb41-3034-c1ca-9275-cce3235cc662@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1477928704-10611-2-git-send-email-geert+renesas@glider.be>
-Sender: linux-doc-owner@vger.kernel.org
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Jonathan Corbet <corbet@lwn.net>, Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, iommu@lists.linux-foundation.org, linux-renesas-soc@vger.kernel.org
+In-Reply-To: <9e91cb41-3034-c1ca-9275-cce3235cc662-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Oct 31, 2016 at 04:45:03PM +0100, Geert Uytterhoeven wrote:
-> If the system runs out of SW-IOMMU space, changes are high successive
-> requests will fail, too, flooding the kernel log.  This is true
-> especially for streaming DMA, which is typically used repeatedly outside
-> the driver's initialization routine.  Add rate-limiting to fix this.
+On Tue, Nov 01, 2016 at 04:36:10PM +0000, Robin Murphy wrote:
+> Bikeshed alert...
 > 
-> While at it, get rid of the open-coded dev_name() handling by using the
-> appropriate dev_err_*() variant.
+> On 18/10/16 17:04, Lorenzo Pieralisi wrote:
+> > The of_iommu_{set/get}_ops() API is used to associate a device
+> > tree node with a specific set of IOMMU operations. The same
+> > kernel interface is required on systems booting with ACPI, where
+> > devices are not associated with a device tree node, therefore
+> > the interface requires generalization.
+> > 
+> > The struct device fwnode member represents the fwnode token
+> > associated with the device and the struct it points at is firmware
+> > specific; regardless, it is initialized on both ACPI and DT systems
+> > and makes an ideal candidate to use it to associate a set of IOMMU
+> > operations to a given device, through its struct device.fwnode member
+> > pointer.
+> > 
+> > Convert the DT specific of_iommu_{set/get}_ops() interface to
+> > use struct device.fwnode as a look-up token, making the interface
+> > usable on ACPI systems.
+> > 
+> > Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+> > Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> > Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> > Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> > Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> > ---
+> >  drivers/iommu/iommu.c    | 43 +++++++++++++++++++++++++++++++++++++++++++
+> >  drivers/iommu/of_iommu.c | 39 ---------------------------------------
+> >  include/linux/iommu.h    | 14 ++++++++++++++
+> >  include/linux/of_iommu.h | 12 ++++++++++--
+> >  4 files changed, 67 insertions(+), 41 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > index 9a2f196..320eb8c 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -1615,6 +1615,49 @@ int iommu_request_dm_for_dev(struct device *dev)
+> >  	return ret;
+> >  }
+> >  
+> > +struct fwnode_iommu_node {
 > 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Having just pulled in this patch in isolation for some hacking, I
+> realise that by about the fifth time one reads "fwnode_iommu_node" it
+> just looks like meaningless gibberish. Can we just call it
+> "iommu_instance" instead, as that's what it's representing here?
 
-applied.
-> ---
->  lib/swiotlb.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+Agreed, how about iommu_(fw)entry ? Anyway, I will do, point taken.
+
+> > +	struct list_head list;
+> > +	struct fwnode_handle *fwnode;
+> > +	const struct iommu_ops *ops;
+> > +};
+> > +static LIST_HEAD(fwnode_iommu_list);
+> > +static DEFINE_SPINLOCK(fwnode_iommu_lock);
+> > +
+> > +void fwnode_iommu_set_ops(struct fwnode_handle *fwnode,
+> > +			  const struct iommu_ops *ops)
+> > +{
+> > +	struct fwnode_iommu_node *iommu =
+> > +				kzalloc(sizeof(*iommu), GFP_KERNEL);
 > 
-> diff --git a/lib/swiotlb.c b/lib/swiotlb.c
-> index 22e13a0e19d76a2b..6ce764410ae475cc 100644
-> --- a/lib/swiotlb.c
-> +++ b/lib/swiotlb.c
-> @@ -714,8 +714,8 @@ void swiotlb_tbl_sync_single(struct device *hwdev, phys_addr_t tlb_addr,
->  	 * When the mapping is small enough return a static buffer to limit
->  	 * the damage, or panic when the transfer is too big.
->  	 */
-> -	printk(KERN_ERR "DMA: Out of SW-IOMMU space for %zu bytes at "
-> -	       "device %s\n", size, dev ? dev_name(dev) : "?");
-> +	dev_err_ratelimited(dev, "DMA: Out of SW-IOMMU space for %zu bytes\n",
-> +			    size);
->  
->  	if (size <= io_tlb_overflow || !do_panic)
->  		return;
-> -- 
-> 1.9.1
+> (plus it shortens this line so it really doesn't the awkward break)
+> 
+> Apologies, (the original rubbish name was my fault anyway)
+
+No worries, you have a point, will update for next (hopefully last)
+posting.
+
+Thanks !
+Lorenzo
+
+> Robin.
+> 
+> > +
+> > +	if (WARN_ON(!iommu))
+> > +		return;
+> > +
+> > +	if (is_of_node(fwnode))
+> > +		of_node_get(to_of_node(fwnode));
+> > +
+> > +	INIT_LIST_HEAD(&iommu->list);
+> > +	iommu->fwnode = fwnode;
+> > +	iommu->ops = ops;
+> > +	spin_lock(&fwnode_iommu_lock);
+> > +	list_add_tail(&iommu->list, &fwnode_iommu_list);
+> > +	spin_unlock(&fwnode_iommu_lock);
+> > +}
+> > +
+> > +const struct iommu_ops *fwnode_iommu_get_ops(struct fwnode_handle *fwnode)
+> > +{
+> > +	struct fwnode_iommu_node *node;
+> > +	const struct iommu_ops *ops = NULL;
+> > +
+> > +	spin_lock(&fwnode_iommu_lock);
+> > +	list_for_each_entry(node, &fwnode_iommu_list, list)
+> > +		if (node->fwnode == fwnode) {
+> > +			ops = node->ops;
+> > +			break;
+> > +		}
+> > +	spin_unlock(&fwnode_iommu_lock);
+> > +	return ops;
+> > +}
+> > +
+> >  int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+> >  		      const struct iommu_ops *ops)
+> >  {
+> > diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> > index 5b82862..0f57ddc 100644
+> > --- a/drivers/iommu/of_iommu.c
+> > +++ b/drivers/iommu/of_iommu.c
+> > @@ -96,45 +96,6 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
+> >  }
+> >  EXPORT_SYMBOL_GPL(of_get_dma_window);
+> >  
+> > -struct of_iommu_node {
+> > -	struct list_head list;
+> > -	struct device_node *np;
+> > -	const struct iommu_ops *ops;
+> > -};
+> > -static LIST_HEAD(of_iommu_list);
+> > -static DEFINE_SPINLOCK(of_iommu_lock);
+> > -
+> > -void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops)
+> > -{
+> > -	struct of_iommu_node *iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
+> > -
+> > -	if (WARN_ON(!iommu))
+> > -		return;
+> > -
+> > -	of_node_get(np);
+> > -	INIT_LIST_HEAD(&iommu->list);
+> > -	iommu->np = np;
+> > -	iommu->ops = ops;
+> > -	spin_lock(&of_iommu_lock);
+> > -	list_add_tail(&iommu->list, &of_iommu_list);
+> > -	spin_unlock(&of_iommu_lock);
+> > -}
+> > -
+> > -const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+> > -{
+> > -	struct of_iommu_node *node;
+> > -	const struct iommu_ops *ops = NULL;
+> > -
+> > -	spin_lock(&of_iommu_lock);
+> > -	list_for_each_entry(node, &of_iommu_list, list)
+> > -		if (node->np == np) {
+> > -			ops = node->ops;
+> > -			break;
+> > -		}
+> > -	spin_unlock(&of_iommu_lock);
+> > -	return ops;
+> > -}
+> > -
+> >  static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+> >  {
+> >  	struct of_phandle_args *iommu_spec = data;
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 436dc21..15d5478 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -351,6 +351,9 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+> >  		      const struct iommu_ops *ops);
+> >  void iommu_fwspec_free(struct device *dev);
+> >  int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
+> > +void fwnode_iommu_set_ops(struct fwnode_handle *fwnode,
+> > +			  const struct iommu_ops *ops);
+> > +const struct iommu_ops *fwnode_iommu_get_ops(struct fwnode_handle *fwnode);
+> >  
+> >  #else /* CONFIG_IOMMU_API */
+> >  
+> > @@ -580,6 +583,17 @@ static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
+> >  	return -ENODEV;
+> >  }
+> >  
+> > +static inline void fwnode_iommu_set_ops(struct fwnode_handle *fwnode,
+> > +					const struct iommu_ops *ops)
+> > +{
+> > +}
+> > +
+> > +static inline
+> > +const struct iommu_ops *fwnode_iommu_get_ops(struct fwnode_handle *fwnode)
+> > +{
+> > +	return NULL;
+> > +}
+> > +
+> >  #endif /* CONFIG_IOMMU_API */
+> >  
+> >  #endif /* __LINUX_IOMMU_H */
+> > diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+> > index e80b9c7..7681007 100644
+> > --- a/include/linux/of_iommu.h
+> > +++ b/include/linux/of_iommu.h
+> > @@ -31,8 +31,16 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
+> >  
+> >  #endif	/* CONFIG_OF_IOMMU */
+> >  
+> > -void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops);
+> > -const struct iommu_ops *of_iommu_get_ops(struct device_node *np);
+> > +static inline void of_iommu_set_ops(struct device_node *np,
+> > +				    const struct iommu_ops *ops)
+> > +{
+> > +	fwnode_iommu_set_ops(&np->fwnode, ops);
+> > +}
+> > +
+> > +static inline const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+> > +{
+> > +	return fwnode_iommu_get_ops(&np->fwnode);
+> > +}
+> >  
+> >  extern struct of_device_id __iommu_of_table;
+> >  
+> > 
 > 
