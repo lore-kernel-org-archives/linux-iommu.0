@@ -1,74 +1,110 @@
-From: Lukas Wunner <lukas@wunner.de>
-Subject: Re: [PATCH v5 7/7] iommu/exynos: Use device dependency links to
- control runtime pm
-Date: Tue, 8 Nov 2016 16:30:44 +0100
-Message-ID: <20161108153044.GA6983@wunner.de>
-References: <1476948173-21093-1-git-send-email-m.szyprowski@samsung.com>
- <CGME20161020072336eucas1p24a2b020f69b6ae1f55e1760e6e0e94f9@eucas1p2.samsung.com>
- <1476948173-21093-8-git-send-email-m.szyprowski@samsung.com>
- <20161107214747.GJ1764@wotan.suse.de>
- <4bc652ce-6cf9-f4df-4793-e126cf81079d@samsung.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.9-rc4
+Date: Tue, 8 Nov 2016 16:47:12 +0100
+Message-ID: <20161108154700.GA11889@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <4bc652ce-6cf9-f4df-4793-e126cf81079d@samsung.com>
-Sender: linux-pm-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: "Luis R. Rodriguez" <mcgrof@kernel.org>, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Kevin Hilman <khilman@kernel.org>, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, Tomasz Figa <tomasz.figa@gmail.com>, Grant Likely <grant.likely@secretlab.ca>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: multipart/mixed; boundary="===============7896673674809713809=="
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 08, 2016 at 08:27:12AM +0100, Marek Szyprowski wrote:
-> On 2016-11-07 22:47, Luis R. Rodriguez wrote:
-> > Has there been any review of the existing similar solutions out there
-> > such as the DRM / audio component framework? Would that help ?
-> 
-> Nope, none of that solution deals with runtime pm.
 
-Well, they do.  Hybrid graphics laptops often have an HDA controller
-on the discrete GPU and I assume that's what Luis meant. There's code
-in drivers/gpu/vga/vga_switcheroo.c to make this (only sort of) work:
-
-* When the GPU is powered up/down, the HDA controller's driver is
-  instructed to pm_runtime_get/put the HDA device (see call to
-  set_audio_state() in vga_switcheroo_set_dynamic_switch()).
-
-* When a runtime PM ref is acquired on the HDA device, the
-  GPU is powered up (see vga_switcheroo_runtime_resume_hdmi_audio()).
+--===============7896673674809713809==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="x+6KMIRAuhnl3hBn"
+Content-Disposition: inline
 
 
-Unfortunately this is all fairly broken, e.g.:
+--x+6KMIRAuhnl3hBn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-* If a runtime PM ref on the HDA device is held for more than 5 sec
-  (autosuspend delay of the GPU), the GPU will be powered down and
-  the HDA device will become inaccessible, regardless of the runtime
-  PM ref still being held (because vga_switcheroo_set_dynamic_switch()
-  doesn't check the refcount of the HDA device).
+Hi Linus,
 
-* The DRM device is afforded direct-complete but the HDA device is not.
-  If the GPU is handled earlier by dpm_suspend(), then runtime PM will
-  have been disabled on the GPU and thus the HDA device will fail to
-  runtime resume before system sleep.
+The following changes since commit bc33b0ca11e3df467777a4fa7639ba488c9d4911:
 
-Rafael's series allows representation of such inter-device dependencies
-in the PM core and can thus replace kludgy and broken "solutions" like
-the one above.
+  Linux 4.9-rc4 (2016-11-05 16:23:36 -0700)
 
-There's one thing that I haven't understood myself though:  In an e-mail
-exchange in September Rafael has argued that the above-mentioned hybrid
-graphics use case "isn't a good [example] IMO.  That clearly is a case
-when two (or more) devices share power resources controlled by a single
-on/off switch.  Which is a clear use case for a PM domain."
+are available in the git repository at:
 
-The same seems to apply to Marek's SYSMMU use case.  When applying device
-links to SYSMMU or hybrid graphics, we select one of the devices in the
-PM domain as master and have the other one depend on it as slave, i.e.
-a synthetic hierarchical relationship is established.
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.9-rc4
 
-I've responded to Rafael on September 18 that this can't be solved with
-a struct dev_pm_domain, but haven't received a reply since:
-https://lkml.org/lkml/2016/9/18/103
+for you to fetch changes up to bea64033dd7b5fb6296eda8266acab6364ce1554:
+
+  iommu/vt-d: Fix dead-locks in disable_dmar_iommu() path (2016-11-08 15:08:26 +0100)
+
+----------------------------------------------------------------
+IOMMU-Fixes for Linux v4.9-rc4
+
+Two places need fixing:
+
+	* Four patches from Robin Murphy fix several issues with the
+	  recently merged generic DT-bindings support for arm-smmu
+	  drivers
+
+	* A fix for a dead-lock issue in the VT-d driver, which shows up
+	  on iommu hotplug
+
+----------------------------------------------------------------
+Joerg Roedel (1):
+      iommu/vt-d: Fix dead-locks in disable_dmar_iommu() path
+
+Robin Murphy (4):
+      iommu/arm-smmu: Work around ARM DMA configuration
+      iommu/arm-smmu: Don't inadvertently reject multiple SMMUv3s
+      iommu/arm-smmu: Check that iommu_fwspecs are ours
+      iommu/arm-smmu: Fix out-of-bounds dereference
+
+ drivers/iommu/arm-smmu-v3.c | 25 +++++++++++++++++--------
+ drivers/iommu/arm-smmu.c    | 16 ++++++++++++++--
+ drivers/iommu/intel-iommu.c | 14 ++++++++++++--
+ 3 files changed, 43 insertions(+), 12 deletions(-)
+
+Please pull.
 
 Thanks,
 
-Lukas
+	Joerg
+
+--x+6KMIRAuhnl3hBn
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJYIfN0AAoJECvwRC2XARrjw2IQAMoaJfsGUYDVnV3Umcvb0KBw
+29IpcLP1xTFzZ+EQ4konh1dpnbLrxQNDgQE738vCgClkb+ew6qrYaHOIS6S8R7dy
+7QJWVTOixR4syJzRq817INpUTFBGG7S57r7kH+8lYQNDRxoWyQZlMyUOAAdq9Yx+
+US/pK0F8vVVvgfisBfBaFWVYn1v+zxjnJUua1qnhfP7SWWma01bkdkAEtcqp4FLc
+0I82CU3qQ8gp2+gsKXjwdIr3vglebwOYkdhbu7dfdIDWJUmiKCT7NoiUFRBEsNFl
+JfRoEip6g244xfY7mnbGegpDIGIntqNuOEifE6z+JysguVVbEdBb66lJeBvW5yTz
+EtMp9BT29RzzOXoqfArD0M0t4nETvOL4PYlqK+KiLUebhIww3a9O2rTVmDilqvM0
+l2HbMEg2kjPhV5w1U0pjwg23T00Sl8duLILv/jL9eadWQdJqiW9q8DYYxSyLpeaB
+tE8hzq8/evf3+pPJJYhcKORdLJY40zzzPUgFld+C/zBnRVm2nWENcFwnlbNNvd+t
+IqxZHKNhYlUW/hJJEvwzQ1knqWYbmBUfa2WHYz1zAzhJCxY0lRZMtlEOZ47V9OcO
+0+9OBloY/tGmiORDDEa8+pgxaTeZILL0U61vjtF/p1qGdmbyhRuycskD0GaPWwVd
+1A2xi4B3Yerh7XhTvU4M
+=nRU2
+-----END PGP SIGNATURE-----
+
+--x+6KMIRAuhnl3hBn--
+
+--===============7896673674809713809==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============7896673674809713809==--
