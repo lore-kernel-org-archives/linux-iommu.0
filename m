@@ -1,78 +1,78 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH v5 7/7] iommu/exynos: Use device dependency links to
- control runtime pm
-Date: Tue, 08 Nov 2016 08:27:12 +0100
-Message-ID: <4bc652ce-6cf9-f4df-4793-e126cf81079d@samsung.com>
-References: <1476948173-21093-1-git-send-email-m.szyprowski@samsung.com>
- <CGME20161020072336eucas1p24a2b020f69b6ae1f55e1760e6e0e94f9@eucas1p2.samsung.com>
- <1476948173-21093-8-git-send-email-m.szyprowski@samsung.com>
- <20161107214747.GJ1764@wotan.suse.de>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/dma-iommu: properly respect configured address
+	space size
+Date: Tue, 8 Nov 2016 11:37:23 +0000
+Message-ID: <68e7a18b-739e-b73e-eacf-3cb6c1bd279a@arm.com>
+References: <CGME20161107130625eucas1p2dd23c07010b4f3eddb6c6540ed802246@eucas1p2.samsung.com>
+	<1478523973-8828-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <20161107214747.GJ1764@wotan.suse.de>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: "Luis R. Rodriguez" <mcgrof@kernel.org>
-Cc: linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Lukas Wunner <lukas@wunner.de>, Kevin Hilman <khilman@kernel.org>, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, Tomasz Figa <tomasz.figa@gmail.com>, Grant Likely <grant.likely@secretlab.ca>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Lars-Peter Clausen <lars@metafoo.de>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1478523973-8828-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Luis,
+Hi Marek,
 
+On 07/11/16 13:06, Marek Szyprowski wrote:
+> When one called iommu_dma_init_domain() with size smaller than device's
+> DMA mask, the alloc_iova() will not respect it and always assume that all
+> IOVA addresses will be allocated from the the (base ... dev->dma_mask) range.
 
-On 2016-11-07 22:47, Luis R. Rodriguez wrote:
-> On Thu, Oct 20, 2016 at 09:22:53AM +0200, Marek Szyprowski wrote:
->> This patch uses recently introduced device dependency links to track the
->> runtime pm state of the master's device. This way each SYSMMU controller
->> is set to runtime active only when its master's device is active and can
->> restore or save its state instead of being activated all the time when
->> attached to the given master device. This way SYSMMU controllers no longer
->> prevents respective power domains to be turned off when master's device
->> is not being used.
-> Its unclear why you need this based on this commit log -- is this
-> needed only on platforms that lack ACPI and use device tree ?
+Is that actually a problem for anything?
 
-Nope, it has nothing to device tree nor ACPI. The dependency is a direct
-result of the way the devices operate.
+> This patch fixes this issue by taking the configured address space size
+> parameter into account (if it is smaller than the device's dma_mask).
 
-> If so
-> why? If this issue is present also on systems that only use ACPI is
-> this possibly due to an ACPI firmware bug  or the lack of some semantics
-> in ACPI to express ordering in a better way? If the issue is device
-> tree related only is this due to the lack of semantics in device tree
-> to express some more complex dependency ?
+TBH I've been pondering ripping the size stuff out of dma-iommu, as it
+all stems from me originally failing to understand what dma_32bit_pfn is
+actually for. The truth is that iova_domains just don't have a size or
+upper limit; however if devices with both large and small DMA masks
+share a domain, then the top-down nature of the allocator means that
+allocating for the less-capable devices would involve walking through
+every out-of-range entry in the tree every time. Having cached32_node
+based on dma_32bit_pfn just provides an optimised starting point for
+searching within the smaller mask.
 
-The main feature of device links that is used in this patch is enabling
-runtime pm dependency between Exynos SYSMMU controller (called it client
-device) and the device, for which it implements DMA address translation
-(called master device). The assumptions are following:
-1. master device driver is completely unaware of the Exynos SYSMMU presence,
-    IOMMU is transparently hooked up and managed by DMA-mapping framework
-2. SYSMMU belongs to the same power domain as it's master device
-3. SYSMMU is optional, master device can fully operate without it, with
-    simple DMA address translation (DMA address == physical address)
-4. Master device implements runtime pm, what in turn causes respective
-    power domain to be turned on/off
-5. DMA-mapping and IOMMU frameworks provides no calls to notify SYSMMU
-    when its master device is performing DMA operations, so SYSMMU has
-    to be runtime active
-6. Currently SYSMMU always sets its runtime pm status to active after
-    attaching to its master device to ensure proper hardware state. This
-    prevents power domain to be turned off, even when master device sets
-    its runtime pm status to suspended.
-7. Exynos SYSMMU has to be runtime active at the same time when its
-    master device is runtime active to it to perform DMA operations and
-    allow the power domain to be turned off, when master device is
-    runtime suspended.
-8. The terms of device links, Exynos SYSMMU is a 'consumer' and master
-    device is a 'supplier'.
+Would it hurt any of your use-cases to relax/rework the reinitialisation
+checks in iommu_dma_init_domain()? Alternatively if we really do have a
+case for wanting a hard upper limit, it might make more sense to add an
+end_pfn to the iova_domain and handle it in the allocator itself.
 
-> Has there been any review of the existing similar solutions out there
-> such as the DRM / audio component framework? Would that help ?
+Robin.
 
-Nope, none of that solution deals with runtime pm.
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> ---
+>  drivers/iommu/dma-iommu.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index c5ab8667e6f2..8b4b72654359 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -212,11 +212,13 @@ static struct iova *__alloc_iova(struct iommu_domain *domain, size_t size,
+>  
+>  	if (domain->geometry.force_aperture)
+>  		dma_limit = min(dma_limit, domain->geometry.aperture_end);
+> +
+> +	dma_limit = min(dma_limit >> shift, (dma_addr_t)iovad->dma_32bit_pfn);
+>  	/*
+>  	 * Enforce size-alignment to be safe - there could perhaps be an
+>  	 * attribute to control this per-device, or at least per-domain...
+>  	 */
+> -	return alloc_iova(iovad, length, dma_limit >> shift, true);
+> +	return alloc_iova(iovad, length, dma_limit, true);
+>  }
+>  
+>  /* The IOVA allocator knows what we mapped, so just unmap whatever that was */
+> 
