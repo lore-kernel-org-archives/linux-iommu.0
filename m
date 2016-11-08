@@ -1,16 +1,16 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH] iommu/dma-iommu: properly respect configured address space
-	size
-Date: Tue, 08 Nov 2016 14:41:40 +0100
-Message-ID: <8286728f-fab3-8179-5215-e156da426244@samsung.com>
-References: <CGME20161107130625eucas1p2dd23c07010b4f3eddb6c6540ed802246@eucas1p2.samsung.com>
-	<1478523973-8828-1-git-send-email-m.szyprowski@samsung.com>
-	<68e7a18b-739e-b73e-eacf-3cb6c1bd279a@arm.com>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: [PATCH] iommu/vt-d: Fix dead-locks in disable_dmar_iommu() path
+Date: Tue, 8 Nov 2016 15:15:39 +0100
+Message-ID: <20161108141539.GB3583@suse.de>
+References: <1476694480-4251-1-git-send-email-iari@itu.dk>
+	<20161103205136.GA4930@suse.de>
+	<CAGbDTvqDAEcLPNxHa6wvjTwpotDbZSSDL3MocVgj=LTMFG8Okw@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <68e7a18b-739e-b73e-eacf-3cb6c1bd279a-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAGbDTvqDAEcLPNxHa6wvjTwpotDbZSSDL3MocVgj=LTMFG8Okw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,56 +20,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Iago Abal <iari-YidNj35/HaM@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On Fri, Nov 04, 2016 at 10:38:29AM +0100, Iago Abal wrote:
+> That patch was actually my first attempt at fixing the problem, but I
+> ran the tool and I found a second possibility of deadlock:
+> `domain_exit' calls to `domain_remove_dev_info', which also spin_locks
+> on `device_domain_lock'.
+> 
+> Alternatively I could add another `__domain_exit' function that
+> doesn't take the lock.
 
+So that is actually not easy to do, I'd rather go with the simpler
+solution of dropping the lock for domain_exit() invocation and then
+re-start walking the list afterwards, like in the below patch:
 
-On 2016-11-08 12:37, Robin Murphy wrote:
-> On 07/11/16 13:06, Marek Szyprowski wrote:
->> When one called iommu_dma_init_domain() with size smaller than device's
->> DMA mask, the alloc_iova() will not respect it and always assume that all
->> IOVA addresses will be allocated from the the (base ... dev->dma_mask) range.
-> Is that actually a problem for anything?
+>From bea64033dd7b5fb6296eda8266acab6364ce1554 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Date: Tue, 8 Nov 2016 15:08:26 +0100
+Subject: [PATCH] iommu/vt-d: Fix dead-locks in disable_dmar_iommu() path
 
-Yes, I found this issue while working on next version of ARM & ARM64
-DMA-mapping/IOMMU integration patchset and adapting Exynos drivers for the
-new IOMMU/DMA-mapping glue.
+It turns out that the disable_dmar_iommu() code-path tried
+to get the device_domain_lock recursivly, which will
+dead-lock when this code runs on dmar removal. Fix both
+code-paths that could lead to the dead-lock.
 
-Some Exynos devices (codec and camera isp) operate only on the limited (and
-really small: 256M for example) DMA window. They use non-standard way of
-addressing memory: an offset from the firmware base. However they still have
-32bit DMA mask, as the firmware can be located basically everywhere in the
-real DMA address space, but then they can access only next 256M from that
-firmware base.
+Fixes: 55d940430ab9 ('iommu/vt-d: Get rid of domain->iommu_lock')
+Reported-by: Iago Abal <iari-YidNj35/HaM@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
->
->> This patch fixes this issue by taking the configured address space size
->> parameter into account (if it is smaller than the device's dma_mask).
-> TBH I've been pondering ripping the size stuff out of dma-iommu, as it
-> all stems from me originally failing to understand what dma_32bit_pfn is
-> actually for. The truth is that iova_domains just don't have a size or
-> upper limit; however if devices with both large and small DMA masks
-> share a domain, then the top-down nature of the allocator means that
-> allocating for the less-capable devices would involve walking through
-> every out-of-range entry in the tree every time. Having cached32_node
-> based on dma_32bit_pfn just provides an optimised starting point for
-> searching within the smaller mask.
-
-Right, this dma_32bit_pfn was really misleading at the first glance,
-but then I found that this was something like end_pfn in case of dma-iommu
-code.
-
-> Would it hurt any of your use-cases to relax/rework the reinitialisation
-> checks in iommu_dma_init_domain()? Alternatively if we really do have a
-> case for wanting a hard upper limit, it might make more sense to add an
-> end_pfn to the iova_domain and handle it in the allocator itself.
-
-The proper support for end_pfn would be a better approach probably,
-especially if we consider readability of the code.
-
-Best regards
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a4407ea..3965e73 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1711,6 +1711,7 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+ 	if (!iommu->domains || !iommu->domain_ids)
+ 		return;
+ 
++again:
+ 	spin_lock_irqsave(&device_domain_lock, flags);
+ 	list_for_each_entry_safe(info, tmp, &device_domain_list, global) {
+ 		struct dmar_domain *domain;
+@@ -1723,10 +1724,19 @@ static void disable_dmar_iommu(struct intel_iommu *iommu)
+ 
+ 		domain = info->domain;
+ 
+-		dmar_remove_one_dev_info(domain, info->dev);
++		__dmar_remove_one_dev_info(info);
+ 
+-		if (!domain_type_is_vm_or_si(domain))
++		if (!domain_type_is_vm_or_si(domain)) {
++			/*
++			 * The domain_exit() function  can't be called under
++			 * device_domain_lock, as it takes this lock itself.
++			 * So release the lock here and re-run the loop
++			 * afterwards.
++			 */
++			spin_unlock_irqrestore(&device_domain_lock, flags);
+ 			domain_exit(domain);
++			goto again;
++		}
+ 	}
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ 
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.6.6
