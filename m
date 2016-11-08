@@ -1,104 +1,110 @@
-From: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v5 7/7] iommu/exynos: Use device dependency links to
-	control runtime pm
-Date: Mon, 7 Nov 2016 22:47:47 +0100
-Message-ID: <20161107214747.GJ1764@wotan.suse.de>
-References: <1476948173-21093-1-git-send-email-m.szyprowski@samsung.com>
-	<CGME20161020072336eucas1p24a2b020f69b6ae1f55e1760e6e0e94f9@eucas1p2.samsung.com>
-	<1476948173-21093-8-git-send-email-m.szyprowski@samsung.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Summary of LPC guest MSI discussion in Santa Fe (was: Re: [RFC 0/8]
+ KVM PCIe/MSI passthrough on ARM/ARM64 (Alt II))
+Date: Tue, 8 Nov 2016 02:45:59 +0000
+Message-ID: <20161108024559.GA20591@arm.com>
+References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
+ <20161103220205.37715b49@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <kvm-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1476948173-21093-8-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Mauro Carvalho Chehab <mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Mark
+In-Reply-To: <20161103220205.37715b49@t450s.home>
+Sender: kvm-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Eric Auger <eric.auger@redhat.com>, eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, robin.murphy@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org, drjones@redhat.com, linux-kernel@vger.kernel.org, pranav.sawargaonkar@gmail.com, iommu@lists.linux-foundation.org, punit.agrawal@arm.com, diana.craciun@nxp.com, ddutile@redhat.com, benh@kernel.crashing.org, arnd@arndb.de, jcm@redhat.com, dwmw@amazon.co.uk
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Oct 20, 2016 at 09:22:53AM +0200, Marek Szyprowski wrote:
-> This patch uses recently introduced device dependency links to track the
-> runtime pm state of the master's device. This way each SYSMMU controller
-> is set to runtime active only when its master's device is active and can
-> restore or save its state instead of being activated all the time when
-> attached to the given master device. This way SYSMMU controllers no longer
-> prevents respective power domains to be turned off when master's device
-> is not being used.
+Hi all,
 
-Its unclear why you need this based on this commit log -- is this
-needed only on platforms that lack ACPI and use device tree ? If so
-why? If this issue is present also on systems that only use ACPI is
-this possibly due to an ACPI firmware bug  or the lack of some semantics
-in ACPI to express ordering in a better way? If the issue is device
-tree related only is this due to the lack of semantics in device tree
-to express some more complex dependency ?
+I figured this was a reasonable post to piggy-back on for the LPC minutes
+relating to guest MSIs on arm64.
 
-Has there been any review of the existing similar solutions out there
-such as the DRM / audio component framework? Would that help ?
+On Thu, Nov 03, 2016 at 10:02:05PM -0600, Alex Williamson wrote:
+> We can always have QEMU reject hot-adding the device if the reserved
+> region overlaps existing guest RAM, but I don't even really see how we
+> advise users to give them a reasonable chance of avoiding that
+> possibility.  Apparently there are also ARM platforms where MSI pages
+> cannot be remapped to support the previous programmable user/VM
+> address, is it even worthwhile to support those platforms?  Does that
+> decision influence whether user programmable MSI reserved regions are
+> really a second class citizen to fixed reserved regions?  I expect
+> we'll be talking about this tomorrow morning, but I certainly haven't
+> come up with any viable solutions to this.  Thanks,
 
-  Luis
+At LPC last week, we discussed guest MSIs on arm64 as part of the PCI
+microconference. I presented some slides to illustrate some of the issues
+we're trying to solve:
 
-> 
-> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> ---
->  drivers/iommu/exynos-iommu.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 5e6d7bbf9b70..59b4f2ce4f5f 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -781,10 +781,6 @@ static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
->  	if (!has_sysmmu(dev) || owner->domain != iommu_domain)
->  		return;
->  
-> -	list_for_each_entry(data, &owner->controllers, owner_node) {
-> -		pm_runtime_put_sync(data->sysmmu);
-> -	}
-> -
->  	mutex_lock(&owner->rpm_lock);
->  
->  	list_for_each_entry(data, &owner->controllers, owner_node) {
-> @@ -848,10 +844,6 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
->  
->  	mutex_unlock(&owner->rpm_lock);
->  
-> -	list_for_each_entry(data, &owner->controllers, owner_node) {
-> -		pm_runtime_get_sync(data->sysmmu);
-> -	}
-> -
->  	dev_dbg(dev, "%s: Attached IOMMU with pgtable %pa\n", __func__,
->  		&pagetable);
->  
-> @@ -1232,6 +1224,14 @@ static int exynos_iommu_of_xlate(struct device *dev,
->  
->  	list_add_tail(&data->owner_node, &owner->controllers);
->  	data->master = dev;
-> +
-> +	/*
-> +	 * SYSMMU will be runtime activated via device link (dependency) to its
-> +	 * master device, so there are no direct calls to pm_runtime_get/put
-> +	 * in this driver.
-> +	 */
-> +	device_link_add(dev, data->sysmmu, DL_FLAG_PM_RUNTIME);
-> +
->  	return 0;
->  }
->  
-> -- 
-> 1.9.1
-> 
-> 
+  http://www.willdeacon.ukfsn.org/bitbucket/lpc-16/msi-in-guest-arm64.pdf
 
--- 
-Luis Rodriguez, SUSE LINUX GmbH
-Maxfeldstrasse 5; D-90409 Nuernberg
+Punit took some notes (thanks!) on the etherpad here:
+
+  https://etherpad.openstack.org/p/LPC2016_PCI
+
+although the discussion was pretty lively and jumped about, so I've had
+to go from memory where the notes didn't capture everything that was
+said.
+
+To summarise, arm64 platforms differ in their handling of MSIs when compared
+to x86:
+
+  1. The physical memory map is not standardised (Jon pointed out that
+     this is something that was realised late on)
+  2. MSIs are usually treated the same as DMA writes, in that they must be
+     mapped by the SMMU page tables so that they target a physical MSI
+     doorbell
+  3. On some platforms, MSIs bypass the SMMU entirely (e.g. due to an MSI
+     doorbell built into the PCI RC)
+  4. Platforms typically have some set of addresses that abort before
+     reaching the SMMU (e.g. because the PCI identifies them as P2P).
+
+All of this means that userspace (QEMU) needs to identify the memory
+regions corresponding to points (3) and (4) and ensure that they are
+not allocated in the guest physical (IPA) space. For platforms that can
+remap the MSI doorbell as in (2), then some space also needs to be
+allocated for that.
+
+Rather than treat these as separate problems, a better interface is to
+tell userspace about a set of reserved regions, and have this include
+the MSI doorbell, irrespective of whether or not it can be remapped.
+Don suggested that we statically pick an address for the doorbell in a
+similar way to x86, and have the kernel map it there. We could even pick
+0xfee00000. If it conflicts with a reserved region on the platform (due
+to (4)), then we'd obviously have to (deterministically?) allocate it
+somewhere else, but probably within the bottom 4G.
+
+The next question is how to tell userspace about all of the reserved
+regions. Initially, the idea was to extend VFIO, however Alex pointed
+out a horrible scenario:
+
+  1. QEMU spawns a VM on system 0
+  2. VM is migrated to system 1
+  3. QEMU attempts to passthrough a device using PCI hotplug
+
+In this scenario, the guest memory map is chosen at step (1), yet there
+is no VFIO fd available to determine the reserved regions. Furthermore,
+the reserved regions may vary between system 0 and system 1. This pretty
+much rules out using VFIO to determine the reserved regions. Alex suggested
+that the SMMU driver can advertise the regions via /sys/class/iommu/. This
+would solve part of the problem, but migration between systems with
+different memory maps can still cause problems if the reserved regions
+of the new system conflict with the guest memory map chosen by QEMU.
+Jon pointed out that most people are pretty conservative about hardware
+choices when migrating between them -- that is, they may only migrate
+between different revisions of the same SoC, or they know ahead of time
+all of the memory maps they want to support and this could be communicated
+by way of configuration to libvirt. It would be up to QEMU to fail the
+hotplug if it detected a conflict. Alex asked if there was a security
+issue with DMA bypassing the SMMU, but there aren't currently any systems
+where that is known to happen. Such a system would surely not be safe for
+passthrough.
+
+Ben mused that a way to handle conflicts dynamically might be to hotplug
+on the entire host bridge in the guest, passing firmware tables describing
+the new reserved regions as a property of the host bridge. Whilst this
+may well solve the issue, it was largely considered future work due to
+its invasive nature and dependency on firmware tables (and guest support)
+that do not currently exist.
+
+Will
