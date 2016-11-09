@@ -1,222 +1,89 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v7 04/16] drivers: iommu: make of_iommu_set/get_ops() DT
- agnostic
-Date: Wed, 9 Nov 2016 14:40:08 +0000
-Message-ID: <c3136fae-144c-5949-3933-671b783671c8@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v7 05/16] drivers: iommu: arm-smmu: convert struct device
+	of_node to fwnode usage
+Date: Wed, 9 Nov 2016 14:43:18 +0000
+Message-ID: <7ab465a8-f1ae-91ef-12fd-50f498af3d6e@arm.com>
 References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
- <20161109141948.19244-5-lorenzo.pieralisi@arm.com>
+	<20161109141948.19244-6-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20161109141948.19244-5-lorenzo.pieralisi@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org
-Cc: Will Deacon <will.deacon@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Joerg Roedel <joro@8bytes.org>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20161109141948.19244-6-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 On 09/11/16 14:19, Lorenzo Pieralisi wrote:
-> The of_iommu_{set/get}_ops() API is used to associate a device
-> tree node with a specific set of IOMMU operations. The same
-> kernel interface is required on systems booting with ACPI, where
-> devices are not associated with a device tree node, therefore
-> the interface requires generalization.
+> Current ARM SMMU driver rely on the struct device.of_node pointer for
+> device look-up and iommu_ops retrieval.
 > 
-> The struct device fwnode member represents the fwnode token
-> associated with the device and the struct it points at is firmware
-> specific; regardless, it is initialized on both ACPI and DT systems
-> and makes an ideal candidate to use it to associate a set of IOMMU
-> operations to a given device, through its struct device.fwnode member
-> pointer.
+> In preparation for ACPI probing enablement, convert the driver to use
+> the struct device.fwnode member for device and iommu_ops look-up so that
+> the driver infrastructure can be used also on systems that do not
+> associate an of_node pointer to a struct device (eg ACPI), making the
+> device look-up and iommu_ops retrieval firmware agnostic.
 > 
-> Convert the DT specific of_iommu_{set/get}_ops() interface to
-> use struct device.fwnode as a look-up token, making the interface
-> usable on ACPI systems.
-> 
-> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Tested-by: Hanjun Guo <hanjun.guo@linaro.org>
-> Tested-by: Tomasz Nowicki <tn@semihalf.com>
-> Cc: Will Deacon <will.deacon@arm.com>
-> Cc: Hanjun Guo <hanjun.guo@linaro.org>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
+> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+> Tested-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Tested-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
 > ---
->  drivers/iommu/iommu.c    | 42 ++++++++++++++++++++++++++++++++++++++++++
->  drivers/iommu/of_iommu.c | 39 ---------------------------------------
->  include/linux/iommu.h    | 14 ++++++++++++++
->  include/linux/of_iommu.h | 12 ++++++++++--
->  4 files changed, 66 insertions(+), 41 deletions(-)
+>  drivers/iommu/arm-smmu.c | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 9a2f196..5c97c01 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1615,6 +1615,48 @@ int iommu_request_dm_for_dev(struct device *dev)
->  	return ret;
->  }
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 8f72814..8a3c2a4 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1379,13 +1379,14 @@ static bool arm_smmu_capable(enum iommu_cap cap)
 >  
-> +struct iommu_fwentry {
-
-:)
-
-> +	struct list_head list;
-> +	struct fwnode_handle *fwnode;
-> +	const struct iommu_ops *ops;
-> +};
-> +static LIST_HEAD(iommu_fwentry_list);
-> +static DEFINE_SPINLOCK(iommu_fwentry_lock);
-> +
-> +void fwnode_iommu_set_ops(struct fwnode_handle *fwnode,
-> +			  const struct iommu_ops *ops)
-> +{
-> +	struct iommu_fwentry *iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
-> +
-> +	if (WARN_ON(!iommu))
-> +		return;
-> +
-> +	if (is_of_node(fwnode))
-
-Nit: this check is actually redundant, since to_of_node() already does
-the right thing and of_node_get() is NULL-safe - iommu_fwspec_init()
-already works that way. On the other hand, though, it is perhaps more
-intuitive to see it explicitly, and since to_of_node() is inline it
-ought to result in the same object code (I've not checked, though).
-Either way:
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-> +		of_node_get(to_of_node(fwnode));
-> +
-> +	INIT_LIST_HEAD(&iommu->list);
-> +	iommu->fwnode = fwnode;
-> +	iommu->ops = ops;
-> +	spin_lock(&iommu_fwentry_lock);
-> +	list_add_tail(&iommu->list, &iommu_fwentry_list);
-> +	spin_unlock(&iommu_fwentry_lock);
-> +}
-> +
-> +const struct iommu_ops *fwnode_iommu_get_ops(struct fwnode_handle *fwnode)
-> +{
-> +	struct iommu_fwentry *node;
-> +	const struct iommu_ops *ops = NULL;
-> +
-> +	spin_lock(&iommu_fwentry_lock);
-> +	list_for_each_entry(node, &iommu_fwentry_list, list)
-> +		if (node->fwnode == fwnode) {
-> +			ops = node->ops;
-> +			break;
-> +		}
-> +	spin_unlock(&iommu_fwentry_lock);
-> +	return ops;
-> +}
-> +
->  int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
->  		      const struct iommu_ops *ops)
+>  static int arm_smmu_match_node(struct device *dev, void *data)
 >  {
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 5b82862..0f57ddc 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -96,45 +96,6 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
+> -	return dev->of_node == data;
+> +	return dev->fwnode == data;
 >  }
->  EXPORT_SYMBOL_GPL(of_get_dma_window);
 >  
-> -struct of_iommu_node {
-> -	struct list_head list;
-> -	struct device_node *np;
-> -	const struct iommu_ops *ops;
-> -};
-> -static LIST_HEAD(of_iommu_list);
-> -static DEFINE_SPINLOCK(of_iommu_lock);
-> -
-> -void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops)
-> -{
-> -	struct of_iommu_node *iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
-> -
-> -	if (WARN_ON(!iommu))
-> -		return;
-> -
-> -	of_node_get(np);
-> -	INIT_LIST_HEAD(&iommu->list);
-> -	iommu->np = np;
-> -	iommu->ops = ops;
-> -	spin_lock(&of_iommu_lock);
-> -	list_add_tail(&iommu->list, &of_iommu_list);
-> -	spin_unlock(&of_iommu_lock);
-> -}
-> -
-> -const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
-> -{
-> -	struct of_iommu_node *node;
-> -	const struct iommu_ops *ops = NULL;
-> -
-> -	spin_lock(&of_iommu_lock);
-> -	list_for_each_entry(node, &of_iommu_list, list)
-> -		if (node->np == np) {
-> -			ops = node->ops;
-> -			break;
-> -		}
-> -	spin_unlock(&of_iommu_lock);
-> -	return ops;
-> -}
-> -
->  static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+> -static struct arm_smmu_device *arm_smmu_get_by_node(struct device_node *np)
+> +static
+> +struct arm_smmu_device *arm_smmu_get_by_fwnode(struct fwnode_handle *fwnode)
 >  {
->  	struct of_phandle_args *iommu_spec = data;
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 436dc21..15d5478 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -351,6 +351,9 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
->  		      const struct iommu_ops *ops);
->  void iommu_fwspec_free(struct device *dev);
->  int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
-> +void fwnode_iommu_set_ops(struct fwnode_handle *fwnode,
-> +			  const struct iommu_ops *ops);
-> +const struct iommu_ops *fwnode_iommu_get_ops(struct fwnode_handle *fwnode);
->  
->  #else /* CONFIG_IOMMU_API */
->  
-> @@ -580,6 +583,17 @@ static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
->  	return -ENODEV;
+>  	struct device *dev = driver_find_device(&arm_smmu_driver.driver, NULL,
+> -						np, arm_smmu_match_node);
+> +						fwnode, arm_smmu_match_node);
+>  	put_device(dev);
+>  	return dev ? dev_get_drvdata(dev) : NULL;
 >  }
+> @@ -1403,7 +1404,7 @@ static int arm_smmu_add_device(struct device *dev)
+>  		if (ret)
+>  			goto out_free;
+>  	} else if (fwspec && fwspec->ops == &arm_smmu_ops) {
+> -		smmu = arm_smmu_get_by_node(to_of_node(fwspec->iommu_fwnode));
+> +		smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
+>  	} else {
+>  		return -ENODEV;
+>  	}
+> @@ -2007,7 +2008,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+>  		}
+>  	}
 >  
-> +static inline void fwnode_iommu_set_ops(struct fwnode_handle *fwnode,
-> +					const struct iommu_ops *ops)
-> +{
-> +}
-> +
-> +static inline
-> +const struct iommu_ops *fwnode_iommu_get_ops(struct fwnode_handle *fwnode)
-> +{
-> +	return NULL;
-> +}
-> +
->  #endif /* CONFIG_IOMMU_API */
->  
->  #endif /* __LINUX_IOMMU_H */
-> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-> index e80b9c7..7681007 100644
-> --- a/include/linux/of_iommu.h
-> +++ b/include/linux/of_iommu.h
-> @@ -31,8 +31,16 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
->  
->  #endif	/* CONFIG_OF_IOMMU */
->  
-> -void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops);
-> -const struct iommu_ops *of_iommu_get_ops(struct device_node *np);
-> +static inline void of_iommu_set_ops(struct device_node *np,
-> +				    const struct iommu_ops *ops)
-> +{
-> +	fwnode_iommu_set_ops(&np->fwnode, ops);
-> +}
-> +
-> +static inline const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
-> +{
-> +	return fwnode_iommu_get_ops(&np->fwnode);
-> +}
->  
->  extern struct of_device_id __iommu_of_table;
+> -	of_iommu_set_ops(dev->of_node, &arm_smmu_ops);
+> +	fwnode_iommu_set_ops(dev->fwnode, &arm_smmu_ops);
+>  	platform_set_drvdata(pdev, smmu);
+>  	arm_smmu_device_reset(smmu);
 >  
 > 
-
