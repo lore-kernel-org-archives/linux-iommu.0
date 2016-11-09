@@ -1,103 +1,92 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v7 15/16] drivers: acpi: iort: add single mapping function
-Date: Wed,  9 Nov 2016 14:19:47 +0000
-Message-ID: <20161109141948.19244-16-lorenzo.pieralisi@arm.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH v7 14/16] drivers: acpi: iort: replace rid map type with type mask
+Date: Wed,  9 Nov 2016 14:19:46 +0000
+Message-ID: <20161109141948.19244-15-lorenzo.pieralisi@arm.com>
 References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161109141948.19244-1-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Tomasz Nowicki <tn@semihalf.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-The current IORT id mapping API requires components to provide
-an input requester ID (a Bus-Device-Function (BDF) identifier for
-PCI devices) to translate an input identifier to an output
-identifier through an IORT range mapping.
+IORT tables provide data that allow the kernel to carry out
+device ID mappings between endpoints and system components
+(eg interrupt controllers, IOMMUs). When the mapping for a
+given device ID is carried out, the translation mechanism
+is done on a per-subsystem basis rather than a component
+subtype (ie the IOMMU kernel layer will look for mappings
+from a device to all IORT node types corresponding to IOMMU
+components), therefore the corresponding mapping API should
+work on a range (ie mask) of IORT node types corresponding
+to a common set of components (eg IOMMUs) rather than a
+specific node type.
 
-Named components do not have an identifiable source ID therefore
-their respective input/output mapping can only be defined in
-IORT tables through single mappings, that provide a translation
-that does not require any input identifier.
+Upgrade the IORT iort_node_map_rid() API to work with a
+type mask instead of a single node type so that it can
+be used for mappings that span multiple components types
+(ie IOMMUs).
 
-Current IORT interface for requester id mappings (iort_node_map_rid())
-is not suitable for components that do not provide a requester id,
-so it cannot be used for IORT named components.
-
-Add an interface to the IORT API to enable retrieval of id
-by allowing an indexed walk of the single mappings array for
-a given component, therefore completing the IORT mapping API.
-
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Tested-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Tested-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Tested-by: Hanjun Guo <hanjun.guo@linaro.org>
+Tested-by: Tomasz Nowicki <tn@semihalf.com>
+Cc: Hanjun Guo <hanjun.guo@linaro.org>
+Cc: Tomasz Nowicki <tn@semihalf.com>
+Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
 ---
- drivers/acpi/arm64/iort.c | 39 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+ drivers/acpi/arm64/iort.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index 62057c6..7d30605 100644
+index 4708806..62057c6 100644
 --- a/drivers/acpi/arm64/iort.c
 +++ b/drivers/acpi/arm64/iort.c
-@@ -318,6 +318,45 @@ static int iort_id_map(struct acpi_iort_id_mapping *map, u8 type, u32 rid_in,
- 	return 0;
- }
+@@ -26,6 +26,9 @@
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
  
-+static
-+struct acpi_iort_node *iort_node_get_id(struct acpi_iort_node *node,
-+					u32 *id_out, u8 type_mask,
-+					int index)
-+{
-+	struct acpi_iort_node *parent;
-+	struct acpi_iort_id_mapping *map;
++#define IORT_TYPE_MASK(type)	(1 << (type))
++#define IORT_MSI_TYPE		(1 << ACPI_IORT_NODE_ITS_GROUP)
 +
-+	if (!node->mapping_offset || !node->mapping_count ||
-+				     index >= node->mapping_count)
-+		return NULL;
-+
-+	map = ACPI_ADD_PTR(struct acpi_iort_id_mapping, node,
-+			   node->mapping_offset);
-+
-+	/* Firmware bug! */
-+	if (!map->output_reference) {
-+		pr_err(FW_BUG "[node %p type %d] ID map has NULL parent reference\n",
-+		       node, node->type);
-+		return NULL;
-+	}
-+
-+	parent = ACPI_ADD_PTR(struct acpi_iort_node, iort_table,
-+			       map->output_reference);
-+
-+	if (!(IORT_TYPE_MASK(parent->type) & type_mask))
-+		return NULL;
-+
-+	if (map[index].flags & ACPI_IORT_ID_SINGLE_MAPPING) {
-+		if (node->type == ACPI_IORT_NODE_NAMED_COMPONENT ||
-+		    node->type == ACPI_IORT_NODE_PCI_ROOT_COMPLEX) {
-+			*id_out = map[index].output_base;
-+			return parent;
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
+ struct iort_its_msi_chip {
+ 	struct list_head	list;
+ 	struct fwnode_handle	*fw_node;
+@@ -317,7 +320,7 @@ static int iort_id_map(struct acpi_iort_id_mapping *map, u8 type, u32 rid_in,
+ 
  static struct acpi_iort_node *iort_node_map_rid(struct acpi_iort_node *node,
  						u32 rid_in, u32 *rid_out,
- 						u8 type_mask)
+-						u8 type)
++						u8 type_mask)
+ {
+ 	u32 rid = rid_in;
+ 
+@@ -326,7 +329,7 @@ static struct acpi_iort_node *iort_node_map_rid(struct acpi_iort_node *node,
+ 		struct acpi_iort_id_mapping *map;
+ 		int i;
+ 
+-		if (node->type == type) {
++		if (IORT_TYPE_MASK(node->type) & type_mask) {
+ 			if (rid_out)
+ 				*rid_out = rid;
+ 			return node;
+@@ -399,7 +402,7 @@ u32 iort_msi_map_rid(struct device *dev, u32 req_id)
+ 	if (!node)
+ 		return req_id;
+ 
+-	iort_node_map_rid(node, req_id, &dev_id, ACPI_IORT_NODE_ITS_GROUP);
++	iort_node_map_rid(node, req_id, &dev_id, IORT_MSI_TYPE);
+ 	return dev_id;
+ }
+ 
+@@ -421,7 +424,7 @@ static int iort_dev_find_its_id(struct device *dev, u32 req_id,
+ 	if (!node)
+ 		return -ENXIO;
+ 
+-	node = iort_node_map_rid(node, req_id, NULL, ACPI_IORT_NODE_ITS_GROUP);
++	node = iort_node_map_rid(node, req_id, NULL, IORT_MSI_TYPE);
+ 	if (!node)
+ 		return -ENXIO;
+ 
 -- 
 2.10.0
+
