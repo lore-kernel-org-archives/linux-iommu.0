@@ -1,97 +1,53 @@
-From: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: Re: [v16, 0/7] Fix eSDHC host version register bug
-Date: Wed, 9 Nov 2016 19:27:47 +0100
-Message-ID: <CAPDyKFrcAN_pqgtGaUanfB2zh97zGcL23m5VDtJ3g==NJeRrfA@mail.gmail.com>
-References: <1478661252-42439-1-git-send-email-yangbo.lu@nxp.com>
+From: Don Dutile <ddutile@redhat.com>
+Subject: Re: Summary of LPC guest MSI discussion in Santa Fe
+Date: Wed, 9 Nov 2016 13:59:07 -0500
+Message-ID: <582371FB.2040808@redhat.com>
+References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
+ <20161103220205.37715b49@t450s.home> <20161108024559.GA20591@arm.com>
+ <20161108202922.GC15676@cbox> <20161108163508.1bcae0c2@t450s.home>
+ <58228F71.6020108@redhat.com> <20161109170326.GG17771@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1478661252-42439-1-git-send-email-yangbo.lu-3arQi8VN3Tc@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Xiaobo Xie <xiaobo.xie-3arQi8VN3Tc@public.gmane.org>, Minghuan Lian <minghuan.lian-3arQi8VN3Tc@public.gmane.org>, linux-clk <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Qiang Zhao <qiang.zhao-3arQi8VN3Tc@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Scott Wood <oss-fOR+EgIDQEHk1uMJSBkQmQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mmc <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linuxppc-dev-uLR06cmDAlZmR6Xm/wNWPw@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20161109170326.GG17771@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>, Christoffer Dall <christoffer.dall@linaro.org>, Eric Auger <eric.auger@redhat.com>, eric.auger.pro@gmail.com, marc.zyngier@arm.com, robin.murphy@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org, drjones@redhat.com, linux-kernel@vger.kernel.org, pranav.sawargaonkar@gmail.com, iommu@lists.linux-foundation.org, punit.agrawal@arm.com, diana.craciun@nxp.com, benh@kernel.crashing.org, arnd@arndb.de, jcm@redhat.com, dwmw@amazon.co.uk
 List-Id: iommu@lists.linux-foundation.org
 
-- i2c-list
-
-On 9 November 2016 at 04:14, Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org> wrote:
-> This patchset is used to fix a host version register bug in the T4240-R1.0-R2.0
-> eSDHC controller. To match the SoC version and revision, 15 previous version
-> patchsets had tried many methods but all of them were rejected by reviewers.
-> Such as
->         - dts compatible method
->         - syscon method
->         - ifdef PPC method
->         - GUTS driver getting SVR method
-> Anrd suggested a soc_device_match method in v10, and this is the only available
-> method left now. This v11 patchset introduces the soc_device_match interface in
-> soc driver.
+On 11/09/2016 12:03 PM, Will Deacon wrote:
+> On Tue, Nov 08, 2016 at 09:52:33PM -0500, Don Dutile wrote:
+>> On 11/08/2016 06:35 PM, Alex Williamson wrote:
+>>> On Tue, 8 Nov 2016 21:29:22 +0100
+>>> Christoffer Dall <christoffer.dall@linaro.org> wrote:
+>>>> Is my understanding correct, that you need to tell userspace about the
+>>>> location of the doorbell (in the IOVA space) in case (2), because even
+>>>> though the configuration of the device is handled by the (host) kernel
+>>>> through trapping of the BARs, we have to avoid the VFIO user programming
+>>>> the device to create other DMA transactions to this particular address,
+>>>> since that will obviously conflict and either not produce the desired
+>>>> DMA transactions or result in unintended weird interrupts?
 >
-> The first four patches of Yangbo are to add the GUTS driver. This is used to
-> register a soc device which contain soc version and revision information.
-> The other three patches introduce the soc_device_match method in soc driver
-> and apply it on esdhc driver to fix this bug.
+> Yes, that's the crux of the issue.
 >
-> ---
-> Changes for v15:
->         - Dropped patch 'dt: bindings: update Freescale DCFG compatible'
->           since the work had been done by below patch on ShawnGuo's linux tree.
->           'dt-bindings: fsl: add LS1043A/LS1046A/LS2080A compatible for SCFG
->            and DCFG'
->         - Fixed error code issue in guts driver
-> Changes for v16:
->         - Dropped patch 'powerpc/fsl: move mpc85xx.h to include/linux/fsl'
->         - Added a bug-fix patch from Geert
-> ---
+>>> Correct, if the MSI doorbell IOVA range overlaps RAM in the VM, then
+>>> it's potentially a DMA target and we'll get bogus data on DMA read from
+>>> the device, and lose data and potentially trigger spurious interrupts on
+>>> DMA write from the device.  Thanks,
+>>>
+>> That's b/c the MSI doorbells are not positioned *above* the SMMU, i.e.,
+>> they address match before the SMMU checks are done.  if
+>> all DMA addrs had to go through SMMU first, then the DMA access could
+>> be ignored/rejected.
 >
-> Arnd Bergmann (1):
->   base: soc: introduce soc_device_match() interface
+> That's actually not true :( The SMMU can't generally distinguish between MSI
+> writes and DMA writes, so it would just see a write transaction to the
+> doorbell address, regardless of how it was generated by the endpoint.
 >
-> Geert Uytterhoeven (1):
->   base: soc: Check for NULL SoC device attributes
+> Will
 >
-> Yangbo Lu (5):
->   ARM64: dts: ls2080a: add device configuration node
->   dt: bindings: move guts devicetree doc out of powerpc directory
->   soc: fsl: add GUTS driver for QorIQ platforms
->   MAINTAINERS: add entry for Freescale SoC drivers
->   mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
->
->  .../bindings/{powerpc => soc}/fsl/guts.txt         |   3 +
->  MAINTAINERS                                        |  11 +-
->  arch/arm64/boot/dts/freescale/fsl-ls2080a.dtsi     |   6 +
->  drivers/base/Kconfig                               |   1 +
->  drivers/base/soc.c                                 |  70 ++++++
->  drivers/mmc/host/Kconfig                           |   1 +
->  drivers/mmc/host/sdhci-of-esdhc.c                  |  20 ++
->  drivers/soc/Kconfig                                |   3 +-
->  drivers/soc/fsl/Kconfig                            |  18 ++
->  drivers/soc/fsl/Makefile                           |   1 +
->  drivers/soc/fsl/guts.c                             | 236 +++++++++++++++++++++
->  include/linux/fsl/guts.h                           | 125 ++++++-----
->  include/linux/sys_soc.h                            |   3 +
->  13 files changed, 447 insertions(+), 51 deletions(-)
->  rename Documentation/devicetree/bindings/{powerpc => soc}/fsl/guts.txt (91%)
->  create mode 100644 drivers/soc/fsl/Kconfig
->  create mode 100644 drivers/soc/fsl/guts.c
->
-> --
-> 2.1.0.27.g96db324
->
-
-Thanks, applied on my mmc tree for next!
-
-I noticed that some DT compatibles weren't documented, according to
-checkpatch. Please fix that asap!
-
-Kind regards
-Ulf Hansson
+So, we have real systems where MSI doorbells are placed at the same IOVA
+that could have memory for a guest, but not at the same IOVA as memory on real hw ?
+How are memory holes passed to SMMU so it doesn't have this issue for bare-metal
+(assign an IOVA that overlaps an MSI doorbell address)?
