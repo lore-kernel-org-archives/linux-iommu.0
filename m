@@ -1,116 +1,149 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH V3 0/8] IOMMU probe deferral support
-Date: Wed, 9 Nov 2016 11:54:20 +0530
-Message-ID: <002001d23a51$ecb01390$c6103ab0$@codeaurora.org>
-References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org> <60ee8066-f167-e9df-ae3e-4138f1133bad@arm.com> <003a01d22f97$82534c70$86f9e550$@codeaurora.org> <421e2b14-0231-d376-02a0-097423120b3d@arm.com> <006f01d236ae$61751c40$245f54c0$@codeaurora.org> <9f36244f-62d4-08e3-d64a-2b04ad4dc2e0@arm.com>
+From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: Summary of LPC guest MSI discussion in Santa Fe
+Date: Wed, 9 Nov 2016 08:43:12 +0100
+Message-ID: <001659cd-5806-7729-8cea-dd6982010c9f@redhat.com>
+References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
+	<20161103220205.37715b49@t450s.home> <20161108024559.GA20591@arm.com>
+	<dae12190-1eb6-20a9-5740-9e5be8bb65fc@redhat.com>
+	<20161108175457.GK20591@arm.com> <5822214F.2070500@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <9f36244f-62d4-08e3-d64a-2b04ad4dc2e0@arm.com>
-Content-Language: en-us
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: 'Robin Murphy' <robin.murphy@arm.com>, will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, laurent.pinchart@ideasonboard.com, m.szyprowski@samsung.com, tfiga@chromium.org, srinivas.kandagatla@linaro.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5822214F.2070500-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
->On 04/11/16 15:16, Sricharan wrote:
->> Hi Robin,
+Hi Will,
+On 08/11/2016 20:02, Don Dutile wrote:
+> On 11/08/2016 12:54 PM, Will Deacon wrote:
+>> On Tue, Nov 08, 2016 at 03:27:23PM +0100, Auger Eric wrote:
+>>> On 08/11/2016 03:45, Will Deacon wrote:
+>>>> Rather than treat these as separate problems, a better interface is to
+>>>> tell userspace about a set of reserved regions, and have this include
+>>>> the MSI doorbell, irrespective of whether or not it can be remapped.
+>>>> Don suggested that we statically pick an address for the doorbell in a
+>>>> similar way to x86, and have the kernel map it there. We could even
+>>>> pick
+>>>> 0xfee00000. If it conflicts with a reserved region on the platform (due
+>>>> to (4)), then we'd obviously have to (deterministically?) allocate it
+>>>> somewhere else, but probably within the bottom 4G.
+>>> This is tentatively achieved now with
+>>> [1] [RFC v2 0/8] KVM PCIe/MSI passthrough on ARM/ARM64 - Alt II
+>>> (http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1264506.html)
+>>>
+>> Yup, I saw that fly by. Hopefully some of the internals can be reused
+>> with the current thinking on user ABI.
 >>
->>>>> Yikes, on second look, that definitely shouldn't be happening.
->>>>> Everything below is probably the resulting fallout.
+>>>> The next question is how to tell userspace about all of the reserved
+>>>> regions. Initially, the idea was to extend VFIO, however Alex pointed
+>>>> out a horrible scenario:
 >>>>
->>>> [   40.206703] vfio-pci 0000:08:00.0: Failed to setup iommu ops
+>>>>    1. QEMU spawns a VM on system 0
+>>>>    2. VM is migrated to system 1
+>>>>    3. QEMU attempts to passthrough a device using PCI hotplug
 >>>>
->>>> I think the above print which says "failed to setup iommu_ops"
->>>> because the call ops->add_device failed in of_pci_iommu_configure
->>>> is the reason for the failure, in my case i simply do not get this even with
->>>> your scripts. ops->add_device succeeds in the rebind as well. So still
->>>> checking what could be happening in your case.
+>>>> In this scenario, the guest memory map is chosen at step (1), yet there
+>>>> is no VFIO fd available to determine the reserved regions. Furthermore,
+>>>> the reserved regions may vary between system 0 and system 1. This
+>>>> pretty
+>>>> much rules out using VFIO to determine the reserved regions.Alex
+>>>> suggested
+>>>> that the SMMU driver can advertise the regions via
+>>>> /sys/class/iommu/. This
+>>>> would solve part of the problem, but migration between systems with
+>>>> different memory maps can still cause problems if the reserved regions
+>>>> of the new system conflict with the guest memory map chosen by QEMU.
 >>>
->>> I was looking at your code base from [1].The ops->add_device
->>> callback from of_pci_iommu_configure on the rebind is the
->>> one which is causing the failure. But not able to spot out
->>>from code which point is causing the failure. It would be very helpful
->>> if i can know which is the return value from the add_device callback
->>> or point inside add_device callback which fails in your setup.
+>>> OK so I understand we do not want anymore the VFIO chain capability API
+>>> (patch 5 of above series) but we prefer a sysfs approach instead.
+>> Right.
+>>
+>>> I understand the sysfs approach which allows the userspace to get the
+>>> info earlier and independently on VFIO. Keeping in mind current QEMU
+>>> virt - which is not the only userspace - will not do much from this info
+>>> until we bring upheavals in virt address space management. So if I am
+>>> not wrong, at the moment the main action to be undertaken is the
+>>> rejection of the PCI hotplug in case we detect a collision.
+>> I don't think so; it should be up to userspace to reject the hotplug.
+>> If userspace doesn't have support for the regions, then that's fine --
+>> you just end up in a situation where the CPU page table maps memory
+>> somewhere that the device can't see. In other words, you'll end up with
+>> spurious DMA failures, but that's exactly what happens with current
+>> systems
+>> if you passthrough an overlapping region (Robin demonstrated this on
+>> Juno).
+>>
+>> Additionally, you can imagine some future support where you can tell the
+>> guest not to use certain regions of its memory for DMA. In this case, you
+>> wouldn't want to refuse the hotplug in the case of overlapping regions.
+>>
+>> Really, I think the kernel side just needs to enumerate the fixed
+>> reserved
+>> regions, place the doorbell at a fixed address and then advertise these
+>> via sysfs.
+>>
+>>> I can respin [1]
+>>> - studying and taking into account Robin's comments about dm_regions
+>>> similarities
+>>> - removing the VFIO capability chain and replacing this by a sysfs API
+>> Ideally, this would be reusable between different SMMU drivers so the
+>> sysfs
+>> entries have the same format etc.
+>>
+>>> Would that be OK?
+>> Sounds good to me. Are you in a position to prototype something on the
+>> qemu
+>> side once we've got kernel-side agreement?
+yes sure.
+>>
+>>> What about Alex comments who wanted to report the usable memory ranges
+>>> instead of unusable memory ranges?
 >>>
->>>
->>> [1] git://linux-arm.org/linux-rm iommu/misc
+>>> Also did you have a chance to discuss the following items:
+>>> 1) the VFIO irq safety assessment
+>> The discussion really focussed on system topology, as opposed to
+>> properties
+>> of the doorbell. Regardless of how the device talks to the doorbell, if
+>> the doorbell can't protect against things like MSI spoofing, then it's
+>> unsafe. My opinion is that we shouldn't allow passthrough by default on
+>> systems with unsafe doorbells (we could piggyback on
+>> allow_unsafe_interrupts
+>> cmdline option to VFIO).
+OK.
 >>
->> With little more try, i saw an issue where i had an failure
->> similar to what you reported. The issue happens when multiple
->> devices fall in to same group due to matching sids. I ended up
->> doing a fix like below and it would be nice to verify if it is the same
->> that we are seeing in your setup and if the fix makes a difference ?
->>
->> From: Sricharan R <sricharan@codeaurora.org>
->> Date: Fri, 4 Nov 2016 20:28:49 +0530
->> Subject: [PATCH] iommu/arm-smmu: Fix group's reference counting
->>
->> iommu_group_get_for_dev which gets called in the add_device
->> callback, increases the reference count of the iommu_group,
->> so we do an iommu_group_put after that. iommu_group_get_for_dev
->> inturn calls device_group callback and in the case of arm-smmu
->> we call generic_device_group/pci_device_group which takes
->> care of increasing the group's reference. But when we return
->> an already existing group(when multiple devices have same group)
->> the reference is not incremented, resulting in issues when the
->> remove_device callback for the devices is invoked.
->> Fixing the same here.
->
->Bah, yes, this does look like my fault - after flip-flopping between
->about 3 different ways to keep refcounts for the S2CR entries, none of
->which would quite work, I ripped it all out but apparently still got
->things wrong, oh well. Thanks for figuring it out.
- >
->On the probe-deferral angle, whilst it's useful to have uncovered this
->bug, I don't think we should actually be calling remove_device() from
->DMA teardown. I think it's preferable from a user perspective if group
->numbering remains stable, rather than changing depending on the order in
->which they unbind/rebind VFIO drivers. I'm really keen to try and get
->this in shape for 4.10, so I've taken the liberty of hacking up my own
->branch (iommu/defer) based on v3 - would you mind taking a look at the
->two "iommu/of:" commits to see what you think? (Ignore the PCI changes
->to your later patches - that was an experiment which didn't really work out)
+>> A first step would be making all this opt-in, and only supporting GICv3
+>> ITS for now.
+> You're trying to support a config that is < GICv3 and no ITS ? ...
+> That would be the equiv. of x86 pre-intr-remap, and that's why
+> allow_unsafe_interrupts
+> hook was created ... to enable devel/kick-the-tires.
+>>> 2) the MSI reserved size computation (is an arbitrary size OK?)
+>> If we fix the base address, we could fix a size too. However, we'd still
+>> need to enumerate the doorbells to check that they fit in the region we
+>> have. If not, then we can warn during boot and treat it the same way as
+>> a resource conflict (that is, reallocate the region in some deterministic
+>> way).
+OK
 
-Ok, will take a look at this now and respond more on this.
+Thanks
 
->
->> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
->> ---
->>  drivers/iommu/arm-smmu.c | 4 +++-
->>  1 file changed, 3 insertions(+), 1 deletion(-)
+Eric
 >>
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index 71ce4b6..a1d0b3c 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -1516,8 +1516,10 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
->>  		group = smmu->s2crs[idx].group;
->>  	}
->>
->> -	if (group)
->> +	if (group) {
->> +		iommu_group_get_by_id(iommu_group_id(group));
->>  		return group;
->
->This might as well just be inline, i.e.:
->
->		return iommu_group_get_by_id(iommu_group_id(group));
->
->It's a shame we have to go all round the houses when we have the group
->right there, but this is probably the most expedient fix. I guess we can
->extend the API with some sort of iommu_group_get(group) overload in
->future if we really want to.
->
-
-ok, i can send this fix separately then. Otherwise, Will was suggesting on the
-other thread that there should probably be a separate API to increment
-the group refcount or get the group from the existing aliasing device.
-As per me adding the api, looks like another option or post the above ?
-
-Regards,
- Sricharan
+>> Will
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
