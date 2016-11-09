@@ -1,11 +1,13 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 1/5] iommu: Allow taking a reference on a group directly
-Date: Wed,  9 Nov 2016 12:47:24 +0000
-Message-ID: <3922e1f14d8ecb50440b2d9b0d1123f3c9307fc5.1478695557.git.robin.murphy@arm.com>
+Subject: [PATCH 2/5] iommu/arm-smmu: Fix group refcounting
+Date: Wed,  9 Nov 2016 12:47:25 +0000
+Message-ID: <5142017efd33fd22637878140a05fe3db007f217.1478695557.git.robin.murphy@arm.com>
+References: <3922e1f14d8ecb50440b2d9b0d1123f3c9307fc5.1478695557.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <3922e1f14d8ecb50440b2d9b0d1123f3c9307fc5.1478695557.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,58 +21,27 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-iommu_group_get_for_dev() expects that the IOMMU driver's device_group
-callback return a group with a reference held for the given device.
-Whilst allocating a new group is fine, and pci_device_group() correctly
-handles reusing an existing group, there is no general means for IOMMU
-drivers doing their own group lookup to take additional references on an
-existing group pointer without having to also store device pointers or
-resort to elaborate trickery.
+When arm_smmu_device_group() finds an existing group due to Stream ID
+aliasing, it should be taking an additional reference on that group.
 
-Add an IOMMU-driver-specific function to fill the hole.
-
+Reported-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 14 ++++++++++++++
- include/linux/iommu.h |  1 +
- 2 files changed, 15 insertions(+)
+ drivers/iommu/arm-smmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 9a2f1960873b..b0b052bc6bb5 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -552,6 +552,20 @@ struct iommu_group *iommu_group_get(struct device *dev)
- EXPORT_SYMBOL_GPL(iommu_group_get);
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 8f7281444551..9f760cfba4fa 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1478,7 +1478,7 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+ 	}
  
- /**
-+ * __iommu_group_get - Increment reference on a group
-+ * @group: the group to use, must not be NULL
-+ *
-+ * This function may be called by internal iommu driver group management
-+ * when the context of a struct device pointer is not available.  It is
-+ * not for general use.  Returns the given group for convenience.
-+ */
-+struct iommu_group *__iommu_group_get(struct iommu_group *group)
-+{
-+	kobject_get(group->devices_kobj);
-+	return group;
-+}
-+
-+/**
-  * iommu_group_put - Decrement group reference
-  * @group: the group to use
-  *
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 436dc21318af..3f5d3f9d2440 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -253,6 +253,7 @@ extern void iommu_group_remove_device(struct device *dev);
- extern int iommu_group_for_each_dev(struct iommu_group *group, void *data,
- 				    int (*fn)(struct device *, void *));
- extern struct iommu_group *iommu_group_get(struct device *dev);
-+extern struct iommu_group *__iommu_group_get(struct iommu_group *group);
- extern void iommu_group_put(struct iommu_group *group);
- extern int iommu_group_register_notifier(struct iommu_group *group,
- 					 struct notifier_block *nb);
+ 	if (group)
+-		return group;
++		return __iommu_group_get(group);
+ 
+ 	if (dev_is_pci(dev))
+ 		group = pci_device_group(dev);
 -- 
 2.10.2.dirty
