@@ -1,18 +1,14 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v4 2/2] iommu/exynos: Add proper runtime pm support
-Date: Wed, 09 Nov 2016 16:07:34 +0100
-Message-ID: <9cf5829a-baac-9297-b231-17212d0195b1@samsung.com>
-References: <1475136751-31340-1-git-send-email-m.szyprowski@samsung.com>
-	<CGME20160929081240eucas1p231c1ab5c5936886cbec6bc3f5267c940@eucas1p2.samsung.com>
-	<1475136751-31340-3-git-send-email-m.szyprowski@samsung.com>
-	<20161006173756.GK3296@wotan.suse.de>
-	<87aeb58b-bda0-93c5-e51d-ab9be0b9d518@samsung.com>
-	<20161108221437.GC13978@wotan.suse.de>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v7 07/16] drivers: acpi: implement acpi_dma_configure
+Date: Wed, 9 Nov 2016 15:33:27 +0000
+Message-ID: <e25b0ebb-2ae4-cb13-b264-9ab43d8f2934@arm.com>
+References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
+	<20161109141948.19244-8-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20161108221437.GC13978-B4tOwbsTzaBolqkO4TVVkw@public.gmane.org>
+In-Reply-To: <20161109141948.19244-8-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,116 +18,180 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?Q?Krzysztof_Koz=c5=82owski?= <k.kozlowski.k-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Mauro Carvalho Chehab <mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Luis,
+On 09/11/16 14:19, Lorenzo Pieralisi wrote:
+> On DT based systems, the of_dma_configure() API implements DMA
+> configuration for a given device. On ACPI systems an API equivalent to
+> of_dma_configure() is missing which implies that it is currently not
+> possible to set-up DMA operations for devices through the ACPI generic
+> kernel layer.
+> 
+> This patch fills the gap by introducing acpi_dma_configure/deconfigure()
+> calls that for now are just wrappers around arch_setup_dma_ops() and
+> arch_teardown_dma_ops() and also updates ACPI and PCI core code to use
+> the newly introduced acpi_dma_configure/acpi_dma_deconfigure functions.
+> 
+> Since acpi_dma_configure() is used to configure DMA operations, the
+> function initializes the dma/coherent_dma masks to sane default values
+> if the current masks are uninitialized (also to keep the default values
+> consistent with DT systems) to make sure the device has a complete
+> default DMA set-up.
+> 
+> The DMA range size passed to arch_setup_dma_ops() is sized according
+> to the device coherent_dma_mask (starting at address 0x0), mirroring the
+> DT probing path behaviour when a dma-ranges property is not provided
+> for the device being probed; this changes the current arch_setup_dma_ops()
+> call parameters in the ACPI probing case, but since arch_setup_dma_ops()
+> is a NOP on all architectures but ARM/ARM64 this patch does not change
+> the current kernel behaviour on them.
+> 
+> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+> Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org> [pci]
+> Tested-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Tested-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+> Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+> ---
+>  drivers/acpi/glue.c     |  4 ++--
+>  drivers/acpi/scan.c     | 40 ++++++++++++++++++++++++++++++++++++++++
+>  drivers/pci/probe.c     |  3 +--
+>  include/acpi/acpi_bus.h |  2 ++
+>  include/linux/acpi.h    |  5 +++++
+>  5 files changed, 50 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/acpi/glue.c b/drivers/acpi/glue.c
+> index 5ea5dc2..f8d6564 100644
+> --- a/drivers/acpi/glue.c
+> +++ b/drivers/acpi/glue.c
+> @@ -227,8 +227,7 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
+>  
+>  	attr = acpi_get_dma_attr(acpi_dev);
+>  	if (attr != DEV_DMA_NOT_SUPPORTED)
+> -		arch_setup_dma_ops(dev, 0, 0, NULL,
+> -				   attr == DEV_DMA_COHERENT);
+> +		acpi_dma_configure(dev, attr);
+>  
+>  	acpi_physnode_link_name(physical_node_name, node_id);
+>  	retval = sysfs_create_link(&acpi_dev->dev.kobj, &dev->kobj,
+> @@ -251,6 +250,7 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
+>  	return 0;
+>  
+>   err:
+> +	acpi_dma_deconfigure(dev);
+>  	ACPI_COMPANION_SET(dev, NULL);
+>  	put_device(dev);
+>  	put_device(&acpi_dev->dev);
+> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+> index 035ac64..694e0b6 100644
+> --- a/drivers/acpi/scan.c
+> +++ b/drivers/acpi/scan.c
+> @@ -1370,6 +1370,46 @@ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
+>  		return DEV_DMA_NON_COHERENT;
+>  }
+>  
+> +/**
+> + * acpi_dma_configure - Set-up DMA configuration for the device.
+> + * @dev: The pointer to the device
+> + * @attr: device dma attributes
+> + */
+> +void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
+> +{
+> +	/*
+> +	 * Set default coherent_dma_mask to 32 bit.  Drivers are expected to
+> +	 * setup the correct supported mask.
+> +	 */
+> +	if (!dev->coherent_dma_mask)
+> +		dev->coherent_dma_mask = DMA_BIT_MASK(32);
+> +
+> +	/*
+> +	 * Set it to coherent_dma_mask by default if the architecture
+> +	 * code has not set it.
+> +	 */
+> +	if (!dev->dma_mask)
+> +		dev->dma_mask = &dev->coherent_dma_mask;
+> +
+> +	/*
+> +	 * Assume dma valid range starts at 0 and covers the whole
+> +	 * coherent_dma_mask.
+> +	 */
+> +	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, NULL,
+> +			   attr == DEV_DMA_COHERENT);
+> +}
+> +EXPORT_SYMBOL_GPL(acpi_dma_configure);
+> +
+> +/**
+> + * acpi_dma_deconfigure - Tear-down DMA configuration for the device.
+> + * @dev: The pointer to the device
+> + */
+> +void acpi_dma_deconfigure(struct device *dev)
+> +{
+> +	arch_teardown_dma_ops(dev);
+> +}
+> +EXPORT_SYMBOL_GPL(acpi_dma_deconfigure);
+> +
+>  static void acpi_init_coherency(struct acpi_device *adev)
+>  {
+>  	unsigned long long cca = 0;
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index ab00267..c29e07a 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -1738,8 +1738,7 @@ static void pci_dma_configure(struct pci_dev *dev)
+>  		if (attr == DEV_DMA_NOT_SUPPORTED)
+>  			dev_warn(&dev->dev, "DMA not supported.\n");
 
+If we're going to check attr for DMA support before each call like this,
+it seems like we may as well put the check at the top of
+acpi_dma_configure() instead. I think it should be viable to predicate
+the warning on dev_is_pci() at this point, if that's the appropriate
+behaviour.
 
-On 2016-11-08 23:14, Luis R. Rodriguez wrote:
-> On Mon, Oct 10, 2016 at 03:32:06PM +0200, Marek Szyprowski wrote:
->> Hi Luis
->>
->>
->> On 2016-10-06 19:37, Luis R. Rodriguez wrote:
->>> On Thu, Sep 29, 2016 at 10:12:31AM +0200, Marek Szyprowski wrote:
->>>> This patch uses recently introduced device links to track the runtime pm
->>>> state of the master's device. This way each SYSMMU controller is runtime
->>>> activated when its master's device is active
->>> instead of?
->> instead of keeping SYSMMU controller runtime active all the time.
-> I thought Rafael's work was for suspend/resume, not for runtime suspend.
-> Is it for both ?
+Still, we're likely to be touching this again soon with the
+IOMMU-probe-ordering work, so there's plenty of room for further
+cleanups then:
 
-Yes, it solves both problems, although the suspend/resume was easy to 
-workaround
-just by using LATE_SLEEP_OPS.
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-> Because as far as I can tell this was painted to help
-> with suspend/resume ?
-
-It also helped to remove the suspend/resume workaround.
-
->>> BTW what is the master device of a SYSMMU? I have no clue about these
->>> IOMMU devices here.
->> Here is a more detailed description of IOMMU hardware I wrote a few days ago
->> for Ulf:
->> http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1231006.html
->>
->> In short: there is a SYSMMU controller and its master device - a device,
->> which performs DMA operations. That SYSMMU sits in between system memory
->> and the master device, so it performs mapping of DMA addresses to physical
->> memory addresses on each DMA operation.
-> So you seek a run time power optimization ? Or a fix on suspend? Or both?
-
-The main reason for using device links was to implement proper runtime power
-optimization.
-
->>>> and can save/restore its state instead of being enabled all the time.
->>> I take it this means currently even if the master device is disabled
->>> (whatever that is) all SYSMMU controllers are kept enabled, is that right?
->>> The issue here is this wastes power? Or what is the issue?
->> Yes, the issue here is the fact that SYSMMU is kept active all the time,
->> what in turn prevent the power domain for turning off even if master device
->> doesn't do anything and is already suspended. This directly (some clocks
->> enabled) and in-directly (leakage current) causes power looses.
-> Thanks for the confirmation so really the biggest concern here was run time PM.
->
->>>> This way SYSMMU controllers no
->>>> longer prevents respective power domains to be turned off when master's
->>>> device is not used.
->>> So when the master device is idle we want to also remove power from the
->>> controllers ? How much power does this save on a typical device in the
->>> market BTW ?
->> The main purpose of this patchset is to let power domains to be turned off,
->> because with the current code all domains are all the time turned on,
->> because
->> SYSMMU controllers prevent them from turning them off.
-> I see.. I think the audio folks already addressed this with DAPM, but granted
-> this was for audio. Then I was also referred to the DRM / Audio component
-> framework, has this been looked into? v4l folks have v4l async stuff but
-> its not clear if that help with run time PM. I'm mentioning these given it'd be
-> silly to re-invent the wheel, additionally if we now have a generic solution
-> everyone can jump on board with there is quite a bit of work we can do to
-> dump a lot of old legacy crap.
-
-Right, probably some workarounds here and there can be removed. However 
-components
-and v4l-async solutions are for resolving only probe and registration 
-issues and they
-are some kind of pool for grouping devices and triggering special 
-callback once all
-requested devices in the pool have probed.
-
->> If you want I can measure the power consumption of the idle board with all
->> domains enabled and disabled if you want to see the numbers. On the other
->> board
->> disabling most power domains in idle state (the clocks were already
->> disabled)
->> gave me about 20mA savings (at 3.7V), what is a significant value for the
->> battery powered device.
-> Thanks, this means nothing to me, however it would be value-add to the commit log
-> as anyone reviewing  this can understand what the goal / savings was for exactly.
->
->>>> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->>>> ---
->>>>    drivers/iommu/exynos-iommu.c | 225 ++++++++++++++++++-------------------------
->>>>    1 file changed, 94 insertions(+), 131 deletions(-)
->>> I'm reviewing the device link patches now but since this is a demo of
->>> use of that I'll note the changes here are pretty large and it makes
->>> it terribly difficult for review. Is there any way this patch can be split
->>> up in to logical atomic pieces that only do one task upon change ?
->> I will try to split it a bit, but I cannot promise that much can be done
->> to improve readability for someone not very familiar with the driver
->> internals.
-> I've heard this before, I don't buy it but lets see!
-
-Somehow I managed to split this all-in-one patch into several smaller 
-changes
-in v5 and v6 was posted yesterday ago.
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+>  		else
+> -			arch_setup_dma_ops(&dev->dev, 0, 0, NULL,
+> -					   attr == DEV_DMA_COHERENT);
+> +			acpi_dma_configure(&dev->dev, attr);
+>  	}
+>  
+>  	pci_put_host_bridge_device(bridge);
+> diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
+> index c1a524d..4242c31 100644
+> --- a/include/acpi/acpi_bus.h
+> +++ b/include/acpi/acpi_bus.h
+> @@ -573,6 +573,8 @@ struct acpi_pci_root {
+>  
+>  bool acpi_dma_supported(struct acpi_device *adev);
+>  enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev);
+> +void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr);
+> +void acpi_dma_deconfigure(struct device *dev);
+>  
+>  struct acpi_device *acpi_find_child_device(struct acpi_device *parent,
+>  					   u64 address, bool check_children);
+> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+> index 6efb13c..df961f4 100644
+> --- a/include/linux/acpi.h
+> +++ b/include/linux/acpi.h
+> @@ -764,6 +764,11 @@ static inline enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
+>  	return DEV_DMA_NOT_SUPPORTED;
+>  }
+>  
+> +static inline void acpi_dma_configure(struct device *dev,
+> +				      enum dev_dma_attr attr) { }
+> +
+> +static inline void acpi_dma_deconfigure(struct device *dev) { }
+> +
+>  #define ACPI_PTR(_ptr)	(NULL)
+>  
+>  static inline void acpi_device_set_enumerated(struct acpi_device *adev)
+> 
