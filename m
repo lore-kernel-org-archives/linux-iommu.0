@@ -1,48 +1,46 @@
-From: Wolfram Sang <wsa@the-dreams.de>
-Subject: Re: [v16, 0/7] Fix eSDHC host version register bug
-Date: Wed, 9 Nov 2016 10:18:33 +0100
-Message-ID: <20161109091832.GC1807@katana>
-References: <1478661252-42439-1-git-send-email-yangbo.lu@nxp.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 3/5] iommu/amd: Fix group refcounting
+Date: Wed,  9 Nov 2016 12:47:26 +0000
+Message-ID: <afa2d74af82b161db0de3eb550b91519f0ad535f.1478695557.git.robin.murphy@arm.com>
+References: <3922e1f14d8ecb50440b2d9b0d1123f3c9307fc5.1478695557.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="uh9ZiVrAOUUm9fzH"
-Return-path: <linux-i2c-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1478661252-42439-1-git-send-email-yangbo.lu@nxp.com>
-Sender: linux-i2c-owner@vger.kernel.org
-To: Yangbo Lu <yangbo.lu@nxp.com>
-Cc: linux-mmc@vger.kernel.org, ulf.hansson@linaro.org, Scott Wood <oss@buserror.net>, Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, iommu@lists.linux-foundation.org, netdev@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh+dt@kernel.org>, Russell King <linux@arm.linux.org.uk>, Jochen Friedrich <jochen@scram.de>, Joerg Roedel <joro@8bytes.org>, Claudiu Manoil <claudiu.manoil@freescale.com>, Bhupesh Sharma <bhupesh.sharma@freescale.com>, Qiang Zhao <qiang.zhao@nxp.com>, Kumar Gala <galak@codeaurora.org>, Leo Li <leoyang.li@nxp.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <3922e1f14d8ecb50440b2d9b0d1123f3c9307fc5.1478695557.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+If acpihid_device_group() finds an existing group for the relevant
+devid, it should be taking an additional reference on that group.
 
---uh9ZiVrAOUUm9fzH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-
-Can you please update your CC list? There is nothing i2c related in this
-patch series, so you could drop the i2c-list.
-
-
---uh9ZiVrAOUUm9fzH
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJYIunoAAoJEBQN5MwUoCm2JCAP/0clLR2IchSWDZ0rRwfbLcAL
-aKM/ckNIlHdPmOCq/KnJcPpGux4l6J+WkODLGpCJSMJzI0/WwjPIcNGITaapo7Ue
-U0NlY49zQ6scE9OMwsCwW22Ao5sArOi+6PAZSjmXYMN2+a+k+AnnWc+mmVmHZ9Y4
-lWVeksXVm4Lg2xEtq84ceXOpatb/4KE3M3iOKgcg+9T+Fro+/NnTjf+AkuF9Xkay
-jNqGoOdeIzD2WvrjCRD7+ApBfZZyz/Za89cGtkTvK69QqON6HB6xiesDF/YbPoz3
-UYn91ab+/teyAvoN5kDHaRcEQT2L47rQPY2hh26eCV4pyepp+23sAZ9nMakYOZRl
-rV7/ZBUh6GvyUSxDW8ud/G/O52wbdSObyBjj+qUhCQ5LjtHgcaSZwg8/Brml7YsS
-NO205lIMOsjGiB+vs9N1QhApga6Rcamb3RgIeg3un6gHCFsqnG3xEyeEDhYNNzia
-AIa+xhQ/8MAps3yjGQDp3rDJ+kxzn1qHfsEBCkOEloGsDlKt1L8R9t/05/dYwJGd
-7aKyLlhCXMGbdgzKxPcWNCiKm/UP+pZns4ABDJA8Gi9xkkEJrcr87IQ070M8N4if
-gMRmGS8Q4Yr7MXLC44C2+aStjQWk/058IuKXV/oGHvrj3Buh+IKBl4GazD2tECj5
-gmp4R7RKlYgaZUklTDQT
-=Bmj3
------END PGP SIGNATURE-----
-
---uh9ZiVrAOUUm9fzH--
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 754595ee11b6..4ef05691ceb1 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -373,6 +373,8 @@ static struct iommu_group *acpihid_device_group(struct device *dev)
+ 
+ 	if (!entry->group)
+ 		entry->group = generic_device_group(dev);
++	else
++		__iommu_group_get(entry->group);
+ 
+ 	return entry->group;
+ }
+-- 
+2.10.2.dirty
