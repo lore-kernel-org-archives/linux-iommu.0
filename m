@@ -1,70 +1,107 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Summary of LPC guest MSI discussion in Santa Fe
-Date: Wed, 9 Nov 2016 16:24:58 -0700
-Message-ID: <20161109162458.39594fdb@t450s.home>
-References: <20161103220205.37715b49@t450s.home>
-	<20161108024559.GA20591@arm.com> <20161108202922.GC15676@cbox>
-	<20161108163508.1bcae0c2@t450s.home> <58228F71.6020108@redhat.com>
-	<20161109170326.GG17771@arm.com> <582371FB.2040808@redhat.com>
-	<20161109192303.GD15676@cbox> <20161109203145.GO17771@arm.com>
-	<20161109151709.74927f83@t450s.home>
-	<20161109222522.GS17771@arm.com>
+From: "Luis R. Rodriguez" <mcgrof@kernel.org>
+Subject: Re: [PATCH v6 7/7] iommu/exynos: Use device dependency links to
+ control runtime pm
+Date: Thu, 10 Nov 2016 00:31:26 +0100
+Message-ID: <20161109233126.GM13978@wotan.suse.de>
+References: <1478611764-6473-1-git-send-email-m.szyprowski@samsung.com>
+ <CGME20161108133019eucas1p1be275492ba670030324a164320866008@eucas1p1.samsung.com>
+ <1478611764-6473-8-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161109222522.GS17771-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1478611764-6473-8-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Mark Brown <broonie@kernel.org>, "Luis R. Rodriguez" <mcgrof@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Lukas Wunner <lukas@wunner.de>, Kevin Hilman <khilman@kernel.org>, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, Tomasz Figa <tomasz.figa@gmail.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Lars-Peter Clausen <lars@metafoo.de>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 9 Nov 2016 22:25:22 +0000
-Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-
-> On Wed, Nov 09, 2016 at 03:17:09PM -0700, Alex Williamson wrote:
-> > On Wed, 9 Nov 2016 20:31:45 +0000
-> > Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:  
-> > > On Wed, Nov 09, 2016 at 08:23:03PM +0100, Christoffer Dall wrote:  
-> > > > 
-> > > > (I suppose it's technically possible to get around this issue by letting
-> > > > QEMU place RAM wherever it wants but tell the guest to never use a
-> > > > particular subset of its RAM for DMA, because that would conflict with
-> > > > the doorbell IOVA or be seen as p2p transactions.  But I think we all
-> > > > probably agree that it's a disgusting idea.)    
-> > > 
-> > > Disgusting, yes, but Ben's idea of hotplugging on the host controller with
-> > > firmware tables describing the reserved regions is something that we could
-> > > do in the distant future. In the meantime, I don't think that VFIO should
-> > > explicitly reject overlapping mappings if userspace asks for them.  
-> > 
-> > I'm confused by the last sentence here, rejecting user mappings that
-> > overlap reserved ranges, such as MSI doorbell pages, is exactly how
-> > we'd reject hot-adding a device when we meet such a conflict.  If we
-> > don't reject such a mapping, we're knowingly creating a situation that
-> > potentially leads to data loss.  Minimally, QEMU would need to know
-> > about the reserved region, map around it through VFIO, and take
-> > responsibility (somehow) for making sure that region is never used for
-> > DMA.  Thanks,  
+On Tue, Nov 08, 2016 at 02:29:24PM +0100, Marek Szyprowski wrote:
+> This patch uses recently introduced device dependency links to track the
+> runtime pm state of the master's device. The goal is to let SYSMMU
+> controller device's runtime PM to follow the runtime PM state of the
+> respective master's device. This way each SYSMMU controller is active
+> only when its master's device is active and can properly restore or save
+> its state instead on runtime PM transition of master's device.
+> This approach replaces old behavior, when SYSMMU controller was set to
+> runtime active once after attaching to the master device. In the new
+> approach SYSMMU controllers no longer prevents respective power domains
+> to be turned off when master's device is not being used.
 > 
-> Yes, but my point is that it should be up to QEMU to abort the hotplug, not
-> the host kernel, since there may be ways in which a guest can tolerate the
-> overlapping region (e.g. by avoiding that range of memory for DMA).
+> The dependency links also enforces proper order of suspending/restoring
+> devices during system sleep transition, so there is no more need to use
+> LATE_SYSTEM_SLEEP_PM_OPS-based workaround for ensuring that SYSMMUs are
+> suspended after their master devices.
 
-The VFIO_IOMMU_MAP_DMA ioctl is a contract, the user ask to map a range
-of IOVAs to a range of virtual addresses for a given device.  If VFIO
-cannot reasonably fulfill that contract, it must fail.  It's up to QEMU
-how to manage the hotplug and what memory regions it asks VFIO to map
-for a device, but VFIO must reject mappings that it (or the SMMU by
-virtue of using the IOMMU API) know to overlap reserved ranges.  So I
-still disagree with the referenced statement.  Thanks,
+Patches 1-6 seems reasonable to me, however in so far as this patch is
+concerned I'd appreaciate if you and Rafael can reply to Lukas Wunner's
+questions.
 
-Alex
+  Luis
+
+> 
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
+>  drivers/iommu/exynos-iommu.c | 20 ++++++++++----------
+>  1 file changed, 10 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 5e6d7bb..4b05a15 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -633,8 +633,8 @@ static int __maybe_unused exynos_sysmmu_resume(struct device *dev)
+>  
+>  static const struct dev_pm_ops sysmmu_pm_ops = {
+>  	SET_RUNTIME_PM_OPS(exynos_sysmmu_suspend, exynos_sysmmu_resume, NULL)
+> -	SET_LATE_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+> -				     pm_runtime_force_resume)
+> +	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+> +				pm_runtime_force_resume)
+>  };
+>  
+>  static const struct of_device_id sysmmu_of_match[] __initconst = {
+> @@ -781,10 +781,6 @@ static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
+>  	if (!has_sysmmu(dev) || owner->domain != iommu_domain)
+>  		return;
+>  
+> -	list_for_each_entry(data, &owner->controllers, owner_node) {
+> -		pm_runtime_put_sync(data->sysmmu);
+> -	}
+> -
+>  	mutex_lock(&owner->rpm_lock);
+>  
+>  	list_for_each_entry(data, &owner->controllers, owner_node) {
+> @@ -848,10 +844,6 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
+>  
+>  	mutex_unlock(&owner->rpm_lock);
+>  
+> -	list_for_each_entry(data, &owner->controllers, owner_node) {
+> -		pm_runtime_get_sync(data->sysmmu);
+> -	}
+> -
+>  	dev_dbg(dev, "%s: Attached IOMMU with pgtable %pa\n", __func__,
+>  		&pagetable);
+>  
+> @@ -1232,6 +1224,14 @@ static int exynos_iommu_of_xlate(struct device *dev,
+>  
+>  	list_add_tail(&data->owner_node, &owner->controllers);
+>  	data->master = dev;
+> +
+> +	/*
+> +	 * SYSMMU will be runtime activated via device link (dependency) to its
+> +	 * master device, so there are no direct calls to pm_runtime_get/put
+> +	 * in this driver.
+> +	 */
+> +	device_link_add(dev, data->sysmmu, DL_FLAG_PM_RUNTIME);
+> +
+>  	return 0;
+>  }
+>  
+> -- 
+> 1.9.1
+> 
+> 
+
+-- 
+Luis Rodriguez, SUSE LINUX GmbH
+Maxfeldstrasse 5; D-90409 Nuernberg
