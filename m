@@ -1,17 +1,14 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: Summary of LPC guest MSI discussion in Santa Fe
-Date: Wed, 9 Nov 2016 17:03:26 +0000
-Message-ID: <20161109170326.GG17771@arm.com>
-References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
-	<20161103220205.37715b49@t450s.home>
-	<20161108024559.GA20591@arm.com> <20161108202922.GC15676@cbox>
-	<20161108163508.1bcae0c2@t450s.home> <58228F71.6020108@redhat.com>
+Subject: Re: [PATCH 1/5] iommu: Allow taking a reference on a group directly
+Date: Wed, 9 Nov 2016 17:25:43 +0000
+Message-ID: <20161109172543.GI17771@arm.com>
+References: <3922e1f14d8ecb50440b2d9b0d1123f3c9307fc5.1478695557.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <58228F71.6020108-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <3922e1f14d8ecb50440b2d9b0d1123f3c9307fc5.1478695557.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,36 +18,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 08, 2016 at 09:52:33PM -0500, Don Dutile wrote:
-> On 11/08/2016 06:35 PM, Alex Williamson wrote:
-> >On Tue, 8 Nov 2016 21:29:22 +0100
-> >Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
-> >>Is my understanding correct, that you need to tell userspace about the
-> >>location of the doorbell (in the IOVA space) in case (2), because even
-> >>though the configuration of the device is handled by the (host) kernel
-> >>through trapping of the BARs, we have to avoid the VFIO user programming
-> >>the device to create other DMA transactions to this particular address,
-> >>since that will obviously conflict and either not produce the desired
-> >>DMA transactions or result in unintended weird interrupts?
+On Wed, Nov 09, 2016 at 12:47:24PM +0000, Robin Murphy wrote:
+> iommu_group_get_for_dev() expects that the IOMMU driver's device_group
+> callback return a group with a reference held for the given device.
+> Whilst allocating a new group is fine, and pci_device_group() correctly
+> handles reusing an existing group, there is no general means for IOMMU
+> drivers doing their own group lookup to take additional references on an
+> existing group pointer without having to also store device pointers or
+> resort to elaborate trickery.
+> 
+> Add an IOMMU-driver-specific function to fill the hole.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/iommu.c | 14 ++++++++++++++
+>  include/linux/iommu.h |  1 +
+>  2 files changed, 15 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 9a2f1960873b..b0b052bc6bb5 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -552,6 +552,20 @@ struct iommu_group *iommu_group_get(struct device *dev)
+>  EXPORT_SYMBOL_GPL(iommu_group_get);
+>  
+>  /**
+> + * __iommu_group_get - Increment reference on a group
+> + * @group: the group to use, must not be NULL
+> + *
+> + * This function may be called by internal iommu driver group management
+> + * when the context of a struct device pointer is not available.  It is
+> + * not for general use.  Returns the given group for convenience.
+> + */
+> +struct iommu_group *__iommu_group_get(struct iommu_group *group)
+> +{
+> +	kobject_get(group->devices_kobj);
+> +	return group;
+> +}
 
-Yes, that's the crux of the issue.
+This probably either wants sticking in a header or exporting to modules.
+That said, why do we need the underscores and the comment about internal
+group management? That's pretty much already the case for iommu_group_get.
 
-> >Correct, if the MSI doorbell IOVA range overlaps RAM in the VM, then
-> >it's potentially a DMA target and we'll get bogus data on DMA read from
-> >the device, and lose data and potentially trigger spurious interrupts on
-> >DMA write from the device.  Thanks,
-> >
-> That's b/c the MSI doorbells are not positioned *above* the SMMU, i.e.,
-> they address match before the SMMU checks are done.  if
-> all DMA addrs had to go through SMMU first, then the DMA access could
-> be ignored/rejected.
-
-That's actually not true :( The SMMU can't generally distinguish between MSI
-writes and DMA writes, so it would just see a write transaction to the
-doorbell address, regardless of how it was generated by the endpoint.
+Of course, removing the underscores gives you a naming conflict, but we
+could just call it something like "iommu_group_get_ref".
 
 Will
