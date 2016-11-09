@@ -1,114 +1,84 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+From: Robin Murphy <robin.murphy@arm.com>
 Subject: Re: Summary of LPC guest MSI discussion in Santa Fe
-Date: Wed, 9 Nov 2016 13:01:14 -0700
-Message-ID: <20161109130114.3e17bba9@t450s.home>
+Date: Wed, 9 Nov 2016 20:11:16 +0000
+Message-ID: <e59e9a17-e943-a227-5ea4-d028232155a8@arm.com>
 References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
-	<20161103220205.37715b49@t450s.home>
-	<20161108024559.GA20591@arm.com> <20161108202922.GC15676@cbox>
-	<20161108163508.1bcae0c2@t450s.home> <58228F71.6020108@redhat.com>
-	<20161109170326.GG17771@arm.com> <582371FB.2040808@redhat.com>
-	<20161109192303.GD15676@cbox>
+ <20161103220205.37715b49@t450s.home> <20161108024559.GA20591@arm.com>
+ <20161108202922.GC15676@cbox> <20161108163508.1bcae0c2@t450s.home>
+ <58228F71.6020108@redhat.com> <20161109170326.GG17771@arm.com>
+ <582371FB.2040808@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161109192303.GD15676@cbox>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <582371FB.2040808@redhat.com>
+Sender: kvm-owner@vger.kernel.org
+To: Don Dutile <ddutile@redhat.com>, Will Deacon <will.deacon@arm.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>, Christoffer Dall <christoffer.dall@linaro.org>, Eric Auger <eric.auger@redhat.com>, eric.auger.pro@gmail.com, marc.zyngier@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org, drjones@redhat.com, linux-kernel@vger.kernel.org, pranav.sawargaonkar@gmail.com, iommu@lists.linux-foundation.org, punit.agrawal@arm.com, diana.craciun@nxp.com, benh@kernel.crashing.org, arnd@arndb.de, jcm@redhat.com, dwmw@amazon.co.uk
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 9 Nov 2016 20:23:03 +0100
-Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+On 09/11/16 18:59, Don Dutile wrote:
+> On 11/09/2016 12:03 PM, Will Deacon wrote:
+>> On Tue, Nov 08, 2016 at 09:52:33PM -0500, Don Dutile wrote:
+>>> On 11/08/2016 06:35 PM, Alex Williamson wrote:
+>>>> On Tue, 8 Nov 2016 21:29:22 +0100
+>>>> Christoffer Dall <christoffer.dall@linaro.org> wrote:
+>>>>> Is my understanding correct, that you need to tell userspace about the
+>>>>> location of the doorbell (in the IOVA space) in case (2), because even
+>>>>> though the configuration of the device is handled by the (host) kernel
+>>>>> through trapping of the BARs, we have to avoid the VFIO user
+>>>>> programming
+>>>>> the device to create other DMA transactions to this particular
+>>>>> address,
+>>>>> since that will obviously conflict and either not produce the desired
+>>>>> DMA transactions or result in unintended weird interrupts?
+>>
+>> Yes, that's the crux of the issue.
+>>
+>>>> Correct, if the MSI doorbell IOVA range overlaps RAM in the VM, then
+>>>> it's potentially a DMA target and we'll get bogus data on DMA read from
+>>>> the device, and lose data and potentially trigger spurious
+>>>> interrupts on
+>>>> DMA write from the device.  Thanks,
+>>>>
+>>> That's b/c the MSI doorbells are not positioned *above* the SMMU, i.e.,
+>>> they address match before the SMMU checks are done.  if
+>>> all DMA addrs had to go through SMMU first, then the DMA access could
+>>> be ignored/rejected.
+>>
+>> That's actually not true :( The SMMU can't generally distinguish
+>> between MSI
+>> writes and DMA writes, so it would just see a write transaction to the
+>> doorbell address, regardless of how it was generated by the endpoint.
+>>
+>> Will
+>>
+> So, we have real systems where MSI doorbells are placed at the same IOVA
+> that could have memory for a guest, but not at the same IOVA as memory
+> on real hw ?
 
-> On Wed, Nov 09, 2016 at 01:59:07PM -0500, Don Dutile wrote:
-> > On 11/09/2016 12:03 PM, Will Deacon wrote:  
-> > >On Tue, Nov 08, 2016 at 09:52:33PM -0500, Don Dutile wrote:  
-> > >>On 11/08/2016 06:35 PM, Alex Williamson wrote:  
-> > >>>On Tue, 8 Nov 2016 21:29:22 +0100
-> > >>>Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:  
-> > >>>>Is my understanding correct, that you need to tell userspace about the
-> > >>>>location of the doorbell (in the IOVA space) in case (2), because even
-> > >>>>though the configuration of the device is handled by the (host) kernel
-> > >>>>through trapping of the BARs, we have to avoid the VFIO user programming
-> > >>>>the device to create other DMA transactions to this particular address,
-> > >>>>since that will obviously conflict and either not produce the desired
-> > >>>>DMA transactions or result in unintended weird interrupts?  
-> > >
-> > >Yes, that's the crux of the issue.
-> > >  
-> > >>>Correct, if the MSI doorbell IOVA range overlaps RAM in the VM, then
-> > >>>it's potentially a DMA target and we'll get bogus data on DMA read from
-> > >>>the device, and lose data and potentially trigger spurious interrupts on
-> > >>>DMA write from the device.  Thanks,
-> > >>>  
-> > >>That's b/c the MSI doorbells are not positioned *above* the SMMU, i.e.,
-> > >>they address match before the SMMU checks are done.  if
-> > >>all DMA addrs had to go through SMMU first, then the DMA access could
-> > >>be ignored/rejected.  
-> > >
-> > >That's actually not true :( The SMMU can't generally distinguish between MSI
-> > >writes and DMA writes, so it would just see a write transaction to the
-> > >doorbell address, regardless of how it was generated by the endpoint.
-> > >
-> > >Will
-> > >  
-> > So, we have real systems where MSI doorbells are placed at the same IOVA
-> > that could have memory for a guest  
-> 
-> I don't think this is a property of a hardware system.  THe problem is
-> userspace not knowing where in the IOVA space the kernel is going to
-> place the doorbell, so you can end up (basically by chance) that some
-> IPA range of guest memory overlaps with the IOVA space for the doorbell.
-> 
-> 
-> >, but not at the same IOVA as memory on real hw ?  
-> 
-> On real hardware without an IOMMU the system designer would have to
-> separate the IOVA and RAM in the physical address space.  With an IOMMU,
-> the SMMU driver just makes sure to allocate separate regions in the IOVA
-> space.
-> 
-> The challenge, as I understand it, happens with the VM, because the VM
-> doesn't allocate the IOVA for the MSI doorbell itself, but the host
-> kernel does this, independently from the attributes (e.g. memory map) of
-> the VM.
-> 
-> Because the IOVA is a single resource, but with two independent entities
-> allocating chunks of it (the host kernel for the MSI doorbell IOVA, and
-> the VFIO user for other DMA operations), you have to provide some
-> coordination between those to entities to avoid conflicts.  In the case
-> of KVM, the two entities are the host kernel and the VFIO user (QEMU/the
-> VM), and the host kernel informs the VFIO user to never attempt to use
-> the doorbell IOVA already reserved by the host kernel for DMA.
-> 
-> One way to do that is to ensure that the IPA space of the VFIO user
-> corresponding to the doorbell IOVA is simply not valid, ie. the reserved
-> regions that avoid for example QEMU to allocate RAM there.
-> 
-> (I suppose it's technically possible to get around this issue by letting
-> QEMU place RAM wherever it wants but tell the guest to never use a
-> particular subset of its RAM for DMA, because that would conflict with
-> the doorbell IOVA or be seen as p2p transactions.  But I think we all
-> probably agree that it's a disgusting idea.)
+MSI doorbells integral to PCIe root complexes (and thus untranslatable)
+typically have a programmable address, so could be anywhere. In the more
+general category of "special hardware addresses", QEMU's default ARM
+guest memory map puts RAM starting at 0x40000000; on the ARM Juno
+platform, that happens to be where PCI config space starts; as Juno's
+PCIe doesn't support ACS, peer-to-peer or anything clever, if you assign
+the PCI bus to a guest (all of it, given the lack of ACS), the root
+complex just sees the guest's attempts to DMA to "memory" as the device
+attempting to access config space and aborts them.
 
-Well, it's not like QEMU or libvirt stumbling through sysfs to figure
-out where holes could be in order to instantiate a VM with matching
-holes, just in case someone might decide to hot-add a device into the
-VM, at some point, and hopefully they don't migrate the VM to another
-host with a different layout first, is all that much less disgusting or
-foolproof. It's just that in order to dynamically remove a page as a
-possible DMA target we require a paravirt channel, such as a balloon
-driver that's able to pluck a specific page.  In some ways it's
-actually less disgusting, but it puts some prerequisites on
-enlightening the guest OS.  Thanks,
+> How are memory holes passed to SMMU so it doesn't have this issue for
+> bare-metal
+> (assign an IOVA that overlaps an MSI doorbell address)?
 
-Alex
+When we *are* in full control of the IOVA space, we just carve out what
+we can find as best we can - see iova_reserve_pci_windows() in
+dma-iommu.c, which isn't really all that different to what x86 does
+(e.g. init_reserved_iova_ranges() in amd-iommu.c). Note that we don't
+actually have any way currently to discover upstream MSI doorbells
+(ponder dw_pcie_msi_init() in pcie-designware.c for an example of the
+problem) - the specific MSI support we have in DMA ops at the moment
+only covers GICv2m or GICv3 ITS downstream of translation, but
+fortunately that's the typical relevant use-case on current platforms.
+
+Robin.
