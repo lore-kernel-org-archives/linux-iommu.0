@@ -1,16 +1,13 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/5] iommu: Allow taking a reference on a group directly
-Date: Wed, 9 Nov 2016 18:00:59 +0000
-Message-ID: <20161109180059.GJ17771@arm.com>
-References: <3922e1f14d8ecb50440b2d9b0d1123f3c9307fc5.1478695557.git.robin.murphy@arm.com>
-	<20161109172543.GI17771@arm.com>
-	<8b35afe8-7e09-c2d3-91ae-5d2a10da6fc8@arm.com>
+From: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [v16, 0/7] Fix eSDHC host version register bug
+Date: Wed, 9 Nov 2016 19:27:47 +0100
+Message-ID: <CAPDyKFrcAN_pqgtGaUanfB2zh97zGcL23m5VDtJ3g==NJeRrfA@mail.gmail.com>
+References: <1478661252-42439-1-git-send-email-yangbo.lu@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <8b35afe8-7e09-c2d3-91ae-5d2a10da6fc8-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <1478661252-42439-1-git-send-email-yangbo.lu-3arQi8VN3Tc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,87 +17,81 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Xiaobo Xie <xiaobo.xie-3arQi8VN3Tc@public.gmane.org>, Minghuan Lian <minghuan.lian-3arQi8VN3Tc@public.gmane.org>, linux-clk <linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Qiang Zhao <qiang.zhao-3arQi8VN3Tc@public.gmane.org>, Russell King <linux-lFZ/pmaqli7XmaaqVzeoHQ@public.gmane.org>, Bhupesh Sharma <bhupesh.sharma-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, Jochen Friedrich <jochen-NIgtFMG+Po8@public.gmane.org>, Claudiu Manoil <claudiu.manoil-KZfg59tc24xl57MIdRCFDg@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Scott Wood <oss-fOR+EgIDQEHk1uMJSBkQmQ@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, netdev-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-mmc <linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Leo Li <leoyang.li-3arQi8VN3Tc@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kumar Gala <galak-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linuxppc-dev-uLR06cmDAlZmR6Xm/wNWPw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 09, 2016 at 05:46:16PM +0000, Robin Murphy wrote:
-> On 09/11/16 17:25, Will Deacon wrote:
-> > On Wed, Nov 09, 2016 at 12:47:24PM +0000, Robin Murphy wrote:
-> >> iommu_group_get_for_dev() expects that the IOMMU driver's device_group
-> >> callback return a group with a reference held for the given device.
-> >> Whilst allocating a new group is fine, and pci_device_group() correctly
-> >> handles reusing an existing group, there is no general means for IOMMU
-> >> drivers doing their own group lookup to take additional references on an
-> >> existing group pointer without having to also store device pointers or
-> >> resort to elaborate trickery.
-> >>
-> >> Add an IOMMU-driver-specific function to fill the hole.
-> >>
-> >> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> >> ---
-> >>  drivers/iommu/iommu.c | 14 ++++++++++++++
-> >>  include/linux/iommu.h |  1 +
-> >>  2 files changed, 15 insertions(+)
-> >>
-> >> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> >> index 9a2f1960873b..b0b052bc6bb5 100644
-> >> --- a/drivers/iommu/iommu.c
-> >> +++ b/drivers/iommu/iommu.c
-> >> @@ -552,6 +552,20 @@ struct iommu_group *iommu_group_get(struct device *dev)
-> >>  EXPORT_SYMBOL_GPL(iommu_group_get);
-> >>  
-> >>  /**
-> >> + * __iommu_group_get - Increment reference on a group
-> >> + * @group: the group to use, must not be NULL
-> >> + *
-> >> + * This function may be called by internal iommu driver group management
-> >> + * when the context of a struct device pointer is not available.  It is
-> >> + * not for general use.  Returns the given group for convenience.
-> >> + */
-> >> +struct iommu_group *__iommu_group_get(struct iommu_group *group)
-> >> +{
-> >> +	kobject_get(group->devices_kobj);
-> >> +	return group;
-> >> +}
-> > 
-> > This probably either wants sticking in a header or exporting to modules.
-> > That said, why do we need the underscores and the comment about internal
-> > group management? That's pretty much already the case for iommu_group_get.
-> 
-> The definition of struct iommu_group is private to iommu.c, so any
-> touching of the members has to be in here. The comment is to contrast
-> with iommu_group_get()'s "This function is called by iommu drivers and
-> users". This one is explicitly not for users of the API (DMA mapping,
-> VFIO, etc.), as they really have no business messing with refcounts
-> directly, and should always be operating in the context of a device;
+- i2c-list
 
-But they can already do it if they want to, using the horrible group id
-hack that's been doing the rounds. The IOMMU API is already low-level
-enough, so I don't think trying to split it up like this is helpful.
-Hell, people can even just dip in and bump the kobject directly, or grab a
-handle to a device in the group already and call iommu_group_get.
+On 9 November 2016 at 04:14, Yangbo Lu <yangbo.lu-3arQi8VN3Tc@public.gmane.org> wrote:
+> This patchset is used to fix a host version register bug in the T4240-R1.0-R2.0
+> eSDHC controller. To match the SoC version and revision, 15 previous version
+> patchsets had tried many methods but all of them were rejected by reviewers.
+> Such as
+>         - dts compatible method
+>         - syscon method
+>         - ifdef PPC method
+>         - GUTS driver getting SVR method
+> Anrd suggested a soc_device_match method in v10, and this is the only available
+> method left now. This v11 patchset introduces the soc_device_match interface in
+> soc driver.
+>
+> The first four patches of Yangbo are to add the GUTS driver. This is used to
+> register a soc device which contain soc version and revision information.
+> The other three patches introduce the soc_device_match method in soc driver
+> and apply it on esdhc driver to fix this bug.
+>
+> ---
+> Changes for v15:
+>         - Dropped patch 'dt: bindings: update Freescale DCFG compatible'
+>           since the work had been done by below patch on ShawnGuo's linux tree.
+>           'dt-bindings: fsl: add LS1043A/LS1046A/LS2080A compatible for SCFG
+>            and DCFG'
+>         - Fixed error code issue in guts driver
+> Changes for v16:
+>         - Dropped patch 'powerpc/fsl: move mpc85xx.h to include/linux/fsl'
+>         - Added a bug-fix patch from Geert
+> ---
+>
+> Arnd Bergmann (1):
+>   base: soc: introduce soc_device_match() interface
+>
+> Geert Uytterhoeven (1):
+>   base: soc: Check for NULL SoC device attributes
+>
+> Yangbo Lu (5):
+>   ARM64: dts: ls2080a: add device configuration node
+>   dt: bindings: move guts devicetree doc out of powerpc directory
+>   soc: fsl: add GUTS driver for QorIQ platforms
+>   MAINTAINERS: add entry for Freescale SoC drivers
+>   mmc: sdhci-of-esdhc: fix host version for T4240-R1.0-R2.0
+>
+>  .../bindings/{powerpc => soc}/fsl/guts.txt         |   3 +
+>  MAINTAINERS                                        |  11 +-
+>  arch/arm64/boot/dts/freescale/fsl-ls2080a.dtsi     |   6 +
+>  drivers/base/Kconfig                               |   1 +
+>  drivers/base/soc.c                                 |  70 ++++++
+>  drivers/mmc/host/Kconfig                           |   1 +
+>  drivers/mmc/host/sdhci-of-esdhc.c                  |  20 ++
+>  drivers/soc/Kconfig                                |   3 +-
+>  drivers/soc/fsl/Kconfig                            |  18 ++
+>  drivers/soc/fsl/Makefile                           |   1 +
+>  drivers/soc/fsl/guts.c                             | 236 +++++++++++++++++++++
+>  include/linux/fsl/guts.h                           | 125 ++++++-----
+>  include/linux/sys_soc.h                            |   3 +
+>  13 files changed, 447 insertions(+), 51 deletions(-)
+>  rename Documentation/devicetree/bindings/{powerpc => soc}/fsl/guts.txt (91%)
+>  create mode 100644 drivers/soc/fsl/Kconfig
+>  create mode 100644 drivers/soc/fsl/guts.c
+>
+> --
+> 2.1.0.27.g96db324
+>
 
-That said, it doesn't look like iommu_group_get_by_id actually has any
-callers in tree, so maybe we could kill it.
+Thanks, applied on my mmc tree for next!
 
-> it's only for the benefit of anyone *implementing* the API. And since
-> IOMMU drivers aren't modular (yet... ;)) there's no cause for an export.
-> 
-> > Of course, removing the underscores gives you a naming conflict, but we
-> > could just call it something like "iommu_group_get_ref".
-> 
-> Ideally, this would be the iommu_group_get() to precisely match
-> iommu_group_put(), and the existing function would renamed something
-> like iommu_dev_group_get() (or perhaps even all external uses converted
-> over to iommu_group_get_for_dev()), but that would be an awful lot of
-> churn for little obvious benefit. Similarly, I nearly added the below
-> hunk, but it didn't seem worth the bother.
+I noticed that some DT compatibles weren't documented, according to
+checkpatch. Please fix that asap!
 
-I'd still rather the new function was renamed. We already have the group,
-so calling a weird underscore version of iommu_group_get is really
-counter-intuitive.
-
-Joerg -- do you have a preference?
-
-Will
+Kind regards
+Ulf Hansson
