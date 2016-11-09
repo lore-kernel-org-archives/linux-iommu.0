@@ -1,92 +1,222 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH v7 14/16] drivers: acpi: iort: replace rid map type with type mask
-Date: Wed,  9 Nov 2016 14:19:46 +0000
-Message-ID: <20161109141948.19244-15-lorenzo.pieralisi@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v7 04/16] drivers: iommu: make of_iommu_set/get_ops() DT
+ agnostic
+Date: Wed, 9 Nov 2016 14:40:08 +0000
+Message-ID: <c3136fae-144c-5949-3933-671b783671c8@arm.com>
 References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
+ <20161109141948.19244-5-lorenzo.pieralisi@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
+In-Reply-To: <20161109141948.19244-5-lorenzo.pieralisi@arm.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Tomasz Nowicki <tn@semihalf.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org
+Cc: Will Deacon <will.deacon@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Joerg Roedel <joro@8bytes.org>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-IORT tables provide data that allow the kernel to carry out
-device ID mappings between endpoints and system components
-(eg interrupt controllers, IOMMUs). When the mapping for a
-given device ID is carried out, the translation mechanism
-is done on a per-subsystem basis rather than a component
-subtype (ie the IOMMU kernel layer will look for mappings
-from a device to all IORT node types corresponding to IOMMU
-components), therefore the corresponding mapping API should
-work on a range (ie mask) of IORT node types corresponding
-to a common set of components (eg IOMMUs) rather than a
-specific node type.
+On 09/11/16 14:19, Lorenzo Pieralisi wrote:
+> The of_iommu_{set/get}_ops() API is used to associate a device
+> tree node with a specific set of IOMMU operations. The same
+> kernel interface is required on systems booting with ACPI, where
+> devices are not associated with a device tree node, therefore
+> the interface requires generalization.
+> 
+> The struct device fwnode member represents the fwnode token
+> associated with the device and the struct it points at is firmware
+> specific; regardless, it is initialized on both ACPI and DT systems
+> and makes an ideal candidate to use it to associate a set of IOMMU
+> operations to a given device, through its struct device.fwnode member
+> pointer.
+> 
+> Convert the DT specific of_iommu_{set/get}_ops() interface to
+> use struct device.fwnode as a look-up token, making the interface
+> usable on ACPI systems.
+> 
+> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> Tested-by: Hanjun Guo <hanjun.guo@linaro.org>
+> Tested-by: Tomasz Nowicki <tn@semihalf.com>
+> Cc: Will Deacon <will.deacon@arm.com>
+> Cc: Hanjun Guo <hanjun.guo@linaro.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> ---
+>  drivers/iommu/iommu.c    | 42 ++++++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/of_iommu.c | 39 ---------------------------------------
+>  include/linux/iommu.h    | 14 ++++++++++++++
+>  include/linux/of_iommu.h | 12 ++++++++++--
+>  4 files changed, 66 insertions(+), 41 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 9a2f196..5c97c01 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1615,6 +1615,48 @@ int iommu_request_dm_for_dev(struct device *dev)
+>  	return ret;
+>  }
+>  
+> +struct iommu_fwentry {
 
-Upgrade the IORT iort_node_map_rid() API to work with a
-type mask instead of a single node type so that it can
-be used for mappings that span multiple components types
-(ie IOMMUs).
+:)
 
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Tested-by: Hanjun Guo <hanjun.guo@linaro.org>
-Tested-by: Tomasz Nowicki <tn@semihalf.com>
-Cc: Hanjun Guo <hanjun.guo@linaro.org>
-Cc: Tomasz Nowicki <tn@semihalf.com>
-Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
----
- drivers/acpi/arm64/iort.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+> +	struct list_head list;
+> +	struct fwnode_handle *fwnode;
+> +	const struct iommu_ops *ops;
+> +};
+> +static LIST_HEAD(iommu_fwentry_list);
+> +static DEFINE_SPINLOCK(iommu_fwentry_lock);
+> +
+> +void fwnode_iommu_set_ops(struct fwnode_handle *fwnode,
+> +			  const struct iommu_ops *ops)
+> +{
+> +	struct iommu_fwentry *iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
+> +
+> +	if (WARN_ON(!iommu))
+> +		return;
+> +
+> +	if (is_of_node(fwnode))
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index 4708806..62057c6 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -26,6 +26,9 @@
- #include <linux/platform_device.h>
- #include <linux/slab.h>
- 
-+#define IORT_TYPE_MASK(type)	(1 << (type))
-+#define IORT_MSI_TYPE		(1 << ACPI_IORT_NODE_ITS_GROUP)
-+
- struct iort_its_msi_chip {
- 	struct list_head	list;
- 	struct fwnode_handle	*fw_node;
-@@ -317,7 +320,7 @@ static int iort_id_map(struct acpi_iort_id_mapping *map, u8 type, u32 rid_in,
- 
- static struct acpi_iort_node *iort_node_map_rid(struct acpi_iort_node *node,
- 						u32 rid_in, u32 *rid_out,
--						u8 type)
-+						u8 type_mask)
- {
- 	u32 rid = rid_in;
- 
-@@ -326,7 +329,7 @@ static struct acpi_iort_node *iort_node_map_rid(struct acpi_iort_node *node,
- 		struct acpi_iort_id_mapping *map;
- 		int i;
- 
--		if (node->type == type) {
-+		if (IORT_TYPE_MASK(node->type) & type_mask) {
- 			if (rid_out)
- 				*rid_out = rid;
- 			return node;
-@@ -399,7 +402,7 @@ u32 iort_msi_map_rid(struct device *dev, u32 req_id)
- 	if (!node)
- 		return req_id;
- 
--	iort_node_map_rid(node, req_id, &dev_id, ACPI_IORT_NODE_ITS_GROUP);
-+	iort_node_map_rid(node, req_id, &dev_id, IORT_MSI_TYPE);
- 	return dev_id;
- }
- 
-@@ -421,7 +424,7 @@ static int iort_dev_find_its_id(struct device *dev, u32 req_id,
- 	if (!node)
- 		return -ENXIO;
- 
--	node = iort_node_map_rid(node, req_id, NULL, ACPI_IORT_NODE_ITS_GROUP);
-+	node = iort_node_map_rid(node, req_id, NULL, IORT_MSI_TYPE);
- 	if (!node)
- 		return -ENXIO;
- 
--- 
-2.10.0
+Nit: this check is actually redundant, since to_of_node() already does
+the right thing and of_node_get() is NULL-safe - iommu_fwspec_init()
+already works that way. On the other hand, though, it is perhaps more
+intuitive to see it explicitly, and since to_of_node() is inline it
+ought to result in the same object code (I've not checked, though).
+Either way:
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+> +		of_node_get(to_of_node(fwnode));
+> +
+> +	INIT_LIST_HEAD(&iommu->list);
+> +	iommu->fwnode = fwnode;
+> +	iommu->ops = ops;
+> +	spin_lock(&iommu_fwentry_lock);
+> +	list_add_tail(&iommu->list, &iommu_fwentry_list);
+> +	spin_unlock(&iommu_fwentry_lock);
+> +}
+> +
+> +const struct iommu_ops *fwnode_iommu_get_ops(struct fwnode_handle *fwnode)
+> +{
+> +	struct iommu_fwentry *node;
+> +	const struct iommu_ops *ops = NULL;
+> +
+> +	spin_lock(&iommu_fwentry_lock);
+> +	list_for_each_entry(node, &iommu_fwentry_list, list)
+> +		if (node->fwnode == fwnode) {
+> +			ops = node->ops;
+> +			break;
+> +		}
+> +	spin_unlock(&iommu_fwentry_lock);
+> +	return ops;
+> +}
+> +
+>  int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+>  		      const struct iommu_ops *ops)
+>  {
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 5b82862..0f57ddc 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -96,45 +96,6 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
+>  }
+>  EXPORT_SYMBOL_GPL(of_get_dma_window);
+>  
+> -struct of_iommu_node {
+> -	struct list_head list;
+> -	struct device_node *np;
+> -	const struct iommu_ops *ops;
+> -};
+> -static LIST_HEAD(of_iommu_list);
+> -static DEFINE_SPINLOCK(of_iommu_lock);
+> -
+> -void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops)
+> -{
+> -	struct of_iommu_node *iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
+> -
+> -	if (WARN_ON(!iommu))
+> -		return;
+> -
+> -	of_node_get(np);
+> -	INIT_LIST_HEAD(&iommu->list);
+> -	iommu->np = np;
+> -	iommu->ops = ops;
+> -	spin_lock(&of_iommu_lock);
+> -	list_add_tail(&iommu->list, &of_iommu_list);
+> -	spin_unlock(&of_iommu_lock);
+> -}
+> -
+> -const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+> -{
+> -	struct of_iommu_node *node;
+> -	const struct iommu_ops *ops = NULL;
+> -
+> -	spin_lock(&of_iommu_lock);
+> -	list_for_each_entry(node, &of_iommu_list, list)
+> -		if (node->np == np) {
+> -			ops = node->ops;
+> -			break;
+> -		}
+> -	spin_unlock(&of_iommu_lock);
+> -	return ops;
+> -}
+> -
+>  static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+>  {
+>  	struct of_phandle_args *iommu_spec = data;
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 436dc21..15d5478 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -351,6 +351,9 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+>  		      const struct iommu_ops *ops);
+>  void iommu_fwspec_free(struct device *dev);
+>  int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
+> +void fwnode_iommu_set_ops(struct fwnode_handle *fwnode,
+> +			  const struct iommu_ops *ops);
+> +const struct iommu_ops *fwnode_iommu_get_ops(struct fwnode_handle *fwnode);
+>  
+>  #else /* CONFIG_IOMMU_API */
+>  
+> @@ -580,6 +583,17 @@ static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
+>  	return -ENODEV;
+>  }
+>  
+> +static inline void fwnode_iommu_set_ops(struct fwnode_handle *fwnode,
+> +					const struct iommu_ops *ops)
+> +{
+> +}
+> +
+> +static inline
+> +const struct iommu_ops *fwnode_iommu_get_ops(struct fwnode_handle *fwnode)
+> +{
+> +	return NULL;
+> +}
+> +
+>  #endif /* CONFIG_IOMMU_API */
+>  
+>  #endif /* __LINUX_IOMMU_H */
+> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+> index e80b9c7..7681007 100644
+> --- a/include/linux/of_iommu.h
+> +++ b/include/linux/of_iommu.h
+> @@ -31,8 +31,16 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
+>  
+>  #endif	/* CONFIG_OF_IOMMU */
+>  
+> -void of_iommu_set_ops(struct device_node *np, const struct iommu_ops *ops);
+> -const struct iommu_ops *of_iommu_get_ops(struct device_node *np);
+> +static inline void of_iommu_set_ops(struct device_node *np,
+> +				    const struct iommu_ops *ops)
+> +{
+> +	fwnode_iommu_set_ops(&np->fwnode, ops);
+> +}
+> +
+> +static inline const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+> +{
+> +	return fwnode_iommu_get_ops(&np->fwnode);
+> +}
+>  
+>  extern struct of_device_id __iommu_of_table;
+>  
+> 
 
