@@ -1,20 +1,17 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V3 0/8] IOMMU probe deferral support
-Date: Wed, 9 Nov 2016 16:59:49 +0000
-Message-ID: <20161109165949.GF17771@arm.com>
-References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
-	<60ee8066-f167-e9df-ae3e-4138f1133bad@arm.com>
-	<003a01d22f97$82534c70$86f9e550$@codeaurora.org>
-	<421e2b14-0231-d376-02a0-097423120b3d@arm.com>
-	<006f01d236ae$61751c40$245f54c0$@codeaurora.org>
-	<9f36244f-62d4-08e3-d64a-2b04ad4dc2e0@arm.com>
-	<002001d23a51$ecb01390$c6103ab0$@codeaurora.org>
+Subject: Re: Summary of LPC guest MSI discussion in Santa Fe
+Date: Wed, 9 Nov 2016 17:03:26 +0000
+Message-ID: <20161109170326.GG17771@arm.com>
+References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
+	<20161103220205.37715b49@t450s.home>
+	<20161108024559.GA20591@arm.com> <20161108202922.GC15676@cbox>
+	<20161108163508.1bcae0c2@t450s.home> <58228F71.6020108@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <002001d23a51$ecb01390$c6103ab0$@codeaurora.org>
+In-Reply-To: <58228F71.6020108-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,42 +21,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 09, 2016 at 11:54:20AM +0530, Sricharan wrote:
-> >> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> >> index 71ce4b6..a1d0b3c 100644
-> >> --- a/drivers/iommu/arm-smmu.c
-> >> +++ b/drivers/iommu/arm-smmu.c
-> >> @@ -1516,8 +1516,10 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
-> >>  		group = smmu->s2crs[idx].group;
-> >>  	}
-> >>
-> >> -	if (group)
-> >> +	if (group) {
-> >> +		iommu_group_get_by_id(iommu_group_id(group));
-> >>  		return group;
-> >
-> >This might as well just be inline, i.e.:
-> >
-> >		return iommu_group_get_by_id(iommu_group_id(group));
-> >
-> >It's a shame we have to go all round the houses when we have the group
-> >right there, but this is probably the most expedient fix. I guess we can
-> >extend the API with some sort of iommu_group_get(group) overload in
-> >future if we really want to.
-> >
-> 
-> ok, i can send this fix separately then. Otherwise, Will was suggesting on the
-> other thread that there should probably be a separate API to increment
-> the group refcount or get the group from the existing aliasing device.
-> As per me adding the api, looks like another option or post the above ?
+On Tue, Nov 08, 2016 at 09:52:33PM -0500, Don Dutile wrote:
+> On 11/08/2016 06:35 PM, Alex Williamson wrote:
+> >On Tue, 8 Nov 2016 21:29:22 +0100
+> >Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org> wrote:
+> >>Is my understanding correct, that you need to tell userspace about the
+> >>location of the doorbell (in the IOVA space) in case (2), because even
+> >>though the configuration of the device is handled by the (host) kernel
+> >>through trapping of the BARs, we have to avoid the VFIO user programming
+> >>the device to create other DMA transactions to this particular address,
+> >>since that will obviously conflict and either not produce the desired
+> >>DMA transactions or result in unintended weird interrupts?
 
-I think adding a new function to the API is the way to go -- having code
-like what you propose above littered around the drivers is hard to read and
-pretty error-prone, since it looks like a NOP to people who aren't already
-thinking about ref counts.
+Yes, that's the crux of the issue.
+
+> >Correct, if the MSI doorbell IOVA range overlaps RAM in the VM, then
+> >it's potentially a DMA target and we'll get bogus data on DMA read from
+> >the device, and lose data and potentially trigger spurious interrupts on
+> >DMA write from the device.  Thanks,
+> >
+> That's b/c the MSI doorbells are not positioned *above* the SMMU, i.e.,
+> they address match before the SMMU checks are done.  if
+> all DMA addrs had to go through SMMU first, then the DMA access could
+> be ignored/rejected.
+
+That's actually not true :( The SMMU can't generally distinguish between MSI
+writes and DMA writes, so it would just see a write transaction to the
+doorbell address, regardless of how it was generated by the endpoint.
 
 Will
