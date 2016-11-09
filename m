@@ -1,8 +1,8 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v7 12/16] drivers: iommu: arm-smmu: split probe functions into
-	DT/generic portions
-Date: Wed,  9 Nov 2016 14:19:44 +0000
-Message-ID: <20161109141948.19244-13-lorenzo.pieralisi@arm.com>
+Subject: [PATCH v7 09/16] drivers: acpi: iort: add support for ARM SMMU
+	platform devices creation
+Date: Wed,  9 Nov 2016 14:19:41 +0000
+Message-ID: <20161109141948.19244-10-lorenzo.pieralisi@arm.com>
 References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,160 +19,212 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Current ARM SMMU probe functions intermingle HW and DT probing
-in the initialization functions to detect and programme the ARM SMMU
-driver features. In order to allow probing the ARM SMMU with other
-firmwares than DT, this patch splits the ARM SMMU init functions into
-DT and HW specific portions so that other FW interfaces (ie ACPI) can
-reuse the HW probing functions and skip the DT portion accordingly.
+In ARM ACPI systems, IOMMU components are specified through static
+IORT table entries. In order to create platform devices for the
+corresponding ARM SMMU components, IORT kernel code should be made
+able to parse IORT table entries and create platform devices
+dynamically.
 
-This patch implements no functional change, only code reshuffling.
+This patch adds the generic IORT infrastructure required to create
+platform devices for ARM SMMUs.
+
+ARM SMMU versions have different resources requirement therefore this
+patch also introduces an IORT specific structure (ie iort_iommu_config)
+that contains hooks (to be defined when the corresponding ARM SMMU
+driver support is added to the kernel) to be used to define the
+platform devices names, init the IOMMUs, count their resources and
+finally initialize them.
 
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 Tested-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Tested-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 62 +++++++++++++++++++++++++++++-------------------
- 1 file changed, 37 insertions(+), 25 deletions(-)
+ drivers/acpi/arm64/iort.c | 151 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 151 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 8a3c2a4..e1b6951 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1668,7 +1668,7 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 	unsigned long size;
- 	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
- 	u32 id;
--	bool cttw_dt, cttw_reg;
-+	bool cttw_reg, cttw_fw = smmu->features & ARM_SMMU_FEAT_COHERENT_WALK;
- 	int i;
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 4bb6acb..ddf83b5 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -19,9 +19,11 @@
+ #define pr_fmt(fmt)	"ACPI: IORT: " fmt
  
- 	dev_notice(smmu->dev, "probing hardware configuration...\n");
-@@ -1713,20 +1713,17 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ #include <linux/acpi_iort.h>
++#include <linux/iommu.h>
+ #include <linux/kernel.h>
+ #include <linux/list.h>
+ #include <linux/pci.h>
++#include <linux/platform_device.h>
+ #include <linux/slab.h>
  
- 	/*
- 	 * In order for DMA API calls to work properly, we must defer to what
--	 * the DT says about coherency, regardless of what the hardware claims.
-+	 * the FW says about coherency, regardless of what the hardware claims.
- 	 * Fortunately, this also opens up a workaround for systems where the
- 	 * ID register value has ended up configured incorrectly.
- 	 */
--	cttw_dt = of_dma_is_coherent(smmu->dev->of_node);
- 	cttw_reg = !!(id & ID0_CTTW);
--	if (cttw_dt)
--		smmu->features |= ARM_SMMU_FEAT_COHERENT_WALK;
--	if (cttw_dt || cttw_reg)
-+	if (cttw_fw || cttw_reg)
- 		dev_notice(smmu->dev, "\t%scoherent table walk\n",
--			   cttw_dt ? "" : "non-");
--	if (cttw_dt != cttw_reg)
-+			   cttw_fw ? "" : "non-");
-+	if (cttw_fw != cttw_reg)
- 		dev_notice(smmu->dev,
--			   "\t(IDR0.CTTW overridden by dma-coherent property)\n");
-+			   "\t(IDR0.CTTW overridden by FW configuration)\n");
+ struct iort_its_msi_chip {
+@@ -457,6 +459,153 @@ struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id)
+ 	return irq_find_matching_fwnode(handle, DOMAIN_BUS_PCI_MSI);
+ }
  
- 	/* Max. number of entries we have for stream matching/indexing */
- 	size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
-@@ -1907,15 +1904,25 @@ static const struct of_device_id arm_smmu_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
- 
--static int arm_smmu_device_dt_probe(struct platform_device *pdev)
-+static int arm_smmu_device_dt_probe(struct platform_device *pdev,
-+				    struct arm_smmu_device *smmu)
- {
- 	const struct arm_smmu_match_data *data;
--	struct resource *res;
--	struct arm_smmu_device *smmu;
- 	struct device *dev = &pdev->dev;
--	int num_irqs, i, err;
- 	bool legacy_binding;
- 
-+	if (of_property_read_u32(dev->of_node, "#global-interrupts",
-+				 &smmu->num_global_irqs)) {
-+		dev_err(dev, "missing #global-interrupts property\n");
-+		return -ENODEV;
-+	}
++struct iort_iommu_config {
++	const char *name;
++	int (*iommu_init)(struct acpi_iort_node *node);
++	bool (*iommu_is_coherent)(struct acpi_iort_node *node);
++	int (*iommu_count_resources)(struct acpi_iort_node *node);
++	void (*iommu_init_resources)(struct resource *res,
++				     struct acpi_iort_node *node);
++};
 +
-+	data = of_device_get_match_data(dev);
-+	smmu->version = data->version;
-+	smmu->model = data->model;
-+
-+	parse_driver_options(smmu);
-+
- 	legacy_binding = of_find_property(dev->of_node, "mmu-masters", NULL);
- 	if (legacy_binding && !using_generic_binding) {
- 		if (!using_legacy_binding)
-@@ -1928,6 +1935,19 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
-+	if (of_dma_is_coherent(smmu->dev->of_node))
-+		smmu->features |= ARM_SMMU_FEAT_COHERENT_WALK;
-+
-+	return 0;
++static __init
++const struct iort_iommu_config *iort_get_iommu_cfg(struct acpi_iort_node *node)
++{
++	return NULL;
 +}
 +
-+static int arm_smmu_device_probe(struct platform_device *pdev)
++/**
++ * iort_add_smmu_platform_device() - Allocate a platform device for SMMU
++ * @node: Pointer to SMMU ACPI IORT node
++ *
++ * Returns: 0 on success, <0 failure
++ */
++static int __init iort_add_smmu_platform_device(struct acpi_iort_node *node)
 +{
-+	struct resource *res;
-+	struct arm_smmu_device *smmu;
-+	struct device *dev = &pdev->dev;
-+	int num_irqs, i, err;
++	struct fwnode_handle *fwnode;
++	struct platform_device *pdev;
++	struct resource *r;
++	enum dev_dma_attr attr;
++	int ret, count;
++	const struct iort_iommu_config *ops = iort_get_iommu_cfg(node);
 +
- 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
- 	if (!smmu) {
- 		dev_err(dev, "failed to allocate arm_smmu_device\n");
-@@ -1935,9 +1955,9 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
++	if (!ops)
++		return -ENODEV;
++
++	pdev = platform_device_alloc(ops->name, PLATFORM_DEVID_AUTO);
++	if (!pdev)
++		return PTR_ERR(pdev);
++
++	count = ops->iommu_count_resources(node);
++
++	r = kcalloc(count, sizeof(*r), GFP_KERNEL);
++	if (!r) {
++		ret = -ENOMEM;
++		goto dev_put;
++	}
++
++	ops->iommu_init_resources(r, node);
++
++	ret = platform_device_add_resources(pdev, r, count);
++	/*
++	 * Resources are duplicated in platform_device_add_resources,
++	 * free their allocated memory
++	 */
++	kfree(r);
++
++	if (ret)
++		goto dev_put;
++
++	/*
++	 * Add a copy of IORT node pointer to platform_data to
++	 * be used to retrieve IORT data information.
++	 */
++	ret = platform_device_add_data(pdev, &node, sizeof(node));
++	if (ret)
++		goto dev_put;
++
++	/*
++	 * We expect the dma masks to be equivalent for
++	 * all SMMUs set-ups
++	 */
++	pdev->dev.dma_mask = &pdev->dev.coherent_dma_mask;
++
++	fwnode = iort_get_fwnode(node);
++
++	if (!fwnode) {
++		ret = -ENODEV;
++		goto dev_put;
++	}
++
++	pdev->dev.fwnode = fwnode;
++
++	attr = ops->iommu_is_coherent(node) ?
++			     DEV_DMA_COHERENT : DEV_DMA_NON_COHERENT;
++
++	/* Configure DMA for the page table walker */
++	acpi_dma_configure(&pdev->dev, attr);
++
++	ret = platform_device_add(pdev);
++	if (ret)
++		goto dma_deconfigure;
++
++	return 0;
++
++dma_deconfigure:
++	acpi_dma_deconfigure(&pdev->dev);
++dev_put:
++	platform_device_put(pdev);
++
++	return ret;
++}
++
++static void __init iort_init_platform_devices(void)
++{
++	struct acpi_iort_node *iort_node, *iort_end;
++	struct acpi_table_iort *iort;
++	struct fwnode_handle *fwnode;
++	int i, ret;
++
++	/*
++	 * iort_table and iort both point to the start of IORT table, but
++	 * have different struct types
++	 */
++	iort = (struct acpi_table_iort *)iort_table;
++
++	/* Get the first IORT node */
++	iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort,
++				 iort->node_offset);
++	iort_end = ACPI_ADD_PTR(struct acpi_iort_node, iort,
++				iort_table->length);
++
++	for (i = 0; i < iort->node_count; i++) {
++		if (iort_node >= iort_end) {
++			pr_err("iort node pointer overflows, bad table\n");
++			return;
++		}
++
++		if ((iort_node->type == ACPI_IORT_NODE_SMMU) ||
++			(iort_node->type == ACPI_IORT_NODE_SMMU_V3)) {
++
++			fwnode = acpi_alloc_fwnode_static();
++			if (!fwnode)
++				return;
++
++			iort_set_fwnode(iort_node, fwnode);
++
++			ret = iort_add_smmu_platform_device(iort_node);
++			if (ret) {
++				iort_delete_fwnode(iort_node);
++				acpi_free_fwnode_static(fwnode);
++				return;
++			}
++		}
++
++		iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort_node,
++					 iort_node->length);
++	}
++}
++
+ void __init acpi_iort_init(void)
+ {
+ 	acpi_status status;
+@@ -472,5 +621,7 @@ void __init acpi_iort_init(void)
+ 		return;
  	}
- 	smmu->dev = dev;
  
--	data = of_device_get_match_data(dev);
--	smmu->version = data->version;
--	smmu->model = data->model;
-+	err = arm_smmu_device_dt_probe(pdev, smmu);
-+	if (err)
-+		return err;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	smmu->base = devm_ioremap_resource(dev, res);
-@@ -1945,12 +1965,6 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 		return PTR_ERR(smmu->base);
- 	smmu->size = resource_size(res);
- 
--	if (of_property_read_u32(dev->of_node, "#global-interrupts",
--				 &smmu->num_global_irqs)) {
--		dev_err(dev, "missing #global-interrupts property\n");
--		return -ENODEV;
--	}
--
- 	num_irqs = 0;
- 	while ((res = platform_get_resource(pdev, IORESOURCE_IRQ, num_irqs))) {
- 		num_irqs++;
-@@ -1985,8 +1999,6 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
- 	if (err)
- 		return err;
- 
--	parse_driver_options(smmu);
--
- 	if (smmu->version == ARM_SMMU_V2 &&
- 	    smmu->num_context_banks != smmu->num_context_irqs) {
- 		dev_err(dev,
-@@ -2048,7 +2060,7 @@ static struct platform_driver arm_smmu_driver = {
- 		.name		= "arm-smmu",
- 		.of_match_table	= of_match_ptr(arm_smmu_of_match),
- 	},
--	.probe	= arm_smmu_device_dt_probe,
-+	.probe	= arm_smmu_device_probe,
- 	.remove	= arm_smmu_device_remove,
- };
- 
++	iort_init_platform_devices();
++
+ 	acpi_probe_device_table(iort);
+ }
 -- 
 2.10.0
