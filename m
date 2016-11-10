@@ -1,111 +1,67 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/dma-iommu: properly respect configured address
- space size
-Date: Thu, 10 Nov 2016 14:08:21 +0000
-Message-ID: <89438c46-5066-ab1a-efce-8e97fc614b93@arm.com>
-References: <CGME20161107130625eucas1p2dd23c07010b4f3eddb6c6540ed802246@eucas1p2.samsung.com>
- <1478523973-8828-1-git-send-email-m.szyprowski@samsung.com>
- <68e7a18b-739e-b73e-eacf-3cb6c1bd279a@arm.com>
- <8286728f-fab3-8179-5215-e156da426244@samsung.com>
- <d215c05c-b922-4bee-a2dc-695669a801f6@arm.com>
- <6f2f3d37-dc6c-abdb-9692-8dcc9cad36f3@samsung.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 1/2] iommu/dma: Implement dma_{map,unmap}_resource()
+Date: Thu, 10 Nov 2016 14:30:04 +0000
+Message-ID: <1ae5dc0f-2e59-3e10-a61a-1f5452ad560f@arm.com>
+References: <4e84146ae49a4edd5f1226d76617be9aa92a58ee.1477503578.git.robin.murphy@arm.com>
+	<20161110122420.GH9996@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <6f2f3d37-dc6c-abdb-9692-8dcc9cad36f3@samsung.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc: Joerg Roedel <joro@8bytes.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20161110122420.GH9996-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/11/16 14:53, Marek Szyprowski wrote:
-> Hi Robin,
-> 
-> 
-> On 2016-11-08 15:44, Robin Murphy wrote:
->> On 08/11/16 13:41, Marek Szyprowski wrote:
->>> On 2016-11-08 12:37, Robin Murphy wrote:
->>>> On 07/11/16 13:06, Marek Szyprowski wrote:
->>>>> When one called iommu_dma_init_domain() with size smaller than
->>>>> device's
->>>>> DMA mask, the alloc_iova() will not respect it and always assume that
->>>>> all
->>>>> IOVA addresses will be allocated from the the (base ...
->>>>> dev->dma_mask) range.
->>>> Is that actually a problem for anything?
->>> Yes, I found this issue while working on next version of ARM & ARM64
->>> DMA-mapping/IOMMU integration patchset and adapting Exynos drivers
->>> for the
->>> new IOMMU/DMA-mapping glue.
->>>
->>> Some Exynos devices (codec and camera isp) operate only on the
->>> limited (and
->>> really small: 256M for example) DMA window. They use non-standard way of
->>> addressing memory: an offset from the firmware base. However they still
->>> have
->>> 32bit DMA mask, as the firmware can be located basically everywhere
->>> in the
->>> real DMA address space, but then they can access only next 256M from
->>> that
->>> firmware base.
->> OK, that's good to know, thanks. However, I think in this case it sounds
->> like it's really the DMA mask that's the underlying problem - if those
->> blocks themselves can only drive 28 address bits, then the struct
->> devices representing them should have 28-bit DMA masks, and the
->> "firmware base" of whoever's driving the upper bits modelled with a
->> dma_pfn_offset. Even if they do have full 32-bit interfaces themselves,
->> but are constrained to segment-offset addressing internally, I still
->> think it would be tidier to represent things that way.
+On 10/11/16 12:24, Joerg Roedel wrote:
+> On Wed, Oct 26, 2016 at 06:43:56PM +0100, Robin Murphy wrote:
+>> With the new dma_{map,unmap}_resource() functions added to the DMA API
+>> for the benefit of cases like slave DMA, add suitable implementations to
+>> the arsenal of our generic layer. Since cache maintenance should not be
+>> a concern, these can both be standalone callback implementations without
+>> the need for arch code wrappers.
 >>
->> At some point in dma-iommu development I did have support for DMA
->> offsets upstream of the IOMMU, and am happy to reinstate it if there's a
->> real use case (assuming you can't simply always set the firmware base to
->> 0 when using the IOMMU).
+>> CC: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>
+>> v2: Use iommu_dma_unmap_page for symmetry, instead of being sneaky.
+>>
+>>  drivers/iommu/dma-iommu.c | 13 +++++++++++++
+>>  include/linux/dma-iommu.h |  4 ++++
+>>  2 files changed, 17 insertions(+)
+>>
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index c5ab8667e6f2..a2fd90a6a782 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -624,6 +624,19 @@ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+>>  	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), sg_dma_address(sg));
+>>  }
+>>  
+>> +dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
+>> +		size_t size, enum dma_data_direction dir, unsigned long attrs)
+>> +{
+>> +	return iommu_dma_map_page(dev, phys_to_page(phys), offset_in_page(phys),
+>> +			size, dma_direction_to_prot(dir, false) | IOMMU_MMIO);
+>> +}
 > 
-> That would indeed look a bit simpler, but I've already tried such approach
-> and the firmware crashes when its base in real DMA address space is set to
-> zero.
+> Isn't the whole point of map_resource that we can map regions which have
+> no 'struct page' associated? The use phys_to_page() will certainly not
+> do the right thing here.
 
-Ah, sadly I'm not too surprised... ;)
-
-Having pondered it a little more, what if the firmware base is instead
-set equal to the max offset, then you can have a power-of-two DMA mask
-at twice that size (e.g. 512M) such that the top-down IOVA allocations
-start in the right place. That would appear to achieve pretty much the
-same result as this patch, but more robustly.
-
-Incidentally, how do the init size and DMA mask end up different in the
-first place? Is this another case of the "dma-ranges" info from
-of_dma_configure() getting clobbered by a driver calling dma_set_mask()
-later?
+Perhaps it's a bit cheeky, but the struct page pointer is never
+dereferenced - the only thing iommu_dma_map_page() does with it is
+immediately convert it back again. Is there ever a case where
+page_to_phys(phys_to_page(phys)) != phys ?
 
 Robin.
-
->>>>> This patch fixes this issue by taking the configured address space
->>>>> size
->>>>> parameter into account (if it is smaller than the device's dma_mask).
->>>> TBH I've been pondering ripping the size stuff out of dma-iommu, as it
->>>> all stems from me originally failing to understand what
->>>> dma_32bit_pfn is
->>>> actually for. The truth is that iova_domains just don't have a size or
->>>> upper limit; however if devices with both large and small DMA masks
->>>> share a domain, then the top-down nature of the allocator means that
->>>> allocating for the less-capable devices would involve walking through
->>>> every out-of-range entry in the tree every time. Having cached32_node
->>>> based on dma_32bit_pfn just provides an optimised starting point for
->>>> searching within the smaller mask.
->>> Right, this dma_32bit_pfn was really misleading at the first glance,
->>> but then I found that this was something like end_pfn in case of
->>> dma-iommu
->>> code.
->> Yes, that was my incorrect assumption - at the time I interpreted it as
->> a de-facto upper limit which was still possible to allocate above in
->> special circumstances, which turns out to be almost entirely backwards.
->> I'd rather not bake that into the dma-iommu code any further if we can
->> avoid it (I'll try throwing an RFC together to clear up what's there
->> already).
-> 
-> Okay.
-> 
-> Best regards
