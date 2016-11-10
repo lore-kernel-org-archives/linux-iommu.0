@@ -1,36 +1,27 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu: convert DT component matching to
-	component_match_add_release()
-Date: Thu, 10 Nov 2016 12:25:41 +0100
-Message-ID: <20161110112541.GB9996@8bytes.org>
-References: <E1bwo8o-0005LV-54@rmk-PC.armlinux.org.uk>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v6 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V6
+Date: Thu, 10 Nov 2016 12:42:29 +0100
+Message-ID: <20161110114229.GD9996@8bytes.org>
+References: <20161019233533.10506.16810.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <E1bwo8o-0005LV-54-eh5Bv4kxaXIk46pC+1QYvQNdhmdF6hFW@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Russell King <rmk+kernel-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <20161019233533.10506.16810.sendpatchset@little-apple>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: iommu@lists.linux-foundation.org, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au, robin.murphy@arm.com, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Oct 19, 2016 at 11:30:34AM +0100, Russell King wrote:
-> Convert DT component matching to use component_match_add_release().
+On Thu, Oct 20, 2016 at 08:35:33AM +0900, Magnus Damm wrote:
+> iommu/ipmmu-vmsa: IPMMU multi-arch update V6
 > 
-> Signed-off-by: Russell King <rmk+kernel-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-> ---
->  drivers/iommu/mtk_iommu.c    | 8 +++++---
->  drivers/iommu/mtk_iommu.h    | 5 +++++
->  drivers/iommu/mtk_iommu_v1.c | 8 +++++---
->  3 files changed, 15 insertions(+), 6 deletions(-)
+> [PATCH v6 01/07] iommu/ipmmu-vmsa: Remove platform data handling
+> [PATCH v6 02/07] iommu/ipmmu-vmsa: Rework interrupt code and use bitmap for context
+> [PATCH v6 03/07] iommu/ipmmu-vmsa: Break out utlb parsing code
+> [PATCH v6 04/07] iommu/ipmmu-vmsa: Break out domain allocation code
+> [PATCH v6 05/07] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
+> [PATCH v6 06/07] iommu/ipmmu-vmsa: ARM and ARM64 archdata access
+> [PATCH v6 07/07] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
 
-Applied, thanks.
+Applied to arm/renesas, thanks.
