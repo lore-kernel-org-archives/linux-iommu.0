@@ -1,42 +1,44 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v7 00/16] ACPI IORT ARM SMMU support
-Date: Thu, 10 Nov 2016 10:58:06 +0000
-Message-ID: <20161110105806.GA20209@red-moon>
-References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
- <CAJZ5v0j09fsp4Y66v2UANOGnW4FNO7PWxpZY=Pgw=bUccEL_eA@mail.gmail.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/mediatek: Convert M4Uv2 to iommu_fwspec
+Date: Thu, 10 Nov 2016 12:00:31 +0100
+Message-ID: <20161110110030.GA9996@8bytes.org>
+References: <0205bf6404b16bdebe8039bfc65570a2a6f9f960.1476704508.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAJZ5v0j09fsp4Y66v2UANOGnW4FNO7PWxpZY=Pgw=bUccEL_eA@mail.gmail.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Hanjun Guo <hanjun.guo@linaro.org>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Linux PCI <linux-pci@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lis>
+In-Reply-To: <0205bf6404b16bdebe8039bfc65570a2a6f9f960.1476704508.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Rafael,
-
-On Thu, Nov 10, 2016 at 12:36:12AM +0100, Rafael J. Wysocki wrote:
-> Hi Lorenzo,
+On Mon, Oct 17, 2016 at 12:49:20PM +0100, Robin Murphy wrote:
+> Our per-device data consists of the M4U instance and firmware-provided
+> list of LARB IDs, which is a perfect fit for the generic iommu_fwspec
+> machinery. Use that directly as a simpler alternative to the custom
+> archdata code.
 > 
-> On Wed, Nov 9, 2016 at 3:19 PM, Lorenzo Pieralisi
-> <lorenzo.pieralisi@arm.com> wrote:
-> > This patch series is v7 of a previous posting:
-> >
-> > https://lkml.org/lkml/2016/10/18/506
+> CC: Yong Wu <yong.wu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
 > 
-> I don't see anything objectionable in this series.
+> These are fairly mechanical cleanups, so I'm pretty confident, but it
+> still bears mentioning that they're only compile-tested as I don't have
+> the relevant hardware.
+> 
+> Robin.
+> 
+>  drivers/iommu/mtk_iommu.c | 75 ++++++++++++-----------------------------------
+>  1 file changed, 18 insertions(+), 57 deletions(-)
 
-Thank you very much !
-
-> Please let me know which patches in particular to look at in detail.
-
-Apart from patch 1, patch 7 (and patch 16 that adds on top of it)
-requires an ack from an ACPI core perspective. acpi_dma_configure()
-should not affect x86/ia64 systems at all so those patches should
-not really be controversial (patch 16 adds an IORT hook into
-acpi_dma_configure() that is a nop by design on anything other than
-ARM64), please let me know if they are ok.
-
-Thank you again for your time,
-Lorenzo
+Applied both, thanks Robin.
