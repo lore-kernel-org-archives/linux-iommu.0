@@ -1,94 +1,96 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Summary of LPC guest MSI discussion in Santa Fe
-Date: Wed, 9 Nov 2016 16:59:57 -0700
-Message-ID: <20161109165957.62c1eb61@t450s.home>
-References: <20161108202922.GC15676@cbox> <20161108163508.1bcae0c2@t450s.home>
-	<58228F71.6020108@redhat.com> <20161109170326.GG17771@arm.com>
-	<582371FB.2040808@redhat.com> <20161109192303.GD15676@cbox>
-	<20161109203145.GO17771@arm.com>
-	<20161109151709.74927f83@t450s.home>
-	<20161109222522.GS17771@arm.com>
-	<20161109162458.39594fdb@t450s.home>
-	<20161109233847.GT17771@arm.com>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH v5 7/7] iommu/exynos: Use device dependency links to
+ control runtime pm
+Date: Thu, 10 Nov 2016 01:05:42 +0100
+Message-ID: <CAJZ5v0g_UX_==q7JMRZfE=1COpFu28Z8NN1W_TpJ2sa7U79hKw@mail.gmail.com>
+References: <1476948173-21093-1-git-send-email-m.szyprowski@samsung.com>
+ <CGME20161020072336eucas1p24a2b020f69b6ae1f55e1760e6e0e94f9@eucas1p2.samsung.com>
+ <1476948173-21093-8-git-send-email-m.szyprowski@samsung.com>
+ <20161107214747.GJ1764@wotan.suse.de> <4bc652ce-6cf9-f4df-4793-e126cf81079d@samsung.com>
+ <20161108153044.GA6983@wunner.de> <20161109235526.GN13978@wotan.suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161109233847.GT17771-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <20161109235526.GN13978@wotan.suse.de>
+Sender: linux-kernel-owner@vger.kernel.org
+To: "Luis R. Rodriguez" <mcgrof@kernel.org>
+Cc: Lukas Wunner <lukas@wunner.de>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Marek Szyprowski <m.szyprowski@samsung.com>, Linux PM <linux-pm@vger.kernel.org>, Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, Linux Samsung SoC <linux-samsung-soc@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Kevin Hilman <khilman@kernel.org>, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, Tomasz Figa <tomasz.figa@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 9 Nov 2016 23:38:50 +0000
-Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+On Thu, Nov 10, 2016 at 12:55 AM, Luis R. Rodriguez <mcgrof@kernel.org> wrote:
+> On Tue, Nov 08, 2016 at 04:30:44PM +0100, Lukas Wunner wrote:
+>> On Tue, Nov 08, 2016 at 08:27:12AM +0100, Marek Szyprowski wrote:
+>> > On 2016-11-07 22:47, Luis R. Rodriguez wrote:
+>> > > Has there been any review of the existing similar solutions out there
+>> > > such as the DRM / audio component framework? Would that help ?
+>> >
+>> > Nope, none of that solution deals with runtime pm.
+>>
+>> Well, they do.  Hybrid graphics laptops often have an HDA controller
+>> on the discrete GPU and I assume that's what Luis meant. There's code
+>> in drivers/gpu/vga/vga_switcheroo.c to make this (only sort of) work:
+>>
+>> * When the GPU is powered up/down, the HDA controller's driver is
+>>   instructed to pm_runtime_get/put the HDA device (see call to
+>>   set_audio_state() in vga_switcheroo_set_dynamic_switch()).
+>>
+>> * When a runtime PM ref is acquired on the HDA device, the
+>>   GPU is powered up (see vga_switcheroo_runtime_resume_hdmi_audio()).
+>>
+>>
+>> Unfortunately this is all fairly broken, e.g.:
+>>
+>> * If a runtime PM ref on the HDA device is held for more than 5 sec
+>>   (autosuspend delay of the GPU), the GPU will be powered down and
+>>   the HDA device will become inaccessible, regardless of the runtime
+>>   PM ref still being held (because vga_switcheroo_set_dynamic_switch()
+>>   doesn't check the refcount of the HDA device).
+>>
+>> * The DRM device is afforded direct-complete but the HDA device is not.
+>>   If the GPU is handled earlier by dpm_suspend(), then runtime PM will
+>>   have been disabled on the GPU and thus the HDA device will fail to
+>>   runtime resume before system sleep.
+>>
+>> Rafael's series allows representation of such inter-device dependencies
+>> in the PM core and can thus replace kludgy and broken "solutions" like
+>> the one above.
+>>
+>> There's one thing that I haven't understood myself though:  In an e-mail
+>> exchange in September Rafael has argued that the above-mentioned hybrid
+>> graphics use case "isn't a good [example] IMO.  That clearly is a case
+>> when two (or more) devices share power resources controlled by a single
+>> on/off switch.  Which is a clear use case for a PM domain."
+>>
+>> The same seems to apply to Marek's SYSMMU use case.  When applying device
+>> links to SYSMMU or hybrid graphics, we select one of the devices in the
+>> PM domain as master and have the other one depend on it as slave, i.e.
+>> a synthetic hierarchical relationship is established.
+>>
+>> I've responded to Rafael on September 18 that this can't be solved with
+>> a struct dev_pm_domain, but haven't received a reply since:
+>> https://lkml.org/lkml/2016/9/18/103
+>
+> Rafael note:
+>
+> The one he asked here.
 
-> On Wed, Nov 09, 2016 at 04:24:58PM -0700, Alex Williamson wrote:
-> > On Wed, 9 Nov 2016 22:25:22 +0000
-> > Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> >   
-> > > On Wed, Nov 09, 2016 at 03:17:09PM -0700, Alex Williamson wrote:  
-> > > > On Wed, 9 Nov 2016 20:31:45 +0000
-> > > > Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:    
-> > > > > On Wed, Nov 09, 2016 at 08:23:03PM +0100, Christoffer Dall wrote:    
-> > > > > > 
-> > > > > > (I suppose it's technically possible to get around this issue by letting
-> > > > > > QEMU place RAM wherever it wants but tell the guest to never use a
-> > > > > > particular subset of its RAM for DMA, because that would conflict with
-> > > > > > the doorbell IOVA or be seen as p2p transactions.  But I think we all
-> > > > > > probably agree that it's a disgusting idea.)      
-> > > > > 
-> > > > > Disgusting, yes, but Ben's idea of hotplugging on the host controller with
-> > > > > firmware tables describing the reserved regions is something that we could
-> > > > > do in the distant future. In the meantime, I don't think that VFIO should
-> > > > > explicitly reject overlapping mappings if userspace asks for them.    
-> > > > 
-> > > > I'm confused by the last sentence here, rejecting user mappings that
-> > > > overlap reserved ranges, such as MSI doorbell pages, is exactly how
-> > > > we'd reject hot-adding a device when we meet such a conflict.  If we
-> > > > don't reject such a mapping, we're knowingly creating a situation that
-> > > > potentially leads to data loss.  Minimally, QEMU would need to know
-> > > > about the reserved region, map around it through VFIO, and take
-> > > > responsibility (somehow) for making sure that region is never used for
-> > > > DMA.  Thanks,    
-> > > 
-> > > Yes, but my point is that it should be up to QEMU to abort the hotplug, not
-> > > the host kernel, since there may be ways in which a guest can tolerate the
-> > > overlapping region (e.g. by avoiding that range of memory for DMA).  
-> > 
-> > The VFIO_IOMMU_MAP_DMA ioctl is a contract, the user ask to map a range
-> > of IOVAs to a range of virtual addresses for a given device.  If VFIO
-> > cannot reasonably fulfill that contract, it must fail.  It's up to QEMU
-> > how to manage the hotplug and what memory regions it asks VFIO to map
-> > for a device, but VFIO must reject mappings that it (or the SMMU by
-> > virtue of using the IOMMU API) know to overlap reserved ranges.  So I
-> > still disagree with the referenced statement.  Thanks,  
-> 
-> I think that's a pity. Not only does it mean that both QEMU and the kernel
-> have more work to do (the former has to carve up its mapping requests,
-> whilst the latter has to check that it is indeed doing this), but it also
-> precludes the use of hugepage mappings on the IOMMU because of reserved
-> regions. For example, a 4k hole someplace may mean we can't put down 1GB
-> table entries for the guest memory in the SMMU.
-> 
-> All this seems to do is add complexity and decrease performance. For what?
-> QEMU has to go read the reserved regions from someplace anyway. It's also
-> the way that VFIO works *today* on arm64 wrt reserved regions, it just has
-> no way to identify those holes at present.
+OK, so please see the message I've just sent. :-)
 
-Sure, that sucks, but how is the alternative even an option?  The user
-asked to map something, we can't, if we allow that to happen now it's a
-bug.  Put the MSI doorbells somewhere that this won't be an issue.  If
-the platform has it fixed somewhere that this is an issue, don't use
-that platform.  The correctness of the interface is more important than
-catering to a poorly designed system layout IMO.  Thanks,
+The bottom line is that there may be multiple ways to approach a
+problem like this and which of them works best really depends on the
+particular case.
 
-Alex
+You seem to be thinking that the device links infrastructure may not
+be necessary after all if there are other ways to address the problems
+it is intended for, but those other ways may still be less viable
+practically due to the complexity involved and similar.  Also they may
+lead to code duplication in different places that try to address those
+problems in a similar fashion, but slightly differently.
+
+All this is about providing people with reasonably straightforward and
+common ways to deal with certain class of problems showing up in
+multiple places.  It is not about getting the driver probe ordering
+right magically in one go.
+
+Thanks,
+Rafael
