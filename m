@@ -1,199 +1,59 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC v2 4/8] iommu: Add a list of iommu_reserved_region in
-	iommu_domain
-Date: Thu, 10 Nov 2016 12:48:52 +0000
-Message-ID: <7c6095e8-1f7c-317b-3df7-02c8a4cfe5b7@arm.com>
-References: <1478258646-3117-1-git-send-email-eric.auger@redhat.com>
-	<1478258646-3117-5-git-send-email-eric.auger@redhat.com>
-	<71bfe2a5-455e-9335-ba81-097ef24399ee@arm.com>
-	<fd35f7e3-6d97-7e67-a5c5-bb633ce0e8fd@redhat.com>
-	<6851a74a-775a-bd20-cdea-4cf06f5f0289@arm.com>
-	<6c2e1c81-e951-a284-b547-733369128e7e@redhat.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [RFC PATCH v3 02/20] x86: Set the write-protect cache mode for
+ full PAT support
+Date: Thu, 10 Nov 2016 14:14:00 +0100
+Message-ID: <20161110131400.bmeoojsrin2zi2w2@pd.tnic>
+References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
+ <20161110003448.3280.27573.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6c2e1c81-e951-a284-b547-733369128e7e-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20161110003448.3280.27573.stgit@tlendack-t1.amdoffice.net>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Tom Lendacky <thomas.lendacky@amd.com>, Toshi Kani <toshi.kani@hpe.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/11/16 12:14, Auger Eric wrote:
-> Hi Robin,
++ Toshi.
+
+On Wed, Nov 09, 2016 at 06:34:48PM -0600, Tom Lendacky wrote:
+> For processors that support PAT, set the write-protect cache mode
+> (_PAGE_CACHE_MODE_WP) entry to the actual write-protect value (x05).
 > 
-> On 10/11/2016 12:54, Robin Murphy wrote:
->> Hi Eric,
->>
->> On 10/11/16 11:22, Auger Eric wrote:
->>> Hi Robin,
->>>
->>> On 04/11/2016 15:00, Robin Murphy wrote:
->>>> Hi Eric,
->>>>
->>>> Thanks for posting this new series - the bottom-up approach is a lot
->>>> easier to reason about :)
->>>>
->>>> On 04/11/16 11:24, Eric Auger wrote:
->>>>> Introduce a new iommu_reserved_region struct. This embodies
->>>>> an IOVA reserved region that cannot be used along with the IOMMU
->>>>> API. The list is protected by a dedicated mutex.
->>>>
->>>> In the light of these patches, I think I'm settling into agreement that
->>>> the iommu_domain is the sweet spot for accessing this information - the
->>>> underlying magic address ranges might be properties of various bits of
->>>> hardware many of which aren't the IOMMU itself, but they only start to
->>>> matter at the point you start wanting to use an IOMMU domain at the
->>>> higher level. Therefore, having a callback in the domain ops to pull
->>>> everything together fits rather neatly.
->>> Using get_dm_regions could have make sense but this approach now is
->>> ruled out by sysfs API approach. If attribute file is bound to be used
->>> before iommu domains are created, we cannot rely on any iommu_domain
->>> based callback. Back to square 1?
->>
->> I think it's still OK. The thing about these reserved regions is that as
->> a property of the underlying hardware they must be common to any domain
->> for a given group, therefore without loss of generality we can simply
->> query group->domain->ops->get_dm_regions(), and can expect the reserved
->> ones will be the same regardless of what domain that points to
->> (identity-mapped IVMD/RMRR/etc.
-> Are they really? P2P reserved regions depend on iommu_domain right?
-
-Indeed. To use the SMMU example, reprogramming S2CRs to target a
-different context bank (i.e. attaching to a different domain) won't
-affect the fact that the transactions aren't even reaching the SMMU in
-the first place. That's why we need the exact same information for DMA
-domains, thus why getting it for free via the dm_regions mechanism would
-be really neat.
-
-The visibility of P2P regions, doorbells, etc. for a given device is
-ultimately a property of the hardware topology, and topology happens to
-be what the iommu_group already represents*. There looks to be a snag
-when we try to consider the addresses of such regions, since addresses
-are the business of iommu_domains, not groups, but as there is a 1:1
-relationship between a group and its default domain, things end up tying
-together quite neatly.
-
-Robin.
-
-*in fact, I've just had an idea that way we check ACS paths to determine
-groups might similarly be a finer-grained way to detect what P2P
-regions, if any, are actually relevant.
-
-> Now I did not consider default_domain usability, I acknowledge. I will
-> send a POC anyway.
+> Acked-by: Borislav Petkov <bp@suse.de>
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> ---
+>  arch/x86/mm/pat.c |    4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
->  regions may not be, but we'd be
->> filtering those out anyway). The default DMA domains need this
->> information too, and since those are allocated at group creation,
->> group->domain should always be non-NULL and interrogable.
->>
->> Plus, the groups are already there in sysfs, and, being representative
->> of device topology, would seem to be an ideal place to expose the
->> addressing limitations relevant to the devices within them. This really
->> feels like it's all falling into place (on the kernel end, at least, I'm
->> sticking to the sidelines on the userspace discussion ;)).
+> diff --git a/arch/x86/mm/pat.c b/arch/x86/mm/pat.c
+> index 170cc4f..87e8952 100644
+> --- a/arch/x86/mm/pat.c
+> +++ b/arch/x86/mm/pat.c
+> @@ -355,7 +355,7 @@ void pat_init(void)
+>  		 *      010    2    UC-: _PAGE_CACHE_MODE_UC_MINUS
+>  		 *      011    3    UC : _PAGE_CACHE_MODE_UC
+>  		 *      100    4    WB : Reserved
+> -		 *      101    5    WC : Reserved
+> +		 *      101    5    WP : _PAGE_CACHE_MODE_WP
+>  		 *      110    6    UC-: Reserved
+>  		 *      111    7    WT : _PAGE_CACHE_MODE_WT
+>  		 *
+> @@ -363,7 +363,7 @@ void pat_init(void)
+>  		 * corresponding types in the presence of PAT errata.
+>  		 */
+>  		pat = PAT(0, WB) | PAT(1, WC) | PAT(2, UC_MINUS) | PAT(3, UC) |
+> -		      PAT(4, WB) | PAT(5, WC) | PAT(6, UC_MINUS) | PAT(7, WT);
+> +		      PAT(4, WB) | PAT(5, WP) | PAT(6, UC_MINUS) | PAT(7, WT);
+>  	}
+>  
+>  	if (!boot_cpu_done) {
 > 
-> Thanks
 > 
-> Eric
->>
->> Robin.
->>
->>>
->>> Thanks
->>>
->>> Eric
->>>>
->>>>>
->>>>> An iommu domain now owns a list of those.
->>>>>
->>>>> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->>>>>
->>>>> ---
->>>>> ---
->>>>>  drivers/iommu/iommu.c |  2 ++
->>>>>  include/linux/iommu.h | 17 +++++++++++++++++
->>>>>  2 files changed, 19 insertions(+)
->>>>>
->>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>>> index 9a2f196..0af07492 100644
->>>>> --- a/drivers/iommu/iommu.c
->>>>> +++ b/drivers/iommu/iommu.c
->>>>> @@ -1061,6 +1061,8 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
->>>>>  
->>>>>  	domain->ops  = bus->iommu_ops;
->>>>>  	domain->type = type;
->>>>> +	INIT_LIST_HEAD(&domain->reserved_regions);
->>>>> +	mutex_init(&domain->resv_mutex);
->>>>>  	/* Assume all sizes by default; the driver may override this later */
->>>>>  	domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
->>>>>  
->>>>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->>>>> index 436dc21..0f2eb64 100644
->>>>> --- a/include/linux/iommu.h
->>>>> +++ b/include/linux/iommu.h
->>>>> @@ -84,6 +84,8 @@ struct iommu_domain {
->>>>>  	void *handler_token;
->>>>>  	struct iommu_domain_geometry geometry;
->>>>>  	void *iova_cookie;
->>>>> +	struct list_head reserved_regions;
->>>>> +	struct mutex resv_mutex; /* protects the reserved region list */
->>>>>  };
->>>>>  
->>>>>  enum iommu_cap {
->>>>> @@ -131,6 +133,21 @@ struct iommu_dm_region {
->>>>>  	int			prot;
->>>>>  };
->>>>>  
->>>>> +/**
->>>>> + * struct iommu_reserved_region - descriptor for a reserved iova region
->>>>> + * @list: Linked list pointers
->>>>> + * @start: IOVA base address of the region
->>>>> + * @length: Length of the region in bytes
->>>>> + */
->>>>> +struct iommu_reserved_region {
->>>>> +	struct list_head	list;
->>>>> +	dma_addr_t		start;
->>>>> +	size_t			length;
->>>>> +};
->>>>
->>>> Looking at this in context with the dm_region above, though, I come to
->>>> the surprising realisation that these *are* dm_regions, even at the
->>>> fundamental level - on the one hand you've got physical addresses which
->>>> can't be remapped (because something is already using them), while on
->>>> the other you've got physical addresses which can't be remapped (because
->>>> the IOMMU is incapable). In fact for reserved regions *other* than our
->>>> faked-up MSI region there's no harm if the IOMMU were to actually
->>>> identity-map them.
->>>>
->>>> Let's just add this to the existing infrastructure, either with some
->>>> kind of IOMMU_NOMAP flag or simply prot = 0. That way it automatically
->>>> gets shared between the VFIO and DMA cases for free!
->>>>
->>>> Robin.
->>>>
->>>>> +
->>>>> +#define iommu_reserved_region_for_each(resv, d) \
->>>>> +	list_for_each_entry(resv, &(d)->reserved_regions, list)
->>>>> +
->>>>>  #ifdef CONFIG_IOMMU_API
->>>>>  
->>>>>  /**
->>>>>
->>>>
->>>>
->>>> _______________________________________________
->>>> linux-arm-kernel mailing list
->>>> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
->>>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
->>>>
->>
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
