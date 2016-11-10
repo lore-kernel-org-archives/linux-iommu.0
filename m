@@ -1,22 +1,21 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: Summary of LPC guest MSI discussion in Santa Fe
-Date: Wed, 9 Nov 2016 17:55:17 -0700
-Message-ID: <20161109175517.174e7803@t450s.home>
-References: <20161108202922.GC15676@cbox> <20161108163508.1bcae0c2@t450s.home>
-	<58228F71.6020108@redhat.com> <20161109170326.GG17771@arm.com>
-	<582371FB.2040808@redhat.com> <20161109192303.GD15676@cbox>
-	<20161109203145.GO17771@arm.com>
-	<20161109151709.74927f83@t450s.home>
-	<20161109222522.GS17771@arm.com>
-	<20161109162458.39594fdb@t450s.home>
-	<20161109233847.GT17771@arm.com>
-	<20161109165957.62c1eb61@t450s.home>
-	<83b6440a-31eb-c1b4-642c-a4c311f37ef2@redhat.com>
+From: "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v4 2/2] iommu/exynos: Add proper runtime pm support
+Date: Thu, 10 Nov 2016 02:15:07 +0100
+Message-ID: <20161110011507.GP13978@wotan.suse.de>
+References: <1475136751-31340-1-git-send-email-m.szyprowski@samsung.com>
+	<CGME20160929081240eucas1p231c1ab5c5936886cbec6bc3f5267c940@eucas1p2.samsung.com>
+	<1475136751-31340-3-git-send-email-m.szyprowski@samsung.com>
+	<20161006173756.GK3296@wotan.suse.de>
+	<87aeb58b-bda0-93c5-e51d-ab9be0b9d518@samsung.com>
+	<20161108221437.GC13978@wotan.suse.de>
+	<9cf5829a-baac-9297-b231-17212d0195b1@samsung.com>
+	<CAJZ5v0iEZNsjzb4sxzG39UzNYuiqQErD5diE7WmdBKqQM9_S1g@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <83b6440a-31eb-c1b4-642c-a4c311f37ef2-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0iEZNsjzb4sxzG39UzNYuiqQErD5diE7WmdBKqQM9_S1g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,105 +25,85 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>, Mauro Carvalho Chehab <mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, Linux Samsung SoC <linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Linux PM <linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Krzysztof =?utf-8?Q?Koz=C5=82owski?= <k.kozlowski.k-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Dmitry Torokhov <dmitry.torokhov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Mark
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, 10 Nov 2016 01:14:42 +0100
-Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-
-> Hi,
-> 
-> On 10/11/2016 00:59, Alex Williamson wrote:
-> > On Wed, 9 Nov 2016 23:38:50 +0000
-> > Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> >   
-> >> On Wed, Nov 09, 2016 at 04:24:58PM -0700, Alex Williamson wrote:  
-> >>> On Wed, 9 Nov 2016 22:25:22 +0000
-> >>> Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> >>>     
-> >>>> On Wed, Nov 09, 2016 at 03:17:09PM -0700, Alex Williamson wrote:    
-> >>>>> On Wed, 9 Nov 2016 20:31:45 +0000
-> >>>>> Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:      
-> >>>>>> On Wed, Nov 09, 2016 at 08:23:03PM +0100, Christoffer Dall wrote:      
-> >>>>>>>
-> >>>>>>> (I suppose it's technically possible to get around this issue by letting
-> >>>>>>> QEMU place RAM wherever it wants but tell the guest to never use a
-> >>>>>>> particular subset of its RAM for DMA, because that would conflict with
-> >>>>>>> the doorbell IOVA or be seen as p2p transactions.  But I think we all
-> >>>>>>> probably agree that it's a disgusting idea.)        
-> >>>>>>
-> >>>>>> Disgusting, yes, but Ben's idea of hotplugging on the host controller with
-> >>>>>> firmware tables describing the reserved regions is something that we could
-> >>>>>> do in the distant future. In the meantime, I don't think that VFIO should
-> >>>>>> explicitly reject overlapping mappings if userspace asks for them.      
-> >>>>>
-> >>>>> I'm confused by the last sentence here, rejecting user mappings that
-> >>>>> overlap reserved ranges, such as MSI doorbell pages, is exactly how
-> >>>>> we'd reject hot-adding a device when we meet such a conflict.  If we
-> >>>>> don't reject such a mapping, we're knowingly creating a situation that
-> >>>>> potentially leads to data loss.  Minimally, QEMU would need to know
-> >>>>> about the reserved region, map around it through VFIO, and take
-> >>>>> responsibility (somehow) for making sure that region is never used for
-> >>>>> DMA.  Thanks,      
-> >>>>
-> >>>> Yes, but my point is that it should be up to QEMU to abort the hotplug, not
-> >>>> the host kernel, since there may be ways in which a guest can tolerate the
-> >>>> overlapping region (e.g. by avoiding that range of memory for DMA).    
+On Thu, Nov 10, 2016 at 01:36:29AM +0100, Rafael J. Wysocki wrote:
+> On Wed, Nov 9, 2016 at 4:07 PM, Marek Szyprowski
+> <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
+> > Hi Luis,
+> >
+> >
+> > On 2016-11-08 23:14, Luis R. Rodriguez wrote:
+> >>
+> >> On Mon, Oct 10, 2016 at 03:32:06PM +0200, Marek Szyprowski wrote:
 > >>>
-> >>> The VFIO_IOMMU_MAP_DMA ioctl is a contract, the user ask to map a range
-> >>> of IOVAs to a range of virtual addresses for a given device.  If VFIO
-> >>> cannot reasonably fulfill that contract, it must fail.  It's up to QEMU
-> >>> how to manage the hotplug and what memory regions it asks VFIO to map
-> >>> for a device, but VFIO must reject mappings that it (or the SMMU by
-> >>> virtue of using the IOMMU API) know to overlap reserved ranges.  So I
-> >>> still disagree with the referenced statement.  Thanks,    
+> >>> Hi Luis
+> >>>
+> >>>
+> >>> On 2016-10-06 19:37, Luis R. Rodriguez wrote:
+> >>>>
+> >>>> On Thu, Sep 29, 2016 at 10:12:31AM +0200, Marek Szyprowski wrote:
+> >>>>>
+> >>>>> This patch uses recently introduced device links to track the runtime
+> >>>>> pm
+> >>>>> state of the master's device. This way each SYSMMU controller is
+> >>>>> runtime
+> >>>>> activated when its master's device is active
+> >>>>
+> >>>> instead of?
+> >>>
+> >>> instead of keeping SYSMMU controller runtime active all the time.
 > >>
-> >> I think that's a pity. Not only does it mean that both QEMU and the kernel
-> >> have more work to do (the former has to carve up its mapping requests,
-> >> whilst the latter has to check that it is indeed doing this), but it also
-> >> precludes the use of hugepage mappings on the IOMMU because of reserved
-> >> regions. For example, a 4k hole someplace may mean we can't put down 1GB
-> >> table entries for the guest memory in the SMMU.
-> >>
-> >> All this seems to do is add complexity and decrease performance. For what?
-> >> QEMU has to go read the reserved regions from someplace anyway. It's also
-> >> the way that VFIO works *today* on arm64 wrt reserved regions, it just has
-> >> no way to identify those holes at present.  
-> > 
-> > Sure, that sucks, but how is the alternative even an option?  The user
-> > asked to map something, we can't, if we allow that to happen now it's a
-> > bug.  Put the MSI doorbells somewhere that this won't be an issue.  If
-> > the platform has it fixed somewhere that this is an issue, don't use
-> > that platform.  The correctness of the interface is more important than
-> > catering to a poorly designed system layout IMO.  Thanks,  
+> >> I thought Rafael's work was for suspend/resume, not for runtime suspend.
+> >> Is it for both ?
+> >
+> >
+> > Yes, it solves both problems, although the suspend/resume was easy to
+> > workaround just by using LATE_SLEEP_OPS.
 > 
-> Besides above problematic, I started to prototype the sysfs API. A first
-> issue I face is the reserved regions become global to the iommu instead
-> of characterizing the iommu_domain, ie. the "reserved_regions" attribute
-> file sits below an iommu instance (~
-> /sys/class/iommu/dmar0/intel-iommu/reserved_regions ||
-> /sys/class/iommu/arm-smmu0/arm-smmu/reserved_regions).
+> Right, but that's just in this particular case, because the dependency
+> chain is of length 2. :-)
 > 
-> MSI reserved window can be considered global to the IOMMU. However PCIe
-> host bridge P2P regions rather are per iommu-domain.
+> If you had a longer chain, you might in theory use  the _noirq() stage
+> somehow, but that has limitations.
 > 
-> Do you confirm the attribute file should contain both global reserved
-> regions and all per iommu_domain reserved regions?
+> >> Because as far as I can tell this was painted to help
+> >> with suspend/resume ?
 > 
-> Thoughts?
+> It helps with three things, (async) suspend/resume, runtime PM and
+> shutdown (that last part is the hardest to figure out).  The ordering
+> in which all of these are carried out is analogous and cannot be
+> determined correctly by the device registration ordering itself in
+> general (which has been a known fact for years, but some localized
+> workarounds were put in some places to work around that).
 
-I don't think we have any business describing IOVA addresses consumed
-by peer devices in an IOMMU sysfs file.  If it's a separate device it
-should be exposed by examining the rest of the topology.  Regions
-consumed by PCI endpoints and interconnects are already exposed in
-sysfs.  In fact, is this perhaps a more accurate model for these MSI
-controllers too?  Perhaps they should be exposed in the bus topology
-somewhere as consuming the IOVA range.  If DMA to an IOVA is consumed
-by an intermediate device before it hits the IOMMU vs not being
-translated as specified by the user at the IOMMU, I'm less inclined to
-call that something VFIO should reject.  However, instantiating a VM
-with holes to account for every potential peer device seems like it
-borders on insanity.  Thanks,
+Thanks for the clarification, this is due to the implicit sort you
+had explained (and I provided notes for on ksummit-discuss) right?
 
-Alex
+Can you itemize a few of the workarounds that are used today?
+As you clarify below, getting this order of device registration
+correct does not necessarily guarantee devices will wait for their
+provider to be ready.
+
+> Moreover, even if the list ordering (of dpm_list, for instance) is
+> correct, it still doesn't guarantee the right ordering of actions that
+> are carried out asynchronously.  They are all started in the list
+> order, but they may be running in parallel with each other and
+> complete at different times.  For this reason, there needs to be a way
+> to ensure that, say, the suspend operations for consumer devices
+> complete before their suppliers will become unavailable and so on.
+
+Thanks this helps as well!
+
+> Both runtime PM and system suspend/resume have this problem.  It is
+> not present in the system shutdown case, but it still helps to get a
+> correct list ordering (ie. such that won't cause supplier devices to
+> be shut down before their consumers) in this case too.
+
+Is the fact that its not on shutdown just because we don't care about
+being sloppy about shutdown ? Shouldn't some devices care about that
+order ?
+
+  Luis
