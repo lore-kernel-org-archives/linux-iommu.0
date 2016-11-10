@@ -1,17 +1,19 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v6 3/7] iommu/exynos: Simplify internal enable/disable
-	functions
-Date: Thu, 10 Nov 2016 17:40:03 +0100
-Message-ID: <20161110164003.GL2078@8bytes.org>
-References: <1478611764-6473-1-git-send-email-m.szyprowski@samsung.com>
-	<CGME20161108133016eucas1p27a25afd3a49bfc1e3e41c5a32e022f07@eucas1p2.samsung.com>
-	<1478611764-6473-4-git-send-email-m.szyprowski@samsung.com>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: Summary of LPC guest MSI discussion in Santa Fe
+Date: Thu, 10 Nov 2016 10:07:04 -0700
+Message-ID: <20161110100704.7dd16e2f@t450s.home>
+References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
+	<20161103220205.37715b49@t450s.home>
+	<20161108024559.GA20591@arm.com> <20161108202922.GC15676@cbox>
+	<20161108163508.1bcae0c2@t450s.home> <58228F71.6020108@redhat.com>
+	<20161109170326.GG17771@arm.com> <582371FB.2040808@redhat.com>
+	<20161109192303.GD15676@cbox> <20161109130114.3e17bba9@t450s.home>
+	<20161110144007.GC2078@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1478611764-6473-4-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <20161110144007.GC2078-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,35 +23,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 08, 2016 at 02:29:20PM +0100, Marek Szyprowski wrote:
-> Remove remaining leftovers of the ref-count related code in the
-> __sysmmu_enable/disable functions inline __sysmmu_enable/disable_nocount
-> to them. Suspend/resume callbacks now checks if master device is set for
-> given SYSMMU controller instead of relying on the activation count.
+On Thu, 10 Nov 2016 15:40:07 +0100
+Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+
+> On Wed, Nov 09, 2016 at 01:01:14PM -0700, Alex Williamson wrote:
+> > Well, it's not like QEMU or libvirt stumbling through sysfs to figure
+> > out where holes could be in order to instantiate a VM with matching
+> > holes, just in case someone might decide to hot-add a device into the
+> > VM, at some point, and hopefully they don't migrate the VM to another
+> > host with a different layout first, is all that much less disgusting or
+> > foolproof. It's just that in order to dynamically remove a page as a
+> > possible DMA target we require a paravirt channel, such as a balloon
+> > driver that's able to pluck a specific page.  In some ways it's
+> > actually less disgusting, but it puts some prerequisites on
+> > enlightening the guest OS.  Thanks,  
 > 
-> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> ---
->  drivers/iommu/exynos-iommu.c | 104 ++++++++++++-------------------------------
->  1 file changed, 29 insertions(+), 75 deletions(-)
-> 
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 4056228..f45b274 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -237,8 +237,8 @@ struct sysmmu_drvdata {
->  	struct clk *aclk;		/* SYSMMU's aclk clock */
->  	struct clk *pclk;		/* SYSMMU's pclk clock */
->  	struct clk *clk_master;		/* master's device clock */
-> -	int activations;		/* number of calls to sysmmu_enable */
->  	spinlock_t lock;		/* lock for modyfying state */
-> +	int active;			/* current status */
+> I think it is much simpler if libvirt/qemu just go through all
+> potentially assignable devices on a system and pre-exclude any addresses
+> from guest RAM beforehand, rather than doing something like this with
+> paravirt/ballooning when a device is hot-added. There is no guarantee
+> that you can take a page away from a linux-guest.
 
-Any reason for this being int and not bool? You only assign true/false
-later.
+Right, I'm not advocating a paravirt ballooning approach, just pointing
+out that they're both terrible, just in different ways.  Thanks,
 
-
-	Joerg
+Alex
