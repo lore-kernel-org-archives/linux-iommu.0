@@ -1,45 +1,205 @@
-From: "Kani, Toshimitsu" <toshi.kani@hpe.com>
-Subject: Re: [RFC PATCH v3 02/20] x86: Set the write-protect cache mode for
- full PAT support
-Date: Fri, 11 Nov 2016 01:26:48 +0000
-Message-ID: <1478827480.20881.142.camel@hpe.com>
-References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
-	 <20161110003448.3280.27573.stgit@tlendack-t1.amdoffice.net>
-	 <20161110131400.bmeoojsrin2zi2w2@pd.tnic>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH v6 06/07] iommu/ipmmu-vmsa: ARM and ARM64 archdata access
+Date: Fri, 11 Nov 2016 03:27:38 +0200
+Message-ID: <4483634.D6YpsPD8PO@avalon>
+References: <20161019233533.10506.16810.sendpatchset@little-apple> <20161019233633.10506.3943.sendpatchset@little-apple> <792320ab-13ae-741e-7202-1e7983e0b7a4@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20161110131400.bmeoojsrin2zi2w2@pd.tnic>
-Content-Language: en-US
-Content-ID: <5A008A45AA7B1344A2346C26C53E4AD3@NAMPRD84.PROD.OUTLOOK.COM>
-Sender: owner-linux-mm@kvack.org
-To: "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>, "bp@alien8.de" <bp@alien8.de>
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "dvyukov@google.com" <dvyukov@google.com>, "corbet@lwn.net" <corbet@lwn.net>, "arnd@arndb.de" <arnd@arndb.de>, "matt@codeblueprint.co.uk" <matt@codeblueprint.co.uk>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "aryabinin@virtuozzo.com" <aryabinin@virtuozzo.com>, "tglx@linutronix.de" <tglx@linutronix.de>, "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>, "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>, "x86@kernel.org" <x86@kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "riel@redhat.com" <riel@redhat.com>, "lwoodman@redhat.com" <lwoodman@redhat.com>, "mingo@redhat.com" <mingo@redhat.com>, "joro@8bytes.org" <joro@8bytes.org>, "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>, "pbonzini@redhat.com" <pbonzini@redhat.>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <792320ab-13ae-741e-7202-1e7983e0b7a4@arm.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Magnus Damm <magnus.damm@gmail.com>, iommu@lists.linux-foundation.org, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, joro@8bytes.org, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCAyMDE2LTExLTEwIGF0IDE0OjE0ICswMTAwLCBCb3Jpc2xhdiBQZXRrb3Ygd3JvdGU6
-DQo+ICsgVG9zaGkuDQo+IA0KPiBPbiBXZWQsIE5vdiAwOSwgMjAxNiBhdCAwNjozNDo0OFBNIC0w
-NjAwLCBUb20gTGVuZGFja3kgd3JvdGU6DQo+ID4gDQo+ID4gRm9yIHByb2Nlc3NvcnMgdGhhdCBz
-dXBwb3J0IFBBVCwgc2V0IHRoZSB3cml0ZS1wcm90ZWN0IGNhY2hlIG1vZGUNCj4gPiAoX1BBR0Vf
-Q0FDSEVfTU9ERV9XUCkgZW50cnkgdG8gdGhlIGFjdHVhbCB3cml0ZS1wcm90ZWN0IHZhbHVlDQo+
-ID4gKHgwNSkuDQoNClVzaW5nIHNsb3QgNiBtYXkgYmUgbW9yZSBjYXV0aW91cyAoZm9yIHRoZSBz
-YW1lIHJlYXNvbiBzbG90IDcgd2FzIHVzZWQNCmZvciBXVCksIGJ1dCBJIGRvIG5vdCBoYXZlIGEg
-c3Ryb25nIG9waW5pb24gZm9yIGl0Lg0KDQpzZXRfcGFnZV9tZW10eXBlKCkgY2Fubm90IHRyYWNr
-IHRoZSB1c2Ugb2YgV1AgdHlwZSBzaW5jZSB0aGVyZSBpcyBubw0KZXh0cmEtYml0IGF2YWlsYWJs
-ZSBmb3IgV1AsIGJ1dCBXUCBpcyBvbmx5IHN1cHBvcnRlZCBieQ0KZWFybHlfbWVtcmVtYXBfeHgo
-KSBpbnRlcmZhY2VzIGluIHRoaXMgc2VyaWVzLiDCoFNvLCBJIHRoaW5rIHdlIHNob3VsZA0KanVz
-dCBkb2N1bWVudCB0aGF0IFdQIGlzIG9ubHkgaW50ZW5kZWQgZm9yIHRlbXBvcmFyeSBtYXBwaW5n
-cyBhdCBib290LQ0KdGltZSB1bnRpbCB0aGlzIGlzc3VlIGlzIHJlc29sdmVkLiDCoEFsc28sIHdl
-IG5lZWQgdG8gbWFrZSBzdXJlIHRoYXQNCnRoaXMgZWFybHlfbWVtcmVtYXAgZm9yIFdQIGlzIG9u
-bHkgY2FsbGVkIGFmdGVyIHBhdF9pbml0KCkgaXMgZG9uZS4NCg0KQSBuaXQgLSBwbGVhc2UgYWRk
-IFdQIHRvIHRoZSBmdW5jdGlvbiBoZWFkZXIgY29tbWVudCBiZWxvdy4NCiJUaGlzIGZ1bmN0aW9u
-IGluaXRpYWxpemVzIFBBVCBNU1IgYW5kIFBBVCB0YWJsZSB3aXRoIGFuIE9TLWRlZmluZWQNCnZh
-bHVlIHRvIGVuYWJsZSBhZGRpdGlvbmFsIGNhY2hlIGF0dHJpYnV0ZXMsIFdDIGFuZCBXVC4iDQoN
-ClRoYW5rcywNCi1Ub3NoaQ==
+Hello,
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+On Friday 21 Oct 2016 18:32:54 Robin Murphy wrote:
+> On 20/10/16 00:36, Magnus Damm wrote:
+> > From: Magnus Damm <damm+renesas@opensource.se>
+> > 
+> > Not all architectures have an iommu member in their archdata, so
+> > use #ifdefs support build wit COMPILE_TEST on any architecture.
+> 
+> As an alternative to this we could now use iommu_fwspec in place of the
+> custom ipmmu_vmsa_archdata - that's deliberately
+> architecture-independent. I converted the Mediatek drivers[1] as an
+> example to stand separately from the big SMMU rework, as those are the
+> ones I'm most familiar with, but it looks like the IPMMU is a similarly
+> perfect fit.
+> 
+> Of course, that could always come afterwards as a cleanup - I wouldn't
+> consider it a blocker at this point - but it does look like it might
+> simplify some of the code being moved around in this series if it were
+> to be done beforehand.
+
+I like the suggestion, it looks much cleaner. It would also allow implementing 
+.of_xlate() in a cleaner fashion. I don't think it needs to block this series, 
+but if Magnus ends up sending a v7 to address all the other small comments, it 
+would be worth a shot.
+
+> [1]:http://www.mail-archive.com/iommu@lists.linux-foundation.org/msg14577.ht
+> ml
+> > Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+> > Reviewed-by: Joerg Roedel <jroedel@suse.de>
+> > ---
+> > 
+> >  Changes since V5:
+> >  - None
+> >  
+> >  Changes since V4:
+> >  - None
+> >  
+> >  Changes since V3:
+> >  - New patch
+> >  
+> >  drivers/iommu/ipmmu-vmsa.c |   37 +++++++++++++++++++++++++++----------
+> >  1 file changed, 27 insertions(+), 10 deletions(-)
+> > 
+> > --- 0012/drivers/iommu/ipmmu-vmsa.c
+> > +++ work/drivers/iommu/ipmmu-vmsa.c	2016-09-20 21:59:21.690607110 +0900
+> > @@ -70,6 +70,25 @@ static struct ipmmu_vmsa_domain *to_vmsa
+> > 
+> >  	return container_of(dom, struct ipmmu_vmsa_domain, io_domain);
+> >  
+> >  }
+> > 
+> > +#if defined(CONFIG_ARM) || defined(CONFIG_ARM64)
+> > +static struct ipmmu_vmsa_archdata *to_archdata(struct device *dev)
+> > +{
+> > +	return dev->archdata.iommu;
+> > +}
+> > +static void set_archdata(struct device *dev, struct ipmmu_vmsa_archdata
+> > *p) +{
+> > +	dev->archdata.iommu = p;
+> > +}
+> > +#else
+> > +static struct ipmmu_vmsa_archdata *to_archdata(struct device *dev)
+> > +{
+> > +	return NULL;
+> > +}
+> > +static void set_archdata(struct device *dev, struct ipmmu_vmsa_archdata
+> > *p) +{
+> > +}
+> > +#endif
+> > +
+> > 
+> >  #define TLB_LOOP_TIMEOUT		100	/* 100us */
+> >  
+> >  /*
+> >  ------------------------------------------------------------------------
+> >  -----> 
+> > @@ -539,7 +558,7 @@ static void ipmmu_domain_free(struct iom
+> > 
+> >  static int ipmmu_attach_device(struct iommu_domain *io_domain,
+> >  
+> >  			       struct device *dev)
+> >  
+> >  {
+> > 
+> > -	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
+> > +	struct ipmmu_vmsa_archdata *archdata = to_archdata(dev);
+> > 
+> >  	struct ipmmu_vmsa_device *mmu = archdata->mmu;
+> >  	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+> >  	unsigned long flags;
+> > 
+> > @@ -581,7 +600,7 @@ static int ipmmu_attach_device(struct io
+> > 
+> >  static void ipmmu_detach_device(struct iommu_domain *io_domain,
+> >  
+> >  				struct device *dev)
+> >  
+> >  {
+> > 
+> > -	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
+> > +	struct ipmmu_vmsa_archdata *archdata = to_archdata(dev);
+> > 
+> >  	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+> >  	unsigned int i;
+> > 
+> > @@ -701,7 +720,7 @@ static int ipmmu_init_platform_device(st
+> > 
+> >  	archdata->mmu = mmu;
+> >  	archdata->utlbs = utlbs;
+> >  	archdata->num_utlbs = num_utlbs;
+> > 
+> > -	dev->archdata.iommu = archdata;
+> > +	set_archdata(dev, archdata);
+> > 
+> >  	return 0;
+> >  
+> >  error:
+> > @@ -713,12 +732,11 @@ error:
+> >  static int ipmmu_add_device(struct device *dev)
+> >  {
+> > 
+> > -	struct ipmmu_vmsa_archdata *archdata;
+> > 
+> >  	struct ipmmu_vmsa_device *mmu = NULL;
+> >  	struct iommu_group *group;
+> >  	int ret;
+> > 
+> > -	if (dev->archdata.iommu) {
+> > +	if (to_archdata(dev)) {
+> > 
+> >  		dev_warn(dev, "IOMMU driver already assigned to device %s\n",
+> >  		
+> >  			 dev_name(dev));
+> >  		
+> >  		return -EINVAL;
+> > 
+> > @@ -754,8 +772,7 @@ static int ipmmu_add_device(struct devic
+> > 
+> >  	 * - Make the mapping size configurable ? We currently use a 2GB 
+mapping
+> >  	 *   at a 1GB offset to ensure that NULL VAs will fault.
+> >  	 */
+> > 
+> > -	archdata = dev->archdata.iommu;
+> > -	mmu = archdata->mmu;
+> > +	mmu = to_archdata(dev)->mmu;
+> > 
+> >  	if (!mmu->mapping) {
+> >  	
+> >  		struct dma_iommu_mapping *mapping;
+> > 
+> > @@ -783,7 +800,7 @@ error:
+> >  	if (mmu)
+> >  	
+> >  		arm_iommu_release_mapping(mmu->mapping);
+> > 
+> > -	dev->archdata.iommu = NULL;
+> > +	set_archdata(dev, NULL);
+> > 
+> >  	if (!IS_ERR_OR_NULL(group))
+> >  	
+> >  		iommu_group_remove_device(dev);
+> > 
+> > @@ -793,7 +810,7 @@ error:
+> >  static void ipmmu_remove_device(struct device *dev)
+> >  {
+> > 
+> > -	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
+> > +	struct ipmmu_vmsa_archdata *archdata = to_archdata(dev);
+> > 
+> >  	arm_iommu_detach_device(dev);
+> >  	iommu_group_remove_device(dev);
+> > 
+> > @@ -801,7 +818,7 @@ static void ipmmu_remove_device(struct d
+> > 
+> >  	kfree(archdata->utlbs);
+> >  	kfree(archdata);
+> > 
+> > -	dev->archdata.iommu = NULL;
+> > +	set_archdata(dev, NULL);
+> > 
+> >  }
+> >  
+> >  static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
+
+-- 
+Regards,
+
+Laurent Pinchart
