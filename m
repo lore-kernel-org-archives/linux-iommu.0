@@ -1,34 +1,32 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [RFC PATCH v3 03/20] x86: Add the Secure Memory Encryption cpu
- feature
-Date: Fri, 11 Nov 2016 12:53:51 +0100
-Message-ID: <20161111115351.ytzhp3u3sdyslknl@pd.tnic>
-References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
- <20161110003459.3280.25796.stgit@tlendack-t1.amdoffice.net>
+From: Hanjun Guo <hanjun.guo@linaro.org>
+Subject: Re: [PATCH v7 00/16] ACPI IORT ARM SMMU support
+Date: Fri, 11 Nov 2016 20:44:38 +0800
+Message-ID: <5825BD36.1040600@linaro.org>
+References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20161110003459.3280.25796.stgit@tlendack-t1.amdoffice.net>
+In-Reply-To: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org
+Cc: Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 09, 2016 at 06:34:59PM -0600, Tom Lendacky wrote:
-> Update the cpu features to include identifying and reporting on the
+On 11/09/2016 10:19 PM, Lorenzo Pieralisi wrote:
+> This patch series is v7 of a previous posting:
+>
+> https://lkml.org/lkml/2016/10/18/506
+>
+> v6 -> v7
+> 	- Rebased against v4.9-rc4
+> 	- Fixed IORT probing on ACPI systems with missing IORT table
+> 	- Fixed SMMUv1/v2 global interrupt detection
+> 	- Updated iommu_ops firmware look-up
 
-Here and for all other commit messages:
+Although no major update for the new version, I tested
+this patchset again on hisilicon d03, and the platform
+device works as before with SMMUv3.
 
-s/cpu/CPU/g
-
-> Secure Memory Encryption feature.
-> 
-
-...
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+Thanks
+Hanjun
