@@ -1,53 +1,78 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [RFC v2 8/8] iommu/arm-smmu: implement add_reserved_regions
- callback
-Date: Fri, 11 Nov 2016 16:47:01 +0100
-Message-ID: <79da09b8-ac1e-cebf-5393-7d67f002b3e3@redhat.com>
-References: <1478258646-3117-1-git-send-email-eric.auger@redhat.com>
- <1478258646-3117-9-git-send-email-eric.auger@redhat.com>
- <20161110154606.GH2078@8bytes.org>
- <04ed9694-707d-260b-70c6-f367d292ceca@redhat.com>
- <20161110161331.GJ2078@8bytes.org>
- <f4537e43-0237-e478-eacd-b107458628b8@redhat.com>
- <20161111114223.GP2078@8bytes.org>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: Summary of LPC guest MSI discussion in Santa Fe
+Date: Fri, 11 Nov 2016 08:50:56 -0700
+Message-ID: <20161111085056.4cf8989d@t450s.home>
+References: <20161109151709.74927f83@t450s.home>
+	<20161109222522.GS17771@arm.com>
+	<20161109162458.39594fdb@t450s.home>
+	<20161109233847.GT17771@arm.com>
+	<20161109165957.62c1eb61@t450s.home>
+	<83b6440a-31eb-c1b4-642c-a4c311f37ef2@redhat.com>
+	<20161109175517.174e7803@t450s.home>
+	<20161110020130.GA19108@arm.com>
+	<ddd8af9d-ad8f-78d8-3048-3d640b74470e@redhat.com>
+	<20161110104601.0939ba9a@t450s.home>
+	<20161111111944.GO2078@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161111114223.GP2078@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: drjones@redhat.com, jason@lakedaemon.net, kvm@vger.kernel.org, marc.zyngier@arm.com, punit.agrawal@arm.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, diana.craciun@nxp.com, alex.williamson@redhat.com, pranav.sawargaonkar@gmail.com, linux-arm-kernel@lists.infradead.org, tglx@linutronix.de, robin.murphy@arm.com, christoffer.dall@linaro.org, eric.auger.pro@gmail.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20161111111944.GO2078-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, Christoffer Dall <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On Fri, 11 Nov 2016 12:19:44 +0100
+Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
 
-On 11/11/2016 12:42, Joerg Roedel wrote:
-> On Thu, Nov 10, 2016 at 07:00:52PM +0100, Auger Eric wrote:
->> GICv2m and GICV3 ITS use dma-mapping iommu_dma_map_msi_msg to allocate
->> an MSI IOVA on-demand.
+> On Thu, Nov 10, 2016 at 10:46:01AM -0700, Alex Williamson wrote:
+> > In the case of x86, we know that DMA mappings overlapping the MSI
+> > doorbells won't be translated correctly, it's not a valid mapping for
+> > that range, and therefore the iommu driver backing the IOMMU API
+> > should describe that reserved range and reject mappings to it.  
 > 
-> Yes, and it the right thing to do there because as a DMA-API
-> implementation the dma-iommu code cares about the address space
-> allocation.
-> 
-> As I understand it this is different in your case, as someone else is
-> defining the address space layout. So why do you need to allocate it
-> yourself?
-Effectively in passthrough use case, the userspace defines the address
-space layout and maps guest RAM PA=IOVA to PAs (using
-VFIO_IOMMU_MAP_DMA). But this address space does not comprise the MSI
-IOVAs. Userspace does not care about MSI IOMMU mapping. So the MSI IOVA
-region must be allocated by either the VFIO driver or the IOMMU driver I
-think. Who else could initialize the IOVA allocator domain?
+> The drivers actually allow mappings to the MSI region via the IOMMU-API,
+> and I think it should stay this way also for other reserved ranges.
+> Address space management is done by the IOMMU-API user already (and has
+> to be done there nowadays), be it a DMA-API implementation which just
+> reserves these regions in its address space allocator or be it VFIO with
+> QEMU, which don't map RAM there anyway. So there is no point of checking
+> this again in the IOMMU drivers and we can keep that out of the
+> mapping/unmapping fast-path.
 
-That's true that we have a mix of unmanaged addresses and "managed"
-addresses which is not neat. But how to manage otherwise?
+It's really just a happenstance that we don't map RAM over the x86 MSI
+range though.  That property really can't be guaranteed once we mix
+architectures, such as running an aarch64 VM on x86 host via TCG.
+AIUI, the MSI range is actually handled differently than other DMA
+ranges, so a iommu_map() overlapping a range that the iommu cannot map
+should fail just like an attempt to map beyond the address width of the
+iommu.
+ 
+> > For PCI devices userspace can examine the topology of the iommu group
+> > and exclude MMIO ranges of peer devices based on the BARs, which are
+> > exposed in various places, pci-sysfs as well as /proc/iomem.  For
+> > non-PCI or MSI controllers... ???  
+> 
+> Right, the hardware resources can be examined. But maybe this can be
+> extended to also cover RMRR ranges? Then we would be able to assign
+> devices with RMRR mappings to guests.
 
-Thanks
+RMRRs are special in a different way, the VT-d spec requires that the
+OS honor RMRRs, the user has no responsibility (and currently no
+visibility) to make that same arrangement.  In order to potentially
+protect the physical host platform, the iommu drivers should prevent a
+user from remapping RMRRS.  Maybe there needs to be a different
+interface used by untrusted users vs in-kernel drivers, but I think the
+kernel really needs to be defensive in the case of user mappings, which
+is where the IOMMU API is rooted.  Thanks,
 
-Eric
-> 
-> 
-> 	Joerg
-> 
+Alex
