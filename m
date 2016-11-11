@@ -1,11 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH RESEND] iommu/iova: Extend cached node lookup condition
-Date: Fri, 11 Nov 2016 18:35:46 +0000
-Message-ID: <1b035087a5a3ca8de9daf10bf067f3bd5c0e6f61.1478889292.git.robin.murphy@arm.com>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 4/5] iommu: Move REQ_ACS_FLAGS out to header and rename
+Date: Fri, 11 Nov 2016 16:57:40 -0600
+Message-ID: <20161111225740.GX9868@bhelgaas-glaptop.roam.corp.google.com>
+References: <20161026175156.23495.12980.stgit@gimli.home>
+	<20161026180134.23495.27520.stgit@gimli.home>
+	<20161110122713.GI9996@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20161110122713.GI9996-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,34 +20,26 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When searching for a free IOVA range, we optimise the tree traversal
-by starting from the cached32_node, instead of the last node, when
-limit_pfn is equal to dma_32bit_pfn. However, if limit_pfn happens to
-be smaller, then we'll go ahead and start from the top even though
-dma_32bit_pfn is still a more suitable upper bound. Since this is
-clearly a silly thing to do, adjust the lookup condition appropriately.
+On Thu, Nov 10, 2016 at 01:27:13PM +0100, Joerg Roedel wrote:
+> On Wed, Oct 26, 2016 at 12:01:34PM -0600, Alex Williamson wrote:
+> > Allow other parts of the kernel to see which PCI ACS flags the IOMMU
+> > layer considers necessary for isolation.
+> > 
+> > Signed-off-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> > Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> > ---
+> >  drivers/iommu/iommu.c |   18 +++++-------------
+> >  include/linux/iommu.h |   11 +++++++++++
+> >  2 files changed, 16 insertions(+), 13 deletions(-)
+> 
+> Applied, thanks Alex.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/iova.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Joerg, did you apply just this one (4/5), or the whole series?  If the
+former, is it safe for me to apply 1, 2, 3, and 5?  I assumed these were
+meant to go as a group.
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index e23001bfcfee..080beca0197d 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -56,7 +56,7 @@ EXPORT_SYMBOL_GPL(init_iova_domain);
- static struct rb_node *
- __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
- {
--	if ((*limit_pfn != iovad->dma_32bit_pfn) ||
-+	if ((*limit_pfn > iovad->dma_32bit_pfn) ||
- 		(iovad->cached32_node == NULL))
- 		return rb_last(&iovad->rbroot);
- 	else {
--- 
-2.10.2.dirty
+Bjorn
