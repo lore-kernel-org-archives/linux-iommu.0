@@ -1,13 +1,11 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v3 2/2] arm64: Wire up iommu_dma_{map, unmap}_resource()
-Date: Fri, 11 Nov 2016 18:27:35 +0000
-Message-ID: <706f6bc883775206d661f38d9c1cbaa4cc4d04b7.1478887214.git.robin.murphy@arm.com>
-References: <7d54803d32968be46a1a525d7160feb13af72f00.1478887214.git.robin.murphy@arm.com>
+Subject: [PATCH] iommu/dma: Stop getting dma_32bit_pfn wrong
+Date: Fri, 11 Nov 2016 18:30:45 +0000
+Message-ID: <f9c96106e6253f7033be8dd975392f0edb12e603.1478889045.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <7d54803d32968be46a1a525d7160feb13af72f00.1478887214.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,31 +15,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-With no coherency to worry about, just plug'em straight in.
+iommu_dma_init_domain() was originally written under the misconception
+that dma_32bit_pfn represented some sort of size limit for IOVA domains.
+Since the truth is almost the exact opposite of that, rework the logic
+and comments to reflect its real purpose of optimising lookups when
+allocating from a subset of the available space.
 
-CC: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-CC: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- arch/arm64/mm/dma-mapping.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/dma-iommu.c | 23 ++++++++++++++++++-----
+ 1 file changed, 18 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 3f74d0d98de6..5cd0a383b14b 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -796,6 +796,8 @@ static struct dma_map_ops iommu_dma_ops = {
- 	.sync_single_for_device = __iommu_sync_single_for_device,
- 	.sync_sg_for_cpu = __iommu_sync_sg_for_cpu,
- 	.sync_sg_for_device = __iommu_sync_sg_for_device,
-+	.map_resource = iommu_dma_map_resource,
-+	.unmap_resource = iommu_dma_unmap_resource,
- 	.dma_supported = iommu_dma_supported,
- 	.mapping_error = iommu_dma_mapping_error,
- };
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index c5ab8667e6f2..ae045a14b530 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -139,6 +139,7 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ {
+ 	struct iova_domain *iovad = cookie_iovad(domain);
+ 	unsigned long order, base_pfn, end_pfn;
++	bool pci = dev && dev_is_pci(dev);
+ 
+ 	if (!iovad)
+ 		return -ENODEV;
+@@ -161,19 +162,31 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 		end_pfn = min_t(unsigned long, end_pfn,
+ 				domain->geometry.aperture_end >> order);
+ 	}
++	/*
++	 * PCI devices may have larger DMA masks, but still prefer allocating
++	 * within a 32-bit mask to avoid DAC addressing. Such limitations don't
++	 * apply to the typical platform device, so for those we may as well
++	 * leave the cache limit at the top of the range they're likely to use.
++	 */
++	if (pci)
++		end_pfn = min_t(unsigned long, end_pfn,
++				DMA_BIT_MASK(32) >> order);
+ 
+-	/* All we can safely do with an existing domain is enlarge it */
++	/* start_pfn is always nonzero for an already-initialised domain */
+ 	if (iovad->start_pfn) {
+ 		if (1UL << order != iovad->granule ||
+-		    base_pfn != iovad->start_pfn ||
+-		    end_pfn < iovad->dma_32bit_pfn) {
++		    base_pfn != iovad->start_pfn) {
+ 			pr_warn("Incompatible range for DMA domain\n");
+ 			return -EFAULT;
+ 		}
+-		iovad->dma_32bit_pfn = end_pfn;
++		/*
++		 * If we have devices with different DMA masks, move the free
++		 * area cache limit down for the benefit of the smaller one.
++		 */
++		iovad->dma_32bit_pfn = min(end_pfn, iovad->dma_32bit_pfn);
+ 	} else {
+ 		init_iova_domain(iovad, 1UL << order, base_pfn, end_pfn);
+-		if (dev && dev_is_pci(dev))
++		if (pci)
+ 			iova_reserve_pci_windows(to_pci_dev(dev), iovad);
+ 	}
+ 	return 0;
 -- 
 2.10.2.dirty
