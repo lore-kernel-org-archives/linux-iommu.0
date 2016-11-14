@@ -1,76 +1,44 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v7 04/16] drivers: iommu: make of_iommu_set/get_ops() DT
- agnostic
-Date: Mon, 14 Nov 2016 18:25:16 +0000
-Message-ID: <313844ca-d948-1297-84b2-669f3a7d57d2@arm.com>
-References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
- <20161109141948.19244-5-lorenzo.pieralisi@arm.com>
- <20161111152248.GS2078@8bytes.org>
- <552e674a-f434-f08f-8e16-a94544ce8e6e@arm.com>
- <20161111162736.GV2078@8bytes.org>
- <33769e3c-265f-6e89-adf9-6d35b1e03579@arm.com>
- <20161114102654.GA1677@red-moon>
- <41e3eff1-9ce6-bcfb-5716-c65ef38add63@arm.com>
- <20161114155222.GZ2078@8bytes.org>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [RFC PATCH v3 06/20] x86: Add support to enable SME during early
+ boot processing
+Date: Mon, 14 Nov 2016 21:01:32 +0100
+Message-ID: <20161114200132.i54uar3wckqlzsbt@pd.tnic>
+References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
+ <20161110003543.3280.99623.stgit@tlendack-t1.amdoffice.net>
+ <20161114172930.27z7p2kytmhtcbsb@pd.tnic>
+ <178d7d21-ffbd-1083-9c64-f05378147e27@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161114155222.GZ2078@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=utf-8
+Return-path: <kvm-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <178d7d21-ffbd-1083-9c64-f05378147e27@amd.com>
+Sender: kvm-owner@vger.kernel.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 14/11/16 15:52, Joerg Roedel wrote:
-> On Mon, Nov 14, 2016 at 12:00:47PM +0000, Robin Murphy wrote:
->> If we've already made the decision to move away from bus ops, I don't
->> see that it makes sense to deliberately introduce new dependencies on
->> them. Besides, as it stands, this patch literally implements "tell the
->> iommu-core which hardware-iommus exist in the system and a seperate
->> iommu_ops ptr for each of them" straight off.
-> 
-> Not sure which code you are looking at, but as I see it we have only
-> per-device iommu-ops now (with this patch). That is different from
-> having core-visible hardware-iommu instances where devices could link
-> to.
+On Mon, Nov 14, 2016 at 12:18:44PM -0600, Tom Lendacky wrote:
+> The %rsi register can be clobbered by the called function so I'm saving
+> it since it points to the real mode data.  I might be able to look into
+> saving it earlier and restoring it before needed, but I though this
+> might be clearer.
 
-The per-device IOMMU ops are already there since 57f98d2f61e1. This
-patch generalises the other end, moving the "registering an IOMMU
-instance" (i.e. iommu_fwentry) bit into the IOMMU core, from being
-OF-specific. I'd be perfectly happy if we rename iommu_fwentry to
-iommu_instance, fwnode_iommu_set_ops() to iommu_register_instance(), and
-such if that makes the design intent clearer.
+Ah, that's already in the comment earlier, I missed that.
 
-If you'd also prefer to replace iommu_fwspec::ops with an opaque
-iommu_fwspec::iommu_instance pointer so that things are a bit more
-centralised (and users are forced to go through the API rather then call
-ops directly), I'd have no major objection either. My main point is that
-we've been deliberately putting the relevant building blocks in place -
-the of_iommu_{get,set}_ops stuff was designed from the start to
-accommodate per-instance ops, via the ops pointer *being* the instance
-token; the iommu_fwspec stuff is deliberately intended to provide
-per-device ops on top of that. The raw functionality is either there in
-iommu.c already, or moving there in patches already written, so if it
-doesn't look right all we need to focus on is making it look right.
+> I can expand on the commit message about that.  I was trying to keep the
+> early boot-related code separate from the main code in arch/x86/mm dir.
 
-> Also the rest of iommu-core code still makes use of the per-bus ops. The
-> per-device ops are only used for the of_xlate fn-ptr.
+... because?
 
-Hence my aforementioned patches intended for 4.10, directly following on
-from introducing iommu_fwspec in 4.9:
+It all gets linked into one monolithic image anyway and mem_encrypt.c
+is not, like, really huge, right? IOW, I don't see a reason to spread
+the code around the tree. OTOH, having everything in one file is much
+better.
 
-http://www.mail-archive.com/iommu@lists.linux-foundation.org/msg14576.html
+Or am I missing a good reason?
 
-...the purpose being to provide a smooth transition from per-bus ops to
-per-device, per-instance ops. Apply those and we're 90% of the way there
-for OF-based IOMMU drivers (not that any of those actually need
-per-instance ops, admittedly; I did prototype it for the ARM SMMU ages
-ago, but it didn't seem worth the bother). Lorenzo's series broadens the
-scope to ACPI-based systems and moves the generically-useful parts into
-the core where we can easily build on them further if necessary. The
-major remaining work is to convert external callers of the current
-bus-dependent functions like iommu_domain_alloc(), iommu_present(), etc.
-to device-based alternatives.
+-- 
+Regards/Gruss,
+    Boris.
 
-Robin.
+Good mailing practices for 400: avoid top-posting and trim the reply.
