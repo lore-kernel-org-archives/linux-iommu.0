@@ -1,11 +1,14 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v4 1/2] iommu/dma: Implement dma_{map,unmap}_resource()
-Date: Mon, 14 Nov 2016 12:16:26 +0000
-Message-ID: <d1cbd5ce714ce3c978aa8bfcb31def87d7919198.1479125555.git.robin.murphy@arm.com>
+Subject: Re: [RFC v2 3/8] iommu/dma: Allow MSI-only cookies
+Date: Mon, 14 Nov 2016 12:36:33 +0000
+Message-ID: <5f93ebfd-edf4-0b5a-b54a-b96937a588b8@arm.com>
+References: <1478258646-3117-1-git-send-email-eric.auger@redhat.com>
+	<1478258646-3117-4-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1478258646-3117-4-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,93 +18,278 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-With the new dma_{map,unmap}_resource() functions added to the DMA API
-for the benefit of cases like slave DMA, add suitable implementations to
-the arsenal of our generic layer. Since cache maintenance should not be
-a concern, these can both be standalone callback implementations without
-the need for arch code wrappers.
+On 04/11/16 11:24, Eric Auger wrote:
+> From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> 
+> IOMMU domain users such as VFIO face a similar problem to DMA API ops
+> with regard to mapping MSI messages in systems where the MSI write is
+> subject to IOMMU translation. With the relevant infrastructure now in
+> place for managed DMA domains, it's actually really simple for other
+> users to piggyback off that and reap the benefits without giving up
+> their own IOVA management, and without having to reinvent their own
+> wheel in the MSI layer.
+> 
+> Allow such users to opt into automatic MSI remapping by dedicating a
+> region of their IOVA space to a managed cookie.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
-CC: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+OK, following the discussion elsewhere I've had a go at the less stupid,
+but more involved, version. Thoughts?
+
+Robin.
+
+----->8-----
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [RFC PATCH] iommu/dma: Allow MSI-only cookies
+
+IOMMU domain users such as VFIO face a similar problem to DMA API ops
+with regard to mapping MSI messages in systems where the MSI write is
+subject to IOMMU translation. With the relevant infrastructure now in
+place for managed DMA domains, it's actually really simple for other
+users to piggyback off that and reap the benefits without giving up
+their own IOVA management, and without having to reinvent their own
+wheel in the MSI layer.
+
+Allow such users to opt into automatic MSI remapping by dedicating a
+region of their IOVA space to a managed cookie, and extend the mapping
+routine to implement a trivial linear allocator in such cases, to avoid
+the needless overhead of a full-blown IOVA domain.
+
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
-
-v4: Add the missed static qualifier (thanks Catalin)
-
- drivers/iommu/dma-iommu.c | 24 +++++++++++++++++++++---
- include/linux/dma-iommu.h |  4 ++++
- 2 files changed, 25 insertions(+), 3 deletions(-)
+ drivers/iommu/dma-iommu.c | 118 ++++++++++++++++++++++++++++++++++++----------
+ include/linux/dma-iommu.h |   6 +++
+ 2 files changed, 100 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index c5ab8667e6f2..2db0d641cf45 100644
+index c5ab8667e6f2..33d66a8273c6 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -432,13 +432,12 @@ int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma)
- 	return ret;
+@@ -37,10 +37,19 @@ struct iommu_dma_msi_page {
+ 	phys_addr_t		phys;
+ };
+ 
++enum iommu_dma_cookie_type {
++	IOMMU_DMA_IOVA_COOKIE,
++	IOMMU_DMA_MSI_COOKIE,
++};
++
+ struct iommu_dma_cookie {
+-	struct iova_domain	iovad;
+-	struct list_head	msi_page_list;
+-	spinlock_t		msi_lock;
++	union {
++		struct iova_domain	iovad;
++		dma_addr_t		msi_iova;
++	};
++	struct list_head		msi_page_list;
++	spinlock_t			msi_lock;
++	enum iommu_dma_cookie_type	type;
+ };
+ 
+ static inline struct iova_domain *cookie_iovad(struct iommu_domain *domain)
+@@ -53,6 +62,19 @@ int iommu_dma_init(void)
+ 	return iova_cache_get();
  }
  
--dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
--		unsigned long offset, size_t size, int prot)
-+static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
-+		size_t size, int prot)
++static struct iommu_dma_cookie *__cookie_alloc(enum iommu_dma_cookie_type type)
++{
++	struct iommu_dma_cookie *cookie;
++
++	cookie = kzalloc(sizeof(*cookie), GFP_KERNEL);
++	if (cookie) {
++		spin_lock_init(&cookie->msi_lock);
++		INIT_LIST_HEAD(&cookie->msi_page_list);
++		cookie->type = type;
++	}
++	return cookie;
++}
++
+ /**
+  * iommu_get_dma_cookie - Acquire DMA-API resources for a domain
+  * @domain: IOMMU domain to prepare for DMA-API usage
+@@ -62,25 +84,53 @@ int iommu_dma_init(void)
+  */
+ int iommu_get_dma_cookie(struct iommu_domain *domain)
  {
- 	dma_addr_t dma_addr;
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
- 	struct iova_domain *iovad = cookie_iovad(domain);
--	phys_addr_t phys = page_to_phys(page) + offset;
- 	size_t iova_off = iova_offset(iovad, phys);
- 	size_t len = iova_align(iovad, size + iova_off);
- 	struct iova *iova = __alloc_iova(domain, len, dma_get_mask(dev));
-@@ -454,6 +453,12 @@ dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
- 	return dma_addr + iova_off;
- }
+-	struct iommu_dma_cookie *cookie;
+-
+ 	if (domain->iova_cookie)
+ 		return -EEXIST;
  
-+dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
-+		unsigned long offset, size_t size, int prot)
-+{
-+	return __iommu_dma_map(dev, page_to_phys(page) + offset, size, prot);
-+}
-+
- void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
- 		enum dma_data_direction dir, unsigned long attrs)
- {
-@@ -624,6 +629,19 @@ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
- 	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), sg_dma_address(sg));
- }
+-	cookie = kzalloc(sizeof(*cookie), GFP_KERNEL);
+-	if (!cookie)
++	domain->iova_cookie = __cookie_alloc(IOMMU_DMA_IOVA_COOKIE);
++	if (!domain->iova_cookie)
+ 		return -ENOMEM;
  
-+dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs)
+-	spin_lock_init(&cookie->msi_lock);
+-	INIT_LIST_HEAD(&cookie->msi_page_list);
+-	domain->iova_cookie = cookie;
+ 	return 0;
+ }
+ EXPORT_SYMBOL(iommu_get_dma_cookie);
+ 
+ /**
++ * iommu_get_msi_cookie - Acquire just MSI remapping resources
++ * @domain: IOMMU domain to prepare
++ * @base: Start address of IOVA region for MSI mappings
++ *
++ * Users who manage their own IOVA allocation and do not want DMA API support,
++ * but would still like to take advantage of automatic MSI remapping, can use
++ * this to initialise their own domain appropriately. Users should reserve a
++ * contiguous IOVA region, starting at @base, large enough to accommodate the
++ * number of PAGE_SIZE mappings necessary to cover every MSI doorbell address
++ * used by the devices attached to @domain.
++ */
++int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base)
 +{
-+	return __iommu_dma_map(dev, phys, size,
-+			dma_direction_to_prot(dir, false) | IOMMU_MMIO);
-+}
++	struct iommu_dma_cookie *cookie;
 +
-+void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+{
-+	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), handle);
-+}
++	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
++		return -EINVAL;
 +
- int iommu_dma_supported(struct device *dev, u64 mask)
++	if (domain->iova_cookie)
++		return -EEXIST;
++
++	cookie = __cookie_alloc(IOMMU_DMA_IOVA_COOKIE);
++	if (!cookie)
++		return -ENOMEM;
++
++	cookie->msi_iova = base;
++	domain->iova_cookie = cookie;
++	return 0;
++}
++EXPORT_SYMBOL(iommu_get_msi_cookie);
++
++/**
+  * iommu_put_dma_cookie - Release a domain's DMA mapping resources
+- * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
++ * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie() or
++ *          iommu_get_msi_cookie()
+  *
+  * IOMMU drivers should normally call this from their domain_free callback.
+  */
+@@ -92,7 +142,7 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+ 	if (!cookie)
+ 		return;
+ 
+-	if (cookie->iovad.granule)
++	if (cookie->type == IOMMU_DMA_IOVA_COOKIE && cookie->iovad.granule)
+ 		put_iova_domain(&cookie->iovad);
+ 
+ 	list_for_each_entry_safe(msi, tmp, &cookie->msi_page_list, list) {
+@@ -137,11 +187,12 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
+ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 		u64 size, struct device *dev)
  {
- 	/*
+-	struct iova_domain *iovad = cookie_iovad(domain);
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iova_domain *iovad = &cookie->iovad;
+ 	unsigned long order, base_pfn, end_pfn;
+ 
+-	if (!iovad)
+-		return -ENODEV;
++	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
++		return -EINVAL;
+ 
+ 	/* Use the smallest supported page size for IOVA granularity */
+ 	order = __ffs(domain->pgsize_bitmap);
+@@ -644,11 +695,21 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+ {
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+ 	struct iommu_dma_msi_page *msi_page;
+-	struct iova_domain *iovad = &cookie->iovad;
++	struct iova_domain *iovad;
+ 	struct iova *iova;
+ 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
++	size_t size;
++
++	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
++		iovad = &cookie->iovad;
++		size = iovad->granule;
++	} else {
++		iovad = NULL;
++		size = PAGE_SIZE;
++	}
++
++	msi_addr &= ~(phys_addr_t)(size - 1);
+ 
+-	msi_addr &= ~(phys_addr_t)iova_mask(iovad);
+ 	list_for_each_entry(msi_page, &cookie->msi_page_list, list)
+ 		if (msi_page->phys == msi_addr)
+ 			return msi_page;
+@@ -657,13 +718,18 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+ 	if (!msi_page)
+ 		return NULL;
+ 
+-	iova = __alloc_iova(domain, iovad->granule, dma_get_mask(dev));
+-	if (!iova)
+-		goto out_free_page;
+-
+ 	msi_page->phys = msi_addr;
+-	msi_page->iova = iova_dma_addr(iovad, iova);
+-	if (iommu_map(domain, msi_page->iova, msi_addr, iovad->granule, prot))
++	if (iovad) {
++		iova = __alloc_iova(domain, size, dma_get_mask(dev));
++		if (!iova)
++			goto out_free_page;
++		msi_page->iova = iova_dma_addr(iovad, iova);
++	} else {
++		msi_page->iova = cookie->msi_iova;
++		cookie->msi_iova += size;
++	}
++
++	if (iommu_map(domain, msi_page->iova, msi_addr, size, prot))
+ 		goto out_free_iova;
+ 
+ 	INIT_LIST_HEAD(&msi_page->list);
+@@ -671,7 +737,10 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+ 	return msi_page;
+ 
+ out_free_iova:
+-	__free_iova(iovad, iova);
++	if (iovad)
++		__free_iova(iovad, iova);
++	else
++		cookie->msi_iova -= size;
+ out_free_page:
+ 	kfree(msi_page);
+ 	return NULL;
+@@ -716,3 +785,4 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
+ 		msg->address_lo += lower_32_bits(msi_page->iova);
+ 	}
+ }
++
 diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index 32c589062bd9..7f7e9a7e3839 100644
+index 32c589062bd9..d69932474576 100644
 --- a/include/linux/dma-iommu.h
 +++ b/include/linux/dma-iommu.h
-@@ -61,6 +61,10 @@ void iommu_dma_unmap_page(struct device *dev, dma_addr_t handle, size_t size,
- 		enum dma_data_direction dir, unsigned long attrs);
- void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
- 		enum dma_data_direction dir, unsigned long attrs);
-+dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs);
-+void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs);
- int iommu_dma_supported(struct device *dev, u64 mask);
- int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
+@@ -27,6 +27,7 @@ int iommu_dma_init(void);
  
+ /* Domain management interface for IOMMU drivers */
+ int iommu_get_dma_cookie(struct iommu_domain *domain);
++int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base);
+ void iommu_put_dma_cookie(struct iommu_domain *domain);
+ 
+ /* Setup call for arch DMA mapping code */
+@@ -82,6 +83,11 @@ static inline int iommu_get_dma_cookie(struct iommu_domain *domain)
+ 	return -ENODEV;
+ }
+ 
++static inline int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base)
++{
++	return -ENODEV;
++}
++
+ static inline void iommu_put_dma_cookie(struct iommu_domain *domain)
+ {
+ }
 -- 
 2.10.2.dirty
