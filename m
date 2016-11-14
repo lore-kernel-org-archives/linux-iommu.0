@@ -1,94 +1,48 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH V3 0/8] IOMMU probe deferral support
-Date: Mon, 14 Nov 2016 09:11:01 +0530
-Message-ID: <01bb01d23e28$f0612d00$d1238700$@codeaurora.org>
-References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org> <60ee8066-f167-e9df-ae3e-4138f1133bad@arm.com> <003a01d22f97$82534c70$86f9e550$@codeaurora.org> <421e2b14-0231-d376-02a0-097423120b3d@arm.com> <006f01d236ae$61751c40$245f54c0$@codeaurora.org> <9f36244f-62d4-08e3-d64a-2b04ad4dc2e0@arm.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH v7 1/7] iommu/exynos: Remove excessive, useless debug
+Date: Mon, 14 Nov 2016 11:08:06 +0100
+Message-ID: <1479118092-1365-2-git-send-email-m.szyprowski@samsung.com>
+References: <1479118092-1365-1-git-send-email-m.szyprowski@samsung.com>
+	<CGME20161114100909eucas1p1de05334a584eda44d68c932f31487e20@eucas1p1.samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: 
-Content-Language: en-us
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: 'Robin Murphy' <robin.murphy@arm.com>, will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, laurent.pinchart@ideasonboard.com, m.szyprowski@samsung.com, tfiga@chromium.org, srinivas.kandagatla@linaro.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <1479118092-1365-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Remove excessive, useless debug about skipping TLB invalidation, which
+is a normal situation when more aggressive power management is enabled.
 
->Hi Robin,
->
->>On 04/11/16 15:16, Sricharan wrote:
->>> Hi Robin,
->>>
->>>>>> Yikes, on second look, that definitely shouldn't be happening.
->>>>>> Everything below is probably the resulting fallout.
->>>>>
->>>>> [   40.206703] vfio-pci 0000:08:00.0: Failed to setup iommu ops
->>>>>
->>>>> I think the above print which says "failed to setup iommu_ops"
->>>>> because the call ops->add_device failed in of_pci_iommu_configure
->>>>> is the reason for the failure, in my case i simply do not get this even with
->>>>> your scripts. ops->add_device succeeds in the rebind as well. So still
->>>>> checking what could be happening in your case.
->>>>
->>>> I was looking at your code base from [1].The ops->add_device
->>>> callback from of_pci_iommu_configure on the rebind is the
->>>> one which is causing the failure. But not able to spot out
->>>>from code which point is causing the failure. It would be very helpful
->>>> if i can know which is the return value from the add_device callback
->>>> or point inside add_device callback which fails in your setup.
->>>>
->>>>
->>>> [1] git://linux-arm.org/linux-rm iommu/misc
->>>
->>> With little more try, i saw an issue where i had an failure
->>> similar to what you reported. The issue happens when multiple
->>> devices fall in to same group due to matching sids. I ended up
->>> doing a fix like below and it would be nice to verify if it is the same
->>> that we are seeing in your setup and if the fix makes a difference ?
->>>
->>> From: Sricharan R <sricharan@codeaurora.org>
->>> Date: Fri, 4 Nov 2016 20:28:49 +0530
->>> Subject: [PATCH] iommu/arm-smmu: Fix group's reference counting
->>>
->>> iommu_group_get_for_dev which gets called in the add_device
->>> callback, increases the reference count of the iommu_group,
->>> so we do an iommu_group_put after that. iommu_group_get_for_dev
->>> inturn calls device_group callback and in the case of arm-smmu
->>> we call generic_device_group/pci_device_group which takes
->>> care of increasing the group's reference. But when we return
->>> an already existing group(when multiple devices have same group)
->>> the reference is not incremented, resulting in issues when the
->>> remove_device callback for the devices is invoked.
->>> Fixing the same here.
->>
->>Bah, yes, this does look like my fault - after flip-flopping between
->>about 3 different ways to keep refcounts for the S2CR entries, none of
->>which would quite work, I ripped it all out but apparently still got
->>things wrong, oh well. Thanks for figuring it out.
-> >
->>On the probe-deferral angle, whilst it's useful to have uncovered this
->>bug, I don't think we should actually be calling remove_device() from
->>DMA teardown. I think it's preferable from a user perspective if group
->>numbering remains stable, rather than changing depending on the order in
->>which they unbind/rebind VFIO drivers. I'm really keen to try and get
->>this in shape for 4.10, so I've taken the liberty of hacking up my own
->>branch (iommu/defer) based on v3 - would you mind taking a look at the
->>two "iommu/of:" commits to see what you think? (Ignore the PCI changes
->>to your later patches - that was an experiment which didn't really work out)
->
->Ok, will take a look at this now and respond more on this.
->
-Sorry for the delayed response on this. I was OOO for the last few days.
-So i tested this branch and it worked fine. I tested it with a pci device
-for both normal and deferred probe cases.  The of/iommu patches
-are the cleanup/preparation patches and it looks fine. One thing is without
-calling the remove_device callback, the resources like (smes for exmaple)
-and the group association of the device all remain allocated. That does not
-feel correct, given that the associated device does not exist. So to
-understand that, what happens with VFIO in this case which makes the
-group renumbering/rebinding a problem ?
+Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+---
+ drivers/iommu/exynos-iommu.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Regards,
- Sricharan
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 30808e9..8ba0d60 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -578,9 +578,6 @@ static void sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
+ 			sysmmu_unblock(data);
+ 		}
+ 		clk_disable(data->clk_master);
+-	} else {
+-		dev_dbg(data->master,
+-			"disabled. Skipping TLB invalidation @ %#x\n", iova);
+ 	}
+ 	spin_unlock_irqrestore(&data->lock, flags);
+ }
+-- 
+1.9.1
