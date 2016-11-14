@@ -1,37 +1,30 @@
-From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 1/2] iommu/dma: Implement dma_{map,unmap}_resource()
-Date: Mon, 14 Nov 2016 07:12:28 -0700
-Message-ID: <20161114141228.eegibrpap2fyjr5v@localhost>
-References: <d1cbd5ce714ce3c978aa8bfcb31def87d7919198.1479125555.git.robin.murphy@arm.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu/exynos: Add support for page access protection bits
+Date: Mon, 14 Nov 2016 16:00:15 +0100
+Message-ID: <20161114150015.GA13998@8bytes.org>
+References: <CGME20161103080459eucas1p254076fdf45c72dbc09aee42fe6234c0d@eucas1p2.samsung.com>
+ <1478160285-14214-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <d1cbd5ce714ce3c978aa8bfcb31def87d7919198.1479125555.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <1478160285-14214-1-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 14, 2016 at 12:16:26PM +0000, Robin Murphy wrote:
-> With the new dma_{map,unmap}_resource() functions added to the DMA API
-> for the benefit of cases like slave DMA, add suitable implementations to
-> the arsenal of our generic layer. Since cache maintenance should not be
-> a concern, these can both be standalone callback implementations without
-> the need for arch code wrappers.
+On Thu, Nov 03, 2016 at 09:04:45AM +0100, Marek Szyprowski wrote:
+> This patch add support for page access protection bits. Till now this
+> feature was disabled and Exynos SYSMMU always mapped pages as read/write.
+> Now page access bits are set according to the protection bits provided
+> in iommu_map(), so Exynos SYSMMU is able to detect incorrect access to
+> mapped pages. Exynos SYSMMU earlier than v5 doesn't support write-only
+> mappings, so pages with such protection bits are mapped as read/write.
 > 
-> CC: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
+>  drivers/iommu/exynos-iommu.c | 63 +++++++++++++++++++++++++++++++++++---------
+>  1 file changed, 51 insertions(+), 12 deletions(-)
 
-FWIW:
-
-Reviewed-by: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Applied, thanks Marek.
