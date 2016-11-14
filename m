@@ -1,174 +1,64 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v7 2/7] iommu/exynos: Remove dead code
-Date: Mon, 14 Nov 2016 11:08:07 +0100
-Message-ID: <1479118092-1365-3-git-send-email-m.szyprowski@samsung.com>
-References: <1479118092-1365-1-git-send-email-m.szyprowski@samsung.com>
-	<CGME20161114100909eucas1p1bc6b64109f463f12879b2e3eccb76434@eucas1p1.samsung.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v7 04/16] drivers: iommu: make of_iommu_set/get_ops() DT
+ agnostic
+Date: Mon, 14 Nov 2016 10:26:54 +0000
+Message-ID: <20161114102654.GA1677@red-moon>
+References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
+ <20161109141948.19244-5-lorenzo.pieralisi@arm.com>
+ <20161111152248.GS2078@8bytes.org>
+ <552e674a-f434-f08f-8e16-a94544ce8e6e@arm.com>
+ <20161111162736.GV2078@8bytes.org>
+ <33769e3c-265f-6e89-adf9-6d35b1e03579@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1479118092-1365-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-pm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Tobias Jakobi <tjakobi-o02PS0xoJP9W0yFyLvAVXMxlOr/tl8fh@public.gmane.org>, "Luis R. Rodriguez" <mcgrof-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <33769e3c-265f-6e89-adf9-6d35b1e03579@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-__sysmmu_enable/disable functions were designed to do ref-count based
-operations, but current code always calls them only once, so the code for
-checking the conditions and invalid conditions can be simply removed
-without any influence to the driver operation.
+Hi Robin, Joerg,
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
----
- drivers/iommu/exynos-iommu.c | 65 ++++++++++++--------------------------------
- 1 file changed, 17 insertions(+), 48 deletions(-)
+On Fri, Nov 11, 2016 at 05:43:39PM +0000, Robin Murphy wrote:
+> On 11/11/16 16:27, Joerg Roedel wrote:
+> > On Fri, Nov 11, 2016 at 04:17:37PM +0000, Robin Murphy wrote:
+> >> In the original of_iommu_configure design, the thought was that an ops
+> >> structure could be IOMMU-instance-specific (hence the later-removed
+> >> "priv" member), so I suppose right now it is mostly a hangover from
+> >> that. However, it's also what we initialise a device's fwspec with, so
+> >> becomes important again if we're ever going to get past the limitations
+> >> of buses-which-are-not-actually-buses[1].
+> > 
+> > Yeah, I discussed this with a few others at LPC. My current idea is to
+> > tell the iommu-core which hardware-iommus exist in the system and a
+> > seperate iommu_ops ptr for each of them. Then every struct device can
+> > link to the iommu-instance it is translated by.
+> 
+> Er, that sounds very much like a description of what we already have in
+> 4.9-rc. Every struct device now has an iommu_fwspec which encapsulates
+> both an iommu_ops pointer (which can perfectly well be per-instance if
+> the IOMMU driver wants) and a place for the IOMMU-private data to
+> replace the mess of archdata.iommu and driver-internal globals.
+> 
+> > We are not there yet, but this will give you the same per-device
+> > iommu-ops as implemented here.
+> 
+> With those two patches I linked to, which make the bulk of the IOMMU
+> core code per-device-ops-aware off the bat, I'd say we *are* already
+> pretty much there. It's only iommu_domain_alloc() which needs a
+> device-based alternative, and the non-of_xlate-based IOMMU drivers to
+> either call iommu_fwspec_init() for themselves, or perhaps for x86
+> plumbing in DMAR/IVRS equivalents of the IORT parsing to the
+> infrastructure provided by this series.
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 8ba0d60..4056228 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -460,9 +460,6 @@ static bool __sysmmu_disable(struct sysmmu_drvdata *data)
- 		__sysmmu_disable_nocount(data);
- 
- 		dev_dbg(data->sysmmu, "Disabled\n");
--	} else  {
--		dev_dbg(data->sysmmu, "%d times left to disable\n",
--					data->activations);
- 	}
- 
- 	spin_unlock_irqrestore(&data->lock, flags);
-@@ -508,29 +505,18 @@ static void __sysmmu_enable_nocount(struct sysmmu_drvdata *data)
- static int __sysmmu_enable(struct sysmmu_drvdata *data, phys_addr_t pgtable,
- 			   struct exynos_iommu_domain *domain)
- {
--	int ret = 0;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&data->lock, flags);
- 	if (set_sysmmu_active(data)) {
- 		data->pgtable = pgtable;
- 		data->domain = domain;
--
- 		__sysmmu_enable_nocount(data);
--
- 		dev_dbg(data->sysmmu, "Enabled\n");
--	} else {
--		ret = (pgtable == data->pgtable) ? 1 : -EBUSY;
--
--		dev_dbg(data->sysmmu, "already enabled\n");
- 	}
--
--	if (WARN_ON(ret < 0))
--		set_sysmmu_inactive(data); /* decrement count */
--
- 	spin_unlock_irqrestore(&data->lock, flags);
- 
--	return ret;
-+	return 0;
- }
- 
- static void sysmmu_tlb_invalidate_flpdcache(struct sysmmu_drvdata *data,
-@@ -793,8 +779,8 @@ static void exynos_iommu_domain_free(struct iommu_domain *iommu_domain)
- 	spin_lock_irqsave(&domain->lock, flags);
- 
- 	list_for_each_entry_safe(data, next, &domain->clients, domain_node) {
--		if (__sysmmu_disable(data))
--			data->master = NULL;
-+		__sysmmu_disable(data);
-+		data->master = NULL;
- 		list_del_init(&data->domain_node);
- 	}
- 
-@@ -829,31 +815,23 @@ static void exynos_iommu_detach_device(struct iommu_domain *iommu_domain,
- 	phys_addr_t pagetable = virt_to_phys(domain->pgtable);
- 	struct sysmmu_drvdata *data, *next;
- 	unsigned long flags;
--	bool found = false;
- 
- 	if (!has_sysmmu(dev) || owner->domain != iommu_domain)
- 		return;
- 
- 	spin_lock_irqsave(&domain->lock, flags);
- 	list_for_each_entry_safe(data, next, &domain->clients, domain_node) {
--		if (data->master == dev) {
--			if (__sysmmu_disable(data)) {
--				data->master = NULL;
--				list_del_init(&data->domain_node);
--			}
--			pm_runtime_put(data->sysmmu);
--			found = true;
--		}
-+		__sysmmu_disable(data);
-+		data->master = NULL;
-+		list_del_init(&data->domain_node);
-+		pm_runtime_put(data->sysmmu);
- 	}
- 	spin_unlock_irqrestore(&domain->lock, flags);
- 
- 	owner->domain = NULL;
- 
--	if (found)
--		dev_dbg(dev, "%s: Detached IOMMU with pgtable %pa\n",
--					__func__, &pagetable);
--	else
--		dev_err(dev, "%s: No IOMMU is attached\n", __func__);
-+	dev_dbg(dev, "%s: Detached IOMMU with pgtable %pa\n", __func__,
-+		&pagetable);
- }
- 
- static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
-@@ -864,7 +842,6 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
- 	struct sysmmu_drvdata *data;
- 	phys_addr_t pagetable = virt_to_phys(domain->pgtable);
- 	unsigned long flags;
--	int ret = -ENODEV;
- 
- 	if (!has_sysmmu(dev))
- 		return -ENODEV;
-@@ -874,27 +851,19 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
- 
- 	list_for_each_entry(data, &owner->controllers, owner_node) {
- 		pm_runtime_get_sync(data->sysmmu);
--		ret = __sysmmu_enable(data, pagetable, domain);
--		if (ret >= 0) {
--			data->master = dev;
-+		__sysmmu_enable(data, pagetable, domain);
-+		data->master = dev;
- 
--			spin_lock_irqsave(&domain->lock, flags);
--			list_add_tail(&data->domain_node, &domain->clients);
--			spin_unlock_irqrestore(&domain->lock, flags);
--		}
--	}
--
--	if (ret < 0) {
--		dev_err(dev, "%s: Failed to attach IOMMU with pgtable %pa\n",
--					__func__, &pagetable);
--		return ret;
-+		spin_lock_irqsave(&domain->lock, flags);
-+		list_add_tail(&data->domain_node, &domain->clients);
-+		spin_unlock_irqrestore(&domain->lock, flags);
- 	}
- 
- 	owner->domain = iommu_domain;
--	dev_dbg(dev, "%s: Attached IOMMU with pgtable %pa %s\n",
--		__func__, &pagetable, (ret == 0) ? "" : ", again");
-+	dev_dbg(dev, "%s: Attached IOMMU with pgtable %pa\n", __func__,
-+		&pagetable);
- 
--	return ret;
-+	return 0;
- }
- 
- static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *domain,
--- 
-1.9.1
+I think it all boils down to how we end up implementing the per-device
+iommu_ops look-up/binding, question is what do you want me to do with
+this patch, it should be fine to drop it and use dev->bus->iommu_ops
+for the look-up but I should know sooner rather than later to make
+sure the series get another good round of testing.
+
+Please let me know, thank you very much.
+
+Lorenzo
