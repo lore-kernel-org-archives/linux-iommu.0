@@ -1,57 +1,49 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [RFC v2 8/8] iommu/arm-smmu: implement add_reserved_regions
- callback
-Date: Mon, 14 Nov 2016 16:31:50 +0100
-Message-ID: <20161114153149.GY2078@8bytes.org>
-References: <1478258646-3117-1-git-send-email-eric.auger@redhat.com>
- <1478258646-3117-9-git-send-email-eric.auger@redhat.com>
- <20161110154606.GH2078@8bytes.org>
- <04ed9694-707d-260b-70c6-f367d292ceca@redhat.com>
- <20161110161331.GJ2078@8bytes.org>
- <f4537e43-0237-e478-eacd-b107458628b8@redhat.com>
- <20161111114223.GP2078@8bytes.org>
- <79da09b8-ac1e-cebf-5393-7d67f002b3e3@redhat.com>
- <20161111162211.GU2078@8bytes.org>
- <634ac375-3507-6926-164f-e67f7c798c98@redhat.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v7 04/16] drivers: iommu: make of_iommu_set/get_ops() DT
+	agnostic
+Date: Mon, 14 Nov 2016 16:52:23 +0100
+Message-ID: <20161114155222.GZ2078@8bytes.org>
+References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
+	<20161109141948.19244-5-lorenzo.pieralisi@arm.com>
+	<20161111152248.GS2078@8bytes.org>
+	<552e674a-f434-f08f-8e16-a94544ce8e6e@arm.com>
+	<20161111162736.GV2078@8bytes.org>
+	<33769e3c-265f-6e89-adf9-6d35b1e03579@arm.com>
+	<20161114102654.GA1677@red-moon>
+	<41e3eff1-9ce6-bcfb-5716-c65ef38add63@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <634ac375-3507-6926-164f-e67f7c798c98@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Auger Eric <eric.auger@redhat.com>
-Cc: drjones@redhat.com, jason@lakedaemon.net, kvm@vger.kernel.org, marc.zyngier@arm.com, punit.agrawal@arm.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, diana.craciun@nxp.com, alex.williamson@redhat.com, pranav.sawargaonkar@gmail.com, linux-arm-kernel@lists.infradead.org, tglx@linutronix.de, robin.murphy@arm.com, christoffer.dall@linaro.org, eric.auger.pro@gmail.com
+In-Reply-To: <41e3eff1-9ce6-bcfb-5716-c65ef38add63-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Eric,
+On Mon, Nov 14, 2016 at 12:00:47PM +0000, Robin Murphy wrote:
+> If we've already made the decision to move away from bus ops, I don't
+> see that it makes sense to deliberately introduce new dependencies on
+> them. Besides, as it stands, this patch literally implements "tell the
+> iommu-core which hardware-iommus exist in the system and a seperate
+> iommu_ops ptr for each of them" straight off.
 
-On Fri, Nov 11, 2016 at 05:45:19PM +0100, Auger Eric wrote:
-> On 11/11/2016 17:22, Joerg Roedel wrote:
-> > So I think we need a way to tell userspace about the reserved regions
-> > (per iommu-group) so that userspace knows where it can not map anything,
+Not sure which code you are looking at, but as I see it we have only
+per-device iommu-ops now (with this patch). That is different from
+having core-visible hardware-iommu instances where devices could link
+to.
 
-> Current plan is to expose that info through an iommu-group sysfs
-> attribute, as you and Robin advised.
-
-Great.
-
-> > and VFIO can enforce that. But the right struct here is not an
-> > iova-allocator rb-tree, a ordered linked list should be sufficient.
-> I plan a linked list to store the reserved regions (P2P regions, MSI
-> region, ...). get_dma_regions is called with a list local to a function
-> for that. Might be needed to move that list head in the iommu_group to
-> avoid calling the get_dm_regions again in the attribute show function?
-
-You can re-use the get_dm_regions() call-back available in the iommu-ops
-already. Just rename it and add a flag to it which tells the iommu-core
-whether that region needs to be mapped or not.
-
-> But to allocate the IOVAs within the MSI reserved region, I understand
-> you don't want us to use the iova.c allocator, is that correct? We need
-> an allocator though, even a very basic one based on bitmap or whatever.
-> There potentially have several different physical MSI frame pages to map.
-
-I don't get this, what do you need and address-allocator for?
+Also the rest of iommu-core code still makes use of the per-bus ops. The
+per-device ops are only used for the of_xlate fn-ptr.
 
 
 
