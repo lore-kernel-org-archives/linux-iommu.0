@@ -1,77 +1,77 @@
-From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: [bug report] iommu/vt-d: Fix IOMMU lookup for SR-IOV Virtual Functions
-Date: Mon, 14 Nov 2016 14:09:52 +0300
-Message-ID: <20161114110951.GA1881@mwanda>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v7 04/16] drivers: iommu: make of_iommu_set/get_ops() DT
+ agnostic
+Date: Mon, 14 Nov 2016 12:00:47 +0000
+Message-ID: <41e3eff1-9ce6-bcfb-5716-c65ef38add63@arm.com>
+References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
+ <20161109141948.19244-5-lorenzo.pieralisi@arm.com>
+ <20161111152248.GS2078@8bytes.org>
+ <552e674a-f434-f08f-8e16-a94544ce8e6e@arm.com>
+ <20161111162736.GV2078@8bytes.org>
+ <33769e3c-265f-6e89-adf9-6d35b1e03579@arm.com>
+ <20161114102654.GA1677@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20161114102654.GA1677@red-moon>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Ashok Raj,
+On 14/11/16 10:26, Lorenzo Pieralisi wrote:
+> Hi Robin, Joerg,
+> 
+> On Fri, Nov 11, 2016 at 05:43:39PM +0000, Robin Murphy wrote:
+>> On 11/11/16 16:27, Joerg Roedel wrote:
+>>> On Fri, Nov 11, 2016 at 04:17:37PM +0000, Robin Murphy wrote:
+>>>> In the original of_iommu_configure design, the thought was that an ops
+>>>> structure could be IOMMU-instance-specific (hence the later-removed
+>>>> "priv" member), so I suppose right now it is mostly a hangover from
+>>>> that. However, it's also what we initialise a device's fwspec with, so
+>>>> becomes important again if we're ever going to get past the limitations
+>>>> of buses-which-are-not-actually-buses[1].
+>>>
+>>> Yeah, I discussed this with a few others at LPC. My current idea is to
+>>> tell the iommu-core which hardware-iommus exist in the system and a
+>>> seperate iommu_ops ptr for each of them. Then every struct device can
+>>> link to the iommu-instance it is translated by.
+>>
+>> Er, that sounds very much like a description of what we already have in
+>> 4.9-rc. Every struct device now has an iommu_fwspec which encapsulates
+>> both an iommu_ops pointer (which can perfectly well be per-instance if
+>> the IOMMU driver wants) and a place for the IOMMU-private data to
+>> replace the mess of archdata.iommu and driver-internal globals.
+>>
+>>> We are not there yet, but this will give you the same per-device
+>>> iommu-ops as implemented here.
+>>
+>> With those two patches I linked to, which make the bulk of the IOMMU
+>> core code per-device-ops-aware off the bat, I'd say we *are* already
+>> pretty much there. It's only iommu_domain_alloc() which needs a
+>> device-based alternative, and the non-of_xlate-based IOMMU drivers to
+>> either call iommu_fwspec_init() for themselves, or perhaps for x86
+>> plumbing in DMAR/IVRS equivalents of the IORT parsing to the
+>> infrastructure provided by this series.
+> 
+> I think it all boils down to how we end up implementing the per-device
+> iommu_ops look-up/binding, question is what do you want me to do with
+> this patch, it should be fine to drop it and use dev->bus->iommu_ops
+> for the look-up but I should know sooner rather than later to make
+> sure the series get another good round of testing.
 
-This is a semi-automatic email about new static checker warnings.
+If we've already made the decision to move away from bus ops, I don't
+see that it makes sense to deliberately introduce new dependencies on
+them. Besides, as it stands, this patch literally implements "tell the
+iommu-core which hardware-iommus exist in the system and a seperate
+iommu_ops ptr for each of them" straight off.
 
-The patch 1c387188c60f: "iommu/vt-d: Fix IOMMU lookup for SR-IOV 
-Virtual Functions" from Oct 21, 2016, leads to the following Smatch 
-complaint:
+Robin.
 
-drivers/iommu/intel-iommu.c:918 device_to_iommu()
-	 error: we previously assumed 'pdev' could be null (see line 908)
+> 
+> Please let me know, thank you very much.
+> 
+> Lorenzo
+> 
 
-drivers/iommu/intel-iommu.c
-   907		for_each_active_iommu(iommu, drhd) {
-   908			if (pdev && segment != drhd->segment)
-                            ^^^^
-Other code assumes pdev can be NULL.
-
-   909				continue;
-   910	
-   911			for_each_active_dev_scope(drhd->devices,
-   912						  drhd->devices_cnt, i, tmp) {
-   913				if (tmp == dev) {
-   914					/* For a VF use its original BDF# not that of the PF
-   915					 * which we used for the IOMMU lookup. Strictly speaking
-   916					 * we could do this for all PCI devices; we only need to
-   917					 * get the BDF# from the scope table for ACPI matches. */
-   918					if (pdev->is_virtfn)
-                                            ^^^^^^^^^^^^^^^
-Not checked.
-
-   919						goto got_pdev;
-   920	
-   921                                  *bus = drhd->devices[i].bus;
-   922                                  *devfn = drhd->devices[i].devfn;
-   923                                  goto out;
-   924                          }
-   925  
-   926                          if (!pdev || !dev_is_pci(tmp))
-                                     ^^^^
-Checked here as well.
-
-   927                                  continue;
-   928  
-   929                          ptmp = to_pci_dev(tmp);
-   930                          if (ptmp->subordinate &&
-   931                              ptmp->subordinate->number <= pdev->bus->number &&
-   932                              ptmp->subordinate->busn_res.end >= pdev->bus->number)
-   933                                  goto got_pdev;
-   934                  }
-   935  
-   936                  if (pdev && drhd->include_all) {
-   937                  got_pdev:
-
-regards,
-dan carpenter
