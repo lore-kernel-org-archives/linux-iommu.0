@@ -1,54 +1,94 @@
-From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 2/2] arm64: Wire up iommu_dma_{map, unmap}_resource()
-Date: Sun, 13 Nov 2016 11:42:34 +0000
-Message-ID: <20161113114234.GB24837@MBP.local>
-References: <7d54803d32968be46a1a525d7160feb13af72f00.1478887214.git.robin.murphy@arm.com>
-	<706f6bc883775206d661f38d9c1cbaa4cc4d04b7.1478887214.git.robin.murphy@arm.com>
+From: "Sricharan" <sricharan@codeaurora.org>
+Subject: RE: [PATCH V3 0/8] IOMMU probe deferral support
+Date: Mon, 14 Nov 2016 09:11:01 +0530
+Message-ID: <01bb01d23e28$f0612d00$d1238700$@codeaurora.org>
+References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org> <60ee8066-f167-e9df-ae3e-4138f1133bad@arm.com> <003a01d22f97$82534c70$86f9e550$@codeaurora.org> <421e2b14-0231-d376-02a0-097423120b3d@arm.com> <006f01d236ae$61751c40$245f54c0$@codeaurora.org> <9f36244f-62d4-08e3-d64a-2b04ad4dc2e0@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain;
+        charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <706f6bc883775206d661f38d9c1cbaa4cc4d04b7.1478887214.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: 
+Content-Language: en-us
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: 'Robin Murphy' <robin.murphy@arm.com>, will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, laurent.pinchart@ideasonboard.com, m.szyprowski@samsung.com, tfiga@chromium.org, srinivas.kandagatla@linaro.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 11, 2016 at 06:27:35PM +0000, Robin Murphy wrote:
-> With no coherency to worry about, just plug'em straight in.
-> 
-> CC: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-> CC: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  arch/arm64/mm/dma-mapping.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index 3f74d0d98de6..5cd0a383b14b 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -796,6 +796,8 @@ static struct dma_map_ops iommu_dma_ops = {
->  	.sync_single_for_device = __iommu_sync_single_for_device,
->  	.sync_sg_for_cpu = __iommu_sync_sg_for_cpu,
->  	.sync_sg_for_device = __iommu_sync_sg_for_device,
-> +	.map_resource = iommu_dma_map_resource,
-> +	.unmap_resource = iommu_dma_unmap_resource,
->  	.dma_supported = iommu_dma_supported,
->  	.mapping_error = iommu_dma_mapping_error,
+Hi Robin,
 
-Acked-by: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+>Hi Robin,
+>
+>>On 04/11/16 15:16, Sricharan wrote:
+>>> Hi Robin,
+>>>
+>>>>>> Yikes, on second look, that definitely shouldn't be happening.
+>>>>>> Everything below is probably the resulting fallout.
+>>>>>
+>>>>> [   40.206703] vfio-pci 0000:08:00.0: Failed to setup iommu ops
+>>>>>
+>>>>> I think the above print which says "failed to setup iommu_ops"
+>>>>> because the call ops->add_device failed in of_pci_iommu_configure
+>>>>> is the reason for the failure, in my case i simply do not get this even with
+>>>>> your scripts. ops->add_device succeeds in the rebind as well. So still
+>>>>> checking what could be happening in your case.
+>>>>
+>>>> I was looking at your code base from [1].The ops->add_device
+>>>> callback from of_pci_iommu_configure on the rebind is the
+>>>> one which is causing the failure. But not able to spot out
+>>>>from code which point is causing the failure. It would be very helpful
+>>>> if i can know which is the return value from the add_device callback
+>>>> or point inside add_device callback which fails in your setup.
+>>>>
+>>>>
+>>>> [1] git://linux-arm.org/linux-rm iommu/misc
+>>>
+>>> With little more try, i saw an issue where i had an failure
+>>> similar to what you reported. The issue happens when multiple
+>>> devices fall in to same group due to matching sids. I ended up
+>>> doing a fix like below and it would be nice to verify if it is the same
+>>> that we are seeing in your setup and if the fix makes a difference ?
+>>>
+>>> From: Sricharan R <sricharan@codeaurora.org>
+>>> Date: Fri, 4 Nov 2016 20:28:49 +0530
+>>> Subject: [PATCH] iommu/arm-smmu: Fix group's reference counting
+>>>
+>>> iommu_group_get_for_dev which gets called in the add_device
+>>> callback, increases the reference count of the iommu_group,
+>>> so we do an iommu_group_put after that. iommu_group_get_for_dev
+>>> inturn calls device_group callback and in the case of arm-smmu
+>>> we call generic_device_group/pci_device_group which takes
+>>> care of increasing the group's reference. But when we return
+>>> an already existing group(when multiple devices have same group)
+>>> the reference is not incremented, resulting in issues when the
+>>> remove_device callback for the devices is invoked.
+>>> Fixing the same here.
+>>
+>>Bah, yes, this does look like my fault - after flip-flopping between
+>>about 3 different ways to keep refcounts for the S2CR entries, none of
+>>which would quite work, I ripped it all out but apparently still got
+>>things wrong, oh well. Thanks for figuring it out.
+> >
+>>On the probe-deferral angle, whilst it's useful to have uncovered this
+>>bug, I don't think we should actually be calling remove_device() from
+>>DMA teardown. I think it's preferable from a user perspective if group
+>>numbering remains stable, rather than changing depending on the order in
+>>which they unbind/rebind VFIO drivers. I'm really keen to try and get
+>>this in shape for 4.10, so I've taken the liberty of hacking up my own
+>>branch (iommu/defer) based on v3 - would you mind taking a look at the
+>>two "iommu/of:" commits to see what you think? (Ignore the PCI changes
+>>to your later patches - that was an experiment which didn't really work out)
+>
+>Ok, will take a look at this now and respond more on this.
+>
+Sorry for the delayed response on this. I was OOO for the last few days.
+So i tested this branch and it worked fine. I tested it with a pci device
+for both normal and deferred probe cases.  The of/iommu patches
+are the cleanup/preparation patches and it looks fine. One thing is without
+calling the remove_device callback, the resources like (smes for exmaple)
+and the group association of the device all remain allocated. That does not
+feel correct, given that the associated device does not exist. So to
+understand that, what happens with VFIO in this case which makes the
+group renumbering/rebinding a problem ?
 
-I guess these two patches would go in via the iommu tree.
-
--- 
-Catalin
+Regards,
+ Sricharan
