@@ -1,49 +1,37 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 4/5] iommu: Move REQ_ACS_FLAGS out to header and rename
-Date: Mon, 14 Nov 2016 13:48:03 +0100
-Message-ID: <20161114124803.GW2078@8bytes.org>
-References: <20161026175156.23495.12980.stgit@gimli.home>
- <20161026180134.23495.27520.stgit@gimli.home>
- <20161110122713.GI9996@8bytes.org>
- <20161111225740.GX9868@bhelgaas-glaptop.roam.corp.google.com>
+From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v4 1/2] iommu/dma: Implement dma_{map,unmap}_resource()
+Date: Mon, 14 Nov 2016 07:12:28 -0700
+Message-ID: <20161114141228.eegibrpap2fyjr5v@localhost>
+References: <d1cbd5ce714ce3c978aa8bfcb31def87d7919198.1479125555.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20161111225740.GX9868@bhelgaas-glaptop.roam.corp.google.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Alex Williamson <alex.williamson@redhat.com>, linux-pci@vger.kernel.org, bhelgaas@google.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <d1cbd5ce714ce3c978aa8bfcb31def87d7919198.1479125555.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Nov 11, 2016 at 04:57:40PM -0600, Bjorn Helgaas wrote:
-> On Thu, Nov 10, 2016 at 01:27:13PM +0100, Joerg Roedel wrote:
-> > On Wed, Oct 26, 2016 at 12:01:34PM -0600, Alex Williamson wrote:
-> > > Allow other parts of the kernel to see which PCI ACS flags the IOMMU
-> > > layer considers necessary for isolation.
-> > > 
-> > > Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
-> > > Cc: Joerg Roedel <joro@8bytes.org>
-> > > ---
-> > >  drivers/iommu/iommu.c |   18 +++++-------------
-> > >  include/linux/iommu.h |   11 +++++++++++
-> > >  2 files changed, 16 insertions(+), 13 deletions(-)
-> > 
-> > Applied, thanks Alex.
+On Mon, Nov 14, 2016 at 12:16:26PM +0000, Robin Murphy wrote:
+> With the new dma_{map,unmap}_resource() functions added to the DMA API
+> for the benefit of cases like slave DMA, add suitable implementations to
+> the arsenal of our generic layer. Since cache maintenance should not be
+> a concern, these can both be standalone callback implementations without
+> the need for arch code wrappers.
 > 
-> Hi Joerg, did you apply just this one (4/5), or the whole series?  If the
-> former, is it safe for me to apply 1, 2, 3, and 5?  I assumed these were
-> meant to go as a group.
+> CC: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-Ah yes, I missed that this patch was part of a series and applied it. I
-can still remove it, as the tree is not yet pushed. Will you take the
-while series? Then you can add my
+FWIW:
 
-	Acked-by: Joerg Roedel <jroedel@suse.de>
-
-to this patch.
-
-
-Thanks,
-
-	Joerg
+Reviewed-by: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
