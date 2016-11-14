@@ -1,204 +1,76 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [RFC PATCH v3 06/20] x86: Add support to enable SME during early
- boot processing
-Date: Mon, 14 Nov 2016 12:18:44 -0600
-Message-ID: <178d7d21-ffbd-1083-9c64-f05378147e27@amd.com>
-References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
- <20161110003543.3280.99623.stgit@tlendack-t1.amdoffice.net>
- <20161114172930.27z7p2kytmhtcbsb@pd.tnic>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v7 04/16] drivers: iommu: make of_iommu_set/get_ops() DT
+ agnostic
+Date: Mon, 14 Nov 2016 18:25:16 +0000
+Message-ID: <313844ca-d948-1297-84b2-669f3a7d57d2@arm.com>
+References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
+ <20161109141948.19244-5-lorenzo.pieralisi@arm.com>
+ <20161111152248.GS2078@8bytes.org>
+ <552e674a-f434-f08f-8e16-a94544ce8e6e@arm.com>
+ <20161111162736.GV2078@8bytes.org>
+ <33769e3c-265f-6e89-adf9-6d35b1e03579@arm.com>
+ <20161114102654.GA1677@red-moon>
+ <41e3eff1-9ce6-bcfb-5716-c65ef38add63@arm.com>
+ <20161114155222.GZ2078@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161114172930.27z7p2kytmhtcbsb@pd.tnic>
+In-Reply-To: <20161114155222.GZ2078@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/14/2016 11:29 AM, Borislav Petkov wrote:
-> On Wed, Nov 09, 2016 at 06:35:43PM -0600, Tom Lendacky wrote:
->> This patch adds support to the early boot code to use Secure Memory
->> Encryption (SME).  Support is added to update the early pagetables with
->> the memory encryption mask and to encrypt the kernel in place.
->>
->> The routines to set the encryption mask and perform the encryption are
->> stub routines for now with full function to be added in a later patch.
->>
->> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
->> ---
->>  arch/x86/kernel/Makefile           |    2 ++
->>  arch/x86/kernel/head_64.S          |   35 ++++++++++++++++++++++++++++++++++-
->>  arch/x86/kernel/mem_encrypt_init.c |   29 +++++++++++++++++++++++++++++
->>  3 files changed, 65 insertions(+), 1 deletion(-)
->>  create mode 100644 arch/x86/kernel/mem_encrypt_init.c
->>
->> diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
->> index 45257cf..27e22f4 100644
->> --- a/arch/x86/kernel/Makefile
->> +++ b/arch/x86/kernel/Makefile
->> @@ -141,4 +141,6 @@ ifeq ($(CONFIG_X86_64),y)
->>  
->>  	obj-$(CONFIG_PCI_MMCONFIG)	+= mmconf-fam10h_64.o
->>  	obj-y				+= vsmp_64.o
->> +
->> +	obj-y				+= mem_encrypt_init.o
->>  endif
->> diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
->> index c98a559..9a28aad 100644
->> --- a/arch/x86/kernel/head_64.S
->> +++ b/arch/x86/kernel/head_64.S
->> @@ -95,6 +95,17 @@ startup_64:
->>  	jnz	bad_address
->>  
->>  	/*
->> +	 * Enable Secure Memory Encryption (if available).  Save the mask
->> +	 * in %r12 for later use and add the memory encryption mask to %rbp
->> +	 * to include it in the page table fixups.
->> +	 */
->> +	push	%rsi
->> +	call	sme_enable
->> +	pop	%rsi
+On 14/11/16 15:52, Joerg Roedel wrote:
+> On Mon, Nov 14, 2016 at 12:00:47PM +0000, Robin Murphy wrote:
+>> If we've already made the decision to move away from bus ops, I don't
+>> see that it makes sense to deliberately introduce new dependencies on
+>> them. Besides, as it stands, this patch literally implements "tell the
+>> iommu-core which hardware-iommus exist in the system and a seperate
+>> iommu_ops ptr for each of them" straight off.
 > 
-> Why %rsi?
-> 
-> sme_enable() is void so no args in registers and returns in %rax.
-> 
-> /me is confused.
+> Not sure which code you are looking at, but as I see it we have only
+> per-device iommu-ops now (with this patch). That is different from
+> having core-visible hardware-iommu instances where devices could link
+> to.
 
-The %rsi register can be clobbered by the called function so I'm saving
-it since it points to the real mode data.  I might be able to look into
-saving it earlier and restoring it before needed, but I though this
-might be clearer.
+The per-device IOMMU ops are already there since 57f98d2f61e1. This
+patch generalises the other end, moving the "registering an IOMMU
+instance" (i.e. iommu_fwentry) bit into the IOMMU core, from being
+OF-specific. I'd be perfectly happy if we rename iommu_fwentry to
+iommu_instance, fwnode_iommu_set_ops() to iommu_register_instance(), and
+such if that makes the design intent clearer.
 
-> 
->> +	movq	%rax, %r12
->> +	addq	%r12, %rbp
->> +
->> +	/*
->>  	 * Fixup the physical addresses in the page table
->>  	 */
->>  	addq	%rbp, early_level4_pgt + (L4_START_KERNEL*8)(%rip)
->> @@ -117,6 +128,7 @@ startup_64:
->>  	shrq	$PGDIR_SHIFT, %rax
->>  
->>  	leaq	(4096 + _KERNPG_TABLE)(%rbx), %rdx
->> +	addq	%r12, %rdx
->>  	movq	%rdx, 0(%rbx,%rax,8)
->>  	movq	%rdx, 8(%rbx,%rax,8)
->>  
->> @@ -133,6 +145,7 @@ startup_64:
->>  	movq	%rdi, %rax
->>  	shrq	$PMD_SHIFT, %rdi
->>  	addq	$(__PAGE_KERNEL_LARGE_EXEC & ~_PAGE_GLOBAL), %rax
->> +	addq	%r12, %rax
->>  	leaq	(_end - 1)(%rip), %rcx
->>  	shrq	$PMD_SHIFT, %rcx
->>  	subq	%rdi, %rcx
->> @@ -163,9 +176,21 @@ startup_64:
->>  	cmp	%r8, %rdi
->>  	jne	1b
->>  
->> -	/* Fixup phys_base */
->> +	/*
->> +	 * Fixup phys_base, remove the memory encryption mask from %rbp
->> +	 * to obtain the true physical address.
->> +	 */
->> +	subq	%r12, %rbp
->>  	addq	%rbp, phys_base(%rip)
->>  
->> +	/*
->> +	 * The page tables have been updated with the memory encryption mask,
->> +	 * so encrypt the kernel if memory encryption is active
->> +	 */
->> +	push	%rsi
->> +	call	sme_encrypt_kernel
->> +	pop	%rsi
-> 
-> Ditto.
-> 
->> +
->>  	movq	$(early_level4_pgt - __START_KERNEL_map), %rax
->>  	jmp 1f
->>  ENTRY(secondary_startup_64)
->> @@ -186,9 +211,17 @@ ENTRY(secondary_startup_64)
->>  	/* Sanitize CPU configuration */
->>  	call verify_cpu
->>  
->> +	push	%rsi
->> +	call	sme_get_me_mask
->> +	pop	%rsi
-> 
-> Ditto.
-> 
->> +	movq	%rax, %r12
->> +
->>  	movq	$(init_level4_pgt - __START_KERNEL_map), %rax
->>  1:
->>  
->> +	/* Add the memory encryption mask to RAX */
-> 
-> I think that should say something like:
-> 
-> 	/*
-> 	 * Add the memory encryption mask to init_level4_pgt's physical address
-> 	 */
-> 
-> or so...
+If you'd also prefer to replace iommu_fwspec::ops with an opaque
+iommu_fwspec::iommu_instance pointer so that things are a bit more
+centralised (and users are forced to go through the API rather then call
+ops directly), I'd have no major objection either. My main point is that
+we've been deliberately putting the relevant building blocks in place -
+the of_iommu_{get,set}_ops stuff was designed from the start to
+accommodate per-instance ops, via the ops pointer *being* the instance
+token; the iommu_fwspec stuff is deliberately intended to provide
+per-device ops on top of that. The raw functionality is either there in
+iommu.c already, or moving there in patches already written, so if it
+doesn't look right all we need to focus on is making it look right.
 
-Yup, I'll expand on the comment for this.
+> Also the rest of iommu-core code still makes use of the per-bus ops. The
+> per-device ops are only used for the of_xlate fn-ptr.
 
-> 
->> +	addq	%r12, %rax
->> +
->>  	/* Enable PAE mode and PGE */
->>  	movl	$(X86_CR4_PAE | X86_CR4_PGE), %ecx
->>  	movq	%rcx, %cr4
->> diff --git a/arch/x86/kernel/mem_encrypt_init.c b/arch/x86/kernel/mem_encrypt_init.c
->> new file mode 100644
->> index 0000000..388d6fb
->> --- /dev/null
->> +++ b/arch/x86/kernel/mem_encrypt_init.c
-> 
-> So nothing in the commit message explains why we need a separate
-> mem_encrypt_init.c file when we already have arch/x86/mm/mem_encrypt.c
-> for all memory encryption code...
+Hence my aforementioned patches intended for 4.10, directly following on
+from introducing iommu_fwspec in 4.9:
 
-I can expand on the commit message about that.  I was trying to keep the
-early boot-related code separate from the main code in arch/x86/mm dir.
+http://www.mail-archive.com/iommu@lists.linux-foundation.org/msg14576.html
 
-Thanks,
-Tom
+...the purpose being to provide a smooth transition from per-bus ops to
+per-device, per-instance ops. Apply those and we're 90% of the way there
+for OF-based IOMMU drivers (not that any of those actually need
+per-instance ops, admittedly; I did prototype it for the ARM SMMU ages
+ago, but it didn't seem worth the bother). Lorenzo's series broadens the
+scope to ACPI-based systems and moves the generically-useful parts into
+the core where we can easily build on them further if necessary. The
+major remaining work is to convert external callers of the current
+bus-dependent functions like iommu_domain_alloc(), iommu_present(), etc.
+to device-based alternatives.
 
-> 
->> @@ -0,0 +1,29 @@
->> +/*
->> + * AMD Memory Encryption Support
->> + *
->> + * Copyright (C) 2016 Advanced Micro Devices, Inc.
->> + *
->> + * Author: Tom Lendacky <thomas.lendacky@amd.com>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License version 2 as
->> + * published by the Free Software Foundation.
->> + */
->> +
->> +#include <linux/linkage.h>
->> +#include <linux/init.h>
->> +#include <linux/mem_encrypt.h>
->> +
->> +void __init sme_encrypt_kernel(void)
->> +{
->> +}
->> +
->> +unsigned long __init sme_get_me_mask(void)
->> +{
->> +	return sme_me_mask;
->> +}
->> +
->> +unsigned long __init sme_enable(void)
->> +{
->> +	return sme_me_mask;
->> +}
-> 
+Robin.
