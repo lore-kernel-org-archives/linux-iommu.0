@@ -1,60 +1,116 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [RFC v2 8/8] iommu/arm-smmu: implement add_reserved_regions
- callback
-Date: Mon, 14 Nov 2016 17:57:35 +0100
-Message-ID: <1846cf2b-b988-be6d-368d-7991c0bdbe5e@redhat.com>
-References: <20161110154606.GH2078@8bytes.org>
- <04ed9694-707d-260b-70c6-f367d292ceca@redhat.com>
- <20161110161331.GJ2078@8bytes.org>
- <f4537e43-0237-e478-eacd-b107458628b8@redhat.com>
- <20161111114223.GP2078@8bytes.org>
- <79da09b8-ac1e-cebf-5393-7d67f002b3e3@redhat.com>
- <20161111162211.GU2078@8bytes.org>
- <634ac375-3507-6926-164f-e67f7c798c98@redhat.com>
- <20161114153149.GY2078@8bytes.org>
- <295feefe-014b-5669-7f5a-e04b09ba3454@redhat.com>
- <20161114162037.GC14829@8bytes.org>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [RFC PATCH v3 01/20] x86: Documentation for AMD Secure Memory
+ Encryption (SME)
+Date: Mon, 14 Nov 2016 11:15:23 -0600
+Message-ID: <0a4fd80a-c3ec-5cb3-6996-bb1562c1bf58@amd.com>
+References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
+ <20161110003439.3280.82634.stgit@tlendack-t1.amdoffice.net>
+ <20161110105114.oiwcgpb436dxrdpb@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161114162037.GC14829@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: drjones@redhat.com, alex.williamson@redhat.com, jason@lakedaemon.net, kvm@vger.kernel.org, marc.zyngier@arm.com, punit.agrawal@arm.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, diana.craciun@nxp.com, iommu@lists.linux-foundation.org, pranav.sawargaonkar@gmail.com, christoffer.dall@linaro.org, tglx@linutronix.de, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, eric.auger.pro@gmail.com
+Return-path: <linux-doc-owner@vger.kernel.org>
+In-Reply-To: <20161110105114.oiwcgpb436dxrdpb@pd.tnic>
+Sender: linux-doc-owner@vger.kernel.org
+To: Borislav Petkov <bp@alien8.de>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-On 14/11/2016 17:20, Joerg Roedel wrote:
-> On Mon, Nov 14, 2016 at 05:08:16PM +0100, Auger Eric wrote:
->> There are potentially several MSI doorbell physical pages in the SOC
->> that are accessed through the IOMMU (translated). Each of those must
->> have a corresponding IOVA and IOVA/PA mapping programmed in the IOMMU.
->> Else MSI will fault.
+On 11/10/2016 4:51 AM, Borislav Petkov wrote:
+> On Wed, Nov 09, 2016 at 06:34:39PM -0600, Tom Lendacky wrote:
+>> This patch adds a Documenation entry to decribe the AMD Secure Memory
+>> Encryption (SME) feature.
 >>
->> - step 1 was to define a usable IOVA range for MSI mapping. So now we
->> decided the base address and size would be hardcoded for ARM. The
->> get_dm_region can be used to retrieve that hardcoded region.
->> - Step2 is to allocate IOVAs within that range and map then for each of
->> those MSI doorbells. This is done in the MSI controller compose() callback.
+>> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+>> ---
+>>  Documentation/kernel-parameters.txt         |    5 +++
+>>  Documentation/x86/amd-memory-encryption.txt |   40 +++++++++++++++++++++++++++
+>>  2 files changed, 45 insertions(+)
+>>  create mode 100644 Documentation/x86/amd-memory-encryption.txt
 >>
->> I hope I succeeded in clarifying this time.
->>
->> Robin sent today a new version of its cookie think using a dummy
->> allocator. I am currently integrating it.
+>> diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+>> index 030e9e9..4c730b0 100644
+>> --- a/Documentation/kernel-parameters.txt
+>> +++ b/Documentation/kernel-parameters.txt
+>> @@ -2282,6 +2282,11 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+>>  			memory contents and reserves bad memory
+>>  			regions that are detected.
+>>  
+>> +	mem_encrypt=	[X86-64] Enable AMD Secure Memory Encryption (SME)
+>> +			Memory encryption is disabled by default, using this
+>> +			switch, memory encryption can be enabled.
 > 
-> Okay, I understand. A simple bitmap-allocator would probably be
-> sufficient, and doesn't have the overhead the iova allocator has. About
-> how many pages are we talking here?
-Very few actually. In the systems I have access to I only have a single
-page. In most advanced systems we could imagine per-cpu doorbells but
-this does not exist yet as far as I know.
+> I'd say here:
+> 
+> 			"Force-enable memory encryption if it is disabled in the
+> 			BIOS."
 
-Thanks
+Good suggestion, that will make this clearer.
 
-Eric
 > 
+>> +			on: enable memory encryption
+>> +
+>>  	meye.*=		[HW] Set MotionEye Camera parameters
+>>  			See Documentation/video4linux/meye.txt.
+>>  
+>> diff --git a/Documentation/x86/amd-memory-encryption.txt b/Documentation/x86/amd-memory-encryption.txt
+>> new file mode 100644
+>> index 0000000..788d871
+>> --- /dev/null
+>> +++ b/Documentation/x86/amd-memory-encryption.txt
+>> @@ -0,0 +1,40 @@
+>> +Secure Memory Encryption (SME) is a feature found on AMD processors.
+>> +
+>> +SME provides the ability to mark individual pages of memory as encrypted using
+>> +the standard x86 page tables.  A page that is marked encrypted will be
+>> +automatically decrypted when read from DRAM and encrypted when written to
+>> +DRAM.  SME can therefore be used to protect the contents of DRAM from physical
+>> +attacks on the system.
+>> +
+>> +A page is encrypted when a page table entry has the encryption bit set (see
+>> +below how to determine the position of the bit).  The encryption bit can be
+>> +specified in the cr3 register, allowing the PGD table to be encrypted. Each
+>> +successive level of page tables can also be encrypted.
+>> +
+>> +Support for SME can be determined through the CPUID instruction. The CPUID
+>> +function 0x8000001f reports information related to SME:
+>> +
+>> +	0x8000001f[eax]:
+>> +		Bit[0] indicates support for SME
+>> +	0x8000001f[ebx]:
+>> +		Bit[5:0]  pagetable bit number used to enable memory encryption
+>> +		Bit[11:6] reduction in physical address space, in bits, when
+>> +			  memory encryption is enabled (this only affects system
+>> +			  physical addresses, not guest physical addresses)
+>> +
+>> +If support for SME is present, MSR 0xc00100010 (SYS_CFG) can be used to
+>> +determine if SME is enabled and/or to enable memory encryption:
+>> +
+>> +	0xc0010010:
+>> +		Bit[23]   0 = memory encryption features are disabled
+>> +			  1 = memory encryption features are enabled
+>> +
+>> +Linux relies on BIOS to set this bit if BIOS has determined that the reduction
+>> +in the physical address space as a result of enabling memory encryption (see
+>> +CPUID information above) will not conflict with the address space resource
+>> +requirements for the system.  If this bit is not set upon Linux startup then
+>> +Linux itself will not set it and memory encryption will not be possible.
+>> +
+>> +SME support is configurable through the AMD_MEM_ENCRYPT config option.
+>> +Additionally, the mem_encrypt=on command line parameter is required to activate
+>> +memory encryption.
 > 
-> 	Joerg
+> So how am I to understand this? We won't have TSME or we will but it
+> will be off by default and users will have to enable it in the BIOS or
+> will have to boot with mem_encrypt=on...?
+> 
+> Can you please expand on all the possible options there would be
+> available to users?
+
+Yup, I'll try to expand on the documentation to include all the
+possibilities for this.
+
+Thanks,
+Tom
+
 > 
