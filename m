@@ -1,44 +1,54 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [RFC PATCH v3 06/20] x86: Add support to enable SME during early
- boot processing
-Date: Mon, 14 Nov 2016 21:01:32 +0100
-Message-ID: <20161114200132.i54uar3wckqlzsbt@pd.tnic>
-References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
- <20161110003543.3280.99623.stgit@tlendack-t1.amdoffice.net>
- <20161114172930.27z7p2kytmhtcbsb@pd.tnic>
- <178d7d21-ffbd-1083-9c64-f05378147e27@amd.com>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH 1/5] PCI: Make pci_std_enable_acs() non-static
+Date: Mon, 14 Nov 2016 14:59:51 -0600
+Message-ID: <20161114205950.GA9868@bhelgaas-glaptop.roam.corp.google.com>
+References: <20161026175156.23495.12980.stgit@gimli.home>
+ <20161026180116.23495.77322.stgit@gimli.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <kvm-owner@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <178d7d21-ffbd-1083-9c64-f05378147e27@amd.com>
-Sender: kvm-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>
+In-Reply-To: <20161026180116.23495.77322.stgit@gimli.home>
+Sender: linux-pci-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: linux-pci@vger.kernel.org, bhelgaas@google.com, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 14, 2016 at 12:18:44PM -0600, Tom Lendacky wrote:
-> The %rsi register can be clobbered by the called function so I'm saving
-> it since it points to the real mode data.  I might be able to look into
-> saving it earlier and restoring it before needed, but I though this
-> might be clearer.
+On Wed, Oct 26, 2016 at 12:01:16PM -0600, Alex Williamson wrote:
+> For use by quirks.
+> 
+> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+> ---
+>  drivers/pci/pci.c   |    2 +-
+>  include/linux/pci.h |    1 +
+>  2 files changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index aab9d51..b901ee7 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -2728,7 +2728,7 @@ void pci_request_acs(void)
+>   * pci_std_enable_acs - enable ACS on devices using standard ACS capabilites
+>   * @dev: the PCI device
+>   */
+> -static void pci_std_enable_acs(struct pci_dev *dev)
+> +void pci_std_enable_acs(struct pci_dev *dev)
+>  {
+>  	int pos;
+>  	u16 cap;
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 0ab8359..c3248d5 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1900,6 +1900,7 @@ static inline int pci_pcie_type(const struct pci_dev *dev)
+>  bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags);
+>  bool pci_acs_path_enabled(struct pci_dev *start,
+>  			  struct pci_dev *end, u16 acs_flags);
+> +void pci_std_enable_acs(struct pci_dev *dev);
 
-Ah, that's already in the comment earlier, I missed that.
+I think putting this in drivers/pci/pci.h would be sufficient for what
+you need, wouldn't it?  Same for pcie_get_link() and pcie_retrain_link().
 
-> I can expand on the commit message about that.  I was trying to keep the
-> early boot-related code separate from the main code in arch/x86/mm dir.
-
-... because?
-
-It all gets linked into one monolithic image anyway and mem_encrypt.c
-is not, like, really huge, right? IOW, I don't see a reason to spread
-the code around the tree. OTOH, having everything in one file is much
-better.
-
-Or am I missing a good reason?
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+>  #define PCI_VPD_LRDT			0x80	/* Large Resource Data Type */
+>  #define PCI_VPD_LRDT_ID(x)		((x) | PCI_VPD_LRDT)
+> 
