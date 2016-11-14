@@ -1,57 +1,38 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH v7 04/16] drivers: iommu: make of_iommu_set/get_ops() DT
- agnostic
-Date: Mon, 14 Nov 2016 16:42:28 +0000
-Message-ID: <20161114164228.GA31339@red-moon>
-References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
- <20161109141948.19244-5-lorenzo.pieralisi@arm.com>
- <20161111152248.GS2078@8bytes.org>
- <552e674a-f434-f08f-8e16-a94544ce8e6e@arm.com>
- <20161111162736.GV2078@8bytes.org>
- <33769e3c-265f-6e89-adf9-6d35b1e03579@arm.com>
- <20161114102654.GA1677@red-moon>
- <41e3eff1-9ce6-bcfb-5716-c65ef38add63@arm.com>
- <20161114155222.GZ2078@8bytes.org>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [RFC PATCH v3 14/20] iommu/amd: Disable AMD IOMMU if memory
+ encryption is active
+Date: Mon, 14 Nov 2016 10:48:52 -0600
+Message-ID: <b4403b85-42dd-66b2-bde6-726c6ac5ae0e@amd.com>
+References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
+ <20161110003731.3280.67205.stgit@tlendack-t1.amdoffice.net>
+ <20161114163204.GA2078@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
 Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20161114155222.GZ2078@8bytes.org>
+In-Reply-To: <20161114163204.GA2078@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: Joerg Roedel <joro@8bytes.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 14, 2016 at 04:52:23PM +0100, Joerg Roedel wrote:
-> On Mon, Nov 14, 2016 at 12:00:47PM +0000, Robin Murphy wrote:
-> > If we've already made the decision to move away from bus ops, I don't
-> > see that it makes sense to deliberately introduce new dependencies on
-> > them. Besides, as it stands, this patch literally implements "tell the
-> > iommu-core which hardware-iommus exist in the system and a seperate
-> > iommu_ops ptr for each of them" straight off.
+On 11/14/2016 10:32 AM, Joerg Roedel wrote:
+> On Wed, Nov 09, 2016 at 06:37:32PM -0600, Tom Lendacky wrote:
+>> +	/* For now, disable the IOMMU if SME is active */
+>> +	if (sme_me_mask)
+>> +		return -ENODEV;
+>> +
 > 
-> Not sure which code you are looking at, but as I see it we have only
-> per-device iommu-ops now (with this patch). That is different from
-> having core-visible hardware-iommu instances where devices could link
-> to.
+> Please print a message here telling the user why the IOMMU got disabled.
 
-This patch enables the IOMMU-OF-node<->device look-up on non-OF (ie
-ACPI) systems by "converting" the of_node to a generic fwnode_handle,
-that's all it does (and move the related look-up code from
-drivers/iommu/of_iommu.c to drivers/iommu/iommu.c so that it does
-not depend on OF_IOMMU any longer).
-
-> Also the rest of iommu-core code still makes use of the per-bus ops. The
-> per-device ops are only used for the of_xlate fn-ptr.
-
-I can put this patch on the backburner and retrieve the iommu_ops
-through the dev->bus path in the IORT xlate function (iort_iommu_xlate()
-introduced in the last patch), the change is trivial and should work
-just fine but it deserves a v8 to give everyone a chance to test it.
-
-We would end-up handling the device->iommu_ops look-up differently in DT
-and ACPI for streamid translations though, I am not sure I see a reason
-why.
+Will do.
 
 Thanks,
-Lorenzo
+Tom
+
+> 
+> 
+> Thanks,
+> 
+> 	Joerg
+> 
