@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v3 03/10] iommu: Add new reserved IOMMU attributes
-Date: Tue, 15 Nov 2016 13:09:16 +0000
-Message-ID: <1479215363-2898-4-git-send-email-eric.auger@redhat.com>
+Subject: [RFC v3 10/10] vfio/type1: Get MSI cookie
+Date: Tue, 15 Nov 2016 13:09:23 +0000
+Message-ID: <1479215363-2898-11-git-send-email-eric.auger@redhat.com>
 References: <1479215363-2898-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,31 +21,67 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-IOMMU_RESV_NOMAP is used to tag reserved IOVAs that are not
-supposed to be IOMMU mapped. IOMMU_RESV_MSI tags IOVAs
-corresponding to MSIs that need to be IOMMU mapped.
-
-IOMMU_RESV_MASK allows to check if the IOVA is reserved.
+When attaching a group to the container, handle the group's
+reserved regions and particularly the IOMMU_RESV_MSI region
+which requires an IOVA allocator to be initialized through
+the iommu_get_msi_cookie API. This will allow the MSI IOVAs
+to be transparently allocated on MSI controller's compose().
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- include/linux/iommu.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/vfio/vfio_iommu_type1.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 7f6ebd0..02cf565 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -32,6 +32,10 @@
- #define IOMMU_NOEXEC	(1 << 3)
- #define IOMMU_MMIO	(1 << 4) /* e.g. things like MSI doorbells */
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 2ba1942..701d8a8 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -36,6 +36,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/vfio.h>
+ #include <linux/workqueue.h>
++#include <linux/dma-iommu.h>
  
-+#define IOMMU_RESV_MASK		0x300 /* Reserved IOVA mask */
-+#define IOMMU_RESV_NOMAP	(1 << 8) /* IOVA that cannot be mapped */
-+#define IOMMU_RESV_MSI		(1 << 9) /* MSI region transparently mapped */
+ #define DRIVER_VERSION  "0.2"
+ #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
+@@ -734,6 +735,27 @@ static void vfio_test_domain_fgsp(struct vfio_domain *domain)
+ 	__free_pages(pages, order);
+ }
+ 
++static int vfio_iommu_handle_resv_regions(struct iommu_domain *domain,
++					  struct iommu_group *group)
++{
++	struct list_head group_resv_regions;
++	struct iommu_resv_region *region, *next;
++	int ret = 0;
 +
- struct iommu_ops;
- struct iommu_group;
- struct bus_type;
++	INIT_LIST_HEAD(&group_resv_regions);
++	iommu_get_group_resv_regions(group, &group_resv_regions);
++	list_for_each_entry(region, &group_resv_regions, list) {
++		if (region->prot & IOMMU_RESV_MSI) {
++			ret = iommu_get_msi_cookie(domain, region->start);
++			if (ret)
++				break;
++		}
++	}
++	list_for_each_entry_safe(region, next, &group_resv_regions, list)
++		kfree(region);
++	return ret;
++}
++
+ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 					 struct iommu_group *iommu_group)
+ {
+@@ -834,6 +856,10 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	if (ret)
+ 		goto out_detach;
+ 
++	ret = vfio_iommu_handle_resv_regions(domain->domain, iommu_group);
++	if (ret)
++		goto out_detach;
++
+ 	list_add(&domain->next, &iommu->domain_list);
+ 
+ 	mutex_unlock(&iommu->lock);
 -- 
 1.9.1
