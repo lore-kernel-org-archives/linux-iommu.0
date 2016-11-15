@@ -1,7 +1,8 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v3 10/10] vfio/type1: Get MSI cookie
-Date: Tue, 15 Nov 2016 13:09:23 +0000
-Message-ID: <1479215363-2898-11-git-send-email-eric.auger@redhat.com>
+Subject: [RFC v3 07/10] iommu: Implement reserved_regions iommu-group sysfs
+	file
+Date: Tue, 15 Nov 2016 13:09:20 +0000
+Message-ID: <1479215363-2898-8-git-send-email-eric.auger@redhat.com>
 References: <1479215363-2898-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,67 +22,103 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When attaching a group to the container, handle the group's
-reserved regions and particularly the IOMMU_RESV_MSI region
-which requires an IOVA allocator to be initialized through
-the iommu_get_msi_cookie API. This will allow the MSI IOVAs
-to be transparently allocated on MSI controller's compose().
+A new iommu-group sysfs attribute file is introduced. It contains
+the list of reserved regions for the iommu-group. Each reserved
+region is described on a separate line:
+- first field is the start IOVA address,
+- second is the end IOVA address,
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/vfio/vfio_iommu_type1.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 2ba1942..701d8a8 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -36,6 +36,7 @@
- #include <linux/uaccess.h>
- #include <linux/vfio.h>
- #include <linux/workqueue.h>
-+#include <linux/dma-iommu.h>
+---
+
+The file layout is inspired of /sys/bus/pci/devices/BDF/resource.
+I also read Documentation/filesystems/sysfs.txt so I expect this
+to be frowned upon.
+---
+ drivers/iommu/iommu.c | 47 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index e0fbcc5..ce9a465 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -32,6 +32,7 @@
+ #include <linux/pci.h>
+ #include <linux/bitops.h>
+ #include <linux/property.h>
++#include <linux/list_sort.h>
+ #include <trace/events/iommu.h>
  
- #define DRIVER_VERSION  "0.2"
- #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
-@@ -734,6 +735,27 @@ static void vfio_test_domain_fgsp(struct vfio_domain *domain)
- 	__free_pages(pages, order);
+ static struct kset *iommu_group_kset;
+@@ -186,8 +187,47 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
  }
+ EXPORT_SYMBOL_GPL(iommu_get_group_resv_regions);
  
-+static int vfio_iommu_handle_resv_regions(struct iommu_domain *domain,
-+					  struct iommu_group *group)
++static int iommu_resv_region_cmp(void *priv, struct list_head *a,
++			       struct list_head *b)
 +{
-+	struct list_head group_resv_regions;
++	struct iommu_resv_region *rega, *regb;
++
++	rega = container_of(a, struct iommu_resv_region, list);
++	regb = container_of(b, struct iommu_resv_region, list);
++
++	if (rega->start + rega->length - 1 < regb->start)
++		return -1;
++	if (regb->start + regb->length - 1 < rega->start)
++		return 1;
++	else
++		return 0;
++}
++
++static ssize_t iommu_group_show_resv_regions(struct iommu_group *group,
++					     char *buf)
++{
 +	struct iommu_resv_region *region, *next;
-+	int ret = 0;
++	struct list_head group_resv_regions;
++	char *str = buf;
 +
 +	INIT_LIST_HEAD(&group_resv_regions);
 +	iommu_get_group_resv_regions(group, &group_resv_regions);
-+	list_for_each_entry(region, &group_resv_regions, list) {
-+		if (region->prot & IOMMU_RESV_MSI) {
-+			ret = iommu_get_msi_cookie(domain, region->start);
-+			if (ret)
-+				break;
-+		}
-+	}
-+	list_for_each_entry_safe(region, next, &group_resv_regions, list)
++	list_sort(NULL, &group_resv_regions, iommu_resv_region_cmp);
++
++	list_for_each_entry_safe(region, next, &group_resv_regions, list) {
++		str += sprintf(str, "0x%016llx 0x%016llx\n", region->start,
++			       region->start + region->length - 1);
 +		kfree(region);
-+	return ret;
++	}
++
++	return (str - buf);
 +}
 +
- static int vfio_iommu_type1_attach_group(void *iommu_data,
- 					 struct iommu_group *iommu_group)
- {
-@@ -834,6 +856,10 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_detach;
+ static IOMMU_GROUP_ATTR(name, S_IRUGO, iommu_group_show_name, NULL);
  
-+	ret = vfio_iommu_handle_resv_regions(domain->domain, iommu_group);
-+	if (ret)
-+		goto out_detach;
++static IOMMU_GROUP_ATTR(reserved_regions, S_IRUGO,
++			iommu_group_show_resv_regions, NULL);
 +
- 	list_add(&domain->next, &iommu->domain_list);
+ static void iommu_group_release(struct kobject *kobj)
+ {
+ 	struct iommu_group *group = to_iommu_group(kobj);
+@@ -202,6 +242,8 @@ static void iommu_group_release(struct kobject *kobj)
+ 	if (group->default_domain)
+ 		iommu_domain_free(group->default_domain);
  
- 	mutex_unlock(&iommu->lock);
++	iommu_group_remove_file(group, &iommu_group_attr_reserved_regions);
++
+ 	kfree(group->name);
+ 	kfree(group);
+ }
+@@ -265,6 +307,11 @@ struct iommu_group *iommu_group_alloc(void)
+ 	 */
+ 	kobject_put(&group->kobj);
+ 
++	ret = iommu_group_create_file(group,
++				      &iommu_group_attr_reserved_regions);
++	if (ret)
++		return ERR_PTR(ret);
++
+ 	pr_debug("Allocated group %d\n", group->id);
+ 
+ 	return group;
 -- 
 1.9.1
