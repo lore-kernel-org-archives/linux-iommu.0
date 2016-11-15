@@ -1,334 +1,384 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC v2 3/8] iommu/dma: Allow MSI-only cookies
-Date: Tue, 15 Nov 2016 14:52:21 +0000
-Message-ID: <d613e6c5-8236-d319-0a77-9142dce85513@arm.com>
-References: <1478258646-3117-1-git-send-email-eric.auger@redhat.com>
- <1478258646-3117-4-git-send-email-eric.auger@redhat.com>
- <5f93ebfd-edf4-0b5a-b54a-b96937a588b8@arm.com>
- <0af2373f-db86-e93f-b3e1-01c3076ce6fc@redhat.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [RFC PATCH v3 13/20] x86: DMA support for memory encryption
+Date: Tue, 15 Nov 2016 17:16:59 +0200
+Message-ID: <20161115171443-mutt-send-email-mst@kernel.org>
+References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
+ <20161110003723.3280.62636.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <0af2373f-db86-e93f-b3e1-01c3076ce6fc@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Auger Eric <eric.auger@redhat.com>, eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org
-Cc: drjones@redhat.com, kvm@vger.kernel.org, punit.agrawal@arm.com, linux-kernel@vger.kernel.org, diana.craciun@nxp.com, iommu@lists.linux-foundation.org, pranav.sawargaonkar@gmail.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20161110003723.3280.62636.stgit@tlendack-t1.amdoffice.net>
+Sender: linux-arch-owner@vger.kernel.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexande
 List-Id: iommu@lists.linux-foundation.org
 
-On 14/11/16 23:23, Auger Eric wrote:
-> Hi Robin,
+On Wed, Nov 09, 2016 at 06:37:23PM -0600, Tom Lendacky wrote:
+> Since DMA addresses will effectively look like 48-bit addresses when the
+> memory encryption mask is set, SWIOTLB is needed if the DMA mask of the
+> device performing the DMA does not support 48-bits. SWIOTLB will be
+> initialized to create un-encrypted bounce buffers for use by these devices.
 > 
-> On 14/11/2016 13:36, Robin Murphy wrote:
->> On 04/11/16 11:24, Eric Auger wrote:
->>> From: Robin Murphy <robin.murphy@arm.com>
->>>
->>> IOMMU domain users such as VFIO face a similar problem to DMA API ops
->>> with regard to mapping MSI messages in systems where the MSI write is
->>> subject to IOMMU translation. With the relevant infrastructure now in
->>> place for managed DMA domains, it's actually really simple for other
->>> users to piggyback off that and reap the benefits without giving up
->>> their own IOVA management, and without having to reinvent their own
->>> wheel in the MSI layer.
->>>
->>> Allow such users to opt into automatic MSI remapping by dedicating a
->>> region of their IOVA space to a managed cookie.
->>>
->>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->>
->> OK, following the discussion elsewhere I've had a go at the less stupid,
->> but more involved, version. Thoughts?
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> ---
+>  arch/x86/include/asm/dma-mapping.h |    5 ++-
+>  arch/x86/include/asm/mem_encrypt.h |    5 +++
+>  arch/x86/kernel/pci-dma.c          |   11 ++++---
+>  arch/x86/kernel/pci-nommu.c        |    2 +
+>  arch/x86/kernel/pci-swiotlb.c      |    8 ++++-
+>  arch/x86/mm/mem_encrypt.c          |   17 +++++++++++
+>  include/linux/swiotlb.h            |    1 +
+>  init/main.c                        |   13 ++++++++
+>  lib/swiotlb.c                      |   58 +++++++++++++++++++++++++++++++-----
+>  9 files changed, 103 insertions(+), 17 deletions(-)
 > 
-> Conceptually I don't have any major objection with the minimalist
-> allocation scheme all the more so it follows Joerg's guidance. Maybe the
-> only thing is we do not check we don't overshoot the reserved msi-region.
+> diff --git a/arch/x86/include/asm/dma-mapping.h b/arch/x86/include/asm/dma-mapping.h
+> index 4446162..c9cdcae 100644
+> --- a/arch/x86/include/asm/dma-mapping.h
+> +++ b/arch/x86/include/asm/dma-mapping.h
+> @@ -12,6 +12,7 @@
+>  #include <asm/io.h>
+>  #include <asm/swiotlb.h>
+>  #include <linux/dma-contiguous.h>
+> +#include <asm/mem_encrypt.h>
+>  
+>  #ifdef CONFIG_ISA
+>  # define ISA_DMA_BIT_MASK DMA_BIT_MASK(24)
+> @@ -69,12 +70,12 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
+>  
+>  static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+>  {
+> -	return paddr;
+> +	return paddr | sme_me_mask;
+>  }
+>  
+>  static inline phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
+>  {
+> -	return daddr;
+> +	return daddr & ~sme_me_mask;
+>  }
+>  #endif /* CONFIG_X86_DMA_REMAP */
+>  
+> diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
+> index d544481..a024451 100644
+> --- a/arch/x86/include/asm/mem_encrypt.h
+> +++ b/arch/x86/include/asm/mem_encrypt.h
+> @@ -35,6 +35,11 @@ void __init sme_encrypt_ramdisk(resource_size_t paddr,
+>  
+>  void __init sme_early_init(void);
+>  
+> +/* Architecture __weak replacement functions */
+> +void __init mem_encrypt_init(void);
+> +
+> +void swiotlb_set_mem_unenc(void *vaddr, unsigned long size);
+> +
+>  #define __sme_pa(x)		(__pa((x)) | sme_me_mask)
+>  #define __sme_pa_nodebug(x)	(__pa_nodebug((x)) | sme_me_mask)
+>  
+> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+> index d30c377..0ce28df 100644
+> --- a/arch/x86/kernel/pci-dma.c
+> +++ b/arch/x86/kernel/pci-dma.c
+> @@ -92,9 +92,12 @@ again:
+>  	/* CMA can be used only in the context which permits sleeping */
+>  	if (gfpflags_allow_blocking(flag)) {
+>  		page = dma_alloc_from_contiguous(dev, count, get_order(size));
+> -		if (page && page_to_phys(page) + size > dma_mask) {
+> -			dma_release_from_contiguous(dev, page, count);
+> -			page = NULL;
+> +		if (page) {
+> +			addr = phys_to_dma(dev, page_to_phys(page));
+> +			if (addr + size > dma_mask) {
+> +				dma_release_from_contiguous(dev, page, count);
+> +				page = NULL;
+> +			}
+>  		}
+>  	}
+>  	/* fallback */
+> @@ -103,7 +106,7 @@ again:
+>  	if (!page)
+>  		return NULL;
+>  
+> -	addr = page_to_phys(page);
+> +	addr = phys_to_dma(dev, page_to_phys(page));
+>  	if (addr + size > dma_mask) {
+>  		__free_pages(page, get_order(size));
+>  
+> diff --git a/arch/x86/kernel/pci-nommu.c b/arch/x86/kernel/pci-nommu.c
+> index 00e71ce..922c10d 100644
+> --- a/arch/x86/kernel/pci-nommu.c
+> +++ b/arch/x86/kernel/pci-nommu.c
+> @@ -30,7 +30,7 @@ static dma_addr_t nommu_map_page(struct device *dev, struct page *page,
+>  				 enum dma_data_direction dir,
+>  				 unsigned long attrs)
+>  {
+> -	dma_addr_t bus = page_to_phys(page) + offset;
+> +	dma_addr_t bus = phys_to_dma(dev, page_to_phys(page)) + offset;
+>  	WARN_ON(size == 0);
+>  	if (!check_addr("map_single", dev, bus, size))
+>  		return DMA_ERROR_CODE;
+> diff --git a/arch/x86/kernel/pci-swiotlb.c b/arch/x86/kernel/pci-swiotlb.c
+> index b47edb8..34a9e524 100644
+> --- a/arch/x86/kernel/pci-swiotlb.c
+> +++ b/arch/x86/kernel/pci-swiotlb.c
+> @@ -12,6 +12,8 @@
+>  #include <asm/dma.h>
+>  #include <asm/xen/swiotlb-xen.h>
+>  #include <asm/iommu_table.h>
+> +#include <asm/mem_encrypt.h>
+> +
+>  int swiotlb __read_mostly;
+>  
+>  void *x86_swiotlb_alloc_coherent(struct device *hwdev, size_t size,
+> @@ -64,13 +66,15 @@ static struct dma_map_ops swiotlb_dma_ops = {
+>   * pci_swiotlb_detect_override - set swiotlb to 1 if necessary
+>   *
+>   * This returns non-zero if we are forced to use swiotlb (by the boot
+> - * option).
+> + * option). If memory encryption is enabled then swiotlb will be set
+> + * to 1 so that bounce buffers are allocated and used for devices that
+> + * do not support the addressing range required for the encryption mask.
+>   */
+>  int __init pci_swiotlb_detect_override(void)
+>  {
+>  	int use_swiotlb = swiotlb | swiotlb_force;
+>  
+> -	if (swiotlb_force)
+> +	if (swiotlb_force || sme_me_mask)
+>  		swiotlb = 1;
+>  
+>  	return use_swiotlb;
+> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+> index 41cfdf9..e351003 100644
+> --- a/arch/x86/mm/mem_encrypt.c
+> +++ b/arch/x86/mm/mem_encrypt.c
+> @@ -13,6 +13,8 @@
+>  #include <linux/linkage.h>
+>  #include <linux/init.h>
+>  #include <linux/mm.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/swiotlb.h>
+>  
+>  #include <asm/tlbflush.h>
+>  #include <asm/fixmap.h>
+> @@ -240,3 +242,18 @@ void __init sme_early_init(void)
+>  	for (i = 0; i < ARRAY_SIZE(protection_map); i++)
+>  		protection_map[i] = __pgprot(pgprot_val(protection_map[i]) | sme_me_mask);
+>  }
+> +
+> +/* Architecture __weak replacement functions */
+> +void __init mem_encrypt_init(void)
+> +{
+> +	if (!sme_me_mask)
+> +		return;
+> +
+> +	/* Make SWIOTLB use an unencrypted DMA area */
+> +	swiotlb_clear_encryption();
+> +}
+> +
+> +void swiotlb_set_mem_unenc(void *vaddr, unsigned long size)
+> +{
+> +	sme_set_mem_unenc(vaddr, size);
+> +}
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 5f81f8a..5c909fc 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -29,6 +29,7 @@ int swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose);
+>  extern unsigned long swiotlb_nr_tbl(void);
+>  unsigned long swiotlb_size_or_default(void);
+>  extern int swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs);
+> +extern void __init swiotlb_clear_encryption(void);
+>  
+>  /*
+>   * Enumeration for sync targets
+> diff --git a/init/main.c b/init/main.c
+> index a8a58e2..ae37f0d 100644
+> --- a/init/main.c
+> +++ b/init/main.c
+> @@ -458,6 +458,10 @@ void __init __weak thread_stack_cache_init(void)
+>  }
+>  #endif
+>  
+> +void __init __weak mem_encrypt_init(void)
+> +{
+> +}
+> +
+>  /*
+>   * Set up kernel memory allocators
+>   */
+> @@ -598,6 +602,15 @@ asmlinkage __visible void __init start_kernel(void)
+>  	 */
+>  	locking_selftest();
+>  
+> +	/*
+> +	 * This needs to be called before any devices perform DMA
+> +	 * operations that might use the swiotlb bounce buffers.
+> +	 * This call will mark the bounce buffers as un-encrypted so
+> +	 * that their usage will not cause "plain-text" data to be
+> +	 * decrypted when accessed.
+> +	 */
+> +	mem_encrypt_init();
+> +
+>  #ifdef CONFIG_BLK_DEV_INITRD
+>  	if (initrd_start && !initrd_below_start_ok &&
+>  	    page_to_pfn(virt_to_page((void *)initrd_start)) < min_low_pfn) {
+> diff --git a/lib/swiotlb.c b/lib/swiotlb.c
+> index 22e13a0..638e99c 100644
+> --- a/lib/swiotlb.c
+> +++ b/lib/swiotlb.c
+> @@ -30,6 +30,7 @@
+>  #include <linux/highmem.h>
+>  #include <linux/gfp.h>
+>  #include <linux/scatterlist.h>
+> +#include <linux/mem_encrypt.h>
+>  
+>  #include <asm/io.h>
+>  #include <asm/dma.h>
+> @@ -131,6 +132,17 @@ unsigned long swiotlb_size_or_default(void)
+>  	return size ? size : (IO_TLB_DEFAULT_SIZE);
+>  }
+>  
+> +void __weak swiotlb_set_mem_unenc(void *vaddr, unsigned long size)
+> +{
+> +}
+> +
+> +/* For swiotlb, clear memory encryption mask from dma addresses */
+> +static dma_addr_t swiotlb_phys_to_dma(struct device *hwdev,
+> +				      phys_addr_t address)
+> +{
+> +	return phys_to_dma(hwdev, address) & ~sme_me_mask;
+> +}
+> +
+>  /* Note that this doesn't work with highmem page */
+>  static dma_addr_t swiotlb_virt_to_bus(struct device *hwdev,
+>  				      volatile void *address)
+> @@ -159,6 +171,31 @@ void swiotlb_print_info(void)
+>  	       bytes >> 20, vstart, vend - 1);
+>  }
+>  
+> +/*
+> + * If memory encryption is active, the DMA address for an encrypted page may
+> + * be beyond the range of the device. If bounce buffers are required be sure
+> + * that they are not on an encrypted page. This should be called before the
+> + * iotlb area is used.
 
-Yes, I thought about that and came to the conclusion that it was hard to
-justify the extra complexity. Since the caller has to calculate an
-appropriate region size to reserve anyway, we might as well just trust
-it to be correct. And if the caller did get things wrong, then one or
-other iommu_map() is going to fail on the overlapping IOVAs anyway.
+Makes sense, but I think at least a dmesg warning here
+might be a good idea.
 
+A boot flag that says "don't enable devices that don't support
+encryption" might be a good idea, too, since most people
+don't read dmesg output and won't notice the message.
+
+
+> + */
+> +void __init swiotlb_clear_encryption(void)
+> +{
+> +	void *vaddr;
+> +	unsigned long bytes;
+> +
+> +	if (no_iotlb_memory || !io_tlb_start || late_alloc)
+> +		return;
+> +
+> +	vaddr = phys_to_virt(io_tlb_start);
+> +	bytes = PAGE_ALIGN(io_tlb_nslabs << IO_TLB_SHIFT);
+> +	swiotlb_set_mem_unenc(vaddr, bytes);
+> +	memset(vaddr, 0, bytes);
+> +
+> +	vaddr = phys_to_virt(io_tlb_overflow_buffer);
+> +	bytes = PAGE_ALIGN(io_tlb_overflow);
+> +	swiotlb_set_mem_unenc(vaddr, bytes);
+> +	memset(vaddr, 0, bytes);
+> +}
+> +
+>  int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+>  {
+>  	void *v_overflow_buffer;
+> @@ -294,6 +331,8 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+>  	io_tlb_start = virt_to_phys(tlb);
+>  	io_tlb_end = io_tlb_start + bytes;
+>  
+> +	/* Keep TLB in unencrypted memory if memory encryption is active */
+> +	swiotlb_set_mem_unenc(tlb, bytes);
+>  	memset(tlb, 0, bytes);
+>  
+>  	/*
+> @@ -304,6 +343,9 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+>  	if (!v_overflow_buffer)
+>  		goto cleanup2;
+>  
+> +	/* Keep overflow in unencrypted memory if memory encryption is active */
+> +	swiotlb_set_mem_unenc(v_overflow_buffer, io_tlb_overflow);
+> +	memset(v_overflow_buffer, 0, io_tlb_overflow);
+>  	io_tlb_overflow_buffer = virt_to_phys(v_overflow_buffer);
+>  
+>  	/*
+> @@ -541,7 +583,7 @@ static phys_addr_t
+>  map_single(struct device *hwdev, phys_addr_t phys, size_t size,
+>  	   enum dma_data_direction dir)
+>  {
+> -	dma_addr_t start_dma_addr = phys_to_dma(hwdev, io_tlb_start);
+> +	dma_addr_t start_dma_addr = swiotlb_phys_to_dma(hwdev, io_tlb_start);
+>  
+>  	return swiotlb_tbl_map_single(hwdev, start_dma_addr, phys, size, dir);
+>  }
+> @@ -659,7 +701,7 @@ swiotlb_alloc_coherent(struct device *hwdev, size_t size,
+>  			goto err_warn;
+>  
+>  		ret = phys_to_virt(paddr);
+> -		dev_addr = phys_to_dma(hwdev, paddr);
+> +		dev_addr = swiotlb_phys_to_dma(hwdev, paddr);
+>  
+>  		/* Confirm address can be DMA'd by device */
+>  		if (dev_addr + size - 1 > dma_mask) {
+> @@ -758,15 +800,15 @@ dma_addr_t swiotlb_map_page(struct device *dev, struct page *page,
+>  	map = map_single(dev, phys, size, dir);
+>  	if (map == SWIOTLB_MAP_ERROR) {
+>  		swiotlb_full(dev, size, dir, 1);
+> -		return phys_to_dma(dev, io_tlb_overflow_buffer);
+> +		return swiotlb_phys_to_dma(dev, io_tlb_overflow_buffer);
+>  	}
+>  
+> -	dev_addr = phys_to_dma(dev, map);
+> +	dev_addr = swiotlb_phys_to_dma(dev, map);
+>  
+>  	/* Ensure that the address returned is DMA'ble */
+>  	if (!dma_capable(dev, dev_addr, size)) {
+>  		swiotlb_tbl_unmap_single(dev, map, size, dir);
+> -		return phys_to_dma(dev, io_tlb_overflow_buffer);
+> +		return swiotlb_phys_to_dma(dev, io_tlb_overflow_buffer);
+>  	}
+>  
+>  	return dev_addr;
+> @@ -901,7 +943,7 @@ swiotlb_map_sg_attrs(struct device *hwdev, struct scatterlist *sgl, int nelems,
+>  				sg_dma_len(sgl) = 0;
+>  				return 0;
+>  			}
+> -			sg->dma_address = phys_to_dma(hwdev, map);
+> +			sg->dma_address = swiotlb_phys_to_dma(hwdev, map);
+>  		} else
+>  			sg->dma_address = dev_addr;
+>  		sg_dma_len(sg) = sg->length;
+> @@ -985,7 +1027,7 @@ EXPORT_SYMBOL(swiotlb_sync_sg_for_device);
+>  int
+>  swiotlb_dma_mapping_error(struct device *hwdev, dma_addr_t dma_addr)
+>  {
+> -	return (dma_addr == phys_to_dma(hwdev, io_tlb_overflow_buffer));
+> +	return (dma_addr == swiotlb_phys_to_dma(hwdev, io_tlb_overflow_buffer));
+>  }
+>  EXPORT_SYMBOL(swiotlb_dma_mapping_error);
+>  
+> @@ -998,6 +1040,6 @@ EXPORT_SYMBOL(swiotlb_dma_mapping_error);
+>  int
+>  swiotlb_dma_supported(struct device *hwdev, u64 mask)
+>  {
+> -	return phys_to_dma(hwdev, io_tlb_end - 1) <= mask;
+> +	return swiotlb_phys_to_dma(hwdev, io_tlb_end - 1) <= mask;
+>  }
+>  EXPORT_SYMBOL(swiotlb_dma_supported);
 > 
-> Besides there are 2 issues reported below.
-> 
->>
->> Robin.
->>
->> ----->8-----
->> From: Robin Murphy <robin.murphy@arm.com>
->> Subject: [RFC PATCH] iommu/dma: Allow MSI-only cookies
->>
->> IOMMU domain users such as VFIO face a similar problem to DMA API ops
->> with regard to mapping MSI messages in systems where the MSI write is
->> subject to IOMMU translation. With the relevant infrastructure now in
->> place for managed DMA domains, it's actually really simple for other
->> users to piggyback off that and reap the benefits without giving up
->> their own IOVA management, and without having to reinvent their own
->> wheel in the MSI layer.
->>
->> Allow such users to opt into automatic MSI remapping by dedicating a
->> region of their IOVA space to a managed cookie, and extend the mapping
->> routine to implement a trivial linear allocator in such cases, to avoid
->> the needless overhead of a full-blown IOVA domain.
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>  drivers/iommu/dma-iommu.c | 118 ++++++++++++++++++++++++++++++++++++----------
->>  include/linux/dma-iommu.h |   6 +++
->>  2 files changed, 100 insertions(+), 24 deletions(-)
->>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index c5ab8667e6f2..33d66a8273c6 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -37,10 +37,19 @@ struct iommu_dma_msi_page {
->>  	phys_addr_t		phys;
->>  };
->>  
->> +enum iommu_dma_cookie_type {
->> +	IOMMU_DMA_IOVA_COOKIE,
->> +	IOMMU_DMA_MSI_COOKIE,
->> +};
->> +
->>  struct iommu_dma_cookie {
->> -	struct iova_domain	iovad;
->> -	struct list_head	msi_page_list;
->> -	spinlock_t		msi_lock;
->> +	union {
->> +		struct iova_domain	iovad;
->> +		dma_addr_t		msi_iova;
->> +	};
->> +	struct list_head		msi_page_list;
->> +	spinlock_t			msi_lock;
->> +	enum iommu_dma_cookie_type	type;
->>  };
->>  
->>  static inline struct iova_domain *cookie_iovad(struct iommu_domain *domain)
->> @@ -53,6 +62,19 @@ int iommu_dma_init(void)
->>  	return iova_cache_get();
->>  }
->>  
->> +static struct iommu_dma_cookie *__cookie_alloc(enum iommu_dma_cookie_type type)
->> +{
->> +	struct iommu_dma_cookie *cookie;
->> +
->> +	cookie = kzalloc(sizeof(*cookie), GFP_KERNEL);
->> +	if (cookie) {
->> +		spin_lock_init(&cookie->msi_lock);
->> +		INIT_LIST_HEAD(&cookie->msi_page_list);
->> +		cookie->type = type;
->> +	}
->> +	return cookie;
->> +}
->> +
->>  /**
->>   * iommu_get_dma_cookie - Acquire DMA-API resources for a domain
->>   * @domain: IOMMU domain to prepare for DMA-API usage
->> @@ -62,25 +84,53 @@ int iommu_dma_init(void)
->>   */
->>  int iommu_get_dma_cookie(struct iommu_domain *domain)
->>  {
->> -	struct iommu_dma_cookie *cookie;
->> -
->>  	if (domain->iova_cookie)
->>  		return -EEXIST;
->>  
->> -	cookie = kzalloc(sizeof(*cookie), GFP_KERNEL);
->> -	if (!cookie)
->> +	domain->iova_cookie = __cookie_alloc(IOMMU_DMA_IOVA_COOKIE);
->> +	if (!domain->iova_cookie)
->>  		return -ENOMEM;
->>  
->> -	spin_lock_init(&cookie->msi_lock);
->> -	INIT_LIST_HEAD(&cookie->msi_page_list);
->> -	domain->iova_cookie = cookie;
->>  	return 0;
->>  }
->>  EXPORT_SYMBOL(iommu_get_dma_cookie);
->>  
->>  /**
->> + * iommu_get_msi_cookie - Acquire just MSI remapping resources
->> + * @domain: IOMMU domain to prepare
->> + * @base: Start address of IOVA region for MSI mappings
->> + *
->> + * Users who manage their own IOVA allocation and do not want DMA API support,
->> + * but would still like to take advantage of automatic MSI remapping, can use
->> + * this to initialise their own domain appropriately. Users should reserve a
->> + * contiguous IOVA region, starting at @base, large enough to accommodate the
->> + * number of PAGE_SIZE mappings necessary to cover every MSI doorbell address
->> + * used by the devices attached to @domain.
->> + */
->> +int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base)
->> +{
->> +	struct iommu_dma_cookie *cookie;
->> +
->> +	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
->> +		return -EINVAL;
->> +
->> +	if (domain->iova_cookie)
->> +		return -EEXIST;
->> +
->> +	cookie = __cookie_alloc(IOMMU_DMA_IOVA_COOKIE);
-> must be IOMMU_DMA_MSI_COOKIE else it has bad consequences.
-
-Oops, quite right!
-
->> +	if (!cookie)
->> +		return -ENOMEM;
->> +
->> +	cookie->msi_iova = base;
->> +	domain->iova_cookie = cookie;
->> +	return 0;
->> +}
->> +EXPORT_SYMBOL(iommu_get_msi_cookie);
->> +
->> +/**
->>   * iommu_put_dma_cookie - Release a domain's DMA mapping resources
->> - * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
->> + * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie() or
->> + *          iommu_get_msi_cookie()
->>   *
->>   * IOMMU drivers should normally call this from their domain_free callback.
->>   */
->> @@ -92,7 +142,7 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
->>  	if (!cookie)
->>  		return;
->>  
->> -	if (cookie->iovad.granule)
->> +	if (cookie->type == IOMMU_DMA_IOVA_COOKIE && cookie->iovad.granule)
->>  		put_iova_domain(&cookie->iovad);
->>  
->>  	list_for_each_entry_safe(msi, tmp, &cookie->msi_page_list, list) {
->> @@ -137,11 +187,12 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
->>  int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->>  		u64 size, struct device *dev)
->>  {
->> -	struct iova_domain *iovad = cookie_iovad(domain);
->> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
->> +	struct iova_domain *iovad = &cookie->iovad;
->>  	unsigned long order, base_pfn, end_pfn;
->>  
->> -	if (!iovad)
->> -		return -ENODEV;
->> +	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
->> +		return -EINVAL;
->>  
->>  	/* Use the smallest supported page size for IOVA granularity */
->>  	order = __ffs(domain->pgsize_bitmap);
->> @@ -644,11 +695,21 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
->>  {
->>  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
->>  	struct iommu_dma_msi_page *msi_page;
->> -	struct iova_domain *iovad = &cookie->iovad;
->> +	struct iova_domain *iovad;
->>  	struct iova *iova;
->>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
->> +	size_t size;
->> +
->> +	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
->> +		iovad = &cookie->iovad;
->> +		size = iovad->granule;
->> +	} else {
->> +		iovad = NULL;
->> +		size = PAGE_SIZE;
->> +	}
->> +
->> +	msi_addr &= ~(phys_addr_t)(size - 1);
->>  
->> -	msi_addr &= ~(phys_addr_t)iova_mask(iovad);
->>  	list_for_each_entry(msi_page, &cookie->msi_page_list, list)
->>  		if (msi_page->phys == msi_addr)
->>  			return msi_page;
->> @@ -657,13 +718,18 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
->>  	if (!msi_page)
->>  		return NULL;
->>  
->> -	iova = __alloc_iova(domain, iovad->granule, dma_get_mask(dev));
->> -	if (!iova)
->> -		goto out_free_page;
->> -
->>  	msi_page->phys = msi_addr;
->> -	msi_page->iova = iova_dma_addr(iovad, iova);
->> -	if (iommu_map(domain, msi_page->iova, msi_addr, iovad->granule, prot))
->> +	if (iovad) {
->> +		iova = __alloc_iova(domain, size, dma_get_mask(dev));
->> +		if (!iova)
->> +			goto out_free_page;
->> +		msi_page->iova = iova_dma_addr(iovad, iova);
->> +	} else {
->> +		msi_page->iova = cookie->msi_iova;
->> +		cookie->msi_iova += size;
->> +	}
->> +
->> +	if (iommu_map(domain, msi_page->iova, msi_addr, size, prot))
->>  		goto out_free_iova;
->>  
->>  	INIT_LIST_HEAD(&msi_page->list);
->> @@ -671,7 +737,10 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
->>  	return msi_page;
->>  
->>  out_free_iova:
->> -	__free_iova(iovad, iova);
->> +	if (iovad)
->> +		__free_iova(iovad, iova);
->> +	else
->> +		cookie->msi_iova -= size;
->>  out_free_page:
->>  	kfree(msi_page);
->>  	return NULL;
->> @@ -716,3 +785,4 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
->>  		msg->address_lo += lower_32_bits(msi_page->iova);
->>  	}
->>  }
-> 
-> in iommu_dma_map_msi_msg there is another issue at:
-> msg->address_lo &= iova_mask(&cookie->iovad);
-> iovad might not exist
-
-Ah yes, I'd overlooked that one, thanks - seems compile-testing isn't
-that magic bullet...
-
-Completely factoring out the alloc/free seemed like overkill when all
-the IOVA stuff seemed to be in the one function, but in light of this
-I'll have another go and see if I can get it any tidier - the RFC was
-primarily for the simplified interface and allocator. In the meantime I
-think your fixed-up version looks correct.
-
-> Thanks
-> 
-> Eric
-> 
->> +
-
-(now, this line I had at least already taken care of. Oh well)
-
-Thanks,
-Robin.
-
->> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
->> index 32c589062bd9..d69932474576 100644
->> --- a/include/linux/dma-iommu.h
->> +++ b/include/linux/dma-iommu.h
->> @@ -27,6 +27,7 @@ int iommu_dma_init(void);
->>  
->>  /* Domain management interface for IOMMU drivers */
->>  int iommu_get_dma_cookie(struct iommu_domain *domain);
->> +int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base);
->>  void iommu_put_dma_cookie(struct iommu_domain *domain);
->>  
->>  /* Setup call for arch DMA mapping code */
->> @@ -82,6 +83,11 @@ static inline int iommu_get_dma_cookie(struct iommu_domain *domain)
->>  	return -ENODEV;
->>  }
->>  
->> +static inline int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base)
->> +{
->> +	return -ENODEV;
->> +}
->> +
->>  static inline void iommu_put_dma_cookie(struct iommu_domain *domain)
->>  {
->>  }
->>
+> --
+> To unsubscribe from this list: send the line "unsubscribe kvm" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
