@@ -1,13 +1,14 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [bug report] iommu: Implement common IOMMU ops for DMA mapping
-Date: Tue, 15 Nov 2016 11:43:40 +0000
-Message-ID: <96f37d21-b303-1e9d-de95-27cf4618d79a@arm.com>
-References: <20161115094425.GA13139@mwanda>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH] iommu/dma: Stop getting dma_32bit_pfn wrong
+Date: Tue, 15 Nov 2016 12:49:09 +0100
+Message-ID: <20161115114909.GC24857@8bytes.org>
+References: <f9c96106e6253f7033be8dd975392f0edb12e603.1478889045.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161115094425.GA13139@mwanda>
+Content-Disposition: inline
+In-Reply-To: <f9c96106e6253f7033be8dd975392f0edb12e603.1478889045.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,88 +18,52 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Dan,
+On Fri, Nov 11, 2016 at 06:30:45PM +0000, Robin Murphy wrote:
+> iommu_dma_init_domain() was originally written under the misconception
+> that dma_32bit_pfn represented some sort of size limit for IOVA domains.
+> Since the truth is almost the exact opposite of that, rework the logic
+> and comments to reflect its real purpose of optimising lookups when
+> allocating from a subset of the available space.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/dma-iommu.c | 23 ++++++++++++++++++-----
+>  1 file changed, 18 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index c5ab8667e6f2..ae045a14b530 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -139,6 +139,7 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+>  {
+>  	struct iova_domain *iovad = cookie_iovad(domain);
+>  	unsigned long order, base_pfn, end_pfn;
+> +	bool pci = dev && dev_is_pci(dev);
+>  
+>  	if (!iovad)
+>  		return -ENODEV;
+> @@ -161,19 +162,31 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+>  		end_pfn = min_t(unsigned long, end_pfn,
+>  				domain->geometry.aperture_end >> order);
+>  	}
+> +	/*
+> +	 * PCI devices may have larger DMA masks, but still prefer allocating
+> +	 * within a 32-bit mask to avoid DAC addressing. Such limitations don't
+> +	 * apply to the typical platform device, so for those we may as well
+> +	 * leave the cache limit at the top of the range they're likely to use.
+> +	 */
+> +	if (pci)
+> +		end_pfn = min_t(unsigned long, end_pfn,
+> +				DMA_BIT_MASK(32) >> order);
 
-On 15/11/16 09:44, Dan Carpenter wrote:
-> Hello Robin Murphy,
-> 
-> The patch 0db2e5d18f76: "iommu: Implement common IOMMU ops for DMA
-> mapping" from Oct 1, 2015, leads to the following static checker
-> warning:
-> 
-> 	drivers/iommu/dma-iommu.c:377 iommu_dma_alloc()
-> 	warn: use 'gfp' here instead of GFP_XXX?
-> 
-> drivers/iommu/dma-iommu.c
->    343  struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
->                                                                        ^^^^^^^^^
-> 
->    344                  unsigned long attrs, int prot, dma_addr_t *handle,
->    345                  void (*flush_page)(struct device *, const void *, phys_addr_t))
->    346  {
->    347          struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->    348          struct iova_domain *iovad = cookie_iovad(domain);
->    349          struct iova *iova;
->    350          struct page **pages;
->    351          struct sg_table sgt;
->    352          dma_addr_t dma_addr;
->    353          unsigned int count, min_size, alloc_sizes = domain->pgsize_bitmap;
->    354  
->    355          *handle = DMA_ERROR_CODE;
->    356  
->    357          min_size = alloc_sizes & -alloc_sizes;
->    358          if (min_size < PAGE_SIZE) {
->    359                  min_size = PAGE_SIZE;
->    360                  alloc_sizes |= PAGE_SIZE;
->    361          } else {
->    362                  size = ALIGN(size, min_size);
->    363          }
->    364          if (attrs & DMA_ATTR_ALLOC_SINGLE_PAGES)
->    365                  alloc_sizes = min_size;
->    366  
->    367          count = PAGE_ALIGN(size) >> PAGE_SHIFT;
->    368          pages = __iommu_dma_alloc_pages(count, alloc_sizes >> PAGE_SHIFT, gfp);
->                                                                                   ^^^^
-> Here we use gfp.
-> 
->    369          if (!pages)
->    370                  return NULL;
->    371  
->    372          iova = __alloc_iova(domain, size, dev->coherent_dma_mask);
->    373          if (!iova)
->    374                  goto out_free_pages;
->    375  
->    376          size = iova_align(iovad, size);
->    377          if (sg_alloc_table_from_pages(&sgt, pages, count, 0, size, GFP_KERNEL))
->                                                                            ^^^^^^^^^^
-> Here we're using GFP_KERNEL.  I don't know the code well enough to say
-> if it was intentional.
+Question, does it actually hurt platform devices to follow the same
+allocation strategy as pci devices? I mean, does it hurt enough to
+special-case the code here?
 
-Yes, it's intentional - the SG table is a separate (transient) thing to
-help map the buffer itself, and iommu_dma_alloc() should only be called
-from blocking-safe contexts anyway (since __iommu_dma_alloc_pages() may
-need to vmalloc() a large array to keep track of the pages if the buffer
-being allocated is massive - the GFP_KERNEL in the other case there is
-deliberate, too).
 
-Thanks,
-Robin.
 
-> 
->    378                  goto out_free_iova;
->    379  
->    380          if (!(prot & IOMMU_CACHE)) {
->    381                  struct sg_mapping_iter miter;
->    382                  /*
->    383                   * The CPU-centric flushing implied by SG_MITER_TO_SG isn't
->    384                   * sufficient here, so skip it by using the "wrong" direction.
->    385                   */
->    386                  sg_miter_start(&miter, sgt.sgl, sgt.orig_nents, SG_MITER_FROM_SG);
-> 
-> regards,
-> dan carpenter
-> 
+	Joerg
