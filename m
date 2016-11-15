@@ -1,14 +1,17 @@
-From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v3 09/10] iommu/arm-smmu: Implement reserved region get/put
-	callbacks
-Date: Tue, 15 Nov 2016 13:09:22 +0000
-Message-ID: <1479215363-2898-10-git-send-email-eric.auger@redhat.com>
-References: <1479215363-2898-1-git-send-email-eric.auger@redhat.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v7 00/16] ACPI IORT ARM SMMU support
+Date: Tue, 15 Nov 2016 14:07:51 +0000
+Message-ID: <20161115140751.GA16710@red-moon>
+References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
+	<CAJZ5v0j09fsp4Y66v2UANOGnW4FNO7PWxpZY=Pgw=bUccEL_eA@mail.gmail.com>
+	<20161115101257.GB16261@red-moon>
+	<CAJZ5v0gh9qB41zcnvnETDA-5ho577uhxE4rehZqEXorFViY__w@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1479215363-2898-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0gh9qB41zcnvnETDA-5ho577uhxE4rehZqEXorFViY__w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,106 +21,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux Kernel Mailing List <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "open list:AMD IOMMU (AMD-VI)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The get() populates the list with the PCI host bridge windows
-and the MSI IOVA range.
+On Tue, Nov 15, 2016 at 02:04:09PM +0100, Rafael J. Wysocki wrote:
+> On Tue, Nov 15, 2016 at 11:12 AM, Lorenzo Pieralisi
+> <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org> wrote:
+> > Hi Rafael,
+> >
+> > On Thu, Nov 10, 2016 at 12:36:12AM +0100, Rafael J. Wysocki wrote:
+> >> Hi Lorenzo,
+> >>
+> >> On Wed, Nov 9, 2016 at 3:19 PM, Lorenzo Pieralisi
+> >> <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org> wrote:
+> >> > This patch series is v7 of a previous posting:
+> >> >
+> >> > https://lkml.org/lkml/2016/10/18/506
+> >>
+> >> I don't see anything objectionable in this series.
+> >>
+> >> Please let me know which patches in particular to look at in detail.
+> >
+> > Are patches 7 and consequently 16 (that builds on top of 7) ok with
+> > you ? They should be equivalent to nop on anything other than ARM64
+> > but they touch ACPI core so they require an ACK if they are ok please.
+> 
+> Yes, they are.  Please feel free to add my ACKs to those or I will
+> send them separately later today.
 
-At the moment an arbitray MSI IOVA window is set at 0x8000000
-of size 1MB. This will allow to report those info in iommu-group
-sysfs?
+Thank you very much, I will add them to v8 that should be final,
+I will send it when the dust has settled on patch 4, which looks
+like the last bit to sort out (we may not even need a v8 at all).
 
-Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
----
-
-RFC v2 -> v3:
-- use existing get/put_resv_regions
-
-RFC v1 -> v2:
-- use defines for MSI IOVA base and length
----
- drivers/iommu/arm-smmu.c | 52 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 8f72814..81f1a83 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -278,6 +278,9 @@ enum arm_smmu_s2cr_privcfg {
- 
- #define FSYNR0_WNR			(1 << 4)
- 
-+#define MSI_IOVA_BASE			0x8000000
-+#define MSI_IOVA_LENGTH			0x100000
-+
- static int force_stage;
- module_param(force_stage, int, S_IRUGO);
- MODULE_PARM_DESC(force_stage,
-@@ -1545,6 +1548,53 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	return iommu_fwspec_add_ids(dev, &fwid, 1);
- }
- 
-+static void arm_smmu_get_resv_regions(struct device *dev,
-+				      struct list_head *head)
-+{
-+	struct iommu_resv_region *region;
-+	struct pci_host_bridge *bridge;
-+	struct resource_entry *window;
-+
-+	/* MSI region */
-+	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-+					 IOMMU_RESV_MSI);
-+	if (!region)
-+		return;
-+
-+	list_add_tail(&region->list, head);
-+
-+	if (!dev_is_pci(dev))
-+		return;
-+
-+	bridge = pci_find_host_bridge(to_pci_dev(dev)->bus);
-+
-+	resource_list_for_each_entry(window, &bridge->windows) {
-+		phys_addr_t start;
-+		size_t length;
-+
-+		if (resource_type(window->res) != IORESOURCE_MEM &&
-+		    resource_type(window->res) != IORESOURCE_IO)
-+			continue;
-+
-+		start = window->res->start - window->offset;
-+		length = window->res->end - window->res->start + 1;
-+		region = iommu_alloc_resv_region(start, length,
-+						 IOMMU_RESV_NOMAP);
-+		if (!region)
-+			return;
-+		list_add_tail(&region->list, head);
-+	}
-+}
-+
-+static void arm_smmu_put_resv_regions(struct device *dev,
-+				      struct list_head *head)
-+{
-+	struct iommu_resv_region *entry, *next;
-+
-+	list_for_each_entry_safe(entry, next, head, list)
-+		kfree(entry);
-+}
-+
- static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -1560,6 +1610,8 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	.domain_get_attr	= arm_smmu_domain_get_attr,
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
- 	.of_xlate		= arm_smmu_of_xlate,
-+	.get_resv_regions	= arm_smmu_get_resv_regions,
-+	.put_resv_regions	= arm_smmu_put_resv_regions,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- };
- 
--- 
-1.9.1
+Thanks !
+Lorenzo
