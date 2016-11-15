@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v3 05/10] iommu: Do not map reserved regions
-Date: Tue, 15 Nov 2016 13:09:18 +0000
-Message-ID: <1479215363-2898-6-git-send-email-eric.auger@redhat.com>
+Subject: [RFC v3 03/10] iommu: Add new reserved IOMMU attributes
+Date: Tue, 15 Nov 2016 13:09:16 +0000
+Message-ID: <1479215363-2898-4-git-send-email-eric.auger@redhat.com>
 References: <1479215363-2898-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,27 +21,31 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-As we introduced IOMMU_RESV_NOMAP and IOMMU_RESV_MSI regions,
-let's prevent those new regions from being mapped.
+IOMMU_RESV_NOMAP is used to tag reserved IOVAs that are not
+supposed to be IOMMU mapped. IOMMU_RESV_MSI tags IOVAs
+corresponding to MSIs that need to be IOMMU mapped.
+
+IOMMU_RESV_MASK allows to check if the IOVA is reserved.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/iommu.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 6ee529f..a4530ad 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -343,6 +343,9 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
- 		start = ALIGN(entry->start, pg_size);
- 		end   = ALIGN(entry->start + entry->length, pg_size);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 7f6ebd0..02cf565 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -32,6 +32,10 @@
+ #define IOMMU_NOEXEC	(1 << 3)
+ #define IOMMU_MMIO	(1 << 4) /* e.g. things like MSI doorbells */
  
-+		if (entry->prot & IOMMU_RESV_MASK)
-+			continue;
++#define IOMMU_RESV_MASK		0x300 /* Reserved IOVA mask */
++#define IOMMU_RESV_NOMAP	(1 << 8) /* IOVA that cannot be mapped */
++#define IOMMU_RESV_MSI		(1 << 9) /* MSI region transparently mapped */
 +
- 		for (addr = start; addr < end; addr += pg_size) {
- 			phys_addr_t phys_addr;
- 
+ struct iommu_ops;
+ struct iommu_group;
+ struct bus_type;
 -- 
 1.9.1
