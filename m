@@ -1,101 +1,121 @@
-From: Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH v3 13/20] x86: DMA support for memory encryption
-Date: Tue, 15 Nov 2016 19:17:36 +0100
-Message-ID: <20161115181736.GA14060@potion>
-References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
- <20161110003723.3280.62636.stgit@tlendack-t1.amdoffice.net>
- <20161115143943.GC2185@potion>
- <d5ebd13d-1278-8714-3f03-8ee7f04a2b38@amd.com>
+From: David Daney <ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v2] arm64: SMMU-v2: Workaround for Cavium ThunderX erratum
+	28168
+Date: Tue, 15 Nov 2016 10:24:22 -0800
+Message-ID: <582B52D6.6060907@caviumnetworks.com>
+References: <1479193220-6693-1-git-send-email-gakula@caviumnetworks.com>
+	<0414d797-7134-8192-d373-b14b26edd023@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-efi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <d5ebd13d-1278-8714-3f03-8ee7f04a2b38-5C7GfCeVMHo@public.gmane.org>
-Sender: linux-efi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Thomas Gleixner <tgl>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <0414d797-7134-8192-d373-b14b26edd023-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Cc: Prasun.Kapoor-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, suzuki.poulose-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, james.morse-5wv7dgnIgG8@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-2016-11-15 11:02-0600, Tom Lendacky:
-> On 11/15/2016 8:39 AM, Radim Krčmář wrote:
->> 2016-11-09 18:37-0600, Tom Lendacky:
->>> Since DMA addresses will effectively look like 48-bit addresses when the
->>> memory encryption mask is set, SWIOTLB is needed if the DMA mask of the
->>> device performing the DMA does not support 48-bits. SWIOTLB will be
->>> initialized to create un-encrypted bounce buffers for use by these devices.
->>>
->>> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
->>> ---
->>> diff --git a/arch/x86/kernel/pci-swiotlb.c b/arch/x86/kernel/pci-swiotlb.c
->>> @@ -64,13 +66,15 @@ static struct dma_map_ops swiotlb_dma_ops = {
->>>   * pci_swiotlb_detect_override - set swiotlb to 1 if necessary
->>>   *
->>>   * This returns non-zero if we are forced to use swiotlb (by the boot
->>> - * option).
->>> + * option). If memory encryption is enabled then swiotlb will be set
->>> + * to 1 so that bounce buffers are allocated and used for devices that
->>> + * do not support the addressing range required for the encryption mask.
->>>   */
->>>  int __init pci_swiotlb_detect_override(void)
->>>  {
->>>  	int use_swiotlb = swiotlb | swiotlb_force;
->>>  
->>> -	if (swiotlb_force)
->>> +	if (swiotlb_force || sme_me_mask)
->>>  		swiotlb = 1;
->>>  
->>>  	return use_swiotlb;
->> 
->> We want to return 1 even if only sme_me_mask is 1, because the return
->> value is used for detection.  The following would be less obscure, IMO:
->> 
->> 	if (swiotlb_force || sme_me_mask)
->> 		swiotlb = 1;
->> 
->> 	return swiotlb;
-> 
-> If we do that then all DMA would go through the swiotlb bounce buffers.
+On 11/15/2016 01:26 AM, Marc Zyngier wrote:
+> On 15/11/16 07:00, Geetha sowjanya wrote:
+>> From: Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>>
+>>    This patch implements Cavium ThunderX erratum 28168.
+>>
+>>    PCI requires stores complete in order. Due to erratum #28168
+>>    PCI-inbound MSI-X store to the interrupt controller are delivered
+>>    to the interrupt controller before older PCI-inbound memory stores
+>>    are committed.
+>>    Doing a sync on SMMU will make sure all prior data transfers are
+>>    completed before invoking ISR.
+>>
+>> Signed-off-by: Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>> Signed-off-by: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+[...]
+>> --- a/drivers/irqchip/irq-gic-v3.c
+>> +++ b/drivers/irqchip/irq-gic-v3.c
+>> @@ -28,6 +28,8 @@
+>>   #include <linux/of_irq.h>
+>>   #include <linux/percpu.h>
+>>   #include <linux/slab.h>
+>> +#include <linux/msi.h>
+>> +#include <linux/pci.h>
+>>
+>>   #include <linux/irqchip.h>
+>>   #include <linux/irqchip/arm-gic-common.h>
+>> @@ -736,6 +738,20 @@ static inline void gic_cpu_pm_init(void) { }
+>>
+>>   #define GIC_ID_NR		(1U << gic_data.rdists.id_bits)
+>>
+>> +/*
+>> + * Due to #28168 erratum in ThunderX,
+>> + * we need to make sure DMA data transfer is done before MSIX.
+>> + */
+>> +static void cavium_irq_perflow_handler(struct irq_data *data)
+>> +{
+>> +	struct pci_dev *pdev;
+>> +
+>> +	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
+>
+> What happens if this is not a PCI device?
+>
+>> +	if ((pdev->vendor != 0x177d) &&
+>> +			((pdev->device & 0xA000) != 0xA000))
+>> +		cavium_arm_smmu_tlb_sync(&pdev->dev);
+>
+> I've asked that before. What makes Cavium devices so special that they
+> are not sensitive to this bug?
 
-No, that is decided for example in swiotlb_map_page() and we need to
-call pci_swiotlb_init() to register that function.
 
-> By setting swiotlb to 1 we indicate that the bounce buffers will be
-> needed for those devices that can't support the addressing range when
-> the encryption bit is set (48 bit DMA). But if the device can support
-> the addressing range we won't use the bounce buffers.
+This is a heuristic for devices connected to external PCIe buses as 
+opposed to on-SoC devices (which don't suffer from the erratum).
 
-If we return 0 here, then pci_swiotlb_init() will not be called =>
-dma_ops won't be set to swiotlb_dma_ops => we won't use bounce buffers.
+In any event what would happen if we got rid of this check and ...
 
->> We setup encrypted swiotlb and then decrypt it, but sometimes set it up
->> decrypted (late_alloc) ... why isn't the swiotlb set up decrypted
->> directly?
-> 
-> When swiotlb is allocated in swiotlb_init(), it is too early to make
-> use of the api to the change the page attributes. Because of this,
-> the callback to make those changes is needed.
 
-Thanks. (I don't know page table setup enough to see a lesser evil. :])
+>
+>> +}
+>> +
+>>   static int gic_irq_domain_map(struct irq_domain *d, unsigned int irq,
+>>   			      irq_hw_number_t hw)
+>>   {
+>> @@ -773,6 +789,9 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int irq,
+>>   			return -EPERM;
+>>   		irq_domain_set_info(d, irq, hw, chip, d->host_data,
+>>   				    handle_fasteoi_irq, NULL, NULL);
+>> +		if (cpus_have_cap(ARM64_WORKAROUND_CAVIUM_28168))
+>> +			__irq_set_preflow_handler(irq,
+>> +						  cavium_irq_perflow_handler);
+>
 
->>> @@ -541,7 +583,7 @@ static phys_addr_t
->>>  map_single(struct device *hwdev, phys_addr_t phys, size_t size,
->>>  	   enum dma_data_direction dir)
->>>  {
->>> -	dma_addr_t start_dma_addr = phys_to_dma(hwdev, io_tlb_start);
->>> +	dma_addr_t start_dma_addr = swiotlb_phys_to_dma(hwdev, io_tlb_start);
->> 
->> We have decrypted io_tlb_start before, so shouldn't its physical address
->> be saved without the sme bit?  (Which changes a lot ...)
-> 
-> I'm not sure what you mean here, can you elaborate a bit more?
+... move the registration of the preflow_handler into a 
+msi_domain_ops.msi_finish() handler in irq-git-v3-its-pic-msi.c?
 
-The C-bit (sme bit) is a part of the physical address.
-If we know that a certain physical page should be accessed as
-unencrypted (the bounce buffer) then the C-bit is 0.
-I'm wondering why we save the physical address with the C-bit set when
-we know that it can't be accessed that way (because we remove it every
-time).
+There we will know that it is a pci device, and can walk up the bus 
+hierarchy to see if there is a Cavium PCIe root port present.  If such a 
+port is found, we know we are on an external Cavium PCIe bus, and can 
+register the preflow_handler without having to check the device identifiers.
 
-The naming is a bit confusing, because physical addresses are actually
-virtualized by SME -- maybe we should be calling them SME addresses?
+
+
+> What happens if SMMUv2 is not compiled in? Also, since this only affects
+> LPI signaling, why is this in the core GICv3 code and not in the ITS.
+> And more specifically, in the PCI part of the ITS, since you seem to
+> exclusively consider PCI?
+>
+>>   	}
+>>
+>>   	return 0;
+>>
+>
+> Thanks,
+>
+> 	M.
+>
