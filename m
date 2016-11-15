@@ -1,14 +1,12 @@
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2] arm64: SMMU-v2: Workaround for Cavium ThunderX erratum
-	28168
-Date: Tue, 15 Nov 2016 09:26:27 +0000
-Message-ID: <0414d797-7134-8192-d373-b14b26edd023@arm.com>
-References: <1479193220-6693-1-git-send-email-gakula@caviumnetworks.com>
+From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: [bug report] iommu: Implement common IOMMU ops for DMA mapping
+Date: Tue, 15 Nov 2016 12:44:25 +0300
+Message-ID: <20161115094425.GA13139@mwanda>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1479193220-6693-1-git-send-email-gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,232 +16,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: Prasun.Kapoor-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, suzuki.poulose-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, james.morse-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: robin.murphy-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 15/11/16 07:00, Geetha sowjanya wrote:
-> From: Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> 
->   This patch implements Cavium ThunderX erratum 28168.
-> 
->   PCI requires stores complete in order. Due to erratum #28168
->   PCI-inbound MSI-X store to the interrupt controller are delivered
->   to the interrupt controller before older PCI-inbound memory stores
->   are committed.
->   Doing a sync on SMMU will make sure all prior data transfers are
->   completed before invoking ISR.
-> 
-> Signed-off-by: Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> Signed-off-by: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> ---
->  arch/arm64/Kconfig                  |   11 +++++++++++
->  arch/arm64/Kconfig.platforms        |    1 +
->  arch/arm64/include/asm/cpufeature.h |    3 ++-
->  arch/arm64/kernel/cpu_errata.c      |   16 ++++++++++++++++
->  drivers/iommu/arm-smmu.c            |   24 ++++++++++++++++++++++++
->  drivers/irqchip/irq-gic-common.h    |    1 +
->  drivers/irqchip/irq-gic-v3.c        |   19 +++++++++++++++++++
->  7 files changed, 74 insertions(+), 1 deletions(-)
-> 
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index 30398db..751972c 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -474,6 +474,17 @@ config CAVIUM_ERRATUM_27456
->  
->  	  If unsure, say Y.
->  
-> +config CAVIUM_ERRATUM_28168
-> +       bool "Cavium erratum 28168: Make sure DMA data transfer is done before MSIX"
-> +       depends on ARCH_THUNDER && ARM64
-> +       default y
-> +       help
-> +        Due to erratum #28168 PCI-inbound MSI-X store to the interrupt
-> +        controller are delivered to the interrupt controller before older
-> +        PCI-inbound memory stores are committed. Doing a sync on SMMU
-> +        will make sure all prior data transfers are done before invoking ISR.
-> +
-> +        If unsure, say Y.
+Hello Robin Murphy,
 
-Where is the entry in Documentation/arm64/silicon-errata.txt?
+The patch 0db2e5d18f76: "iommu: Implement common IOMMU ops for DMA
+mapping" from Oct 1, 2015, leads to the following static checker
+warning:
 
->  endmenu
->  
->  
-> diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
-> index cfbdf02..2ac4ac6 100644
-> --- a/arch/arm64/Kconfig.platforms
-> +++ b/arch/arm64/Kconfig.platforms
-> @@ -185,6 +185,7 @@ config ARCH_SPRD
->  
->  config ARCH_THUNDER
->  	bool "Cavium Inc. Thunder SoC Family"
-> +	select IRQ_PREFLOW_FASTEOI
->  	help
->  	  This enables support for Cavium's Thunder Family of SoCs.
->  
-> diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
-> index 758d74f..821fc3c 100644
-> --- a/arch/arm64/include/asm/cpufeature.h
-> +++ b/arch/arm64/include/asm/cpufeature.h
-> @@ -40,8 +40,9 @@
->  #define ARM64_HAS_32BIT_EL0			13
->  #define ARM64_HYP_OFFSET_LOW			14
->  #define ARM64_MISMATCHED_CACHE_LINE_SIZE	15
-> +#define ARM64_WORKAROUND_CAVIUM_28168		16
->  
-> -#define ARM64_NCAPS				16
-> +#define ARM64_NCAPS				17
->  
->  #ifndef __ASSEMBLY__
->  
-> diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-> index 0150394..0841a12 100644
-> --- a/arch/arm64/kernel/cpu_errata.c
-> +++ b/arch/arm64/kernel/cpu_errata.c
-> @@ -122,6 +122,22 @@ static void cpu_enable_trap_ctr_access(void *__unused)
->  		MIDR_RANGE(MIDR_THUNDERX_81XX, 0x00, 0x00),
->  	},
->  #endif
-> +#ifdef CONFIG_CAVIUM_ERRATUM_28168
-> +	{
-> +	/* Cavium ThunderX, T88 pass 1.x - 2.1 */
-> +		.desc = "Cavium erratum 28168",
-> +		.capability = ARM64_WORKAROUND_CAVIUM_28168,
-> +		MIDR_RANGE(MIDR_THUNDERX, 0x00,
-> +			   (1 << MIDR_VARIANT_SHIFT) | 1),
-> +	},
-> +	{
-> +	/* Cavium ThunderX, T81 pass 1.0 */
-> +		.desc = "Cavium erratum 28168",
-> +		.capability = ARM64_WORKAROUND_CAVIUM_28168,
-> +		MIDR_RANGE(MIDR_THUNDERX_81XX, 0x00, 0x00),
-> +	},
-> +#endif
+	drivers/iommu/dma-iommu.c:377 iommu_dma_alloc()
+	warn: use 'gfp' here instead of GFP_XXX?
 
-How is that a CPU bug? Shouldn't that be keyed on the SMMU version or
-the ITs version?
+drivers/iommu/dma-iommu.c
+   343  struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+                                                                       ^^^^^^^^^
 
-> +
->  	{
->  		.desc = "Mismatched cache line size",
->  		.capability = ARM64_MISMATCHED_CACHE_LINE_SIZE,
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index c841eb7..1b4555c 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -570,6 +570,30 @@ static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
->  	}
->  }
->  
-> +/*
-> + * Cavium ThunderX erratum 28168
-> + *
-> + * Due to erratum #28168 PCI-inbound MSI-X store to the interrupt
-> + * controller are delivered to the interrupt controller before older
-> + * PCI-inbound memory stores are committed. Doing a sync on SMMU
-> + * will make sure all prior data transfers are completed before
-> + * invoking ISR.
-> + *
-> + */
-> +void cavium_arm_smmu_tlb_sync(struct device *dev)
-> +{
-> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> +	struct arm_smmu_device *smmu;
-> +
-> +	smmu = fwspec_smmu(fwspec);
-> +	if (!smmu)
-> +		return;
-> +	__arm_smmu_tlb_sync(smmu);
-> +
-> +}
-> +EXPORT_SYMBOL(cavium_arm_smmu_tlb_sync);
+   344                  unsigned long attrs, int prot, dma_addr_t *handle,
+   345                  void (*flush_page)(struct device *, const void *, phys_addr_t))
+   346  {
+   347          struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+   348          struct iova_domain *iovad = cookie_iovad(domain);
+   349          struct iova *iova;
+   350          struct page **pages;
+   351          struct sg_table sgt;
+   352          dma_addr_t dma_addr;
+   353          unsigned int count, min_size, alloc_sizes = domain->pgsize_bitmap;
+   354  
+   355          *handle = DMA_ERROR_CODE;
+   356  
+   357          min_size = alloc_sizes & -alloc_sizes;
+   358          if (min_size < PAGE_SIZE) {
+   359                  min_size = PAGE_SIZE;
+   360                  alloc_sizes |= PAGE_SIZE;
+   361          } else {
+   362                  size = ALIGN(size, min_size);
+   363          }
+   364          if (attrs & DMA_ATTR_ALLOC_SINGLE_PAGES)
+   365                  alloc_sizes = min_size;
+   366  
+   367          count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+   368          pages = __iommu_dma_alloc_pages(count, alloc_sizes >> PAGE_SHIFT, gfp);
+                                                                                  ^^^^
+Here we use gfp.
 
-Why does this need to be exported? The only user can only be built-in.
+   369          if (!pages)
+   370                  return NULL;
+   371  
+   372          iova = __alloc_iova(domain, size, dev->coherent_dma_mask);
+   373          if (!iova)
+   374                  goto out_free_pages;
+   375  
+   376          size = iova_align(iovad, size);
+   377          if (sg_alloc_table_from_pages(&sgt, pages, count, 0, size, GFP_KERNEL))
+                                                                           ^^^^^^^^^^
+Here we're using GFP_KERNEL.  I don't know the code well enough to say
+if it was intentional.
 
-> +
-> +
->  static void arm_smmu_tlb_sync(void *cookie)
->  {
->  	struct arm_smmu_domain *smmu_domain = cookie;
-> diff --git a/drivers/irqchip/irq-gic-common.h b/drivers/irqchip/irq-gic-common.h
-> index 205e5fd..4e88f55 100644
-> --- a/drivers/irqchip/irq-gic-common.h
-> +++ b/drivers/irqchip/irq-gic-common.h
-> @@ -38,4 +38,5 @@ void gic_enable_quirks(u32 iidr, const struct gic_quirk *quirks,
->  
->  void gic_set_kvm_info(const struct gic_kvm_info *info);
->  
-> +void cavium_arm_smmu_tlb_sync(struct device *dev);
+   378                  goto out_free_iova;
+   379  
+   380          if (!(prot & IOMMU_CACHE)) {
+   381                  struct sg_mapping_iter miter;
+   382                  /*
+   383                   * The CPU-centric flushing implied by SG_MITER_TO_SG isn't
+   384                   * sufficient here, so skip it by using the "wrong" direction.
+   385                   */
+   386                  sg_miter_start(&miter, sgt.sgl, sgt.orig_nents, SG_MITER_FROM_SG);
 
-Why should this be visible to GICv2 as well? I have the ugly feeling
-this should stay private to the SMMU code and that a more standard
-mechanism should be used... Robin, is there anything else we could
-piggy-back on?
-
->  #endif /* _IRQ_GIC_COMMON_H */
-> diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-> index 19d642e..723cebe 100644
-> --- a/drivers/irqchip/irq-gic-v3.c
-> +++ b/drivers/irqchip/irq-gic-v3.c
-> @@ -28,6 +28,8 @@
->  #include <linux/of_irq.h>
->  #include <linux/percpu.h>
->  #include <linux/slab.h>
-> +#include <linux/msi.h>
-> +#include <linux/pci.h>
->  
->  #include <linux/irqchip.h>
->  #include <linux/irqchip/arm-gic-common.h>
-> @@ -736,6 +738,20 @@ static inline void gic_cpu_pm_init(void) { }
->  
->  #define GIC_ID_NR		(1U << gic_data.rdists.id_bits)
->  
-> +/*
-> + * Due to #28168 erratum in ThunderX,
-> + * we need to make sure DMA data transfer is done before MSIX.
-> + */
-> +static void cavium_irq_perflow_handler(struct irq_data *data)
-> +{
-> +	struct pci_dev *pdev;
-> +
-> +	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
-
-What happens if this is not a PCI device?
-
-> +	if ((pdev->vendor != 0x177d) &&
-> +			((pdev->device & 0xA000) != 0xA000))
-> +		cavium_arm_smmu_tlb_sync(&pdev->dev);
-
-I've asked that before. What makes Cavium devices so special that they
-are not sensitive to this bug?
-
-> +}
-> +
->  static int gic_irq_domain_map(struct irq_domain *d, unsigned int irq,
->  			      irq_hw_number_t hw)
->  {
-> @@ -773,6 +789,9 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int irq,
->  			return -EPERM;
->  		irq_domain_set_info(d, irq, hw, chip, d->host_data,
->  				    handle_fasteoi_irq, NULL, NULL);
-> +		if (cpus_have_cap(ARM64_WORKAROUND_CAVIUM_28168))
-> +			__irq_set_preflow_handler(irq,
-> +						  cavium_irq_perflow_handler);
-
-What happens if SMMUv2 is not compiled in? Also, since this only affects
-LPI signaling, why is this in the core GICv3 code and not in the ITS.
-And more specifically, in the PCI part of the ITS, since you seem to
-exclusively consider PCI?
-
->  	}
->  
->  	return 0;
-> 
-
-Thanks,
-
-	M.
--- 
-Jazz is not dead. It just smells funny...
+regards,
+dan carpenter
