@@ -1,65 +1,86 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH] iommu/exynos: Fix warnings from DMA-debug
-Date: Tue, 15 Nov 2016 11:01:09 +0100
-Message-ID: <1479204069-29552-1-git-send-email-m.szyprowski@samsung.com>
-References: <CGME20161115100127eucas1p102655ca6a67c33bb9e92c60bba7477a9@eucas1p1.samsung.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v7 04/16] drivers: iommu: make of_iommu_set/get_ops() DT
+ agnostic
+Date: Tue, 15 Nov 2016 10:07:01 +0000
+Message-ID: <20161115100701.GA16261@red-moon>
+References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
+ <20161109141948.19244-5-lorenzo.pieralisi@arm.com>
+ <20161111152248.GS2078@8bytes.org>
+ <552e674a-f434-f08f-8e16-a94544ce8e6e@arm.com>
+ <20161111162736.GV2078@8bytes.org>
+ <33769e3c-265f-6e89-adf9-6d35b1e03579@arm.com>
+ <20161114102654.GA1677@red-moon>
+ <41e3eff1-9ce6-bcfb-5716-c65ef38add63@arm.com>
+ <20161114155222.GZ2078@8bytes.org>
+ <313844ca-d948-1297-84b2-669f3a7d57d2@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Seung-Woo Kim <sw0312.kim-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <313844ca-d948-1297-84b2-669f3a7d57d2@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Add a simple checks for dma_map_single() return value to make DMA-debug
-checker happly. Exynos IOMMU on Samsung Exynos SoCs always use device,
-which has linear DMA mapping ops (dma address is equal to physical memory
-address), so no failures are returned from dma_map_single().
+On Mon, Nov 14, 2016 at 06:25:16PM +0000, Robin Murphy wrote:
+> On 14/11/16 15:52, Joerg Roedel wrote:
+> > On Mon, Nov 14, 2016 at 12:00:47PM +0000, Robin Murphy wrote:
+> >> If we've already made the decision to move away from bus ops, I don't
+> >> see that it makes sense to deliberately introduce new dependencies on
+> >> them. Besides, as it stands, this patch literally implements "tell the
+> >> iommu-core which hardware-iommus exist in the system and a seperate
+> >> iommu_ops ptr for each of them" straight off.
+> > 
+> > Not sure which code you are looking at, but as I see it we have only
+> > per-device iommu-ops now (with this patch). That is different from
+> > having core-visible hardware-iommu instances where devices could link
+> > to.
+> 
+> The per-device IOMMU ops are already there since 57f98d2f61e1. This
+> patch generalises the other end, moving the "registering an IOMMU
+> instance" (i.e. iommu_fwentry) bit into the IOMMU core, from being
+> OF-specific. I'd be perfectly happy if we rename iommu_fwentry to
+> iommu_instance, fwnode_iommu_set_ops() to iommu_register_instance(), and
+> such if that makes the design intent clearer.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
----
- drivers/iommu/exynos-iommu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+I second that and I need to know what to do with this patch sooner
+rather than later so it is time we make a decision please.
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 30808e9..7b0bd86 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -763,6 +763,7 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
- 				DMA_TO_DEVICE);
- 	/* For mapping page table entries we rely on dma == phys */
- 	BUG_ON(handle != virt_to_phys(domain->pgtable));
-+	BUG_ON(dma_mapping_error(dma_dev, handle));
- 
- 	spin_lock_init(&domain->lock);
- 	spin_lock_init(&domain->pgtablelock);
-@@ -909,6 +910,7 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *domain,
- 	}
- 
- 	if (lv1ent_fault(sent)) {
-+		dma_addr_t handle;
- 		sysmmu_pte_t *pent;
- 		bool need_flush_flpd_cache = lv1ent_zero(sent);
- 
-@@ -920,7 +922,9 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *domain,
- 		update_pte(sent, mk_lv1ent_page(virt_to_phys(pent)));
- 		kmemleak_ignore(pent);
- 		*pgcounter = NUM_LV2ENTRIES;
--		dma_map_single(dma_dev, pent, LV2TABLE_SIZE, DMA_TO_DEVICE);
-+		handle = dma_map_single(dma_dev, pent, LV2TABLE_SIZE,
-+					DMA_TO_DEVICE);
-+		BUG_ON(dma_mapping_error(dma_dev, handle));
- 
- 		/*
- 		 * If pre-fetched SLPD is a faulty SLPD in zero_l2_table,
--- 
-1.9.1
+Joerg, what's your opinion ?
+
+Thanks,
+Lorenzo
+
+> If you'd also prefer to replace iommu_fwspec::ops with an opaque
+> iommu_fwspec::iommu_instance pointer so that things are a bit more
+> centralised (and users are forced to go through the API rather then call
+> ops directly), I'd have no major objection either. My main point is that
+> we've been deliberately putting the relevant building blocks in place -
+> the of_iommu_{get,set}_ops stuff was designed from the start to
+> accommodate per-instance ops, via the ops pointer *being* the instance
+> token; the iommu_fwspec stuff is deliberately intended to provide
+> per-device ops on top of that. The raw functionality is either there in
+> iommu.c already, or moving there in patches already written, so if it
+> doesn't look right all we need to focus on is making it look right.
+> 
+> > Also the rest of iommu-core code still makes use of the per-bus ops. The
+> > per-device ops are only used for the of_xlate fn-ptr.
+> 
+> Hence my aforementioned patches intended for 4.10, directly following on
+> from introducing iommu_fwspec in 4.9:
+> 
+> http://www.mail-archive.com/iommu@lists.linux-foundation.org/msg14576.html
+> 
+> ...the purpose being to provide a smooth transition from per-bus ops to
+> per-device, per-instance ops. Apply those and we're 90% of the way there
+> for OF-based IOMMU drivers (not that any of those actually need
+> per-instance ops, admittedly; I did prototype it for the ARM SMMU ages
+> ago, but it didn't seem worth the bother). Lorenzo's series broadens the
+> scope to ACPI-based systems and moves the generically-useful parts into
+> the core where we can easily build on them further if necessary. The
+> major remaining work is to convert external callers of the current
+> bus-dependent functions like iommu_domain_alloc(), iommu_present(), etc.
+> to device-based alternatives.
+> 
+> Robin.
