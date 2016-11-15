@@ -1,46 +1,249 @@
-From: Nikola Pajkovsky <npajkovsky@suse.cz>
-Subject: [PATCH] iommu: fix iommu_free() comparison of unsigned expression >= 0
-Date: Tue, 15 Nov 2016 09:47:49 +0100
-Message-ID: <7612c0f9dd7c1290407dbf8e809def922006920b.1479161177.git.npajkovsky@suse.cz>
+From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2] arm64: SMMU-v2: Workaround for Cavium ThunderX erratum
+	28168
+Date: Tue, 15 Nov 2016 09:26:27 +0000
+Message-ID: <0414d797-7134-8192-d373-b14b26edd023@arm.com>
+References: <1479193220-6693-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Muli Ben-Yehuda <mulix@mulix.org>, Jon Mason <jdmason@kudzu.us>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1479193220-6693-1-git-send-email-gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: Prasun.Kapoor-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, suzuki.poulose-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, james.morse-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-commit 8fd524b355da ("x86: Kill bad_dma_address variable") has killed
-bad_dma_address variable and used instead of macro DMA_ERROR_CODE
-which is always zero. Since dma_addr is unsigned, statement
+On 15/11/16 07:00, Geetha sowjanya wrote:
+> From: Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> 
+>   This patch implements Cavium ThunderX erratum 28168.
+> 
+>   PCI requires stores complete in order. Due to erratum #28168
+>   PCI-inbound MSI-X store to the interrupt controller are delivered
+>   to the interrupt controller before older PCI-inbound memory stores
+>   are committed.
+>   Doing a sync on SMMU will make sure all prior data transfers are
+>   completed before invoking ISR.
+> 
+> Signed-off-by: Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> ---
+>  arch/arm64/Kconfig                  |   11 +++++++++++
+>  arch/arm64/Kconfig.platforms        |    1 +
+>  arch/arm64/include/asm/cpufeature.h |    3 ++-
+>  arch/arm64/kernel/cpu_errata.c      |   16 ++++++++++++++++
+>  drivers/iommu/arm-smmu.c            |   24 ++++++++++++++++++++++++
+>  drivers/irqchip/irq-gic-common.h    |    1 +
+>  drivers/irqchip/irq-gic-v3.c        |   19 +++++++++++++++++++
+>  7 files changed, 74 insertions(+), 1 deletions(-)
+> 
+> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+> index 30398db..751972c 100644
+> --- a/arch/arm64/Kconfig
+> +++ b/arch/arm64/Kconfig
+> @@ -474,6 +474,17 @@ config CAVIUM_ERRATUM_27456
+>  
+>  	  If unsure, say Y.
+>  
+> +config CAVIUM_ERRATUM_28168
+> +       bool "Cavium erratum 28168: Make sure DMA data transfer is done before MSIX"
+> +       depends on ARCH_THUNDER && ARM64
+> +       default y
+> +       help
+> +        Due to erratum #28168 PCI-inbound MSI-X store to the interrupt
+> +        controller are delivered to the interrupt controller before older
+> +        PCI-inbound memory stores are committed. Doing a sync on SMMU
+> +        will make sure all prior data transfers are done before invoking ISR.
+> +
+> +        If unsure, say Y.
 
-   dma_addr >= DMA_ERROR_CODE
+Where is the entry in Documentation/arm64/silicon-errata.txt?
 
-is always true, and not needed.
+>  endmenu
+>  
+>  
+> diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+> index cfbdf02..2ac4ac6 100644
+> --- a/arch/arm64/Kconfig.platforms
+> +++ b/arch/arm64/Kconfig.platforms
+> @@ -185,6 +185,7 @@ config ARCH_SPRD
+>  
+>  config ARCH_THUNDER
+>  	bool "Cavium Inc. Thunder SoC Family"
+> +	select IRQ_PREFLOW_FASTEOI
+>  	help
+>  	  This enables support for Cavium's Thunder Family of SoCs.
+>  
+> diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
+> index 758d74f..821fc3c 100644
+> --- a/arch/arm64/include/asm/cpufeature.h
+> +++ b/arch/arm64/include/asm/cpufeature.h
+> @@ -40,8 +40,9 @@
+>  #define ARM64_HAS_32BIT_EL0			13
+>  #define ARM64_HYP_OFFSET_LOW			14
+>  #define ARM64_MISMATCHED_CACHE_LINE_SIZE	15
+> +#define ARM64_WORKAROUND_CAVIUM_28168		16
+>  
+> -#define ARM64_NCAPS				16
+> +#define ARM64_NCAPS				17
+>  
+>  #ifndef __ASSEMBLY__
+>  
+> diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
+> index 0150394..0841a12 100644
+> --- a/arch/arm64/kernel/cpu_errata.c
+> +++ b/arch/arm64/kernel/cpu_errata.c
+> @@ -122,6 +122,22 @@ static void cpu_enable_trap_ctr_access(void *__unused)
+>  		MIDR_RANGE(MIDR_THUNDERX_81XX, 0x00, 0x00),
+>  	},
+>  #endif
+> +#ifdef CONFIG_CAVIUM_ERRATUM_28168
+> +	{
+> +	/* Cavium ThunderX, T88 pass 1.x - 2.1 */
+> +		.desc = "Cavium erratum 28168",
+> +		.capability = ARM64_WORKAROUND_CAVIUM_28168,
+> +		MIDR_RANGE(MIDR_THUNDERX, 0x00,
+> +			   (1 << MIDR_VARIANT_SHIFT) | 1),
+> +	},
+> +	{
+> +	/* Cavium ThunderX, T81 pass 1.0 */
+> +		.desc = "Cavium erratum 28168",
+> +		.capability = ARM64_WORKAROUND_CAVIUM_28168,
+> +		MIDR_RANGE(MIDR_THUNDERX_81XX, 0x00, 0x00),
+> +	},
+> +#endif
 
-arch/x86/kernel/pci-calgary_64.c: In function ‘iommu_free’:
-arch/x86/kernel/pci-calgary_64.c:299:2: warning: comparison of unsigned expression >= 0 is always true [-Wtype-limits]
-  if (unlikely((dma_addr >= DMA_ERROR_CODE) && (dma_addr < badend))) {
+How is that a CPU bug? Shouldn't that be keyed on the SMMU version or
+the ITs version?
 
-Fixes: 8fd524b355da ("x86: Kill bad_dma_address variable")
-Signed-off-by: Nikola Pajkovsky <npajkovsky@suse.cz>
----
- arch/x86/kernel/pci-calgary_64.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> +
+>  	{
+>  		.desc = "Mismatched cache line size",
+>  		.capability = ARM64_MISMATCHED_CACHE_LINE_SIZE,
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index c841eb7..1b4555c 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -570,6 +570,30 @@ static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+>  	}
+>  }
+>  
+> +/*
+> + * Cavium ThunderX erratum 28168
+> + *
+> + * Due to erratum #28168 PCI-inbound MSI-X store to the interrupt
+> + * controller are delivered to the interrupt controller before older
+> + * PCI-inbound memory stores are committed. Doing a sync on SMMU
+> + * will make sure all prior data transfers are completed before
+> + * invoking ISR.
+> + *
+> + */
+> +void cavium_arm_smmu_tlb_sync(struct device *dev)
+> +{
+> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+> +	struct arm_smmu_device *smmu;
+> +
+> +	smmu = fwspec_smmu(fwspec);
+> +	if (!smmu)
+> +		return;
+> +	__arm_smmu_tlb_sync(smmu);
+> +
+> +}
+> +EXPORT_SYMBOL(cavium_arm_smmu_tlb_sync);
 
-diff --git a/arch/x86/kernel/pci-calgary_64.c b/arch/x86/kernel/pci-calgary_64.c
-index 5d400ba1349d..d47517941bbc 100644
---- a/arch/x86/kernel/pci-calgary_64.c
-+++ b/arch/x86/kernel/pci-calgary_64.c
-@@ -296,7 +296,7 @@ static void iommu_free(struct iommu_table *tbl, dma_addr_t dma_addr,
- 
- 	/* were we called with bad_dma_address? */
- 	badend = DMA_ERROR_CODE + (EMERGENCY_PAGES * PAGE_SIZE);
--	if (unlikely((dma_addr >= DMA_ERROR_CODE) && (dma_addr < badend))) {
-+	if (unlikely(dma_addr < badend)) {
- 		WARN(1, KERN_ERR "Calgary: driver tried unmapping bad DMA "
- 		       "address 0x%Lx\n", dma_addr);
- 		return;
+Why does this need to be exported? The only user can only be built-in.
+
+> +
+> +
+>  static void arm_smmu_tlb_sync(void *cookie)
+>  {
+>  	struct arm_smmu_domain *smmu_domain = cookie;
+> diff --git a/drivers/irqchip/irq-gic-common.h b/drivers/irqchip/irq-gic-common.h
+> index 205e5fd..4e88f55 100644
+> --- a/drivers/irqchip/irq-gic-common.h
+> +++ b/drivers/irqchip/irq-gic-common.h
+> @@ -38,4 +38,5 @@ void gic_enable_quirks(u32 iidr, const struct gic_quirk *quirks,
+>  
+>  void gic_set_kvm_info(const struct gic_kvm_info *info);
+>  
+> +void cavium_arm_smmu_tlb_sync(struct device *dev);
+
+Why should this be visible to GICv2 as well? I have the ugly feeling
+this should stay private to the SMMU code and that a more standard
+mechanism should be used... Robin, is there anything else we could
+piggy-back on?
+
+>  #endif /* _IRQ_GIC_COMMON_H */
+> diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+> index 19d642e..723cebe 100644
+> --- a/drivers/irqchip/irq-gic-v3.c
+> +++ b/drivers/irqchip/irq-gic-v3.c
+> @@ -28,6 +28,8 @@
+>  #include <linux/of_irq.h>
+>  #include <linux/percpu.h>
+>  #include <linux/slab.h>
+> +#include <linux/msi.h>
+> +#include <linux/pci.h>
+>  
+>  #include <linux/irqchip.h>
+>  #include <linux/irqchip/arm-gic-common.h>
+> @@ -736,6 +738,20 @@ static inline void gic_cpu_pm_init(void) { }
+>  
+>  #define GIC_ID_NR		(1U << gic_data.rdists.id_bits)
+>  
+> +/*
+> + * Due to #28168 erratum in ThunderX,
+> + * we need to make sure DMA data transfer is done before MSIX.
+> + */
+> +static void cavium_irq_perflow_handler(struct irq_data *data)
+> +{
+> +	struct pci_dev *pdev;
+> +
+> +	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
+
+What happens if this is not a PCI device?
+
+> +	if ((pdev->vendor != 0x177d) &&
+> +			((pdev->device & 0xA000) != 0xA000))
+> +		cavium_arm_smmu_tlb_sync(&pdev->dev);
+
+I've asked that before. What makes Cavium devices so special that they
+are not sensitive to this bug?
+
+> +}
+> +
+>  static int gic_irq_domain_map(struct irq_domain *d, unsigned int irq,
+>  			      irq_hw_number_t hw)
+>  {
+> @@ -773,6 +789,9 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int irq,
+>  			return -EPERM;
+>  		irq_domain_set_info(d, irq, hw, chip, d->host_data,
+>  				    handle_fasteoi_irq, NULL, NULL);
+> +		if (cpus_have_cap(ARM64_WORKAROUND_CAVIUM_28168))
+> +			__irq_set_preflow_handler(irq,
+> +						  cavium_irq_perflow_handler);
+
+What happens if SMMUv2 is not compiled in? Also, since this only affects
+LPI signaling, why is this in the core GICv3 code and not in the ITS.
+And more specifically, in the PCI part of the ITS, since you seem to
+exclusively consider PCI?
+
+>  	}
+>  
+>  	return 0;
+> 
+
+Thanks,
+
+	M.
 -- 
-2.10.0
+Jazz is not dead. It just smells funny...
