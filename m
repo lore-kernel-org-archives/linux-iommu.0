@@ -1,119 +1,90 @@
-From: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2] arm64: SMMU-v2: Workaround for Cavium ThunderX erratum
-	28168
-Date: Wed, 16 Nov 2016 09:54:35 +0000
-Message-ID: <288765fe-f10b-135b-2011-642a0e4828fe@arm.com>
-References: <1479193220-6693-1-git-send-email-gakula@caviumnetworks.com>
-	<0414d797-7134-8192-d373-b14b26edd023@arm.com>
-	<582B52D6.6060907@caviumnetworks.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH v7 04/16] drivers: iommu: make of_iommu_set/get_ops() DT
+ agnostic
+Date: Wed, 16 Nov 2016 09:56:15 +0000
+Message-ID: <20161116095615.GA25656@red-moon>
+References: <20161109141948.19244-1-lorenzo.pieralisi@arm.com>
+ <20161109141948.19244-5-lorenzo.pieralisi@arm.com>
+ <20161111152248.GS2078@8bytes.org>
+ <552e674a-f434-f08f-8e16-a94544ce8e6e@arm.com>
+ <20161111162736.GV2078@8bytes.org>
+ <33769e3c-265f-6e89-adf9-6d35b1e03579@arm.com>
+ <20161114102654.GA1677@red-moon>
+ <41e3eff1-9ce6-bcfb-5716-c65ef38add63@arm.com>
+ <20161114155222.GZ2078@8bytes.org>
+ <313844ca-d948-1297-84b2-669f3a7d57d2@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <582B52D6.6060907-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: David Daney <ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Cc: Prasun.Kapoor-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, suzuki.poulose-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, james.morse-5wv7dgnIgG8@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <313844ca-d948-1297-84b2-669f3a7d57d2@arm.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org, Will Deacon <will.deacon@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 15/11/16 18:24, David Daney wrote:
-> On 11/15/2016 01:26 AM, Marc Zyngier wrote:
->> On 15/11/16 07:00, Geetha sowjanya wrote:
->>> From: Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
->>>
->>>    This patch implements Cavium ThunderX erratum 28168.
->>>
->>>    PCI requires stores complete in order. Due to erratum #28168
->>>    PCI-inbound MSI-X store to the interrupt controller are delivered
->>>    to the interrupt controller before older PCI-inbound memory stores
->>>    are committed.
->>>    Doing a sync on SMMU will make sure all prior data transfers are
->>>    completed before invoking ISR.
->>>
->>> Signed-off-by: Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
->>> Signed-off-by: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> [...]
->>> --- a/drivers/irqchip/irq-gic-v3.c
->>> +++ b/drivers/irqchip/irq-gic-v3.c
->>> @@ -28,6 +28,8 @@
->>>   #include <linux/of_irq.h>
->>>   #include <linux/percpu.h>
->>>   #include <linux/slab.h>
->>> +#include <linux/msi.h>
->>> +#include <linux/pci.h>
->>>
->>>   #include <linux/irqchip.h>
->>>   #include <linux/irqchip/arm-gic-common.h>
->>> @@ -736,6 +738,20 @@ static inline void gic_cpu_pm_init(void) { }
->>>
->>>   #define GIC_ID_NR		(1U << gic_data.rdists.id_bits)
->>>
->>> +/*
->>> + * Due to #28168 erratum in ThunderX,
->>> + * we need to make sure DMA data transfer is done before MSIX.
->>> + */
->>> +static void cavium_irq_perflow_handler(struct irq_data *data)
->>> +{
->>> +	struct pci_dev *pdev;
->>> +
->>> +	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
->>
->> What happens if this is not a PCI device?
->>
->>> +	if ((pdev->vendor != 0x177d) &&
->>> +			((pdev->device & 0xA000) != 0xA000))
->>> +		cavium_arm_smmu_tlb_sync(&pdev->dev);
->>
->> I've asked that before. What makes Cavium devices so special that they
->> are not sensitive to this bug?
-> 
-> 
-> This is a heuristic for devices connected to external PCIe buses as 
-> opposed to on-SoC devices (which don't suffer from the erratum).
-> 
-> In any event what would happen if we got rid of this check and ...
-> 
-> 
->>
->>> +}
->>> +
->>>   static int gic_irq_domain_map(struct irq_domain *d, unsigned int irq,
->>>   			      irq_hw_number_t hw)
->>>   {
->>> @@ -773,6 +789,9 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int irq,
->>>   			return -EPERM;
->>>   		irq_domain_set_info(d, irq, hw, chip, d->host_data,
->>>   				    handle_fasteoi_irq, NULL, NULL);
->>> +		if (cpus_have_cap(ARM64_WORKAROUND_CAVIUM_28168))
->>> +			__irq_set_preflow_handler(irq,
->>> +						  cavium_irq_perflow_handler);
->>
-> 
-> ... move the registration of the preflow_handler into a 
-> msi_domain_ops.msi_finish() handler in irq-git-v3-its-pic-msi.c?
+Hi Joerg,
 
-That's the kind of thing I was angling for. You'll have to store the
-device pointer into the scratchpad (we still have plenty of space there)
-so that msi_finish() can have a peek.
+On Mon, Nov 14, 2016 at 06:25:16PM +0000, Robin Murphy wrote:
+> On 14/11/16 15:52, Joerg Roedel wrote:
+> > On Mon, Nov 14, 2016 at 12:00:47PM +0000, Robin Murphy wrote:
+> >> If we've already made the decision to move away from bus ops, I don't
+> >> see that it makes sense to deliberately introduce new dependencies on
+> >> them. Besides, as it stands, this patch literally implements "tell the
+> >> iommu-core which hardware-iommus exist in the system and a seperate
+> >> iommu_ops ptr for each of them" straight off.
+> > 
+> > Not sure which code you are looking at, but as I see it we have only
+> > per-device iommu-ops now (with this patch). That is different from
+> > having core-visible hardware-iommu instances where devices could link
+> > to.
+> 
+> The per-device IOMMU ops are already there since 57f98d2f61e1. This
+> patch generalises the other end, moving the "registering an IOMMU
+> instance" (i.e. iommu_fwentry) bit into the IOMMU core, from being
+> OF-specific. I'd be perfectly happy if we rename iommu_fwentry to
+> iommu_instance, fwnode_iommu_set_ops() to iommu_register_instance(), and
+> such if that makes the design intent clearer.
 
-> There we will know that it is a pci device, and can walk up the bus 
-> hierarchy to see if there is a Cavium PCIe root port present.  If such a 
-> port is found, we know we are on an external Cavium PCIe bus, and can 
-> register the preflow_handler without having to check the device identifiers.
+I can easily make the changes Robin suggests above, I need to know
+what to do with this patch it is the last blocking point for this
+series and time is running out I can revert to using dev->bus to
+retrieve iommu_ops (even though I do not think it makes sense given
+what Robin outlines below) but I need to know please, we can't gate
+an entire series for this patch that is just syntactic sugar.
 
-Something like that (though I'm unclear why other devices wouldn't see a
-root port, but that's probably me lacking some PCIe foo).
+Thanks !
+Lorenzo
 
-Thanks,
-
-	M.
--- 
-Jazz is not dead. It just smells funny...
+> If you'd also prefer to replace iommu_fwspec::ops with an opaque
+> iommu_fwspec::iommu_instance pointer so that things are a bit more
+> centralised (and users are forced to go through the API rather then call
+> ops directly), I'd have no major objection either. My main point is that
+> we've been deliberately putting the relevant building blocks in place -
+> the of_iommu_{get,set}_ops stuff was designed from the start to
+> accommodate per-instance ops, via the ops pointer *being* the instance
+> token; the iommu_fwspec stuff is deliberately intended to provide
+> per-device ops on top of that. The raw functionality is either there in
+> iommu.c already, or moving there in patches already written, so if it
+> doesn't look right all we need to focus on is making it look right.
+> 
+> > Also the rest of iommu-core code still makes use of the per-bus ops. The
+> > per-device ops are only used for the of_xlate fn-ptr.
+> 
+> Hence my aforementioned patches intended for 4.10, directly following on
+> from introducing iommu_fwspec in 4.9:
+> 
+> http://www.mail-archive.com/iommu@lists.linux-foundation.org/msg14576.html
+> 
+> ...the purpose being to provide a smooth transition from per-bus ops to
+> per-device, per-instance ops. Apply those and we're 90% of the way there
+> for OF-based IOMMU drivers (not that any of those actually need
+> per-instance ops, admittedly; I did prototype it for the ARM SMMU ages
+> ago, but it didn't seem worth the bother). Lorenzo's series broadens the
+> scope to ACPI-based systems and moves the generically-useful parts into
+> the core where we can easily build on them further if necessary. The
+> major remaining work is to convert external callers of the current
+> bus-dependent functions like iommu_domain_alloc(), iommu_present(), etc.
+> to device-based alternatives.
+> 
+> Robin.
