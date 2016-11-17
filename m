@@ -1,93 +1,108 @@
-From: Honghui Zhang <honghui.zhang@mediatek.com>
-Subject: Re: [PATCH] iommu: mtk: add common-clk dependency
-Date: Thu, 17 Nov 2016 09:25:58 +0800
-Message-ID: <1479345958.17679.11.camel@mtksdaap41>
-References: <20161116152837.3508723-1-arnd@arndb.de>
-         <20161116193850.GK25626@codeaurora.org>
+From: Xunlei Pang <xpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/vt-d: Flush old iotlb for kdump when the device
+	gets context mapped
+Date: Thu, 17 Nov 2016 10:47:28 +0800
+Message-ID: <582D1A40.409@redhat.com>
+References: <1479286950-21885-1-git-send-email-xlpang@redhat.com>
+	<582C232F.6080205@redhat.com>
+	<CAL-B5D1kkWE4e6P1xY1Cgkf-7+nBXH=C7g21=phEzmM4FPZRRQ@mail.gmail.com>
+Reply-To: xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20161116193850.GK25626@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@codeaurora.org>
-Cc: Arnd Bergmann <arnd@arndb.de>, James Liao <jamesjj.liao@mediatek.com>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org, Shunli Wang <shunli.wang@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>, Erin Lo <erin.lo@mediatek.com>, linux-arm-kernel@lists.infradead.org, John Crispin <blogic@openwrt.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAL-B5D1kkWE4e6P1xY1Cgkf-7+nBXH=C7g21=phEzmM4FPZRRQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Myron Stowe <myron.stowe-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: Don Brace <don.brace-dzo6w/eZyo2tG0bUXCXiUA@public.gmane.org>, Myron Stowe <myron.stowe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2016-11-16 at 11:38 -0800, Stephen Boyd wrote:
-> On 11/16, Arnd Bergmann wrote:
-> > After the MT2701 clock driver was added, we get a harmless warning for
-> > the iommu driver that selects it, when compile-testing without
-> > COMMON_CLK.
-> > 
-> > warning: (MTK_IOMMU_V1) selects COMMON_CLK_MT2701_IMGSYS which has unmet direct dependencies (COMMON_CLK)
-> > 
-> > Adding a dependency on COMMON_CLK avoids the warning.
-> > 
-> > Fixes: e9862118272a ("clk: mediatek: Add MT2701 clock support")
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> 
-> Hm.. why is an iommu driver selecting a clk driver? They should
-> be using standard clk APIs so it's not like they need it for
-> build time correctness. Shouldn't we drop the selects instead?
-> Those look to have been introduced a few kernel versions ago, but
-> they were selecting options that didn't exist until a few days
-> ago when I merged the mediatek clk driver. The clk options are
-> user-visible, so it should be possible to select them in the
-> configuration phase.
-> 
+On 2016/11/16 at 22:58, Myron Stowe wrote:
+> On Wed, Nov 16, 2016 at 2:13 AM, Xunlei Pang <xpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+>> Ccing David
+>> On 2016/11/16 at 17:02, Xunlei Pang wrote:
+>>> We met the DMAR fault both on hpsa P420i and P421 SmartArray controllers
+>>> under kdump, it can be steadily reproduced on several different machines,
+>>> the dmesg log is like:
+>>> HP HPSA Driver (v 3.4.16-0)
+>>> hpsa 0000:02:00.0: using doorbell to reset controller
+>>> hpsa 0000:02:00.0: board ready after hard reset.
+>>> hpsa 0000:02:00.0: Waiting for controller to respond to no-op
+>>> DMAR: Setting identity map for device 0000:02:00.0 [0xe8000 - 0xe8fff]
+>>> DMAR: Setting identity map for device 0000:02:00.0 [0xf4000 - 0xf4fff]
+>>> DMAR: Setting identity map for device 0000:02:00.0 [0xbdf6e000 - 0xbdf6efff]
+>>> DMAR: Setting identity map for device 0000:02:00.0 [0xbdf6f000 - 0xbdf7efff]
+>>> DMAR: Setting identity map for device 0000:02:00.0 [0xbdf7f000 - 0xbdf82fff]
+>>> DMAR: Setting identity map for device 0000:02:00.0 [0xbdf83000 - 0xbdf84fff]
+>>> DMAR: DRHD: handling fault status reg 2
+>>> DMAR: [DMA Read] Request device [02:00.0] fault addr fffff000 [fault reason 06] PTE Read access is not set
+>>> hpsa 0000:02:00.0: controller message 03:00 timed out
+>>> hpsa 0000:02:00.0: no-op failed; re-trying
+>>>
+>>> After some debugging, we found that the corresponding pte entry value
+>>> is correct, and the value of the iommu caching mode is 0, the fault is
+>>> probably due to the old iotlb cache of the in-flight DMA.
+>>>
+>>> Thus need to flush the old iotlb after context mapping is setup for the
+>>> device, where the device is supposed to finish reset at its driver probe
+>>> stage and no in-flight DMA exists hereafter.
+>>>
+>>> With this patch, all our problematic machines can survive the kdump tests.
+>>>
+>>> CC: Myron Stowe <myron.stowe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>>> CC: Don Brace <don.brace-dzo6w/eZyo2tG0bUXCXiUA@public.gmane.org>
+>>> CC: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>>> CC: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>>> Tested-by: Joseph Szczypek <jszczype-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>>> Signed-off-by: Xunlei Pang <xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>>> ---
+>>>  drivers/iommu/intel-iommu.c | 11 +++++++++--
+>>>  1 file changed, 9 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+>>> index 3965e73..eb79288 100644
+>>> --- a/drivers/iommu/intel-iommu.c
+>>> +++ b/drivers/iommu/intel-iommu.c
+>>> @@ -2067,9 +2067,16 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+>>>        * It's a non-present to present mapping. If hardware doesn't cache
+>>>        * non-present entry we only need to flush the write-buffer. If the
+>>>        * _does_ cache non-present entries, then it does so in the special
+> If this does get accepted then we should fix the above grammar also -
+>   "If the _does_ cache ..." -> "If the hardware _does_ cache ..."
 
-Hi, Stephen,
-  I'm a bit out of date of the current clock code. Mediatek IOMMU v1
-driver will need smi driver to enable iommu clients. And smi driver is
-also respond to enable/disable the susbsys clocks for multi-media HW.
-The relationship between iommu and smi is like the graphics below[1].
+Yes, but this reminds me of something.
+As per the comment, the code here only needs to flush context caches for the special domain 0 which is
+used to tag the non-present/erroneous caches, seems we should flush the old domain id of present entries
+for kdump according to the analysis, other than the new-allocated domain id. Let me ponder more on this.
 
-              EMI (External Memory Interface)
-               |
-              m4u (Multimedia Memory Management Unit)
-               |
-           SMI Common(Smart Multimedia Interface Common)
-               |
-       +----------------+-------
-       |                |
-       |                |
-   SMI larb0        SMI larb1   ... SoCs have several SMI local
-arbiter(larb).
-   (display)         (vdec)
-       |                |
-       |                |
- +-----+-----+     +----+----+
- |     |     |     |    |    |
- |     |     |...  |    |    |  ... There are different ports in each
-larb.
- |     |     |     |    |    |
-OVL0 RDMA0 WDMA0  MC   PP   VLD
+Regards,
+Xunlei
 
-
-When enable SMI driver it will need those subsys clock provider.
-But those clocks providers are disabled in default. Since it's needed by
-smi driver, and smi was select by MTK_IOMMU_V1, I figure it should be
-select by MTK_IOMMU_V1 too.
-
-[1]Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-
-
-thanks.
-
-> ----8<----
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 8ee54d71c7eb..37e204f3d9be 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -352,9 +352,6 @@ config MTK_IOMMU_V1
->  	select IOMMU_API
->  	select MEMORY
->  	select MTK_SMI
-> -	select COMMON_CLK_MT2701_MMSYS
-> -	select COMMON_CLK_MT2701_IMGSYS
-> -	select COMMON_CLK_MT2701_VDECSYS
->  	help
->  	  Support for the M4U on certain Mediatek SoCs. M4U generation 1 HW is
->  	  Multimedia Memory Managememt Unit. This option enables remapping of
-> 
+>
+>>> -      * domain #0, which we have to flush:
+>>> +      * domain #0, which we have to flush.
+>>> +      *
+>>> +      * For kdump cases, present entries may be cached due to the in-flight
+>>> +      * DMA and copied old pgtable, but there is no unmapping behaviour for
+>>> +      * them, so we need an explicit iotlb flush for the newly-mapped device.
+>>> +      * For kdump, at this point, the device is supposed to finish reset at
+>>> +      * the driver probe stage, no in-flight DMA will exist, thus we do not
+>>> +      * need to worry about that anymore hereafter.
+>>>        */
+>>> -     if (cap_caching_mode(iommu->cap)) {
+>>> +     if (is_kdump_kernel() || cap_caching_mode(iommu->cap)) {
+>>>               iommu->flush.flush_context(iommu, 0,
+>>>                                          (((u16)bus) << 8) | devfn,
+>>>                                          DMA_CCMD_MASK_NOBIT,
+>> _______________________________________________
+>> iommu mailing list
+>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
