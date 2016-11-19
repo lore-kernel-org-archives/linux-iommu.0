@@ -1,71 +1,184 @@
-From: Lukas Wunner <lukas@wunner.de>
-Subject: Re: [PATCH v5 7/7] iommu/exynos: Use device dependency links to
- control runtime pm
-Date: Sat, 19 Nov 2016 12:11:57 +0100
-Message-ID: <20161119111157.GA364@wunner.de>
-References: <1476948173-21093-1-git-send-email-m.szyprowski@samsung.com>
- <CGME20161020072336eucas1p24a2b020f69b6ae1f55e1760e6e0e94f9@eucas1p2.samsung.com>
- <1476948173-21093-8-git-send-email-m.szyprowski@samsung.com>
- <20161107214747.GJ1764@wotan.suse.de>
- <4bc652ce-6cf9-f4df-4793-e126cf81079d@samsung.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [RFC PATCH v3 09/20] x86: Insure that boot memory areas are
+ mapped properly
+Date: Sat, 19 Nov 2016 12:12:27 -0600
+Message-ID: <d6e8539a-0e4d-8d16-ffe1-e88595cb7ab3@amd.com>
+References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
+ <20161110003620.3280.20613.stgit@tlendack-t1.amdoffice.net>
+ <20161117122015.kxnwjtgyzitxio2p@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <4bc652ce-6cf9-f4df-4793-e126cf81079d@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: "Luis R. Rodriguez" <mcgrof@kernel.org>, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Kevin Hilman <khilman@kernel.org>, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, Tomasz Figa <tomasz.figa@gmail.com>, Grant Likely <grant.likely@secretlab.ca>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20161117122015.kxnwjtgyzitxio2p@pd.tnic>
+Sender: owner-linux-mm@kvack.org
+To: Borislav Petkov <bp@alien8.de>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 08, 2016 at 08:27:12AM +0100, Marek Szyprowski wrote:
-> On 2016-11-07 22:47, Luis R. Rodriguez wrote:
-> > If so
-> > why? If this issue is present also on systems that only use ACPI is
-> > this possibly due to an ACPI firmware bug  or the lack of some semantics
-> > in ACPI to express ordering in a better way? If the issue is device
-> > tree related only is this due to the lack of semantics in device tree
-> > to express some more complex dependency ?
+On 11/17/2016 6:20 AM, Borislav Petkov wrote:
+> On Wed, Nov 09, 2016 at 06:36:20PM -0600, Tom Lendacky wrote:
+>> The boot data and command line data are present in memory in an
+>> un-encrypted state and are copied early in the boot process.  The early
+>> page fault support will map these areas as encrypted, so before attempting
+>> to copy them, add unencrypted mappings so the data is accessed properly
+>> when copied.
+>>
+>> For the initrd, encrypt this data in place. Since the future mapping of the
+>> initrd area will be mapped as encrypted the data will be accessed properly.
+>>
+>> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+>> ---
+>>  arch/x86/include/asm/mem_encrypt.h |   13 ++++++++
+>>  arch/x86/kernel/head64.c           |   21 ++++++++++++--
+>>  arch/x86/kernel/setup.c            |    9 ++++++
+>>  arch/x86/mm/mem_encrypt.c          |   56 ++++++++++++++++++++++++++++++++++++
+>>  4 files changed, 96 insertions(+), 3 deletions(-)
 > 
-> The main feature of device links that is used in this patch is enabling
-> runtime pm dependency between Exynos SYSMMU controller (called it client
-> device) and the device, for which it implements DMA address translation
-> (called master device). The assumptions are following:
-> 1. master device driver is completely unaware of the Exynos SYSMMU presence,
->    IOMMU is transparently hooked up and managed by DMA-mapping framework
-> 2. SYSMMU belongs to the same power domain as it's master device
-> 3. SYSMMU is optional, master device can fully operate without it, with
->    simple DMA address translation (DMA address == physical address)
-> 4. Master device implements runtime pm, what in turn causes respective
->    power domain to be turned on/off
-> 5. DMA-mapping and IOMMU frameworks provides no calls to notify SYSMMU
->    when its master device is performing DMA operations, so SYSMMU has
->    to be runtime active
-> 6. Currently SYSMMU always sets its runtime pm status to active after
->    attaching to its master device to ensure proper hardware state. This
->    prevents power domain to be turned off, even when master device sets
->    its runtime pm status to suspended.
-> 7. Exynos SYSMMU has to be runtime active at the same time when its
->    master device is runtime active to it to perform DMA operations and
->    allow the power domain to be turned off, when master device is
->    runtime suspended.
-> 8. The terms of device links, Exynos SYSMMU is a 'consumer' and master
->    device is a 'supplier'.
+> ...
+> 
+>> @@ -122,6 +131,12 @@ static void __init copy_bootdata(char *real_mode_data)
+>>  	char * command_line;
+>>  	unsigned long cmd_line_ptr;
+>>  
+>> +	/*
+>> +	 * If SME is active, this will create un-encrypted mappings of the
+>> +	 * boot data in advance of the copy operations
+> 						      ^
+> 						      |
+> 					    Fullstop--+
+> 
+>> +	 */
+>> +	sme_map_bootdata(real_mode_data);
+>> +
+>>  	memcpy(&boot_params, real_mode_data, sizeof boot_params);
+>>  	sanitize_boot_params(&boot_params);
+>>  	cmd_line_ptr = get_cmd_line_ptr();
+> 
+> ...
+> 
+>> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+>> index 06235b4..411210d 100644
+>> --- a/arch/x86/mm/mem_encrypt.c
+>> +++ b/arch/x86/mm/mem_encrypt.c
+>> @@ -16,8 +16,11 @@
+>>  
+>>  #include <asm/tlbflush.h>
+>>  #include <asm/fixmap.h>
+>> +#include <asm/setup.h>
+>> +#include <asm/bootparam.h>
+>>  
+>>  extern pmdval_t early_pmd_flags;
+>> +int __init __early_make_pgtable(unsigned long, pmdval_t);
+>>  
+>>  /*
+>>   * Since sme_me_mask is set early in the boot process it must reside in
+>> @@ -126,6 +129,59 @@ void __init sme_early_mem_dec(resource_size_t paddr, unsigned long size)
+>>  	}
+>>  }
+>>  
+>> +static void __init *sme_bootdata_mapping(void *vaddr, unsigned long size)
+> 
+> So this could be called __sme_map_bootdata(). "sme_bootdata_mapping"
+> doesn't tell me what the function does as there's no verb in the name.
+> 
 
-You seem to have mixed up the consumer and supplier in point 8 above.
-Your code is such that the SYSMMU is the supplier and the master device
-is the consumer:
+Ok, makes sense.
 
-	device_link_add(dev, data->sysmmu, DL_FLAG_PM_RUNTIME);
+>> +{
+>> +	unsigned long paddr = (unsigned long)vaddr - __PAGE_OFFSET;
+>> +	pmdval_t pmd_flags, pmd;
+>> +	void *ret = vaddr;
+> 
+> That *ret --->
+> 
+>> +
+>> +	/* Use early_pmd_flags but remove the encryption mask */
+>> +	pmd_flags = early_pmd_flags & ~sme_me_mask;
+>> +
+>> +	do {
+>> +		pmd = (paddr & PMD_MASK) + pmd_flags;
+>> +		__early_make_pgtable((unsigned long)vaddr, pmd);
+>> +
+>> +		vaddr += PMD_SIZE;
+>> +		paddr += PMD_SIZE;
+>> +		size = (size < PMD_SIZE) ? 0 : size - PMD_SIZE;
+> 
+> 			size <= PMD_SIZE
+> 
+> 				looks more obvious to me...
 
-Prototype of device_link_add:
+Ok, will do.
 
-	struct device_link *device_link_add(struct device *consumer,
-				            struct device *supplier,
-					    u32 flags);
+> 
+>> +	} while (size);
+>> +
+>> +	return ret;
+> 
+> ---> is simply passing vaddr out. So the function can be just as well be
+> void and you can do below:
+> 
+> 	__sme_map_bootdata(real_mode_data, sizeof(boot_params));
+> 
+> 	boot_data = (struct boot_params *)real_mode_data;
+> 
+> 	...
 
-Your code is correct, only point 8 above is wrong.
+Ok, that simplifies the function too.
 
-Best regards,
+> 
+>> +void __init sme_map_bootdata(char *real_mode_data)
+>> +{
+>> +	struct boot_params *boot_data;
+>> +	unsigned long cmdline_paddr;
+>> +
+>> +	if (!sme_me_mask)
+>> +		return;
+>> +
+>> +	/*
+>> +	 * The bootdata will not be encrypted, so it needs to be mapped
+>> +	 * as unencrypted data so it can be copied properly.
+>> +	 */
+>> +	boot_data = sme_bootdata_mapping(real_mode_data, sizeof(boot_params));
+>> +
+>> +	/*
+>> +	 * Determine the command line address only after having established
+>> +	 * the unencrypted mapping.
+>> +	 */
+>> +	cmdline_paddr = boot_data->hdr.cmd_line_ptr |
+>> +			((u64)boot_data->ext_cmd_line_ptr << 32);
+> 
+> <---- newline here.
+> 
+>> +	if (cmdline_paddr)
+>> +		sme_bootdata_mapping(__va(cmdline_paddr), COMMAND_LINE_SIZE);
+>> +}
+>> +
+>> +void __init sme_encrypt_ramdisk(resource_size_t paddr, unsigned long size)
+>> +{
+>> +	if (!sme_me_mask)
+>> +		return;
+>> +
+>> +	sme_early_mem_enc(paddr, size);
+>> +}
+> 
+> So this one could simply be called sme_encrypt_area() and be used for
+> other things. There's nothing special about encrypting a ramdisk, by the
+> looks of it.
 
-Lukas
+The sme_early_mem_enc() function is already exposed so I'll use that. I
+originally had it that way but tried to hide any logic associated with
+it by just calling this function.  Any changes in logic in the future
+would be handled within the SME function.  But that can be done in the
+future if needed.
+
+Thanks,
+Tom
+
+> 
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
