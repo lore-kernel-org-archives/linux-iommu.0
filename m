@@ -1,99 +1,59 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH V3 0/8] IOMMU probe deferral support
-Date: Sun, 20 Nov 2016 20:41:19 +0530
-Message-ID: <002b01d24340$5d56e730$1804b590$@codeaurora.org>
-References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org> <60ee8066-f167-e9df-ae3e-4138f1133bad@arm.com> <003a01d22f97$82534c70$86f9e550$@codeaurora.org> <421e2b14-0231-d376-02a0-097423120b3d@arm.com> <006f01d236ae$61751c40$245f54c0$@codeaurora.org> <9f36244f-62d4-08e3-d64a-2b04ad4dc2e0@arm.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [RFC PATCH v3 10/20] Add support to access boot related data in
+ the clear
+Date: Mon, 21 Nov 2016 00:04:35 +0100
+Message-ID: <20161120230435.gqjp7gboshhqplbf@pd.tnic>
+References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
+ <20161110003631.3280.73292.stgit@tlendack-t1.amdoffice.net>
+ <20161117155543.vg3domfqm3bhp4f7@pd.tnic>
+ <f7bf8301-7d91-dd43-d5f0-05e977c0c5a2@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: 
-Content-Language: en-us
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: 'Robin Murphy' <robin.murphy@arm.com>, will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, laurent.pinchart@ideasonboard.com, m.szyprowski@samsung.com, tfiga@chromium.org, srinivas.kandagatla@linaro.org
+Content-Type: text/plain; charset=utf-8
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <f7bf8301-7d91-dd43-d5f0-05e977c0c5a2@amd.com>
+Sender: owner-linux-mm@kvack.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On Sat, Nov 19, 2016 at 12:33:49PM -0600, Tom Lendacky wrote:
+> >> +{
+> >> +	/* SME is not active, just return true */
+> >> +	if (!sme_me_mask)
+> >> +		return true;
+> > 
+> > I don't understand the logic here: SME is not active -> apply encryption?!
+> 
+> It does seem counter-intuitive, but it is mainly because of the memremap
+> vs. early_memremap support. For the early_memremap support, if the
+> sme_me_mask is 0 it doesn't matter whether we return true or false since
+> the mask is zero even if you try to apply it. But for the memremap
+> support, it's used to determine whether to do the ram remap vs an
+> ioremap.
+> 
+> I'll pull the sme_me_mask check out of the function and put it in the
+> individual functions to remove the contradiction and make things
+> clearer.
 
->Hi Robin,
->
->>Hi Robin,
->>
->>>On 04/11/16 15:16, Sricharan wrote:
->>>> Hi Robin,
->>>>
->>>>>>> Yikes, on second look, that definitely shouldn't be happening.
->>>>>>> Everything below is probably the resulting fallout.
->>>>>>
->>>>>> [   40.206703] vfio-pci 0000:08:00.0: Failed to setup iommu ops
->>>>>>
->>>>>> I think the above print which says "failed to setup iommu_ops"
->>>>>> because the call ops->add_device failed in of_pci_iommu_configure
->>>>>> is the reason for the failure, in my case i simply do not get this even with
->>>>>> your scripts. ops->add_device succeeds in the rebind as well. So still
->>>>>> checking what could be happening in your case.
->>>>>
->>>>> I was looking at your code base from [1].The ops->add_device
->>>>> callback from of_pci_iommu_configure on the rebind is the
->>>>> one which is causing the failure. But not able to spot out
->>>>>from code which point is causing the failure. It would be very helpful
->>>>> if i can know which is the return value from the add_device callback
->>>>> or point inside add_device callback which fails in your setup.
->>>>>
->>>>>
->>>>> [1] git://linux-arm.org/linux-rm iommu/misc
->>>>
->>>> With little more try, i saw an issue where i had an failure
->>>> similar to what you reported. The issue happens when multiple
->>>> devices fall in to same group due to matching sids. I ended up
->>>> doing a fix like below and it would be nice to verify if it is the same
->>>> that we are seeing in your setup and if the fix makes a difference ?
->>>>
->>>> From: Sricharan R <sricharan@codeaurora.org>
->>>> Date: Fri, 4 Nov 2016 20:28:49 +0530
->>>> Subject: [PATCH] iommu/arm-smmu: Fix group's reference counting
->>>>
->>>> iommu_group_get_for_dev which gets called in the add_device
->>>> callback, increases the reference count of the iommu_group,
->>>> so we do an iommu_group_put after that. iommu_group_get_for_dev
->>>> inturn calls device_group callback and in the case of arm-smmu
->>>> we call generic_device_group/pci_device_group which takes
->>>> care of increasing the group's reference. But when we return
->>>> an already existing group(when multiple devices have same group)
->>>> the reference is not incremented, resulting in issues when the
->>>> remove_device callback for the devices is invoked.
->>>> Fixing the same here.
->>>
->>>Bah, yes, this does look like my fault - after flip-flopping between
->>>about 3 different ways to keep refcounts for the S2CR entries, none of
->>>which would quite work, I ripped it all out but apparently still got
->>>things wrong, oh well. Thanks for figuring it out.
->> >
->>>On the probe-deferral angle, whilst it's useful to have uncovered this
->>>bug, I don't think we should actually be calling remove_device() from
->>>DMA teardown. I think it's preferable from a user perspective if group
->>>numbering remains stable, rather than changing depending on the order in
->>>which they unbind/rebind VFIO drivers. I'm really keen to try and get
->>>this in shape for 4.10, so I've taken the liberty of hacking up my own
->>>branch (iommu/defer) based on v3 - would you mind taking a look at the
->>>two "iommu/of:" commits to see what you think? (Ignore the PCI changes
->>>to your later patches - that was an experiment which didn't really work out)
->>
->>Ok, will take a look at this now and respond more on this.
->>
->Sorry for the delayed response on this. I was OOO for the last few days.
->So i tested this branch and it worked fine. I tested it with a pci device
->for both normal and deferred probe cases.  The of/iommu patches
->are the cleanup/preparation patches and it looks fine. One thing is without
->calling the remove_device callback, the resources like (smes for exmaple)
->and the group association of the device all remain allocated. That does not
->feel correct, given that the associated device does not exist. So to
->understand that, what happens with VFIO in this case which makes the
->group renumbering/rebinding a problem ?
->
+But that would be more code, right?
 
-Would it be ok if i post a V4 based on your branch above ?
+Instead, you could simply explain in a comment above it what do you
+mean exactly. Something along the lines of "if sme_me_mask is not
+set, we should map encrypted because if not set, we can simply remap
+RAM. Otherwise we have to ioremap because we need to access it in the
+clear..."
 
-Regards,
- Sricharan
+I presume - I still don't grok that difference here completely.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
