@@ -1,8 +1,8 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v9 03/16] drivers: acpi: iort: add support for IOMMU fwnode
-	registration
-Date: Mon, 21 Nov 2016 10:01:35 +0000
-Message-ID: <20161121100148.24769-4-lorenzo.pieralisi@arm.com>
+Subject: [PATCH v9 05/16] drivers: iommu: arm-smmu: convert struct device
+	of_node to fwnode usage
+Date: Mon, 21 Nov 2016 10:01:37 +0000
+Message-ID: <20161121100148.24769-6-lorenzo.pieralisi@arm.com>
 References: <20161121100148.24769-1-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,132 +19,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The ACPI IORT table provide entries for IOMMU (aka SMMU in ARM world)
-components that allow creating the kernel data structures required to
-probe and initialize the IOMMU devices.
+Current ARM SMMU driver rely on the struct device.of_node pointer for
+device look-up and iommu_ops retrieval.
 
-This patch provides support in the IORT kernel code to register IOMMU
-components and their respective fwnode.
+In preparation for ACPI probing enablement, convert the driver to use
+the struct device.fwnode member for device and iommu_ops look-up so that
+the driver infrastructure can be used also on systems that do not
+associate an of_node pointer to a struct device (eg ACPI), making the
+device look-up and iommu_ops retrieval firmware agnostic.
 
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Reviewed-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Reviewed-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
 Tested-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Tested-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/acpi/arm64/iort.c | 86 +++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 86 insertions(+)
+ drivers/iommu/arm-smmu.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index 2c46ebc..1ac2720 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -20,7 +20,9 @@
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 8f72814..339a8d3 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1379,13 +1379,14 @@ static bool arm_smmu_capable(enum iommu_cap cap)
  
- #include <linux/acpi_iort.h>
- #include <linux/kernel.h>
-+#include <linux/list.h>
- #include <linux/pci.h>
-+#include <linux/slab.h>
+ static int arm_smmu_match_node(struct device *dev, void *data)
+ {
+-	return dev->of_node == data;
++	return dev->fwnode == data;
+ }
  
- struct iort_its_msi_chip {
- 	struct list_head	list;
-@@ -28,6 +30,90 @@ struct iort_its_msi_chip {
- 	u32			translation_id;
- };
+-static struct arm_smmu_device *arm_smmu_get_by_node(struct device_node *np)
++static
++struct arm_smmu_device *arm_smmu_get_by_fwnode(struct fwnode_handle *fwnode)
+ {
+ 	struct device *dev = driver_find_device(&arm_smmu_driver.driver, NULL,
+-						np, arm_smmu_match_node);
++						fwnode, arm_smmu_match_node);
+ 	put_device(dev);
+ 	return dev ? dev_get_drvdata(dev) : NULL;
+ }
+@@ -1403,7 +1404,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 		if (ret)
+ 			goto out_free;
+ 	} else if (fwspec && fwspec->ops == &arm_smmu_ops) {
+-		smmu = arm_smmu_get_by_node(to_of_node(fwspec->iommu_fwnode));
++		smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
+ 	} else {
+ 		return -ENODEV;
+ 	}
+@@ -2007,7 +2008,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
+ 		}
+ 	}
  
-+struct iort_fwnode {
-+	struct list_head list;
-+	struct acpi_iort_node *iort_node;
-+	struct fwnode_handle *fwnode;
-+};
-+static LIST_HEAD(iort_fwnode_list);
-+static DEFINE_SPINLOCK(iort_fwnode_lock);
-+
-+/**
-+ * iort_set_fwnode() - Create iort_fwnode and use it to register
-+ *		       iommu data in the iort_fwnode_list
-+ *
-+ * @node: IORT table node associated with the IOMMU
-+ * @fwnode: fwnode associated with the IORT node
-+ *
-+ * Returns: 0 on success
-+ *          <0 on failure
-+ */
-+static inline int iort_set_fwnode(struct acpi_iort_node *iort_node,
-+				  struct fwnode_handle *fwnode)
-+{
-+	struct iort_fwnode *np;
-+
-+	np = kzalloc(sizeof(struct iort_fwnode), GFP_ATOMIC);
-+
-+	if (WARN_ON(!np))
-+		return -ENOMEM;
-+
-+	INIT_LIST_HEAD(&np->list);
-+	np->iort_node = iort_node;
-+	np->fwnode = fwnode;
-+
-+	spin_lock(&iort_fwnode_lock);
-+	list_add_tail(&np->list, &iort_fwnode_list);
-+	spin_unlock(&iort_fwnode_lock);
-+
-+	return 0;
-+}
-+
-+/**
-+ * iort_get_fwnode() - Retrieve fwnode associated with an IORT node
-+ *
-+ * @node: IORT table node to be looked-up
-+ *
-+ * Returns: fwnode_handle pointer on success, NULL on failure
-+ */
-+static inline
-+struct fwnode_handle *iort_get_fwnode(struct acpi_iort_node *node)
-+{
-+	struct iort_fwnode *curr;
-+	struct fwnode_handle *fwnode = NULL;
-+
-+	spin_lock(&iort_fwnode_lock);
-+	list_for_each_entry(curr, &iort_fwnode_list, list) {
-+		if (curr->iort_node == node) {
-+			fwnode = curr->fwnode;
-+			break;
-+		}
-+	}
-+	spin_unlock(&iort_fwnode_lock);
-+
-+	return fwnode;
-+}
-+
-+/**
-+ * iort_delete_fwnode() - Delete fwnode associated with an IORT node
-+ *
-+ * @node: IORT table node associated with fwnode to delete
-+ */
-+static inline void iort_delete_fwnode(struct acpi_iort_node *node)
-+{
-+	struct iort_fwnode *curr, *tmp;
-+
-+	spin_lock(&iort_fwnode_lock);
-+	list_for_each_entry_safe(curr, tmp, &iort_fwnode_list, list) {
-+		if (curr->iort_node == node) {
-+			list_del(&curr->list);
-+			kfree(curr);
-+			break;
-+		}
-+	}
-+	spin_unlock(&iort_fwnode_lock);
-+}
-+
- typedef acpi_status (*iort_find_node_callback)
- 	(struct acpi_iort_node *node, void *context);
+-	of_iommu_set_ops(dev->of_node, &arm_smmu_ops);
++	iommu_register_instance(dev->fwnode, &arm_smmu_ops);
+ 	platform_set_drvdata(pdev, smmu);
+ 	arm_smmu_device_reset(smmu);
  
 -- 
 2.10.0
