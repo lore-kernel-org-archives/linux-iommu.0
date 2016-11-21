@@ -1,228 +1,79 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v9 16/16] drivers: acpi: iort: introduce iort_iommu_configure
-Date: Mon, 21 Nov 2016 10:01:48 +0000
-Message-ID: <20161121100148.24769-17-lorenzo.pieralisi@arm.com>
-References: <20161121100148.24769-1-lorenzo.pieralisi@arm.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v5 7/7] iommu/exynos: Use device dependency links to
+ control runtime pm
+Date: Mon, 21 Nov 2016 14:11:18 +0100
+Message-ID: <188bfb9a-ce06-23d4-8d2f-d0189fb3bd3a@samsung.com>
+References: <1476948173-21093-1-git-send-email-m.szyprowski@samsung.com>
+ <CGME20161020072336eucas1p24a2b020f69b6ae1f55e1760e6e0e94f9@eucas1p2.samsung.com>
+ <1476948173-21093-8-git-send-email-m.szyprowski@samsung.com>
+ <20161107214747.GJ1764@wotan.suse.de>
+ <4bc652ce-6cf9-f4df-4793-e126cf81079d@samsung.com>
+ <20161119111157.GA364@wunner.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161121100148.24769-1-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <20161119111157.GA364@wunner.de>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Lukas Wunner <lukas@wunner.de>
+Cc: "Luis R. Rodriguez" <mcgrof@kernel.org>, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Inki Dae <inki.dae@samsung.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Kevin Hilman <khilman@kernel.org>, Tobias Jakobi <tjakobi@math.uni-bielefeld.de>, Tomasz Figa <tomasz.figa@gmail.com>, Grant Likely <grant.likely@secretlab.ca>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Lars-Peter Clausen <lars@metafoo.de>
 List-Id: iommu@lists.linux-foundation.org
 
-DT based systems have a generic kernel API to configure IOMMUs
-for devices (ie of_iommu_configure()).
+Hi Lukas,
 
-On ARM based ACPI systems, the of_iommu_configure() equivalent can
-be implemented atop ACPI IORT kernel API, with the corresponding
-functions to map device identifiers to IOMMUs and retrieve the
-corresponding IOMMU operations necessary for DMA operations set-up.
 
-By relying on the iommu_fwspec generic kernel infrastructure,
-implement the IORT based IOMMU configuration for ARM ACPI systems
-and hook it up in the ACPI kernel layer that implements DMA
-configuration for a device.
+On 2016-11-19 12:11, Lukas Wunner wrote:
+> On Tue, Nov 08, 2016 at 08:27:12AM +0100, Marek Szyprowski wrote:
+>> On 2016-11-07 22:47, Luis R. Rodriguez wrote:
+>>> If so
+>>> why? If this issue is present also on systems that only use ACPI is
+>>> this possibly due to an ACPI firmware bug  or the lack of some semantics
+>>> in ACPI to express ordering in a better way? If the issue is device
+>>> tree related only is this due to the lack of semantics in device tree
+>>> to express some more complex dependency ?
+>> The main feature of device links that is used in this patch is enabling
+>> runtime pm dependency between Exynos SYSMMU controller (called it client
+>> device) and the device, for which it implements DMA address translation
+>> (called master device). The assumptions are following:
+>> 1. master device driver is completely unaware of the Exynos SYSMMU presence,
+>>     IOMMU is transparently hooked up and managed by DMA-mapping framework
+>> 2. SYSMMU belongs to the same power domain as it's master device
+>> 3. SYSMMU is optional, master device can fully operate without it, with
+>>     simple DMA address translation (DMA address == physical address)
+>> 4. Master device implements runtime pm, what in turn causes respective
+>>     power domain to be turned on/off
+>> 5. DMA-mapping and IOMMU frameworks provides no calls to notify SYSMMU
+>>     when its master device is performing DMA operations, so SYSMMU has
+>>     to be runtime active
+>> 6. Currently SYSMMU always sets its runtime pm status to active after
+>>     attaching to its master device to ensure proper hardware state. This
+>>     prevents power domain to be turned off, even when master device sets
+>>     its runtime pm status to suspended.
+>> 7. Exynos SYSMMU has to be runtime active at the same time when its
+>>     master device is runtime active to it to perform DMA operations and
+>>     allow the power domain to be turned off, when master device is
+>>     runtime suspended.
+>> 8. The terms of device links, Exynos SYSMMU is a 'consumer' and master
+>>     device is a 'supplier'.
+> You seem to have mixed up the consumer and supplier in point 8 above.
+> Your code is such that the SYSMMU is the supplier and the master device
+> is the consumer:
+>
+> 	device_link_add(dev, data->sysmmu, DL_FLAG_PM_RUNTIME);
+>
+> Prototype of device_link_add:
+>
+> 	struct device_link *device_link_add(struct device *consumer,
+> 				            struct device *supplier,
+> 					    u32 flags);
+>
+> Your code is correct, only point 8 above is wrong.
 
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org> [ACPI core]
-Reviewed-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Tested-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Tested-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
----
- drivers/acpi/arm64/iort.c | 98 +++++++++++++++++++++++++++++++++++++++++++++++
- drivers/acpi/scan.c       |  7 +++-
- include/linux/acpi_iort.h |  6 +++
- 3 files changed, 110 insertions(+), 1 deletion(-)
+Thanks for checking this. You are right that I mixed up consumer and 
+supplier
+in point 8. I'm sorry for the confusion.
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index 6aae49c..47bace8 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -28,6 +28,8 @@
- 
- #define IORT_TYPE_MASK(type)	(1 << (type))
- #define IORT_MSI_TYPE		(1 << ACPI_IORT_NODE_ITS_GROUP)
-+#define IORT_IOMMU_TYPE		((1 << ACPI_IORT_NODE_SMMU) |	\
-+				(1 << ACPI_IORT_NODE_SMMU_V3))
- 
- struct iort_its_msi_chip {
- 	struct list_head	list;
-@@ -501,6 +503,102 @@ struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id)
- 	return irq_find_matching_fwnode(handle, DOMAIN_BUS_PCI_MSI);
- }
- 
-+static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
-+{
-+	u32 *rid = data;
-+
-+	*rid = alias;
-+	return 0;
-+}
-+
-+static int arm_smmu_iort_xlate(struct device *dev, u32 streamid,
-+			       struct fwnode_handle *fwnode,
-+			       const struct iommu_ops *ops)
-+{
-+	int ret = iommu_fwspec_init(dev, fwnode, ops);
-+
-+	if (!ret)
-+		ret = iommu_fwspec_add_ids(dev, &streamid, 1);
-+
-+	return ret;
-+}
-+
-+static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
-+					struct acpi_iort_node *node,
-+					u32 streamid)
-+{
-+	const struct iommu_ops *ops = NULL;
-+	int ret = -ENODEV;
-+	struct fwnode_handle *iort_fwnode;
-+
-+	if (node) {
-+		iort_fwnode = iort_get_fwnode(node);
-+		if (!iort_fwnode)
-+			return NULL;
-+
-+		ops = iommu_get_instance(iort_fwnode);
-+		if (!ops)
-+			return NULL;
-+
-+		ret = arm_smmu_iort_xlate(dev, streamid, iort_fwnode, ops);
-+	}
-+
-+	return ret ? NULL : ops;
-+}
-+
-+/**
-+ * iort_iommu_configure - Set-up IOMMU configuration for a device.
-+ *
-+ * @dev: device to configure
-+ *
-+ * Returns: iommu_ops pointer on configuration success
-+ *          NULL on configuration failure
-+ */
-+const struct iommu_ops *iort_iommu_configure(struct device *dev)
-+{
-+	struct acpi_iort_node *node, *parent;
-+	const struct iommu_ops *ops = NULL;
-+	u32 streamid = 0;
-+
-+	if (dev_is_pci(dev)) {
-+		struct pci_bus *bus = to_pci_dev(dev)->bus;
-+		u32 rid;
-+
-+		pci_for_each_dma_alias(to_pci_dev(dev), __get_pci_rid,
-+				       &rid);
-+
-+		node = iort_scan_node(ACPI_IORT_NODE_PCI_ROOT_COMPLEX,
-+				      iort_match_node_callback, &bus->dev);
-+		if (!node)
-+			return NULL;
-+
-+		parent = iort_node_map_rid(node, rid, &streamid,
-+					   IORT_IOMMU_TYPE);
-+
-+		ops = iort_iommu_xlate(dev, parent, streamid);
-+
-+	} else {
-+		int i = 0;
-+
-+		node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
-+				      iort_match_node_callback, dev);
-+		if (!node)
-+			return NULL;
-+
-+		parent = iort_node_get_id(node, &streamid,
-+					  IORT_IOMMU_TYPE, i++);
-+
-+		while (parent) {
-+			ops = iort_iommu_xlate(dev, parent, streamid);
-+
-+			parent = iort_node_get_id(node, &streamid,
-+						  IORT_IOMMU_TYPE, i++);
-+		}
-+	}
-+
-+	return ops;
-+}
-+
- static void __init acpi_iort_register_irq(int hwirq, const char *name,
- 					  int trigger,
- 					  struct resource *res)
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 45b5710..80698d3 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -7,6 +7,7 @@
- #include <linux/slab.h>
- #include <linux/kernel.h>
- #include <linux/acpi.h>
-+#include <linux/acpi_iort.h>
- #include <linux/signal.h>
- #include <linux/kthread.h>
- #include <linux/dmi.h>
-@@ -1377,6 +1378,8 @@ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
-  */
- void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
- {
-+	const struct iommu_ops *iommu;
-+
- 	/*
- 	 * Set default coherent_dma_mask to 32 bit.  Drivers are expected to
- 	 * setup the correct supported mask.
-@@ -1391,11 +1394,13 @@ void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
- 	if (!dev->dma_mask)
- 		dev->dma_mask = &dev->coherent_dma_mask;
- 
-+	iommu = iort_iommu_configure(dev);
-+
- 	/*
- 	 * Assume dma valid range starts at 0 and covers the whole
- 	 * coherent_dma_mask.
- 	 */
--	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, NULL,
-+	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
- 			   attr == DEV_DMA_COHERENT);
- }
- EXPORT_SYMBOL_GPL(acpi_dma_configure);
-diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-index 79ba1bb..dcb2b60 100644
---- a/include/linux/acpi_iort.h
-+++ b/include/linux/acpi_iort.h
-@@ -34,6 +34,8 @@ void acpi_iort_init(void);
- bool iort_node_match(u8 type);
- u32 iort_msi_map_rid(struct device *dev, u32 req_id);
- struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id);
-+/* IOMMU interface */
-+const struct iommu_ops *iort_iommu_configure(struct device *dev);
- #else
- static inline void acpi_iort_init(void) { }
- static inline bool iort_node_match(u8 type) { return false; }
-@@ -42,6 +44,10 @@ static inline u32 iort_msi_map_rid(struct device *dev, u32 req_id)
- static inline struct irq_domain *iort_get_device_domain(struct device *dev,
- 							u32 req_id)
- { return NULL; }
-+/* IOMMU interface */
-+static inline
-+const struct iommu_ops *iort_iommu_configure(struct device *dev)
-+{ return NULL; }
- #endif
- 
- #define IORT_ACPI_DECLARE(name, table_id, fn)		\
+Best regards
 -- 
-2.10.0
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
