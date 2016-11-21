@@ -1,8 +1,7 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v9 09/16] drivers: acpi: iort: add support for ARM SMMU
-	platform devices creation
-Date: Mon, 21 Nov 2016 10:01:41 +0000
-Message-ID: <20161121100148.24769-10-lorenzo.pieralisi@arm.com>
+Subject: [PATCH v9 11/16] drivers: iommu: arm-smmu-v3: add IORT configuration
+Date: Mon, 21 Nov 2016 10:01:43 +0000
+Message-ID: <20161121100148.24769-12-lorenzo.pieralisi@arm.com>
 References: <20161121100148.24769-1-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,213 +18,238 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-In ARM ACPI systems, IOMMU components are specified through static
-IORT table entries. In order to create platform devices for the
-corresponding ARM SMMU components, IORT kernel code should be made
-able to parse IORT table entries and create platform devices
-dynamically.
+In ACPI bases systems, in order to be able to create platform
+devices and initialize them for ARM SMMU v3 components, the IORT
+kernel implementation requires a set of static functions to be
+used by the IORT kernel layer to configure platform devices for
+ARM SMMU v3 components.
 
-This patch adds the generic IORT infrastructure required to create
-platform devices for ARM SMMUs.
-
-ARM SMMU versions have different resources requirement therefore this
-patch also introduces an IORT specific structure (ie iort_iommu_config)
-that contains hooks (to be defined when the corresponding ARM SMMU
-driver support is added to the kernel) to be used to define the
-platform devices names, init the IOMMUs, count their resources and
-finally initialize them.
+Add static configuration functions to the IORT kernel layer for
+the ARM SMMU v3 components, so that the ARM SMMU v3 driver can
+initialize its respective platform device by relying on the IORT
+kernel infrastructure and by adding a corresponding ACPI device
+early probe section entry.
 
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 Reviewed-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
 Tested-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Tested-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 ---
- drivers/acpi/arm64/iort.c | 151 ++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 151 insertions(+)
+ drivers/acpi/arm64/iort.c   | 103 +++++++++++++++++++++++++++++++++++++++++++-
+ drivers/iommu/arm-smmu-v3.c |  49 ++++++++++++++++++++-
+ 2 files changed, 150 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index 4bb6acb..ddf83b5 100644
+index ddf83b5..fd52e4c 100644
 --- a/drivers/acpi/arm64/iort.c
 +++ b/drivers/acpi/arm64/iort.c
-@@ -19,9 +19,11 @@
- #define pr_fmt(fmt)	"ACPI: IORT: " fmt
- 
- #include <linux/acpi_iort.h>
-+#include <linux/iommu.h>
- #include <linux/kernel.h>
- #include <linux/list.h>
- #include <linux/pci.h>
-+#include <linux/platform_device.h>
- #include <linux/slab.h>
- 
- struct iort_its_msi_chip {
-@@ -457,6 +459,153 @@ struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id)
+@@ -459,6 +459,95 @@ struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id)
  	return irq_find_matching_fwnode(handle, DOMAIN_BUS_PCI_MSI);
  }
  
-+struct iort_iommu_config {
-+	const char *name;
-+	int (*iommu_init)(struct acpi_iort_node *node);
-+	bool (*iommu_is_coherent)(struct acpi_iort_node *node);
-+	int (*iommu_count_resources)(struct acpi_iort_node *node);
-+	void (*iommu_init_resources)(struct resource *res,
-+				     struct acpi_iort_node *node);
++static void __init acpi_iort_register_irq(int hwirq, const char *name,
++					  int trigger,
++					  struct resource *res)
++{
++	int irq = acpi_register_gsi(NULL, hwirq, trigger,
++				    ACPI_ACTIVE_HIGH);
++
++	if (irq <= 0) {
++		pr_err("could not register gsi hwirq %d name [%s]\n", hwirq,
++								      name);
++		return;
++	}
++
++	res->start = irq;
++	res->end = irq;
++	res->flags = IORESOURCE_IRQ;
++	res->name = name;
++}
++
++static int __init arm_smmu_v3_count_resources(struct acpi_iort_node *node)
++{
++	struct acpi_iort_smmu_v3 *smmu;
++	/* Always present mem resource */
++	int num_res = 1;
++
++	/* Retrieve SMMUv3 specific data */
++	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
++
++	if (smmu->event_gsiv)
++		num_res++;
++
++	if (smmu->pri_gsiv)
++		num_res++;
++
++	if (smmu->gerr_gsiv)
++		num_res++;
++
++	if (smmu->sync_gsiv)
++		num_res++;
++
++	return num_res;
++}
++
++static void __init arm_smmu_v3_init_resources(struct resource *res,
++					      struct acpi_iort_node *node)
++{
++	struct acpi_iort_smmu_v3 *smmu;
++	int num_res = 0;
++
++	/* Retrieve SMMUv3 specific data */
++	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
++
++	res[num_res].start = smmu->base_address;
++	res[num_res].end = smmu->base_address + SZ_128K - 1;
++	res[num_res].flags = IORESOURCE_MEM;
++
++	num_res++;
++
++	if (smmu->event_gsiv)
++		acpi_iort_register_irq(smmu->event_gsiv, "eventq",
++				       ACPI_EDGE_SENSITIVE,
++				       &res[num_res++]);
++
++	if (smmu->pri_gsiv)
++		acpi_iort_register_irq(smmu->pri_gsiv, "priq",
++				       ACPI_EDGE_SENSITIVE,
++				       &res[num_res++]);
++
++	if (smmu->gerr_gsiv)
++		acpi_iort_register_irq(smmu->gerr_gsiv, "gerror",
++				       ACPI_EDGE_SENSITIVE,
++				       &res[num_res++]);
++
++	if (smmu->sync_gsiv)
++		acpi_iort_register_irq(smmu->sync_gsiv, "cmdq-sync",
++				       ACPI_EDGE_SENSITIVE,
++				       &res[num_res++]);
++}
++
++static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
++{
++	struct acpi_iort_smmu_v3 *smmu;
++
++	/* Retrieve SMMUv3 specific data */
++	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
++
++	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
++}
++
+ struct iort_iommu_config {
+ 	const char *name;
+ 	int (*iommu_init)(struct acpi_iort_node *node);
+@@ -468,10 +557,22 @@ struct iort_iommu_config {
+ 				     struct acpi_iort_node *node);
+ };
+ 
++static const struct iort_iommu_config iort_arm_smmu_v3_cfg __initconst = {
++	.name = "arm-smmu-v3",
++	.iommu_is_coherent = arm_smmu_v3_is_coherent,
++	.iommu_count_resources = arm_smmu_v3_count_resources,
++	.iommu_init_resources = arm_smmu_v3_init_resources
 +};
 +
-+static __init
-+const struct iort_iommu_config *iort_get_iommu_cfg(struct acpi_iort_node *node)
-+{
-+	return NULL;
-+}
-+
-+/**
-+ * iort_add_smmu_platform_device() - Allocate a platform device for SMMU
-+ * @node: Pointer to SMMU ACPI IORT node
-+ *
-+ * Returns: 0 on success, <0 failure
-+ */
-+static int __init iort_add_smmu_platform_device(struct acpi_iort_node *node)
-+{
-+	struct fwnode_handle *fwnode;
-+	struct platform_device *pdev;
-+	struct resource *r;
-+	enum dev_dma_attr attr;
-+	int ret, count;
-+	const struct iort_iommu_config *ops = iort_get_iommu_cfg(node);
-+
-+	if (!ops)
-+		return -ENODEV;
-+
-+	pdev = platform_device_alloc(ops->name, PLATFORM_DEVID_AUTO);
-+	if (!pdev)
-+		return PTR_ERR(pdev);
-+
-+	count = ops->iommu_count_resources(node);
-+
-+	r = kcalloc(count, sizeof(*r), GFP_KERNEL);
-+	if (!r) {
-+		ret = -ENOMEM;
-+		goto dev_put;
+ static __init
+ const struct iort_iommu_config *iort_get_iommu_cfg(struct acpi_iort_node *node)
+ {
+-	return NULL;
++	switch (node->type) {
++	case ACPI_IORT_NODE_SMMU_V3:
++		return &iort_arm_smmu_v3_cfg;
++	default:
++		return NULL;
 +	}
+ }
+ 
+ /**
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 2b3f9ac..d22c428 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -20,6 +20,8 @@
+  * This driver is powered by bad coffee and bombay mix.
+  */
+ 
++#include <linux/acpi.h>
++#include <linux/acpi_iort.h>
+ #include <linux/delay.h>
+ #include <linux/dma-iommu.h>
+ #include <linux/err.h>
+@@ -2559,6 +2561,32 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_ACPI
++static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
++				      struct arm_smmu_device *smmu)
++{
++	struct acpi_iort_smmu_v3 *iort_smmu;
++	struct device *dev = smmu->dev;
++	struct acpi_iort_node *node;
 +
-+	ops->iommu_init_resources(r, node);
++	node = *(struct acpi_iort_node **)dev_get_platdata(dev);
 +
-+	ret = platform_device_add_resources(pdev, r, count);
-+	/*
-+	 * Resources are duplicated in platform_device_add_resources,
-+	 * free their allocated memory
-+	 */
-+	kfree(r);
++	/* Retrieve SMMUv3 specific data */
++	iort_smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
 +
-+	if (ret)
-+		goto dev_put;
-+
-+	/*
-+	 * Add a copy of IORT node pointer to platform_data to
-+	 * be used to retrieve IORT data information.
-+	 */
-+	ret = platform_device_add_data(pdev, &node, sizeof(node));
-+	if (ret)
-+		goto dev_put;
-+
-+	/*
-+	 * We expect the dma masks to be equivalent for
-+	 * all SMMUs set-ups
-+	 */
-+	pdev->dev.dma_mask = &pdev->dev.coherent_dma_mask;
-+
-+	fwnode = iort_get_fwnode(node);
-+
-+	if (!fwnode) {
-+		ret = -ENODEV;
-+		goto dev_put;
-+	}
-+
-+	pdev->dev.fwnode = fwnode;
-+
-+	attr = ops->iommu_is_coherent(node) ?
-+			     DEV_DMA_COHERENT : DEV_DMA_NON_COHERENT;
-+
-+	/* Configure DMA for the page table walker */
-+	acpi_dma_configure(&pdev->dev, attr);
-+
-+	ret = platform_device_add(pdev);
-+	if (ret)
-+		goto dma_deconfigure;
++	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
++		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
 +
 +	return 0;
-+
-+dma_deconfigure:
-+	acpi_dma_deconfigure(&pdev->dev);
-+dev_put:
-+	platform_device_put(pdev);
-+
-+	return ret;
 +}
-+
-+static void __init iort_init_platform_devices(void)
++#else
++static inline int arm_smmu_device_acpi_probe(struct platform_device *pdev,
++					     struct arm_smmu_device *smmu)
 +{
-+	struct acpi_iort_node *iort_node, *iort_end;
-+	struct acpi_table_iort *iort;
-+	struct fwnode_handle *fwnode;
-+	int i, ret;
-+
-+	/*
-+	 * iort_table and iort both point to the start of IORT table, but
-+	 * have different struct types
-+	 */
-+	iort = (struct acpi_table_iort *)iort_table;
-+
-+	/* Get the first IORT node */
-+	iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort,
-+				 iort->node_offset);
-+	iort_end = ACPI_ADD_PTR(struct acpi_iort_node, iort,
-+				iort_table->length);
-+
-+	for (i = 0; i < iort->node_count; i++) {
-+		if (iort_node >= iort_end) {
-+			pr_err("iort node pointer overflows, bad table\n");
-+			return;
-+		}
-+
-+		if ((iort_node->type == ACPI_IORT_NODE_SMMU) ||
-+			(iort_node->type == ACPI_IORT_NODE_SMMU_V3)) {
-+
-+			fwnode = acpi_alloc_fwnode_static();
-+			if (!fwnode)
-+				return;
-+
-+			iort_set_fwnode(iort_node, fwnode);
-+
-+			ret = iort_add_smmu_platform_device(iort_node);
-+			if (ret) {
-+				iort_delete_fwnode(iort_node);
-+				acpi_free_fwnode_static(fwnode);
-+				return;
-+			}
-+		}
-+
-+		iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort_node,
-+					 iort_node->length);
-+	}
++	return -ENODEV;
 +}
++#endif
 +
- void __init acpi_iort_init(void)
+ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+ 				    struct arm_smmu_device *smmu)
  {
- 	acpi_status status;
-@@ -472,5 +621,7 @@ void __init acpi_iort_init(void)
- 		return;
- 	}
+@@ -2624,8 +2652,16 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	if (irq > 0)
+ 		smmu->gerr_irq = irq;
  
-+	iort_init_platform_devices();
++	if (dev->of_node) {
++		ret = arm_smmu_device_dt_probe(pdev, smmu);
++	} else {
++		ret = arm_smmu_device_acpi_probe(pdev, smmu);
++		if (ret == -ENODEV)
++			return ret;
++	}
 +
- 	acpi_probe_device_table(iort);
+ 	/* Set bypass mode according to firmware probing result */
+-	bypass = !!arm_smmu_device_dt_probe(pdev, smmu);
++	bypass = !!ret;
+ 
+ 	/* Probe the h/w */
+ 	ret = arm_smmu_device_hw_probe(smmu);
+@@ -2728,6 +2764,17 @@ static int __init arm_smmu_of_init(struct device_node *np)
  }
+ IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3", arm_smmu_of_init);
+ 
++#ifdef CONFIG_ACPI
++static int __init acpi_smmu_v3_init(struct acpi_table_header *table)
++{
++	if (iort_node_match(ACPI_IORT_NODE_SMMU_V3))
++		return arm_smmu_init();
++
++	return 0;
++}
++IORT_ACPI_DECLARE(arm_smmu_v3, ACPI_SIG_IORT, acpi_smmu_v3_init);
++#endif
++
+ MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
+ MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
+ MODULE_LICENSE("GPL v2");
 -- 
 2.10.0
