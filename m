@@ -1,7 +1,8 @@
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v9 11/16] drivers: iommu: arm-smmu-v3: add IORT configuration
-Date: Mon, 21 Nov 2016 10:01:43 +0000
-Message-ID: <20161121100148.24769-12-lorenzo.pieralisi@arm.com>
+Subject: [PATCH v9 10/16] drivers: iommu: arm-smmu-v3: split probe functions
+	into DT/generic portions
+Date: Mon, 21 Nov 2016 10:01:42 +0000
+Message-ID: <20161121100148.24769-11-lorenzo.pieralisi@arm.com>
 References: <20161121100148.24769-1-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,235 +22,123 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-In ACPI bases systems, in order to be able to create platform
-devices and initialize them for ARM SMMU v3 components, the IORT
-kernel implementation requires a set of static functions to be
-used by the IORT kernel layer to configure platform devices for
-ARM SMMU v3 components.
+Current ARM SMMUv3 probe functions intermingle HW and DT probing in the
+initialization functions to detect and programme the ARM SMMU v3 driver
+features. In order to allow probing the ARM SMMUv3 with other firmwares
+than DT, this patch splits the ARM SMMUv3 init functions into DT and HW
+specific portions so that other FW interfaces (ie ACPI) can reuse the HW
+probing functions and skip the DT portion accordingly.
 
-Add static configuration functions to the IORT kernel layer for
-the ARM SMMU v3 components, so that the ARM SMMU v3 driver can
-initialize its respective platform device by relying on the IORT
-kernel infrastructure and by adding a corresponding ACPI device
-early probe section entry.
+This patch implements no functional change, only code reshuffling.
 
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 Reviewed-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
 Tested-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Tested-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 ---
- drivers/acpi/arm64/iort.c   | 103 +++++++++++++++++++++++++++++++++++++++++++-
- drivers/iommu/arm-smmu-v3.c |  49 ++++++++++++++++++++-
- 2 files changed, 150 insertions(+), 2 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 43 +++++++++++++++++++++++++++----------------
+ 1 file changed, 27 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index ddf83b5..fd52e4c 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -459,6 +459,95 @@ struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id)
- 	return irq_find_matching_fwnode(handle, DOMAIN_BUS_PCI_MSI);
- }
- 
-+static void __init acpi_iort_register_irq(int hwirq, const char *name,
-+					  int trigger,
-+					  struct resource *res)
-+{
-+	int irq = acpi_register_gsi(NULL, hwirq, trigger,
-+				    ACPI_ACTIVE_HIGH);
-+
-+	if (irq <= 0) {
-+		pr_err("could not register gsi hwirq %d name [%s]\n", hwirq,
-+								      name);
-+		return;
-+	}
-+
-+	res->start = irq;
-+	res->end = irq;
-+	res->flags = IORESOURCE_IRQ;
-+	res->name = name;
-+}
-+
-+static int __init arm_smmu_v3_count_resources(struct acpi_iort_node *node)
-+{
-+	struct acpi_iort_smmu_v3 *smmu;
-+	/* Always present mem resource */
-+	int num_res = 1;
-+
-+	/* Retrieve SMMUv3 specific data */
-+	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-+
-+	if (smmu->event_gsiv)
-+		num_res++;
-+
-+	if (smmu->pri_gsiv)
-+		num_res++;
-+
-+	if (smmu->gerr_gsiv)
-+		num_res++;
-+
-+	if (smmu->sync_gsiv)
-+		num_res++;
-+
-+	return num_res;
-+}
-+
-+static void __init arm_smmu_v3_init_resources(struct resource *res,
-+					      struct acpi_iort_node *node)
-+{
-+	struct acpi_iort_smmu_v3 *smmu;
-+	int num_res = 0;
-+
-+	/* Retrieve SMMUv3 specific data */
-+	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-+
-+	res[num_res].start = smmu->base_address;
-+	res[num_res].end = smmu->base_address + SZ_128K - 1;
-+	res[num_res].flags = IORESOURCE_MEM;
-+
-+	num_res++;
-+
-+	if (smmu->event_gsiv)
-+		acpi_iort_register_irq(smmu->event_gsiv, "eventq",
-+				       ACPI_EDGE_SENSITIVE,
-+				       &res[num_res++]);
-+
-+	if (smmu->pri_gsiv)
-+		acpi_iort_register_irq(smmu->pri_gsiv, "priq",
-+				       ACPI_EDGE_SENSITIVE,
-+				       &res[num_res++]);
-+
-+	if (smmu->gerr_gsiv)
-+		acpi_iort_register_irq(smmu->gerr_gsiv, "gerror",
-+				       ACPI_EDGE_SENSITIVE,
-+				       &res[num_res++]);
-+
-+	if (smmu->sync_gsiv)
-+		acpi_iort_register_irq(smmu->sync_gsiv, "cmdq-sync",
-+				       ACPI_EDGE_SENSITIVE,
-+				       &res[num_res++]);
-+}
-+
-+static bool __init arm_smmu_v3_is_coherent(struct acpi_iort_node *node)
-+{
-+	struct acpi_iort_smmu_v3 *smmu;
-+
-+	/* Retrieve SMMUv3 specific data */
-+	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-+
-+	return smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE;
-+}
-+
- struct iort_iommu_config {
- 	const char *name;
- 	int (*iommu_init)(struct acpi_iort_node *node);
-@@ -468,10 +557,22 @@ struct iort_iommu_config {
- 				     struct acpi_iort_node *node);
- };
- 
-+static const struct iort_iommu_config iort_arm_smmu_v3_cfg __initconst = {
-+	.name = "arm-smmu-v3",
-+	.iommu_is_coherent = arm_smmu_v3_is_coherent,
-+	.iommu_count_resources = arm_smmu_v3_count_resources,
-+	.iommu_init_resources = arm_smmu_v3_init_resources
-+};
-+
- static __init
- const struct iort_iommu_config *iort_get_iommu_cfg(struct acpi_iort_node *node)
- {
--	return NULL;
-+	switch (node->type) {
-+	case ACPI_IORT_NODE_SMMU_V3:
-+		return &iort_arm_smmu_v3_cfg;
-+	default:
-+		return NULL;
-+	}
- }
- 
- /**
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 2b3f9ac..d22c428 100644
+index e6e1c87..2b3f9ac 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -20,6 +20,8 @@
-  * This driver is powered by bad coffee and bombay mix.
-  */
- 
-+#include <linux/acpi.h>
-+#include <linux/acpi_iort.h>
- #include <linux/delay.h>
- #include <linux/dma-iommu.h>
- #include <linux/err.h>
-@@ -2559,6 +2561,32 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+@@ -2381,10 +2381,10 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
  	return 0;
  }
  
-+#ifdef CONFIG_ACPI
-+static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
-+				      struct arm_smmu_device *smmu)
-+{
-+	struct acpi_iort_smmu_v3 *iort_smmu;
-+	struct device *dev = smmu->dev;
-+	struct acpi_iort_node *node;
+-static int arm_smmu_device_probe(struct arm_smmu_device *smmu)
++static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ {
+ 	u32 reg;
+-	bool coherent;
++	bool coherent = smmu->features & ARM_SMMU_FEAT_COHERENCY;
+ 
+ 	/* IDR0 */
+ 	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR0);
+@@ -2436,13 +2436,9 @@ static int arm_smmu_device_probe(struct arm_smmu_device *smmu)
+ 		smmu->features |= ARM_SMMU_FEAT_HYP;
+ 
+ 	/*
+-	 * The dma-coherent property is used in preference to the ID
++	 * The coherency feature as set by FW is used in preference to the ID
+ 	 * register, but warn on mismatch.
+ 	 */
+-	coherent = of_dma_is_coherent(smmu->dev->of_node);
+-	if (coherent)
+-		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
+-
+ 	if (!!(reg & IDR0_COHACC) != coherent)
+ 		dev_warn(smmu->dev, "IDR0.COHACC overridden by dma-coherent property (%s)\n",
+ 			 coherent ? "true" : "false");
+@@ -2563,21 +2559,35 @@ static int arm_smmu_device_probe(struct arm_smmu_device *smmu)
+ 	return 0;
+ }
+ 
+-static int arm_smmu_device_dt_probe(struct platform_device *pdev)
++static int arm_smmu_device_dt_probe(struct platform_device *pdev,
++				    struct arm_smmu_device *smmu)
+ {
+-	int irq, ret;
+-	struct resource *res;
+-	struct arm_smmu_device *smmu;
+ 	struct device *dev = &pdev->dev;
+-	bool bypass = true;
+ 	u32 cells;
++	int ret = -EINVAL;
+ 
+ 	if (of_property_read_u32(dev->of_node, "#iommu-cells", &cells))
+ 		dev_err(dev, "missing #iommu-cells property\n");
+ 	else if (cells != 1)
+ 		dev_err(dev, "invalid #iommu-cells value (%d)\n", cells);
+ 	else
+-		bypass = false;
++		ret = 0;
 +
-+	node = *(struct acpi_iort_node **)dev_get_platdata(dev);
++	parse_driver_options(smmu);
 +
-+	/* Retrieve SMMUv3 specific data */
-+	iort_smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
-+
-+	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
++	if (of_dma_is_coherent(dev->of_node))
 +		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
 +
-+	return 0;
++	return ret;
 +}
-+#else
-+static inline int arm_smmu_device_acpi_probe(struct platform_device *pdev,
-+					     struct arm_smmu_device *smmu)
-+{
-+	return -ENODEV;
-+}
-+#endif
 +
- static int arm_smmu_device_dt_probe(struct platform_device *pdev,
- 				    struct arm_smmu_device *smmu)
- {
-@@ -2624,8 +2652,16 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
++static int arm_smmu_device_probe(struct platform_device *pdev)
++{
++	int irq, ret;
++	struct resource *res;
++	struct arm_smmu_device *smmu;
++	struct device *dev = &pdev->dev;
++	bool bypass;
+ 
+ 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+ 	if (!smmu) {
+@@ -2614,10 +2624,11 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev)
  	if (irq > 0)
  		smmu->gerr_irq = irq;
  
-+	if (dev->of_node) {
-+		ret = arm_smmu_device_dt_probe(pdev, smmu);
-+	} else {
-+		ret = arm_smmu_device_acpi_probe(pdev, smmu);
-+		if (ret == -ENODEV)
-+			return ret;
-+	}
-+
- 	/* Set bypass mode according to firmware probing result */
--	bypass = !!arm_smmu_device_dt_probe(pdev, smmu);
-+	bypass = !!ret;
+-	parse_driver_options(smmu);
++	/* Set bypass mode according to firmware probing result */
++	bypass = !!arm_smmu_device_dt_probe(pdev, smmu);
  
  	/* Probe the h/w */
- 	ret = arm_smmu_device_hw_probe(smmu);
-@@ -2728,6 +2764,17 @@ static int __init arm_smmu_of_init(struct device_node *np)
- }
- IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3", arm_smmu_of_init);
+-	ret = arm_smmu_device_probe(smmu);
++	ret = arm_smmu_device_hw_probe(smmu);
+ 	if (ret)
+ 		return ret;
  
-+#ifdef CONFIG_ACPI
-+static int __init acpi_smmu_v3_init(struct acpi_table_header *table)
-+{
-+	if (iort_node_match(ACPI_IORT_NODE_SMMU_V3))
-+		return arm_smmu_init();
-+
-+	return 0;
-+}
-+IORT_ACPI_DECLARE(arm_smmu_v3, ACPI_SIG_IORT, acpi_smmu_v3_init);
-+#endif
-+
- MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
- MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
- MODULE_LICENSE("GPL v2");
+@@ -2679,7 +2690,7 @@ static struct platform_driver arm_smmu_driver = {
+ 		.name		= "arm-smmu-v3",
+ 		.of_match_table	= of_match_ptr(arm_smmu_of_match),
+ 	},
+-	.probe	= arm_smmu_device_dt_probe,
++	.probe	= arm_smmu_device_probe,
+ 	.remove	= arm_smmu_device_remove,
+ };
+ 
 -- 
 2.10.0
