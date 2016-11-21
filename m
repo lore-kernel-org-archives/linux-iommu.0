@@ -1,86 +1,63 @@
-From: Jon Masters <jcm@jonmasters.org>
-Subject: Re: Summary of LPC guest MSI discussion in Santa Fe
-Date: Sun, 20 Nov 2016 22:13:30 -0700
-Message-ID: <83d7bf8e-1aa9-b61b-4e83-ba9da1926d19@jonmasters.org>
-References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
- <20161103220205.37715b49@t450s.home> <20161108024559.GA20591@arm.com>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [RFC PATCH v3 11/20] x86: Add support for changing memory
+	encryption attribute
+Date: Mon, 21 Nov 2016 09:27:54 +0100
+Message-ID: <20161121082754.at6lhjhekbzjgyhc@pd.tnic>
+References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
+	<20161110003655.3280.57333.stgit@tlendack-t1.amdoffice.net>
+	<20161117173945.gnar3arpyeeh5xm2@pd.tnic>
+	<6f1a16e4-5a84-20c0-4bd3-3be5ed933800@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20161108024559.GA20591@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Will Deacon <will.deacon@arm.com>, Alex Williamson <alex.williamson@redhat.com>
-Cc: drjones@redhat.com, jason@lakedaemon.net, kvm@vger.kernel.org, marc.zyngier@arm.com, benh@kernel.crashing.org, joro@8bytes.org, punit.agrawal@arm.com, linux-kernel@vger.kernel.org, arnd@arndb.de, diana.craciun@nxp.com, Eric Auger <eric.auger@redhat.com>, iommu@lists.linux-foundation.org, pranav.sawargaonkar@gmail.com, ddutile@redhat.com, linux-arm-kernel@lists.infradead.org, jcm@redhat.com, tglx@linutronix.de, robin.murphy@arm.com, dwmw@amazon.co.uk, christoffer.dall@linaro.org, eric.auger.pro@gmail.com
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <6f1a16e4-5a84-20c0-4bd3-3be5ed933800-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/07/2016 07:45 PM, Will Deacon wrote:
+On Sat, Nov 19, 2016 at 12:48:27PM -0600, Tom Lendacky wrote:
+> Should I move this functionality into the sme_set_mem_* functions or
+> remove the sme_set_mem_* functions and use the set_memory_* functions
+> directly.  The latter means calculating the number of pages, but makes
+> it clear that this works on a page level while the former keeps
+> everything the mem_encrypt.c file (and I can change that to take in a
+> page count so that it is clear about the page boundary usage).
 
-> I figured this was a reasonable post to piggy-back on for the LPC minutes
-> relating to guest MSIs on arm64.
+A user of that interface doesn't care, right?
 
-Thanks for this Will. I'm still digging out post-LPC and SC16, but the
-summary was much appreciated, and I'm glad the conversation is helping.
+All she wants to do is pass in an address and size and the code will
+figure out everything. And I think address and size is the simplest two
+args you can pass. numpages can be calculated from it. As you do in
+sme_set_mem_*.
 
->   1. The physical memory map is not standardised (Jon pointed out that
->      this is something that was realised late on)
+And you need to do it all in pageattr.c because it uses the cpa wankery
+in there so you probably want to define
 
-Just to note, we discussed this one about 3-4 years ago. I recall making
-a vigorous slideshow at a committee meeting in defense of having a
-single memory map for ARMv8 servers and requiring everyone to follow it.
-I was weak. I listened to the comments that this was "unreasonable".
-Instead, I consider it was unreasonable of me to not get with the other
-OS vendors and force things to be done one way. The lack of a "map at
-zero" RAM location on ARMv8 has been annoying enough for 32-bit DMA only
-devices on 64-bit (behind an SMMU but in passthrough mode it doesn't
-help) and other issues beyond fixing the MSI doorbell regions. If I ever
-have a time machine, I tried harder.
+int set_memory_dec(unsigned long addr, size_t size)
+int set_memory_enc(unsigned long addr, size_t size)
 
-> Jon pointed out that most people are pretty conservative about hardware
-> choices when migrating between them -- that is, they may only migrate
-> between different revisions of the same SoC, or they know ahead of time
-> all of the memory maps they want to support and this could be communicated
-> by way of configuration to libvirt.
+there which both simply call
 
-I think it's certainly reasonable to assume this in an initial
-implementation and fix it later. Currently, we're very conservative
-about host CPU passthrough anyway and can't migrate from one microarch
-to another revision of the same microarch even. And on x86, nobody
-really supports e.g. Intel to AMD and back again. I've always been of
-the mind that we should ensure the architecture can handle this, but
-then cautiously approach this with a default to not doing it.
+__set_memory_enc_dec(unsigned long addr, size_t size, bool enc)
 
-> Alex asked if there was a security
-> issue with DMA bypassing the SMMU, but there aren't currently any systems
-> where that is known to happen. Such a system would surely not be safe for
-> passthrough.
+and it goes and figures out everything, builds the cpa_data and does the
+mapping.
 
-There are other potential security issues that came up but don't need to
-be noted here (yet). I have wanted to clarify the SBSA for a long time
-when it comes to how IOMMUs should be implemented. It's past time that
-we went back and had a few conversations about that. I've poked.
+That looks very simple and clean to me.
 
-> Ben mused that a way to handle conflicts dynamically might be to hotplug
-> on the entire host bridge in the guest, passing firmware tables describing
-> the new reserved regions as a property of the host bridge. Whilst this
-> may well solve the issue, it was largely considered future work due to
-> its invasive nature and dependency on firmware tables (and guest support)
-> that do not currently exist.
+-- 
+Regards/Gruss,
+    Boris.
 
-Indeed. It's an elegant solution (thanks Ben) that I gather POWER
-already does (good for them). We've obviously got a few things to clean
-up after we get the basics in place. Again, I think we can consider it
-reasonable that the MSI doorbell regions are predetermined on system A
-well ahead of any potential migration (that may or may not then work)
-for the moment. Vendors will want to loosen this later, and they can
-drive the work to do that, for example by hotplugging a host bridge.
-
-Jon.
+Good mailing practices for 400: avoid top-posting and trim the reply.
