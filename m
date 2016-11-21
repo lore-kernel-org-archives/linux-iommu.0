@@ -1,59 +1,86 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [RFC PATCH v3 10/20] Add support to access boot related data in
- the clear
-Date: Mon, 21 Nov 2016 00:04:35 +0100
-Message-ID: <20161120230435.gqjp7gboshhqplbf@pd.tnic>
-References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
- <20161110003631.3280.73292.stgit@tlendack-t1.amdoffice.net>
- <20161117155543.vg3domfqm3bhp4f7@pd.tnic>
- <f7bf8301-7d91-dd43-d5f0-05e977c0c5a2@amd.com>
+From: Jon Masters <jcm@jonmasters.org>
+Subject: Re: Summary of LPC guest MSI discussion in Santa Fe
+Date: Sun, 20 Nov 2016 22:13:30 -0700
+Message-ID: <83d7bf8e-1aa9-b61b-4e83-ba9da1926d19@jonmasters.org>
+References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
+ <20161103220205.37715b49@t450s.home> <20161108024559.GA20591@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <f7bf8301-7d91-dd43-d5f0-05e977c0c5a2@amd.com>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20161108024559.GA20591@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: drjones@redhat.com, jason@lakedaemon.net, kvm@vger.kernel.org, marc.zyngier@arm.com, benh@kernel.crashing.org, joro@8bytes.org, punit.agrawal@arm.com, linux-kernel@vger.kernel.org, arnd@arndb.de, diana.craciun@nxp.com, Eric Auger <eric.auger@redhat.com>, iommu@lists.linux-foundation.org, pranav.sawargaonkar@gmail.com, ddutile@redhat.com, linux-arm-kernel@lists.infradead.org, jcm@redhat.com, tglx@linutronix.de, robin.murphy@arm.com, dwmw@amazon.co.uk, christoffer.dall@linaro.org, eric.auger.pro@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Sat, Nov 19, 2016 at 12:33:49PM -0600, Tom Lendacky wrote:
-> >> +{
-> >> +	/* SME is not active, just return true */
-> >> +	if (!sme_me_mask)
-> >> +		return true;
-> > 
-> > I don't understand the logic here: SME is not active -> apply encryption?!
-> 
-> It does seem counter-intuitive, but it is mainly because of the memremap
-> vs. early_memremap support. For the early_memremap support, if the
-> sme_me_mask is 0 it doesn't matter whether we return true or false since
-> the mask is zero even if you try to apply it. But for the memremap
-> support, it's used to determine whether to do the ram remap vs an
-> ioremap.
-> 
-> I'll pull the sme_me_mask check out of the function and put it in the
-> individual functions to remove the contradiction and make things
-> clearer.
+On 11/07/2016 07:45 PM, Will Deacon wrote:
 
-But that would be more code, right?
+> I figured this was a reasonable post to piggy-back on for the LPC minutes
+> relating to guest MSIs on arm64.
 
-Instead, you could simply explain in a comment above it what do you
-mean exactly. Something along the lines of "if sme_me_mask is not
-set, we should map encrypted because if not set, we can simply remap
-RAM. Otherwise we have to ioremap because we need to access it in the
-clear..."
+Thanks for this Will. I'm still digging out post-LPC and SC16, but the
+summary was much appreciated, and I'm glad the conversation is helping.
 
-I presume - I still don't grok that difference here completely.
+>   1. The physical memory map is not standardised (Jon pointed out that
+>      this is something that was realised late on)
 
--- 
-Regards/Gruss,
-    Boris.
+Just to note, we discussed this one about 3-4 years ago. I recall making
+a vigorous slideshow at a committee meeting in defense of having a
+single memory map for ARMv8 servers and requiring everyone to follow it.
+I was weak. I listened to the comments that this was "unreasonable".
+Instead, I consider it was unreasonable of me to not get with the other
+OS vendors and force things to be done one way. The lack of a "map at
+zero" RAM location on ARMv8 has been annoying enough for 32-bit DMA only
+devices on 64-bit (behind an SMMU but in passthrough mode it doesn't
+help) and other issues beyond fixing the MSI doorbell regions. If I ever
+have a time machine, I tried harder.
 
-Good mailing practices for 400: avoid top-posting and trim the reply.
+> Jon pointed out that most people are pretty conservative about hardware
+> choices when migrating between them -- that is, they may only migrate
+> between different revisions of the same SoC, or they know ahead of time
+> all of the memory maps they want to support and this could be communicated
+> by way of configuration to libvirt.
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+I think it's certainly reasonable to assume this in an initial
+implementation and fix it later. Currently, we're very conservative
+about host CPU passthrough anyway and can't migrate from one microarch
+to another revision of the same microarch even. And on x86, nobody
+really supports e.g. Intel to AMD and back again. I've always been of
+the mind that we should ensure the architecture can handle this, but
+then cautiously approach this with a default to not doing it.
+
+> Alex asked if there was a security
+> issue with DMA bypassing the SMMU, but there aren't currently any systems
+> where that is known to happen. Such a system would surely not be safe for
+> passthrough.
+
+There are other potential security issues that came up but don't need to
+be noted here (yet). I have wanted to clarify the SBSA for a long time
+when it comes to how IOMMUs should be implemented. It's past time that
+we went back and had a few conversations about that. I've poked.
+
+> Ben mused that a way to handle conflicts dynamically might be to hotplug
+> on the entire host bridge in the guest, passing firmware tables describing
+> the new reserved regions as a property of the host bridge. Whilst this
+> may well solve the issue, it was largely considered future work due to
+> its invasive nature and dependency on firmware tables (and guest support)
+> that do not currently exist.
+
+Indeed. It's an elegant solution (thanks Ben) that I gather POWER
+already does (good for them). We've obviously got a few things to clean
+up after we get the basics in place. Again, I think we can consider it
+reasonable that the MSI doorbell regions are predetermined on system A
+well ahead of any potential migration (that may or may not then work)
+for the moment. Vendors will want to loosen this later, and they can
+drive the work to do that, for example by hotplugging a host bridge.
+
+Jon.
