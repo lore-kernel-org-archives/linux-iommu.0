@@ -1,69 +1,48 @@
-From: Mark Hounschell <markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org>
-Subject: Re: BUG at drivers/iommu/amd_iommu.c:1436!
-Date: Tue, 22 Nov 2016 14:53:25 -0500
-Message-ID: <6dc89f9c-bb32-d7e5-f72e-104e0a9afd48@compro.net>
-References: <838275de-6cac-93d8-ca04-54b06a24b3d4@compro.net>
-	<20161117214141.GC2078@8bytes.org>
-	<f4ababc2-64bf-fd0e-1d18-cb5963d23eb1@compro.net>
-	<20161117220045.GD2078@8bytes.org>
-	<b8260bfd-55c9-c029-1af1-e1ccc719dd3a@compro.net>
-	<20161121153250.GE2078@8bytes.org>
-	<4f6afa52-9634-79f4-01af-1ae047aa83f7@compro.net>
-	<20161122084522.GF2078@8bytes.org>
-Reply-To: markh-n2QNKt385d+sTnJN9+BGXg@public.gmane.org
+From: "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC PATCH v3 13/20] x86: DMA support for memory encryption
+Date: Tue, 22 Nov 2016 22:41:30 +0200
+Message-ID: <20161122224005-mutt-send-email-mst@kernel.org>
+References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
+ <20161110003723.3280.62636.stgit@tlendack-t1.amdoffice.net>
+ <20161115171443-mutt-send-email-mst@kernel.org>
+ <4d97f998-5835-f4e0-9840-7f7979251275@amd.com>
+ <20161122113859.5dtlrfgizwpum6st@pd.tnic>
+ <20161122171455-mutt-send-email-mst@kernel.org>
+ <20161122154137.z5vp3xcl5cpesuiz@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161122084522.GF2078-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-efi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20161122154137.z5vp3xcl5cpesuiz-fF5Pk5pvG8Y@public.gmane.org>
+Sender: linux-efi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/22/2016 03:45 AM, Joerg Roedel wrote:
-> On Mon, Nov 21, 2016 at 04:47:59PM -0500, Mark Hounschell wrote:
->> OK, I did get this message before the reported BUG message.
->>
->> gpiohsd gpiohsd: DMA-API: device driver tries to free DMA memory it has not allocated [device address=0xffffffffffee8000] [size=8192 bytes]
->>
->> But I've verified that the dma_addr_t that I get for the alloc, and
->> also use for the free is 0x00000000ffee8000 in this case? Is device
->> "address=0xffffffffffee8000" in that message a bug in the message or
->> do we have a sign extended address problem? It seems strange to me,
->> I've never seen a dma_addr_t given, when using the iommu, that
->> high. In the past I've seen them as usually 0x00xxxxxx?
->>
->> I have also verified that simply changing from
->> pci_alloc/free_consistent to the newer DMA API fixes my issue and I
->> get no such messages.
->
-> Yes, this looks like a sign-extension bug somewhere. But its not in the
-> amd-iommu driver, because dma-debug also sees it. And from what I can
-> tell the dma-api interface seems to be fine. It consistently uses
-> dma_addr_t to pass these values around.
->
-> Where can I find the source of the failing code? I need exactly the code
-> version that triggers the problem.
->
->
+On Tue, Nov 22, 2016 at 04:41:37PM +0100, Borislav Petkov wrote:
+> On Tue, Nov 22, 2016 at 05:22:38PM +0200, Michael S. Tsirkin wrote:
+> > The issue is it's a (potential) security hole, not a slowdown.
+> 
+> How? Because the bounce buffers will be unencrypted and someone might
+> intercept them?
 
-I certainly don't have a problem sending you the code but I'm sure you 
-have better things to do than scour over some out of kernel GPL driver 
-code. I see many many users of pci_alloc/free in kernel so it can't be 
-broken as badly as it appears to me here. I'm going to just go ahead and 
-convert this section of code to use the newer DMA API and be done with it.
+Or even modify them. Guests generally trust devices since they
+assume they are under their control.
 
-It appears pci_alloc/free_consistent is going to be removed completely 
-soon anyway.
-
-Thanks
-Mark
+> > To disable unsecure things. If someone enables SEV one might have an
+> > expectation of security.  Might help push vendors to do the right thing
+> > as a side effect.
+> 
+> Ok, you're looking at the SEV-cloud-multiple-guests aspect. Right, that
+> makes sense.
+> 
+> I guess for SEV we should even flip the logic: disable such devices by
+> default and an opt-in option to enable them and issue a big fat warning.
+> I'd even want to let the guest users know that they're on a system which
+> cannot give them encrypted DMA to some devices...
+> 
+> -- 
+> Regards/Gruss,
+>     Boris.
+> 
+> Good mailing practices for 400: avoid top-posting and trim the reply.
