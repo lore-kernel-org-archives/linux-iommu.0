@@ -1,19 +1,15 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V3 0/8] IOMMU probe deferral support
-Date: Wed, 23 Nov 2016 19:54:20 +0000
-Message-ID: <918128b9-cdb0-1454-000a-146cee7a05ea@arm.com>
-References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
-	<60ee8066-f167-e9df-ae3e-4138f1133bad@arm.com>
-	<003a01d22f97$82534c70$86f9e550$@codeaurora.org>
-	<421e2b14-0231-d376-02a0-097423120b3d@arm.com>
-	<006f01d236ae$61751c40$245f54c0$@codeaurora.org>
-	<9f36244f-62d4-08e3-d64a-2b04ad4dc2e0@arm.com>
-	<002b01d24340$5d56e730$1804b590$@codeaurora.org>
+From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: Summary of LPC guest MSI discussion in Santa Fe
+Date: Wed, 23 Nov 2016 15:12:41 -0500
+Message-ID: <5835F839.40905@redhat.com>
+References: <1478209178-3009-1-git-send-email-eric.auger@redhat.com>
+	<20161103220205.37715b49@t450s.home> <20161108024559.GA20591@arm.com>
+	<83d7bf8e-1aa9-b61b-4e83-ba9da1926d19@jonmasters.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <002b01d24340$5d56e730$1804b590$@codeaurora.org>
+In-Reply-To: <83d7bf8e-1aa9-b61b-4e83-ba9da1926d19-Zp4isUonpHBD60Wz+7aTrA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,117 +19,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+To: Jon Masters <jcm-Zp4isUonpHBD60Wz+7aTrA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, benh-XVmvHMARGAS8U2dJNN8I7kB+6BGkLq7r@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, dwmw-vV1OtcyAfmbQXOPxS62xeg@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 20/11/16 15:11, Sricharan wrote:
-> Hi Robin,
-> 
->> Hi Robin,
->>
->>> Hi Robin,
->>>
->>>> On 04/11/16 15:16, Sricharan wrote:
->>>>> Hi Robin,
->>>>>
->>>>>>>> Yikes, on second look, that definitely shouldn't be happening.
->>>>>>>> Everything below is probably the resulting fallout.
->>>>>>>
->>>>>>> [   40.206703] vfio-pci 0000:08:00.0: Failed to setup iommu ops
->>>>>>>
->>>>>>> I think the above print which says "failed to setup iommu_ops"
->>>>>>> because the call ops->add_device failed in of_pci_iommu_configure
->>>>>>> is the reason for the failure, in my case i simply do not get this even with
->>>>>>> your scripts. ops->add_device succeeds in the rebind as well. So still
->>>>>>> checking what could be happening in your case.
->>>>>>
->>>>>> I was looking at your code base from [1].The ops->add_device
->>>>>> callback from of_pci_iommu_configure on the rebind is the
->>>>>> one which is causing the failure. But not able to spot out
->>>>> >from code which point is causing the failure. It would be very helpful
->>>>>> if i can know which is the return value from the add_device callback
->>>>>> or point inside add_device callback which fails in your setup.
->>>>>>
->>>>>>
->>>>>> [1] git://linux-arm.org/linux-rm iommu/misc
->>>>>
->>>>> With little more try, i saw an issue where i had an failure
->>>>> similar to what you reported. The issue happens when multiple
->>>>> devices fall in to same group due to matching sids. I ended up
->>>>> doing a fix like below and it would be nice to verify if it is the same
->>>>> that we are seeing in your setup and if the fix makes a difference ?
->>>>>
->>>>> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>>> Date: Fri, 4 Nov 2016 20:28:49 +0530
->>>>> Subject: [PATCH] iommu/arm-smmu: Fix group's reference counting
->>>>>
->>>>> iommu_group_get_for_dev which gets called in the add_device
->>>>> callback, increases the reference count of the iommu_group,
->>>>> so we do an iommu_group_put after that. iommu_group_get_for_dev
->>>>> inturn calls device_group callback and in the case of arm-smmu
->>>>> we call generic_device_group/pci_device_group which takes
->>>>> care of increasing the group's reference. But when we return
->>>>> an already existing group(when multiple devices have same group)
->>>>> the reference is not incremented, resulting in issues when the
->>>>> remove_device callback for the devices is invoked.
->>>>> Fixing the same here.
->>>>
->>>> Bah, yes, this does look like my fault - after flip-flopping between
->>>> about 3 different ways to keep refcounts for the S2CR entries, none of
->>>> which would quite work, I ripped it all out but apparently still got
->>>> things wrong, oh well. Thanks for figuring it out.
->>>>
->>>> On the probe-deferral angle, whilst it's useful to have uncovered this
->>>> bug, I don't think we should actually be calling remove_device() from
->>>> DMA teardown. I think it's preferable from a user perspective if group
->>>> numbering remains stable, rather than changing depending on the order in
->>>> which they unbind/rebind VFIO drivers. I'm really keen to try and get
->>>> this in shape for 4.10, so I've taken the liberty of hacking up my own
->>>> branch (iommu/defer) based on v3 - would you mind taking a look at the
->>>> two "iommu/of:" commits to see what you think? (Ignore the PCI changes
->>>> to your later patches - that was an experiment which didn't really work out)
->>>
->>> Ok, will take a look at this now and respond more on this.
->>>
->> Sorry for the delayed response on this. I was OOO for the last few days.
->> So i tested this branch and it worked fine. I tested it with a pci device
->> for both normal and deferred probe cases.  The of/iommu patches
->> are the cleanup/preparation patches and it looks fine. One thing is without
->> calling the remove_device callback, the resources like (smes for exmaple)
->> and the group association of the device all remain allocated. That does not
->> feel correct, given that the associated device does not exist. So to
->> understand that, what happens with VFIO in this case which makes the
->> group renumbering/rebinding a problem ?
->>
-> 
-> Would it be ok if i post a V4 based on your branch above ?
+On 11/21/2016 12:13 AM, Jon Masters wrote:
+> On 11/07/2016 07:45 PM, Will Deacon wrote:
+>
+>> I figured this was a reasonable post to piggy-back on for the LPC minutes
+>> relating to guest MSIs on arm64.
+>
+> Thanks for this Will. I'm still digging out post-LPC and SC16, but the
+> summary was much appreciated, and I'm glad the conversation is helping.
+>
+>>    1. The physical memory map is not standardised (Jon pointed out that
+>>       this is something that was realised late on)
+>
+> Just to note, we discussed this one about 3-4 years ago. I recall making
+> a vigorous slideshow at a committee meeting in defense of having a
+> single memory map for ARMv8 servers and requiring everyone to follow it.
+> I was weak. I listened to the comments that this was "unreasonable".
+> Instead, I consider it was unreasonable of me to not get with the other
+> OS vendors and force things to be done one way. The lack of a "map at
+> zero" RAM location on ARMv8 has been annoying enough for 32-bit DMA only
+> devices on 64-bit (behind an SMMU but in passthrough mode it doesn't
+> help) and other issues beyond fixing the MSI doorbell regions. If I ever
+> have a time machine, I tried harder.
+>
+>> Jon pointed out that most people are pretty conservative about hardware
+>> choices when migrating between them -- that is, they may only migrate
+>> between different revisions of the same SoC, or they know ahead of time
+>> all of the memory maps they want to support and this could be communicated
+>> by way of configuration to libvirt.
+>
+> I think it's certainly reasonable to assume this in an initial
+> implementation and fix it later. Currently, we're very conservative
+> about host CPU passthrough anyway and can't migrate from one microarch
+> to another revision of the same microarch even. And on x86, nobody
+> really supports e.g. Intel to AMD and back again. I've always been of
+Thats primarily due to diff virt implentations ... vme vs svm.
+1) thats not the case here; can argue cross arch variations .. gicv2 vs gicv3 vs gicv4 ...
+    but cross vendor should work if arch and common feature map (like x86 libvirt can resolve)
+    is provided
+2) second chance to do it better; look n learn!
+    and common thread i am trying to drive home here ... learn from past mistakes *and* good choices.
 
-Sure, as long as none of the hacks slip through :) - I've just pushed
-out a mild rework based on Lorenzo's v9, which I hope shouldn't break
-anything for you.
 
-Having thought a bit more about the add/remove thing, I'm inclined to
-agree that the group numbering itself may not be that big an issue in
-practice - sure, it could break my little script, but it looks like QEMU
-and such work with the device ID rather than the group number directly,
-so might not even notice. However, the fact remains that the callbacks
-are intended to handle a device being added to/removed from its bus, and
-will continue to do so on other platforms, so I don't like the idea of
-introducing needlessly different behaviour. If you unbind a driver, the
-stream IDs and everything don't stop existing at the hardware level; the
-struct device to which the in-kernel data belongs still exists and
-doesn't stop being associated with its bus. There's no good reason for
-freeing SMEs that we'll only reallocate again (inadequately-specced
-hardware with not enough SMRs/contexts is not a *good* reason), and
-there are also some strong arguments against letting any stream IDs the
-kernel knows about go back to bypass after a driver has been bound - by
-keeping groups around as expected that's something we can implement
-quite easily without having to completely lock down bypass for stream
-IDs the kernel *doesn't* know about.
-
-Robin.
-
-> 
-> Regards,
->  Sricharan
-> 
+> the mind that we should ensure the architecture can handle this, but
+> then cautiously approach this with a default to not doing it.
+>
+>> Alex asked if there was a security
+>> issue with DMA bypassing the SMMU, but there aren't currently any systems
+>> where that is known to happen. Such a system would surely not be safe for
+>> passthrough.
+>
+> There are other potential security issues that came up but don't need to
+> be noted here (yet). I have wanted to clarify the SBSA for a long time
+> when it comes to how IOMMUs should be implemented. It's past time that
+> we went back and had a few conversations about that. I've poked.
+>
+>> Ben mused that a way to handle conflicts dynamically might be to hotplug
+>> on the entire host bridge in the guest, passing firmware tables describing
+>> the new reserved regions as a property of the host bridge. Whilst this
+>> may well solve the issue, it was largely considered future work due to
+>> its invasive nature and dependency on firmware tables (and guest support)
+>> that do not currently exist.
+>
+> Indeed. It's an elegant solution (thanks Ben) that I gather POWER
+> already does (good for them). We've obviously got a few things to clean
+> up after we get the basics in place. Again, I think we can consider it
+> reasonable that the MSI doorbell regions are predetermined on system A
+> well ahead of any potential migration (that may or may not then work)
+> for the moment. Vendors will want to loosen this later, and they can
+> drive the work to do that, for example by hotplugging a host bridge.
+>
+> Jon.
+>
