@@ -1,31 +1,139 @@
-From: Geliang Tang <geliangtang@gmail.com>
-Subject: [PATCH] iommu/s390: drop duplicate header pci.h
-Date: Wed, 23 Nov 2016 23:23:19 +0800
-Message-ID: <4cc3123e0ea4ee25b46e463e698ece75f9ff966e.1479914526.git.geliangtang@gmail.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Gerald Schaefer <gerald.schaefer@de.ibm.com>, Joerg Roedel <joro@8bytes.org>
-Cc: Geliang Tang <geliangtang@gmail.com>, linux-s390@vger.kernel.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH V3 0/8] IOMMU probe deferral support
+Date: Wed, 23 Nov 2016 19:54:20 +0000
+Message-ID: <918128b9-cdb0-1454-000a-146cee7a05ea@arm.com>
+References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
+	<60ee8066-f167-e9df-ae3e-4138f1133bad@arm.com>
+	<003a01d22f97$82534c70$86f9e550$@codeaurora.org>
+	<421e2b14-0231-d376-02a0-097423120b3d@arm.com>
+	<006f01d236ae$61751c40$245f54c0$@codeaurora.org>
+	<9f36244f-62d4-08e3-d64a-2b04ad4dc2e0@arm.com>
+	<002b01d24340$5d56e730$1804b590$@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <002b01d24340$5d56e730$1804b590$@codeaurora.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Drop duplicate header pci.h from s390-iommu.c.
+On 20/11/16 15:11, Sricharan wrote:
+> Hi Robin,
+> 
+>> Hi Robin,
+>>
+>>> Hi Robin,
+>>>
+>>>> On 04/11/16 15:16, Sricharan wrote:
+>>>>> Hi Robin,
+>>>>>
+>>>>>>>> Yikes, on second look, that definitely shouldn't be happening.
+>>>>>>>> Everything below is probably the resulting fallout.
+>>>>>>>
+>>>>>>> [   40.206703] vfio-pci 0000:08:00.0: Failed to setup iommu ops
+>>>>>>>
+>>>>>>> I think the above print which says "failed to setup iommu_ops"
+>>>>>>> because the call ops->add_device failed in of_pci_iommu_configure
+>>>>>>> is the reason for the failure, in my case i simply do not get this even with
+>>>>>>> your scripts. ops->add_device succeeds in the rebind as well. So still
+>>>>>>> checking what could be happening in your case.
+>>>>>>
+>>>>>> I was looking at your code base from [1].The ops->add_device
+>>>>>> callback from of_pci_iommu_configure on the rebind is the
+>>>>>> one which is causing the failure. But not able to spot out
+>>>>> >from code which point is causing the failure. It would be very helpful
+>>>>>> if i can know which is the return value from the add_device callback
+>>>>>> or point inside add_device callback which fails in your setup.
+>>>>>>
+>>>>>>
+>>>>>> [1] git://linux-arm.org/linux-rm iommu/misc
+>>>>>
+>>>>> With little more try, i saw an issue where i had an failure
+>>>>> similar to what you reported. The issue happens when multiple
+>>>>> devices fall in to same group due to matching sids. I ended up
+>>>>> doing a fix like below and it would be nice to verify if it is the same
+>>>>> that we are seeing in your setup and if the fix makes a difference ?
+>>>>>
+>>>>> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>>>> Date: Fri, 4 Nov 2016 20:28:49 +0530
+>>>>> Subject: [PATCH] iommu/arm-smmu: Fix group's reference counting
+>>>>>
+>>>>> iommu_group_get_for_dev which gets called in the add_device
+>>>>> callback, increases the reference count of the iommu_group,
+>>>>> so we do an iommu_group_put after that. iommu_group_get_for_dev
+>>>>> inturn calls device_group callback and in the case of arm-smmu
+>>>>> we call generic_device_group/pci_device_group which takes
+>>>>> care of increasing the group's reference. But when we return
+>>>>> an already existing group(when multiple devices have same group)
+>>>>> the reference is not incremented, resulting in issues when the
+>>>>> remove_device callback for the devices is invoked.
+>>>>> Fixing the same here.
+>>>>
+>>>> Bah, yes, this does look like my fault - after flip-flopping between
+>>>> about 3 different ways to keep refcounts for the S2CR entries, none of
+>>>> which would quite work, I ripped it all out but apparently still got
+>>>> things wrong, oh well. Thanks for figuring it out.
+>>>>
+>>>> On the probe-deferral angle, whilst it's useful to have uncovered this
+>>>> bug, I don't think we should actually be calling remove_device() from
+>>>> DMA teardown. I think it's preferable from a user perspective if group
+>>>> numbering remains stable, rather than changing depending on the order in
+>>>> which they unbind/rebind VFIO drivers. I'm really keen to try and get
+>>>> this in shape for 4.10, so I've taken the liberty of hacking up my own
+>>>> branch (iommu/defer) based on v3 - would you mind taking a look at the
+>>>> two "iommu/of:" commits to see what you think? (Ignore the PCI changes
+>>>> to your later patches - that was an experiment which didn't really work out)
+>>>
+>>> Ok, will take a look at this now and respond more on this.
+>>>
+>> Sorry for the delayed response on this. I was OOO for the last few days.
+>> So i tested this branch and it worked fine. I tested it with a pci device
+>> for both normal and deferred probe cases.  The of/iommu patches
+>> are the cleanup/preparation patches and it looks fine. One thing is without
+>> calling the remove_device callback, the resources like (smes for exmaple)
+>> and the group association of the device all remain allocated. That does not
+>> feel correct, given that the associated device does not exist. So to
+>> understand that, what happens with VFIO in this case which makes the
+>> group renumbering/rebinding a problem ?
+>>
+> 
+> Would it be ok if i post a V4 based on your branch above ?
 
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
----
- drivers/iommu/s390-iommu.c | 1 -
- 1 file changed, 1 deletion(-)
+Sure, as long as none of the hacks slip through :) - I've just pushed
+out a mild rework based on Lorenzo's v9, which I hope shouldn't break
+anything for you.
 
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 3b44b1d..179e636 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -8,7 +8,6 @@
- #include <linux/pci.h>
- #include <linux/iommu.h>
- #include <linux/iommu-helper.h>
--#include <linux/pci.h>
- #include <linux/sizes.h>
- #include <asm/pci_dma.h>
- 
--- 
-2.9.3
+Having thought a bit more about the add/remove thing, I'm inclined to
+agree that the group numbering itself may not be that big an issue in
+practice - sure, it could break my little script, but it looks like QEMU
+and such work with the device ID rather than the group number directly,
+so might not even notice. However, the fact remains that the callbacks
+are intended to handle a device being added to/removed from its bus, and
+will continue to do so on other platforms, so I don't like the idea of
+introducing needlessly different behaviour. If you unbind a driver, the
+stream IDs and everything don't stop existing at the hardware level; the
+struct device to which the in-kernel data belongs still exists and
+doesn't stop being associated with its bus. There's no good reason for
+freeing SMEs that we'll only reallocate again (inadequately-specced
+hardware with not enough SMRs/contexts is not a *good* reason), and
+there are also some strong arguments against letting any stream IDs the
+kernel knows about go back to bypass after a driver has been bound - by
+keeping groups around as expected that's something we can implement
+quite easily without having to completely lock down bypass for stream
+IDs the kernel *doesn't* know about.
+
+Robin.
+
+> 
+> Regards,
+>  Sricharan
+> 
