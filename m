@@ -1,17 +1,21 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 4/5] iommu/exynos: Add default_domain check in
-	iommu_attach_device
-Date: Thu, 24 Nov 2016 14:05:21 +0100
-Message-ID: <d572b33e-6e1b-81d7-31cc-d5c95385d9ac@samsung.com>
-References: <1479986420-30859-1-git-send-email-m.szyprowski@samsung.com>
-	<1479986420-30859-5-git-send-email-m.szyprowski@samsung.com>
-	<CGME20161124122527epcas4p4fbc26985eb9b231b5c1c61409e134c7e@epcas4p4.samsung.com>
-	<6937b5da-23cf-d9bb-0b7c-d54171b02828@arm.com>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH V3 0/8] IOMMU probe deferral support
+Date: Thu, 24 Nov 2016 21:40:58 +0530
+Message-ID: <004401d2466d$5b8b2170$12a16450$@codeaurora.org>
+References: <1475600632-21289-1-git-send-email-sricharan@codeaurora.org>
+	<60ee8066-f167-e9df-ae3e-4138f1133bad@arm.com>
+	<003a01d22f97$82534c70$86f9e550$@codeaurora.org>
+	<421e2b14-0231-d376-02a0-097423120b3d@arm.com>
+	<006f01d236ae$61751c40$245f54c0$@codeaurora.org>
+	<9f36244f-62d4-08e3-d64a-2b04ad4dc2e0@arm.com>
+	<002b01d24340$5d56e730$1804b590$@codeaurora.org>
+	<918128b9-cdb0-1454-000a-146cee7a05ea@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <6937b5da-23cf-d9bb-0b7c-d54171b02828-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <918128b9-cdb0-1454-000a-146cee7a05ea-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,81 +25,93 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+To: 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Robin,
 
+<snip..>
 
-On 2016-11-24 13:25, Robin Murphy wrote:
-> Hi Marek,
 >
-> On 24/11/16 11:20, Marek Szyprowski wrote:
->> This patch adds default_domain check before calling
->> exynos_iommu_detach_device. This path was intended only to cope with
->> default domains, which are automatically attached by the iommu core, so
->> return error if user tries to attach device, which is already attached
->> to other (non-default) domain.
-> I think this only applies to the current state of 32-bit ARM, where the
-> initial allocation of a default domain fails without CONFIG_IOMMU_DMA.
-> Since the device has a group, iommu_attach_device() will end up calling
-> into __iommu_attach_group(), which does this check before calling the
-> driver's .attach_dev:
->
-> 	if (group->default_domain && group->domain != group->default_domain)
-> 		return -EBUSY;
->
-> which if group->default_domain is non-NULL would make the new check
-> below redundant unless owner->domain can change independently of
-> dev->iommu_group->domain, but that sounds like it would be a bigger
-> problem anyway.
-
-Thanks for your review. Default domains are used on ARM64 and they are
-automatically attached by IOMMU core. This was the reason for looking into
-this. But you are right, that there is no need for the additional check, as
-this is already handled in the iommu core.
-
->> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->> ---
->>   drivers/iommu/exynos-iommu.c | 11 ++++++++++-
->>   1 file changed, 10 insertions(+), 1 deletion(-)
+>>>>>> iommu_group_get_for_dev which gets called in the add_device
+>>>>>> callback, increases the reference count of the iommu_group,
+>>>>>> so we do an iommu_group_put after that. iommu_group_get_for_dev
+>>>>>> inturn calls device_group callback and in the case of arm-smmu
+>>>>>> we call generic_device_group/pci_device_group which takes
+>>>>>> care of increasing the group's reference. But when we return
+>>>>>> an already existing group(when multiple devices have same group)
+>>>>>> the reference is not incremented, resulting in issues when the
+>>>>>> remove_device callback for the devices is invoked.
+>>>>>> Fixing the same here.
+>>>>>
+>>>>> Bah, yes, this does look like my fault - after flip-flopping between
+>>>>> about 3 different ways to keep refcounts for the S2CR entries, none of
+>>>>> which would quite work, I ripped it all out but apparently still got
+>>>>> things wrong, oh well. Thanks for figuring it out.
+>>>>>
+>>>>> On the probe-deferral angle, whilst it's useful to have uncovered this
+>>>>> bug, I don't think we should actually be calling remove_device() from
+>>>>> DMA teardown. I think it's preferable from a user perspective if group
+>>>>> numbering remains stable, rather than changing depending on the order in
+>>>>> which they unbind/rebind VFIO drivers. I'm really keen to try and get
+>>>>> this in shape for 4.10, so I've taken the liberty of hacking up my own
+>>>>> branch (iommu/defer) based on v3 - would you mind taking a look at the
+>>>>> two "iommu/of:" commits to see what you think? (Ignore the PCI changes
+>>>>> to your later patches - that was an experiment which didn't really work out)
+>>>>
+>>>> Ok, will take a look at this now and respond more on this.
+>>>>
+>>> Sorry for the delayed response on this. I was OOO for the last few days.
+>>> So i tested this branch and it worked fine. I tested it with a pci device
+>>> for both normal and deferred probe cases.  The of/iommu patches
+>>> are the cleanup/preparation patches and it looks fine. One thing is without
+>>> calling the remove_device callback, the resources like (smes for exmaple)
+>>> and the group association of the device all remain allocated. That does not
+>>> feel correct, given that the associated device does not exist. So to
+>>> understand that, what happens with VFIO in this case which makes the
+>>> group renumbering/rebinding a problem ?
+>>>
 >>
->> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
->> index 426b1534d4d3..63d9358a6d9c 100644
->> --- a/drivers/iommu/exynos-iommu.c
->> +++ b/drivers/iommu/exynos-iommu.c
->> @@ -859,8 +859,17 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
->>   	if (!has_sysmmu(dev))
->>   		return -ENODEV;
->>   
->> -	if (owner->domain)
->> +	if (owner->domain) {
->> +		struct iommu_group *group = iommu_group_get(dev);
->> +
->> +		if (!group ||
->> +		    owner->domain != iommu_group_default_domain(group)) {
-> Similarly, I think this prevents reattaching to a default domain from
-> iommu_detach_device(), since __iommu_detach_group() won't call
-> .detach_dev first if default_domain is non-NULL, therefore owner->domain
-> is presumably still pointing to the outgoing non-default domain.
-
-Right, I forgot about reattaching to the default domain. Please drop 
-this patch,
-the previous code was correct.
-
+>> Would it be ok if i post a V4 based on your branch above ?
 >
->> +			iommu_group_put(group);
->> +			return -EINVAL;
->> +		}
->> +		iommu_group_put(group);
->>   		exynos_iommu_detach_device(owner->domain, dev);
->> +	}
->>   
->>   	mutex_lock(&owner->rpm_lock);
->>
+>Sure, as long as none of the hacks slip through :) - I've just pushed
+>out a mild rework based on Lorenzo's v9, which I hope shouldn't break
+>anything for you.
+>
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Ok sure, i will test and just the post out the stuff from your branch then
+mostly by tomorrow.
+
+>Having thought a bit more about the add/remove thing, I'm inclined to
+>agree that the group numbering itself may not be that big an issue in
+>practice - sure, it could break my little script, but it looks like QEMU
+>and such work with the device ID rather than the group number directly,
+>so might not even notice. However, the fact remains that the callbacks
+>are intended to handle a device being added to/removed from its bus, and
+>will continue to do so on other platforms, so I don't like the idea of
+>introducing needlessly different behaviour. If you unbind a driver, the
+>stream IDs and everything don't stop existing at the hardware level; the
+>struct device to which the in-kernel data belongs still exists and
+>doesn't stop being associated with its bus. There's no good reason for
+>freeing SMEs that we'll only reallocate again (inadequately-specced
+>hardware with not enough SMRs/contexts is not a *good* reason), and
+
+ok, so SMRs/contexts was the reason i was adding the remove_dev
+callback, but if thats not good enough then there was no other
+intention.
+
+>there are also some strong arguments against letting any stream IDs the
+>kernel knows about go back to bypass after a driver has been bound - by
+
+ok, but not sure why is this so ?
+
+>keeping groups around as expected that's something we can implement
+>quite easily without having to completely lock down bypass for stream
+>IDs the kernel *doesn't* know about.
+>
+
+So do you mean in this case to keep the unbound device's group/context bank
+to bypass rather than resetting the streamids ?
+
+Regards,
+ Sricharan
