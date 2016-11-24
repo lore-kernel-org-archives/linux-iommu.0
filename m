@@ -1,85 +1,345 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 4/5] iommu/exynos: Add default_domain check in
-	iommu_attach_device
-Date: Thu, 24 Nov 2016 12:25:22 +0000
-Message-ID: <6937b5da-23cf-d9bb-0b7c-d54171b02828@arm.com>
-References: <1479986420-30859-1-git-send-email-m.szyprowski@samsung.com>
-	<1479986420-30859-5-git-send-email-m.szyprowski@samsung.com>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [RFC PATCH v3 19/20] x86: Add support to make use of Secure
+ Memory Encryption
+Date: Thu, 24 Nov 2016 13:50:38 +0100
+Message-ID: <20161124125038.j4wmtzgv2ju3v2ym@pd.tnic>
+References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
+ <20161110003826.3280.5546.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1479986420-30859-5-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-efi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20161110003826.3280.5546.stgit-qCXWGYdRb2BnqfbPTmsdiZQ+2ll4COg0XqFh9Ls21Oc@public.gmane.org>
+Sender: linux-efi-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Cc: linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Marek,
-
-On 24/11/16 11:20, Marek Szyprowski wrote:
-> This patch adds default_domain check before calling
-> exynos_iommu_detach_device. This path was intended only to cope with
-> default domains, which are automatically attached by the iommu core, so
-> return error if user tries to attach device, which is already attached
-> to other (non-default) domain.
-
-I think this only applies to the current state of 32-bit ARM, where the
-initial allocation of a default domain fails without CONFIG_IOMMU_DMA.
-Since the device has a group, iommu_attach_device() will end up calling
-into __iommu_attach_group(), which does this check before calling the
-driver's .attach_dev:
-
-	if (group->default_domain && group->domain != group->default_domain)
-		return -EBUSY;
-
-which if group->default_domain is non-NULL would make the new check
-below redundant unless owner->domain can change independently of
-dev->iommu_group->domain, but that sounds like it would be a bigger
-problem anyway.
-
-> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+On Wed, Nov 09, 2016 at 06:38:26PM -0600, Tom Lendacky wrote:
+> This patch adds the support to check if SME has been enabled and if the
+> mem_encrypt=on command line option is set. If both of these conditions
+> are true, then the encryption mask is set and the kernel is encrypted
+> "in place."
+> 
+> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
 > ---
->  drivers/iommu/exynos-iommu.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
+>  arch/x86/kernel/Makefile           |    1 
+>  arch/x86/kernel/mem_encrypt_boot.S |  156 +++++++++++++++++++++++++++++
+>  arch/x86/kernel/mem_encrypt_init.c |  196 ++++++++++++++++++++++++++++++++++++
+>  3 files changed, 353 insertions(+)
+>  create mode 100644 arch/x86/kernel/mem_encrypt_boot.S
 > 
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 426b1534d4d3..63d9358a6d9c 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -859,8 +859,17 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
->  	if (!has_sysmmu(dev))
->  		return -ENODEV;
+> diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+> index 27e22f4..020759f 100644
+> --- a/arch/x86/kernel/Makefile
+> +++ b/arch/x86/kernel/Makefile
+> @@ -143,4 +143,5 @@ ifeq ($(CONFIG_X86_64),y)
+>  	obj-y				+= vsmp_64.o
 >  
-> -	if (owner->domain)
-> +	if (owner->domain) {
-> +		struct iommu_group *group = iommu_group_get(dev);
+>  	obj-y				+= mem_encrypt_init.o
+> +	obj-y				+= mem_encrypt_boot.o
+
+So there's a lot of ifdeffery below which is not really needed and those
+objects above get built-in by default.
+
+So let's clean that up:
+
+obj-$(CONFIG_AMD_MEM_ENCRYPT)		+= ...
+
+for all .c files.
+
+Then, put prototypes of all externally visible elements - functions,
+vars, etc - in include/linux/mem_encrypt.h in the
+
+#else   /* !CONFIG_AMD_MEM_ENCRYPT */
+
+branch so that the build works too for people who don't enable
+CONFIG_AMD_MEM_ENCRYPT. Much cleaner this way.
+
+>  endif
+> diff --git a/arch/x86/kernel/mem_encrypt_boot.S b/arch/x86/kernel/mem_encrypt_boot.S
+> new file mode 100644
+> index 0000000..d4917ba
+> --- /dev/null
+> +++ b/arch/x86/kernel/mem_encrypt_boot.S
+> @@ -0,0 +1,156 @@
+> +/*
+> + * AMD Memory Encryption Support
+> + *
+> + * Copyright (C) 2016 Advanced Micro Devices, Inc.
+> + *
+> + * Author: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + */
 > +
-> +		if (!group ||
-> +		    owner->domain != iommu_group_default_domain(group)) {
+> +#include <linux/linkage.h>
+> +#include <asm/pgtable.h>
+> +#include <asm/page.h>
+> +#include <asm/processor-flags.h>
+> +#include <asm/msr-index.h>
+> +
+> +	.text
+> +	.code64
+> +ENTRY(sme_encrypt_execute)
 
-Similarly, I think this prevents reattaching to a default domain from
-iommu_detach_device(), since __iommu_detach_group() won't call
-.detach_dev first if default_domain is non-NULL, therefore owner->domain
-is presumably still pointing to the outgoing non-default domain.
+sme_encrypt() looks perfectly fine to me.
 
-Robin.
+Btw, is this the reason why this is still in asm:
 
-> +			iommu_group_put(group);
-> +			return -EINVAL;
-> +		}
-> +		iommu_group_put(group);
->  		exynos_iommu_detach_device(owner->domain, dev);
+"(not everything could be converted, e.g. the routine that does the
+actual encryption needs to be copied into a safe location and it is
+difficult to determine the actual length of the function in order to
+copy it)"
+
+?
+
+If so, ELF symbols have sizes and you can query function sizes, perhaps
+lookup_symbol_attrs() in kernel/kallsyms.c which returns size in one of
+its args, etc.
+
+Alternatively, we can have markers around the function if the kallsyms
+game doesn't work.
+
+Below are just some small nits, I'll review this fully once we solve the
+in-asm question.
+
+> diff --git a/arch/x86/kernel/mem_encrypt_init.c b/arch/x86/kernel/mem_encrypt_init.c
+> index 388d6fb..7bdd159 100644
+> --- a/arch/x86/kernel/mem_encrypt_init.c
+> +++ b/arch/x86/kernel/mem_encrypt_init.c
+> @@ -13,9 +13,205 @@
+>  #include <linux/linkage.h>
+>  #include <linux/init.h>
+>  #include <linux/mem_encrypt.h>
+> +#include <linux/mm.h>
+> +
+> +#include <asm/sections.h>
+> +
+> +#ifdef CONFIG_AMD_MEM_ENCRYPT
+> +
+> +extern void sme_encrypt_execute(unsigned long, unsigned long, unsigned long,
+> +				void *, pgd_t *);
+> +
+> +#define PGD_FLAGS	_KERNPG_TABLE_NO_ENC
+> +#define PUD_FLAGS	_KERNPG_TABLE_NO_ENC
+> +#define PMD_FLAGS	__PAGE_KERNEL_LARGE_EXEC
+> +
+> +static void __init *sme_pgtable_entry(pgd_t *pgd, void *next_page,
+> +				      void *vaddr, pmdval_t pmd_val)
+> +{
+> +	pud_t *pud;
+> +	pmd_t *pmd;
+> +
+> +	pgd += pgd_index((unsigned long)vaddr);
+> +	if (pgd_none(*pgd)) {
+> +		pud = next_page;
+> +		memset(pud, 0, sizeof(*pud) * PTRS_PER_PUD);
+> +		native_set_pgd(pgd,
+> +			       native_make_pgd((unsigned long)pud + PGD_FLAGS));
+> +		next_page += sizeof(*pud) * PTRS_PER_PUD;
+> +	} else {
+> +		pud = (pud_t *)(native_pgd_val(*pgd) & ~PTE_FLAGS_MASK);
 > +	}
+> +
+> +	pud += pud_index((unsigned long)vaddr);
+> +	if (pud_none(*pud)) {
+> +		pmd = next_page;
+> +		memset(pmd, 0, sizeof(*pmd) * PTRS_PER_PMD);
+> +		native_set_pud(pud,
+> +			       native_make_pud((unsigned long)pmd + PUD_FLAGS));
+> +		next_page += sizeof(*pmd) * PTRS_PER_PMD;
+> +	} else {
+> +		pmd = (pmd_t *)(native_pud_val(*pud) & ~PTE_FLAGS_MASK);
+> +	}
+> +
+> +	pmd += pmd_index((unsigned long)vaddr);
+> +	if (pmd_none(*pmd) || !pmd_large(*pmd))
+> +		native_set_pmd(pmd, native_make_pmd(pmd_val));
+> +
+> +	return next_page;
+> +}
+> +
+> +static unsigned long __init sme_pgtable_calc(unsigned long start,
+> +					     unsigned long end)
+> +{
+> +	unsigned long addr, total;
+> +
+> +	total = 0;
+> +	addr = start;
+> +	while (addr < end) {
+> +		unsigned long pgd_end;
+> +
+> +		pgd_end = (addr & PGDIR_MASK) + PGDIR_SIZE;
+> +		if (pgd_end > end)
+> +			pgd_end = end;
+> +
+> +		total += sizeof(pud_t) * PTRS_PER_PUD * 2;
+> +
+> +		while (addr < pgd_end) {
+> +			unsigned long pud_end;
+> +
+> +			pud_end = (addr & PUD_MASK) + PUD_SIZE;
+> +			if (pud_end > end)
+> +				pud_end = end;
+> +
+> +			total += sizeof(pmd_t) * PTRS_PER_PMD * 2;
+> +
+> +			addr = pud_end;
+> +		}
+> +
+> +		addr = pgd_end;
+> +	}
+> +	total += sizeof(pgd_t) * PTRS_PER_PGD;
+> +
+> +	return total;
+> +}
+> +#endif	/* CONFIG_AMD_MEM_ENCRYPT */
 >  
->  	mutex_lock(&owner->rpm_lock);
+>  void __init sme_encrypt_kernel(void)
+>  {
+> +#ifdef CONFIG_AMD_MEM_ENCRYPT
+> +	pgd_t *pgd;
+> +	void *workarea, *next_page, *vaddr;
+> +	unsigned long kern_start, kern_end, kern_len;
+> +	unsigned long index, paddr, pmd_flags;
+> +	unsigned long exec_size, full_size;
+
+Args in reversed christmas tree order please:
+
+	unsigned long kern_start, kern_end, kern_len;
+	unsigned long index, paddr, pmd_flags;
+	void *workarea, *next_page, *vaddr;
+	unsigned long exec_size, full_size;
+	pgd_t *pgd;
+
+> +
+> +	/* If SME is not active then no need to prepare */
+> +	if (!sme_me_mask)
+> +		return;
+> +
+> +	/* Set the workarea to be after the kernel */
+> +	workarea = (void *)ALIGN(__pa_symbol(_end), PMD_PAGE_SIZE);
+> +
+> +	/*
+> +	 * Prepare for encrypting the kernel by building new pagetables with
+> +	 * the necessary attributes needed to encrypt the kernel in place.
+> +	 *
+> +	 *   One range of virtual addresses will map the memory occupied
+> +	 *   by the kernel as encrypted.
+> +	 *
+> +	 *   Another range of virtual addresses will map the memory occupied
+> +	 *   by the kernel as un-encrypted and write-protected.
+> +	 *
+> +	 *     The use of write-protect attribute will prevent any of the
+> +	 *     memory from being cached.
+> +	 */
+> +
+> +	/* Physical address gives us the identity mapped virtual address */
+> +	kern_start = __pa_symbol(_text);
+> +	kern_end = ALIGN(__pa_symbol(_end), PMD_PAGE_SIZE) - 1;
+> +	kern_len = kern_end - kern_start + 1;
+> +
+> +	/*
+> +	 * Calculate required number of workarea bytes needed:
+> +	 *   executable encryption area size:
+> +	 *     stack page (PAGE_SIZE)
+> +	 *     encryption routine page (PAGE_SIZE)
+> +	 *     intermediate copy buffer (PMD_PAGE_SIZE)
+> +	 *   pagetable structures for workarea (in case not currently mapped)
+> +	 *   pagetable structures for the encryption of the kernel
+> +	 */
+> +	exec_size = (PAGE_SIZE * 2) + PMD_PAGE_SIZE;
+> +
+> +	full_size = exec_size;
+> +	full_size += ALIGN(exec_size, PMD_PAGE_SIZE) / PMD_PAGE_SIZE *
+
+Is that a fancy way of saying "2"?
+
+IOW, something like:
+
+	/* + 2 pmd_t pagetable pages for the executable encryption area size */
+	full_size += 2 * PAGE_SIZE;
+
+looks much more readable to me...
+
+> +		     sizeof(pmd_t) * PTRS_PER_PMD;
+> +	full_size += sme_pgtable_calc(kern_start, kern_end + exec_size);
+> +
+> +	next_page = workarea + exec_size;
+> +
+> +	/* Make sure the current pagetables have entries for the workarea */
+> +	pgd = (pgd_t *)native_read_cr3();
+> +	paddr = (unsigned long)workarea;
+> +	while (paddr < (unsigned long)workarea + full_size) {
+> +		vaddr = (void *)paddr;
+> +		next_page = sme_pgtable_entry(pgd, next_page, vaddr,
+> +					      paddr + PMD_FLAGS);
+> +
+> +		paddr += PMD_PAGE_SIZE;
+> +	}
+> +	native_write_cr3(native_read_cr3());
+> +
+> +	/* Calculate a PGD index to be used for the un-encrypted mapping */
+> +	index = (pgd_index(kern_end + full_size) + 1) & (PTRS_PER_PGD - 1);
+> +	index <<= PGDIR_SHIFT;
+> +
+> +	/* Set and clear the PGD */
+> +	pgd = next_page;
+> +	memset(pgd, 0, sizeof(*pgd) * PTRS_PER_PGD);
+> +	next_page += sizeof(*pgd) * PTRS_PER_PGD;
+> +
+> +	/* Add encrypted (identity) mappings for the kernel */
+> +	pmd_flags = PMD_FLAGS | _PAGE_ENC;
+> +	paddr = kern_start;
+> +	while (paddr < kern_end) {
+> +		vaddr = (void *)paddr;
+> +		next_page = sme_pgtable_entry(pgd, next_page, vaddr,
+> +					      paddr + pmd_flags);
+> +
+> +		paddr += PMD_PAGE_SIZE;
+> +	}
+> +
+> +	/* Add un-encrypted (non-identity) mappings for the kernel */
+> +	pmd_flags = (PMD_FLAGS & ~_PAGE_CACHE_MASK) | (_PAGE_PAT | _PAGE_PWT);
+> +	paddr = kern_start;
+> +	while (paddr < kern_end) {
+> +		vaddr = (void *)(paddr + index);
+> +		next_page = sme_pgtable_entry(pgd, next_page, vaddr,
+> +					      paddr + pmd_flags);
+> +
+> +		paddr += PMD_PAGE_SIZE;
+> +	}
+> +
+> +	/* Add the workarea to both mappings */
+> +	paddr = kern_end + 1;
+> +	while (paddr < (kern_end + exec_size)) {
+> +		vaddr = (void *)paddr;
+> +		next_page = sme_pgtable_entry(pgd, next_page, vaddr,
+> +					      paddr + PMD_FLAGS);
+> +
+> +		vaddr = (void *)(paddr + index);
+> +		next_page = sme_pgtable_entry(pgd, next_page, vaddr,
+> +					      paddr + PMD_FLAGS);
+> +
+> +		paddr += PMD_PAGE_SIZE;
+> +	}
+> +
+> +	/* Perform the encryption */
+> +	sme_encrypt_execute(kern_start, kern_start + index, kern_len,
+> +			    workarea, pgd);
+> +
+> +#endif	/* CONFIG_AMD_MEM_ENCRYPT */
+>  }
 >  
+>  unsigned long __init sme_get_me_mask(void)
 > 
+> 
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
