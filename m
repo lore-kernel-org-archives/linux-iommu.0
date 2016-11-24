@@ -1,59 +1,49 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 1/5] iommu/exynos: Improve page fault debug message
-Date: Thu, 24 Nov 2016 12:20:16 +0100
-Message-ID: <1479986420-30859-2-git-send-email-m.szyprowski@samsung.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH 4/5] iommu/exynos: Add default_domain check in
+ iommu_attach_device
+Date: Thu, 24 Nov 2016 12:20:19 +0100
+Message-ID: <1479986420-30859-5-git-send-email-m.szyprowski@samsung.com>
 References: <1479986420-30859-1-git-send-email-m.szyprowski@samsung.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1479986420-30859-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1479986420-30859-1-git-send-email-m.szyprowski@samsung.com>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Add master device name to default IOMMU fault message to make easier to
-find which device triggered the fault. While at it, move printing some
-information (like page table base and first level entry addresses) to
-dev_dbg(), because those are typically not very useful for typical device
-driver user/developer not equipped with hardware debugging tools.
+This patch adds default_domain check before calling
+exynos_iommu_detach_device. This path was intended only to cope with
+default domains, which are automatically attached by the iommu core, so
+return error if user tries to attach device, which is already attached
+to other (non-default) domain.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/iommu/exynos-iommu.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/iommu/exynos-iommu.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 57ba0d3091ea..ac726e1760de 100644
+index 426b1534d4d3..63d9358a6d9c 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -381,13 +381,14 @@ static void show_fault_information(struct sysmmu_drvdata *data,
- {
- 	sysmmu_pte_t *ent;
+@@ -859,8 +859,17 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
+ 	if (!has_sysmmu(dev))
+ 		return -ENODEV;
  
--	dev_err(data->sysmmu, "%s FAULT occurred at %#x (page table base: %pa)\n",
--		finfo->name, fault_addr, &data->pgtable);
-+	dev_err(data->sysmmu, "%s: %s FAULT occurred at %#x\n",
-+		dev_name(data->master), finfo->name, fault_addr);
-+	dev_dbg(data->sysmmu, "Page table base: %pa\n", &data->pgtable);
- 	ent = section_entry(phys_to_virt(data->pgtable), fault_addr);
--	dev_err(data->sysmmu, "\tLv1 entry: %#x\n", *ent);
-+	dev_dbg(data->sysmmu, "\tLv1 entry: %#x\n", *ent);
- 	if (lv1ent_page(ent)) {
- 		ent = page_entry(ent, fault_addr);
--		dev_err(data->sysmmu, "\t Lv2 entry: %#x\n", *ent);
-+		dev_dbg(data->sysmmu, "\t Lv2 entry: %#x\n", *ent);
- 	}
- }
+-	if (owner->domain)
++	if (owner->domain) {
++		struct iommu_group *group = iommu_group_get(dev);
++
++		if (!group ||
++		    owner->domain != iommu_group_default_domain(group)) {
++			iommu_group_put(group);
++			return -EINVAL;
++		}
++		iommu_group_put(group);
+ 		exynos_iommu_detach_device(owner->domain, dev);
++	}
+ 
+ 	mutex_lock(&owner->rpm_lock);
  
 -- 
 1.9.1
