@@ -1,12 +1,11 @@
-From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: [patch] iommu/amd: Missing error code in amd_iommu_init_device()
-Date: Thu, 24 Nov 2016 14:05:44 +0300
-Message-ID: <20161124110544.GE17225@mwanda>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH 0/5] Fixes for Exynos IOMMU driver
+Date: Thu, 24 Nov 2016 12:20:15 +0100
+Message-ID: <1479986420-30859-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,28 +15,37 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kernel-janitors-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-We should set "ret" to -EINVAL if iommu_group_get() fails.
+Hello,
 
-Fixes: 55c99a4dc50f ("iommu/amd: Use iommu_attach_group()")
-Signed-off-by: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+This is collection of fixes for Exynos IOMMU driver. Patches 1-2 are
+resend of the patches, which got lost on mainline list. Patch 3 adds
+a protection for the issue, which arises when IOMMU deferred probe
+patches will be merged. Patches 4-5 are fixes for default_domain
+handling.
 
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 594849a..f8ed8c9 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -805,8 +805,10 @@ int amd_iommu_init_device(struct pci_dev *pdev, int pasids)
- 		goto out_free_domain;
- 
- 	group = iommu_group_get(&pdev->dev);
--	if (!group)
-+	if (!group) {
-+		ret = -EINVAL;
- 		goto out_free_domain;
-+	}
- 
- 	ret = iommu_attach_group(dev_state->domain, group);
- 	if (ret != 0)
+Patches are based on current iommu/next branch.
+
+Best regards
+Marek Szyprowski
+Samsung R&D Institute Poland
+
+Patch summary:
+
+Marek Szyprowski (5):
+  iommu/exynos: Improve page fault debug message
+  iommu/exynos: Fix warnings from DMA-debug
+  iommu/exynos: Ensure that SYSMMU is added only once to its master
+    device
+  iommu/exynos: Add default_domain check in iommu_attach_device
+  iommu/exynos: Properly release device from the default domain in
+    ->remove
+
+ drivers/iommu/exynos-iommu.c | 44 +++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 37 insertions(+), 7 deletions(-)
+
+-- 
+1.9.1
