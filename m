@@ -1,8 +1,7 @@
 From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH 3/5] iommu/exynos: Ensure that SYSMMU is added only once to its
-	master device
-Date: Thu, 24 Nov 2016 12:20:18 +0100
-Message-ID: <1479986420-30859-4-git-send-email-m.szyprowski@samsung.com>
+Subject: [PATCH 2/5] iommu/exynos: Fix warnings from DMA-debug
+Date: Thu, 24 Nov 2016 12:20:17 +0100
+Message-ID: <1479986420-30859-3-git-send-email-m.szyprowski@samsung.com>
 References: <1479986420-30859-1-git-send-email-m.szyprowski@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,12 +21,10 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-sa
 Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch prepares Exynos IOMMU driver for deferred probing
-support. Once it gets added, of_xlate() callback might be called
-more than once for the same SYSMMU controller and master device
-(for example it happens when masters device driver fails with
-EPROBE_DEFER). This patch adds a check, which ensures that SYSMMU
-controller is added to its master device (owner) only once.
+Add a simple checks for dma_map_single() return value to make DMA-debug
+checker happly. Exynos IOMMU on Samsung Exynos SoCs always use device,
+which has linear DMA mapping ops (dma address is equal to physical memory
+address), so no failures are returned from dma_map_single().
 
 Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
@@ -35,28 +32,35 @@ Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gman
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index e7851cffbbee..426b1534d4d3 100644
+index ac726e1760de..e7851cffbbee 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -1247,7 +1247,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
- {
- 	struct exynos_iommu_owner *owner = dev->archdata.iommu;
- 	struct platform_device *sysmmu = of_find_device_by_node(spec->np);
--	struct sysmmu_drvdata *data;
-+	struct sysmmu_drvdata *data, *entry;
+@@ -744,6 +744,7 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
+ 				DMA_TO_DEVICE);
+ 	/* For mapping page table entries we rely on dma == phys */
+ 	BUG_ON(handle != virt_to_phys(domain->pgtable));
++	BUG_ON(dma_mapping_error(dma_dev, handle));
  
- 	if (!sysmmu)
- 		return -ENODEV;
-@@ -1266,6 +1266,10 @@ static int exynos_iommu_of_xlate(struct device *dev,
- 		dev->archdata.iommu = owner;
+ 	spin_lock_init(&domain->lock);
+ 	spin_lock_init(&domain->pgtablelock);
+@@ -898,6 +899,7 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *domain,
  	}
  
-+	list_for_each_entry(entry, &owner->controllers, owner_node)
-+		if (entry == data)
-+			return 0;
-+
- 	list_add_tail(&data->owner_node, &owner->controllers);
- 	data->master = dev;
+ 	if (lv1ent_fault(sent)) {
++		dma_addr_t handle;
+ 		sysmmu_pte_t *pent;
+ 		bool need_flush_flpd_cache = lv1ent_zero(sent);
  
+@@ -909,7 +911,9 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *domain,
+ 		update_pte(sent, mk_lv1ent_page(virt_to_phys(pent)));
+ 		kmemleak_ignore(pent);
+ 		*pgcounter = NUM_LV2ENTRIES;
+-		dma_map_single(dma_dev, pent, LV2TABLE_SIZE, DMA_TO_DEVICE);
++		handle = dma_map_single(dma_dev, pent, LV2TABLE_SIZE,
++					DMA_TO_DEVICE);
++		BUG_ON(dma_mapping_error(dma_dev, handle));
+ 
+ 		/*
+ 		 * If pre-fetched SLPD is a faulty SLPD in zero_l2_table,
 -- 
 1.9.1
