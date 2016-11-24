@@ -1,49 +1,62 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH 4/5] iommu/exynos: Add default_domain check in
- iommu_attach_device
-Date: Thu, 24 Nov 2016 12:20:19 +0100
-Message-ID: <1479986420-30859-5-git-send-email-m.szyprowski@samsung.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: [PATCH 3/5] iommu/exynos: Ensure that SYSMMU is added only once to its
+	master device
+Date: Thu, 24 Nov 2016 12:20:18 +0100
+Message-ID: <1479986420-30859-4-git-send-email-m.szyprowski@samsung.com>
 References: <1479986420-30859-1-git-send-email-m.szyprowski@samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1479986420-30859-1-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Krzysztof Kozlowski <krzk@kernel.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <1479986420-30859-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds default_domain check before calling
-exynos_iommu_detach_device. This path was intended only to cope with
-default domains, which are automatically attached by the iommu core, so
-return error if user tries to attach device, which is already attached
-to other (non-default) domain.
+This patch prepares Exynos IOMMU driver for deferred probing
+support. Once it gets added, of_xlate() callback might be called
+more than once for the same SYSMMU controller and master device
+(for example it happens when masters device driver fails with
+EPROBE_DEFER). This patch adds a check, which ensures that SYSMMU
+controller is added to its master device (owner) only once.
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/iommu/exynos-iommu.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 426b1534d4d3..63d9358a6d9c 100644
+index e7851cffbbee..426b1534d4d3 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -859,8 +859,17 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
- 	if (!has_sysmmu(dev))
+@@ -1247,7 +1247,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
+ {
+ 	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+ 	struct platform_device *sysmmu = of_find_device_by_node(spec->np);
+-	struct sysmmu_drvdata *data;
++	struct sysmmu_drvdata *data, *entry;
+ 
+ 	if (!sysmmu)
  		return -ENODEV;
+@@ -1266,6 +1266,10 @@ static int exynos_iommu_of_xlate(struct device *dev,
+ 		dev->archdata.iommu = owner;
+ 	}
  
--	if (owner->domain)
-+	if (owner->domain) {
-+		struct iommu_group *group = iommu_group_get(dev);
++	list_for_each_entry(entry, &owner->controllers, owner_node)
++		if (entry == data)
++			return 0;
 +
-+		if (!group ||
-+		    owner->domain != iommu_group_default_domain(group)) {
-+			iommu_group_put(group);
-+			return -EINVAL;
-+		}
-+		iommu_group_put(group);
- 		exynos_iommu_detach_device(owner->domain, dev);
-+	}
- 
- 	mutex_lock(&owner->rpm_lock);
+ 	list_add_tail(&data->owner_node, &owner->controllers);
+ 	data->master = dev;
  
 -- 
 1.9.1
