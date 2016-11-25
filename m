@@ -1,7 +1,7 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v7 05/12] iommu/amd: copy old trans table from old kernel
-Date: Fri, 25 Nov 2016 13:13:12 +0800
-Message-ID: <1480050799-1237-6-git-send-email-bhe@redhat.com>
+Subject: [PATCH v7 06/12] iommu: Add is_attach_deferred call-back to iommu-ops
+Date: Fri, 25 Nov 2016 13:13:13 +0800
+Message-ID: <1480050799-1237-7-git-send-email-bhe@redhat.com>
 References: <1480050799-1237-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,106 +21,52 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Here several things need be done:
-- If iommu is pre-enabled in a normal kernel, just disable it and print
-  warning.
-
-- If failed to copy dev table of old kernel, continue to proceed as
-  it does in normal kernel.
-
-- Disable and Re-enable event/cmd buffer,  install the copied DTE table
-  to reg, and detect and enable guest vapic.
-
-- Flush all caches
+This new call-back will be used to check if the domain attach need be
+deferred for now. If yes, the domain attach/detach will return directly.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 51 ++++++++++++++++++++++++++++++++++++------
- 1 file changed, 44 insertions(+), 7 deletions(-)
+ drivers/iommu/iommu.c | 8 ++++++++
+ include/linux/iommu.h | 1 +
+ 2 files changed, 9 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 8fc9840..4233f26 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -36,6 +36,7 @@
- #include <asm/io_apic.h>
- #include <asm/irq_remapping.h>
- 
-+#include <linux/crash_dump.h>
- #include "amd_iommu_proto.h"
- #include "amd_iommu_types.h"
- #include "irq_remapping.h"
-@@ -1481,9 +1482,12 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 	iommu->int_enabled = false;
- 
- 	init_translation_status(iommu);
--
--	if (translation_pre_enabled(iommu))
--		pr_warn("Translation is already enabled - trying to copy translation structures\n");
-+	if (translation_pre_enabled(iommu) && !is_kdump_kernel()) {
-+		iommu_disable(iommu);
-+		clear_translation_pre_enabled(iommu);
-+		pr_warn("Translation was enabled for IOMMU:%d but we are not in kdump mode\n",
-+			iommu->index);
-+	}
- 
- 	ret = init_iommu_from_acpi(iommu, h);
- 	if (ret)
-@@ -1975,8 +1979,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
- }
- 
- /*
-- * Init the device table to not allow DMA access for devices and
-- * suppress all page faults
-+ * Init the device table to not allow DMA access for devices
-  */
- static void init_device_table_dma(void)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 9a2f196..0262eee 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1083,6 +1083,10 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+ 				 struct device *dev)
  {
-@@ -2117,9 +2120,43 @@ static void early_enable_iommu(struct amd_iommu *iommu)
- static void early_enable_iommus(void)
- {
- 	struct amd_iommu *iommu;
-+	bool is_pre_enabled = false;
- 
--	for_each_iommu(iommu)
--		early_enable_iommu(iommu);
-+	for_each_iommu(iommu) {
-+		if (translation_pre_enabled(iommu)) {
-+			is_pre_enabled = true;
-+			break;
-+		}
-+	}
+ 	int ret;
++	if ((domain->ops->is_attach_deferred != NULL) &&
++	    domain->ops->is_attach_deferred(domain, dev))
++		return 0;
 +
-+	if (!is_pre_enabled) {
-+		for_each_iommu(iommu)
-+			early_enable_iommu(iommu);
-+	} else {
-+		pr_warn("Translation is already enabled - trying to copy translation structures\n");
-+		if (copy_dev_tables()) {
-+			pr_err("Failed to copy DEV table from previous kernel.\n");
-+			/*
-+			 * If failed to copy dev tables from old kernel, continue to proceed
-+			 * as it does in normal kernel.
-+			 */
-+			for_each_iommu(iommu) {
-+				clear_translation_pre_enabled(iommu);
-+				early_enable_iommu(iommu);
-+			}
-+		} else {
-+			pr_info("Copied DEV table from previous kernel.\n");
-+			for_each_iommu(iommu) {
-+				iommu_disable_command_buffer(iommu);
-+				iommu_disable_event_buffer(iommu);
-+				iommu_enable_command_buffer(iommu);
-+				iommu_enable_event_buffer(iommu);
-+				iommu_enable_ga(iommu);
-+				iommu_set_device_table(iommu);
-+				iommu_flush_all_caches(iommu);
-+			}
-+		}
-+	}
+ 	if (unlikely(domain->ops->attach_dev == NULL))
+ 		return -ENODEV;
  
- #ifdef CONFIG_IRQ_REMAP
- 	if (AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
+@@ -1124,6 +1128,10 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
+ static void __iommu_detach_device(struct iommu_domain *domain,
+ 				  struct device *dev)
+ {
++	if ((domain->ops->is_attach_deferred != NULL) &&
++	    domain->ops->is_attach_deferred(domain, dev))
++		return;
++
+ 	if (unlikely(domain->ops->detach_dev == NULL))
+ 		return;
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 436dc21..e179313 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -200,6 +200,7 @@ struct iommu_ops {
+ 	u32 (*domain_get_windows)(struct iommu_domain *domain);
+ 
+ 	int (*of_xlate)(struct device *dev, struct of_phandle_args *args);
++	bool (*is_attach_deferred)(struct iommu_domain *domain, struct device *dev);
+ 
+ 	unsigned long pgsize_bitmap;
+ };
 -- 
 2.5.5
