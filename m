@@ -1,7 +1,8 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v7 07/12] iommu/amd: Use is_attach_deferred call-back
-Date: Fri, 25 Nov 2016 13:13:14 +0800
-Message-ID: <1480050799-1237-8-git-send-email-bhe@redhat.com>
+Subject: [PATCH v7 08/12] iommu/amd: Add sanity check of irq remap information
+	of old dev table entry
+Date: Fri, 25 Nov 2016 13:13:15 +0800
+Message-ID: <1480050799-1237-9-git-send-email-bhe@redhat.com>
 References: <1480050799-1237-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,86 +22,102 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Implement call-back is_attach_deferred and use it to defer the
-domain attach from iommu driver init to device driver init when
-iommu is pre-enabled in kdump kernel.
+Firstly split the dev table entry copy into address translation part and
+irq remapping part. Because these two parts could be configured to
+be available indepentently.
+
+Secondly check if IntCtl and IntTabLen are 10b and 1000b if they are
+set.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+ drivers/iommu/amd_iommu.c       |  5 -----
+ drivers/iommu/amd_iommu_init.c  | 25 ++++++++++++++++++++++---
+ drivers/iommu/amd_iommu_types.h |  8 ++++++++
+ 3 files changed, 30 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index d5aef72..fc8ecfb 100644
+index fc8ecfb..cea90d5 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -138,6 +138,7 @@ struct iommu_dev_data {
- 					     PPR completions */
- 	u32 errata;			  /* Bitmap for errata to apply */
- 	bool use_vapic;			  /* Enable device to use vapic mode */
-+	bool defer_attach;
- };
+@@ -3640,11 +3640,6 @@ EXPORT_SYMBOL(amd_iommu_device_info);
  
- /*
-@@ -340,12 +341,17 @@ static u16 get_alias(struct device *dev)
- static struct iommu_dev_data *find_dev_data(u16 devid)
+ static struct irq_chip amd_ir_chip;
+ 
+-#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
+-#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
+-#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
+-#define DTE_IRQ_REMAP_ENABLE    1ULL
+-
+ static void set_dte_irq_entry(u16 devid, struct irq_remap_table *table)
  {
- 	struct iommu_dev_data *dev_data;
-+	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
+ 	u64 dte;
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 4233f26..4427c63 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -837,12 +837,12 @@ static int get_dev_entry_bit(u16 devid, u8 bit)
  
- 	dev_data = search_dev_data(devid);
- 
--	if (dev_data == NULL)
-+	if (dev_data == NULL) {
- 		dev_data = alloc_dev_data(devid);
- 
-+		if (translation_pre_enabled(iommu))
-+			dev_data->defer_attach = true;
-+	}
-+
- 	return dev_data;
- }
- 
-@@ -2315,11 +2321,18 @@ static void queue_add(struct dma_ops_domain *dma_dom,
- static struct protection_domain *get_domain(struct device *dev)
+ static int copy_dev_tables(void)
  {
- 	struct protection_domain *domain;
-+	struct iommu_domain *io_domain;
++	u64 int_ctl, int_tab_len, entry, last_entry = 0;
+ 	struct dev_table_entry *old_devtb = NULL;
+ 	u32 lo, hi, devid, old_devtb_size;
+ 	phys_addr_t old_devtb_phys;
+-	u64 entry, last_entry = 0;
+ 	struct amd_iommu *iommu;
+-	u16 dom_id, dte_v;
++	u16 dom_id, dte_v, irq_v;
+ 	static int copied;
  
- 	if (!check_device(dev))
- 		return ERR_PTR(-EINVAL);
- 
- 	domain = get_dev_data(dev)->domain;
-+	if (domain == NULL && get_dev_data(dev)->defer_attach) {
-+		get_dev_data(dev)->defer_attach = false;
-+		io_domain = iommu_get_domain_for_dev(dev);
-+		domain = to_pdomain(io_domain);
-+		attach_device(dev, domain);
-+	}
- 	if (!dma_ops_domain(domain))
- 		return ERR_PTR(-EBUSY);
- 
-@@ -3215,6 +3228,13 @@ static void amd_iommu_apply_dm_region(struct device *dev,
- 	WARN_ON_ONCE(reserve_iova(&dma_dom->iovad, start, end) == NULL);
- }
- 
-+static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
-+					 struct device *dev)
-+{
-+	struct iommu_dev_data *dev_data = dev->archdata.iommu;
-+	return dev_data->defer_attach;
-+}
+ 	for_each_iommu(iommu) {
+@@ -881,8 +881,27 @@ static int copy_dev_tables(void)
+ 			amd_iommu_dev_table[devid] = old_devtb[devid];
+ 			dom_id = old_devtb[devid].data[1] & DEV_DOMID_MASK;
+ 			dte_v = old_devtb[devid].data[0] & DTE_FLAG_V;
+-			if (dte_v && dom_id)
++			if (dte_v && dom_id) {
++				amd_iommu_dev_table[devid].data[0]
++					= old_devtb[devid].data[0];
++				amd_iommu_dev_table[devid].data[1]
++					= old_devtb[devid].data[1];
+ 				__set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
++			}
 +
- static const struct iommu_ops amd_iommu_ops = {
- 	.capable = amd_iommu_capable,
- 	.domain_alloc = amd_iommu_domain_alloc,
-@@ -3231,6 +3251,7 @@ static const struct iommu_ops amd_iommu_ops = {
- 	.get_dm_regions = amd_iommu_get_dm_regions,
- 	.put_dm_regions = amd_iommu_put_dm_regions,
- 	.apply_dm_region = amd_iommu_apply_dm_region,
-+	.is_attach_deferred = amd_iommu_is_attach_deferred,
- 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
- };
++			irq_v = old_devtb[devid].data[2] & DTE_IRQ_REMAP_ENABLE;
++			int_ctl = old_devtb[devid].data[2] & DTE_IRQ_REMAP_INTCTL_MASK;
++			int_tab_len = old_devtb[devid].data[2] & DTE_IRQ_TABLE_LEN_MASK;
++			if (irq_v && (int_ctl || int_tab_len)) {
++				if ((int_ctl != DTE_IRQ_REMAP_INTCTL) ||
++					 (int_tab_len != DTE_IRQ_TABLE_LEN)) {
++					pr_err("Wrong old irq remapping flag: %#x\n", devid);
++					return -1;
++				}
++
++				amd_iommu_dev_table[devid].data[2]
++					= old_devtb[devid].data[2];
++			}
+ 		}
+ 		memunmap(old_devtb);
+ 		copied = 1;
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index 79ec841..b5ae18e 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -250,6 +250,14 @@
  
+ #define GA_GUEST_NR		0x1
+ 
++/* Bit value definition for dte irq remapping fields*/
++#define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
++#define DTE_IRQ_REMAP_INTCTL_MASK	(0x3ULL << 60)
++#define DTE_IRQ_TABLE_LEN_MASK	(0xfULL << 1)
++#define DTE_IRQ_REMAP_INTCTL    (2ULL << 60)
++#define DTE_IRQ_TABLE_LEN       (8ULL << 1)
++#define DTE_IRQ_REMAP_ENABLE    1ULL
++
+ #define PAGE_MODE_NONE    0x00
+ #define PAGE_MODE_1_LEVEL 0x01
+ #define PAGE_MODE_2_LEVEL 0x02
 -- 
 2.5.5
