@@ -1,7 +1,8 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v7 09/12] iommu/amd: Don't copy GCR3 table root pointer
-Date: Fri, 25 Nov 2016 13:13:16 +0800
-Message-ID: <1480050799-1237-10-git-send-email-bhe@redhat.com>
+Subject: [PATCH v7 10/12] iommu/amd: Clear out the GV flag when handle
+	deferred domain attach
+Date: Fri, 25 Nov 2016 13:13:17 +0800
+Message-ID: <1480050799-1237-11-git-send-email-bhe@redhat.com>
 References: <1480050799-1237-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,197 +22,61 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When in kdump kernel iommu is pre_enabled, if a device is set up with
-guest translations (DTE.GV=1), then don't copy GCR3 table root pointer
-but move the device over to an empty guest-cr3 table and handle the
-faults in the PPR log (which answer them with INVALID). After all these
-PPR faults are recoverable for the device and we should not allow the
-device to change old-kernels data when we don't have to.
+When handle deferred domain attach, we need check if the domain is
+v2. If not, should try to clear out the GV flag which could be
+copied from the old device table entry.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Suggested-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       | 26 +++-----------------------
- drivers/iommu/amd_iommu_init.c  | 11 +++++++++++
- drivers/iommu/amd_iommu_proto.h |  1 +
- drivers/iommu/amd_iommu_types.h | 22 ++++++++++++++++++++++
- drivers/iommu/amd_iommu_v2.c    | 18 +++++++++++++++++-
- 5 files changed, 54 insertions(+), 24 deletions(-)
+ drivers/iommu/amd_iommu.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index cea90d5..22520f6 100644
+index 22520f6..3a8e4ae 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -120,28 +120,6 @@ int amd_iommu_max_glx_val = -1;
- static struct dma_map_ops amd_iommu_dma_ops;
+@@ -1839,6 +1839,11 @@ static void clear_dte_entry(u16 devid)
+ 	amd_iommu_apply_erratum_63(devid);
+ }
  
- /*
-- * This struct contains device specific data for the IOMMU
-- */
--struct iommu_dev_data {
--	struct list_head list;		  /* For domain->dev_list */
--	struct list_head dev_data_list;	  /* For global dev_data_list */
--	struct protection_domain *domain; /* Domain the device is bound to */
--	u16 devid;			  /* PCI Device ID */
--	u16 alias;			  /* Alias Device ID */
--	bool iommu_v2;			  /* Device can make use of IOMMUv2 */
--	bool passthrough;		  /* Device is identity mapped */
--	struct {
--		bool enabled;
--		int qdep;
--	} ats;				  /* ATS state */
--	bool pri_tlp;			  /* PASID TLB required for
--					     PPR completions */
--	u32 errata;			  /* Bitmap for errata to apply */
--	bool use_vapic;			  /* Enable device to use vapic mode */
--	bool defer_attach;
--};
--
--/*
-  * general struct to manage commands send to an IOMMU
++static void clear_dte_flag_gv(u16 devid)
++{
++	amd_iommu_dev_table[devid].data[0] &= (~DTE_FLAG_GV);
++}
++
+ static void do_attach(struct iommu_dev_data *dev_data,
+ 		      struct protection_domain *domain)
+ {
+@@ -2299,6 +2304,7 @@ static void queue_add(struct dma_ops_domain *dma_dom,
   */
- struct iommu_cmd {
-@@ -355,10 +333,11 @@ static struct iommu_dev_data *find_dev_data(u16 devid)
- 	return dev_data;
- }
- 
--static struct iommu_dev_data *get_dev_data(struct device *dev)
-+struct iommu_dev_data *get_dev_data(struct device *dev)
+ static struct protection_domain *get_domain(struct device *dev)
  {
- 	return dev->archdata.iommu;
- }
-+EXPORT_SYMBOL(get_dev_data);
++	struct iommu_dev_data *dev_data = get_dev_data(dev);
+ 	struct protection_domain *domain;
+ 	struct iommu_domain *io_domain;
  
- /*
- * Find or create an IOMMU group for a acpihid device.
-@@ -2378,6 +2357,7 @@ static int dir2prot(enum dma_data_direction direction)
- 	else
- 		return 0;
- }
-+
- /*
-  * This function contains common code for mapping of a physically
-  * contiguous memory region into DMA address space. It is used by all
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 4427c63..d362b63 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -204,6 +204,7 @@ u16 *amd_iommu_alias_table;
-  * for a specific device. It is also indexed by the PCI device id.
-  */
- struct amd_iommu **amd_iommu_rlookup_table;
-+EXPORT_SYMBOL(amd_iommu_rlookup_table);
+@@ -2306,11 +2312,21 @@ static struct protection_domain *get_domain(struct device *dev)
+ 		return ERR_PTR(-EINVAL);
  
- /*
-  * This table is used to find the irq remapping table for a given device id
-@@ -257,6 +258,7 @@ bool translation_pre_enabled(struct amd_iommu *iommu)
- {
- 	return (iommu->flags & AMD_IOMMU_FLAG_TRANS_PRE_ENABLED);
- }
-+EXPORT_SYMBOL(translation_pre_enabled);
- 
- static void clear_translation_pre_enabled(struct amd_iommu *iommu)
- {
-@@ -844,6 +846,7 @@ static int copy_dev_tables(void)
- 	struct amd_iommu *iommu;
- 	u16 dom_id, dte_v, irq_v;
- 	static int copied;
-+	u64 tmp;
- 
- 	for_each_iommu(iommu) {
- 		if (!translation_pre_enabled(iommu)) {
-@@ -887,6 +890,14 @@ static int copy_dev_tables(void)
- 				amd_iommu_dev_table[devid].data[1]
- 					= old_devtb[devid].data[1];
- 				__set_bit(dom_id, amd_iommu_pd_alloc_bitmap);
-+				/* If gcr3 table existed, mask it out */
-+				if (old_devtb[devid].data[0] & DTE_FLAG_GV) {
-+					tmp = DTE_GCR3_VAL_B(~0ULL) << DTE_GCR3_SHIFT_B;
-+					tmp |= DTE_GCR3_VAL_C(~0ULL) << DTE_GCR3_SHIFT_C;
-+					amd_iommu_dev_table[devid].data[1] &= ~tmp;
-+					tmp = DTE_GCR3_VAL_A(~0ULL) << DTE_GCR3_SHIFT_A;
-+					amd_iommu_dev_table[devid].data[0] &= ~tmp;
-+				}
- 			}
- 
- 			irq_v = old_devtb[devid].data[2] & DTE_IRQ_REMAP_ENABLE;
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 9560183..d6a2c36 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -94,4 +94,5 @@ static inline bool iommu_feature(struct amd_iommu *iommu, u64 f)
- }
- 
- extern bool translation_pre_enabled(struct amd_iommu *iommu);
-+extern struct iommu_dev_data *get_dev_data(struct device *dev);
- #endif /* _ASM_X86_AMD_IOMMU_PROTO_H  */
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index b5ae18e..5524cdd 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -612,6 +612,28 @@ struct devid_map {
- 	bool cmd_line;
- };
- 
-+/*
-+ * This struct contains device specific data for the IOMMU
-+ */
-+struct iommu_dev_data {
-+	struct list_head list;		  /* For domain->dev_list */
-+	struct list_head dev_data_list;	  /* For global dev_data_list */
-+	struct protection_domain *domain; /* Domain the device is bound to */
-+	u16 devid;			  /* PCI Device ID */
-+	u16 alias;			  /* Alias Device ID */
-+	bool iommu_v2;			  /* Device can make use of IOMMUv2 */
-+	bool passthrough;		  /* Device is identity mapped */
-+	struct {
-+		bool enabled;
-+		int qdep;
-+	} ats;				  /* ATS state */
-+	bool pri_tlp;			  /* PASID TLB required for
-+					     PPR completions */
-+	u32 errata;			  /* Bitmap for errata to apply */
-+	bool use_vapic;			  /* Enable device to use vapic mode */
-+	bool defer_attach;
-+};
-+
- /* Map HPET and IOAPIC ids to the devid used by the IOMMU */
- extern struct list_head ioapic_map;
- extern struct list_head hpet_map;
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 594849a..f66110b 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -561,13 +561,29 @@ static int ppr_notifier(struct notifier_block *nb, unsigned long e, void *data)
- 	unsigned long flags;
- 	struct fault *fault;
- 	bool finish;
--	u16 tag;
-+	u16 tag, devid;
- 	int ret;
-+	struct iommu_dev_data *dev_data;
-+	struct pci_dev *pdev = NULL;
- 
- 	iommu_fault = data;
- 	tag         = iommu_fault->tag & 0x1ff;
- 	finish      = (iommu_fault->tag >> 9) & 1;
- 
-+	devid = iommu_fault->device_id;
-+	pdev = pci_get_bus_and_slot(PCI_BUS_NUM(devid), devid & 0xff);
-+	if (!pdev)
-+		return -ENODEV;
-+	dev_data = get_dev_data(&pdev->dev);
-+
-+	/* In kdump kernel pci dev is not initialized yet -> send INVALID */
-+	if (translation_pre_enabled(amd_iommu_rlookup_table[devid])
-+		&& dev_data->defer_attach) {
-+		amd_iommu_complete_ppr(pdev, iommu_fault->pasid,
-+				       PPR_INVALID, tag);
-+		goto out;
-+	}
-+
- 	ret = NOTIFY_DONE;
- 	dev_state = get_device_state(iommu_fault->device_id);
- 	if (dev_state == NULL)
+ 	domain = get_dev_data(dev)->domain;
+-	if (domain == NULL && get_dev_data(dev)->defer_attach) {
++	if (domain == NULL && dev_data->defer_attach) {
++		u16 alias = amd_iommu_alias_table[dev_data->devid];
+ 		get_dev_data(dev)->defer_attach = false;
+ 		io_domain = iommu_get_domain_for_dev(dev);
+ 		domain = to_pdomain(io_domain);
+ 		attach_device(dev, domain);
++		/*
++		 * If the deferred attached domain is not v2, should clear out
++		 * the old GV flag.
++		 */
++		if (!(domain->flags & PD_IOMMUV2_MASK)) {
++			clear_dte_flag_gv(dev_data->devid);
++			if (alias != dev_data->devid)
++				clear_dte_flag_gv(dev_data->devid);
++		}
+ 	}
+ 	if (!dma_ops_domain(domain))
+ 		return ERR_PTR(-EBUSY);
 -- 
 2.5.5
