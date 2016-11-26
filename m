@@ -1,75 +1,96 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [RFC PATCH v3 20/20] x86: Add support to make use of Secure
- Memory Encryption
-Date: Sat, 26 Nov 2016 21:47:03 +0100
-Message-ID: <20161126204703.wlcd6cw7dxzvpxyc@pd.tnic>
-References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
- <20161110003838.3280.23327.stgit@tlendack-t1.amdoffice.net>
+From: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Subject: [PATCH 13/22] iommu/vt-d: Convert to hotplug state machine
+Date: Sun, 27 Nov 2016 00:13:41 +0100
+Message-ID: <20161126231350.10321-14-bigeasy@linutronix.de>
+References: <20161126231350.10321-1-bigeasy@linutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <20161110003838.3280.23327.stgit@tlendack-t1.amdoffice.net>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20161126231350.10321-1-bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, rt-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 09, 2016 at 06:38:38PM -0600, Tom Lendacky wrote:
-> This patch adds the support to check if SME has been enabled and if the
-> mem_encrypt=on command line option is set. If both of these conditions
-> are true, then the encryption mask is set and the kernel is encrypted
-> "in place."
-> 
-> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-> ---
->  arch/x86/kernel/head_64.S          |    1 +
->  arch/x86/kernel/mem_encrypt_init.c |   60 +++++++++++++++++++++++++++++++++++-
->  arch/x86/mm/mem_encrypt.c          |    2 +
->  3 files changed, 62 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-> index e8a7272..c225433 100644
-> --- a/arch/x86/kernel/head_64.S
-> +++ b/arch/x86/kernel/head_64.S
-> @@ -100,6 +100,7 @@ startup_64:
->  	 * to include it in the page table fixups.
->  	 */
->  	push	%rsi
-> +	movq	%rsi, %rdi
->  	call	sme_enable
->  	pop	%rsi
->  	movq	%rax, %r12
-> diff --git a/arch/x86/kernel/mem_encrypt_init.c b/arch/x86/kernel/mem_encrypt_init.c
-> index 7bdd159..c94ceb8 100644
-> --- a/arch/x86/kernel/mem_encrypt_init.c
-> +++ b/arch/x86/kernel/mem_encrypt_init.c
-> @@ -16,9 +16,14 @@
->  #include <linux/mm.h>
->  
->  #include <asm/sections.h>
-> +#include <asm/processor-flags.h>
-> +#include <asm/msr.h>
-> +#include <asm/cmdline.h>
->  
->  #ifdef CONFIG_AMD_MEM_ENCRYPT
->  
-> +static char sme_cmdline_arg[] __initdata = "mem_encrypt=on";
+From: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
 
-One more thing: just like we're adding an =on switch, we'd need an =off
-switch in case something's wrong with the SME code. IOW, if a user
-supplies "mem_encrypt=off", we do not encrypt.
+Install the callbacks via the state machine.
 
-Thanks.
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Signed-off-by: Anna-Maria Gleixner <anna-maria-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c | 24 ++++++------------------
+ include/linux/cpuhotplug.h  |  1 +
+ 2 files changed, 7 insertions(+), 18 deletions(-)
 
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a4407eabf0e6..fd7962560e56 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4665,25 +4665,13 @@ static void free_all_cpu_cached_iovas(unsigned int cpu)
+ 	}
+ }
+ 
+-static int intel_iommu_cpu_notifier(struct notifier_block *nfb,
+-				    unsigned long action, void *v)
++static int intel_iommu_cpu_dead(unsigned int cpu)
+ {
+-	unsigned int cpu = (unsigned long)v;
+-
+-	switch (action) {
+-	case CPU_DEAD:
+-	case CPU_DEAD_FROZEN:
+-		free_all_cpu_cached_iovas(cpu);
+-		flush_unmaps_timeout(cpu);
+-		break;
+-	}
+-	return NOTIFY_OK;
++	free_all_cpu_cached_iovas(cpu);
++	flush_unmaps_timeout(cpu);
++	return 0;
+ }
+ 
+-static struct notifier_block intel_iommu_cpu_nb = {
+-	.notifier_call = intel_iommu_cpu_notifier,
+-};
+-
+ static ssize_t intel_iommu_show_version(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
+@@ -4832,8 +4820,8 @@ int __init intel_iommu_init(void)
+ 	bus_register_notifier(&pci_bus_type, &device_nb);
+ 	if (si_domain && !hw_pass_through)
+ 		register_memory_notifier(&intel_iommu_memory_nb);
+-	register_hotcpu_notifier(&intel_iommu_cpu_nb);
+-
++	cpuhp_setup_state(CPUHP_IOMMU_INTEL_DEAD, "iommu/intel:dead", NULL,
++			  intel_iommu_cpu_dead);
+ 	intel_iommu_enabled = 1;
+ 
+ 	return 0;
+diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
+index c7d0d76ef0ee..853f8176594d 100644
+--- a/include/linux/cpuhotplug.h
++++ b/include/linux/cpuhotplug.h
+@@ -40,6 +40,7 @@ enum cpuhp_state {
+ 	CPUHP_PAGE_ALLOC_DEAD,
+ 	CPUHP_NET_DEV_DEAD,
+ 	CPUHP_PCI_XGENE_DEAD,
++	CPUHP_IOMMU_INTEL_DEAD,
+ 	CPUHP_WORKQUEUE_PREP,
+ 	CPUHP_POWER_NUMA_PREPARE,
+ 	CPUHP_HRTIMERS_PREPARE,
 -- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+2.10.2
