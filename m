@@ -1,49 +1,58 @@
-From: Hanjun Guo <hanjun.guo@linaro.org>
-Subject: Re: [PATCH v9 09/16] drivers: acpi: iort: add support for ARM SMMU
- platform devices creation
-Date: Tue, 29 Nov 2016 20:17:58 +0800
-Message-ID: <11ea77fa-688f-d31d-bd3c-35ca52e0a18b@linaro.org>
+From: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v9 14/16] drivers: acpi: iort: replace rid map type with
+	type mask
+Date: Tue, 29 Nov 2016 20:29:16 +0800
+Message-ID: <300db741-2ad9-3a44-13b3-03980ce3713c@linaro.org>
 References: <20161121100148.24769-1-lorenzo.pieralisi@arm.com>
- <20161121100148.24769-10-lorenzo.pieralisi@arm.com>
+	<20161121100148.24769-15-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20161121100148.24769-10-lorenzo.pieralisi@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org
-Cc: Tomasz Nowicki <tn@semihalf.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20161121100148.24769-15-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dennis Chen <dennis.chen-5wv7dgnIgG8@public.gmane.org>, Prem Mallappa <prem.mallappa-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 On 2016/11/21 18:01, Lorenzo Pieralisi wrote:
-> In ARM ACPI systems, IOMMU components are specified through static
-> IORT table entries. In order to create platform devices for the
-> corresponding ARM SMMU components, IORT kernel code should be made
-> able to parse IORT table entries and create platform devices
-> dynamically.
+> IORT tables provide data that allow the kernel to carry out
+> device ID mappings between endpoints and system components
+> (eg interrupt controllers, IOMMUs). When the mapping for a
+> given device ID is carried out, the translation mechanism
+> is done on a per-subsystem basis rather than a component
+> subtype (ie the IOMMU kernel layer will look for mappings
+> from a device to all IORT node types corresponding to IOMMU
+> components), therefore the corresponding mapping API should
+> work on a range (ie mask) of IORT node types corresponding
+> to a common set of components (eg IOMMUs) rather than a
+> specific node type.
 >
-> This patch adds the generic IORT infrastructure required to create
-> platform devices for ARM SMMUs.
+> Upgrade the IORT iort_node_map_rid() API to work with a
+> type mask instead of a single node type so that it can
+> be used for mappings that span multiple components types
+> (ie IOMMUs).
 >
-> ARM SMMU versions have different resources requirement therefore this
-> patch also introduces an IORT specific structure (ie iort_iommu_config)
-> that contains hooks (to be defined when the corresponding ARM SMMU
-> driver support is added to the kernel) to be used to define the
-> platform devices names, init the IOMMUs, count their resources and
-> finally initialize them.
->
-> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Reviewed-by: Tomasz Nowicki <tn@semihalf.com>
-> Tested-by: Hanjun Guo <hanjun.guo@linaro.org>
-> Tested-by: Tomasz Nowicki <tn@semihalf.com>
-> Cc: Hanjun Guo <hanjun.guo@linaro.org>
-> Cc: Tomasz Nowicki <tn@semihalf.com>
-> Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+> Reviewed-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+> Tested-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Tested-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+> Cc: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Cc: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+> Cc: "Rafael J. Wysocki" <rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org>
 > ---
->  drivers/acpi/arm64/iort.c | 151 ++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 151 insertions(+)
+>  drivers/acpi/arm64/iort.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
 
-Acked-by: Hanjun Guo <hanjun.guo@linaro.org>
+Acked-by: Hanjun Guo <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
 Thanks
 Hanjun
