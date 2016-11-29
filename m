@@ -1,59 +1,57 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V3 0/8] IOMMU probe deferral support
-Date: Mon, 28 Nov 2016 18:13:39 +0000
-Message-ID: <20161128181339.GA32078@red-moon>
-References: <60ee8066-f167-e9df-ae3e-4138f1133bad@arm.com>
-	<003a01d22f97$82534c70$86f9e550$@codeaurora.org>
-	<421e2b14-0231-d376-02a0-097423120b3d@arm.com>
-	<006f01d236ae$61751c40$245f54c0$@codeaurora.org>
-	<9f36244f-62d4-08e3-d64a-2b04ad4dc2e0@arm.com>
-	<002b01d24340$5d56e730$1804b590$@codeaurora.org>
-	<918128b9-cdb0-1454-000a-146cee7a05ea@arm.com>
-	<004401d2466d$5b8b2170$12a16450$@codeaurora.org>
-	<f2ad6976-0f8f-d116-bc43-37337dd9f41f@arm.com>
-	<000001d2499e$df7f2d80$9e7d8880$@codeaurora.org>
+From: Brian Norris <briannorris-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Subject: Re: [PATCH v5 8/8] iommu/rockchip: Enable Rockchip IOMMU on ARM64
+Date: Mon, 28 Nov 2016 16:42:27 -0800
+Message-ID: <20161129004225.GA109697@google.com>
+References: <1466734413-7453-9-git-send-email-zhengsq@rock-chips.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <000001d2499e$df7f2d80$9e7d8880$@codeaurora.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+In-Reply-To: <1466734413-7453-9-git-send-email-zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, mark.yao-TNX95d0MmH7DzftRWevZcw@public.gmane.org, airlied-cv59FeDIM0c@public.gmane.org, tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dri-devel-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>, linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Nov 28, 2016 at 11:12:08PM +0530, Sricharan wrote:
+Hi,
 
-[...]
-
-> >Cool. We're rather hoping that the ACPI stuff is good to go for 4.10
-> >now, so it's probably worth pulling the rest of that in (beyond the one
-> >patch I picked) to make sure the of_dma_configure/acpi_dma_configure
-> >paths don't inadvertently diverge.
-> >
+On Fri, Jun 24, 2016 at 10:13:33AM +0800, Shunqian Zheng wrote:
+> From: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
 > 
-> I rebased and was testing your branch with Lorenzo's series. One thing
-> i am still trying to get right is the acpi_dma_configure call. With your
-> series dma_configure calls pci_dma/of_dma configure, so i am just adding
-> acpi_dma_configure call there for non-pci ACPI devices as well. I see that
-> acpi_dma_configure right now is called from acpi_bind_one and 
-> iort_add_smmu_platform_device, both go through the really_probe function
-> path, so moving acpi_dma_configure from the above the two functions
-> to dma_configure. I remember we discussed this on another thread, so
-> hopefully it is correct. I do not have an platform to test the ACPI though.
-> I will take some testing help on V4 for this.
+> This patch makes it possible to compile the rockchip-iommu driver on
+> ARM64, so that it can be used with 64-bit SoCs equipped with this type
+> of IOMMU.
+> 
+> Signed-off-by: Simon Xue <xxm-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+> Signed-off-by: Shunqian Zheng <zhengsq-TNX95d0MmH7DzftRWevZcw@public.gmane.org>
+> Signed-off-by: Tomasz Figa <tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+> ---
+>  drivers/iommu/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index ad08603..5572621 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -218,7 +218,7 @@ config OMAP_IOMMU_DEBUG
+>  
+>  config ROCKCHIP_IOMMU
+>  	bool "Rockchip IOMMU Support"
+> -	depends on ARM
+> +	depends on ARM || ARM64
+>  	depends on ARCH_ROCKCHIP || COMPILE_TEST
+>  	select IOMMU_API
+>  	select ARM_DMA_USE_IOMMU
 
-I am happy to test it for you please just send me a pointer at your v4
-code.
+Whatever happened with the rest of this series? Some of the IOMMU bits
+made it, but the DRM fixes never did, and so this didn't get applied.
+This leaves the whole DRM stack unusable on ARM64 Rockchip systems.
 
-Thank you !
-Lorenzo
+The patch context has changed a bit on patch 7 (and maybe 6?), so
+somebody will need to refresh those on the latest upstream.
+
+Brian
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
