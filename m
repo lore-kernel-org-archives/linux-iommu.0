@@ -1,33 +1,23 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu/s390: drop duplicate header pci.h
-Date: Tue, 29 Nov 2016 17:38:45 +0100
-Message-ID: <20161129163845.GA13850@8bytes.org>
-References: <4cc3123e0ea4ee25b46e463e698ece75f9ff966e.1479914526.git.geliangtang@gmail.com>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [patch] iommu/amd: Missing error code in amd_iommu_init_device()
+Date: Tue, 29 Nov 2016 17:40:04 +0100
+Message-ID: <20161129164004.GB13850@8bytes.org>
+References: <20161124110544.GE17225@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <kernel-janitors-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <4cc3123e0ea4ee25b46e463e698ece75f9ff966e.1479914526.git.geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20161124110544.GE17225@mwanda>
+Sender: kernel-janitors-owner@vger.kernel.org
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: iommu@lists.linux-foundation.org, kernel-janitors@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 23, 2016 at 11:23:19PM +0800, Geliang Tang wrote:
-> Drop duplicate header pci.h from s390-iommu.c.
+On Thu, Nov 24, 2016 at 02:05:44PM +0300, Dan Carpenter wrote:
+> We should set "ret" to -EINVAL if iommu_group_get() fails.
 > 
-> Signed-off-by: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/iommu/s390-iommu.c | 1 -
->  1 file changed, 1 deletion(-)
+> Fixes: 55c99a4dc50f ("iommu/amd: Use iommu_attach_group()")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
 Applied, thanks.
+
