@@ -1,65 +1,45 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 4/5] iommu/exynos: Add default_domain check in
-	iommu_attach_device
-Date: Tue, 29 Nov 2016 17:48:23 +0100
-Message-ID: <20161129164823.GD13850@8bytes.org>
-References: <1479986420-30859-1-git-send-email-m.szyprowski@samsung.com>
-	<1479986420-30859-5-git-send-email-m.szyprowski@samsung.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [PATCH v7 04/16] drivers: iommu: make of_iommu_set/get_ops() DT
+ agnostic
+Date: Tue, 29 Nov 2016 17:06:40 +0000
+Message-ID: <20161129170639.GH30283@arm.com>
+References: <20161111152248.GS2078@8bytes.org>
+ <552e674a-f434-f08f-8e16-a94544ce8e6e@arm.com>
+ <20161111162736.GV2078@8bytes.org>
+ <33769e3c-265f-6e89-adf9-6d35b1e03579@arm.com>
+ <20161114102654.GA1677@red-moon>
+ <41e3eff1-9ce6-bcfb-5716-c65ef38add63@arm.com>
+ <20161114155222.GZ2078@8bytes.org>
+ <313844ca-d948-1297-84b2-669f3a7d57d2@arm.com>
+ <20161116095615.GA25656@red-moon>
+ <20161129160549.GH2078@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1479986420-30859-5-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <20161129160549.GH2078@8bytes.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org, Hanjun Guo <hanjun.guo@linaro.org>, Marc Zyngier <marc.zyngier@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Tomasz Nowicki <tn@semihalf.com>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Nov 24, 2016 at 12:20:19PM +0100, Marek Szyprowski wrote:
-> This patch adds default_domain check before calling
-> exynos_iommu_detach_device. This path was intended only to cope with
-> default domains, which are automatically attached by the iommu core, so
-> return error if user tries to attach device, which is already attached
-> to other (non-default) domain.
+On Tue, Nov 29, 2016 at 05:05:49PM +0100, Joerg Roedel wrote:
+> On Wed, Nov 16, 2016 at 09:56:15AM +0000, Lorenzo Pieralisi wrote:
+> > I can easily make the changes Robin suggests above, I need to know
+> > what to do with this patch it is the last blocking point for this
+> > series and time is running out I can revert to using dev->bus to
+> > retrieve iommu_ops (even though I do not think it makes sense given
+> > what Robin outlines below) but I need to know please, we can't gate
+> > an entire series for this patch that is just syntactic sugar.
 > 
-> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> ---
->  drivers/iommu/exynos-iommu.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 426b1534d4d3..63d9358a6d9c 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -859,8 +859,17 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
->  	if (!has_sysmmu(dev))
->  		return -ENODEV;
->  
-> -	if (owner->domain)
-> +	if (owner->domain) {
-> +		struct iommu_group *group = iommu_group_get(dev);
-> +
-> +		if (!group ||
-> +		    owner->domain != iommu_group_default_domain(group)) {
-> +			iommu_group_put(group);
-> +			return -EINVAL;
-> +		}
-> +		iommu_group_put(group);
->  		exynos_iommu_detach_device(owner->domain, dev);
-> +	}
+> Well, I didn't really object to the approach per-se, I just wanted to
+> know the rationale behind the need for the iommu-ops pointer. So through
+> which tree should this series be merged?
 
-Does this fix any actual bug? The iommu core should take care that the
-above never happens. See __iommu_attach_group() function for details.
+I was just about to send a pull request to you, since it conflicts with
+my ARM SMMU patches and the PCI/ACPI bits are acked by Rafael and Bjorn.
 
+My for-joerg/arm-smmu/updates is ready to go; just need to write the
+pull request.
 
-
-	Joerg
+Will
