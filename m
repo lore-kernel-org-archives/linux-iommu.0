@@ -1,19 +1,17 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Flush old iotlb for kdump when the device
-	gets context mapped
-Date: Wed, 30 Nov 2016 17:03:27 +0800
-Message-ID: <20161130090327.GA4192@x1>
-References: <1479286950-21885-1-git-send-email-xlpang@redhat.com>
-	<582C232F.6080205@redhat.com>
-	<CAL-B5D1kkWE4e6P1xY1Cgkf-7+nBXH=C7g21=phEzmM4FPZRRQ@mail.gmail.com>
-	<582D1A40.409@redhat.com> <20161129143547.GG2078@8bytes.org>
-	<583E8A9B.7070906@redhat.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH 4/5] iommu/exynos: Add default_domain check in
+	iommu_attach_device
+Date: Wed, 30 Nov 2016 10:05:28 +0100
+Message-ID: <4958e5fb-f0ef-647b-1274-69a9a31ac542@samsung.com>
+References: <1479986420-30859-1-git-send-email-m.szyprowski@samsung.com>
+	<1479986420-30859-5-git-send-email-m.szyprowski@samsung.com>
+	<CGME20161129164906epcas2p179f07684f18b446c776d5c04aa53011e@epcas2p1.samsung.com>
+	<20161129164823.GD13850@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <583E8A9B.7070906-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-reply-to: <20161129164823.GD13850-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,60 +21,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: Don Brace <don.brace-dzo6w/eZyo2tG0bUXCXiUA@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Myron Stowe <myron.stowe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/30/16 at 04:15pm, Xunlei Pang wrote:
-> On 11/29/2016 at 10:35 PM, Joerg Roedel wrote:
-> > On Thu, Nov 17, 2016 at 10:47:28AM +0800, Xunlei Pang wrote:
-> >> As per the comment, the code here only needs to flush context caches
-> >> for the special domain 0 which is used to tag the
-> >> non-present/erroneous caches, seems we should flush the old domain id
-> >> of present entries for kdump according to the analysis, other than the
-> >> new-allocated domain id. Let me ponder more on this.
-> > Flushing the context entry only is fine. The old domain-id will not be
-> > re-used anyway, so there is no point in reading it out of the context
-> > table and flush it.
-> 
-> Do you mean to flush the context entry using the new-allocated domain id?
-> 
-> Yes, old domain-id will not be re-used as they were reserved when copy, but
-> may still be cached by in-flight DMA access.
+Hi Joerg,
 
-Joerg is saying you have flushed context entry which is the ingress,
-new DMA can't get an entrance to hit the iotlb accordingly. Since you
-have bolted the ingress gate. I guess
 
-> 
-> Here is what the things seem to be from my understanding, and why I want to
-> flush using the old domain id:
-> 1) In kdump mode, old tables are copied, and all the iommu caches are flushed.
-> 2) There comes some in-flight DMA before the device's new context is mapped,
->     so translation caches(context, iotlb, etc) are created tagging old domain-id
->     in the iommu hardware.
-> 3) At the driver probe stage, the device is reset , and no in-flight DMA will exist.
->     Here I assumed that the device reset won't flush the old caches in the iommu
->     hardware related to this device. I haven't found any relevant specification, please
->     correct me if I am wrong.
-> 4) Then new context is setup, and new DMA is initiated, hit old cache that was
->     created in 2) as currently there's no such flush action, so DMAR fault happens.
-> 
-> I already posted v2 to flush context/iotlb using the old domain-id:
-> https://lkml.org/lkml/2016/11/18/514
-> 
-> Regards,
-> Xunlei
-> 
-> >
-> > Also, please add a Fixes-tag when you re-post this patch.
-> >
-> >
-> > 	Joerg
-> >
-> 
-> 
-> _______________________________________________
-> kexec mailing list
-> kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/kexec
+On 2016-11-29 17:48, Joerg Roedel wrote:
+> On Thu, Nov 24, 2016 at 12:20:19PM +0100, Marek Szyprowski wrote:
+>> This patch adds default_domain check before calling
+>> exynos_iommu_detach_device. This path was intended only to cope with
+>> default domains, which are automatically attached by the iommu core, so
+>> return error if user tries to attach device, which is already attached
+>> to other (non-default) domain.
+>>
+>> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>> ---
+>>   drivers/iommu/exynos-iommu.c | 11 ++++++++++-
+>>   1 file changed, 10 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+>> index 426b1534d4d3..63d9358a6d9c 100644
+>> --- a/drivers/iommu/exynos-iommu.c
+>> +++ b/drivers/iommu/exynos-iommu.c
+>> @@ -859,8 +859,17 @@ static int exynos_iommu_attach_device(struct iommu_domain *iommu_domain,
+>>   	if (!has_sysmmu(dev))
+>>   		return -ENODEV;
+>>   
+>> -	if (owner->domain)
+>> +	if (owner->domain) {
+>> +		struct iommu_group *group = iommu_group_get(dev);
+>> +
+>> +		if (!group ||
+>> +		    owner->domain != iommu_group_default_domain(group)) {
+>> +			iommu_group_put(group);
+>> +			return -EINVAL;
+>> +		}
+>> +		iommu_group_put(group);
+>>   		exynos_iommu_detach_device(owner->domain, dev);
+>> +	}
+> Does this fix any actual bug? The iommu core should take care that the
+> above never happens. See __iommu_attach_group() function for details.
+
+I've made this patch, when I was adding default domain handling in
+exynos_iommu_remove_device(), but as it has been already pointed by Robin,
+there is no point for the above check in exynos_iommu_attach_device(),
+because it is handled in the iommu core. Please ignore this patch.
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
