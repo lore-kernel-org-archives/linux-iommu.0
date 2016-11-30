@@ -1,7 +1,7 @@
 From: Sricharan R <sricharan@codeaurora.org>
-Subject: [PATCH 02/10] iommu/of: Prepare for deferred IOMMU configuration
-Date: Wed, 30 Nov 2016 05:52:16 +0530
-Message-ID: <1480465344-11862-3-git-send-email-sricharan@codeaurora.org>
+Subject: [PATCH 03/10] of: dma: Move range size workaround to of_dma_get_range()
+Date: Wed, 30 Nov 2016 05:52:17 +0530
+Message-ID: <1480465344-11862-4-git-send-email-sricharan@codeaurora.org>
 References: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
 Return-path: <linux-arm-msm-owner@vger.kernel.org>
 In-Reply-To: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
@@ -10,85 +10,83 @@ To: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralis
 Cc: sricharan@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
-IOMMU configuration represents unchanging properties of the hardware,
-and as such should only need happen once in a device's lifetime, but
-the necessary interaction with the IOMMU device and driver complicates
-exactly when that point should be.
+Invalid dma-ranges values should be worked around when retrieving the
+DMA range in of_dma_get_range(), not by all callers of the function.
+This isn't much of a problem now that we have a single caller, but that
+situation will change when moving DMA configuration to device probe
+time.
 
-Since the only reasonable tool available for handling the inter-device
-dependency is probe deferral, we need to prepare of_iommu_configure()
-to run later than it is currently called (i.e. at driver probe rather
-than device creation), to handle being retried, and to tell whether a
-not-yet present IOMMU should be waited for or skipped (by virtue of
-having declared a built-in driver or not).
-
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 ---
- drivers/iommu/of_iommu.c | 30 +++++++++++++++++++++++++++++-
- 1 file changed, 29 insertions(+), 1 deletion(-)
+ drivers/of/address.c | 20 ++++++++++++++++++--
+ drivers/of/device.c  | 15 ---------------
+ 2 files changed, 18 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index ee49081..349bd1d 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -104,12 +104,20 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
- 	int err;
- 
- 	ops = iommu_get_instance(fwnode);
--	if (!ops || !ops->of_xlate)
-+	if ((ops && !ops->of_xlate) ||
-+	    (!ops && !of_match_node(&__iommu_of_table, iommu_spec->np)))
- 		return NULL;
- 
- 	err = iommu_fwspec_init(dev, &iommu_spec->np->fwnode, ops);
- 	if (err)
- 		return ERR_PTR(err);
-+	/*
-+	 * The otherwise-empty fwspec handily serves to indicate the specific
-+	 * IOMMU device we're waiting for, which will be useful if we ever get
-+	 * a proper probe-ordering dependency mechanism in future.
-+	 */
-+	if (!ops)
-+		return ERR_PTR(-EPROBE_DEFER);
- 
- 	err = ops->of_xlate(dev, iommu_spec);
- 	if (err)
-@@ -186,14 +194,34 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 					   struct device_node *master_np)
+diff --git a/drivers/of/address.c b/drivers/of/address.c
+index 02b2903..6aeb816 100644
+--- a/drivers/of/address.c
++++ b/drivers/of/address.c
+@@ -819,8 +819,8 @@ void __iomem *of_io_request_and_map(struct device_node *np, int index,
+  *	CPU addr (phys_addr_t)	: pna cells
+  *	size			: nsize cells
+  *
+- * It returns -ENODEV if "dma-ranges" property was not found
+- * for this device in DT.
++ * Return 0 on success, -ENODEV if the "dma-ranges" property was not found for
++ * this device in DT, or -EINVAL if the CPU address or size is invalid.
+  */
+ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
  {
- 	const struct iommu_ops *ops;
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+@@ -880,6 +880,22 @@ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *siz
+ 	*dma_addr = dmaaddr;
  
- 	if (!master_np)
- 		return NULL;
- 
-+	if (fwspec) {
-+		if (fwspec->ops)
-+			return fwspec->ops;
-+
-+		/* In the deferred case, start again from scratch */
-+		iommu_fwspec_free(dev);
-+	}
-+
- 	if (dev_is_pci(dev))
- 		ops = of_pci_iommu_init(to_pci_dev(dev), master_np);
- 	else
- 		ops = of_platform_iommu_init(dev, master_np);
+ 	*size = of_read_number(ranges + naddr + pna, nsize);
 +	/*
-+	 * If we have reason to believe the IOMMU driver missed the initial
-+	 * add_device callback for dev, replay it to get things in order.
++	 * DT nodes sometimes incorrectly set the size as a mask. Work around
++	 * those incorrect DT by computing the size as mask + 1.
 +	 */
-+	if (!IS_ERR_OR_NULL(ops) && ops->add_device &&
-+	    dev->bus && !dev->iommu_group) {
-+		int err = ops->add_device(dev);
++	if (*size & 1) {
++		pr_warn("%s: size 0x%llx for dma-range in node(%s) set as mask\n",
++			__func__, *size, np->full_name);
++		*size = *size + 1;
++	}
 +
-+		if (err)
-+			ops = ERR_PTR(err);
++	if (!*size) {
++		pr_err("%s: invalid size zero for dma-range in node(%s)\n",
++		       __func__, np->full_name);
++		ret = -EINVAL;
++		goto out;
 +	}
  
- 	return IS_ERR(ops) ? NULL : ops;
- }
+ 	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
+ 		 *dma_addr, *paddr, *size);
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index fd5cfad..d9898d9 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -110,21 +110,6 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+ 		size = dev->coherent_dma_mask + 1;
+ 	} else {
+ 		offset = PFN_DOWN(paddr - dma_addr);
+-
+-		/*
+-		 * Add a work around to treat the size as mask + 1 in case
+-		 * it is defined in DT as a mask.
+-		 */
+-		if (size & 1) {
+-			dev_warn(dev, "Invalid size 0x%llx for dma-range\n",
+-				 size);
+-			size = size + 1;
+-		}
+-
+-		if (!size) {
+-			dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
+-			return;
+-		}
+ 		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
+ 	}
+ 
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
