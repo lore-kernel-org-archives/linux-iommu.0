@@ -1,65 +1,133 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [RFC PATCH v3 20/20] x86: Add support to make use of Secure
- Memory Encryption
-Date: Tue, 29 Nov 2016 20:56:18 +0100
-Message-ID: <20161129195618.ewuiw5rdsu26yf7w@pd.tnic>
-References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
- <20161110003838.3280.23327.stgit@tlendack-t1.amdoffice.net>
- <20161126204703.wlcd6cw7dxzvpxyc@pd.tnic>
- <4cffdd71-dcc6-35e9-2654-e39067a525a8@amd.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <4cffdd71-dcc6-35e9-2654-e39067a525a8@amd.com>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>
+From: Sricharan R <sricharan@codeaurora.org>
+Subject: [PATCH v4 00/10] IOMMU probe deferral support
+Date: Wed, 30 Nov 2016 05:52:14 +0530
+Message-ID: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
+Cc: sricharan@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Nov 29, 2016 at 12:48:17PM -0600, Tom Lendacky wrote:
-> > One more thing: just like we're adding an =on switch, we'd need an =off
-> > switch in case something's wrong with the SME code. IOW, if a user
-> > supplies "mem_encrypt=off", we do not encrypt.
-> 
-> Well, we can document "off", but if the exact string "mem_encrypt=on"
-> isn't specified on the command line then the encryption won't occur.
+This series calls the dma ops configuration for the devices
+at a generic place so that it works for all busses.
+The dma_configure_ops for a device is now called during
+the device_attach callback just before the probe of the
+bus/driver is called. Similarly dma_deconfigure is called during
+device/driver_detach path.
 
-So you have this:
+pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
+       |                         |
+pci_bus_add_device     (device_add/driver_register)
+       |                         |
+device_attach           device_initial_probe
+       |                         |
+__device_attach_driver    __device_attach_driver
+       |
+driver_probe_device
+       |
+really_probe
+       |
+dma_configure
 
-+       /*
-+        * Fixups have not been to applied phys_base yet, so we must obtain
-+        * the address to the SME command line option in the following way.
-+        */
-+       asm ("lea sme_cmdline_arg(%%rip), %0"
-+            : "=r" (cmdline_arg)
-+            : "p" (sme_cmdline_arg));
-+       cmdline_ptr = bp->hdr.cmd_line_ptr | ((u64)bp->ext_cmd_line_ptr << 32);
-+       if (cmdline_find_option_bool((char *)cmdline_ptr, cmdline_arg))
-+               sme_me_mask = 1UL << (ebx & 0x3f);
+Similarly on the device/driver_unregister path __device_release_driver is
+called which inturn calls dma_deconfigure.
 
-If I parse this right, we will enable SME *only* if mem_encrypt=on is
-explicitly supplied on the command line.
+Took the reworked patches [2] from Robin's branch and
+rebased on top of Lorenzo's ACPI IORT ARM support series [3].
 
-Which means, users will have to *know* about that cmdline switch first.
-Which then means, we have to go and tell them. Do you see where I'm
-going with this?
+Tested with platform and pci devices for probe deferral
+and reprobe on arm64 based platform. Added the patches [9,10],
+    drivers: acpi: Configure acpi devices dma operation at probe time
+    drivers: acpi: Handle IOMMU lookup failure with deferred probing or error
+for doing the dma ops configuration at probe time for acpi based platform
+as well. Did not have a acpi based platform to test the changes and with
+my still catching up knowledge on acpi/enumeration those two patches needs
+to be reviewed/tested more.
 
-I know we talked about this already but I still think we should enable
-it by default and people who don't want it will use the =off switch. We
-can also do something like CONFIG_AMD_SME_ENABLED_BY_DEFAULT which we
-can be selected during build for the different setups.
+Previous post of this series [5].
 
-Hmmm.
+ [V4]
+     * Took the reworked patches [2] from Robin's branch and
+       rebased on top of Lorenzo's ACPI IORT ARM support series [3].
+
+     * Added the patches for moving the dma ops configuration of
+       acpi based devices to probe time as well.
+ [V3]
+     * Removed the patch to split dma_masks/dma_ops configuration
+       separately based on review comments that both masks and ops are
+       required only during the device probe time.
+
+     * Reworked the series based on Generic DT bindings series.
+
+     * Added call to iommu's remove_device in the cleanup path for arm and
+       arm64.
+
+     * Removed the notifier trick in arm64 to handle early device
+       registration.
+
+     * Added reset of dma_ops in cleanup path for arm based on comments.
+
+     * Fixed the pci_iommu_configure path and tested with PCI device as
+       well.
+ 
+     * Fixed a bug to return the correct iommu_ops from patch 7 [4] in
+       last post.
+
+     * Fixed few other cosmetic comments.
+  
+ [V2]
+     * Updated the Initial post to call dma_configure/deconfigure from
+       generic code
+ 
+     * Added iommu add_device callback from of_iommu_configure path
+
+ [V1]
+     * Initial post from Laurent Pinchart [1]
+
+[1] http://lists.linuxfoundation.org/pipermail/iommu/2015-May/013016.html
+[2] http://www.linux-arm.org/git?p=linux-rm.git;a=shortlog;h=refs/heads/iommu/defer
+[3] https://lkml.org/lkml/2016/11/21/141
+[4] https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg13940.html
+[5] http://lists.infradead.org/pipermail/linux-arm-kernel/2016-October/460832.html
+
+Laurent Pinchart (3):
+  of: dma: Move range size workaround to of_dma_get_range()
+  of: dma: Make of_dma_deconfigure() public
+  iommu: of: Handle IOMMU lookup failure with deferred probing or error
+
+Robin Murphy (3):
+  iommu/of: Refactor of_iommu_configure() for error handling
+  iommu/of: Prepare for deferred IOMMU configuration
+  iommu/arm-smmu: Clean up early-probing workarounds
+
+Sricharan R (4):
+  drivers: platform: Configure dma operations at probe time
+  arm64: dma-mapping: Remove the notifier trick to handle early setting
+    of dma_ops
+  drivers: acpi: Configure acpi devices dma operation at probe time
+  drivers: acpi: Handle IOMMU lookup failure with deferred probing or
+    error
+
+ arch/arm64/mm/dma-mapping.c | 132 ++++----------------------------------------
+ drivers/acpi/arm64/iort.c   |  17 +++++-
+ drivers/acpi/glue.c         |   6 --
+ drivers/acpi/scan.c         |   7 ++-
+ drivers/base/dd.c           |  10 ++++
+ drivers/base/dma-mapping.c  |  32 +++++++++++
+ drivers/iommu/arm-smmu-v3.c |  35 +-----------
+ drivers/iommu/arm-smmu.c    |  58 +++----------------
+ drivers/iommu/dma-iommu.c   |   1 +
+ drivers/iommu/of_iommu.c    | 114 +++++++++++++++++++++++++++-----------
+ drivers/of/address.c        |  20 ++++++-
+ drivers/of/device.c         |  36 ++++++------
+ drivers/of/platform.c       |  10 +---
+ drivers/pci/probe.c         |  17 +++---
+ include/acpi/acpi_bus.h     |   2 +-
+ include/linux/acpi.h        |   7 ++-
+ include/linux/dma-mapping.h |   3 +
+ include/linux/of_device.h   |  10 +++-
+ include/linux/pci.h         |   5 ++
+ 19 files changed, 238 insertions(+), 284 deletions(-)
 
 -- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
