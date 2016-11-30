@@ -1,7 +1,7 @@
 From: Sricharan R <sricharan@codeaurora.org>
-Subject: [PATCH 09/10] drivers: acpi: Configure acpi devices dma operation at probe time
-Date: Wed, 30 Nov 2016 05:52:23 +0530
-Message-ID: <1480465344-11862-10-git-send-email-sricharan@codeaurora.org>
+Subject: [PATCH 10/10] drivers: acpi: Handle IOMMU lookup failure with deferred probing or error
+Date: Wed, 30 Nov 2016 05:52:24 +0530
+Message-ID: <1480465344-11862-11-git-send-email-sricharan@codeaurora.org>
 References: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
 Return-path: <linux-arm-msm-owner@vger.kernel.org>
 In-Reply-To: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
@@ -10,87 +10,151 @@ To: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralis
 Cc: sricharan@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-With all the DT based devices getting their dma ops configured
-during probe time to have the right iommu setup, let us do the
-same for acpi based devices as well.
+This is an equivalent to the DT's handling of the iommu master's probe
+with deferred probing when the corrsponding iommu is not probed yet.
+The lack of a registered IOMMU can be caused by the lack of a driver for
+the IOMMU, the IOMMU device probe not having been performed yet, having
+been deferred, or having failed.
 
-Configuring DMA ops at probe time will allow deferring device probe when
-the IOMMU isn't available yet. The dma_configure for the device is now called
-from the generic device_attach callback just before the bus/driver probe
-is called. This way, configuring the DMA ops for the device would be called
-at the same place for all bus_types, hence the deferred probing mechanism
-should work for all buses as well.
+The first case occurs when the firmware describes the bus master and
+IOMMU topology correctly but no device driver exists for the IOMMU yet
+or the device driver has not been compiled in. Return NULL, the caller
+will configure the device without an IOMMU.
+
+The second and third cases are handled by deferring the probe of the bus
+master device which will eventually get reprobed after the IOMMU.
+
+The last case is currently handled by deferring the probe of the bus
+master device as well. A mechanism to either configure the bus master
+device without an IOMMU or to fail the bus master device probe depending
+on whether the IOMMU is optional or mandatory would be a good
+enhancement.
 
 Signed-off-by: Sricharan R <sricharan@codeaurora.org>
 ---
- drivers/acpi/glue.c        |  6 ------
- drivers/base/dma-mapping.c | 12 ++++++++++++
- 2 files changed, 12 insertions(+), 6 deletions(-)
+ drivers/acpi/arm64/iort.c | 17 ++++++++++++++++-
+ drivers/acpi/scan.c       |  7 +++++--
+ drivers/pci/probe.c       |  2 +-
+ include/acpi/acpi_bus.h   |  2 +-
+ include/linux/acpi.h      |  7 +++++--
+ 5 files changed, 28 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/acpi/glue.c b/drivers/acpi/glue.c
-index f8d6564..458445f 100644
---- a/drivers/acpi/glue.c
-+++ b/drivers/acpi/glue.c
-@@ -168,7 +168,6 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
- 	struct list_head *physnode_list;
- 	unsigned int node_id;
- 	int retval = -EINVAL;
--	enum dev_dma_attr attr;
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 47bace8..18ad4d9 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -537,8 +537,9 @@ static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
+ 			return NULL;
  
- 	if (has_acpi_companion(dev)) {
- 		if (acpi_dev) {
-@@ -225,10 +224,6 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
- 	if (!has_acpi_companion(dev))
- 		ACPI_COMPANION_SET(dev, acpi_dev);
+ 		ops = iommu_get_instance(iort_fwnode);
++		/* This means that the iommu driver is still not probed */
+ 		if (!ops)
+-			return NULL;
++			return ERR_PTR(-EPROBE_DEFER);
  
--	attr = acpi_get_dma_attr(acpi_dev);
--	if (attr != DEV_DMA_NOT_SUPPORTED)
--		acpi_dma_configure(dev, attr);
--
- 	acpi_physnode_link_name(physical_node_name, node_id);
- 	retval = sysfs_create_link(&acpi_dev->dev.kobj, &dev->kobj,
- 				   physical_node_name);
-@@ -250,7 +245,6 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
- 	return 0;
+ 		ret = arm_smmu_iort_xlate(dev, streamid, iort_fwnode, ops);
+ 	}
+@@ -590,12 +591,26 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
  
-  err:
--	acpi_dma_deconfigure(dev);
- 	ACPI_COMPANION_SET(dev, NULL);
- 	put_device(dev);
- 	put_device(&acpi_dev->dev);
-diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
-index 576fdfb..2ec4dae 100644
---- a/drivers/base/dma-mapping.c
-+++ b/drivers/base/dma-mapping.c
-@@ -347,17 +347,29 @@ void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags)
-  * Common configuration to enable DMA API use for a device
-  */
- #include <linux/pci.h>
-+#include <linux/acpi.h>
+ 		while (parent) {
+ 			ops = iort_iommu_xlate(dev, parent, streamid);
++			if (IS_ERR_OR_NULL(ops))
++				return ops;
  
- int dma_configure(struct device *dev)
- {
-+	struct acpi_device *adev;
-+	enum dev_dma_attr attr;
+ 			parent = iort_node_get_id(node, &streamid,
+ 						  IORT_IOMMU_TYPE, i++);
+ 		}
+ 	}
+ 
++	/*
++	 * If we have reason to believe the IOMMU driver missed the initial
++	 * add_device callback for dev, replay it to get things in order.
++	 */
++	if (!IS_ERR_OR_NULL(ops) && ops->add_device &&
++	    dev->bus && !dev->iommu_group) {
++		int err = ops->add_device(dev);
 +
- 	if (dev_is_pci(dev))
- 		return pci_dma_configure(dev);
- 	else if (dev->of_node)
- 		return of_dma_configure(dev, dev->of_node);
-+	else if (has_acpi_companion(dev)) {
-+		adev = to_acpi_device_node(dev->fwnode);
-+		attr = acpi_get_dma_attr(adev);
-+		if (attr != DEV_DMA_NOT_SUPPORTED)
-+			return acpi_dma_configure(dev, attr);
++		if (err)
++			ops = ERR_PTR(err);
 +	}
 +
- 	return 0;
+ 	return ops;
  }
  
- void dma_deconfigure(struct device *dev)
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 80698d3..c80e51e 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1376,7 +1376,7 @@ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
+  * @dev: The pointer to the device
+  * @attr: device dma attributes
+  */
+-void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
++int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
  {
- 	of_dma_deconfigure(dev);
-+	acpi_dma_deconfigure(dev);
+ 	const struct iommu_ops *iommu;
+ 
+@@ -1395,13 +1395,16 @@ void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
+ 		dev->dma_mask = &dev->coherent_dma_mask;
+ 
+ 	iommu = iort_iommu_configure(dev);
+-
++	if (IS_ERR(iommu))
++		return PTR_ERR(iommu);
+ 	/*
+ 	 * Assume dma valid range starts at 0 and covers the whole
+ 	 * coherent_dma_mask.
+ 	 */
+ 	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
+ 			   attr == DEV_DMA_COHERENT);
++
++	return 0;
  }
+ EXPORT_SYMBOL_GPL(acpi_dma_configure);
+ 
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 6316cae..e32c7e5 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -1739,7 +1739,7 @@ int pci_dma_configure(struct device *dev)
+ 		if (attr == DEV_DMA_NOT_SUPPORTED)
+ 			dev_warn(dev, "DMA not supported.\n");
+ 		else
+-			acpi_dma_configure(dev, attr);
++			ret = acpi_dma_configure(dev, attr);
+ 	}
+ 
+ 	pci_put_host_bridge_device(bridge);
+diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
+index 4242c31..9aa762f 100644
+--- a/include/acpi/acpi_bus.h
++++ b/include/acpi/acpi_bus.h
+@@ -573,7 +573,7 @@ struct acpi_pci_root {
+ 
+ bool acpi_dma_supported(struct acpi_device *adev);
+ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev);
+-void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr);
++int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr);
+ void acpi_dma_deconfigure(struct device *dev);
+ 
+ struct acpi_device *acpi_find_child_device(struct acpi_device *parent,
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index 8d15fc5..0e8d33f 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -765,8 +765,11 @@ static inline enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
+ 	return DEV_DMA_NOT_SUPPORTED;
+ }
+ 
+-static inline void acpi_dma_configure(struct device *dev,
+-				      enum dev_dma_attr attr) { }
++static inline int acpi_dma_configure(struct device *dev,
++				     enum dev_dma_attr attr)
++{
++	return 0;
++}
+ 
+ static inline void acpi_dma_deconfigure(struct device *dev) { }
+ 
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
