@@ -1,48 +1,40 @@
 From: Hanjun Guo <hanjun.guo@linaro.org>
-Subject: Re: [PATCH v9 15/16] drivers: acpi: iort: add single mapping function
-Date: Wed, 30 Nov 2016 11:22:42 +0800
-Message-ID: <dad19582-43ce-3882-1592-c99ee96d07fb@linaro.org>
+Subject: Re: [PATCH v9 16/16] drivers: acpi: iort: introduce
+ iort_iommu_configure
+Date: Wed, 30 Nov 2016 11:26:38 +0800
+Message-ID: <af73cb66-6da9-1457-4333-78e7866326fd@linaro.org>
 References: <20161121100148.24769-1-lorenzo.pieralisi@arm.com>
- <20161121100148.24769-16-lorenzo.pieralisi@arm.com>
+ <20161121100148.24769-17-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20161121100148.24769-16-lorenzo.pieralisi@arm.com>
+In-Reply-To: <20161121100148.24769-17-lorenzo.pieralisi@arm.com>
 Sender: linux-acpi-owner@vger.kernel.org
 To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org
 Cc: Tomasz Nowicki <tn@semihalf.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
 On 2016/11/21 18:01, Lorenzo Pieralisi wrote:
-> The current IORT id mapping API requires components to provide
-> an input requester ID (a Bus-Device-Function (BDF) identifier for
-> PCI devices) to translate an input identifier to an output
-> identifier through an IORT range mapping.
+> DT based systems have a generic kernel API to configure IOMMUs
+> for devices (ie of_iommu_configure()).
 >
-> Named components do not have an identifiable source ID therefore
-> their respective input/output mapping can only be defined in
-> IORT tables through single mappings, that provide a translation
-> that does not require any input identifier.
+> On ARM based ACPI systems, the of_iommu_configure() equivalent can
+> be implemented atop ACPI IORT kernel API, with the corresponding
+> functions to map device identifiers to IOMMUs and retrieve the
+> corresponding IOMMU operations necessary for DMA operations set-up.
 >
-> Current IORT interface for requester id mappings (iort_node_map_rid())
-> is not suitable for components that do not provide a requester id,
-> so it cannot be used for IORT named components.
->
-> Add an interface to the IORT API to enable retrieval of id
-> by allowing an indexed walk of the single mappings array for
-> a given component, therefore completing the IORT mapping API.
+> By relying on the iommu_fwspec generic kernel infrastructure,
+> implement the IORT based IOMMU configuration for ARM ACPI systems
+> and hook it up in the ACPI kernel layer that implements DMA
+> configuration for a device.
 >
 > Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com> [ACPI core]
 > Reviewed-by: Tomasz Nowicki <tn@semihalf.com>
 > Tested-by: Hanjun Guo <hanjun.guo@linaro.org>
 > Tested-by: Tomasz Nowicki <tn@semihalf.com>
 > Cc: Hanjun Guo <hanjun.guo@linaro.org>
-> Cc: Tomasz Nowicki <tn@semihalf.com>
-> Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-> ---
->  drivers/acpi/arm64/iort.c | 39 +++++++++++++++++++++++++++++++++++++++
->  1 file changed, 39 insertions(+)
 
 Acked-by: Hanjun Guo <hanjun.guo@linaro.org>
 
