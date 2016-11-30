@@ -1,18 +1,19 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC v3 00/10] KVM PCIe/MSI passthrough on ARM/ARM64 and IOVA
-	reserved regions
-Date: Wed, 30 Nov 2016 13:57:22 +0000
-Message-ID: <9e83990c-8f09-e21b-c86b-500e5e5c0f75@arm.com>
-References: <1479215363-2898-1-git-send-email-eric.auger@redhat.com>
-	<6c9012fd-070b-6218-48e7-69b37f2559dd@redhat.com>
-	<CAFpQJXWp5BfsxU5nkWm7hrq5wp6=b-6iYVHjBQYhmkWN_kSSzg@mail.gmail.com>
-	<3d0ddb50-6e63-3fe2-55c0-ce49579905c9@redhat.com>
-	<CAFpQJXVqStQwRkm9F=e+8UFxWsddcwgB=AyfnZXSSaOw3eyBUA@mail.gmail.com>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH 06/10] iommu: of: Handle IOMMU lookup failure with
+	deferred probing or error
+Date: Wed, 30 Nov 2016 19:31:10 +0530
+Message-ID: <001601d24b12$384b7710$a8e26530$@codeaurora.org>
+References: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
+	<CGME20161130002345epcas1p2486d2d61930d132210d9cb7d19bcbb48@epcas1p2.samsung.com>
+	<1480465344-11862-7-git-send-email-sricharan@codeaurora.org>
+	<8e91ce72-9d37-f4be-9224-856a1a4c3e1d@samsung.com>
+	<5043bd01-2fc3-851d-2d6f-ba5fea96c774@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAFpQJXVqStQwRkm9F=e+8UFxWsddcwgB=AyfnZXSSaOw3eyBUA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <5043bd01-2fc3-851d-2d6f-ba5fea96c774-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,132 +23,102 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ganapatrao Kulkarni <gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, punit.agrawal-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>, 'Marek Szyprowski' <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 30/11/16 10:52, Ganapatrao Kulkarni wrote:
-> On Wed, Nov 30, 2016 at 3:44 PM, Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
->> Hi Ganapat,
->>
->> On 30/11/2016 11:04, Ganapatrao Kulkarni wrote:
->>> Hi Eric,
->>>
->>> in you repo "https://github.com/eauger/linux/tree/v4.9-rc5-reserved-rfc-v3"
->>> there is 11th patch "pci: Enable overrides for missing ACS capabilities"
->>> is this patch part of some other series?
->>
->> Actually this is a very old patch from Alex aimed at working around lack
->> of PCIe ACS support: https://lkml.org/lkml/2013/5/30/513
->>
-> 
-> i have tried this patchset on thunderx-83xx for vfio and it works for me!
-> i was wondering is this patch required? i guess not.
+Hi Robin,
 
-If your system and devices actually support and properly advertise ACS
-then there's nothing to override. Conversely, if you're happy assigning
-everything behind a single RC to the same guest then ACS doesn't really
-matter. It's only the in-between case - when the host still wants to
-keep control of one or more devices, but they all get grouped together
-due to lack of ACS - that warrants working around.
-
-Robin.
-
-> 
-> please cc me when you respin this patchset.
-> 
-> thanks
-> Ganapat
-> 
->> Thanks
+>On 30/11/16 07:54, Marek Szyprowski wrote:
+>> Hi Sricharan and Robin,
 >>
->> Eric
+>>
+>> On 2016-11-30 01:22, Sricharan R wrote:
+>>> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 >>>
->>> thanks
->>> Ganapat
+>>> Failures to look up an IOMMU when parsing the DT iommus property need to
+>>> be handled separately from the .of_xlate() failures to support deferred
+>>> probing.
 >>>
->>> On Wed, Nov 30, 2016 at 3:19 PM, Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
->>>> Hi,
->>>>
->>>> On 15/11/2016 14:09, Eric Auger wrote:
->>>>> Following LPC discussions, we now report reserved regions through
->>>>> iommu-group sysfs reserved_regions attribute file.
->>>>>
->>>>> Reserved regions are populated through the IOMMU get_resv_region callback
->>>>> (former get_dm_regions), now implemented by amd-iommu, intel-iommu and
->>>>> arm-smmu.
->>>>>
->>>>> The intel-iommu reports the [FEE0_0000h - FEF0_000h] MSI window as an
->>>>> IOMMU_RESV_NOMAP reserved region.
->>>>>
->>>>> arm-smmu reports the MSI window (arbitrarily located at 0x8000000 and
->>>>> 1MB large) and the PCI host bridge windows.
->>>>>
->>>>> The series integrates a not officially posted patch from Robin:
->>>>> "iommu/dma: Allow MSI-only cookies".
->>>>>
->>>>> This series currently does not address IRQ safety assessment.
->>>>
->>>> I will respin this series taking into account Joerg's comment. Does
->>>> anyone have additional comments or want to put forward some conceptual
->>>> issues with the current direction and with this implementation?
->>>>
->>>> As for the IRQ safety assessment, in a first step I would propose to
->>>> remove the IOMMU_CAP_INTR_REMAP from arm-smmus and consider the
->>>> assignment as unsafe. Any objection?
->>>>
->>>> Thanks
->>>>
->>>> Eric
->>>>
->>>>
->>>>> Best Regards
->>>>>
->>>>> Eric
->>>>>
->>>>> Git: complete series available at
->>>>> https://github.com/eauger/linux/tree/v4.9-rc5-reserved-rfc-v3
->>>>>
->>>>> History:
->>>>> RFC v2 -> v3:
->>>>> - switch to an iommu-group sysfs API
->>>>> - use new dummy allocator provided by Robin
->>>>> - dummy allocator initialized by vfio-iommu-type1 after enumerating
->>>>>   the reserved regions
->>>>> - at the moment ARM MSI base address/size is left unchanged compared
->>>>>   to v2
->>>>> - we currently report reserved regions and not usable IOVA regions as
->>>>>   requested by Alex
->>>>>
->>>>> RFC v1 -> v2:
->>>>> - fix intel_add_reserved_regions
->>>>> - add mutex lock/unlock in vfio_iommu_type1
->>>>>
->>>>>
->>>>> Eric Auger (10):
->>>>>   iommu/dma: Allow MSI-only cookies
->>>>>   iommu: Rename iommu_dm_regions into iommu_resv_regions
->>>>>   iommu: Add new reserved IOMMU attributes
->>>>>   iommu: iommu_alloc_resv_region
->>>>>   iommu: Do not map reserved regions
->>>>>   iommu: iommu_get_group_resv_regions
->>>>>   iommu: Implement reserved_regions iommu-group sysfs file
->>>>>   iommu/vt-d: Implement reserved region get/put callbacks
->>>>>   iommu/arm-smmu: Implement reserved region get/put callbacks
->>>>>   vfio/type1: Get MSI cookie
->>>>>
->>>>>  drivers/iommu/amd_iommu.c       |  20 +++---
->>>>>  drivers/iommu/arm-smmu.c        |  52 +++++++++++++++
->>>>>  drivers/iommu/dma-iommu.c       | 116 ++++++++++++++++++++++++++-------
->>>>>  drivers/iommu/intel-iommu.c     |  50 ++++++++++----
->>>>>  drivers/iommu/iommu.c           | 141 ++++++++++++++++++++++++++++++++++++----
->>>>>  drivers/vfio/vfio_iommu_type1.c |  26 ++++++++
->>>>>  include/linux/dma-iommu.h       |   7 ++
->>>>>  include/linux/iommu.h           |  49 ++++++++++----
->>>>>  8 files changed, 391 insertions(+), 70 deletions(-)
->>>>>
->>>>
->>>> _______________________________________________
->>>> linux-arm-kernel mailing list
->>>> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
->>>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>>> The lack of a registered IOMMU can be caused by the lack of a driver for
+>>> the IOMMU, the IOMMU device probe not having been performed yet, having
+>>> been deferred, or having failed.
+>>>
+>>> The first case occurs when the device tree describes the bus master and
+>>> IOMMU topology correctly but no device driver exists for the IOMMU yet
+>>> or the device driver has not been compiled in. Return NULL, the caller
+>>> will configure the device without an IOMMU.
+>>>
+>>> The second and third cases are handled by deferring the probe of the bus
+>>> master device which will eventually get reprobed after the IOMMU.
+>>>
+>>> The last case is currently handled by deferring the probe of the bus
+>>> master device as well. A mechanism to either configure the bus master
+>>> device without an IOMMU or to fail the bus master device probe depending
+>>> on whether the IOMMU is optional or mandatory would be a good
+>>> enhancement.
+>>>
+>>> Signed-off-by: Laurent Pichart
+>>> <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+>>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>>> [rm: massive PCI hacks]
+>>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>>> ---
+>>>   drivers/base/dma-mapping.c | 4 ++--
+>>>   drivers/iommu/dma-iommu.c  | 1 +
+>>>   drivers/iommu/of_iommu.c   | 5 +++--
+>>>   drivers/of/device.c        | 9 +++++++--
+>>>   drivers/pci/probe.c        | 6 ++++--
+>>>   include/linux/of_device.h  | 9 ++++++---
+>>>   include/linux/pci.h        | 4 ++--
+>>>   7 files changed, 25 insertions(+), 13 deletions(-)
+>>>
+>>> diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+>>> index b2a5629..576fdfb 100644
+>>> --- a/drivers/base/dma-mapping.c
+>>> +++ b/drivers/base/dma-mapping.c
+>>> @@ -351,9 +351,9 @@ void dma_common_free_remap(void *cpu_addr, size_t
+>>> size, unsigned long vm_flags)
+>>>   int dma_configure(struct device *dev)
+>>>   {
+>>>       if (dev_is_pci(dev))
+>>> -        pci_dma_configure(dev);
+>>> +        return pci_dma_configure(dev);
+>>>       else if (dev->of_node)
+>>> -        of_dma_configure(dev, dev->of_node);
+>>> +        return of_dma_configure(dev, dev->of_node);
+>>>       return 0;
+>>>   }
+>>>   diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>>> index c5ab866..d2a7a46 100644
+>>> --- a/drivers/iommu/dma-iommu.c
+>>> +++ b/drivers/iommu/dma-iommu.c
+>>> @@ -148,6 +148,7 @@ int iommu_dma_init_domain(struct iommu_domain
+>>> *domain, dma_addr_t base,
+>>>       base_pfn = max_t(unsigned long, 1, base >> order);
+>>>       end_pfn = (base + size - 1) >> order;
+>>>   +    dev_info(dev, "0x%llx 0x%llx, 0x%llx 0x%llx, 0x%llx 0x%llx\n",
+>>> base, size, domain->geometry.aperture_start,
+>>> domain->geometry.aperture_end,
+>>
+>> This causes a NULL pointer dereference if caller passes NULL device
+>> pointer.
+>> There is such caller in drivers/gpu/drm/exynos/exynos_drm_iommu.h.
+>> Trivial to fix as it looks like a leftover from developement or
+>> debugging stage.
+>
+>Yes, this is some development crap which was never intended to go
+>upstream. Hence "massive PCI hacks" ;)
+>
+>Other than the first two patches, the rest of the stuff from me here was
+>just an experiment which I'm not entirely convinced by the outcome of -
+>I don't particularly like the resulting fragmentation of having
+>pci_dma_configure() awkwardly floating around on its own in pci.c.
+
+Ha, sorry looks like that i have misunderstood that then. I thought that
+the V3 changes that i had for pci was hacky and the reworked patches
+in your latest branch were correct. So do you suggest that the
+pci_dma_configure gets removed and the pci related changes gets handled
+in of_iommu_configure /acpi_dma_configure itself ?
+
+Regards,
+Sricharan
