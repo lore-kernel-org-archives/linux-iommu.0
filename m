@@ -1,160 +1,79 @@
-From: Sricharan R <sricharan@codeaurora.org>
-Subject: [PATCH 10/10] drivers: acpi: Handle IOMMU lookup failure with deferred probing or error
-Date: Wed, 30 Nov 2016 05:52:24 +0530
-Message-ID: <1480465344-11862-11-git-send-email-sricharan@codeaurora.org>
-References: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
-Cc: sricharan@codeaurora.org
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH V3 0/8] IOMMU probe deferral support
+Date: Wed, 30 Nov 2016 06:04:13 +0530
+Message-ID: <00c901d24aa1$7d851730$788f4590$@codeaurora.org>
+References: <60ee8066-f167-e9df-ae3e-4138f1133bad@arm.com>
+	<003a01d22f97$82534c70$86f9e550$@codeaurora.org>
+	<421e2b14-0231-d376-02a0-097423120b3d@arm.com>
+	<006f01d236ae$61751c40$245f54c0$@codeaurora.org>
+	<9f36244f-62d4-08e3-d64a-2b04ad4dc2e0@arm.com>
+	<002b01d24340$5d56e730$1804b590$@codeaurora.org>
+	<918128b9-cdb0-1454-000a-146cee7a05ea@arm.com>
+	<004401d2466d$5b8b2170$12a16450$@codeaurora.org>
+	<f2ad6976-0f8f-d116-bc43-37337dd9f41f@arm.com>
+	<000001d2499e$df7f2d80$9e7d8880$@codeaurora.org>
+	<20161128181339.GA32078@red-moon>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20161128181339.GA32078@red-moon>
+Content-Language: en-us
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Lorenzo Pieralisi' <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This is an equivalent to the DT's handling of the iommu master's probe
-with deferred probing when the corrsponding iommu is not probed yet.
-The lack of a registered IOMMU can be caused by the lack of a driver for
-the IOMMU, the IOMMU device probe not having been performed yet, having
-been deferred, or having failed.
+Hi Lorenzo,
 
-The first case occurs when the firmware describes the bus master and
-IOMMU topology correctly but no device driver exists for the IOMMU yet
-or the device driver has not been compiled in. Return NULL, the caller
-will configure the device without an IOMMU.
+>-----Original Message-----
+>From: linux-arm-kernel [mailto:linux-arm-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org] On Behalf Of Lorenzo Pieralisi
+>Sent: Monday, November 28, 2016 11:44 PM
+>To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org; tfiga-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+>foundation.org; srinivas.kandagatla-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org; 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>;
+>linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+>Subject: Re: [PATCH V3 0/8] IOMMU probe deferral support
+>
+>On Mon, Nov 28, 2016 at 11:12:08PM +0530, Sricharan wrote:
+>
+>[...]
+>
+>> >Cool. We're rather hoping that the ACPI stuff is good to go for 4.10
+>> >now, so it's probably worth pulling the rest of that in (beyond the one
+>> >patch I picked) to make sure the of_dma_configure/acpi_dma_configure
+>> >paths don't inadvertently diverge.
+>> >
+>>
+>> I rebased and was testing your branch with Lorenzo's series. One thing
+>> i am still trying to get right is the acpi_dma_configure call. With your
+>> series dma_configure calls pci_dma/of_dma configure, so i am just adding
+>> acpi_dma_configure call there for non-pci ACPI devices as well. I see that
+>> acpi_dma_configure right now is called from acpi_bind_one and
+>> iort_add_smmu_platform_device, both go through the really_probe function
+>> path, so moving acpi_dma_configure from the above the two functions
+>> to dma_configure. I remember we discussed this on another thread, so
+>> hopefully it is correct. I do not have an platform to test the ACPI though.
+>> I will take some testing help on V4 for this.
+>
+>I am happy to test it for you please just send me a pointer at your v4
+>code.
+>
+ I posted the v4 and CCed you there. So i am little skeptical about the acpi
+changes that i have posted. I was checking for a function equivalent 
+in acpi as of_match_node in DT, to figure out if the iommu_spec.np that
+the master device is pointing to is there in the iommu_of_table and based
+on that we can decide if to defer the probe. I was seeing iort_scan_node
+was its equivalent. But if that is not correct, then last patch has to be reworked.
+Anyways will be good to know your feedback on this.
 
-The second and third cases are handled by deferring the probe of the bus
-master device which will eventually get reprobed after the IOMMU.
-
-The last case is currently handled by deferring the probe of the bus
-master device as well. A mechanism to either configure the bus master
-device without an IOMMU or to fail the bus master device probe depending
-on whether the IOMMU is optional or mandatory would be a good
-enhancement.
-
-Signed-off-by: Sricharan R <sricharan@codeaurora.org>
----
- drivers/acpi/arm64/iort.c | 17 ++++++++++++++++-
- drivers/acpi/scan.c       |  7 +++++--
- drivers/pci/probe.c       |  2 +-
- include/acpi/acpi_bus.h   |  2 +-
- include/linux/acpi.h      |  7 +++++--
- 5 files changed, 28 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index 47bace8..18ad4d9 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -537,8 +537,9 @@ static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
- 			return NULL;
- 
- 		ops = iommu_get_instance(iort_fwnode);
-+		/* This means that the iommu driver is still not probed */
- 		if (!ops)
--			return NULL;
-+			return ERR_PTR(-EPROBE_DEFER);
- 
- 		ret = arm_smmu_iort_xlate(dev, streamid, iort_fwnode, ops);
- 	}
-@@ -590,12 +591,26 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
- 
- 		while (parent) {
- 			ops = iort_iommu_xlate(dev, parent, streamid);
-+			if (IS_ERR_OR_NULL(ops))
-+				return ops;
- 
- 			parent = iort_node_get_id(node, &streamid,
- 						  IORT_IOMMU_TYPE, i++);
- 		}
- 	}
- 
-+	/*
-+	 * If we have reason to believe the IOMMU driver missed the initial
-+	 * add_device callback for dev, replay it to get things in order.
-+	 */
-+	if (!IS_ERR_OR_NULL(ops) && ops->add_device &&
-+	    dev->bus && !dev->iommu_group) {
-+		int err = ops->add_device(dev);
-+
-+		if (err)
-+			ops = ERR_PTR(err);
-+	}
-+
- 	return ops;
- }
- 
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 80698d3..c80e51e 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -1376,7 +1376,7 @@ enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
-  * @dev: The pointer to the device
-  * @attr: device dma attributes
-  */
--void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
-+int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
- {
- 	const struct iommu_ops *iommu;
- 
-@@ -1395,13 +1395,16 @@ void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
- 		dev->dma_mask = &dev->coherent_dma_mask;
- 
- 	iommu = iort_iommu_configure(dev);
--
-+	if (IS_ERR(iommu))
-+		return PTR_ERR(iommu);
- 	/*
- 	 * Assume dma valid range starts at 0 and covers the whole
- 	 * coherent_dma_mask.
- 	 */
- 	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
- 			   attr == DEV_DMA_COHERENT);
-+
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(acpi_dma_configure);
- 
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 6316cae..e32c7e5 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1739,7 +1739,7 @@ int pci_dma_configure(struct device *dev)
- 		if (attr == DEV_DMA_NOT_SUPPORTED)
- 			dev_warn(dev, "DMA not supported.\n");
- 		else
--			acpi_dma_configure(dev, attr);
-+			ret = acpi_dma_configure(dev, attr);
- 	}
- 
- 	pci_put_host_bridge_device(bridge);
-diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
-index 4242c31..9aa762f 100644
---- a/include/acpi/acpi_bus.h
-+++ b/include/acpi/acpi_bus.h
-@@ -573,7 +573,7 @@ struct acpi_pci_root {
- 
- bool acpi_dma_supported(struct acpi_device *adev);
- enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev);
--void acpi_dma_configure(struct device *dev, enum dev_dma_attr attr);
-+int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr);
- void acpi_dma_deconfigure(struct device *dev);
- 
- struct acpi_device *acpi_find_child_device(struct acpi_device *parent,
-diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index 8d15fc5..0e8d33f 100644
---- a/include/linux/acpi.h
-+++ b/include/linux/acpi.h
-@@ -765,8 +765,11 @@ static inline enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev)
- 	return DEV_DMA_NOT_SUPPORTED;
- }
- 
--static inline void acpi_dma_configure(struct device *dev,
--				      enum dev_dma_attr attr) { }
-+static inline int acpi_dma_configure(struct device *dev,
-+				     enum dev_dma_attr attr)
-+{
-+	return 0;
-+}
- 
- static inline void acpi_dma_deconfigure(struct device *dev) { }
- 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+Regards,
+ Sricharan
