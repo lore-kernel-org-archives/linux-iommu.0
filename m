@@ -1,17 +1,18 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 06/10] iommu: of: Handle IOMMU lookup failure with
-	deferred probing or error
-Date: Wed, 30 Nov 2016 12:57:23 +0000
-Message-ID: <5043bd01-2fc3-851d-2d6f-ba5fea96c774@arm.com>
-References: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
-	<CGME20161130002345epcas1p2486d2d61930d132210d9cb7d19bcbb48@epcas1p2.samsung.com>
-	<1480465344-11862-7-git-send-email-sricharan@codeaurora.org>
-	<8e91ce72-9d37-f4be-9224-856a1a4c3e1d@samsung.com>
+Subject: Re: [RFC v3 00/10] KVM PCIe/MSI passthrough on ARM/ARM64 and IOVA
+	reserved regions
+Date: Wed, 30 Nov 2016 13:57:22 +0000
+Message-ID: <9e83990c-8f09-e21b-c86b-500e5e5c0f75@arm.com>
+References: <1479215363-2898-1-git-send-email-eric.auger@redhat.com>
+	<6c9012fd-070b-6218-48e7-69b37f2559dd@redhat.com>
+	<CAFpQJXWp5BfsxU5nkWm7hrq5wp6=b-6iYVHjBQYhmkWN_kSSzg@mail.gmail.com>
+	<3d0ddb50-6e63-3fe2-55c0-ce49579905c9@redhat.com>
+	<CAFpQJXVqStQwRkm9F=e+8UFxWsddcwgB=AyfnZXSSaOw3eyBUA@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <8e91ce72-9d37-f4be-9224-856a1a4c3e1d-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+In-Reply-To: <CAFpQJXVqStQwRkm9F=e+8UFxWsddcwgB=AyfnZXSSaOw3eyBUA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,242 +22,132 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Ganapatrao Kulkarni <gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Jason Cooper <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, punit.agrawal-5wv7dgnIgG8@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org" <ganapatrao.kulkarni-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 30/11/16 07:54, Marek Szyprowski wrote:
-> Hi Sricharan and Robin,
+On 30/11/16 10:52, Ganapatrao Kulkarni wrote:
+> On Wed, Nov 30, 2016 at 3:44 PM, Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+>> Hi Ganapat,
+>>
+>> On 30/11/2016 11:04, Ganapatrao Kulkarni wrote:
+>>> Hi Eric,
+>>>
+>>> in you repo "https://github.com/eauger/linux/tree/v4.9-rc5-reserved-rfc-v3"
+>>> there is 11th patch "pci: Enable overrides for missing ACS capabilities"
+>>> is this patch part of some other series?
+>>
+>> Actually this is a very old patch from Alex aimed at working around lack
+>> of PCIe ACS support: https://lkml.org/lkml/2013/5/30/513
+>>
 > 
-> 
-> On 2016-11-30 01:22, Sricharan R wrote:
->> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
->>
->> Failures to look up an IOMMU when parsing the DT iommus property need to
->> be handled separately from the .of_xlate() failures to support deferred
->> probing.
->>
->> The lack of a registered IOMMU can be caused by the lack of a driver for
->> the IOMMU, the IOMMU device probe not having been performed yet, having
->> been deferred, or having failed.
->>
->> The first case occurs when the device tree describes the bus master and
->> IOMMU topology correctly but no device driver exists for the IOMMU yet
->> or the device driver has not been compiled in. Return NULL, the caller
->> will configure the device without an IOMMU.
->>
->> The second and third cases are handled by deferring the probe of the bus
->> master device which will eventually get reprobed after the IOMMU.
->>
->> The last case is currently handled by deferring the probe of the bus
->> master device as well. A mechanism to either configure the bus master
->> device without an IOMMU or to fail the bus master device probe depending
->> on whether the IOMMU is optional or mandatory would be a good
->> enhancement.
->>
->> Signed-off-by: Laurent Pichart
->> <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
->> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> [rm: massive PCI hacks]
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
->>   drivers/base/dma-mapping.c | 4 ++--
->>   drivers/iommu/dma-iommu.c  | 1 +
->>   drivers/iommu/of_iommu.c   | 5 +++--
->>   drivers/of/device.c        | 9 +++++++--
->>   drivers/pci/probe.c        | 6 ++++--
->>   include/linux/of_device.h  | 9 ++++++---
->>   include/linux/pci.h        | 4 ++--
->>   7 files changed, 25 insertions(+), 13 deletions(-)
->>
->> diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
->> index b2a5629..576fdfb 100644
->> --- a/drivers/base/dma-mapping.c
->> +++ b/drivers/base/dma-mapping.c
->> @@ -351,9 +351,9 @@ void dma_common_free_remap(void *cpu_addr, size_t
->> size, unsigned long vm_flags)
->>   int dma_configure(struct device *dev)
->>   {
->>       if (dev_is_pci(dev))
->> -        pci_dma_configure(dev);
->> +        return pci_dma_configure(dev);
->>       else if (dev->of_node)
->> -        of_dma_configure(dev, dev->of_node);
->> +        return of_dma_configure(dev, dev->of_node);
->>       return 0;
->>   }
->>   diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index c5ab866..d2a7a46 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -148,6 +148,7 @@ int iommu_dma_init_domain(struct iommu_domain
->> *domain, dma_addr_t base,
->>       base_pfn = max_t(unsigned long, 1, base >> order);
->>       end_pfn = (base + size - 1) >> order;
->>   +    dev_info(dev, "0x%llx 0x%llx, 0x%llx 0x%llx, 0x%llx 0x%llx\n",
->> base, size, domain->geometry.aperture_start,
->> domain->geometry.aperture_end,
-> 
-> This causes a NULL pointer dereference if caller passes NULL device
-> pointer.
-> There is such caller in drivers/gpu/drm/exynos/exynos_drm_iommu.h.
-> Trivial to fix as it looks like a leftover from developement or
-> debugging stage.
+> i have tried this patchset on thunderx-83xx for vfio and it works for me!
+> i was wondering is this patch required? i guess not.
 
-Yes, this is some development crap which was never intended to go
-upstream. Hence "massive PCI hacks" ;)
-
-Other than the first two patches, the rest of the stuff from me here was
-just an experiment which I'm not entirely convinced by the outcome of -
-I don't particularly like the resulting fragmentation of having
-pci_dma_configure() awkwardly floating around on its own in pci.c.
+If your system and devices actually support and properly advertise ACS
+then there's nothing to override. Conversely, if you're happy assigning
+everything behind a single RC to the same guest then ACS doesn't really
+matter. It's only the in-between case - when the host still wants to
+keep control of one or more devices, but they all get grouped together
+due to lack of ACS - that warrants working around.
 
 Robin.
 
->> *dev->dma_mask, dev->coherent_dma_mask);
->>       /* Check the domain allows at least some access to the device... */
->>       if (domain->geometry.force_aperture) {
->>           if (base > domain->geometry.aperture_end ||
->> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->> index 349bd1d..9529d6c 100644
->> --- a/drivers/iommu/of_iommu.c
->> +++ b/drivers/iommu/of_iommu.c
->> @@ -23,6 +23,7 @@
->>   #include <linux/of.h>
->>   #include <linux/of_iommu.h>
->>   #include <linux/of_pci.h>
->> +#include <linux/pci.h>
->>   #include <linux/slab.h>
->>     static const struct of_device_id __iommu_of_table_sentinel
->> @@ -223,7 +224,7 @@ const struct iommu_ops *of_iommu_configure(struct
->> device *dev,
->>               ops = ERR_PTR(err);
->>       }
->>   -    return IS_ERR(ops) ? NULL : ops;
->> +    return ops;
->>   }
->>     static int __init of_iommu_init(void)
->> @@ -234,7 +235,7 @@ static int __init of_iommu_init(void)
->>       for_each_matching_node_and_match(np, matches, &match) {
->>           const of_iommu_init_fn init_fn = match->data;
->>   -        if (init_fn(np))
->> +        if (init_fn && init_fn(np))
->>               pr_err("Failed to initialise IOMMU %s\n",
->>                   of_node_full_name(np));
->>       }
->> diff --git a/drivers/of/device.c b/drivers/of/device.c
->> index 1c843e2..d58595c 100644
->> --- a/drivers/of/device.c
->> +++ b/drivers/of/device.c
->> @@ -82,7 +82,7 @@ int of_device_add(struct platform_device *ofdev)
->>    * can use a platform bus notifier and handle BUS_NOTIFY_ADD_DEVICE
->> events
->>    * to fix up DMA configuration.
->>    */
->> -void of_dma_configure(struct device *dev, struct device_node *np)
->> +int of_dma_configure(struct device *dev, struct device_node *np)
->>   {
->>       u64 dma_addr, paddr, size;
->>       int ret;
->> @@ -107,7 +107,7 @@ void of_dma_configure(struct device *dev, struct
->> device_node *np)
->>       ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
->>       if (ret < 0) {
->>           dma_addr = offset = 0;
->> -        size = dev->coherent_dma_mask + 1;
->> +        size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
->>       } else {
->>           offset = PFN_DOWN(paddr - dma_addr);
->>           dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
->> @@ -129,10 +129,15 @@ void of_dma_configure(struct device *dev, struct
->> device_node *np)
->>           coherent ? " " : " not ");
->>         iommu = of_iommu_configure(dev, np);
->> +    if (IS_ERR(iommu))
->> +        return PTR_ERR(iommu);
->> +
->>       dev_dbg(dev, "device is%sbehind an iommu\n",
->>           iommu ? " " : " not ");
->>         arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
->> +
->> +    return 0;
->>   }
->>   EXPORT_SYMBOL_GPL(of_dma_configure);
->>   diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
->> index 04af770..6316cae 100644
->> --- a/drivers/pci/probe.c
->> +++ b/drivers/pci/probe.c
->> @@ -1724,13 +1724,14 @@ static void pci_set_msi_domain(struct pci_dev
->> *dev)
->>    * Function to update PCI devices's DMA configuration using the same
->>    * info from the OF node or ACPI node of host bridge's parent (if any).
->>    */
->> -void pci_dma_configure(struct device *dev)
->> +int pci_dma_configure(struct device *dev)
->>   {
->>       struct device *bridge =
->> pci_get_host_bridge_device(to_pci_dev(dev));
->> +    int ret = 0;
->>         if (IS_ENABLED(CONFIG_OF) &&
->>           bridge->parent && bridge->parent->of_node) {
->> -        of_dma_configure(dev, bridge->parent->of_node);
->> +        ret = of_dma_configure(dev, bridge->parent->of_node);
->>       } else if (has_acpi_companion(bridge)) {
->>           struct acpi_device *adev = to_acpi_device_node(bridge->fwnode);
->>           enum dev_dma_attr attr = acpi_get_dma_attr(adev);
->> @@ -1742,6 +1743,7 @@ void pci_dma_configure(struct device *dev)
->>       }
->>         pci_put_host_bridge_device(bridge);
->> +    return ret;
->>   }
->>     void pci_device_add(struct pci_dev *dev, struct pci_bus *bus)
->> diff --git a/include/linux/of_device.h b/include/linux/of_device.h
->> index d20a31a..6dca65c 100644
->> --- a/include/linux/of_device.h
->> +++ b/include/linux/of_device.h
->> @@ -55,7 +55,7 @@ static inline struct device_node
->> *of_cpu_device_node_get(int cpu)
->>       return of_node_get(cpu_dev->of_node);
->>   }
->>   -void of_dma_configure(struct device *dev, struct device_node *np);
->> +int of_dma_configure(struct device *dev, struct device_node *np);
->>   void of_dma_deconfigure(struct device *dev);
->>   #else /* CONFIG_OF */
->>   @@ -99,8 +99,11 @@ static inline struct device_node
->> *of_cpu_device_node_get(int cpu)
->>   {
->>       return NULL;
->>   }
->> -static inline void of_dma_configure(struct device *dev, struct
->> device_node *np)
->> -{}
->> +
->> +static inline int of_dma_configure(struct device *dev, struct
->> device_node *np)
->> +{
->> +    return 0;
->> +}
->>   static inline void of_dma_deconfigure(struct device *dev)
->>   {}
->>   #endif /* CONFIG_OF */
->> diff --git a/include/linux/pci.h b/include/linux/pci.h
->> index d04f651..989ca44 100644
->> --- a/include/linux/pci.h
->> +++ b/include/linux/pci.h
->> @@ -870,7 +870,7 @@ struct resource *pci_find_parent_resource(const
->> struct pci_dev *dev,
->>   #define dev_is_pf(d) ((dev_is_pci(d) ? to_pci_dev(d)->is_physfn :
->> false))
->>   #define dev_num_vf(d) ((dev_is_pci(d) ? pci_num_vf(to_pci_dev(d)) : 0))
->>   -void pci_dma_configure(struct device *dev);
->> +int pci_dma_configure(struct device *dev);
->>     /* Generic PCI functions exported to card drivers */
->>   @@ -1604,7 +1604,7 @@ static inline struct pci_dev
->> *pci_get_bus_and_slot(unsigned int bus,
->>   #define dev_is_pf(d) (false)
->>   #define dev_num_vf(d) (0)
->>   -static inline void pci_dma_configure(struct device *dev) { }
->> +static inline int pci_dma_configure(struct device *dev) { return 0; }
->>     #endif /* CONFIG_PCI */
->>   
 > 
-> Best regards
+> please cc me when you respin this patchset.
+> 
+> thanks
+> Ganapat
+> 
+>> Thanks
+>>
+>> Eric
+>>>
+>>> thanks
+>>> Ganapat
+>>>
+>>> On Wed, Nov 30, 2016 at 3:19 PM, Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+>>>> Hi,
+>>>>
+>>>> On 15/11/2016 14:09, Eric Auger wrote:
+>>>>> Following LPC discussions, we now report reserved regions through
+>>>>> iommu-group sysfs reserved_regions attribute file.
+>>>>>
+>>>>> Reserved regions are populated through the IOMMU get_resv_region callback
+>>>>> (former get_dm_regions), now implemented by amd-iommu, intel-iommu and
+>>>>> arm-smmu.
+>>>>>
+>>>>> The intel-iommu reports the [FEE0_0000h - FEF0_000h] MSI window as an
+>>>>> IOMMU_RESV_NOMAP reserved region.
+>>>>>
+>>>>> arm-smmu reports the MSI window (arbitrarily located at 0x8000000 and
+>>>>> 1MB large) and the PCI host bridge windows.
+>>>>>
+>>>>> The series integrates a not officially posted patch from Robin:
+>>>>> "iommu/dma: Allow MSI-only cookies".
+>>>>>
+>>>>> This series currently does not address IRQ safety assessment.
+>>>>
+>>>> I will respin this series taking into account Joerg's comment. Does
+>>>> anyone have additional comments or want to put forward some conceptual
+>>>> issues with the current direction and with this implementation?
+>>>>
+>>>> As for the IRQ safety assessment, in a first step I would propose to
+>>>> remove the IOMMU_CAP_INTR_REMAP from arm-smmus and consider the
+>>>> assignment as unsafe. Any objection?
+>>>>
+>>>> Thanks
+>>>>
+>>>> Eric
+>>>>
+>>>>
+>>>>> Best Regards
+>>>>>
+>>>>> Eric
+>>>>>
+>>>>> Git: complete series available at
+>>>>> https://github.com/eauger/linux/tree/v4.9-rc5-reserved-rfc-v3
+>>>>>
+>>>>> History:
+>>>>> RFC v2 -> v3:
+>>>>> - switch to an iommu-group sysfs API
+>>>>> - use new dummy allocator provided by Robin
+>>>>> - dummy allocator initialized by vfio-iommu-type1 after enumerating
+>>>>>   the reserved regions
+>>>>> - at the moment ARM MSI base address/size is left unchanged compared
+>>>>>   to v2
+>>>>> - we currently report reserved regions and not usable IOVA regions as
+>>>>>   requested by Alex
+>>>>>
+>>>>> RFC v1 -> v2:
+>>>>> - fix intel_add_reserved_regions
+>>>>> - add mutex lock/unlock in vfio_iommu_type1
+>>>>>
+>>>>>
+>>>>> Eric Auger (10):
+>>>>>   iommu/dma: Allow MSI-only cookies
+>>>>>   iommu: Rename iommu_dm_regions into iommu_resv_regions
+>>>>>   iommu: Add new reserved IOMMU attributes
+>>>>>   iommu: iommu_alloc_resv_region
+>>>>>   iommu: Do not map reserved regions
+>>>>>   iommu: iommu_get_group_resv_regions
+>>>>>   iommu: Implement reserved_regions iommu-group sysfs file
+>>>>>   iommu/vt-d: Implement reserved region get/put callbacks
+>>>>>   iommu/arm-smmu: Implement reserved region get/put callbacks
+>>>>>   vfio/type1: Get MSI cookie
+>>>>>
+>>>>>  drivers/iommu/amd_iommu.c       |  20 +++---
+>>>>>  drivers/iommu/arm-smmu.c        |  52 +++++++++++++++
+>>>>>  drivers/iommu/dma-iommu.c       | 116 ++++++++++++++++++++++++++-------
+>>>>>  drivers/iommu/intel-iommu.c     |  50 ++++++++++----
+>>>>>  drivers/iommu/iommu.c           | 141 ++++++++++++++++++++++++++++++++++++----
+>>>>>  drivers/vfio/vfio_iommu_type1.c |  26 ++++++++
+>>>>>  include/linux/dma-iommu.h       |   7 ++
+>>>>>  include/linux/iommu.h           |  49 ++++++++++----
+>>>>>  8 files changed, 391 insertions(+), 70 deletions(-)
+>>>>>
+>>>>
+>>>> _______________________________________________
+>>>> linux-arm-kernel mailing list
+>>>> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+>>>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
