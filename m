@@ -1,131 +1,85 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RESEND PATCH V6 0/6] Add support for privileged mappings
-Date: Fri, 2 Dec 2016 16:16:39 +0000
-Message-ID: <e7e05493-e216-d744-b828-351d2c70150d@arm.com>
-References: <1480690509-13490-1-git-send-email-sricharan@codeaurora.org>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH v9 07/16] drivers: acpi: implement acpi_dma_configure
+Date: Sat, 3 Dec 2016 03:11:09 +0100
+Message-ID: <CAJZ5v0jfwGBaHepToB9U3qQZ3KTB6XzoRDwEskV0B9fK7+OoDg@mail.gmail.com>
+References: <20161121100148.24769-1-lorenzo.pieralisi@arm.com>
+ <20161121100148.24769-8-lorenzo.pieralisi@arm.com> <20161202153816.GA18290@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1480690509-13490-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20161202153816.GA18290@red-moon>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>, Mark Salter <msalter@redhat.com>, Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, Tomasz Nowicki <tn@semihalf.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Marc Zyngier <marc.zyngier@arm.com>, Hanjun Guo <hanjun.guo@linaro.org>, Jon Masters <jcm@redhat.com>, Eric Auger <eric.auger@redhat.com>, Sinan Kaya <okaya@codeaurora.org>, Nate Watterson <nwatters@codeaurora.org>, Prem Mallappa <prem.mallappa@broadcom.com>, Dennis Chen <dennis.chen@arm.com>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, Linux PCI <linux-pci@vger.kernel>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Sricharan,
+On Fri, Dec 2, 2016 at 4:38 PM, Lorenzo Pieralisi
+<lorenzo.pieralisi@arm.com> wrote:
+> Rafael, Mark, Suravee,
+>
+> On Mon, Nov 21, 2016 at 10:01:39AM +0000, Lorenzo Pieralisi wrote:
+>> On DT based systems, the of_dma_configure() API implements DMA
+>> configuration for a given device. On ACPI systems an API equivalent to
+>> of_dma_configure() is missing which implies that it is currently not
+>> possible to set-up DMA operations for devices through the ACPI generic
+>> kernel layer.
+>>
+>> This patch fills the gap by introducing acpi_dma_configure/deconfigure()
+>> calls that for now are just wrappers around arch_setup_dma_ops() and
+>> arch_teardown_dma_ops() and also updates ACPI and PCI core code to use
+>> the newly introduced acpi_dma_configure/acpi_dma_deconfigure functions.
+>>
+>> Since acpi_dma_configure() is used to configure DMA operations, the
+>> function initializes the dma/coherent_dma masks to sane default values
+>> if the current masks are uninitialized (also to keep the default values
+>> consistent with DT systems) to make sure the device has a complete
+>> default DMA set-up.
+>
+> I spotted a niggle that unfortunately was hard to spot (and should not
+> be a problem per se but better safe than sorry) and I am not comfortable
+> with it.
+>
+> Following commit d0562674838c ("ACPI / scan: Parse _CCA and setup
+> device coherency") in acpi_bind_one() we check if the acpi_device
+> associated with a device just added supports DMA, first it was
+> done with acpi_check_dma() and then commit 1831eff876bd ("device
+> property: ACPI: Make use of the new DMA Attribute APIs") changed
+> it to acpi_get_dma_attr().
+>
+> The subsequent check (attr != DEV_DMA_NOT_SUPPORTED) is always true
+> on _any_ acpi device we pass to acpi_bind_one() on x86, which was
+> fine because we used it to call arch_setup_dma_ops(), which is a nop
+> on x86. On ARM64 a _CCA method is required to define if a device
+> supports DMA so (attr != DEV_DMA_NOT_SUPPORTED) may well be false.
+>
+> Now, acpi_bind_one() is used to bind an acpi_device to its physical
+> node also for pseudo-devices like cpus and memory nodes. For those
+> objects, on x86, attr will always be != DEV_DMA_NOT_SUPPORTED.
+>
+> So far so good, because on x86 arch_setup_dma_ops() is empty code.
+>
+> With this patch, I use the (attr != DEV_DMA_NOT_SUPPORTED) check
+> to call acpi_dma_configure() which is basically a nop on x86 except
+> that it sets up the dma_mask/coherent_dma_mask to a sane default value
+> (after all we are setting up DMA for the device so it makes sense to
+> initialize the masks there if they were unset since we are configuring
+> DMA for the device in question) for the given device.
+>
+> Problem is, as per the explanation above, we are also setting the
+> default dma masks for pseudo-devices (eg CPUs) that were previously
+> untouched, it should not be a problem per-se but I am not comfortable
+> with that, honestly it does not make much sense.
+>
+> An easy "fix" would be to move the default dma masks initialization out
+> of acpi_dma_configure() (as it was in previous patch versions of this
+> series - I moved it to acpi_dma_configure() just a consolidation point
+> for initializing the masks instead of scattering them in every
+> acpi_dma_configure caller) I can send this as a fix-up patch to Joerg if
+> we think that's the right thing to do (or I can send it to Rafael later
+> when the code is in the merged depending on the timing) just let me
+> know please.
 
-On 02/12/16 14:55, Sricharan R wrote:
-> This series is a resend of the V5 that Mitch sent sometime back [2]
-> All the patches are the same and i have just rebased. Not sure why this
-> finally did not make it last time. The last patch in the previous
-> series does not apply now [3], so just redid that. Also Copied the tags
-> that he had from last time as well.
+Why can't arch_setup_dma_ops() set those masks too?
 
-Heh, I was assuming this would be down to me to pick up. Vinod did have
-some complaints last time about the commit message on the PL330 patch -
-I did get as far as rewriting that and reworking onto my SMMU
-changes[1], I just hadn't got round to sending it, so it fell onto the
-"after the next merge window" pile.
-
-I'd give some review comments, but they'd essentially be a diff against
-that branch :)
-
-Robin.
-
-[1]:http://www.linux-arm.org/git?p=linux-rm.git;a=shortlog;h=refs/heads/mh/dma-priv
-
-> The following patch to the ARM SMMU driver:
-> 
->     commit d346180e70b91b3d5a1ae7e5603e65593d4622bc
->     Author: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->     Date:   Tue Jan 26 18:06:34 2016 +0000
->     
->         iommu/arm-smmu: Treat all device transactions as unprivileged
-> 
-> started forcing all SMMU transactions to come through as "unprivileged".
-> The rationale given was that:
-> 
->   (1) There is no way in the IOMMU API to even request privileged
->       mappings.
-> 
->   (2) It's difficult to implement a DMA mapper that correctly models the
->       ARM VMSAv8 behavior of unprivileged-writeable =>
->       privileged-execute-never.
-> 
-> This series rectifies (1) by introducing an IOMMU API for privileged
-> mappings and implements it in io-pgtable-arm.
-> 
-> This series rectifies (2) by introducing a new dma attribute
-> (DMA_ATTR_PRIVILEGED) for users of the DMA API that need privileged
-> mappings which are inaccessible to lesser-privileged execution levels, and
-> implements it in the arm64 IOMMU DMA mapper.  The one known user (pl330.c)
-> is converted over to the new attribute.
-> 
-> Jordan and Jeremy can provide more info on the use case if needed, but the
-> high level is that it's a security feature to prevent attacks such as [1].
-> 
-> [1] https://github.com/robclark/kilroy
-> [2] https://lkml.org/lkml/2016/7/27/590
-> [3] https://patchwork.kernel.org/patch/9250493/
-> 
-> Changelog:
-> 
->  v5..v6
->     - Rebased all the patches and redid 6/6 as it does not apply in
->       this code base. 
-> 
->  v4..v5
-> 
->     - Simplified patch 4/6 (suggested by Robin Murphy).
-> 
->   v3..v4
-> 
->     - Rebased and reworked on linux next due to the dma attrs rework going
->       on over there.  Patches changed: 3/6, 4/6, and 5/6.
-> 
->   v2..v3
-> 
->     - Incorporated feedback from Robin:
->       * Various comments and re-wordings.
->       * Use existing bit definitions for IOMMU_PRIV implementation
->         in io-pgtable-arm.
->       * Renamed and redocumented dma_direction_to_prot.
->       * Don't worry about executability in new DMA attr.
-> 
->   v1..v2
-> 
->     - Added a new DMA attribute to make executable privileged mappings
->       work, and use that in the pl330 driver (suggested by Will).
-> 
-> Jeremy Gebben (1):
->   iommu/io-pgtable-arm: add support for the IOMMU_PRIV flag
-> 
-> Mitchel Humpherys (4):
->   iommu: add IOMMU_PRIV attribute
->   common: DMA-mapping: add DMA_ATTR_PRIVILEGED attribute
->   arm64/dma-mapping: Implement DMA_ATTR_PRIVILEGED
->   dmaengine: pl330: Make sure microcode is privileged
-> 
-> Sricharan R (1):
->   iommu/arm-smmu: Set privileged attribute to 'default' instead of
->     'unprivileged'
-> 
->  Documentation/DMA-attributes.txt | 10 ++++++++++
->  arch/arm64/mm/dma-mapping.c      |  6 +++---
->  drivers/dma/pl330.c              |  6 ++++--
->  drivers/iommu/arm-smmu.c         |  2 +-
->  drivers/iommu/dma-iommu.c        | 10 ++++++++--
->  drivers/iommu/io-pgtable-arm.c   |  5 ++++-
->  include/linux/dma-iommu.h        |  3 ++-
->  include/linux/dma-mapping.h      |  7 +++++++
->  include/linux/iommu.h            |  1 +
->  9 files changed, 40 insertions(+), 10 deletions(-)
-> 
+Thanks,
+Rafael
