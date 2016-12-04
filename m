@@ -1,15 +1,11 @@
-From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: RE: [RESEND PATCH V6 0/6] Add support for privileged mappings
-Date: Sun, 4 Dec 2016 13:18:56 +0530
-Message-ID: <000d01d24e02$e3023700$a906a500$@codeaurora.org>
-References: <1480690509-13490-1-git-send-email-sricharan@codeaurora.org>
-	<e7e05493-e216-d744-b828-351d2c70150d@arm.com>
+From: Lukas Wunner <lukas-JFq808J9C/izQB+pC5nmwQ@public.gmane.org>
+Subject: [PATCH 0/2] Device links documentation
+Date: Sun, 4 Dec 2016 13:10:04 +0100
+Message-ID: <cover.1480849144.git.lukas@wunner.de>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e7e05493-e216-d744-b828-351d2c70150d-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,39 +15,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+To: "Rafael J. Wysocki" <rafael-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Silvio Fricke <silvio.fricke-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Ulf Hansson <ulf.hansson-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Tomasz Figa <tomasz.figa-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Grant Likely <grant.likely-s3s/WqlpOiPyB63q8FvJNQ@public.gmane.org>, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Lars-Peter Clausen <lars-Qo5EllUWu/uELgA04lAiVw@public.gmane.org>, Kevin Hilman <khilman-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Mauro Carvalho Chehab <mchehab-JPH+aEBZ4P+UEJcrhfAQsw@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Christoph Hellwig <hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Kukjin Kim <kgene-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, Alan Stern <stern-nwvwT67g6+6dFdvTe/nMLpVzexx5G7lz@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Inki Dae <inki.dae-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, g@mail.linuxfoundation.org, Tomeu Vizoso <tomeu.vizoso-ZGY8ohtN/8qB+jHODAdFcQ@public.gmane.org>, Dmitry Torokhov <dmitry.toro>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Here's my suggestion for initial documentation on the device links
+feature that's queued for 4.10 on Greg KH's driver-core-next branch.
+Please let me know if you have any additions or corrections.
 
->Hi Sricharan,
->
->On 02/12/16 14:55, Sricharan R wrote:
->> This series is a resend of the V5 that Mitch sent sometime back [2]
->> All the patches are the same and i have just rebased. Not sure why this
->> finally did not make it last time. The last patch in the previous
->> series does not apply now [3], so just redid that. Also Copied the tags
->> that he had from last time as well.
->
->Heh, I was assuming this would be down to me to pick up. Vinod did have
->some complaints last time about the commit message on the PL330 patch -
->I did get as far as rewriting that and reworking onto my SMMU
->changes[1], I just hadn't got round to sending it, so it fell onto the
->"after the next merge window" pile.
->
->I'd give some review comments, but they'd essentially be a diff against
->that branch :)
->
+To read this in rendered form:
+http://wunner.de/kernel-doc/core-api/device_link.html
 
-Sure, i did not knew that you were on this already. I can repost with the diff
-from your branch taken in or wait for you as well. I am fine with either ways
-that you suggest.
+Patch [2/2] could go in via driver-core-next, but patch [1/2] would
+need to go in via docs-next (because the core-api directory doesn't
+exist yet in driver-core-next).
 
-I checked the patches against your branch, i see that the changes are,
+@Jonathan Corbet:  Is core-api the right place to put this? An
+alternative would be Documentation/driver-api, but unlike core-api
+it contains less prose text but mostly just bare API docs gleaned
+from kernel-doc.
 
-1) one patch for implementing it for armv7s descriptor
-2) Changes on pl330 patch commit logs and
-3) One patch for doing the revert on arm-smmuv3 as well.
 
-Regards,
- Sricharan
+To render the documentation oneself, the device links patches need
+to be merged from driver-core-next into docs-next.  Here's a branch
+which contains all the necessary bits:
+https://github.com/l1k/linux/commits/device_links_docs_v1
+
+(The build is currently broken for docs-next, one needs to remove
+80211.xml from Documentation/DocBook/Makefile and for some reason
+$BUILDDIR/cec.h.rst is not found on the first build, but only on
+the second build.)
+
+
+About half of the documentation was distilled from the mailing list
+discussion initiated by Luis Rodriguez after KS/LPC:
+https://lkml.org/lkml/2016/11/7/790
+https://lkml.org/lkml/2016/11/7/795
+https://lkml.org/lkml/2016/11/8/899
+
+The other half is based on the first draft I posted in September:
+https://lkml.org/lkml/2016/9/27/215
+
+Thanks,
+
+Lukas
+
+
+Lukas Wunner (2):
+  Documentation/core-api/device_link: Add initial documentation
+  driver core: Silence device links sphinx warning
+
+ Documentation/core-api/device_link.rst | 279 +++++++++++++++++++++++++++++++++
+ Documentation/core-api/index.rst       |   8 +
+ drivers/base/core.c                    |   4 +-
+ include/linux/device.h                 |   1 +
+ 4 files changed, 290 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/core-api/device_link.rst
+
+-- 
+2.10.2
