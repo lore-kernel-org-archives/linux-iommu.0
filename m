@@ -1,74 +1,36 @@
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH 2/2] driver core: Silence device links sphinx warning
-Date: Mon, 5 Dec 2016 23:21:21 +0100
-Message-ID: <CAJZ5v0gVyQYm3YEjyhC5FeSV-qnj9UMG=-7uO4Ni6PhwqmrO_w@mail.gmail.com>
-References: <cover.1480849144.git.lukas@wunner.de> <a1c7a93ee8ef057fb70aa3abeed38daf989444fc.1480849144.git.lukas@wunner.de>
+From: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH] iommu/intel: disable DMAR for Q35 integrated gfx
+Date: Mon, 05 Dec 2016 22:47:32 +0000
+Message-ID: <1480978052.28987.58.camel@infradead.org>
+References: <20161205215841.GA20819@beast>
+	<1480975635.81411.4.camel@infradead.org>
+	<CAGXu5j+QJZk9PghXdo=3Rp-noshG-GeSKxn+nuicqpRgFiiR5w@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-Reply-To: <a1c7a93ee8ef057fb70aa3abeed38daf989444fc.1480849144.git.lukas@wunner.de>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Lukas Wunner <lukas@wunner.de>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jonathan Corbet <corbet@lwn.net>, Silvio Fricke <silvio.fricke@gmail.com>, "Luis R. Rodriguez" <mcgrof@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Andrzej Hajda <a.hajda@samsung.com>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, Inki Dae <inki.dae@samsung.com>, Joerg Roedel <joro@8bytes.org>, Kukjin Kim <kgene@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>, Mark Brown <broonie@kernel.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>, Kevin Hilman <khilman@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Tobias Jakobi <tjakobi@math.uni-bielefeld.>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAGXu5j+QJZk9PghXdo=3Rp-noshG-GeSKxn+nuicqpRgFiiR5w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Kees Cook <keescook-F7+t8E8rja9g9hUCZPvPmw@public.gmane.org>
+Cc: intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jani Nikula <jani.nikula-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Daniel Vetter <daniel.vetter-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Dec 4, 2016 at 1:10 PM, Lukas Wunner <lukas@wunner.de> wrote:
-> Silence this warning emitted by sphinx:
-> include/linux/device.h:938: warning: No description found for parameter 'links'
->
-> While at it, fix typos in comments of device links code.
->
-> Cc: Rafael J. Wysocki <rafael@kernel.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Silvio Fricke <silvio.fricke@gmail.com>
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
+On Mon, 2016-12-05 at 14:18 -0800, Kees Cook wrote:
+> Hm, I have no idea. :) What would I look for in the BIOS?
 
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+For a start, what is the actual failure mode?
 
-and thanks for fixing these!
+> I figured since g4 was busted, surely q35 was too, since it's even
+> older...
 
-[Adds note to self to spellcheck patches next time.]
-
-> ---
->  drivers/base/core.c    | 4 ++--
->  include/linux/device.h | 1 +
->  2 files changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/base/core.c b/drivers/base/core.c
-> index d0c9df5..8c25e68 100644
-> --- a/drivers/base/core.c
-> +++ b/drivers/base/core.c
-> @@ -172,7 +172,7 @@ static int device_reorder_to_tail(struct device *dev, void *not_used)
->   *
->   * The supplier device is required to be registered when this function is called
->   * and NULL will be returned if that is not the case.  The consumer device need
-> - * not be registerd, however.
-> + * not be registered, however.
->   */
->  struct device_link *device_link_add(struct device *consumer,
->                                     struct device *supplier, u32 flags)
-> @@ -225,7 +225,7 @@ struct device_link *device_link_add(struct device *consumer,
->         INIT_LIST_HEAD(&link->c_node);
->         link->flags = flags;
->
-> -       /* Deterine the initial link state. */
-> +       /* Determine the initial link state. */
->         if (flags & DL_FLAG_STATELESS) {
->                 link->status = DL_STATE_NONE;
->         } else {
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index 3896af4..87edfdf 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -813,6 +813,7 @@ struct dev_links_info {
->   *             on.  This shrinks the "Board Support Packages" (BSPs) and
->   *             minimizes board-specific #ifdefs in drivers.
->   * @driver_data: Private pointer for driver specific info.
-> + * @links:     Links to suppliers and consumers of this device.
->   * @power:     For device power management.
->   *             See Documentation/power/admin-guide/devices.rst for details.
->   * @pm_domain: Provide callbacks that are executed during system suspend,
-> --
-> 2.10.2
->
+Oh no, they all have different failures. Intel never actually *tested*
+their graphics hardware before shipping it, but IIRC it was only Q4x
+where we concluded the hardware was just too broken to live.
