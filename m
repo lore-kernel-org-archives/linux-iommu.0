@@ -1,36 +1,51 @@
-From: Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH 1/2] Documentation/core-api/device_link: Add initial
- documentation
-Date: Mon, 5 Dec 2016 14:15:28 -0700
-Message-ID: <20161205141528.1c0e9f52@lwn.net>
-References: <cover.1480849144.git.lukas@wunner.de>
-        <f5b568e349aaeb31039a0c4d01fdb05d8b3bdd2a.1480849144.git.lukas@wunner.de>
+From: Kees Cook <keescook@chromium.org>
+Subject: [PATCH] iommu/intel: disable DMAR for Q35 integrated gfx
+Date: Mon, 5 Dec 2016 13:58:41 -0800
+Message-ID: <20161205215841.GA20819@beast>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
-Return-path: <linux-pm-owner@vger.kernel.org>
-In-Reply-To: <f5b568e349aaeb31039a0c4d01fdb05d8b3bdd2a.1480849144.git.lukas@wunner.de>
-Sender: linux-pm-owner@vger.kernel.org
-To: Lukas Wunner <lukas@wunner.de>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Mauro Carvalho Chehab <mchehab@osg.samsung.com>, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Daniel Vetter <daniel.vetter@intel.com>
+Cc: intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, 4 Dec 2016 13:10:04 +0100
-Lukas Wunner <lukas@wunner.de> wrote:
-
-> Document device links as introduced in v4.10 with commits:
->     4bdb35506b89 ("driver core: Add a wrapper around
->                    __device_release_driver()")
->     9ed9895370ae ("driver core: Functional dependencies tracking
->                    support")
->     8c73b4288496 ("PM / sleep: Make async suspend/resume of devices use
->                    device links")
->     21d5c57b3726 ("PM / runtime: Use device links")
->     baa8809f6097 ("PM / runtime: Optimize the use of device links")
-
-I went ahead and applied this one to docs-next.  I did, however, take the
-liberty of shifting it over to the driver-api manual.
-
-Thanks,
-
-jon
+VGhpcyBibGFja2xpc3RzIHRoZSBRMzUgaW50ZWdyYXRlZCBncmFwaGljcyBzbyBJT01NVSBjYW4g
+YmUgb3RoZXJ3aXNlCmVuYWJsZWQuIFdpdGhvdXQgdGhpcywgYSBRMzUgc3lzdGVtIGNhbiBvbmx5
+IGVuYWJsZSBJT01NVSB3aGVuIGJvb3RpbmcKd2l0aCAiaW50ZWxfaW9tbXU9b24saWdmeF9vZmYi
+IGJ1dCBub3QgImludGVsX2lvbW11PW9uIi4KCjAwOjAyLjAgMDMwMDogODA4NjoyOWIyIChyZXYg
+MDIpIChwcm9nLWlmIDAwIFtWR0EgY29udHJvbGxlcl0pCiAgICAgICAgU3Vic3lzdGVtOiA4MDg2
+OjRmNGEKICAgICAgICBGbGFnczogYnVzIG1hc3RlciwgZmFzdCBkZXZzZWwsIGxhdGVuY3kgMCwg
+SVJRIDMyCiAgICAgICAgTWVtb3J5IGF0IGUwMzgwMDAwICgzMi1iaXQsIG5vbi1wcmVmZXRjaGFi
+bGUpIFtzaXplPTUxMktdCiAgICAgICAgSS9PIHBvcnRzIGF0IDI0NjAgW3NpemU9OF0KICAgICAg
+ICBNZW1vcnkgYXQgZDAwMDAwMDAgKDMyLWJpdCwgcHJlZmV0Y2hhYmxlKSBbc2l6ZT0yNTZNXQog
+ICAgICAgIE1lbW9yeSBhdCBlMDIwMDAwMCAoMzItYml0LCBub24tcHJlZmV0Y2hhYmxlKSBbc2l6
+ZT0xTV0KICAgICAgICBFeHBhbnNpb24gUk9NIGF0IDx1bmFzc2lnbmVkPiBbZGlzYWJsZWRdCiAg
+ICAgICAgQ2FwYWJpbGl0aWVzOiA8YWNjZXNzIGRlbmllZD4KICAgICAgICBLZXJuZWwgZHJpdmVy
+IGluIHVzZTogaTkxNQogICAgICAgIEtlcm5lbCBtb2R1bGVzOiBpOTE1CgpTaWduZWQtb2ZmLWJ5
+OiBLZWVzIENvb2sgPGtlZXNjb29rQGNocm9taXVtLm9yZz4KLS0tCiBkcml2ZXJzL2lvbW11L2lu
+dGVsLWlvbW11LmMgfCAxICsKIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQoKZGlmZiAt
+LWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwt
+aW9tbXUuYwppbmRleCBkODM3NmMyZDE4YjMuLjI0ZTViMDY4MzRhZSAxMDA2NDQKLS0tIGEvZHJp
+dmVycy9pb21tdS9pbnRlbC1pb21tdS5jCisrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUu
+YwpAQCAtNTMyNyw2ICs1MzI3LDcgQEAgc3RhdGljIHZvaWQgcXVpcmtfaW9tbXVfZzR4X2dmeChz
+dHJ1Y3QgcGNpX2RldiAqZGV2KQogCWRtYXJfbWFwX2dmeCA9IDA7CiB9CiAKK0RFQ0xBUkVfUENJ
+X0ZJWFVQX0hFQURFUihQQ0lfVkVORE9SX0lEX0lOVEVMLCAweDI5YjIsIHF1aXJrX2lvbW11X2c0
+eF9nZngpOwogREVDTEFSRV9QQ0lfRklYVVBfSEVBREVSKFBDSV9WRU5ET1JfSURfSU5URUwsIDB4
+MmE0MCwgcXVpcmtfaW9tbXVfZzR4X2dmeCk7CiBERUNMQVJFX1BDSV9GSVhVUF9IRUFERVIoUENJ
+X1ZFTkRPUl9JRF9JTlRFTCwgMHgyZTAwLCBxdWlya19pb21tdV9nNHhfZ2Z4KTsKIERFQ0xBUkVf
+UENJX0ZJWFVQX0hFQURFUihQQ0lfVkVORE9SX0lEX0lOVEVMLCAweDJlMTAsIHF1aXJrX2lvbW11
+X2c0eF9nZngpOwotLSAKMi43LjQKCgotLSAKS2VlcyBDb29rCk5leHVzIFNlY3VyaXR5Cl9fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkludGVsLWdmeCBtYWls
+aW5nIGxpc3QKSW50ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZy
+ZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdmeAo=
