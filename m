@@ -1,15 +1,15 @@
-From: Don Brace <don.brace-dzo6w/eZyo2tG0bUXCXiUA@public.gmane.org>
-Subject: RE: [PATCH v3] iommu/vt-d: Flush old iommu caches for kdump when
-	the device gets context mapped
-Date: Tue, 6 Dec 2016 22:03:20 +0000
-Message-ID: <4993A297653ECB4581FA5C3C31323D1941809326@avsrvexchmbx1.microsemi.net>
-References: <1480939747-31916-1-git-send-email-xlpang@redhat.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 3/4] iommu/arm-smmu: Disable stalling faults for all
+	endpoints
+Date: Tue, 6 Dec 2016 18:30:21 -0500
+Message-ID: <CAF6AEGujUb37qagBZK1T13eAh=50zy0z5HpFF9FsuvkZZ7c5qw@mail.gmail.com>
+References: <1471525542-14969-1-git-send-email-will.deacon@arm.com>
+	<1471525542-14969-4-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1480939747-31916-1-git-send-email-xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1471525542-14969-4-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,117 +19,144 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Xunlei Pang <xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David
-	Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Joseph Szczypek <jszczype-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> -----Original Message-----
-> From: Xunlei Pang [mailto:xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Monday, December 05, 2016 6:09 AM
-> To: Joerg Roedel; David Woodhouse
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Xunlei
-> Pang; Myron Stowe; Joseph Szczypek; Don Brace; Baoquan He; Dave Young
-> Subject: [PATCH v3] iommu/vt-d: Flush old iommu caches for kdump when
-> the device gets context mapped
-> 
-> EXTERNAL EMAIL
-> 
-> 
-> We met the DMAR fault both on hpsa P420i and P421 SmartArray controllers
-> under kdump, it can be steadily reproduced on several different machines,
-> the dmesg log is like:
-> HP HPSA Driver (v 3.4.16-0)
-> hpsa 0000:02:00.0: using doorbell to reset controller
-> hpsa 0000:02:00.0: board ready after hard reset.
-> hpsa 0000:02:00.0: Waiting for controller to respond to no-op
-> DMAR: Setting identity map for device 0000:02:00.0 [0xe8000 - 0xe8fff]
-> DMAR: Setting identity map for device 0000:02:00.0 [0xf4000 - 0xf4fff]
-> DMAR: Setting identity map for device 0000:02:00.0 [0xbdf6e000 -
-> 0xbdf6efff]
-> DMAR: Setting identity map for device 0000:02:00.0 [0xbdf6f000 - 0xbdf7efff]
-> DMAR: Setting identity map for device 0000:02:00.0 [0xbdf7f000 - 0xbdf82fff]
-> DMAR: Setting identity map for device 0000:02:00.0 [0xbdf83000 - 0xbdf84fff]
-> DMAR: DRHD: handling fault status reg 2
-> DMAR: [DMA Read] Request device [02:00.0] fault addr fffff000 [fault reason
-> 06] PTE Read access is not set
-> hpsa 0000:02:00.0: controller message 03:00 timed out
-> hpsa 0000:02:00.0: no-op failed; re-trying
-> 
-> After some debugging, we found that the fault addr is from DMA initiated at
-> the driver probe stage after reset(not in-flight DMA), and the corresponding
-> pte entry value is correct, the fault is likely due to the old iommu caches
-> of the in-flight DMA before it.
-> 
-> Thus we need to flush the old cache after context mapping is setup for the
-> device, where the device is supposed to finish reset at its driver probe
-> stage and no in-flight DMA exists hereafter.
-> 
-> I'm not sure if the hardware is responsible for invalidating all the related
-> caches allocated in the iommu hardware before, but seems not the case for
-> hpsa,
-> actually many device drivers have problems in properly resetting the
-> hardware.
-> Anyway flushing (again) by software in kdump kernel when the device gets
-> context
-> mapped which is a quite infrequent operation does little harm.
-> 
-> With this patch, the problematic machine can survive the kdump tests.
-> 
-> CC: Myron Stowe <myron.stowe-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> CC: Joseph Szczypek <jszczype-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> CC: Don Brace <don.brace-dzo6w/eZyo2tG0bUXCXiUA@public.gmane.org>
-> CC: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> CC: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Fixes: 091d42e43d21 ("iommu/vt-d: Copy translation tables from old kernel")
-> Fixes: dbcd861f252d ("iommu/vt-d: Do not re-use domain-ids from the old
-> kernel")
-> Fixes: cf484d0e6939 ("iommu/vt-d: Mark copied context entries")
-> Signed-off-by: Xunlei Pang <xlpang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+On Thu, Aug 18, 2016 at 9:05 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> Enabling stalling faults can result in hardware deadlock on poorly
+> designed systems, particularly those with a PCI root complex upstream of
+> the SMMU.
+>
+> Although it's not really Linux's job to save hardware integrators from
+> their own misfortune, it *is* our job to stop userspace (e.g. VFIO
+> clients) from hosing the system for everybody else, even if they might
+> already be required to have elevated privileges.
+>
+> Given that the fault handling code currently executes entirely in IRQ
+> context, there is nothing that can sensibly be done to recover from
+> things like page faults anyway, so let's rip this code out for now and
+> avoid the potential for deadlock.
+
+Hi Will,
+
+so, I'd like to re-introduce this feature, I *guess* as some sort of
+opt-in quirk (ie. disabled by default unless something in DT tells you
+otherwise??  But I'm open to suggestions.  I'm not entirely sure what
+hw was having problems due to this feature.)
+
+On newer snapdragon devices we are using arm-smmu for the GPU, and
+halting the GPU so the driver's fault handler can dump some GPU state
+on faults is enormously helpful for debugging and tracking down where
+in the gpu cmdstream the fault was triggered.  In addition, we will
+eventually want the ability to update pagetables from fault handler
+and resuming the faulting transition.
+
+Some additional comments below..
+
+> Cc: <stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+> Reported-by: Matt Evans <matt.evans-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 > ---
-> v2->v3:
-> Flush context cache only and add Fixes-tag, according to Joerg's comments.
-> 
->  drivers/iommu/intel-iommu.c | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 3965e73..624eac9 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -2024,6 +2024,25 @@ static int domain_context_mapping_one(struct
-> dmar_domain *domain,
->         if (context_present(context))
->                 goto out_unlock;
-> 
-> +       /*
-> +        * For kdump cases, old valid entries may be cached due to the
-> +        * in-flight DMA and copied pgtable, but there is no unmapping
-> +        * behaviour for them, thus we need an explicit cache flush for
-> +        * the newly-mapped device. For kdump, at this point, the device
-> +        * is supposed to finish reset at its driver probe stage, so no
-> +        * in-flight DMA will exist, and we don't need to worry anymore
-> +        * hereafter.
-> +        */
-> +       if (context_copied(context)) {
-> +               u16 did_old = context_domain_id(context);
-> +
-> +               if (did_old >= 0 && did_old < cap_ndoms(iommu->cap))
-> +                       iommu->flush.flush_context(iommu, did_old,
-> +                                                  (((u16)bus) << 8) | devfn,
-> +                                                  DMA_CCMD_MASK_NOBIT,
-> +                                                  DMA_CCMD_DEVICE_INVL);
-> +       }
-> +
->         pgd = domain->pgd;
-> 
->         context_clear_entry(context);
+>  drivers/iommu/arm-smmu.c | 34 +++++++---------------------------
+>  1 file changed, 7 insertions(+), 27 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 4f49fe29f202..2db74ebc3240 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -686,8 +686,7 @@ static struct iommu_gather_ops arm_smmu_gather_ops = {
+>
+>  static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+>  {
+> -       int flags, ret;
+> -       u32 fsr, fsynr, resume;
+> +       u32 fsr, fsynr;
+>         unsigned long iova;
+>         struct iommu_domain *domain = dev;
+>         struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> @@ -701,34 +700,15 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+>         if (!(fsr & FSR_FAULT))
+>                 return IRQ_NONE;
+>
+> -       if (fsr & FSR_IGN)
+> -               dev_err_ratelimited(smmu->dev,
+> -                                   "Unexpected context fault (fsr 0x%x)\n",
+> -                                   fsr);
+> -
+>         fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
+> -       flags = fsynr & FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ;
+> -
+>         iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
+> -       if (!report_iommu_fault(domain, smmu->dev, iova, flags)) {
+> -               ret = IRQ_HANDLED;
+> -               resume = RESUME_RETRY;
+> -       } else {
+> -               dev_err_ratelimited(smmu->dev,
+> -                   "Unhandled context fault: iova=0x%08lx, fsynr=0x%x, cb=%d\n",
+> -                   iova, fsynr, cfg->cbndx);
+
+I would like to decouple this dev_err_ratelimit() print from the
+RESUME_RETRY vs RESUME_TERMINATE behaviour.  I need the ability to
+indicate by return from my fault handler whether to resume or
+terminate.  But I already have my own ratelimted prints and would
+prefer not to spam dmesg twice.
+
+I'm thinking about report_iommu_fault() returning:
+
+  0 => RESUME_RETRY
+  -EFAULT => RESUME_TERMINATE but don't print
+  anything else (or specifically -ENOSYS?) => RESUME_TERMINATE and print
+
+thoughts?
+
+> -               ret = IRQ_NONE;
+> -               resume = RESUME_TERMINATE;
+> -       }
+> -
+> -       /* Clear the faulting FSR */
+> -       writel(fsr, cb_base + ARM_SMMU_CB_FSR);
+>
+> -       /* Retry or terminate any stalled transactions */
+> -       if (fsr & FSR_SS)
+> -               writel_relaxed(resume, cb_base + ARM_SMMU_CB_RESUME);
+
+This might be a bug in qcom's implementation of the smmu spec, but
+seems like we don't have SS bit set, yet we still require RESUME reg
+to be written, otherwise gpu is perma-wedged.  Maybe topic for a
+separate quirk?  I'm not sure if writing RESUME reg on other hw when
+SS bit is not set is likely to cause problems?  If not I suppose we
+could just unconditionally write it.
+
+Anyways, I'm not super-familiar w/ arm-smmu so suggestions welcome..
+in between debugging freedreno I'll try to put together some patches.
+
+BR,
+-R
+
+> +       dev_err_ratelimited(smmu->dev,
+> +       "Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
+> +                           fsr, iova, fsynr, cfg->cbndx);
+>
+> -       return ret;
+> +       writel(fsr, cb_base + ARM_SMMU_CB_FSR);
+> +       return IRQ_HANDLED;
+>  }
+>
+>  static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+> @@ -837,7 +817,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>         }
+>
+>         /* SCTLR */
+> -       reg = SCTLR_CFCFG | SCTLR_CFIE | SCTLR_CFRE | SCTLR_M | SCTLR_EAE_SBOP;
+> +       reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_M | SCTLR_EAE_SBOP;
+>         if (stage1)
+>                 reg |= SCTLR_S1_ASIDPNE;
+>  #ifdef __BIG_ENDIAN
 > --
-> 1.8.3.1
-
-Tested-by: Don Brace <don.brace-dzo6w/eZyo2tG0bUXCXiUA@public.gmane.org>
-
-Thanks,
-Don Brace
-ESC - Smart Storage
-Microsemi Corporation
+> 2.1.4
+>
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
