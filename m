@@ -1,15 +1,15 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC v3 09/10] iommu/arm-smmu: Implement reserved region get/put
-	callbacks
-Date: Tue, 6 Dec 2016 18:55:53 +0000
-Message-ID: <02c0ce15-fa67-e65f-3a4e-f543cc9fd3b8@arm.com>
-References: <1479215363-2898-1-git-send-email-eric.auger@redhat.com>
-	<1479215363-2898-10-git-send-email-eric.auger@redhat.com>
+Subject: Re: [RESEND PATCH V6 0/6] Add support for privileged mappings
+Date: Tue, 6 Dec 2016 19:14:01 +0000
+Message-ID: <ad7a90ce-c1cd-856e-8573-394c05fda6e4@arm.com>
+References: <1480690509-13490-1-git-send-email-sricharan@codeaurora.org>
+	<e7e05493-e216-d744-b828-351d2c70150d@arm.com>
+	<000d01d24e02$e3023700$a906a500$@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1479215363-2898-10-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <000d01d24e02$e3023700$a906a500$@codeaurora.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,126 +19,48 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 15/11/16 13:09, Eric Auger wrote:
-> The get() populates the list with the PCI host bridge windows
-> and the MSI IOVA range.
+On 04/12/16 07:48, Sricharan wrote:
+> Hi Robin,
 > 
-> At the moment an arbitray MSI IOVA window is set at 0x8000000
-> of size 1MB. This will allow to report those info in iommu-group
-> sysfs?
+>> Hi Sricharan,
+>>
+>> On 02/12/16 14:55, Sricharan R wrote:
+>>> This series is a resend of the V5 that Mitch sent sometime back [2]
+>>> All the patches are the same and i have just rebased. Not sure why this
+>>> finally did not make it last time. The last patch in the previous
+>>> series does not apply now [3], so just redid that. Also Copied the tags
+>>> that he had from last time as well.
+>>
+>> Heh, I was assuming this would be down to me to pick up. Vinod did have
+>> some complaints last time about the commit message on the PL330 patch -
+>> I did get as far as rewriting that and reworking onto my SMMU
+>> changes[1], I just hadn't got round to sending it, so it fell onto the
+>> "after the next merge window" pile.
+>>
+>> I'd give some review comments, but they'd essentially be a diff against
+>> that branch :)
+>>
 > 
-> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> Sure, i did not knew that you were on this already. I can repost with the diff
+> from your branch taken in or wait for you as well. I am fine with either ways
+> that you suggest.
 > 
-> ---
+> I checked the patches against your branch, i see that the changes are,
 > 
-> RFC v2 -> v3:
-> - use existing get/put_resv_regions
-> 
-> RFC v1 -> v2:
-> - use defines for MSI IOVA base and length
-> ---
->  drivers/iommu/arm-smmu.c | 52 ++++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 52 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 8f72814..81f1a83 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -278,6 +278,9 @@ enum arm_smmu_s2cr_privcfg {
->  
->  #define FSYNR0_WNR			(1 << 4)
->  
-> +#define MSI_IOVA_BASE			0x8000000
-> +#define MSI_IOVA_LENGTH			0x100000
-> +
->  static int force_stage;
->  module_param(force_stage, int, S_IRUGO);
->  MODULE_PARM_DESC(force_stage,
-> @@ -1545,6 +1548,53 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
->  	return iommu_fwspec_add_ids(dev, &fwid, 1);
->  }
->  
-> +static void arm_smmu_get_resv_regions(struct device *dev,
-> +				      struct list_head *head)
-> +{
-> +	struct iommu_resv_region *region;
-> +	struct pci_host_bridge *bridge;
-> +	struct resource_entry *window;
-> +
-> +	/* MSI region */
-> +	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-> +					 IOMMU_RESV_MSI);
-> +	if (!region)
-> +		return;
-> +
-> +	list_add_tail(&region->list, head);
-> +
-> +	if (!dev_is_pci(dev))
-> +		return;
-> +
-> +	bridge = pci_find_host_bridge(to_pci_dev(dev)->bus);
-> +
-> +	resource_list_for_each_entry(window, &bridge->windows) {
-> +		phys_addr_t start;
-> +		size_t length;
-> +
-> +		if (resource_type(window->res) != IORESOURCE_MEM &&
-> +		    resource_type(window->res) != IORESOURCE_IO)
+> 1) one patch for implementing it for armv7s descriptor
+> 2) Changes on pl330 patch commit logs and
+> 3) One patch for doing the revert on arm-smmuv3 as well.
 
-As Joerg commented elsewhere, considering anything other than memory
-resources isn't right (I appreciate you've merely copied my own mistake
-here). We need some other way to handle root complexes where the CPU
-MMIO views of PCI windows appear in PCI memory space - using the I/O
-address of I/O resources only works by chance on Juno, and it still
-doesn't account for config space. I suggest we just leave that out for
-the time being to make life easier (does it even apply to anything other
-than Juno?) and figure it out later.
-
-> +			continue;
-> +
-> +		start = window->res->start - window->offset;
-> +		length = window->res->end - window->res->start + 1;
-> +		region = iommu_alloc_resv_region(start, length,
-> +						 IOMMU_RESV_NOMAP);
-> +		if (!region)
-> +			return;
-> +		list_add_tail(&region->list, head);
-> +	}
-> +}
-
-Either way, there's nothing SMMU-specific about PCI windows. The fact
-that we'd have to copy-paste all of this into the SMMUv3 driver
-unchanged suggests it should go somewhere common (although I would be
-inclined to leave the insertion of the fake MSI region to driver-private
-wrappers). As I said before, the current iova_reserve_pci_windows()
-simply wants splitting into appropriate public callbacks for
-get_resv_regions and apply_resv_regions.
+If you want to pick up my short-descriptor and SMMUv3 patches and run
+with them you're more than welcome - the rest is just cosmetic stuff
+which doesn't really matter, especially as it's picking up acks as-is.
 
 Robin.
 
-> +static void arm_smmu_put_resv_regions(struct device *dev,
-> +				      struct list_head *head)
-> +{
-> +	struct iommu_resv_region *entry, *next;
-> +
-> +	list_for_each_entry_safe(entry, next, head, list)
-> +		kfree(entry);
-> +}
-> +
->  static struct iommu_ops arm_smmu_ops = {
->  	.capable		= arm_smmu_capable,
->  	.domain_alloc		= arm_smmu_domain_alloc,
-> @@ -1560,6 +1610,8 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
->  	.domain_get_attr	= arm_smmu_domain_get_attr,
->  	.domain_set_attr	= arm_smmu_domain_set_attr,
->  	.of_xlate		= arm_smmu_of_xlate,
-> +	.get_resv_regions	= arm_smmu_get_resv_regions,
-> +	.put_resv_regions	= arm_smmu_put_resv_regions,
->  	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
->  };
->  
+> Regards,
+>  Sricharan
+> 
 > 
