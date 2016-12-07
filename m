@@ -1,15 +1,15 @@
 From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC v3 06/10] iommu: iommu_get_group_resv_regions
-Date: Wed, 7 Dec 2016 16:13:46 +0100
-Message-ID: <c2a635f7-6b2b-d8f8-12c3-7759cbd7da43@redhat.com>
+Subject: Re: [RFC v3 05/10] iommu: Do not map reserved regions
+Date: Wed, 7 Dec 2016 16:15:08 +0100
+Message-ID: <a6954c16-dc81-8694-2b4b-10f0c47dd2d6@redhat.com>
 References: <1479215363-2898-1-git-send-email-eric.auger@redhat.com>
-	<1479215363-2898-7-git-send-email-eric.auger@redhat.com>
-	<8eb9662b-d677-546c-feb8-32fe5bd624f2@arm.com>
+	<1479215363-2898-6-git-send-email-eric.auger@redhat.com>
+	<fff44f65-d9a6-1e35-97cd-997b92d2fce3@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <8eb9662b-d677-546c-feb8-32fe5bd624f2-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <fff44f65-d9a6-1e35-97cd-997b92d2fce3-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,141 +23,52 @@ To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, eric.auger.pro-Re5
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hi Robin
 
-On 06/12/2016 19:13, Robin Murphy wrote:
+On 06/12/2016 18:36, Robin Murphy wrote:
 > On 15/11/16 13:09, Eric Auger wrote:
->> Introduce iommu_get_group_resv_regions whose role consists in
->> enumerating all devices from the group and collecting their
->> reserved regions. It checks duplicates.
+>> As we introduced IOMMU_RESV_NOMAP and IOMMU_RESV_MSI regions,
+>> let's prevent those new regions from being mapped.
 >>
 >> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
->>
 >> ---
->>
->> - we do not move list elements from device to group list since
->>   the iommu_put_resv_regions() could not be called.
->> - at the moment I did not introduce any iommu_put_group_resv_regions
->>   since it simply consists in voiding/freeing the list
->> ---
->>  drivers/iommu/iommu.c | 53 +++++++++++++++++++++++++++++++++++++++++++++++++++
->>  include/linux/iommu.h |  8 ++++++++
->>  2 files changed, 61 insertions(+)
+>>  drivers/iommu/iommu.c | 3 +++
+>>  1 file changed, 3 insertions(+)
 >>
 >> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index a4530ad..e0fbcc5 100644
+>> index 6ee529f..a4530ad 100644
 >> --- a/drivers/iommu/iommu.c
 >> +++ b/drivers/iommu/iommu.c
->> @@ -133,6 +133,59 @@ static ssize_t iommu_group_show_name(struct iommu_group *group, char *buf)
->>  	return sprintf(buf, "%s\n", group->name);
->>  }
+>> @@ -343,6 +343,9 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
+>>  		start = ALIGN(entry->start, pg_size);
+>>  		end   = ALIGN(entry->start + entry->length, pg_size);
 >>  
->> +static bool iommu_resv_region_present(struct iommu_resv_region *region,
->> +				      struct list_head *head)
->> +{
->> +	struct iommu_resv_region *entry;
->> +
->> +	list_for_each_entry(entry, head, list) {
->> +		if ((region->start == entry->start) &&
->> +		    (region->length == entry->length) &&
->> +		    (region->prot == entry->prot))
->> +			return true;
->> +	}
->> +	return false;
->> +}
->> +
->> +static int
->> +iommu_insert_device_resv_regions(struct list_head *dev_resv_regions,
->> +				 struct list_head *group_resv_regions)
->> +{
->> +	struct iommu_resv_region *entry, *region;
->> +
->> +	list_for_each_entry(entry, dev_resv_regions, list) {
->> +		if (iommu_resv_region_present(entry, group_resv_regions))
->> +			continue;
+>> +		if (entry->prot & IOMMU_RESV_MASK)
 > 
-> In the case of overlapping regions which _aren't_ an exact match, would
-> it be better to expand the existing one rather than leave the caller to
-> sort it out? It seems a bit inconsistent to handle only the one case here.
+> This seems to be the only place that this mask is used, and frankly I
+> think it's less clear than simply "(IOMMU_RESV_NOMAP | IOMMU_RESV_MSI)"
+> would be, at which point we may as well drop the mask and special value
+> trickery altogether. Plus, per my previous comment, if it were to be "if
+> (entry->type != <direct mapped type>)" instead, that's about as obvious
+> as it can get.
+OK I will add this new type entry in the reserved window struct.
 
-Well this is mostly here to avoid inserting several times the same PCIe
-host bridge windows (retrieved from several PCIe EP attached to the same
-bridge). I don't know if it is worth making things over-complicated. Do
-you have another situation in mind?
-> 
->> +		region = iommu_alloc_resv_region(entry->start, entry->length,
->> +					       entry->prot);
->> +		if (!region)
->> +			return -ENOMEM;
->> +
->> +		list_add_tail(&region->list, group_resv_regions);
->> +	}
->> +	return 0;
->> +}
->> +
->> +int iommu_get_group_resv_regions(struct iommu_group *group,
->> +				 struct list_head *head)
->> +{
->> +	struct iommu_device *device;
->> +	int ret = 0;
->> +
->> +	list_for_each_entry(device, &group->devices, list) {
-> 
-> Should we not be taking the group mutex around this?
-Yes you're right.
-
-Thanks
+thanks
 
 Eric
 > 
 > Robin.
 > 
->> +		struct list_head dev_resv_regions;
+>> +			continue;
 >> +
->> +		INIT_LIST_HEAD(&dev_resv_regions);
->> +		iommu_get_resv_regions(device->dev, &dev_resv_regions);
->> +		ret = iommu_insert_device_resv_regions(&dev_resv_regions, head);
->> +		iommu_put_resv_regions(device->dev, &dev_resv_regions);
->> +		if (ret)
->> +			break;
->> +	}
->> +	return ret;
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_get_group_resv_regions);
->> +
->>  static IOMMU_GROUP_ATTR(name, S_IRUGO, iommu_group_show_name, NULL);
+>>  		for (addr = start; addr < end; addr += pg_size) {
+>>  			phys_addr_t phys_addr;
 >>  
->>  static void iommu_group_release(struct kobject *kobj)
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index 0aea877..0f7ae2c 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -243,6 +243,8 @@ extern void iommu_set_fault_handler(struct iommu_domain *domain,
->>  extern int iommu_request_dm_for_dev(struct device *dev);
->>  extern struct iommu_resv_region *
->>  iommu_alloc_resv_region(phys_addr_t start, size_t length, unsigned int prot);
->> +extern int iommu_get_group_resv_regions(struct iommu_group *group,
->> +					struct list_head *head);
->>  
->>  extern int iommu_attach_group(struct iommu_domain *domain,
->>  			      struct iommu_group *group);
->> @@ -462,6 +464,12 @@ static inline void iommu_put_resv_regions(struct device *dev,
->>  	return NULL;
->>  }
->>  
->> +static inline int iommu_get_group_resv_regions(struct iommu_group *group,
->> +					       struct list_head *head)
->> +{
->> +	return -ENODEV;
->> +}
->> +
->>  static inline int iommu_request_dm_for_dev(struct device *dev)
->>  {
->>  	return -ENODEV;
 >>
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe kvm" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 > 
