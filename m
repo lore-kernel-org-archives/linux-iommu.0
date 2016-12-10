@@ -1,159 +1,144 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [RFC PATCH v3 10/20] Add support to access boot related data in
- the clear
-Date: Fri, 9 Dec 2016 08:26:40 -0600
-Message-ID: <8aebb166-12ae-64aa-bf1a-3f46fe8b52dd@amd.com>
-References: <20161110003426.3280.2999.stgit@tlendack-t1.amdoffice.net>
- <20161110003631.3280.73292.stgit@tlendack-t1.amdoffice.net>
- <20161207131903.GU20785@codeblueprint.co.uk>
+From: "Sricharan" <sricharan@codeaurora.org>
+Subject: RE: [PATCH 3/4] iommu/arm-smmu: Disable stalling faults for all endpoints
+Date: Sat, 10 Dec 2016 21:14:42 +0530
+Message-ID: <000301d252fc$5b19a810$114cf830$@codeaurora.org>
+References: <1471525542-14969-1-git-send-email-will.deacon@arm.com> <1471525542-14969-4-git-send-email-will.deacon@arm.com> <CAF6AEGujUb37qagBZK1T13eAh=50zy0z5HpFF9FsuvkZZ7c5qw@mail.gmail.com> <20161207000025.GB21862@jcrouse-lnx.qualcomm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain;
+        charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20161207131903.GU20785@codeblueprint.co.uk>
-Sender: owner-linux-mm@kvack.org
-To: Matt Fleming <matt@codeblueprint.co.uk>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>, Ard Biesheuvel <ard.biesheuvel@linaro.>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20161207000025.GB21862@jcrouse-lnx.qualcomm.com>
+Content-Language: en-us
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: 'Jordan Crouse' <jcrouse@codeaurora.org>, 'Rob Clark' <robdclark@gmail.com>
+Cc: 'linux-arm-msm' <linux-arm-msm@vger.kernel.org>, iommu@lists.linux-foundation.org, 'Will Deacon' <will.deacon@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/7/2016 7:19 AM, Matt Fleming wrote:
-> On Wed, 09 Nov, at 06:36:31PM, Tom Lendacky wrote:
->> Boot data (such as EFI related data) is not encrypted when the system is
->> booted and needs to be accessed unencrypted.  Add support to apply the
->> proper attributes to the EFI page tables and to the early_memremap and
->> memremap APIs to identify the type of data being accessed so that the
->> proper encryption attribute can be applied.
+Hi Rob,
+
+>> > Although it's not really Linux's job to save hardware integrators from
+>> > their own misfortune, it *is* our job to stop userspace (e.g. VFIO
+>> > clients) from hosing the system for everybody else, even if they might
+>> > already be required to have elevated privileges.
+>> >
+>> > Given that the fault handling code currently executes entirely in IRQ
+>> > context, there is nothing that can sensibly be done to recover from
+>> > things like page faults anyway, so let's rip this code out for now and
+>> > avoid the potential for deadlock.
 >>
->> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
->> ---
->>  arch/x86/include/asm/e820.h    |    1 
->>  arch/x86/kernel/e820.c         |   16 +++++++
->>  arch/x86/mm/ioremap.c          |   89 ++++++++++++++++++++++++++++++++++++++++
->>  arch/x86/platform/efi/efi_64.c |   12 ++++-
->>  drivers/firmware/efi/efi.c     |   33 +++++++++++++++
->>  include/linux/efi.h            |    2 +
->>  kernel/memremap.c              |    8 +++-
->>  mm/early_ioremap.c             |   18 +++++++-
->>  8 files changed, 172 insertions(+), 7 deletions(-)
->  
-> FWIW, I think this version is an improvement over all the previous
-> ones.
-> 
-> [...]
-> 
->> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
->> index ff542cd..ee347c2 100644
->> --- a/arch/x86/mm/ioremap.c
->> +++ b/arch/x86/mm/ioremap.c
->> @@ -20,6 +20,9 @@
->>  #include <asm/tlbflush.h>
->>  #include <asm/pgalloc.h>
->>  #include <asm/pat.h>
->> +#include <asm/e820.h>
->> +#include <asm/setup.h>
->> +#include <linux/efi.h>
->>  
->>  #include "physaddr.h"
->>  
->> @@ -418,6 +421,92 @@ void unxlate_dev_mem_ptr(phys_addr_t phys, void *addr)
->>  	iounmap((void __iomem *)((unsigned long)addr & PAGE_MASK));
->>  }
->>  
->> +static bool memremap_setup_data(resource_size_t phys_addr,
->> +				unsigned long size)
->> +{
->> +	u64 paddr;
->> +
->> +	if (phys_addr == boot_params.hdr.setup_data)
->> +		return true;
->> +
-> 
-> Why is the setup_data linked list not traversed when checking for
-> matching addresses? Am I reading this incorrectly? I don't see how
-> this can work.
+>> Hi Will,
+>>
+>> so, I'd like to re-introduce this feature, I *guess* as some sort of
+>> opt-in quirk (ie. disabled by default unless something in DT tells you
+>> otherwise??  But I'm open to suggestions.  I'm not entirely sure what
+>> hw was having problems due to this feature.)
+>>
+>> On newer snapdragon devices we are using arm-smmu for the GPU, and
+>> halting the GPU so the driver's fault handler can dump some GPU state
+>> on faults is enormously helpful for debugging and tracking down where
+>> in the gpu cmdstream the fault was triggered.  In addition, we will
+>> eventually want the ability to update pagetables from fault handler
+>> and resuming the faulting transition.
+>>
+>> Some additional comments below..
+>>
+>> > Cc: <stable@vger.kernel.org>
+>> > Reported-by: Matt Evans <matt.evans@arm.com>
+>> > Signed-off-by: Will Deacon <will.deacon@arm.com>
+>> > ---
+>> >  drivers/iommu/arm-smmu.c | 34 +++++++---------------------------
+>> >  1 file changed, 7 insertions(+), 27 deletions(-)
+>> >
+>> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> > index 4f49fe29f202..2db74ebc3240 100644
+>> > --- a/drivers/iommu/arm-smmu.c
+>> > +++ b/drivers/iommu/arm-smmu.c
+>> > @@ -686,8 +686,7 @@ static struct iommu_gather_ops arm_smmu_gather_ops = {
+>> >
+>> >  static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+>> >  {
+>> > -       int flags, ret;
+>> > -       u32 fsr, fsynr, resume;
+>> > +       u32 fsr, fsynr;
+>> >         unsigned long iova;
+>> >         struct iommu_domain *domain = dev;
+>> >         struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>> > @@ -701,34 +700,15 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+>> >         if (!(fsr & FSR_FAULT))
+>> >                 return IRQ_NONE;
+>> >
+>> > -       if (fsr & FSR_IGN)
+>> > -               dev_err_ratelimited(smmu->dev,
+>> > -                                   "Unexpected context fault (fsr 0x%x)\n",
+>> > -                                   fsr);
+>> > -
+>> >         fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
+>> > -       flags = fsynr & FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ;
+>> > -
+>> >         iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
+>> > -       if (!report_iommu_fault(domain, smmu->dev, iova, flags)) {
+>> > -               ret = IRQ_HANDLED;
+>> > -               resume = RESUME_RETRY;
+>> > -       } else {
+>> > -               dev_err_ratelimited(smmu->dev,
+>> > -                   "Unhandled context fault: iova=0x%08lx, fsynr=0x%x, cb=%d\n",
+>> > -                   iova, fsynr, cfg->cbndx);
+>>
+>> I would like to decouple this dev_err_ratelimit() print from the
+>> RESUME_RETRY vs RESUME_TERMINATE behaviour.  I need the ability to
+>> indicate by return from my fault handler whether to resume or
+>> terminate.  But I already have my own ratelimted prints and would
+>> prefer not to spam dmesg twice.
+>>
+>> I'm thinking about report_iommu_fault() returning:
+>>
+>>   0 => RESUME_RETRY
+>>   -EFAULT => RESUME_TERMINATE but don't print
+>>   anything else (or specifically -ENOSYS?) => RESUME_TERMINATE and print
+>>
+>> thoughts?
+>>
+>> > -               ret = IRQ_NONE;
+>> > -               resume = RESUME_TERMINATE;
+>> > -       }
+>> > -
+>> > -       /* Clear the faulting FSR */
+>> > -       writel(fsr, cb_base + ARM_SMMU_CB_FSR);
+>> >
+>> > -       /* Retry or terminate any stalled transactions */
+>> > -       if (fsr & FSR_SS)
+>> > -               writel_relaxed(resume, cb_base + ARM_SMMU_CB_RESUME);
+>>
+>> This might be a bug in qcom's implementation of the smmu spec, but
+>> seems like we don't have SS bit set, yet we still require RESUME reg
+>> to be written, otherwise gpu is perma-wedged.  Maybe topic for a
+>> separate quirk?  I'm not sure if writing RESUME reg on other hw when
+>> SS bit is not set is likely to cause problems?  If not I suppose we
+>> could just unconditionally write it.
+>>
+>> Anyways, I'm not super-familiar w/ arm-smmu so suggestions welcome..
+>> in between debugging freedreno I'll try to put together some patches.
+>
+>From what I can tell we need SCTLR_CFCFG to make the stall happen otherwise
+>the operation just gets terminated immediately and *then* we get notification
+>but by then the system keeps going.
+>
 
-Yeah, I caught that too after I sent this out. I think the best way to
-handle this would be to create a list/array of setup data addresses in
-the parse_setup_data() routine and then check the address against that
-list in this routine.
+Yes thats right, SCTLR_CFCFG was removed as a part of this patch.
 
-> 
->> +	paddr = boot_params.efi_info.efi_memmap_hi;
->> +	paddr <<= 32;
->> +	paddr |= boot_params.efi_info.efi_memmap;
->> +	if (phys_addr == paddr)
->> +		return true;
->> +
->> +	paddr = boot_params.efi_info.efi_systab_hi;
->> +	paddr <<= 32;
->> +	paddr |= boot_params.efi_info.efi_systab;
->> +	if (phys_addr == paddr)
->> +		return true;
->> +
->> +	if (efi_table_address_match(phys_addr))
->> +		return true;
->> +
->> +	return false;
->> +}
->> +
->> +static bool memremap_apply_encryption(resource_size_t phys_addr,
->> +				      unsigned long size)
->> +{
->> +	/* SME is not active, just return true */
->> +	if (!sme_me_mask)
->> +		return true;
->> +
->> +	/* Check if the address is part of the setup data */
->> +	if (memremap_setup_data(phys_addr, size))
->> +		return false;
->> +
->> +	/* Check if the address is part of EFI boot/runtime data */
->> +	switch (efi_mem_type(phys_addr)) {
->> +	case EFI_BOOT_SERVICES_DATA:
->> +	case EFI_RUNTIME_SERVICES_DATA:
->> +		return false;
->> +	}
-> 
-> EFI_LOADER_DATA is notable by its absence.
-> 
-> We use that memory type for allocations inside of the EFI boot stub
-> that are than used while the kernel is running. One use that comes to
-> mind is for initrd files, see handle_cmdline_files().
-> 
-> Oh I see you handle that in PATCH 9, never mind.
-> 
->> diff --git a/arch/x86/platform/efi/efi_64.c b/arch/x86/platform/efi/efi_64.c
->> index 58b0f80..3f89179 100644
->> --- a/arch/x86/platform/efi/efi_64.c
->> +++ b/arch/x86/platform/efi/efi_64.c
->> @@ -221,7 +221,13 @@ int __init efi_setup_page_tables(unsigned long pa_memmap, unsigned num_pages)
->>  	if (efi_enabled(EFI_OLD_MEMMAP))
->>  		return 0;
->>  
->> -	efi_scratch.efi_pgt = (pgd_t *)__pa(efi_pgd);
->> +	/*
->> +	 * Since the PGD is encrypted, set the encryption mask so that when
->> +	 * this value is loaded into cr3 the PGD will be decrypted during
->> +	 * the pagetable walk.
->> +	 */
->> +	efi_scratch.efi_pgt = (pgd_t *)__sme_pa(efi_pgd);
->> +
->>  	pgd = efi_pgd;
->>  
->>  	/*
-> 
-> Do all callers of __pa() in arch/x86 need fixing up like this?
+>I think SCTLR_HUPCF helps control that behavior (i.e. we don't go off faulting
+>through eternity) but I don't know how it works.
+>
+>From my very unlearned understanding I think we do want to set CFCFG and then
+>stall and let the interrupt handler decide to retry/terminate.
 
-No, currently this is only be needed when we're dealing with values that
-will be used in the cr3 register.
+Yes, infact i was thinking of adding this as a new patch, but now that this was
+a reverted one. As you said, it would be good to know  the hw which was having
+problem with this and probably having this has a quirk otherwise.
 
-Thanks,
-Tom
+Also i see that FSR_SS is implemented by the qcom  and the 
+downstream code uses it.
 
-> 
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Regards,
+  Sricharan
