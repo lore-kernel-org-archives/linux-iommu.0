@@ -1,144 +1,131 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH 3/4] iommu/arm-smmu: Disable stalling faults for all endpoints
-Date: Sat, 10 Dec 2016 21:14:42 +0530
-Message-ID: <000301d252fc$5b19a810$114cf830$@codeaurora.org>
-References: <1471525542-14969-1-git-send-email-will.deacon@arm.com> <1471525542-14969-4-git-send-email-will.deacon@arm.com> <CAF6AEGujUb37qagBZK1T13eAh=50zy0z5HpFF9FsuvkZZ7c5qw@mail.gmail.com> <20161207000025.GB21862@jcrouse-lnx.qualcomm.com>
+From: Don Dutile <ddutile-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC v3 00/10] KVM PCIe/MSI passthrough on ARM/ARM64 and IOVA
+	reserved regions
+Date: Sat, 10 Dec 2016 21:05:53 -0500
+Message-ID: <584CB481.3040902@redhat.com>
+References: <1479215363-2898-1-git-send-email-eric.auger@redhat.com>
+	<c5d4efa7-699d-4aa3-44cc-4ce03d0ce185@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <20161207000025.GB21862@jcrouse-lnx.qualcomm.com>
-Content-Language: en-us
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: 'Jordan Crouse' <jcrouse@codeaurora.org>, 'Rob Clark' <robdclark@gmail.com>
-Cc: 'linux-arm-msm' <linux-arm-msm@vger.kernel.org>, iommu@lists.linux-foundation.org, 'Will Deacon' <will.deacon@arm.com>, linux-arm-kernel@lists.infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <c5d4efa7-699d-4aa3-44cc-4ce03d0ce185-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Rob,
-
->> > Although it's not really Linux's job to save hardware integrators from
->> > their own misfortune, it *is* our job to stop userspace (e.g. VFIO
->> > clients) from hosing the system for everybody else, even if they might
->> > already be required to have elevated privileges.
->> >
->> > Given that the fault handling code currently executes entirely in IRQ
->> > context, there is nothing that can sensibly be done to recover from
->> > things like page faults anyway, so let's rip this code out for now and
->> > avoid the potential for deadlock.
->>
->> Hi Will,
->>
->> so, I'd like to re-introduce this feature, I *guess* as some sort of
->> opt-in quirk (ie. disabled by default unless something in DT tells you
->> otherwise??  But I'm open to suggestions.  I'm not entirely sure what
->> hw was having problems due to this feature.)
->>
->> On newer snapdragon devices we are using arm-smmu for the GPU, and
->> halting the GPU so the driver's fault handler can dump some GPU state
->> on faults is enormously helpful for debugging and tracking down where
->> in the gpu cmdstream the fault was triggered.  In addition, we will
->> eventually want the ability to update pagetables from fault handler
->> and resuming the faulting transition.
->>
->> Some additional comments below..
->>
->> > Cc: <stable@vger.kernel.org>
->> > Reported-by: Matt Evans <matt.evans@arm.com>
->> > Signed-off-by: Will Deacon <will.deacon@arm.com>
->> > ---
->> >  drivers/iommu/arm-smmu.c | 34 +++++++---------------------------
->> >  1 file changed, 7 insertions(+), 27 deletions(-)
->> >
->> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> > index 4f49fe29f202..2db74ebc3240 100644
->> > --- a/drivers/iommu/arm-smmu.c
->> > +++ b/drivers/iommu/arm-smmu.c
->> > @@ -686,8 +686,7 @@ static struct iommu_gather_ops arm_smmu_gather_ops = {
->> >
->> >  static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->> >  {
->> > -       int flags, ret;
->> > -       u32 fsr, fsynr, resume;
->> > +       u32 fsr, fsynr;
->> >         unsigned long iova;
->> >         struct iommu_domain *domain = dev;
->> >         struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->> > @@ -701,34 +700,15 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->> >         if (!(fsr & FSR_FAULT))
->> >                 return IRQ_NONE;
->> >
->> > -       if (fsr & FSR_IGN)
->> > -               dev_err_ratelimited(smmu->dev,
->> > -                                   "Unexpected context fault (fsr 0x%x)\n",
->> > -                                   fsr);
->> > -
->> >         fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
->> > -       flags = fsynr & FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ;
->> > -
->> >         iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
->> > -       if (!report_iommu_fault(domain, smmu->dev, iova, flags)) {
->> > -               ret = IRQ_HANDLED;
->> > -               resume = RESUME_RETRY;
->> > -       } else {
->> > -               dev_err_ratelimited(smmu->dev,
->> > -                   "Unhandled context fault: iova=0x%08lx, fsynr=0x%x, cb=%d\n",
->> > -                   iova, fsynr, cfg->cbndx);
->>
->> I would like to decouple this dev_err_ratelimit() print from the
->> RESUME_RETRY vs RESUME_TERMINATE behaviour.  I need the ability to
->> indicate by return from my fault handler whether to resume or
->> terminate.  But I already have my own ratelimted prints and would
->> prefer not to spam dmesg twice.
->>
->> I'm thinking about report_iommu_fault() returning:
->>
->>   0 => RESUME_RETRY
->>   -EFAULT => RESUME_TERMINATE but don't print
->>   anything else (or specifically -ENOSYS?) => RESUME_TERMINATE and print
->>
->> thoughts?
->>
->> > -               ret = IRQ_NONE;
->> > -               resume = RESUME_TERMINATE;
->> > -       }
->> > -
->> > -       /* Clear the faulting FSR */
->> > -       writel(fsr, cb_base + ARM_SMMU_CB_FSR);
->> >
->> > -       /* Retry or terminate any stalled transactions */
->> > -       if (fsr & FSR_SS)
->> > -               writel_relaxed(resume, cb_base + ARM_SMMU_CB_RESUME);
->>
->> This might be a bug in qcom's implementation of the smmu spec, but
->> seems like we don't have SS bit set, yet we still require RESUME reg
->> to be written, otherwise gpu is perma-wedged.  Maybe topic for a
->> separate quirk?  I'm not sure if writing RESUME reg on other hw when
->> SS bit is not set is likely to cause problems?  If not I suppose we
->> could just unconditionally write it.
->>
->> Anyways, I'm not super-familiar w/ arm-smmu so suggestions welcome..
->> in between debugging freedreno I'll try to put together some patches.
+On 12/08/2016 04:36 AM, Auger Eric wrote:
+> Hi,
 >
->From what I can tell we need SCTLR_CFCFG to make the stall happen otherwise
->the operation just gets terminated immediately and *then* we get notification
->but by then the system keeps going.
+> On 15/11/2016 14:09, Eric Auger wrote:
+>> Following LPC discussions, we now report reserved regions through
+>> iommu-group sysfs reserved_regions attribute file.
 >
-
-Yes thats right, SCTLR_CFCFG was removed as a part of this patch.
-
->I think SCTLR_HUPCF helps control that behavior (i.e. we don't go off faulting
->through eternity) but I don't know how it works.
 >
->From my very unlearned understanding I think we do want to set CFCFG and then
->stall and let the interrupt handler decide to retry/terminate.
+> While I am respinning this series into v4, here is a tentative summary
+> of technical topics for which no consensus was reached at this point.
+>
+> 1) Shall we report the usable IOVA range instead of reserved IOVA
+>     ranges. Not discussed at/after LPC.
+>     x I currently report reserved regions. Alex expressed the need to
+>       report the full usable IOVA range instead (x86 min-max range
+>       minus MSI APIC window). I think this is meaningful for ARM
+>       too where arm-smmu might not support the full 64b range.
+>     x Any objection we report the usable IOVA regions instead?
+>
+> 2) Shall the kernel check collision with MSI window* when userspace
+>     calls VFIO_IOMMU_MAP_DMA?
+>     Joerg/Will No; Alex yes
+>     *for IOVA regions consumed downstream to the IOMMU: everyone says NO
+>
+> 3) RMRR reporting in the iommu group sysfs? Joerg: yes; Don: no
+Um, I'm missing context, but the only thing I recall saying no to wrt RMRR
+is that _any_ device that has an RMRR cannot be assigned to a guest.
+Or, are you saying, RMRR's should be exposed in the guest os?  if so, then
+you have my 'no' there.
 
-Yes, infact i was thinking of adding this as a new patch, but now that this was
-a reverted one. As you said, it would be good to know  the hw which was having
-problem with this and probably having this has a quirk otherwise.
+>     My current series does not expose them in iommu group sysfs.
+>     I understand we can expose the RMRR regions in the iomm group sysfs
+>     without necessarily supporting RMRR requiring device assignment.
+This sentence doesn't make sense to me.
+Can you try re-wording it?
+I can't tell what RMRR has to do w/device assignment, other than what I said above.
+Exposing RMRR's in sysfs is not an issue in general.
 
-Also i see that FSR_SS is implemented by the qcom  and the 
-downstream code uses it.
-
-Regards,
-  Sricharan
+>     We can also add this support later.
+>
+> Thanks
+>
+> Eric
+>
+>
+>>
+>> Reserved regions are populated through the IOMMU get_resv_region callback
+>> (former get_dm_regions), now implemented by amd-iommu, intel-iommu and
+>> arm-smmu.
+>>
+>> The intel-iommu reports the [FEE0_0000h - FEF0_000h] MSI window as an
+>> IOMMU_RESV_NOMAP reserved region.
+>>
+>> arm-smmu reports the MSI window (arbitrarily located at 0x8000000 and
+>> 1MB large) and the PCI host bridge windows.
+>>
+>> The series integrates a not officially posted patch from Robin:
+>> "iommu/dma: Allow MSI-only cookies".
+>>
+>> This series currently does not address IRQ safety assessment.
+>>
+>> Best Regards
+>>
+>> Eric
+>>
+>> Git: complete series available at
+>> https://github.com/eauger/linux/tree/v4.9-rc5-reserved-rfc-v3
+>>
+>> History:
+>> RFC v2 -> v3:
+>> - switch to an iommu-group sysfs API
+>> - use new dummy allocator provided by Robin
+>> - dummy allocator initialized by vfio-iommu-type1 after enumerating
+>>    the reserved regions
+>> - at the moment ARM MSI base address/size is left unchanged compared
+>>    to v2
+>> - we currently report reserved regions and not usable IOVA regions as
+>>    requested by Alex
+>>
+>> RFC v1 -> v2:
+>> - fix intel_add_reserved_regions
+>> - add mutex lock/unlock in vfio_iommu_type1
+>>
+>>
+>> Eric Auger (10):
+>>    iommu/dma: Allow MSI-only cookies
+>>    iommu: Rename iommu_dm_regions into iommu_resv_regions
+>>    iommu: Add new reserved IOMMU attributes
+>>    iommu: iommu_alloc_resv_region
+>>    iommu: Do not map reserved regions
+>>    iommu: iommu_get_group_resv_regions
+>>    iommu: Implement reserved_regions iommu-group sysfs file
+>>    iommu/vt-d: Implement reserved region get/put callbacks
+>>    iommu/arm-smmu: Implement reserved region get/put callbacks
+>>    vfio/type1: Get MSI cookie
+>>
+>>   drivers/iommu/amd_iommu.c       |  20 +++---
+>>   drivers/iommu/arm-smmu.c        |  52 +++++++++++++++
+>>   drivers/iommu/dma-iommu.c       | 116 ++++++++++++++++++++++++++-------
+>>   drivers/iommu/intel-iommu.c     |  50 ++++++++++----
+>>   drivers/iommu/iommu.c           | 141 ++++++++++++++++++++++++++++++++++++----
+>>   drivers/vfio/vfio_iommu_type1.c |  26 ++++++++
+>>   include/linux/dma-iommu.h       |   7 ++
+>>   include/linux/iommu.h           |  49 ++++++++++----
+>>   8 files changed, 391 insertions(+), 70 deletions(-)
+>>
