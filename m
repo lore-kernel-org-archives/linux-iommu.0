@@ -1,7 +1,8 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V7 6/8] dmaengine: pl330: Make sure microcode is privileged
-Date: Tue, 13 Dec 2016 00:08:45 +0530
-Message-ID: <1481567927-14791-7-git-send-email-sricharan@codeaurora.org>
+Subject: [PATCH V7 7/8] iommu/arm-smmu: Set privileged attribute to 'default'
+	instead of 'unprivileged'
+Date: Tue, 13 Dec 2016 00:08:46 +0530
+Message-ID: <1481567927-14791-8-git-send-email-sricharan@codeaurora.org>
 References: <1481567927-14791-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,51 +22,31 @@ To: jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, pdaly-sgV2jX0FEOL9JmXXK+q4O
 Cc: dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Currently the driver sets all the device transactions privileges
+to UNPRIVILEGED, but there are cases where the iommu masters wants
+to isolate privileged supervisor and unprivileged user.
+So don't override the privileged setting to unprivileged, instead
+set it to default as incoming and let it be controlled by the pagetable
+settings.
 
-The PL330 is hard-wired such that instruction fetches on both the
-manager and channel threads go out onto the bus with the "privileged"
-bit set. This can become troublesome once there is an IOMMU or other
-form of memory protection downstream, since those will typically be
-programmed by the DMA mapping subsystem in the expectation of normal
-unprivileged transactions (such as the PL330 channel threads' own data
-accesses as currently configured by this driver).
-
-To avoid the case of, say, an IOMMU blocking an unexpected privileged
-transaction with a permission fault, use the newly-introduced
-DMA_ATTR_PRIVILEGED attribute for the mapping of our microcode buffer.
-That way the DMA layer can do whatever it needs to do to make things
-continue to work as expected on more complex systems.
-
-Cc: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Acked-by: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-[rm: remove now-redundant local variable, clarify commit message]
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- drivers/dma/pl330.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/iommu/arm-smmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
-index 030fe05..1e5ae0c 100644
---- a/drivers/dma/pl330.c
-+++ b/drivers/dma/pl330.c
-@@ -1859,9 +1859,10 @@ static int dmac_alloc_resources(struct pl330_dmac *pl330)
- 	 * Alloc MicroCode buffer for 'chans' Channel threads.
- 	 * A channel's buffer offset is (Channel_Id * MCODE_BUFF_PERCHAN)
- 	 */
--	pl330->mcode_cpu = dma_alloc_coherent(pl330->ddma.dev,
-+	pl330->mcode_cpu = dma_alloc_attrs(pl330->ddma.dev,
- 				chans * pl330->mcbufsz,
--				&pl330->mcode_bus, GFP_KERNEL);
-+				&pl330->mcode_bus, GFP_KERNEL,
-+				DMA_ATTR_PRIVILEGED);
- 	if (!pl330->mcode_cpu) {
- 		dev_err(pl330->ddma.dev, "%s:%d Can't allocate memory!\n",
- 			__func__, __LINE__);
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index eaa8f44..8bb0eea 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1213,7 +1213,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ 			continue;
+ 
+ 		s2cr[idx].type = type;
+-		s2cr[idx].privcfg = S2CR_PRIVCFG_UNPRIV;
++		s2cr[idx].privcfg = S2CR_PRIVCFG_DEFAULT;
+ 		s2cr[idx].cbndx = cbndx;
+ 		arm_smmu_write_s2cr(smmu, idx);
+ 	}
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
