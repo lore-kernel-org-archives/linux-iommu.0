@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v4 12/16] irqdomain: irq_domain_check_msi_remap
-Date: Tue, 13 Dec 2016 20:30:30 +0000
-Message-ID: <1481661034-3088-13-git-send-email-eric.auger@redhat.com>
+Subject: [RFC v4 14/16] vfio/type1: Allow transparent MSI IOVA allocation
+Date: Tue, 13 Dec 2016 20:30:32 +0000
+Message-ID: <1481661034-3088-15-git-send-email-eric.auger@redhat.com>
 References: <1481661034-3088-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,82 +21,92 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This new function checks whether all platform and PCI
-MSI domains implement IRQ remapping. This is useful to
-understand whether VFIO passthrough is safe with respect
-to interrupts.
-
-On ARM typically an MSI controller can sit downstream
-to the IOMMU without preventing VFIO passthrough.
-As such any assigned device can write into the MSI doorbell.
-In case the MSI controller implements IRQ remapping, assigned
-devices will not be able to trigger interrupts towards the
-host. On the contrary, the assignment must be emphasized as
-unsafe with respect to interrupts.
+When attaching a group to the container, check the group's
+reserved regions and test whether the IOMMU translates MSI
+transactions. If yes, we initialize an IOVA allocator through
+the iommu_get_msi_cookie API. This will allow the MSI IOVAs
+to be transparently allocated on MSI controller's compose().
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- include/linux/irqdomain.h |  5 +++++
- kernel/irq/irqdomain.c    | 24 ++++++++++++++++++++++++
- 2 files changed, 29 insertions(+)
 
-diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
-index ab017b2..b279dd1 100644
---- a/include/linux/irqdomain.h
-+++ b/include/linux/irqdomain.h
-@@ -219,6 +219,7 @@ struct irq_domain *irq_domain_add_legacy(struct device_node *of_node,
- 					 void *host_data);
- extern struct irq_domain *irq_find_matching_fwspec(struct irq_fwspec *fwspec,
- 						   enum irq_domain_bus_token bus_token);
-+extern bool irq_domain_check_msi_remap(void);
- extern void irq_set_default_host(struct irq_domain *host);
- extern int irq_domain_alloc_descs(int virq, unsigned int nr_irqs,
- 				  irq_hw_number_t hwirq, int node,
-@@ -491,6 +492,10 @@ static inline struct irq_domain *irq_find_matching_fwnode(
- {
- 	return NULL;
+---
+
+v3 -> v4:
+- test region's type: IOMMU_RESV_MSI
+- restructure the code to prepare for safety assessment
+- reword title
+---
+ drivers/vfio/vfio_iommu_type1.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 2ba1942..d07fe73 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -36,6 +36,7 @@
+ #include <linux/uaccess.h>
+ #include <linux/vfio.h>
+ #include <linux/workqueue.h>
++#include <linux/dma-iommu.h>
+ 
+ #define DRIVER_VERSION  "0.2"
+ #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
+@@ -734,6 +735,28 @@ static void vfio_test_domain_fgsp(struct vfio_domain *domain)
+ 	__free_pages(pages, order);
  }
-+static inline bool irq_domain_check_msi_remap(void)
-+{
-+	return false;
-+}
- #endif /* !CONFIG_IRQ_DOMAIN */
  
- #endif /* _LINUX_IRQDOMAIN_H */
-diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
-index 8c0a0ae..d9a6fc5 100644
---- a/kernel/irq/irqdomain.c
-+++ b/kernel/irq/irqdomain.c
-@@ -278,6 +278,30 @@ struct irq_domain *irq_find_matching_fwspec(struct irq_fwspec *fwspec,
- EXPORT_SYMBOL_GPL(irq_find_matching_fwspec);
- 
- /**
-+ * irq_domain_check_msi_remap() - Checks whether all PCI and
-+ * platform MSI irq domains implement IRQ remapping
-+ */
-+bool irq_domain_check_msi_remap(void)
++static bool vfio_iommu_has_resv_msi(struct iommu_group *group,
++				    phys_addr_t *base)
 +{
-+	struct irq_domain *h;
-+	bool ret = true;
++	struct list_head group_resv_regions;
++	struct iommu_resv_region *region, *next;
++	bool ret = false;
 +
-+	mutex_lock(&irq_domain_mutex);
-+	list_for_each_entry(h, &irq_domain_list, link) {
-+		if (((h->bus_token & DOMAIN_BUS_PCI_MSI) ||
-+		     (h->bus_token & DOMAIN_BUS_PLATFORM_MSI)) &&
-+		    !(h->flags & IRQ_DOMAIN_FLAG_MSI_REMAP)) {
-+			ret = false;
++	INIT_LIST_HEAD(&group_resv_regions);
++	iommu_get_group_resv_regions(group, &group_resv_regions);
++	list_for_each_entry(region, &group_resv_regions, list) {
++		if (region->type & IOMMU_RESV_MSI) {
++			*base = region->start;
++			ret = true;
 +			goto out;
 +		}
 +	}
 +out:
-+	mutex_unlock(&irq_domain_mutex);
++	list_for_each_entry_safe(region, next, &group_resv_regions, list)
++		kfree(region);
 +	return ret;
 +}
-+EXPORT_SYMBOL_GPL(irq_domain_check_msi_remap);
 +
-+/**
-  * irq_set_default_host() - Set a "default" irq domain
-  * @domain: default domain pointer
-  *
+ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 					 struct iommu_group *iommu_group)
+ {
+@@ -742,6 +765,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	struct vfio_domain *domain, *d;
+ 	struct bus_type *bus = NULL;
+ 	int ret;
++	bool resv_msi;
++	phys_addr_t resv_msi_base;
+ 
+ 	mutex_lock(&iommu->lock);
+ 
+@@ -788,6 +813,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	if (ret)
+ 		goto out_domain;
+ 
++	resv_msi = vfio_iommu_has_resv_msi(iommu_group, &resv_msi_base);
++
+ 	INIT_LIST_HEAD(&domain->group_list);
+ 	list_add(&group->next, &domain->group_list);
+ 
+@@ -834,6 +861,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	if (ret)
+ 		goto out_detach;
+ 
++	if (resv_msi && iommu_get_msi_cookie(domain->domain, resv_msi_base))
++		goto out_detach;
++
+ 	list_add(&domain->next, &iommu->domain_list);
+ 
+ 	mutex_unlock(&iommu->lock);
 -- 
 1.9.1
