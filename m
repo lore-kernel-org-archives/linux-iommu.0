@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v4 10/16] iommu/arm-smmu-v3: Implement reserved region get/put
-	callbacks
-Date: Tue, 13 Dec 2016 20:30:28 +0000
-Message-ID: <1481661034-3088-11-git-send-email-eric.auger@redhat.com>
+Subject: [RFC v4 12/16] irqdomain: irq_domain_check_msi_remap
+Date: Tue, 13 Dec 2016 20:30:30 +0000
+Message-ID: <1481661034-3088-13-git-send-email-eric.auger@redhat.com>
 References: <1481661034-3088-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,75 +21,82 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-iommu/arm-smmu: Implement reserved region get/put callbacks
+This new function checks whether all platform and PCI
+MSI domains implement IRQ remapping. This is useful to
+understand whether VFIO passthrough is safe with respect
+to interrupts.
 
-The get() populates the list with the MSI IOVA reserved window.
-
-At the moment an arbitray MSI IOVA window is set at 0x8000000
-of size 1MB. This will allow to report those info in iommu-group
-sysfs.
+On ARM typically an MSI controller can sit downstream
+to the IOMMU without preventing VFIO passthrough.
+As such any assigned device can write into the MSI doorbell.
+In case the MSI controller implements IRQ remapping, assigned
+devices will not be able to trigger interrupts towards the
+host. On the contrary, the assignment must be emphasized as
+unsafe with respect to interrupts.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
 ---
+ include/linux/irqdomain.h |  5 +++++
+ kernel/irq/irqdomain.c    | 24 ++++++++++++++++++++++++
+ 2 files changed, 29 insertions(+)
 
-v4: creation
----
- drivers/iommu/arm-smmu-v3.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index e6f9b2d..c9ee2f5 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -410,6 +410,9 @@
- /* High-level queue structures */
- #define ARM_SMMU_POLL_TIMEOUT_US	100
- 
-+#define MSI_IOVA_BASE			0x8000000
-+#define MSI_IOVA_LENGTH			0x100000
-+
- static bool disable_bypass;
- module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
- MODULE_PARM_DESC(disable_bypass,
-@@ -1880,6 +1883,29 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	return iommu_fwspec_add_ids(dev, args->args, 1);
+diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
+index ab017b2..b279dd1 100644
+--- a/include/linux/irqdomain.h
++++ b/include/linux/irqdomain.h
+@@ -219,6 +219,7 @@ struct irq_domain *irq_domain_add_legacy(struct device_node *of_node,
+ 					 void *host_data);
+ extern struct irq_domain *irq_find_matching_fwspec(struct irq_fwspec *fwspec,
+ 						   enum irq_domain_bus_token bus_token);
++extern bool irq_domain_check_msi_remap(void);
+ extern void irq_set_default_host(struct irq_domain *host);
+ extern int irq_domain_alloc_descs(int virq, unsigned int nr_irqs,
+ 				  irq_hw_number_t hwirq, int node,
+@@ -491,6 +492,10 @@ static inline struct irq_domain *irq_find_matching_fwnode(
+ {
+ 	return NULL;
  }
- 
-+static void arm_smmu_get_resv_regions(struct device *dev,
-+				      struct list_head *head)
++static inline bool irq_domain_check_msi_remap(void)
 +{
-+	struct iommu_resv_region *region;
-+	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-+
-+	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-+					 prot, IOMMU_RESV_MSI);
-+	if (!region)
-+		return;
-+
-+	list_add_tail(&region->list, head);
++	return false;
 +}
-+
-+static void arm_smmu_put_resv_regions(struct device *dev,
-+				      struct list_head *head)
-+{
-+	struct iommu_resv_region *entry, *next;
-+
-+	list_for_each_entry_safe(entry, next, head, list)
-+		kfree(entry);
-+}
-+
- static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -1895,6 +1921,8 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	.domain_get_attr	= arm_smmu_domain_get_attr,
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
- 	.of_xlate		= arm_smmu_of_xlate,
-+	.get_resv_regions	= arm_smmu_get_resv_regions,
-+	.put_resv_regions	= arm_smmu_put_resv_regions,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- };
+ #endif /* !CONFIG_IRQ_DOMAIN */
  
+ #endif /* _LINUX_IRQDOMAIN_H */
+diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
+index 8c0a0ae..d9a6fc5 100644
+--- a/kernel/irq/irqdomain.c
++++ b/kernel/irq/irqdomain.c
+@@ -278,6 +278,30 @@ struct irq_domain *irq_find_matching_fwspec(struct irq_fwspec *fwspec,
+ EXPORT_SYMBOL_GPL(irq_find_matching_fwspec);
+ 
+ /**
++ * irq_domain_check_msi_remap() - Checks whether all PCI and
++ * platform MSI irq domains implement IRQ remapping
++ */
++bool irq_domain_check_msi_remap(void)
++{
++	struct irq_domain *h;
++	bool ret = true;
++
++	mutex_lock(&irq_domain_mutex);
++	list_for_each_entry(h, &irq_domain_list, link) {
++		if (((h->bus_token & DOMAIN_BUS_PCI_MSI) ||
++		     (h->bus_token & DOMAIN_BUS_PLATFORM_MSI)) &&
++		    !(h->flags & IRQ_DOMAIN_FLAG_MSI_REMAP)) {
++			ret = false;
++			goto out;
++		}
++	}
++out:
++	mutex_unlock(&irq_domain_mutex);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(irq_domain_check_msi_remap);
++
++/**
+  * irq_set_default_host() - Set a "default" irq domain
+  * @domain: default domain pointer
+  *
 -- 
 1.9.1
