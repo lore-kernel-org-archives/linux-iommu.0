@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v4 02/16] iommu: Rename iommu_dm_regions into iommu_resv_regions
-Date: Tue, 13 Dec 2016 20:30:20 +0000
-Message-ID: <1481661034-3088-3-git-send-email-eric.auger@redhat.com>
+Subject: [RFC v4 01/16] iommu/dma: Allow MSI-only cookies
+Date: Tue, 13 Dec 2016 20:30:19 +0000
+Message-ID: <1481661034-3088-2-git-send-email-eric.auger@redhat.com>
 References: <1481661034-3088-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,230 +21,256 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We want to extend the callbacks used for dm regions and
-use them for reserved regions. Reserved regions can be
-- directly mapped regions
-- regions that cannot be iommu mapped (PCI host bridge windows, ...)
-- MSI regions (because they belong to another address space or because
-  they are not translated by the IOMMU and need special handling)
+IOMMU domain users such as VFIO face a similar problem to DMA API ops
+with regard to mapping MSI messages in systems where the MSI write is
+subject to IOMMU translation. With the relevant infrastructure now in
+place for managed DMA domains, it's actually really simple for other
+users to piggyback off that and reap the benefits without giving up
+their own IOVA management, and without having to reinvent their own
+wheel in the MSI layer.
 
-So let's rename the struct and also the callbacks.
+Allow such users to opt into automatic MSI remapping by dedicating a
+region of their IOVA space to a managed cookie, and extend the mapping
+routine to implement a trivial linear allocator in such cases, to avoid
+the needless overhead of a full-blown IOVA domain.
 
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Acked-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
 ---
-
-v3 -> v4:
-- add Robin's A-b
+[Eric] fixed 2 issues on MSI path
 ---
- drivers/iommu/amd_iommu.c | 20 ++++++++++----------
- drivers/iommu/iommu.c     | 22 +++++++++++-----------
- include/linux/iommu.h     | 29 +++++++++++++++--------------
- 3 files changed, 36 insertions(+), 35 deletions(-)
+ drivers/iommu/dma-iommu.c | 116 +++++++++++++++++++++++++++++++++++++---------
+ include/linux/dma-iommu.h |   7 +++
+ 2 files changed, 101 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 754595e..a6c351d 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3159,8 +3159,8 @@ static bool amd_iommu_capable(enum iommu_cap cap)
- 	return false;
- }
- 
--static void amd_iommu_get_dm_regions(struct device *dev,
--				     struct list_head *head)
-+static void amd_iommu_get_resv_regions(struct device *dev,
-+				       struct list_head *head)
- {
- 	struct unity_map_entry *entry;
- 	int devid;
-@@ -3170,7 +3170,7 @@ static void amd_iommu_get_dm_regions(struct device *dev,
- 		return;
- 
- 	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
--		struct iommu_dm_region *region;
-+		struct iommu_resv_region *region;
- 
- 		if (devid < entry->devid_start || devid > entry->devid_end)
- 			continue;
-@@ -3193,18 +3193,18 @@ static void amd_iommu_get_dm_regions(struct device *dev,
- 	}
- }
- 
--static void amd_iommu_put_dm_regions(struct device *dev,
-+static void amd_iommu_put_resv_regions(struct device *dev,
- 				     struct list_head *head)
- {
--	struct iommu_dm_region *entry, *next;
-+	struct iommu_resv_region *entry, *next;
- 
- 	list_for_each_entry_safe(entry, next, head, list)
- 		kfree(entry);
- }
- 
--static void amd_iommu_apply_dm_region(struct device *dev,
-+static void amd_iommu_apply_resv_region(struct device *dev,
- 				      struct iommu_domain *domain,
--				      struct iommu_dm_region *region)
-+				      struct iommu_resv_region *region)
- {
- 	struct dma_ops_domain *dma_dom = to_dma_ops_domain(to_pdomain(domain));
- 	unsigned long start, end;
-@@ -3228,9 +3228,9 @@ static void amd_iommu_apply_dm_region(struct device *dev,
- 	.add_device = amd_iommu_add_device,
- 	.remove_device = amd_iommu_remove_device,
- 	.device_group = amd_iommu_device_group,
--	.get_dm_regions = amd_iommu_get_dm_regions,
--	.put_dm_regions = amd_iommu_put_dm_regions,
--	.apply_dm_region = amd_iommu_apply_dm_region,
-+	.get_resv_regions = amd_iommu_get_resv_regions,
-+	.put_resv_regions = amd_iommu_put_resv_regions,
-+	.apply_resv_region = amd_iommu_apply_resv_region,
- 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index c5ab866..793103f 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -37,10 +37,19 @@ struct iommu_dma_msi_page {
+ 	phys_addr_t		phys;
  };
  
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 9a2f196..c7ed334 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -318,7 +318,7 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
- 					      struct device *dev)
- {
- 	struct iommu_domain *domain = group->default_domain;
--	struct iommu_dm_region *entry;
-+	struct iommu_resv_region *entry;
- 	struct list_head mappings;
- 	unsigned long pg_size;
- 	int ret = 0;
-@@ -331,14 +331,14 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
- 	pg_size = 1UL << __ffs(domain->pgsize_bitmap);
- 	INIT_LIST_HEAD(&mappings);
- 
--	iommu_get_dm_regions(dev, &mappings);
-+	iommu_get_resv_regions(dev, &mappings);
- 
- 	/* We need to consider overlapping regions for different devices */
- 	list_for_each_entry(entry, &mappings, list) {
- 		dma_addr_t start, end, addr;
- 
--		if (domain->ops->apply_dm_region)
--			domain->ops->apply_dm_region(dev, domain, entry);
-+		if (domain->ops->apply_resv_region)
-+			domain->ops->apply_resv_region(dev, domain, entry);
- 
- 		start = ALIGN(entry->start, pg_size);
- 		end   = ALIGN(entry->start + entry->length, pg_size);
-@@ -358,7 +358,7 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
- 	}
- 
- out:
--	iommu_put_dm_regions(dev, &mappings);
-+	iommu_put_resv_regions(dev, &mappings);
- 
- 	return ret;
- }
-@@ -1546,20 +1546,20 @@ int iommu_domain_set_attr(struct iommu_domain *domain,
- }
- EXPORT_SYMBOL_GPL(iommu_domain_set_attr);
- 
--void iommu_get_dm_regions(struct device *dev, struct list_head *list)
-+void iommu_get_resv_regions(struct device *dev, struct list_head *list)
- {
- 	const struct iommu_ops *ops = dev->bus->iommu_ops;
- 
--	if (ops && ops->get_dm_regions)
--		ops->get_dm_regions(dev, list);
-+	if (ops && ops->get_resv_regions)
-+		ops->get_resv_regions(dev, list);
- }
- 
--void iommu_put_dm_regions(struct device *dev, struct list_head *list)
-+void iommu_put_resv_regions(struct device *dev, struct list_head *list)
- {
- 	const struct iommu_ops *ops = dev->bus->iommu_ops;
- 
--	if (ops && ops->put_dm_regions)
--		ops->put_dm_regions(dev, list);
-+	if (ops && ops->put_resv_regions)
-+		ops->put_resv_regions(dev, list);
- }
- 
- /* Request that a device is direct mapped by the IOMMU */
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 436dc21..7f6ebd0 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -118,13 +118,13 @@ enum iommu_attr {
++enum iommu_dma_cookie_type {
++	IOMMU_DMA_IOVA_COOKIE,
++	IOMMU_DMA_MSI_COOKIE,
++};
++
+ struct iommu_dma_cookie {
+-	struct iova_domain	iovad;
+-	struct list_head	msi_page_list;
+-	spinlock_t		msi_lock;
++	union {
++		struct iova_domain	iovad;
++		dma_addr_t		msi_iova;
++	};
++	struct list_head		msi_page_list;
++	spinlock_t			msi_lock;
++	enum iommu_dma_cookie_type	type;
  };
+ 
+ static inline struct iova_domain *cookie_iovad(struct iommu_domain *domain)
+@@ -53,6 +62,19 @@ int iommu_dma_init(void)
+ 	return iova_cache_get();
+ }
+ 
++static struct iommu_dma_cookie *__cookie_alloc(enum iommu_dma_cookie_type type)
++{
++	struct iommu_dma_cookie *cookie;
++
++	cookie = kzalloc(sizeof(*cookie), GFP_KERNEL);
++	if (cookie) {
++		spin_lock_init(&cookie->msi_lock);
++		INIT_LIST_HEAD(&cookie->msi_page_list);
++		cookie->type = type;
++	}
++	return cookie;
++}
++
+ /**
+  * iommu_get_dma_cookie - Acquire DMA-API resources for a domain
+  * @domain: IOMMU domain to prepare for DMA-API usage
+@@ -62,25 +84,53 @@ int iommu_dma_init(void)
+  */
+ int iommu_get_dma_cookie(struct iommu_domain *domain)
+ {
++	if (domain->iova_cookie)
++		return -EEXIST;
++
++	domain->iova_cookie = __cookie_alloc(IOMMU_DMA_IOVA_COOKIE);
++	if (!domain->iova_cookie)
++		return -ENOMEM;
++
++	return 0;
++}
++EXPORT_SYMBOL(iommu_get_dma_cookie);
++
++/**
++ * iommu_get_msi_cookie - Acquire just MSI remapping resources
++ * @domain: IOMMU domain to prepare
++ * @base: Start address of IOVA region for MSI mappings
++ *
++ * Users who manage their own IOVA allocation and do not want DMA API support,
++ * but would still like to take advantage of automatic MSI remapping, can use
++ * this to initialise their own domain appropriately. Users should reserve a
++ * contiguous IOVA region, starting at @base, large enough to accommodate the
++ * number of PAGE_SIZE mappings necessary to cover every MSI doorbell address
++ * used by the devices attached to @domain.
++ */
++int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base)
++{
+ 	struct iommu_dma_cookie *cookie;
+ 
++	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
++		return -EINVAL;
++
+ 	if (domain->iova_cookie)
+ 		return -EEXIST;
+ 
+-	cookie = kzalloc(sizeof(*cookie), GFP_KERNEL);
++	cookie = __cookie_alloc(IOMMU_DMA_MSI_COOKIE);
+ 	if (!cookie)
+ 		return -ENOMEM;
+ 
+-	spin_lock_init(&cookie->msi_lock);
+-	INIT_LIST_HEAD(&cookie->msi_page_list);
++	cookie->msi_iova = base;
+ 	domain->iova_cookie = cookie;
+ 	return 0;
+ }
+-EXPORT_SYMBOL(iommu_get_dma_cookie);
++EXPORT_SYMBOL(iommu_get_msi_cookie);
  
  /**
-- * struct iommu_dm_region - descriptor for a direct mapped memory region
-+ * struct iommu_resv_region - descriptor for a reserved memory region
-  * @list: Linked list pointers
-  * @start: System physical start address of the region
-  * @length: Length of the region in bytes
-  * @prot: IOMMU Protection flags (READ/WRITE/...)
+  * iommu_put_dma_cookie - Release a domain's DMA mapping resources
+- * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
++ * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie() or
++ *          iommu_get_msi_cookie()
+  *
+  * IOMMU drivers should normally call this from their domain_free callback.
   */
--struct iommu_dm_region {
-+struct iommu_resv_region {
- 	struct list_head	list;
- 	phys_addr_t		start;
- 	size_t			length;
-@@ -150,9 +150,9 @@ struct iommu_dm_region {
-  * @device_group: find iommu group for a particular device
-  * @domain_get_attr: Query domain attributes
-  * @domain_set_attr: Change domain attributes
-- * @get_dm_regions: Request list of direct mapping requirements for a device
-- * @put_dm_regions: Free list of direct mapping requirements for a device
-- * @apply_dm_region: Temporary helper call-back for iova reserved ranges
-+ * @get_resv_regions: Request list of reserved regions for a device
-+ * @put_resv_regions: Free list of reserved regions for a device
-+ * @apply_resv_region: Temporary helper call-back for iova reserved ranges
-  * @domain_window_enable: Configure and enable a particular window for a domain
-  * @domain_window_disable: Disable a particular window for a domain
-  * @domain_set_windows: Set the number of windows for a domain
-@@ -184,11 +184,12 @@ struct iommu_ops {
- 	int (*domain_set_attr)(struct iommu_domain *domain,
- 			       enum iommu_attr attr, void *data);
+@@ -92,7 +142,7 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+ 	if (!cookie)
+ 		return;
  
--	/* Request/Free a list of direct mapping requirements for a device */
--	void (*get_dm_regions)(struct device *dev, struct list_head *list);
--	void (*put_dm_regions)(struct device *dev, struct list_head *list);
--	void (*apply_dm_region)(struct device *dev, struct iommu_domain *domain,
--				struct iommu_dm_region *region);
-+	/* Request/Free a list of reserved regions for a device */
-+	void (*get_resv_regions)(struct device *dev, struct list_head *list);
-+	void (*put_resv_regions)(struct device *dev, struct list_head *list);
-+	void (*apply_resv_region)(struct device *dev,
-+				  struct iommu_domain *domain,
-+				  struct iommu_resv_region *region);
+-	if (cookie->iovad.granule)
++	if (cookie->type == IOMMU_DMA_IOVA_COOKIE && cookie->iovad.granule)
+ 		put_iova_domain(&cookie->iovad);
  
- 	/* Window handling functions */
- 	int (*domain_window_enable)(struct iommu_domain *domain, u32 wnd_nr,
-@@ -233,8 +234,8 @@ extern size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long io
- extern void iommu_set_fault_handler(struct iommu_domain *domain,
- 			iommu_fault_handler_t handler, void *token);
- 
--extern void iommu_get_dm_regions(struct device *dev, struct list_head *list);
--extern void iommu_put_dm_regions(struct device *dev, struct list_head *list);
-+extern void iommu_get_resv_regions(struct device *dev, struct list_head *list);
-+extern void iommu_put_resv_regions(struct device *dev, struct list_head *list);
- extern int iommu_request_dm_for_dev(struct device *dev);
- 
- extern int iommu_attach_group(struct iommu_domain *domain,
-@@ -439,12 +440,12 @@ static inline void iommu_set_fault_handler(struct iommu_domain *domain,
+ 	list_for_each_entry_safe(msi, tmp, &cookie->msi_page_list, list) {
+@@ -137,11 +187,12 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
+ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 		u64 size, struct device *dev)
  {
+-	struct iova_domain *iovad = cookie_iovad(domain);
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iova_domain *iovad = &cookie->iovad;
+ 	unsigned long order, base_pfn, end_pfn;
+ 
+-	if (!iovad)
+-		return -ENODEV;
++	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
++		return -EINVAL;
+ 
+ 	/* Use the smallest supported page size for IOVA granularity */
+ 	order = __ffs(domain->pgsize_bitmap);
+@@ -644,11 +695,21 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+ {
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+ 	struct iommu_dma_msi_page *msi_page;
+-	struct iova_domain *iovad = &cookie->iovad;
++	struct iova_domain *iovad;
+ 	struct iova *iova;
+ 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
++	size_t size;
++
++	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
++		iovad = &cookie->iovad;
++		size = iovad->granule;
++	} else {
++		iovad = NULL;
++		size = PAGE_SIZE;
++	}
++
++	msi_addr &= ~(phys_addr_t)(size - 1);
+ 
+-	msi_addr &= ~(phys_addr_t)iova_mask(iovad);
+ 	list_for_each_entry(msi_page, &cookie->msi_page_list, list)
+ 		if (msi_page->phys == msi_addr)
+ 			return msi_page;
+@@ -657,13 +718,18 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+ 	if (!msi_page)
+ 		return NULL;
+ 
+-	iova = __alloc_iova(domain, iovad->granule, dma_get_mask(dev));
+-	if (!iova)
+-		goto out_free_page;
+-
+ 	msi_page->phys = msi_addr;
+-	msi_page->iova = iova_dma_addr(iovad, iova);
+-	if (iommu_map(domain, msi_page->iova, msi_addr, iovad->granule, prot))
++	if (iovad) {
++		iova = __alloc_iova(domain, size, dma_get_mask(dev));
++		if (!iova)
++			goto out_free_page;
++		msi_page->iova = iova_dma_addr(iovad, iova);
++	} else {
++		msi_page->iova = cookie->msi_iova;
++		cookie->msi_iova += size;
++	}
++
++	if (iommu_map(domain, msi_page->iova, msi_addr, size, prot))
+ 		goto out_free_iova;
+ 
+ 	INIT_LIST_HEAD(&msi_page->list);
+@@ -671,7 +737,10 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+ 	return msi_page;
+ 
+ out_free_iova:
+-	__free_iova(iovad, iova);
++	if (iovad)
++		__free_iova(iovad, iova);
++	else
++		cookie->msi_iova -= size;
+ out_free_page:
+ 	kfree(msi_page);
+ 	return NULL;
+@@ -712,7 +781,10 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
+ 		msg->data = ~0U;
+ 	} else {
+ 		msg->address_hi = upper_32_bits(msi_page->iova);
+-		msg->address_lo &= iova_mask(&cookie->iovad);
++		if (cookie->type == IOMMU_DMA_IOVA_COOKIE)
++			msg->address_lo &= iova_mask(&cookie->iovad);
++		else
++			msg->address_lo &= (PAGE_SIZE - 1);
+ 		msg->address_lo += lower_32_bits(msi_page->iova);
+ 	}
+ }
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index 32c5890..e27f2997 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -27,6 +27,7 @@
+ 
+ /* Domain management interface for IOMMU drivers */
+ int iommu_get_dma_cookie(struct iommu_domain *domain);
++int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base);
+ void iommu_put_dma_cookie(struct iommu_domain *domain);
+ 
+ /* Setup call for arch DMA mapping code */
+@@ -82,6 +83,12 @@ static inline int iommu_get_dma_cookie(struct iommu_domain *domain)
+ 	return -ENODEV;
  }
  
--static inline void iommu_get_dm_regions(struct device *dev,
-+static inline void iommu_get_resv_regions(struct device *dev,
- 					struct list_head *list)
- {
- }
- 
--static inline void iommu_put_dm_regions(struct device *dev,
-+static inline void iommu_put_resv_regions(struct device *dev,
- 					struct list_head *list)
++static inline int iommu_get_msi_cookie(struct iommu_domain *domain,
++				       dma_addr_t base)
++{
++	return -ENODEV;
++}
++
+ static inline void iommu_put_dma_cookie(struct iommu_domain *domain)
  {
  }
 -- 
