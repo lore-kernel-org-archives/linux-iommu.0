@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v4 03/16] iommu: Add a new type field in iommu_resv_region
-Date: Tue, 13 Dec 2016 20:30:21 +0000
-Message-ID: <1481661034-3088-4-git-send-email-eric.auger@redhat.com>
+Subject: [RFC v4 04/16] iommu: iommu_alloc_resv_region
+Date: Tue, 13 Dec 2016 20:30:22 +0000
+Message-ID: <1481661034-3088-5-git-send-email-eric.auger@redhat.com>
 References: <1481661034-3088-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,61 +21,64 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We introduce a new field to differentiate the reserved region
-types and specialize the apply_resv_region implementation.
-
-Legacy direct mapped regions have IOMMU_RESV_DIRECT type.
-We introduce 2 new reserved memory types:
-- IOMMU_RESV_MSI will characterize MSI regions
-- IOMMU_RESV_NOMAP characterize regions that cannot by mapped.
+Introduce a new helper serving the purpose to allocate a reserved
+region. This will be used in iommu driver implementing reserved
+region callbacks.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/amd_iommu.c | 1 +
- include/linux/iommu.h     | 7 +++++++
- 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index a6c351d..3186c05 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3184,6 +3184,7 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+---
+
+v3 -> v4:
+- add INIT_LIST_HEAD(&region->list)
+- use int for prot param and add int type param
+- remove implementation outside of CONFIG_IOMMU_API
+---
+ drivers/iommu/iommu.c | 18 ++++++++++++++++++
+ include/linux/iommu.h |  2 ++
+ 2 files changed, 20 insertions(+)
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index c7ed334..f83d762 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1562,6 +1562,24 @@ void iommu_put_resv_regions(struct device *dev, struct list_head *list)
+ 		ops->put_resv_regions(dev, list);
+ }
  
- 		region->start = entry->address_start;
- 		region->length = entry->address_end - entry->address_start;
-+		region->type = IOMMU_RESV_DIRECT;
- 		if (entry->prot & IOMMU_PROT_IR)
- 			region->prot |= IOMMU_READ;
- 		if (entry->prot & IOMMU_PROT_IW)
++struct iommu_resv_region *iommu_alloc_resv_region(phys_addr_t start,
++						  size_t length,
++						  int prot, int type)
++{
++	struct iommu_resv_region *region;
++
++	region = kzalloc(sizeof(*region), GFP_KERNEL);
++	if (!region)
++		return NULL;
++
++	INIT_LIST_HEAD(&region->list);
++	region->start = start;
++	region->length = length;
++	region->prot = prot;
++	region->type = type;
++	return region;
++}
++
+ /* Request that a device is direct mapped by the IOMMU */
+ int iommu_request_dm_for_dev(struct device *dev)
+ {
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 7f6ebd0..ec87bac 100644
+index ec87bac..66b0c1c 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -117,18 +117,25 @@ enum iommu_attr {
- 	DOMAIN_ATTR_MAX,
- };
+@@ -244,6 +244,8 @@ extern void iommu_set_fault_handler(struct iommu_domain *domain,
+ extern void iommu_get_resv_regions(struct device *dev, struct list_head *list);
+ extern void iommu_put_resv_regions(struct device *dev, struct list_head *list);
+ extern int iommu_request_dm_for_dev(struct device *dev);
++extern struct iommu_resv_region *
++iommu_alloc_resv_region(phys_addr_t start, size_t length, int prot, int type);
  
-+/* These are the possible reserved region types */
-+#define IOMMU_RESV_DIRECT	(1 << 0)
-+#define IOMMU_RESV_NOMAP	(1 << 1)
-+#define IOMMU_RESV_MSI		(1 << 2)
-+
- /**
-  * struct iommu_resv_region - descriptor for a reserved memory region
-  * @list: Linked list pointers
-  * @start: System physical start address of the region
-  * @length: Length of the region in bytes
-  * @prot: IOMMU Protection flags (READ/WRITE/...)
-+ * @type: Type of the reserved region
-  */
- struct iommu_resv_region {
- 	struct list_head	list;
- 	phys_addr_t		start;
- 	size_t			length;
- 	int			prot;
-+	int			type;
- };
- 
- #ifdef CONFIG_IOMMU_API
+ extern int iommu_attach_group(struct iommu_domain *domain,
+ 			      struct iommu_group *group);
 -- 
 1.9.1
