@@ -1,62 +1,83 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V7 7/8] iommu/arm-smmu: Set privileged attribute to
-	'default' instead of 'unprivileged'
-Date: Tue, 13 Dec 2016 12:20:24 +0000
-Message-ID: <03731ccb-dad0-6e0b-577b-4cd8e47717c0@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH V7 4/8] common: DMA-mapping: add DMA_ATTR_PRIVILEGED
+ attribute
+Date: Tue, 13 Dec 2016 13:55:46 +0000
+Message-ID: <941457b5-9bfc-8df5-6f70-5f92e950cd89@arm.com>
 References: <1481567927-14791-1-git-send-email-sricharan@codeaurora.org>
-	<1481567927-14791-8-git-send-email-sricharan@codeaurora.org>
+ <1481567927-14791-5-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1481567927-14791-8-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
-Cc: dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1481567927-14791-5-git-send-email-sricharan@codeaurora.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Sricharan R <sricharan@codeaurora.org>, jcrouse@codeaurora.org, pdaly@codeaurora.org, jgebben@codeaurora.org, joro@8bytes.org, linux-kernel@vger.kernel.org, pratikp@codeaurora.org, iommu@lists.linux-foundation.org, tzeng@codeaurora.org, linux-arm-kernel@lists.infradead.org, will.deacon@arm.com, mitchelh@codeaurora.org, vinod.koul@intel.com
+Cc: dan.j.williams@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
 On 12/12/16 18:38, Sricharan R wrote:
-> Currently the driver sets all the device transactions privileges
-> to UNPRIVILEGED, but there are cases where the iommu masters wants
-> to isolate privileged supervisor and unprivileged user.
-> So don't override the privileged setting to unprivileged, instead
-> set it to default as incoming and let it be controlled by the pagetable
-> settings.
+> From: Mitchel Humpherys <mitchelh@codeaurora.org>
 > 
-> Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-
-Since everything else has already got my tags on it:
-
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
-I'd say the whole series looks good to go now, thanks for picking it up.
-
-Robin.
-
+> This patch adds the DMA_ATTR_PRIVILEGED attribute to the DMA-mapping
+> subsystem.
+> 
+> Some advanced peripherals such as remote processors and GPUs perform
+> accesses to DMA buffers in both privileged "supervisor" and unprivileged
+> "user" modes.  This attribute is used to indicate to the DMA-mapping
+> subsystem that the buffer is fully accessible at the elevated privilege
+> level (and ideally inaccessible or at least read-only at the
+> lesser-privileged levels).
+> 
+> Cc: linux-doc@vger.kernel.org
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> Tested-by: Robin Murphy <robin.murphy@arm.com>
+> Acked-by: Will Deacon <will.deacon@arm.com>
+> Signed-off-by: Mitchel Humpherys <mitchelh@codeaurora.org>
 > ---
->  drivers/iommu/arm-smmu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  Documentation/DMA-attributes.txt | 10 ++++++++++
+>  include/linux/dma-mapping.h      |  7 +++++++
+>  2 files changed, 17 insertions(+)
 > 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index eaa8f44..8bb0eea 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -1213,7 +1213,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
->  			continue;
+> diff --git a/Documentation/DMA-attributes.txt b/Documentation/DMA-attributes.txt
+> index 98bf7ac..44c6bc4 100644
+> --- a/Documentation/DMA-attributes.txt
+> +++ b/Documentation/DMA-attributes.txt
+> @@ -143,3 +143,13 @@ So, this provides a way for drivers to avoid those error messages on calls
+>  where allocation failures are not a problem, and shouldn't bother the logs.
 >  
->  		s2cr[idx].type = type;
-> -		s2cr[idx].privcfg = S2CR_PRIVCFG_UNPRIV;
-> +		s2cr[idx].privcfg = S2CR_PRIVCFG_DEFAULT;
->  		s2cr[idx].cbndx = cbndx;
->  		arm_smmu_write_s2cr(smmu, idx);
->  	}
+>  NOTE: At the moment DMA_ATTR_NO_WARN is only implemented on PowerPC.
+> +
+> +DMA_ATTR_PRIVILEGED
+> +------------------------------
+> +
+> +Some advanced peripherals such as remote processors and GPUs perform
+> +accesses to DMA buffers in both privileged "supervisor" and unprivileged
+> +"user" modes.  This attribute is used to indicate to the DMA-mapping
+> +subsystem that the buffer is fully accessible at the elevated privilege
+> +level (and ideally inaccessible or at least read-only at the
+> +lesser-privileged levels).
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 6f3e6ca..ee31ea1 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -63,6 +63,13 @@
+>  #define DMA_ATTR_NO_WARN	(1UL << 8)
+>  
+>  /*
+> + * DMA_ATTR_PRIVILEGED: used to indicate that the buffer is fully
+> + * accessible at an elevated privilege level (and ideally inaccessible or
+> + * at least read-only at lesser-privileged levels).
+> + */
+> +#define DMA_ATTR_PRIVILEGED		(1UL << 8)
+
+Oops, I spoke slightly too soon - there's a value conflict here which
+has been missed in the rebase.
+
+Robin
+
+> +
+> +/*
+>   * A dma_addr_t can hold any valid DMA or bus address for the platform.
+>   * It can be given to a device to use as a DMA source or target.  A CPU cannot
+>   * reference a dma_addr_t directly because there may be translation between
 > 
