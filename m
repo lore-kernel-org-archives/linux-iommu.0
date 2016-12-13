@@ -1,7 +1,7 @@
 From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Subject: RE: [PATCH V7 5/8] arm64/dma-mapping: Implement DMA_ATTR_PRIVILEGED
-Date: Tue, 13 Dec 2016 20:24:17 +0530
-Message-ID: <002501d25550$ccf29400$66d7bc00$@codeaurora.org>
+Date: Wed, 14 Dec 2016 00:16:34 +0530
+Message-ID: <005f01d25571$3f75b5f0$be6121d0$@codeaurora.org>
 References: <1481567927-14791-1-git-send-email-sricharan@codeaurora.org>
 	<1481567927-14791-6-git-send-email-sricharan@codeaurora.org>
 	<7d09fc5a-9425-c171-e469-2759534de2dc@arm.com>
@@ -11,7 +11,7 @@ Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4e6ebf88-0138-afce-d752-56b66d69772f-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: 
 Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -26,125 +26,155 @@ To: 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>, jcrouse-sgV2jX0F
 Cc: dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Robin,
 
->
->On 13/12/16 14:38, Sricharan wrote:
->> Hi Robin,
->>
->>> -----Original Message-----
->>> From: linux-arm-kernel [mailto:linux-arm-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org] On Behalf Of Robin Murphy
->>> Sent: Tuesday, December 13, 2016 7:33 PM
->>> To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>; jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org; pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org; jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org;
->>> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
->tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org;
->>> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org; mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org; vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
->>> Cc: dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
->>> Subject: Re: [PATCH V7 5/8] arm64/dma-mapping: Implement DMA_ATTR_PRIVILEGED
->>>
->>> On 12/12/16 18:38, Sricharan R wrote:
->>>> From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>>
->>>> The newly added DMA_ATTR_PRIVILEGED is useful for creating mappings that
->>>> are only accessible to privileged DMA engines.  Implement it in
->>>> dma-iommu.c so that the ARM64 DMA IOMMU mapper can make use of it.
->>>>
->>>> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->>>> Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->>>> Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
->>>> Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>> ---
->>>>  arch/arm64/mm/dma-mapping.c |  6 +++---
->>>>  drivers/iommu/dma-iommu.c   | 10 ++++++++--
->>>>  include/linux/dma-iommu.h   |  3 ++-
->>>>  3 files changed, 13 insertions(+), 6 deletions(-)
->>>>
->>>> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
->>>> index 401f79a..ae76ead 100644
->>>> --- a/arch/arm64/mm/dma-mapping.c
->>>> +++ b/arch/arm64/mm/dma-mapping.c
->>>> @@ -557,7 +557,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
->>>>  				 unsigned long attrs)
->>>>  {
->>>>  	bool coherent = is_device_dma_coherent(dev);
->>>> -	int ioprot = dma_direction_to_prot(DMA_BIDIRECTIONAL, coherent);
->>>> +	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
->>>>  	size_t iosize = size;
->>>>  	void *addr;
->>>>
->>>> @@ -711,7 +711,7 @@ static dma_addr_t __iommu_map_page(struct device *dev, struct page *page,
->>>>  				   unsigned long attrs)
->>>>  {
->>>>  	bool coherent = is_device_dma_coherent(dev);
->>>> -	int prot = dma_direction_to_prot(dir, coherent);
->>>> +	int prot = dma_info_to_prot(dir, coherent, attrs);
->>>>  	dma_addr_t dev_addr = iommu_dma_map_page(dev, page, offset, size, prot);
->>>>
->>>>  	if (!iommu_dma_mapping_error(dev, dev_addr) &&
->>>> @@ -769,7 +769,7 @@ static int __iommu_map_sg_attrs(struct device *dev, struct scatterlist *sgl,
->>>>  		__iommu_sync_sg_for_device(dev, sgl, nelems, dir);
->>>>
->>>>  	return iommu_dma_map_sg(dev, sgl, nelems,
->>>> -			dma_direction_to_prot(dir, coherent));
->>>> +				dma_info_to_prot(dir, coherent, attrs));
->>>>  }
->>>>
->>>>  static void __iommu_unmap_sg_attrs(struct device *dev,
->>>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->>>> index d2a7a46..756d5e0 100644
->>>> --- a/drivers/iommu/dma-iommu.c
->>>> +++ b/drivers/iommu/dma-iommu.c
->>>> @@ -182,16 +182,22 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->>>>  EXPORT_SYMBOL(iommu_dma_init_domain);
->>>>
->>>>  /**
->>>> - * dma_direction_to_prot - Translate DMA API directions to IOMMU API page flags
->>>> + * dma_info_to_prot - Translate DMA API directions and attributes to IOMMU API
->>>> + *                    page flags.
->>>>   * @dir: Direction of DMA transfer
->>>>   * @coherent: Is the DMA master cache-coherent?
->>>> + * @attrs: DMA attributes for the mapping
->>>>   *
->>>>   * Return: corresponding IOMMU API page protection flags
->>>>   */
->>>> -int dma_direction_to_prot(enum dma_data_direction dir, bool coherent)
->>>> +int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
->>>> +		     unsigned long attrs)
->>>>  {
->>>>  	int prot = coherent ? IOMMU_CACHE : 0;
->>>>
->>>> +	if (attrs & DMA_ATTR_PRIVILEGED)
->>>> +		prot |= IOMMU_PRIV;
->>>> +
->>>>  	switch (dir) {
->>>>  	case DMA_BIDIRECTIONAL:
->>>>  		return prot | IOMMU_READ | IOMMU_WRITE;
->>>
->>> ...and applying against -next now also needs this hunk:
->>>
->>> @@ -639,7 +639,7 @@ dma_addr_t iommu_dma_map_resource(struct device
->>> *dev, phys_addr_t phys,
->>> 		size_t size, enum dma_data_direction dir, unsigned long attrs)
->>> {
->>> 	return __iommu_dma_map(dev, phys, size,
->>> -			dma_direction_to_prot(dir, false) | IOMMU_MMIO);
->>> +			dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO);
->>> }
->>>
->>> void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
->>>
->>> With those two issues fixed up, I've given the series (applied to
->>> next-20161213) a spin on a SMMUv3/PL330 fast model and it still checks out.
->>>
->>
->> oops, sorry that i missed this in rebase. I can repost now with this fixed,
->> 'checks out' you mean something is not working correct ?
->
->No, I mean it _is_ still correct - I guess that's more of an idiom than
->I thought :)
->
+<snip..>
 
-ha ok, thanks for the testing as well. I will just send a v8 with those two fixed now.
+>>>>>  		return prot | IOMMU_READ | IOMMU_WRITE;
+>>>>
+>>>> ...and applying against -next now also needs this hunk:
+>>>>
+>>>> @@ -639,7 +639,7 @@ dma_addr_t iommu_dma_map_resource(struct device
+>>>> *dev, phys_addr_t phys,
+>>>> 		size_t size, enum dma_data_direction dir, unsigned long attrs)
+>>>> {
+>>>> 	return __iommu_dma_map(dev, phys, size,
+>>>> -			dma_direction_to_prot(dir, false) | IOMMU_MMIO);
+>>>> +			dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO);
+>>>> }
+>>>>
+>>>> void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+>>>>
+>>>> With those two issues fixed up, I've given the series (applied to
+>>>> next-20161213) a spin on a SMMUv3/PL330 fast model and it still checks out.
+>>>>
+>>>
+>>> oops, sorry that i missed this in rebase. I can repost now with this fixed,
+>>> 'checks out' you mean something is not working correct ?
+>>
+>>No, I mean it _is_ still correct - I guess that's more of an idiom than
+>>I thought :)
+>>
+>
+>ha ok, thanks for the testing as well. I will just send a v8 with those two fixed now.
+
+Just while checking that i have not missed anything else, realized that the
+dma-mapping apis in arm as to be modified to pass the PRIVILIGED attributes
+as well. While my testing path was using the iommu_map directly i was not
+seeing this, but then i did a patch like below. I will just figure out another
+other codebase where the master uses the dma apis, test and add it in the
+V8 that i would send.
+
+
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Date: Tue, 13 Dec 2016 23:25:01 +0530
+Subject: [PATCH V8 6/9] arm/dma-mapping: Implement DMA_ATTR_PRIVILEGED
+
+The newly added DMA_ATTR_PRIVILEGED is useful for creating mappings that
+are only accessible to privileged DMA engines.  Implementing it in dma-mapping
+for it to get used from the dma mappings apis.
+
+Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ arch/arm/mm/dma-mapping.c | 24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
+
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index ab77100..e0d9923 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -1394,7 +1394,8 @@ static int __iommu_free_buffer(struct device *dev, struct page **pages,
+  * Create a mapping in device IO address space for specified pages
+  */
+ static dma_addr_t
+-__iommu_create_mapping(struct device *dev, struct page **pages, size_t size)
++__iommu_create_mapping(struct device *dev, struct page **pages, size_t size,
++		       unsigned long attrs)
+ {
+ 	struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
+ 	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+@@ -1419,7 +1420,7 @@ static int __iommu_free_buffer(struct device *dev, struct page **pages,
+ 
+ 		len = (j - i) << PAGE_SHIFT;
+ 		ret = iommu_map(mapping->domain, iova, phys, len,
+-				IOMMU_READ|IOMMU_WRITE);
++				__dma_info_to_prot(DMA_BIRECTIONAL, attrs));
+ 		if (ret < 0)
+ 			goto fail;
+ 		iova += len;
+@@ -1476,7 +1477,8 @@ static struct page **__iommu_get_pages(void *cpu_addr, unsigned long attrs)
+ }
+ 
+ static void *__iommu_alloc_simple(struct device *dev, size_t size, gfp_t gfp,
+-				  dma_addr_t *handle, int coherent_flag)
++				  dma_addr_t *handle, int coherent_flag,
++				  unsigned long attrs)
+ {
+ 	struct page *page;
+ 	void *addr;
+@@ -1488,7 +1490,7 @@ static void *__iommu_alloc_simple(struct device *dev, size_t size, gfp_t gfp,
+ 	if (!addr)
+ 		return NULL;
+ 
+-	*handle = __iommu_create_mapping(dev, &page, size);
++	*handle = __iommu_create_mapping(dev, &page, size, attrs);
+ 	if (*handle == DMA_ERROR_CODE)
+ 		goto err_mapping;
+ 
+@@ -1522,7 +1524,8 @@ static void *__arm_iommu_alloc_attrs(struct device *dev, size_t size,
+ 
+ 	if (coherent_flag  == COHERENT || !gfpflags_allow_blocking(gfp))
+ 		return __iommu_alloc_simple(dev, size, gfp, handle,
+-					    coherent_flag);
++					    coherent_flag,
++					    attrs);
+ 
+ 	/*
+ 	 * Following is a work-around (a.k.a. hack) to prevent pages
+@@ -1672,10 +1675,13 @@ static int arm_iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
+ 					 GFP_KERNEL);
+ }
+ 
+-static int __dma_direction_to_prot(enum dma_data_direction dir)
++static int __dma_info_to_prot(enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	int prot;
+ 
++	if (attrs & DMA_ATTR_PRIVILEGED)
++		prot |= IOMMU_PRIV;
++
+ 	switch (dir) {
+ 	case DMA_BIDIRECTIONAL:
+ 		prot = IOMMU_READ | IOMMU_WRITE;
+@@ -1722,7 +1728,7 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
+ 		if (!is_coherent && (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
+ 			__dma_page_cpu_to_dev(sg_page(s), s->offset, s->length, dir);
+ 
+-		prot = __dma_direction_to_prot(dir);
++		prot = __dma_info_to_prot(dir, attrs);
+ 
+ 		ret = iommu_map(mapping->domain, iova, phys, len, prot);
+ 		if (ret < 0)
+@@ -1930,7 +1936,7 @@ static dma_addr_t arm_coherent_iommu_map_page(struct device *dev, struct page *p
+ 	if (dma_addr == DMA_ERROR_CODE)
+ 		return dma_addr;
+ 
+-	prot = __dma_direction_to_prot(dir);
++	prot = __dma_info_to_prot(dir, attrs);
+ 
+ 	ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len, prot);
+ 	if (ret < 0)
+@@ -2036,7 +2042,7 @@ static dma_addr_t arm_iommu_map_resource(struct device *dev,
+ 	if (dma_addr == DMA_ERROR_CODE)
+ 		return dma_addr;
+ 
+-	prot = __dma_direction_to_prot(dir) | IOMMU_MMIO;
++	prot = __dma_info_to_prot(dir, attrs) | IOMMU_MMIO;
+ 
+ 	ret = iommu_map(mapping->domain, dma_addr, addr, len, prot);
+ 	if (ret < 0)
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
 
 Regards,
  Sricharan
