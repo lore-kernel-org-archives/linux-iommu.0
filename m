@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v4 05/16] iommu: Only map direct mapped regions
-Date: Tue, 13 Dec 2016 20:30:23 +0000
-Message-ID: <1481661034-3088-6-git-send-email-eric.auger@redhat.com>
+Subject: [RFC v4 11/16] irqdomain: Add IRQ_DOMAIN_FLAG_MSI_REMAP value
+Date: Tue, 13 Dec 2016 20:30:29 +0000
+Message-ID: <1481661034-3088-12-git-send-email-eric.auger@redhat.com>
 References: <1481661034-3088-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,32 +21,28 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-As we introduced new reserved region types which do not require
-mapping, let's make sure we only map direct mapped regions.
+This new enum value aims at indicating whether the irq domain
+implements MSI remapping. This property is useful to assess
+the IRQ assignment safety at VFIO level.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
 ---
-
-v3 -> v4:
-- use region's type and reword commit message and title
----
- drivers/iommu/iommu.c | 3 +++
+ include/linux/irqdomain.h | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index f83d762..ae3d97b 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -343,6 +343,9 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
- 		start = ALIGN(entry->start, pg_size);
- 		end   = ALIGN(entry->start + entry->length, pg_size);
+diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
+index ffb8460..ab017b2 100644
+--- a/include/linux/irqdomain.h
++++ b/include/linux/irqdomain.h
+@@ -183,6 +183,9 @@ enum {
+ 	/* Irq domain is an IPI domain with single virq */
+ 	IRQ_DOMAIN_FLAG_IPI_SINGLE	= (1 << 3),
  
-+		if (entry->type != IOMMU_RESV_DIRECT)
-+			continue;
++	/* Irq domain is MSI remapping capable */
++	IRQ_DOMAIN_FLAG_MSI_REMAP	= (1 << 4),
 +
- 		for (addr = start; addr < end; addr += pg_size) {
- 			phys_addr_t phys_addr;
- 
+ 	/*
+ 	 * Flags starting from IRQ_DOMAIN_FLAG_NONCORE are reserved
+ 	 * for implementation specific purposes and ignored by the
 -- 
 1.9.1
