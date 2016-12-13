@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v4 07/16] iommu: Implement reserved_regions iommu-group sysfs
-	file
-Date: Tue, 13 Dec 2016 20:30:25 +0000
-Message-ID: <1481661034-3088-8-git-send-email-eric.auger@redhat.com>
+Subject: [RFC v4 08/16] iommu/vt-d: Implement reserved region get/put callbacks
+Date: Tue, 13 Dec 2016 20:30:26 +0000
+Message-ID: <1481661034-3088-9-git-send-email-eric.auger@redhat.com>
 References: <1481661034-3088-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,105 +21,92 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-A new iommu-group sysfs attribute file is introduced. It contains
-the list of reserved regions for the iommu-group. Each reserved
-region is described on a separate line:
-- first field is the start IOVA address,
-- second is the end IOVA address,
+This patch registers the [0xfee00000 - 0xfeefffff] 1MB
+MSI range as a reserved region. This will allow to report
+that range in the iommu-group sysfs.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
 
-v3 -> v4:
-- add cast to long long int when printing to avoid warning on
-  i386
-- change S_IRUGO into 0444
-- remove sort. The list is natively sorted now.
-- update Documentation/ABI/testing/sysfs-kernel-iommu_groups
+RFCv2 -> RFCv3:
+- use get/put_resv_region callbacks.
 
-The file layout is inspired of /sys/bus/pci/devices/BDF/resource.
-I also read Documentation/filesystems/sysfs.txt so I expect this
-to be frowned upon.
+RFC v1 -> RFC v2:
+- fix intel_iommu_add_reserved_regions name
+- use IOAPIC_RANGE_START and IOAPIC_RANGE_END defines
+- return if the MSI region is already registered;
 ---
- .../ABI/testing/sysfs-kernel-iommu_groups          |  9 +++++++
- drivers/iommu/iommu.c                              | 31 ++++++++++++++++++++++
- 2 files changed, 40 insertions(+)
+ drivers/iommu/intel-iommu.c | 50 +++++++++++++++++++++++++++++++++------------
+ 1 file changed, 37 insertions(+), 13 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-kernel-iommu_groups b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-index 9b31556..b0cb1fa 100644
---- a/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-+++ b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-@@ -12,3 +12,12 @@ Description:	/sys/kernel/iommu_groups/ contains a number of sub-
- 		file if the IOMMU driver has chosen to register a more
- 		common name for the group.
- Users:
-+
-+What:		/sys/kernel/iommu_groups/reserved_regions
-+Date: 		December 2016
-+KernelVersion:  v4.11
-+Contact: 	Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-+Description:    /sys/kernel/iommu_groups/reserved_regions list IOVA
-+		regions that cannot be used. Not necessarily all
-+		unusable regions are listed. This is typically used to
-+		output reserved MSI IOVA regions.
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 1565df4..ab80dde 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -211,8 +211,32 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index d8376c2..06c447a 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5196,6 +5196,28 @@ static void intel_iommu_remove_device(struct device *dev)
+ 	iommu_device_unlink(iommu->iommu_dev, dev);
  }
- EXPORT_SYMBOL_GPL(iommu_get_group_resv_regions);
  
-+static ssize_t iommu_group_show_resv_regions(struct iommu_group *group,
-+					     char *buf)
++static void intel_iommu_get_resv_regions(struct device *device,
++					 struct list_head *head)
 +{
-+	struct iommu_resv_region *region, *next;
-+	struct list_head group_resv_regions;
-+	char *str = buf;
++	struct iommu_resv_region *reg;
 +
-+	INIT_LIST_HEAD(&group_resv_regions);
-+	iommu_get_group_resv_regions(group, &group_resv_regions);
-+
-+	list_for_each_entry_safe(region, next, &group_resv_regions, list) {
-+		str += sprintf(str, "0x%016llx 0x%016llx\n",
-+			       (long long int)region->start,
-+			       (long long int)(region->start +
-+						region->length - 1));
-+		kfree(region);
-+	}
-+
-+	return (str - buf);
++	reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
++				      IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
++				      0, IOMMU_RESV_NOMAP);
++	if (!reg)
++		return;
++	list_add_tail(&reg->list, head);
 +}
 +
- static IOMMU_GROUP_ATTR(name, S_IRUGO, iommu_group_show_name, NULL);
- 
-+static IOMMU_GROUP_ATTR(reserved_regions, 0444,
-+			iommu_group_show_resv_regions, NULL);
++static void intel_iommu_put_resv_regions(struct device *dev,
++					 struct list_head *head)
++{
++	struct iommu_resv_region *entry, *next;
 +
- static void iommu_group_release(struct kobject *kobj)
++	list_for_each_entry_safe(entry, next, head, list)
++		kfree(entry);
++}
++
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev)
  {
- 	struct iommu_group *group = to_iommu_group(kobj);
-@@ -227,6 +251,8 @@ static void iommu_group_release(struct kobject *kobj)
- 	if (group->default_domain)
- 		iommu_domain_free(group->default_domain);
+@@ -5305,19 +5327,21 @@ struct intel_iommu *intel_svm_device_to_iommu(struct device *dev)
+ #endif /* CONFIG_INTEL_IOMMU_SVM */
  
-+	iommu_group_remove_file(group, &iommu_group_attr_reserved_regions);
-+
- 	kfree(group->name);
- 	kfree(group);
- }
-@@ -290,6 +316,11 @@ struct iommu_group *iommu_group_alloc(void)
- 	 */
- 	kobject_put(&group->kobj);
+ static const struct iommu_ops intel_iommu_ops = {
+-	.capable	= intel_iommu_capable,
+-	.domain_alloc	= intel_iommu_domain_alloc,
+-	.domain_free	= intel_iommu_domain_free,
+-	.attach_dev	= intel_iommu_attach_device,
+-	.detach_dev	= intel_iommu_detach_device,
+-	.map		= intel_iommu_map,
+-	.unmap		= intel_iommu_unmap,
+-	.map_sg		= default_iommu_map_sg,
+-	.iova_to_phys	= intel_iommu_iova_to_phys,
+-	.add_device	= intel_iommu_add_device,
+-	.remove_device	= intel_iommu_remove_device,
+-	.device_group   = pci_device_group,
+-	.pgsize_bitmap	= INTEL_IOMMU_PGSIZES,
++	.capable		= intel_iommu_capable,
++	.domain_alloc		= intel_iommu_domain_alloc,
++	.domain_free		= intel_iommu_domain_free,
++	.attach_dev		= intel_iommu_attach_device,
++	.detach_dev		= intel_iommu_detach_device,
++	.map			= intel_iommu_map,
++	.unmap			= intel_iommu_unmap,
++	.map_sg			= default_iommu_map_sg,
++	.iova_to_phys		= intel_iommu_iova_to_phys,
++	.add_device		= intel_iommu_add_device,
++	.remove_device		= intel_iommu_remove_device,
++	.get_resv_regions	= intel_iommu_get_resv_regions,
++	.put_resv_regions	= intel_iommu_put_resv_regions,
++	.device_group		= pci_device_group,
++	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
+ };
  
-+	ret = iommu_group_create_file(group,
-+				      &iommu_group_attr_reserved_regions);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
- 	pr_debug("Allocated group %d\n", group->id);
- 
- 	return group;
+ static void quirk_iommu_g4x_gfx(struct pci_dev *dev)
 -- 
 1.9.1
