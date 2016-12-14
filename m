@@ -1,65 +1,82 @@
-From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [RFC v4 16/16] iommu/arm-smmu: Do not advertise IOMMU_CAP_INTR_REMAP
-	anymore
-Date: Tue, 13 Dec 2016 20:30:34 +0000
-Message-ID: <1481661034-3088-17-git-send-email-eric.auger@redhat.com>
-References: <1481661034-3088-1-git-send-email-eric.auger@redhat.com>
+From: Mika Kuoppala <mika.kuoppala@linux.intel.com>
+Subject: Re: [PATCH v2] iommu/intel-iommu: fix pasid table size encoding
+Date: Wed, 14 Dec 2016 14:36:40 +0200
+Message-ID: <87lgvi8z6v.fsf@gaia.fi.intel.com>
+References: <1481048063-56808-1-git-send-email-jacob.jun.pan@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1481661034-3088-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1481048063-56808-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>, Ashok Raj <ashok.raj@intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-IOMMU_CAP_INTR_REMAP has been advertised in arm-smmu(-v3) although
-on ARM this property is not attached to the IOMMU but rather is
-implemented in the MSI controller (GICv3 ITS).
+Jacob Pan <jacob.jun.pan@linux.intel.com> writes:
 
-Now vfio_iommu_type1 takes into account the MSI domain MSI remapping
-capability, let's correct this.
+> Different encodings are used to represent supported PASID bits
+> and number of PASID table entries.
+> The current code assigns ecap_pss directly to extended context
+> table entry PTS which is wrong and could result in writing
+> non-zero bits to the reserved fields. IOMMU fault reason
+> 11 will be reported when reserved bits are nonzero.
+> This patch converts ecap_pss to extend context entry pts encoding
+> based on VT-d spec. Chapter 9.4 as follows:
+>  - number of PASID bits = ecap_pss + 1
+>  - number of PASID table entries = 2^(pts + 5)
+> Software assigned limit of pasid_max value is also respected to
+> match the allocation limitation of PASID table.
+>
+> cc: Mika Kuoppala <mika.kuoppala@linux.intel.com>
+> cc: Ashok Raj <ashok.raj@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
-Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 2 --
- drivers/iommu/arm-smmu.c    | 2 --
- 2 files changed, 4 deletions(-)
+Tested-by: Mika Kuoppala <mika.kuoppala@intel.com>
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index c9ee2f5..0d472c8 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1373,8 +1373,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- 	switch (cap) {
- 	case IOMMU_CAP_CACHE_COHERENCY:
- 		return true;
--	case IOMMU_CAP_INTR_REMAP:
--		return true; /* MSIs are just memory writes */
- 	case IOMMU_CAP_NOEXEC:
- 		return true;
- 	default:
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index d24a646..27a851e 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1371,8 +1371,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- 		 * requests.
- 		 */
- 		return true;
--	case IOMMU_CAP_INTR_REMAP:
--		return true; /* MSIs are just memory writes */
- 	case IOMMU_CAP_NOEXEC:
- 		return true;
- 	default:
--- 
-1.9.1
+> ---
+>  drivers/iommu/intel-iommu.c | 23 ++++++++++++++++++++++-
+>  1 file changed, 22 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 27596e6..5d9cddc 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -5173,6 +5173,25 @@ static void intel_iommu_remove_device(struct device *dev)
+>  }
+>  
+>  #ifdef CONFIG_INTEL_IOMMU_SVM
+> +#define MAX_NR_PASID_BITS (20)
+> +static inline unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
+> +{
+> +	/*
+> +	 * Convert ecap_pss to extend context entry pts encoding, also
+> +	 * respect the soft pasid_max value set by the iommu.
+> +	 * - number of PASID bits = ecap_pss + 1
+> +	 * - number of PASID table entries = 2^(pts + 5)
+> +	 * Therefore, pts = ecap_pss - 4
+> +	 * e.g. KBL ecap_pss = 0x13, PASID has 20 bits, pts = 15
+> +	 */
+> +	if (ecap_pss(iommu->ecap) < 5)
+> +		return 0;
+> +
+> +	/* pasid_max is encoded as actual number of entries not the bits */
+> +	return find_first_bit((unsigned long *)&iommu->pasid_max,
+> +			MAX_NR_PASID_BITS) - 5;
+> +}
+> +
+>  int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev)
+>  {
+>  	struct device_domain_info *info;
+> @@ -5205,7 +5224,9 @@ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sd
+>  
+>  	if (!(ctx_lo & CONTEXT_PASIDE)) {
+>  		context[1].hi = (u64)virt_to_phys(iommu->pasid_state_table);
+> -		context[1].lo = (u64)virt_to_phys(iommu->pasid_table) | ecap_pss(iommu->ecap);
+> +		context[1].lo = (u64)virt_to_phys(iommu->pasid_table) |
+> +			intel_iommu_get_pts(iommu);
+> +
+>  		wmb();
+>  		/* CONTEXT_TT_MULTI_LEVEL and CONTEXT_TT_DEV_IOTLB are both
+>  		 * extended to permit requests-with-PASID if the PASIDE bit
+> -- 
+> 2.7.4
