@@ -1,16 +1,12 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v2] iommu/intel-iommu: fix pasid table size encoding
-Date: Thu, 15 Dec 2016 23:51:35 +0100
-Message-ID: <20161215225135.GE17255@8bytes.org>
-References: <1481048063-56808-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<87lgvi8z6v.fsf@gaia.fi.intel.com>
-	<20161215200709.GA61908@otc-nc-03>
+From: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>
+Subject: [PATCH] Docs: dt: Be explicit and consistent in reference to IOMMU
+	specifiers
+Date: Thu, 15 Dec 2016 18:16:13 -0600
+Message-ID: <1481847373-2602-1-git-send-email-stuart.yoder@nxp.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20161215200709.GA61908@otc-nc-03>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,16 +16,74 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Mika Kuoppala <mika.kuoppala-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Dec 15, 2016 at 12:07:10PM -0800, Raj, Ashok wrote:
-> Haven't heard about it from David yet, but can we queue this for 4.10? 
-> If you have any questions/concerns please let us know.
+The generic IOMMU binding says that the meaning of an 'IOMMU specifier'
+is defined by the binding of a specific SMMU.  The ARM SMMU binding
+never explicitly uses the term 'specifier' at all.  Update implicit
+references to use the explicit term.
 
-I'll queue the fix when rc1 is out.
+In the iommu-map binding change references to iommu-specifier to
+"IOMMU specifier" so we are 100% consistent everywhere with terminology
+and capitalization.
 
+Signed-off-by: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>
+---
+ Documentation/devicetree/bindings/iommu/arm,smmu.txt | 10 +++++-----
+ Documentation/devicetree/bindings/pci/pci-iommu.txt  |  6 +++---
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-
-	Joerg
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+index e862d148..6cdf32d 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+@@ -36,15 +36,15 @@ conditions.
+                   combined interrupt, it must be listed multiple times.
+ 
+ - #iommu-cells  : See Documentation/devicetree/bindings/iommu/iommu.txt
+-                  for details. With a value of 1, each "iommus" entry
++                  for details. With a value of 1, each IOMMU specifier
+                   represents a distinct stream ID emitted by that device
+                   into the relevant SMMU.
+ 
+                   SMMUs with stream matching support and complex masters
+-                  may use a value of 2, where the second cell represents
+-                  an SMR mask to combine with the ID in the first cell.
+-                  Care must be taken to ensure the set of matched IDs
+-                  does not result in conflicts.
++                  may use a value of 2, where the second cell of the
++                  IOMMU specifier represents an SMR mask to combine with
++                  the ID in the first cell.  Care must be taken to ensure
++                  the set of matched IDs does not result in conflicts.
+ 
+ ** System MMU optional properties:
+ 
+diff --git a/Documentation/devicetree/bindings/pci/pci-iommu.txt b/Documentation/devicetree/bindings/pci/pci-iommu.txt
+index 56c8296..0def586 100644
+--- a/Documentation/devicetree/bindings/pci/pci-iommu.txt
++++ b/Documentation/devicetree/bindings/pci/pci-iommu.txt
+@@ -32,17 +32,17 @@ PCI root complex
+ Optional properties
+ -------------------
+ 
+-- iommu-map: Maps a Requester ID to an IOMMU and associated iommu-specifier
++- iommu-map: Maps a Requester ID to an IOMMU and associated IOMMU specifier
+   data.
+ 
+   The property is an arbitrary number of tuples of
+   (rid-base,iommu,iommu-base,length).
+ 
+   Any RID r in the interval [rid-base, rid-base + length) is associated with
+-  the listed IOMMU, with the iommu-specifier (r - rid-base + iommu-base).
++  the listed IOMMU, with the IOMMU specifier (r - rid-base + iommu-base).
+ 
+ - iommu-map-mask: A mask to be applied to each Requester ID prior to being
+-  mapped to an iommu-specifier per the iommu-map property.
++  mapped to an IOMMU specifier per the iommu-map property.
+ 
+ 
+ Example (1)
+-- 
+1.9.0
