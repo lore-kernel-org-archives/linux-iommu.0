@@ -1,12 +1,12 @@
-From: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH] iommu/arm-smmu-v3: prevent corruption of ste stage-1 context
-	ptr
-Date: Mon, 19 Dec 2016 15:38:38 -0500
-Message-ID: <1482179918-4457-1-git-send-email-nwatters@codeaurora.org>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: possible dmar_init_reserved_ranges() error
+Date: Mon, 19 Dec 2016 15:20:44 -0600
+Message-ID: <20161219212044.GA21774@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,32 +16,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rwright-ZPxbGqLxI0U@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-To ensure that the stage-1 context ptr for an ste points to the
-intended context descriptor, this patch adds code to clear away
-the stale context ptr value prior to or'ing in the new one.
+Hi guys,
 
-Signed-off-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 2 ++
- 1 file changed, 2 insertions(+)
+I have some questions about dmar_init_reserved_ranges().  On systems
+where CPU physical address space is not identity-mapped to PCI bus
+address space, e.g., where the PCI host bridge windows have _TRA
+offsets, I'm not sure we're doing the right thing.
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4d6ec44..093f9f1 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1080,6 +1080,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
- 		if (smmu->features & ARM_SMMU_FEAT_STALLS)
- 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
- 
-+		val &= ~(STRTAB_STE_0_S1CTXPTR_MASK <<
-+			 STRTAB_STE_0_S1CTXPTR_SHIFT);
- 		val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK
- 		        << STRTAB_STE_0_S1CTXPTR_SHIFT) |
- 			STRTAB_STE_0_CFG_S1_TRANS;
--- 
-Qualcomm Datacenter Technologies, Inc. on behalf of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux
-Foundation Collaborative Project.
+Assume we have a PCI host bridge with _TRA that maps CPU addresses
+0x80000000-0x9fffffff to PCI bus addresses 0x00000000-0x1fffffff, with
+two PCI devices below it:
+
+  PCI host bridge domain 0000 [bus 00-3f]
+  PCI host bridge window [mem 0x80000000-0x9fffffff] (bus 0x00000000-0x1fffffff]
+  00:00.0: BAR 0 [mem 0x80000000-0x8ffffffff] (0x00000000-0x0fffffff on bus)
+  00:01.0: BAR 0 [mem 0x90000000-0x9ffffffff] (0x10000000-0x1fffffff on bus)
+
+The IOMMU init code in dmar_init_reserved_ranges() reserves the PCI
+MMIO space for all devices:
+
+  pci_iommu_init()
+    intel_iommu_init()
+      dmar_init_reserved_ranges()
+        reserve_iova(0x80000000-0x8ffffffff)
+        reserve_iova(0x90000000-0x9ffffffff)
+
+This looks odd because we're reserving CPU physical addresses, but
+the IOVA space contains *PCI bus* addresses.  On most x86 systems they
+would be the same, but not on all.
+
+Assume the driver for 00:00.0 maps a page of main memory for DMA.  It
+may receive a dma_addr_t of 0x10000000:
+
+  00:00.0: intel_map_page() returns dma_addr_t 0x10000000
+  00:00.0: issues DMA to 0x10000000
+
+What happens here?  The DMA access should go to main memory.  In
+conventional PCI it would be a peer-to-peer access to device 00:01.0.
+Is there enough PCIe smarts (ACS or something?) to do otherwise?
+
+The dmar_init_reserved_ranges() comment says "Reserve all PCI MMIO to
+avoid peer-to-peer access."  Without _TRA, CPU addresses and PCI bus
+addresses would be identical, and I think these reserve_iova() calls
+*would* prevent this situation.  So maybe we're just missing a
+pcibios_resource_to_bus() here?
+
+Bjorn
