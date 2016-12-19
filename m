@@ -1,18 +1,11 @@
-From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: RE: [PATCH 3/4] iommu/arm-smmu: Disable stalling faults for all
-	endpoints
-Date: Mon, 19 Dec 2016 14:33:36 +0530
-Message-ID: <000c01d259d6$cc750460$655f0d20$@codeaurora.org>
-References: <1471525542-14969-1-git-send-email-will.deacon@arm.com>
-	<1471525542-14969-4-git-send-email-will.deacon@arm.com>
-	<CAF6AEGujUb37qagBZK1T13eAh=50zy0z5HpFF9FsuvkZZ7c5qw@mail.gmail.com>
-	<20161216115413.GE13191@arm.com>
+From: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] iommu/iova: use rb_entry()
+Date: Mon, 19 Dec 2016 22:46:58 +0800
+Message-ID: <85a2c5e2551fcc3b4ea84033e9887b7387c1f63b.1482158738.git.geliangtang@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161216115413.GE13191-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,60 +15,117 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Will Deacon' <will.deacon-5wv7dgnIgG8@public.gmane.org>, 'Rob Clark' <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: 'linux-arm-msm' <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, 'Jordan Crouse' <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+To make the code clearer, use rb_entry() instead of container_of() to
+deal with rbtree.
 
->On Tue, Dec 06, 2016 at 06:30:21PM -0500, Rob Clark wrote:
->> On Thu, Aug 18, 2016 at 9:05 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
->> > Enabling stalling faults can result in hardware deadlock on poorly
->> > designed systems, particularly those with a PCI root complex upstream of
->> > the SMMU.
->> >
->> > Although it's not really Linux's job to save hardware integrators from
->> > their own misfortune, it *is* our job to stop userspace (e.g. VFIO
->> > clients) from hosing the system for everybody else, even if they might
->> > already be required to have elevated privileges.
->> >
->> > Given that the fault handling code currently executes entirely in IRQ
->> > context, there is nothing that can sensibly be done to recover from
->> > things like page faults anyway, so let's rip this code out for now and
->> > avoid the potential for deadlock.
->>
->> so, I'd like to re-introduce this feature, I *guess* as some sort of
->> opt-in quirk (ie. disabled by default unless something in DT tells you
->> otherwise??  But I'm open to suggestions.  I'm not entirely sure what
->> hw was having problems due to this feature.)
->>
->> On newer snapdragon devices we are using arm-smmu for the GPU, and
->> halting the GPU so the driver's fault handler can dump some GPU state
->> on faults is enormously helpful for debugging and tracking down where
->> in the gpu cmdstream the fault was triggered.  In addition, we will
->> eventually want the ability to update pagetables from fault handler
->> and resuming the faulting transition.
->
->I'm not against reintroducing this, but it would certainly need to be
->opt-in, as you suggest. If we want to try to use stall faults to enable
->demand paging for DMA, then that means running core mm code to resolve
->the fault and we can't do that in irq context. Consequently, we have to
->hand this off to a thread, which means the hardware must allow the SS
->bit to remain set without immediately reasserting the interrupt line.
->Furthermore, we can't handle multiple faults on a context-bank, so we'd
->need to restrict ourselves to one device (i.e. faulting stream) per
->domain (CB).
->
->I think that means we want both specific compatible strings to identify
->the SS bit behaviour, but also a way to opt-in for the stall model as a
->separate property to indicate that the SoC integration can support this
->without e.g. deadlocking.
->
+Signed-off-by: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/iommu/iova.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-To understand the reason on the need for the quirk based on SS bit behavior,
-if the platform supports stall model and enabled, then SS bit should be implemented
-and remain set until the RESUME register is written back, means same behavior
-always ?
-
-Regards,
- Sricharan
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 080beca..b7268a1 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -62,7 +62,7 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
+ 	else {
+ 		struct rb_node *prev_node = rb_prev(iovad->cached32_node);
+ 		struct iova *curr_iova =
+-			container_of(iovad->cached32_node, struct iova, node);
++			rb_entry(iovad->cached32_node, struct iova, node);
+ 		*limit_pfn = curr_iova->pfn_lo - 1;
+ 		return prev_node;
+ 	}
+@@ -86,11 +86,11 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+ 	if (!iovad->cached32_node)
+ 		return;
+ 	curr = iovad->cached32_node;
+-	cached_iova = container_of(curr, struct iova, node);
++	cached_iova = rb_entry(curr, struct iova, node);
+ 
+ 	if (free->pfn_lo >= cached_iova->pfn_lo) {
+ 		struct rb_node *node = rb_next(&free->node);
+-		struct iova *iova = container_of(node, struct iova, node);
++		struct iova *iova = rb_entry(node, struct iova, node);
+ 
+ 		/* only cache if it's below 32bit pfn */
+ 		if (node && iova->pfn_lo < iovad->dma_32bit_pfn)
+@@ -125,7 +125,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 	curr = __get_cached_rbnode(iovad, &limit_pfn);
+ 	prev = curr;
+ 	while (curr) {
+-		struct iova *curr_iova = container_of(curr, struct iova, node);
++		struct iova *curr_iova = rb_entry(curr, struct iova, node);
+ 
+ 		if (limit_pfn < curr_iova->pfn_lo)
+ 			goto move_left;
+@@ -171,8 +171,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 
+ 		/* Figure out where to put new node */
+ 		while (*entry) {
+-			struct iova *this = container_of(*entry,
+-							struct iova, node);
++			struct iova *this = rb_entry(*entry, struct iova, node);
+ 			parent = *entry;
+ 
+ 			if (new->pfn_lo < this->pfn_lo)
+@@ -201,7 +200,7 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova)
+ 	struct rb_node **new = &(root->rb_node), *parent = NULL;
+ 	/* Figure out where to put new node */
+ 	while (*new) {
+-		struct iova *this = container_of(*new, struct iova, node);
++		struct iova *this = rb_entry(*new, struct iova, node);
+ 
+ 		parent = *new;
+ 
+@@ -311,7 +310,7 @@ private_find_iova(struct iova_domain *iovad, unsigned long pfn)
+ 	assert_spin_locked(&iovad->iova_rbtree_lock);
+ 
+ 	while (node) {
+-		struct iova *iova = container_of(node, struct iova, node);
++		struct iova *iova = rb_entry(node, struct iova, node);
+ 
+ 		/* If pfn falls within iova's range, return iova */
+ 		if ((pfn >= iova->pfn_lo) && (pfn <= iova->pfn_hi)) {
+@@ -463,7 +462,7 @@ void put_iova_domain(struct iova_domain *iovad)
+ 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+ 	node = rb_first(&iovad->rbroot);
+ 	while (node) {
+-		struct iova *iova = container_of(node, struct iova, node);
++		struct iova *iova = rb_entry(node, struct iova, node);
+ 
+ 		rb_erase(node, &iovad->rbroot);
+ 		free_iova_mem(iova);
+@@ -477,7 +476,7 @@ static int
+ __is_range_overlap(struct rb_node *node,
+ 	unsigned long pfn_lo, unsigned long pfn_hi)
+ {
+-	struct iova *iova = container_of(node, struct iova, node);
++	struct iova *iova = rb_entry(node, struct iova, node);
+ 
+ 	if ((pfn_lo <= iova->pfn_hi) && (pfn_hi >= iova->pfn_lo))
+ 		return 1;
+@@ -541,7 +540,7 @@ reserve_iova(struct iova_domain *iovad,
+ 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+ 	for (node = rb_first(&iovad->rbroot); node; node = rb_next(node)) {
+ 		if (__is_range_overlap(node, pfn_lo, pfn_hi)) {
+-			iova = container_of(node, struct iova, node);
++			iova = rb_entry(node, struct iova, node);
+ 			__adjust_overlap_range(iova, &pfn_lo, &pfn_hi);
+ 			if ((pfn_lo >= iova->pfn_lo) &&
+ 				(pfn_hi <= iova->pfn_hi))
+@@ -578,7 +577,7 @@ copy_reserved_iova(struct iova_domain *from, struct iova_domain *to)
+ 
+ 	spin_lock_irqsave(&from->iova_rbtree_lock, flags);
+ 	for (node = rb_first(&from->rbroot); node; node = rb_next(node)) {
+-		struct iova *iova = container_of(node, struct iova, node);
++		struct iova *iova = rb_entry(node, struct iova, node);
+ 		struct iova *new_iova;
+ 
+ 		new_iova = reserve_iova(to, iova->pfn_lo, iova->pfn_hi);
+-- 
+2.9.3
