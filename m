@@ -1,7 +1,7 @@
-From: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] iommu/iova: use rb_entry()
-Date: Mon, 19 Dec 2016 22:46:58 +0800
-Message-ID: <85a2c5e2551fcc3b4ea84033e9887b7387c1f63b.1482158738.git.geliangtang@gmail.com>
+From: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu-v3: avoid over allocating for l2 stream tables
+Date: Mon, 19 Dec 2016 15:26:40 -0500
+Message-ID: <1482179200-4264-1-git-send-email-nwatters@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -15,117 +15,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-To make the code clearer, use rb_entry() instead of container_of() to
-deal with rbtree.
+Currently, all l2 stream tables are being allocated with space for
+(1<<split) stes without regard to the number of sid bits the smmu
+physically supports. To avoid allocating memory for inaccessible
+stes, this patch limits the span of an l2 table to be no larger
+than the sid size of the smmu to which it belongs.
 
-Signed-off-by: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- drivers/iommu/iova.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 080beca..b7268a1 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -62,7 +62,7 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
- 	else {
- 		struct rb_node *prev_node = rb_prev(iovad->cached32_node);
- 		struct iova *curr_iova =
--			container_of(iovad->cached32_node, struct iova, node);
-+			rb_entry(iovad->cached32_node, struct iova, node);
- 		*limit_pfn = curr_iova->pfn_lo - 1;
- 		return prev_node;
- 	}
-@@ -86,11 +86,11 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
- 	if (!iovad->cached32_node)
- 		return;
- 	curr = iovad->cached32_node;
--	cached_iova = container_of(curr, struct iova, node);
-+	cached_iova = rb_entry(curr, struct iova, node);
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 4d6ec44..5dca671 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1129,6 +1129,7 @@ static void arm_smmu_init_bypass_stes(u64 *strtab, unsigned int nent)
  
- 	if (free->pfn_lo >= cached_iova->pfn_lo) {
- 		struct rb_node *node = rb_next(&free->node);
--		struct iova *iova = container_of(node, struct iova, node);
-+		struct iova *iova = rb_entry(node, struct iova, node);
- 
- 		/* only cache if it's below 32bit pfn */
- 		if (node && iova->pfn_lo < iovad->dma_32bit_pfn)
-@@ -125,7 +125,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 	curr = __get_cached_rbnode(iovad, &limit_pfn);
- 	prev = curr;
- 	while (curr) {
--		struct iova *curr_iova = container_of(curr, struct iova, node);
-+		struct iova *curr_iova = rb_entry(curr, struct iova, node);
- 
- 		if (limit_pfn < curr_iova->pfn_lo)
- 			goto move_left;
-@@ -171,8 +171,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 
- 		/* Figure out where to put new node */
- 		while (*entry) {
--			struct iova *this = container_of(*entry,
--							struct iova, node);
-+			struct iova *this = rb_entry(*entry, struct iova, node);
- 			parent = *entry;
- 
- 			if (new->pfn_lo < this->pfn_lo)
-@@ -201,7 +200,7 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova)
- 	struct rb_node **new = &(root->rb_node), *parent = NULL;
- 	/* Figure out where to put new node */
- 	while (*new) {
--		struct iova *this = container_of(*new, struct iova, node);
-+		struct iova *this = rb_entry(*new, struct iova, node);
- 
- 		parent = *new;
- 
-@@ -311,7 +310,7 @@ private_find_iova(struct iova_domain *iovad, unsigned long pfn)
- 	assert_spin_locked(&iovad->iova_rbtree_lock);
- 
- 	while (node) {
--		struct iova *iova = container_of(node, struct iova, node);
-+		struct iova *iova = rb_entry(node, struct iova, node);
- 
- 		/* If pfn falls within iova's range, return iova */
- 		if ((pfn >= iova->pfn_lo) && (pfn <= iova->pfn_hi)) {
-@@ -463,7 +462,7 @@ void put_iova_domain(struct iova_domain *iovad)
- 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
- 	node = rb_first(&iovad->rbroot);
- 	while (node) {
--		struct iova *iova = container_of(node, struct iova, node);
-+		struct iova *iova = rb_entry(node, struct iova, node);
- 
- 		rb_erase(node, &iovad->rbroot);
- 		free_iova_mem(iova);
-@@ -477,7 +476,7 @@ static int
- __is_range_overlap(struct rb_node *node,
- 	unsigned long pfn_lo, unsigned long pfn_hi)
+ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
  {
--	struct iova *iova = container_of(node, struct iova, node);
-+	struct iova *iova = rb_entry(node, struct iova, node);
++	u8 span;
+ 	size_t size;
+ 	void *strtab;
+ 	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+@@ -1137,10 +1138,11 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+ 	if (desc->l2ptr)
+ 		return 0;
  
- 	if ((pfn_lo <= iova->pfn_hi) && (pfn_hi >= iova->pfn_lo))
- 		return 1;
-@@ -541,7 +540,7 @@ reserve_iova(struct iova_domain *iovad,
- 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
- 	for (node = rb_first(&iovad->rbroot); node; node = rb_next(node)) {
- 		if (__is_range_overlap(node, pfn_lo, pfn_hi)) {
--			iova = container_of(node, struct iova, node);
-+			iova = rb_entry(node, struct iova, node);
- 			__adjust_overlap_range(iova, &pfn_lo, &pfn_hi);
- 			if ((pfn_lo >= iova->pfn_lo) &&
- 				(pfn_hi <= iova->pfn_hi))
-@@ -578,7 +577,7 @@ copy_reserved_iova(struct iova_domain *from, struct iova_domain *to)
+-	size = 1 << (STRTAB_SPLIT + ilog2(STRTAB_STE_DWORDS) + 3);
++	span = (smmu->sid_bits < STRTAB_SPLIT) ? smmu->sid_bits : STRTAB_SPLIT;
++	size = 1 << (span + ilog2(STRTAB_STE_DWORDS) + 3);
+ 	strtab = &cfg->strtab[(sid >> STRTAB_SPLIT) * STRTAB_L1_DESC_DWORDS];
  
- 	spin_lock_irqsave(&from->iova_rbtree_lock, flags);
- 	for (node = rb_first(&from->rbroot); node; node = rb_next(node)) {
--		struct iova *iova = container_of(node, struct iova, node);
-+		struct iova *iova = rb_entry(node, struct iova, node);
- 		struct iova *new_iova;
+-	desc->span = STRTAB_SPLIT + 1;
++	desc->span = span + 1;
+ 	desc->l2ptr = dmam_alloc_coherent(smmu->dev, size, &desc->l2ptr_dma,
+ 					  GFP_KERNEL | __GFP_ZERO);
+ 	if (!desc->l2ptr) {
+@@ -1150,7 +1152,7 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+ 		return -ENOMEM;
+ 	}
  
- 		new_iova = reserve_iova(to, iova->pfn_lo, iova->pfn_hi);
+-	arm_smmu_init_bypass_stes(desc->l2ptr, 1 << STRTAB_SPLIT);
++	arm_smmu_init_bypass_stes(desc->l2ptr, 1 << span);
+ 	arm_smmu_write_strtab_l1_desc(strtab, desc);
+ 	return 0;
+ }
+@@ -2001,6 +2003,8 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
+ 		dev_warn(smmu->dev,
+ 			 "2-level strtab only covers %u/%u bits of SID\n",
+ 			 size, smmu->sid_bits);
++	else if (smmu->sid_bits < size)
++		size = smmu->sid_bits;
+ 
+ 	l1size = cfg->num_l1_ents * (STRTAB_L1_DESC_DWORDS << 3);
+ 	strtab = dmam_alloc_coherent(smmu->dev, l1size, &cfg->strtab_dma,
 -- 
-2.9.3
+Qualcomm Datacenter Technologies, Inc. on behalf of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux
+Foundation Collaborative Project.
