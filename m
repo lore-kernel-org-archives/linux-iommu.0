@@ -1,16 +1,19 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3] arm64: SMMU-v2: Workaround for Cavium ThunderX
-	erratum 28168
-Date: Tue, 20 Dec 2016 11:56:31 +0000
-Message-ID: <20161220115630.GD10132@arm.com>
-References: <1482231993-27571-1-git-send-email-gakula@caviumnetworks.com>
-	<bd950765-8c1f-14d5-2be8-efa76f2d6b6b@arm.com>
+Subject: Re: [PATCH 3/4] iommu/arm-smmu: Disable stalling faults for all
+	endpoints
+Date: Tue, 20 Dec 2016 16:17:53 +0000
+Message-ID: <20161220161752.GJ10132@arm.com>
+References: <1471525542-14969-1-git-send-email-will.deacon@arm.com>
+	<1471525542-14969-4-git-send-email-will.deacon@arm.com>
+	<CAF6AEGujUb37qagBZK1T13eAh=50zy0z5HpFF9FsuvkZZ7c5qw@mail.gmail.com>
+	<20161216115413.GE13191@arm.com>
+	<000c01d259d6$cc750460$655f0d20$@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <bd950765-8c1f-14d5-2be8-efa76f2d6b6b-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <000c01d259d6$cc750460$655f0d20$@codeaurora.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,42 +23,68 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Cc: jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, Sunil.Goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, suzuki.poulose-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, james.morse-5wv7dgnIgG8@public.gmane.org, Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: 'linux-arm-msm' <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, 'Jordan Crouse' <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 20, 2016 at 11:52:58AM +0000, Marc Zyngier wrote:
-> On 20/12/16 11:06, Geetha sowjanya wrote:
-> > From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> > +#ifdef CONFIG_CAVIUM_ERRATUM_28168
-> > +/*
-> > + * Cavium ThunderX erratum 28168
-> > + *
-> > + * Due to erratum #28168 PCI-inbound MSI-X store to the interrupt
-> > + * controller are delivered to the interrupt controller before older
-> > + * PCI-inbound memory stores are committed. Doing a sync on SMMU
-> > + * will make sure all prior data transfers are completed before
-> > + * invoking ISR.
-> > + *
-> > + */
-> > +void dev_smmu_tlb_sync(struct device *dev)
-> > +{
-> > +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-> > +	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
-> > +
-> > +	if (smmu)
-> > +		__arm_smmu_tlb_sync(smmu);
-> > +}
-> > +#endif
+On Mon, Dec 19, 2016 at 02:33:36PM +0530, Sricharan wrote:
+> >On Tue, Dec 06, 2016 at 06:30:21PM -0500, Rob Clark wrote:
+> >> On Thu, Aug 18, 2016 at 9:05 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> >> > Enabling stalling faults can result in hardware deadlock on poorly
+> >> > designed systems, particularly those with a PCI root complex upstream of
+> >> > the SMMU.
+> >> >
+> >> > Although it's not really Linux's job to save hardware integrators from
+> >> > their own misfortune, it *is* our job to stop userspace (e.g. VFIO
+> >> > clients) from hosing the system for everybody else, even if they might
+> >> > already be required to have elevated privileges.
+> >> >
+> >> > Given that the fault handling code currently executes entirely in IRQ
+> >> > context, there is nothing that can sensibly be done to recover from
+> >> > things like page faults anyway, so let's rip this code out for now and
+> >> > avoid the potential for deadlock.
+> >>
+> >> so, I'd like to re-introduce this feature, I *guess* as some sort of
+> >> opt-in quirk (ie. disabled by default unless something in DT tells you
+> >> otherwise??  But I'm open to suggestions.  I'm not entirely sure what
+> >> hw was having problems due to this feature.)
+> >>
+> >> On newer snapdragon devices we are using arm-smmu for the GPU, and
+> >> halting the GPU so the driver's fault handler can dump some GPU state
+> >> on faults is enormously helpful for debugging and tracking down where
+> >> in the gpu cmdstream the fault was triggered.  In addition, we will
+> >> eventually want the ability to update pagetables from fault handler
+> >> and resuming the faulting transition.
+> >
+> >I'm not against reintroducing this, but it would certainly need to be
+> >opt-in, as you suggest. If we want to try to use stall faults to enable
+> >demand paging for DMA, then that means running core mm code to resolve
+> >the fault and we can't do that in irq context. Consequently, we have to
+> >hand this off to a thread, which means the hardware must allow the SS
+> >bit to remain set without immediately reasserting the interrupt line.
+> >Furthermore, we can't handle multiple faults on a context-bank, so we'd
+> >need to restrict ourselves to one device (i.e. faulting stream) per
+> >domain (CB).
+> >
+> >I think that means we want both specific compatible strings to identify
+> >the SS bit behaviour, but also a way to opt-in for the stall model as a
+> >separate property to indicate that the SoC integration can support this
+> >without e.g. deadlocking.
+> >
 > 
-> I'll let Robin and Will comment on this, but it strikes be as rather odd
-> that nothing will happen if the SMMU is in bypass or simply compiled
-> out. So this workaround is at best incomplete.
+> To understand the reason on the need for the quirk based on SS bit behavior,
+> if the platform supports stall model and enabled, then SS bit should be implemented
+> and remain set until the RESUME register is written back, means same behavior
+> always ?
 
-Agreed. Unless the SMMU is the cause of the issue, relying on it to
-implement the workaround is fragile and unnecessarily introduces a linkage
-between SMMU driver internals and the interrupt handling code.
-
-Not a fan.
+The behaviour of the SS bit is IMPLEMENTATION DEFINED per the architecture,
+so we need to know which way the given implementation chose to go. If we
+want to support paging, then we absolutely need a way to return from the
+interrupt handler without having handled the stall (i.e. without having
+written to the RESUME register). That means that we mustn't take the same
+interrupt immediately, otherwise we'll end up getting stuck in an infinite
+fault. One hacky option would be to mask the interrupt at the GIC, but
+that adds an additional requirement of one interrupt per context bank,
+which isn't typically implemented in my experience.
 
 Will
