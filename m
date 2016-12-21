@@ -1,82 +1,62 @@
-From: David Daney <ddaney-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v3] arm64: SMMU-v2: Workaround for Cavium ThunderX erratum
-	28168
-Date: Tue, 20 Dec 2016 09:52:38 -0800
-Message-ID: <d8aed795-f4ce-609e-ccd2-0daf628b0376@caviumnetworks.com>
-References: <1482231993-27571-1-git-send-email-gakula@caviumnetworks.com>
-	<bd950765-8c1f-14d5-2be8-efa76f2d6b6b@arm.com>
-	<20161220115630.GD10132@arm.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH] iommu/arm-smmu: Add global SMR masking property
+Date: Tue, 20 Dec 2016 21:29:21 -0600
+Message-ID: <20161221032921.hdcnyiq6m224ejlv@rob-hp-laptop>
+References: <ad6b6a4937b1fe183e6d48ccbaf4cb46db92fed4.1481893907.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161220115630.GD10132-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Cc: jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, Sunil.Goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, suzuki.poulose-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Tirumalesh Chalamarla <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, james.morse-5wv7dgnIgG8@public.gmane.org, Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <ad6b6a4937b1fe183e6d48ccbaf4cb46db92fed4.1481893907.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, stuart.yoder-3arQi8VN3Tc@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 12/20/2016 03:56 AM, Will Deacon wrote:
-> On Tue, Dec 20, 2016 at 11:52:58AM +0000, Marc Zyngier wrote:
->> On 20/12/16 11:06, Geetha sowjanya wrote:
->>> From: Tirumalesh Chalamarla <tchalamarla-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
->>> +#ifdef CONFIG_CAVIUM_ERRATUM_28168
->>> +/*
->>> + * Cavium ThunderX erratum 28168
->>> + *
->>> + * Due to erratum #28168 PCI-inbound MSI-X store to the interrupt
->>> + * controller are delivered to the interrupt controller before older
->>> + * PCI-inbound memory stores are committed. Doing a sync on SMMU
->>> + * will make sure all prior data transfers are completed before
->>> + * invoking ISR.
->>> + *
->>> + */
->>> +void dev_smmu_tlb_sync(struct device *dev)
->>> +{
->>> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
->>> +	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
->>> +
->>> +	if (smmu)
->>> +		__arm_smmu_tlb_sync(smmu);
->>> +}
->>> +#endif
->>
->> I'll let Robin and Will comment on this, but it strikes be as rather odd
->> that nothing will happen if the SMMU is in bypass or simply compiled
->> out. So this workaround is at best incomplete.
->
-> Agreed. Unless the SMMU is the cause of the issue, relying on it to
-> implement the workaround is fragile and unnecessarily introduces a linkage
-> between SMMU driver internals and the interrupt handling code.
+On Fri, Dec 16, 2016 at 01:19:29PM +0000, Robin Murphy wrote:
+> The current SMR masking support using a 2-cell iommu-specifier is
+> primarily intended to handle individual masters with large and/or
+> complex Stream ID assignments; it quickly gets a bit clunky in other SMR
+> use-cases where we just want to consistently mask out the same part of
+> every Stream ID (e.g. for MMU-500 configurations where the appended TBU
+> number gets in the way unnecessarily). Let's add a new property to allow
+> a single global mask value to better fit the latter situation.
+> 
+> CC: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+> 
+> Compile-tested only...
+> 
+>  Documentation/devicetree/bindings/iommu/arm,smmu.txt | 8 ++++++++
+>  drivers/iommu/arm-smmu.c                             | 4 +++-
+>  2 files changed, 11 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> index e862d1485205..98f5cbe5fdb4 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+> @@ -60,6 +60,14 @@ conditions.
+>                    aliases of secure registers have to be used during
+>                    SMMU configuration.
+>  
+> +- stream-match-mask : Specifies a fixed SMR mask value to combine with
 
+Needs a vendor prefix.
 
-The SMMU is not the cause of the problem, it is the solution, and as 
-such is required.
+Otherwise looks fine.
 
-Perhaps we should have a Kconfig "select" for the SMMU driver if 
-CAVIUM_ERRATUM_28168 is selected.
-
-
->
-> Not a fan.
-
-In general, I don't think anybody is a big fan of errata and their 
-workarounds.
-
-
->
-> Will
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
->
+> +                  the Stream ID value from every iommu-specifier. This
+> +                  may be used instead of an "#iommu-cells" value of 2
+> +                  when there is no need for per-master SMR masks, but
+> +                  it is still desired to mask some portion of every
+> +                  Stream ID (e.g. for certain MMU-500 configurations
+> +                  given globally unique external IDs).
+> +
+>  ** Deprecated properties:
+>  
+>  - mmu-masters (deprecated in favour of the generic "iommus" binding) :
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
