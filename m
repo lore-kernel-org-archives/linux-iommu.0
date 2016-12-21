@@ -1,62 +1,63 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH] iommu/arm-smmu: Add global SMR masking property
-Date: Tue, 20 Dec 2016 21:29:21 -0600
-Message-ID: <20161221032921.hdcnyiq6m224ejlv@rob-hp-laptop>
-References: <ad6b6a4937b1fe183e6d48ccbaf4cb46db92fed4.1481893907.git.robin.murphy@arm.com>
+From: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu-v3: Clear prior settings when updating STEs
+Date: Tue, 20 Dec 2016 23:11:48 -0500
+Message-ID: <1482293508-21621-1-git-send-email-nwatters@codeaurora.org>
+References: <20161220095340.GB10132@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <ad6b6a4937b1fe183e6d48ccbaf4cb46db92fed4.1481893907.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, stuart.yoder-3arQi8VN3Tc@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20161220095340.GB10132-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Dec 16, 2016 at 01:19:29PM +0000, Robin Murphy wrote:
-> The current SMR masking support using a 2-cell iommu-specifier is
-> primarily intended to handle individual masters with large and/or
-> complex Stream ID assignments; it quickly gets a bit clunky in other SMR
-> use-cases where we just want to consistently mask out the same part of
-> every Stream ID (e.g. for MMU-500 configurations where the appended TBU
-> number gets in the way unnecessarily). Let's add a new property to allow
-> a single global mask value to better fit the latter situation.
-> 
-> CC: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
-> 
-> Compile-tested only...
-> 
->  Documentation/devicetree/bindings/iommu/arm,smmu.txt | 8 ++++++++
->  drivers/iommu/arm-smmu.c                             | 4 +++-
->  2 files changed, 11 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> index e862d1485205..98f5cbe5fdb4 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> @@ -60,6 +60,14 @@ conditions.
->                    aliases of secure registers have to be used during
->                    SMMU configuration.
->  
-> +- stream-match-mask : Specifies a fixed SMR mask value to combine with
+To prevent corruption of the stage-1 context pointer field when
+updating STEs, rebuild the entire containing dword instead of
+clearing individual fields.
 
-Needs a vendor prefix.
+Signed-off-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-Otherwise looks fine.
-
-> +                  the Stream ID value from every iommu-specifier. This
-> +                  may be used instead of an "#iommu-cells" value of 2
-> +                  when there is no need for per-master SMR masks, but
-> +                  it is still desired to mask some portion of every
-> +                  Stream ID (e.g. for certain MMU-500 configurations
-> +                  given globally unique external IDs).
-> +
->  ** Deprecated properties:
->  
->  - mmu-masters (deprecated in favour of the generic "iommus" binding) :
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 4d6ec44..94f305d 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1042,13 +1042,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ 		}
+ 	}
+ 
+-	/* Nuke the existing Config, as we're going to rewrite it */
+-	val &= ~(STRTAB_STE_0_CFG_MASK << STRTAB_STE_0_CFG_SHIFT);
+-
+-	if (ste->valid)
+-		val |= STRTAB_STE_0_V;
+-	else
+-		val &= ~STRTAB_STE_0_V;
++	/* Nuke the existing STE_0 value, as we're going to rewrite it */
++	val = ste->valid ? STRTAB_STE_0_V : 0;
+ 
+ 	if (ste->bypass) {
+ 		val |= disable_bypass ? STRTAB_STE_0_CFG_ABORT
+@@ -1083,7 +1078,6 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ 		val |= (ste->s1_cfg->cdptr_dma & STRTAB_STE_0_S1CTXPTR_MASK
+ 		        << STRTAB_STE_0_S1CTXPTR_SHIFT) |
+ 			STRTAB_STE_0_CFG_S1_TRANS;
+-
+ 	}
+ 
+ 	if (ste->s2_cfg) {
+-- 
+Qualcomm Datacenter Technologies, Inc. on behalf of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux
+Foundation Collaborative Project.
