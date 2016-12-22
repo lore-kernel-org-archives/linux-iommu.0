@@ -1,98 +1,83 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [RFC v4 15/16] vfio/type1: Check MSI remapping at irq domain
- level
-Date: Thu, 22 Dec 2016 14:02:40 +0100
-Message-ID: <3ead0cc1-7798-3e39-da56-c18a5989c00c@redhat.com>
-References: <1481661034-3088-1-git-send-email-eric.auger@redhat.com>
- <1481661034-3088-16-git-send-email-eric.auger@redhat.com>
- <HE1PR04MB13219CC90CE2BBE62356D94CFF920@HE1PR04MB1321.eurprd04.prod.outlook.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: possible dmar_init_reserved_ranges() error
+Date: Thu, 22 Dec 2016 17:27:14 +0100
+Message-ID: <20161222162713.GF17255@8bytes.org>
+References: <20161219212044.GA21774@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <HE1PR04MB13219CC90CE2BBE62356D94CFF920@HE1PR04MB1321.eurprd04.prod.outlook.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Diana Madalina Craciun <diana.craciun@nxp.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "christoffer.dall@linaro.org" <christoffer.dall@linaro.org>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "tglx@linutronix.de" <tglx@linutronix.de>, "jason@lakedaemon.net" <jason@lakedaemon.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "drjones@redhat.com" <drjones@redhat.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "pranav.sawargaonkar@gmail.com" <pranav.sawargaonkar@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "punit.agrawal@arm.com" <punit.agrawal@arm.com>, "gpkulkarni@gmail.com" <gpkulkarni@gmail.com>, "shankerd@codeaurora.org" <shankerd@codeaurora.org>, Bharat Bhushan <bharat.bhushan@nxp.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20161219212044.GA21774-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rwright-ZPxbGqLxI0U@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Diana,
+Hi Bjorn,
 
-On 22/12/2016 13:41, Diana Madalina Craciun wrote:
-> Hi Eric,
+On Mon, Dec 19, 2016 at 03:20:44PM -0600, Bjorn Helgaas wrote:
+> I have some questions about dmar_init_reserved_ranges().  On systems
+> where CPU physical address space is not identity-mapped to PCI bus
+> address space, e.g., where the PCI host bridge windows have _TRA
+> offsets, I'm not sure we're doing the right thing.
 > 
-> On 12/13/2016 10:32 PM, Eric Auger wrote:
->> In case the IOMMU does not bypass MSI transactions (typical
->> case on ARM), we check all MSI controllers are IRQ remapping
->> capable. If not the IRQ assignment may be unsafe.
->>
->> At this stage the arm-smmu-(v3) still advertise the
->> IOMMU_CAP_INTR_REMAP capability at IOMMU level. This will be
->> removed in subsequent patches.
->>
->> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->> ---
->>  drivers/vfio/vfio_iommu_type1.c | 9 ++++++---
->>  1 file changed, 6 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->> index d07fe73..a05648b 100644
->> --- a/drivers/vfio/vfio_iommu_type1.c
->> +++ b/drivers/vfio/vfio_iommu_type1.c
->> @@ -37,6 +37,7 @@
->>  #include <linux/vfio.h>
->>  #include <linux/workqueue.h>
->>  #include <linux/dma-iommu.h>
->> +#include <linux/irqdomain.h>
->>  
->>  #define DRIVER_VERSION  "0.2"
->>  #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson@redhat.com>"
->> @@ -765,7 +766,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>  	struct vfio_domain *domain, *d;
->>  	struct bus_type *bus = NULL;
->>  	int ret;
->> -	bool resv_msi;
->> +	bool resv_msi, msi_remap;
->>  	phys_addr_t resv_msi_base;
->>  
->>  	mutex_lock(&iommu->lock);
->> @@ -818,8 +819,10 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->>  	INIT_LIST_HEAD(&domain->group_list);
->>  	list_add(&group->next, &domain->group_list);
->>  
->> -	if (!allow_unsafe_interrupts &&
->> -	    !iommu_capable(bus, IOMMU_CAP_INTR_REMAP)) {
->> +	msi_remap = resv_msi ? irq_domain_check_msi_remap() :
->> +			       iommu_capable(bus, IOMMU_CAP_INTR_REMAP);
->> +
->> +	if (!allow_unsafe_interrupts && !msi_remap) {
->>  		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
->>  		       __func__);
->>  		ret = -EPERM;
+> Assume we have a PCI host bridge with _TRA that maps CPU addresses
+> 0x80000000-0x9fffffff to PCI bus addresses 0x00000000-0x1fffffff, with
+> two PCI devices below it:
 > 
-> I tested your v4.9-reserved-v4 branch on a ITS capable hardware (NXP
-> LS2080), so I did not set allow_unsafe_interrupts. It fails here
-> complaining that the there is no interrupt remapping support. The
-> irq_domain_check_msi_remap function returns false as none of the checked
-> domains has the IRQ_DOMAIN_FLAG_MSI_REMAP flag set. I think the reason
-> is that the flags are not propagated through the domain hierarchy when
-> the domain is created.
+>   PCI host bridge domain 0000 [bus 00-3f]
+>   PCI host bridge window [mem 0x80000000-0x9fffffff] (bus 0x00000000-0x1fffffff]
+>   00:00.0: BAR 0 [mem 0x80000000-0x8ffffffff] (0x00000000-0x0fffffff on bus)
+>   00:01.0: BAR 0 [mem 0x90000000-0x9ffffffff] (0x10000000-0x1fffffff on bus)
+> 
+> The IOMMU init code in dmar_init_reserved_ranges() reserves the PCI
+> MMIO space for all devices:
+> 
+>   pci_iommu_init()
+>     intel_iommu_init()
+>       dmar_init_reserved_ranges()
+>         reserve_iova(0x80000000-0x8ffffffff)
+>         reserve_iova(0x90000000-0x9ffffffff)
+> 
+> This looks odd because we're reserving CPU physical addresses, but
+> the IOVA space contains *PCI bus* addresses.  On most x86 systems they
+> would be the same, but not on all.
 
-Hum OK. Please apologize for the inconvenience, all the more so this is
-the second time you report the same issue for different cause :-( At the
-moment I can't test on a GICv3 ITS based system. I will try to fix that
-though.
+Interesting, I wasn't aware of that. Looks like we are not doing the
+right thing in dmar_init_reserved_ranges(). How is that handled without
+an IOMMU, when the bus-addresses overlap with ram addresses?
+ 
+> Assume the driver for 00:00.0 maps a page of main memory for DMA.  It
+> may receive a dma_addr_t of 0x10000000:
+> 
+>   00:00.0: intel_map_page() returns dma_addr_t 0x10000000
+>   00:00.0: issues DMA to 0x10000000
+> 
+> What happens here?  The DMA access should go to main memory.  In
+> conventional PCI it would be a peer-to-peer access to device 00:01.0.
+> Is there enough PCIe smarts (ACS or something?) to do otherwise?
 
-I would like to get the confirmation introducing this flag is the right
-direction though.
+If there is a bridge doing ACS between the devices, the IOMMU will see
+the request and re-map it to its RAM address.
 
-Thanks
+> The dmar_init_reserved_ranges() comment says "Reserve all PCI MMIO to
+> avoid peer-to-peer access."  Without _TRA, CPU addresses and PCI bus
+> addresses would be identical, and I think these reserve_iova() calls
+> *would* prevent this situation.  So maybe we're just missing a
+> pcibios_resource_to_bus() here?
 
-Eric
-> 
-> Thanks,
-> 
-> Diana
-> 
-> 
-> 
+I'll have a look, the AMD IOMMU driver implements this too, so it needs
+also be fixed there. Do you know which x86 systems are configured like
+this?
+
+
+	Joerg
