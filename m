@@ -1,86 +1,98 @@
-From: Diana Madalina Craciun <diana.craciun-3arQi8VN3Tc@public.gmane.org>
-Subject: Re: [RFC v4 15/16] vfio/type1: Check MSI remapping at irq domain level
-Date: Thu, 22 Dec 2016 12:41:53 +0000
-Message-ID: <HE1PR04MB13219CC90CE2BBE62356D94CFF920@HE1PR04MB1321.eurprd04.prod.outlook.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [RFC v4 15/16] vfio/type1: Check MSI remapping at irq domain
+ level
+Date: Thu, 22 Dec 2016 14:02:40 +0100
+Message-ID: <3ead0cc1-7798-3e39-da56-c18a5989c00c@redhat.com>
 References: <1481661034-3088-1-git-send-email-eric.auger@redhat.com>
-	<1481661034-3088-16-git-send-email-eric.auger@redhat.com>
+ <1481661034-3088-16-git-send-email-eric.auger@redhat.com>
+ <HE1PR04MB13219CC90CE2BBE62356D94CFF920@HE1PR04MB1321.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org" <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Cc: "drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "punit.agrawal-5wv7dgnIgG8@public.gmane.org" <punit.agrawal-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <HE1PR04MB13219CC90CE2BBE62356D94CFF920@HE1PR04MB1321.eurprd04.prod.outlook.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Diana Madalina Craciun <diana.craciun@nxp.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "christoffer.dall@linaro.org" <christoffer.dall@linaro.org>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "tglx@linutronix.de" <tglx@linutronix.de>, "jason@lakedaemon.net" <jason@lakedaemon.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "drjones@redhat.com" <drjones@redhat.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "pranav.sawargaonkar@gmail.com" <pranav.sawargaonkar@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "punit.agrawal@arm.com" <punit.agrawal@arm.com>, "gpkulkarni@gmail.com" <gpkulkarni@gmail.com>, "shankerd@codeaurora.org" <shankerd@codeaurora.org>, Bharat Bhushan <bharat.bhushan@nxp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Eric,
+Hi Diana,
 
-On 12/13/2016 10:32 PM, Eric Auger wrote:
-> In case the IOMMU does not bypass MSI transactions (typical
-> case on ARM), we check all MSI controllers are IRQ remapping
-> capable. If not the IRQ assignment may be unsafe.
->
-> At this stage the arm-smmu-(v3) still advertise the
-> IOMMU_CAP_INTR_REMAP capability at IOMMU level. This will be
-> removed in subsequent patches.
->
-> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index d07fe73..a05648b 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -37,6 +37,7 @@
->  #include <linux/vfio.h>
->  #include <linux/workqueue.h>
->  #include <linux/dma-iommu.h>
-> +#include <linux/irqdomain.h>
->  
->  #define DRIVER_VERSION  "0.2"
->  #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
-> @@ -765,7 +766,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	struct vfio_domain *domain, *d;
->  	struct bus_type *bus = NULL;
->  	int ret;
-> -	bool resv_msi;
-> +	bool resv_msi, msi_remap;
->  	phys_addr_t resv_msi_base;
->  
->  	mutex_lock(&iommu->lock);
-> @@ -818,8 +819,10 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	INIT_LIST_HEAD(&domain->group_list);
->  	list_add(&group->next, &domain->group_list);
->  
-> -	if (!allow_unsafe_interrupts &&
-> -	    !iommu_capable(bus, IOMMU_CAP_INTR_REMAP)) {
-> +	msi_remap = resv_msi ? irq_domain_check_msi_remap() :
-> +			       iommu_capable(bus, IOMMU_CAP_INTR_REMAP);
-> +
-> +	if (!allow_unsafe_interrupts && !msi_remap) {
->  		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
->  		       __func__);
->  		ret = -EPERM;
+On 22/12/2016 13:41, Diana Madalina Craciun wrote:
+> Hi Eric,
+> 
+> On 12/13/2016 10:32 PM, Eric Auger wrote:
+>> In case the IOMMU does not bypass MSI transactions (typical
+>> case on ARM), we check all MSI controllers are IRQ remapping
+>> capable. If not the IRQ assignment may be unsafe.
+>>
+>> At this stage the arm-smmu-(v3) still advertise the
+>> IOMMU_CAP_INTR_REMAP capability at IOMMU level. This will be
+>> removed in subsequent patches.
+>>
+>> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+>> ---
+>>  drivers/vfio/vfio_iommu_type1.c | 9 ++++++---
+>>  1 file changed, 6 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+>> index d07fe73..a05648b 100644
+>> --- a/drivers/vfio/vfio_iommu_type1.c
+>> +++ b/drivers/vfio/vfio_iommu_type1.c
+>> @@ -37,6 +37,7 @@
+>>  #include <linux/vfio.h>
+>>  #include <linux/workqueue.h>
+>>  #include <linux/dma-iommu.h>
+>> +#include <linux/irqdomain.h>
+>>  
+>>  #define DRIVER_VERSION  "0.2"
+>>  #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson@redhat.com>"
+>> @@ -765,7 +766,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>>  	struct vfio_domain *domain, *d;
+>>  	struct bus_type *bus = NULL;
+>>  	int ret;
+>> -	bool resv_msi;
+>> +	bool resv_msi, msi_remap;
+>>  	phys_addr_t resv_msi_base;
+>>  
+>>  	mutex_lock(&iommu->lock);
+>> @@ -818,8 +819,10 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>>  	INIT_LIST_HEAD(&domain->group_list);
+>>  	list_add(&group->next, &domain->group_list);
+>>  
+>> -	if (!allow_unsafe_interrupts &&
+>> -	    !iommu_capable(bus, IOMMU_CAP_INTR_REMAP)) {
+>> +	msi_remap = resv_msi ? irq_domain_check_msi_remap() :
+>> +			       iommu_capable(bus, IOMMU_CAP_INTR_REMAP);
+>> +
+>> +	if (!allow_unsafe_interrupts && !msi_remap) {
+>>  		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
+>>  		       __func__);
+>>  		ret = -EPERM;
+> 
+> I tested your v4.9-reserved-v4 branch on a ITS capable hardware (NXP
+> LS2080), so I did not set allow_unsafe_interrupts. It fails here
+> complaining that the there is no interrupt remapping support. The
+> irq_domain_check_msi_remap function returns false as none of the checked
+> domains has the IRQ_DOMAIN_FLAG_MSI_REMAP flag set. I think the reason
+> is that the flags are not propagated through the domain hierarchy when
+> the domain is created.
 
-I tested your v4.9-reserved-v4 branch on a ITS capable hardware (NXP
-LS2080), so I did not set allow_unsafe_interrupts. It fails here
-complaining that the there is no interrupt remapping support. The
-irq_domain_check_msi_remap function returns false as none of the checked
-domains has the IRQ_DOMAIN_FLAG_MSI_REMAP flag set. I think the reason
-is that the flags are not propagated through the domain hierarchy when
-the domain is created.
+Hum OK. Please apologize for the inconvenience, all the more so this is
+the second time you report the same issue for different cause :-( At the
+moment I can't test on a GICv3 ITS based system. I will try to fix that
+though.
 
-Thanks,
+I would like to get the confirmation introducing this flag is the right
+direction though.
 
-Diana
+Thanks
+
+Eric
+> 
+> Thanks,
+> 
+> Diana
+> 
+> 
+> 
