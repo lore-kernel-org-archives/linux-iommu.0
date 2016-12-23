@@ -1,13 +1,15 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V6 7/7] perf/amd/iommu: Enable support for multiple IOMMUs
-Date: Fri, 23 Dec 2016 20:38:50 +0700
-Message-ID: <1482500330-5606-8-git-send-email-Suravee.Suthikulpanit@amd.com>
-References: <1482500330-5606-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+From: Geetha Akula <geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC v4 15/16] vfio/type1: Check MSI remapping at irq domain level
+Date: Fri, 23 Dec 2016 19:03:47 +0530
+Message-ID: <CANHdaibH3GCFhM4nXh1KJoFhZCodtWo7KfP7AcSoVD0HwjDWfg@mail.gmail.com>
+References: <1481661034-3088-1-git-send-email-eric.auger@redhat.com>
+	<1481661034-3088-16-git-send-email-eric.auger@redhat.com>
+	<HE1PR04MB13219CC90CE2BBE62356D94CFF920@HE1PR04MB1321.eurprd04.prod.outlook.com>
+	<3ead0cc1-7798-3e39-da56-c18a5989c00c@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============1863778894454842344=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1482500330-5606-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <3ead0cc1-7798-3e39-da56-c18a5989c00c-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,267 +19,254 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
+To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: "drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org" <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "punit.agrawal-5wv7dgnIgG8@public.gmane.org" <punit.agrawal-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds multi-IOMMU support for perf by exposing
-an AMD IOMMU PMU for each IOMMU found in the system via:
+--===============1863778894454842344==
+Content-Type: multipart/alternative; boundary=94eb2c18f22a9564570544536fdf
 
-  /sys/device/amd_iommu_x     /* where x is the IOMMU index. */
+--94eb2c18f22a9564570544536fdf
+Content-Type: text/plain; charset=UTF-8
 
-This allows users to specify different events to be programed
-onto performance counters of each IOMMU.
+Hi Eric,
 
-Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
----
- arch/x86/events/amd/iommu.c | 119 ++++++++++++++++++++++++--------------------
- 1 file changed, 64 insertions(+), 55 deletions(-)
+Seeing same issue reported by Diana on ThunderX with you v4.9-reserved-v4
+branch.
+Vfio passthough work fine when allow_unsafe_interrupts is set.
 
-diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
-index 2403c78..5fd97b5 100644
---- a/arch/x86/events/amd/iommu.c
-+++ b/arch/x86/events/amd/iommu.c
-@@ -35,10 +35,13 @@
- #define _GET_PASID_MASK(ev) ((ev->hw.extra_reg.config >> 16) & 0xFFFFULL)
- #define _GET_DOMID_MASK(ev) ((ev->hw.extra_reg.config >> 32) & 0xFFFFULL)
- 
--static struct perf_amd_iommu __perf_iommu;
-+#define PERF_AMD_IOMMU_NAME_SZ 16
- 
- struct perf_amd_iommu {
-+	struct list_head list;
- 	struct pmu pmu;
-+	uint idx;
-+	char name[PERF_AMD_IOMMU_NAME_SZ];
- 	u8 max_banks;
- 	u8 max_counters;
- 	u64 cntr_assign_mask;
-@@ -46,6 +49,8 @@ struct perf_amd_iommu {
- 	const struct attribute_group *attr_groups[4];
- };
- 
-+LIST_HEAD(perf_amd_iommu_list);
-+
- #define format_group	attr_groups[0]
- #define cpumask_group	attr_groups[1]
- #define events_group	attr_groups[2]
-@@ -204,8 +209,7 @@ static int clear_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu,
- static int perf_iommu_event_init(struct perf_event *event)
- {
- 	struct hw_perf_event *hwc = &event->hw;
--	struct perf_amd_iommu *perf_iommu;
--	u64 config, config1;
-+	struct perf_amd_iommu *pi = container_of(event->pmu, struct perf_amd_iommu, pmu);
- 
- 	/* test the event attr type check for PMU enumeration */
- 	if (event->attr.type != event->pmu->type)
-@@ -227,27 +231,17 @@ static int perf_iommu_event_init(struct perf_event *event)
- 	if (event->cpu < 0)
- 		return -EINVAL;
- 
--	perf_iommu = &__perf_iommu;
--
--	if (event->pmu != &perf_iommu->pmu)
--		return -ENOENT;
--
--	if (perf_iommu) {
--		config = event->attr.config;
--		config1 = event->attr.config1;
--	} else {
--		return -EINVAL;
--	}
--
- 	/* update the hw_perf_event struct with the iommu config data */
--	hwc->config = config;
--	hwc->extra_reg.config = config1;
-+	hwc->idx = pi->idx;
-+	hwc->config = event->attr.config;
-+	hwc->extra_reg.config = event->attr.config1;
- 
- 	return 0;
- }
- 
- static void perf_iommu_enable_event(struct perf_event *ev)
- {
-+	struct hw_perf_event *hwc = &ev->hw;
- 	u8 csource = _GET_CSOURCE(ev);
- 	u16 devid = _GET_DEVID(ev);
- 	u8 bank = _GET_BANK(ev);
-@@ -255,33 +249,34 @@ static void perf_iommu_enable_event(struct perf_event *ev)
- 	u64 reg = 0ULL;
- 
- 	reg = csource;
--	amd_iommu_pc_set_reg(0, devid, bank, cntr,
-+	amd_iommu_pc_set_reg(hwc->idx, devid, bank, cntr,
- 			     IOMMU_PC_COUNTER_SRC_REG, &reg);
- 
- 	reg = devid | (_GET_DEVID_MASK(ev) << 32);
- 	if (reg)
- 		reg |= BIT(31);
--	amd_iommu_pc_set_reg(0, devid, bank, cntr,
-+	amd_iommu_pc_set_reg(hwc->idx, devid, bank, cntr,
- 			     IOMMU_PC_DEVID_MATCH_REG, &reg);
- 
- 	reg = _GET_PASID(ev) | (_GET_PASID_MASK(ev) << 32);
- 	if (reg)
- 		reg |= BIT(31);
--	amd_iommu_pc_set_reg(0, devid, bank, cntr,
-+	amd_iommu_pc_set_reg(hwc->idx, devid, bank, cntr,
- 			     IOMMU_PC_PASID_MATCH_REG, &reg);
- 
- 	reg = _GET_DOMID(ev) | (_GET_DOMID_MASK(ev) << 32);
- 	if (reg)
- 		reg |= BIT(31);
--	amd_iommu_pc_set_reg(0, devid, bank, cntr,
-+	amd_iommu_pc_set_reg(hwc->idx, devid, bank, cntr,
- 			     IOMMU_PC_DOMID_MATCH_REG, &reg);
- }
- 
- static void perf_iommu_disable_event(struct perf_event *event)
- {
-+	struct hw_perf_event *hwc = &event->hw;
- 	u64 reg = 0ULL;
- 
--	amd_iommu_pc_set_reg(0, _GET_DEVID(event), _GET_BANK(event),
-+	amd_iommu_pc_set_reg(hwc->idx, _GET_DEVID(event), _GET_BANK(event),
- 			     _GET_CNTR(event), IOMMU_PC_COUNTER_SRC_REG, &reg);
- }
- 
-@@ -301,7 +296,7 @@ static void perf_iommu_start(struct perf_event *event, int flags)
- 
- 	val = local64_read(&hwc->prev_count);
- 
--	amd_iommu_pc_set_counter(0, _GET_BANK(event), _GET_CNTR(event), &val);
-+	amd_iommu_pc_set_counter(hwc->idx, _GET_BANK(event), _GET_CNTR(event), &val);
- enable:
- 	perf_iommu_enable_event(event);
- 	perf_event_update_userpage(event);
-@@ -314,7 +309,7 @@ static void perf_iommu_read(struct perf_event *event)
- 	s64 delta;
- 	struct hw_perf_event *hwc = &event->hw;
- 
--	if (amd_iommu_pc_get_counter(0, _GET_BANK(event), _GET_CNTR(event), &cnt))
-+	if (amd_iommu_pc_get_counter(hwc->idx, _GET_BANK(event), _GET_CNTR(event), &cnt))
- 		return;
- 
- 	/* IOMMU pc counter register is only 48 bits */
-@@ -417,14 +412,20 @@ static __init int _init_events_attrs(struct perf_amd_iommu *perf_iommu)
- 
- static __init void amd_iommu_pc_exit(void)
- {
--	if (__perf_iommu.events_group != NULL) {
--		kfree(__perf_iommu.events_group);
--		__perf_iommu.events_group = NULL;
-+	struct perf_amd_iommu *pi, *next;
-+
-+	list_for_each_entry_safe(pi, next, &perf_amd_iommu_list, list) {
-+		list_del(&pi->list);
-+
-+		kfree(pi->events_group);
-+		pi->events_group = NULL;
-+
-+		kfree(pi);
- 	}
- }
- 
--static __init int _init_perf_amd_iommu(
--	struct perf_amd_iommu *perf_iommu, char *name)
-+static __init int
-+init_one_perf_amd_iommu(struct perf_amd_iommu *perf_iommu, uint idx)
- {
- 	int ret;
- 
-@@ -441,54 +442,62 @@ static __init int _init_perf_amd_iommu(
- 	if (_init_events_attrs(perf_iommu) != 0)
- 		pr_err("Only support raw events.\n");
- 
--	perf_iommu->max_banks = amd_iommu_pc_get_max_banks(0);
--	perf_iommu->max_counters = amd_iommu_pc_get_max_counters(0);
-+	snprintf(perf_iommu->name, PERF_AMD_IOMMU_NAME_SZ, "amd_iommu_%u", idx);
-+	perf_iommu->idx = idx;
-+	perf_iommu->max_banks = amd_iommu_pc_get_max_banks(idx);
-+	perf_iommu->max_counters = amd_iommu_pc_get_max_counters(idx);
- 	if (!perf_iommu->max_banks || !perf_iommu->max_counters)
- 		return -EINVAL;
- 
- 	/* Init null attributes */
- 	perf_iommu->null_group = NULL;
-+
-+	/* Setting up PMU */
-+	perf_iommu->pmu.event_init = perf_iommu_event_init,
-+	perf_iommu->pmu.add = perf_iommu_add,
-+	perf_iommu->pmu.del = perf_iommu_del,
-+	perf_iommu->pmu.start = perf_iommu_start,
-+	perf_iommu->pmu.stop = perf_iommu_stop,
-+	perf_iommu->pmu.read = perf_iommu_read,
-+	perf_iommu->pmu.task_ctx_nr = perf_invalid_context;
- 	perf_iommu->pmu.attr_groups = perf_iommu->attr_groups;
- 
--	ret = perf_pmu_register(&perf_iommu->pmu, name, -1);
-+	ret = perf_pmu_register(&perf_iommu->pmu, perf_iommu->name, -1);
- 	if (ret) {
- 		pr_err("Error initializing AMD IOMMU perf counters.\n");
- 		amd_iommu_pc_exit();
- 	} else {
--		pr_info("perf: amd_iommu: Detected. (%d banks, %d counters/bank)\n",
--			amd_iommu_pc_get_max_banks(0),
--			amd_iommu_pc_get_max_counters(0));
-+		pr_info("Detected %s, w/ %d banks, %d counters/bank\n",
-+			perf_iommu->name,
-+			amd_iommu_pc_get_max_banks(idx),
-+			amd_iommu_pc_get_max_counters(idx));
-+
-+		list_add_tail(&perf_iommu->list, &perf_amd_iommu_list);
- 	}
- 
- 	return ret;
- }
- 
--static struct perf_amd_iommu __perf_iommu = {
--	.pmu = {
--		.task_ctx_nr    = perf_invalid_context,
--		.event_init	= perf_iommu_event_init,
--		.add		= perf_iommu_add,
--		.del		= perf_iommu_del,
--		.start		= perf_iommu_start,
--		.stop		= perf_iommu_stop,
--		.read		= perf_iommu_read,
--	},
--	.max_banks		= 0x00,
--	.max_counters		= 0x00,
--	.cntr_assign_mask	= 0ULL,
--	.format_group		= NULL,
--	.cpumask_group		= NULL,
--	.events_group		= NULL,
--	.null_group		= NULL,
--};
--
- static __init int amd_iommu_pc_init(void)
- {
-+	uint i;
-+
- 	/* Make sure the IOMMU PC resource is available */
- 	if (!amd_iommu_pc_supported())
- 		return -ENODEV;
- 
--	_init_perf_amd_iommu(&__perf_iommu, "amd_iommu");
-+	for (i = 0 ; i < amd_iommu_get_num_iommus(); i++) {
-+		int ret;
-+		struct perf_amd_iommu *pi;
-+
-+		pi = kzalloc(sizeof(struct perf_amd_iommu), GFP_KERNEL);
-+		if (!pi)
-+			return -ENOMEM;
-+
-+		ret = init_one_perf_amd_iommu(pi, i);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	return 0;
- }
--- 
-1.8.3.1
+
+Thank you,
+Geetha.
+
+On Thu, Dec 22, 2016 at 6:32 PM, Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
+
+> Hi Diana,
+>
+> On 22/12/2016 13:41, Diana Madalina Craciun wrote:
+> > Hi Eric,
+> >
+> > On 12/13/2016 10:32 PM, Eric Auger wrote:
+> >> In case the IOMMU does not bypass MSI transactions (typical
+> >> case on ARM), we check all MSI controllers are IRQ remapping
+> >> capable. If not the IRQ assignment may be unsafe.
+> >>
+> >> At this stage the arm-smmu-(v3) still advertise the
+> >> IOMMU_CAP_INTR_REMAP capability at IOMMU level. This will be
+> >> removed in subsequent patches.
+> >>
+> >> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> >> ---
+> >>  drivers/vfio/vfio_iommu_type1.c | 9 ++++++---
+> >>  1 file changed, 6 insertions(+), 3 deletions(-)
+> >>
+> >> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_
+> type1.c
+> >> index d07fe73..a05648b 100644
+> >> --- a/drivers/vfio/vfio_iommu_type1.c
+> >> +++ b/drivers/vfio/vfio_iommu_type1.c
+> >> @@ -37,6 +37,7 @@
+> >>  #include <linux/vfio.h>
+> >>  #include <linux/workqueue.h>
+> >>  #include <linux/dma-iommu.h>
+> >> +#include <linux/irqdomain.h>
+> >>
+> >>  #define DRIVER_VERSION  "0.2"
+> >>  #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
+> >> @@ -765,7 +766,7 @@ static int vfio_iommu_type1_attach_group(void
+> *iommu_data,
+> >>      struct vfio_domain *domain, *d;
+> >>      struct bus_type *bus = NULL;
+> >>      int ret;
+> >> -    bool resv_msi;
+> >> +    bool resv_msi, msi_remap;
+> >>      phys_addr_t resv_msi_base;
+> >>
+> >>      mutex_lock(&iommu->lock);
+> >> @@ -818,8 +819,10 @@ static int vfio_iommu_type1_attach_group(void
+> *iommu_data,
+> >>      INIT_LIST_HEAD(&domain->group_list);
+> >>      list_add(&group->next, &domain->group_list);
+> >>
+> >> -    if (!allow_unsafe_interrupts &&
+> >> -        !iommu_capable(bus, IOMMU_CAP_INTR_REMAP)) {
+> >> +    msi_remap = resv_msi ? irq_domain_check_msi_remap() :
+> >> +                           iommu_capable(bus, IOMMU_CAP_INTR_REMAP);
+> >> +
+> >> +    if (!allow_unsafe_interrupts && !msi_remap) {
+> >>              pr_warn("%s: No interrupt remapping support.  Use the
+> module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on
+> this platform\n",
+> >>                     __func__);
+> >>              ret = -EPERM;
+> >
+> > I tested your v4.9-reserved-v4 branch on a ITS capable hardware (NXP
+> > LS2080), so I did not set allow_unsafe_interrupts. It fails here
+> > complaining that the there is no interrupt remapping support. The
+> > irq_domain_check_msi_remap function returns false as none of the checked
+> > domains has the IRQ_DOMAIN_FLAG_MSI_REMAP flag set. I think the reason
+> > is that the flags are not propagated through the domain hierarchy when
+> > the domain is created.
+>
+> Hum OK. Please apologize for the inconvenience, all the more so this is
+> the second time you report the same issue for different cause :-( At the
+> moment I can't test on a GICv3 ITS based system. I will try to fix that
+> though.
+>
+> I would like to get the confirmation introducing this flag is the right
+> direction though.
+>
+> Thanks
+>
+> Eric
+> >
+> > Thanks,
+> >
+> > Diana
+> >
+> >
+> >
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>
+
+--94eb2c18f22a9564570544536fdf
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div><div><div><div>Hi Eric,<br><br></div>Seeing same issu=
+e reported by Diana on ThunderX with you v4.9-reserved-v4 branch. <br></div=
+>Vfio passthough work fine when allow_unsafe_interrupts is set.<br><br><br>=
+</div>Thank you,<br></div>Geetha.<br></div><div class=3D"gmail_extra"><br><=
+div class=3D"gmail_quote">On Thu, Dec 22, 2016 at 6:32 PM, Auger Eric <span=
+ dir=3D"ltr">&lt;<a href=3D"mailto:eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" target=3D"_blank"=
+>eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_=
+quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1=
+ex">Hi Diana,<br>
+<div><div class=3D"h5"><br>
+On 22/12/2016 13:41, Diana Madalina Craciun wrote:<br>
+&gt; Hi Eric,<br>
+&gt;<br>
+&gt; On 12/13/2016 10:32 PM, Eric Auger wrote:<br>
+&gt;&gt; In case the IOMMU does not bypass MSI transactions (typical<br>
+&gt;&gt; case on ARM), we check all MSI controllers are IRQ remapping<br>
+&gt;&gt; capable. If not the IRQ assignment may be unsafe.<br>
+&gt;&gt;<br>
+&gt;&gt; At this stage the arm-smmu-(v3) still advertise the<br>
+&gt;&gt; IOMMU_CAP_INTR_REMAP capability at IOMMU level. This will be<br>
+&gt;&gt; removed in subsequent patches.<br>
+&gt;&gt;<br>
+&gt;&gt; Signed-off-by: Eric Auger &lt;<a href=3D"mailto:eric.auger@redhat.=
+com">eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org</a>&gt;<br>
+&gt;&gt; ---<br>
+&gt;&gt;=C2=A0 drivers/vfio/vfio_iommu_type1.<wbr>c | 9 ++++++---<br>
+&gt;&gt;=C2=A0 1 file changed, 6 insertions(+), 3 deletions(-)<br>
+&gt;&gt;<br>
+&gt;&gt; diff --git a/drivers/vfio/vfio_iommu_<wbr>type1.c b/drivers/vfio/v=
+fio_iommu_<wbr>type1.c<br>
+&gt;&gt; index d07fe73..a05648b 100644<br>
+&gt;&gt; --- a/drivers/vfio/vfio_iommu_<wbr>type1.c<br>
+&gt;&gt; +++ b/drivers/vfio/vfio_iommu_<wbr>type1.c<br>
+&gt;&gt; @@ -37,6 +37,7 @@<br>
+&gt;&gt;=C2=A0 #include &lt;linux/vfio.h&gt;<br>
+&gt;&gt;=C2=A0 #include &lt;linux/workqueue.h&gt;<br>
+&gt;&gt;=C2=A0 #include &lt;linux/dma-iommu.h&gt;<br>
+&gt;&gt; +#include &lt;linux/irqdomain.h&gt;<br>
+&gt;&gt;<br>
+&gt;&gt;=C2=A0 #define DRIVER_VERSION=C2=A0 &quot;0.2&quot;<br>
+&gt;&gt;=C2=A0 #define DRIVER_AUTHOR=C2=A0 =C2=A0&quot;Alex Williamson &lt;=
+<a href=3D"mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org">alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org</a=
+>&gt;&quot;<br>
+&gt;&gt; @@ -765,7 +766,7 @@ static int vfio_iommu_type1_attach_group(<wbr>=
+void *iommu_data,<br>
+&gt;&gt;=C2=A0 =C2=A0 =C2=A0 struct vfio_domain *domain, *d;<br>
+&gt;&gt;=C2=A0 =C2=A0 =C2=A0 struct bus_type *bus =3D NULL;<br>
+&gt;&gt;=C2=A0 =C2=A0 =C2=A0 int ret;<br>
+&gt;&gt; -=C2=A0 =C2=A0 bool resv_msi;<br>
+&gt;&gt; +=C2=A0 =C2=A0 bool resv_msi, msi_remap;<br>
+&gt;&gt;=C2=A0 =C2=A0 =C2=A0 phys_addr_t resv_msi_base;<br>
+&gt;&gt;<br>
+&gt;&gt;=C2=A0 =C2=A0 =C2=A0 mutex_lock(&amp;iommu-&gt;lock);<br>
+&gt;&gt; @@ -818,8 +819,10 @@ static int vfio_iommu_type1_attach_group(<wbr=
+>void *iommu_data,<br>
+&gt;&gt;=C2=A0 =C2=A0 =C2=A0 INIT_LIST_HEAD(&amp;domain-&gt;group_<wbr>list=
+);<br>
+&gt;&gt;=C2=A0 =C2=A0 =C2=A0 list_add(&amp;group-&gt;next, &amp;domain-&gt;=
+group_list);<br>
+&gt;&gt;<br>
+&gt;&gt; -=C2=A0 =C2=A0 if (!allow_unsafe_interrupts &amp;&amp;<br>
+&gt;&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 !iommu_capable(bus, IOMMU_CAP_INTR_RE=
+MAP)) {<br>
+&gt;&gt; +=C2=A0 =C2=A0 msi_remap =3D resv_msi ? irq_domain_check_msi_remap=
+() :<br>
+&gt;&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0iommu_capable(bus, IOMMU_CAP_INTR_REMAP);=
+<br>
+&gt;&gt; +<br>
+&gt;&gt; +=C2=A0 =C2=A0 if (!allow_unsafe_interrupts &amp;&amp; !msi_remap)=
+ {<br>
+&gt;&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 pr_warn(&quot;%s: =
+No interrupt remapping support.=C2=A0 Use the module param \&quot;allow_uns=
+afe_interrupts\&quot; to enable VFIO IOMMU support on this platform\n&quot;=
+,<br>
+&gt;&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0__func__);<br>
+&gt;&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D -EPERM;<br=
+>
+&gt;<br>
+&gt; I tested your v4.9-reserved-v4 branch on a ITS capable hardware (NXP<b=
+r>
+&gt; LS2080), so I did not set allow_unsafe_interrupts. It fails here<br>
+&gt; complaining that the there is no interrupt remapping support. The<br>
+&gt; irq_domain_check_msi_remap function returns false as none of the check=
+ed<br>
+&gt; domains has the IRQ_DOMAIN_FLAG_MSI_REMAP flag set. I think the reason=
+<br>
+&gt; is that the flags are not propagated through the domain hierarchy when=
+<br>
+&gt; the domain is created.<br>
+<br>
+</div></div>Hum OK. Please apologize for the inconvenience, all the more so=
+ this is<br>
+the second time you report the same issue for different cause :-( At the<br=
+>
+moment I can&#39;t test on a GICv3 ITS based system. I will try to fix that=
+<br>
+though.<br>
+<br>
+I would like to get the confirmation introducing this flag is the right<br>
+direction though.<br>
+<br>
+Thanks<br>
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+Eric<br>
+</font></span><div class=3D"HOEnZb"><div class=3D"h5">&gt;<br>
+&gt; Thanks,<br>
+&gt;<br>
+&gt; Diana<br>
+&gt;<br>
+&gt;<br>
+&gt;<br>
+<br>
+______________________________<wbr>_________________<br>
+linux-arm-kernel mailing list<br>
+<a href=3D"mailto:linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org">linux-arm-kernel@li=
+sts.<wbr>infradead.org</a><br>
+<a href=3D"http://lists.infradead.org/mailman/listinfo/linux-arm-kernel" re=
+l=3D"noreferrer" target=3D"_blank">http://lists.infradead.org/<wbr>mailman/=
+listinfo/linux-arm-<wbr>kernel</a><br>
+</div></div></blockquote></div><br></div>
+
+--94eb2c18f22a9564570544536fdf--
+
+--===============1863778894454842344==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1863778894454842344==--
