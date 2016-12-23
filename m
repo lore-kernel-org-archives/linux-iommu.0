@@ -1,7 +1,7 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH V6 5/7] perf/amd/iommu: Clean up perf_iommu_enable_event
-Date: Fri, 23 Dec 2016 20:38:48 +0700
-Message-ID: <1482500330-5606-6-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH V6 6/7] iommu/amd: Introduce amd_iommu_get_num_iommus()
+Date: Fri, 23 Dec 2016 20:38:49 +0700
+Message-ID: <1482500330-5606-7-git-send-email-Suravee.Suthikulpanit@amd.com>
 References: <1482500330-5606-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,50 +21,66 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFL
 Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch cleans up:
-  * Various bitwise operations in perf_iommu_enable_event
-  * Make use macros BIT(x)
+This patch introduces amd_iommu_get_num_iommus(). This is intended for
+Perf AMD IOMMU driver.
 
-This should not affect logic and functionality.
-
-Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- arch/x86/events/amd/iommu.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ arch/x86/events/amd/iommu.h     | 2 ++
+ drivers/iommu/amd_iommu_init.c  | 7 ++++++-
+ drivers/iommu/amd_iommu_proto.h | 1 +
+ 3 files changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
-index 9bff41d..2403c78 100644
---- a/arch/x86/events/amd/iommu.c
-+++ b/arch/x86/events/amd/iommu.c
-@@ -258,21 +258,21 @@ static void perf_iommu_enable_event(struct perf_event *ev)
- 	amd_iommu_pc_set_reg(0, devid, bank, cntr,
- 			     IOMMU_PC_COUNTER_SRC_REG, &reg);
+diff --git a/arch/x86/events/amd/iommu.h b/arch/x86/events/amd/iommu.h
+index 71ec9d7..891c7c4 100644
+--- a/arch/x86/events/amd/iommu.h
++++ b/arch/x86/events/amd/iommu.h
+@@ -25,6 +25,8 @@
+ #define PC_MAX_SPEC_CNTRS			16
  
--	reg = 0ULL | devid | (_GET_DEVID_MASK(ev) << 32);
-+	reg = devid | (_GET_DEVID_MASK(ev) << 32);
- 	if (reg)
--		reg |= (1UL << 31);
-+		reg |= BIT(31);
- 	amd_iommu_pc_set_reg(0, devid, bank, cntr,
- 			     IOMMU_PC_DEVID_MATCH_REG, &reg);
+ /* amd_iommu_init.c external support functions */
++extern int amd_iommu_get_num_iommus(void);
++
+ extern bool amd_iommu_pc_supported(void);
  
--	reg = 0ULL | _GET_PASID(ev) | (_GET_PASID_MASK(ev) << 32);
-+	reg = _GET_PASID(ev) | (_GET_PASID_MASK(ev) << 32);
- 	if (reg)
--		reg |= (1UL << 31);
-+		reg |= BIT(31);
- 	amd_iommu_pc_set_reg(0, devid, bank, cntr,
- 			     IOMMU_PC_PASID_MATCH_REG, &reg);
+ extern u8 amd_iommu_pc_get_max_banks(uint devid);
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index c993c77..c3740cb 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1329,7 +1329,7 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
  
--	reg = 0ULL | _GET_DOMID(ev) | (_GET_DOMID_MASK(ev) << 32);
-+	reg = _GET_DOMID(ev) | (_GET_DOMID_MASK(ev) << 32);
- 	if (reg)
--		reg |= (1UL << 31);
-+		reg |= BIT(31);
- 	amd_iommu_pc_set_reg(0, devid, bank, cntr,
- 			     IOMMU_PC_DOMID_MATCH_REG, &reg);
+ 	/* Add IOMMU to internal data structures */
+ 	list_add_tail(&iommu->list, &amd_iommu_list);
+-	iommu->index             = amd_iommus_present++;
++	iommu->index = amd_iommus_present++;
+ 
+ 	if (unlikely(iommu->index >= MAX_IOMMUS)) {
+ 		WARN(1, "AMD-Vi: System has more IOMMUs than supported by this driver\n");
+@@ -2717,6 +2717,11 @@ static struct amd_iommu *get_amd_iommu(uint idx)
+ 	return iommu;
  }
+ 
++int amd_iommu_get_num_iommus(void)
++{
++	return amd_iommus_present;
++}
++
+ /****************************************************************************
+  *
+  * IOMMU EFR Performance Counter support functionality. This code allows
+diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
+index 1df3ff7..58dfdbf 100644
+--- a/drivers/iommu/amd_iommu_proto.h
++++ b/drivers/iommu/amd_iommu_proto.h
+@@ -61,6 +61,7 @@ extern int amd_iommu_domain_set_gcr3(struct iommu_domain *dom, int pasid,
+ #define IOMMU_PC_COUNTER_REG			0x00
+ #endif
+ 
++extern int amd_iommu_get_num_iommus(void);
+ extern bool amd_iommu_pc_supported(void);
+ extern u8 amd_iommu_pc_get_max_banks(uint devid);
+ extern u8 amd_iommu_pc_get_max_counters(uint devid);
 -- 
 1.8.3.1
