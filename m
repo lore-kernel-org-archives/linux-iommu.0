@@ -1,17 +1,14 @@
-From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC v4 15/16] vfio/type1: Check MSI remapping at irq domain level
-Date: Fri, 23 Dec 2016 16:13:24 +0100
-Message-ID: <72057deb-cc71-33f1-e96a-ed2c96a99c3b@redhat.com>
-References: <1481661034-3088-1-git-send-email-eric.auger@redhat.com>
-	<1481661034-3088-16-git-send-email-eric.auger@redhat.com>
-	<HE1PR04MB13219CC90CE2BBE62356D94CFF920@HE1PR04MB1321.eurprd04.prod.outlook.com>
-	<3ead0cc1-7798-3e39-da56-c18a5989c00c@redhat.com>
-	<CANHdaibH3GCFhM4nXh1KJoFhZCodtWo7KfP7AcSoVD0HwjDWfg@mail.gmail.com>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v7 00/12] Fix kdump faults on system with amd iommu
+Date: Sat, 24 Dec 2016 11:47:05 +0800
+Message-ID: <20161224034705.GE25035@x1>
+References: <1480050799-1237-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CANHdaibH3GCFhM4nXh1KJoFhZCodtWo7KfP7AcSoVD0HwjDWfg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1480050799-1237-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,127 +18,80 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geetha Akula <geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org" <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "punit.agrawal-5wv7dgnIgG8@public.gmane.org" <punit.agrawal-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Geetha,
+Hi Joerg,
 
-On 23/12/2016 14:33, Geetha Akula wrote:
-> Hi Eric,
-> 
-> Seeing same issue reported by Diana on ThunderX with you
-> v4.9-reserved-v4 branch.
-> Vfio passthough work fine when allow_unsafe_interrupts is set.
-Thank you for testing! I will fix the security assessment by better
-studying flag propagation in domain hierarchy.
+Ping!
 
-Best Regards
+Could you help review this version? Not sure this could catch up to
+v4.10 merging.
 
-Eric
+Thanks
+Baoqaun
 
+On 11/25/16 at 01:13pm, Baoquan He wrote:
+> This is v7 post.
 > 
+> The principle of the fix is similar to intel iommu. Just defer the assignment
+> of device to domain to device driver init. In this version of post, a new
+> call-back is_attach_deferred is added to iommu-ops, it's used to check whether
+> we need defer the domain attach/detach in iommu-core code.
 > 
-> Thank you,
-> Geetha.
+> v5:
+>     bnx2 NIC can't reset itself during driver init. Post patch to reset
+>     it during driver init. IO_PAGE_FAULT can't be seen anymore.
 > 
-> On Thu, Dec 22, 2016 at 6:32 PM, Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-> <mailto:eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>> wrote:
+>     Below is link of v5 post.
+>     https://lists.linuxfoundation.org/pipermail/iommu/2016-September/018527.html
 > 
->     Hi Diana,
+> v5->v6:
+>     According to Joerg's comments made several below main changes:
+>     - Add sanity check when copy old dev tables.
 > 
->     On 22/12/2016 13:41, Diana Madalina Craciun wrote:
->     > Hi Eric,
->     >
->     > On 12/13/2016 10:32 PM, Eric Auger wrote:
->     >> In case the IOMMU does not bypass MSI transactions (typical
->     >> case on ARM), we check all MSI controllers are IRQ remapping
->     >> capable. If not the IRQ assignment may be unsafe.
->     >>
->     >> At this stage the arm-smmu-(v3) still advertise the
->     >> IOMMU_CAP_INTR_REMAP capability at IOMMU level. This will be
->     >> removed in subsequent patches.
->     >>
->     >> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
->     <mailto:eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>>
->     >> ---
->     >>  drivers/vfio/vfio_iommu_type1.c | 9 ++++++---
->     >>  1 file changed, 6 insertions(+), 3 deletions(-)
->     >>
->     >> diff --git a/drivers/vfio/vfio_iommu_type1.c
->     b/drivers/vfio/vfio_iommu_type1.c
->     >> index d07fe73..a05648b 100644
->     >> --- a/drivers/vfio/vfio_iommu_type1.c
->     >> +++ b/drivers/vfio/vfio_iommu_type1.c
->     >> @@ -37,6 +37,7 @@
->     >>  #include <linux/vfio.h>
->     >>  #include <linux/workqueue.h>
->     >>  #include <linux/dma-iommu.h>
->     >> +#include <linux/irqdomain.h>
->     >>
->     >>  #define DRIVER_VERSION  "0.2"
->     >>  #define DRIVER_AUTHOR   "Alex Williamson
->     <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org <mailto:alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>>"
->     >> @@ -765,7 +766,7 @@ static int vfio_iommu_type1_attach_group(void
->     *iommu_data,
->     >>      struct vfio_domain *domain, *d;
->     >>      struct bus_type *bus = NULL;
->     >>      int ret;
->     >> -    bool resv_msi;
->     >> +    bool resv_msi, msi_remap;
->     >>      phys_addr_t resv_msi_base;
->     >>
->     >>      mutex_lock(&iommu->lock);
->     >> @@ -818,8 +819,10 @@ static int
->     vfio_iommu_type1_attach_group(void *iommu_data,
->     >>      INIT_LIST_HEAD(&domain->group_list);
->     >>      list_add(&group->next, &domain->group_list);
->     >>
->     >> -    if (!allow_unsafe_interrupts &&
->     >> -        !iommu_capable(bus, IOMMU_CAP_INTR_REMAP)) {
->     >> +    msi_remap = resv_msi ? irq_domain_check_msi_remap() :
->     >> +                           iommu_capable(bus, IOMMU_CAP_INTR_REMAP);
->     >> +
->     >> +    if (!allow_unsafe_interrupts && !msi_remap) {
->     >>              pr_warn("%s: No interrupt remapping support.  Use
->     the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU
->     support on this platform\n",
->     >>                     __func__);
->     >>              ret = -EPERM;
->     >
->     > I tested your v4.9-reserved-v4 branch on a ITS capable hardware (NXP
->     > LS2080), so I did not set allow_unsafe_interrupts. It fails here
->     > complaining that the there is no interrupt remapping support. The
->     > irq_domain_check_msi_remap function returns false as none of the
->     checked
->     > domains has the IRQ_DOMAIN_FLAG_MSI_REMAP flag set. I think the reason
->     > is that the flags are not propagated through the domain hierarchy when
->     > the domain is created.
+>     - If a device is set up with guest translations (DTE.GV=1), then don't
+>       copy that information but move the device over to an empty guest-cr3
+>       table and handle the faults in the PPR log (which just answer them
+>       with INVALID).
 > 
->     Hum OK. Please apologize for the inconvenience, all the more so this is
->     the second time you report the same issue for different cause :-( At the
->     moment I can't test on a GICv3 ITS based system. I will try to fix that
->     though.
+> v6->v7:
+>     Two main changes are made according to Joerg's suggestion:
+>     - Add is_attach_deferred call-back to iommu-ops. With this domain
+>       can be deferred to device driver init cleanly.
 > 
->     I would like to get the confirmation introducing this flag is the right
->     direction though.
+>     - Allocate memory below 4G for dev table if translation pre-enabled.
+>       AMD engineer pointed out that it's unsafe to update the device-table
+>       while iommu is enabled. device-table pointer update is split up into
+>       two 32bit writes in the IOMMU hardware. So updating it while the IOMMU
+>       is enabled could have some nasty side effects.
 > 
->     Thanks
+> Baoquan He (12):
+>   iommu/amd: Detect pre enabled translation
+>   iommu/amd: add several helper function
+>   iommu/amd: Define bit fields for DTE particularly
+>   iommu/amd: Add function copy_dev_tables
+>   iommu/amd: copy old trans table from old kernel
+>   iommu: Add is_attach_deferred call-back to iommu-ops
+>   iommu/amd: Use is_attach_deferred call-back
+>   iommu/amd: Add sanity check of irq remap information of old dev table
+>     entry
+>   iommu/amd: Don't copy GCR3 table root pointer
+>   iommu/amd: Clear out the GV flag when handle deferred domain attach
+>   iommu: Assign the direct mapped domain to group->domain
+>   iommu/amd: Allocate memory below 4G for dev table if translation
+>     pre-enabled
 > 
->     Eric
->     >
->     > Thanks,
->     >
->     > Diana
->     >
->     >
->     >
+>  drivers/iommu/amd_iommu.c       |  78 +++++++++-------
+>  drivers/iommu/amd_iommu_init.c  | 201 +++++++++++++++++++++++++++++++++++++---
+>  drivers/iommu/amd_iommu_proto.h |   2 +
+>  drivers/iommu/amd_iommu_types.h |  53 ++++++++++-
+>  drivers/iommu/amd_iommu_v2.c    |  18 +++-
+>  drivers/iommu/iommu.c           |   9 ++
+>  include/linux/iommu.h           |   1 +
+>  7 files changed, 313 insertions(+), 49 deletions(-)
 > 
->     _______________________________________________
->     linux-arm-kernel mailing list
->     linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
->     <mailto:linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
->     http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
->     <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>
-> 
+> -- 
+> 2.5.5
 > 
