@@ -1,97 +1,70 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v7 00/12] Fix kdump faults on system with amd iommu
-Date: Sat, 24 Dec 2016 11:47:05 +0800
-Message-ID: <20161224034705.GE25035@x1>
-References: <1480050799-1237-1-git-send-email-bhe@redhat.com>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: possible dmar_init_reserved_ranges() error
+Date: Tue, 27 Dec 2016 17:44:17 -0600
+Message-ID: <20161227234417.GA24366@bhelgaas-glaptop.roam.corp.google.com>
+References: <20161219212044.GA21774@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1480050799-1237-1-git-send-email-bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <20161219212044.GA21774@bhelgaas-glaptop.roam.corp.google.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, g@bhelgaas-glaptop.roam.corp.google.com
+Cc: rwright@hpe.com, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On Mon, Dec 19, 2016 at 03:20:44PM -0600, Bjorn Helgaas wrote:
+> Hi guys,
+> 
+> I have some questions about dmar_init_reserved_ranges().  On systems
+> where CPU physical address space is not identity-mapped to PCI bus
+> address space, e.g., where the PCI host bridge windows have _TRA
+> offsets, I'm not sure we're doing the right thing.
+> 
+> Assume we have a PCI host bridge with _TRA that maps CPU addresses
+> 0x80000000-0x9fffffff to PCI bus addresses 0x00000000-0x1fffffff, with
+> two PCI devices below it:
+> 
+>   PCI host bridge domain 0000 [bus 00-3f]
+>   PCI host bridge window [mem 0x80000000-0x9fffffff] (bus 0x00000000-0x1fffffff]
+>   00:00.0: BAR 0 [mem 0x80000000-0x8ffffffff] (0x00000000-0x0fffffff on bus)
+>   00:01.0: BAR 0 [mem 0x90000000-0x9ffffffff] (0x10000000-0x1fffffff on bus)
+> 
+> The IOMMU init code in dmar_init_reserved_ranges() reserves the PCI
+> MMIO space for all devices:
+> 
+>   pci_iommu_init()
+>     intel_iommu_init()
+>       dmar_init_reserved_ranges()
+>         reserve_iova(0x80000000-0x8ffffffff)
+>         reserve_iova(0x90000000-0x9ffffffff)
+> 
+> This looks odd because we're reserving CPU physical addresses, but
+> the IOVA space contains *PCI bus* addresses.  On most x86 systems they
+> would be the same, but not on all.
 
-Ping!
+While we're looking at this, here's another question.  We do basically
+this:
 
-Could you help review this version? Not sure this could catch up to
-v4.10 merging.
+  dmar_init_reserved_ranges()
+  {
+    ...
+    for_each_pci_dev(pdev) {
+      for (i = 0; i < PCI_NUM_RESOURCES; i++) {
+        r = &pdev->resource[i];
+        reserve_iova(r)
 
-Thanks
-Baoqaun
+But I assume it's possible to have more than one IOTLB in a system,
+so you could have some PCI devices under one IOTLB and others under a
+different IOTLB.  So it seems like we should reserve only the IOVA
+space used by the devices under *this* IOTLB.
 
-On 11/25/16 at 01:13pm, Baoquan He wrote:
-> This is v7 post.
-> 
-> The principle of the fix is similar to intel iommu. Just defer the assignment
-> of device to domain to device driver init. In this version of post, a new
-> call-back is_attach_deferred is added to iommu-ops, it's used to check whether
-> we need defer the domain attach/detach in iommu-core code.
-> 
-> v5:
->     bnx2 NIC can't reset itself during driver init. Post patch to reset
->     it during driver init. IO_PAGE_FAULT can't be seen anymore.
-> 
->     Below is link of v5 post.
->     https://lists.linuxfoundation.org/pipermail/iommu/2016-September/018527.html
-> 
-> v5->v6:
->     According to Joerg's comments made several below main changes:
->     - Add sanity check when copy old dev tables.
-> 
->     - If a device is set up with guest translations (DTE.GV=1), then don't
->       copy that information but move the device over to an empty guest-cr3
->       table and handle the faults in the PPR log (which just answer them
->       with INVALID).
-> 
-> v6->v7:
->     Two main changes are made according to Joerg's suggestion:
->     - Add is_attach_deferred call-back to iommu-ops. With this domain
->       can be deferred to device driver init cleanly.
-> 
->     - Allocate memory below 4G for dev table if translation pre-enabled.
->       AMD engineer pointed out that it's unsafe to update the device-table
->       while iommu is enabled. device-table pointer update is split up into
->       two 32bit writes in the IOMMU hardware. So updating it while the IOMMU
->       is enabled could have some nasty side effects.
-> 
-> Baoquan He (12):
->   iommu/amd: Detect pre enabled translation
->   iommu/amd: add several helper function
->   iommu/amd: Define bit fields for DTE particularly
->   iommu/amd: Add function copy_dev_tables
->   iommu/amd: copy old trans table from old kernel
->   iommu: Add is_attach_deferred call-back to iommu-ops
->   iommu/amd: Use is_attach_deferred call-back
->   iommu/amd: Add sanity check of irq remap information of old dev table
->     entry
->   iommu/amd: Don't copy GCR3 table root pointer
->   iommu/amd: Clear out the GV flag when handle deferred domain attach
->   iommu: Assign the direct mapped domain to group->domain
->   iommu/amd: Allocate memory below 4G for dev table if translation
->     pre-enabled
-> 
->  drivers/iommu/amd_iommu.c       |  78 +++++++++-------
->  drivers/iommu/amd_iommu_init.c  | 201 +++++++++++++++++++++++++++++++++++++---
->  drivers/iommu/amd_iommu_proto.h |   2 +
->  drivers/iommu/amd_iommu_types.h |  53 ++++++++++-
->  drivers/iommu/amd_iommu_v2.c    |  18 +++-
->  drivers/iommu/iommu.c           |   9 ++
->  include/linux/iommu.h           |   1 +
->  7 files changed, 313 insertions(+), 49 deletions(-)
-> 
-> -- 
-> 2.5.5
-> 
+Also, we may hot-add a device under the IOTLB, and I don't see where
+we reserve the IOVA space it uses.
+
+I think the best thing to do would be to reserve the host bridge
+apertures related to each IOTLB.  That would resolve both questions.
+It looks like iova_reserve_pci_windows() does this in the
+iommu_dma_init_domain() path.
+
+Bjorn
