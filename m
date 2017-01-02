@@ -1,16 +1,11 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCHv9 6/6] dmaengine: rcar-dmac: add iommu support for slave
-	transfers
-Date: Mon, 02 Jan 2017 01:08:04 +0200
-Message-ID: <26490346.qhNpbOL6eO@avalon>
-References: <20160810112219.17964-1-niklas.soderlund+renesas@ragnatech.se>
-	<20160810112219.17964-7-niklas.soderlund+renesas@ragnatech.se>
-	<6358234.jyTvyVnNF0@avalon>
+From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v7 RESEND 00/12] Fix kdump faults on system with amd iommu
+Date: Mon,  2 Jan 2017 15:39:46 +0800
+Message-ID: <1483342798-6542-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <6358234.jyTvyVnNF0@avalon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,108 +15,70 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Niklas =?ISO-8859-1?Q?S=F6derlund?= <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
-Cc: hch-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linus.walleij-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Niklas,
+This is v7 post RESENT based on v4.10-rc2 of linus's tree. Just adjust the
+sequence of several patches and add the Suggested-by forgot in the previous
+post.
 
-On Monday 05 Sep 2016 12:52:44 Laurent Pinchart wrote:
-> On Wednesday 10 Aug 2016 13:22:19 Niklas S=F6derlund wrote:
-> > Enable slave transfers to a device behind a IPMMU by mapping the slave
-> > addresses using the dma-mapping API.
-> > =
+The principle of the fix is similar to intel iommu. Just defer the assignment
+of device to domain to device driver init. In this version of post, a new
+call-back is_attach_deferred is added to iommu-ops, it's used to check whether
+we need defer the domain attach/detach in iommu-core code.
 
-> > Signed-off-by: Niklas S=F6derlund <niklas.soderlund+renesas@ragnatech.s=
-e>
-> > ---
-> > drivers/dma/sh/rcar-dmac.c | 82 ++++++++++++++++++++++++++++++++++++---=
---
-> > 1 file changed, 74 insertions(+), 8 deletions(-)
-> > =
+v5:
+    bnx2 NIC can't reset itself during driver init. Post patch to reset
+    it during driver init. IO_PAGE_FAULT can't be seen anymore.
 
-> > diff --git a/drivers/dma/sh/rcar-dmac.c b/drivers/dma/sh/rcar-dmac.c
-> > index cf983a9..22a5e40 100644
-> > --- a/drivers/dma/sh/rcar-dmac.c
-> > +++ b/drivers/dma/sh/rcar-dmac.c
+    Below is link of v5 post.
+    https://lists.linuxfoundation.org/pipermail/iommu/2016-September/018527.html
 
-[snip]
+v5->v6:
+    According to Joerg's comments made several below main changes:
+    - Add sanity check when copy old dev tables.
 
-> > +static int rcar_dmac_map_slave_addr(struct dma_chan *chan,
-> > +				    enum dma_transfer_direction dir)
-> > +{
-> > +	struct rcar_dmac_chan *rchan =3D to_rcar_dmac_chan(chan);
-> > +	struct rcar_dmac_chan_map *map =3D &rchan->map;
-> > +	phys_addr_t dev_addr;
-> > +	size_t dev_size;
-> > +	enum dma_data_direction dev_dir;
-> > +
-> > +	if (dir =3D=3D DMA_DEV_TO_MEM) {
-> > +		dev_addr =3D rchan->src.slave_addr;
-> > +		dev_size =3D rchan->src.xfer_size;
-> > +		dev_dir =3D DMA_TO_DEVICE;
-> =
+    - If a device is set up with guest translations (DTE.GV=1), then don't
+      copy that information but move the device over to an empty guest-cr3
+      table and handle the faults in the PPR log (which just answer them
+      with INVALID).
 
-> Shouldn't this be DMA_FROM_DEVICE, and DMA_TO_DEVICE below ?
+v6->v7:
+    Two main changes are made according to Joerg's suggestion:
+    - Add is_attach_deferred call-back to iommu-ops. With this domain
+      can be deferred to device driver init cleanly.
 
-This comment can be ignored (thank you Robin for the explanation), but ...
+    - Allocate memory below 4G for dev table if translation pre-enabled.
+      AMD engineer pointed out that it's unsafe to update the device-table
+      while iommu is enabled. device-table pointer update is split up into
+      two 32bit writes in the IOMMU hardware. So updating it while the IOMMU
+      is enabled could have some nasty side effects.
 
-> > +	} else {
-> > +		dev_addr =3D rchan->dst.slave_addr;
-> > +		dev_size =3D rchan->dst.xfer_size;
-> > +		dev_dir =3D DMA_FROM_DEVICE;
-> > +	}
-> > +
-> > +	/* Reuse current map if possible. */
-> > +	if (dev_addr =3D=3D map->slave.slave_addr &&
-> > +	    dev_size =3D=3D map->slave.xfer_size &&
-> > +	    dev_dir =3D=3D map->dir)
-> > +		return 0;
-> > +
-> > +	/* Remove old mapping if present. */
-> > +	if (map->slave.xfer_size)
-> > +		dma_unmap_resource(chan->device->dev, map->addr,
-> > +				   map->slave.xfer_size, map->dir, 0);
-> =
+Baoquan He (12):
+  iommu/amd: Detect pre enabled translation
+  iommu/amd: add several helper function
+  iommu/amd: Define bit fields for DTE particularly
+  iommu/amd: Add function copy_dev_tables
+  iommu/amd: copy old trans table from old kernel
+  iommu: Add is_attach_deferred call-back to iommu-ops
+  iommu/amd: Use is_attach_deferred call-back
+  iommu/amd: Add sanity check of irq remap information of old dev table
+    entry
+  iommu: Assign the direct mapped domain to group->domain
+  iommu/amd: Allocate memory below 4G for dev table if translation
+    pre-enabled
+  iommu/amd: Don't copy GCR3 table root pointer
+  iommu/amd: Clear out the GV flag when handle deferred domain attach
 
-> Unless I'm mistaken the resource will not be unmapped when freeing channel
-> resources, will it ?
+ drivers/iommu/amd_iommu.c       |  78 +++++++++-------
+ drivers/iommu/amd_iommu_init.c  | 201 +++++++++++++++++++++++++++++++++++++---
+ drivers/iommu/amd_iommu_proto.h |   2 +
+ drivers/iommu/amd_iommu_types.h |  53 ++++++++++-
+ drivers/iommu/amd_iommu_v2.c    |  18 +++-
+ drivers/iommu/iommu.c           |   9 ++
+ include/linux/iommu.h           |   1 +
+ 7 files changed, 313 insertions(+), 49 deletions(-)
 
-I believe this one still needs to be addressed.
-
-> > +	map->slave.xfer_size =3D 0;
-> > +
-> > +	/* Create new slave address map. */
-> > +	map->addr =3D dma_map_resource(chan->device->dev, dev_addr, dev_size,
-> > +				     dev_dir, 0);
-> > +
-> > +	if (dma_mapping_error(chan->device->dev, map->addr)) {
-> > +		dev_err(chan->device->dev,
-> > +			"chan%u: failed to map %zx@%pap", rchan->index,
-> > +			dev_size, &dev_addr);
-> > +		return -EIO;
-> > +	}
-> > +
-> > +	dev_dbg(chan->device->dev, "chan%u: map %zx@%pap to %pad dir: %s\n",
-> > +		rchan->index, dev_size, &dev_addr, &map->addr,
-> =
-
-> > +		dev_dir =3D=3D DMA_TO_DEVICE ? "DMA_TO_DEVICE" :
-> "DMA_FROM_DEVICE");
-> =
-
-> > +
-> > +	map->slave.slave_addr =3D dev_addr;
-> > +	map->slave.xfer_size =3D dev_size;
-> > +	map->dir =3D dev_dir;
-> > +
-> > +	return 0;
-> > +}
-
-[snip]
-
--- =
-
-Regards,
-
-Laurent Pinchart
+-- 
+2.5.5
