@@ -1,7 +1,8 @@
 From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v7 RESEND 02/12] iommu/amd: add several helper function
-Date: Mon,  2 Jan 2017 15:39:48 +0800
-Message-ID: <1483342798-6542-3-git-send-email-bhe@redhat.com>
+Subject: [PATCH v7 RESEND 03/12] iommu/amd: Define bit fields for DTE
+	particularly
+Date: Mon,  2 Jan 2017 15:39:49 +0800
+Message-ID: <1483342798-6542-4-git-send-email-bhe@redhat.com>
 References: <1483342798-6542-1-git-send-email-bhe@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,90 +22,98 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Move per iommu enabling code into a wrapper function early_enable_iommu().
-This can make later kdump change easier.
-
-And also add iommu_disable_command_buffer and iommu_disable_event_buffer
-for later usage.
+In amd-vi spec several bits of IO PTE fields and DTE fields are similar
+so that both of them can share the same MACRO definition. However
+defining their respecitve bit fields can make code more read-able. So
+do it in this patch.
 
 Signed-off-by: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 42 +++++++++++++++++++++++++++++++-----------
- 1 file changed, 31 insertions(+), 11 deletions(-)
+ drivers/iommu/amd_iommu.c       |  8 ++++----
+ drivers/iommu/amd_iommu_types.h | 18 ++++++++++++++----
+ 2 files changed, 18 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index fc45e92..ef743ca 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -626,6 +626,14 @@ static void iommu_enable_command_buffer(struct amd_iommu *iommu)
- 	amd_iommu_reset_cmd_buffer(iommu);
- }
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 019e027..350bcd9 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1478,9 +1478,9 @@ static int iommu_map_page(struct protection_domain *dom,
+ 
+ 	if (count > 1) {
+ 		__pte = PAGE_SIZE_PTE(phys_addr, page_size);
+-		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_P | IOMMU_PTE_FC;
++		__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_PR | IOMMU_PTE_FC;
+ 	} else
+-		__pte = phys_addr | IOMMU_PTE_P | IOMMU_PTE_FC;
++		__pte = phys_addr | IOMMU_PTE_PR | IOMMU_PTE_FC;
+ 
+ 	if (prot & IOMMU_PROT_IR)
+ 		__pte |= IOMMU_PTE_IR;
+@@ -1807,7 +1807,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+ 
+ 	pte_root |= (domain->mode & DEV_ENTRY_MODE_MASK)
+ 		    << DEV_ENTRY_MODE_SHIFT;
+-	pte_root |= IOMMU_PTE_IR | IOMMU_PTE_IW | IOMMU_PTE_P | IOMMU_PTE_TV;
++	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V | DTE_FLAG_TV;
+ 
+ 	flags = amd_iommu_dev_table[devid].data[1];
+ 
+@@ -1850,7 +1850,7 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain, bool ats)
+ static void clear_dte_entry(u16 devid)
+ {
+ 	/* remove entry from the device table seen by the hardware */
+-	amd_iommu_dev_table[devid].data[0]  = IOMMU_PTE_P | IOMMU_PTE_TV;
++	amd_iommu_dev_table[devid].data[0]  = DTE_FLAG_V | DTE_FLAG_TV;
+ 	amd_iommu_dev_table[devid].data[1] &= DTE_FLAG_MASK;
+ 
+ 	amd_iommu_apply_erratum_63(devid);
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+index 2bbc19d..6a4378f 100644
+--- a/drivers/iommu/amd_iommu_types.h
++++ b/drivers/iommu/amd_iommu_types.h
+@@ -265,7 +265,7 @@
+ #define PM_LEVEL_INDEX(x, a)	(((a) >> PM_LEVEL_SHIFT((x))) & 0x1ffULL)
+ #define PM_LEVEL_ENC(x)		(((x) << 9) & 0xe00ULL)
+ #define PM_LEVEL_PDE(x, a)	((a) | PM_LEVEL_ENC((x)) | \
+-				 IOMMU_PTE_P | IOMMU_PTE_IR | IOMMU_PTE_IW)
++				 IOMMU_PTE_PR | IOMMU_PTE_IR | IOMMU_PTE_IW)
+ #define PM_PTE_LEVEL(pte)	(((pte) >> 9) & 0x7ULL)
+ 
+ #define PM_MAP_4k		0
+@@ -314,13 +314,23 @@
+ #define PTE_LEVEL_PAGE_SIZE(level)			\
+ 	(1ULL << (12 + (9 * (level))))
+ 
+-#define IOMMU_PTE_P  (1ULL << 0)
+-#define IOMMU_PTE_TV (1ULL << 1)
++/*
++ * Bit value definition for I/O PTE fields
++ */
++#define IOMMU_PTE_PR (1ULL << 0)
+ #define IOMMU_PTE_U  (1ULL << 59)
+ #define IOMMU_PTE_FC (1ULL << 60)
+ #define IOMMU_PTE_IR (1ULL << 61)
+ #define IOMMU_PTE_IW (1ULL << 62)
  
 +/*
-+ * This function disables the command buffer
++ * Bit value definition for DTE fields
 + */
-+static void iommu_disable_command_buffer(struct amd_iommu *iommu)
-+{
-+	iommu_feature_disable(iommu, CONTROL_CMDBUF_EN);
-+}
++#define DTE_FLAG_V  (1ULL << 0)
++#define DTE_FLAG_TV (1ULL << 1)
++#define DTE_FLAG_IR (1ULL << 61)
++#define DTE_FLAG_IW (1ULL << 62)
 +
- static void __init free_command_buffer(struct amd_iommu *iommu)
- {
- 	free_pages((unsigned long)iommu->cmd_buf, get_order(CMD_BUFFER_SIZE));
-@@ -658,6 +666,14 @@ static void iommu_enable_event_buffer(struct amd_iommu *iommu)
- 	iommu_feature_enable(iommu, CONTROL_EVT_LOG_EN);
- }
+ #define DTE_FLAG_IOTLB	(1ULL << 32)
+ #define DTE_FLAG_GV	(1ULL << 55)
+ #define DTE_FLAG_MASK	(0x3ffULL << 32)
+@@ -342,7 +352,7 @@
+ #define GCR3_VALID		0x01ULL
  
-+/*
-+ * This function disables the command buffer
-+ */
-+static void iommu_disable_event_buffer(struct amd_iommu *iommu)
-+{
-+	iommu_feature_disable(iommu, CONTROL_EVT_LOG_EN);
-+}
-+
- static void __init free_event_buffer(struct amd_iommu *iommu)
- {
- 	free_pages((unsigned long)iommu->evt_buf, get_order(EVT_BUFFER_SIZE));
-@@ -2027,6 +2043,19 @@ static void iommu_enable_ga(struct amd_iommu *iommu)
- #endif
- }
+ #define IOMMU_PAGE_MASK (((1ULL << 52) - 1) & ~0xfffULL)
+-#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_P)
++#define IOMMU_PTE_PRESENT(pte) ((pte) & IOMMU_PTE_PR)
+ #define IOMMU_PTE_PAGE(pte) (phys_to_virt((pte) & IOMMU_PAGE_MASK))
+ #define IOMMU_PTE_MODE(pte) (((pte) >> 9) & 0x07)
  
-+static void early_enable_iommu(struct amd_iommu *iommu)
-+{
-+	iommu_disable(iommu);
-+	iommu_init_flags(iommu);
-+	iommu_set_device_table(iommu);
-+	iommu_enable_command_buffer(iommu);
-+	iommu_enable_event_buffer(iommu);
-+	iommu_set_exclusion_range(iommu);
-+	iommu_enable_ga(iommu);
-+	iommu_enable(iommu);
-+	iommu_flush_all_caches(iommu);
-+}
-+
- /*
-  * This function finally enables all IOMMUs found in the system after
-  * they have been initialized
-@@ -2035,17 +2064,8 @@ static void early_enable_iommus(void)
- {
- 	struct amd_iommu *iommu;
- 
--	for_each_iommu(iommu) {
--		iommu_disable(iommu);
--		iommu_init_flags(iommu);
--		iommu_set_device_table(iommu);
--		iommu_enable_command_buffer(iommu);
--		iommu_enable_event_buffer(iommu);
--		iommu_set_exclusion_range(iommu);
--		iommu_enable_ga(iommu);
--		iommu_enable(iommu);
--		iommu_flush_all_caches(iommu);
--	}
-+	for_each_iommu(iommu)
-+		early_enable_iommu(iommu);
- 
- #ifdef CONFIG_IRQ_REMAP
- 	if (AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
 -- 
 2.5.5
