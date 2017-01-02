@@ -1,8 +1,7 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V8 8/9] iommu/arm-smmu: Set privileged attribute to 'default'
-	instead of 'unprivileged'
-Date: Mon,  2 Jan 2017 18:42:43 +0530
-Message-ID: <1483362764-11990-9-git-send-email-sricharan@codeaurora.org>
+Subject: [PATCH V8 9/9] Revert "iommu/arm-smmu: Set PRIVCFG in stage 1 STEs"
+Date: Mon,  2 Jan 2017 18:42:44 +0530
+Message-ID: <1483362764-11990-10-git-send-email-sricharan@codeaurora.org>
 References: <1483362764-11990-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,31 +21,43 @@ To: jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, pdaly-sgV2jX0FEOL9JmXXK+q4O
 Cc: dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently the driver sets all the device transactions privileges
-to UNPRIVILEGED, but there are cases where the iommu masters wants
-to isolate privileged supervisor and unprivileged user.
-So don't override the privileged setting to unprivileged, instead
-set it to default as incoming and let it be controlled by the pagetable
-settings.
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+This reverts commit df5e1a0f2a2d779ad467a691203bcbc74d75690e.
+
+Now that proper privileged mappings can be requested via IOMMU_PRIV,
+unconditionally overriding the incoming PRIVCFG becomes the wrong thing
+to do, so stop it.
+
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/arm-smmu-v3.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index a60cded..73a0a25 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1214,7 +1214,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- 			continue;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 4d6ec44..7d45d8b 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -269,9 +269,6 @@
+ #define STRTAB_STE_1_SHCFG_INCOMING	1UL
+ #define STRTAB_STE_1_SHCFG_SHIFT	44
  
- 		s2cr[idx].type = type;
--		s2cr[idx].privcfg = S2CR_PRIVCFG_UNPRIV;
-+		s2cr[idx].privcfg = S2CR_PRIVCFG_DEFAULT;
- 		s2cr[idx].cbndx = cbndx;
- 		arm_smmu_write_s2cr(smmu, idx);
- 	}
+-#define STRTAB_STE_1_PRIVCFG_UNPRIV	2UL
+-#define STRTAB_STE_1_PRIVCFG_SHIFT	48
+-
+ #define STRTAB_STE_2_S2VMID_SHIFT	0
+ #define STRTAB_STE_2_S2VMID_MASK	0xffffUL
+ #define STRTAB_STE_2_VTCR_SHIFT		32
+@@ -1073,9 +1070,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
+ #ifdef CONFIG_PCI_ATS
+ 			 STRTAB_STE_1_EATS_TRANS << STRTAB_STE_1_EATS_SHIFT |
+ #endif
+-			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT |
+-			 STRTAB_STE_1_PRIVCFG_UNPRIV <<
+-			 STRTAB_STE_1_PRIVCFG_SHIFT);
++			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT);
+ 
+ 		if (smmu->features & ARM_SMMU_FEAT_STALLS)
+ 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
