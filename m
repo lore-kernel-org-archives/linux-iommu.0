@@ -1,8 +1,7 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V8 3/9] iommu/io-pgtable-arm-v7s: Add support for the
-	IOMMU_PRIV flag
-Date: Mon,  2 Jan 2017 18:42:38 +0530
-Message-ID: <1483362764-11990-4-git-send-email-sricharan@codeaurora.org>
+Subject: [PATCH V8 4/9] common: DMA-mapping: add DMA_ATTR_PRIVILEGED attribute
+Date: Mon,  2 Jan 2017 18:42:39 +0530
+Message-ID: <1483362764-11990-5-git-send-email-sricharan@codeaurora.org>
 References: <1483362764-11990-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,40 +21,63 @@ To: jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, pdaly-sgV2jX0FEOL9JmXXK+q4O
 Cc: dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 
-The short-descriptor format also allows privileged-only mappings, so
-let's wire it up.
+This patch adds the DMA_ATTR_PRIVILEGED attribute to the DMA-mapping
+subsystem.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Tested-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Some advanced peripherals such as remote processors and GPUs perform
+accesses to DMA buffers in both privileged "supervisor" and unprivileged
+"user" modes.  This attribute is used to indicate to the DMA-mapping
+subsystem that the buffer is fully accessible at the elevated privilege
+level (and ideally inaccessible or at least read-only at the
+lesser-privileged levels).
+
+Cc: linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- drivers/iommu/io-pgtable-arm-v7s.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ Documentation/DMA-attributes.txt | 10 ++++++++++
+ include/linux/dma-mapping.h      |  7 +++++++
+ 2 files changed, 17 insertions(+)
 
-diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-index 0769276..1c049e2 100644
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -265,7 +265,9 @@ static arm_v7s_iopte arm_v7s_prot_to_pte(int prot, int lvl,
- 	if (!(prot & IOMMU_MMIO))
- 		pte |= ARM_V7S_ATTR_TEX(1);
- 	if (ap) {
--		pte |= ARM_V7S_PTE_AF | ARM_V7S_PTE_AP_UNPRIV;
-+		pte |= ARM_V7S_PTE_AF;
-+		if (!(prot & IOMMU_PRIV))
-+			pte |= ARM_V7S_PTE_AP_UNPRIV;
- 		if (!(prot & IOMMU_WRITE))
- 			pte |= ARM_V7S_PTE_AP_RDONLY;
- 	}
-@@ -288,6 +290,8 @@ static int arm_v7s_pte_to_prot(arm_v7s_iopte pte, int lvl)
+diff --git a/Documentation/DMA-attributes.txt b/Documentation/DMA-attributes.txt
+index 98bf7ac..44c6bc4 100644
+--- a/Documentation/DMA-attributes.txt
++++ b/Documentation/DMA-attributes.txt
+@@ -143,3 +143,13 @@ So, this provides a way for drivers to avoid those error messages on calls
+ where allocation failures are not a problem, and shouldn't bother the logs.
  
- 	if (!(attr & ARM_V7S_PTE_AP_RDONLY))
- 		prot |= IOMMU_WRITE;
-+	if (!(attr & ARM_V7S_PTE_AP_UNPRIV))
-+		prot |= IOMMU_PRIV;
- 	if ((attr & (ARM_V7S_TEX_MASK << ARM_V7S_TEX_SHIFT)) == 0)
- 		prot |= IOMMU_MMIO;
- 	else if (pte & ARM_V7S_ATTR_C)
+ NOTE: At the moment DMA_ATTR_NO_WARN is only implemented on PowerPC.
++
++DMA_ATTR_PRIVILEGED
++------------------------------
++
++Some advanced peripherals such as remote processors and GPUs perform
++accesses to DMA buffers in both privileged "supervisor" and unprivileged
++"user" modes.  This attribute is used to indicate to the DMA-mapping
++subsystem that the buffer is fully accessible at the elevated privilege
++level (and ideally inaccessible or at least read-only at the
++lesser-privileged levels).
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 10c5a17b1..c24721a 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -63,6 +63,13 @@
+ #define DMA_ATTR_NO_WARN	(1UL << 8)
+ 
+ /*
++ * DMA_ATTR_PRIVILEGED: used to indicate that the buffer is fully
++ * accessible at an elevated privilege level (and ideally inaccessible or
++ * at least read-only at lesser-privileged levels).
++ */
++#define DMA_ATTR_PRIVILEGED		(1UL << 9)
++
++/*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.
+  * It can be given to a device to use as a DMA source or target.  A CPU cannot
+  * reference a dma_addr_t directly because there may be translation between
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
