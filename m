@@ -1,7 +1,7 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V8 6/9] arm/dma-mapping: Implement DMA_ATTR_PRIVILEGED
-Date: Mon,  2 Jan 2017 18:42:41 +0530
-Message-ID: <1483362764-11990-7-git-send-email-sricharan@codeaurora.org>
+Subject: [PATCH V8 7/9] dmaengine: pl330: Make sure microcode is privileged
+Date: Mon,  2 Jan 2017 18:42:42 +0530
+Message-ID: <1483362764-11990-8-git-send-email-sricharan@codeaurora.org>
 References: <1483362764-11990-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,155 +21,51 @@ To: jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, pdaly-sgV2jX0FEOL9JmXXK+q4O
 Cc: dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The newly added DMA_ATTR_PRIVILEGED is useful for creating mappings that
-are only accessible to privileged DMA engines.  Adding it to the
-arm dma-mapping.c so that the ARM32 DMA IOMMU mapper can make use of it.
+From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 
-Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+The PL330 is hard-wired such that instruction fetches on both the
+manager and channel threads go out onto the bus with the "privileged"
+bit set. This can become troublesome once there is an IOMMU or other
+form of memory protection downstream, since those will typically be
+programmed by the DMA mapping subsystem in the expectation of normal
+unprivileged transactions (such as the PL330 channel threads' own data
+accesses as currently configured by this driver).
+
+To avoid the case of, say, an IOMMU blocking an unexpected privileged
+transaction with a permission fault, use the newly-introduced
+DMA_ATTR_PRIVILEGED attribute for the mapping of our microcode buffer.
+That way the DMA layer can do whatever it needs to do to make things
+continue to work as expected on more complex systems.
+
+Cc: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Acked-by: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+[rm: remove now-redundant local variable, clarify commit message]
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- arch/arm/mm/dma-mapping.c | 60 +++++++++++++++++++++++------------------------
- 1 file changed, 30 insertions(+), 30 deletions(-)
+ drivers/dma/pl330.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index ab77100..82d3e79 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -1171,6 +1171,25 @@ static int __init dma_debug_do_init(void)
- 
- #ifdef CONFIG_ARM_DMA_USE_IOMMU
- 
-+static int __dma_info_to_prot(enum dma_data_direction dir, unsigned long attrs)
-+{
-+	int prot = 0;
-+
-+	if (attrs & DMA_ATTR_PRIVILEGED)
-+		prot |= IOMMU_PRIV;
-+
-+	switch (dir) {
-+	case DMA_BIDIRECTIONAL:
-+		return prot | IOMMU_READ | IOMMU_WRITE;
-+	case DMA_TO_DEVICE:
-+		return prot | IOMMU_READ;
-+	case DMA_FROM_DEVICE:
-+		return prot | IOMMU_WRITE;
-+	default:
-+		return prot;
-+	}
-+}
-+
- /* IOMMU */
- 
- static int extend_iommu_mapping(struct dma_iommu_mapping *mapping);
-@@ -1394,7 +1413,8 @@ static int __iommu_free_buffer(struct device *dev, struct page **pages,
-  * Create a mapping in device IO address space for specified pages
-  */
- static dma_addr_t
--__iommu_create_mapping(struct device *dev, struct page **pages, size_t size)
-+__iommu_create_mapping(struct device *dev, struct page **pages, size_t size,
-+		       unsigned long attrs)
- {
- 	struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
- 	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-@@ -1419,7 +1439,7 @@ static int __iommu_free_buffer(struct device *dev, struct page **pages,
- 
- 		len = (j - i) << PAGE_SHIFT;
- 		ret = iommu_map(mapping->domain, iova, phys, len,
--				IOMMU_READ|IOMMU_WRITE);
-+				__dma_info_to_prot(DMA_BIDIRECTIONAL, attrs));
- 		if (ret < 0)
- 			goto fail;
- 		iova += len;
-@@ -1476,7 +1496,8 @@ static struct page **__iommu_get_pages(void *cpu_addr, unsigned long attrs)
- }
- 
- static void *__iommu_alloc_simple(struct device *dev, size_t size, gfp_t gfp,
--				  dma_addr_t *handle, int coherent_flag)
-+				  dma_addr_t *handle, int coherent_flag,
-+				  unsigned long attrs)
- {
- 	struct page *page;
- 	void *addr;
-@@ -1488,7 +1509,7 @@ static void *__iommu_alloc_simple(struct device *dev, size_t size, gfp_t gfp,
- 	if (!addr)
- 		return NULL;
- 
--	*handle = __iommu_create_mapping(dev, &page, size);
-+	*handle = __iommu_create_mapping(dev, &page, size, attrs);
- 	if (*handle == DMA_ERROR_CODE)
- 		goto err_mapping;
- 
-@@ -1522,7 +1543,7 @@ static void *__arm_iommu_alloc_attrs(struct device *dev, size_t size,
- 
- 	if (coherent_flag  == COHERENT || !gfpflags_allow_blocking(gfp))
- 		return __iommu_alloc_simple(dev, size, gfp, handle,
--					    coherent_flag);
-+					    coherent_flag, attrs);
- 
- 	/*
- 	 * Following is a work-around (a.k.a. hack) to prevent pages
-@@ -1537,7 +1558,7 @@ static void *__arm_iommu_alloc_attrs(struct device *dev, size_t size,
- 	if (!pages)
- 		return NULL;
- 
--	*handle = __iommu_create_mapping(dev, pages, size);
-+	*handle = __iommu_create_mapping(dev, pages, size, attrs);
- 	if (*handle == DMA_ERROR_CODE)
- 		goto err_buffer;
- 
-@@ -1672,27 +1693,6 @@ static int arm_iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
- 					 GFP_KERNEL);
- }
- 
--static int __dma_direction_to_prot(enum dma_data_direction dir)
--{
--	int prot;
--
--	switch (dir) {
--	case DMA_BIDIRECTIONAL:
--		prot = IOMMU_READ | IOMMU_WRITE;
--		break;
--	case DMA_TO_DEVICE:
--		prot = IOMMU_READ;
--		break;
--	case DMA_FROM_DEVICE:
--		prot = IOMMU_WRITE;
--		break;
--	default:
--		prot = 0;
--	}
--
--	return prot;
--}
--
- /*
-  * Map a part of the scatter-gather list into contiguous io address space
-  */
-@@ -1722,7 +1722,7 @@ static int __map_sg_chunk(struct device *dev, struct scatterlist *sg,
- 		if (!is_coherent && (attrs & DMA_ATTR_SKIP_CPU_SYNC) == 0)
- 			__dma_page_cpu_to_dev(sg_page(s), s->offset, s->length, dir);
- 
--		prot = __dma_direction_to_prot(dir);
-+		prot = __dma_info_to_prot(dir, attrs);
- 
- 		ret = iommu_map(mapping->domain, iova, phys, len, prot);
- 		if (ret < 0)
-@@ -1930,7 +1930,7 @@ static dma_addr_t arm_coherent_iommu_map_page(struct device *dev, struct page *p
- 	if (dma_addr == DMA_ERROR_CODE)
- 		return dma_addr;
- 
--	prot = __dma_direction_to_prot(dir);
-+	prot = __dma_info_to_prot(dir, attrs);
- 
- 	ret = iommu_map(mapping->domain, dma_addr, page_to_phys(page), len, prot);
- 	if (ret < 0)
-@@ -2036,7 +2036,7 @@ static dma_addr_t arm_iommu_map_resource(struct device *dev,
- 	if (dma_addr == DMA_ERROR_CODE)
- 		return dma_addr;
- 
--	prot = __dma_direction_to_prot(dir) | IOMMU_MMIO;
-+	prot = __dma_info_to_prot(dir, attrs) | IOMMU_MMIO;
- 
- 	ret = iommu_map(mapping->domain, dma_addr, addr, len, prot);
- 	if (ret < 0)
+diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
+index 87fd015..5a90d0c 100644
+--- a/drivers/dma/pl330.c
++++ b/drivers/dma/pl330.c
+@@ -1864,9 +1864,10 @@ static int dmac_alloc_resources(struct pl330_dmac *pl330)
+ 	 * Alloc MicroCode buffer for 'chans' Channel threads.
+ 	 * A channel's buffer offset is (Channel_Id * MCODE_BUFF_PERCHAN)
+ 	 */
+-	pl330->mcode_cpu = dma_alloc_coherent(pl330->ddma.dev,
++	pl330->mcode_cpu = dma_alloc_attrs(pl330->ddma.dev,
+ 				chans * pl330->mcbufsz,
+-				&pl330->mcode_bus, GFP_KERNEL);
++				&pl330->mcode_bus, GFP_KERNEL,
++				DMA_ATTR_PRIVILEGED);
+ 	if (!pl330->mcode_cpu) {
+ 		dev_err(pl330->ddma.dev, "%s:%d Can't allocate memory!\n",
+ 			__func__, __LINE__);
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
