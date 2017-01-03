@@ -1,15 +1,15 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH] iommu/arm-smmu: Add global SMR masking property
-Date: Tue, 3 Jan 2017 13:47:34 +0000
-Message-ID: <20170103134733.GG6986@arm.com>
-References: <ad6b6a4937b1fe183e6d48ccbaf4cb46db92fed4.1481893907.git.robin.murphy@arm.com>
-	<20161221032921.hdcnyiq6m224ejlv@rob-hp-laptop>
+From: Myron Stowe <myron.stowe-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v3] iommu/vt-d: Flush old iommu caches for kdump when the
+	device gets context mapped
+Date: Tue, 3 Jan 2017 08:23:23 -0700
+Message-ID: <CAL-B5D0JFx678Y-zMoQVXBrqt0TajvcpEKn1emnoCQtYaK=DZw@mail.gmail.com>
+References: <1480939747-31916-1-git-send-email-xlpang@redhat.com>
+	<20161206160346.GB27203@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20161221032921.hdcnyiq6m224ejlv@rob-hp-laptop>
+In-Reply-To: <20161206160346.GB27203-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,55 +19,21 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, stuart.yoder-3arQi8VN3Tc@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Don Brace <don.brace-dzo6w/eZyo2tG0bUXCXiUA@public.gmane.org>, Joseph Szczypek <jszczype-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 20, 2016 at 09:29:21PM -0600, Rob Herring wrote:
-> On Fri, Dec 16, 2016 at 01:19:29PM +0000, Robin Murphy wrote:
-> > The current SMR masking support using a 2-cell iommu-specifier is
-> > primarily intended to handle individual masters with large and/or
-> > complex Stream ID assignments; it quickly gets a bit clunky in other SMR
-> > use-cases where we just want to consistently mask out the same part of
-> > every Stream ID (e.g. for MMU-500 configurations where the appended TBU
-> > number gets in the way unnecessarily). Let's add a new property to allow
-> > a single global mask value to better fit the latter situation.
-> > 
-> > CC: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>
-> > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> > ---
-> > 
-> > Compile-tested only...
-> > 
-> >  Documentation/devicetree/bindings/iommu/arm,smmu.txt | 8 ++++++++
-> >  drivers/iommu/arm-smmu.c                             | 4 +++-
-> >  2 files changed, 11 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> > index e862d1485205..98f5cbe5fdb4 100644
-> > --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> > +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> > @@ -60,6 +60,14 @@ conditions.
-> >                    aliases of secure registers have to be used during
-> >                    SMMU configuration.
-> >  
-> > +- stream-match-mask : Specifies a fixed SMR mask value to combine with
-> 
-> Needs a vendor prefix.
+On Tue, Dec 6, 2016 at 9:03 AM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> On Mon, Dec 05, 2016 at 08:09:07PM +0800, Xunlei Pang wrote:
+>>  drivers/iommu/intel-iommu.c | 19 +++++++++++++++++++
+>>  1 file changed, 19 insertions(+)
+>
+> Applied, thanks.
 
-Why does this need a vendor prefix? I'm not fussed either way, but since
-the stream-match-mask is an optional architectural concept and not specific
-to an implementation, it seems strange to me that it would need a prefix
-whereas something like #global-interrupts does not.
+Joerg:
 
-> > +                  the Stream ID value from every iommu-specifier. This
-> > +                  may be used instead of an "#iommu-cells" value of 2
-> > +                  when there is no need for per-master SMR masks, but
-> > +                  it is still desired to mask some portion of every
-> > +                  Stream ID (e.g. for certain MMU-500 configurations
-> > +                  given globally unique external IDs).
+This didn't seem to make the 4.10 merge window.  Was that on purpose?
+Any idea when you might include this in a pull request for Linus?
 
-Robin -- it might be worth a sentence here saying that the property is
-ignored if stream matching isn't supported by the hardware.
-
-Will
+Myron
+>
