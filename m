@@ -1,7 +1,7 @@
 From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [RFC 2/3] iommu/arm-smmu: Add qcom implementation
-Date: Tue,  3 Jan 2017 16:30:55 -0500
-Message-ID: <1483479056-15202-3-git-send-email-robdclark@gmail.com>
+Subject: [RFC 3/3] iommu/arm-smmu: Let fault handler return -EFAULT
+Date: Tue,  3 Jan 2017 16:30:56 -0500
+Message-ID: <1483479056-15202-4-git-send-email-robdclark@gmail.com>
 References: <1483479056-15202-1-git-send-email-robdclark@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,52 +21,45 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-At least on the db820c I have, with the firmware I have, I'm not seeing
-the SS bit set, even though the iommu is in a stalled state.  So for
-this implementation ignore not having SS bit set.
+Let the iommu user ask the iommu to terminate the transaction without
+printing any error msg via -EFAULT return.
+
+(Alternatively, look for -ENOSYS return instead to trigger the msg?)
 
 Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/arm-smmu.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iommu/arm-smmu.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index a71cb8f..a8d9901 100644
+index a8d9901..dc26c98 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -298,6 +298,7 @@ enum arm_smmu_implementation {
- 	GENERIC_SMMU,
- 	ARM_MMU500,
- 	CAVIUM_SMMUV2,
-+	QCOM_SMMUV2,
- };
+@@ -703,15 +703,23 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ 	flags = fsynr & FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ;
  
- struct arm_smmu_s2cr {
-@@ -716,6 +717,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	/* Clear the faulting FSR */
- 	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
- 
-+	if (smmu->model == QCOM_SMMUV2)
-+		fsr |= FSR_SS;
+ 	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
+-	if (!report_iommu_fault(domain, smmu->dev, iova, flags)) {
 +
- 	/* Retry or terminate any stalled transactions */
- 	if (fsr & FSR_SS) {
- 		/* Should we care about ending up w/ a stalled transaction
-@@ -1991,6 +1995,7 @@ ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
- ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
- ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
- ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
-+ARM_SMMU_MATCH_DATA(qcom_smmuv2, ARM_SMMU_V2, QCOM_SMMUV2);
++	switch (report_iommu_fault(domain, smmu->dev, iova, flags)) {
++	case 0:
+ 		ret = IRQ_HANDLED;
+ 		resume = RESUME_RETRY;
+-	} else {
++		break;
++	case -EFAULT:
++		ret = IRQ_HANDLED;
++		resume = RESUME_TERMINATE;
++		break;
++	default:
+ 		dev_err_ratelimited(smmu->dev,
+ 		    "Unhandled context fault: iova=0x%08lx, fsynr=0x%x, cb=%d\n",
+ 		    iova, fsynr, cfg->cbndx);
+ 		ret = IRQ_NONE;
+ 		resume = RESUME_TERMINATE;
++		break;
+ 	}
  
- static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,smmu-v1", .data = &smmu_generic_v1 },
-@@ -1999,6 +2004,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "arm,mmu-401", .data = &arm_mmu401 },
- 	{ .compatible = "arm,mmu-500", .data = &arm_mmu500 },
- 	{ .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
-+	{ .compatible = "qcom,smmu-v2", .data = &qcom_smmuv2 },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+ 	/* Clear the faulting FSR */
 -- 
 2.7.4
