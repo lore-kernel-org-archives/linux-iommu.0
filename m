@@ -1,7 +1,7 @@
 From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [RFC 1/3] iommu/arm-smmu: Add support to opt-in to stalling
-Date: Tue,  3 Jan 2017 16:30:54 -0500
-Message-ID: <1483479056-15202-2-git-send-email-robdclark@gmail.com>
+Subject: [RFC 2/3] iommu/arm-smmu: Add qcom implementation
+Date: Tue,  3 Jan 2017 16:30:55 -0500
+Message-ID: <1483479056-15202-3-git-send-email-robdclark@gmail.com>
 References: <1483479056-15202-1-git-send-email-robdclark@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,117 +21,52 @@ To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-TODO maybe we want two options, one to enable stalling, and 2nd to punt
-handling to wq?  I haven't needed to use mm APIs from fault handler yet
-(although it is something that I think we'll want some day).  Perhaps
-stalling support is limited to just letting driver dump some extra
-debugging information otherwise.  Threaded handling probably only useful
-with stalling, but inverse may not always be true.
+At least on the db820c I have, with the firmware I have, I'm not seeing
+the SS bit set, even though the iommu is in a stalled state.  So for
+this implementation ignore not having SS bit set.
 
 Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- .../devicetree/bindings/iommu/arm,smmu.txt         |  3 ++
- drivers/iommu/arm-smmu.c                           | 42 ++++++++++++++++++----
- 2 files changed, 39 insertions(+), 6 deletions(-)
+ drivers/iommu/arm-smmu.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-index ef465b0..5f405a6 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-@@ -68,6 +68,9 @@ conditions.
-                   aliases of secure registers have to be used during
-                   SMMU configuration.
- 
-+- arm,smmu-enable-stall : Enable stall mode to stall memory transactions
-+                  and resume after fault is handled
-+
- ** Deprecated properties:
- 
- - mmu-masters (deprecated in favour of the generic "iommus" binding) :
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index d505432..a71cb8f 100644
+index a71cb8f..a8d9901 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -350,6 +350,7 @@ struct arm_smmu_device {
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
-+#define ARM_SMMU_OPT_ENABLE_STALL      (1 << 1)
- 	u32				options;
- 	enum arm_smmu_arch_version	version;
- 	enum arm_smmu_implementation	model;
-@@ -425,6 +426,7 @@ static bool using_legacy_binding, using_generic_binding;
- 
- static struct arm_smmu_option_prop arm_smmu_options[] = {
- 	{ ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
-+	{ ARM_SMMU_OPT_ENABLE_STALL,      "arm,smmu-enable-stall" },
- 	{ 0, NULL},
+@@ -298,6 +298,7 @@ enum arm_smmu_implementation {
+ 	GENERIC_SMMU,
+ 	ARM_MMU500,
+ 	CAVIUM_SMMUV2,
++	QCOM_SMMUV2,
  };
  
-@@ -676,7 +678,8 @@ static struct iommu_gather_ops arm_smmu_gather_ops = {
- 
- static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- {
--	u32 fsr, fsynr;
-+	int flags, ret;
-+	u32 fsr, fsynr, resume;
- 	unsigned long iova;
- 	struct iommu_domain *domain = dev;
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-@@ -690,15 +693,40 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
- 	if (!(fsr & FSR_FAULT))
- 		return IRQ_NONE;
- 
-+	if (fsr & FSR_IGN)
-+		dev_err_ratelimited(smmu->dev,
-+				    "Unexpected context fault (fsr 0x%x)\n",
-+				    fsr);
-+
- 	fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
--	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
-+	flags = fsynr & FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ;
- 
--	dev_err_ratelimited(smmu->dev,
--	"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
--			    fsr, iova, fsynr, cfg->cbndx);
-+	iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
-+	if (!report_iommu_fault(domain, smmu->dev, iova, flags)) {
-+		ret = IRQ_HANDLED;
-+		resume = RESUME_RETRY;
-+	} else {
-+		dev_err_ratelimited(smmu->dev,
-+		    "Unhandled context fault: iova=0x%08lx, fsynr=0x%x, cb=%d\n",
-+		    iova, fsynr, cfg->cbndx);
-+		ret = IRQ_NONE;
-+		resume = RESUME_TERMINATE;
-+	}
- 
-+	/* Clear the faulting FSR */
+ struct arm_smmu_s2cr {
+@@ -716,6 +717,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+ 	/* Clear the faulting FSR */
  	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
--	return IRQ_HANDLED;
-+
-+	/* Retry or terminate any stalled transactions */
-+	if (fsr & FSR_SS) {
-+		/* Should we care about ending up w/ a stalled transaction
-+		 * when we didn't ask for it?  I guess for now best to call
-+		 * attention to it and resume anyways.
-+		 */
-+		WARN_ON(!(smmu->options & ARM_SMMU_OPT_ENABLE_STALL));
-+		writel_relaxed(resume, cb_base + ARM_SMMU_CB_RESUME);
-+	}
-+
-+	return ret;
- }
  
- static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
-@@ -824,6 +852,8 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
++	if (smmu->model == QCOM_SMMUV2)
++		fsr |= FSR_SS;
++
+ 	/* Retry or terminate any stalled transactions */
+ 	if (fsr & FSR_SS) {
+ 		/* Should we care about ending up w/ a stalled transaction
+@@ -1991,6 +1995,7 @@ ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
+ ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
+ ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
+ ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
++ARM_SMMU_MATCH_DATA(qcom_smmuv2, ARM_SMMU_V2, QCOM_SMMUV2);
  
- 	/* SCTLR */
- 	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
-+	if (smmu->options & ARM_SMMU_OPT_ENABLE_STALL)
-+		reg |= SCTLR_CFCFG;
- 	if (stage1)
- 		reg |= SCTLR_S1_ASIDPNE;
- #ifdef __BIG_ENDIAN
+ static const struct of_device_id arm_smmu_of_match[] = {
+ 	{ .compatible = "arm,smmu-v1", .data = &smmu_generic_v1 },
+@@ -1999,6 +2004,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
+ 	{ .compatible = "arm,mmu-401", .data = &arm_mmu401 },
+ 	{ .compatible = "arm,mmu-500", .data = &arm_mmu500 },
+ 	{ .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
++	{ .compatible = "qcom,smmu-v2", .data = &qcom_smmuv2 },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
 -- 
 2.7.4
