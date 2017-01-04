@@ -1,16 +1,16 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: possible dmar_init_reserved_ranges() error
-Date: Wed, 4 Jan 2017 15:39:09 +0100
-Message-ID: <20170104143909.GD10632@8bytes.org>
-References: <20161219212044.GA21774@bhelgaas-glaptop.roam.corp.google.com>
-	<20161227234417.GA24366@bhelgaas-glaptop.roam.corp.google.com>
-	<20161228032139.GA254916@otc-nc-03>
+Subject: Re: [PATCH V6 2/7] perf/amd/iommu: Modify functions to query max
+	banks and counters
+Date: Wed, 4 Jan 2017 15:48:53 +0100
+Message-ID: <20170104144853.GE10632@8bytes.org>
+References: <1482500330-5606-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1482500330-5606-3-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20161228032139.GA254916@otc-nc-03>
+In-Reply-To: <1482500330-5606-3-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,18 +20,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: g@bhelgaas-glaptop.roam.corp.google.com, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, rwright-ZPxbGqLxI0U@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Dec 27, 2016 at 07:21:39PM -0800, Raj, Ashok wrote:
-> This sounds reasonable, if we can reserve from the host bridge apertures 
-> it should take care of hot-plug cases as well, and should simply how the
-> reservation is made.
+On Fri, Dec 23, 2016 at 08:38:45PM +0700, Suravee Suthikulpanit wrote:
+> --- a/arch/x86/events/amd/iommu.h
+> +++ b/arch/x86/events/amd/iommu.h
+> @@ -24,15 +24,12 @@
+>  #define PC_MAX_SPEC_BNKS			64
+>  #define PC_MAX_SPEC_CNTRS			16
+>  
+> -/* iommu pc reg masks*/
+> -#define IOMMU_BASE_DEVID			0x0000
+> -
+>  /* amd_iommu_init.c external support functions */
+>  extern bool amd_iommu_pc_supported(void);
+>  
+> -extern u8 amd_iommu_pc_get_max_banks(u16 devid);
+> +extern u8 amd_iommu_pc_get_max_banks(uint devid);
+>  
+> -extern u8 amd_iommu_pc_get_max_counters(u16 devid);
+> +extern u8 amd_iommu_pc_get_max_counters(uint devid);
 
-Agreed, I have this on my todo list already since I converted the AMD
-IOMMU driver to the iova allocator. Just reserving the pci windows is
-much better than what we are currently doing.
+The parameters are now iommu-indexes and not device-ids anymore. You
+should reflect that in the prototypes here too.
 
+> diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
+> index 7eb60c1..1f10b3f 100644
+> --- a/drivers/iommu/amd_iommu_proto.h
+> +++ b/drivers/iommu/amd_iommu_proto.h
+> @@ -58,8 +58,8 @@ extern int amd_iommu_domain_set_gcr3(struct iommu_domain *dom, int pasid,
+>  
+>  /* IOMMU Performance Counter functions */
+>  extern bool amd_iommu_pc_supported(void);
+> -extern u8 amd_iommu_pc_get_max_banks(u16 devid);
+> -extern u8 amd_iommu_pc_get_max_counters(u16 devid);
+> +extern u8 amd_iommu_pc_get_max_banks(uint devid);
+> +extern u8 amd_iommu_pc_get_max_counters(uint devid);
 
-	Joerg
+Same here, and why do you need to declare the prototypes in two
+different header files?
