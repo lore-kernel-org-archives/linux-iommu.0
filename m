@@ -1,15 +1,14 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [RFC 2/3] iommu/arm-smmu: Add qcom implementation
-Date: Tue, 3 Jan 2017 15:28:33 -0700
-Message-ID: <20170103222832.GA19199@jcrouse-lnx.qualcomm.com>
-References: <1483479056-15202-1-git-send-email-robdclark@gmail.com>
-	<1483479056-15202-3-git-send-email-robdclark@gmail.com>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH] iommu: Drop the of_iommu_{set/get}_ops() interface
+Date: Wed, 4 Jan 2017 13:30:28 +0530
+Message-ID: <002c01d26660$a1bf2d40$e53d87c0$@codeaurora.org>
+References: <20170103173456.18154-1-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1483479056-15202-3-git-send-email-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20170103173456.18154-1-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,84 +18,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+To: 'Lorenzo Pieralisi' <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: 'Will Deacon' <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, 'Matthias Brugger' <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Jan 03, 2017 at 04:30:55PM -0500, Rob Clark wrote:
-> At least on the db820c I have, with the firmware I have, I'm not seeing
-> the SS bit set, even though the iommu is in a stalled state.  So for
-> this implementation ignore not having SS bit set.
+Hi Lorenzo,
 
-The SS bit gets set if SCTLR.CFCFG is set to 1. It works in the downstream
-kernel because the GPU driver writes directly to SCTLR in the IOMMU hardware
-(which of course is a crime against humanity but that is one of the many reasons
-why it is a *downstream* driver).
+>With the introduction of the new iommu_{register/get}_instance()
+>interface in commit e4f10ffe4c9b ("iommu: Make of_iommu_set/get_ops() DT
+>agnostic") (based on struct fwnode_handle as look-up token, so firmware
+>agnostic) to register IOMMU instances with the core IOMMU layer there is
+>no reason to keep the old OF based interface around any longer.
+>
+>Convert all the IOMMU drivers (and OF IOMMU core code) that rely on the
+>of_iommu_{set/get}_ops() to the new kernel interface to register/retrieve
+>IOMMU instances and remove the of_iommu_{set/get}_ops() remaining glue
+>code in order to complete the interface rework.
+>
+>Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+>Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+>Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+>Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>---
+>Exynos, msm and mtk code compile tested only owing to lack of
+>test platforms, I would appreciate some help in testing this
+>patch on those platforms before merging it even if it is just
+>a simple interface conversion.
+>
 
-My understanding is that SCTLR.CFCFG == 0 should automatically terminate the
-transaction so I don't understand why we need to write to RESUME. I'm not
-doubting Rob's patch, I'm doubting why we need it in the first place. It seems
-that if we have to write it regardless of the value of CFCFG then we should
-probably just do that instead of relying on the SS bit.
+For msm,
+Tested-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 
-The public spec doesn't give any indication to me that any of this behavior is
-implementation specific but I only have one implementation to base that
-assumption on. Perhaps the default value of SCTLR is implementation specific?
-
-If other implementations do expect SS (and CFCFG) to be set by default then we
-would indeed need to set up a quirk. The other possibility would be to force
-set CFCFG for all targets, but I would be hesitant to do that on the GPU iommu
-because if we stall the GPU for too long then hang detect will fire.
-
-Jordan
-
-> Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index a71cb8f..a8d9901 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -298,6 +298,7 @@ enum arm_smmu_implementation {
->  	GENERIC_SMMU,
->  	ARM_MMU500,
->  	CAVIUM_SMMUV2,
-> +	QCOM_SMMUV2,
->  };
->  
->  struct arm_smmu_s2cr {
-> @@ -716,6 +717,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->  	/* Clear the faulting FSR */
->  	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
->  
-> +	if (smmu->model == QCOM_SMMUV2)
-> +		fsr |= FSR_SS;
-> +
->  	/* Retry or terminate any stalled transactions */
->  	if (fsr & FSR_SS) {
->  		/* Should we care about ending up w/ a stalled transaction
-> @@ -1991,6 +1995,7 @@ ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
->  ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
->  ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
->  ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
-> +ARM_SMMU_MATCH_DATA(qcom_smmuv2, ARM_SMMU_V2, QCOM_SMMUV2);
->  
->  static const struct of_device_id arm_smmu_of_match[] = {
->  	{ .compatible = "arm,smmu-v1", .data = &smmu_generic_v1 },
-> @@ -1999,6 +2004,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
->  	{ .compatible = "arm,mmu-401", .data = &arm_mmu401 },
->  	{ .compatible = "arm,mmu-500", .data = &arm_mmu500 },
->  	{ .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
-> +	{ .compatible = "qcom,smmu-v2", .data = &qcom_smmuv2 },
->  	{ },
->  };
->  MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
-> -- 
-> 2.7.4
-> 
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Regards,
+ Sricharan
