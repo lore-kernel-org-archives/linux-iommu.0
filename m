@@ -1,7 +1,8 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v5 15/17] vfio/type1: Allow transparent MSI IOVA allocation
-Date: Wed,  4 Jan 2017 13:32:24 +0000
-Message-ID: <1483536746-2725-16-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v5 17/17] iommu/arm-smmu: Do not advertise
+	IOMMU_CAP_INTR_REMAP anymore
+Date: Wed,  4 Jan 2017 13:32:26 +0000
+Message-ID: <1483536746-2725-18-git-send-email-eric.auger@redhat.com>
 References: <1483536746-2725-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,92 +22,44 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When attaching a group to the container, check the group's
-reserved regions and test whether the IOMMU translates MSI
-transactions. If yes, we initialize an IOVA allocator through
-the iommu_get_msi_cookie API. This will allow the MSI IOVAs
-to be transparently allocated on MSI controller's compose().
+IOMMU_CAP_INTR_REMAP has been advertised in arm-smmu(-v3) although
+on ARM this property is not attached to the IOMMU but rather is
+implemented in the MSI controller (GICv3 ITS).
+
+Now vfio_iommu_type1 takes into account the MSI domain MSI remapping
+capability, let's correct this.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
 ---
+ drivers/iommu/arm-smmu-v3.c | 2 --
+ drivers/iommu/arm-smmu.c    | 2 --
+ 2 files changed, 4 deletions(-)
 
-v3 -> v4:
-- test region's type: IOMMU_RESV_MSI
-- restructure the code to prepare for safety assessment
-- reword title
----
- drivers/vfio/vfio_iommu_type1.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
-
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index f3726ba..b473ef80 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -39,6 +39,7 @@
- #include <linux/pid_namespace.h>
- #include <linux/mdev.h>
- #include <linux/notifier.h>
-+#include <linux/dma-iommu.h>
- 
- #define DRIVER_VERSION  "0.2"
- #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
-@@ -1177,6 +1178,28 @@ static struct vfio_group *find_iommu_group(struct vfio_domain *domain,
- 	return NULL;
- }
- 
-+static bool vfio_iommu_has_resv_msi(struct iommu_group *group,
-+				    phys_addr_t *base)
-+{
-+	struct list_head group_resv_regions;
-+	struct iommu_resv_region *region, *next;
-+	bool ret = false;
-+
-+	INIT_LIST_HEAD(&group_resv_regions);
-+	iommu_get_group_resv_regions(group, &group_resv_regions);
-+	list_for_each_entry(region, &group_resv_regions, list) {
-+		if (region->type & IOMMU_RESV_MSI) {
-+			*base = region->start;
-+			ret = true;
-+			goto out;
-+		}
-+	}
-+out:
-+	list_for_each_entry_safe(region, next, &group_resv_regions, list)
-+		kfree(region);
-+	return ret;
-+}
-+
- static int vfio_iommu_type1_attach_group(void *iommu_data,
- 					 struct iommu_group *iommu_group)
- {
-@@ -1185,6 +1208,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	struct vfio_domain *domain, *d;
- 	struct bus_type *bus = NULL, *mdev_bus;
- 	int ret;
-+	bool resv_msi;
-+	phys_addr_t resv_msi_base;
- 
- 	mutex_lock(&iommu->lock);
- 
-@@ -1254,6 +1279,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_domain;
- 
-+	resv_msi = vfio_iommu_has_resv_msi(iommu_group, &resv_msi_base);
-+
- 	INIT_LIST_HEAD(&domain->group_list);
- 	list_add(&group->next, &domain->group_list);
- 
-@@ -1300,6 +1327,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_detach;
- 
-+	if (resv_msi && iommu_get_msi_cookie(domain->domain, resv_msi_base))
-+		goto out_detach;
-+
- 	list_add(&domain->next, &iommu->domain_list);
- 
- 	mutex_unlock(&iommu->lock);
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 6c4111c..d9cf6cb 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1375,8 +1375,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 	switch (cap) {
+ 	case IOMMU_CAP_CACHE_COHERENCY:
+ 		return true;
+-	case IOMMU_CAP_INTR_REMAP:
+-		return true; /* MSIs are just memory writes */
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index a354572..13d2600 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1374,8 +1374,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 		 * requests.
+ 		 */
+ 		return true;
+-	case IOMMU_CAP_INTR_REMAP:
+-		return true; /* MSIs are just memory writes */
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
 -- 
 1.9.1
