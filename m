@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v5 17/17] iommu/arm-smmu: Do not advertise
-	IOMMU_CAP_INTR_REMAP anymore
-Date: Wed,  4 Jan 2017 13:32:26 +0000
-Message-ID: <1483536746-2725-18-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v5 14/17] irqchip/gicv3-its: Sets IRQ_DOMAIN_FLAG_MSI_REMAP
+Date: Wed,  4 Jan 2017 13:32:23 +0000
+Message-ID: <1483536746-2725-15-git-send-email-eric.auger@redhat.com>
 References: <1483536746-2725-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,44 +21,25 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-IOMMU_CAP_INTR_REMAP has been advertised in arm-smmu(-v3) although
-on ARM this property is not attached to the IOMMU but rather is
-implemented in the MSI controller (GICv3 ITS).
-
-Now vfio_iommu_type1 takes into account the MSI domain MSI remapping
-capability, let's correct this.
+The GICv3 ITS is MSI remapping capable. Let's advertise
+this property so that VFIO passthrough can assess IRQ safety.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 2 --
- drivers/iommu/arm-smmu.c    | 2 --
- 2 files changed, 4 deletions(-)
+ drivers/irqchip/irq-gic-v3-its.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 6c4111c..d9cf6cb 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1375,8 +1375,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- 	switch (cap) {
- 	case IOMMU_CAP_CACHE_COHERENCY:
- 		return true;
--	case IOMMU_CAP_INTR_REMAP:
--		return true; /* MSIs are just memory writes */
- 	case IOMMU_CAP_NOEXEC:
- 		return true;
- 	default:
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index a354572..13d2600 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1374,8 +1374,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- 		 * requests.
- 		 */
- 		return true;
--	case IOMMU_CAP_INTR_REMAP:
--		return true; /* MSIs are just memory writes */
- 	case IOMMU_CAP_NOEXEC:
- 		return true;
- 	default:
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+index 69b040f..9d4fefc 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -1642,6 +1642,7 @@ static int its_init_domain(struct fwnode_handle *handle, struct its_node *its)
+ 
+ 	inner_domain->parent = its_parent;
+ 	inner_domain->bus_token = DOMAIN_BUS_NEXUS;
++	inner_domain->flags |= IRQ_DOMAIN_FLAG_MSI_REMAP;
+ 	info->ops = &its_msi_domain_ops;
+ 	info->data = its;
+ 	inner_domain->host_data = info;
 -- 
 1.9.1
