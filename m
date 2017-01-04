@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v5 12/17] irqdomain: Add IRQ_DOMAIN_FLAG_MSI_REMAP value
-Date: Wed,  4 Jan 2017 13:32:21 +0000
-Message-ID: <1483536746-2725-13-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v5 15/17] vfio/type1: Allow transparent MSI IOVA allocation
+Date: Wed,  4 Jan 2017 13:32:24 +0000
+Message-ID: <1483536746-2725-16-git-send-email-eric.auger@redhat.com>
 References: <1483536746-2725-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,30 +21,92 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This new enum value aims at indicating whether the irq domain
-implements MSI remapping. This property is useful to assess
-the IRQ assignment safety at VFIO level.
+When attaching a group to the container, check the group's
+reserved regions and test whether the IOMMU translates MSI
+transactions. If yes, we initialize an IOVA allocator through
+the iommu_get_msi_cookie API. This will allow the MSI IOVAs
+to be transparently allocated on MSI controller's compose().
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
----
- include/linux/irqdomain.h | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
-index ffb8460..ab017b2 100644
---- a/include/linux/irqdomain.h
-+++ b/include/linux/irqdomain.h
-@@ -183,6 +183,9 @@ enum {
- 	/* Irq domain is an IPI domain with single virq */
- 	IRQ_DOMAIN_FLAG_IPI_SINGLE	= (1 << 3),
+v3 -> v4:
+- test region's type: IOMMU_RESV_MSI
+- restructure the code to prepare for safety assessment
+- reword title
+---
+ drivers/vfio/vfio_iommu_type1.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index f3726ba..b473ef80 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -39,6 +39,7 @@
+ #include <linux/pid_namespace.h>
+ #include <linux/mdev.h>
+ #include <linux/notifier.h>
++#include <linux/dma-iommu.h>
  
-+	/* Irq domain is MSI remapping capable */
-+	IRQ_DOMAIN_FLAG_MSI_REMAP	= (1 << 4),
+ #define DRIVER_VERSION  "0.2"
+ #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
+@@ -1177,6 +1178,28 @@ static struct vfio_group *find_iommu_group(struct vfio_domain *domain,
+ 	return NULL;
+ }
+ 
++static bool vfio_iommu_has_resv_msi(struct iommu_group *group,
++				    phys_addr_t *base)
++{
++	struct list_head group_resv_regions;
++	struct iommu_resv_region *region, *next;
++	bool ret = false;
 +
- 	/*
- 	 * Flags starting from IRQ_DOMAIN_FLAG_NONCORE are reserved
- 	 * for implementation specific purposes and ignored by the
++	INIT_LIST_HEAD(&group_resv_regions);
++	iommu_get_group_resv_regions(group, &group_resv_regions);
++	list_for_each_entry(region, &group_resv_regions, list) {
++		if (region->type & IOMMU_RESV_MSI) {
++			*base = region->start;
++			ret = true;
++			goto out;
++		}
++	}
++out:
++	list_for_each_entry_safe(region, next, &group_resv_regions, list)
++		kfree(region);
++	return ret;
++}
++
+ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 					 struct iommu_group *iommu_group)
+ {
+@@ -1185,6 +1208,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	struct vfio_domain *domain, *d;
+ 	struct bus_type *bus = NULL, *mdev_bus;
+ 	int ret;
++	bool resv_msi;
++	phys_addr_t resv_msi_base;
+ 
+ 	mutex_lock(&iommu->lock);
+ 
+@@ -1254,6 +1279,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	if (ret)
+ 		goto out_domain;
+ 
++	resv_msi = vfio_iommu_has_resv_msi(iommu_group, &resv_msi_base);
++
+ 	INIT_LIST_HEAD(&domain->group_list);
+ 	list_add(&group->next, &domain->group_list);
+ 
+@@ -1300,6 +1327,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	if (ret)
+ 		goto out_detach;
+ 
++	if (resv_msi && iommu_get_msi_cookie(domain->domain, resv_msi_base))
++		goto out_detach;
++
+ 	list_add(&domain->next, &iommu->domain_list);
+ 
+ 	mutex_unlock(&iommu->lock);
 -- 
 1.9.1
