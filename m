@@ -1,12 +1,13 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v5 00/17] KVM PCIe/MSI passthrough on ARM/ARM64 and IOVA
-	reserved regions
-Date: Wed,  4 Jan 2017 13:32:09 +0000
-Message-ID: <1483536746-2725-1-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v5 03/17] iommu: Add a new type field in iommu_resv_region
+Date: Wed,  4 Jan 2017 13:32:12 +0000
+Message-ID: <1483536746-2725-4-git-send-email-eric.auger@redhat.com>
+References: <1483536746-2725-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1483536746-2725-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,107 +21,61 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Following LPC discussions, we now report reserved regions through
-iommu-group sysfs reserved_regions attribute file.
+We introduce a new field to differentiate the reserved region
+types and specialize the apply_resv_region implementation.
 
-Reserved regions are populated through the IOMMU get_resv_region
-callback (former get_dm_regions), now implemented by amd-iommu,
-intel-iommu and arm-smmu:
-- the intel-iommu reports the [0xfee00000 - 0xfeefffff] MSI window
-  as an IOMMU_RESV_NOMAP reserved region.
-- the amd-iommu reports device direct mapped regions, the MSI region
-  and HT regions.
-- the arm-smmu reports the MSI window (arbitrarily located at
-  0x8000000 and 1MB large).
+Legacy direct mapped regions have IOMMU_RESV_DIRECT type.
+We introduce 2 new reserved memory types:
+- IOMMU_RESV_MSI will characterize MSI regions
+- IOMMU_RESV_NOMAP characterize regions that cannot by mapped.
 
-Unsafe interrupt assignment is tested by enumerating all MSI irq
-domains and checking MSI remapping is supported in the above hierarchy.
-This check is done in case we detect the iommu translates MSI
-(an IOMMU_RESV_MSI window exists). Otherwise the IRQ remapping
-capability is checked at IOMMU level. Obviously this is a defensive
-IRQ safety assessment: Assuming there are several MSI controllers
-in the system and at least one does not implement IRQ remapping,
-the assignment will be considered as unsafe (even if this controller
-is not acessible from the assigned devices).
+Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c | 1 +
+ include/linux/iommu.h     | 7 +++++++
+ 2 files changed, 8 insertions(+)
 
-The series integrates a not officially posted patch from Robin:
-"iommu/dma: Allow MSI-only cookies".
-
-Best Regards
-
-Eric
-
-Git: complete series available at
-https://github.com/eauger/linux/tree/v4.10-rc2-reserved-v5
-
-History:
-
-RFCv4 -> PATCHv5
-- fix IRQ security assessment by looking at irq domain parents
-- check DOMAIN_BUS_FSL_MC_MSI irq domains
-- AMD MSI and HT regions are exposed in iommu group sysfs
-
-RFCv3 -> RFCv4:
-- arm-smmu driver does not register PCI host bridge windows as
-  reserved regions anymore
-- Implement reserved region get/put callbacks also in arm-smmuv3
-- take the iommu_group lock on iommu_get_group_resv_regions
-- add a type field in iommu_resv_region instead of using prot
-- init the region list_head in iommu_alloc_resv_region, also
-  add type parameter
-- iommu_insert_resv_region manage overlaps and sort reserved
-  windows
-- address IRQ safety assessment by enumerating all the MSI irq
-  domains and checking the MSI_REMAP flag
-- update Documentation/ABI/testing/sysfs-kernel-iommu_groups
-
-RFC v2 -> v3:
-- switch to an iommu-group sysfs API
-- use new dummy allocator provided by Robin
-- dummy allocator initialized by vfio-iommu-type1 after enumerating
-  the reserved regions
-- at the moment ARM MSI base address/size is left unchanged compared
-  to v2
-- we currently report reserved regions and not usable IOVA regions as
-  requested by Alex
-
-RFC v1 -> v2:
-- fix intel_add_reserved_regions
-- add mutex lock/unlock in vfio_iommu_type1
-
-
-Eric Auger (17):
-  iommu/dma: Allow MSI-only cookies
-  iommu: Rename iommu_dm_regions into iommu_resv_regions
-  iommu: Add a new type field in iommu_resv_region
-  iommu: iommu_alloc_resv_region
-  iommu: Only map direct mapped regions
-  iommu: iommu_get_group_resv_regions
-  iommu: Implement reserved_regions iommu-group sysfs file
-  iommu/vt-d: Implement reserved region get/put callbacks
-  iommu/amd: Declare MSI and HT regions as reserved IOVA regions
-  iommu/arm-smmu: Implement reserved region get/put callbacks
-  iommu/arm-smmu-v3: Implement reserved region get/put callbacks
-  irqdomain: Add IRQ_DOMAIN_FLAG_MSI_REMAP value
-  irqdomain: irq_domain_check_msi_remap
-  irqchip/gicv3-its: Sets IRQ_DOMAIN_FLAG_MSI_REMAP
-  vfio/type1: Allow transparent MSI IOVA allocation
-  vfio/type1: Check MSI remapping at irq domain level
-  iommu/arm-smmu: Do not advertise IOMMU_CAP_INTR_REMAP anymore
-
- drivers/iommu/amd_iommu.c        |  54 +++++++++-----
- drivers/iommu/arm-smmu-v3.c      |  30 +++++++-
- drivers/iommu/arm-smmu.c         |  30 +++++++-
- drivers/iommu/dma-iommu.c        | 116 ++++++++++++++++++++++++------
- drivers/iommu/intel-iommu.c      |  50 +++++++++----
- drivers/iommu/iommu.c            | 152 ++++++++++++++++++++++++++++++++++++---
- drivers/irqchip/irq-gic-v3-its.c |   1 +
- drivers/vfio/vfio_iommu_type1.c  |  34 ++++++++-
- include/linux/dma-iommu.h        |   7 ++
- include/linux/iommu.h            |  46 ++++++++----
- include/linux/irqdomain.h        |   4 ++
- kernel/irq/irqdomain.c           |  41 +++++++++++
- 12 files changed, 481 insertions(+), 84 deletions(-)
-
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 04334eb..c6c3f1e 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3186,6 +3186,7 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+ 
+ 		region->start = entry->address_start;
+ 		region->length = entry->address_end - entry->address_start;
++		region->type = IOMMU_RESV_DIRECT;
+ 		if (entry->prot & IOMMU_PROT_IR)
+ 			region->prot |= IOMMU_READ;
+ 		if (entry->prot & IOMMU_PROT_IW)
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index bfecb8b..9128a8d 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -117,18 +117,25 @@ enum iommu_attr {
+ 	DOMAIN_ATTR_MAX,
+ };
+ 
++/* These are the possible reserved region types */
++#define IOMMU_RESV_DIRECT	(1 << 0)
++#define IOMMU_RESV_NOMAP	(1 << 1)
++#define IOMMU_RESV_MSI		(1 << 2)
++
+ /**
+  * struct iommu_resv_region - descriptor for a reserved memory region
+  * @list: Linked list pointers
+  * @start: System physical start address of the region
+  * @length: Length of the region in bytes
+  * @prot: IOMMU Protection flags (READ/WRITE/...)
++ * @type: Type of the reserved region
+  */
+ struct iommu_resv_region {
+ 	struct list_head	list;
+ 	phys_addr_t		start;
+ 	size_t			length;
+ 	int			prot;
++	int			type;
+ };
+ 
+ #ifdef CONFIG_IOMMU_API
 -- 
 1.9.1
