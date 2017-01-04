@@ -1,8 +1,8 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v5 09/17] iommu/amd: Declare MSI and HT regions as reserved
-	IOVA regions
-Date: Wed,  4 Jan 2017 13:32:18 +0000
-Message-ID: <1483536746-2725-10-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v5 10/17] iommu/arm-smmu: Implement reserved region get/put
+	callbacks
+Date: Wed,  4 Jan 2017 13:32:19 +0000
+Message-ID: <1483536746-2725-11-git-send-email-eric.auger@redhat.com>
 References: <1483536746-2725-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,85 +22,81 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch registers the MSI and HT regions as non mappable
-reserved regions. They will be exposed in the iommu-group sysfs.
+The get() populates the list with the MSI IOVA reserved window.
 
-For direct-mapped regions let's also use iommu_alloc_resv_region().
+At the moment an arbitray MSI IOVA window is set at 0x8000000
+of size 1MB. This will allow to report those info in iommu-group
+sysfs.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
 
-v5: creation
----
- drivers/iommu/amd_iommu.c | 37 ++++++++++++++++++++++++++-----------
- 1 file changed, 26 insertions(+), 11 deletions(-)
+v3 -> v4:
+- do not handle PCI host bridge windows anymore
+- encode prot
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index c6c3f1e..24c752d 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3164,6 +3164,7 @@ static bool amd_iommu_capable(enum iommu_cap cap)
- static void amd_iommu_get_resv_regions(struct device *dev,
- 				       struct list_head *head)
- {
-+	struct iommu_resv_region *region;
- 	struct unity_map_entry *entry;
- 	int devid;
+RFC v2 -> v3:
+- use existing get/put_resv_regions
+
+RFC v1 -> v2:
+- use defines for MSI IOVA base and length
+---
+ drivers/iommu/arm-smmu.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index a60cded..a354572 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -281,6 +281,9 @@ enum arm_smmu_s2cr_privcfg {
  
-@@ -3172,28 +3173,42 @@ static void amd_iommu_get_resv_regions(struct device *dev,
- 		return;
+ #define FSYNR0_WNR			(1 << 4)
  
- 	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
--		struct iommu_resv_region *region;
-+		size_t length;
-+		int prot = 0;
- 
- 		if (devid < entry->devid_start || devid > entry->devid_end)
- 			continue;
- 
--		region = kzalloc(sizeof(*region), GFP_KERNEL);
-+		length = entry->address_end - entry->address_start;
-+		if (entry->prot & IOMMU_PROT_IR)
-+			prot |= IOMMU_READ;
-+		if (entry->prot & IOMMU_PROT_IW)
-+			prot |= IOMMU_WRITE;
++#define MSI_IOVA_BASE			0x8000000
++#define MSI_IOVA_LENGTH			0x100000
 +
-+		region = iommu_alloc_resv_region(entry->address_start,
-+						 length, prot,
-+						 IOMMU_RESV_DIRECT);
- 		if (!region) {
- 			pr_err("Out of memory allocating dm-regions for %s\n",
- 				dev_name(dev));
- 			return;
- 		}
--
--		region->start = entry->address_start;
--		region->length = entry->address_end - entry->address_start;
--		region->type = IOMMU_RESV_DIRECT;
--		if (entry->prot & IOMMU_PROT_IR)
--			region->prot |= IOMMU_READ;
--		if (entry->prot & IOMMU_PROT_IW)
--			region->prot |= IOMMU_WRITE;
--
- 		list_add_tail(&region->list, head);
- 	}
-+
-+	region = iommu_alloc_resv_region(MSI_RANGE_START,
-+					 MSI_RANGE_END - MSI_RANGE_START + 1,
-+					 0, IOMMU_RESV_NOMAP);
-+	if (!region)
-+		return;
-+	list_add_tail(&region->list, head);
-+
-+	region = iommu_alloc_resv_region(HT_RANGE_START,
-+					 HT_RANGE_END - HT_RANGE_START + 1,
-+					 0, IOMMU_RESV_NOMAP);
-+	if (!region)
-+		return;
-+	list_add_tail(&region->list, head);
+ static int force_stage;
+ module_param(force_stage, int, S_IRUGO);
+ MODULE_PARM_DESC(force_stage,
+@@ -1549,6 +1552,29 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ 	return iommu_fwspec_add_ids(dev, &fwid, 1);
  }
  
- static void amd_iommu_put_resv_regions(struct device *dev,
++static void arm_smmu_get_resv_regions(struct device *dev,
++				      struct list_head *head)
++{
++	struct iommu_resv_region *region;
++	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
++
++	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
++					 prot, IOMMU_RESV_MSI);
++	if (!region)
++		return;
++
++	list_add_tail(&region->list, head);
++}
++
++static void arm_smmu_put_resv_regions(struct device *dev,
++				      struct list_head *head)
++{
++	struct iommu_resv_region *entry, *next;
++
++	list_for_each_entry_safe(entry, next, head, list)
++		kfree(entry);
++}
++
+ static struct iommu_ops arm_smmu_ops = {
+ 	.capable		= arm_smmu_capable,
+ 	.domain_alloc		= arm_smmu_domain_alloc,
+@@ -1564,6 +1590,8 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ 	.domain_get_attr	= arm_smmu_domain_get_attr,
+ 	.domain_set_attr	= arm_smmu_domain_set_attr,
+ 	.of_xlate		= arm_smmu_of_xlate,
++	.get_resv_regions	= arm_smmu_get_resv_regions,
++	.put_resv_regions	= arm_smmu_put_resv_regions,
+ 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+ };
+ 
 -- 
 1.9.1
