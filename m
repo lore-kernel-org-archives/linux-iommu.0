@@ -1,16 +1,14 @@
-From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: RE: [RFC 2/3] iommu/arm-smmu: Add qcom implementation
-Date: Wed, 4 Jan 2017 19:03:10 +0530
-Message-ID: <003201d2668f$1b8456e0$528d04a0$@codeaurora.org>
-References: <1483479056-15202-1-git-send-email-robdclark@gmail.com>
-	<1483479056-15202-3-git-send-email-robdclark@gmail.com>
-	<20170103222832.GA19199@jcrouse-lnx.qualcomm.com>
+From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v5 09/17] iommu/amd: Declare MSI and HT regions as reserved
+	IOVA regions
+Date: Wed,  4 Jan 2017 13:32:18 +0000
+Message-ID: <1483536746-2725-10-git-send-email-eric.auger@redhat.com>
+References: <1483536746-2725-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170103222832.GA19199-9PYrDHPZ2Orvke4nUoYGnHL1okKdlPRT@public.gmane.org>
-Content-Language: en-us
+In-Reply-To: <1483536746-2725-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,117 +18,89 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Jordan Crouse' <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, 'Rob Clark' <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, 'Will Deacon' <will.deacon-5wv7dgnIgG8@public.gmane.org>
+To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+This patch registers the MSI and HT regions as non mappable
+reserved regions. They will be exposed in the iommu-group sysfs.
 
->-----Original Message-----
->From: linux-arm-msm-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org [mailto:linux-arm-msm-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org] On Behalf Of Jordan Crouse
->Sent: Wednesday, January 04, 2017 3:59 AM
->To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Sricharan R
-><sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->Subject: Re: [RFC 2/3] iommu/arm-smmu: Add qcom implementation
->
->On Tue, Jan 03, 2017 at 04:30:55PM -0500, Rob Clark wrote:
->> At least on the db820c I have, with the firmware I have, I'm not seeing
->> the SS bit set, even though the iommu is in a stalled state.  So for
->> this implementation ignore not having SS bit set.
->
->The SS bit gets set if SCTLR.CFCFG is set to 1. It works in the downstream
->kernel because the GPU driver writes directly to SCTLR in the IOMMU hardware
->(which of course is a crime against humanity but that is one of the many reasons
->why it is a *downstream* driver).
->
->My understanding is that SCTLR.CFCFG == 0 should automatically terminate the
->transaction so I don't understand why we need to write to RESUME. I'm not
->doubting Rob's patch, I'm doubting why we need it in the first place. It seems
->that if we have to write it regardless of the value of CFCFG then we should
->probably just do that instead of relying on the SS bit.
->
+For direct-mapped regions let's also use iommu_alloc_resv_region().
 
-The patch is setting CFCFG to 1, hence we require clearing the fault with a 
-write to the RESUME register. I tested these patches on arm-smmu with
-the DB820c and saw that the 'FSR_SS' bit is getting set properly after a 
-fault on the adreno smmu.
+Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
->The public spec doesn't give any indication to me that any of this behavior is
->implementation specific but I only have one implementation to base that
->assumption on. Perhaps the default value of SCTLR is implementation specific?
->
->If other implementations do expect SS (and CFCFG) to be set by default then we
->would indeed need to set up a quirk. The other possibility would be to force
->set CFCFG for all targets, but I would be hesitant to do that on the GPU iommu
->because if we stall the GPU for too long then hang detect will fire.
->
+---
 
-As i understood from the previous discussions on this [1],  the
-behaviour of the stall model (whether enabling the stall would impact other
-contexts as well) and how the stalled context bank is going to assert the
-interrupts were implementation defined. I thought that the setting of the
-'SS' bit should happen if stall model is supported. 
+v5: creation
+---
+ drivers/iommu/amd_iommu.c | 37 ++++++++++++++++++++++++++-----------
+ 1 file changed, 26 insertions(+), 11 deletions(-)
 
-[1] https://www.spinics.net/lists/linux-arm-msm/msg25203.html
-
-Regards,
- Sricharan
-
-
->Jordan
->
->> Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->> ---
->>  drivers/iommu/arm-smmu.c | 6 ++++++
->>  1 file changed, 6 insertions(+)
->>
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index a71cb8f..a8d9901 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -298,6 +298,7 @@ enum arm_smmu_implementation {
->>  	GENERIC_SMMU,
->>  	ARM_MMU500,
->>  	CAVIUM_SMMUV2,
->> +	QCOM_SMMUV2,
->>  };
->>
->>  struct arm_smmu_s2cr {
->> @@ -716,6 +717,9 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->>  	/* Clear the faulting FSR */
->>  	writel(fsr, cb_base + ARM_SMMU_CB_FSR);
->>
->> +	if (smmu->model == QCOM_SMMUV2)
->> +		fsr |= FSR_SS;
->> +
->>  	/* Retry or terminate any stalled transactions */
->>  	if (fsr & FSR_SS) {
->>  		/* Should we care about ending up w/ a stalled transaction
->> @@ -1991,6 +1995,7 @@ ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
->>  ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
->>  ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
->>  ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
->> +ARM_SMMU_MATCH_DATA(qcom_smmuv2, ARM_SMMU_V2, QCOM_SMMUV2);
->>
->>  static const struct of_device_id arm_smmu_of_match[] = {
->>  	{ .compatible = "arm,smmu-v1", .data = &smmu_generic_v1 },
->> @@ -1999,6 +2004,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
->>  	{ .compatible = "arm,mmu-401", .data = &arm_mmu401 },
->>  	{ .compatible = "arm,mmu-500", .data = &arm_mmu500 },
->>  	{ .compatible = "cavium,smmu-v2", .data = &cavium_smmuv2 },
->> +	{ .compatible = "qcom,smmu-v2", .data = &qcom_smmuv2 },
->>  	{ },
->>  };
->>  MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
->> --
->> 2.7.4
->>
->
->--
->The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
->a Linux Foundation Collaborative Project
->--
->To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
->the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index c6c3f1e..24c752d 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3164,6 +3164,7 @@ static bool amd_iommu_capable(enum iommu_cap cap)
+ static void amd_iommu_get_resv_regions(struct device *dev,
+ 				       struct list_head *head)
+ {
++	struct iommu_resv_region *region;
+ 	struct unity_map_entry *entry;
+ 	int devid;
+ 
+@@ -3172,28 +3173,42 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+ 		return;
+ 
+ 	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
+-		struct iommu_resv_region *region;
++		size_t length;
++		int prot = 0;
+ 
+ 		if (devid < entry->devid_start || devid > entry->devid_end)
+ 			continue;
+ 
+-		region = kzalloc(sizeof(*region), GFP_KERNEL);
++		length = entry->address_end - entry->address_start;
++		if (entry->prot & IOMMU_PROT_IR)
++			prot |= IOMMU_READ;
++		if (entry->prot & IOMMU_PROT_IW)
++			prot |= IOMMU_WRITE;
++
++		region = iommu_alloc_resv_region(entry->address_start,
++						 length, prot,
++						 IOMMU_RESV_DIRECT);
+ 		if (!region) {
+ 			pr_err("Out of memory allocating dm-regions for %s\n",
+ 				dev_name(dev));
+ 			return;
+ 		}
+-
+-		region->start = entry->address_start;
+-		region->length = entry->address_end - entry->address_start;
+-		region->type = IOMMU_RESV_DIRECT;
+-		if (entry->prot & IOMMU_PROT_IR)
+-			region->prot |= IOMMU_READ;
+-		if (entry->prot & IOMMU_PROT_IW)
+-			region->prot |= IOMMU_WRITE;
+-
+ 		list_add_tail(&region->list, head);
+ 	}
++
++	region = iommu_alloc_resv_region(MSI_RANGE_START,
++					 MSI_RANGE_END - MSI_RANGE_START + 1,
++					 0, IOMMU_RESV_NOMAP);
++	if (!region)
++		return;
++	list_add_tail(&region->list, head);
++
++	region = iommu_alloc_resv_region(HT_RANGE_START,
++					 HT_RANGE_END - HT_RANGE_START + 1,
++					 0, IOMMU_RESV_NOMAP);
++	if (!region)
++		return;
++	list_add_tail(&region->list, head);
+ }
+ 
+ static void amd_iommu_put_resv_regions(struct device *dev,
+-- 
+1.9.1
