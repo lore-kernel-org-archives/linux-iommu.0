@@ -1,21 +1,17 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 02/10] iommu/of: Prepare for deferred IOMMU configuration
-Date: Thu, 5 Jan 2017 15:35:49 +0000
-Message-ID: <20170105153549.GA31090@red-moon>
-References: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
-	<1480465344-11862-3-git-send-email-sricharan@codeaurora.org>
-	<20161130161723.GA9042@red-moon>
-	<c89825aa-c75f-8493-fe92-7cc97f525bc7@arm.com>
-	<20161201112917.GA9680@red-moon>
-	<003601d2672e$91744b40$b45ce1c0$@codeaurora.org>
-	<20170105122714.GA30449@red-moon>
-	<7cd7bcfb-abae-2948-c3f8-230c0d9c9db6@arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC 1/3] iommu/arm-smmu: Add support to opt-in to stalling
+Date: Thu, 5 Jan 2017 15:49:51 +0000
+Message-ID: <20170105154950.GM679@arm.com>
+References: <1483479056-15202-1-git-send-email-robdclark@gmail.com>
+	<1483479056-15202-2-git-send-email-robdclark@gmail.com>
+	<20170105115528.GG679@arm.com>
+	<CAF6AEGsUdZALAQTozmxPV8Os=3pG7ay=1Oqtctx99FV9_4SX7Q@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <7cd7bcfb-abae-2948-c3f8-230c0d9c9db6-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <CAF6AEGsUdZALAQTozmxPV8Os=3pG7ay=1Oqtctx99FV9_4SX7Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,74 +21,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 05, 2017 at 01:52:29PM +0000, Robin Murphy wrote:
-
-[...]
-
-> > Question: I had a look into this and instead of fiddling about with the
-> > linker script entries in ACPI (ie IORT_ACPI_DECLARE - which I hope this
-> > patchset would help remove entirely), I think that the only check we
-> > need in IORT is, depending on what type of SMMU a given device is
-> > connected to, to check if the respective SMMU driver is compiled in the
-> > kernel and it will be probed, _eventually_.
-> > 
-> > As Robin said, by the time a device is probed the respective SMMU
-> > devices are already created and registered with IORT kernel code or
-> > they will never be, so to understand if we should defer probing
-> > SMMU device creation is _not_ really a problem in ACPI.
-> > 
-> > To check if a SMMU driver is enabled, do we really need a linker
-> > table ?
-> > 
-> > Would not a check based on eg:
-> > 
-> > /**
-> >  * @type: IOMMU IORT node type of the IOMMU a device is connected to
-> >  */
-> > static bool iort_iommu_driver_enabled(u8 type)
-> > {
-> > 	switch (type) {
-> > 	case ACPI_IORT_SMMU_V3:
-> > 		return IS_ENABLED(CONFIG_ARM_SMMU_V3);
+On Thu, Jan 05, 2017 at 10:27:27AM -0500, Rob Clark wrote:
+> On Thu, Jan 5, 2017 at 6:55 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> > On Tue, Jan 03, 2017 at 04:30:54PM -0500, Rob Clark wrote:
+> >> TODO maybe we want two options, one to enable stalling, and 2nd to punt
+> >> handling to wq?  I haven't needed to use mm APIs from fault handler yet
+> >> (although it is something that I think we'll want some day).  Perhaps
+> >> stalling support is limited to just letting driver dump some extra
+> >> debugging information otherwise.  Threaded handling probably only useful
+> >> with stalling, but inverse may not always be true.
+> >
+> > I'd actually like to see this stuck on a worker thread, because I think
+> > that's more generally useful and I don't want to have a situation where
+> > sometimes the IOMMU fault notifier is run in IRQ context and sometimes it's
+> > not.
 > 
-> IS_BUILTIN(...)
+> So I was talking a bit w/ Jordan on IRC yesterday..  and we also have
+> the GPU's hw hang-detect to contend with.  So I *suspect* that when we
+> get to the point of using this to do things like page in things from
+> swap and resume the faulting transaction, we probably want to get
+> called immediately from the IRQ handler so we can disable the hw
+> hang-detect.
 
-Yep right, it is currently equivalent but that does not mean it
-will always be.
+Well, if you want to use an SMMU for paging, then the GPU driver would
+need to request that explicitly when allocating its DMA buffers, to that
+would be the time to either delay or disable the hang detection.
 
-> > 	case ACPI_IORT_SMMU:
-> > 		return IS_ENABLED(CONFIG_ARM_SMMU);
-> > 	default:
-> > 		pr_warn("Unknown IORT SMMU type\n");
+> I'm not sure if the better solution then would be to have two fault
+> callbacks, one immediately from the IRQ and a later one from wq.  Or
+> let the driver handle the wq business and give it a way to tell the
+> IOMMU when to resume.
 > 
-> Might displaying the actual value be helfpul for debugging a broken IORT
-> table?
+> I kinda think we should punt on the worker thread for now until we are
+> ready to resume faulting transactions, because I guess a strong chance
+> that whatever way we do it now will be wrong ;-)
 
-Yes I will do.
+I guess what I'm after is for you to change the interrupt handlers to be
+threaded, like they are for SMMUv3. I *think* you can do that with a NULL
+thread_fn for now, and just call report_iommu_fault from the handler.
+The return value of that could, in theory, be used to queued the paging
+request and wake the paging thread in future.
 
-> > 		return false;
-> > 	}
-> > }
-> > 
-> > be sufficient (it is a bit gross, agreed, but it is to understand if
-> > that's all we need) ? Is there anything I am missing ?
-> > 
-> > Let me know, I will put together a patch for you I really do not
-> > want to block your series for this trivial niggle.
+> > I wonder if this should also be predicated on the compatible string, so
+> > that the "arm,smmu-enable-stall" property is ignored (with a warning) if
+> > the compatible string isn't specific enough to identify an implementation
+> > with the required SS behaviour? On the other hand, it feels pretty
+> > redundant and a single "stalling works" property is all we need.
 > 
-> Other than that, though, I like it :) IORT has a small, strictly
-> bounded, set of supported devices, so I really don't see the need to go
-> overboard putting it on parity with DT when something this neat and
-> simple will suffice.
+> We could also drop the property and key the behavior on specific
+> compat strings I guess.  Having both seems a bit odd.  Anyways, I'll
+> defer to DT folks about what the cleaner approach is.
 
-Ok, patch coming, which will also allow Sricharan to get rid of the
-IORT linker script infrastructure altogether (and more than that,
-I can write the patches on top of Sricharan series that I managed
-to rebase against v4.10-rc2).
+As Robin pointed out, we do need to be able to distinguish the integration
+of the device from the device itself. For example, MMU-9000 might be capable
+of stalling, but if it's bolted to a PCI RC, it's not safe to do so.
 
-Thanks,
-Lorenzo
+Will
