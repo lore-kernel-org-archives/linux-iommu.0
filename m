@@ -1,73 +1,169 @@
-From: Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [RFC 1/3] iommu/arm-smmu: Add support to opt-in to stalling
-Date: Thu, 5 Jan 2017 12:08:57 +0000
-Message-ID: <20170105120857.GB21952@leverpostej>
-References: <1483479056-15202-1-git-send-email-robdclark@gmail.com>
- <1483479056-15202-2-git-send-email-robdclark@gmail.com>
- <20170105115528.GG679@arm.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 02/10] iommu/of: Prepare for deferred IOMMU configuration
+Date: Thu, 5 Jan 2017 12:27:14 +0000
+Message-ID: <20170105122714.GA30449@red-moon>
+References: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
+	<1480465344-11862-3-git-send-email-sricharan@codeaurora.org>
+	<20161130161723.GA9042@red-moon>
+	<c89825aa-c75f-8493-fe92-7cc97f525bc7@arm.com>
+	<20161201112917.GA9680@red-moon>
+	<003601d2672e$91744b40$b45ce1c0$@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170105115528.GG679@arm.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: Rob Clark <robdclark@gmail.com>, iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org, Sricharan R <sricharan@codeaurora.org>, Jordan Crouse <jcrouse@codeaurora.org>, robh@kernel.org, devicetree@vger.kernel.org
+In-Reply-To: <003601d2672e$91744b40$b45ce1c0$@codeaurora.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 05, 2017 at 11:55:29AM +0000, Will Deacon wrote:
-> On Tue, Jan 03, 2017 at 04:30:54PM -0500, Rob Clark wrote:
-> > TODO maybe we want two options, one to enable stalling, and 2nd to punt
-> > handling to wq?  I haven't needed to use mm APIs from fault handler yet
-> > (although it is something that I think we'll want some day).  Perhaps
-> > stalling support is limited to just letting driver dump some extra
-> > debugging information otherwise.  Threaded handling probably only useful
-> > with stalling, but inverse may not always be true.
+On Thu, Jan 05, 2017 at 02:04:37PM +0530, Sricharan wrote:
+> Hi Robin/Lorenzo,
 > 
-> I'd actually like to see this stuck on a worker thread, because I think
-> that's more generally useful and I don't want to have a situation where
-> sometimes the IOMMU fault notifier is run in IRQ context and sometimes it's
-> not.
+> >Hi Robin,Lorenzo,
+> >
+> >>On Wed, Nov 30, 2016 at 04:42:27PM +0000, Robin Murphy wrote:
+> >>> On 30/11/16 16:17, Lorenzo Pieralisi wrote:
+> >>> > Sricharan, Robin,
+> >>> >
+> >>> > I gave this series a go on ACPI and apart from an SMMU v3 fix-up
+> >>> > it seems to work, more thorough testing required though.
+> >>> >
+> >>> > A key question below.
+> >>> >
+> >>> > On Wed, Nov 30, 2016 at 05:52:16AM +0530, Sricharan R wrote:
+> >>> >> From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> >>> >>
+> >>> >> IOMMU configuration represents unchanging properties of the hardware,
+> >>> >> and as such should only need happen once in a device's lifetime, but
+> >>> >> the necessary interaction with the IOMMU device and driver complicates
+> >>> >> exactly when that point should be.
+> >>> >>
+> >>> >> Since the only reasonable tool available for handling the inter-device
+> >>> >> dependency is probe deferral, we need to prepare of_iommu_configure()
+> >>> >> to run later than it is currently called (i.e. at driver probe rather
+> >>> >> than device creation), to handle being retried, and to tell whether a
+> >>> >> not-yet present IOMMU should be waited for or skipped (by virtue of
+> >>> >> having declared a built-in driver or not).
+> >>> >>
+> >>> >> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> >>> >> ---
+> >>> >>  drivers/iommu/of_iommu.c | 30 +++++++++++++++++++++++++++++-
+> >>> >>  1 file changed, 29 insertions(+), 1 deletion(-)
+> >>> >>
+> >>> >> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> >>> >> index ee49081..349bd1d 100644
+> >>> >> --- a/drivers/iommu/of_iommu.c
+> >>> >> +++ b/drivers/iommu/of_iommu.c
+> >>> >> @@ -104,12 +104,20 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
+> >>> >>  	int err;
+> >>> >>
+> >>> >>  	ops = iommu_get_instance(fwnode);
+> >>> >> -	if (!ops || !ops->of_xlate)
+> >>> >> +	if ((ops && !ops->of_xlate) ||
+> >>> >> +	    (!ops && !of_match_node(&__iommu_of_table, iommu_spec->np)))
+> >>> >
+> >>> > IIUC of_match_node() here is there to check there is a driver compiled
+> >>> > in for this device_node (aka compatible string in OF world), correct ?
+> >>>
+> >>> Yes - specifically, it's checking the magic table for a matching
+> >>> IOMMU_OF_DECLARE entry.
+> >>>
+> >>> > If that's the case (and I think that's what Sricharan was referring to
+> >>> > in his ACPI query) I need to cook-up something on the ACPI side to
+> >>> > emulate the OF linker table behaviour (or anyway to detect a driver is
+> >>> > actually in the kernel), it is not that difficult but it is key to know,
+> >>> > I will give it some thought to make it as clean as possible.
+> >>>
+> >>> I didn't think this would be a concern for ACPI, since IORT works much
+> >>> the same way the current of_iommu_init_fn/of_platform_device_create()
+> >>> bodges in drivers so for DT. If you can only discover SMMUs from IORT,
+> >>> then iort_init_platform_devices() will have already created every SMMU
+> >>> that's going to exist before discovering other devices from wherever
+> >>> they come from, thus you could never get into the situation of probing a
+> >>> device without its SMMU being ready (if it's ever going to be). Is that
+> >>> not right?
+> >>
+> >>It is right, my point and question is: we are probing a device and we
+> >>have to know whether it is worth deferring its IOMMU DMA setup. On DT,
+> >>through of_match_node(&__iommu_of_table, iommu_device_node) we check at
+> >>once that:
+> >>
+> >>1 - A device for the IOMMU exists
+> >>
+> >>AND
+> >>
+> >>2 - A driver for the IOMMU is compiled in the kernel
+> >>
+> >>Is this correct ? As you said (1) is not a concern on ACPI IORT (because
+> >>we create the IOMMU device before _any_ other device so either the IOMMU
+> >>device is there or it will never be by the time master devices are
+> >>probed), but for (2) I need to slightly change how the IORT linker entry
+> >>work to make sure we can detect a driver is actually compiled in the
+> >>kernel, it is easy, I was just asking if my understanding was correct
+> >>and I think that was what Sricharan was referring to in his query.
+> >>
+> >
+> >Yes right, this was what i was looking for in the ACPI case and putting this
+> >in the iort_iommu_xlate was needed to return EPROBE_DEFER when the
+> >driver is not yet been probed.
 > 
-> > 
-> > Signed-off-by: Rob Clark <robdclark@gmail.com>
-> > ---
-> >  .../devicetree/bindings/iommu/arm,smmu.txt         |  3 ++
-> >  drivers/iommu/arm-smmu.c                           | 42 ++++++++++++++++++----
-> >  2 files changed, 39 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> > index ef465b0..5f405a6 100644
-> > --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> > +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> > @@ -68,6 +68,9 @@ conditions.
-> >                    aliases of secure registers have to be used during
-> >                    SMMU configuration.
-> >  
-> > +- arm,smmu-enable-stall : Enable stall mode to stall memory transactions
-> > +                  and resume after fault is handled
+> With the thinking of taking this series through, would it be fine if i
+> cleanup the pci configure hanging outside and push it in to
+> of/acpi_iommu configure respectively ? This time with all neeeded for
+> ACPI added as well.  Also on the last post of V4, Lorenzo commented
+> that it worked for him, although still the of_match_node equivalent in
+> ACPI has to be added. If i can get that, then i will add that as well
+> to make this complete.
 
-The wording here seems to describe a policy rather than a property.
+Question: I had a look into this and instead of fiddling about with the
+linker script entries in ACPI (ie IORT_ACPI_DECLARE - which I hope this
+patchset would help remove entirely), I think that the only check we
+need in IORT is, depending on what type of SMMU a given device is
+connected to, to check if the respective SMMU driver is compiled in the
+kernel and it will be probed, _eventually_.
 
-Can you elaborate on when/why this is required/preferred/valid?
+As Robin said, by the time a device is probed the respective SMMU
+devices are already created and registered with IORT kernel code or
+they will never be, so to understand if we should defer probing
+SMMU device creation is _not_ really a problem in ACPI.
 
-> >  static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
-> > @@ -824,6 +852,8 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
-> >  
-> >  	/* SCTLR */
-> >  	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
-> > +	if (smmu->options & ARM_SMMU_OPT_ENABLE_STALL)
-> > +		reg |= SCTLR_CFCFG;
-> 
-> I wonder if this should also be predicated on the compatible string, so
-> that the "arm,smmu-enable-stall" property is ignored (with a warning) if
-> the compatible string isn't specific enough to identify an implementation
-> with the required SS behaviour? On the other hand, it feels pretty
-> redundant and a single "stalling works" property is all we need.
+To check if a SMMU driver is enabled, do we really need a linker
+table ?
 
-Can you elaborate on what "stalling works" entails? Is that just the SS
-bit behaviour? are there integration or endpoint-specific things that we
-need to care about?
+Would not a check based on eg:
+
+/**
+ * @type: IOMMU IORT node type of the IOMMU a device is connected to
+ */
+static bool iort_iommu_driver_enabled(u8 type)
+{
+	switch (type) {
+	case ACPI_IORT_SMMU_V3:
+		return IS_ENABLED(CONFIG_ARM_SMMU_V3);
+	case ACPI_IORT_SMMU:
+		return IS_ENABLED(CONFIG_ARM_SMMU);
+	default:
+		pr_warn("Unknown IORT SMMU type\n");
+		return false;
+	}
+}
+
+be sufficient (it is a bit gross, agreed, but it is to understand if
+that's all we need) ? Is there anything I am missing ?
+
+Let me know, I will put together a patch for you I really do not
+want to block your series for this trivial niggle.
 
 Thanks,
-Mark.
+Lorenzo
