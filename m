@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v6 17/18] vfio/type1: Check MSI remapping at irq domain level
-Date: Thu,  5 Jan 2017 19:04:45 +0000
-Message-ID: <1483643086-2883-18-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v6 16/18] vfio/type1: Allow transparent MSI IOVA allocation
+Date: Thu,  5 Jan 2017 19:04:44 +0000
+Message-ID: <1483643086-2883-17-git-send-email-eric.auger@redhat.com>
 References: <1483643086-2883-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,56 +21,92 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In case the IOMMU translates MSI transactions (typical case
-on ARM), we check MSI remapping capability at IRQ domain
-level. Otherwise it is checked at IOMMU level.
-
-At this stage the arm-smmu-(v3) still advertise the
-IOMMU_CAP_INTR_REMAP capability at IOMMU level. This will be
-removed in subsequent patches.
+When attaching a group to the container, check the group's
+reserved regions and test whether the IOMMU translates MSI
+transactions. If yes, we initialize an IOVA allocator through
+the iommu_get_msi_cookie API. This will allow the MSI IOVAs
+to be transparently allocated on MSI controller's compose().
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
 
-v6: rewrite test
+v3 -> v4:
+- test region's type: IOMMU_RESV_MSI
+- restructure the code to prepare for safety assessment
+- reword title
 ---
- drivers/vfio/vfio_iommu_type1.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/vfio/vfio_iommu_type1.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
 diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index b473ef80..fa0b5c4 100644
+index f3726ba..b473ef80 100644
 --- a/drivers/vfio/vfio_iommu_type1.c
 +++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -40,6 +40,7 @@
+@@ -39,6 +39,7 @@
+ #include <linux/pid_namespace.h>
  #include <linux/mdev.h>
  #include <linux/notifier.h>
- #include <linux/dma-iommu.h>
-+#include <linux/irqdomain.h>
++#include <linux/dma-iommu.h>
  
  #define DRIVER_VERSION  "0.2"
  #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
-@@ -1208,7 +1209,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+@@ -1177,6 +1178,28 @@ static struct vfio_group *find_iommu_group(struct vfio_domain *domain,
+ 	return NULL;
+ }
+ 
++static bool vfio_iommu_has_resv_msi(struct iommu_group *group,
++				    phys_addr_t *base)
++{
++	struct list_head group_resv_regions;
++	struct iommu_resv_region *region, *next;
++	bool ret = false;
++
++	INIT_LIST_HEAD(&group_resv_regions);
++	iommu_get_group_resv_regions(group, &group_resv_regions);
++	list_for_each_entry(region, &group_resv_regions, list) {
++		if (region->type & IOMMU_RESV_MSI) {
++			*base = region->start;
++			ret = true;
++			goto out;
++		}
++	}
++out:
++	list_for_each_entry_safe(region, next, &group_resv_regions, list)
++		kfree(region);
++	return ret;
++}
++
+ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 					 struct iommu_group *iommu_group)
+ {
+@@ -1185,6 +1208,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
  	struct vfio_domain *domain, *d;
  	struct bus_type *bus = NULL, *mdev_bus;
  	int ret;
--	bool resv_msi;
-+	bool resv_msi, msi_remap;
- 	phys_addr_t resv_msi_base;
++	bool resv_msi;
++	phys_addr_t resv_msi_base;
  
  	mutex_lock(&iommu->lock);
-@@ -1284,8 +1285,10 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 
+@@ -1254,6 +1279,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	if (ret)
+ 		goto out_domain;
+ 
++	resv_msi = vfio_iommu_has_resv_msi(iommu_group, &resv_msi_base);
++
  	INIT_LIST_HEAD(&domain->group_list);
  	list_add(&group->next, &domain->group_list);
  
--	if (!allow_unsafe_interrupts &&
--	    !iommu_capable(bus, IOMMU_CAP_INTR_REMAP)) {
-+	msi_remap = resv_msi ? irq_domain_check_msi_remap() :
-+				iommu_capable(bus, IOMMU_CAP_INTR_REMAP);
+@@ -1300,6 +1327,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	if (ret)
+ 		goto out_detach;
+ 
++	if (resv_msi && iommu_get_msi_cookie(domain->domain, resv_msi_base))
++		goto out_detach;
 +
-+	if (!allow_unsafe_interrupts && !msi_remap) {
- 		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
- 		       __func__);
- 		ret = -EPERM;
+ 	list_add(&domain->next, &iommu->domain_list);
+ 
+ 	mutex_unlock(&iommu->lock);
 -- 
 1.9.1
