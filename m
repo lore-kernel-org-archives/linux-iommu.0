@@ -1,176 +1,136 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Subject: Re: [RFC 1/3] iommu/arm-smmu: Add support to opt-in to stalling
-Date: Thu, 5 Jan 2017 10:27:27 -0500
-Message-ID: <CAF6AEGsUdZALAQTozmxPV8Os=3pG7ay=1Oqtctx99FV9_4SX7Q@mail.gmail.com>
+Date: Thu, 5 Jan 2017 15:32:50 +0000
+Message-ID: <d1a36cc5-265d-6971-f698-29b8d76e7884@arm.com>
 References: <1483479056-15202-1-git-send-email-robdclark@gmail.com>
- <1483479056-15202-2-git-send-email-robdclark@gmail.com> <20170105115528.GG679@arm.com>
+	<1483479056-15202-2-git-send-email-robdclark@gmail.com>
+	<20170105115528.GG679@arm.com> <20170105120857.GB21952@leverpostej>
+	<20170105140005.GJ679@arm.com> <20170105140720.GA25868@leverpostej>
+	<20170105144742.GK679@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <20170105115528.GG679-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170105144742.GK679-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+Cc: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 5, 2017 at 6:55 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Tue, Jan 03, 2017 at 04:30:54PM -0500, Rob Clark wrote:
->> TODO maybe we want two options, one to enable stalling, and 2nd to punt
->> handling to wq?  I haven't needed to use mm APIs from fault handler yet
->> (although it is something that I think we'll want some day).  Perhaps
->> stalling support is limited to just letting driver dump some extra
->> debugging information otherwise.  Threaded handling probably only useful
->> with stalling, but inverse may not always be true.
->
-> I'd actually like to see this stuck on a worker thread, because I think
-> that's more generally useful and I don't want to have a situation where
-> sometimes the IOMMU fault notifier is run in IRQ context and sometimes it's
-> not.
+On 05/01/17 14:47, Will Deacon wrote:
+> On Thu, Jan 05, 2017 at 02:07:31PM +0000, Mark Rutland wrote:
+>> On Thu, Jan 05, 2017 at 02:00:05PM +0000, Will Deacon wrote:
+>>> On Thu, Jan 05, 2017 at 12:08:57PM +0000, Mark Rutland wrote:
+>>>> On Thu, Jan 05, 2017 at 11:55:29AM +0000, Will Deacon wrote:
+>>>>> On Tue, Jan 03, 2017 at 04:30:54PM -0500, Rob Clark wrote:
+>>>>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>>>>>> index ef465b0..5f405a6 100644
+>>>>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>>>>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>>>>>> @@ -68,6 +68,9 @@ conditions.
+>>>>>>                    aliases of secure registers have to be used during
+>>>>>>                    SMMU configuration.
+>>>>>>  
+>>>>>> +- arm,smmu-enable-stall : Enable stall mode to stall memory transactions
+>>>>>> +                  and resume after fault is handled
+>>>>
+>>>> The wording here seems to describe a policy rather than a property.
+>>>>
+>>>> Can you elaborate on when/why this is required/preferred/valid?
+>>>
+>>> It's not a policy, it's a hardware capability. There are some non-probeable
+>>> reasons why stalling mode is unsafe or unusable:
+>>>
+>>>   http://lists.infradead.org/pipermail/linux-arm-kernel/2016-December/474530.html
+>>
+>> Ok. My point was that the wording above is an imperative -- it tells
+>> the kernel to enable stall mode, not if/why it is safe to do so (i.e. it
+>> is a policy, not a property).
+>>
+>> It sounds like that's just a wording issue. Something like
+>> "arm,stalling-is-usable" (along with a descrition of when that
+>> can/should be in the DT) would be vastly better.
+> 
+> Why does it need a vendor prefix? I'm not down on the convention there.
+> "stalling-safe" or "stalling-supported" are alternative strings.
+> 
+>>>>>>  static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+>>>>>> @@ -824,6 +852,8 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>>>>>>  
+>>>>>>  	/* SCTLR */
+>>>>>>  	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
+>>>>>> +	if (smmu->options & ARM_SMMU_OPT_ENABLE_STALL)
+>>>>>> +		reg |= SCTLR_CFCFG;
+>>>>>
+>>>>> I wonder if this should also be predicated on the compatible string, so
+>>>>> that the "arm,smmu-enable-stall" property is ignored (with a warning) if
+>>>>> the compatible string isn't specific enough to identify an implementation
+>>>>> with the required SS behaviour? On the other hand, it feels pretty
+>>>>> redundant and a single "stalling works" property is all we need.
+>>>>
+>>>> Can you elaborate on what "stalling works" entails? Is that just the SS
+>>>> bit behaviour? are there integration or endpoint-specific things that we
+>>>> need to care about?
+>>>
+>>> See above. The "stalling works" property (arm,smmu-enable-stall) would
+>>> indicate that both the implementation *and* the integration are such
+>>> that stalling is usable for demand paging. I suspect there are endpoints
+>>> that can't deal with stalls (e.g. they might timeout and signal a RAS
+>>> event), but in that case their respective device drivers should ensure
+>>> that any DMA buffers are pinned and/or register a fault handler to
+>>> request termination of the faulting transaction.
+>>
+>> Ok. It would be good to elaborate on what "stalling is useable" means in
+>> the property description. i.e. what specificallty the implementation and
+>> integration need to ensure.
+> 
+> We can describe some of those guarantees in the property description, but
+> it's difficult to enumerate them exhaustively. For example, you wouldn't
+> want stalling to lead to data corruption, denial of service, or for the
+> thing to catch fire, but having those as explicit requirements is a bit
+> daft. It's also impossible to check that you thought of everything.
+> 
+> Aside from renaming the option, I'm really after an opinion on whether
+> it's better to have one property or combine it with the compatible
+> string, because I can see benefits of both and don't much care either
+> way.
 
-So I was talking a bit w/ Jordan on IRC yesterday..  and we also have
-the GPU's hw hang-detect to contend with.  So I *suspect* that when we
-get to the point of using this to do things like page in things from
-swap and resume the faulting transaction, we probably want to get
-called immediately from the IRQ handler so we can disable the hw
-hang-detect.
+The SMMU implementation side of the decision (i.e. independence of IRQ
+assertion vs. SS) seems like exactly the sort of stuff the compatible
+string already has covered. The integration side I'm less confident can
+be described this way at all - the "this device definitely won't go
+wrong if stalled for an indefinite length of time" is inherently a
+per-master thing, so a single property on the SMMU implying that for
+every device connected to it seems a bit optimistic, and breaks down as
+soon as you have one device in the system for which that isn't true (a
+PCI root complex, say), even if that guy's traffic never crosses paths
+with whichever few devices you actually care about using stalls with.
 
-I'm not sure if the better solution then would be to have two fault
-callbacks, one immediately from the IRQ and a later one from wq.  Or
-let the driver handle the wq business and give it a way to tell the
-IOMMU when to resume.
+I think this needs to be some kind of "arm,smmu-stall-safe" property
+placed on individual master device nodes (mad idea: or even an extra
+cell of flags in the IOMMU specifier) to encapsulate both that the given
+device itself is OK with being stalled, and that it's integrated in such
+a way that its stalled transactions cannot disrupt any *other* device
+(e.g. it has a TBU all to itself). Then upon initialising a context bank
+on a suitable SMMU implementation, we set CFCFG based on whatever device
+is being attached to the corresponding domain, and refuse any subsequent
+attempts to attach a non-stallable device to a stalling domain (and
+possibly even vice-versa).
 
-I kinda think we should punt on the worker thread for now until we are
-ready to resume faulting transactions, because I guess a strong chance
-that whatever way we do it now will be wrong ;-)
+Robin.
 
->>
->> Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->> ---
->>  .../devicetree/bindings/iommu/arm,smmu.txt         |  3 ++
->>  drivers/iommu/arm-smmu.c                           | 42 ++++++++++++++++++----
->>  2 files changed, 39 insertions(+), 6 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
->> index ef465b0..5f405a6 100644
->> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
->> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
->> @@ -68,6 +68,9 @@ conditions.
->>                    aliases of secure registers have to be used during
->>                    SMMU configuration.
->>
->> +- arm,smmu-enable-stall : Enable stall mode to stall memory transactions
->> +                  and resume after fault is handled
->> +
->>  ** Deprecated properties:
->>
->>  - mmu-masters (deprecated in favour of the generic "iommus" binding) :
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index d505432..a71cb8f 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -350,6 +350,7 @@ struct arm_smmu_device {
->>       u32                             features;
->>
->>  #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
->> +#define ARM_SMMU_OPT_ENABLE_STALL      (1 << 1)
->>       u32                             options;
->>       enum arm_smmu_arch_version      version;
->>       enum arm_smmu_implementation    model;
->> @@ -425,6 +426,7 @@ static bool using_legacy_binding, using_generic_binding;
->>
->>  static struct arm_smmu_option_prop arm_smmu_options[] = {
->>       { ARM_SMMU_OPT_SECURE_CFG_ACCESS, "calxeda,smmu-secure-config-access" },
->> +     { ARM_SMMU_OPT_ENABLE_STALL,      "arm,smmu-enable-stall" },
->>       { 0, NULL},
->>  };
->>
->> @@ -676,7 +678,8 @@ static struct iommu_gather_ops arm_smmu_gather_ops = {
->>
->>  static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->>  {
->> -     u32 fsr, fsynr;
->> +     int flags, ret;
->> +     u32 fsr, fsynr, resume;
->>       unsigned long iova;
->>       struct iommu_domain *domain = dev;
->>       struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->> @@ -690,15 +693,40 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->>       if (!(fsr & FSR_FAULT))
->>               return IRQ_NONE;
->>
->> +     if (fsr & FSR_IGN)
->> +             dev_err_ratelimited(smmu->dev,
->> +                                 "Unexpected context fault (fsr 0x%x)\n",
->> +                                 fsr);
->> +
->>       fsynr = readl_relaxed(cb_base + ARM_SMMU_CB_FSYNR0);
->> -     iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
->> +     flags = fsynr & FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ;
->>
->> -     dev_err_ratelimited(smmu->dev,
->> -     "Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cb=%d\n",
->> -                         fsr, iova, fsynr, cfg->cbndx);
->> +     iova = readq_relaxed(cb_base + ARM_SMMU_CB_FAR);
->> +     if (!report_iommu_fault(domain, smmu->dev, iova, flags)) {
->> +             ret = IRQ_HANDLED;
->> +             resume = RESUME_RETRY;
->> +     } else {
->> +             dev_err_ratelimited(smmu->dev,
->> +                 "Unhandled context fault: iova=0x%08lx, fsynr=0x%x, cb=%d\n",
->> +                 iova, fsynr, cfg->cbndx);
->> +             ret = IRQ_NONE;
->> +             resume = RESUME_TERMINATE;
->> +     }
->>
->> +     /* Clear the faulting FSR */
->>       writel(fsr, cb_base + ARM_SMMU_CB_FSR);
->> -     return IRQ_HANDLED;
->> +
->> +     /* Retry or terminate any stalled transactions */
->> +     if (fsr & FSR_SS) {
->> +             /* Should we care about ending up w/ a stalled transaction
->> +              * when we didn't ask for it?  I guess for now best to call
->> +              * attention to it and resume anyways.
->> +              */
->> +             WARN_ON(!(smmu->options & ARM_SMMU_OPT_ENABLE_STALL));
->
-> I don't think we need to care about this. If we're getting stall faults
-> with CFCFG clear, then something has gone drastically wrong in the hardware
-> and we'll probably see "Unhandled context fault" anyway.
-
-ok, I can drop the WARN_ON()
-
->> +             writel_relaxed(resume, cb_base + ARM_SMMU_CB_RESUME);
->> +     }
->> +
->> +     return ret;
->>  }
->>
->>  static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
->> @@ -824,6 +852,8 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
->>
->>       /* SCTLR */
->>       reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
->> +     if (smmu->options & ARM_SMMU_OPT_ENABLE_STALL)
->> +             reg |= SCTLR_CFCFG;
->
-> I wonder if this should also be predicated on the compatible string, so
-> that the "arm,smmu-enable-stall" property is ignored (with a warning) if
-> the compatible string isn't specific enough to identify an implementation
-> with the required SS behaviour? On the other hand, it feels pretty
-> redundant and a single "stalling works" property is all we need.
-
-We could also drop the property and key the behavior on specific
-compat strings I guess.  Having both seems a bit odd.  Anyways, I'll
-defer to DT folks about what the cleaner approach is.
-
-BR,
--R
-
-> I added the devicetree folks to CC for an opinion..
->
+> 
 > Will
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> _______________________________________________
+> iommu mailing list
+> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
