@@ -1,17 +1,21 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC 1/3] iommu/arm-smmu: Add support to opt-in to stalling
-Date: Thu, 5 Jan 2017 14:47:42 +0000
-Message-ID: <20170105144742.GK679@arm.com>
-References: <1483479056-15202-1-git-send-email-robdclark@gmail.com>
-	<1483479056-15202-2-git-send-email-robdclark@gmail.com>
-	<20170105115528.GG679@arm.com> <20170105120857.GB21952@leverpostej>
-	<20170105140005.GJ679@arm.com> <20170105140720.GA25868@leverpostej>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH 02/10] iommu/of: Prepare for deferred IOMMU configuration
+Date: Thu, 5 Jan 2017 20:21:53 +0530
+Message-ID: <005f01d26763$450f9cc0$cf2ed640$@codeaurora.org>
+References: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
+	<1480465344-11862-3-git-send-email-sricharan@codeaurora.org>
+	<20161130161723.GA9042@red-moon>
+	<c89825aa-c75f-8493-fe92-7cc97f525bc7@arm.com>
+	<20161201112917.GA9680@red-moon>
+	<003601d2672e$91744b40$b45ce1c0$@codeaurora.org>
+	<20170105122714.GA30449@red-moon>
+	<7cd7bcfb-abae-2948-c3f8-230c0d9c9db6@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170105140720.GA25868@leverpostej>
+In-Reply-To: <7cd7bcfb-abae-2948-c3f8-230c0d9c9db6-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,85 +25,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>, 'Lorenzo Pieralisi' <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 05, 2017 at 02:07:31PM +0000, Mark Rutland wrote:
-> On Thu, Jan 05, 2017 at 02:00:05PM +0000, Will Deacon wrote:
-> > On Thu, Jan 05, 2017 at 12:08:57PM +0000, Mark Rutland wrote:
-> > > On Thu, Jan 05, 2017 at 11:55:29AM +0000, Will Deacon wrote:
-> > > > On Tue, Jan 03, 2017 at 04:30:54PM -0500, Rob Clark wrote:
-> > > > > diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> > > > > index ef465b0..5f405a6 100644
-> > > > > --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> > > > > +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> > > > > @@ -68,6 +68,9 @@ conditions.
-> > > > >                    aliases of secure registers have to be used during
-> > > > >                    SMMU configuration.
-> > > > >  
-> > > > > +- arm,smmu-enable-stall : Enable stall mode to stall memory transactions
-> > > > > +                  and resume after fault is handled
-> > > 
-> > > The wording here seems to describe a policy rather than a property.
-> > > 
-> > > Can you elaborate on when/why this is required/preferred/valid?
-> > 
-> > It's not a policy, it's a hardware capability. There are some non-probeable
-> > reasons why stalling mode is unsafe or unusable:
-> > 
-> >   http://lists.infradead.org/pipermail/linux-arm-kernel/2016-December/474530.html
-> 
-> Ok. My point was that the wording above is an imperative -- it tells
-> the kernel to enable stall mode, not if/why it is safe to do so (i.e. it
-> is a policy, not a property).
-> 
-> It sounds like that's just a wording issue. Something like
-> "arm,stalling-is-usable" (along with a descrition of when that
-> can/should be in the DT) would be vastly better.
+Hi,
 
-Why does it need a vendor prefix? I'm not down on the convention there.
-"stalling-safe" or "stalling-supported" are alternative strings.
+[...]
 
-> > > > >  static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
-> > > > > @@ -824,6 +852,8 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
-> > > > >  
-> > > > >  	/* SCTLR */
-> > > > >  	reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE | SCTLR_M;
-> > > > > +	if (smmu->options & ARM_SMMU_OPT_ENABLE_STALL)
-> > > > > +		reg |= SCTLR_CFCFG;
-> > > > 
-> > > > I wonder if this should also be predicated on the compatible string, so
-> > > > that the "arm,smmu-enable-stall" property is ignored (with a warning) if
-> > > > the compatible string isn't specific enough to identify an implementation
-> > > > with the required SS behaviour? On the other hand, it feels pretty
-> > > > redundant and a single "stalling works" property is all we need.
-> > > 
-> > > Can you elaborate on what "stalling works" entails? Is that just the SS
-> > > bit behaviour? are there integration or endpoint-specific things that we
-> > > need to care about?
-> > 
-> > See above. The "stalling works" property (arm,smmu-enable-stall) would
-> > indicate that both the implementation *and* the integration are such
-> > that stalling is usable for demand paging. I suspect there are endpoints
-> > that can't deal with stalls (e.g. they might timeout and signal a RAS
-> > event), but in that case their respective device drivers should ensure
-> > that any DMA buffers are pinned and/or register a fault handler to
-> > request termination of the faulting transaction.
-> 
-> Ok. It would be good to elaborate on what "stalling is useable" means in
-> the property description. i.e. what specificallty the implementation and
-> integration need to ensure.
+>>>
+>>> With the thinking of taking this series through, would it be fine if i
+>>> cleanup the pci configure hanging outside and push it in to
+>>> of/acpi_iommu configure respectively ? This time with all neeeded for
+>>> ACPI added as well.  Also on the last post of V4, Lorenzo commented
+>>> that it worked for him, although still the of_match_node equivalent in
+>>> ACPI has to be added. If i can get that, then i will add that as well
+>>> to make this complete.
+>>
+>> Question: I had a look into this and instead of fiddling about with the
+>> linker script entries in ACPI (ie IORT_ACPI_DECLARE - which I hope this
+>> patchset would help remove entirely), I think that the only check we
+>> need in IORT is, depending on what type of SMMU a given device is
+>> connected to, to check if the respective SMMU driver is compiled in the
+>> kernel and it will be probed, _eventually_.
+>>
+>> As Robin said, by the time a device is probed the respective SMMU
+>> devices are already created and registered with IORT kernel code or
+>> they will never be, so to understand if we should defer probing
+>> SMMU device creation is _not_ really a problem in ACPI.
+>>
+>> To check if a SMMU driver is enabled, do we really need a linker
+>> table ?
+>>
+>> Would not a check based on eg:
+>>
+>> /**
+>>  * @type: IOMMU IORT node type of the IOMMU a device is connected to
+>>  */
+>> static bool iort_iommu_driver_enabled(u8 type)
+>> {
+>> 	switch (type) {
+>> 	case ACPI_IORT_SMMU_V3:
+>> 		return IS_ENABLED(CONFIG_ARM_SMMU_V3);
+>
+>IS_BUILTIN(...)
+>
+>> 	case ACPI_IORT_SMMU:
+>> 		return IS_ENABLED(CONFIG_ARM_SMMU);
+>> 	default:
+>> 		pr_warn("Unknown IORT SMMU type\n");
+>
+>Might displaying the actual value be helfpul for debugging a broken IORT
+>table?
+>
+>> 		return false;
+>> 	}
+>> }
+>>
+>> be sufficient (it is a bit gross, agreed, but it is to understand if
+>> that's all we need) ? Is there anything I am missing ?
+>>
+>> Let me know, I will put together a patch for you I really do not
+>> want to block your series for this trivial niggle.
+>
+>Other than that, though, I like it :) IORT has a small, strictly
+>bounded, set of supported devices, so I really don't see the need to go
+>overboard putting it on parity with DT when something this neat and
+>simple will suffice.
+>
 
-We can describe some of those guarantees in the property description, but
-it's difficult to enumerate them exhaustively. For example, you wouldn't
-want stalling to lead to data corruption, denial of service, or for the
-thing to catch fire, but having those as explicit requirements is a bit
-daft. It's also impossible to check that you thought of everything.
+Ok sure, looks correct for me as well in whole of the context here.
 
-Aside from renaming the option, I'm really after an opinion on whether
-it's better to have one property or combine it with the compatible
-string, because I can see benefits of both and don't much care either
-way.
-
-Will
+Regards,
+ Sricharan
