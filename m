@@ -1,18 +1,17 @@
-From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: RE: [PATCH 02/10] iommu/of: Prepare for deferred IOMMU configuration
-Date: Thu, 5 Jan 2017 14:04:37 +0530
-Message-ID: <003601d2672e$91744b40$b45ce1c0$@codeaurora.org>
-References: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
-	<1480465344-11862-3-git-send-email-sricharan@codeaurora.org>
-	<20161130161723.GA9042@red-moon>
-	<c89825aa-c75f-8493-fe92-7cc97f525bc7@arm.com>
-	<20161201112917.GA9680@red-moon>
+From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v5 13/17] irqdomain: irq_domain_check_msi_remap
+Date: Thu, 5 Jan 2017 11:45:05 +0100
+Message-ID: <92fcb464-3364-c432-29d8-1c2ce4a5f110@redhat.com>
+References: <1483536746-2725-1-git-send-email-eric.auger@redhat.com>
+	<1483536746-2725-14-git-send-email-eric.auger@redhat.com>
+	<ecb7ddf6-074f-50e4-6402-d59ceb1edd1d@arm.com>
+	<df8e7fdb-4048-3169-c758-c2a64119a321@redhat.com>
+	<c9c4c159-60ea-8501-5dc2-17bbb24ddfab@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: 
-Content-Language: en-us
+In-Reply-To: <c9c4c159-60ea-8501-5dc2-17bbb24ddfab-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,106 +21,191 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Lorenzo Pieralisi' <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin/Lorenzo,
+Hi Marc,
 
->Hi Robin,Lorenzo,
->
->>On Wed, Nov 30, 2016 at 04:42:27PM +0000, Robin Murphy wrote:
->>> On 30/11/16 16:17, Lorenzo Pieralisi wrote:
->>> > Sricharan, Robin,
->>> >
->>> > I gave this series a go on ACPI and apart from an SMMU v3 fix-up
->>> > it seems to work, more thorough testing required though.
->>> >
->>> > A key question below.
->>> >
->>> > On Wed, Nov 30, 2016 at 05:52:16AM +0530, Sricharan R wrote:
->>> >> From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->>> >>
->>> >> IOMMU configuration represents unchanging properties of the hardware,
->>> >> and as such should only need happen once in a device's lifetime, but
->>> >> the necessary interaction with the IOMMU device and driver complicates
->>> >> exactly when that point should be.
->>> >>
->>> >> Since the only reasonable tool available for handling the inter-device
->>> >> dependency is probe deferral, we need to prepare of_iommu_configure()
->>> >> to run later than it is currently called (i.e. at driver probe rather
->>> >> than device creation), to handle being retried, and to tell whether a
->>> >> not-yet present IOMMU should be waited for or skipped (by virtue of
->>> >> having declared a built-in driver or not).
->>> >>
->>> >> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->>> >> ---
->>> >>  drivers/iommu/of_iommu.c | 30 +++++++++++++++++++++++++++++-
->>> >>  1 file changed, 29 insertions(+), 1 deletion(-)
->>> >>
->>> >> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->>> >> index ee49081..349bd1d 100644
->>> >> --- a/drivers/iommu/of_iommu.c
->>> >> +++ b/drivers/iommu/of_iommu.c
->>> >> @@ -104,12 +104,20 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
->>> >>  	int err;
->>> >>
->>> >>  	ops = iommu_get_instance(fwnode);
->>> >> -	if (!ops || !ops->of_xlate)
->>> >> +	if ((ops && !ops->of_xlate) ||
->>> >> +	    (!ops && !of_match_node(&__iommu_of_table, iommu_spec->np)))
->>> >
->>> > IIUC of_match_node() here is there to check there is a driver compiled
->>> > in for this device_node (aka compatible string in OF world), correct ?
+On 04/01/2017 16:27, Marc Zyngier wrote:
+> On 04/01/17 14:11, Auger Eric wrote:
+>> Hi Marc,
+>>
+>> On 04/01/2017 14:46, Marc Zyngier wrote:
+>>> Hi Eric,
 >>>
->>> Yes - specifically, it's checking the magic table for a matching
->>> IOMMU_OF_DECLARE entry.
+>>> On 04/01/17 13:32, Eric Auger wrote:
+>>>> This new function checks whether all platform and PCI
+>>>> MSI domains implement IRQ remapping. This is useful to
+>>>> understand whether VFIO passthrough is safe with respect
+>>>> to interrupts.
+>>>>
+>>>> On ARM typically an MSI controller can sit downstream
+>>>> to the IOMMU without preventing VFIO passthrough.
+>>>> As such any assigned device can write into the MSI doorbell.
+>>>> In case the MSI controller implements IRQ remapping, assigned
+>>>> devices will not be able to trigger interrupts towards the
+>>>> host. On the contrary, the assignment must be emphasized as
+>>>> unsafe with respect to interrupts.
+>>>>
+>>>> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>>>>
+>>>> ---
+>>>>
+>>>> v4 -> v5:
+>>>> - Handle DOMAIN_BUS_FSL_MC_MSI domains
+>>>> - Check parents
+>>>> ---
+>>>>  include/linux/irqdomain.h |  1 +
+>>>>  kernel/irq/irqdomain.c    | 41 +++++++++++++++++++++++++++++++++++++++++
+>>>>  2 files changed, 42 insertions(+)
+>>>>
+>>>> diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
+>>>> index ab017b2..281a40f 100644
+>>>> --- a/include/linux/irqdomain.h
+>>>> +++ b/include/linux/irqdomain.h
+>>>> @@ -219,6 +219,7 @@ struct irq_domain *irq_domain_add_legacy(struct device_node *of_node,
+>>>>  					 void *host_data);
+>>>>  extern struct irq_domain *irq_find_matching_fwspec(struct irq_fwspec *fwspec,
+>>>>  						   enum irq_domain_bus_token bus_token);
+>>>> +extern bool irq_domain_check_msi_remap(void);
+>>>>  extern void irq_set_default_host(struct irq_domain *host);
+>>>>  extern int irq_domain_alloc_descs(int virq, unsigned int nr_irqs,
+>>>>  				  irq_hw_number_t hwirq, int node,
+>>>> diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
+>>>> index 8c0a0ae..700caea 100644
+>>>> --- a/kernel/irq/irqdomain.c
+>>>> +++ b/kernel/irq/irqdomain.c
+>>>> @@ -278,6 +278,47 @@ struct irq_domain *irq_find_matching_fwspec(struct irq_fwspec *fwspec,
+>>>>  EXPORT_SYMBOL_GPL(irq_find_matching_fwspec);
+>>>>  
+>>>>  /**
+>>>> + * irq_domain_is_msi_remap - Check if @domain or any parent
+>>>> + * has MSI remapping support
+>>>> + * @domain: domain pointer
+>>>> + */
+>>>> +static bool irq_domain_is_msi_remap(struct irq_domain *domain)
+>>>> +{
+>>>> +	struct irq_domain *h = domain;
+>>>> +
+>>>> +	for (; h; h = h->parent) {
+>>>> +		if (h->flags & IRQ_DOMAIN_FLAG_MSI_REMAP)
+>>>> +			return true;
+>>>> +	}
+>>>> +	return false;
+>>>> +}
+>>>> +
+>>>> +/**
+>>>> + * irq_domain_check_msi_remap() - Checks whether all MSI
+>>>> + * irq domains implement IRQ remapping
+>>>> + */
+>>>> +bool irq_domain_check_msi_remap(void)
+>>>> +{
+>>>> +	struct irq_domain *h;
+>>>> +	bool ret = true;
+>>>> +
+>>>> +	mutex_lock(&irq_domain_mutex);
+>>>> +	list_for_each_entry(h, &irq_domain_list, link) {
+>>>> +		if (((h->bus_token & DOMAIN_BUS_PCI_MSI) ||
+>>>> +		     (h->bus_token & DOMAIN_BUS_PLATFORM_MSI) ||
+>>>> +		     (h->bus_token & DOMAIN_BUS_FSL_MC_MSI)) &&
+>>>> +		     !irq_domain_is_msi_remap(h)) {
 >>>
->>> > If that's the case (and I think that's what Sricharan was referring to
->>> > in his ACPI query) I need to cook-up something on the ACPI side to
->>> > emulate the OF linker table behaviour (or anyway to detect a driver is
->>> > actually in the kernel), it is not that difficult but it is key to know,
->>> > I will give it some thought to make it as clean as possible.
->>>
->>> I didn't think this would be a concern for ACPI, since IORT works much
->>> the same way the current of_iommu_init_fn/of_platform_device_create()
->>> bodges in drivers so for DT. If you can only discover SMMUs from IORT,
->>> then iort_init_platform_devices() will have already created every SMMU
->>> that's going to exist before discovering other devices from wherever
->>> they come from, thus you could never get into the situation of probing a
->>> device without its SMMU being ready (if it's ever going to be). Is that
->>> not right?
+>>> (h->bus_token & DOMAIN_BUS_PCI_MSI) and co looks quite wrong. bus_token
+>>> is not a bitmap, and DOMAIN_BUS_* not a single bit value (see enum
+>>> irq_domain_bus_token). Surely this should read
+>>> (h->bus_token == DOMAIN_BUS_PCI_MSI).
+>> Oh I did not notice that. Thanks.
 >>
->>It is right, my point and question is: we are probing a device and we
->>have to know whether it is worth deferring its IOMMU DMA setup. On DT,
->>through of_match_node(&__iommu_of_table, iommu_device_node) we check at
->>once that:
->>
->>1 - A device for the IOMMU exists
->>
->>AND
->>
->>2 - A driver for the IOMMU is compiled in the kernel
->>
->>Is this correct ? As you said (1) is not a concern on ACPI IORT (because
->>we create the IOMMU device before _any_ other device so either the IOMMU
->>device is there or it will never be by the time master devices are
->>probed), but for (2) I need to slightly change how the IORT linker entry
->>work to make sure we can detect a driver is actually compiled in the
->>kernel, it is easy, I was just asking if my understanding was correct
->>and I think that was what Sricharan was referring to in his query.
->>
->
->Yes right, this was what i was looking for in the ACPI case and putting this
->in the iort_iommu_xlate was needed to return EPROBE_DEFER when the
->driver is not yet been probed.
+>> Any other comments on the irqdomain side? Do you think the current
+>> approach consisting in looking at those bus tokens and their parents
+>> looks good?
+> 
+> To be completely honest, I don't like it much, as having to enumerate
+> all the bus types can come up with could become quite a burden in the
+> long run. I'd rather be able to identify MSI capable domains by
+> construction. I came up with the following approach (fully untested):
+> 
+> diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
+> index 281a40f..7779796 100644
+> --- a/include/linux/irqdomain.h
+> +++ b/include/linux/irqdomain.h
+> @@ -183,8 +183,11 @@ enum {
+>  	/* Irq domain is an IPI domain with single virq */
+>  	IRQ_DOMAIN_FLAG_IPI_SINGLE	= (1 << 3),
+>  
+> +	/* Irq domain implements MSIs */
+> +	IRQ_DOMAIN_FLAG_MSI		= (1 << 4),
+> +
+>  	/* Irq domain is MSI remapping capable */
+> -	IRQ_DOMAIN_FLAG_MSI_REMAP	= (1 << 4),
+> +	IRQ_DOMAIN_FLAG_MSI_REMAP	= (1 << 5),
+>  
+>  	/*
+>  	 * Flags starting from IRQ_DOMAIN_FLAG_NONCORE are reserved
+> @@ -450,6 +453,11 @@ static inline bool irq_domain_is_ipi_single(struct irq_domain *domain)
+>  {
+>  	return domain->flags & IRQ_DOMAIN_FLAG_IPI_SINGLE;
+>  }
+> +
+> +static inline bool irq_domain_is_msi(struct irq_domain *domain)
+> +{
+> +	return domain->flags & IRQ_DOMAIN_FLAG_MSI;
+> +}
+>  #else	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
+>  static inline void irq_domain_activate_irq(struct irq_data *data) { }
+>  static inline void irq_domain_deactivate_irq(struct irq_data *data) { }
+> @@ -481,6 +489,11 @@ static inline bool irq_domain_is_ipi_single(struct irq_domain *domain)
+>  {
+>  	return false;
+>  }
+> +
+> +static inline bool irq_domain_is_msi(struct irq_domain *domain)
+> +{
+> +	return false;
+> +}
+>  #endif	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
+>  
+>  #else /* CONFIG_IRQ_DOMAIN */
+> diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
+> index 700caea..33b6921 100644
+> --- a/kernel/irq/irqdomain.c
+> +++ b/kernel/irq/irqdomain.c
+> @@ -304,10 +304,7 @@ bool irq_domain_check_msi_remap(void)
+>  
+>  	mutex_lock(&irq_domain_mutex);
+>  	list_for_each_entry(h, &irq_domain_list, link) {
+> -		if (((h->bus_token & DOMAIN_BUS_PCI_MSI) ||
+> -		     (h->bus_token & DOMAIN_BUS_PLATFORM_MSI) ||
+> -		     (h->bus_token & DOMAIN_BUS_FSL_MC_MSI)) &&
+> -		     !irq_domain_is_msi_remap(h)) {
+> +		if (irq_domain_is_msi(h) && !irq_domain_is_msi_remap(h)) {
+>  			ret = false;
+>  			goto out;
+>  		}
+> diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+> index ee23006..b637263 100644
+> --- a/kernel/irq/msi.c
+> +++ b/kernel/irq/msi.c
+> @@ -270,7 +270,7 @@ struct irq_domain *msi_create_irq_domain(struct fwnode_handle *fwnode,
+>  	if (info->flags & MSI_FLAG_USE_DEF_CHIP_OPS)
+>  		msi_domain_update_chip_ops(info);
+>  
+> -	return irq_domain_create_hierarchy(parent, 0, 0, fwnode,
+> +	return irq_domain_create_hierarchy(parent, IRQ_DOMAIN_FLAG_MSI, 0, fwnode,
+>  					   &msi_domain_ops, info);
+>  }
+>  
+> 
+> 
+> Thoughts?
 
-With the thinking of taking this series through, would it be fine if i cleanup
-the pci configure hanging outside and push it in to of/acpi_iommu configure
-respectively ? This time with all neeeded for ACPI added as well.
- Also on the last post of V4, Lorenzo commented that it worked for him, although
-still the of_match_node equivalent in ACPI has to be added. If i can get that,
-then i will add that as well to make this complete.
+Don't we need to set the IRQ_DOMAIN_FLAG_MSI flag in
+platform_msi_create_device_domain too (drivers/base/platform-msi.c)?
 
-Regards,
- Sricharan
+Thanks
+
+Eric
+> 
+> 	M.
+> 
