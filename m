@@ -1,7 +1,8 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v6 06/18] iommu: iommu_get_group_resv_regions
-Date: Thu,  5 Jan 2017 19:04:34 +0000
-Message-ID: <1483643086-2883-7-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v6 08/18] iommu/vt-d: Implement reserved region get/put
+	callbacks
+Date: Thu,  5 Jan 2017 19:04:36 +0000
+Message-ID: <1483643086-2883-9-git-send-email-eric.auger@redhat.com>
 References: <1483643086-2883-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,142 +22,92 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce iommu_get_group_resv_regions whose role consists in
-enumerating all devices from the group and collecting their
-reserved regions. The list is sorted and overlaps are checked.
+This patch registers the [FEE0_0000h - FEF0_000h] 1MB MSI range
+as a reserved region. This will allow to report that range
+in the iommu-group sysfs.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
 
-v3 -> v4:
-- take the iommu_group lock in iommu_get_group_resv_regions
-- the list now is sorted and overlaps are checked
+RFCv2 -> RFCv3:
+- use get/put_resv_region callbacks.
 
-NOTE:
-- we do not move list elements from device to group list since
-  the iommu_put_resv_regions() could not be called.
-- at the moment I did not introduce any iommu_put_group_resv_regions
-  since it simply consists in voiding/freeing the list
+RFC v1 -> RFC v2:
+- fix intel_iommu_add_reserved_regions name
+- use IOAPIC_RANGE_START and IOAPIC_RANGE_END defines
+- return if the MSI region is already registered;
 ---
- drivers/iommu/iommu.c | 78 +++++++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/iommu.h |  8 ++++++
- 2 files changed, 86 insertions(+)
+ drivers/iommu/intel-iommu.c | 50 +++++++++++++++++++++++++++++++++------------
+ 1 file changed, 37 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 41c1906..a2d51b3 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -133,6 +133,84 @@ static ssize_t iommu_group_show_name(struct iommu_group *group, char *buf)
- 	return sprintf(buf, "%s\n", group->name);
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index c66c273..4080207 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5184,6 +5184,28 @@ static void intel_iommu_remove_device(struct device *dev)
+ 	iommu_device_unlink(iommu->iommu_dev, dev);
  }
  
-+static int iommu_insert_resv_region(struct iommu_resv_region *new,
-+				    struct list_head *regions)
++static void intel_iommu_get_resv_regions(struct device *device,
++					 struct list_head *head)
 +{
-+	struct iommu_resv_region *region;
-+	phys_addr_t start = new->start;
-+	phys_addr_t end = new->start + new->length - 1;
-+	struct list_head *pos = regions->next;
++	struct iommu_resv_region *reg;
 +
-+	while (pos != regions) {
-+		struct iommu_resv_region *entry =
-+			list_entry(pos, struct iommu_resv_region, list);
-+		phys_addr_t a = entry->start;
-+		phys_addr_t b = entry->start + entry->length - 1;
-+
-+		if (end < a) {
-+			goto insert;
-+		} else if (start > b) {
-+			pos = pos->next;
-+		} else if ((start >= a) && (end <= b)) {
-+			goto done;
-+		} else {
-+			phys_addr_t new_start = min(a, start);
-+			phys_addr_t new_end = max(b, end);
-+
-+			list_del(&entry->list);
-+			entry->start = new_start;
-+			entry->length = new_end - new_start + 1;
-+			iommu_insert_resv_region(entry, regions);
-+		}
-+	}
-+insert:
-+	region = iommu_alloc_resv_region(new->start, new->length,
-+					 new->prot, new->type);
-+	if (!region)
-+		return -ENOMEM;
-+
-+	list_add_tail(&region->list, pos);
-+done:
-+	return 0;
++	reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
++				      IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
++				      0, IOMMU_RESV_NOMAP);
++	if (!reg)
++		return;
++	list_add_tail(&reg->list, head);
 +}
 +
-+static int
-+iommu_insert_device_resv_regions(struct list_head *dev_resv_regions,
-+				 struct list_head *group_resv_regions)
++static void intel_iommu_put_resv_regions(struct device *dev,
++					 struct list_head *head)
 +{
-+	struct iommu_resv_region *entry;
-+	int ret;
++	struct iommu_resv_region *entry, *next;
 +
-+	list_for_each_entry(entry, dev_resv_regions, list) {
-+		ret = iommu_insert_resv_region(entry, group_resv_regions);
-+		if (ret)
-+			break;
-+	}
-+	return ret;
++	list_for_each_entry_safe(entry, next, head, list)
++		kfree(entry);
 +}
 +
-+int iommu_get_group_resv_regions(struct iommu_group *group,
-+				 struct list_head *head)
-+{
-+	struct iommu_device *device;
-+	int ret = 0;
-+
-+	mutex_lock(&group->mutex);
-+	list_for_each_entry(device, &group->devices, list) {
-+		struct list_head dev_resv_regions;
-+
-+		INIT_LIST_HEAD(&dev_resv_regions);
-+		iommu_get_resv_regions(device->dev, &dev_resv_regions);
-+		ret = iommu_insert_device_resv_regions(&dev_resv_regions, head);
-+		iommu_put_resv_regions(device->dev, &dev_resv_regions);
-+		if (ret)
-+			break;
-+	}
-+	mutex_unlock(&group->mutex);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_get_group_resv_regions);
-+
- static IOMMU_GROUP_ATTR(name, S_IRUGO, iommu_group_show_name, NULL);
- 
- static void iommu_group_release(struct kobject *kobj)
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index e97a877..b5f8492 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -246,6 +246,8 @@ extern void iommu_set_fault_handler(struct iommu_domain *domain,
- extern int iommu_request_dm_for_dev(struct device *dev);
- extern struct iommu_resv_region *
- iommu_alloc_resv_region(phys_addr_t start, size_t length, int prot, int type);
-+extern int iommu_get_group_resv_regions(struct iommu_group *group,
-+					struct list_head *head);
- 
- extern int iommu_attach_group(struct iommu_domain *domain,
- 			      struct iommu_group *group);
-@@ -463,6 +465,12 @@ static inline void iommu_put_resv_regions(struct device *dev,
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct intel_svm_dev *sdev)
  {
- }
+@@ -5293,19 +5315,21 @@ struct intel_iommu *intel_svm_device_to_iommu(struct device *dev)
+ #endif /* CONFIG_INTEL_IOMMU_SVM */
  
-+static inline int iommu_get_group_resv_regions(struct iommu_group *group,
-+					       struct list_head *head)
-+{
-+	return -ENODEV;
-+}
-+
- static inline int iommu_request_dm_for_dev(struct device *dev)
- {
- 	return -ENODEV;
+ static const struct iommu_ops intel_iommu_ops = {
+-	.capable	= intel_iommu_capable,
+-	.domain_alloc	= intel_iommu_domain_alloc,
+-	.domain_free	= intel_iommu_domain_free,
+-	.attach_dev	= intel_iommu_attach_device,
+-	.detach_dev	= intel_iommu_detach_device,
+-	.map		= intel_iommu_map,
+-	.unmap		= intel_iommu_unmap,
+-	.map_sg		= default_iommu_map_sg,
+-	.iova_to_phys	= intel_iommu_iova_to_phys,
+-	.add_device	= intel_iommu_add_device,
+-	.remove_device	= intel_iommu_remove_device,
+-	.device_group   = pci_device_group,
+-	.pgsize_bitmap	= INTEL_IOMMU_PGSIZES,
++	.capable		= intel_iommu_capable,
++	.domain_alloc		= intel_iommu_domain_alloc,
++	.domain_free		= intel_iommu_domain_free,
++	.attach_dev		= intel_iommu_attach_device,
++	.detach_dev		= intel_iommu_detach_device,
++	.map			= intel_iommu_map,
++	.unmap			= intel_iommu_unmap,
++	.map_sg			= default_iommu_map_sg,
++	.iova_to_phys		= intel_iommu_iova_to_phys,
++	.add_device		= intel_iommu_add_device,
++	.remove_device		= intel_iommu_remove_device,
++	.get_resv_regions	= intel_iommu_get_resv_regions,
++	.put_resv_regions	= intel_iommu_put_resv_regions,
++	.device_group		= pci_device_group,
++	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
+ };
+ 
+ static void quirk_iommu_g4x_gfx(struct pci_dev *dev)
 -- 
 1.9.1
