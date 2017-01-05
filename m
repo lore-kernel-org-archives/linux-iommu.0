@@ -1,7 +1,8 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v6 14/18] irqdomain: irq_domain_check_msi_remap
-Date: Thu,  5 Jan 2017 19:04:42 +0000
-Message-ID: <1483643086-2883-15-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v6 18/18] iommu/arm-smmu: Do not advertise
+	IOMMU_CAP_INTR_REMAP anymore
+Date: Thu,  5 Jan 2017 19:04:46 +0000
+Message-ID: <1483643086-2883-19-git-send-email-eric.auger@redhat.com>
 References: <1483643086-2883-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,78 +22,44 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This new function checks whether all MSI irq domains
-implement IRQ remapping. This is useful to understand
-whether VFIO passthrough is safe with respect to interrupts.
+IOMMU_CAP_INTR_REMAP has been advertised in arm-smmu(-v3) although
+on ARM this property is not attached to the IOMMU but rather is
+implemented in the MSI controller (GICv3 ITS).
 
-On ARM typically an MSI controller can sit downstream
-to the IOMMU without preventing VFIO passthrough.
-As such any assigned device can write into the MSI doorbell.
-In case the MSI controller implements IRQ remapping, assigned
-devices will not be able to trigger interrupts towards the
-host. On the contrary, the assignment must be emphasized as
-unsafe with respect to interrupts.
+Now vfio_iommu_type1 checks MSI remapping capability at MSI controller
+level, let's correct this.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
 ---
-v5 -> v6:
-- use irq_domain_hierarchical_is_msi_remap()
-- comment rewording
+ drivers/iommu/arm-smmu-v3.c | 2 --
+ drivers/iommu/arm-smmu.c    | 2 --
+ 2 files changed, 4 deletions(-)
 
-v4 -> v5:
-- Handle DOMAIN_BUS_FSL_MC_MSI domains
-- Check parents
----
- include/linux/irqdomain.h |  1 +
- kernel/irq/irqdomain.c    | 23 +++++++++++++++++++++++
- 2 files changed, 24 insertions(+)
-
-diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
-index bc2f571..188eced 100644
---- a/include/linux/irqdomain.h
-+++ b/include/linux/irqdomain.h
-@@ -222,6 +222,7 @@ struct irq_domain *irq_domain_add_legacy(struct device_node *of_node,
- 					 void *host_data);
- extern struct irq_domain *irq_find_matching_fwspec(struct irq_fwspec *fwspec,
- 						   enum irq_domain_bus_token bus_token);
-+extern bool irq_domain_check_msi_remap(void);
- extern void irq_set_default_host(struct irq_domain *host);
- extern int irq_domain_alloc_descs(int virq, unsigned int nr_irqs,
- 				  irq_hw_number_t hwirq, int node,
-diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
-index 6a946c4..f3fbd85d 100644
---- a/kernel/irq/irqdomain.c
-+++ b/kernel/irq/irqdomain.c
-@@ -278,6 +278,29 @@ struct irq_domain *irq_find_matching_fwspec(struct irq_fwspec *fwspec,
- EXPORT_SYMBOL_GPL(irq_find_matching_fwspec);
- 
- /**
-+ * irq_domain_check_msi_remap - Check whether all MSI
-+ * irq domains implement IRQ remapping
-+ */
-+bool irq_domain_check_msi_remap(void)
-+{
-+	struct irq_domain *h;
-+	bool ret = true;
-+
-+	mutex_lock(&irq_domain_mutex);
-+	list_for_each_entry(h, &irq_domain_list, link) {
-+		if (irq_domain_is_msi(h) &&
-+		    !irq_domain_hierarchical_is_msi_remap(h)) {
-+			ret = false;
-+			goto out;
-+		}
-+	}
-+out:
-+	mutex_unlock(&irq_domain_mutex);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(irq_domain_check_msi_remap);
-+
-+/**
-  * irq_set_default_host() - Set a "default" irq domain
-  * @domain: default domain pointer
-  *
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 6c4111c..d9cf6cb 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1375,8 +1375,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 	switch (cap) {
+ 	case IOMMU_CAP_CACHE_COHERENCY:
+ 		return true;
+-	case IOMMU_CAP_INTR_REMAP:
+-		return true; /* MSIs are just memory writes */
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index a354572..13d2600 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1374,8 +1374,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 		 * requests.
+ 		 */
+ 		return true;
+-	case IOMMU_CAP_INTR_REMAP:
+-		return true; /* MSIs are just memory writes */
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
 -- 
 1.9.1
