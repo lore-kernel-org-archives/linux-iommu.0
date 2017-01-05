@@ -1,8 +1,8 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v6 07/18] iommu: Implement reserved_regions iommu-group sysfs
-	file
-Date: Thu,  5 Jan 2017 19:04:35 +0000
-Message-ID: <1483643086-2883-8-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v6 09/18] iommu/amd: Declare MSI and HT regions as reserved
+	IOVA regions
+Date: Thu,  5 Jan 2017 19:04:37 +0000
+Message-ID: <1483643086-2883-10-git-send-email-eric.auger@redhat.com>
 References: <1483643086-2883-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,86 +22,85 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-A new iommu-group sysfs attribute file is introduced. It contains
-the list of reserved regions for the iommu-group. Each reserved
-region is described on a separate line:
-- first field is the start IOVA address,
-- second is the end IOVA address,
+This patch registers the MSI and HT regions as non mappable
+reserved regions. They will be exposed in the iommu-group sysfs.
+
+For direct-mapped regions let's also use iommu_alloc_resv_region().
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
 
-v3 -> v4:
-- add cast to long long int when printing to avoid warning on
-  i386
-- change S_IRUGO into 0444
-- remove sort. The list is natively sorted now.
-
-The file layout is inspired of /sys/bus/pci/devices/BDF/resource.
-I also read Documentation/filesystems/sysfs.txt so I expect this
-to be frowned upon.
+v5: creation
 ---
- drivers/iommu/iommu.c | 31 +++++++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ drivers/iommu/amd_iommu.c | 37 ++++++++++++++++++++++++++-----------
+ 1 file changed, 26 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index a2d51b3..15756d8 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -211,8 +211,32 @@ int iommu_get_group_resv_regions(struct iommu_group *group,
- }
- EXPORT_SYMBOL_GPL(iommu_get_group_resv_regions);
- 
-+static ssize_t iommu_group_show_resv_regions(struct iommu_group *group,
-+					     char *buf)
-+{
-+	struct iommu_resv_region *region, *next;
-+	struct list_head group_resv_regions;
-+	char *str = buf;
-+
-+	INIT_LIST_HEAD(&group_resv_regions);
-+	iommu_get_group_resv_regions(group, &group_resv_regions);
-+
-+	list_for_each_entry_safe(region, next, &group_resv_regions, list) {
-+		str += sprintf(str, "0x%016llx 0x%016llx\n",
-+			       (long long int)region->start,
-+			       (long long int)(region->start +
-+						region->length - 1));
-+		kfree(region);
-+	}
-+
-+	return (str - buf);
-+}
-+
- static IOMMU_GROUP_ATTR(name, S_IRUGO, iommu_group_show_name, NULL);
- 
-+static IOMMU_GROUP_ATTR(reserved_regions, 0444,
-+			iommu_group_show_resv_regions, NULL);
-+
- static void iommu_group_release(struct kobject *kobj)
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index c6c3f1e..24c752d 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3164,6 +3164,7 @@ static bool amd_iommu_capable(enum iommu_cap cap)
+ static void amd_iommu_get_resv_regions(struct device *dev,
+ 				       struct list_head *head)
  {
- 	struct iommu_group *group = to_iommu_group(kobj);
-@@ -227,6 +251,8 @@ static void iommu_group_release(struct kobject *kobj)
- 	if (group->default_domain)
- 		iommu_domain_free(group->default_domain);
++	struct iommu_resv_region *region;
+ 	struct unity_map_entry *entry;
+ 	int devid;
  
-+	iommu_group_remove_file(group, &iommu_group_attr_reserved_regions);
+@@ -3172,28 +3173,42 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+ 		return;
+ 
+ 	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
+-		struct iommu_resv_region *region;
++		size_t length;
++		int prot = 0;
+ 
+ 		if (devid < entry->devid_start || devid > entry->devid_end)
+ 			continue;
+ 
+-		region = kzalloc(sizeof(*region), GFP_KERNEL);
++		length = entry->address_end - entry->address_start;
++		if (entry->prot & IOMMU_PROT_IR)
++			prot |= IOMMU_READ;
++		if (entry->prot & IOMMU_PROT_IW)
++			prot |= IOMMU_WRITE;
 +
- 	kfree(group->name);
- 	kfree(group);
++		region = iommu_alloc_resv_region(entry->address_start,
++						 length, prot,
++						 IOMMU_RESV_DIRECT);
+ 		if (!region) {
+ 			pr_err("Out of memory allocating dm-regions for %s\n",
+ 				dev_name(dev));
+ 			return;
+ 		}
+-
+-		region->start = entry->address_start;
+-		region->length = entry->address_end - entry->address_start;
+-		region->type = IOMMU_RESV_DIRECT;
+-		if (entry->prot & IOMMU_PROT_IR)
+-			region->prot |= IOMMU_READ;
+-		if (entry->prot & IOMMU_PROT_IW)
+-			region->prot |= IOMMU_WRITE;
+-
+ 		list_add_tail(&region->list, head);
+ 	}
++
++	region = iommu_alloc_resv_region(MSI_RANGE_START,
++					 MSI_RANGE_END - MSI_RANGE_START + 1,
++					 0, IOMMU_RESV_NOMAP);
++	if (!region)
++		return;
++	list_add_tail(&region->list, head);
++
++	region = iommu_alloc_resv_region(HT_RANGE_START,
++					 HT_RANGE_END - HT_RANGE_START + 1,
++					 0, IOMMU_RESV_NOMAP);
++	if (!region)
++		return;
++	list_add_tail(&region->list, head);
  }
-@@ -290,6 +316,11 @@ struct iommu_group *iommu_group_alloc(void)
- 	 */
- 	kobject_put(&group->kobj);
  
-+	ret = iommu_group_create_file(group,
-+				      &iommu_group_attr_reserved_regions);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
- 	pr_debug("Allocated group %d\n", group->id);
- 
- 	return group;
+ static void amd_iommu_put_resv_regions(struct device *dev,
 -- 
 1.9.1
