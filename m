@@ -1,13 +1,10 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V9 9/9] Revert "iommu/arm-smmu: Set PRIVCFG in stage 1 STEs"
-Date: Fri,  6 Jan 2017 18:58:16 +0530
-Message-ID: <1483709296-32761-10-git-send-email-sricharan@codeaurora.org>
-References: <1483709296-32761-1-git-send-email-sricharan@codeaurora.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.10-rc2
+Date: Fri, 6 Jan 2017 16:02:15 +0100
+Message-ID: <20170106150209.GA29909@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============2497852214782882652=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1483709296-32761-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,46 +14,99 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, pdaly-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pratikp-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, tzeng-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-This reverts commit df5e1a0f2a2d779ad467a691203bcbc74d75690e.
+--===============2497852214782882652==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gBBFr7Ir9EOA20Yy"
+Content-Disposition: inline
 
-Now that proper privileged mappings can be requested via IOMMU_PRIV,
-unconditionally overriding the incoming PRIVCFG becomes the wrong thing
-to do, so stop it.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+--gBBFr7Ir9EOA20Yy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4d6ec44..7d45d8b 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -269,9 +269,6 @@
- #define STRTAB_STE_1_SHCFG_INCOMING	1UL
- #define STRTAB_STE_1_SHCFG_SHIFT	44
- 
--#define STRTAB_STE_1_PRIVCFG_UNPRIV	2UL
--#define STRTAB_STE_1_PRIVCFG_SHIFT	48
--
- #define STRTAB_STE_2_S2VMID_SHIFT	0
- #define STRTAB_STE_2_S2VMID_MASK	0xffffUL
- #define STRTAB_STE_2_VTCR_SHIFT		32
-@@ -1073,9 +1070,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
- #ifdef CONFIG_PCI_ATS
- 			 STRTAB_STE_1_EATS_TRANS << STRTAB_STE_1_EATS_SHIFT |
- #endif
--			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT |
--			 STRTAB_STE_1_PRIVCFG_UNPRIV <<
--			 STRTAB_STE_1_PRIVCFG_SHIFT);
-+			 STRTAB_STE_1_STRW_NSEL1 << STRTAB_STE_1_STRW_SHIFT);
- 
- 		if (smmu->features & ARM_SMMU_FEAT_STALLS)
- 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+Hi Linus,
+
+The following changes since commit 0c744ea4f77d72b3dcebb7a8f2684633ec79be88:
+
+  Linux 4.10-rc2 (2017-01-01 14:31:53 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.10-rc2
+
+for you to fetch changes up to 432abf68a79332282329286d190e21fe3ac02a31:
+
+  iommu/amd: Fix the left value check of cmd buffer (2017-01-04 15:22:22 +0100)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v4.10-rc2
+
+Three fixes queued up:
+
+	* Fix an issue with command buffer overflow handling in the AMD
+	  IOMMU driver
+
+	* Add an additional context entry flush to the Intel VT-d driver
+	  to make sure any old context entry from kdump copying is
+	  flushed out of the cache
+
+	* Correct the encoding of the PASID table size in the Intel VT-d
+	  driver
+
+----------------------------------------------------------------
+Huang Rui (1):
+      iommu/amd: Fix the left value check of cmd buffer
+
+Jacob Pan (1):
+      iommu/vt-d: Fix pasid table size encoding
+
+Xunlei Pang (1):
+      iommu/vt-d: Flush old iommu caches for kdump when the device gets context mapped
+
+ drivers/iommu/amd_iommu.c   |  2 +-
+ drivers/iommu/intel-iommu.c | 42 +++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 42 insertions(+), 2 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--gBBFr7Ir9EOA20Yy
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJYb7FxAAoJECvwRC2XARrjdg0P/i6So7BsACaqoUnPSIx4HxG1
+1YaGviu5ko516apfzmLLiSUW8/lkgwOEcfbMOEbkH6ivfM58MfsCmz65CC937qzC
+ERL/GqG6n++br9AKYMiUSH/2K+YQ2cwIExVB6TAHRcf9C6eZSk6q+S40213y/H/g
+Vtue4LhYrdwNczW1M1UapxDGciLhlAcDN7XCb3vuoYQI70YUZzpOTtr8/deWc65R
+/QrNQshGTCFnOxIvkKeVtqMmKnyz+74P0Y3LzcXxlOtJsAi9aSU+si+GeCrWzm4H
+IXZfjo2EDG3QTHHf8m6MGhj0uYIQg5V5OpaPWi0XcMeRSsjYTI5Klwe8f6oUdI3H
+4E0eW/vt/9ybj537dyTgGkP17wz4hbOAsTr4SkAs+Wi0F3H5de5ZNJroswpAxGS0
+BQT4q/Gk/ue9WCzkwcK60dFd6iVDTWek0H7H9SI38fAWtYYPmcvJddoi21CTIb3z
+BOewo14igM7vnnNXTsJ536xKhKWQrmjmfc3/+oYqSVU12lAmkPKcbgXEJpQ1mZtC
+PFRuHO/u1o/mKCjQv4GpFqKU0Yoc4Ve+Kzg0xgb4A31AQuHA5Zo0+jL4LspnXJGJ
+4nqkVXikRin14e205+bnz83EKfrNzfixrIU0DJ+OKP409VOih95NNmYFs8j5NKh+
+Rkxu9ykLmhtZmyputB7/
+=Mk7l
+-----END PGP SIGNATURE-----
+
+--gBBFr7Ir9EOA20Yy--
+
+--===============2497852214782882652==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============2497852214782882652==--
