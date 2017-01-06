@@ -1,10 +1,22 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Fixes for Linux v4.10-rc2
-Date: Fri, 6 Jan 2017 16:02:15 +0100
-Message-ID: <20170106150209.GA29909@8bytes.org>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 02/10] iommu/of: Prepare for deferred IOMMU configuration
+Date: Fri, 6 Jan 2017 16:24:00 +0000
+Message-ID: <20170106162400.GA8109@red-moon>
+References: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
+	<1480465344-11862-3-git-send-email-sricharan@codeaurora.org>
+	<20161130161723.GA9042@red-moon>
+	<c89825aa-c75f-8493-fe92-7cc97f525bc7@arm.com>
+	<20161201112917.GA9680@red-moon>
+	<003601d2672e$91744b40$b45ce1c0$@codeaurora.org>
+	<20170105122714.GA30449@red-moon>
+	<7cd7bcfb-abae-2948-c3f8-230c0d9c9db6@arm.com>
+	<005f01d26763$450f9cc0$cf2ed640$@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============2497852214782882652=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <005f01d26763$450f9cc0$cf2ed640$@codeaurora.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -14,99 +26,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On Thu, Jan 05, 2017 at 08:21:53PM +0530, Sricharan wrote:
+> Hi,
+> 
+> [...]
+> 
+> >>>
+> >>> With the thinking of taking this series through, would it be fine if i
+> >>> cleanup the pci configure hanging outside and push it in to
+> >>> of/acpi_iommu configure respectively ? This time with all neeeded for
+> >>> ACPI added as well.  Also on the last post of V4, Lorenzo commented
+> >>> that it worked for him, although still the of_match_node equivalent in
+> >>> ACPI has to be added. If i can get that, then i will add that as well
+> >>> to make this complete.
+> >>
+> >> Question: I had a look into this and instead of fiddling about with the
+> >> linker script entries in ACPI (ie IORT_ACPI_DECLARE - which I hope this
+> >> patchset would help remove entirely), I think that the only check we
+> >> need in IORT is, depending on what type of SMMU a given device is
+> >> connected to, to check if the respective SMMU driver is compiled in the
+> >> kernel and it will be probed, _eventually_.
+> >>
+> >> As Robin said, by the time a device is probed the respective SMMU
+> >> devices are already created and registered with IORT kernel code or
+> >> they will never be, so to understand if we should defer probing
+> >> SMMU device creation is _not_ really a problem in ACPI.
+> >>
+> >> To check if a SMMU driver is enabled, do we really need a linker
+> >> table ?
+> >>
+> >> Would not a check based on eg:
+> >>
+> >> /**
+> >>  * @type: IOMMU IORT node type of the IOMMU a device is connected to
+> >>  */
+> >> static bool iort_iommu_driver_enabled(u8 type)
+> >> {
+> >> 	switch (type) {
+> >> 	case ACPI_IORT_SMMU_V3:
+> >> 		return IS_ENABLED(CONFIG_ARM_SMMU_V3);
+> >
+> >IS_BUILTIN(...)
+> >
+> >> 	case ACPI_IORT_SMMU:
+> >> 		return IS_ENABLED(CONFIG_ARM_SMMU);
+> >> 	default:
+> >> 		pr_warn("Unknown IORT SMMU type\n");
+> >
+> >Might displaying the actual value be helfpul for debugging a broken IORT
+> >table?
+> >
+> >> 		return false;
+> >> 	}
+> >> }
+> >>
+> >> be sufficient (it is a bit gross, agreed, but it is to understand if
+> >> that's all we need) ? Is there anything I am missing ?
+> >>
+> >> Let me know, I will put together a patch for you I really do not
+> >> want to block your series for this trivial niggle.
+> >
+> >Other than that, though, I like it :) IORT has a small, strictly
+> >bounded, set of supported devices, so I really don't see the need to go
+> >overboard putting it on parity with DT when something this neat and
+> >simple will suffice.
+> >
+> 
+> Ok sure, looks correct for me as well in whole of the context here.
 
---===============2497852214782882652==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="gBBFr7Ir9EOA20Yy"
-Content-Disposition: inline
+Ok, I put together a branch where you can find your original series
+plus some ACPI patches for you to test and use:
 
+git://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git iommu/probe-deferral
 
---gBBFr7Ir9EOA20Yy
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Feel free to post the additional patches I added along with your series
+(that from what I gather you have reworked already) and please both have a
+look if the deferral mechanism I put in place in ACPI makes sense to you.
 
-Hi Linus,
+Please CC linux-acpi upon posting, if you need help shout.
 
-The following changes since commit 0c744ea4f77d72b3dcebb7a8f2684633ec79be88:
-
-  Linux 4.10-rc2 (2017-01-01 14:31:53 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v4.10-rc2
-
-for you to fetch changes up to 432abf68a79332282329286d190e21fe3ac02a31:
-
-  iommu/amd: Fix the left value check of cmd buffer (2017-01-04 15:22:22 +0100)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v4.10-rc2
-
-Three fixes queued up:
-
-	* Fix an issue with command buffer overflow handling in the AMD
-	  IOMMU driver
-
-	* Add an additional context entry flush to the Intel VT-d driver
-	  to make sure any old context entry from kdump copying is
-	  flushed out of the cache
-
-	* Correct the encoding of the PASID table size in the Intel VT-d
-	  driver
-
-----------------------------------------------------------------
-Huang Rui (1):
-      iommu/amd: Fix the left value check of cmd buffer
-
-Jacob Pan (1):
-      iommu/vt-d: Fix pasid table size encoding
-
-Xunlei Pang (1):
-      iommu/vt-d: Flush old iommu caches for kdump when the device gets context mapped
-
- drivers/iommu/amd_iommu.c   |  2 +-
- drivers/iommu/intel-iommu.c | 42 +++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 42 insertions(+), 2 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---gBBFr7Ir9EOA20Yy
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJYb7FxAAoJECvwRC2XARrjdg0P/i6So7BsACaqoUnPSIx4HxG1
-1YaGviu5ko516apfzmLLiSUW8/lkgwOEcfbMOEbkH6ivfM58MfsCmz65CC937qzC
-ERL/GqG6n++br9AKYMiUSH/2K+YQ2cwIExVB6TAHRcf9C6eZSk6q+S40213y/H/g
-Vtue4LhYrdwNczW1M1UapxDGciLhlAcDN7XCb3vuoYQI70YUZzpOTtr8/deWc65R
-/QrNQshGTCFnOxIvkKeVtqMmKnyz+74P0Y3LzcXxlOtJsAi9aSU+si+GeCrWzm4H
-IXZfjo2EDG3QTHHf8m6MGhj0uYIQg5V5OpaPWi0XcMeRSsjYTI5Klwe8f6oUdI3H
-4E0eW/vt/9ybj537dyTgGkP17wz4hbOAsTr4SkAs+Wi0F3H5de5ZNJroswpAxGS0
-BQT4q/Gk/ue9WCzkwcK60dFd6iVDTWek0H7H9SI38fAWtYYPmcvJddoi21CTIb3z
-BOewo14igM7vnnNXTsJ536xKhKWQrmjmfc3/+oYqSVU12lAmkPKcbgXEJpQ1mZtC
-PFRuHO/u1o/mKCjQv4GpFqKU0Yoc4Ve+Kzg0xgb4A31AQuHA5Zo0+jL4LspnXJGJ
-4nqkVXikRin14e205+bnz83EKfrNzfixrIU0DJ+OKP409VOih95NNmYFs8j5NKh+
-Rkxu9ykLmhtZmyputB7/
-=Mk7l
------END PGP SIGNATURE-----
-
---gBBFr7Ir9EOA20Yy--
-
---===============2497852214782882652==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============2497852214782882652==--
+Lorenzo
