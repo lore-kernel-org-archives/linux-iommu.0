@@ -1,107 +1,59 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+From: Rob Clark <robdclark@gmail.com>
 Subject: Re: [RFC 1/3] iommu/arm-smmu: Add support to opt-in to stalling
-Date: Fri, 6 Jan 2017 11:26:49 -0500
-Message-ID: <CAF6AEGuUidGEONzh92SYg9V2gE812oq_0CoZt-Zv7=bzb3FN3A@mail.gmail.com>
+Date: Fri, 6 Jan 2017 11:36:28 -0500
+Message-ID: <CAF6AEGupLYDjBOYptRevM8WqwHDv1Pxcs1G23mj0QpwZU=0nTQ@mail.gmail.com>
 References: <1483479056-15202-1-git-send-email-robdclark@gmail.com>
-	<1483479056-15202-2-git-send-email-robdclark@gmail.com>
-	<20170105115528.GG679@arm.com>
-	<CAF6AEGsUdZALAQTozmxPV8Os=3pG7ay=1Oqtctx99FV9_4SX7Q@mail.gmail.com>
-	<20170105154950.GM679@arm.com>
+ <1483479056-15202-2-git-send-email-robdclark@gmail.com> <20170105115528.GG679@arm.com>
+ <20170105120857.GB21952@leverpostej> <20170105140005.GJ679@arm.com>
+ <20170105140720.GA25868@leverpostej> <20170105144742.GK679@arm.com>
+ <d1a36cc5-265d-6971-f698-29b8d76e7884@arm.com> <20170105160755.GN679@arm.com>
+ <611575f4-3e37-1f4d-ef29-94e6f65baf66@arm.com> <20170105172557.GS679@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170105154950.GM679-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20170105172557.GS679@arm.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Mark Rutland <mark.rutland@arm.com>, Rob Herring <robh@kernel.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Jordan Crouse <jcrouse@codeaurora.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 5, 2017 at 10:49 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Thu, Jan 05, 2017 at 10:27:27AM -0500, Rob Clark wrote:
->> On Thu, Jan 5, 2017 at 6:55 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
->> > On Tue, Jan 03, 2017 at 04:30:54PM -0500, Rob Clark wrote:
->> >> TODO maybe we want two options, one to enable stalling, and 2nd to punt
->> >> handling to wq?  I haven't needed to use mm APIs from fault handler yet
->> >> (although it is something that I think we'll want some day).  Perhaps
->> >> stalling support is limited to just letting driver dump some extra
->> >> debugging information otherwise.  Threaded handling probably only useful
->> >> with stalling, but inverse may not always be true.
->> >
->> > I'd actually like to see this stuck on a worker thread, because I think
->> > that's more generally useful and I don't want to have a situation where
->> > sometimes the IOMMU fault notifier is run in IRQ context and sometimes it's
->> > not.
+On Thu, Jan 5, 2017 at 12:25 PM, Will Deacon <will.deacon@arm.com> wrote:
+>> That's still got to be a per-master property, not a SMMU property, I
+>> think. To illustrate:
 >>
->> So I was talking a bit w/ Jordan on IRC yesterday..  and we also have
->> the GPU's hw hang-detect to contend with.  So I *suspect* that when we
->> get to the point of using this to do things like page in things from
->> swap and resume the faulting transaction, we probably want to get
->> called immediately from the IRQ handler so we can disable the hw
->> hang-detect.
->
-> Well, if you want to use an SMMU for paging, then the GPU driver would
-> need to request that explicitly when allocating its DMA buffers, to that
-> would be the time to either delay or disable the hang detection.
-
-If userspace is using SVM, for example, it is pretty impossible to
-know when to expect a fault.  The best you could do is keep track that
-*some* process which has active work queued up for gpu is using SVM
-and disable hang detect for *everyone*.. which is kind of sad.
-
->> I'm not sure if the better solution then would be to have two fault
->> callbacks, one immediately from the IRQ and a later one from wq.  Or
->> let the driver handle the wq business and give it a way to tell the
->> IOMMU when to resume.
+>>   [A]         [B]   [C]
+>>    |           |_____|
+>>  __|______________|___
+>> | TBU |        | TBU |
+>> |_____|  SMMU  |_____|
+>> |__|______________|__|
+>>    |              |
 >>
->> I kinda think we should punt on the worker thread for now until we are
->> ready to resume faulting transactions, because I guess a strong chance
->> that whatever way we do it now will be wrong ;-)
+>> Say A and B are instances of some device happy to be stalled, and C is a
+>> PCIe RC, and each is attached to their own context bank - enabling
+>> stalls for A is definitely fine. However even though B and C are using
+>> different context banks, enabling stalls for B might deadlock C if it
+>> results in more total outstanding transactions than the TBU's slave port
+>> supports. Therefore A can happily claim to be stall-safe, but B cannot
+>> due to its integration with respect to C.
 >
-> I guess what I'm after is for you to change the interrupt handlers to be
-> threaded, like they are for SMMUv3. I *think* you can do that with a NULL
-> thread_fn for now, and just call report_iommu_fault from the handler.
-> The return value of that could, in theory, be used to queued the paging
-> request and wake the paging thread in future.
+> So in this case, don't say that B and C can DMA to unpinned memory. You
+> need the third property. This property (property 2) is concerned with the
+> SMMU itself because, e.g. the way the walker has been integrated can
+> cause a deadlock.
 
-If we only pass in the non-threaded irq fxn, I'm not really sure how
-that changes anything.. or maybe I'm not understanding what you mean.
 
-But yeah, I guess we could use request_threaded_irq() to get both IRQ
-context notification and a later thread context notification rather
-than doing the wq thing.  Either way the iommu API has to change
-slightly.
+fwiw, I guess I'm mostly thinking about case (A)..  but I guess in the
+(B) case amend my suggestion about adding param to
+iommu_set_fault_handler() slightly to consider the enable_stall param
+passed in when both (B) and (C) register their fault handlers?
 
->> > I wonder if this should also be predicated on the compatible string, so
->> > that the "arm,smmu-enable-stall" property is ignored (with a warning) if
->> > the compatible string isn't specific enough to identify an implementation
->> > with the required SS behaviour? On the other hand, it feels pretty
->> > redundant and a single "stalling works" property is all we need.
->>
->> We could also drop the property and key the behavior on specific
->> compat strings I guess.  Having both seems a bit odd.  Anyways, I'll
->> defer to DT folks about what the cleaner approach is.
->
-> As Robin pointed out, we do need to be able to distinguish the integration
-> of the device from the device itself. For example, MMU-9000 might be capable
-> of stalling, but if it's bolted to a PCI RC, it's not safe to do so.
+Or I guess the idea about increasing extra cell (which IIUC would let
+us add an extra param in dt in the devices iommus property) could also
+work.  Unless maybe there could be some cases where whether a device
+can do stalling is also a function of the driver as well (ie. some
+feature needs to be implemented type thing)..
 
-Hmm, well we install the fault handler on the iommu_domain..  perhaps
-maybe a combo of dts property (or deciding based on more specific
-compat string), plus extra param passed in to
-iommu_set_fault_hander().  The dts property or compat string to
-indicate whether the iommu (and how it is wired up) can handle stalls,
-and enable_stall param when fault handler is registered to indicate
-whether the device itself can cope.. if either can't do stalling, then
-don't set CFCFG.
 
 BR,
 -R
