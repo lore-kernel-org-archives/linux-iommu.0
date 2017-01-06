@@ -1,7 +1,7 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V9 5/9] arm64/dma-mapping: Implement DMA_ATTR_PRIVILEGED
-Date: Fri,  6 Jan 2017 18:58:12 +0530
-Message-ID: <1483709296-32761-6-git-send-email-sricharan@codeaurora.org>
+Subject: [PATCH V9 7/9] dmaengine: pl330: Make sure microcode is privileged
+Date: Fri,  6 Jan 2017 18:58:14 +0530
+Message-ID: <1483709296-32761-8-git-send-email-sricharan@codeaurora.org>
 References: <1483709296-32761-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,102 +22,49 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 
-The newly added DMA_ATTR_PRIVILEGED is useful for creating mappings that
-are only accessible to privileged DMA engines.  Implement it in
-dma-iommu.c so that the ARM64 DMA IOMMU mapper can make use of it.
+The PL330 is hard-wired such that instruction fetches on both the
+manager and channel threads go out onto the bus with the "privileged"
+bit set. This can become troublesome once there is an IOMMU or other
+form of memory protection downstream, since those will typically be
+programmed by the DMA mapping subsystem in the expectation of normal
+unprivileged transactions (such as the PL330 channel threads' own data
+accesses as currently configured by this driver).
 
+To avoid the case of, say, an IOMMU blocking an unexpected privileged
+transaction with a permission fault, use the newly-introduced
+DMA_ATTR_PRIVILEGED attribute for the mapping of our microcode buffer.
+That way the DMA layer can do whatever it needs to do to make things
+continue to work as expected on more complex systems.
+
+Cc: Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Acked-by: Vinod Koul <vinod.koul-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+[rm: remove now-redundant local variable, clarify commit message]
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- arch/arm64/mm/dma-mapping.c |  6 +++---
- drivers/iommu/dma-iommu.c   | 12 +++++++++---
- include/linux/dma-iommu.h   |  3 ++-
- 3 files changed, 14 insertions(+), 7 deletions(-)
+ drivers/dma/pl330.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 290a84f..49c6f75 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -557,7 +557,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
- 				 unsigned long attrs)
- {
- 	bool coherent = is_device_dma_coherent(dev);
--	int ioprot = dma_direction_to_prot(DMA_BIDIRECTIONAL, coherent);
-+	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
- 	size_t iosize = size;
- 	void *addr;
- 
-@@ -711,7 +711,7 @@ static dma_addr_t __iommu_map_page(struct device *dev, struct page *page,
- 				   unsigned long attrs)
- {
- 	bool coherent = is_device_dma_coherent(dev);
--	int prot = dma_direction_to_prot(dir, coherent);
-+	int prot = dma_info_to_prot(dir, coherent, attrs);
- 	dma_addr_t dev_addr = iommu_dma_map_page(dev, page, offset, size, prot);
- 
- 	if (!iommu_dma_mapping_error(dev, dev_addr) &&
-@@ -769,7 +769,7 @@ static int __iommu_map_sg_attrs(struct device *dev, struct scatterlist *sgl,
- 		__iommu_sync_sg_for_device(dev, sgl, nelems, dir);
- 
- 	return iommu_dma_map_sg(dev, sgl, nelems,
--			dma_direction_to_prot(dir, coherent));
-+				dma_info_to_prot(dir, coherent, attrs));
- }
- 
- static void __iommu_unmap_sg_attrs(struct device *dev,
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 2db0d64..3006eee 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -181,16 +181,22 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- EXPORT_SYMBOL(iommu_dma_init_domain);
- 
- /**
-- * dma_direction_to_prot - Translate DMA API directions to IOMMU API page flags
-+ * dma_info_to_prot - Translate DMA API directions and attributes to IOMMU API
-+ *                    page flags.
-  * @dir: Direction of DMA transfer
-  * @coherent: Is the DMA master cache-coherent?
-+ * @attrs: DMA attributes for the mapping
-  *
-  * Return: corresponding IOMMU API page protection flags
-  */
--int dma_direction_to_prot(enum dma_data_direction dir, bool coherent)
-+int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
-+		     unsigned long attrs)
- {
- 	int prot = coherent ? IOMMU_CACHE : 0;
- 
-+	if (attrs & DMA_ATTR_PRIVILEGED)
-+		prot |= IOMMU_PRIV;
-+
- 	switch (dir) {
- 	case DMA_BIDIRECTIONAL:
- 		return prot | IOMMU_READ | IOMMU_WRITE;
-@@ -633,7 +639,7 @@ dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
- 		size_t size, enum dma_data_direction dir, unsigned long attrs)
- {
- 	return __iommu_dma_map(dev, phys, size,
--			dma_direction_to_prot(dir, false) | IOMMU_MMIO);
-+			dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO);
- }
- 
- void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index 7f7e9a7..c5511e1 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -34,7 +34,8 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 		u64 size, struct device *dev);
- 
- /* General helpers for DMA-API <-> IOMMU-API interaction */
--int dma_direction_to_prot(enum dma_data_direction dir, bool coherent);
-+int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
-+		     unsigned long attrs);
- 
- /*
-  * These implement the bulk of the relevant DMA mapping callbacks, but require
+diff --git a/drivers/dma/pl330.c b/drivers/dma/pl330.c
+index 87fd015..5a90d0c 100644
+--- a/drivers/dma/pl330.c
++++ b/drivers/dma/pl330.c
+@@ -1864,9 +1864,10 @@ static int dmac_alloc_resources(struct pl330_dmac *pl330)
+ 	 * Alloc MicroCode buffer for 'chans' Channel threads.
+ 	 * A channel's buffer offset is (Channel_Id * MCODE_BUFF_PERCHAN)
+ 	 */
+-	pl330->mcode_cpu = dma_alloc_coherent(pl330->ddma.dev,
++	pl330->mcode_cpu = dma_alloc_attrs(pl330->ddma.dev,
+ 				chans * pl330->mcbufsz,
+-				&pl330->mcode_bus, GFP_KERNEL);
++				&pl330->mcode_bus, GFP_KERNEL,
++				DMA_ATTR_PRIVILEGED);
+ 	if (!pl330->mcode_cpu) {
+ 		dev_err(pl330->ddma.dev, "%s:%d Can't allocate memory!\n",
+ 			__func__, __LINE__);
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
