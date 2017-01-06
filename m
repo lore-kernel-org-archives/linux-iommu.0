@@ -1,16 +1,16 @@
 From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v6 08/18] iommu/vt-d: Implement reserved region get/put
-	callbacks
-Date: Fri, 6 Jan 2017 12:45:54 +0100
-Message-ID: <36bac0a9-89a6-ff7b-1870-a795a4f57700@redhat.com>
+Subject: Re: [PATCH v6 07/18] iommu: Implement reserved_regions iommu-group
+	sysfs file
+Date: Fri, 6 Jan 2017 12:46:05 +0100
+Message-ID: <888d3750-817c-77d1-8154-e77cf8c3ad4b@redhat.com>
 References: <1483643086-2883-1-git-send-email-eric.auger@redhat.com>
-	<1483643086-2883-9-git-send-email-eric.auger@redhat.com>
-	<20170106110131.GM17255@8bytes.org>
+	<1483643086-2883-8-git-send-email-eric.auger@redhat.com>
+	<20170106110039.GL17255@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170106110131.GM17255-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20170106110039.GL17255-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,33 +26,25 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Joerg,
 
-On 06/01/2017 12:01, Joerg Roedel wrote:
-> On Thu, Jan 05, 2017 at 07:04:36PM +0000, Eric Auger wrote:
->> +static void intel_iommu_get_resv_regions(struct device *device,
->> +					 struct list_head *head)
->> +{
->> +	struct iommu_resv_region *reg;
->> +
->> +	reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
->> +				      IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
->> +				      0, IOMMU_RESV_NOMAP);
->> +	if (!reg)
->> +		return;
->> +	list_add_tail(&reg->list, head);
->> +}
+On 06/01/2017 12:00, Joerg Roedel wrote:
+> On Thu, Jan 05, 2017 at 07:04:35PM +0000, Eric Auger wrote:
+>> +	list_for_each_entry_safe(region, next, &group_resv_regions, list) {
+>> +		str += sprintf(str, "0x%016llx 0x%016llx\n",
+>> +			       (long long int)region->start,
+>> +			       (long long int)(region->start +
+>> +						region->length - 1));
+>> +		kfree(region);
+>> +	}
 > 
-> That is different from what AMD does, can you also report the RMRR
-> regions for the device here (as direct-map regions)?
+> I think it also makes sense to report the type of the reserved region.
 
-if I return RMRR regions as direct mapped regions,
-iommu_group_create_direct_mappings will perform the 1-1 mapping.
+What is the best practice in that case? Shall we put the type enum
+values as strings such as:
+- direct
+- nomap
+- msi
 
-I am not familiar with the intel-iommu code but I guess this job
-currently is done in the intel driver:
-iommu_prepare_rmrr_dev -> iommu_prepare_identity_map
-->domain_prepare_identity_map -> iommu_domain_identity_map?
-
-What is your feeling?
+and document that in Documentation/ABI/testing/sysfs-kernel-iommu_groups
 
 Thanks
 
@@ -61,4 +53,9 @@ Eric
 > 
 > 
 > 	Joerg
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe kvm" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
