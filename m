@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v7 10/19] iommu/amd: Declare MSI and HT regions as reserved
-	IOVA regions
-Date: Mon,  9 Jan 2017 13:46:01 +0000
-Message-ID: <1483969570-3154-11-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v7 05/19] iommu: iommu_alloc_resv_region
+Date: Mon,  9 Jan 2017 13:45:56 +0000
+Message-ID: <1483969570-3154-6-git-send-email-eric.auger@redhat.com>
 References: <1483969570-3154-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,87 +21,64 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch registers the MSI and HT regions as non mappable
-reserved regions. They will be exposed in the iommu-group sysfs.
-
-For direct-mapped regions let's also use iommu_alloc_resv_region().
+Introduce a new helper serving the purpose to allocate a reserved
+region. This will be used in iommu driver implementing reserved
+region callbacks.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
-v6 -> v7:
-- use IOMMU_RESV_RESERVED
 
-v5: creation
+v3 -> v4:
+- add INIT_LIST_HEAD(&region->list)
+- use int for prot param and add int type param
+- remove implementation outside of CONFIG_IOMMU_API
 ---
- drivers/iommu/amd_iommu.c | 37 ++++++++++++++++++++++++++-----------
- 1 file changed, 26 insertions(+), 11 deletions(-)
+ drivers/iommu/iommu.c | 18 ++++++++++++++++++
+ include/linux/iommu.h |  2 ++
+ 2 files changed, 20 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 5f7ea4f..d109e41 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3164,6 +3164,7 @@ static bool amd_iommu_capable(enum iommu_cap cap)
- static void amd_iommu_get_resv_regions(struct device *dev,
- 				       struct list_head *head)
- {
-+	struct iommu_resv_region *region;
- 	struct unity_map_entry *entry;
- 	int devid;
- 
-@@ -3172,28 +3173,42 @@ static void amd_iommu_get_resv_regions(struct device *dev,
- 		return;
- 
- 	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
--		struct iommu_resv_region *region;
-+		size_t length;
-+		int prot = 0;
- 
- 		if (devid < entry->devid_start || devid > entry->devid_end)
- 			continue;
- 
--		region = kzalloc(sizeof(*region), GFP_KERNEL);
-+		length = entry->address_end - entry->address_start;
-+		if (entry->prot & IOMMU_PROT_IR)
-+			prot |= IOMMU_READ;
-+		if (entry->prot & IOMMU_PROT_IW)
-+			prot |= IOMMU_WRITE;
-+
-+		region = iommu_alloc_resv_region(entry->address_start,
-+						 length, prot,
-+						 IOMMU_RESV_DIRECT);
- 		if (!region) {
- 			pr_err("Out of memory allocating dm-regions for %s\n",
- 				dev_name(dev));
- 			return;
- 		}
--
--		region->start = entry->address_start;
--		region->length = entry->address_end - entry->address_start;
--		region->type = IOMMU_RESV_DIRECT;
--		if (entry->prot & IOMMU_PROT_IR)
--			region->prot |= IOMMU_READ;
--		if (entry->prot & IOMMU_PROT_IW)
--			region->prot |= IOMMU_WRITE;
--
- 		list_add_tail(&region->list, head);
- 	}
-+
-+	region = iommu_alloc_resv_region(MSI_RANGE_START,
-+					 MSI_RANGE_END - MSI_RANGE_START + 1,
-+					 0, IOMMU_RESV_RESERVED);
-+	if (!region)
-+		return;
-+	list_add_tail(&region->list, head);
-+
-+	region = iommu_alloc_resv_region(HT_RANGE_START,
-+					 HT_RANGE_END - HT_RANGE_START + 1,
-+					 0, IOMMU_RESV_RESERVED);
-+	if (!region)
-+		return;
-+	list_add_tail(&region->list, head);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 1cee5c3..927878d 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1575,6 +1575,24 @@ void iommu_put_resv_regions(struct device *dev, struct list_head *list)
+ 		ops->put_resv_regions(dev, list);
  }
  
- static void amd_iommu_put_resv_regions(struct device *dev,
++struct iommu_resv_region *iommu_alloc_resv_region(phys_addr_t start,
++						  size_t length,
++						  int prot, int type)
++{
++	struct iommu_resv_region *region;
++
++	region = kzalloc(sizeof(*region), GFP_KERNEL);
++	if (!region)
++		return NULL;
++
++	INIT_LIST_HEAD(&region->list);
++	region->start = start;
++	region->length = length;
++	region->prot = prot;
++	region->type = type;
++	return region;
++}
++
+ /* Request that a device is direct mapped by the IOMMU */
+ int iommu_request_dm_for_dev(struct device *dev)
+ {
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 233a6bf..f6bb55d3 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -244,6 +244,8 @@ extern void iommu_set_fault_handler(struct iommu_domain *domain,
+ extern void iommu_get_resv_regions(struct device *dev, struct list_head *list);
+ extern void iommu_put_resv_regions(struct device *dev, struct list_head *list);
+ extern int iommu_request_dm_for_dev(struct device *dev);
++extern struct iommu_resv_region *
++iommu_alloc_resv_region(phys_addr_t start, size_t length, int prot, int type);
+ 
+ extern int iommu_attach_group(struct iommu_domain *domain,
+ 			      struct iommu_group *group);
 -- 
 1.9.1
