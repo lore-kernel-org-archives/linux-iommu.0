@@ -1,8 +1,8 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v7 14/19] genirq/msi: Set IRQ_DOMAIN_FLAG_MSI on MSI domain
-	creation
-Date: Mon,  9 Jan 2017 13:46:05 +0000
-Message-ID: <1483969570-3154-15-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v7 11/19] iommu/arm-smmu: Implement reserved region get/put
+	callbacks
+Date: Mon,  9 Jan 2017 13:46:02 +0000
+Message-ID: <1483969570-3154-12-git-send-email-eric.auger@redhat.com>
 References: <1483969570-3154-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,32 +22,81 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now we have a flag value indicating an IRQ domain implements MSI,
-let's set it on msi_create_irq_domain().
+The get() populates the list with the MSI IOVA reserved window.
+
+At the moment an arbitray MSI IOVA window is set at 0x8000000
+of size 1MB. This will allow to report those info in iommu-group
+sysfs.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
 
-v6: new
----
- kernel/irq/msi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v3 -> v4:
+- do not handle PCI host bridge windows anymore
+- encode prot
 
-diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-index ee23006..ddc2f54 100644
---- a/kernel/irq/msi.c
-+++ b/kernel/irq/msi.c
-@@ -270,8 +270,8 @@ struct irq_domain *msi_create_irq_domain(struct fwnode_handle *fwnode,
- 	if (info->flags & MSI_FLAG_USE_DEF_CHIP_OPS)
- 		msi_domain_update_chip_ops(info);
+RFC v2 -> v3:
+- use existing get/put_resv_regions
+
+RFC v1 -> v2:
+- use defines for MSI IOVA base and length
+---
+ drivers/iommu/arm-smmu.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index a60cded..a354572 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -281,6 +281,9 @@ enum arm_smmu_s2cr_privcfg {
  
--	return irq_domain_create_hierarchy(parent, 0, 0, fwnode,
--					   &msi_domain_ops, info);
-+	return irq_domain_create_hierarchy(parent, IRQ_DOMAIN_FLAG_MSI, 0,
-+					   fwnode, &msi_domain_ops, info);
+ #define FSYNR0_WNR			(1 << 4)
+ 
++#define MSI_IOVA_BASE			0x8000000
++#define MSI_IOVA_LENGTH			0x100000
++
+ static int force_stage;
+ module_param(force_stage, int, S_IRUGO);
+ MODULE_PARM_DESC(force_stage,
+@@ -1549,6 +1552,29 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ 	return iommu_fwspec_add_ids(dev, &fwid, 1);
  }
  
- int msi_domain_prepare_irqs(struct irq_domain *domain, struct device *dev,
++static void arm_smmu_get_resv_regions(struct device *dev,
++				      struct list_head *head)
++{
++	struct iommu_resv_region *region;
++	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
++
++	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
++					 prot, IOMMU_RESV_MSI);
++	if (!region)
++		return;
++
++	list_add_tail(&region->list, head);
++}
++
++static void arm_smmu_put_resv_regions(struct device *dev,
++				      struct list_head *head)
++{
++	struct iommu_resv_region *entry, *next;
++
++	list_for_each_entry_safe(entry, next, head, list)
++		kfree(entry);
++}
++
+ static struct iommu_ops arm_smmu_ops = {
+ 	.capable		= arm_smmu_capable,
+ 	.domain_alloc		= arm_smmu_domain_alloc,
+@@ -1564,6 +1590,8 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ 	.domain_get_attr	= arm_smmu_domain_get_attr,
+ 	.domain_set_attr	= arm_smmu_domain_set_attr,
+ 	.of_xlate		= arm_smmu_of_xlate,
++	.get_resv_regions	= arm_smmu_get_resv_regions,
++	.put_resv_regions	= arm_smmu_put_resv_regions,
+ 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+ };
+ 
 -- 
 1.9.1
