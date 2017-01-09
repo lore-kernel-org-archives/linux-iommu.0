@@ -1,12 +1,14 @@
 From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v2 0/4] Fixes for Exynos IOMMU driver
-Date: Mon, 09 Jan 2017 13:03:52 +0100
-Message-ID: <1483963436-29803-1-git-send-email-m.szyprowski@samsung.com>
-References: <CGME20170109120410eucas1p2caf69260dc125da0d9651321eadd03ca@eucas1p2.samsung.com>
+Subject: [PATCH v2 2/4] iommu/exynos: Fix warnings from DMA-debug
+Date: Mon, 09 Jan 2017 13:03:54 +0100
+Message-ID: <1483963436-29803-3-git-send-email-m.szyprowski@samsung.com>
+References: <1483963436-29803-1-git-send-email-m.szyprowski@samsung.com>
+	<CGME20170109120412eucas1p2d0f898940a61a973bcc8d1645138f0ca@eucas1p2.samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <1483963436-29803-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,41 +22,59 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-sa
 Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello,
+Add a simple checks for dma_map_single() return value to make DMA-debug
+checker happly. Exynos IOMMU on Samsung Exynos SoCs always use device,
+which has linear DMA mapping ops (dma address is equal to physical memory
+address), so no failures are returned from dma_map_single().
 
-This is collection of fixes for Exynos IOMMU driver. Patches 1-2 are
-resend and update of the patches, which got lost on mainline list.
-Patches 3-4 solve the issue, which arises when IOMMU deferred probe
-patches will be merged.
+Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+---
+ drivers/iommu/exynos-iommu.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-Patches are based on current iommu/next branch.
-
-Best regards
-Marek Szyprowski
-Samsung R&D Institute Poland
-
-Changelog:
-
-v2:
-- dropped "iommu/exynos: Add default_domain check in iommu_attach_device"
-  patch, this is handled in iommu core
-- replaced BUG_ON with proper error propagation
-
-v1: http://www.spinics.net/lists/linux-samsung-soc/msg56354.html
-- initial version
-
-Patch summary:
-
-Marek Szyprowski (4):
-  iommu/exynos: Improve page fault debug message
-  iommu/exynos: Fix warnings from DMA-debug
-  iommu/exynos: Ensure that SYSMMU is added only once to its master
-    device
-  iommu/exynos: Properly release device from the default domain in
-    ->remove
-
- drivers/iommu/exynos-iommu.c | 39 +++++++++++++++++++++++++++++++++------
- 1 file changed, 33 insertions(+), 6 deletions(-)
-
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 058ee8425f35..b0d537e6a445 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -744,6 +744,8 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
+ 				DMA_TO_DEVICE);
+ 	/* For mapping page table entries we rely on dma == phys */
+ 	BUG_ON(handle != virt_to_phys(domain->pgtable));
++	if (dma_mapping_error(dma_dev, handle))
++		goto err_lv2ent;
+ 
+ 	spin_lock_init(&domain->lock);
+ 	spin_lock_init(&domain->pgtablelock);
+@@ -755,6 +757,8 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
+ 
+ 	return &domain->domain;
+ 
++err_lv2ent:
++	free_pages((unsigned long)domain->lv2entcnt, 1);
+ err_counter:
+ 	free_pages((unsigned long)domain->pgtable, 2);
+ err_dma_cookie:
+@@ -898,6 +902,7 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *domain,
+ 	}
+ 
+ 	if (lv1ent_fault(sent)) {
++		dma_addr_t handle;
+ 		sysmmu_pte_t *pent;
+ 		bool need_flush_flpd_cache = lv1ent_zero(sent);
+ 
+@@ -909,7 +914,12 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *domain,
+ 		update_pte(sent, mk_lv1ent_page(virt_to_phys(pent)));
+ 		kmemleak_ignore(pent);
+ 		*pgcounter = NUM_LV2ENTRIES;
+-		dma_map_single(dma_dev, pent, LV2TABLE_SIZE, DMA_TO_DEVICE);
++		handle = dma_map_single(dma_dev, pent, LV2TABLE_SIZE,
++					DMA_TO_DEVICE);
++		if (dma_mapping_error(dma_dev, handle)) {
++			kmem_cache_free(lv2table_kmem_cache, pent);
++			return ERR_PTR(-EADDRINUSE);
++		}
+ 
+ 		/*
+ 		 * If pre-fetched SLPD is a faulty SLPD in zero_l2_table,
 -- 
 1.9.1
