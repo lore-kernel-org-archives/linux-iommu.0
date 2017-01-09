@@ -1,9 +1,10 @@
 From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v2 2/4] iommu/exynos: Fix warnings from DMA-debug
-Date: Mon, 09 Jan 2017 13:03:54 +0100
-Message-ID: <1483963436-29803-3-git-send-email-m.szyprowski@samsung.com>
+Subject: [PATCH v2 4/4] iommu/exynos: Properly release device from the default
+	domain in ->remove
+Date: Mon, 09 Jan 2017 13:03:56 +0100
+Message-ID: <1483963436-29803-5-git-send-email-m.szyprowski@samsung.com>
 References: <1483963436-29803-1-git-send-email-m.szyprowski@samsung.com>
-	<CGME20170109120412eucas1p2d0f898940a61a973bcc8d1645138f0ca@eucas1p2.samsung.com>
+	<CGME20170109120413eucas1p19721a17d6e81e75e8f6e93ec2528f1b6@eucas1p1.samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -22,59 +23,40 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-sa
 Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add a simple checks for dma_map_single() return value to make DMA-debug
-checker happly. Exynos IOMMU on Samsung Exynos SoCs always use device,
-which has linear DMA mapping ops (dma address is equal to physical memory
-address), so no failures are returned from dma_map_single().
+IOMMU core doesn't detach device from the default domain before calling
+->iommu_remove_device, so check that and do the proper cleanup or
+warn if device is still attached to non-default domain.
 
 Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/iommu/exynos-iommu.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
 diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 058ee8425f35..b0d537e6a445 100644
+index 8bf5a06a6c01..37d9738bd023 100644
 --- a/drivers/iommu/exynos-iommu.c
 +++ b/drivers/iommu/exynos-iommu.c
-@@ -744,6 +744,8 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
- 				DMA_TO_DEVICE);
- 	/* For mapping page table entries we rely on dma == phys */
- 	BUG_ON(handle != virt_to_phys(domain->pgtable));
-+	if (dma_mapping_error(dma_dev, handle))
-+		goto err_lv2ent;
+@@ -1242,9 +1242,21 @@ static int exynos_iommu_add_device(struct device *dev)
  
- 	spin_lock_init(&domain->lock);
- 	spin_lock_init(&domain->pgtablelock);
-@@ -755,6 +757,8 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
+ static void exynos_iommu_remove_device(struct device *dev)
+ {
++	struct exynos_iommu_owner *owner = dev->archdata.iommu;
++
+ 	if (!has_sysmmu(dev))
+ 		return;
  
- 	return &domain->domain;
- 
-+err_lv2ent:
-+	free_pages((unsigned long)domain->lv2entcnt, 1);
- err_counter:
- 	free_pages((unsigned long)domain->pgtable, 2);
- err_dma_cookie:
-@@ -898,6 +902,7 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *domain,
- 	}
- 
- 	if (lv1ent_fault(sent)) {
-+		dma_addr_t handle;
- 		sysmmu_pte_t *pent;
- 		bool need_flush_flpd_cache = lv1ent_zero(sent);
- 
-@@ -909,7 +914,12 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *domain,
- 		update_pte(sent, mk_lv1ent_page(virt_to_phys(pent)));
- 		kmemleak_ignore(pent);
- 		*pgcounter = NUM_LV2ENTRIES;
--		dma_map_single(dma_dev, pent, LV2TABLE_SIZE, DMA_TO_DEVICE);
-+		handle = dma_map_single(dma_dev, pent, LV2TABLE_SIZE,
-+					DMA_TO_DEVICE);
-+		if (dma_mapping_error(dma_dev, handle)) {
-+			kmem_cache_free(lv2table_kmem_cache, pent);
-+			return ERR_PTR(-EADDRINUSE);
++	if (owner->domain) {
++		struct iommu_group *group = iommu_group_get(dev);
++
++		if (group) {
++			WARN_ON(owner->domain !=
++				iommu_group_default_domain(group));
++			exynos_iommu_detach_device(owner->domain, dev);
++			iommu_group_put(group);
 +		}
++	}
+ 	iommu_group_remove_device(dev);
+ }
  
- 		/*
- 		 * If pre-fetched SLPD is a faulty SLPD in zero_l2_table,
 -- 
 1.9.1
