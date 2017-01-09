@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v7 12/19] iommu/arm-smmu-v3: Implement reserved region get/put
-	callbacks
-Date: Mon,  9 Jan 2017 13:46:03 +0000
-Message-ID: <1483969570-3154-13-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v7 13/19] irqdomain: Add irq domain MSI and MSI_REMAP flags
+Date: Mon,  9 Jan 2017 13:46:04 +0000
+Message-ID: <1483969570-3154-14-git-send-email-eric.auger@redhat.com>
 References: <1483969570-3154-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,75 +21,118 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-iommu/arm-smmu: Implement reserved region get/put callbacks
+We introduce two new enum values for the irq domain flag:
+- IRQ_DOMAIN_FLAG_MSI indicates the irq domain corresponds to
+  an MSI domain
+- IRQ_DOMAIN_FLAG_MSI_REMAP indicates the irq domain has MSI
+  remapping capabilities.
 
-The get() populates the list with the MSI IOVA reserved window.
+Those values will be useful to check all MSI irq domains have
+MSI remapping support when assessing the safety of IRQ assignment
+to a guest.
 
-At the moment an arbitray MSI IOVA window is set at 0x8000000
-of size 1MB. This will allow to report those info in iommu-group
-sysfs.
+irq_domain_hierarchical_is_msi_remap() allows to check if an
+irq domain or any parent implements MSI remapping.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 ---
 
-v4: creation
+v6:
+- add IRQ_DOMAIN_FLAG_MSI as suggested by Marc
+- add irq_domain_is_msi, irq_domain_is_msi_remap and
+  irq_domain_hierarchical_is_msi_remap
 ---
- drivers/iommu/arm-smmu-v3.c | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ include/linux/irqdomain.h | 35 +++++++++++++++++++++++++++++++++++
+ kernel/irq/irqdomain.c    | 16 ++++++++++++++++
+ 2 files changed, 51 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4d6ec44..6c4111c 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -412,6 +412,9 @@
- /* High-level queue structures */
- #define ARM_SMMU_POLL_TIMEOUT_US	100
+diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
+index ffb8460..bc2f571 100644
+--- a/include/linux/irqdomain.h
++++ b/include/linux/irqdomain.h
+@@ -183,6 +183,12 @@ enum {
+ 	/* Irq domain is an IPI domain with single virq */
+ 	IRQ_DOMAIN_FLAG_IPI_SINGLE	= (1 << 3),
  
-+#define MSI_IOVA_BASE			0x8000000
-+#define MSI_IOVA_LENGTH			0x100000
++	/* Irq domain implements MSIs */
++	IRQ_DOMAIN_FLAG_MSI		= (1 << 4),
 +
- static bool disable_bypass;
- module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
- MODULE_PARM_DESC(disable_bypass,
-@@ -1883,6 +1886,29 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	return iommu_fwspec_add_ids(dev, args->args, 1);
++	/* Irq domain implements MSI remapping */
++	IRQ_DOMAIN_FLAG_MSI_REMAP	= (1 << 5),
++
+ 	/*
+ 	 * Flags starting from IRQ_DOMAIN_FLAG_NONCORE are reserved
+ 	 * for implementation specific purposes and ignored by the
+@@ -446,6 +452,19 @@ static inline bool irq_domain_is_ipi_single(struct irq_domain *domain)
+ {
+ 	return domain->flags & IRQ_DOMAIN_FLAG_IPI_SINGLE;
  }
- 
-+static void arm_smmu_get_resv_regions(struct device *dev,
-+				      struct list_head *head)
++
++static inline bool irq_domain_is_msi(struct irq_domain *domain)
 +{
-+	struct iommu_resv_region *region;
-+	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-+
-+	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-+					 prot, IOMMU_RESV_MSI);
-+	if (!region)
-+		return;
-+
-+	list_add_tail(&region->list, head);
++	return domain->flags & IRQ_DOMAIN_FLAG_MSI;
 +}
 +
-+static void arm_smmu_put_resv_regions(struct device *dev,
-+				      struct list_head *head)
++static inline bool irq_domain_is_msi_remap(struct irq_domain *domain)
 +{
-+	struct iommu_resv_region *entry, *next;
-+
-+	list_for_each_entry_safe(entry, next, head, list)
-+		kfree(entry);
++	return domain->flags & IRQ_DOMAIN_FLAG_MSI_REMAP;
 +}
 +
- static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -1898,6 +1924,8 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	.domain_get_attr	= arm_smmu_domain_get_attr,
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
- 	.of_xlate		= arm_smmu_of_xlate,
-+	.get_resv_regions	= arm_smmu_get_resv_regions,
-+	.put_resv_regions	= arm_smmu_put_resv_regions,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- };
++extern bool irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain);
++
+ #else	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
+ static inline void irq_domain_activate_irq(struct irq_data *data) { }
+ static inline void irq_domain_deactivate_irq(struct irq_data *data) { }
+@@ -477,6 +496,22 @@ static inline bool irq_domain_is_ipi_single(struct irq_domain *domain)
+ {
+ 	return false;
+ }
++
++static inline bool irq_domain_is_msi(struct irq_domain *domain)
++{
++	return false;
++}
++
++static inline bool irq_domain_is_msi_remap(struct irq_domain *domain)
++{
++	return false;
++}
++
++static inline bool
++irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain)
++{
++	return false;
++}
+ #endif	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
  
+ #else /* CONFIG_IRQ_DOMAIN */
+diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
+index 8c0a0ae..101ee8f 100644
+--- a/kernel/irq/irqdomain.c
++++ b/kernel/irq/irqdomain.c
+@@ -1392,6 +1392,22 @@ static void irq_domain_check_hierarchy(struct irq_domain *domain)
+ 	if (domain->ops->alloc)
+ 		domain->flags |= IRQ_DOMAIN_FLAG_HIERARCHY;
+ }
++
++/**
++ * irq_domain_hierarchical_is_msi_remap - Check if the domain or any
++ * parent has MSI remapping support
++ * @domain: domain pointer
++ */
++bool irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain)
++{
++	struct irq_domain *h = domain;
++
++	for (; h; h = h->parent) {
++		if (irq_domain_is_msi_remap(h))
++			return true;
++	}
++	return false;
++}
+ #else	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
+ /**
+  * irq_domain_get_irq_data - Get irq_data associated with @virq and @domain
 -- 
 1.9.1
