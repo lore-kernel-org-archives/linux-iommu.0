@@ -1,19 +1,14 @@
-From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v6 07/18] iommu: Implement reserved_regions iommu-group
-	sysfs file
-Date: Sun, 8 Jan 2017 17:26:53 +0100
-Message-ID: <24abe958-6a79-5766-653b-b355a85f2be4@redhat.com>
-References: <1483643086-2883-1-git-send-email-eric.auger@redhat.com>
-	<1483643086-2883-8-git-send-email-eric.auger@redhat.com>
-	<20170106110039.GL17255@8bytes.org>
-	<888d3750-817c-77d1-8154-e77cf8c3ad4b@redhat.com>
-	<20170106124816.GQ17255@8bytes.org>
-	<0858b719-2888-0645-66d2-56fe698f4e2f@redhat.com>
+From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH] iommu: Drop the of_iommu_{set/get}_ops() interface
+Date: Mon, 09 Jan 2017 09:11:28 +0100
+Message-ID: <e9d847ad-a986-965f-0432-374e1c55bab3@samsung.com>
+References: <CGME20170103173514epcas4p42d343054cc7117c7299ca7bfad0015af@epcas4p4.samsung.com>
+	<20170103173456.18154-1-lorenzo.pieralisi@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <0858b719-2888-0645-66d2-56fe698f4e2f-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-reply-to: <20170103173456.18154-1-lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,63 +18,134 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Lorenzo,
 
-On 06/01/2017 18:18, Auger Eric wrote:
-> Hi Joerg, Robin,
-> 
-> On 06/01/2017 13:48, Joerg Roedel wrote:
->> On Fri, Jan 06, 2017 at 12:46:05PM +0100, Auger Eric wrote:
->>> On 06/01/2017 12:00, Joerg Roedel wrote:
->>
->>>> I think it also makes sense to report the type of the reserved region.
->>>
->>> What is the best practice in that case? Shall we put the type enum
->>> values as strings such as:
->>> - direct
->>> - nomap
->>> - msi
->>>
->>> and document that in Documentation/ABI/testing/sysfs-kernel-iommu_groups
->>
->> Yes, a string would be good. An probably 'reserved' is a better name
->> than nomap?
-> the iommu_insert_resv_region() function that builds the group reserved
-> region list sorts all regions and handles the case where there is an
-> overlap between regions. Current code does not care about the type of
-> regions. So in case a NOMAP region overlaps with a direct-mapped region,
-> what is reported to the user space is the superset and the type depends
-> on the overlap. This was suggested by Robin at some point to handle
-> overlaps.
-> 
-> I guess I should merge regions only in case the types equal?
-> 
-> I remember that Alex thought that user-space should not care so much
-> about the type of the regions so I tought it was better for the
-> user-space to have a minimal view of the regions.
-> 
-> On the other hand, this issue of merging regions of different types
-> should not happen often but I prefer to highlight the potential issue.
+On 2017-01-03 18:34, Lorenzo Pieralisi wrote:
+> With the introduction of the new iommu_{register/get}_instance()
+> interface in commit e4f10ffe4c9b ("iommu: Make of_iommu_set/get_ops() DT
+> agnostic") (based on struct fwnode_handle as look-up token, so firmware
+> agnostic) to register IOMMU instances with the core IOMMU layer there is
+> no reason to keep the old OF based interface around any longer.
+>
+> Convert all the IOMMU drivers (and OF IOMMU core code) that rely on the
+> of_iommu_{set/get}_ops() to the new kernel interface to register/retrieve
+> IOMMU instances and remove the of_iommu_{set/get}_ops() remaining glue
+> code in order to complete the interface rework.
+>
+> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+> Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+> Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> ---
+> Exynos, msm and mtk code compile tested only owing to lack of
+> test platforms, I would appreciate some help in testing this
+> patch on those platforms before merging it even if it is just
+> a simple interface conversion.
 
-> 
-> What is your guidance?
+Tested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 
-Please forget the question. From an API point of view It does not make
-sense that iommu_insert_resv_region() merges regions of a different
-types since the type field becomes unreliable. I will fix this.
+>
+> Thanks,
+> Lorenzo
+>
+>   drivers/iommu/exynos-iommu.c |  2 +-
+>   drivers/iommu/msm_iommu.c    |  2 +-
+>   drivers/iommu/mtk_iommu.c    |  2 +-
+>   drivers/iommu/of_iommu.c     |  4 ++--
+>   include/linux/of_iommu.h     | 11 -----------
+>   5 files changed, 5 insertions(+), 16 deletions(-)
+>
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 57ba0d3..b79e4c4 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -628,7 +628,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+>   
+>   	pm_runtime_enable(dev);
+>   
+> -	of_iommu_set_ops(dev->of_node, &exynos_iommu_ops);
+> +	iommu_register_instance(dev->fwnode, &exynos_iommu_ops);
+>   
+>   	return 0;
+>   }
+> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+> index b09692b..9cd3cee 100644
+> --- a/drivers/iommu/msm_iommu.c
+> +++ b/drivers/iommu/msm_iommu.c
+> @@ -737,7 +737,7 @@ static int msm_iommu_probe(struct platform_device *pdev)
+>   	}
+>   
+>   	list_add(&iommu->dev_node, &qcom_iommu_devices);
+> -	of_iommu_set_ops(pdev->dev.of_node, &msm_iommu_ops);
+> +	iommu_register_instance(pdev->dev.fwnode, &msm_iommu_ops);
+>   
+>   	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
+>   		iommu->base, iommu->irq, iommu->ncb);
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 1479c76..0596ab2 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -655,7 +655,7 @@ static int mtk_iommu_init_fn(struct device_node *np)
+>   		return ret;
+>   	}
+>   
+> -	of_iommu_set_ops(np, &mtk_iommu_ops);
+> +	iommu_register_instance(&np->fwnode, &mtk_iommu_ops);
+>   	return 0;
+>   }
+>   
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 0f57ddc..d7f480a 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -127,7 +127,7 @@ static const struct iommu_ops
+>   			   "iommu-map-mask", &iommu_spec.np, iommu_spec.args))
+>   		return NULL;
+>   
+> -	ops = of_iommu_get_ops(iommu_spec.np);
+> +	ops = iommu_get_instance(&iommu_spec.np->fwnode);
+>   	if (!ops || !ops->of_xlate ||
+>   	    iommu_fwspec_init(&pdev->dev, &iommu_spec.np->fwnode, ops) ||
+>   	    ops->of_xlate(&pdev->dev, &iommu_spec))
+> @@ -157,7 +157,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+>   					   "#iommu-cells", idx,
+>   					   &iommu_spec)) {
+>   		np = iommu_spec.np;
+> -		ops = of_iommu_get_ops(np);
+> +		ops = iommu_get_instance(&np->fwnode);
+>   
+>   		if (!ops || !ops->of_xlate ||
+>   		    iommu_fwspec_init(dev, &np->fwnode, ops) ||
+> diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+> index 6a7fc50..13394ac 100644
+> --- a/include/linux/of_iommu.h
+> +++ b/include/linux/of_iommu.h
+> @@ -31,17 +31,6 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
+>   
+>   #endif	/* CONFIG_OF_IOMMU */
+>   
+> -static inline void of_iommu_set_ops(struct device_node *np,
+> -				    const struct iommu_ops *ops)
+> -{
+> -	iommu_register_instance(&np->fwnode, ops);
+> -}
+> -
+> -static inline const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
+> -{
+> -	return iommu_get_instance(&np->fwnode);
+> -}
+> -
+>   extern struct of_device_id __iommu_of_table;
+>   
+>   typedef int (*of_iommu_init_fn)(struct device_node *);
 
-Thanks
-
-Eric
-> 
-> Thanks
-> 
-> Eric
->>
->>
->> 	Joerg
->>
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
