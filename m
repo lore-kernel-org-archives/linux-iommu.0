@@ -1,14 +1,12 @@
 From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v2 1/4] iommu/exynos: Improve page fault debug message
-Date: Mon, 09 Jan 2017 13:03:53 +0100
-Message-ID: <1483963436-29803-2-git-send-email-m.szyprowski@samsung.com>
-References: <1483963436-29803-1-git-send-email-m.szyprowski@samsung.com>
-	<CGME20170109120411eucas1p1fddd9c346093e918337dedf9a9a7739e@eucas1p1.samsung.com>
+Subject: [PATCH v2 0/4] Fixes for Exynos IOMMU driver
+Date: Mon, 09 Jan 2017 13:03:52 +0100
+Message-ID: <1483963436-29803-1-git-send-email-m.szyprowski@samsung.com>
+References: <CGME20170109120410eucas1p2caf69260dc125da0d9651321eadd03ca@eucas1p2.samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <1483963436-29803-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,39 +20,41 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-sa
 Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Krzysztof Kozlowski <krzk-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add master device name to default IOMMU fault message to make easier to
-find which device triggered the fault. While at it, move printing some
-information (like page table base and first level entry addresses) to
-dev_dbg(), because those are typically not very useful for typical device
-driver user/developer not equipped with hardware debugging tools.
+Hello,
 
-Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
----
- drivers/iommu/exynos-iommu.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+This is collection of fixes for Exynos IOMMU driver. Patches 1-2 are
+resend and update of the patches, which got lost on mainline list.
+Patches 3-4 solve the issue, which arises when IOMMU deferred probe
+patches will be merged.
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index b79e4c452b8b..058ee8425f35 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -381,13 +381,14 @@ static void show_fault_information(struct sysmmu_drvdata *data,
- {
- 	sysmmu_pte_t *ent;
- 
--	dev_err(data->sysmmu, "%s FAULT occurred at %#x (page table base: %pa)\n",
--		finfo->name, fault_addr, &data->pgtable);
-+	dev_err(data->sysmmu, "%s: %s FAULT occurred at %#x\n",
-+		dev_name(data->master), finfo->name, fault_addr);
-+	dev_dbg(data->sysmmu, "Page table base: %pa\n", &data->pgtable);
- 	ent = section_entry(phys_to_virt(data->pgtable), fault_addr);
--	dev_err(data->sysmmu, "\tLv1 entry: %#x\n", *ent);
-+	dev_dbg(data->sysmmu, "\tLv1 entry: %#x\n", *ent);
- 	if (lv1ent_page(ent)) {
- 		ent = page_entry(ent, fault_addr);
--		dev_err(data->sysmmu, "\t Lv2 entry: %#x\n", *ent);
-+		dev_dbg(data->sysmmu, "\t Lv2 entry: %#x\n", *ent);
- 	}
- }
- 
+Patches are based on current iommu/next branch.
+
+Best regards
+Marek Szyprowski
+Samsung R&D Institute Poland
+
+Changelog:
+
+v2:
+- dropped "iommu/exynos: Add default_domain check in iommu_attach_device"
+  patch, this is handled in iommu core
+- replaced BUG_ON with proper error propagation
+
+v1: http://www.spinics.net/lists/linux-samsung-soc/msg56354.html
+- initial version
+
+Patch summary:
+
+Marek Szyprowski (4):
+  iommu/exynos: Improve page fault debug message
+  iommu/exynos: Fix warnings from DMA-debug
+  iommu/exynos: Ensure that SYSMMU is added only once to its master
+    device
+  iommu/exynos: Properly release device from the default domain in
+    ->remove
+
+ drivers/iommu/exynos-iommu.c | 39 +++++++++++++++++++++++++++++++++------
+ 1 file changed, 33 insertions(+), 6 deletions(-)
+
 -- 
 1.9.1
