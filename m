@@ -1,7 +1,8 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v7 18/19] vfio/type1: Check MSI remapping at irq domain level
-Date: Mon,  9 Jan 2017 13:46:09 +0000
-Message-ID: <1483969570-3154-19-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v7 19/19] iommu/arm-smmu: Do not advertise
+	IOMMU_CAP_INTR_REMAP anymore
+Date: Mon,  9 Jan 2017 13:46:10 +0000
+Message-ID: <1483969570-3154-20-git-send-email-eric.auger@redhat.com>
 References: <1483969570-3154-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,56 +22,44 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In case the IOMMU translates MSI transactions (typical case
-on ARM), we check MSI remapping capability at IRQ domain
-level. Otherwise it is checked at IOMMU level.
+IOMMU_CAP_INTR_REMAP has been advertised in arm-smmu(-v3) although
+on ARM this property is not attached to the IOMMU but rather is
+implemented in the MSI controller (GICv3 ITS).
 
-At this stage the arm-smmu-(v3) still advertise the
-IOMMU_CAP_INTR_REMAP capability at IOMMU level. This will be
-removed in subsequent patches.
+Now vfio_iommu_type1 checks MSI remapping capability at MSI controller
+level, let's correct this.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-
 ---
+ drivers/iommu/arm-smmu-v3.c | 2 --
+ drivers/iommu/arm-smmu.c    | 2 --
+ 2 files changed, 4 deletions(-)
 
-v6: rewrite test
----
- drivers/vfio/vfio_iommu_type1.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 5651faf..ec903a0 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -40,6 +40,7 @@
- #include <linux/mdev.h>
- #include <linux/notifier.h>
- #include <linux/dma-iommu.h>
-+#include <linux/irqdomain.h>
- 
- #define DRIVER_VERSION  "0.2"
- #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
-@@ -1212,7 +1213,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	struct vfio_domain *domain, *d;
- 	struct bus_type *bus = NULL, *mdev_bus;
- 	int ret;
--	bool resv_msi;
-+	bool resv_msi, msi_remap;
- 	phys_addr_t resv_msi_base;
- 
- 	mutex_lock(&iommu->lock);
-@@ -1288,8 +1289,10 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	INIT_LIST_HEAD(&domain->group_list);
- 	list_add(&group->next, &domain->group_list);
- 
--	if (!allow_unsafe_interrupts &&
--	    !iommu_capable(bus, IOMMU_CAP_INTR_REMAP)) {
-+	msi_remap = resv_msi ? irq_domain_check_msi_remap() :
-+				iommu_capable(bus, IOMMU_CAP_INTR_REMAP);
-+
-+	if (!allow_unsafe_interrupts && !msi_remap) {
- 		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
- 		       __func__);
- 		ret = -EPERM;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 6c4111c..d9cf6cb 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1375,8 +1375,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 	switch (cap) {
+ 	case IOMMU_CAP_CACHE_COHERENCY:
+ 		return true;
+-	case IOMMU_CAP_INTR_REMAP:
+-		return true; /* MSIs are just memory writes */
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index a354572..13d2600 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1374,8 +1374,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 		 * requests.
+ 		 */
+ 		return true;
+-	case IOMMU_CAP_INTR_REMAP:
+-		return true; /* MSIs are just memory writes */
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
 -- 
 1.9.1
