@@ -1,36 +1,64 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH v7 19/19] iommu/arm-smmu: Do not advertise
- IOMMU_CAP_INTR_REMAP anymore
-Date: Tue, 10 Jan 2017 14:17:48 +0000
-Message-ID: <20170110141748.GD27365@arm.com>
-References: <1483969570-3154-1-git-send-email-eric.auger@redhat.com>
- <1483969570-3154-20-git-send-email-eric.auger@redhat.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v7 2/7] perf/amd/iommu: Modify functions to query max
+	banks and counters
+Date: Tue, 10 Jan 2017 15:43:40 +0100
+Message-ID: <20170110144340.GT17255@8bytes.org>
+References: <1484019227-11473-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1484019227-11473-3-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1483969570-3154-20-git-send-email-eric.auger@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Eric Auger <eric.auger@redhat.com>
-Cc: eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org, drjones@redhat.com, linux-kernel@vger.kernel.org, pranav.sawargaonkar@gmail.com, iommu@lists.linux-foundation.org, punit.agrawal@arm.com, diana.craciun@nxp.com, gpkulkarni@gmail.com, shankerd@codeaurora.org, bharat.bhushan@nxp.com, geethasowjanya.akula@gmail.com
+In-Reply-To: <1484019227-11473-3-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 09, 2017 at 01:46:10PM +0000, Eric Auger wrote:
-> IOMMU_CAP_INTR_REMAP has been advertised in arm-smmu(-v3) although
-> on ARM this property is not attached to the IOMMU but rather is
-> implemented in the MSI controller (GICv3 ITS).
-> 
-> Now vfio_iommu_type1 checks MSI remapping capability at MSI controller
-> level, let's correct this.
-> 
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 2 --
->  drivers/iommu/arm-smmu.c    | 2 --
->  2 files changed, 4 deletions(-)
+On Mon, Jan 09, 2017 at 09:33:42PM -0600, Suthikulpanit, Suravee wrote:
+> +static struct amd_iommu *get_amd_iommu(uint idx)
+> +{
+> +	uint i = 0;
+> +	struct amd_iommu *iommu = NULL;
+> +
+> +	for_each_iommu(iommu) {
+> +		if (i == idx)
+> +			break;
+> +		i++;
+> +	}
+> +	return iommu;
+> +}
 
-Dependent on the previous two VFIO patches:
+Sorry for missing that in the last review, but this function returns
+just the last iommu in the list when there are less iommus than the
+requested index.
 
-Acked-by: Will Deacon <will.deacon@arm.com>
+Is that intentional? The following code checks for !iommu, so I guess
+not. It should look more like this then:
 
-Will
+	static struct amd_iommu *get_amd_iommu(uint idx)
+	{
+		uint i = 0;
+		struct amd_iommu *iommu, *ret = NULL;
+
+		for_each_iommu(iommu)
+			if (i++ == idx) {
+				ret = iommu;
+				break;
+			}
+		return ret;
+	}
+
+
+Regards,
+
+	Joerg
