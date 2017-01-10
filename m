@@ -1,73 +1,99 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v7 6/7] iommu/amd: Introduce amd_iommu_get_num_iommus()
-Date: Mon, 9 Jan 2017 21:33:46 -0600
-Message-ID: <1484019227-11473-7-git-send-email-Suravee.Suthikulpanit@amd.com>
-References: <1484019227-11473-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+From: "Sricharan" <sricharan@codeaurora.org>
+Subject: RE: [PATCH v2 3/4] iommu/exynos: Ensure that SYSMMU is added only      once to its master device
+Date: Tue, 10 Jan 2017 10:04:19 +0530
+Message-ID: <000c01d26afa$d2a6a2f0$77f3e8d0$@codeaurora.org>
+References: <1483963436-29803-1-git-send-email-m.szyprowski@samsung.com>        <CGME20170109120412eucas1p27f3aab2d42712a9783d79bb4e06d01d5@eucas1p2.samsung.com>       <1483963436-29803-4-git-send-email-m.szyprowski@samsung.com> <fc7e0a6e-e65b-2a58-4c19-5bc31e36363c@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain;
+        charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484019227-11473-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-Reply-To: <fc7e0a6e-e65b-2a58-4c19-5bc31e36363c@arm.com>
+Content-Language: en-us
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: 'Robin Murphy' <robin.murphy@arm.com>, 'Marek Szyprowski' <m.szyprowski@samsung.com>, iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
+Cc: 'Krzysztof Kozlowski' <krzk@kernel.org>, 'Bartlomiej Zolnierkiewicz' <b.zolnierkie@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-This patch introduces amd_iommu_get_num_iommus(). This is intended for
-Perf AMD IOMMU driver.
+Hi,
 
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
----
- arch/x86/events/amd/iommu.h    | 2 ++
- drivers/iommu/amd_iommu_init.c | 7 ++++++-
- 2 files changed, 8 insertions(+), 1 deletion(-)
+>Hi Marek,
+>
+>On 09/01/17 12:03, Marek Szyprowski wrote:
+>> This patch prepares Exynos IOMMU driver for deferred probing
+>> support. Once it gets added, of_xlate() callback might be called
+>> more than once for the same SYSMMU controller and master device
+>> (for example it happens when masters device driver fails with
+>> EPROBE_DEFER). This patch adds a check, which ensures that SYSMMU
+>> controller is added to its master device (owner) only once.
+>
+>FWIW, I think it would be better to address that issue in the
+>probe-deferral code itself, rather than fixing up individual IOMMU
+>drivers. In fact, I *think* it's already covered in the latest version
+>of the of_iommu_configure() changes[1], specifically this bit:
+>
+>	...
+>	if (fwspec) {
+>		if (fwspec->ops)
+>			return fwspec->ops;
+>	...
+>
+>Which should ensure that a successful IOMMU configuration happens
+>exactly once between device creation and destruction.
+>
+>That said, this patch would still add robustness against actual error
+>conditions, e.g. an erroneous DT which managed to specify the same
+>phandle twice, although making it "if (WARN_ON(entry == data))" might be
+>a good idea.
+>
 
-diff --git a/arch/x86/events/amd/iommu.h b/arch/x86/events/amd/iommu.h
-index 342716e..381f1c4 100644
---- a/arch/x86/events/amd/iommu.h
-+++ b/arch/x86/events/amd/iommu.h
-@@ -25,6 +25,8 @@
- #define PC_MAX_SPEC_CNTRS			16
- 
- /* amd_iommu_init.c external support functions */
-+extern int amd_iommu_get_num_iommus(void);
-+
- extern bool amd_iommu_pc_supported(void);
- 
- extern u8 amd_iommu_pc_get_max_banks(uint idx);
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index c993c77..c3740cb 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1329,7 +1329,7 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 
- 	/* Add IOMMU to internal data structures */
- 	list_add_tail(&iommu->list, &amd_iommu_list);
--	iommu->index             = amd_iommus_present++;
-+	iommu->index = amd_iommus_present++;
- 
- 	if (unlikely(iommu->index >= MAX_IOMMUS)) {
- 		WARN(1, "AMD-Vi: System has more IOMMUs than supported by this driver\n");
-@@ -2717,6 +2717,11 @@ static struct amd_iommu *get_amd_iommu(uint idx)
- 	return iommu;
- }
- 
-+int amd_iommu_get_num_iommus(void)
-+{
-+	return amd_iommus_present;
-+}
-+
- /****************************************************************************
-  *
-  * IOMMU EFR Performance Counter support functionality. This code allows
--- 
-1.8.3.1
+Yes, the latest version has the above mentioned fix of just returning back
+from of_iommu_configure, if already configured. But anyways since this
+patch is doing the check in xlate, which still can be called multiple times
+even without deferring, incase of say multiple sids as well. But i
+remember that sometime back Marek mentioned that the exynos
+iommu currently always has "#iommu-cells = <0>" , but this patch might
+be required if that changes as well.
+
+Regards,
+ Sricharan
+
+>Robin.
+>
+>[1]:https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg15333.html
+>
+>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>> ---
+>>  drivers/iommu/exynos-iommu.c | 6 +++++-
+>>  1 file changed, 5 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+>> index b0d537e6a445..8bf5a06a6c01 100644
+>> --- a/drivers/iommu/exynos-iommu.c
+>> +++ b/drivers/iommu/exynos-iommu.c
+>> @@ -1253,7 +1253,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
+>>  {
+>>  	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+>>  	struct platform_device *sysmmu = of_find_device_by_node(spec->np);
+>> -	struct sysmmu_drvdata *data;
+>> +	struct sysmmu_drvdata *data, *entry;
+>>
+>>  	if (!sysmmu)
+>>  		return -ENODEV;
+>> @@ -1272,6 +1272,10 @@ static int exynos_iommu_of_xlate(struct device *dev,
+>>  		dev->archdata.iommu = owner;
+>>  	}
+>>
+>> +	list_for_each_entry(entry, &owner->controllers, owner_node)
+>> +		if (entry == data)
+>> +			return 0;
+>> +
+>>  	list_add_tail(&data->owner_node, &owner->controllers);
+>>  	data->master = dev;
+>>
+>>
+>
+>_______________________________________________
+>iommu mailing list
+>iommu@lists.linux-foundation.org
+>https://lists.linuxfoundation.org/mailman/listinfo/iommu
