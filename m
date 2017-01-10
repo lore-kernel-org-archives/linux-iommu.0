@@ -1,11 +1,13 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v7 0/7] perf/amd/iommu: Enable multi-IOMMU support
-Date: Mon, 9 Jan 2017 21:33:40 -0600
-Message-ID: <1484019227-11473-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH v7 1/7] perf/amd/iommu: Misc fix up perf_iommu_read
+Date: Mon, 9 Jan 2017 21:33:41 -0600
+Message-ID: <1484019227-11473-2-git-send-email-Suravee.Suthikulpanit@amd.com>
+References: <1484019227-11473-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1484019227-11473-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,44 +21,64 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFL
 Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+This patch contains the following minor fixup:
+  * Fixed overflow handling since u64 delta would lose the MSB sign bit.
+  * Remove unnecessary local64_set().
+  * Coding style and make use of GENMASK_ULL macro.
 
-This patch series modifies the existing IOMMU and Perf drivers to support
-systems with multiple IOMMUs by allocating an amd_iommu PMU per IOMMU instance.
-This allows users to specify performance events and filters separately for each
-IOMMU.
+Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+---
+ arch/x86/events/amd/iommu.c | 25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
-This has been tested on the new family17h-based server w/ multiple IOMMUs.
-
-Git branch containing this patch series is available here:
-
-    https://github.com/ssuthiku/linux.git  perf-iommu-v7
-
-Changes from V6 (https://lkml.org/lkml/2016/12/23/134)
-  * Renamed function parameters from devid to idx (per Joerg).
-  * Removed unnecessary function declarations from amd_iommu_proto.h
-    (per Joerg).
-
-Changes from V5 (https://lkml.org/lkml/2016/2/23/370)
-  * Rebased onto v4.9.
-  * Remove the patch which consolidates function delclarations since
-    we have not yet agreed on the appropriate place for the new header file.
-
-
-Suravee Suthikulpanit (7):
-  perf/amd/iommu: Misc fix up perf_iommu_read
-  perf/amd/iommu: Modify functions to query max banks and counters
-  perf/amd/iommu: Modify IOMMU API to allow specifying IOMMU index
-  perf/amd/iommu: Declare pr_fmt and remove unnecessary pr_debug
-  perf/amd/iommu: Clean up perf_iommu_enable_event
-  iommu/amd: Introduce amd_iommu_get_num_iommus()
-  perf/amd/iommu: Enable support for multiple IOMMUs
-
- arch/x86/events/amd/iommu.c     | 206 ++++++++++++++++++++--------------------
- arch/x86/events/amd/iommu.h     |  17 ++--
- drivers/iommu/amd_iommu_init.c  | 119 ++++++++++++++++-------
- drivers/iommu/amd_iommu_proto.h |   9 +-
- 4 files changed, 201 insertions(+), 150 deletions(-)
-
+diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+index b28200d..f387baf 100644
+--- a/arch/x86/events/amd/iommu.c
++++ b/arch/x86/events/amd/iommu.c
+@@ -319,29 +319,30 @@ static void perf_iommu_start(struct perf_event *event, int flags)
+ 
+ static void perf_iommu_read(struct perf_event *event)
+ {
+-	u64 count = 0ULL;
+-	u64 prev_raw_count = 0ULL;
+-	u64 delta = 0ULL;
++	u64 cnt, prev;
++	s64 delta;
+ 	struct hw_perf_event *hwc = &event->hw;
+ 	pr_debug("perf: amd_iommu:perf_iommu_read\n");
+ 
+ 	amd_iommu_pc_get_set_reg_val(_GET_DEVID(event),
+ 				_GET_BANK(event), _GET_CNTR(event),
+-				IOMMU_PC_COUNTER_REG, &count, false);
++				IOMMU_PC_COUNTER_REG, &cnt, false);
+ 
+ 	/* IOMMU pc counter register is only 48 bits */
+-	count &= 0xFFFFFFFFFFFFULL;
++	cnt &= GENMASK_ULL(48, 0);
+ 
+-	prev_raw_count =  local64_read(&hwc->prev_count);
+-	if (local64_cmpxchg(&hwc->prev_count, prev_raw_count,
+-					count) != prev_raw_count)
+-		return;
++	prev = local64_read(&hwc->prev_count);
+ 
+-	/* Handling 48-bit counter overflowing */
+-	delta = (count << COUNTER_SHIFT) - (prev_raw_count << COUNTER_SHIFT);
++	/*
++	 * Since we do not enable counter overflow interrupts,
++	 * we do not have to worry about prev_count changing on us.
++	 */
++	local64_set(&hwc->prev_count, cnt);
++
++	/* Handle 48-bit counter overflow */
++	delta = (cnt << COUNTER_SHIFT) - (prev << COUNTER_SHIFT);
+ 	delta >>= COUNTER_SHIFT;
+ 	local64_add(delta, &event->count);
+-
+ }
+ 
+ static void perf_iommu_stop(struct perf_event *event, int flags)
 -- 
 1.8.3.1
