@@ -1,77 +1,67 @@
-From: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH] iommu/arm-smmu-v3: limit use of 2-level stream tables
-Date: Tue, 10 Jan 2017 14:47:13 -0500
-Message-ID: <1484077633-18376-1-git-send-email-nwatters@codeaurora.org>
-References: <20161220102209.GC10132@arm.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v7 08/19] iommu: Implement reserved_regions iommu-group
+ sysfs file
+Date: Tue, 10 Jan 2017 22:21:28 +0100
+Message-ID: <1d2137bf-8d0d-d786-6cd6-9090fb76f05c@redhat.com>
+References: <1483969570-3154-1-git-send-email-eric.auger@redhat.com>
+ <1483969570-3154-9-git-send-email-eric.auger@redhat.com>
+ <9ee5aa6b-6e63-c153-0727-729e0e9592c6@redhat.com>
+ <20170110171444.GU17255@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20161220102209.GC10132-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <20170110171444.GU17255@8bytes.org>
+Sender: kvm-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: drjones@redhat.com, jason@lakedaemon.net, kvm@vger.kernel.org, marc.zyngier@arm.com, bharat.bhushan@nxp.com, punit.agrawal@arm.com, will.deacon@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, geethasowjanya.akula@gmail.com, diana.craciun@nxp.com, alex.williamson@redhat.com, pranav.sawargaonkar@gmail.com, shankerd@codeaurora.org, linux-arm-kernel@lists.infradead.org, tglx@linutronix.de, gpkulkarni@gmail.com, robin.murphy@arm.com, christoffer.dall@linaro.org, eric.auger.pro@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-In the current arm-smmu-v3 driver, all smmus that support 2-level
-stream tables are being forced to use them. This is suboptimal for
-smmus that support fewer stream id bits than would fill in a single
-second level table. This patch limits the use of 2-level tables to
-smmus that both support the feature and whose first level table can
-possibly contain more than a single entry.
+Hi Joerg,
+On 10/01/2017 18:14, Joerg Roedel wrote:
+> On Tue, Jan 10, 2017 at 05:20:34PM +0100, Auger Eric wrote:
+>> The /sys/kernel/iommu_groups/n directory seems to be removed before this
+>> gets called and this may produce a WARNING when devices get removed from
+>> the group. I intend to remove the call since I have the feeling
+>> everything gets cleaned up properly.
+> 
+> A feeling is not enough, please check that in the code.
 
-Signed-off-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 21 ++++++++++-----------
- 1 file changed, 10 insertions(+), 11 deletions(-)
+So my understanding is on group's kobject_release we have:
+kobject_release
+|_ kobject_cleanup
+	|_ kobject_del
+		|_ sysfs_remove_dir
+			|_ kernfs_remove
+				|_ _kernfs_remove
+	../..
+	|_ ktype release (iommu_group_release)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 4d6ec44..7d1a7e5 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1983,17 +1983,9 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
- 	u32 size, l1size;
- 	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
- 
--	/*
--	 * If we can resolve everything with a single L2 table, then we
--	 * just need a single L1 descriptor. Otherwise, calculate the L1
--	 * size, capped to the SIDSIZE.
--	 */
--	if (smmu->sid_bits < STRTAB_SPLIT) {
--		size = 0;
--	} else {
--		size = STRTAB_L1_SZ_SHIFT - (ilog2(STRTAB_L1_DESC_DWORDS) + 3);
--		size = min(size, smmu->sid_bits - STRTAB_SPLIT);
--	}
-+	/* Calculate the L1 size, capped to the SIDSIZE. */
-+	size = STRTAB_L1_SZ_SHIFT - (ilog2(STRTAB_L1_DESC_DWORDS) + 3);
-+	size = min(size, smmu->sid_bits - STRTAB_SPLIT);
- 	cfg->num_l1_ents = 1 << size;
- 
- 	size += STRTAB_SPLIT;
-@@ -2504,6 +2496,13 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 	smmu->ssid_bits = reg >> IDR1_SSID_SHIFT & IDR1_SSID_MASK;
- 	smmu->sid_bits = reg >> IDR1_SID_SHIFT & IDR1_SID_MASK;
- 
-+	/*
-+	 * If the SMMU supports fewer bits than would fill a single L2 stream
-+	 * table, use a linear table instead.
-+	 */
-+	if (smmu->sid_bits <= STRTAB_SPLIT)
-+		smmu->features &= ~ARM_SMMU_FEAT_2_LVL_STRTAB;
-+
- 	/* IDR5 */
- 	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR5);
- 
--- 
-Qualcomm Datacenter Technologies, Inc. on behalf of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux
-Foundation Collaborative Project.
+_kernfs_remove() calls kernfs_put() on all descendant nodes, leading to
+the whole directory cleanup.
+
+In iommu_group_release I called sysfs_remove_file on the
+reserved_regions attribute file. My understanding is its job is
+identifical as what was done previously and the node was already
+destroyed hence the warning.
+
+sysfs_remove_file
+|_ sysfs_remove_file_ns
+	|_ kernfs_remove_by_name_ns
+		|_kernfs_remove
+
+So my understanding is it is safe to remove it.
+
+Thanks
+
+Eric
+> 
+> 
+> 	Joerg
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
