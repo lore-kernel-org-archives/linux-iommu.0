@@ -1,193 +1,296 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH] IOMMU: SMMUv2: Support for Extended Stream ID (16 bit)
-Date: Wed, 11 Jan 2017 14:15:12 +0000
-Message-ID: <63d66004-bf8c-146d-2af4-b5f035159480@arm.com>
-References: <20170110115755.19102-1-aleksey.makarov@linaro.org>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v7 3/7] perf/amd/iommu: Modify IOMMU API to allow
+ specifying IOMMU index
+Date: Wed, 11 Jan 2017 18:23:52 +0100
+Message-ID: <20170111172352.rsi6n6aarvti7oox@pd.tnic>
+References: <1484019227-11473-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+ <1484019227-11473-4-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170110115755.19102-1-aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1484019227-11473-4-git-send-email-Suravee.Suthikulpanit@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, joro@8bytes.org, peterz@infradead.org, mingo@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 10/01/17 11:57, Aleksey Makarov wrote:
-> Enable the Extended Stream ID feature when available.
+On Mon, Jan 09, 2017 at 09:33:43PM -0600, Suravee Suthikulpanit wrote:
+> The current amd_iommu_pc_get_set_reg_val() cannot support multi-IOMMU.
+
+							multiple IOMMUs.
+
+> It is also confusing since it is trying to support set and get in
+> one function.
 > 
-> This patch on top of series "[PATCH v7 00/19] KVM PCIe/MSI passthrough
-> on ARM/ARM64 and IOVA reserved regions" by Eric Auger allows
-> to passthrough an external PCIe network card on a ThunderX server
-> successfully.
+> So, this patch breaks it down to amd_iommu_pc_[get|set]_counter(),
+
+"So break it down to..."
+
+> and modifies them to allow callers to specify IOMMU index. This prepares
+> the driver for supporting multi-IOMMU in subsequent patch.
 > 
-> Without this patch that card caused a warning like
+> This patch also removes unnecessary function declarations in
+
+"Also, remove unnecessary ..."
+
+> amd_iommu_proto.h.
 > 
-> 	pci 0006:90:00.0: stream ID 0x9000 out of range for SMMU (0x7fff)
-> 
-> during boot.
-> 
-> Signed-off-by: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 > ---
->  drivers/iommu/arm-smmu.c | 53 +++++++++++++++++++++++++++++++++---------------
->  1 file changed, 37 insertions(+), 16 deletions(-)
+>  arch/x86/events/amd/iommu.c     | 45 +++++++++++-------------
+>  arch/x86/events/amd/iommu.h     |  8 +++--
+>  drivers/iommu/amd_iommu_init.c  | 77 +++++++++++++++++++++++++++++++----------
+>  drivers/iommu/amd_iommu_proto.h |  7 ++--
+>  4 files changed, 88 insertions(+), 49 deletions(-)
 > 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 13d26009b8e0..d160c12828f4 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -24,6 +24,7 @@
->   *	- v7/v8 long-descriptor format
->   *	- Non-secure access to the SMMU
->   *	- Context fault reporting
-> + *	- Extended Stream ID (16 bit)
->   */
+> diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+> index cf94f48..9744dc8 100644
+> --- a/arch/x86/events/amd/iommu.c
+> +++ b/arch/x86/events/amd/iommu.c
+> @@ -248,46 +248,44 @@ static void perf_iommu_enable_event(struct perf_event *ev)
+>  {
+>  	u8 csource = _GET_CSOURCE(ev);
+>  	u16 devid = _GET_DEVID(ev);
+> +	u8 bank = _GET_BANK(ev);
+> +	u8 cntr = _GET_CNTR(ev);
+>  	u64 reg = 0ULL;
 >  
->  #define pr_fmt(fmt) "arm-smmu: " fmt
-> @@ -87,6 +88,7 @@
->  #define sCR0_CLIENTPD			(1 << 0)
->  #define sCR0_GFRE			(1 << 1)
->  #define sCR0_GFIE			(1 << 2)
-> +#define sCR0_EXIDENABLE			(1 << 3)
->  #define sCR0_GCFGFRE			(1 << 4)
->  #define sCR0_GCFGFIE			(1 << 5)
->  #define sCR0_USFCFG			(1 << 10)
-> @@ -126,6 +128,7 @@
->  #define ID0_NUMIRPT_MASK		0xff
->  #define ID0_NUMSIDB_SHIFT		9
->  #define ID0_NUMSIDB_MASK		0xf
-> +#define ID0_EXIDS			(1 << 8)
->  #define ID0_NUMSMRG_SHIFT		0
->  #define ID0_NUMSMRG_MASK		0xff
+>  	reg = csource;
+> -	amd_iommu_pc_get_set_reg_val(devid,
+> -			_GET_BANK(ev), _GET_CNTR(ev) ,
+> -			 IOMMU_PC_COUNTER_SRC_REG, &reg, true);
+> +	amd_iommu_pc_set_reg(0, devid, bank, cntr,
+> +			     IOMMU_PC_COUNTER_SRC_REG, &reg);
 >  
-> @@ -169,6 +172,7 @@
->  #define ARM_SMMU_GR0_S2CR(n)		(0xc00 + ((n) << 2))
->  #define S2CR_CBNDX_SHIFT		0
->  #define S2CR_CBNDX_MASK			0xff
-> +#define S2CR_EXIDVALID			(1 << 10)
->  #define S2CR_TYPE_SHIFT			16
->  #define S2CR_TYPE_MASK			0x3
->  enum arm_smmu_s2cr_type {
-> @@ -354,6 +358,7 @@ struct arm_smmu_device {
->  #define ARM_SMMU_FEAT_FMT_AARCH64_64K	(1 << 9)
->  #define ARM_SMMU_FEAT_FMT_AARCH32_L	(1 << 10)
->  #define ARM_SMMU_FEAT_FMT_AARCH32_S	(1 << 11)
-> +#define ARM_SMMU_FEAT_EXIDS		(1 << 12)
->  	u32				features;
+>  	reg = 0ULL | devid | (_GET_DEVID_MASK(ev) << 32);
+
+What are those 0ULL being ORed in? This is to do what exactly?
+
+>  	if (reg)
+>  		reg |= (1UL << 31);
+
+		reg |= BIT(31);
+
+You can do conversion in a prepatch though.
+
+> -	amd_iommu_pc_get_set_reg_val(devid,
+> -			_GET_BANK(ev), _GET_CNTR(ev) ,
+> -			 IOMMU_PC_DEVID_MATCH_REG, &reg, true);
+> +	amd_iommu_pc_set_reg(0, devid, bank, cntr,
+> +			     IOMMU_PC_DEVID_MATCH_REG, &reg);
 >  
->  #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
-> @@ -1051,7 +1056,7 @@ static void arm_smmu_write_smr(struct arm_smmu_device *smmu, int idx)
->  	struct arm_smmu_smr *smr = smmu->smrs + idx;
->  	u32 reg = smr->id << SMR_ID_SHIFT | smr->mask << SMR_MASK_SHIFT;
+>  	reg = 0ULL | _GET_PASID(ev) | (_GET_PASID_MASK(ev) << 32);
+>  	if (reg)
+>  		reg |= (1UL << 31);
+> -	amd_iommu_pc_get_set_reg_val(devid,
+> -			_GET_BANK(ev), _GET_CNTR(ev) ,
+> -			 IOMMU_PC_PASID_MATCH_REG, &reg, true);
+> +	amd_iommu_pc_set_reg(0, devid, bank, cntr,
+> +			     IOMMU_PC_PASID_MATCH_REG, &reg);
 >  
-> -	if (smr->valid)
-> +	if (!(smmu->features & ARM_SMMU_FEAT_EXIDS) && smr->valid)
->  		reg |= SMR_VALID;
->  	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_SMR(idx));
+>  	reg = 0ULL | _GET_DOMID(ev) | (_GET_DOMID_MASK(ev) << 32);
+>  	if (reg)
+>  		reg |= (1UL << 31);
+> -	amd_iommu_pc_get_set_reg_val(devid,
+> -			_GET_BANK(ev), _GET_CNTR(ev) ,
+> -			 IOMMU_PC_DOMID_MATCH_REG, &reg, true);
+> +	amd_iommu_pc_set_reg(0, devid, bank, cntr,
+> +			     IOMMU_PC_DOMID_MATCH_REG, &reg);
 >  }
-> @@ -1063,6 +1068,9 @@ static void arm_smmu_write_s2cr(struct arm_smmu_device *smmu, int idx)
->  		  (s2cr->cbndx & S2CR_CBNDX_MASK) << S2CR_CBNDX_SHIFT |
->  		  (s2cr->privcfg & S2CR_PRIVCFG_MASK) << S2CR_PRIVCFG_SHIFT;
+
+...
+
+> diff --git a/arch/x86/events/amd/iommu.h b/arch/x86/events/amd/iommu.h
+> index 432d867..342716e 100644
+> --- a/arch/x86/events/amd/iommu.h
+> +++ b/arch/x86/events/amd/iommu.h
+> @@ -31,7 +31,11 @@
 >  
-> +	if (smmu->features & ARM_SMMU_FEAT_EXIDS && smmu->smrs &&
-> +	    smmu->smrs[idx].valid)
-> +		reg |= S2CR_EXIDVALID;
->  	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_S2CR(idx));
->  }
+>  extern u8 amd_iommu_pc_get_max_counters(uint idx);
 >  
-> @@ -1674,6 +1682,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
->  	if (smmu->features & ARM_SMMU_FEAT_VMID16)
->  		reg |= sCR0_VMID16EN;
->  
-> +	if (smmu->features & ARM_SMMU_FEAT_EXIDS)
-> +		reg |= sCR0_EXIDENABLE;
+> -extern int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr,
+> -			u8 fxn, u64 *value, bool is_write);
+> +extern int amd_iommu_pc_set_reg(uint idx, u16 devid, u8 bank, u8 cntr,
+> +			 u8 fxn, u64 *value);
+
+Align args at opening brace.
+
 > +
->  	/* Push the button */
->  	__arm_smmu_tlb_sync(smmu);
->  	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-> @@ -1761,7 +1772,12 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
->  			   "\t(IDR0.CTTW overridden by FW configuration)\n");
+> +extern int amd_iommu_pc_set_counter(uint idx, u8 bank, u8 cntr, u64 *value);
+> +
+> +extern int amd_iommu_pc_get_counter(uint idx, u8 bank, u8 cntr, u64 *value);
 >  
->  	/* Max. number of entries we have for stream matching/indexing */
-> -	size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
-> +	if (smmu->version == ARM_SMMU_V2 && id & ID0_EXIDS) {
-> +		smmu->features |= ARM_SMMU_FEAT_EXIDS;
-> +		size = (1 << 16);
-
-Unnecessary parentheses.
-
-> +	} else {
-> +		size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
-> +	}
-
-Given what the architecture says about the relationship between EXIDS
-and NUMSIDB, I suppose an even shorter version could be:
-
-	if (smmu->version == ARM_SMMU_V2 && id & ID0_EXIDS)
-		size *= 2;
-
-but I'm not sure that's actually any nicer to read.
-
->  	smmu->streamid_mask = size - 1;
->  	if (id & ID0_SMS) {
->  		u32 smr;
-> @@ -1774,20 +1790,25 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
->  			return -ENODEV;
->  		}
+>  #endif /*_PERF_EVENT_AMD_IOMMU_H_*/
+> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+> index a7e756b..c993c77 100644
+> --- a/drivers/iommu/amd_iommu_init.c
+> +++ b/drivers/iommu/amd_iommu_init.c
+> @@ -251,10 +251,6 @@ enum iommu_init_state {
+>  static int __init iommu_go_to_state(enum iommu_init_state state);
+>  static void init_device_table_dma(void);
 >  
-> -		/*
-> -		 * SMR.ID bits may not be preserved if the corresponding MASK
-> -		 * bits are set, so check each one separately. We can reject
-> -		 * masters later if they try to claim IDs outside these masks.
-> -		 */
-> -		smr = smmu->streamid_mask << SMR_ID_SHIFT;
-> -		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-> -		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-> -		smmu->streamid_mask = smr >> SMR_ID_SHIFT;
+> -static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
+> -				    u8 bank, u8 cntr, u8 fxn,
+> -				    u64 *value, bool is_write);
 > -
-> -		smr = smmu->streamid_mask << SMR_MASK_SHIFT;
-> -		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-> -		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-> -		smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
-> +		if (smmu->features & ARM_SMMU_FEAT_EXIDS) {
-> +			smmu->smr_mask_mask = smmu->streamid_mask;
-> +		} else {
-> +			/*
-> +			 * SMR.ID bits may not be preserved if the corresponding
-> +			 * MASK bits are set, so check each one separately.
-> +			 * We can reject masters later if they try to claim IDs
-> +			 * outside these masks.
-> +			 */
-> +			smr = smmu->streamid_mask << SMR_ID_SHIFT;
-> +			writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-> +			smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-> +			smmu->streamid_mask = smr >> SMR_ID_SHIFT;
-> +
-> +			smr = smmu->streamid_mask << SMR_MASK_SHIFT;
-> +			writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-> +			smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-> +			smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
-> +		}
+>  static inline void update_last_devid(u16 devid)
+>  {
+>  	if (devid > amd_iommu_last_bdf)
+> @@ -1474,6 +1470,8 @@ static int __init init_iommu_all(struct acpi_table_header *table)
+>  	return 0;
+>  }
+>  
+> +static int iommu_pc_get_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
+> +				u8 fxn, u64 *value, bool is_write);
 
-This hunk is quite possibly wrong. I don't see any guarantee in the
-architecture that all EXMASK/EXID bits *must* be implemented, and even
-so there's still no harm in the driver determining that experimentally.
-It looks like we need a bit of refactoring such that we move the probing
-of SMR fields to after counting and allocating the SME structures, then
-in the EXIDS case we can explicitly clear the SMEs and poke EXIDENABLE
-inbetween.
-
-Robin.
+Can you break that one too pls? In a separate patch.
 
 >  
->  		/* Zero-initialised to mark as invalid */
->  		smmu->smrs = devm_kcalloc(smmu->dev, size, sizeof(*smmu->smrs),
+>  static void init_iommu_perf_ctr(struct amd_iommu *iommu)
+>  {
+> @@ -1485,8 +1483,8 @@ static void init_iommu_perf_ctr(struct amd_iommu *iommu)
+>  	amd_iommu_pc_present = true;
+>  
+>  	/* Check if the performance counters can be written to */
+> -	if ((0 != iommu_pc_get_set_reg_val(iommu, 0, 0, 0, &val, true)) ||
+> -	    (0 != iommu_pc_get_set_reg_val(iommu, 0, 0, 0, &val2, false)) ||
+> +	if ((iommu_pc_get_set_reg(iommu, 0, 0, 0, &val, true) != 0) ||
+> +	    (iommu_pc_get_set_reg(iommu, 0, 0, 0, &val2, false) != 0) ||
+
+	if (iommu_pc_get_set_reg(iommu, 0, 0, 0, &val, true) ||
+	    iommu_pc_get_set_reg(iommu, 0, 0, 0, &val2, false))
+
+is more readable.
+
+>  	    (val != val2)) {
+>  		pr_err("AMD-Vi: Unable to write to IOMMU perf counter.\n");
+>  		amd_iommu_pc_present = false;
+> @@ -2754,15 +2752,18 @@ u8 amd_iommu_pc_get_max_counters(uint idx)
+>  }
+>  EXPORT_SYMBOL(amd_iommu_pc_get_max_counters);
+>  
+> -static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
+> -				    u8 bank, u8 cntr, u8 fxn,
+> -				    u64 *value, bool is_write)
+> +static int iommu_pc_get_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
+> +				u8 fxn, u64 *value, bool is_write)
+>  {
+>  	u32 offset;
+>  	u32 max_offset_lim;
+>  
+> +	/* Make sure the IOMMU PC resource is available */
+> +	if (!amd_iommu_pc_present)
+> +		return -ENODEV;
+> +
+>  	/* Check for valid iommu and pc register indexing */
+> -	if (WARN_ON((fxn > 0x28) || (fxn & 7)))
+> +	if (WARN_ON((iommu == NULL) || (fxn > 0x28) || (fxn & 7)))
+
+	    WARN_ON(!iommu || ...
+
+>  		return -ENODEV;
+>  
+>  	offset = (u32)(((0x40|bank) << 12) | (cntr << 8) | fxn);
+> @@ -2785,17 +2786,55 @@ static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
+>  
+>  	return 0;
+>  }
+> -EXPORT_SYMBOL(amd_iommu_pc_get_set_reg_val);
+>  
+> -int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
+> -				    u64 *value, bool is_write)
+> +int amd_iommu_pc_set_reg(uint idx, u16 devid, u8 bank, u8 cntr,
+> +			 u8 fxn, u64 *value)
+>  {
+> -	struct amd_iommu *iommu = amd_iommu_rlookup_table[devid];
+> +	struct amd_iommu *iommu = get_amd_iommu(idx);
+>  
+> -	/* Make sure the IOMMU PC resource is available */
+> -	if (!amd_iommu_pc_present || iommu == NULL)
+> -		return -ENODEV;
+> +	if (!iommu)
+> +		return -EINVAL;
+> +
+> +	return iommu_pc_get_set_reg(iommu, bank, cntr, fxn, value, true);
+> +}
+> +EXPORT_SYMBOL(amd_iommu_pc_set_reg);
+> +
+> +int amd_iommu_pc_set_counter(uint idx, u8 bank, u8 cntr, u64 *value)
+> +{
+> +	struct amd_iommu *iommu = get_amd_iommu(idx);
+> +
+> +	if (!iommu)
+> +		return -EINVAL;
+>  
+> -	return iommu_pc_get_set_reg_val(iommu, bank, cntr, fxn,
+> -					value, is_write);
+> +	return iommu_pc_get_set_reg(iommu, bank, cntr,
+> +				    IOMMU_PC_COUNTER_REG,
+> +				    value, true);
+
+Why isn't this masking out [63:49] like below?
+
+> +}
+> +EXPORT_SYMBOL(amd_iommu_pc_set_counter);
+> +
+> +int amd_iommu_pc_get_counter(uint idx, u8 bank, u8 cntr, u64 *value)
+> +{
+> +	struct amd_iommu *iommu = get_amd_iommu(idx);
+> +	int ret;
+> +	u64 tmp;
+> +
+> +	if (!value || !iommu)
+> +		return -EINVAL;
+> +	/*
+> +	 * Here, we read the specified counters on all IOMMUs,
+> +	 * which should have been programmed the same way and
+> +	 * aggregate the counter values.
+> +	 */
+> +
+> +	ret = iommu_pc_get_set_reg(iommu, bank, cntr,
+> +				   IOMMU_PC_COUNTER_REG,
+> +				   &tmp, false);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* IOMMU pc counter register is only 48 bits */
+> +	*value = tmp & GENMASK_ULL(48, 0);
+> +
+> +	return 0;
+>  }
+> +EXPORT_SYMBOL(amd_iommu_pc_get_counter);
+> diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
+> index 60f2eef..7186c63 100644
+> --- a/drivers/iommu/amd_iommu_proto.h
+> +++ b/drivers/iommu/amd_iommu_proto.h
+> @@ -56,10 +56,9 @@ extern int amd_iommu_domain_set_gcr3(struct iommu_domain *dom, int pasid,
+>  extern int amd_iommu_domain_clear_gcr3(struct iommu_domain *dom, int pasid);
+>  extern struct iommu_domain *amd_iommu_get_v2_domain(struct pci_dev *pdev);
+>  
+> -/* IOMMU Performance Counter functions */
+> -extern bool amd_iommu_pc_supported(void);
+> -extern int amd_iommu_pc_get_set_reg_val(u16 devid, u8 bank, u8 cntr, u8 fxn,
+> -				    u64 *value, bool is_write);
+> +#ifndef IOMMU_PC_COUNTER_REG
+
+What's that for?
+
+> +#define IOMMU_PC_COUNTER_REG			0x00
+> +#endif
+>  
+>  #ifdef CONFIG_IRQ_REMAP
+>  extern int amd_iommu_create_irq_domain(struct amd_iommu *iommu);
+> -- 
+> 1.8.3.1
 > 
+> 
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
