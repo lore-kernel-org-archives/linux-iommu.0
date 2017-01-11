@@ -1,58 +1,86 @@
-From: Tomasz Nowicki <tn@semihalf.com>
-Subject: [PATCH 1/1] iommu/arm-smmu: Fix for ThunderX erratum #27704
-Date: Wed, 11 Jan 2017 12:51:47 +0100
-Message-ID: <1484135507-24872-1-git-send-email-tn@semihalf.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: will.deacon@arm.com, robin.murphy@arm.com, mark.rutland@arm.com, joro@8bytes.org
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Sunil.Goutham@cavium.com, Geethasowjanya.Akula@cavium.com, Tirumalesh.Chalamarla@cavium.com, Prasun.Kapoor@cavium.com, Tomasz Nowicki <tn@semihalf.com>
+From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH v7 1/7] perf/amd/iommu: Misc fix up perf_iommu_read
+Date: Wed, 11 Jan 2017 12:57:35 +0100
+Message-ID: <20170111115735.GI3107@twins.programming.kicks-ass.net>
+References: <1484019227-11473-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1484019227-11473-2-git-send-email-Suravee.Suthikulpanit@amd.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1484019227-11473-2-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The goal of erratum #27704 workaround was to make sure that ASIDs and VMIDs
-are unique across all SMMU instances on affected Cavium systems.
+On Mon, Jan 09, 2017 at 09:33:41PM -0600, Suravee Suthikulpanit wrote:
+> This patch contains the following minor fixup:
+>   * Fixed overflow handling since u64 delta would lose the MSB sign bit.
 
-Currently, the workaround code partitions ASIDs and VMIDs by increasing
-global cavium_smmu_context_count which in turn becomes the base ASID and VMID
-value for the given SMMU instance upon the context bank initialization.
+Please explain.. afaict this actually introduces a bug.
 
-For systems with multiple SMMU instances this approach implies the risk
-of crossing 8-bit ASID, like for CN88xx capable of 4 SMMUv2, 128 context bank each:
-SMMU_0 (0-127 ASID RANGE)
-SMMU_1 (127-255 ASID RANGE)
-SMMU_2 (256-383 ASID RANGE) <--- crossing 8-bit ASID
-SMMU_3 (384-511 ASID RANGE) <--- crossing 8-bit ASID
 
-Since we use 8-bit ASID now we effectively misconfigure ASID[15:8] bits for
-SMMU_CBn_TTBRm register. Also, we still use non-zero ASID[15:8] bits
-upon context invalidation. This patch adds 16-bit ASID support for stage-1
-AArch64 contexts for Cavium SMMUv2 model so that we use ASIDs consistently.
+> diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+> index b28200d..f387baf 100644
+> --- a/arch/x86/events/amd/iommu.c
+> +++ b/arch/x86/events/amd/iommu.c
+> @@ -319,29 +319,30 @@ static void perf_iommu_start(struct perf_event *event, int flags)
+>  
+>  static void perf_iommu_read(struct perf_event *event)
+>  {
+> -	u64 count = 0ULL;
+> -	u64 prev_raw_count = 0ULL;
+> -	u64 delta = 0ULL;
+> +	u64 cnt, prev;
+> +	s64 delta;
+>  	struct hw_perf_event *hwc = &event->hw;
+>  	pr_debug("perf: amd_iommu:perf_iommu_read\n");
+>  
+>  	amd_iommu_pc_get_set_reg_val(_GET_DEVID(event),
+>  				_GET_BANK(event), _GET_CNTR(event),
+> -				IOMMU_PC_COUNTER_REG, &count, false);
+> +				IOMMU_PC_COUNTER_REG, &cnt, false);
+>  
+>  	/* IOMMU pc counter register is only 48 bits */
+> -	count &= 0xFFFFFFFFFFFFULL;
+> +	cnt &= GENMASK_ULL(48, 0);
+>  
+> -	prev_raw_count =  local64_read(&hwc->prev_count);
+> -	if (local64_cmpxchg(&hwc->prev_count, prev_raw_count,
+> -					count) != prev_raw_count)
+> -		return;
+> +	prev = local64_read(&hwc->prev_count);
+>  
+> -	/* Handling 48-bit counter overflowing */
+> -	delta = (count << COUNTER_SHIFT) - (prev_raw_count << COUNTER_SHIFT);
+> +	/*
+> +	 * Since we do not enable counter overflow interrupts,
+> +	 * we do not have to worry about prev_count changing on us.
+> +	 */
 
-Signed-off-by: Tomasz Nowicki <tn@semihalf.com>
----
- drivers/iommu/arm-smmu.c | 4 ++++
- 1 file changed, 4 insertions(+)
+So you cannot group this event with a software event that reads this
+from their sample?
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index a60cded..ae8f059 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -260,6 +260,7 @@ enum arm_smmu_s2cr_privcfg {
- 
- #define TTBCR2_SEP_SHIFT		15
- #define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
-+#define TTBCR2_AS			(1 << 4)
- 
- #define TTBRn_ASID_SHIFT		48
- 
-@@ -778,6 +779,9 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
- 			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
- 			reg2 |= TTBCR2_SEP_UPSTREAM;
-+			if (smmu->model == CAVIUM_SMMUV2 &&
-+			    cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
-+				reg2 |= TTBCR2_AS;
- 		}
- 		if (smmu->version > ARM_SMMU_V1)
- 			writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
--- 
-2.7.4
+> +	local64_set(&hwc->prev_count, cnt);
+> +
+> +	/* Handle 48-bit counter overflow */
+> +	delta = (cnt << COUNTER_SHIFT) - (prev << COUNTER_SHIFT);
+>  	delta >>= COUNTER_SHIFT;
+>  	local64_add(delta, &event->count);
+> -
+>  }
+>  
+>  static void perf_iommu_stop(struct perf_event *event, int flags)
+> -- 
+> 1.8.3.1
+> 
