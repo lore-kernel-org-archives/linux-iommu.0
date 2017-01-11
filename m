@@ -1,8 +1,8 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v8 09/18] iommu/amd: Declare MSI and HT regions as reserved
-	IOVA regions
-Date: Wed, 11 Jan 2017 09:41:45 +0000
-Message-ID: <1484127714-3263-10-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v8 13/18] genirq/msi: Set IRQ_DOMAIN_FLAG_MSI on MSI domain
+	creation
+Date: Wed, 11 Jan 2017 09:41:49 +0000
+Message-ID: <1484127714-3263-14-git-send-email-eric.auger@redhat.com>
 References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,87 +22,36 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This patch registers the MSI and HT regions as non mappable
-reserved regions. They will be exposed in the iommu-group sysfs.
-
-For direct-mapped regions let's also use iommu_alloc_resv_region().
+Now we have a flag value indicating an IRQ domain implements MSI,
+let's set it on msi_create_irq_domain().
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Reviewed-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
 
 ---
-v6 -> v7:
-- use IOMMU_RESV_RESERVED
 
-v5: creation
+v7 -> v8
+- Added Marc's R-b
+
+v6: new
 ---
- drivers/iommu/amd_iommu.c | 37 ++++++++++++++++++++++++++-----------
- 1 file changed, 26 insertions(+), 11 deletions(-)
+ kernel/irq/msi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 5f7ea4f..d109e41 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3164,6 +3164,7 @@ static bool amd_iommu_capable(enum iommu_cap cap)
- static void amd_iommu_get_resv_regions(struct device *dev,
- 				       struct list_head *head)
- {
-+	struct iommu_resv_region *region;
- 	struct unity_map_entry *entry;
- 	int devid;
+diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+index ee23006..ddc2f54 100644
+--- a/kernel/irq/msi.c
++++ b/kernel/irq/msi.c
+@@ -270,8 +270,8 @@ struct irq_domain *msi_create_irq_domain(struct fwnode_handle *fwnode,
+ 	if (info->flags & MSI_FLAG_USE_DEF_CHIP_OPS)
+ 		msi_domain_update_chip_ops(info);
  
-@@ -3172,28 +3173,42 @@ static void amd_iommu_get_resv_regions(struct device *dev,
- 		return;
- 
- 	list_for_each_entry(entry, &amd_iommu_unity_map, list) {
--		struct iommu_resv_region *region;
-+		size_t length;
-+		int prot = 0;
- 
- 		if (devid < entry->devid_start || devid > entry->devid_end)
- 			continue;
- 
--		region = kzalloc(sizeof(*region), GFP_KERNEL);
-+		length = entry->address_end - entry->address_start;
-+		if (entry->prot & IOMMU_PROT_IR)
-+			prot |= IOMMU_READ;
-+		if (entry->prot & IOMMU_PROT_IW)
-+			prot |= IOMMU_WRITE;
-+
-+		region = iommu_alloc_resv_region(entry->address_start,
-+						 length, prot,
-+						 IOMMU_RESV_DIRECT);
- 		if (!region) {
- 			pr_err("Out of memory allocating dm-regions for %s\n",
- 				dev_name(dev));
- 			return;
- 		}
--
--		region->start = entry->address_start;
--		region->length = entry->address_end - entry->address_start;
--		region->type = IOMMU_RESV_DIRECT;
--		if (entry->prot & IOMMU_PROT_IR)
--			region->prot |= IOMMU_READ;
--		if (entry->prot & IOMMU_PROT_IW)
--			region->prot |= IOMMU_WRITE;
--
- 		list_add_tail(&region->list, head);
- 	}
-+
-+	region = iommu_alloc_resv_region(MSI_RANGE_START,
-+					 MSI_RANGE_END - MSI_RANGE_START + 1,
-+					 0, IOMMU_RESV_RESERVED);
-+	if (!region)
-+		return;
-+	list_add_tail(&region->list, head);
-+
-+	region = iommu_alloc_resv_region(HT_RANGE_START,
-+					 HT_RANGE_END - HT_RANGE_START + 1,
-+					 0, IOMMU_RESV_RESERVED);
-+	if (!region)
-+		return;
-+	list_add_tail(&region->list, head);
+-	return irq_domain_create_hierarchy(parent, 0, 0, fwnode,
+-					   &msi_domain_ops, info);
++	return irq_domain_create_hierarchy(parent, IRQ_DOMAIN_FLAG_MSI, 0,
++					   fwnode, &msi_domain_ops, info);
  }
  
- static void amd_iommu_put_resv_regions(struct device *dev,
+ int msi_domain_prepare_irqs(struct irq_domain *domain, struct device *dev,
 -- 
 1.9.1
