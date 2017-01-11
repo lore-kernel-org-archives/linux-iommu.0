@@ -1,17 +1,13 @@
-From: Bart Van Assche <Bart.VanAssche-XdAiOPVOjttBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 2/9] Move dma_ops from archdata into struct device
-Date: Wed, 11 Jan 2017 18:17:03 +0000
-Message-ID: <1484158589.2619.14.camel@sandisk.com>
-References: <20170111005648.14988-1-bart.vanassche@sandisk.com>
-	<20170111005648.14988-3-bart.vanassche@sandisk.com>
-	<20170111064803.GB26893@kroah.com>
+From: "Chalamarla, Tirumalesh" <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu: Fix for ThunderX erratum #27704
+Date: Wed, 11 Jan 2017 18:49:01 +0000
+Message-ID: <BN6PR07MB31868DFFF2645E60E6CF36188E660@BN6PR07MB3186.namprd07.prod.outlook.com>
+References: <1484135507-24872-1-git-send-email-tn@semihalf.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; boundary="===============6693180377525463394=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170111064803.GB26893-U8xfFu+wG4EAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <1484135507-24872-1-git-send-email-tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
 Content-Language: en-US
-Content-ID: <BC3FC4DDD21E1E498D9A2E0C11F30769-XdAiOPVOjttBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,45 +17,229 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "dalias-8zAoT0mYgF4@public.gmane.org" <dalias-8zAoT0mYgF4@public.gmane.org>, "linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "a-jacquiot-l0cyMroinI0@public.gmane.org" <a-jacquiot-l0cyMroinI0@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org" <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, "dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org" <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, "jonas-A9uVI2HLR7kOP4wsBPIw7w@public.gmane.org" <jonas-A9uVI2HLR7kOP4wsBPIw7w@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jesper.nilsson-VrBV9hrLPhE@public.gmane.org" <jesper.nilsson-VrBV9hrLPhE@public.gmane.org>, "linux-am33-list-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <linux-am33-list-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org" <l>
+To: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: "Kapoor, Prasun" <Prasun.Kapoor-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "Goutham,
+	Sunil" <Sunil.Goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Akula, Geethasowjanya" <Geethasowjanya.Akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 2017-01-11 at 07:48 +0100, Greg Kroah-Hartman wrote:
-> On Tue, Jan 10, 2017 at 04:56:41PM -0800, Bart Van Assche wrote:
-> > Several RDMA drivers, e.g. drivers/infiniband/hw/qib, use the CPU to
-> > transfer data between memory and PCIe adapter. Because of performance
-> > reasons it is important that the CPU cache is not flushed when such
-> > drivers transfer data. Make this possible by allowing these drivers to
-> > override the dma_map_ops pointer. Additionally, introduce the function
-> > set_dma_ops() that will be used by a later patch in this series.
-> =
+--===============6693180377525463394==
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_BN6PR07MB31868DFFF2645E60E6CF36188E660BN6PR07MB3186namp_"
 
-> When you say things like "additionally", that's a huge flag that this
-> needs to be split up into multiple patches.=A0=A0No need to add
-> set_dma_ops() here in this patch.
+--_000_BN6PR07MB31868DFFF2645E60E6CF36188E660BN6PR07MB3186namp_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Hello Greg,
 
-Some architectures already define a=A0set_dma_ops() function. So what this
-patch does is to move both the dma_ops pointer and the set_dma_ops()
-function from architecture-specific to architecture independent code. I
-don't think that it is possible to separate these two changes. But I
-understand that how I formulated the patch description caused confusion. I
-will rewrite the patch description to make it more clear before I repost
-this patch series.
+________________________________
+From: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+Sent: Wednesday, January 11, 2017 3:51 AM
+To: will.deacon-5wv7dgnIgG8@public.gmane.org; robin.murphy-5wv7dgnIgG8@public.gmane.org; mark.rutland-5wv7dgnIgG8@public.gmane.org; joro@8=
+bytes.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;=
+ linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Goutham, Sunil; Akula, Geethasowjanya; Chala=
+marla, Tirumalesh; Kapoor, Prasun; Tomasz Nowicki
+Subject: [PATCH 1/1] iommu/arm-smmu: Fix for ThunderX erratum #27704
 
-> And I'd argue that it should be dma_ops_set(), and dma_ops_get(), just
-> to keep the namespace sane, but that's probably a different set of
-> patches...
+The goal of erratum #27704 workaround was to make sure that ASIDs and VMIDs
+are unique across all SMMU instances on affected Cavium systems.
 
-Every time I rebase and retest this patch series on top of a new kernel
-version I have to modify some of the patches to compensate for changes in
-the architecture code. So I expect that once Linus merges these patches that
-he will have to resolve one or more merge conflicts. Including a rename of
-the functions that query and set the dma_ops pointer in this patch series
-would increase the number of merge conflicts triggered by this patch series
-and would make Linus' job harder. So I hope that you will allow me to
-postpone that rename until a later time ...
+Currently, the workaround code partitions ASIDs and VMIDs by increasing
+global cavium_smmu_context_count which in turn becomes the base ASID and VM=
+ID
+value for the given SMMU instance upon the context bank initialization.
 
-Bart.
+For systems with multiple SMMU instances this approach implies the risk
+of crossing 8-bit ASID, like for CN88xx capable of 4 SMMUv2, 128 context ba=
+nk each:
+SMMU_0 (0-127 ASID RANGE)
+SMMU_1 (127-255 ASID RANGE)
+SMMU_2 (256-383 ASID RANGE) <--- crossing 8-bit ASID
+SMMU_3 (384-511 ASID RANGE) <--- crossing 8-bit ASID
+
+Since we use 8-bit ASID now we effectively misconfigure ASID[15:8] bits for
+SMMU_CBn_TTBRm register. Also, we still use non-zero ASID[15:8] bits
+upon context invalidation. This patch adds 16-bit ASID support for stage-1
+AArch64 contexts for Cavium SMMUv2 model so that we use ASIDs consistently.
+
+Signed-off-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index a60cded..ae8f059 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -260,6 +260,7 @@ enum arm_smmu_s2cr_privcfg {
+
+ #define TTBCR2_SEP_SHIFT                15
+ #define TTBCR2_SEP_UPSTREAM             (0x7 << TTBCR2_SEP_SHIFT)
++#define TTBCR2_AS                      (1 << 4)
+
+ #define TTBRn_ASID_SHIFT                48
+
+@@ -778,6 +779,9 @@ static void arm_smmu_init_context_bank(struct arm_smmu_=
+domain *smmu_domain,
+                         reg =3D pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+                         reg2 =3D pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+                         reg2 |=3D TTBCR2_SEP_UPSTREAM;
++                       if (smmu->model =3D=3D CAVIUM_SMMUV2 &&
++                           cfg->fmt =3D=3D ARM_SMMU_CTX_FMT_AARCH64)
++                               reg2 |=3D TTBCR2_AS;
+
+
+it shouldn't be cavium specific just set this bet when we enable 16bit ASID=
+.
+
+
+                 }
+                 if (smmu->version > ARM_SMMU_V1)
+                         writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2)=
+;
+
+you can add my review by.
+--
+2.7.4
+
+
+--_000_BN6PR07MB31868DFFF2645E60E6CF36188E660BN6PR07MB3186namp_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
+1">
+<style type=3D"text/css" style=3D"display:none;"><!-- P {margin-top:0;margi=
+n-bottom:0;} --></style>
+</head>
+<body dir=3D"ltr">
+<div id=3D"divtagdefaultwrapper" style=3D"font-size:12pt;color:#000000;font=
+-family:Calibri,Arial,Helvetica,sans-serif;" dir=3D"ltr">
+<p><br>
+</p>
+<div style=3D"color: rgb(0, 0, 0);">
+<div>
+<hr tabindex=3D"-1" style=3D"display:inline-block; width:98%">
+<div id=3D"x_divRplyFwdMsg" dir=3D"ltr"><font face=3D"Calibri, sans-serif" =
+color=3D"#000000" style=3D"font-size:11pt"><b>From:</b> Tomasz Nowicki &lt;=
+tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org&gt;<br>
+<b>Sent:</b> Wednesday, January 11, 2017 3:51 AM<br>
+<b>To:</b> will.deacon-5wv7dgnIgG8@public.gmane.org; robin.murphy-5wv7dgnIgG8@public.gmane.org; mark.rutland-5wv7dgnIgG8@public.gmane.org;=
+ joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org<br>
+<b>Cc:</b> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm+QpoMPSDrYp@public.gmane.org=
+on.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Goutham, Sunil; Akula, Geethasowjanya=
+; Chalamarla, Tirumalesh; Kapoor, Prasun; Tomasz Nowicki<br>
+<b>Subject:</b> [PATCH 1/1] iommu/arm-smmu: Fix for ThunderX erratum #27704=
+</font>
+<div>&nbsp;</div>
+</div>
+</div>
+<font size=3D"2"><span style=3D"font-size:10pt;">
+<div class=3D"PlainText">The goal of erratum #27704 workaround was to make =
+sure that ASIDs and VMIDs<br>
+are unique across all SMMU instances on affected Cavium systems.<br>
+<br>
+Currently, the workaround code partitions ASIDs and VMIDs by increasing<br>
+global cavium_smmu_context_count which in turn becomes the base ASID and VM=
+ID<br>
+value for the given SMMU instance upon the context bank initialization.<br>
+<br>
+For systems with multiple SMMU instances this approach implies the risk<br>
+of crossing 8-bit ASID, like for CN88xx capable of 4 SMMUv2, 128 context ba=
+nk each:<br>
+SMMU_0 (0-127 ASID RANGE)<br>
+SMMU_1 (127-255 ASID RANGE)<br>
+SMMU_2 (256-383 ASID RANGE) &lt;--- crossing 8-bit ASID<br>
+SMMU_3 (384-511 ASID RANGE) &lt;--- crossing 8-bit ASID<br>
+<br>
+Since we use 8-bit ASID now we effectively misconfigure ASID[15:8] bits for=
+<br>
+SMMU_CBn_TTBRm register. Also, we still use non-zero ASID[15:8] bits<br>
+upon context invalidation. This patch adds 16-bit ASID support for stage-1<=
+br>
+AArch64 contexts for Cavium SMMUv2 model so that we use ASIDs consistently.=
+<br>
+<br>
+Signed-off-by: Tomasz Nowicki &lt;tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org&gt;<br>
+---<br>
+&nbsp;drivers/iommu/arm-smmu.c | 4 &#43;&#43;&#43;&#43;<br>
+&nbsp;1 file changed, 4 insertions(&#43;)<br>
+<br>
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c<br>
+index a60cded..ae8f059 100644<br>
+--- a/drivers/iommu/arm-smmu.c<br>
+&#43;&#43;&#43; b/drivers/iommu/arm-smmu.c<br>
+@@ -260,6 &#43;260,7 @@ enum arm_smmu_s2cr_privcfg {<br>
+&nbsp;<br>
+&nbsp;#define TTBCR2_SEP_SHIFT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 15<br>
+&nbsp;#define TTBCR2_SEP_UPSTREAM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (0x7 &lt;&lt; TTBCR2_SEP_SHIFT)<br>
+&#43;#define TTBCR2_AS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (=
+1 &lt;&lt; 4)<br>
+&nbsp;<br>
+&nbsp;#define TTBRn_ASID_SHIFT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 48<br>
+&nbsp;<br>
+@@ -778,6 &#43;779,9 @@ static void arm_smmu_init_context_bank(struct arm_s=
+mmu_domain *smmu_domain,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; reg =
+=3D pgtbl_cfg-&gt;arm_lpae_s1_cfg.tcr;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; reg2 =
+=3D pgtbl_cfg-&gt;arm_lpae_s1_cfg.tcr &gt;&gt; 32;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; reg2 =
+|=3D TTBCR2_SEP_UPSTREAM;<br>
+&#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (smmu-&gt=
+;model =3D=3D CAVIUM_SMMUV2 &amp;&amp;<br>
+&#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp; cfg-&gt;fmt =3D=3D ARM_SMMU_CTX_FMT_AARCH64)<br>
+&#43;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; reg2 |=3D TTBCR2_AS;</div>
+<div class=3D"PlainText"><br>
+</div>
+<div class=3D"PlainText"><br>
+</div>
+<div class=3D"PlainText">it shouldn't be cavium specific just set this bet =
+when we enable 16bit ASID.</div>
+<div class=3D"PlainText"><br>
+</div>
+<div class=3D"PlainText"><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp; }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp; if (smmu-&gt;version &gt; ARM_SMMU_V1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; write=
+l_relaxed(reg2, cb_base &#43; ARM_SMMU_CB_TTBCR2);</div>
+<div class=3D"PlainText"><br>
+</div>
+<div class=3D"PlainText">you can add my review by.&nbsp;<br>
+-- <br>
+2.7.4<br>
+<br>
+</div>
+</span></font></div>
+</div>
+</body>
+</html>
+
+--_000_BN6PR07MB31868DFFF2645E60E6CF36188E660BN6PR07MB3186namp_--
+
+--===============6693180377525463394==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============6693180377525463394==--
