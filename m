@@ -1,130 +1,71 @@
-From: Eric Auger <eric.auger@redhat.com>
-Subject: [PATCH v8 12/18] irqdomain: Add irq domain MSI and MSI_REMAP flags
-Date: Wed, 11 Jan 2017 09:41:48 +0000
-Message-ID: <1484127714-3263-13-git-send-email-eric.auger@redhat.com>
+From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v8 18/18] iommu/arm-smmu: Do not advertise
+	IOMMU_CAP_INTR_REMAP anymore
+Date: Wed, 11 Jan 2017 09:41:54 +0000
+Message-ID: <1484127714-3263-19-git-send-email-eric.auger@redhat.com>
 References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: eric.auger@redhat.com, eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org
-Cc: kvm@vger.kernel.org, drjones@redhat.com, linux-kernel@vger.kernel.org, pranav.sawargaonkar@gmail.com, iommu@lists.linux-foundation.org, punit.agrawal@arm.com, diana.craciun@nxp.com, gpkulkarni@gmail.com, shankerd@codeaurora.org, bharat.bhushan@nxp.com, geethasowjanya.akula@gmail.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1484127714-3263-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We introduce two new enum values for the irq domain flag:
-- IRQ_DOMAIN_FLAG_MSI indicates the irq domain corresponds to
-  an MSI domain
-- IRQ_DOMAIN_FLAG_MSI_REMAP indicates the irq domain has MSI
-  remapping capabilities.
+IOMMU_CAP_INTR_REMAP has been advertised in arm-smmu(-v3) although
+on ARM this property is not attached to the IOMMU but rather is
+implemented in the MSI controller (GICv3 ITS).
 
-Those values will be useful to check all MSI irq domains have
-MSI remapping support when assessing the safety of IRQ assignment
-to a guest.
+Now vfio_iommu_type1 checks MSI remapping capability at MSI controller
+level, let's correct this.
 
-irq_domain_hierarchical_is_msi_remap() allows to check if an
-irq domain or any parent implements MSI remapping.
-
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
-Reviewed-by: Marc Zyngier <marc.zyngier@arm.com>
+Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 
 ---
 
 v7 -> v8:
-- remove h variable in irq_domain_hierarchical_is_msi_remap
-- add Marc's R-b
-
-v6:
-- add IRQ_DOMAIN_FLAG_MSI as suggested by Marc
-- add irq_domain_is_msi, irq_domain_is_msi_remap and
-  irq_domain_hierarchical_is_msi_remap
+- added Will's A-b
 ---
- include/linux/irqdomain.h | 35 +++++++++++++++++++++++++++++++++++
- kernel/irq/irqdomain.c    | 14 ++++++++++++++
- 2 files changed, 49 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 2 --
+ drivers/iommu/arm-smmu.c    | 2 --
+ 2 files changed, 4 deletions(-)
 
-diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
-index ffb8460..bc2f571 100644
---- a/include/linux/irqdomain.h
-+++ b/include/linux/irqdomain.h
-@@ -183,6 +183,12 @@ enum {
- 	/* Irq domain is an IPI domain with single virq */
- 	IRQ_DOMAIN_FLAG_IPI_SINGLE	= (1 << 3),
- 
-+	/* Irq domain implements MSIs */
-+	IRQ_DOMAIN_FLAG_MSI		= (1 << 4),
-+
-+	/* Irq domain implements MSI remapping */
-+	IRQ_DOMAIN_FLAG_MSI_REMAP	= (1 << 5),
-+
- 	/*
- 	 * Flags starting from IRQ_DOMAIN_FLAG_NONCORE are reserved
- 	 * for implementation specific purposes and ignored by the
-@@ -446,6 +452,19 @@ static inline bool irq_domain_is_ipi_single(struct irq_domain *domain)
- {
- 	return domain->flags & IRQ_DOMAIN_FLAG_IPI_SINGLE;
- }
-+
-+static inline bool irq_domain_is_msi(struct irq_domain *domain)
-+{
-+	return domain->flags & IRQ_DOMAIN_FLAG_MSI;
-+}
-+
-+static inline bool irq_domain_is_msi_remap(struct irq_domain *domain)
-+{
-+	return domain->flags & IRQ_DOMAIN_FLAG_MSI_REMAP;
-+}
-+
-+extern bool irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain);
-+
- #else	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
- static inline void irq_domain_activate_irq(struct irq_data *data) { }
- static inline void irq_domain_deactivate_irq(struct irq_data *data) { }
-@@ -477,6 +496,22 @@ static inline bool irq_domain_is_ipi_single(struct irq_domain *domain)
- {
- 	return false;
- }
-+
-+static inline bool irq_domain_is_msi(struct irq_domain *domain)
-+{
-+	return false;
-+}
-+
-+static inline bool irq_domain_is_msi_remap(struct irq_domain *domain)
-+{
-+	return false;
-+}
-+
-+static inline bool
-+irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain)
-+{
-+	return false;
-+}
- #endif	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
- 
- #else /* CONFIG_IRQ_DOMAIN */
-diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
-index 8c0a0ae..876e131 100644
---- a/kernel/irq/irqdomain.c
-+++ b/kernel/irq/irqdomain.c
-@@ -1392,6 +1392,20 @@ static void irq_domain_check_hierarchy(struct irq_domain *domain)
- 	if (domain->ops->alloc)
- 		domain->flags |= IRQ_DOMAIN_FLAG_HIERARCHY;
- }
-+
-+/**
-+ * irq_domain_hierarchical_is_msi_remap - Check if the domain or any
-+ * parent has MSI remapping support
-+ * @domain: domain pointer
-+ */
-+bool irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain)
-+{
-+	for (; domain; domain = domain->parent) {
-+		if (irq_domain_is_msi_remap(domain))
-+			return true;
-+	}
-+	return false;
-+}
- #else	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
- /**
-  * irq_domain_get_irq_data - Get irq_data associated with @virq and @domain
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 6c4111c..d9cf6cb 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1375,8 +1375,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 	switch (cap) {
+ 	case IOMMU_CAP_CACHE_COHERENCY:
+ 		return true;
+-	case IOMMU_CAP_INTR_REMAP:
+-		return true; /* MSIs are just memory writes */
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index a354572..13d2600 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1374,8 +1374,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 		 * requests.
+ 		 */
+ 		return true;
+-	case IOMMU_CAP_INTR_REMAP:
+-		return true; /* MSIs are just memory writes */
+ 	case IOMMU_CAP_NOEXEC:
+ 		return true;
+ 	default:
 -- 
 1.9.1
