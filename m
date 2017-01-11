@@ -1,13 +1,13 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu: Fix for ThunderX erratum #27704
-Date: Wed, 11 Jan 2017 12:19:43 +0000
-Message-ID: <2c048126-a4d6-16af-987a-3174401a3960@arm.com>
-References: <1484135507-24872-1-git-send-email-tn@semihalf.com>
+Subject: Re: [RFC PATCH] IOMMU: SMMUv2: Support for Extended Stream ID (16 bit)
+Date: Wed, 11 Jan 2017 14:15:12 +0000
+Message-ID: <63d66004-bf8c-146d-2af4-b5f035159480@arm.com>
+References: <20170110115755.19102-1-aleksey.makarov@linaro.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484135507-24872-1-git-send-email-tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+In-Reply-To: <20170110115755.19102-1-aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,74 +17,177 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: Prasun.Kapoor-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Sunil.Goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Geethasowjanya.Akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/01/17 11:51, Tomasz Nowicki wrote:
-> The goal of erratum #27704 workaround was to make sure that ASIDs and VMIDs
-> are unique across all SMMU instances on affected Cavium systems.
+On 10/01/17 11:57, Aleksey Makarov wrote:
+> Enable the Extended Stream ID feature when available.
 > 
-> Currently, the workaround code partitions ASIDs and VMIDs by increasing
-> global cavium_smmu_context_count which in turn becomes the base ASID and VMID
-> value for the given SMMU instance upon the context bank initialization.
+> This patch on top of series "[PATCH v7 00/19] KVM PCIe/MSI passthrough
+> on ARM/ARM64 and IOVA reserved regions" by Eric Auger allows
+> to passthrough an external PCIe network card on a ThunderX server
+> successfully.
 > 
-> For systems with multiple SMMU instances this approach implies the risk
-> of crossing 8-bit ASID, like for CN88xx capable of 4 SMMUv2, 128 context bank each:
-> SMMU_0 (0-127 ASID RANGE)
-> SMMU_1 (127-255 ASID RANGE)
-> SMMU_2 (256-383 ASID RANGE) <--- crossing 8-bit ASID
-> SMMU_3 (384-511 ASID RANGE) <--- crossing 8-bit ASID
-
-I could swear that at some point in the original discussion it was said
-that the TLBs were only shared between pairs of SMMUs, so in fact 0/1
-and 2/3 are independent of each other - out of interest, have you
-managed to hit an actual problem in practice or is this patch just by
-inspection?
-
-Of course, depending on the SMMUs to probe in the right order isn't
-particularly robust, so it's still probably a worthwhile change.
-
-> Since we use 8-bit ASID now we effectively misconfigure ASID[15:8] bits for
-> SMMU_CBn_TTBRm register. Also, we still use non-zero ASID[15:8] bits
-> upon context invalidation. This patch adds 16-bit ASID support for stage-1
-> AArch64 contexts for Cavium SMMUv2 model so that we use ASIDs consistently.
+> Without this patch that card caused a warning like
 > 
-> Signed-off-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+> 	pci 0006:90:00.0: stream ID 0x9000 out of range for SMMU (0x7fff)
+> 
+> during boot.
+> 
+> Signed-off-by: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 > ---
->  drivers/iommu/arm-smmu.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>  drivers/iommu/arm-smmu.c | 53 +++++++++++++++++++++++++++++++++---------------
+>  1 file changed, 37 insertions(+), 16 deletions(-)
 > 
 > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index a60cded..ae8f059 100644
+> index 13d26009b8e0..d160c12828f4 100644
 > --- a/drivers/iommu/arm-smmu.c
 > +++ b/drivers/iommu/arm-smmu.c
-> @@ -260,6 +260,7 @@ enum arm_smmu_s2cr_privcfg {
+> @@ -24,6 +24,7 @@
+>   *	- v7/v8 long-descriptor format
+>   *	- Non-secure access to the SMMU
+>   *	- Context fault reporting
+> + *	- Extended Stream ID (16 bit)
+>   */
 >  
->  #define TTBCR2_SEP_SHIFT		15
->  #define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
-> +#define TTBCR2_AS			(1 << 4)
+>  #define pr_fmt(fmt) "arm-smmu: " fmt
+> @@ -87,6 +88,7 @@
+>  #define sCR0_CLIENTPD			(1 << 0)
+>  #define sCR0_GFRE			(1 << 1)
+>  #define sCR0_GFIE			(1 << 2)
+> +#define sCR0_EXIDENABLE			(1 << 3)
+>  #define sCR0_GCFGFRE			(1 << 4)
+>  #define sCR0_GCFGFIE			(1 << 5)
+>  #define sCR0_USFCFG			(1 << 10)
+> @@ -126,6 +128,7 @@
+>  #define ID0_NUMIRPT_MASK		0xff
+>  #define ID0_NUMSIDB_SHIFT		9
+>  #define ID0_NUMSIDB_MASK		0xf
+> +#define ID0_EXIDS			(1 << 8)
+>  #define ID0_NUMSMRG_SHIFT		0
+>  #define ID0_NUMSMRG_MASK		0xff
 >  
->  #define TTBRn_ASID_SHIFT		48
+> @@ -169,6 +172,7 @@
+>  #define ARM_SMMU_GR0_S2CR(n)		(0xc00 + ((n) << 2))
+>  #define S2CR_CBNDX_SHIFT		0
+>  #define S2CR_CBNDX_MASK			0xff
+> +#define S2CR_EXIDVALID			(1 << 10)
+>  #define S2CR_TYPE_SHIFT			16
+>  #define S2CR_TYPE_MASK			0x3
+>  enum arm_smmu_s2cr_type {
+> @@ -354,6 +358,7 @@ struct arm_smmu_device {
+>  #define ARM_SMMU_FEAT_FMT_AARCH64_64K	(1 << 9)
+>  #define ARM_SMMU_FEAT_FMT_AARCH32_L	(1 << 10)
+>  #define ARM_SMMU_FEAT_FMT_AARCH32_S	(1 << 11)
+> +#define ARM_SMMU_FEAT_EXIDS		(1 << 12)
+>  	u32				features;
 >  
-> @@ -778,6 +779,9 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
->  			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
->  			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
->  			reg2 |= TTBCR2_SEP_UPSTREAM;
-> +			if (smmu->model == CAVIUM_SMMUV2 &&
+>  #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
+> @@ -1051,7 +1056,7 @@ static void arm_smmu_write_smr(struct arm_smmu_device *smmu, int idx)
+>  	struct arm_smmu_smr *smr = smmu->smrs + idx;
+>  	u32 reg = smr->id << SMR_ID_SHIFT | smr->mask << SMR_MASK_SHIFT;
+>  
+> -	if (smr->valid)
+> +	if (!(smmu->features & ARM_SMMU_FEAT_EXIDS) && smr->valid)
+>  		reg |= SMR_VALID;
+>  	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_SMR(idx));
+>  }
+> @@ -1063,6 +1068,9 @@ static void arm_smmu_write_s2cr(struct arm_smmu_device *smmu, int idx)
+>  		  (s2cr->cbndx & S2CR_CBNDX_MASK) << S2CR_CBNDX_SHIFT |
+>  		  (s2cr->privcfg & S2CR_PRIVCFG_MASK) << S2CR_PRIVCFG_SHIFT;
+>  
+> +	if (smmu->features & ARM_SMMU_FEAT_EXIDS && smmu->smrs &&
+> +	    smmu->smrs[idx].valid)
+> +		reg |= S2CR_EXIDVALID;
+>  	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_S2CR(idx));
+>  }
+>  
+> @@ -1674,6 +1682,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>  	if (smmu->features & ARM_SMMU_FEAT_VMID16)
+>  		reg |= sCR0_VMID16EN;
+>  
+> +	if (smmu->features & ARM_SMMU_FEAT_EXIDS)
+> +		reg |= sCR0_EXIDENABLE;
+> +
+>  	/* Push the button */
+>  	__arm_smmu_tlb_sync(smmu);
+>  	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+> @@ -1761,7 +1772,12 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>  			   "\t(IDR0.CTTW overridden by FW configuration)\n");
+>  
+>  	/* Max. number of entries we have for stream matching/indexing */
+> -	size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
+> +	if (smmu->version == ARM_SMMU_V2 && id & ID0_EXIDS) {
+> +		smmu->features |= ARM_SMMU_FEAT_EXIDS;
+> +		size = (1 << 16);
 
-I'd be inclined to say "smmu->version == ARM_SMMU_V2" there, rather than
-make it Cavium-specific - we enable 16-bit VMID unconditionally where
-supported, so I don't see any reason not to handle 16-bit ASIDs in the
-same manner.
+Unnecessary parentheses.
 
-> +			    cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
-> +				reg2 |= TTBCR2_AS;
+> +	} else {
+> +		size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
+> +	}
+
+Given what the architecture says about the relationship between EXIDS
+and NUMSIDB, I suppose an even shorter version could be:
+
+	if (smmu->version == ARM_SMMU_V2 && id & ID0_EXIDS)
+		size *= 2;
+
+but I'm not sure that's actually any nicer to read.
+
+>  	smmu->streamid_mask = size - 1;
+>  	if (id & ID0_SMS) {
+>  		u32 smr;
+> @@ -1774,20 +1790,25 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>  			return -ENODEV;
 >  		}
->  		if (smmu->version > ARM_SMMU_V1)
->  			writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
+>  
+> -		/*
+> -		 * SMR.ID bits may not be preserved if the corresponding MASK
+> -		 * bits are set, so check each one separately. We can reject
+> -		 * masters later if they try to claim IDs outside these masks.
+> -		 */
+> -		smr = smmu->streamid_mask << SMR_ID_SHIFT;
+> -		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
+> -		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
+> -		smmu->streamid_mask = smr >> SMR_ID_SHIFT;
+> -
+> -		smr = smmu->streamid_mask << SMR_MASK_SHIFT;
+> -		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
+> -		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
+> -		smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
+> +		if (smmu->features & ARM_SMMU_FEAT_EXIDS) {
+> +			smmu->smr_mask_mask = smmu->streamid_mask;
+> +		} else {
+> +			/*
+> +			 * SMR.ID bits may not be preserved if the corresponding
+> +			 * MASK bits are set, so check each one separately.
+> +			 * We can reject masters later if they try to claim IDs
+> +			 * outside these masks.
+> +			 */
+> +			smr = smmu->streamid_mask << SMR_ID_SHIFT;
+> +			writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
+> +			smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
+> +			smmu->streamid_mask = smr >> SMR_ID_SHIFT;
+> +
+> +			smr = smmu->streamid_mask << SMR_MASK_SHIFT;
+> +			writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
+> +			smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
+> +			smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
+> +		}
+
+This hunk is quite possibly wrong. I don't see any guarantee in the
+architecture that all EXMASK/EXID bits *must* be implemented, and even
+so there's still no harm in the driver determining that experimentally.
+It looks like we need a bit of refactoring such that we move the probing
+of SMR fields to after counting and allocating the SME structures, then
+in the EXIDS case we can explicitly clear the SMEs and poke EXIDENABLE
+inbetween.
+
+Robin.
+
+>  
+>  		/* Zero-initialised to mark as invalid */
+>  		smmu->smrs = devm_kcalloc(smmu->dev, size, sizeof(*smmu->smrs),
 > 
-
-Either way:
-
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
