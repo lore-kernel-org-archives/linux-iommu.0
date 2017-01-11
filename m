@@ -1,112 +1,130 @@
-From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v8 16/18] vfio/type1: Allow transparent MSI IOVA allocation
-Date: Wed, 11 Jan 2017 09:41:52 +0000
-Message-ID: <1484127714-3263-17-git-send-email-eric.auger@redhat.com>
+From: Eric Auger <eric.auger@redhat.com>
+Subject: [PATCH v8 12/18] irqdomain: Add irq domain MSI and MSI_REMAP flags
+Date: Wed, 11 Jan 2017 09:41:48 +0000
+Message-ID: <1484127714-3263-13-git-send-email-eric.auger@redhat.com>
 References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484127714-3263-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: eric.auger@redhat.com, eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org
+Cc: kvm@vger.kernel.org, drjones@redhat.com, linux-kernel@vger.kernel.org, pranav.sawargaonkar@gmail.com, iommu@lists.linux-foundation.org, punit.agrawal@arm.com, diana.craciun@nxp.com, gpkulkarni@gmail.com, shankerd@codeaurora.org, bharat.bhushan@nxp.com, geethasowjanya.akula@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-When attaching a group to the container, check the group's
-reserved regions and test whether the IOMMU translates MSI
-transactions. If yes, we initialize an IOVA allocator through
-the iommu_get_msi_cookie API. This will allow the MSI IOVAs
-to be transparently allocated on MSI controller's compose().
+We introduce two new enum values for the irq domain flag:
+- IRQ_DOMAIN_FLAG_MSI indicates the irq domain corresponds to
+  an MSI domain
+- IRQ_DOMAIN_FLAG_MSI_REMAP indicates the irq domain has MSI
+  remapping capabilities.
 
-Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Those values will be useful to check all MSI irq domains have
+MSI remapping support when assessing the safety of IRQ assignment
+to a guest.
+
+irq_domain_hierarchical_is_msi_remap() allows to check if an
+irq domain or any parent implements MSI remapping.
+
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
+Reviewed-by: Marc Zyngier <marc.zyngier@arm.com>
 
 ---
 
-v3 -> v4:
-- test region's type: IOMMU_RESV_MSI
-- restructure the code to prepare for safety assessment
-- reword title
----
- drivers/vfio/vfio_iommu_type1.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+v7 -> v8:
+- remove h variable in irq_domain_hierarchical_is_msi_remap
+- add Marc's R-b
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 9266271..5651faf 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -39,6 +39,7 @@
- #include <linux/pid_namespace.h>
- #include <linux/mdev.h>
- #include <linux/notifier.h>
-+#include <linux/dma-iommu.h>
+v6:
+- add IRQ_DOMAIN_FLAG_MSI as suggested by Marc
+- add irq_domain_is_msi, irq_domain_is_msi_remap and
+  irq_domain_hierarchical_is_msi_remap
+---
+ include/linux/irqdomain.h | 35 +++++++++++++++++++++++++++++++++++
+ kernel/irq/irqdomain.c    | 14 ++++++++++++++
+ 2 files changed, 49 insertions(+)
+
+diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
+index ffb8460..bc2f571 100644
+--- a/include/linux/irqdomain.h
++++ b/include/linux/irqdomain.h
+@@ -183,6 +183,12 @@ enum {
+ 	/* Irq domain is an IPI domain with single virq */
+ 	IRQ_DOMAIN_FLAG_IPI_SINGLE	= (1 << 3),
  
- #define DRIVER_VERSION  "0.2"
- #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
-@@ -1181,6 +1182,28 @@ static struct vfio_group *find_iommu_group(struct vfio_domain *domain,
- 	return NULL;
- }
- 
-+static bool vfio_iommu_has_resv_msi(struct iommu_group *group,
-+				    phys_addr_t *base)
-+{
-+	struct list_head group_resv_regions;
-+	struct iommu_resv_region *region, *next;
-+	bool ret = false;
++	/* Irq domain implements MSIs */
++	IRQ_DOMAIN_FLAG_MSI		= (1 << 4),
 +
-+	INIT_LIST_HEAD(&group_resv_regions);
-+	iommu_get_group_resv_regions(group, &group_resv_regions);
-+	list_for_each_entry(region, &group_resv_regions, list) {
-+		if (region->type & IOMMU_RESV_MSI) {
-+			*base = region->start;
-+			ret = true;
-+			goto out;
-+		}
-+	}
-+out:
-+	list_for_each_entry_safe(region, next, &group_resv_regions, list)
-+		kfree(region);
-+	return ret;
++	/* Irq domain implements MSI remapping */
++	IRQ_DOMAIN_FLAG_MSI_REMAP	= (1 << 5),
++
+ 	/*
+ 	 * Flags starting from IRQ_DOMAIN_FLAG_NONCORE are reserved
+ 	 * for implementation specific purposes and ignored by the
+@@ -446,6 +452,19 @@ static inline bool irq_domain_is_ipi_single(struct irq_domain *domain)
+ {
+ 	return domain->flags & IRQ_DOMAIN_FLAG_IPI_SINGLE;
+ }
++
++static inline bool irq_domain_is_msi(struct irq_domain *domain)
++{
++	return domain->flags & IRQ_DOMAIN_FLAG_MSI;
 +}
 +
- static int vfio_iommu_type1_attach_group(void *iommu_data,
- 					 struct iommu_group *iommu_group)
++static inline bool irq_domain_is_msi_remap(struct irq_domain *domain)
++{
++	return domain->flags & IRQ_DOMAIN_FLAG_MSI_REMAP;
++}
++
++extern bool irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain);
++
+ #else	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
+ static inline void irq_domain_activate_irq(struct irq_data *data) { }
+ static inline void irq_domain_deactivate_irq(struct irq_data *data) { }
+@@ -477,6 +496,22 @@ static inline bool irq_domain_is_ipi_single(struct irq_domain *domain)
  {
-@@ -1189,6 +1212,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	struct vfio_domain *domain, *d;
- 	struct bus_type *bus = NULL, *mdev_bus;
- 	int ret;
-+	bool resv_msi;
-+	phys_addr_t resv_msi_base;
- 
- 	mutex_lock(&iommu->lock);
- 
-@@ -1258,6 +1283,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_domain;
- 
-+	resv_msi = vfio_iommu_has_resv_msi(iommu_group, &resv_msi_base);
+ 	return false;
+ }
 +
- 	INIT_LIST_HEAD(&domain->group_list);
- 	list_add(&group->next, &domain->group_list);
- 
-@@ -1304,6 +1331,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 	if (ret)
- 		goto out_detach;
- 
-+	if (resv_msi && iommu_get_msi_cookie(domain->domain, resv_msi_base))
-+		goto out_detach;
++static inline bool irq_domain_is_msi(struct irq_domain *domain)
++{
++	return false;
++}
 +
- 	list_add(&domain->next, &iommu->domain_list);
++static inline bool irq_domain_is_msi_remap(struct irq_domain *domain)
++{
++	return false;
++}
++
++static inline bool
++irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain)
++{
++	return false;
++}
+ #endif	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
  
- 	mutex_unlock(&iommu->lock);
+ #else /* CONFIG_IRQ_DOMAIN */
+diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
+index 8c0a0ae..876e131 100644
+--- a/kernel/irq/irqdomain.c
++++ b/kernel/irq/irqdomain.c
+@@ -1392,6 +1392,20 @@ static void irq_domain_check_hierarchy(struct irq_domain *domain)
+ 	if (domain->ops->alloc)
+ 		domain->flags |= IRQ_DOMAIN_FLAG_HIERARCHY;
+ }
++
++/**
++ * irq_domain_hierarchical_is_msi_remap - Check if the domain or any
++ * parent has MSI remapping support
++ * @domain: domain pointer
++ */
++bool irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain)
++{
++	for (; domain; domain = domain->parent) {
++		if (irq_domain_is_msi_remap(domain))
++			return true;
++	}
++	return false;
++}
+ #else	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
+ /**
+  * irq_domain_get_irq_data - Get irq_data associated with @virq and @domain
 -- 
 1.9.1
