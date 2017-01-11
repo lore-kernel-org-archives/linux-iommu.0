@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v8 13/18] genirq/msi: Set IRQ_DOMAIN_FLAG_MSI on MSI domain
-	creation
-Date: Wed, 11 Jan 2017 09:41:49 +0000
-Message-ID: <1484127714-3263-14-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v8 15/18] irqchip/gicv3-its: Sets IRQ_DOMAIN_FLAG_MSI_REMAP
+Date: Wed, 11 Jan 2017 09:41:51 +0000
+Message-ID: <1484127714-3263-16-git-send-email-eric.auger@redhat.com>
 References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,36 +21,31 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now we have a flag value indicating an IRQ domain implements MSI,
-let's set it on msi_create_irq_domain().
+The GICv3 ITS is MSI remapping capable. Let's advertise
+this property so that VFIO passthrough can assess IRQ safety.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Reviewed-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
 
 ---
 
-v7 -> v8
-- Added Marc's R-b
-
-v6: new
+v7 -> v8:
+- added Marc's R-b
 ---
- kernel/irq/msi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/irqchip/irq-gic-v3-its.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-index ee23006..ddc2f54 100644
---- a/kernel/irq/msi.c
-+++ b/kernel/irq/msi.c
-@@ -270,8 +270,8 @@ struct irq_domain *msi_create_irq_domain(struct fwnode_handle *fwnode,
- 	if (info->flags & MSI_FLAG_USE_DEF_CHIP_OPS)
- 		msi_domain_update_chip_ops(info);
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+index 69b040f..9d4fefc 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -1642,6 +1642,7 @@ static int its_init_domain(struct fwnode_handle *handle, struct its_node *its)
  
--	return irq_domain_create_hierarchy(parent, 0, 0, fwnode,
--					   &msi_domain_ops, info);
-+	return irq_domain_create_hierarchy(parent, IRQ_DOMAIN_FLAG_MSI, 0,
-+					   fwnode, &msi_domain_ops, info);
- }
- 
- int msi_domain_prepare_irqs(struct irq_domain *domain, struct device *dev,
+ 	inner_domain->parent = its_parent;
+ 	inner_domain->bus_token = DOMAIN_BUS_NEXUS;
++	inner_domain->flags |= IRQ_DOMAIN_FLAG_MSI_REMAP;
+ 	info->ops = &its_msi_domain_ops;
+ 	info->data = its;
+ 	inner_domain->host_data = info;
 -- 
 1.9.1
