@@ -1,15 +1,14 @@
-From: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
-Subject: RE: [PATCH v8 00/18] KVM PCIe/MSI passthrough on ARM/ARM64 and IOVA
-	reserved regions
-Date: Thu, 12 Jan 2017 03:59:44 +0000
-Message-ID: <AM5PR0401MB254547FE747461B3332721FC9A790@AM5PR0401MB2545.eurprd04.prod.outlook.com>
-References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
+From: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH 1/1] iommu/arm-smmu: Fix for ThunderX erratum #27704
+Date: Thu, 12 Jan 2017 07:41:57 +0100
+Message-ID: <b0eb1127-182e-63e3-6dd4-c3b40228b909@semihalf.com>
+References: <1484135507-24872-1-git-send-email-tn@semihalf.com>
+	<2c048126-a4d6-16af-987a-3174401a3960@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484127714-3263-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <2c048126-a4d6-16af-987a-3174401a3960-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,171 +18,92 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org" <jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
-Cc: "drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "punit.agrawal-5wv7dgnIgG8@public.gmane.org" <punit.agrawal-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: Prasun.Kapoor-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Sunil.Goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Geethasowjanya.Akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
+On 11.01.2017 13:19, Robin Murphy wrote:
+> On 11/01/17 11:51, Tomasz Nowicki wrote:
+>> The goal of erratum #27704 workaround was to make sure that ASIDs and VMIDs
+>> are unique across all SMMU instances on affected Cavium systems.
+>>
+>> Currently, the workaround code partitions ASIDs and VMIDs by increasing
+>> global cavium_smmu_context_count which in turn becomes the base ASID and VMID
+>> value for the given SMMU instance upon the context bank initialization.
+>>
+>> For systems with multiple SMMU instances this approach implies the risk
+>> of crossing 8-bit ASID, like for CN88xx capable of 4 SMMUv2, 128 context bank each:
+>> SMMU_0 (0-127 ASID RANGE)
+>> SMMU_1 (127-255 ASID RANGE)
+>> SMMU_2 (256-383 ASID RANGE) <--- crossing 8-bit ASID
+>> SMMU_3 (384-511 ASID RANGE) <--- crossing 8-bit ASID
+>
+> I could swear that at some point in the original discussion it was said
+> that the TLBs were only shared between pairs of SMMUs, so in fact 0/1
+> and 2/3 are independent of each other
 
+Indeed TLBs are only shared between pairs of SMMUs but the workaround 
+makes sure ASIDs are unique across all SMMU instances so we do not have 
+to bother about SMMUs probe order.
 
-> -----Original Message-----
-> From: Eric Auger [mailto:eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org]
-> Sent: Wednesday, January 11, 2017 3:12 PM
-> To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org;
-> christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; marc.zyngier-5wv7dgnIgG8@public.gmane.org;
-> robin.murphy-5wv7dgnIgG8@public.gmane.org; alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org;
-> will.deacon-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org;
-> jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org; linux-
-> kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org;
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; punit.agrawal-5wv7dgnIgG8@public.gmane.org; Diana Madalina
-> Craciun <diana.craciun-3arQi8VN3Tc@public.gmane.org>; gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org;
-> shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org; Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>;
-> geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-> Subject: [PATCH v8 00/18] KVM PCIe/MSI passthrough on ARM/ARM64 and
-> IOVA reserved regions
-> 
-> Following LPC discussions, we now report reserved regions through the
-> iommu-group sysfs reserved_regions attribute file.
-> 
-> Reserved regions are populated through the IOMMU get_resv_region
-> callback (former get_dm_regions), now implemented by amd-iommu, intel-
-> iommu and arm-smmu:
-> - the intel-iommu reports the [0xfee00000 - 0xfeefffff] MSI window
->   as a reserved region and RMRR regions as direct-mapped regions.
-> - the amd-iommu reports device direct mapped regions, the MSI region
->   and HT regions.
-> - the arm-smmu reports the MSI window (arbitrarily located at
->   0x8000000 and 1MB large).
-> 
-> Unsafe interrupt assignment is tested by enumerating all MSI irq domains
-> and checking MSI remapping is supported in the above hierarchy.
-> This check is done in case we detect the iommu translates MSI (an
-> IOMMU_RESV_MSI window exists). Otherwise the IRQ remapping capability
-> is checked at IOMMU level. Obviously this is a defensive IRQ safety
-> assessment: Assuming there are several MSI controllers in the system and at
-> least one does not implement IRQ remapping, the assignment will be
-> considered as unsafe (even if this controller is not acessible from the
-> assigned devices).
-> 
-> The series first patch stems from Robin's branch:
-> http://linux-arm.org/git?p=linux-
-> rm.git;a=shortlog;h=refs/heads/iommu/misc
-> 
-> Best Regards
-> 
-> Eric
-> 
-> Git: complete series available at
-> https://github.com/eauger/linux/tree/v4.10-rc3-reserved-v8
+  - out of interest, have you
+> managed to hit an actual problem in practice or is this patch just by
+> inspection?
 
-This series is tested on NXP platform, if you want you can add my tested by
-Tested-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
+Except SMMU0/1 devices all other devices under other SMMUs will fail on 
+guest power off/on. Since we try to invalidate tlb with 16bit ASID but 
+we actually have 8 bit zero padded 16 bit entry.
 
-Thanks
--Bharat
+>
+> Of course, depending on the SMMUs to probe in the right order isn't
+> particularly robust, so it's still probably a worthwhile change.
+>
+>> Since we use 8-bit ASID now we effectively misconfigure ASID[15:8] bits for
+>> SMMU_CBn_TTBRm register. Also, we still use non-zero ASID[15:8] bits
+>> upon context invalidation. This patch adds 16-bit ASID support for stage-1
+>> AArch64 contexts for Cavium SMMUv2 model so that we use ASIDs consistently.
+>>
+>> Signed-off-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+>> ---
+>>  drivers/iommu/arm-smmu.c | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>>
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index a60cded..ae8f059 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -260,6 +260,7 @@ enum arm_smmu_s2cr_privcfg {
+>>
+>>  #define TTBCR2_SEP_SHIFT		15
+>>  #define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
+>> +#define TTBCR2_AS			(1 << 4)
+>>
+>>  #define TTBRn_ASID_SHIFT		48
+>>
+>> @@ -778,6 +779,9 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>>  			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+>>  			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+>>  			reg2 |= TTBCR2_SEP_UPSTREAM;
+>> +			if (smmu->model == CAVIUM_SMMUV2 &&
+>
+> I'd be inclined to say "smmu->version == ARM_SMMU_V2" there, rather than
+> make it Cavium-specific - we enable 16-bit VMID unconditionally where
+> supported, so I don't see any reason not to handle 16-bit ASIDs in the
+> same manner.
 
-> 
-> istory:
-> 
-> PATCHv7 -> PATCHv8
-> - take into account Marc's comments and apply his R-b
-> - remove iommu_group_remove_file call in iommu_group_release
-> - add Will's A-b
-> - removed [PATCH v7 01/19] iommu/dma: Implement PCI allocation
->   optimisation and updated iommu/dma: Allow MSI-only cookies
->   as per Robin's indications
-> 
-> PATCHv6 -> PATCHv7:
-> - iommu/dma: Implement PCI allocation optimisation was added to apply
->   iommu/dma: Allow MSI-only cookies
-> - report Intel RMRR as direct-mapped regions
-> - report the type in the iommu group sysfs reserved_regions file
-> - do not merge regions of different types when building the list
->   of reserved regions
-> - intgeration Robin's "iommu/dma: Allow MSI-only cookies" last
->   version
-> - update Documentation/ABI/testing/sysfs-kernel-iommu_groups
-> - rename IOMMU_RESV_NOMAP into IOMMU_RESV_RESERVED
-> 
-> PATCHv5 -> PATCHv6
-> - Introduce IRQ_DOMAIN_FLAG_MSI as suggested by Marc
-> - irq_domain_is_msi, irq_domain_is_msi_remap,
->   irq_domain_hierarchical_is_msi_remap,
-> - set IRQ_DOMAIN_FLAG_MSI in msi_create_irq_domain
-> - fix compil issue on i386
-> - rework test at VFIO level
-> 
-> RFCv4 -> PATCHv5
-> - fix IRQ security assessment by looking at irq domain parents
-> - check DOMAIN_BUS_FSL_MC_MSI irq domains
-> - AMD MSI and HT regions are exposed in iommu group sysfs
-> 
-> RFCv3 -> RFCv4:
-> - arm-smmu driver does not register PCI host bridge windows as
->   reserved regions anymore
-> - Implement reserved region get/put callbacks also in arm-smmuv3
-> - take the iommu_group lock on iommu_get_group_resv_regions
-> - add a type field in iommu_resv_region instead of using prot
-> - init the region list_head in iommu_alloc_resv_region, also
->   add type parameter
-> - iommu_insert_resv_region manage overlaps and sort reserved
->   windows
-> - address IRQ safety assessment by enumerating all the MSI irq
->   domains and checking the MSI_REMAP flag
-> - update Documentation/ABI/testing/sysfs-kernel-iommu_groups
-> 
-> RFC v2 -> v3:
-> - switch to an iommu-group sysfs API
-> - use new dummy allocator provided by Robin
-> - dummy allocator initialized by vfio-iommu-type1 after enumerating
->   the reserved regions
-> - at the moment ARM MSI base address/size is left unchanged compared
->   to v2
-> - we currently report reserved regions and not usable IOVA regions as
->   requested by Alex
-> 
-> RFC v1 -> v2:
-> - fix intel_add_reserved_regions
-> - add mutex lock/unlock in vfio_iommu_type1
-> 
-> 
-> Eric Auger (17):
->   iommu: Rename iommu_dm_regions into iommu_resv_regions
->   iommu: Add a new type field in iommu_resv_region
->   iommu: iommu_alloc_resv_region
->   iommu: Only map direct mapped regions
->   iommu: iommu_get_group_resv_regions
->   iommu: Implement reserved_regions iommu-group sysfs file
->   iommu/vt-d: Implement reserved region get/put callbacks
->   iommu/amd: Declare MSI and HT regions as reserved IOVA regions
->   iommu/arm-smmu: Implement reserved region get/put callbacks
->   iommu/arm-smmu-v3: Implement reserved region get/put callbacks
->   irqdomain: Add irq domain MSI and MSI_REMAP flags
->   genirq/msi: Set IRQ_DOMAIN_FLAG_MSI on MSI domain creation
->   irqdomain: irq_domain_check_msi_remap
->   irqchip/gicv3-its: Sets IRQ_DOMAIN_FLAG_MSI_REMAP
->   vfio/type1: Allow transparent MSI IOVA allocation
->   vfio/type1: Check MSI remapping at irq domain level
->   iommu/arm-smmu: Do not advertise IOMMU_CAP_INTR_REMAP anymore
-> 
-> Robin Murphy (1):
->   iommu/dma: Allow MSI-only cookies
-> 
->  .../ABI/testing/sysfs-kernel-iommu_groups          |  12 ++
->  drivers/iommu/amd_iommu.c                          |  54 ++++---
->  drivers/iommu/arm-smmu-v3.c                        |  30 +++-
->  drivers/iommu/arm-smmu.c                           |  30 +++-
->  drivers/iommu/dma-iommu.c                          | 119 +++++++++++---
->  drivers/iommu/intel-iommu.c                        |  92 ++++++++---
->  drivers/iommu/iommu.c                              | 177 +++++++++++++++++++--
->  drivers/irqchip/irq-gic-v3-its.c                   |   1 +
->  drivers/vfio/vfio_iommu_type1.c                    |  37 ++++-
->  include/linux/dma-iommu.h                          |   6 +
->  include/linux/iommu.h                              |  46 ++++--
->  include/linux/irqdomain.h                          |  36 +++++
->  kernel/irq/irqdomain.c                             |  36 +++++
->  kernel/irq/msi.c                                   |   4 +-
->  14 files changed, 587 insertions(+), 93 deletions(-)
-> 
-> --
-> 1.9.1
+I agree, I will enable 16-bit ASID for ARM_SMMU_V2.
+
+>
+>> +			    cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
+>> +				reg2 |= TTBCR2_AS;
+>>  		}
+>>  		if (smmu->version > ARM_SMMU_V1)
+>>  			writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
+>>
+>
+> Either way:
+>
+> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Thanks Robin!
+
+Tomasz
