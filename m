@@ -1,47 +1,189 @@
-From: "gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org" <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: Re: [PATCH 2/9] Move dma_ops from archdata into struct device
-Date: Thu, 12 Jan 2017 08:35:11 +0100
-Message-ID: <20170112073511.GA23347@kroah.com>
-References: <20170111005648.14988-1-bart.vanassche@sandisk.com>
-	<20170111005648.14988-3-bart.vanassche@sandisk.com>
-	<20170111064803.GB26893@kroah.com>
-	<1484158589.2619.14.camel@sandisk.com>
-	<20170111203100.GB17895@kroah.com>
-	<1484173670.2619.28.camel@sandisk.com>
+From: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH v8 00/18] KVM PCIe/MSI passthrough on ARM/ARM64 and IOVA
+ reserved regions
+Date: Thu, 12 Jan 2017 08:40:17 +0100
+Message-ID: <bcadbebb-2e1d-9977-da56-817acd9f3dfb@redhat.com>
+References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
+ <AM5PR0401MB254547FE747461B3332721FC9A790@AM5PR0401MB2545.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1484173670.2619.28.camel-XdAiOPVOjttBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bart Van Assche <Bart.VanAssche-XdAiOPVOjttBDgjK7y7TUQ@public.gmane.org>
-Cc: "linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org" <linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, "dalias-8zAoT0mYgF4@public.gmane.org" <dalias-8zAoT0mYgF4@public.gmane.org>, "linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-ia64-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "a-jacquiot-l0cyMroinI0@public.gmane.org" <a-jacquiot-l0cyMroinI0@public.gmane.org>, "catalin.marinas-5wv7dgnIgG8@public.gmane.org" <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org" <x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org" <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, "dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <dhowells-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, "sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <sparclinux-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org" <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, "egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org" <egtvedt-BrfabpQBY5qlHtIdYg32fQ@public.gmane.org>, "jonas-A9uVI2HLR7kOP4wsBPIw7w@public.gmane.org" <jonas-A9uVI2HLR7kOP4wsBPIw7w@public.gmane.org>, "linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-s390-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "jesper.nilsson-VrBV9hrLPhE@public.gmane.org" <jesper.nilsson-VrBV9hrLPhE@public.gmane.org>, "linux-am33-list-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <linux-am33-list-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"linux-c6x-dev-jPsnJVOj+W6hPH1hqNUYSQ@public.gmane.org" <l>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <AM5PR0401MB254547FE747461B3332721FC9A790@AM5PR0401MB2545.eurprd04.prod.outlook.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Bharat Bhushan <bharat.bhushan@nxp.com>, "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>, "christoffer.dall@linaro.org" <christoffer.dall@linaro.org>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "will.deacon@arm.com" <will.deacon@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "tglx@linutronix.de" <tglx@linutronix.de>, "jason@lakedaemon.net" <jason@lakedaemon.net>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "drjones@redhat.com" <drjones@redhat.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "pranav.sawargaonkar@gmail.com" <pranav.sawargaonkar@gmail.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "punit.agrawal@arm.com" <punit.agrawal@arm.com>, Diana Madalina Craciun <diana.craciun@nxp.com>, "gpkulkarni@gmail.com" <gpkulkarni@gmail.com>, "shankerd@codeaurora.org" <shankerd@codeaurora.org>, "geethasowjanya.akula@gmail.com" <geethasowjanya.akula@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 11, 2017 at 10:28:05PM +0000, Bart Van Assche wrote:
-> On Wed, 2017-01-11 at 21:31 +0100, gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org wrote:
-> > That's a big sign that your patch series needs work.  Break it up into
-> > smaller pieces, it should be possible, which will make merges easier
-> > (well, different in a way.)
+Hi Bharat,
+On 12/01/2017 04:59, Bharat Bhushan wrote:
 > 
-> Hello Greg,
 > 
-> Can you have a look at the attached patches? These three patches are a
-> splitup of the single patch at the start of this e-mail thread.
+>> -----Original Message-----
+>> From: Eric Auger [mailto:eric.auger@redhat.com]
+>> Sent: Wednesday, January 11, 2017 3:12 PM
+>> To: eric.auger@redhat.com; eric.auger.pro@gmail.com;
+>> christoffer.dall@linaro.org; marc.zyngier@arm.com;
+>> robin.murphy@arm.com; alex.williamson@redhat.com;
+>> will.deacon@arm.com; joro@8bytes.org; tglx@linutronix.de;
+>> jason@lakedaemon.net; linux-arm-kernel@lists.infradead.org
+>> Cc: kvm@vger.kernel.org; drjones@redhat.com; linux-
+>> kernel@vger.kernel.org; pranav.sawargaonkar@gmail.com;
+>> iommu@lists.linux-foundation.org; punit.agrawal@arm.com; Diana Madalina
+>> Craciun <diana.craciun@nxp.com>; gpkulkarni@gmail.com;
+>> shankerd@codeaurora.org; Bharat Bhushan <bharat.bhushan@nxp.com>;
+>> geethasowjanya.akula@gmail.com
+>> Subject: [PATCH v8 00/18] KVM PCIe/MSI passthrough on ARM/ARM64 and
+>> IOVA reserved regions
+>>
+>> Following LPC discussions, we now report reserved regions through the
+>> iommu-group sysfs reserved_regions attribute file.
+>>
+>> Reserved regions are populated through the IOMMU get_resv_region
+>> callback (former get_dm_regions), now implemented by amd-iommu, intel-
+>> iommu and arm-smmu:
+>> - the intel-iommu reports the [0xfee00000 - 0xfeefffff] MSI window
+>>   as a reserved region and RMRR regions as direct-mapped regions.
+>> - the amd-iommu reports device direct mapped regions, the MSI region
+>>   and HT regions.
+>> - the arm-smmu reports the MSI window (arbitrarily located at
+>>   0x8000000 and 1MB large).
+>>
+>> Unsafe interrupt assignment is tested by enumerating all MSI irq domains
+>> and checking MSI remapping is supported in the above hierarchy.
+>> This check is done in case we detect the iommu translates MSI (an
+>> IOMMU_RESV_MSI window exists). Otherwise the IRQ remapping capability
+>> is checked at IOMMU level. Obviously this is a defensive IRQ safety
+>> assessment: Assuming there are several MSI controllers in the system and at
+>> least one does not implement IRQ remapping, the assignment will be
+>> considered as unsafe (even if this controller is not acessible from the
+>> assigned devices).
+>>
+>> The series first patch stems from Robin's branch:
+>> http://linux-arm.org/git?p=linux-
+>> rm.git;a=shortlog;h=refs/heads/iommu/misc
+>>
+>> Best Regards
+>>
+>> Eric
+>>
+>> Git: complete series available at
+>> https://github.com/eauger/linux/tree/v4.10-rc3-reserved-v8
+> 
+> This series is tested on NXP platform, if you want you can add my tested by
+> Tested-by: Bharat Bhushan <bharat.bhushan@nxp.com>
+Thank you for this!
 
-Please send them in the proper format (i.e. one patch per email), and I
-will be glad to review them.  Otherwise it's really hard to do so, would
-you want to review attachments?
+Best Regards
 
-thanks,
-
-greg k-h
+Eric
+> 
+> Thanks
+> -Bharat
+> 
+>>
+>> istory:
+>>
+>> PATCHv7 -> PATCHv8
+>> - take into account Marc's comments and apply his R-b
+>> - remove iommu_group_remove_file call in iommu_group_release
+>> - add Will's A-b
+>> - removed [PATCH v7 01/19] iommu/dma: Implement PCI allocation
+>>   optimisation and updated iommu/dma: Allow MSI-only cookies
+>>   as per Robin's indications
+>>
+>> PATCHv6 -> PATCHv7:
+>> - iommu/dma: Implement PCI allocation optimisation was added to apply
+>>   iommu/dma: Allow MSI-only cookies
+>> - report Intel RMRR as direct-mapped regions
+>> - report the type in the iommu group sysfs reserved_regions file
+>> - do not merge regions of different types when building the list
+>>   of reserved regions
+>> - intgeration Robin's "iommu/dma: Allow MSI-only cookies" last
+>>   version
+>> - update Documentation/ABI/testing/sysfs-kernel-iommu_groups
+>> - rename IOMMU_RESV_NOMAP into IOMMU_RESV_RESERVED
+>>
+>> PATCHv5 -> PATCHv6
+>> - Introduce IRQ_DOMAIN_FLAG_MSI as suggested by Marc
+>> - irq_domain_is_msi, irq_domain_is_msi_remap,
+>>   irq_domain_hierarchical_is_msi_remap,
+>> - set IRQ_DOMAIN_FLAG_MSI in msi_create_irq_domain
+>> - fix compil issue on i386
+>> - rework test at VFIO level
+>>
+>> RFCv4 -> PATCHv5
+>> - fix IRQ security assessment by looking at irq domain parents
+>> - check DOMAIN_BUS_FSL_MC_MSI irq domains
+>> - AMD MSI and HT regions are exposed in iommu group sysfs
+>>
+>> RFCv3 -> RFCv4:
+>> - arm-smmu driver does not register PCI host bridge windows as
+>>   reserved regions anymore
+>> - Implement reserved region get/put callbacks also in arm-smmuv3
+>> - take the iommu_group lock on iommu_get_group_resv_regions
+>> - add a type field in iommu_resv_region instead of using prot
+>> - init the region list_head in iommu_alloc_resv_region, also
+>>   add type parameter
+>> - iommu_insert_resv_region manage overlaps and sort reserved
+>>   windows
+>> - address IRQ safety assessment by enumerating all the MSI irq
+>>   domains and checking the MSI_REMAP flag
+>> - update Documentation/ABI/testing/sysfs-kernel-iommu_groups
+>>
+>> RFC v2 -> v3:
+>> - switch to an iommu-group sysfs API
+>> - use new dummy allocator provided by Robin
+>> - dummy allocator initialized by vfio-iommu-type1 after enumerating
+>>   the reserved regions
+>> - at the moment ARM MSI base address/size is left unchanged compared
+>>   to v2
+>> - we currently report reserved regions and not usable IOVA regions as
+>>   requested by Alex
+>>
+>> RFC v1 -> v2:
+>> - fix intel_add_reserved_regions
+>> - add mutex lock/unlock in vfio_iommu_type1
+>>
+>>
+>> Eric Auger (17):
+>>   iommu: Rename iommu_dm_regions into iommu_resv_regions
+>>   iommu: Add a new type field in iommu_resv_region
+>>   iommu: iommu_alloc_resv_region
+>>   iommu: Only map direct mapped regions
+>>   iommu: iommu_get_group_resv_regions
+>>   iommu: Implement reserved_regions iommu-group sysfs file
+>>   iommu/vt-d: Implement reserved region get/put callbacks
+>>   iommu/amd: Declare MSI and HT regions as reserved IOVA regions
+>>   iommu/arm-smmu: Implement reserved region get/put callbacks
+>>   iommu/arm-smmu-v3: Implement reserved region get/put callbacks
+>>   irqdomain: Add irq domain MSI and MSI_REMAP flags
+>>   genirq/msi: Set IRQ_DOMAIN_FLAG_MSI on MSI domain creation
+>>   irqdomain: irq_domain_check_msi_remap
+>>   irqchip/gicv3-its: Sets IRQ_DOMAIN_FLAG_MSI_REMAP
+>>   vfio/type1: Allow transparent MSI IOVA allocation
+>>   vfio/type1: Check MSI remapping at irq domain level
+>>   iommu/arm-smmu: Do not advertise IOMMU_CAP_INTR_REMAP anymore
+>>
+>> Robin Murphy (1):
+>>   iommu/dma: Allow MSI-only cookies
+>>
+>>  .../ABI/testing/sysfs-kernel-iommu_groups          |  12 ++
+>>  drivers/iommu/amd_iommu.c                          |  54 ++++---
+>>  drivers/iommu/arm-smmu-v3.c                        |  30 +++-
+>>  drivers/iommu/arm-smmu.c                           |  30 +++-
+>>  drivers/iommu/dma-iommu.c                          | 119 +++++++++++---
+>>  drivers/iommu/intel-iommu.c                        |  92 ++++++++---
+>>  drivers/iommu/iommu.c                              | 177 +++++++++++++++++++--
+>>  drivers/irqchip/irq-gic-v3-its.c                   |   1 +
+>>  drivers/vfio/vfio_iommu_type1.c                    |  37 ++++-
+>>  include/linux/dma-iommu.h                          |   6 +
+>>  include/linux/iommu.h                              |  46 ++++--
+>>  include/linux/irqdomain.h                          |  36 +++++
+>>  kernel/irq/irqdomain.c                             |  36 +++++
+>>  kernel/irq/msi.c                                   |   4 +-
+>>  14 files changed, 587 insertions(+), 93 deletions(-)
+>>
+>> --
+>> 1.9.1
+> 
