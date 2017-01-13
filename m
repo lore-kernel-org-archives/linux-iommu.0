@@ -1,112 +1,176 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu: Fix for ThunderX erratum #27704
-Date: Fri, 13 Jan 2017 10:54:29 +0000
-Message-ID: <26969cd9-5af5-ff4d-75d8-425469c02705@arm.com>
-References: <1484135507-24872-1-git-send-email-tn@semihalf.com>
- <2c048126-a4d6-16af-987a-3174401a3960@arm.com>
- <b0eb1127-182e-63e3-6dd4-c3b40228b909@semihalf.com>
- <1c3253d8-bcaa-e507-cddf-dec952362104@semihalf.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1c3253d8-bcaa-e507-cddf-dec952362104@semihalf.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Tomasz Nowicki <tn@semihalf.com>, will.deacon@arm.com, mark.rutland@arm.com, joro@8bytes.org
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Sunil.Goutham@cavium.com, Geethasowjanya.Akula@cavium.com, Tirumalesh.Chalamarla@cavium.com, Prasun.Kapoor@cavium.com
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] iommu/dma: Add support for DMA_ATTR_FORCE_CONTIGUOUS
+Date: Fri, 13 Jan 2017 12:07:54 +0100
+Message-ID: <1484305674-15018-1-git-send-email-geert+renesas@glider.be>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Magnus Damm <magnus.damm@gmail.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, Geert Uytterhoeven <geert+renesas@glider.be>
 List-Id: iommu@lists.linux-foundation.org
 
-On 13/01/17 10:43, Tomasz Nowicki wrote:
-> On 12.01.2017 07:41, Tomasz Nowicki wrote:
->> On 11.01.2017 13:19, Robin Murphy wrote:
->>> On 11/01/17 11:51, Tomasz Nowicki wrote:
->>>> The goal of erratum #27704 workaround was to make sure that ASIDs and
->>>> VMIDs
->>>> are unique across all SMMU instances on affected Cavium systems.
->>>>
->>>> Currently, the workaround code partitions ASIDs and VMIDs by increasing
->>>> global cavium_smmu_context_count which in turn becomes the base ASID
->>>> and VMID
->>>> value for the given SMMU instance upon the context bank initialization.
->>>>
->>>> For systems with multiple SMMU instances this approach implies the risk
->>>> of crossing 8-bit ASID, like for CN88xx capable of 4 SMMUv2, 128
->>>> context bank each:
->>>> SMMU_0 (0-127 ASID RANGE)
->>>> SMMU_1 (127-255 ASID RANGE)
->>>> SMMU_2 (256-383 ASID RANGE) <--- crossing 8-bit ASID
->>>> SMMU_3 (384-511 ASID RANGE) <--- crossing 8-bit ASID
->>>
->>> I could swear that at some point in the original discussion it was said
->>> that the TLBs were only shared between pairs of SMMUs, so in fact 0/1
->>> and 2/3 are independent of each other
->>
->> Indeed TLBs are only shared between pairs of SMMUs but the workaround
->> makes sure ASIDs are unique across all SMMU instances so we do not have
->> to bother about SMMUs probe order.
->>
->>  - out of interest, have you
->>> managed to hit an actual problem in practice or is this patch just by
->>> inspection?
->>
->> Except SMMU0/1 devices all other devices under other SMMUs will fail on
->> guest power off/on. Since we try to invalidate tlb with 16bit ASID but
->> we actually have 8 bit zero padded 16 bit entry.
->>
->>>
->>> Of course, depending on the SMMUs to probe in the right order isn't
->>> particularly robust, so it's still probably a worthwhile change.
->>>
->>>> Since we use 8-bit ASID now we effectively misconfigure ASID[15:8]
->>>> bits for
->>>> SMMU_CBn_TTBRm register. Also, we still use non-zero ASID[15:8] bits
->>>> upon context invalidation. This patch adds 16-bit ASID support for
->>>> stage-1
->>>> AArch64 contexts for Cavium SMMUv2 model so that we use ASIDs
->>>> consistently.
->>>>
->>>> Signed-off-by: Tomasz Nowicki <tn@semihalf.com>
->>>> ---
->>>>  drivers/iommu/arm-smmu.c | 4 ++++
->>>>  1 file changed, 4 insertions(+)
->>>>
->>>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->>>> index a60cded..ae8f059 100644
->>>> --- a/drivers/iommu/arm-smmu.c
->>>> +++ b/drivers/iommu/arm-smmu.c
->>>> @@ -260,6 +260,7 @@ enum arm_smmu_s2cr_privcfg {
->>>>
->>>>  #define TTBCR2_SEP_SHIFT        15
->>>>  #define TTBCR2_SEP_UPSTREAM        (0x7 << TTBCR2_SEP_SHIFT)
->>>> +#define TTBCR2_AS            (1 << 4)
->>>>
->>>>  #define TTBRn_ASID_SHIFT        48
->>>>
->>>> @@ -778,6 +779,9 @@ static void arm_smmu_init_context_bank(struct
->>>> arm_smmu_domain *smmu_domain,
->>>>              reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
->>>>              reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
->>>>              reg2 |= TTBCR2_SEP_UPSTREAM;
->>>> +            if (smmu->model == CAVIUM_SMMUV2 &&
->>>
->>> I'd be inclined to say "smmu->version == ARM_SMMU_V2" there, rather than
->>> make it Cavium-specific - we enable 16-bit VMID unconditionally where
->>> supported, so I don't see any reason not to handle 16-bit ASIDs in the
->>> same manner.
->>
->> I agree, I will enable 16-bit ASID for ARM_SMMU_V2.
->>
-> 
-> Actually, the ARM_SMMU_CTX_FMT_AARCH64 context check is all we need here:
-> 
-> +            if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
-> +                reg2 |= TTBCR2_AS;
+Add support for DMA_ATTR_FORCE_CONTIGUOUS to the generic IOMMU DMA code.
+This allows to allocate physically contiguous DMA buffers on arm64
+systems with an IOMMU.
 
-Ah, clever! The horrible SMMUv1 64KB supplement supports AArch64
-contexts without being SMMUv2, but of course doesn't have stage 1 :)
+Note that as this uses the CMA allocator, setting this attribute has a
+runtime-dependency on CONFIG_DMA_CMA, just like on arm32.
 
-Robin.
+For arm64 systems using swiotlb, no changes are needed to support the
+allocation of physically contiguous DMA buffers:
+  - swiotlb always uses physically contiguous buffers (up to
+    IO_TLB_SEGSIZE = 128 pages),
+  - arm64's __dma_alloc_coherent() already calls
+    dma_alloc_from_contiguous() when CMA is available.
 
-> 
-> Thanks,
-> Tomasz
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ arch/arm64/mm/dma-mapping.c |  4 ++--
+ drivers/iommu/dma-iommu.c   | 44 ++++++++++++++++++++++++++++++++++----------
+ include/linux/dma-iommu.h   |  2 +-
+ 3 files changed, 37 insertions(+), 13 deletions(-)
+
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 1d7d5d2881db7c19..5fba14a21163e41f 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -589,7 +589,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+ 		addr = dma_common_pages_remap(pages, size, VM_USERMAP, prot,
+ 					      __builtin_return_address(0));
+ 		if (!addr)
+-			iommu_dma_free(dev, pages, iosize, handle);
++			iommu_dma_free(dev, pages, iosize, handle, attrs);
+ 	} else {
+ 		struct page *page;
+ 		/*
+@@ -642,7 +642,7 @@ static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+ 
+ 		if (WARN_ON(!area || !area->pages))
+ 			return;
+-		iommu_dma_free(dev, area->pages, iosize, &handle);
++		iommu_dma_free(dev, area->pages, iosize, &handle, attrs);
+ 		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
+ 	} else {
+ 		iommu_dma_unmap_page(dev, handle, iosize, 0, 0);
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 2db0d641cf4505b5..b991e8dcbbbb35c5 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -30,6 +30,7 @@
+ #include <linux/pci.h>
+ #include <linux/scatterlist.h>
+ #include <linux/vmalloc.h>
++#include <linux/dma-contiguous.h>
+ 
+ struct iommu_dma_msi_page {
+ 	struct list_head	list;
+@@ -238,15 +239,21 @@ static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr)
+ 	__free_iova(iovad, iova);
+ }
+ 
+-static void __iommu_dma_free_pages(struct page **pages, int count)
++static void __iommu_dma_free_pages(struct device *dev, struct page **pages,
++				   int count, unsigned long attrs)
+ {
+-	while (count--)
+-		__free_page(pages[count]);
++	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
++		dma_release_from_contiguous(dev, pages[0], count);
++	} else {
++		while (count--)
++			__free_page(pages[count]);
++	}
+ 	kvfree(pages);
+ }
+ 
+-static struct page **__iommu_dma_alloc_pages(unsigned int count,
+-		unsigned long order_mask, gfp_t gfp)
++static struct page **__iommu_dma_alloc_pages(struct device *dev,
++		unsigned int count, unsigned long order_mask, gfp_t gfp,
++		unsigned long attrs)
+ {
+ 	struct page **pages;
+ 	unsigned int i = 0, array_size = count * sizeof(*pages);
+@@ -265,6 +272,20 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
+ 	/* IOMMU can map any pages, so himem can also be used here */
+ 	gfp |= __GFP_NOWARN | __GFP_HIGHMEM;
+ 
++	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
++		int order = get_order(count << PAGE_SHIFT);
++		struct page *page;
++
++		page = dma_alloc_from_contiguous(dev, count, order);
++		if (!page)
++			return NULL;
++
++		while (count--)
++			pages[i++] = page++;
++
++		return pages;
++	}
++
+ 	while (count) {
+ 		struct page *page = NULL;
+ 		unsigned int order_size;
+@@ -294,7 +315,7 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
+ 			__free_pages(page, order);
+ 		}
+ 		if (!page) {
+-			__iommu_dma_free_pages(pages, i);
++			__iommu_dma_free_pages(dev, pages, i, attrs);
+ 			return NULL;
+ 		}
+ 		count -= order_size;
+@@ -310,15 +331,17 @@ static struct page **__iommu_dma_alloc_pages(unsigned int count,
+  * @pages: Array of buffer pages as returned by iommu_dma_alloc()
+  * @size: Size of buffer in bytes
+  * @handle: DMA address of buffer
++ * @attrs: DMA attributes used for allocation of this buffer
+  *
+  * Frees both the pages associated with the buffer, and the array
+  * describing them
+  */
+ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
+-		dma_addr_t *handle)
++		dma_addr_t *handle, unsigned long attrs)
+ {
+ 	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), *handle);
+-	__iommu_dma_free_pages(pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
++	__iommu_dma_free_pages(dev, pages, PAGE_ALIGN(size) >> PAGE_SHIFT,
++			       attrs);
+ 	*handle = DMA_ERROR_CODE;
+ }
+ 
+@@ -365,7 +388,8 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+ 		alloc_sizes = min_size;
+ 
+ 	count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+-	pages = __iommu_dma_alloc_pages(count, alloc_sizes >> PAGE_SHIFT, gfp);
++	pages = __iommu_dma_alloc_pages(dev, count, alloc_sizes >> PAGE_SHIFT,
++					gfp, attrs);
+ 	if (!pages)
+ 		return NULL;
+ 
+@@ -403,7 +427,7 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+ out_free_iova:
+ 	__free_iova(iovad, iova);
+ out_free_pages:
+-	__iommu_dma_free_pages(pages, count);
++	__iommu_dma_free_pages(dev, pages, count, attrs);
+ 	return NULL;
+ }
+ 
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index 7f7e9a7e3839966c..35fa6b7f9bac9b35 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -44,7 +44,7 @@ struct page **iommu_dma_alloc(struct device *dev, size_t size, gfp_t gfp,
+ 		unsigned long attrs, int prot, dma_addr_t *handle,
+ 		void (*flush_page)(struct device *, const void *, phys_addr_t));
+ void iommu_dma_free(struct device *dev, struct page **pages, size_t size,
+-		dma_addr_t *handle);
++		dma_addr_t *handle, unsigned long attrs);
+ 
+ int iommu_dma_mmap(struct page **pages, size_t size, struct vm_area_struct *vma);
+ 
+-- 
+1.9.1
