@@ -1,54 +1,66 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH] iommu/dma: Add support for DMA_ATTR_FORCE_CONTIGUOUS
-Date: Fri, 13 Jan 2017 13:36:21 +0100
-Message-ID: <CAMuHMdVnteoor56EYG1Ka7t0o8+OKNehGnk6YUciTXdEQ5KKcQ@mail.gmail.com>
-References: <1484305674-15018-1-git-send-email-geert+renesas@glider.be>
- <d336ef3b-4fe6-5ebb-9fed-071fa79028df@arm.com> <CAMuHMdWBfTm_QRuB7x-ZDh0bgGmHokqm7=F2b0rjQTYzizC9hA@mail.gmail.com>
- <0e5c066f-ddf6-30ce-392e-79bd0f401a18@arm.com>
+From: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v8 00/18] KVM PCIe/MSI passthrough on ARM/ARM64 and IOVA
+	reserved regions
+Date: Fri, 13 Jan 2017 14:59:16 +0100
+Message-ID: <e1e6d9cf-5fb8-e118-3a47-4c6be77c21a3@semihalf.com>
+References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <0e5c066f-ddf6-30ce-392e-79bd0f401a18@arm.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <joro@8bytes.org>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Magnus Damm <magnus.damm@gmail.com>, iommu@lists.linux-foundation.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1484127714-3263-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hello Eric,
 
-On Fri, Jan 13, 2017 at 1:17 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 13/01/17 11:59, Geert Uytterhoeven wrote:
->> On Fri, Jan 13, 2017 at 12:32 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->>> On 13/01/17 11:07, Geert Uytterhoeven wrote:
->>>> Add support for DMA_ATTR_FORCE_CONTIGUOUS to the generic IOMMU DMA code.
->>>> This allows to allocate physically contiguous DMA buffers on arm64
->>>> systems with an IOMMU.
->>>
->>> Can anyone explain what this attribute is actually used for? I've never
->>> quite figured it out.
->>
->> My understanding is that DMA_ATTR_FORCE_CONTIGUOUS is needed when using
->> an IOMMU but wanting the buffers to be both contiguous in IOVA space and
->> physically contiguous to allow passing to devices without IOMMU.
->>
->> Main users are graphic and remote processors.
+On 11.01.2017 10:41, Eric Auger wrote:
+> Following LPC discussions, we now report reserved regions through
+> the iommu-group sysfs reserved_regions attribute file.
 >
-> Sure, I assumed it must be to do with buffer sharing, but the systems
-> I'm aware of which have IOMMUs in their media subsystems tend to have
-> them in front of every IP block involved, so I was curious as to what
-> bit of non-IOMMU hardware wanted to play too. The lone in-tree use in
-> the Exynos DRM driver was never very revealing, and the new one I see in
-> the Qualcomm PIL driver frankly looks redundant to me.
+> Reserved regions are populated through the IOMMU get_resv_region
+> callback (former get_dm_regions), now implemented by amd-iommu,
+> intel-iommu and arm-smmu:
+> - the intel-iommu reports the [0xfee00000 - 0xfeefffff] MSI window
+>   as a reserved region and RMRR regions as direct-mapped regions.
+> - the amd-iommu reports device direct mapped regions, the MSI region
+>   and HT regions.
+> - the arm-smmu reports the MSI window (arbitrarily located at
+>   0x8000000 and 1MB large).
+>
+> Unsafe interrupt assignment is tested by enumerating all MSI irq
+> domains and checking MSI remapping is supported in the above hierarchy.
+> This check is done in case we detect the iommu translates MSI
+> (an IOMMU_RESV_MSI window exists). Otherwise the IRQ remapping
+> capability is checked at IOMMU level. Obviously this is a defensive
+> IRQ safety assessment: Assuming there are several MSI controllers
+> in the system and at least one does not implement IRQ remapping,
+> the assignment will be considered as unsafe (even if this controller
+> is not acessible from the assigned devices).
+>
+> The series first patch stems from Robin's branch:
+> http://linux-arm.org/git?p=linux-rm.git;a=shortlog;h=refs/heads/iommu/misc
+>
+> Best Regards
+>
+> Eric
+>
+> Git: complete series available at
+> https://github.com/eauger/linux/tree/v4.10-rc3-reserved-v8
 
-I'll let the GPU-literate people comment on that...
+I tested the series on ThunderX with internal 10G VNIC and Intel IXGBE 
+NIC. Please feel free to add my:
+Tested-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks,
+Tomasz
