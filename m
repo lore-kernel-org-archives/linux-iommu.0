@@ -1,15 +1,17 @@
-From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v8 17/18] vfio/type1: Check MSI remapping at irq domain
-	level
-Date: Fri, 13 Jan 2017 16:04:59 -0700
-Message-ID: <20170113160459.3d186d48@t450s.home>
-References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
-	<1484127714-3263-18-git-send-email-eric.auger@redhat.com>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH v7 7/7] perf/amd/iommu: Enable support for multiple IOMMUs
+Date: Sat, 14 Jan 2017 09:58:29 +0700
+Message-ID: <46834d61-d8b2-201f-99dd-5727994281a5@amd.com>
+References: <1484019227-11473-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1484019227-11473-8-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<20170112175223.qsui53kln7vpmwop@pd.tnic>
+	<6db9d730-b927-5a21-877c-fabb60b66bfe@amd.com>
+	<20170113114925.x6f4r5qcidksnfes@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484127714-3263-18-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <20170113114925.x6f4r5qcidksnfes-fF5Pk5pvG8Y@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,65 +21,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 11 Jan 2017 09:41:53 +0000
-Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org> wrote:
-
-> In case the IOMMU translates MSI transactions (typical case
-> on ARM), we check MSI remapping capability at IRQ domain
-> level. Otherwise it is checked at IOMMU level.
-> 
-> At this stage the arm-smmu-(v3) still advertise the
-> IOMMU_CAP_INTR_REMAP capability at IOMMU level. This will be
-> removed in subsequent patches.
-> 
-> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
 
-Acked-by: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+On 1/13/17 18:49, Borislav Petkov wrote:
+> On Fri, Jan 13, 2017 at 05:24:01PM +0700, Suravee Suthikulpanit wrote:
+>> IIUC, Perf tools looks at the /sys/devices/xxxxx to identify
+>> availalble PMUs. Are you planning to have perf tools look at
+>> /sys/devices/system/iommu/xxx instead?
+>
+> No, I'm planning to understand what do you mean exactly. Because the
+> PMUs are, as I'm being pointed to, here:
+>
+> #define EVENT_SOURCE_DEVICE_PATH "/bus/event_source/devices/"
+>
+> Do you mean that, per chance?
+>
 
- 
-> ---
-> 
-> v6: rewrite test
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 5651faf..ec903a0 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -40,6 +40,7 @@
->  #include <linux/mdev.h>
->  #include <linux/notifier.h>
->  #include <linux/dma-iommu.h>
-> +#include <linux/irqdomain.h>
->  
->  #define DRIVER_VERSION  "0.2"
->  #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>"
-> @@ -1212,7 +1213,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	struct vfio_domain *domain, *d;
->  	struct bus_type *bus = NULL, *mdev_bus;
->  	int ret;
-> -	bool resv_msi;
-> +	bool resv_msi, msi_remap;
->  	phys_addr_t resv_msi_base;
->  
->  	mutex_lock(&iommu->lock);
-> @@ -1288,8 +1289,10 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	INIT_LIST_HEAD(&domain->group_list);
->  	list_add(&group->next, &domain->group_list);
->  
-> -	if (!allow_unsafe_interrupts &&
-> -	    !iommu_capable(bus, IOMMU_CAP_INTR_REMAP)) {
-> +	msi_remap = resv_msi ? irq_domain_check_msi_remap() :
-> +				iommu_capable(bus, IOMMU_CAP_INTR_REMAP);
-> +
-> +	if (!allow_unsafe_interrupts && !msi_remap) {
->  		pr_warn("%s: No interrupt remapping support.  Use the module param \"allow_unsafe_interrupts\" to enable VFIO IOMMU support on this platform\n",
->  		       __func__);
->  		ret = -EPERM;
+Ah, okay. I can see the following directory path:
+
+# ls -l  /sys/devices/
+drwxr-xr-x  5 root root 0 Jan 13 20:36 amd_iommu_0
+
+# ls -l /sys/bus/event_source/devices/
+lrwxrwxrwx 1 root root 0 Jan 13 20:33 amd_iommu_0 -> ../../../devices/amd_iommu_0
+
+I'll update the commit log to mention /bus/event_source/devices/amd_iommu_X instead.
+
+Thanks,
+S
