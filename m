@@ -1,17 +1,16 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v7 7/7] perf/amd/iommu: Enable support for multiple IOMMUs
-Date: Sat, 14 Jan 2017 09:58:29 +0700
-Message-ID: <46834d61-d8b2-201f-99dd-5727994281a5@amd.com>
+Subject: Re: [PATCH v7 4/7] perf/amd/iommu: Declare pr_fmt and remove
+	unnecessary pr_debug
+Date: Sat, 14 Jan 2017 17:13:33 +0700
+Message-ID: <fdbd3d91-9b01-20a2-50a7-1ae6a0d71a47@amd.com>
 References: <1484019227-11473-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1484019227-11473-8-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<20170112175223.qsui53kln7vpmwop@pd.tnic>
-	<6db9d730-b927-5a21-877c-fabb60b66bfe@amd.com>
-	<20170113114925.x6f4r5qcidksnfes@pd.tnic>
+	<1484019227-11473-5-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<20170112101942.5z6e6s344awbi4uk@pd.tnic>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170113114925.x6f4r5qcidksnfes-fF5Pk5pvG8Y@public.gmane.org>
+In-Reply-To: <20170112101942.5z6e6s344awbi4uk-fF5Pk5pvG8Y@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,29 +26,21 @@ List-Id: iommu@lists.linux-foundation.org
 
 
 
-On 1/13/17 18:49, Borislav Petkov wrote:
-> On Fri, Jan 13, 2017 at 05:24:01PM +0700, Suravee Suthikulpanit wrote:
->> IIUC, Perf tools looks at the /sys/devices/xxxxx to identify
->> availalble PMUs. Are you planning to have perf tools look at
->> /sys/devices/system/iommu/xxx instead?
+On 1/12/17 17:19, Borislav Petkov wrote:
+> Also, looking at that driver more, this needs to die, like now:
 >
-> No, I'm planning to understand what do you mean exactly. Because the
-> PMUs are, as I'm being pointed to, here:
+> #define format_group    attr_groups[0]
+> #define cpumask_group   attr_groups[1]
+> #define events_group    attr_groups[2]
+> #define null_group      attr_groups[3]
 >
-> #define EVENT_SOURCE_DEVICE_PATH "/bus/event_source/devices/"
+> Like, kill it dead. Define a separate array, look what the other drivers
+> do, whatever, but this is too ugly to live.
 >
-> Do you mean that, per chance?
+> Thanks.
 >
+> --
 
-Ah, okay. I can see the following directory path:
+Okay... you got it :)
 
-# ls -l  /sys/devices/
-drwxr-xr-x  5 root root 0 Jan 13 20:36 amd_iommu_0
-
-# ls -l /sys/bus/event_source/devices/
-lrwxrwxrwx 1 root root 0 Jan 13 20:33 amd_iommu_0 -> ../../../devices/amd_iommu_0
-
-I'll update the commit log to mention /bus/event_source/devices/amd_iommu_X instead.
-
-Thanks,
 S
