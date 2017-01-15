@@ -1,22 +1,15 @@
-From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: RE: [PATCH V7 01/11] iommu/of: Refactor of_iommu_configure() for
-	error handling
-Date: Tue, 31 Jan 2017 18:41:44 +0530
-Message-ID: <006001d27bc3$96156770$c2403650$@codeaurora.org>
-References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org>
-	<1485188293-20263-2-git-send-email-sricharan@codeaurora.org>
-	<4388779a-0e83-fadc-83f4-98c46c88d42e@semihalf.com>
-	<c7bad124-d9f2-0ddf-168f-0b1950d3e1ed@arm.com>
-	<009901d278c7$34fee230$9efca690$@codeaurora.org>
-	<d27f04da-7d34-9640-1639-790d0732ed93@arm.com>
-	<003601d27ac6$84866840$8d9338c0$@codeaurora.org>
-	<8387d057-15bd-500c-134e-0e731ff837d6@arm.com>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH] iommu/dma: Add support for DMA_ATTR_FORCE_CONTIGUOUS
+Date: Sun, 15 Jan 2017 23:12:49 +0200
+Message-ID: <1782501.BR5drHV8iS@avalon>
+References: <1484305674-15018-1-git-send-email-geert+renesas@glider.be>
+	<CAMuHMdWBfTm_QRuB7x-ZDh0bgGmHokqm7=F2b0rjQTYzizC9hA@mail.gmail.com>
+	<0e5c066f-ddf6-30ce-392e-79bd0f401a18@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <8387d057-15bd-500c-134e-0e731ff837d6-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-us
+In-Reply-To: <0e5c066f-ddf6-30ce-392e-79bd0f401a18-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,88 +19,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>, 'Tomasz Nowicki' <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Robin,
 
->>>>>> I gave the whole patch set a try on ThunderX. really_probe() is failing
->>>>>> on dma_configure()->of_pci_iommu_init() for each PCI device.
->>>>>
->>>>> When you say "failing", do you mean cleanly, or with a crash? I've
->>>>> managed to hit __of_match_node() dereferencing NULL from
->>>>> of_iommu_xlate() in a horribly complicated chain of events, which I'm
->>>>> trying to figure out now, and I wonder if the two might be related.
->>>>
->>>> Sorry that there is crash still. __of_match_node seems to checking
->>>> for NULL arguments , feels like some invalid pointer was passed in.
->>>> Is there any particular sequence to try for this ?
->>>
->>> Ah, I did figure it out - it wasn't actually a NULL dereference, but an
->>> unmapped address. Turns out __iommu_of_table is in initdata, so any
->>> driver probing after init, connected to an unprobed IOMMU (in this case
->>> disabled in DT), trips over trying to match the now-freed table. I'm
->>> working on the fix - technically the bug's in my patch (#2) anyway ;)
->>>
->>
->> Ok, thanks for bringing this out. There is also an issue that
->> Sinan has mentioned while testing the ACPI hotplug path, probably
->> its related to the above, not sure. I will try to check more on that
->> in the meanwhile. Then, taking your fix and fixing the hotplug case
->> i will do one more repost.
->
->OK, I've finally settled on the below fixup for patch #2 - I have some
->follow-on ideas for eventually getting of the magic table altogether,
->but they can wait until we've got the baseline functionality sorted.
->Updated full patch here:
->
->http://www.linux-arm.org/git?p=linux-rm.git;a=commitdiff;h=5616af885f7c5c24f7239d5c689583b2b583c407
+On Friday 13 Jan 2017 12:17:24 Robin Murphy wrote:
+> On 13/01/17 11:59, Geert Uytterhoeven wrote:
+> > On Fri, Jan 13, 2017 at 12:32 PM, Robin Murphy wrote:
+> >> On 13/01/17 11:07, Geert Uytterhoeven wrote:
+> >>> Add support for DMA_ATTR_FORCE_CONTIGUOUS to the generic IOMMU DMA code.
+> >>> This allows to allocate physically contiguous DMA buffers on arm64
+> >>> systems with an IOMMU.
+> >> 
+> >> Can anyone explain what this attribute is actually used for? I've never
+> >> quite figured it out.
+> > 
+> > My understanding is that DMA_ATTR_FORCE_CONTIGUOUS is needed when using
+> > an IOMMU but wanting the buffers to be both contiguous in IOVA space and
+> > physically contiguous to allow passing to devices without IOMMU.
+> > 
+> > Main users are graphic and remote processors.
+> 
+> Sure, I assumed it must be to do with buffer sharing, but the systems
+> I'm aware of which have IOMMUs in their media subsystems tend to have
+> them in front of every IP block involved, so I was curious as to what
+> bit of non-IOMMU hardware wanted to play too. The lone in-tree use in
+> the Exynos DRM driver was never very revealing, and the new one I see in
+> the Qualcomm PIL driver frankly looks redundant to me.
 
-Thanks, will use this. Yes, the magic iommu_of_table makes little
-use with probe deferral in place, except that we are using it at the
-moment. And the other hotplug issue is not related this though.
+If two (or more) devices with different memory requirements are involved in 
+buffer sharing, we need to either allocate and export buffers from the device 
+with the strictest requirements, or to implement a central buffer allocator. 
+In any case, I don't think DMA_ATTR_FORCE_CONTIGUOUS is the right solution to 
+that problem.
 
+Forcing contiguous allocation can however help with performance optimization, 
+as mapping physically contiguous memory through IOMMUs can make use of larger 
+page sizes.
+
+-- 
 Regards,
- Sricharan
 
-
->-----8<-----
->
->diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->index 349bd1d01612..1f92d98237d5 100644
->--- a/drivers/iommu/of_iommu.c
->+++ b/drivers/iommu/of_iommu.c
->@@ -96,6 +96,19 @@ int of_get_dma_window(struct device_node *dn, const
->char *prefix, int index,
-> }
-> EXPORT_SYMBOL_GPL(of_get_dma_window);
->
->+static bool of_iommu_driver_present(struct device_node *np)
->+{
->+	/*
->+	 * If the IOMMU still isn't ready by the time we reach init, assume
->+	 * it never will be. We don't want to defer indefinitely, nor attempt
->+	 * to dereference __iommu_of_table after it's been freed.
->+	 */
->+	if (system_state > SYSTEM_BOOTING)
->+		return false;
->+
->+	return of_match_node(&__iommu_of_table, np);
->+}
->+
-> static const struct iommu_ops
-> *of_iommu_xlate(struct device *dev, struct of_phandle_args *iommu_spec)
-> {
->@@ -105,7 +118,7 @@ static const struct iommu_ops
->
-> 	ops = iommu_get_instance(fwnode);
-> 	if ((ops && !ops->of_xlate) ||
->-	    (!ops && !of_match_node(&__iommu_of_table, iommu_spec->np)))
->+	    (!ops && !of_iommu_driver_present(iommu_spec->np)))
-> 		return NULL;
->
-> 	err = iommu_fwspec_init(dev, &iommu_spec->np->fwnode, ops);
->--
->To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
->the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
->More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Laurent Pinchart
