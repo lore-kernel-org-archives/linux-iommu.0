@@ -1,94 +1,86 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v7 1/7] perf/amd/iommu: Misc fix up perf_iommu_read
-Date: Sun, 15 Jan 2017 09:36:10 +0700
-Message-ID: <8d529523-21b4-d917-e83f-ed616a29083c@amd.com>
-References: <1484019227-11473-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1484019227-11473-2-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<20170111115735.GI3107@twins.programming.kicks-ass.net>
+From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH v4 5/5] ARM: dts: mt2701: add iommu/smi dtsi node for
+ mt2701
+Date: Mon, 16 Jan 2017 10:48:50 +0800
+Message-ID: <1484534930.27576.1.camel@mtksdaap41>
+References: <1465379461-14757-1-git-send-email-honghui.zhang@mediatek.com>
+         <1465379461-14757-6-git-send-email-honghui.zhang@mediatek.com>
+         <09eaf7a5-2b18-1ea6-5699-2e968c6b79a4@gmail.com>
+         <51441f39-e5b5-2cce-63ab-47bd3cf298b3@gmail.com>
+         <1467595950.8420.2.camel@mtksdaap41> <577A1794.5040509@gmail.com>
+         <5a45da57-9262-b1ff-1c6a-c5c211c1bfd4@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170111115735.GI3107-ndre7Fmf5hadTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <5a45da57-9262-b1ff-1c6a-c5c211c1bfd4-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Peter,
+On Fri, 2017-01-13 at 15:54 +0100, Matthias Brugger wrote:
+> 
+> On 04/07/16 10:00, Matthias Brugger wrote:
+> >
+> >
+> > On 04/07/16 03:32, Honghui Zhang wrote:
+> >> On Sun, 2016-07-03 at 21:12 +0200, Matthias Brugger wrote:
+> >>>
+> >>> On 07/03/2016 08:24 AM, Matthias Brugger wrote:
+> >>>>
+> >>>>
+> >>>> On 06/08/2016 11:51 AM, honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
+> >>>>> From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> >>>>>
+> >>>>> Add the dtsi node of iommu and smi for mt2701.
+> >>>>>
+> >>>>> Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
+> >>>>> ---
+> >>>>>   arch/arm/boot/dts/mt2701.dtsi | 51
+> >>>>> +++++++++++++++++++++++++++++++++++++++++++
+> >>>>>   1 file changed, 51 insertions(+)
+> >>>>>
+> >>>>
+> >>>> Applied,
+> >>>
+> >>> Please resend the patch including the infracfg and mmsys node.
+> >>>
+> >>
+> >> Hi, Matthias,
+> >>
+> >> Please hold this one.
+> >> This one is based on CCF "arm: dts: mt2701: Add clock controller device
+> >> nodes"[1] and power domain patch "Mediatek MT2701 SCPSYS power domain
+> >> support v7"[2],
+> >> But these two patchset are still being reviewed now.
+> >>
+> >> Do you think it's better that I send this one later after ccf and power
+> >> domain patch got merged? I will send this patch later if it's OK with
+> >> you.
+> >>
+> >
+> > Sounds good.
+> 
+> Applied now to v4.10-next/dts32
+> 
+> Thanks.
+> 
 
-On 1/11/17 18:57, Peter Zijlstra wrote:
-> On Mon, Jan 09, 2017 at 09:33:41PM -0600, Suravee Suthikulpanit wrote:
->> This patch contains the following minor fixup:
->>   * Fixed overflow handling since u64 delta would lose the MSB sign bit.
->
-> Please explain.. afaict this actually introduces a bug.
+Thanks.
 
-I'm changing the u64 to s64 ..... (see below)
+> >
+> > Thanks a lot,
+> > Matthias
+> >
+> >> Thanks.
+> >> [1] https://patchwork.kernel.org/patch/9109081
+> >> [2]
+> >> http://lists.infradead.org/pipermail/linux-mediatek/2016-May/005429.html
+> >>
 
->
->> diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
->> index b28200d..f387baf 100644
->> --- a/arch/x86/events/amd/iommu.c
->> +++ b/arch/x86/events/amd/iommu.c
->> @@ -319,29 +319,30 @@ static void perf_iommu_start(struct perf_event *event, int flags)
->>
->>  static void perf_iommu_read(struct perf_event *event)
->>  {
->> -	u64 count = 0ULL;
->> -	u64 prev_raw_count = 0ULL;
->> -	u64 delta = 0ULL;
->> +	u64 cnt, prev;
->> +	s64 delta;
 
-.... (here) because we had a discussion (https://lkml.org/lkml/2016/2/18/325),
-and you suggested the following:
-
-     Your overflow handling is broken, you want delta to be s64. Otherwise:
-
-	delta >>= COUNTER_SHIFT;
-
-     ends up as a SHR and you loose the MSB sign bits.
-
->>  	struct hw_perf_event *hwc = &event->hw;
->>  	pr_debug("perf: amd_iommu:perf_iommu_read\n");
->>
->>  	amd_iommu_pc_get_set_reg_val(_GET_DEVID(event),
->>  				_GET_BANK(event), _GET_CNTR(event),
->> -				IOMMU_PC_COUNTER_REG, &count, false);
->> +				IOMMU_PC_COUNTER_REG, &cnt, false);
->>
->>  	/* IOMMU pc counter register is only 48 bits */
->> -	count &= 0xFFFFFFFFFFFFULL;
->> +	cnt &= GENMASK_ULL(48, 0);
->>
->> -	prev_raw_count =  local64_read(&hwc->prev_count);
->> -	if (local64_cmpxchg(&hwc->prev_count, prev_raw_count,
->> -					count) != prev_raw_count)
->> -		return;
->> +	prev = local64_read(&hwc->prev_count);
->>
->> -	/* Handling 48-bit counter overflowing */
->> -	delta = (count << COUNTER_SHIFT) - (prev_raw_count << COUNTER_SHIFT);
->> +	/*
->> +	 * Since we do not enable counter overflow interrupts,
->> +	 * we do not have to worry about prev_count changing on us.
->> +	 */
->
-> So you cannot group this event with a software event that reads this
-> from their sample?
-
-Not sure if I understand you point here. When you say sample, I assume you mean
-the profiling mode used w/ perf record. These counters are not supported for
-sampling mode. So, we only perf stat (i.e. counting mode).
-
-Thanks,
-Suravee
+--
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
