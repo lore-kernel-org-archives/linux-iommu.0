@@ -1,11 +1,13 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v8 0/9] perf/amd/iommu: Enable multi-IOMMU support
-Date: Mon, 16 Jan 2017 01:23:27 -0600
-Message-ID: <1484551416-5440-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH v8 2/9] perf/amd/iommu: Clean up perf_iommu_enable_event
+Date: Mon, 16 Jan 2017 01:23:29 -0600
+Message-ID: <1484551416-5440-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+References: <1484551416-5440-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1484551416-5440-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,56 +23,66 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-This patch series modifies the existing IOMMU and Perf drivers to support
-systems with multiple IOMMUs by allocating an amd_iommu PMU per IOMMU instance.
-This allows users to specify performance events and filters separately for each
-IOMMU.
+* Clean up various bitwise operations in perf_iommu_enable_event
+* Make use macros BIT(x)
 
-This has been tested on the new family17h-based server w/ multiple IOMMUs.
+This should not affect logic and functionality.
 
-Git branch containing this patch series is available here:
+Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+---
+ arch/x86/events/amd/iommu.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-    https://github.com/ssuthiku/linux.git  perf-iommu-v8
-
-Changes from V7 (https://lkml.org/lkml/2017/1/9/917)
-  * Re-order patches to clean up first before introducing new stuff.
-  * Always use amd_iommu_get_num_iommus() to access amd_iommus_present
-    variable now.
-  * Fix Perf IOMMU sysfs attributes initialization.
-  * Miscellaneous clean up 
-
-Changes from V6 (https://lkml.org/lkml/2016/12/23/134)
-  * Renamed function parameters from devid to idx (per Joerg).
-  * Removed unnecessary function declarations from amd_iommu_proto.h
-    (per Joerg).
-
-Changes from V5 (https://lkml.org/lkml/2016/2/23/370)
-  * Rebased onto v4.9.
-  * Remove the patch which consolidates function delclarations since
-    we have not yet agreed on the appropriate place for the new header file.
-
-Thanks,
-Suravee
-
-Suravee Suthikulpanit (9):
-  perf/amd/iommu: Declare pr_fmt and remove unnecessary pr_debug
-  perf/amd/iommu: Clean up perf_iommu_enable_event
-  perf/amd/iommu: Misc fix up perf_iommu_read
-  iommu/amd: Introduce amd_iommu_get_num_iommus()
-  perf/amd/iommu: Modify functions to query max banks and counters
-  perf/amd/iommu: Modify amd_iommu_pc_get_set_reg_val() API to allow
-    specifying IOMMU index
-  perf/amd/iommu: Check return value when set and get counter value
-  perf/amd/iommu: Fix sysfs perf attribute groups
-  perf/amd/iommu: Enable support for multiple IOMMUs
-
- arch/x86/events/amd/iommu.c     | 280 ++++++++++++++++++++--------------------
- arch/x86/events/amd/iommu.h     |  16 ++-
- drivers/iommu/amd_iommu.c       |   6 +-
- drivers/iommu/amd_iommu_init.c  | 100 +++++++++-----
- drivers/iommu/amd_iommu_proto.h |   8 +-
- drivers/iommu/amd_iommu_types.h |   3 -
- 6 files changed, 217 insertions(+), 196 deletions(-)
-
+diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+index 44638d0..1aa25d8 100644
+--- a/arch/x86/events/amd/iommu.c
++++ b/arch/x86/events/amd/iommu.c
+@@ -164,11 +164,11 @@ static int get_next_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu)
+ 	for (bank = 0, shift = 0; bank < max_banks; bank++) {
+ 		for (cntr = 0; cntr < max_cntrs; cntr++) {
+ 			shift = bank + (bank*3) + cntr;
+-			if (perf_iommu->cntr_assign_mask & (1ULL<<shift)) {
++			if (perf_iommu->cntr_assign_mask & BIT(shift)) {
+ 				continue;
+ 			} else {
+-				perf_iommu->cntr_assign_mask |= (1ULL<<shift);
+-				retval = ((u16)((u16)bank<<8) | (u8)(cntr));
++				perf_iommu->cntr_assign_mask |= BIT(shift);
++				retval = ((u16)((u16)bank << 8) | (u8)(cntr));
+ 				goto out;
+ 			}
+ 		}
+@@ -265,23 +265,23 @@ static void perf_iommu_enable_event(struct perf_event *ev)
+ 			_GET_BANK(ev), _GET_CNTR(ev) ,
+ 			 IOMMU_PC_COUNTER_SRC_REG, &reg, true);
+ 
+-	reg = 0ULL | devid | (_GET_DEVID_MASK(ev) << 32);
++	reg = devid | (_GET_DEVID_MASK(ev) << 32);
+ 	if (reg)
+-		reg |= (1UL << 31);
++		reg |= BIT(31);
+ 	amd_iommu_pc_get_set_reg_val(devid,
+ 			_GET_BANK(ev), _GET_CNTR(ev) ,
+ 			 IOMMU_PC_DEVID_MATCH_REG, &reg, true);
+ 
+-	reg = 0ULL | _GET_PASID(ev) | (_GET_PASID_MASK(ev) << 32);
++	reg = _GET_PASID(ev) | (_GET_PASID_MASK(ev) << 32);
+ 	if (reg)
+-		reg |= (1UL << 31);
++		reg |= BIT(31);
+ 	amd_iommu_pc_get_set_reg_val(devid,
+ 			_GET_BANK(ev), _GET_CNTR(ev) ,
+ 			 IOMMU_PC_PASID_MATCH_REG, &reg, true);
+ 
+-	reg = 0ULL | _GET_DOMID(ev) | (_GET_DOMID_MASK(ev) << 32);
++	reg = _GET_DOMID(ev) | (_GET_DOMID_MASK(ev) << 32);
+ 	if (reg)
+-		reg |= (1UL << 31);
++		reg |= BIT(31);
+ 	amd_iommu_pc_get_set_reg_val(devid,
+ 			_GET_BANK(ev), _GET_CNTR(ev) ,
+ 			 IOMMU_PC_DOMID_MATCH_REG, &reg, true);
 -- 
 1.8.3.1
