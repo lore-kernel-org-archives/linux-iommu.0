@@ -1,13 +1,15 @@
-From: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/arm-smmu: Fix for ThunderX erratum #27704
-Date: Mon, 16 Jan 2017 08:25:20 +0100
-Message-ID: <dfc80917-7c13-1240-a359-68ee186d5db7@semihalf.com>
-References: <1484550967-6328-1-git-send-email-tn@semihalf.com>
+From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v8 00/18] KVM PCIe/MSI passthrough on ARM/ARM64 and IOVA
+	reserved regions
+Date: Mon, 16 Jan 2017 10:07:46 +0100
+Message-ID: <ecc19922-b0a6-bc7a-dc5e-389849acc1ea@redhat.com>
+References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
+	<e1e6d9cf-5fb8-e118-3a47-4c6be77c21a3@semihalf.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484550967-6328-1-git-send-email-tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+In-Reply-To: <e1e6d9cf-5fb8-e118-3a47-4c6be77c21a3-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,67 +19,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, Linu.Cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
-Cc: Prasun.Kapoor-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Sunil.Goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Geethasowjanya.Akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-My apologise for not adding 2nd version info of this patch to mail subject.
+Hi Tomasz,
 
-Thanks,
-Tomasz
+On 13/01/2017 14:59, Tomasz Nowicki wrote:
+> Hello Eric,
+> 
+> On 11.01.2017 10:41, Eric Auger wrote:
+>> Following LPC discussions, we now report reserved regions through
+>> the iommu-group sysfs reserved_regions attribute file.
+>>
+>> Reserved regions are populated through the IOMMU get_resv_region
+>> callback (former get_dm_regions), now implemented by amd-iommu,
+>> intel-iommu and arm-smmu:
+>> - the intel-iommu reports the [0xfee00000 - 0xfeefffff] MSI window
+>>   as a reserved region and RMRR regions as direct-mapped regions.
+>> - the amd-iommu reports device direct mapped regions, the MSI region
+>>   and HT regions.
+>> - the arm-smmu reports the MSI window (arbitrarily located at
+>>   0x8000000 and 1MB large).
+>>
+>> Unsafe interrupt assignment is tested by enumerating all MSI irq
+>> domains and checking MSI remapping is supported in the above hierarchy.
+>> This check is done in case we detect the iommu translates MSI
+>> (an IOMMU_RESV_MSI window exists). Otherwise the IRQ remapping
+>> capability is checked at IOMMU level. Obviously this is a defensive
+>> IRQ safety assessment: Assuming there are several MSI controllers
+>> in the system and at least one does not implement IRQ remapping,
+>> the assignment will be considered as unsafe (even if this controller
+>> is not acessible from the assigned devices).
+>>
+>> The series first patch stems from Robin's branch:
+>> http://linux-arm.org/git?p=linux-rm.git;a=shortlog;h=refs/heads/iommu/misc
+>>
+>>
+>> Best Regards
+>>
+>> Eric
+>>
+>> Git: complete series available at
+>> https://github.com/eauger/linux/tree/v4.10-rc3-reserved-v8
+> 
+> I tested the series on ThunderX with internal 10G VNIC and Intel IXGBE
+> NIC. Please feel free to add my:
+> Tested-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Many thanks!
 
-On 16.01.2017 08:16, Tomasz Nowicki wrote:
-> The goal of erratum #27704 workaround was to make sure that ASIDs and VMIDs
-> are unique across all SMMU instances on affected Cavium systems.
->
-> Currently, the workaround code partitions ASIDs and VMIDs by increasing
-> global cavium_smmu_context_count which in turn becomes the base ASID and VMID
-> value for the given SMMU instance upon the context bank initialization.
->
-> For systems with multiple SMMU instances this approach implies the risk
-> of crossing 8-bit ASID, like for 1-socket CN88xx capable of 4 SMMUv2,
-> 128 context banks each:
-> SMMU_0 (0-127 ASID RANGE)
-> SMMU_1 (127-255 ASID RANGE)
-> SMMU_2 (256-383 ASID RANGE) <--- crossing 8-bit ASID
-> SMMU_3 (384-511 ASID RANGE) <--- crossing 8-bit ASID
->
-> Since now we use 8-bit ASID (SMMU_CBn_TCR2.AS = 0) we effectively misconfigure
-> ASID[15:8] bits of SMMU_CBn_TTBRm register for SMMU_2/3. Moreover, we still
-> assume non-zero ASID[15:8] bits upon context invalidation. In the end,
-> except SMMU_0/1 devices all other devices under other SMMUs will fail on guest
-> power off/on. Since we try to invalidate TLB with 16-bit ASID but we actually
-> have 8-bit zero padded 16-bit entry.
->
-> This patch adds 16-bit ASID support for stage-1 AArch64 contexts so that
-> we use ASIDs consistently for all SMMU instances.
->
-> Signed-off-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-> Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> Reviewed-by: Tirumalesh Chalamarla  <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index a60cded..476fab9 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -260,6 +260,7 @@ enum arm_smmu_s2cr_privcfg {
->
->  #define TTBCR2_SEP_SHIFT		15
->  #define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
-> +#define TTBCR2_AS			(1 << 4)
->
->  #define TTBRn_ASID_SHIFT		48
->
-> @@ -778,6 +779,8 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
->  			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
->  			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
->  			reg2 |= TTBCR2_SEP_UPSTREAM;
-> +			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
-> +				reg2 |= TTBCR2_AS;
->  		}
->  		if (smmu->version > ARM_SMMU_V1)
->  			writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
->
+Eric
+> 
+> Thanks,
+> Tomasz
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
