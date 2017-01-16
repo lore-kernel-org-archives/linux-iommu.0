@@ -1,86 +1,76 @@
-From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH v4 5/5] ARM: dts: mt2701: add iommu/smi dtsi node for
- mt2701
-Date: Mon, 16 Jan 2017 10:48:50 +0800
-Message-ID: <1484534930.27576.1.camel@mtksdaap41>
-References: <1465379461-14757-1-git-send-email-honghui.zhang@mediatek.com>
-         <1465379461-14757-6-git-send-email-honghui.zhang@mediatek.com>
-         <09eaf7a5-2b18-1ea6-5699-2e968c6b79a4@gmail.com>
-         <51441f39-e5b5-2cce-63ab-47bd3cf298b3@gmail.com>
-         <1467595950.8420.2.camel@mtksdaap41> <577A1794.5040509@gmail.com>
-         <5a45da57-9262-b1ff-1c6a-c5c211c1bfd4@gmail.com>
+From: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+Subject: [PATCH 1/1] iommu/arm-smmu: Fix for ThunderX erratum #27704
+Date: Mon, 16 Jan 2017 08:16:07 +0100
+Message-ID: <1484550967-6328-1-git-send-email-tn@semihalf.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <5a45da57-9262-b1ff-1c6a-c5c211c1bfd4-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, treding-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, p.zabel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, pebolle-IWqWACnzNjzz+pZb47iToQ@public.gmane.org, kendrick.hsu-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, arnd-r2nGTMty4D4@public.gmane.org, srv_heupstream-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tfiga-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, djkurtz-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, yingjoe.chen-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, eddie.huang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, youlin.pei-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org, erin.lo-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, mark.rutland-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, Linu.Cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
+Cc: Prasun.Kapoor-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Sunil.Goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Geethasowjanya.Akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 2017-01-13 at 15:54 +0100, Matthias Brugger wrote:
-> 
-> On 04/07/16 10:00, Matthias Brugger wrote:
-> >
-> >
-> > On 04/07/16 03:32, Honghui Zhang wrote:
-> >> On Sun, 2016-07-03 at 21:12 +0200, Matthias Brugger wrote:
-> >>>
-> >>> On 07/03/2016 08:24 AM, Matthias Brugger wrote:
-> >>>>
-> >>>>
-> >>>> On 06/08/2016 11:51 AM, honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org wrote:
-> >>>>> From: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> >>>>>
-> >>>>> Add the dtsi node of iommu and smi for mt2701.
-> >>>>>
-> >>>>> Signed-off-by: Honghui Zhang <honghui.zhang-NuS5LvNUpcJWk0Htik3J/w@public.gmane.org>
-> >>>>> ---
-> >>>>>   arch/arm/boot/dts/mt2701.dtsi | 51
-> >>>>> +++++++++++++++++++++++++++++++++++++++++++
-> >>>>>   1 file changed, 51 insertions(+)
-> >>>>>
-> >>>>
-> >>>> Applied,
-> >>>
-> >>> Please resend the patch including the infracfg and mmsys node.
-> >>>
-> >>
-> >> Hi, Matthias,
-> >>
-> >> Please hold this one.
-> >> This one is based on CCF "arm: dts: mt2701: Add clock controller device
-> >> nodes"[1] and power domain patch "Mediatek MT2701 SCPSYS power domain
-> >> support v7"[2],
-> >> But these two patchset are still being reviewed now.
-> >>
-> >> Do you think it's better that I send this one later after ccf and power
-> >> domain patch got merged? I will send this patch later if it's OK with
-> >> you.
-> >>
-> >
-> > Sounds good.
-> 
-> Applied now to v4.10-next/dts32
-> 
-> Thanks.
-> 
+The goal of erratum #27704 workaround was to make sure that ASIDs and VMIDs
+are unique across all SMMU instances on affected Cavium systems.
 
-Thanks.
+Currently, the workaround code partitions ASIDs and VMIDs by increasing
+global cavium_smmu_context_count which in turn becomes the base ASID and VMID
+value for the given SMMU instance upon the context bank initialization.
 
-> >
-> > Thanks a lot,
-> > Matthias
-> >
-> >> Thanks.
-> >> [1] https://patchwork.kernel.org/patch/9109081
-> >> [2]
-> >> http://lists.infradead.org/pipermail/linux-mediatek/2016-May/005429.html
-> >>
+For systems with multiple SMMU instances this approach implies the risk
+of crossing 8-bit ASID, like for 1-socket CN88xx capable of 4 SMMUv2,
+128 context banks each:
+SMMU_0 (0-127 ASID RANGE)
+SMMU_1 (127-255 ASID RANGE)
+SMMU_2 (256-383 ASID RANGE) <--- crossing 8-bit ASID
+SMMU_3 (384-511 ASID RANGE) <--- crossing 8-bit ASID
 
+Since now we use 8-bit ASID (SMMU_CBn_TCR2.AS = 0) we effectively misconfigure
+ASID[15:8] bits of SMMU_CBn_TTBRm register for SMMU_2/3. Moreover, we still
+assume non-zero ASID[15:8] bits upon context invalidation. In the end,
+except SMMU_0/1 devices all other devices under other SMMUs will fail on guest
+power off/on. Since we try to invalidate TLB with 16-bit ASID but we actually
+have 8-bit zero padded 16-bit entry.
 
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+This patch adds 16-bit ASID support for stage-1 AArch64 contexts so that
+we use ASIDs consistently for all SMMU instances.
+
+Signed-off-by: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Reviewed-by: Tirumalesh Chalamarla  <Tirumalesh.Chalamarla-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index a60cded..476fab9 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -260,6 +260,7 @@ enum arm_smmu_s2cr_privcfg {
+ 
+ #define TTBCR2_SEP_SHIFT		15
+ #define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
++#define TTBCR2_AS			(1 << 4)
+ 
+ #define TTBRn_ASID_SHIFT		48
+ 
+@@ -778,6 +779,8 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 			reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+ 			reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+ 			reg2 |= TTBCR2_SEP_UPSTREAM;
++			if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
++				reg2 |= TTBCR2_AS;
+ 		}
+ 		if (smmu->version > ARM_SMMU_V1)
+ 			writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
+-- 
+2.7.4
