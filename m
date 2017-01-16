@@ -1,7 +1,7 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v8 4/9] iommu/amd: Introduce amd_iommu_get_num_iommus()
-Date: Mon, 16 Jan 2017 01:23:31 -0600
-Message-ID: <1484551416-5440-5-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH v8 3/9] perf/amd/iommu: Misc fix up perf_iommu_read
+Date: Mon, 16 Jan 2017 01:23:30 -0600
+Message-ID: <1484551416-5440-4-git-send-email-Suravee.Suthikulpanit@amd.com>
 References: <1484551416-5440-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,128 +21,61 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFL
 Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Introduce amd_iommu_get_num_iommus(), which returns the value of
-amd_iommus_present, then replaces the direct access to the variable
-which is now declared as static.
+* Fix overflow handling since u64 delta would lose the MSB sign bit.
+* Remove unnecessary local64_cmpxchg().
+* Coding style and make use of GENMASK_ULL macro.
 
-This function will also be used by Perf AMD IOMMU driver.
-
+Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- arch/x86/events/amd/iommu.h     |  2 ++
- drivers/iommu/amd_iommu.c       |  6 +++---
- drivers/iommu/amd_iommu_init.c  | 11 +++++++++--
- drivers/iommu/amd_iommu_proto.h |  1 +
- drivers/iommu/amd_iommu_types.h |  3 ---
- 5 files changed, 15 insertions(+), 8 deletions(-)
+ arch/x86/events/amd/iommu.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/arch/x86/events/amd/iommu.h b/arch/x86/events/amd/iommu.h
-index 845d173..5c5c932 100644
---- a/arch/x86/events/amd/iommu.h
-+++ b/arch/x86/events/amd/iommu.h
-@@ -28,6 +28,8 @@
- #define IOMMU_BASE_DEVID			0x0000
+diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+index 1aa25d8..3f1c18a 100644
+--- a/arch/x86/events/amd/iommu.c
++++ b/arch/x86/events/amd/iommu.c
+@@ -320,9 +320,8 @@ static void perf_iommu_start(struct perf_event *event, int flags)
  
- /* amd_iommu_init.c external support functions */
-+extern int amd_iommu_get_num_iommus(void);
-+
- extern bool amd_iommu_pc_supported(void);
- 
- extern u8 amd_iommu_pc_get_max_banks(u16 devid);
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 754595e..ae55485 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1228,7 +1228,7 @@ static void __domain_flush_pages(struct protection_domain *domain,
- 
- 	build_inv_iommu_pages(&cmd, address, size, domain->id, pde);
- 
--	for (i = 0; i < amd_iommus_present; ++i) {
-+	for (i = 0; i < amd_iommu_get_num_iommus(); ++i) {
- 		if (!domain->dev_iommu[i])
- 			continue;
- 
-@@ -1272,7 +1272,7 @@ static void domain_flush_complete(struct protection_domain *domain)
+ static void perf_iommu_read(struct perf_event *event)
  {
- 	int i;
+-	u64 count = 0ULL;
+-	u64 prev_raw_count = 0ULL;
+-	u64 delta = 0ULL;
++	u64 count, prev;
++	s64 delta;
+ 	struct hw_perf_event *hwc = &event->hw;
  
--	for (i = 0; i < amd_iommus_present; ++i) {
-+	for (i = 0; i < amd_iommu_get_num_iommus(); ++i) {
- 		if (domain && !domain->dev_iommu[i])
- 			continue;
+ 	amd_iommu_pc_get_set_reg_val(_GET_DEVID(event),
+@@ -330,18 +329,20 @@ static void perf_iommu_read(struct perf_event *event)
+ 				IOMMU_PC_COUNTER_REG, &count, false);
  
-@@ -3341,7 +3341,7 @@ static int __flush_pasid(struct protection_domain *domain, int pasid,
- 	 * IOMMU TLB needs to be flushed before Device TLB to
- 	 * prevent device TLB refill from IOMMU TLB
- 	 */
--	for (i = 0; i < amd_iommus_present; ++i) {
-+	for (i = 0; i < amd_iommu_get_num_iommus(); ++i) {
- 		if (domain->dev_iommu[i] == 0)
- 			continue;
+ 	/* IOMMU pc counter register is only 48 bits */
+-	count &= 0xFFFFFFFFFFFFULL;
++	count &= GENMASK_ULL(48, 0);
  
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 157e934..515d4c1 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -164,7 +164,9 @@ struct ivmd_header {
+-	prev_raw_count =  local64_read(&hwc->prev_count);
+-	if (local64_cmpxchg(&hwc->prev_count, prev_raw_count,
+-					count) != prev_raw_count)
+-		return;
++	prev = local64_read(&hwc->prev_count);
  
- /* Array to assign indices to IOMMUs*/
- struct amd_iommu *amd_iommus[MAX_IOMMUS];
--int amd_iommus_present;
+-	/* Handling 48-bit counter overflowing */
+-	delta = (count << COUNTER_SHIFT) - (prev_raw_count << COUNTER_SHIFT);
++	/*
++	 * Since we do not enable counter overflow interrupts,
++	 * we do not have to worry about prev_count changing on us.
++	 */
++	local64_set(&hwc->prev_count, count);
 +
-+/* Number of IOMMUs present in the system */
-+static int amd_iommus_present;
- 
- /* IOMMUs have a non-present cache? */
- bool amd_iommu_np_cache __read_mostly;
-@@ -269,6 +271,11 @@ static inline unsigned long tbl_size(int entry_size)
- 	return 1UL << shift;
++	/* Handle 48-bit counter overflow */
++	delta = (count << COUNTER_SHIFT) - (prev << COUNTER_SHIFT);
+ 	delta >>= COUNTER_SHIFT;
+ 	local64_add(delta, &event->count);
+-
  }
  
-+int amd_iommu_get_num_iommus(void)
-+{
-+	return amd_iommus_present;
-+}
-+
- /* Access to l1 and l2 indexed register spaces */
- 
- static u32 iommu_read_l1(struct amd_iommu *iommu, u16 l1, u8 address)
-@@ -1333,7 +1340,7 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h)
- 
- 	/* Add IOMMU to internal data structures */
- 	list_add_tail(&iommu->list, &amd_iommu_list);
--	iommu->index             = amd_iommus_present++;
-+	iommu->index = amd_iommus_present++;
- 
- 	if (unlikely(iommu->index >= MAX_IOMMUS)) {
- 		WARN(1, "AMD-Vi: System has more IOMMUs than supported by this driver\n");
-diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd_iommu_proto.h
-index 7eb60c1..e8f0710 100644
---- a/drivers/iommu/amd_iommu_proto.h
-+++ b/drivers/iommu/amd_iommu_proto.h
-@@ -21,6 +21,7 @@
- 
- #include "amd_iommu_types.h"
- 
-+extern int amd_iommu_get_num_iommus(void);
- extern int amd_iommu_init_dma_ops(void);
- extern int amd_iommu_init_passthrough(void);
- extern irqreturn_t amd_iommu_int_thread(int irq, void *data);
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 0d91785..09d7a11 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -606,9 +606,6 @@ struct devid_map {
-  */
- extern struct amd_iommu *amd_iommus[MAX_IOMMUS];
- 
--/* Number of IOMMUs present in the system */
--extern int amd_iommus_present;
--
- /*
-  * Declarations for the global list of all protection domains
-  */
+ static void perf_iommu_stop(struct perf_event *event, int flags)
 -- 
 1.8.3.1
