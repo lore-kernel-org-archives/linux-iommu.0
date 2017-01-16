@@ -1,214 +1,142 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2] IOMMU: SMMUv2: Support for Extended Stream ID (16 bit)
-Date: Mon, 16 Jan 2017 17:36:44 +0000
-Message-ID: <68beaf50-2deb-f523-a857-384aec490e9a@arm.com>
-References: <20170116141111.29444-1-aleksey.makarov@linaro.org>
+From: Punit Agrawal <punit.agrawal-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu: Handle default domain attach failure
+Date: Mon, 16 Jan 2017 18:02:58 +0000
+Message-ID: <87tw8yopbh.fsf@e105922-lin.cambridge.arm.com>
+References: <f5e5f1f1c3c37a36ea44eb8b2767b257ac97210d.1484571306.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170116141111.29444-1-aleksey.makarov@linaro.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Aleksey Makarov <aleksey.makarov@linaro.org>, Will Deacon <will.deacon@arm.com>
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <f5e5f1f1c3c37a36ea44eb8b2767b257ac97210d.1484571306.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+	(Robin Murphy's message of "Mon, 16 Jan 2017 12:58:07 +0000")
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 16/01/17 14:11, Aleksey Makarov wrote:
-> Enable the Extended Stream ID feature when available.
-> 
-> This patch on top of series "KVM PCIe/MSI passthrough on ARM/ARM64
-> and IOVA reserved regions" by Eric Auger [1] allows to passthrough
-> an external PCIe network card on a ThunderX server successfully.
-> 
-> Without this patch that card caused a warning like
-> 
-> 	pci 0006:90:00.0: stream ID 0x9000 out of range for SMMU (0x7fff)
-> 
-> during boot.
-> 
-> [1] https://lkml.kernel.org/r/1484127714-3263-1-git-send-email-eric.auger@redhat.com
-> 
-> Signed-off-by: Aleksey Makarov <aleksey.makarov@linaro.org>
+Hi Robin,
+
+Thanks for the patch.
+
+Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> writes:
+
+> We wouldn't normally expect ops->attach_dev() to fail, but on IOMMUs
+> with limited hardware resources, or generally misconfigured systems,
+> it is certainly possible. We report failure correctly from the external
+> iommu_attach_device() interface, but do not do so in iommu_group_add()
+> when attaching to the default domain. The result of failure there is
+> that the device, group and domain all get left in a broken,
+> part-configured state which leads to weird errors and misbehaviour down
+> the line when IOMMU API calls sort-of-but-don't-quite work.
+>
+> Check the return value of __iommu_attach_device() on the default domain,
+> and refactor the error handling paths to cope with its failure and clean
+> up correctly in such cases.
+>
+
+Booting with the patch, the boot time warnings I was seeing go away. I
+also now see a bunch of messages when adding devices, such as -
+
+[    4.805466] iommu: Failed to add device 0000:06:10.2 to group 10: -28
+
+
+> Fixes: e39cb8a3aa98 ("iommu: Make sure a device is always attached to a domain")
+> Reported-by: Punit Agrawal <punit.agrawal-5wv7dgnIgG8@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+
+FWIW,
+
+Tested-by: Punit Agrawal <punit.agrawal-5wv7dgnIgG8@public.gmane.org>
+
 > ---
-> v2:
-> - remove unnecessary parentheses (Robin Murphy)
-> - refactor testing SMR fields to after setting sCR0 as theirs width
->   depends on sCR0_EXIDENABLE (Robin Murphy)
-> 
-> v1 (rfc):
-> https://lkml.kernel.org/r/20170110115755.19102-1-aleksey.makarov@linaro.org
-> 
->  drivers/iommu/arm-smmu.c | 67 ++++++++++++++++++++++++++++++++++--------------
->  1 file changed, 48 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 13d26009b8e0..c33df4083d24 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -24,6 +24,7 @@
->   *	- v7/v8 long-descriptor format
->   *	- Non-secure access to the SMMU
->   *	- Context fault reporting
-> + *	- Extended Stream ID (16 bit)
->   */
+>  drivers/iommu/iommu.c | 37 ++++++++++++++++++++++++-------------
+>  1 file changed, 24 insertions(+), 13 deletions(-)
+>
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index dbe7f653bb7c..aed906a3e3db 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -383,36 +383,30 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+>  	device->dev = dev;
 >  
->  #define pr_fmt(fmt) "arm-smmu: " fmt
-> @@ -87,6 +88,7 @@
->  #define sCR0_CLIENTPD			(1 << 0)
->  #define sCR0_GFRE			(1 << 1)
->  #define sCR0_GFIE			(1 << 2)
-> +#define sCR0_EXIDENABLE			(1 << 3)
->  #define sCR0_GCFGFRE			(1 << 4)
->  #define sCR0_GCFGFIE			(1 << 5)
->  #define sCR0_USFCFG			(1 << 10)
-> @@ -126,6 +128,7 @@
->  #define ID0_NUMIRPT_MASK		0xff
->  #define ID0_NUMSIDB_SHIFT		9
->  #define ID0_NUMSIDB_MASK		0xf
-> +#define ID0_EXIDS			(1 << 8)
->  #define ID0_NUMSMRG_SHIFT		0
->  #define ID0_NUMSMRG_MASK		0xff
+>  	ret = sysfs_create_link(&dev->kobj, &group->kobj, "iommu_group");
+> -	if (ret) {
+> -		kfree(device);
+> -		return ret;
+> -	}
+> +	if (ret)
+> +		goto err_free_device;
 >  
-> @@ -169,6 +172,7 @@
->  #define ARM_SMMU_GR0_S2CR(n)		(0xc00 + ((n) << 2))
->  #define S2CR_CBNDX_SHIFT		0
->  #define S2CR_CBNDX_MASK			0xff
-> +#define S2CR_EXIDVALID			(1 << 10)
->  #define S2CR_TYPE_SHIFT			16
->  #define S2CR_TYPE_MASK			0x3
->  enum arm_smmu_s2cr_type {
-> @@ -354,6 +358,7 @@ struct arm_smmu_device {
->  #define ARM_SMMU_FEAT_FMT_AARCH64_64K	(1 << 9)
->  #define ARM_SMMU_FEAT_FMT_AARCH32_L	(1 << 10)
->  #define ARM_SMMU_FEAT_FMT_AARCH32_S	(1 << 11)
-> +#define ARM_SMMU_FEAT_EXIDS		(1 << 12)
->  	u32				features;
+>  	device->name = kasprintf(GFP_KERNEL, "%s", kobject_name(&dev->kobj));
+>  rename:
+>  	if (!device->name) {
+> -		sysfs_remove_link(&dev->kobj, "iommu_group");
+> -		kfree(device);
+> -		return -ENOMEM;
+> +		ret = -ENOMEM;
+> +		goto err_remove_link;
+>  	}
 >  
->  #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
-> @@ -1051,7 +1056,7 @@ static void arm_smmu_write_smr(struct arm_smmu_device *smmu, int idx)
->  	struct arm_smmu_smr *smr = smmu->smrs + idx;
->  	u32 reg = smr->id << SMR_ID_SHIFT | smr->mask << SMR_MASK_SHIFT;
->  
-> -	if (smr->valid)
-> +	if (!(smmu->features & ARM_SMMU_FEAT_EXIDS) && smr->valid)
->  		reg |= SMR_VALID;
->  	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_SMR(idx));
->  }
-> @@ -1063,6 +1068,9 @@ static void arm_smmu_write_s2cr(struct arm_smmu_device *smmu, int idx)
->  		  (s2cr->cbndx & S2CR_CBNDX_MASK) << S2CR_CBNDX_SHIFT |
->  		  (s2cr->privcfg & S2CR_PRIVCFG_MASK) << S2CR_PRIVCFG_SHIFT;
->  
-> +	if (smmu->features & ARM_SMMU_FEAT_EXIDS && smmu->smrs &&
-> +	    smmu->smrs[idx].valid)
-> +		reg |= S2CR_EXIDVALID;
->  	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_S2CR(idx));
->  }
->  
-> @@ -1073,6 +1081,35 @@ static void arm_smmu_write_sme(struct arm_smmu_device *smmu, int idx)
->  		arm_smmu_write_smr(smmu, idx);
->  }
->  
-> +/*
-> + * The width of SMR's mask field depends on sCR0_EXIDENABLE, so this function
-> + * should be called after sCR0 is written.
-> + */
-> +static void arm_smmu_test_smr_masks(struct arm_smmu_device *smmu)
-> +{
-> +	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
-> +	u32 smr;
-> +
-> +	if (!smmu->smrs)
-> +		return;
-> +
-> +	/*
-> +	 * SMR.ID bits may not be preserved if the corresponding
-> +	 * MASK bits are set, so check each one separately.
-> +	 * We can reject masters later if they try to claim IDs
-> +	 * outside these masks.
-> +	 */
-> +	smr = smmu->streamid_mask << SMR_ID_SHIFT;
-> +	writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-> +	smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-> +	smmu->streamid_mask = smr >> SMR_ID_SHIFT;
-> +
-> +	smr = smmu->streamid_mask << SMR_MASK_SHIFT;
-> +	writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-> +	smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-> +	smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
-> +}
-> +
->  static int arm_smmu_find_sme(struct arm_smmu_device *smmu, u16 id, u16 mask)
->  {
->  	struct arm_smmu_smr *smrs = smmu->smrs;
-> @@ -1674,6 +1711,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
->  	if (smmu->features & ARM_SMMU_FEAT_VMID16)
->  		reg |= sCR0_VMID16EN;
->  
-> +	if (smmu->features & ARM_SMMU_FEAT_EXIDS)
-> +		reg |= sCR0_EXIDENABLE;
-> +
->  	/* Push the button */
->  	__arm_smmu_tlb_sync(smmu);
->  	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-> @@ -1761,11 +1801,14 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
->  			   "\t(IDR0.CTTW overridden by FW configuration)\n");
->  
->  	/* Max. number of entries we have for stream matching/indexing */
-> -	size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
-> +	if (smmu->version == ARM_SMMU_V2 && id & ID0_EXIDS) {
-> +		smmu->features |= ARM_SMMU_FEAT_EXIDS;
-> +		size = 1 << 16;
-> +	} else {
-> +		size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
-> +	}
->  	smmu->streamid_mask = size - 1;
->  	if (id & ID0_SMS) {
-> -		u32 smr;
-> -
->  		smmu->features |= ARM_SMMU_FEAT_STREAM_MATCH;
->  		size = (id >> ID0_NUMSMRG_SHIFT) & ID0_NUMSMRG_MASK;
->  		if (size == 0) {
-> @@ -1774,21 +1817,6 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
->  			return -ENODEV;
+>  	ret = sysfs_create_link_nowarn(group->devices_kobj,
+>  				       &dev->kobj, device->name);
+>  	if (ret) {
+> -		kfree(device->name);
+>  		if (ret == -EEXIST && i >= 0) {
+>  			/*
+>  			 * Account for the slim chance of collision
+>  			 * and append an instance to the name.
+>  			 */
+> +			kfree(device->name);
+>  			device->name = kasprintf(GFP_KERNEL, "%s.%d",
+>  						 kobject_name(&dev->kobj), i++);
+>  			goto rename;
 >  		}
->  
-> -		/*
-> -		 * SMR.ID bits may not be preserved if the corresponding MASK
-> -		 * bits are set, so check each one separately. We can reject
-> -		 * masters later if they try to claim IDs outside these masks.
-> -		 */
-> -		smr = smmu->streamid_mask << SMR_ID_SHIFT;
-> -		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-> -		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-> -		smmu->streamid_mask = smr >> SMR_ID_SHIFT;
 > -
-> -		smr = smmu->streamid_mask << SMR_MASK_SHIFT;
-> -		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-> -		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-> -		smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
-> -
->  		/* Zero-initialised to mark as invalid */
->  		smmu->smrs = devm_kcalloc(smmu->dev, size, sizeof(*smmu->smrs),
->  					  GFP_KERNEL);
-
-The only downside is that the print following this will now always claim
-a bogus "... mask 0x0" - I guess we could probably just not print a mask
-here, since it's not overly interesting in itself, and add_device will
-still show the offending mask in full if it ever actually matters (as in
-the commit message).
-
-> @@ -2120,6 +2148,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	iommu_register_instance(dev->fwnode, &arm_smmu_ops);
->  	platform_set_drvdata(pdev, smmu);
->  	arm_smmu_device_reset(smmu);
-> +	arm_smmu_test_smr_masks(smmu);
-
-Otherwise, this is ceratinly an awful lot neater than what I had in mind
-for preserving the existing behaviour :)
-
-Robin.
-
+> -		sysfs_remove_link(&dev->kobj, "iommu_group");
+> -		kfree(device);
+> -		return ret;
+> +		goto err_free_name;
+>  	}
 >  
->  	/* Oh, for a proper bus abstraction */
->  	if (!iommu_present(&platform_bus_type))
-> 
+>  	kobject_get(group->devices_kobj);
+> @@ -424,8 +418,10 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+>  	mutex_lock(&group->mutex);
+>  	list_add_tail(&device->list, &group->devices);
+>  	if (group->domain)
+> -		__iommu_attach_device(group->domain, dev);
+> +		ret = __iommu_attach_device(group->domain, dev);
+>  	mutex_unlock(&group->mutex);
+> +	if (ret)
+> +		goto err_put_group;
+>  
+>  	/* Notify any listeners about change to group. */
+>  	blocking_notifier_call_chain(&group->notifier,
+> @@ -436,6 +432,21 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+>  	pr_info("Adding device %s to group %d\n", dev_name(dev), group->id);
+>  
+>  	return 0;
+> +
+> +err_put_group:
+> +	mutex_lock(&group->mutex);
+> +	list_del(&device->list);
+> +	mutex_unlock(&group->mutex);
+> +	dev->iommu_group = NULL;
+> +	kobject_put(group->devices_kobj);
+> +err_free_name:
+> +	kfree(device->name);
+> +err_remove_link:
+> +	sysfs_remove_link(&dev->kobj, "iommu_group");
+> +err_free_device:
+> +	kfree(device);
+> +	pr_err("Failed to add device %s to group %d: %d\n", dev_name(dev), group->id, ret);
+> +	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_group_add_device);
