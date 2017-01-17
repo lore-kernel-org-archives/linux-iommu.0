@@ -1,142 +1,281 @@
-From: Punit Agrawal <punit.agrawal-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu: Handle default domain attach failure
-Date: Mon, 16 Jan 2017 18:02:58 +0000
-Message-ID: <87tw8yopbh.fsf@e105922-lin.cambridge.arm.com>
-References: <f5e5f1f1c3c37a36ea44eb8b2767b257ac97210d.1484571306.git.robin.murphy@arm.com>
+From: Tomasz Nowicki <tnowicki@caviumnetworks.com>
+Subject: Re: [PATCH v8 01/18] iommu/dma: Allow MSI-only cookies
+Date: Tue, 17 Jan 2017 12:59:02 +0100
+Message-ID: <63888cd2-dfbd-ecad-abe2-9426fa61e72c@caviumnetworks.com>
+References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
+ <1484127714-3263-2-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <f5e5f1f1c3c37a36ea44eb8b2767b257ac97210d.1484571306.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-	(Robin Murphy's message of "Mon, 16 Jan 2017 12:58:07 +0000")
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1484127714-3263-2-git-send-email-eric.auger@redhat.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Eric Auger <eric.auger@redhat.com>, eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org
+Cc: drjones@redhat.com, kvm@vger.kernel.org, punit.agrawal@arm.com, linux-kernel@vger.kernel.org, geethasowjanya.akula@gmail.com, diana.craciun@nxp.com, iommu@lists.linux-foundation.org, pranav.sawargaonkar@gmail.com, bharat.bhushan@nxp.com, shankerd@codeaurora.org, gpkulkarni@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-Thanks for the patch.
-
-Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> writes:
-
-> We wouldn't normally expect ops->attach_dev() to fail, but on IOMMUs
-> with limited hardware resources, or generally misconfigured systems,
-> it is certainly possible. We report failure correctly from the external
-> iommu_attach_device() interface, but do not do so in iommu_group_add()
-> when attaching to the default domain. The result of failure there is
-> that the device, group and domain all get left in a broken,
-> part-configured state which leads to weird errors and misbehaviour down
-> the line when IOMMU API calls sort-of-but-don't-quite work.
+On 11.01.2017 10:41, Eric Auger wrote:
+> From: Robin Murphy <robin.murphy@arm.com>
 >
-> Check the return value of __iommu_attach_device() on the default domain,
-> and refactor the error handling paths to cope with its failure and clean
-> up correctly in such cases.
+> IOMMU domain users such as VFIO face a similar problem to DMA API ops
+> with regard to mapping MSI messages in systems where the MSI write is
+> subject to IOMMU translation. With the relevant infrastructure now in
+> place for managed DMA domains, it's actually really simple for other
+> users to piggyback off that and reap the benefits without giving up
+> their own IOVA management, and without having to reinvent their own
+> wheel in the MSI layer.
 >
+> Allow such users to opt into automatic MSI remapping by dedicating a
+> region of their IOVA space to a managed cookie, and extend the mapping
+> routine to implement a trivial linear allocator in such cases, to avoid
+> the needless overhead of a full-blown IOVA domain.
+>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-Booting with the patch, the boot time warnings I was seeing go away. I
-also now see a bunch of messages when adding devices, such as -
+Reviewed-by: Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>
 
-[    4.805466] iommu: Failed to add device 0000:06:10.2 to group 10: -28
-
-
-> Fixes: e39cb8a3aa98 ("iommu: Make sure a device is always attached to a domain")
-> Reported-by: Punit Agrawal <punit.agrawal-5wv7dgnIgG8@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
-FWIW,
-
-Tested-by: Punit Agrawal <punit.agrawal-5wv7dgnIgG8@public.gmane.org>
+Thanks,
+Tomasz
 
 > ---
->  drivers/iommu/iommu.c | 37 ++++++++++++++++++++++++-------------
->  1 file changed, 24 insertions(+), 13 deletions(-)
+>  drivers/iommu/dma-iommu.c | 119 +++++++++++++++++++++++++++++++++++++---------
+>  include/linux/dma-iommu.h |   6 +++
+>  2 files changed, 102 insertions(+), 23 deletions(-)
 >
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index dbe7f653bb7c..aed906a3e3db 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -383,36 +383,30 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
->  	device->dev = dev;
->  
->  	ret = sysfs_create_link(&dev->kobj, &group->kobj, "iommu_group");
-> -	if (ret) {
-> -		kfree(device);
-> -		return ret;
-> -	}
-> +	if (ret)
-> +		goto err_free_device;
->  
->  	device->name = kasprintf(GFP_KERNEL, "%s", kobject_name(&dev->kobj));
->  rename:
->  	if (!device->name) {
-> -		sysfs_remove_link(&dev->kobj, "iommu_group");
-> -		kfree(device);
-> -		return -ENOMEM;
-> +		ret = -ENOMEM;
-> +		goto err_remove_link;
->  	}
->  
->  	ret = sysfs_create_link_nowarn(group->devices_kobj,
->  				       &dev->kobj, device->name);
->  	if (ret) {
-> -		kfree(device->name);
->  		if (ret == -EEXIST && i >= 0) {
->  			/*
->  			 * Account for the slim chance of collision
->  			 * and append an instance to the name.
->  			 */
-> +			kfree(device->name);
->  			device->name = kasprintf(GFP_KERNEL, "%s.%d",
->  						 kobject_name(&dev->kobj), i++);
->  			goto rename;
->  		}
-> -
-> -		sysfs_remove_link(&dev->kobj, "iommu_group");
-> -		kfree(device);
-> -		return ret;
-> +		goto err_free_name;
->  	}
->  
->  	kobject_get(group->devices_kobj);
-> @@ -424,8 +418,10 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
->  	mutex_lock(&group->mutex);
->  	list_add_tail(&device->list, &group->devices);
->  	if (group->domain)
-> -		__iommu_attach_device(group->domain, dev);
-> +		ret = __iommu_attach_device(group->domain, dev);
->  	mutex_unlock(&group->mutex);
-> +	if (ret)
-> +		goto err_put_group;
->  
->  	/* Notify any listeners about change to group. */
->  	blocking_notifier_call_chain(&group->notifier,
-> @@ -436,6 +432,21 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
->  	pr_info("Adding device %s to group %d\n", dev_name(dev), group->id);
->  
->  	return 0;
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 2db0d64..de41ead 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -37,15 +37,50 @@ struct iommu_dma_msi_page {
+>  	phys_addr_t		phys;
+>  };
+>
+> +enum iommu_dma_cookie_type {
+> +	IOMMU_DMA_IOVA_COOKIE,
+> +	IOMMU_DMA_MSI_COOKIE,
+> +};
 > +
-> +err_put_group:
-> +	mutex_lock(&group->mutex);
-> +	list_del(&device->list);
-> +	mutex_unlock(&group->mutex);
-> +	dev->iommu_group = NULL;
-> +	kobject_put(group->devices_kobj);
-> +err_free_name:
-> +	kfree(device->name);
-> +err_remove_link:
-> +	sysfs_remove_link(&dev->kobj, "iommu_group");
-> +err_free_device:
-> +	kfree(device);
-> +	pr_err("Failed to add device %s to group %d: %d\n", dev_name(dev), group->id, ret);
-> +	return ret;
+>  struct iommu_dma_cookie {
+> -	struct iova_domain	iovad;
+> -	struct list_head	msi_page_list;
+> -	spinlock_t		msi_lock;
+> +	enum iommu_dma_cookie_type	type;
+> +	union {
+> +		/* Full allocator for IOMMU_DMA_IOVA_COOKIE */
+> +		struct iova_domain	iovad;
+> +		/* Trivial linear page allocator for IOMMU_DMA_MSI_COOKIE */
+> +		dma_addr_t		msi_iova;
+> +	};
+> +	struct list_head		msi_page_list;
+> +	spinlock_t			msi_lock;
+>  };
+>
+> +static inline size_t cookie_msi_granule(struct iommu_dma_cookie *cookie)
+> +{
+> +	if (cookie->type == IOMMU_DMA_IOVA_COOKIE)
+> +		return cookie->iovad.granule;
+> +	return PAGE_SIZE;
+> +}
+> +
+>  static inline struct iova_domain *cookie_iovad(struct iommu_domain *domain)
+>  {
+> -	return &((struct iommu_dma_cookie *)domain->iova_cookie)->iovad;
+> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+> +
+> +	if (cookie->type == IOMMU_DMA_IOVA_COOKIE)
+> +		return &cookie->iovad;
+> +	return NULL;
+> +}
+> +
+> +static struct iommu_dma_cookie *cookie_alloc(enum iommu_dma_cookie_type type)
+> +{
+> +	struct iommu_dma_cookie *cookie;
+> +
+> +	cookie = kzalloc(sizeof(*cookie), GFP_KERNEL);
+> +	if (cookie) {
+> +		spin_lock_init(&cookie->msi_lock);
+> +		INIT_LIST_HEAD(&cookie->msi_page_list);
+> +		cookie->type = type;
+> +	}
+> +	return cookie;
 >  }
->  EXPORT_SYMBOL_GPL(iommu_group_add_device);
+>
+>  int iommu_dma_init(void)
+> @@ -62,25 +97,53 @@ int iommu_dma_init(void)
+>   */
+>  int iommu_get_dma_cookie(struct iommu_domain *domain)
+>  {
+> +	if (domain->iova_cookie)
+> +		return -EEXIST;
+> +
+> +	domain->iova_cookie = cookie_alloc(IOMMU_DMA_IOVA_COOKIE);
+> +	if (!domain->iova_cookie)
+> +		return -ENOMEM;
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(iommu_get_dma_cookie);
+> +
+> +/**
+> + * iommu_get_msi_cookie - Acquire just MSI remapping resources
+> + * @domain: IOMMU domain to prepare
+> + * @base: Start address of IOVA region for MSI mappings
+> + *
+> + * Users who manage their own IOVA allocation and do not want DMA API support,
+> + * but would still like to take advantage of automatic MSI remapping, can use
+> + * this to initialise their own domain appropriately. Users should reserve a
+> + * contiguous IOVA region, starting at @base, large enough to accommodate the
+> + * number of PAGE_SIZE mappings necessary to cover every MSI doorbell address
+> + * used by the devices attached to @domain.
+> + */
+> +int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base)
+> +{
+>  	struct iommu_dma_cookie *cookie;
+>
+> +	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+> +		return -EINVAL;
+> +
+>  	if (domain->iova_cookie)
+>  		return -EEXIST;
+>
+> -	cookie = kzalloc(sizeof(*cookie), GFP_KERNEL);
+> +	cookie = cookie_alloc(IOMMU_DMA_MSI_COOKIE);
+>  	if (!cookie)
+>  		return -ENOMEM;
+>
+> -	spin_lock_init(&cookie->msi_lock);
+> -	INIT_LIST_HEAD(&cookie->msi_page_list);
+> +	cookie->msi_iova = base;
+>  	domain->iova_cookie = cookie;
+>  	return 0;
+>  }
+> -EXPORT_SYMBOL(iommu_get_dma_cookie);
+> +EXPORT_SYMBOL(iommu_get_msi_cookie);
+>
+>  /**
+>   * iommu_put_dma_cookie - Release a domain's DMA mapping resources
+> - * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
+> + * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie() or
+> + *          iommu_get_msi_cookie()
+>   *
+>   * IOMMU drivers should normally call this from their domain_free callback.
+>   */
+> @@ -92,7 +155,7 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+>  	if (!cookie)
+>  		return;
+>
+> -	if (cookie->iovad.granule)
+> +	if (cookie->type == IOMMU_DMA_IOVA_COOKIE && cookie->iovad.granule)
+>  		put_iova_domain(&cookie->iovad);
+>
+>  	list_for_each_entry_safe(msi, tmp, &cookie->msi_page_list, list) {
+> @@ -137,11 +200,12 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
+>  int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+>  		u64 size, struct device *dev)
+>  {
+> -	struct iova_domain *iovad = cookie_iovad(domain);
+> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+> +	struct iova_domain *iovad = &cookie->iovad;
+>  	unsigned long order, base_pfn, end_pfn;
+>
+> -	if (!iovad)
+> -		return -ENODEV;
+> +	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
+> +		return -EINVAL;
+>
+>  	/* Use the smallest supported page size for IOVA granularity */
+>  	order = __ffs(domain->pgsize_bitmap);
+> @@ -662,11 +726,12 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>  {
+>  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>  	struct iommu_dma_msi_page *msi_page;
+> -	struct iova_domain *iovad = &cookie->iovad;
+> +	struct iova_domain *iovad = cookie_iovad(domain);
+>  	struct iova *iova;
+>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> +	size_t size = cookie_msi_granule(cookie);
+>
+> -	msi_addr &= ~(phys_addr_t)iova_mask(iovad);
+> +	msi_addr &= ~(phys_addr_t)(size - 1);
+>  	list_for_each_entry(msi_page, &cookie->msi_page_list, list)
+>  		if (msi_page->phys == msi_addr)
+>  			return msi_page;
+> @@ -675,13 +740,18 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>  	if (!msi_page)
+>  		return NULL;
+>
+> -	iova = __alloc_iova(domain, iovad->granule, dma_get_mask(dev));
+> -	if (!iova)
+> -		goto out_free_page;
+> -
+>  	msi_page->phys = msi_addr;
+> -	msi_page->iova = iova_dma_addr(iovad, iova);
+> -	if (iommu_map(domain, msi_page->iova, msi_addr, iovad->granule, prot))
+> +	if (iovad) {
+> +		iova = __alloc_iova(domain, size, dma_get_mask(dev));
+> +		if (!iova)
+> +			goto out_free_page;
+> +		msi_page->iova = iova_dma_addr(iovad, iova);
+> +	} else {
+> +		msi_page->iova = cookie->msi_iova;
+> +		cookie->msi_iova += size;
+> +	}
+> +
+> +	if (iommu_map(domain, msi_page->iova, msi_addr, size, prot))
+>  		goto out_free_iova;
+>
+>  	INIT_LIST_HEAD(&msi_page->list);
+> @@ -689,7 +759,10 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>  	return msi_page;
+>
+>  out_free_iova:
+> -	__free_iova(iovad, iova);
+> +	if (iovad)
+> +		__free_iova(iovad, iova);
+> +	else
+> +		cookie->msi_iova -= size;
+>  out_free_page:
+>  	kfree(msi_page);
+>  	return NULL;
+> @@ -730,7 +803,7 @@ void iommu_dma_map_msi_msg(int irq, struct msi_msg *msg)
+>  		msg->data = ~0U;
+>  	} else {
+>  		msg->address_hi = upper_32_bits(msi_page->iova);
+> -		msg->address_lo &= iova_mask(&cookie->iovad);
+> +		msg->address_lo &= cookie_msi_granule(cookie) - 1;
+>  		msg->address_lo += lower_32_bits(msi_page->iova);
+>  	}
+>  }
+> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+> index 7f7e9a7..28df844 100644
+> --- a/include/linux/dma-iommu.h
+> +++ b/include/linux/dma-iommu.h
+> @@ -27,6 +27,7 @@
+>
+>  /* Domain management interface for IOMMU drivers */
+>  int iommu_get_dma_cookie(struct iommu_domain *domain);
+> +int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base);
+>  void iommu_put_dma_cookie(struct iommu_domain *domain);
+>
+>  /* Setup call for arch DMA mapping code */
+> @@ -86,6 +87,11 @@ static inline int iommu_get_dma_cookie(struct iommu_domain *domain)
+>  	return -ENODEV;
+>  }
+>
+> +static inline int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+>  static inline void iommu_put_dma_cookie(struct iommu_domain *domain)
+>  {
+>  }
+>
