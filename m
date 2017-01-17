@@ -1,14 +1,15 @@
 From: Tomasz Nowicki <tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v8 06/18] iommu: iommu_get_group_resv_regions
-Date: Tue, 17 Jan 2017 13:14:31 +0100
-Message-ID: <15053a96-c3c2-69d4-760b-a213f4bff53f@caviumnetworks.com>
+Subject: Re: [PATCH v8 10/18] iommu/arm-smmu: Implement reserved region
+	get/put callbacks
+Date: Tue, 17 Jan 2017 14:20:56 +0100
+Message-ID: <e45ab455-4a34-cad1-74de-9db395e0dea7@caviumnetworks.com>
 References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
-	<1484127714-3263-7-git-send-email-eric.auger@redhat.com>
+	<1484127714-3263-11-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484127714-3263-7-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1484127714-3263-11-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,10 +24,11 @@ Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@
 List-Id: iommu@lists.linux-foundation.org
 
 On 11.01.2017 10:41, Eric Auger wrote:
-> Introduce iommu_get_group_resv_regions whose role consists in
-> enumerating all devices from the group and collecting their
-> reserved regions. The list is sorted and overlaps between
-> regions of the same type are handled by merging the regions.
+> The get() populates the list with the MSI IOVA reserved window.
+>
+> At the moment an arbitray MSI IOVA window is set at 0x8000000
+> of size 1MB. This will allow to report those info in iommu-group
+> sysfs.
 >
 > Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
@@ -37,156 +39,71 @@ Tomasz
 
 >
 > ---
-> v6 -> v7:
-> - avoid merge of regions of different type
 >
 > v3 -> v4:
-> - take the iommu_group lock in iommu_get_group_resv_regions
-> - the list now is sorted and overlaps are checked
+> - do not handle PCI host bridge windows anymore
+> - encode prot
 >
-> NOTE:
-> - we do not move list elements from device to group list since
->   the iommu_put_resv_regions() could not be called.
-> - at the moment I did not introduce any iommu_put_group_resv_regions
->   since it simply consists in voiding/freeing the list
+> RFC v2 -> v3:
+> - use existing get/put_resv_regions
+>
+> RFC v1 -> v2:
+> - use defines for MSI IOVA base and length
 > ---
->  drivers/iommu/iommu.c | 98 +++++++++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/iommu.h |  8 +++++
->  2 files changed, 106 insertions(+)
+>  drivers/iommu/arm-smmu.c | 28 ++++++++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
 >
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 41c1906..640056b 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -133,6 +133,104 @@ static ssize_t iommu_group_show_name(struct iommu_group *group, char *buf)
->  	return sprintf(buf, "%s\n", group->name);
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index a60cded..a354572 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -281,6 +281,9 @@ enum arm_smmu_s2cr_privcfg {
+>
+>  #define FSYNR0_WNR			(1 << 4)
+>
+> +#define MSI_IOVA_BASE			0x8000000
+> +#define MSI_IOVA_LENGTH			0x100000
+> +
+>  static int force_stage;
+>  module_param(force_stage, int, S_IRUGO);
+>  MODULE_PARM_DESC(force_stage,
+> @@ -1549,6 +1552,29 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+>  	return iommu_fwspec_add_ids(dev, &fwid, 1);
 >  }
 >
-> +/**
-> + * iommu_insert_resv_region - Insert a new region in the
-> + * list of reserved regions.
-> + * @new: new region to insert
-> + * @regions: list of regions
-> + *
-> + * The new element is sorted by address with respect to the other
-> + * regions of the same type. In case it overlaps with another
-> + * region of the same type, regions are merged. In case it
-> + * overlaps with another region of different type, regions are
-> + * not merged.
-> + */
-> +static int iommu_insert_resv_region(struct iommu_resv_region *new,
-> +				    struct list_head *regions)
+> +static void arm_smmu_get_resv_regions(struct device *dev,
+> +				      struct list_head *head)
 > +{
 > +	struct iommu_resv_region *region;
-> +	phys_addr_t start = new->start;
-> +	phys_addr_t end = new->start + new->length - 1;
-> +	struct list_head *pos = regions->next;
+> +	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
 > +
-> +	while (pos != regions) {
-> +		struct iommu_resv_region *entry =
-> +			list_entry(pos, struct iommu_resv_region, list);
-> +		phys_addr_t a = entry->start;
-> +		phys_addr_t b = entry->start + entry->length - 1;
-> +		int type = entry->type;
-> +
-> +		if (end < a) {
-> +			goto insert;
-> +		} else if (start > b) {
-> +			pos = pos->next;
-> +		} else if ((start >= a) && (end <= b)) {
-> +			if (new->type == type)
-> +				goto done;
-> +			else
-> +				pos = pos->next;
-> +		} else {
-> +			if (new->type == type) {
-> +				phys_addr_t new_start = min(a, start);
-> +				phys_addr_t new_end = max(b, end);
-> +
-> +				list_del(&entry->list);
-> +				entry->start = new_start;
-> +				entry->length = new_end - new_start + 1;
-> +				iommu_insert_resv_region(entry, regions);
-> +			} else {
-> +				pos = pos->next;
-> +			}
-> +		}
-> +	}
-> +insert:
-> +	region = iommu_alloc_resv_region(new->start, new->length,
-> +					 new->prot, new->type);
+> +	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+> +					 prot, IOMMU_RESV_MSI);
 > +	if (!region)
-> +		return -ENOMEM;
+> +		return;
 > +
-> +	list_add_tail(&region->list, pos);
-> +done:
-> +	return 0;
+> +	list_add_tail(&region->list, head);
 > +}
 > +
-> +static int
-> +iommu_insert_device_resv_regions(struct list_head *dev_resv_regions,
-> +				 struct list_head *group_resv_regions)
+> +static void arm_smmu_put_resv_regions(struct device *dev,
+> +				      struct list_head *head)
 > +{
-> +	struct iommu_resv_region *entry;
-> +	int ret;
+> +	struct iommu_resv_region *entry, *next;
 > +
-> +	list_for_each_entry(entry, dev_resv_regions, list) {
-> +		ret = iommu_insert_resv_region(entry, group_resv_regions);
-> +		if (ret)
-> +			break;
-> +	}
-> +	return ret;
+> +	list_for_each_entry_safe(entry, next, head, list)
+> +		kfree(entry);
 > +}
 > +
-> +int iommu_get_group_resv_regions(struct iommu_group *group,
-> +				 struct list_head *head)
-> +{
-> +	struct iommu_device *device;
-> +	int ret = 0;
-> +
-> +	mutex_lock(&group->mutex);
-> +	list_for_each_entry(device, &group->devices, list) {
-> +		struct list_head dev_resv_regions;
-> +
-> +		INIT_LIST_HEAD(&dev_resv_regions);
-> +		iommu_get_resv_regions(device->dev, &dev_resv_regions);
-> +		ret = iommu_insert_device_resv_regions(&dev_resv_regions, head);
-> +		iommu_put_resv_regions(device->dev, &dev_resv_regions);
-> +		if (ret)
-> +			break;
-> +	}
-> +	mutex_unlock(&group->mutex);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_get_group_resv_regions);
-> +
->  static IOMMU_GROUP_ATTR(name, S_IRUGO, iommu_group_show_name, NULL);
+>  static struct iommu_ops arm_smmu_ops = {
+>  	.capable		= arm_smmu_capable,
+>  	.domain_alloc		= arm_smmu_domain_alloc,
+> @@ -1564,6 +1590,8 @@ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+>  	.domain_get_attr	= arm_smmu_domain_get_attr,
+>  	.domain_set_attr	= arm_smmu_domain_set_attr,
+>  	.of_xlate		= arm_smmu_of_xlate,
+> +	.get_resv_regions	= arm_smmu_get_resv_regions,
+> +	.put_resv_regions	= arm_smmu_put_resv_regions,
+>  	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+>  };
 >
->  static void iommu_group_release(struct kobject *kobj)
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index f6bb55d3..bec3730 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -246,6 +246,8 @@ extern void iommu_set_fault_handler(struct iommu_domain *domain,
->  extern int iommu_request_dm_for_dev(struct device *dev);
->  extern struct iommu_resv_region *
->  iommu_alloc_resv_region(phys_addr_t start, size_t length, int prot, int type);
-> +extern int iommu_get_group_resv_regions(struct iommu_group *group,
-> +					struct list_head *head);
->
->  extern int iommu_attach_group(struct iommu_domain *domain,
->  			      struct iommu_group *group);
-> @@ -463,6 +465,12 @@ static inline void iommu_put_resv_regions(struct device *dev,
->  {
->  }
->
-> +static inline int iommu_get_group_resv_regions(struct iommu_group *group,
-> +					       struct list_head *head)
-> +{
-> +	return -ENODEV;
-> +}
-> +
->  static inline int iommu_request_dm_for_dev(struct device *dev)
->  {
->  	return -ENODEV;
 >
