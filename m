@@ -1,14 +1,14 @@
 From: Tomasz Nowicki <tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v8 04/18] iommu: iommu_alloc_resv_region
-Date: Tue, 17 Jan 2017 13:12:29 +0100
-Message-ID: <6b6f2af5-74b4-cf51-3c48-6ebc8c040885@caviumnetworks.com>
+Subject: Re: [PATCH v8 05/18] iommu: Only map direct mapped regions
+Date: Tue, 17 Jan 2017 13:13:18 +0100
+Message-ID: <a9618d26-44a8-3453-8b98-f5c46b2e8fa6@caviumnetworks.com>
 References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
-	<1484127714-3263-5-git-send-email-eric.auger@redhat.com>
+	<1484127714-3263-6-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484127714-3263-5-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1484127714-3263-6-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,9 +23,8 @@ Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@
 List-Id: iommu@lists.linux-foundation.org
 
 On 11.01.2017 10:41, Eric Auger wrote:
-> Introduce a new helper serving the purpose to allocate a reserved
-> region. This will be used in iommu driver implementing reserved
-> region callbacks.
+> As we introduced new reserved region types which do not require
+> mapping, let's make sure we only map direct mapped regions.
 >
 > Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 
@@ -38,54 +37,23 @@ Tomasz
 > ---
 >
 > v3 -> v4:
-> - add INIT_LIST_HEAD(&region->list)
-> - use int for prot param and add int type param
-> - remove implementation outside of CONFIG_IOMMU_API
+> - use region's type and reword commit message and title
 > ---
->  drivers/iommu/iommu.c | 18 ++++++++++++++++++
->  include/linux/iommu.h |  2 ++
->  2 files changed, 20 insertions(+)
+>  drivers/iommu/iommu.c | 3 +++
+>  1 file changed, 3 insertions(+)
 >
 > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 1cee5c3..927878d 100644
+> index 927878d..41c1906 100644
 > --- a/drivers/iommu/iommu.c
 > +++ b/drivers/iommu/iommu.c
-> @@ -1575,6 +1575,24 @@ void iommu_put_resv_regions(struct device *dev, struct list_head *list)
->  		ops->put_resv_regions(dev, list);
->  }
+> @@ -343,6 +343,9 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
+>  		start = ALIGN(entry->start, pg_size);
+>  		end   = ALIGN(entry->start + entry->length, pg_size);
 >
-> +struct iommu_resv_region *iommu_alloc_resv_region(phys_addr_t start,
-> +						  size_t length,
-> +						  int prot, int type)
-> +{
-> +	struct iommu_resv_region *region;
+> +		if (entry->type != IOMMU_RESV_DIRECT)
+> +			continue;
 > +
-> +	region = kzalloc(sizeof(*region), GFP_KERNEL);
-> +	if (!region)
-> +		return NULL;
-> +
-> +	INIT_LIST_HEAD(&region->list);
-> +	region->start = start;
-> +	region->length = length;
-> +	region->prot = prot;
-> +	region->type = type;
-> +	return region;
-> +}
-> +
->  /* Request that a device is direct mapped by the IOMMU */
->  int iommu_request_dm_for_dev(struct device *dev)
->  {
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 233a6bf..f6bb55d3 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -244,6 +244,8 @@ extern void iommu_set_fault_handler(struct iommu_domain *domain,
->  extern void iommu_get_resv_regions(struct device *dev, struct list_head *list);
->  extern void iommu_put_resv_regions(struct device *dev, struct list_head *list);
->  extern int iommu_request_dm_for_dev(struct device *dev);
-> +extern struct iommu_resv_region *
-> +iommu_alloc_resv_region(phys_addr_t start, size_t length, int prot, int type);
+>  		for (addr = start; addr < end; addr += pg_size) {
+>  			phys_addr_t phys_addr;
 >
->  extern int iommu_attach_group(struct iommu_domain *domain,
->  			      struct iommu_group *group);
 >
