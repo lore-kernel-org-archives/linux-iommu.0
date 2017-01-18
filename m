@@ -1,49 +1,41 @@
-From: Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 1/5] iommu: Generalize MSM_IOMMU config to ARCH_QCOM
-Date: Wed, 18 Jan 2017 15:27:22 -0800
-Message-ID: <20170118232726.22876-2-sboyd@codeaurora.org>
-References: <20170118232726.22876-1-sboyd@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170118232726.22876-1-sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Andy Gross <andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Stephen Boyd <sboyd@codeaurora.org>
+Subject: [PATCH 0/5] Remove qcom SoC configs
+Date: Wed, 18 Jan 2017 15:27:21 -0800
+Message-ID: <20170118232726.22876-1-sboyd@codeaurora.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Andy Gross <andy.gross@linaro.org>
+Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-We want to get rid of the ARCH_MSM* configs in the future, but
-this still depends on them. Generalize to the ARCH_QCOM config,
-which isn't going away.
+We want to remove the ARCH_MSM* configs in mach-qcom/Kconfig
+because they are proxy configs for selecting the right
+clocksource driver and adjusting the text offset and there is no
+difference between ARCH_MSM8X60 and ARCH_MSM8960 anymore.
+Furthermore, there aren't configs for all the SoCs supported by
+the mainline kernel, leading to confusion about which SoCs are
+supported. This patch series removes them, leading to less confusion
+with the minor downside of always forcing a text offset shift and
+the selection of the qcom specific clocksource driver. The size
+increase from the clocksource driver is already taken in
+the qcom_defconfig, so most likely nobody will care.
 
-Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Signed-off-by: Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/iommu/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Cc: Joerg Roedel <joro@8bytes.org>
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 8ee54d71c7eb..a91fc7986428 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -88,7 +88,7 @@ config FSL_PAMU
- config MSM_IOMMU
- 	bool "MSM IOMMU Support"
- 	depends on ARM
--	depends on ARCH_MSM8X60 || ARCH_MSM8960 || COMPILE_TEST
-+	depends on ARCH_QCOM || COMPILE_TEST
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_ARMV7S
- 	help
+Stephen Boyd (5):
+  iommu: Generalize MSM_IOMMU config to ARCH_QCOM
+  ARM: Makefile: Generalize qcom platform text offset
+  ARM: qcom: Remove SoC specific configs
+  ARM: qcom_defconfig: Drop SoC specific configs
+  ARM: multi_v7_defconfig: Remove qcom SoC configs
+
+ arch/arm/Makefile                   |  3 +--
+ arch/arm/configs/multi_v7_defconfig |  3 ---
+ arch/arm/configs/qcom_defconfig     |  4 ----
+ arch/arm/mach-qcom/Kconfig          | 23 ++---------------------
+ drivers/iommu/Kconfig               |  2 +-
+ 5 files changed, 4 insertions(+), 31 deletions(-)
+
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
