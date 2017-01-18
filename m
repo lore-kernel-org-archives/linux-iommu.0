@@ -1,83 +1,49 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v8 2/9] perf/amd/iommu: Clean up perf_iommu_enable_event
-Date: Wed, 18 Jan 2017 19:20:55 +0100
-Message-ID: <20170118182055.wpgo5b5xe3m4nrql@pd.tnic>
-References: <1484551416-5440-1-git-send-email-Suravee.Suthikulpanit@amd.com>
- <1484551416-5440-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+From: Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH 1/5] iommu: Generalize MSM_IOMMU config to ARCH_QCOM
+Date: Wed, 18 Jan 2017 15:27:22 -0800
+Message-ID: <20170118232726.22876-2-sboyd@codeaurora.org>
+References: <20170118232726.22876-1-sboyd@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1484551416-5440-3-git-send-email-Suravee.Suthikulpanit@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, joro@8bytes.org, peterz@infradead.org, mingo@redhat.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170118232726.22876-1-sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Andy Gross <andy.gross-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 16, 2017 at 01:23:29AM -0600, Suravee Suthikulpanit wrote:
-> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> 
-> * Clean up various bitwise operations in perf_iommu_enable_event
-								  ()
+We want to get rid of the ARCH_MSM* configs in the future, but
+this still depends on them. Generalize to the ARCH_QCOM config,
+which isn't going away.
 
-It is a function.
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Signed-off-by: Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/iommu/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> * Make use macros BIT(x)
-
-"Make use"?
-
-> This should not affect logic and functionality.
-> 
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Borislav Petkov <bp@alien8.de>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  arch/x86/events/amd/iommu.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
-> 
-> diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
-> index 44638d0..1aa25d8 100644
-> --- a/arch/x86/events/amd/iommu.c
-> +++ b/arch/x86/events/amd/iommu.c
-> @@ -164,11 +164,11 @@ static int get_next_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu)
->  	for (bank = 0, shift = 0; bank < max_banks; bank++) {
->  		for (cntr = 0; cntr < max_cntrs; cntr++) {
->  			shift = bank + (bank*3) + cntr;
-> -			if (perf_iommu->cntr_assign_mask & (1ULL<<shift)) {
-> +			if (perf_iommu->cntr_assign_mask & BIT(shift)) {
-
-							   BIT_ULL()
-
-otherwise you're introducing a bug.
-
->  				continue;
->  			} else {
-> -				perf_iommu->cntr_assign_mask |= (1ULL<<shift);
-> -				retval = ((u16)((u16)bank<<8) | (u8)(cntr));
-> +				perf_iommu->cntr_assign_mask |= BIT(shift);
-
-Ditto.
-
-> +				retval = ((u16)((u16)bank << 8) | (u8)(cntr));
-
-That's some ugly casting. Why?
-
-(u8)(cntr) is supposed to do what exactly? Cut off to 255 if max_cntrs
-grows bigger? Can that even happen?
-
-Same for bank?
-
-Then you're casting to u16 even though retval is int. Ah, because it can
-be negative too.
-
-How about this instead?
-
-	retval = ((bank & 0xff) << 8) | (cntr & 0xff);
-
-This way it is really obvious what you're trying to do.
-
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 8ee54d71c7eb..a91fc7986428 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -88,7 +88,7 @@ config FSL_PAMU
+ config MSM_IOMMU
+ 	bool "MSM IOMMU Support"
+ 	depends on ARM
+-	depends on ARCH_MSM8X60 || ARCH_MSM8960 || COMPILE_TEST
++	depends on ARCH_QCOM || COMPILE_TEST
+ 	select IOMMU_API
+ 	select IOMMU_IO_PGTABLE_ARMV7S
+ 	help
 -- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
