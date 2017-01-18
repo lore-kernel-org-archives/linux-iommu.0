@@ -1,86 +1,83 @@
-From: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v8 00/18] KVM PCIe/MSI passthrough on ARM/ARM64 and IOVA
-	reserved regions
-Date: Wed, 18 Jan 2017 14:02:45 +0100
-Message-ID: <9ee8a03b-3231-bb58-1c64-e7f2f76ed5b9@redhat.com>
-References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
-	<e1e6d9cf-5fb8-e118-3a47-4c6be77c21a3@semihalf.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v8 2/9] perf/amd/iommu: Clean up perf_iommu_enable_event
+Date: Wed, 18 Jan 2017 19:20:55 +0100
+Message-ID: <20170118182055.wpgo5b5xe3m4nrql@pd.tnic>
+References: <1484551416-5440-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+ <1484551416-5440-3-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e1e6d9cf-5fb8-e118-3a47-4c6be77c21a3-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1484551416-5440-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, joro@8bytes.org, peterz@infradead.org, mingo@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Tomasz,
-
-On 13/01/2017 14:59, Tomasz Nowicki wrote:
-> Hello Eric,
+On Mon, Jan 16, 2017 at 01:23:29AM -0600, Suravee Suthikulpanit wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > 
-> On 11.01.2017 10:41, Eric Auger wrote:
->> Following LPC discussions, we now report reserved regions through
->> the iommu-group sysfs reserved_regions attribute file.
->>
->> Reserved regions are populated through the IOMMU get_resv_region
->> callback (former get_dm_regions), now implemented by amd-iommu,
->> intel-iommu and arm-smmu:
->> - the intel-iommu reports the [0xfee00000 - 0xfeefffff] MSI window
->>   as a reserved region and RMRR regions as direct-mapped regions.
->> - the amd-iommu reports device direct mapped regions, the MSI region
->>   and HT regions.
->> - the arm-smmu reports the MSI window (arbitrarily located at
->>   0x8000000 and 1MB large).
->>
->> Unsafe interrupt assignment is tested by enumerating all MSI irq
->> domains and checking MSI remapping is supported in the above hierarchy.
->> This check is done in case we detect the iommu translates MSI
->> (an IOMMU_RESV_MSI window exists). Otherwise the IRQ remapping
->> capability is checked at IOMMU level. Obviously this is a defensive
->> IRQ safety assessment: Assuming there are several MSI controllers
->> in the system and at least one does not implement IRQ remapping,
->> the assignment will be considered as unsafe (even if this controller
->> is not acessible from the assigned devices).
->>
->> The series first patch stems from Robin's branch:
->> http://linux-arm.org/git?p=linux-rm.git;a=shortlog;h=refs/heads/iommu/misc
->>
->>
->> Best Regards
->>
->> Eric
->>
->> Git: complete series available at
->> https://github.com/eauger/linux/tree/v4.10-rc3-reserved-v8
-> 
-> I tested the series on ThunderX with internal 10G VNIC and Intel IXGBE
-> NIC. Please feel free to add my:
-> Tested-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+> * Clean up various bitwise operations in perf_iommu_enable_event
+								  ()
 
-Thank you for your review. I will respin tomorrow adding the comment we
-discussed in [PATCH v8 14/18] irqdomain: irq_domain_check_msi_remap.
+It is a function.
 
-I will also apply Bharat's Tested-by, your T-b and your R-b's.
+> * Make use macros BIT(x)
 
-Thanks
+"Make use"?
 
-Eric
+> This should not affect logic and functionality.
 > 
-> Thanks,
-> Tomasz
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>  arch/x86/events/amd/iommu.c | 18 +++++++++---------
+>  1 file changed, 9 insertions(+), 9 deletions(-)
 > 
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+> index 44638d0..1aa25d8 100644
+> --- a/arch/x86/events/amd/iommu.c
+> +++ b/arch/x86/events/amd/iommu.c
+> @@ -164,11 +164,11 @@ static int get_next_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu)
+>  	for (bank = 0, shift = 0; bank < max_banks; bank++) {
+>  		for (cntr = 0; cntr < max_cntrs; cntr++) {
+>  			shift = bank + (bank*3) + cntr;
+> -			if (perf_iommu->cntr_assign_mask & (1ULL<<shift)) {
+> +			if (perf_iommu->cntr_assign_mask & BIT(shift)) {
+
+							   BIT_ULL()
+
+otherwise you're introducing a bug.
+
+>  				continue;
+>  			} else {
+> -				perf_iommu->cntr_assign_mask |= (1ULL<<shift);
+> -				retval = ((u16)((u16)bank<<8) | (u8)(cntr));
+> +				perf_iommu->cntr_assign_mask |= BIT(shift);
+
+Ditto.
+
+> +				retval = ((u16)((u16)bank << 8) | (u8)(cntr));
+
+That's some ugly casting. Why?
+
+(u8)(cntr) is supposed to do what exactly? Cut off to 255 if max_cntrs
+grows bigger? Can that even happen?
+
+Same for bank?
+
+Then you're casting to u16 even though retval is int. Ah, because it can
+be negative too.
+
+How about this instead?
+
+	retval = ((bank & 0xff) << 8) | (cntr & 0xff);
+
+This way it is really obvious what you're trying to do.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
