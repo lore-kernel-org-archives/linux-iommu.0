@@ -1,46 +1,141 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH] iommu: Handle default domain attach failure
-Date: Tue, 17 Jan 2017 16:51:04 +0100
-Message-ID: <20170117155104.GW17255@8bytes.org>
-References: <f5e5f1f1c3c37a36ea44eb8b2767b257ac97210d.1484571306.git.robin.murphy@arm.com>
+From: Tomasz Nowicki <tnowicki@caviumnetworks.com>
+Subject: Re: [PATCH v8 12/18] irqdomain: Add irq domain MSI and MSI_REMAP
+ flags
+Date: Wed, 18 Jan 2017 09:35:53 +0100
+Message-ID: <5b5695c2-2607-4997-516a-699b39bfdb43@caviumnetworks.com>
+References: <1484127714-3263-1-git-send-email-eric.auger@redhat.com>
+ <1484127714-3263-13-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <f5e5f1f1c3c37a36ea44eb8b2767b257ac97210d.1484571306.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1484127714-3263-13-git-send-email-eric.auger@redhat.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Eric Auger <eric.auger@redhat.com>, eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org
+Cc: drjones@redhat.com, kvm@vger.kernel.org, punit.agrawal@arm.com, linux-kernel@vger.kernel.org, geethasowjanya.akula@gmail.com, diana.craciun@nxp.com, iommu@lists.linux-foundation.org, pranav.sawargaonkar@gmail.com, bharat.bhushan@nxp.com, shankerd@codeaurora.org, gpkulkarni@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 16, 2017 at 12:58:07PM +0000, Robin Murphy wrote:
-> We wouldn't normally expect ops->attach_dev() to fail, but on IOMMUs
-> with limited hardware resources, or generally misconfigured systems,
-> it is certainly possible. We report failure correctly from the external
-> iommu_attach_device() interface, but do not do so in iommu_group_add()
-> when attaching to the default domain. The result of failure there is
-> that the device, group and domain all get left in a broken,
-> part-configured state which leads to weird errors and misbehaviour down
-> the line when IOMMU API calls sort-of-but-don't-quite work.
-> 
-> Check the return value of __iommu_attach_device() on the default domain,
-> and refactor the error handling paths to cope with its failure and clean
-> up correctly in such cases.
-> 
-> Fixes: e39cb8a3aa98 ("iommu: Make sure a device is always attached to a domain")
-> Reported-by: Punit Agrawal <punit.agrawal-5wv7dgnIgG8@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/iommu.c | 37 ++++++++++++++++++++++++-------------
->  1 file changed, 24 insertions(+), 13 deletions(-)
+On 11.01.2017 10:41, Eric Auger wrote:
+> We introduce two new enum values for the irq domain flag:
+> - IRQ_DOMAIN_FLAG_MSI indicates the irq domain corresponds to
+>   an MSI domain
+> - IRQ_DOMAIN_FLAG_MSI_REMAP indicates the irq domain has MSI
+>   remapping capabilities.
+>
+> Those values will be useful to check all MSI irq domains have
+> MSI remapping support when assessing the safety of IRQ assignment
+> to a guest.
+>
+> irq_domain_hierarchical_is_msi_remap() allows to check if an
+> irq domain or any parent implements MSI remapping.
+>
+> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+> Reviewed-by: Marc Zyngier <marc.zyngier@arm.com>
 
-Nice cleanup along the fix! Applied, thanks.
+Reviewed-by: Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>
+
+Thanks,
+Tomasz
+
+>
+> ---
+>
+> v7 -> v8:
+> - remove h variable in irq_domain_hierarchical_is_msi_remap
+> - add Marc's R-b
+>
+> v6:
+> - add IRQ_DOMAIN_FLAG_MSI as suggested by Marc
+> - add irq_domain_is_msi, irq_domain_is_msi_remap and
+>   irq_domain_hierarchical_is_msi_remap
+> ---
+>  include/linux/irqdomain.h | 35 +++++++++++++++++++++++++++++++++++
+>  kernel/irq/irqdomain.c    | 14 ++++++++++++++
+>  2 files changed, 49 insertions(+)
+>
+> diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
+> index ffb8460..bc2f571 100644
+> --- a/include/linux/irqdomain.h
+> +++ b/include/linux/irqdomain.h
+> @@ -183,6 +183,12 @@ enum {
+>  	/* Irq domain is an IPI domain with single virq */
+>  	IRQ_DOMAIN_FLAG_IPI_SINGLE	= (1 << 3),
+>
+> +	/* Irq domain implements MSIs */
+> +	IRQ_DOMAIN_FLAG_MSI		= (1 << 4),
+> +
+> +	/* Irq domain implements MSI remapping */
+> +	IRQ_DOMAIN_FLAG_MSI_REMAP	= (1 << 5),
+> +
+>  	/*
+>  	 * Flags starting from IRQ_DOMAIN_FLAG_NONCORE are reserved
+>  	 * for implementation specific purposes and ignored by the
+> @@ -446,6 +452,19 @@ static inline bool irq_domain_is_ipi_single(struct irq_domain *domain)
+>  {
+>  	return domain->flags & IRQ_DOMAIN_FLAG_IPI_SINGLE;
+>  }
+> +
+> +static inline bool irq_domain_is_msi(struct irq_domain *domain)
+> +{
+> +	return domain->flags & IRQ_DOMAIN_FLAG_MSI;
+> +}
+> +
+> +static inline bool irq_domain_is_msi_remap(struct irq_domain *domain)
+> +{
+> +	return domain->flags & IRQ_DOMAIN_FLAG_MSI_REMAP;
+> +}
+> +
+> +extern bool irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain);
+> +
+>  #else	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
+>  static inline void irq_domain_activate_irq(struct irq_data *data) { }
+>  static inline void irq_domain_deactivate_irq(struct irq_data *data) { }
+> @@ -477,6 +496,22 @@ static inline bool irq_domain_is_ipi_single(struct irq_domain *domain)
+>  {
+>  	return false;
+>  }
+> +
+> +static inline bool irq_domain_is_msi(struct irq_domain *domain)
+> +{
+> +	return false;
+> +}
+> +
+> +static inline bool irq_domain_is_msi_remap(struct irq_domain *domain)
+> +{
+> +	return false;
+> +}
+> +
+> +static inline bool
+> +irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain)
+> +{
+> +	return false;
+> +}
+>  #endif	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
+>
+>  #else /* CONFIG_IRQ_DOMAIN */
+> diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
+> index 8c0a0ae..876e131 100644
+> --- a/kernel/irq/irqdomain.c
+> +++ b/kernel/irq/irqdomain.c
+> @@ -1392,6 +1392,20 @@ static void irq_domain_check_hierarchy(struct irq_domain *domain)
+>  	if (domain->ops->alloc)
+>  		domain->flags |= IRQ_DOMAIN_FLAG_HIERARCHY;
+>  }
+> +
+> +/**
+> + * irq_domain_hierarchical_is_msi_remap - Check if the domain or any
+> + * parent has MSI remapping support
+> + * @domain: domain pointer
+> + */
+> +bool irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain)
+> +{
+> +	for (; domain; domain = domain->parent) {
+> +		if (irq_domain_is_msi_remap(domain))
+> +			return true;
+> +	}
+> +	return false;
+> +}
+>  #else	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
+>  /**
+>   * irq_domain_get_irq_data - Get irq_data associated with @virq and @domain
+>
