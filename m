@@ -1,11 +1,14 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 0/5] Implement SMMU passthrough using the default domain
-Date: Thu, 19 Jan 2017 18:19:10 +0000
-Message-ID: <1484849955-1871-1-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 1/5] iommu/arm-smmu: Restrict domain attributes to UNMANAGED
+	domains
+Date: Thu, 19 Jan 2017 18:19:11 +0000
+Message-ID: <1484849955-1871-2-git-send-email-will.deacon@arm.com>
+References: <1484849955-1871-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1484849955-1871-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,39 +22,67 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi all,
+The ARM SMMU drivers provide a DOMAIN_ATTR_NESTING domain attribute,
+which allows callers of the IOMMU API to request that the page table
+for a domain is installed at stage-2, if supported by the hardware.
 
-A number of people have expressed interest in having the SMMU come up in
-a passthrough configuration, and then allow subsequent translation for
-things such as VFIO. Rather than do this in each SMMU driver, it's much
-cleaner to allow the default domain to be configured to be something other
-than DMA.
+Since setting this attribute only makes sense for UNMANAGED domains,
+this patch returns -ENODEV if the domain_{get,set}_attr operations are
+called on other domain types.
 
-This patch series implements a command-line option to configure the
-default domain type. Currently, it supports "dma" and "identity" which
-is sufficient for the passthrough use-case.
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 6 ++++++
+ drivers/iommu/arm-smmu.c    | 6 ++++++
+ 2 files changed, 12 insertions(+)
 
-Tested on an ARM fastmodel.
-
-All feedback welcome,
-
-Will
-
---->8
-
-Will Deacon (5):
-  iommu/arm-smmu: Restrict domain attributes to UNMANAGED domains
-  iommu/arm-smmu: Install bypass S2CRs for IOMMU_DOMAIN_IDENTITY domains
-  iommu/arm-smmu-v3: Install bypass STEs for IOMMU_DOMAIN_IDENTITY
-    domains
-  arm64: dma-mapping: Only swizzle DMA ops for IOMMU_DOMAIN_DMA
-  iommu: Allow default domain type to be set on the kernel command line
-
- arch/arm64/mm/dma-mapping.c | 17 ++++++++++++-----
- drivers/iommu/arm-smmu-v3.c | 20 ++++++++++++++++++--
- drivers/iommu/arm-smmu.c    | 26 +++++++++++++++++++++++---
- drivers/iommu/iommu.c       | 19 +++++++++++++++++--
- 4 files changed, 70 insertions(+), 12 deletions(-)
-
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 4d6ec444a9d6..c254325b0c7a 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1839,6 +1839,9 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+ {
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 
++	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
++		return -ENODEV;
++
+ 	switch (attr) {
+ 	case DOMAIN_ATTR_NESTING:
+ 		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+@@ -1854,6 +1857,9 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+ 	int ret = 0;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 
++	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
++		return -ENODEV;
++
+ 	mutex_lock(&smmu_domain->init_mutex);
+ 
+ 	switch (attr) {
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index a60cded8a6ed..a328ffb75509 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1497,6 +1497,9 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+ {
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 
++	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
++		return -ENODEV;
++
+ 	switch (attr) {
+ 	case DOMAIN_ATTR_NESTING:
+ 		*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+@@ -1512,6 +1515,9 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+ 	int ret = 0;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 
++	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
++		return -ENODEV;
++
+ 	mutex_lock(&smmu_domain->init_mutex);
+ 
+ 	switch (attr) {
 -- 
 2.1.4
