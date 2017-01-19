@@ -1,11 +1,23 @@
-From: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Subject: [PATCH v4] iommu/arm-smmu: Support for Extended Stream ID (16 bit)
-Date: Thu, 19 Jan 2017 17:36:36 +0300
-Message-ID: <20170119143653.7576-1-aleksey.makarov@linaro.org>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 02/10] iommu/of: Prepare for deferred IOMMU configuration
+Date: Thu, 19 Jan 2017 14:40:56 +0000
+Message-ID: <20170119144056.GA4312@red-moon>
+References: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
+	<1480465344-11862-3-git-send-email-sricharan@codeaurora.org>
+	<20161130161723.GA9042@red-moon>
+	<c89825aa-c75f-8493-fe92-7cc97f525bc7@arm.com>
+	<20161201112917.GA9680@red-moon>
+	<003601d2672e$91744b40$b45ce1c0$@codeaurora.org>
+	<20170105122714.GA30449@red-moon>
+	<7cd7bcfb-abae-2948-c3f8-230c0d9c9db6@arm.com>
+	<005f01d26763$450f9cc0$cf2ed640$@codeaurora.org>
+	<20170106162400.GA8109@red-moon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170106162400.GA8109@red-moon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,216 +27,93 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Tomasz Nowicki <tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-It is the time we have the real 16-bit Stream ID user, which is the
-ThunderX. Its IO topology uses 1:1 map for Requester ID to Stream ID
-translation for each root complex which allows to get full 16-bit
-Stream ID.  Firmware assigns bus IDs that are greater than 128 (0x80)
-to some buses under PEM (external PCIe interface).  Eventually SMMU
-drops devices on that buses because their Stream ID is out of range:
+Hi Sricharan,
 
-  pci 0006:90:00.0: stream ID 0x9000 out of range for SMMU (0x7fff)
+On Fri, Jan 06, 2017 at 04:24:00PM +0000, Lorenzo Pieralisi wrote:
+> On Thu, Jan 05, 2017 at 08:21:53PM +0530, Sricharan wrote:
+> > Hi,
+> > 
+> > [...]
+> > 
+> > >>>
+> > >>> With the thinking of taking this series through, would it be fine if i
+> > >>> cleanup the pci configure hanging outside and push it in to
+> > >>> of/acpi_iommu configure respectively ? This time with all neeeded for
+> > >>> ACPI added as well.  Also on the last post of V4, Lorenzo commented
+> > >>> that it worked for him, although still the of_match_node equivalent in
+> > >>> ACPI has to be added. If i can get that, then i will add that as well
+> > >>> to make this complete.
+> > >>
+> > >> Question: I had a look into this and instead of fiddling about with the
+> > >> linker script entries in ACPI (ie IORT_ACPI_DECLARE - which I hope this
+> > >> patchset would help remove entirely), I think that the only check we
+> > >> need in IORT is, depending on what type of SMMU a given device is
+> > >> connected to, to check if the respective SMMU driver is compiled in the
+> > >> kernel and it will be probed, _eventually_.
+> > >>
+> > >> As Robin said, by the time a device is probed the respective SMMU
+> > >> devices are already created and registered with IORT kernel code or
+> > >> they will never be, so to understand if we should defer probing
+> > >> SMMU device creation is _not_ really a problem in ACPI.
+> > >>
+> > >> To check if a SMMU driver is enabled, do we really need a linker
+> > >> table ?
+> > >>
+> > >> Would not a check based on eg:
+> > >>
+> > >> /**
+> > >>  * @type: IOMMU IORT node type of the IOMMU a device is connected to
+> > >>  */
+> > >> static bool iort_iommu_driver_enabled(u8 type)
+> > >> {
+> > >> 	switch (type) {
+> > >> 	case ACPI_IORT_SMMU_V3:
+> > >> 		return IS_ENABLED(CONFIG_ARM_SMMU_V3);
+> > >
+> > >IS_BUILTIN(...)
+> > >
+> > >> 	case ACPI_IORT_SMMU:
+> > >> 		return IS_ENABLED(CONFIG_ARM_SMMU);
+> > >> 	default:
+> > >> 		pr_warn("Unknown IORT SMMU type\n");
+> > >
+> > >Might displaying the actual value be helfpul for debugging a broken IORT
+> > >table?
+> > >
+> > >> 		return false;
+> > >> 	}
+> > >> }
+> > >>
+> > >> be sufficient (it is a bit gross, agreed, but it is to understand if
+> > >> that's all we need) ? Is there anything I am missing ?
+> > >>
+> > >> Let me know, I will put together a patch for you I really do not
+> > >> want to block your series for this trivial niggle.
+> > >
+> > >Other than that, though, I like it :) IORT has a small, strictly
+> > >bounded, set of supported devices, so I really don't see the need to go
+> > >overboard putting it on parity with DT when something this neat and
+> > >simple will suffice.
+> > >
+> > 
+> > Ok sure, looks correct for me as well in whole of the context here.
+> 
+> Ok, I put together a branch where you can find your original series
+> plus some ACPI patches for you to test and use:
+> 
+> git://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git iommu/probe-deferral
+> 
+> Feel free to post the additional patches I added along with your series
+> (that from what I gather you have reworked already) and please both have a
+> look if the deferral mechanism I put in place in ACPI makes sense to you.
 
-To fix above issue enable the Extended Stream ID optional feature
-when available.
+Did you have time to make progress on this ? I think it is time we
+posted the complete series to aim for 4.11 please, if you need help just
+let us know.
 
-Reviewed-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Signed-off-by: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Tested-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
----
-v4:
-change the commit message:
-- explain the reason why the warning happens (Tomasz Nowicki)
-- add 'Reviewed-by' and 'Tested-by' from Tomasz Nowicki
-
-v3:
-https://lkml.kernel.org/r/20170117151431.17085-1-aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
-- keep formatting of the comment
-- fix printk message after the deleted chunk.  "[Do] not print a mask
-  here, since it's not overly interesting in itself, and add_device will
-  still show the offending mask in full if it ever actually matters (as in
-  the commit message)." (Robin Murphy)
-
-v2:
-https://lkml.kernel.org/r/20170116141111.29444-1-aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
-- remove unnecessary parentheses (Robin Murphy)
-- refactor testing SMR fields to after setting sCR0 as theirs width
-  depends on sCR0_EXIDENABLE (Robin Murphy)
-
-v1 (rfc):
-https://lkml.kernel.org/r/20170110115755.19102-1-aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
-
- drivers/iommu/arm-smmu.c | 69 +++++++++++++++++++++++++++++++++---------------
- 1 file changed, 48 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 13d26009b8e0..861cc135722f 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -24,6 +24,7 @@
-  *	- v7/v8 long-descriptor format
-  *	- Non-secure access to the SMMU
-  *	- Context fault reporting
-+ *	- Extended Stream ID (16 bit)
-  */
- 
- #define pr_fmt(fmt) "arm-smmu: " fmt
-@@ -87,6 +88,7 @@
- #define sCR0_CLIENTPD			(1 << 0)
- #define sCR0_GFRE			(1 << 1)
- #define sCR0_GFIE			(1 << 2)
-+#define sCR0_EXIDENABLE			(1 << 3)
- #define sCR0_GCFGFRE			(1 << 4)
- #define sCR0_GCFGFIE			(1 << 5)
- #define sCR0_USFCFG			(1 << 10)
-@@ -126,6 +128,7 @@
- #define ID0_NUMIRPT_MASK		0xff
- #define ID0_NUMSIDB_SHIFT		9
- #define ID0_NUMSIDB_MASK		0xf
-+#define ID0_EXIDS			(1 << 8)
- #define ID0_NUMSMRG_SHIFT		0
- #define ID0_NUMSMRG_MASK		0xff
- 
-@@ -169,6 +172,7 @@
- #define ARM_SMMU_GR0_S2CR(n)		(0xc00 + ((n) << 2))
- #define S2CR_CBNDX_SHIFT		0
- #define S2CR_CBNDX_MASK			0xff
-+#define S2CR_EXIDVALID			(1 << 10)
- #define S2CR_TYPE_SHIFT			16
- #define S2CR_TYPE_MASK			0x3
- enum arm_smmu_s2cr_type {
-@@ -354,6 +358,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_FMT_AARCH64_64K	(1 << 9)
- #define ARM_SMMU_FEAT_FMT_AARCH32_L	(1 << 10)
- #define ARM_SMMU_FEAT_FMT_AARCH32_S	(1 << 11)
-+#define ARM_SMMU_FEAT_EXIDS		(1 << 12)
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
-@@ -1051,7 +1056,7 @@ static void arm_smmu_write_smr(struct arm_smmu_device *smmu, int idx)
- 	struct arm_smmu_smr *smr = smmu->smrs + idx;
- 	u32 reg = smr->id << SMR_ID_SHIFT | smr->mask << SMR_MASK_SHIFT;
- 
--	if (smr->valid)
-+	if (!(smmu->features & ARM_SMMU_FEAT_EXIDS) && smr->valid)
- 		reg |= SMR_VALID;
- 	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_SMR(idx));
- }
-@@ -1063,6 +1068,9 @@ static void arm_smmu_write_s2cr(struct arm_smmu_device *smmu, int idx)
- 		  (s2cr->cbndx & S2CR_CBNDX_MASK) << S2CR_CBNDX_SHIFT |
- 		  (s2cr->privcfg & S2CR_PRIVCFG_MASK) << S2CR_PRIVCFG_SHIFT;
- 
-+	if (smmu->features & ARM_SMMU_FEAT_EXIDS && smmu->smrs &&
-+	    smmu->smrs[idx].valid)
-+		reg |= S2CR_EXIDVALID;
- 	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_S2CR(idx));
- }
- 
-@@ -1073,6 +1081,34 @@ static void arm_smmu_write_sme(struct arm_smmu_device *smmu, int idx)
- 		arm_smmu_write_smr(smmu, idx);
- }
- 
-+/*
-+ * The width of SMR's mask field depends on sCR0_EXIDENABLE, so this function
-+ * should be called after sCR0 is written.
-+ */
-+static void arm_smmu_test_smr_masks(struct arm_smmu_device *smmu)
-+{
-+	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
-+	u32 smr;
-+
-+	if (!smmu->smrs)
-+		return;
-+
-+	/*
-+	 * SMR.ID bits may not be preserved if the corresponding MASK
-+	 * bits are set, so check each one separately. We can reject
-+	 * masters later if they try to claim IDs outside these masks.
-+	 */
-+	smr = smmu->streamid_mask << SMR_ID_SHIFT;
-+	writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-+	smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-+	smmu->streamid_mask = smr >> SMR_ID_SHIFT;
-+
-+	smr = smmu->streamid_mask << SMR_MASK_SHIFT;
-+	writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
-+	smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
-+	smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
-+}
-+
- static int arm_smmu_find_sme(struct arm_smmu_device *smmu, u16 id, u16 mask)
- {
- 	struct arm_smmu_smr *smrs = smmu->smrs;
-@@ -1674,6 +1710,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 	if (smmu->features & ARM_SMMU_FEAT_VMID16)
- 		reg |= sCR0_VMID16EN;
- 
-+	if (smmu->features & ARM_SMMU_FEAT_EXIDS)
-+		reg |= sCR0_EXIDENABLE;
-+
- 	/* Push the button */
- 	__arm_smmu_tlb_sync(smmu);
- 	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
-@@ -1761,11 +1800,14 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 			   "\t(IDR0.CTTW overridden by FW configuration)\n");
- 
- 	/* Max. number of entries we have for stream matching/indexing */
--	size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
-+	if (smmu->version == ARM_SMMU_V2 && id & ID0_EXIDS) {
-+		smmu->features |= ARM_SMMU_FEAT_EXIDS;
-+		size = 1 << 16;
-+	} else {
-+		size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
-+	}
- 	smmu->streamid_mask = size - 1;
- 	if (id & ID0_SMS) {
--		u32 smr;
--
- 		smmu->features |= ARM_SMMU_FEAT_STREAM_MATCH;
- 		size = (id >> ID0_NUMSMRG_SHIFT) & ID0_NUMSMRG_MASK;
- 		if (size == 0) {
-@@ -1774,21 +1816,6 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 			return -ENODEV;
- 		}
- 
--		/*
--		 * SMR.ID bits may not be preserved if the corresponding MASK
--		 * bits are set, so check each one separately. We can reject
--		 * masters later if they try to claim IDs outside these masks.
--		 */
--		smr = smmu->streamid_mask << SMR_ID_SHIFT;
--		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
--		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
--		smmu->streamid_mask = smr >> SMR_ID_SHIFT;
--
--		smr = smmu->streamid_mask << SMR_MASK_SHIFT;
--		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
--		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
--		smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
--
- 		/* Zero-initialised to mark as invalid */
- 		smmu->smrs = devm_kcalloc(smmu->dev, size, sizeof(*smmu->smrs),
- 					  GFP_KERNEL);
-@@ -1796,8 +1823,7 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
- 			return -ENOMEM;
- 
- 		dev_notice(smmu->dev,
--			   "\tstream matching with %lu register groups, mask 0x%x",
--			   size, smmu->smr_mask_mask);
-+			   "\tstream matching with %lu register groups", size);
- 	}
- 	/* s2cr->type == 0 means translation, so initialise explicitly */
- 	smmu->s2crs = devm_kmalloc_array(smmu->dev, size, sizeof(*smmu->s2crs),
-@@ -2120,6 +2146,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	iommu_register_instance(dev->fwnode, &arm_smmu_ops);
- 	platform_set_drvdata(pdev, smmu);
- 	arm_smmu_device_reset(smmu);
-+	arm_smmu_test_smr_masks(smmu);
- 
- 	/* Oh, for a proper bus abstraction */
- 	if (!iommu_present(&platform_bus_type))
--- 
-2.11.0
+Thanks !
+Lorenzo
