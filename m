@@ -1,14 +1,23 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V5 12/12] ACPI/IORT: Remove linker section for IORT entries
-	probing
-Date: Thu, 19 Jan 2017 20:35:56 +0530
-Message-ID: <1484838356-24962-13-git-send-email-sricharan@codeaurora.org>
-References: <1484838356-24962-1-git-send-email-sricharan@codeaurora.org>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH 02/10] iommu/of: Prepare for deferred IOMMU configuration
+Date: Thu, 19 Jan 2017 20:40:18 +0530
+Message-ID: <001a01d27266$295a2550$7c0e6ff0$@codeaurora.org>
+References: <1480465344-11862-1-git-send-email-sricharan@codeaurora.org>
+	<1480465344-11862-3-git-send-email-sricharan@codeaurora.org>
+	<20161130161723.GA9042@red-moon>
+	<c89825aa-c75f-8493-fe92-7cc97f525bc7@arm.com>
+	<20161201112917.GA9680@red-moon>
+	<003601d2672e$91744b40$b45ce1c0$@codeaurora.org>
+	<20170105122714.GA30449@red-moon>
+	<7cd7bcfb-abae-2948-c3f8-230c0d9c9db6@arm.com>
+	<005f01d26763$450f9cc0$cf2ed640$@codeaurora.org>
+	<20170106162400.GA8109@red-moon> <20170119144056.GA4312@red-moon>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484838356-24962-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <20170119144056.GA4312@red-moon>
+Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,70 +27,109 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+To: 'Lorenzo Pieralisi' <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Hi Lorenzo,
 
-The IORT linker section introduced by commit 34ceea275f62
-("ACPI/IORT: Introduce linker section for IORT entries probing")
-was needed to make sure SMMU drivers are registered (and therefore
-probed) in the kernel before devices using the SMMU have a chance
-to probe in turn.
+>-----Original Message-----
+>From: linux-arm-kernel [mailto:linux-arm-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org] On Behalf Of Lorenzo Pieralisi
+>Sent: Thursday, January 19, 2017 8:11 PM
+>To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; 'Robin Murphy'
+><robin.murphy-5wv7dgnIgG8@public.gmane.org>; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+>Subject: Re: [PATCH 02/10] iommu/of: Prepare for deferred IOMMU configuration
+>
+>Hi Sricharan,
+>
+>On Fri, Jan 06, 2017 at 04:24:00PM +0000, Lorenzo Pieralisi wrote:
+>> On Thu, Jan 05, 2017 at 08:21:53PM +0530, Sricharan wrote:
+>> > Hi,
+>> >
+>> > [...]
+>> >
+>> > >>>
+>> > >>> With the thinking of taking this series through, would it be fine if i
+>> > >>> cleanup the pci configure hanging outside and push it in to
+>> > >>> of/acpi_iommu configure respectively ? This time with all neeeded for
+>> > >>> ACPI added as well.  Also on the last post of V4, Lorenzo commented
+>> > >>> that it worked for him, although still the of_match_node equivalent in
+>> > >>> ACPI has to be added. If i can get that, then i will add that as well
+>> > >>> to make this complete.
+>> > >>
+>> > >> Question: I had a look into this and instead of fiddling about with the
+>> > >> linker script entries in ACPI (ie IORT_ACPI_DECLARE - which I hope this
+>> > >> patchset would help remove entirely), I think that the only check we
+>> > >> need in IORT is, depending on what type of SMMU a given device is
+>> > >> connected to, to check if the respective SMMU driver is compiled in the
+>> > >> kernel and it will be probed, _eventually_.
+>> > >>
+>> > >> As Robin said, by the time a device is probed the respective SMMU
+>> > >> devices are already created and registered with IORT kernel code or
+>> > >> they will never be, so to understand if we should defer probing
+>> > >> SMMU device creation is _not_ really a problem in ACPI.
+>> > >>
+>> > >> To check if a SMMU driver is enabled, do we really need a linker
+>> > >> table ?
+>> > >>
+>> > >> Would not a check based on eg:
+>> > >>
+>> > >> /**
+>> > >>  * @type: IOMMU IORT node type of the IOMMU a device is connected to
+>> > >>  */
+>> > >> static bool iort_iommu_driver_enabled(u8 type)
+>> > >> {
+>> > >> 	switch (type) {
+>> > >> 	case ACPI_IORT_SMMU_V3:
+>> > >> 		return IS_ENABLED(CONFIG_ARM_SMMU_V3);
+>> > >
+>> > >IS_BUILTIN(...)
+>> > >
+>> > >> 	case ACPI_IORT_SMMU:
+>> > >> 		return IS_ENABLED(CONFIG_ARM_SMMU);
+>> > >> 	default:
+>> > >> 		pr_warn("Unknown IORT SMMU type\n");
+>> > >
+>> > >Might displaying the actual value be helfpul for debugging a broken IORT
+>> > >table?
+>> > >
+>> > >> 		return false;
+>> > >> 	}
+>> > >> }
+>> > >>
+>> > >> be sufficient (it is a bit gross, agreed, but it is to understand if
+>> > >> that's all we need) ? Is there anything I am missing ?
+>> > >>
+>> > >> Let me know, I will put together a patch for you I really do not
+>> > >> want to block your series for this trivial niggle.
+>> > >
+>> > >Other than that, though, I like it :) IORT has a small, strictly
+>> > >bounded, set of supported devices, so I really don't see the need to go
+>> > >overboard putting it on parity with DT when something this neat and
+>> > >simple will suffice.
+>> > >
+>> >
+>> > Ok sure, looks correct for me as well in whole of the context here.
+>>
+>> Ok, I put together a branch where you can find your original series
+>> plus some ACPI patches for you to test and use:
+>>
+>> git://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git iommu/probe-deferral
+>>
+>> Feel free to post the additional patches I added along with your series
+>> (that from what I gather you have reworked already) and please both have a
+>> look if the deferral mechanism I put in place in ACPI makes sense to you.
+>
+>Did you have time to make progress on this ? I think it is time we
+>posted the complete series to aim for 4.11 please, if you need help just
+>let us know.
+>
 
-Through the introduction of deferred IOMMU configuration the linker
-section based IORT probing infrastructure is not needed any longer, in
-that device/SMMU probe dependencies are managed through the probe
-deferral mechanism, making the IORT linker section infrastructure
-unused, so that it can be removed.
+I just posted V5 now.  I have mainly reworked the pci dma configure code which
+was lying outside and having it all in one place in dma_configure. The ACPI changes
+from you looked fine for me. I have tested on arm64/32 with DT, and require testing
+help on ACPI. Thanks.
 
-Remove the unused IORT linker section probing infrastructure
-from the kernel to complete the ACPI IORT IOMMU configure probe
-deferral mechanism implementation.
-
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/acpi/arm64/iort.c         | 2 --
- include/asm-generic/vmlinux.lds.h | 1 -
- include/linux/acpi_iort.h         | 3 ---
- 3 files changed, 6 deletions(-)
-
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index d01bae8..ac45623 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -992,6 +992,4 @@ void __init acpi_iort_init(void)
- 	}
- 
- 	iort_init_platform_devices();
--
--	acpi_probe_device_table(iort);
- }
-diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-index 0968d13..9faa26c 100644
---- a/include/asm-generic/vmlinux.lds.h
-+++ b/include/asm-generic/vmlinux.lds.h
-@@ -566,7 +566,6 @@
- 	IRQCHIP_OF_MATCH_TABLE()					\
- 	ACPI_PROBE_TABLE(irqchip)					\
- 	ACPI_PROBE_TABLE(clksrc)					\
--	ACPI_PROBE_TABLE(iort)						\
- 	EARLYCON_TABLE()
- 
- #define INIT_TEXT							\
-diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-index 77e0809..f167e1d04 100644
---- a/include/linux/acpi_iort.h
-+++ b/include/linux/acpi_iort.h
-@@ -52,7 +52,4 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
- { return NULL; }
- #endif
- 
--#define IORT_ACPI_DECLARE(name, table_id, fn)		\
--	ACPI_DECLARE_PROBE_ENTRY(iort, name, table_id, 0, NULL, 0, fn)
--
- #endif /* __ACPI_IORT_H__ */
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+Regards,
+ Sricharan
