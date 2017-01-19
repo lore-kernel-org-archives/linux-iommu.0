@@ -1,15 +1,16 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V5 05/12] drivers: platform: Configure dma operations at
-	probe time
-Date: Thu, 19 Jan 2017 17:49:58 +0000
-Message-ID: <327b5a9b-35f6-f6e0-4ef9-d2ed15bb4e49@arm.com>
+Subject: Re: [PATCH V5 08/12] iommu/arm-smmu: Clean up early-probing
+	workarounds
+Date: Thu, 19 Jan 2017 17:58:16 +0000
+Message-ID: <b3f0f112-e4a0-fa4d-4f18-44484392a5e9@arm.com>
 References: <1484838356-24962-1-git-send-email-sricharan@codeaurora.org>
-	<1484838356-24962-6-git-send-email-sricharan@codeaurora.org>
+	<1484838356-24962-9-git-send-email-sricharan@codeaurora.org>
+	<20170119165053.GC28483@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484838356-24962-6-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <20170119165053.GC28483@red-moon>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,170 +20,170 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMTkvMDEvMTcgMTU6MDUsIFNyaWNoYXJhbiBSIHdyb3RlOgo+IENvbmZpZ3VyaW5nIERNQSBv
-cHMgYXQgcHJvYmUgdGltZSB3aWxsIGFsbG93IGRlZmVycmluZyBkZXZpY2UgcHJvYmUgd2hlbgo+
-IHRoZSBJT01NVSBpc24ndCBhdmFpbGFibGUgeWV0LiBUaGUgZG1hX2NvbmZpZ3VyZSBmb3IgdGhl
-IGRldmljZSBpcwo+IG5vdyBjYWxsZWQgZnJvbSB0aGUgZ2VuZXJpYyBkZXZpY2VfYXR0YWNoIGNh
-bGxiYWNrIGp1c3QgYmVmb3JlIHRoZQo+IGJ1cy9kcml2ZXIgcHJvYmUgaXMgY2FsbGVkLiBUaGlz
-IHdheSwgY29uZmlndXJpbmcgdGhlIERNQSBvcHMgZm9yIHRoZQo+IGRldmljZSB3b3VsZCBiZSBj
-YWxsZWQgYXQgdGhlIHNhbWUgcGxhY2UgZm9yIGFsbCBidXNfdHlwZXMsIGhlbmNlIHRoZQo+IGRl
-ZmVycmVkIHByb2JpbmcgbWVjaGFuaXNtIHNob3VsZCB3b3JrIGZvciBhbGwgYnVzZXMgYXMgd2Vs
-bC4KPiAKPiBwY2lfYnVzX2FkZF9kZXZpY2VzICAgIChwbGF0Zm9ybS9hbWJhKShfZGV2aWNlX2Ny
-ZWF0ZS9kcml2ZXJfcmVnaXN0ZXIpCj4gICAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAg
-fAo+IHBjaV9idXNfYWRkX2RldmljZSAgICAgKGRldmljZV9hZGQvZHJpdmVyX3JlZ2lzdGVyKQo+
-ICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgIHwKPiBkZXZpY2VfYXR0YWNoICAgICAg
-ICAgICBkZXZpY2VfaW5pdGlhbF9wcm9iZQo+ICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAg
-ICAgIHwKPiBfX2RldmljZV9hdHRhY2hfZHJpdmVyICAgIF9fZGV2aWNlX2F0dGFjaF9kcml2ZXIK
-PiAgICAgICAgfAo+IGRyaXZlcl9wcm9iZV9kZXZpY2UKPiAgICAgICAgfAo+IHJlYWxseV9wcm9i
-ZQo+ICAgICAgICB8Cj4gZG1hX2NvbmZpZ3VyZQo+IAo+IFNpbWlsYXJseSBvbiB0aGUgZGV2aWNl
-L2RyaXZlcl91bnJlZ2lzdGVyIHBhdGggX19kZXZpY2VfcmVsZWFzZV9kcml2ZXIgaXMKPiBjYWxs
-ZWQgd2hpY2ggaW50dXJuIGNhbGxzIGRtYV9kZWNvbmZpZ3VyZS4KPiAKPiBTaWduZWQtb2ZmLWJ5
-OiBTcmljaGFyYW4gUiA8c3JpY2hhcmFuQGNvZGVhdXJvcmEub3JnPgo+IC0tLQo+ICAqIFJlbW92
-ZWQgdGhlIGRtYSBjb25maWd1cmF0aW9uIGZvciB0aGUgcGNpIGRldmljZXMgaW4gY2FzZSBvZiBE
-VAo+ICAgIGZyb20gcGNpX2RtYV9jb25maWd1cmUgd2hpY2ggd2FzIGhhbmdpbmcgb3V0c2lkZSBz
-ZXBhcmF0ZWx5IGFuZAo+ICAgIGRvaW5nIGl0IGluIGRtYV9jb25maWd1cmUgZnVuY3Rpb24gaXRz
-ZWxmLgo+IAo+ICBkcml2ZXJzL2Jhc2UvZGQuYyAgICAgICAgICAgfCAgOSArKysrKysrKysKPiAg
-ZHJpdmVycy9iYXNlL2RtYS1tYXBwaW5nLmMgIHwgMzIgKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysKPiAgZHJpdmVycy9vZi9wbGF0Zm9ybS5jICAgICAgIHwgIDUgKy0tLS0KPiAgZHJp
-dmVycy9wY2kvcHJvYmUuYyAgICAgICAgIHwgIDUgKy0tLS0KPiAgaW5jbHVkZS9saW51eC9kbWEt
-bWFwcGluZy5oIHwgIDMgKysrCj4gIDUgZmlsZXMgY2hhbmdlZCwgNDYgaW5zZXJ0aW9ucygrKSwg
-OCBkZWxldGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9iYXNlL2RkLmMgYi9kcml2
-ZXJzL2Jhc2UvZGQuYwo+IGluZGV4IGExZmJmNTUuLjQ4ODJmMDYgMTAwNjQ0Cj4gLS0tIGEvZHJp
-dmVycy9iYXNlL2RkLmMKPiArKysgYi9kcml2ZXJzL2Jhc2UvZGQuYwo+IEBAIC0xOSw2ICsxOSw3
-IEBACj4gIAo+ICAjaW5jbHVkZSA8bGludXgvZGV2aWNlLmg+Cj4gICNpbmNsdWRlIDxsaW51eC9k
-ZWxheS5oPgo+ICsjaW5jbHVkZSA8bGludXgvZG1hLW1hcHBpbmcuaD4KPiAgI2luY2x1ZGUgPGxp
-bnV4L21vZHVsZS5oPgo+ICAjaW5jbHVkZSA8bGludXgva3RocmVhZC5oPgo+ICAjaW5jbHVkZSA8
-bGludXgvd2FpdC5oPgo+IEBAIC0zNTYsNiArMzU3LDEwIEBAIHN0YXRpYyBpbnQgcmVhbGx5X3By
-b2JlKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGRldmljZV9kcml2ZXIgKmRydikKPiAgCWlm
-IChyZXQpCj4gIAkJZ290byBwaW5jdHJsX2JpbmRfZmFpbGVkOwo+ICAKPiArCXJldCA9IGRtYV9j
-b25maWd1cmUoZGV2KTsKPiArCWlmIChyZXQpCj4gKwkJZ290byBkbWFfZmFpbGVkOwo+ICsKPiAg
-CWlmIChkcml2ZXJfc3lzZnNfYWRkKGRldikpIHsKPiAgCQlwcmludGsoS0VSTl9FUlIgIiVzOiBk
-cml2ZXJfc3lzZnNfYWRkKCVzKSBmYWlsZWRcbiIsCj4gIAkJCV9fZnVuY19fLCBkZXZfbmFtZShk
-ZXYpKTsKPiBAQCAtNDE3LDYgKzQyMiw4IEBAIHN0YXRpYyBpbnQgcmVhbGx5X3Byb2JlKHN0cnVj
-dCBkZXZpY2UgKmRldiwgc3RydWN0IGRldmljZV9kcml2ZXIgKmRydikKPiAgCWdvdG8gZG9uZTsK
-PiAgCj4gIHByb2JlX2ZhaWxlZDoKPiArCWRtYV9kZWNvbmZpZ3VyZShkZXYpOwo+ICtkbWFfZmFp
-bGVkOgo+ICAJaWYgKGRldi0+YnVzKQo+ICAJCWJsb2NraW5nX25vdGlmaWVyX2NhbGxfY2hhaW4o
-JmRldi0+YnVzLT5wLT5idXNfbm90aWZpZXIsCj4gIAkJCQkJICAgICBCVVNfTk9USUZZX0RSSVZF
-Ul9OT1RfQk9VTkQsIGRldik7Cj4gQEAgLTgyNiw2ICs4MzMsOCBAQCBzdGF0aWMgdm9pZCBfX2Rl
-dmljZV9yZWxlYXNlX2RyaXZlcihzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBkZXZpY2UgKnBh
-cmVudCkKPiAgCQkJZHJ2LT5yZW1vdmUoZGV2KTsKPiAgCj4gIAkJZGV2aWNlX2xpbmtzX2RyaXZl
-cl9jbGVhbnVwKGRldik7Cj4gKwkJZG1hX2RlY29uZmlndXJlKGRldik7Cj4gKwo+ICAJCWRldnJl
-c19yZWxlYXNlX2FsbChkZXYpOwo+ICAJCWRldi0+ZHJpdmVyID0gTlVMTDsKPiAgCQlkZXZfc2V0
-X2RydmRhdGEoZGV2LCBOVUxMKTsKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9iYXNlL2RtYS1tYXBw
-aW5nLmMgYi9kcml2ZXJzL2Jhc2UvZG1hLW1hcHBpbmcuYwo+IGluZGV4IGVmZDcxY2YuLmRmZTZm
-ZDcgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9iYXNlL2RtYS1tYXBwaW5nLmMKPiArKysgYi9kcml2
-ZXJzL2Jhc2UvZG1hLW1hcHBpbmcuYwo+IEBAIC0xMCw2ICsxMCw3IEBACj4gICNpbmNsdWRlIDxs
-aW51eC9kbWEtbWFwcGluZy5oPgo+ICAjaW5jbHVkZSA8bGludXgvZXhwb3J0Lmg+Cj4gICNpbmNs
-dWRlIDxsaW51eC9nZnAuaD4KPiArI2luY2x1ZGUgPGxpbnV4L29mX2RldmljZS5oPgo+ICAjaW5j
-bHVkZSA8bGludXgvc2xhYi5oPgo+ICAjaW5jbHVkZSA8bGludXgvdm1hbGxvYy5oPgo+ICAKPiBA
-QCAtMzQxLDMgKzM0MiwzNCBAQCB2b2lkIGRtYV9jb21tb25fZnJlZV9yZW1hcCh2b2lkICpjcHVf
-YWRkciwgc2l6ZV90IHNpemUsIHVuc2lnbmVkIGxvbmcgdm1fZmxhZ3MpCj4gIAl2dW5tYXAoY3B1
-X2FkZHIpOwo+ICB9Cj4gICNlbmRpZgo+ICsKPiArLyoKPiArICogQ29tbW9uIGNvbmZpZ3VyYXRp
-b24gdG8gZW5hYmxlIERNQSBBUEkgdXNlIGZvciBhIGRldmljZQo+ICsgKi8KPiArI2luY2x1ZGUg
-PGxpbnV4L3BjaS5oPgo+ICsKPiAraW50IGRtYV9jb25maWd1cmUoc3RydWN0IGRldmljZSAqZGV2
-KQo+ICt7Cj4gKwlzdHJ1Y3QgZGV2aWNlICpfZGV2ID0gZGV2Owo+ICsJaW50IGlzX3BjaSA9IGRl
-dl9pc19wY2koZGV2KTsKPiArCj4gKwlpZiAoaXNfcGNpKSB7Cj4gKwkJX2RldiA9IHBjaV9nZXRf
-aG9zdF9icmlkZ2VfZGV2aWNlKHRvX3BjaV9kZXYoZGV2KSk7Cj4gKwkJaWYgKElTX0VOQUJMRUQo
-Q09ORklHX09GKSAmJiBfZGV2LT5wYXJlbnQgJiYKPiArCQkgICAgX2Rldi0+cGFyZW50LT5vZl9u
-b2RlKQo+ICsJCQlfZGV2ID0gX2Rldi0+cGFyZW50Owo+ICsJfQo+ICsKPiArCWlmIChfZGV2LT5v
-Zl9ub2RlKQo+ICsJCW9mX2RtYV9jb25maWd1cmUoZGV2LCBfZGV2LT5vZl9ub2RlKTsKPiArCj4g
-KwlpZiAoaXNfcGNpKQo+ICsJCXBjaV9wdXRfaG9zdF9icmlkZ2VfZGV2aWNlKF9kZXYpOwoKVGhl
-cmUncyBhIGZ1biBidWcgaGVyZSAtIGF0IHRoaXMgcG9pbnQgX2RldiBpcyB0aGUgKnBhcmVudCog
-b2YgdGhlCmJyaWRnZSBkZXZpY2UsIHNvIHdlIHB1dCB0aGUgcmVmY291bnQgb24gdGhlIHdyb25n
-IGRldmljZSAodGhlIHBsYXRmb3JtCmRldmljZSByZXByZXNlbnRpbmcgdGhlIGhvc3QgY29udHJv
-bGxlciwgcmF0aGVyIHRoYW4gdGhlIFBDSSBkZXZpY2UKcmVwcmVzZW50aW5nIGl0cyBpbnNpZGVz
-KSwgd2hpY2ggZnJlZXMgdGhlIGd1eSB3ZSdyZSBpbiB0aGUgbWlkZGxlIG9mCnByb2JpbmcsIGFu
-ZCB0aGluZ3MgcmFwaWRseSBnbyB3cm9uZyBhZnRlcndhcmRzOgoKWyAgICAxLjQ2MTAyNl0gYnVz
-OiAncGxhdGZvcm0nOiBkcml2ZXJfcHJvYmVfZGV2aWNlOiBtYXRjaGVkIGRldmljZQo0MDAwMDAw
-MC5wY2llLWNvbnRyb2xsZXIgd2l0aCBkcml2ZXIgcGNpLWhvc3QtZ2VuZXJpYwpbICAgIDEuNDcx
-NjQwXSBidXM6ICdwbGF0Zm9ybSc6IHJlYWxseV9wcm9iZTogcHJvYmluZyBkcml2ZXIKcGNpLWhv
-c3QtZ2VuZXJpYyB3aXRoIGRldmljZSA0MDAwMDAwMC5wY2llLWNvbnRyb2xsZXIKWyAgICAxLjQ4
-MTY3OF0gT0Y6IFBDSTogaG9zdCBicmlkZ2UgL3BjaWUtY29udHJvbGxlckA0MDAwMDAwMCByYW5n
-ZXM6CgouLi4KClsgICAgMi4xNTgyNTldIGJ1czogJ3BjaSc6IGRyaXZlcl9wcm9iZV9kZXZpY2U6
-IG1hdGNoZWQgZGV2aWNlCjAwMDA6MDI6MTAuMCB3aXRoIGRyaXZlciBwY2llcG9ydApbICAgIDIu
-MTY2NzE2XSBidXM6ICdwY2knOiByZWFsbHlfcHJvYmU6IHByb2JpbmcgZHJpdmVyIHBjaWVwb3J0
-IHdpdGgKZGV2aWNlIDAwMDA6MDI6MTAuMApbICAgIDIuMTc0NTkwXSBwY2kgMDAwMDowMjoxMC4w
-OiBEcml2ZXIgcGNpZXBvcnQgcmVxdWVzdHMgcHJvYmUgZGVmZXJyYWwKWyAgICAyLjE4MDk3OF0g
-cGNpIDAwMDA6MDI6MTAuMDogQWRkZWQgdG8gZGVmZXJyZWQgbGlzdApbICAgIDIuMTg1OTE1XSBi
-dXM6ICdwY2knOiBkcml2ZXJfcHJvYmVfZGV2aWNlOiBtYXRjaGVkIGRldmljZQowMDAwOjAyOjFm
-LjAgd2l0aCBkcml2ZXIgcGNpZXBvcnQKWyAgICAyLjE5NDM2Nl0gYnVzOiAncGNpJzogcmVhbGx5
-X3Byb2JlOiBwcm9iaW5nIGRyaXZlciBwY2llcG9ydCB3aXRoCmRldmljZSAwMDAwOjAyOjFmLjAK
-WyAgICAyLjIwMjIzN10gcGNpIDAwMDA6MDI6MWYuMDogRHJpdmVyIHBjaWVwb3J0IHJlcXVlc3Rz
-IHByb2JlIGRlZmVycmFsClsgICAgMi4yMDg2MjVdIHBjaSAwMDAwOjAyOjFmLjA6IEFkZGVkIHRv
-IGRlZmVycmVkIGxpc3QKWyAgICAyLjIxMzU4Ml0gZHJpdmVyOiAncGNpLWhvc3QtZ2VuZXJpYyc6
-IGRyaXZlcl9ib3VuZDogYm91bmQgdG8gZGV2aWNlCifvv73vv73vv71277+977+977+977+9LnBj
-aWUtY29udHJvbGxlcicKWyAgICAyLjIyMjI5M10gYnVzOiAncGxhdGZvcm0nOiByZWFsbHlfcHJv
-YmU6IGJvdW5kIGRldmljZQrvv73vv73vv71277+977+977+977+9LnBjaWUtY29udHJvbGxlciB0
-byBkcml2ZXIgcGNpLWhvc3QtZ2VuZXJpYwpbICAgIDIuMjMyMDQxXSBVbmFibGUgdG8gaGFuZGxl
-IGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UgYXQKdmlydHVhbCBhZGRyZXNzIDAwMDAw
-MDAwCgpJIHJlY2FsbCBkZWJ1Z2dpbmcgdGhpcyBzYW1lIGlzc3VlIGJlZm9yZSwgYW5kIEkgc2Vl
-bSB0byBoYXZlIGEgbG9jYWwKdmVyc2lvbiBvZiB0aGlzIGNvbW1pdCBkYXRlZCBhYm91dCA2IHdl
-ZWtzIGFnbyB3aGVyZSBkbWFfY29uZmlndXJlKCkKbG9va3MgbGlrZSB0aGlzOgoKLS0tPjgtLS0K
-aW50IGRtYV9jb25maWd1cmUoc3RydWN0IGRldmljZSAqZGV2KQp7CglzdHJ1Y3QgZGV2aWNlICpi
-cmlkZ2UgPSBOVUxMLCAqZG1hX2RldiA9IGRldjsKCglpZiAoZGV2X2lzX3BjaShkZXYpKSB7CgkJ
-YnJpZGdlID0gcGNpX2dldF9ob3N0X2JyaWRnZV9kZXZpY2UodG9fcGNpX2RldihkZXYpKTsKCQlk
-bWFfZGV2ID0gYnJpZGdlLT5wYXJlbnQ7Cgl9CgoJaWYgKGRtYV9kZXYgJiYgZG1hX2Rldi0+b2Zf
-bm9kZSkgewoJCW9mX2RtYV9jb25maWd1cmUoZGV2LCBkbWFfZGV2LT5vZl9ub2RlKTsKCX0gZWxz
-ZSBpZiAoZG1hX2RldiAmJiBoYXNfYWNwaV9jb21wYW5pb24oZG1hX2RldikpIHsKCQlzdHJ1Y3Qg
-YWNwaV9kZXZpY2UgKmFkZXYgPSB0b19hY3BpX2RldmljZV9ub2RlKGRtYV9kZXYtPmZ3bm9kZSk7
-CgkJZW51bSBkZXZfZG1hX2F0dHIgYXR0ciA9IGFjcGlfZ2V0X2RtYV9hdHRyKGFkZXYpOwoKCQlp
-ZiAoYXR0ciA9PSBERVZfRE1BX05PVF9TVVBQT1JURUQpCgkJCWRldl93YXJuKGRldiwgIkRNQSBu
-b3Qgc3VwcG9ydGVkLlxuIik7CgkJZWxzZQoJCQlhcmNoX3NldHVwX2RtYV9vcHMoZGV2LCAwLCAw
-LCBOVUxMLAoJCQkJCSAgIGF0dHIgPT0gREVWX0RNQV9DT0hFUkVOVCk7Cgl9CgoJaWYgKGJyaWRn
-ZSkKCQlwY2lfcHV0X2hvc3RfYnJpZGdlX2RldmljZShicmlkZ2UpOwoKCXJldHVybiAwOwp9Ci0t
-LTg8LS0tCgpJIGhhdmUgYSBmZWVsaW5nIEkgd2FzIGhhdmluZyBhIGdvIGF0IHRpZHlpbmcgdXAg
-dGhlICJQQ0kgaGFja3MiIGZyb20gdjQKbXlzZWxmLCBidXQgb3RoZXIgdGhpbmdzIGVuZGVkIHVw
-IHRha2luZyBwcmVjZWRlbmNlLgoKUm9iaW4uCgo+ICsKPiArCXJldHVybiAwOwo+ICt9Cj4gKwo+
-ICt2b2lkIGRtYV9kZWNvbmZpZ3VyZShzdHJ1Y3QgZGV2aWNlICpkZXYpCj4gK3sKPiArCW9mX2Rt
-YV9kZWNvbmZpZ3VyZShkZXYpOwo+ICt9Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvb2YvcGxhdGZv
-cm0uYyBiL2RyaXZlcnMvb2YvcGxhdGZvcm0uYwo+IGluZGV4IDU3NDE4ZjcuLmNmMzUwMzAgMTAw
-NjQ0Cj4gLS0tIGEvZHJpdmVycy9vZi9wbGF0Zm9ybS5jCj4gKysrIGIvZHJpdmVycy9vZi9wbGF0
-Zm9ybS5jCj4gQEAgLTIyLDYgKzIyLDcgQEAKPiAgI2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4KPiAg
-I2luY2x1ZGUgPGxpbnV4L29mX2FkZHJlc3MuaD4KPiAgI2luY2x1ZGUgPGxpbnV4L29mX2Rldmlj
-ZS5oPgo+ICsjaW5jbHVkZSA8bGludXgvb2ZfaW9tbXUuaD4KPiAgI2luY2x1ZGUgPGxpbnV4L29m
-X2lycS5oPgo+ICAjaW5jbHVkZSA8bGludXgvb2ZfcGxhdGZvcm0uaD4KPiAgI2luY2x1ZGUgPGxp
-bnV4L3BsYXRmb3JtX2RldmljZS5oPgo+IEBAIC0xODYsMTEgKzE4Nyw5IEBAIHN0YXRpYyBzdHJ1
-Y3QgcGxhdGZvcm1fZGV2aWNlICpvZl9wbGF0Zm9ybV9kZXZpY2VfY3JlYXRlX3BkYXRhKAo+ICAK
-PiAgCWRldi0+ZGV2LmJ1cyA9ICZwbGF0Zm9ybV9idXNfdHlwZTsKPiAgCWRldi0+ZGV2LnBsYXRm
-b3JtX2RhdGEgPSBwbGF0Zm9ybV9kYXRhOwo+IC0Jb2ZfZG1hX2NvbmZpZ3VyZSgmZGV2LT5kZXYs
-IGRldi0+ZGV2Lm9mX25vZGUpOwo+ICAJb2ZfbXNpX2NvbmZpZ3VyZSgmZGV2LT5kZXYsIGRldi0+
-ZGV2Lm9mX25vZGUpOwo+ICAKPiAgCWlmIChvZl9kZXZpY2VfYWRkKGRldikgIT0gMCkgewo+IC0J
-CW9mX2RtYV9kZWNvbmZpZ3VyZSgmZGV2LT5kZXYpOwo+ICAJCXBsYXRmb3JtX2RldmljZV9wdXQo
-ZGV2KTsKPiAgCQlnb3RvIGVycl9jbGVhcl9mbGFnOwo+ICAJfQo+IEBAIC0yNDgsNyArMjQ3LDYg
-QEAgc3RhdGljIHN0cnVjdCBhbWJhX2RldmljZSAqb2ZfYW1iYV9kZXZpY2VfY3JlYXRlKHN0cnVj
-dCBkZXZpY2Vfbm9kZSAqbm9kZSwKPiAgCQlkZXZfc2V0X25hbWUoJmRldi0+ZGV2LCAiJXMiLCBi
-dXNfaWQpOwo+ICAJZWxzZQo+ICAJCW9mX2RldmljZV9tYWtlX2J1c19pZCgmZGV2LT5kZXYpOwo+
-IC0Jb2ZfZG1hX2NvbmZpZ3VyZSgmZGV2LT5kZXYsIGRldi0+ZGV2Lm9mX25vZGUpOwo+ICAKPiAg
-CS8qIEFsbG93IHRoZSBIVyBQZXJpcGhlcmFsIElEIHRvIGJlIG92ZXJyaWRkZW4gKi8KPiAgCXBy
-b3AgPSBvZl9nZXRfcHJvcGVydHkobm9kZSwgImFybSxwcmltZWNlbGwtcGVyaXBoaWQiLCBOVUxM
-KTsKPiBAQCAtNTQyLDcgKzU0MCw2IEBAIHN0YXRpYyBpbnQgb2ZfcGxhdGZvcm1fZGV2aWNlX2Rl
-c3Ryb3koc3RydWN0IGRldmljZSAqZGV2LCB2b2lkICpkYXRhKQo+ICAJCWFtYmFfZGV2aWNlX3Vu
-cmVnaXN0ZXIodG9fYW1iYV9kZXZpY2UoZGV2KSk7Cj4gICNlbmRpZgo+ICAKPiAtCW9mX2RtYV9k
-ZWNvbmZpZ3VyZShkZXYpOwo+ICAJb2Zfbm9kZV9jbGVhcl9mbGFnKGRldi0+b2Zfbm9kZSwgT0Zf
-UE9QVUxBVEVEKTsKPiAgCW9mX25vZGVfY2xlYXJfZmxhZyhkZXYtPm9mX25vZGUsIE9GX1BPUFVM
-QVRFRF9CVVMpOwo+ICAJcmV0dXJuIDA7Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvcGNpL3Byb2Jl
-LmMgYi9kcml2ZXJzL3BjaS9wcm9iZS5jCj4gaW5kZXggZTE2NGI1Yy4uNjM0ZDM0ZSAxMDA2NDQK
-PiAtLS0gYS9kcml2ZXJzL3BjaS9wcm9iZS5jCj4gKysrIGIvZHJpdmVycy9wY2kvcHJvYmUuYwo+
-IEBAIC0xODczLDEwICsxODczLDcgQEAgc3RhdGljIHZvaWQgcGNpX2RtYV9jb25maWd1cmUoc3Ry
-dWN0IHBjaV9kZXYgKmRldikKPiAgewo+ICAJc3RydWN0IGRldmljZSAqYnJpZGdlID0gcGNpX2dl
-dF9ob3N0X2JyaWRnZV9kZXZpY2UoZGV2KTsKPiAgCj4gLQlpZiAoSVNfRU5BQkxFRChDT05GSUdf
-T0YpICYmCj4gLQkJYnJpZGdlLT5wYXJlbnQgJiYgYnJpZGdlLT5wYXJlbnQtPm9mX25vZGUpIHsK
-PiAtCQkJb2ZfZG1hX2NvbmZpZ3VyZSgmZGV2LT5kZXYsIGJyaWRnZS0+cGFyZW50LT5vZl9ub2Rl
-KTsKPiAtCX0gZWxzZSBpZiAoaGFzX2FjcGlfY29tcGFuaW9uKGJyaWRnZSkpIHsKPiArCWlmICho
-YXNfYWNwaV9jb21wYW5pb24oYnJpZGdlKSkgewo+ICAJCXN0cnVjdCBhY3BpX2RldmljZSAqYWRl
-diA9IHRvX2FjcGlfZGV2aWNlX25vZGUoYnJpZGdlLT5md25vZGUpOwo+ICAJCWVudW0gZGV2X2Rt
-YV9hdHRyIGF0dHIgPSBhY3BpX2dldF9kbWFfYXR0cihhZGV2KTsKPiAgCj4gZGlmZiAtLWdpdCBh
-L2luY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaCBiL2luY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcu
-aAo+IGluZGV4IGFiZjY4NWVkLi5iNTYzMjBhIDEwMDY0NAo+IC0tLSBhL2luY2x1ZGUvbGludXgv
-ZG1hLW1hcHBpbmcuaAo+ICsrKyBiL2luY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaAo+IEBAIC03
-MTgsNiArNzE4LDkgQEAgdm9pZCAqZG1hX21hcmtfZGVjbGFyZWRfbWVtb3J5X29jY3VwaWVkKHN0
-cnVjdCBkZXZpY2UgKmRldiwKPiAgfQo+ICAjZW5kaWYgLyogQ09ORklHX0hBVkVfR0VORVJJQ19E
-TUFfQ09IRVJFTlQgKi8KPiAgCj4gK2ludCBkbWFfY29uZmlndXJlKHN0cnVjdCBkZXZpY2UgKmRl
-dik7Cj4gK3ZvaWQgZG1hX2RlY29uZmlndXJlKHN0cnVjdCBkZXZpY2UgKmRldik7Cj4gKwo+ICAv
-Kgo+ICAgKiBNYW5hZ2VkIERNQSBBUEkKPiAgICovCj4gCgpfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMu
-bGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21h
-aWxtYW4vbGlzdGluZm8vaW9tbXU=
+On 19/01/17 16:50, Lorenzo Pieralisi wrote:
+> On Thu, Jan 19, 2017 at 08:35:52PM +0530, Sricharan R wrote:
+>> From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>>
+>> Now that the appropriate ordering is enforced via profe-deferral of
+>> masters in core code, rip it all out and bask in the simplicity.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> [Sricharan: Rebased on top of ACPI IORT SMMU series]
+>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>> ---
+>>  * No change
+> 
+> Well, a tad too early on the series for ACPI, aka if we bisect the
+> series here you would break ACPI.
+> 
+> Totally agree on the patch, but you should move it to the end of the
+> series.
+
+Indeed - I think a more appropriate ordering of the current patch
+numbers would be:
+
+1, 2, 3, 4, 9, 5+10 (squashed), 6, 11, 7, 8, 12
+
+Robin.
+
+> 
+> Lorenzo
+> 
+>>  drivers/iommu/arm-smmu-v3.c | 46 ++---------------------------------
+>>  drivers/iommu/arm-smmu.c    | 58 +++++++--------------------------------------
+>>  2 files changed, 10 insertions(+), 94 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index 7d45d8b..7fc4e5f 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -2724,51 +2724,9 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+>>  	.probe	= arm_smmu_device_probe,
+>>  	.remove	= arm_smmu_device_remove,
+>>  };
+>> +module_platform_driver(arm_smmu_driver);
+>>  
+>> -static int __init arm_smmu_init(void)
+>> -{
+>> -	static bool registered;
+>> -	int ret = 0;
+>> -
+>> -	if (!registered) {
+>> -		ret = platform_driver_register(&arm_smmu_driver);
+>> -		registered = !ret;
+>> -	}
+>> -	return ret;
+>> -}
+>> -
+>> -static void __exit arm_smmu_exit(void)
+>> -{
+>> -	return platform_driver_unregister(&arm_smmu_driver);
+>> -}
+>> -
+>> -subsys_initcall(arm_smmu_init);
+>> -module_exit(arm_smmu_exit);
+>> -
+>> -static int __init arm_smmu_of_init(struct device_node *np)
+>> -{
+>> -	int ret = arm_smmu_init();
+>> -
+>> -	if (ret)
+>> -		return ret;
+>> -
+>> -	if (!of_platform_device_create(np, NULL, platform_bus_type.dev_root))
+>> -		return -ENODEV;
+>> -
+>> -	return 0;
+>> -}
+>> -IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3", arm_smmu_of_init);
+>> -
+>> -#ifdef CONFIG_ACPI
+>> -static int __init acpi_smmu_v3_init(struct acpi_table_header *table)
+>> -{
+>> -	if (iort_node_match(ACPI_IORT_NODE_SMMU_V3))
+>> -		return arm_smmu_init();
+>> -
+>> -	return 0;
+>> -}
+>> -IORT_ACPI_DECLARE(arm_smmu_v3, ACPI_SIG_IORT, acpi_smmu_v3_init);
+>> -#endif
+>> +IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3", NULL);
+>>  
+>>  MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
+>>  MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index 73a0a25..c86ae5f 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -2134,56 +2134,14 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+>>  	.probe	= arm_smmu_device_probe,
+>>  	.remove	= arm_smmu_device_remove,
+>>  };
+>> -
+>> -static int __init arm_smmu_init(void)
+>> -{
+>> -	static bool registered;
+>> -	int ret = 0;
+>> -
+>> -	if (!registered) {
+>> -		ret = platform_driver_register(&arm_smmu_driver);
+>> -		registered = !ret;
+>> -	}
+>> -	return ret;
+>> -}
+>> -
+>> -static void __exit arm_smmu_exit(void)
+>> -{
+>> -	return platform_driver_unregister(&arm_smmu_driver);
+>> -}
+>> -
+>> -subsys_initcall(arm_smmu_init);
+>> -module_exit(arm_smmu_exit);
+>> -
+>> -static int __init arm_smmu_of_init(struct device_node *np)
+>> -{
+>> -	int ret = arm_smmu_init();
+>> -
+>> -	if (ret)
+>> -		return ret;
+>> -
+>> -	if (!of_platform_device_create(np, NULL, platform_bus_type.dev_root))
+>> -		return -ENODEV;
+>> -
+>> -	return 0;
+>> -}
+>> -IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1", arm_smmu_of_init);
+>> -IOMMU_OF_DECLARE(arm_smmuv2, "arm,smmu-v2", arm_smmu_of_init);
+>> -IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400", arm_smmu_of_init);
+>> -IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401", arm_smmu_of_init);
+>> -IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500", arm_smmu_of_init);
+>> -IOMMU_OF_DECLARE(cavium_smmuv2, "cavium,smmu-v2", arm_smmu_of_init);
+>> -
+>> -#ifdef CONFIG_ACPI
+>> -static int __init arm_smmu_acpi_init(struct acpi_table_header *table)
+>> -{
+>> -	if (iort_node_match(ACPI_IORT_NODE_SMMU))
+>> -		return arm_smmu_init();
+>> -
+>> -	return 0;
+>> -}
+>> -IORT_ACPI_DECLARE(arm_smmu, ACPI_SIG_IORT, arm_smmu_acpi_init);
+>> -#endif
+>> +module_platform_driver(arm_smmu_driver);
+>> +
+>> +IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1", NULL);
+>> +IOMMU_OF_DECLARE(arm_smmuv2, "arm,smmu-v2", NULL);
+>> +IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400", NULL);
+>> +IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401", NULL);
+>> +IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500", NULL);
+>> +IOMMU_OF_DECLARE(cavium_smmuv2, "cavium,smmu-v2", NULL);
+>>  
+>>  MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
+>>  MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
+>> -- 
+>> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+>>
