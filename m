@@ -1,8 +1,8 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V5 01/12] iommu/of: Refactor of_iommu_configure() for error
-	handling
-Date: Thu, 19 Jan 2017 20:35:45 +0530
-Message-ID: <1484838356-24962-2-git-send-email-sricharan@codeaurora.org>
+Subject: [PATCH V5 06/12] iommu: of: Handle IOMMU lookup failure with deferred
+	probing or error
+Date: Thu, 19 Jan 2017 20:35:50 +0530
+Message-ID: <1484838356-24962-7-git-send-email-sricharan@codeaurora.org>
 References: <1484838356-24962-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,152 +21,164 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 To: robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
-In preparation for some upcoming cleverness, rework the control flow in
-of_iommu_configure() to minimise duplication and improve the propogation
-of errors. It's also as good a time as any to switch over from the
-now-just-a-compatibility-wrapper of_iommu_get_ops() to using the generic
-IOMMU instance interface directly.
+Failures to look up an IOMMU when parsing the DT iommus property need to
+be handled separately from the .of_xlate() failures to support deferred
+probing.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+The lack of a registered IOMMU can be caused by the lack of a driver for
+the IOMMU, the IOMMU device probe not having been performed yet, having
+been deferred, or having failed.
+
+The first case occurs when the device tree describes the bus master and
+IOMMU topology correctly but no device driver exists for the IOMMU yet
+or the device driver has not been compiled in. Return NULL, the caller
+will configure the device without an IOMMU.
+
+The second and third cases are handled by deferring the probe of the bus
+master device which will eventually get reprobed after the IOMMU.
+
+The last case is currently handled by deferring the probe of the bus
+master device as well. A mechanism to either configure the bus master
+device without an IOMMU or to fail the bus master device probe depending
+on whether the IOMMU is optional or mandatory would be a good
+enhancement.
+
+Signed-off-by: Laurent Pichart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- * No change
+ * Removed the dma configuration for the pci devices in case of DT
+   from pci_dma_configure which was hanging outside separately and
+   doing it in dma_configure function itself.
 
- drivers/iommu/of_iommu.c | 83 +++++++++++++++++++++++++++++++-----------------
- 1 file changed, 53 insertions(+), 30 deletions(-)
+ drivers/base/dma-mapping.c | 5 +++--
+ drivers/iommu/of_iommu.c   | 5 +++--
+ drivers/of/device.c        | 9 +++++++--
+ include/linux/of_device.h  | 9 ++++++---
+ 4 files changed, 19 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 0f57ddc..ee49081 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -96,6 +96,28 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
- }
- EXPORT_SYMBOL_GPL(of_get_dma_window);
- 
-+static const struct iommu_ops
-+*of_iommu_xlate(struct device *dev, struct of_phandle_args *iommu_spec)
-+{
-+	const struct iommu_ops *ops;
-+	struct fwnode_handle *fwnode = &iommu_spec->np->fwnode;
-+	int err;
-+
-+	ops = iommu_get_instance(fwnode);
-+	if (!ops || !ops->of_xlate)
-+		return NULL;
-+
-+	err = iommu_fwspec_init(dev, &iommu_spec->np->fwnode, ops);
-+	if (err)
-+		return ERR_PTR(err);
-+
-+	err = ops->of_xlate(dev, iommu_spec);
-+	if (err)
-+		return ERR_PTR(err);
-+
-+	return ops;
-+}
-+
- static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+index dfe6fd7..f82212c 100644
+--- a/drivers/base/dma-mapping.c
++++ b/drivers/base/dma-mapping.c
+@@ -352,6 +352,7 @@ int dma_configure(struct device *dev)
  {
- 	struct of_phandle_args *iommu_spec = data;
-@@ -105,10 +127,11 @@ static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
- }
+ 	struct device *_dev = dev;
+ 	int is_pci = dev_is_pci(dev);
++	int ret = 0;
  
- static const struct iommu_ops
--*of_pci_iommu_configure(struct pci_dev *pdev, struct device_node *bridge_np)
-+*of_pci_iommu_init(struct pci_dev *pdev, struct device_node *bridge_np)
- {
- 	const struct iommu_ops *ops;
- 	struct of_phandle_args iommu_spec;
-+	int err;
- 
- 	/*
- 	 * Start by tracing the RID alias down the PCI topology as
-@@ -123,56 +146,56 @@ static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
- 	 * bus into the system beyond, and which IOMMU it ends up at.
- 	 */
- 	iommu_spec.np = NULL;
--	if (of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
--			   "iommu-map-mask", &iommu_spec.np, iommu_spec.args))
--		return NULL;
-+	err = of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
-+			     "iommu-map-mask", &iommu_spec.np,
-+			     iommu_spec.args);
-+	if (err)
-+		return ERR_PTR(err);
- 
--	ops = of_iommu_get_ops(iommu_spec.np);
--	if (!ops || !ops->of_xlate ||
--	    iommu_fwspec_init(&pdev->dev, &iommu_spec.np->fwnode, ops) ||
--	    ops->of_xlate(&pdev->dev, &iommu_spec))
--		ops = NULL;
-+	ops = of_iommu_xlate(&pdev->dev, &iommu_spec);
- 
- 	of_node_put(iommu_spec.np);
- 	return ops;
- }
- 
--const struct iommu_ops *of_iommu_configure(struct device *dev,
--					   struct device_node *master_np)
-+static const struct iommu_ops
-+*of_platform_iommu_init(struct device *dev, struct device_node *np)
- {
- 	struct of_phandle_args iommu_spec;
--	struct device_node *np;
- 	const struct iommu_ops *ops = NULL;
- 	int idx = 0;
- 
--	if (dev_is_pci(dev))
--		return of_pci_iommu_configure(to_pci_dev(dev), master_np);
--
- 	/*
- 	 * We don't currently walk up the tree looking for a parent IOMMU.
- 	 * See the `Notes:' section of
- 	 * Documentation/devicetree/bindings/iommu/iommu.txt
- 	 */
--	while (!of_parse_phandle_with_args(master_np, "iommus",
--					   "#iommu-cells", idx,
--					   &iommu_spec)) {
--		np = iommu_spec.np;
--		ops = of_iommu_get_ops(np);
--
--		if (!ops || !ops->of_xlate ||
--		    iommu_fwspec_init(dev, &np->fwnode, ops) ||
--		    ops->of_xlate(dev, &iommu_spec))
--			goto err_put_node;
--
--		of_node_put(np);
-+	while (!of_parse_phandle_with_args(np, "iommus", "#iommu-cells",
-+					   idx, &iommu_spec)) {
-+		ops = of_iommu_xlate(dev, &iommu_spec);
-+		of_node_put(iommu_spec.np);
- 		idx++;
-+		if (IS_ERR_OR_NULL(ops))
-+			break;
+ 	if (is_pci) {
+ 		_dev = pci_get_host_bridge_device(to_pci_dev(dev));
+@@ -361,12 +362,12 @@ int dma_configure(struct device *dev)
  	}
  
- 	return ops;
-+}
-+
-+const struct iommu_ops *of_iommu_configure(struct device *dev,
-+					   struct device_node *master_np)
-+{
-+	const struct iommu_ops *ops;
-+
-+	if (!master_np)
-+		return NULL;
-+
-+	if (dev_is_pci(dev))
-+		ops = of_pci_iommu_init(to_pci_dev(dev), master_np);
-+	else
-+		ops = of_platform_iommu_init(dev, master_np);
+ 	if (_dev->of_node)
+-		of_dma_configure(dev, _dev->of_node);
++		ret = of_dma_configure(dev, _dev->of_node);
  
--err_put_node:
--	of_node_put(np);
--	return NULL;
-+	return IS_ERR(ops) ? NULL : ops;
+ 	if (is_pci)
+ 		pci_put_host_bridge_device(_dev);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ void dma_deconfigure(struct device *dev)
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 349bd1d..9529d6c 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -23,6 +23,7 @@
+ #include <linux/of.h>
+ #include <linux/of_iommu.h>
+ #include <linux/of_pci.h>
++#include <linux/pci.h>
+ #include <linux/slab.h>
+ 
+ static const struct of_device_id __iommu_of_table_sentinel
+@@ -223,7 +224,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 			ops = ERR_PTR(err);
+ 	}
+ 
+-	return IS_ERR(ops) ? NULL : ops;
++	return ops;
  }
  
  static int __init of_iommu_init(void)
+@@ -234,7 +235,7 @@ static int __init of_iommu_init(void)
+ 	for_each_matching_node_and_match(np, matches, &match) {
+ 		const of_iommu_init_fn init_fn = match->data;
+ 
+-		if (init_fn(np))
++		if (init_fn && init_fn(np))
+ 			pr_err("Failed to initialise IOMMU %s\n",
+ 				of_node_full_name(np));
+ 	}
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index 1c843e2..d58595c 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -82,7 +82,7 @@ int of_device_add(struct platform_device *ofdev)
+  * can use a platform bus notifier and handle BUS_NOTIFY_ADD_DEVICE events
+  * to fix up DMA configuration.
+  */
+-void of_dma_configure(struct device *dev, struct device_node *np)
++int of_dma_configure(struct device *dev, struct device_node *np)
+ {
+ 	u64 dma_addr, paddr, size;
+ 	int ret;
+@@ -107,7 +107,7 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+ 	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
+ 	if (ret < 0) {
+ 		dma_addr = offset = 0;
+-		size = dev->coherent_dma_mask + 1;
++		size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
+ 	} else {
+ 		offset = PFN_DOWN(paddr - dma_addr);
+ 		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
+@@ -129,10 +129,15 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+ 		coherent ? " " : " not ");
+ 
+ 	iommu = of_iommu_configure(dev, np);
++	if (IS_ERR(iommu))
++		return PTR_ERR(iommu);
++
+ 	dev_dbg(dev, "device is%sbehind an iommu\n",
+ 		iommu ? " " : " not ");
+ 
+ 	arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
++
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(of_dma_configure);
+ 
+diff --git a/include/linux/of_device.h b/include/linux/of_device.h
+index d20a31a..6dca65c 100644
+--- a/include/linux/of_device.h
++++ b/include/linux/of_device.h
+@@ -55,7 +55,7 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
+ 	return of_node_get(cpu_dev->of_node);
+ }
+ 
+-void of_dma_configure(struct device *dev, struct device_node *np);
++int of_dma_configure(struct device *dev, struct device_node *np);
+ void of_dma_deconfigure(struct device *dev);
+ #else /* CONFIG_OF */
+ 
+@@ -99,8 +99,11 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
+ {
+ 	return NULL;
+ }
+-static inline void of_dma_configure(struct device *dev, struct device_node *np)
+-{}
++
++static inline int of_dma_configure(struct device *dev, struct device_node *np)
++{
++	return 0;
++}
+ static inline void of_dma_deconfigure(struct device *dev)
+ {}
+ #endif /* CONFIG_OF */
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
