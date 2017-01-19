@@ -1,8 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v9 13/18] genirq/msi: Set IRQ_DOMAIN_FLAG_MSI on MSI domain
-	creation
-Date: Thu, 19 Jan 2017 20:57:58 +0000
-Message-ID: <1484859483-2866-14-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v9 14/18] irqdomain: irq_domain_check_msi_remap
+Date: Thu, 19 Jan 2017 20:57:59 +0000
+Message-ID: <1484859483-2866-15-git-send-email-eric.auger@redhat.com>
 References: <1484859483-2866-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,38 +21,91 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Now we have a flag value indicating an IRQ domain implements MSI,
-let's set it on msi_create_irq_domain().
+This new function checks whether all MSI irq domains
+implement IRQ remapping. This is useful to understand
+whether VFIO passthrough is safe with respect to interrupts.
+
+On ARM typically an MSI controller can sit downstream
+to the IOMMU without preventing VFIO passthrough.
+As such any assigned device can write into the MSI doorbell.
+In case the MSI controller implements IRQ remapping, assigned
+devices will not be able to trigger interrupts towards the
+host. On the contrary, the assignment must be emphasized as
+unsafe with respect to interrupts.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Reviewed-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
+Reviewed-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 Tested-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 Tested-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
 
 ---
+v8 -> v9:
+- reword doc comment
 
-v7 -> v8
+v7 -> v8:
+- remove goto in irq_domain_check_msi_remap
 - Added Marc's R-b
 
-v6: new
----
- kernel/irq/msi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+v5 -> v6:
+- use irq_domain_hierarchical_is_msi_remap()
+- comment rewording
 
-diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-index ee23006..ddc2f54 100644
---- a/kernel/irq/msi.c
-+++ b/kernel/irq/msi.c
-@@ -270,8 +270,8 @@ struct irq_domain *msi_create_irq_domain(struct fwnode_handle *fwnode,
- 	if (info->flags & MSI_FLAG_USE_DEF_CHIP_OPS)
- 		msi_domain_update_chip_ops(info);
+v4 -> v5:
+- Handle DOMAIN_BUS_FSL_MC_MSI domains
+- Check parents
+---
+ include/linux/irqdomain.h |  1 +
+ kernel/irq/irqdomain.c    | 25 +++++++++++++++++++++++++
+ 2 files changed, 26 insertions(+)
+
+diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
+index bc2f571..188eced 100644
+--- a/include/linux/irqdomain.h
++++ b/include/linux/irqdomain.h
+@@ -222,6 +222,7 @@ struct irq_domain *irq_domain_add_legacy(struct device_node *of_node,
+ 					 void *host_data);
+ extern struct irq_domain *irq_find_matching_fwspec(struct irq_fwspec *fwspec,
+ 						   enum irq_domain_bus_token bus_token);
++extern bool irq_domain_check_msi_remap(void);
+ extern void irq_set_default_host(struct irq_domain *host);
+ extern int irq_domain_alloc_descs(int virq, unsigned int nr_irqs,
+ 				  irq_hw_number_t hwirq, int node,
+diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
+index 876e131..80c4f93 100644
+--- a/kernel/irq/irqdomain.c
++++ b/kernel/irq/irqdomain.c
+@@ -278,6 +278,31 @@ struct irq_domain *irq_find_matching_fwspec(struct irq_fwspec *fwspec,
+ EXPORT_SYMBOL_GPL(irq_find_matching_fwspec);
  
--	return irq_domain_create_hierarchy(parent, 0, 0, fwnode,
--					   &msi_domain_ops, info);
-+	return irq_domain_create_hierarchy(parent, IRQ_DOMAIN_FLAG_MSI, 0,
-+					   fwnode, &msi_domain_ops, info);
- }
- 
- int msi_domain_prepare_irqs(struct irq_domain *domain, struct device *dev,
+ /**
++ * irq_domain_check_msi_remap - Check whether all MSI irq domains implement
++ * IRQ remapping
++ *
++ * Return: false if any MSI irq domain does not support IRQ remapping,
++ * true otherwise (including if there is no MSI irq domain)
++ */
++bool irq_domain_check_msi_remap(void)
++{
++	struct irq_domain *h;
++	bool ret = true;
++
++	mutex_lock(&irq_domain_mutex);
++	list_for_each_entry(h, &irq_domain_list, link) {
++		if (irq_domain_is_msi(h) &&
++		    !irq_domain_hierarchical_is_msi_remap(h)) {
++			ret = false;
++			break;
++		}
++	}
++	mutex_unlock(&irq_domain_mutex);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(irq_domain_check_msi_remap);
++
++/**
+  * irq_set_default_host() - Set a "default" irq domain
+  * @domain: default domain pointer
+  *
 -- 
 1.9.1
