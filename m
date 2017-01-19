@@ -1,7 +1,7 @@
 From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v9 12/18] irqdomain: Add irq domain MSI and MSI_REMAP flags
-Date: Thu, 19 Jan 2017 20:57:57 +0000
-Message-ID: <1484859483-2866-13-git-send-email-eric.auger@redhat.com>
+Subject: [PATCH v9 15/18] irqchip/gicv3-its: Sets IRQ_DOMAIN_FLAG_MSI_REMAP
+Date: Thu, 19 Jan 2017 20:58:00 +0000
+Message-ID: <1484859483-2866-16-git-send-email-eric.auger@redhat.com>
 References: <1484859483-2866-1-git-send-email-eric.auger@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,18 +21,8 @@ To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQq
 Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We introduce two new enum values for the irq domain flag:
-- IRQ_DOMAIN_FLAG_MSI indicates the irq domain corresponds to
-  an MSI domain
-- IRQ_DOMAIN_FLAG_MSI_REMAP indicates the irq domain has MSI
-  remapping capabilities.
-
-Those values will be useful to check all MSI irq domains have
-MSI remapping support when assessing the safety of IRQ assignment
-to a guest.
-
-irq_domain_hierarchical_is_msi_remap() allows to check if an
-irq domain or any parent implements MSI remapping.
+The GICv3 ITS is MSI remapping capable. Let's advertise
+this property so that VFIO passthrough can assess IRQ safety.
 
 Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Reviewed-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
@@ -43,102 +33,22 @@ Tested-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
 ---
 
 v7 -> v8:
-- remove h variable in irq_domain_hierarchical_is_msi_remap
-- add Marc's R-b
-
-v6:
-- add IRQ_DOMAIN_FLAG_MSI as suggested by Marc
-- add irq_domain_is_msi, irq_domain_is_msi_remap and
-  irq_domain_hierarchical_is_msi_remap
+- added Marc's R-b
 ---
- include/linux/irqdomain.h | 35 +++++++++++++++++++++++++++++++++++
- kernel/irq/irqdomain.c    | 14 ++++++++++++++
- 2 files changed, 49 insertions(+)
+ drivers/irqchip/irq-gic-v3-its.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
-index ffb8460..bc2f571 100644
---- a/include/linux/irqdomain.h
-+++ b/include/linux/irqdomain.h
-@@ -183,6 +183,12 @@ enum {
- 	/* Irq domain is an IPI domain with single virq */
- 	IRQ_DOMAIN_FLAG_IPI_SINGLE	= (1 << 3),
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+index 69b040f..9d4fefc 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -1642,6 +1642,7 @@ static int its_init_domain(struct fwnode_handle *handle, struct its_node *its)
  
-+	/* Irq domain implements MSIs */
-+	IRQ_DOMAIN_FLAG_MSI		= (1 << 4),
-+
-+	/* Irq domain implements MSI remapping */
-+	IRQ_DOMAIN_FLAG_MSI_REMAP	= (1 << 5),
-+
- 	/*
- 	 * Flags starting from IRQ_DOMAIN_FLAG_NONCORE are reserved
- 	 * for implementation specific purposes and ignored by the
-@@ -446,6 +452,19 @@ static inline bool irq_domain_is_ipi_single(struct irq_domain *domain)
- {
- 	return domain->flags & IRQ_DOMAIN_FLAG_IPI_SINGLE;
- }
-+
-+static inline bool irq_domain_is_msi(struct irq_domain *domain)
-+{
-+	return domain->flags & IRQ_DOMAIN_FLAG_MSI;
-+}
-+
-+static inline bool irq_domain_is_msi_remap(struct irq_domain *domain)
-+{
-+	return domain->flags & IRQ_DOMAIN_FLAG_MSI_REMAP;
-+}
-+
-+extern bool irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain);
-+
- #else	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
- static inline void irq_domain_activate_irq(struct irq_data *data) { }
- static inline void irq_domain_deactivate_irq(struct irq_data *data) { }
-@@ -477,6 +496,22 @@ static inline bool irq_domain_is_ipi_single(struct irq_domain *domain)
- {
- 	return false;
- }
-+
-+static inline bool irq_domain_is_msi(struct irq_domain *domain)
-+{
-+	return false;
-+}
-+
-+static inline bool irq_domain_is_msi_remap(struct irq_domain *domain)
-+{
-+	return false;
-+}
-+
-+static inline bool
-+irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain)
-+{
-+	return false;
-+}
- #endif	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
- 
- #else /* CONFIG_IRQ_DOMAIN */
-diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
-index 8c0a0ae..876e131 100644
---- a/kernel/irq/irqdomain.c
-+++ b/kernel/irq/irqdomain.c
-@@ -1392,6 +1392,20 @@ static void irq_domain_check_hierarchy(struct irq_domain *domain)
- 	if (domain->ops->alloc)
- 		domain->flags |= IRQ_DOMAIN_FLAG_HIERARCHY;
- }
-+
-+/**
-+ * irq_domain_hierarchical_is_msi_remap - Check if the domain or any
-+ * parent has MSI remapping support
-+ * @domain: domain pointer
-+ */
-+bool irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain)
-+{
-+	for (; domain; domain = domain->parent) {
-+		if (irq_domain_is_msi_remap(domain))
-+			return true;
-+	}
-+	return false;
-+}
- #else	/* CONFIG_IRQ_DOMAIN_HIERARCHY */
- /**
-  * irq_domain_get_irq_data - Get irq_data associated with @virq and @domain
+ 	inner_domain->parent = its_parent;
+ 	inner_domain->bus_token = DOMAIN_BUS_NEXUS;
++	inner_domain->flags |= IRQ_DOMAIN_FLAG_MSI_REMAP;
+ 	info->ops = &its_msi_domain_ops;
+ 	info->data = its;
+ 	inner_domain->host_data = info;
 -- 
 1.9.1
