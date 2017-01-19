@@ -1,16 +1,14 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V5 08/12] iommu/arm-smmu: Clean up early-probing
-	workarounds
-Date: Thu, 19 Jan 2017 17:58:16 +0000
-Message-ID: <b3f0f112-e4a0-fa4d-4f18-44484392a5e9@arm.com>
-References: <1484838356-24962-1-git-send-email-sricharan@codeaurora.org>
-	<1484838356-24962-9-git-send-email-sricharan@codeaurora.org>
-	<20170119165053.GC28483@red-moon>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 2/5] iommu/arm-smmu: Install bypass S2CRs for
+	IOMMU_DOMAIN_IDENTITY domains
+Date: Thu, 19 Jan 2017 18:19:12 +0000
+Message-ID: <1484849955-1871-3-git-send-email-will.deacon@arm.com>
+References: <1484849955-1871-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170119165053.GC28483@red-moon>
+In-Reply-To: <1484849955-1871-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,170 +18,84 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 19/01/17 16:50, Lorenzo Pieralisi wrote:
-> On Thu, Jan 19, 2017 at 08:35:52PM +0530, Sricharan R wrote:
->> From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->>
->> Now that the appropriate ordering is enforced via profe-deferral of
->> masters in core code, rip it all out and bask in the simplicity.
->>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> [Sricharan: Rebased on top of ACPI IORT SMMU series]
->> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> ---
->>  * No change
-> 
-> Well, a tad too early on the series for ACPI, aka if we bisect the
-> series here you would break ACPI.
-> 
-> Totally agree on the patch, but you should move it to the end of the
-> series.
+In preparation for allowing the default domain type to be overridden,
+this patch adds support for IOMMU_DOMAIN_IDENTITY domains to the
+ARM SMMU driver.
 
-Indeed - I think a more appropriate ordering of the current patch
-numbers would be:
+An identity domain is created by placing the corresponding S2CR
+registers into "bypass" mode, which allows transactions to flow through
+the SMMU without any translation.
 
-1, 2, 3, 4, 9, 5+10 (squashed), 6, 11, 7, 8, 12
+Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
-Robin.
-
-> 
-> Lorenzo
-> 
->>  drivers/iommu/arm-smmu-v3.c | 46 ++---------------------------------
->>  drivers/iommu/arm-smmu.c    | 58 +++++++--------------------------------------
->>  2 files changed, 10 insertions(+), 94 deletions(-)
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index 7d45d8b..7fc4e5f 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -2724,51 +2724,9 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
->>  	.probe	= arm_smmu_device_probe,
->>  	.remove	= arm_smmu_device_remove,
->>  };
->> +module_platform_driver(arm_smmu_driver);
->>  
->> -static int __init arm_smmu_init(void)
->> -{
->> -	static bool registered;
->> -	int ret = 0;
->> -
->> -	if (!registered) {
->> -		ret = platform_driver_register(&arm_smmu_driver);
->> -		registered = !ret;
->> -	}
->> -	return ret;
->> -}
->> -
->> -static void __exit arm_smmu_exit(void)
->> -{
->> -	return platform_driver_unregister(&arm_smmu_driver);
->> -}
->> -
->> -subsys_initcall(arm_smmu_init);
->> -module_exit(arm_smmu_exit);
->> -
->> -static int __init arm_smmu_of_init(struct device_node *np)
->> -{
->> -	int ret = arm_smmu_init();
->> -
->> -	if (ret)
->> -		return ret;
->> -
->> -	if (!of_platform_device_create(np, NULL, platform_bus_type.dev_root))
->> -		return -ENODEV;
->> -
->> -	return 0;
->> -}
->> -IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3", arm_smmu_of_init);
->> -
->> -#ifdef CONFIG_ACPI
->> -static int __init acpi_smmu_v3_init(struct acpi_table_header *table)
->> -{
->> -	if (iort_node_match(ACPI_IORT_NODE_SMMU_V3))
->> -		return arm_smmu_init();
->> -
->> -	return 0;
->> -}
->> -IORT_ACPI_DECLARE(arm_smmu_v3, ACPI_SIG_IORT, acpi_smmu_v3_init);
->> -#endif
->> +IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3", NULL);
->>  
->>  MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
->>  MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index 73a0a25..c86ae5f 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -2134,56 +2134,14 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
->>  	.probe	= arm_smmu_device_probe,
->>  	.remove	= arm_smmu_device_remove,
->>  };
->> -
->> -static int __init arm_smmu_init(void)
->> -{
->> -	static bool registered;
->> -	int ret = 0;
->> -
->> -	if (!registered) {
->> -		ret = platform_driver_register(&arm_smmu_driver);
->> -		registered = !ret;
->> -	}
->> -	return ret;
->> -}
->> -
->> -static void __exit arm_smmu_exit(void)
->> -{
->> -	return platform_driver_unregister(&arm_smmu_driver);
->> -}
->> -
->> -subsys_initcall(arm_smmu_init);
->> -module_exit(arm_smmu_exit);
->> -
->> -static int __init arm_smmu_of_init(struct device_node *np)
->> -{
->> -	int ret = arm_smmu_init();
->> -
->> -	if (ret)
->> -		return ret;
->> -
->> -	if (!of_platform_device_create(np, NULL, platform_bus_type.dev_root))
->> -		return -ENODEV;
->> -
->> -	return 0;
->> -}
->> -IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1", arm_smmu_of_init);
->> -IOMMU_OF_DECLARE(arm_smmuv2, "arm,smmu-v2", arm_smmu_of_init);
->> -IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400", arm_smmu_of_init);
->> -IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401", arm_smmu_of_init);
->> -IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500", arm_smmu_of_init);
->> -IOMMU_OF_DECLARE(cavium_smmuv2, "cavium,smmu-v2", arm_smmu_of_init);
->> -
->> -#ifdef CONFIG_ACPI
->> -static int __init arm_smmu_acpi_init(struct acpi_table_header *table)
->> -{
->> -	if (iort_node_match(ACPI_IORT_NODE_SMMU))
->> -		return arm_smmu_init();
->> -
->> -	return 0;
->> -}
->> -IORT_ACPI_DECLARE(arm_smmu, ACPI_SIG_IORT, arm_smmu_acpi_init);
->> -#endif
->> +module_platform_driver(arm_smmu_driver);
->> +
->> +IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1", NULL);
->> +IOMMU_OF_DECLARE(arm_smmuv2, "arm,smmu-v2", NULL);
->> +IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400", NULL);
->> +IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401", NULL);
->> +IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500", NULL);
->> +IOMMU_OF_DECLARE(cavium_smmuv2, "cavium,smmu-v2", NULL);
->>  
->>  MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
->>  MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
->> -- 
->> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
->>
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index a328ffb75509..0f5e42a719e5 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -404,6 +404,7 @@ enum arm_smmu_domain_stage {
+ 	ARM_SMMU_DOMAIN_S1 = 0,
+ 	ARM_SMMU_DOMAIN_S2,
+ 	ARM_SMMU_DOMAIN_NESTED,
++	ARM_SMMU_DOMAIN_BYPASS,
+ };
+ 
+ struct arm_smmu_domain {
+@@ -824,6 +825,12 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	if (smmu_domain->smmu)
+ 		goto out_unlock;
+ 
++	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
++		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
++		smmu_domain->smmu = smmu;
++		goto out_unlock;
++	}
++
+ 	/*
+ 	 * Mapping the requested stage onto what we support is surprisingly
+ 	 * complicated, mainly because the spec allows S1+S2 SMMUs without
+@@ -984,7 +991,7 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+ 	void __iomem *cb_base;
+ 	int irq;
+ 
+-	if (!smmu)
++	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
+ 		return;
+ 
+ 	/*
+@@ -1007,7 +1014,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ {
+ 	struct arm_smmu_domain *smmu_domain;
+ 
+-	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
++	if (type != IOMMU_DOMAIN_UNMANAGED &&
++	    type != IOMMU_DOMAIN_DMA &&
++	    type != IOMMU_DOMAIN_IDENTITY)
+ 		return NULL;
+ 	/*
+ 	 * Allocate the domain and initialise some of its data structures.
+@@ -1205,10 +1214,15 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ {
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 	struct arm_smmu_s2cr *s2cr = smmu->s2crs;
+-	enum arm_smmu_s2cr_type type = S2CR_TYPE_TRANS;
+ 	u8 cbndx = smmu_domain->cfg.cbndx;
++	enum arm_smmu_s2cr_type type;
+ 	int i, idx;
+ 
++	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS)
++		type = S2CR_TYPE_BYPASS;
++	else
++		type = S2CR_TYPE_TRANS;
++
+ 	for_each_cfg_sme(fwspec, i, idx) {
+ 		if (type == s2cr[idx].type && cbndx == s2cr[idx].cbndx)
+ 			continue;
+-- 
+2.1.4
