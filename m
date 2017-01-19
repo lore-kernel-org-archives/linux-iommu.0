@@ -1,41 +1,263 @@
-From: Stephen Boyd <sboyd@codeaurora.org>
-Subject: [PATCH 0/5] Remove qcom SoC configs
-Date: Wed, 18 Jan 2017 15:27:21 -0800
-Message-ID: <20170118232726.22876-1-sboyd@codeaurora.org>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Andy Gross <andy.gross@linaro.org>
-Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>
+From: Tomasz Nowicki <tnowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v3] IOMMU: SMMUv2: Support for Extended Stream ID (16 bit)
+Date: Thu, 19 Jan 2017 09:55:10 +0100
+Message-ID: <bc9eb7ab-5cc7-411b-60f3-b8c369753f9b@caviumnetworks.com>
+References: <20170117151431.17085-1-aleksey.makarov@linaro.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170117151431.17085-1-aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-We want to remove the ARCH_MSM* configs in mach-qcom/Kconfig
-because they are proxy configs for selecting the right
-clocksource driver and adjusting the text offset and there is no
-difference between ARCH_MSM8X60 and ARCH_MSM8960 anymore.
-Furthermore, there aren't configs for all the SoCs supported by
-the mainline kernel, leading to confusion about which SoCs are
-supported. This patch series removes them, leading to less confusion
-with the minor downside of always forcing a text offset shift and
-the selection of the qcom specific clocksource driver. The size
-increase from the clocksource driver is already taken in
-the qcom_defconfig, so most likely nobody will care.
+Hi Aleksey,
 
-Cc: Joerg Roedel <joro@8bytes.org>
+On 17.01.2017 16:14, Aleksey Makarov wrote:
+> Enable the Extended Stream ID feature when available.
+>
+> This patch on top of series "KVM PCIe/MSI passthrough on ARM/ARM64
+> and IOVA reserved regions" by Eric Auger [1] allows to passthrough
+> an external PCIe network card on a ThunderX server successfully.
+>
+> Without this patch that card caused a warning like
+>
+> 	pci 0006:90:00.0: stream ID 0x9000 out of range for SMMU (0x7fff)
+>
+> during boot.
+>
+> [1] https://lkml.kernel.org/r/1484127714-3263-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+>
+> Signed-off-by: Aleksey Makarov <aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 
-Stephen Boyd (5):
-  iommu: Generalize MSM_IOMMU config to ARCH_QCOM
-  ARM: Makefile: Generalize qcom platform text offset
-  ARM: qcom: Remove SoC specific configs
-  ARM: qcom_defconfig: Drop SoC specific configs
-  ARM: multi_v7_defconfig: Remove qcom SoC configs
+I do not thing this is related to PCIe network card. It is rather common 
+to all devices which bus number > 127
 
- arch/arm/Makefile                   |  3 +--
- arch/arm/configs/multi_v7_defconfig |  3 ---
- arch/arm/configs/qcom_defconfig     |  4 ----
- arch/arm/mach-qcom/Kconfig          | 23 ++---------------------
- drivers/iommu/Kconfig               |  2 +-
- 5 files changed, 4 insertions(+), 31 deletions(-)
+----
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+iommu/arm-smmu: Support for Extended Stream ID (16 bit)
+
+It is the time we have the real 16-bit Stream ID user, which is the 
+ThunderX. Its IO topology uses 1:1 map for requester to stream ID 
+translation:
+
+RC no. | Requester ID | Stream ID
+        |              |
+RC_0   | 0-FFFF --->  | 0-FFFF
+
+which allows to get full 16-bit stream ID. Currently all devices with 
+bus number >= 128 (0x80) get non-zero 16th bit of BDF and stream ID (due 
+to 1:1 map). Eventually SMMU drops such device because the stream ID is 
+out of range. This is the case for all devices connected as external 
+endpoints on ThunderX.
+
+To fix above issue enable the Extended Stream ID optional feature when 
+available.
+
+----
+
+Please add my:
+Reviewed-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Tested-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+
+Thanks,
+Tomasz
+
+
+> ---
+> v3:
+> - keep formatting of the comment
+> - fix printk message after the deleted chunk.  "[Do] not print a mask
+>   here, since it's not overly interesting in itself, and add_device will
+>   still show the offending mask in full if it ever actually matters (as in
+>   the commit message)." (Robin Murphy)
+>
+> v2:
+> https://lkml.kernel.org/r/20170116141111.29444-1-aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+> - remove unnecessary parentheses (Robin Murphy)
+> - refactor testing SMR fields to after setting sCR0 as theirs width
+>   depends on sCR0_EXIDENABLE (Robin Murphy)
+>
+> v1 (rfc):
+> https://lkml.kernel.org/r/20170110115755.19102-1-aleksey.makarov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+>
+>  drivers/iommu/arm-smmu.c | 69 +++++++++++++++++++++++++++++++++---------------
+>  1 file changed, 48 insertions(+), 21 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 13d26009b8e0..861cc135722f 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -24,6 +24,7 @@
+>   *	- v7/v8 long-descriptor format
+>   *	- Non-secure access to the SMMU
+>   *	- Context fault reporting
+> + *	- Extended Stream ID (16 bit)
+>   */
+>
+>  #define pr_fmt(fmt) "arm-smmu: " fmt
+> @@ -87,6 +88,7 @@
+>  #define sCR0_CLIENTPD			(1 << 0)
+>  #define sCR0_GFRE			(1 << 1)
+>  #define sCR0_GFIE			(1 << 2)
+> +#define sCR0_EXIDENABLE			(1 << 3)
+>  #define sCR0_GCFGFRE			(1 << 4)
+>  #define sCR0_GCFGFIE			(1 << 5)
+>  #define sCR0_USFCFG			(1 << 10)
+> @@ -126,6 +128,7 @@
+>  #define ID0_NUMIRPT_MASK		0xff
+>  #define ID0_NUMSIDB_SHIFT		9
+>  #define ID0_NUMSIDB_MASK		0xf
+> +#define ID0_EXIDS			(1 << 8)
+>  #define ID0_NUMSMRG_SHIFT		0
+>  #define ID0_NUMSMRG_MASK		0xff
+>
+> @@ -169,6 +172,7 @@
+>  #define ARM_SMMU_GR0_S2CR(n)		(0xc00 + ((n) << 2))
+>  #define S2CR_CBNDX_SHIFT		0
+>  #define S2CR_CBNDX_MASK			0xff
+> +#define S2CR_EXIDVALID			(1 << 10)
+>  #define S2CR_TYPE_SHIFT			16
+>  #define S2CR_TYPE_MASK			0x3
+>  enum arm_smmu_s2cr_type {
+> @@ -354,6 +358,7 @@ struct arm_smmu_device {
+>  #define ARM_SMMU_FEAT_FMT_AARCH64_64K	(1 << 9)
+>  #define ARM_SMMU_FEAT_FMT_AARCH32_L	(1 << 10)
+>  #define ARM_SMMU_FEAT_FMT_AARCH32_S	(1 << 11)
+> +#define ARM_SMMU_FEAT_EXIDS		(1 << 12)
+>  	u32				features;
+>
+>  #define ARM_SMMU_OPT_SECURE_CFG_ACCESS (1 << 0)
+> @@ -1051,7 +1056,7 @@ static void arm_smmu_write_smr(struct arm_smmu_device *smmu, int idx)
+>  	struct arm_smmu_smr *smr = smmu->smrs + idx;
+>  	u32 reg = smr->id << SMR_ID_SHIFT | smr->mask << SMR_MASK_SHIFT;
+>
+> -	if (smr->valid)
+> +	if (!(smmu->features & ARM_SMMU_FEAT_EXIDS) && smr->valid)
+>  		reg |= SMR_VALID;
+>  	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_SMR(idx));
+>  }
+> @@ -1063,6 +1068,9 @@ static void arm_smmu_write_s2cr(struct arm_smmu_device *smmu, int idx)
+>  		  (s2cr->cbndx & S2CR_CBNDX_MASK) << S2CR_CBNDX_SHIFT |
+>  		  (s2cr->privcfg & S2CR_PRIVCFG_MASK) << S2CR_PRIVCFG_SHIFT;
+>
+> +	if (smmu->features & ARM_SMMU_FEAT_EXIDS && smmu->smrs &&
+> +	    smmu->smrs[idx].valid)
+> +		reg |= S2CR_EXIDVALID;
+>  	writel_relaxed(reg, ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_S2CR(idx));
+>  }
+>
+> @@ -1073,6 +1081,34 @@ static void arm_smmu_write_sme(struct arm_smmu_device *smmu, int idx)
+>  		arm_smmu_write_smr(smmu, idx);
+>  }
+>
+> +/*
+> + * The width of SMR's mask field depends on sCR0_EXIDENABLE, so this function
+> + * should be called after sCR0 is written.
+> + */
+> +static void arm_smmu_test_smr_masks(struct arm_smmu_device *smmu)
+> +{
+> +	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+> +	u32 smr;
+> +
+> +	if (!smmu->smrs)
+> +		return;
+> +
+> +	/*
+> +	 * SMR.ID bits may not be preserved if the corresponding MASK
+> +	 * bits are set, so check each one separately. We can reject
+> +	 * masters later if they try to claim IDs outside these masks.
+> +	 */
+> +	smr = smmu->streamid_mask << SMR_ID_SHIFT;
+> +	writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
+> +	smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
+> +	smmu->streamid_mask = smr >> SMR_ID_SHIFT;
+> +
+> +	smr = smmu->streamid_mask << SMR_MASK_SHIFT;
+> +	writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
+> +	smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
+> +	smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
+> +}
+> +
+>  static int arm_smmu_find_sme(struct arm_smmu_device *smmu, u16 id, u16 mask)
+>  {
+>  	struct arm_smmu_smr *smrs = smmu->smrs;
+> @@ -1674,6 +1710,9 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>  	if (smmu->features & ARM_SMMU_FEAT_VMID16)
+>  		reg |= sCR0_VMID16EN;
+>
+> +	if (smmu->features & ARM_SMMU_FEAT_EXIDS)
+> +		reg |= sCR0_EXIDENABLE;
+> +
+>  	/* Push the button */
+>  	__arm_smmu_tlb_sync(smmu);
+>  	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+> @@ -1761,11 +1800,14 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>  			   "\t(IDR0.CTTW overridden by FW configuration)\n");
+>
+>  	/* Max. number of entries we have for stream matching/indexing */
+> -	size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
+> +	if (smmu->version == ARM_SMMU_V2 && id & ID0_EXIDS) {
+> +		smmu->features |= ARM_SMMU_FEAT_EXIDS;
+> +		size = 1 << 16;
+> +	} else {
+> +		size = 1 << ((id >> ID0_NUMSIDB_SHIFT) & ID0_NUMSIDB_MASK);
+> +	}
+>  	smmu->streamid_mask = size - 1;
+>  	if (id & ID0_SMS) {
+> -		u32 smr;
+> -
+>  		smmu->features |= ARM_SMMU_FEAT_STREAM_MATCH;
+>  		size = (id >> ID0_NUMSMRG_SHIFT) & ID0_NUMSMRG_MASK;
+>  		if (size == 0) {
+> @@ -1774,21 +1816,6 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>  			return -ENODEV;
+>  		}
+>
+> -		/*
+> -		 * SMR.ID bits may not be preserved if the corresponding MASK
+> -		 * bits are set, so check each one separately. We can reject
+> -		 * masters later if they try to claim IDs outside these masks.
+> -		 */
+> -		smr = smmu->streamid_mask << SMR_ID_SHIFT;
+> -		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
+> -		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
+> -		smmu->streamid_mask = smr >> SMR_ID_SHIFT;
+> -
+> -		smr = smmu->streamid_mask << SMR_MASK_SHIFT;
+> -		writel_relaxed(smr, gr0_base + ARM_SMMU_GR0_SMR(0));
+> -		smr = readl_relaxed(gr0_base + ARM_SMMU_GR0_SMR(0));
+> -		smmu->smr_mask_mask = smr >> SMR_MASK_SHIFT;
+> -
+>  		/* Zero-initialised to mark as invalid */
+>  		smmu->smrs = devm_kcalloc(smmu->dev, size, sizeof(*smmu->smrs),
+>  					  GFP_KERNEL);
+> @@ -1796,8 +1823,7 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>  			return -ENOMEM;
+>
+>  		dev_notice(smmu->dev,
+> -			   "\tstream matching with %lu register groups, mask 0x%x",
+> -			   size, smmu->smr_mask_mask);
+> +			   "\tstream matching with %lu register groups", size);
+>  	}
+>  	/* s2cr->type == 0 means translation, so initialise explicitly */
+>  	smmu->s2crs = devm_kmalloc_array(smmu->dev, size, sizeof(*smmu->s2crs),
+> @@ -2120,6 +2146,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  	iommu_register_instance(dev->fwnode, &arm_smmu_ops);
+>  	platform_set_drvdata(pdev, smmu);
+>  	arm_smmu_device_reset(smmu);
+> +	arm_smmu_test_smr_masks(smmu);
+>
+>  	/* Oh, for a proper bus abstraction */
+>  	if (!iommu_present(&platform_bus_type))
+>
