@@ -1,54 +1,106 @@
-From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v9 15/18] irqchip/gicv3-its: Sets IRQ_DOMAIN_FLAG_MSI_REMAP
-Date: Thu, 19 Jan 2017 20:58:00 +0000
-Message-ID: <1484859483-2866-16-git-send-email-eric.auger@redhat.com>
+From: Eric Auger <eric.auger@redhat.com>
+Subject: [PATCH v9 16/18] vfio/type1: Allow transparent MSI IOVA allocation
+Date: Thu, 19 Jan 2017 20:58:01 +0000
+Message-ID: <1484859483-2866-17-git-send-email-eric.auger@redhat.com>
 References: <1484859483-2866-1-git-send-email-eric.auger@redhat.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484859483-2866-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <1484859483-2866-1-git-send-email-eric.auger@redhat.com>
+Sender: kvm-owner@vger.kernel.org
+To: eric.auger@redhat.com, eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, will.deacon@arm.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org
+Cc: kvm@vger.kernel.org, drjones@redhat.com, linux-kernel@vger.kernel.org, pranav.sawargaonkar@gmail.com, iommu@lists.linux-foundation.org, punit.agrawal@arm.com, diana.craciun@nxp.com, gpkulkarni@gmail.com, shankerd@codeaurora.org, bharat.bhushan@nxp.com, geethasowjanya.akula@gmail.com
 List-Id: iommu@lists.linux-foundation.org
 
-The GICv3 ITS is MSI remapping capable. Let's advertise
-this property so that VFIO passthrough can assess IRQ safety.
+When attaching a group to the container, check the group's
+reserved regions and test whether the IOMMU translates MSI
+transactions. If yes, we initialize an IOVA allocator through
+the iommu_get_msi_cookie API. This will allow the MSI IOVAs
+to be transparently allocated on MSI controller's compose().
 
-Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Reviewed-by: Marc Zyngier <marc.zyngier-5wv7dgnIgG8@public.gmane.org>
-Reviewed-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Tested-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Tested-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
+Acked-by: Alex Williamson <alex.williamson@redhat.com>
+Reviewed-by: Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>
+Tested-by: Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>
+Tested-by: Bharat Bhushan <bharat.bhushan@nxp.com>
 
 ---
 
-v7 -> v8:
-- added Marc's R-b
+v3 -> v4:
+- test region's type: IOMMU_RESV_MSI
+- restructure the code to prepare for safety assessment
+- reword title
 ---
- drivers/irqchip/irq-gic-v3-its.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/vfio/vfio_iommu_type1.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index 69b040f..9d4fefc 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -1642,6 +1642,7 @@ static int its_init_domain(struct fwnode_handle *handle, struct its_node *its)
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index b3cc33f..8deca9b 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -38,6 +38,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/mdev.h>
+ #include <linux/notifier.h>
++#include <linux/dma-iommu.h>
  
- 	inner_domain->parent = its_parent;
- 	inner_domain->bus_token = DOMAIN_BUS_NEXUS;
-+	inner_domain->flags |= IRQ_DOMAIN_FLAG_MSI_REMAP;
- 	info->ops = &its_msi_domain_ops;
- 	info->data = its;
- 	inner_domain->host_data = info;
+ #define DRIVER_VERSION  "0.2"
+ #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson@redhat.com>"
+@@ -1179,6 +1180,28 @@ static struct vfio_group *find_iommu_group(struct vfio_domain *domain,
+ 	return NULL;
+ }
+ 
++static bool vfio_iommu_has_resv_msi(struct iommu_group *group,
++				    phys_addr_t *base)
++{
++	struct list_head group_resv_regions;
++	struct iommu_resv_region *region, *next;
++	bool ret = false;
++
++	INIT_LIST_HEAD(&group_resv_regions);
++	iommu_get_group_resv_regions(group, &group_resv_regions);
++	list_for_each_entry(region, &group_resv_regions, list) {
++		if (region->type & IOMMU_RESV_MSI) {
++			*base = region->start;
++			ret = true;
++			goto out;
++		}
++	}
++out:
++	list_for_each_entry_safe(region, next, &group_resv_regions, list)
++		kfree(region);
++	return ret;
++}
++
+ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 					 struct iommu_group *iommu_group)
+ {
+@@ -1187,6 +1210,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	struct vfio_domain *domain, *d;
+ 	struct bus_type *bus = NULL, *mdev_bus;
+ 	int ret;
++	bool resv_msi;
++	phys_addr_t resv_msi_base;
+ 
+ 	mutex_lock(&iommu->lock);
+ 
+@@ -1256,6 +1281,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	if (ret)
+ 		goto out_domain;
+ 
++	resv_msi = vfio_iommu_has_resv_msi(iommu_group, &resv_msi_base);
++
+ 	INIT_LIST_HEAD(&domain->group_list);
+ 	list_add(&group->next, &domain->group_list);
+ 
+@@ -1302,6 +1329,9 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 	if (ret)
+ 		goto out_detach;
+ 
++	if (resv_msi && iommu_get_msi_cookie(domain->domain, resv_msi_base))
++		goto out_detach;
++
+ 	list_add(&domain->next, &iommu->domain_list);
+ 
+ 	mutex_unlock(&iommu->lock);
 -- 
 1.9.1
+
