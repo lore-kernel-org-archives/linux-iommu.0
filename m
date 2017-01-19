@@ -1,8 +1,8 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V5 09/12] ACPI/IORT: Add function to check SMMUs drivers
-	presence
-Date: Thu, 19 Jan 2017 20:35:53 +0530
-Message-ID: <1484838356-24962-10-git-send-email-sricharan@codeaurora.org>
+Subject: [PATCH V5 12/12] ACPI/IORT: Remove linker section for IORT entries
+	probing
+Date: Thu, 19 Jan 2017 20:35:56 +0530
+Message-ID: <1484838356-24962-13-git-send-email-sricharan@codeaurora.org>
 References: <1484838356-24962-1-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,44 +23,65 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 
-The IOMMU probe deferral implementation requires a mechanism to detect
-if drivers for SMMU components are built-in in the kernel to detect
-whether IOMMU configuration for a given device should be deferred (ie
-SMMU drivers present but still not probed) or not (drivers not present).
+The IORT linker section introduced by commit 34ceea275f62
+("ACPI/IORT: Introduce linker section for IORT entries probing")
+was needed to make sure SMMU drivers are registered (and therefore
+probed) in the kernel before devices using the SMMU have a chance
+to probe in turn.
 
-Add a simple function to IORT to detect if SMMU drivers for SMMU
-components managed by IORT are built-in in the kernel.
+Through the introduction of deferred IOMMU configuration the linker
+section based IORT probing infrastructure is not needed any longer, in
+that device/SMMU probe dependencies are managed through the probe
+deferral mechanism, making the IORT linker section infrastructure
+unused, so that it can be removed.
+
+Remove the unused IORT linker section probing infrastructure
+from the kernel to complete the ACPI IORT IOMMU configure probe
+deferral mechanism implementation.
 
 Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
 Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Cc: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 ---
- drivers/acpi/arm64/iort.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/acpi/arm64/iort.c         | 2 --
+ include/asm-generic/vmlinux.lds.h | 1 -
+ include/linux/acpi_iort.h         | 3 ---
+ 3 files changed, 6 deletions(-)
 
 diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index e0d2e6e..bf0ed09 100644
+index d01bae8..ac45623 100644
 --- a/drivers/acpi/arm64/iort.c
 +++ b/drivers/acpi/arm64/iort.c
-@@ -523,6 +523,19 @@ static int arm_smmu_iort_xlate(struct device *dev, u32 streamid,
- 	return ret;
- }
+@@ -992,6 +992,4 @@ void __init acpi_iort_init(void)
+ 	}
  
-+static inline bool iort_iommu_driver_enabled(u8 type)
-+{
-+	switch (type) {
-+	case ACPI_IORT_NODE_SMMU_V3:
-+		return IS_BUILTIN(CONFIG_ARM_SMMU_V3);
-+	case ACPI_IORT_NODE_SMMU:
-+		return IS_BUILTIN(CONFIG_ARM_SMMU);
-+	default:
-+		pr_warn("IORT node type %u does not describe an SMMU\n", type);
-+		return false;
-+	}
-+}
-+
- static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
- 					struct acpi_iort_node *node,
- 					u32 streamid)
+ 	iort_init_platform_devices();
+-
+-	acpi_probe_device_table(iort);
+ }
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index 0968d13..9faa26c 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -566,7 +566,6 @@
+ 	IRQCHIP_OF_MATCH_TABLE()					\
+ 	ACPI_PROBE_TABLE(irqchip)					\
+ 	ACPI_PROBE_TABLE(clksrc)					\
+-	ACPI_PROBE_TABLE(iort)						\
+ 	EARLYCON_TABLE()
+ 
+ #define INIT_TEXT							\
+diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+index 77e0809..f167e1d04 100644
+--- a/include/linux/acpi_iort.h
++++ b/include/linux/acpi_iort.h
+@@ -52,7 +52,4 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+ { return NULL; }
+ #endif
+ 
+-#define IORT_ACPI_DECLARE(name, table_id, fn)		\
+-	ACPI_DECLARE_PROBE_ENTRY(iort, name, table_id, 0, NULL, 0, fn)
+-
+ #endif /* __ACPI_IORT_H__ */
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
