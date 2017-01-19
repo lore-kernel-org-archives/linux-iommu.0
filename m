@@ -1,180 +1,240 @@
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V5 08/12] iommu/arm-smmu: Clean up early-probing
-	workarounds
-Date: Thu, 19 Jan 2017 16:50:53 +0000
-Message-ID: <20170119165053.GC28483@red-moon>
-References: <1484838356-24962-1-git-send-email-sricharan@codeaurora.org>
-	<1484838356-24962-9-git-send-email-sricharan@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1484838356-24962-9-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Lucas Stach <l.stach@pengutronix.de>
+Subject: [PATCH 3/3] mm: wire up GFP flag passing in dma_alloc_from_contiguous
+Date: Thu, 19 Jan 2017 18:07:07 +0100
+Message-ID: <20170119170707.31741-3-l.stach@pengutronix.de>
+References: <20170119170707.31741-1-l.stach@pengutronix.de>
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <20170119170707.31741-1-l.stach@pengutronix.de>
+Sender: kvm-owner@vger.kernel.org
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Paolo Bonzini <pbonzini@redhat.com>, =?UTF-8?q?Radim=20Kr=C4=8Dm=C3=A1=C5=99?= <rkrcmar@redhat.com>, Alexander Graf <agraf@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Michal Hocko <mhocko@suse.com>, Vlastimil Babka <vbabka@suse.cz>, linux-arm-kernel@lists.infradead.org, linux-mips@linux-mips.org, kvm@vger.kernel.org, kvm-ppc@vger.kernel.org, linux-xtensa@linux-xtensa.org, iommu@lists.linux-foun
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 19, 2017 at 08:35:52PM +0530, Sricharan R wrote:
-> From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> 
-> Now that the appropriate ordering is enforced via profe-deferral of
-> masters in core code, rip it all out and bask in the simplicity.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> [Sricharan: Rebased on top of ACPI IORT SMMU series]
-> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> ---
->  * No change
+The callers of the DMA alloc functions already provide the proper
+context GFP flags. Make sure to pass them through to the CMA
+allocator, to make the CMA compaction context aware.
 
-Well, a tad too early on the series for ACPI, aka if we bisect the
-series here you would break ACPI.
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+---
+ arch/arm/mm/dma-mapping.c      | 16 +++++++++-------
+ arch/arm64/mm/dma-mapping.c    |  4 ++--
+ arch/mips/mm/dma-default.c     |  4 ++--
+ arch/x86/kernel/pci-dma.c      |  3 ++-
+ arch/xtensa/kernel/pci-dma.c   |  3 ++-
+ drivers/base/dma-contiguous.c  |  5 +++--
+ drivers/iommu/amd_iommu.c      |  2 +-
+ drivers/iommu/intel-iommu.c    |  2 +-
+ include/linux/dma-contiguous.h |  4 ++--
+ 9 files changed, 24 insertions(+), 19 deletions(-)
 
-Totally agree on the patch, but you should move it to the end of the
-series.
+diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+index ab7710002ba6..4d6ec7d821c8 100644
+--- a/arch/arm/mm/dma-mapping.c
++++ b/arch/arm/mm/dma-mapping.c
+@@ -349,7 +349,7 @@ static void __dma_free_buffer(struct page *page, size_t size)
+ static void *__alloc_from_contiguous(struct device *dev, size_t size,
+ 				     pgprot_t prot, struct page **ret_page,
+ 				     const void *caller, bool want_vaddr,
+-				     int coherent_flag);
++				     int coherent_flag, gfp_t gfp);
+ 
+ static void *__alloc_remap_buffer(struct device *dev, size_t size, gfp_t gfp,
+ 				 pgprot_t prot, struct page **ret_page,
+@@ -420,7 +420,8 @@ static int __init atomic_pool_init(void)
+ 	 */
+ 	if (dev_get_cma_area(NULL))
+ 		ptr = __alloc_from_contiguous(NULL, atomic_pool_size, prot,
+-				      &page, atomic_pool_init, true, NORMAL);
++				      &page, atomic_pool_init, true, NORMAL,
++				      GFP_KERNEL);
+ 	else
+ 		ptr = __alloc_remap_buffer(NULL, atomic_pool_size, gfp, prot,
+ 					   &page, atomic_pool_init, true);
+@@ -594,14 +595,14 @@ static int __free_from_pool(void *start, size_t size)
+ static void *__alloc_from_contiguous(struct device *dev, size_t size,
+ 				     pgprot_t prot, struct page **ret_page,
+ 				     const void *caller, bool want_vaddr,
+-				     int coherent_flag)
++				     int coherent_flag, gfp_t gfp)
+ {
+ 	unsigned long order = get_order(size);
+ 	size_t count = size >> PAGE_SHIFT;
+ 	struct page *page;
+ 	void *ptr = NULL;
+ 
+-	page = dma_alloc_from_contiguous(dev, count, order);
++	page = dma_alloc_from_contiguous(dev, count, order, gfp);
+ 	if (!page)
+ 		return NULL;
+ 
+@@ -655,7 +656,7 @@ static inline pgprot_t __get_dma_pgprot(unsigned long attrs, pgprot_t prot)
+ #define __get_dma_pgprot(attrs, prot)				__pgprot(0)
+ #define __alloc_remap_buffer(dev, size, gfp, prot, ret, c, wv)	NULL
+ #define __alloc_from_pool(size, ret_page)			NULL
+-#define __alloc_from_contiguous(dev, size, prot, ret, c, wv, coherent_flag)	NULL
++#define __alloc_from_contiguous(dev, size, prot, ret, c, wv, coherent_flag, gfp)	NULL
+ #define __free_from_pool(cpu_addr, size)			do { } while (0)
+ #define __free_from_contiguous(dev, page, cpu_addr, size, wv)	do { } while (0)
+ #define __dma_free_remap(cpu_addr, size)			do { } while (0)
+@@ -697,7 +698,8 @@ static void *cma_allocator_alloc(struct arm_dma_alloc_args *args,
+ {
+ 	return __alloc_from_contiguous(args->dev, args->size, args->prot,
+ 				       ret_page, args->caller,
+-				       args->want_vaddr, args->coherent_flag);
++				       args->want_vaddr, args->coherent_flag,
++				       args->gfp);
+ }
+ 
+ static void cma_allocator_free(struct arm_dma_free_args *args)
+@@ -1293,7 +1295,7 @@ static struct page **__iommu_alloc_buffer(struct device *dev, size_t size,
+ 		unsigned long order = get_order(size);
+ 		struct page *page;
+ 
+-		page = dma_alloc_from_contiguous(dev, count, order);
++		page = dma_alloc_from_contiguous(dev, count, order, gfp);
+ 		if (!page)
+ 			goto error;
+ 
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index e04082700bb1..b998f56e6a53 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -107,7 +107,7 @@ static void *__dma_alloc_coherent(struct device *dev, size_t size,
+ 		void *addr;
+ 
+ 		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
+-							get_order(size));
++						 get_order(size), flags);
+ 		if (!page)
+ 			return NULL;
+ 
+@@ -379,7 +379,7 @@ static int __init atomic_pool_init(void)
+ 
+ 	if (dev_get_cma_area(NULL))
+ 		page = dma_alloc_from_contiguous(NULL, nr_pages,
+-							pool_size_order);
++						 pool_size_order, GFP_KERNEL);
+ 	else
+ 		page = alloc_pages(GFP_DMA, pool_size_order);
+ 
+diff --git a/arch/mips/mm/dma-default.c b/arch/mips/mm/dma-default.c
+index a39c36af97ad..1895a692efd4 100644
+--- a/arch/mips/mm/dma-default.c
++++ b/arch/mips/mm/dma-default.c
+@@ -148,8 +148,8 @@ static void *mips_dma_alloc_coherent(struct device *dev, size_t size,
+ 	gfp = massage_gfp_flags(dev, gfp);
+ 
+ 	if (IS_ENABLED(CONFIG_DMA_CMA) && gfpflags_allow_blocking(gfp))
+-		page = dma_alloc_from_contiguous(dev,
+-					count, get_order(size));
++		page = dma_alloc_from_contiguous(dev, count, get_order(size),
++						 gfp);
+ 	if (!page)
+ 		page = alloc_pages(gfp, get_order(size));
+ 
+diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
+index d30c37750765..d5c223c9cf11 100644
+--- a/arch/x86/kernel/pci-dma.c
++++ b/arch/x86/kernel/pci-dma.c
+@@ -91,7 +91,8 @@ void *dma_generic_alloc_coherent(struct device *dev, size_t size,
+ 	page = NULL;
+ 	/* CMA can be used only in the context which permits sleeping */
+ 	if (gfpflags_allow_blocking(flag)) {
+-		page = dma_alloc_from_contiguous(dev, count, get_order(size));
++		page = dma_alloc_from_contiguous(dev, count, get_order(size),
++						 flag);
+ 		if (page && page_to_phys(page) + size > dma_mask) {
+ 			dma_release_from_contiguous(dev, page, count);
+ 			page = NULL;
+diff --git a/arch/xtensa/kernel/pci-dma.c b/arch/xtensa/kernel/pci-dma.c
+index 70e362e6038e..34c1f9fa6acc 100644
+--- a/arch/xtensa/kernel/pci-dma.c
++++ b/arch/xtensa/kernel/pci-dma.c
+@@ -158,7 +158,8 @@ static void *xtensa_dma_alloc(struct device *dev, size_t size,
+ 		flag |= GFP_DMA;
+ 
+ 	if (gfpflags_allow_blocking(flag))
+-		page = dma_alloc_from_contiguous(dev, count, get_order(size));
++		page = dma_alloc_from_contiguous(dev, count, get_order(size),
++						 flag);
+ 
+ 	if (!page)
+ 		page = alloc_pages(flag, get_order(size));
+diff --git a/drivers/base/dma-contiguous.c b/drivers/base/dma-contiguous.c
+index d1a9cbabc627..b55804cac4c4 100644
+--- a/drivers/base/dma-contiguous.c
++++ b/drivers/base/dma-contiguous.c
+@@ -181,6 +181,7 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+  * @dev:   Pointer to device for which the allocation is performed.
+  * @count: Requested number of pages.
+  * @align: Requested alignment of pages (in PAGE_SIZE order).
++ * @gfp_mask: GFP flags to use for this allocation.
+  *
+  * This function allocates memory buffer for specified device. It uses
+  * device specific contiguous memory area if available or the default
+@@ -188,12 +189,12 @@ int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+  * function.
+  */
+ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+-				       unsigned int align)
++				       unsigned int align, gfp_t gfp_mask)
+ {
+ 	if (align > CONFIG_CMA_ALIGNMENT)
+ 		align = CONFIG_CMA_ALIGNMENT;
+ 
+-	return cma_alloc(dev_get_cma_area(dev), count, align, GFP_KERNEL);
++	return cma_alloc(dev_get_cma_area(dev), count, align, gfp_mask);
+ }
+ 
+ /**
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 3ef0f42984f2..bd2e335cdf39 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2668,7 +2668,7 @@ static void *alloc_coherent(struct device *dev, size_t size,
+ 			return NULL;
+ 
+ 		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
+-						 get_order(size));
++						 get_order(size), flag);
+ 		if (!page)
+ 			return NULL;
+ 	}
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 8a185250ae5a..3f804eb4299a 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3827,7 +3827,7 @@ static void *intel_alloc_coherent(struct device *dev, size_t size,
+ 	if (gfpflags_allow_blocking(flags)) {
+ 		unsigned int count = size >> PAGE_SHIFT;
+ 
+-		page = dma_alloc_from_contiguous(dev, count, order);
++		page = dma_alloc_from_contiguous(dev, count, order, flags);
+ 		if (page && iommu_no_mapping(dev) &&
+ 		    page_to_phys(page) + size > dev->coherent_dma_mask) {
+ 			dma_release_from_contiguous(dev, page, count);
+diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
+index fec734df1524..b67bf6ac907d 100644
+--- a/include/linux/dma-contiguous.h
++++ b/include/linux/dma-contiguous.h
+@@ -112,7 +112,7 @@ static inline int dma_declare_contiguous(struct device *dev, phys_addr_t size,
+ }
+ 
+ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+-				       unsigned int order);
++				       unsigned int order, gfp_t gfp_mask);
+ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
+ 				 int count);
+ 
+@@ -145,7 +145,7 @@ int dma_declare_contiguous(struct device *dev, phys_addr_t size,
+ 
+ static inline
+ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
+-				       unsigned int order)
++				       unsigned int order, gfp_t gfp_mask)
+ {
+ 	return NULL;
+ }
+-- 
+2.11.0
 
-Lorenzo
-
->  drivers/iommu/arm-smmu-v3.c | 46 ++---------------------------------
->  drivers/iommu/arm-smmu.c    | 58 +++++++--------------------------------------
->  2 files changed, 10 insertions(+), 94 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 7d45d8b..7fc4e5f 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -2724,51 +2724,9 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
->  	.probe	= arm_smmu_device_probe,
->  	.remove	= arm_smmu_device_remove,
->  };
-> +module_platform_driver(arm_smmu_driver);
->  
-> -static int __init arm_smmu_init(void)
-> -{
-> -	static bool registered;
-> -	int ret = 0;
-> -
-> -	if (!registered) {
-> -		ret = platform_driver_register(&arm_smmu_driver);
-> -		registered = !ret;
-> -	}
-> -	return ret;
-> -}
-> -
-> -static void __exit arm_smmu_exit(void)
-> -{
-> -	return platform_driver_unregister(&arm_smmu_driver);
-> -}
-> -
-> -subsys_initcall(arm_smmu_init);
-> -module_exit(arm_smmu_exit);
-> -
-> -static int __init arm_smmu_of_init(struct device_node *np)
-> -{
-> -	int ret = arm_smmu_init();
-> -
-> -	if (ret)
-> -		return ret;
-> -
-> -	if (!of_platform_device_create(np, NULL, platform_bus_type.dev_root))
-> -		return -ENODEV;
-> -
-> -	return 0;
-> -}
-> -IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3", arm_smmu_of_init);
-> -
-> -#ifdef CONFIG_ACPI
-> -static int __init acpi_smmu_v3_init(struct acpi_table_header *table)
-> -{
-> -	if (iort_node_match(ACPI_IORT_NODE_SMMU_V3))
-> -		return arm_smmu_init();
-> -
-> -	return 0;
-> -}
-> -IORT_ACPI_DECLARE(arm_smmu_v3, ACPI_SIG_IORT, acpi_smmu_v3_init);
-> -#endif
-> +IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3", NULL);
->  
->  MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
->  MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 73a0a25..c86ae5f 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -2134,56 +2134,14 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
->  	.probe	= arm_smmu_device_probe,
->  	.remove	= arm_smmu_device_remove,
->  };
-> -
-> -static int __init arm_smmu_init(void)
-> -{
-> -	static bool registered;
-> -	int ret = 0;
-> -
-> -	if (!registered) {
-> -		ret = platform_driver_register(&arm_smmu_driver);
-> -		registered = !ret;
-> -	}
-> -	return ret;
-> -}
-> -
-> -static void __exit arm_smmu_exit(void)
-> -{
-> -	return platform_driver_unregister(&arm_smmu_driver);
-> -}
-> -
-> -subsys_initcall(arm_smmu_init);
-> -module_exit(arm_smmu_exit);
-> -
-> -static int __init arm_smmu_of_init(struct device_node *np)
-> -{
-> -	int ret = arm_smmu_init();
-> -
-> -	if (ret)
-> -		return ret;
-> -
-> -	if (!of_platform_device_create(np, NULL, platform_bus_type.dev_root))
-> -		return -ENODEV;
-> -
-> -	return 0;
-> -}
-> -IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1", arm_smmu_of_init);
-> -IOMMU_OF_DECLARE(arm_smmuv2, "arm,smmu-v2", arm_smmu_of_init);
-> -IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400", arm_smmu_of_init);
-> -IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401", arm_smmu_of_init);
-> -IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500", arm_smmu_of_init);
-> -IOMMU_OF_DECLARE(cavium_smmuv2, "cavium,smmu-v2", arm_smmu_of_init);
-> -
-> -#ifdef CONFIG_ACPI
-> -static int __init arm_smmu_acpi_init(struct acpi_table_header *table)
-> -{
-> -	if (iort_node_match(ACPI_IORT_NODE_SMMU))
-> -		return arm_smmu_init();
-> -
-> -	return 0;
-> -}
-> -IORT_ACPI_DECLARE(arm_smmu, ACPI_SIG_IORT, arm_smmu_acpi_init);
-> -#endif
-> +module_platform_driver(arm_smmu_driver);
-> +
-> +IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1", NULL);
-> +IOMMU_OF_DECLARE(arm_smmuv2, "arm,smmu-v2", NULL);
-> +IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400", NULL);
-> +IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401", NULL);
-> +IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500", NULL);
-> +IOMMU_OF_DECLARE(cavium_smmuv2, "cavium,smmu-v2", NULL);
->  
->  MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
->  MODULE_AUTHOR("Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>");
-> -- 
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
-> 
