@@ -1,14 +1,11 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 2/5] iommu/arm-smmu: Install bypass S2CRs for
-	IOMMU_DOMAIN_IDENTITY domains
-Date: Thu, 19 Jan 2017 18:19:12 +0000
-Message-ID: <1484849955-1871-3-git-send-email-will.deacon@arm.com>
-References: <1484849955-1871-1-git-send-email-will.deacon@arm.com>
+Subject: [PATCH 0/5] Implement SMMU passthrough using the default domain
+Date: Thu, 19 Jan 2017 18:19:10 +0000
+Message-ID: <1484849955-1871-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484849955-1871-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,80 +19,39 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In preparation for allowing the default domain type to be overridden,
-this patch adds support for IOMMU_DOMAIN_IDENTITY domains to the
-ARM SMMU driver.
+Hi all,
 
-An identity domain is created by placing the corresponding S2CR
-registers into "bypass" mode, which allows transactions to flow through
-the SMMU without any translation.
+A number of people have expressed interest in having the SMMU come up in
+a passthrough configuration, and then allow subsequent translation for
+things such as VFIO. Rather than do this in each SMMU driver, it's much
+cleaner to allow the default domain to be configured to be something other
+than DMA.
 
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+This patch series implements a command-line option to configure the
+default domain type. Currently, it supports "dma" and "identity" which
+is sufficient for the passthrough use-case.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index a328ffb75509..0f5e42a719e5 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -404,6 +404,7 @@ enum arm_smmu_domain_stage {
- 	ARM_SMMU_DOMAIN_S1 = 0,
- 	ARM_SMMU_DOMAIN_S2,
- 	ARM_SMMU_DOMAIN_NESTED,
-+	ARM_SMMU_DOMAIN_BYPASS,
- };
- 
- struct arm_smmu_domain {
-@@ -824,6 +825,12 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	if (smmu_domain->smmu)
- 		goto out_unlock;
- 
-+	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
-+		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
-+		smmu_domain->smmu = smmu;
-+		goto out_unlock;
-+	}
-+
- 	/*
- 	 * Mapping the requested stage onto what we support is surprisingly
- 	 * complicated, mainly because the spec allows S1+S2 SMMUs without
-@@ -984,7 +991,7 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- 	void __iomem *cb_base;
- 	int irq;
- 
--	if (!smmu)
-+	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
- 		return;
- 
- 	/*
-@@ -1007,7 +1014,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- {
- 	struct arm_smmu_domain *smmu_domain;
- 
--	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
-+	if (type != IOMMU_DOMAIN_UNMANAGED &&
-+	    type != IOMMU_DOMAIN_DMA &&
-+	    type != IOMMU_DOMAIN_IDENTITY)
- 		return NULL;
- 	/*
- 	 * Allocate the domain and initialise some of its data structures.
-@@ -1205,10 +1214,15 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- {
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	struct arm_smmu_s2cr *s2cr = smmu->s2crs;
--	enum arm_smmu_s2cr_type type = S2CR_TYPE_TRANS;
- 	u8 cbndx = smmu_domain->cfg.cbndx;
-+	enum arm_smmu_s2cr_type type;
- 	int i, idx;
- 
-+	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS)
-+		type = S2CR_TYPE_BYPASS;
-+	else
-+		type = S2CR_TYPE_TRANS;
-+
- 	for_each_cfg_sme(fwspec, i, idx) {
- 		if (type == s2cr[idx].type && cbndx == s2cr[idx].cbndx)
- 			continue;
+Tested on an ARM fastmodel.
+
+All feedback welcome,
+
+Will
+
+--->8
+
+Will Deacon (5):
+  iommu/arm-smmu: Restrict domain attributes to UNMANAGED domains
+  iommu/arm-smmu: Install bypass S2CRs for IOMMU_DOMAIN_IDENTITY domains
+  iommu/arm-smmu-v3: Install bypass STEs for IOMMU_DOMAIN_IDENTITY
+    domains
+  arm64: dma-mapping: Only swizzle DMA ops for IOMMU_DOMAIN_DMA
+  iommu: Allow default domain type to be set on the kernel command line
+
+ arch/arm64/mm/dma-mapping.c | 17 ++++++++++++-----
+ drivers/iommu/arm-smmu-v3.c | 20 ++++++++++++++++++--
+ drivers/iommu/arm-smmu.c    | 26 +++++++++++++++++++++++---
+ drivers/iommu/iommu.c       | 19 +++++++++++++++++--
+ 4 files changed, 70 insertions(+), 12 deletions(-)
+
 -- 
 2.1.4
