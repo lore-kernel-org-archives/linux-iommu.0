@@ -1,42 +1,108 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v8 4/9] iommu/amd: Introduce amd_iommu_get_num_iommus()
-Date: Thu, 19 Jan 2017 19:41:47 +0100
-Message-ID: <20170119184147.uiqqoyhgiw2poen5@pd.tnic>
-References: <1484551416-5440-1-git-send-email-Suravee.Suthikulpanit@amd.com>
- <1484551416-5440-5-git-send-email-Suravee.Suthikulpanit@amd.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 2/5] iommu/arm-smmu: Install bypass S2CRs for
+ IOMMU_DOMAIN_IDENTITY domains
+Date: Thu, 19 Jan 2017 18:50:48 +0000
+Message-ID: <20946171-e832-0803-2450-c095e19b2f64@arm.com>
+References: <1484849955-1871-1-git-send-email-will.deacon@arm.com>
+ <1484849955-1871-3-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1484551416-5440-5-git-send-email-Suravee.Suthikulpanit@amd.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, joro@8bytes.org, peterz@infradead.org, mingo@redhat.com
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1484849955-1871-3-git-send-email-will.deacon@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>, linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux-foundation.org, joro@8bytes.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 16, 2017 at 01:23:31AM -0600, Suravee Suthikulpanit wrote:
-> Introduce amd_iommu_get_num_iommus(), which returns the value of
-> amd_iommus_present, then replaces the direct access to the variable
-		     ^
-		   which
+On 19/01/17 18:19, Will Deacon wrote:
+> In preparation for allowing the default domain type to be overridden,
+> this patch adds support for IOMMU_DOMAIN_IDENTITY domains to the
+> ARM SMMU driver.
+> 
+> An identity domain is created by placing the corresponding S2CR
+> registers into "bypass" mode, which allows transactions to flow through
+> the SMMU without any translation.
 
-> which is now declared as static.
-> 
-> This function will also be used by Perf AMD IOMMU driver.
-> 
-> Cc: Borislav Petkov <bp@alien8.de>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+The other subtle nicety this opens the door to is being able to disable
+unmatched stream bypass without needing enough context banks for every
+single known device, since S2CRs are generally more abundant.
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+> Signed-off-by: Will Deacon <will.deacon@arm.com>
 > ---
->  arch/x86/events/amd/iommu.h     |  2 ++
->  drivers/iommu/amd_iommu.c       |  6 +++---
->  drivers/iommu/amd_iommu_init.c  | 11 +++++++++--
->  drivers/iommu/amd_iommu_proto.h |  1 +
->  drivers/iommu/amd_iommu_types.h |  3 ---
->  5 files changed, 15 insertions(+), 8 deletions(-)
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+>  drivers/iommu/arm-smmu.c | 20 +++++++++++++++++---
+>  1 file changed, 17 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index a328ffb75509..0f5e42a719e5 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -404,6 +404,7 @@ enum arm_smmu_domain_stage {
+>  	ARM_SMMU_DOMAIN_S1 = 0,
+>  	ARM_SMMU_DOMAIN_S2,
+>  	ARM_SMMU_DOMAIN_NESTED,
+> +	ARM_SMMU_DOMAIN_BYPASS,
+>  };
+>  
+>  struct arm_smmu_domain {
+> @@ -824,6 +825,12 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>  	if (smmu_domain->smmu)
+>  		goto out_unlock;
+>  
+> +	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
+> +		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
+> +		smmu_domain->smmu = smmu;
+> +		goto out_unlock;
+> +	}
+> +
+>  	/*
+>  	 * Mapping the requested stage onto what we support is surprisingly
+>  	 * complicated, mainly because the spec allows S1+S2 SMMUs without
+> @@ -984,7 +991,7 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+>  	void __iomem *cb_base;
+>  	int irq;
+>  
+> -	if (!smmu)
+> +	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
+>  		return;
+>  
+>  	/*
+> @@ -1007,7 +1014,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+>  {
+>  	struct arm_smmu_domain *smmu_domain;
+>  
+> -	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
+> +	if (type != IOMMU_DOMAIN_UNMANAGED &&
+> +	    type != IOMMU_DOMAIN_DMA &&
+> +	    type != IOMMU_DOMAIN_IDENTITY)
+>  		return NULL;
+>  	/*
+>  	 * Allocate the domain and initialise some of its data structures.
+> @@ -1205,10 +1214,15 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+>  {
+>  	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>  	struct arm_smmu_s2cr *s2cr = smmu->s2crs;
+> -	enum arm_smmu_s2cr_type type = S2CR_TYPE_TRANS;
+>  	u8 cbndx = smmu_domain->cfg.cbndx;
+> +	enum arm_smmu_s2cr_type type;
+>  	int i, idx;
+>  
+> +	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS)
+> +		type = S2CR_TYPE_BYPASS;
+> +	else
+> +		type = S2CR_TYPE_TRANS;
+> +
+>  	for_each_cfg_sme(fwspec, i, idx) {
+>  		if (type == s2cr[idx].type && cbndx == s2cr[idx].cbndx)
+>  			continue;
+> 
