@@ -1,146 +1,103 @@
-From: Sricharan R <sricharan@codeaurora.org>
-Subject: [PATCH V6 00/11] IOMMU probe deferral support
-Date: Sat, 21 Jan 2017 00:45:37 +0530
-Message-ID: <1484939748-31591-1-git-send-email-sricharan@codeaurora.org>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com
-Cc: sricharan@codeaurora.org
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH V6 03/11] of: dma: Move range size workaround to
+	of_dma_get_range()
+Date: Sat, 21 Jan 2017 00:45:40 +0530
+Message-ID: <1484939748-31591-4-git-send-email-sricharan@codeaurora.org>
+References: <1484939748-31591-1-git-send-email-sricharan@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1484939748-31591-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-This series calls the dma ops configuration for the devices
-at a generic place so that it works for all busses.
-The dma_configure_ops for a device is now called during
-the device_attach callback just before the probe of the
-bus/driver is called. Similarly dma_deconfigure is called during
-device/driver_detach path.
+From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 
-pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
-       |                         |
-pci_bus_add_device     (device_add/driver_register)
-       |                         |
-device_attach           device_initial_probe
-       |                         |
-__device_attach_driver    __device_attach_driver
-       |
-driver_probe_device
-       |
-really_probe
-       |
-dma_configure
+Invalid dma-ranges values should be worked around when retrieving the
+DMA range in of_dma_get_range(), not by all callers of the function.
+This isn't much of a problem now that we have a single caller, but that
+situation will change when moving DMA configuration to device probe
+time.
 
-Similarly on the device/driver_unregister path __device_release_driver is
-called which inturn calls dma_deconfigure.
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+---
+ drivers/of/address.c | 20 ++++++++++++++++++--
+ drivers/of/device.c  | 15 ---------------
+ 2 files changed, 18 insertions(+), 17 deletions(-)
 
-Took the reworked patches [2] from Robin's branch and
-rebased on top of Lorenzo's ACPI IORT ARM support series [3].
-
-* Tested with platform and pci devices for probe deferral
-  and reprobe on arm64 based platform.
-* Need help for testing with ACPI.
-
-Previous post of this series [6]. 
-
- [V6]
-     * Fixed a bug in dma_configure function pointed out by
-       Robin.
-     * Reordered the patches as per comments from Robin and
-       Lorenzo.
-     * Added Tags.
-
- [V5]
-     * Reworked the pci configuration code hanging outside and
-       pushed it to dma_configure as in PATCH#5,6,7.
-       Also added a couple of patches that Lorenzo provided for
-       correcting the Probe deferring mechanism in case of
-       ACPI devices from here [5].
-
- [V4]
-     * Took the reworked patches [2] from Robin's branch and
-       rebased on top of Lorenzo's ACPI IORT ARM support series [3].
-
-     * Added the patches for moving the dma ops configuration of
-       acpi based devices to probe time as well.
- [V3]
-     * Removed the patch to split dma_masks/dma_ops configuration
-       separately based on review comments that both masks and ops are
-       required only during the device probe time.
-
-     * Reworked the series based on Generic DT bindings series.
-
-     * Added call to iommu's remove_device in the cleanup path for arm and
-       arm64.
-
-     * Removed the notifier trick in arm64 to handle early device
-       registration.
-
-     * Added reset of dma_ops in cleanup path for arm based on comments.
-
-     * Fixed the pci_iommu_configure path and tested with PCI device as
-       well.
+diff --git a/drivers/of/address.c b/drivers/of/address.c
+index 02b2903..6aeb816 100644
+--- a/drivers/of/address.c
++++ b/drivers/of/address.c
+@@ -819,8 +819,8 @@ void __iomem *of_io_request_and_map(struct device_node *np, int index,
+  *	CPU addr (phys_addr_t)	: pna cells
+  *	size			: nsize cells
+  *
+- * It returns -ENODEV if "dma-ranges" property was not found
+- * for this device in DT.
++ * Return 0 on success, -ENODEV if the "dma-ranges" property was not found for
++ * this device in DT, or -EINVAL if the CPU address or size is invalid.
+  */
+ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
+ {
+@@ -880,6 +880,22 @@ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *siz
+ 	*dma_addr = dmaaddr;
  
-     * Fixed a bug to return the correct iommu_ops from patch 7 [4] in
-       last post.
-
-     * Fixed few other cosmetic comments.
-  
- [V2]
-     * Updated the Initial post to call dma_configure/deconfigure from
-       generic code
+ 	*size = of_read_number(ranges + naddr + pna, nsize);
++	/*
++	 * DT nodes sometimes incorrectly set the size as a mask. Work around
++	 * those incorrect DT by computing the size as mask + 1.
++	 */
++	if (*size & 1) {
++		pr_warn("%s: size 0x%llx for dma-range in node(%s) set as mask\n",
++			__func__, *size, np->full_name);
++		*size = *size + 1;
++	}
++
++	if (!*size) {
++		pr_err("%s: invalid size zero for dma-range in node(%s)\n",
++		       __func__, np->full_name);
++		ret = -EINVAL;
++		goto out;
++	}
  
-     * Added iommu add_device callback from of_iommu_configure path
-
- [V1]
-     * Initial post from Laurent Pinchart [1]
-
-[1] http://lists.linuxfoundation.org/pipermail/iommu/2015-May/013016.html
-[2] http://www.linux-arm.org/git?p=linux-rm.git;a=shortlog;h=refs/heads/iommu/defer
-[3] https://lkml.org/lkml/2016/11/21/141
-[4] https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg13940.html
-[5] git://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git iommu/probe-deferral
-[6] https://www.spinics.net/lists/arm-kernel/msg556134.html
-
-Laurent Pinchart (3):
-  of: dma: Move range size workaround to of_dma_get_range()
-  of: dma: Make of_dma_deconfigure() public
-  iommu: of: Handle IOMMU lookup failure with deferred probing or error
-
-Lorenzo Pieralisi (2):
-  ACPI/IORT: Add function to check SMMUs drivers presence
-  ACPI/IORT: Remove linker section for IORT entries probing
-
-Robin Murphy (3):
-  iommu/of: Refactor of_iommu_configure() for error handling
-  iommu/of: Prepare for deferred IOMMU configuration
-  iommu/arm-smmu: Clean up early-probing workarounds
-
-Sricharan R (3):
-  drivers: platform: Configure dma operations at probe time
-  drivers: acpi: Handle IOMMU lookup failure with deferred probing or
-    error
-  arm64: dma-mapping: Remove the notifier trick to handle early setting
-    of dma_ops
-
- arch/arm64/mm/dma-mapping.c       | 132 ++++----------------------------------
- drivers/acpi/arm64/iort.c         |  40 +++++++++++-
- drivers/acpi/glue.c               |   5 --
- drivers/acpi/scan.c               |   7 +-
- drivers/base/dd.c                 |   9 +++
- drivers/base/dma-mapping.c        |  41 ++++++++++++
- drivers/iommu/arm-smmu-v3.c       |  46 +------------
- drivers/iommu/arm-smmu.c          |  58 +++--------------
- drivers/iommu/of_iommu.c          | 114 +++++++++++++++++++++++---------
- drivers/of/address.c              |  20 +++++-
- drivers/of/device.c               |  36 ++++++-----
- drivers/of/platform.c             |  10 +--
- drivers/pci/probe.c               |  28 --------
- include/acpi/acpi_bus.h           |   2 +-
- include/asm-generic/vmlinux.lds.h |   1 -
- include/linux/acpi.h              |   7 +-
- include/linux/acpi_iort.h         |   3 -
- include/linux/dma-mapping.h       |   3 +
- include/linux/of_device.h         |  10 ++-
- 19 files changed, 252 insertions(+), 320 deletions(-)
-
+ 	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
+ 		 *dma_addr, *paddr, *size);
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index fd5cfad..d9898d9 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -110,21 +110,6 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+ 		size = dev->coherent_dma_mask + 1;
+ 	} else {
+ 		offset = PFN_DOWN(paddr - dma_addr);
+-
+-		/*
+-		 * Add a work around to treat the size as mask + 1 in case
+-		 * it is defined in DT as a mask.
+-		 */
+-		if (size & 1) {
+-			dev_warn(dev, "Invalid size 0x%llx for dma-range\n",
+-				 size);
+-			size = size + 1;
+-		}
+-
+-		if (!size) {
+-			dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
+-			return;
+-		}
+ 		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
+ 	}
+ 
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
