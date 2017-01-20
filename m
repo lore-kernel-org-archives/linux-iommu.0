@@ -1,151 +1,208 @@
-From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: RE: [PATCH V5 05/12] drivers: platform: Configure dma operations at
-	probe time
-Date: Fri, 20 Jan 2017 11:48:18 +0530
-Message-ID: <000c01d272e5$020ba300$0622e900$@codeaurora.org>
-References: <1484838356-24962-1-git-send-email-sricharan@codeaurora.org>
-	<1484838356-24962-6-git-send-email-sricharan@codeaurora.org>
-	<327b5a9b-35f6-f6e0-4ef9-d2ed15bb4e49@arm.com>
+From: "Sricharan" <sricharan@codeaurora.org>
+Subject: RE: [PATCH V5 05/12] drivers: platform: Configure dma operations at probe time
+Date: Fri, 20 Jan 2017 11:55:40 +0530
+Message-ID: <000f01d272e6$08eba070$1ac2e150$@codeaurora.org>
+References: <1484838356-24962-1-git-send-email-sricharan@codeaurora.org> <1484838356-24962-6-git-send-email-sricharan@codeaurora.org> <327b5a9b-35f6-f6e0-4ef9-d2ed15bb4e49@arm.com> <20170119190250.GA11181@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <327b5a9b-35f6-f6e0-4ef9-d2ed15bb4e49-5wv7dgnIgG8@public.gmane.org>
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20170119190250.GA11181@red-moon>
 Content-Language: en-us
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: 'Lorenzo Pieralisi' <lorenzo.pieralisi@arm.com>, 'Robin Murphy' <robin.murphy@arm.com>
+Cc: will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgUm9iaW4sCgo+T24gMTkvMDEvMTcgMTU6MDUsIFNyaWNoYXJhbiBSIHdyb3RlOgo+PiBDb25m
-aWd1cmluZyBETUEgb3BzIGF0IHByb2JlIHRpbWUgd2lsbCBhbGxvdyBkZWZlcnJpbmcgZGV2aWNl
-IHByb2JlIHdoZW4KPj4gdGhlIElPTU1VIGlzbid0IGF2YWlsYWJsZSB5ZXQuIFRoZSBkbWFfY29u
-ZmlndXJlIGZvciB0aGUgZGV2aWNlIGlzCj4+IG5vdyBjYWxsZWQgZnJvbSB0aGUgZ2VuZXJpYyBk
-ZXZpY2VfYXR0YWNoIGNhbGxiYWNrIGp1c3QgYmVmb3JlIHRoZQo+PiBidXMvZHJpdmVyIHByb2Jl
-IGlzIGNhbGxlZC4gVGhpcyB3YXksIGNvbmZpZ3VyaW5nIHRoZSBETUEgb3BzIGZvciB0aGUKPj4g
-ZGV2aWNlIHdvdWxkIGJlIGNhbGxlZCBhdCB0aGUgc2FtZSBwbGFjZSBmb3IgYWxsIGJ1c190eXBl
-cywgaGVuY2UgdGhlCj4+IGRlZmVycmVkIHByb2JpbmcgbWVjaGFuaXNtIHNob3VsZCB3b3JrIGZv
-ciBhbGwgYnVzZXMgYXMgd2VsbC4KPj4KPj4gcGNpX2J1c19hZGRfZGV2aWNlcyAgICAocGxhdGZv
-cm0vYW1iYSkoX2RldmljZV9jcmVhdGUvZHJpdmVyX3JlZ2lzdGVyKQo+PiAgICAgICAgfCAgICAg
-ICAgICAgICAgICAgICAgICAgICB8Cj4+IHBjaV9idXNfYWRkX2RldmljZSAgICAgKGRldmljZV9h
-ZGQvZHJpdmVyX3JlZ2lzdGVyKQo+PiAgICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICB8
-Cj4+IGRldmljZV9hdHRhY2ggICAgICAgICAgIGRldmljZV9pbml0aWFsX3Byb2JlCj4+ICAgICAg
-ICB8ICAgICAgICAgICAgICAgICAgICAgICAgIHwKPj4gX19kZXZpY2VfYXR0YWNoX2RyaXZlciAg
-ICBfX2RldmljZV9hdHRhY2hfZHJpdmVyCj4+ICAgICAgICB8Cj4+IGRyaXZlcl9wcm9iZV9kZXZp
-Y2UKPj4gICAgICAgIHwKPj4gcmVhbGx5X3Byb2JlCj4+ICAgICAgICB8Cj4+IGRtYV9jb25maWd1
-cmUKPj4KPj4gU2ltaWxhcmx5IG9uIHRoZSBkZXZpY2UvZHJpdmVyX3VucmVnaXN0ZXIgcGF0aCBf
-X2RldmljZV9yZWxlYXNlX2RyaXZlciBpcwo+PiBjYWxsZWQgd2hpY2ggaW50dXJuIGNhbGxzIGRt
-YV9kZWNvbmZpZ3VyZS4KPj4KPj4gU2lnbmVkLW9mZi1ieTogU3JpY2hhcmFuIFIgPHNyaWNoYXJh
-bkBjb2RlYXVyb3JhLm9yZz4KPj4gLS0tCj4+ICAqIFJlbW92ZWQgdGhlIGRtYSBjb25maWd1cmF0
-aW9uIGZvciB0aGUgcGNpIGRldmljZXMgaW4gY2FzZSBvZiBEVAo+PiAgICBmcm9tIHBjaV9kbWFf
-Y29uZmlndXJlIHdoaWNoIHdhcyBoYW5naW5nIG91dHNpZGUgc2VwYXJhdGVseSBhbmQKPj4gICAg
-ZG9pbmcgaXQgaW4gZG1hX2NvbmZpZ3VyZSBmdW5jdGlvbiBpdHNlbGYuCj4+Cj4+ICBkcml2ZXJz
-L2Jhc2UvZGQuYyAgICAgICAgICAgfCAgOSArKysrKysrKysKPj4gIGRyaXZlcnMvYmFzZS9kbWEt
-bWFwcGluZy5jICB8IDMyICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCj4+ICBkcml2
-ZXJzL29mL3BsYXRmb3JtLmMgICAgICAgfCAgNSArLS0tLQo+PiAgZHJpdmVycy9wY2kvcHJvYmUu
-YyAgICAgICAgIHwgIDUgKy0tLS0KPj4gIGluY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaCB8ICAz
-ICsrKwo+PiAgNSBmaWxlcyBjaGFuZ2VkLCA0NiBpbnNlcnRpb25zKCspLCA4IGRlbGV0aW9ucygt
-KQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9iYXNlL2RkLmMgYi9kcml2ZXJzL2Jhc2UvZGQu
-Ywo+PiBpbmRleCBhMWZiZjU1Li40ODgyZjA2IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2Jhc2Uv
-ZGQuYwo+PiArKysgYi9kcml2ZXJzL2Jhc2UvZGQuYwo+PiBAQCAtMTksNiArMTksNyBAQAo+Pgo+
-PiAgI2luY2x1ZGUgPGxpbnV4L2RldmljZS5oPgo+PiAgI2luY2x1ZGUgPGxpbnV4L2RlbGF5Lmg+
-Cj4+ICsjaW5jbHVkZSA8bGludXgvZG1hLW1hcHBpbmcuaD4KPj4gICNpbmNsdWRlIDxsaW51eC9t
-b2R1bGUuaD4KPj4gICNpbmNsdWRlIDxsaW51eC9rdGhyZWFkLmg+Cj4+ICAjaW5jbHVkZSA8bGlu
-dXgvd2FpdC5oPgo+PiBAQCAtMzU2LDYgKzM1NywxMCBAQCBzdGF0aWMgaW50IHJlYWxseV9wcm9i
-ZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBkZXZpY2VfZHJpdmVyICpkcnYpCj4+ICAJaWYg
-KHJldCkKPj4gIAkJZ290byBwaW5jdHJsX2JpbmRfZmFpbGVkOwo+Pgo+PiArCXJldCA9IGRtYV9j
-b25maWd1cmUoZGV2KTsKPj4gKwlpZiAocmV0KQo+PiArCQlnb3RvIGRtYV9mYWlsZWQ7Cj4+ICsK
-Pj4gIAlpZiAoZHJpdmVyX3N5c2ZzX2FkZChkZXYpKSB7Cj4+ICAJCXByaW50ayhLRVJOX0VSUiAi
-JXM6IGRyaXZlcl9zeXNmc19hZGQoJXMpIGZhaWxlZFxuIiwKPj4gIAkJCV9fZnVuY19fLCBkZXZf
-bmFtZShkZXYpKTsKPj4gQEAgLTQxNyw2ICs0MjIsOCBAQCBzdGF0aWMgaW50IHJlYWxseV9wcm9i
-ZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBkZXZpY2VfZHJpdmVyICpkcnYpCj4+ICAJZ290
-byBkb25lOwo+Pgo+PiAgcHJvYmVfZmFpbGVkOgo+PiArCWRtYV9kZWNvbmZpZ3VyZShkZXYpOwo+
-PiArZG1hX2ZhaWxlZDoKPj4gIAlpZiAoZGV2LT5idXMpCj4+ICAJCWJsb2NraW5nX25vdGlmaWVy
-X2NhbGxfY2hhaW4oJmRldi0+YnVzLT5wLT5idXNfbm90aWZpZXIsCj4+ICAJCQkJCSAgICAgQlVT
-X05PVElGWV9EUklWRVJfTk9UX0JPVU5ELCBkZXYpOwo+PiBAQCAtODI2LDYgKzgzMyw4IEBAIHN0
-YXRpYyB2b2lkIF9fZGV2aWNlX3JlbGVhc2VfZHJpdmVyKHN0cnVjdCBkZXZpY2UgKmRldiwgc3Ry
-dWN0IGRldmljZSAqcGFyZW50KQo+PiAgCQkJZHJ2LT5yZW1vdmUoZGV2KTsKPj4KPj4gIAkJZGV2
-aWNlX2xpbmtzX2RyaXZlcl9jbGVhbnVwKGRldik7Cj4+ICsJCWRtYV9kZWNvbmZpZ3VyZShkZXYp
-Owo+PiArCj4+ICAJCWRldnJlc19yZWxlYXNlX2FsbChkZXYpOwo+PiAgCQlkZXYtPmRyaXZlciA9
-IE5VTEw7Cj4+ICAJCWRldl9zZXRfZHJ2ZGF0YShkZXYsIE5VTEwpOwo+PiBkaWZmIC0tZ2l0IGEv
-ZHJpdmVycy9iYXNlL2RtYS1tYXBwaW5nLmMgYi9kcml2ZXJzL2Jhc2UvZG1hLW1hcHBpbmcuYwo+
-PiBpbmRleCBlZmQ3MWNmLi5kZmU2ZmQ3IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2Jhc2UvZG1h
-LW1hcHBpbmcuYwo+PiArKysgYi9kcml2ZXJzL2Jhc2UvZG1hLW1hcHBpbmcuYwo+PiBAQCAtMTAs
-NiArMTAsNyBAQAo+PiAgI2luY2x1ZGUgPGxpbnV4L2RtYS1tYXBwaW5nLmg+Cj4+ICAjaW5jbHVk
-ZSA8bGludXgvZXhwb3J0Lmg+Cj4+ICAjaW5jbHVkZSA8bGludXgvZ2ZwLmg+Cj4+ICsjaW5jbHVk
-ZSA8bGludXgvb2ZfZGV2aWNlLmg+Cj4+ICAjaW5jbHVkZSA8bGludXgvc2xhYi5oPgo+PiAgI2lu
-Y2x1ZGUgPGxpbnV4L3ZtYWxsb2MuaD4KPj4KPj4gQEAgLTM0MSwzICszNDIsMzQgQEAgdm9pZCBk
-bWFfY29tbW9uX2ZyZWVfcmVtYXAodm9pZCAqY3B1X2FkZHIsIHNpemVfdCBzaXplLCB1bnNpZ25l
-ZCBsb25nIHZtX2ZsYWdzKQo+PiAgCXZ1bm1hcChjcHVfYWRkcik7Cj4+ICB9Cj4+ICAjZW5kaWYK
-Pj4gKwo+PiArLyoKPj4gKyAqIENvbW1vbiBjb25maWd1cmF0aW9uIHRvIGVuYWJsZSBETUEgQVBJ
-IHVzZSBmb3IgYSBkZXZpY2UKPj4gKyAqLwo+PiArI2luY2x1ZGUgPGxpbnV4L3BjaS5oPgo+PiAr
-Cj4+ICtpbnQgZG1hX2NvbmZpZ3VyZShzdHJ1Y3QgZGV2aWNlICpkZXYpCj4+ICt7Cj4+ICsJc3Ry
-dWN0IGRldmljZSAqX2RldiA9IGRldjsKPj4gKwlpbnQgaXNfcGNpID0gZGV2X2lzX3BjaShkZXYp
-Owo+PiArCj4+ICsJaWYgKGlzX3BjaSkgewo+PiArCQlfZGV2ID0gcGNpX2dldF9ob3N0X2JyaWRn
-ZV9kZXZpY2UodG9fcGNpX2RldihkZXYpKTsKPj4gKwkJaWYgKElTX0VOQUJMRUQoQ09ORklHX09G
-KSAmJiBfZGV2LT5wYXJlbnQgJiYKPj4gKwkJICAgIF9kZXYtPnBhcmVudC0+b2Zfbm9kZSkKPj4g
-KwkJCV9kZXYgPSBfZGV2LT5wYXJlbnQ7Cj4+ICsJfQo+PiArCj4+ICsJaWYgKF9kZXYtPm9mX25v
-ZGUpCj4+ICsJCW9mX2RtYV9jb25maWd1cmUoZGV2LCBfZGV2LT5vZl9ub2RlKTsKPj4gKwo+PiAr
-CWlmIChpc19wY2kpCj4+ICsJCXBjaV9wdXRfaG9zdF9icmlkZ2VfZGV2aWNlKF9kZXYpOwo+Cj5U
-aGVyZSdzIGEgZnVuIGJ1ZyBoZXJlIC0gYXQgdGhpcyBwb2ludCBfZGV2IGlzIHRoZSAqcGFyZW50
-KiBvZiB0aGUKPmJyaWRnZSBkZXZpY2UsIHNvIHdlIHB1dCB0aGUgcmVmY291bnQgb24gdGhlIHdy
-b25nIGRldmljZSAodGhlIHBsYXRmb3JtCj5kZXZpY2UgcmVwcmVzZW50aW5nIHRoZSBob3N0IGNv
-bnRyb2xsZXIsIHJhdGhlciB0aGFuIHRoZSBQQ0kgZGV2aWNlCj5yZXByZXNlbnRpbmcgaXRzIGlu
-c2lkZXMpLCB3aGljaCBmcmVlcyB0aGUgZ3V5IHdlJ3JlIGluIHRoZSBtaWRkbGUgb2YKPnByb2Jp
-bmcsIGFuZCB0aGluZ3MgcmFwaWRseSBnbyB3cm9uZyBhZnRlcndhcmRzOgo+CgpoYSBteSBiYWQs
-IHJpZ2h0LiBJIHdpbGwgY2hhbmdlIHRvIGZpeCB0aGlzLiBJIHdhcyB0ZXN0aW5nIHRoaXMgd2l0
-aCBhIGNvdXBsZQpvZiBwY2kgZGV2aWNlcywgYnV0IGl0IGRpZCBub3Qgc2hvdyB1cC4gVGhhbmtz
-IGZvciBwb2ludGluZyB0aGlzIG91dC4KSSB3aWxsIGJvcnJvdyB0aGUgdmFyaWFibGUgbmFtZXMg
-ZnJvbSB0aGUgaHVuayBiZWxvdy4gCgo+WyAgICAxLjQ2MTAyNl0gYnVzOiAncGxhdGZvcm0nOiBk
-cml2ZXJfcHJvYmVfZGV2aWNlOiBtYXRjaGVkIGRldmljZQo+NDAwMDAwMDAucGNpZS1jb250cm9s
-bGVyIHdpdGggZHJpdmVyIHBjaS1ob3N0LWdlbmVyaWMKPlsgICAgMS40NzE2NDBdIGJ1czogJ3Bs
-YXRmb3JtJzogcmVhbGx5X3Byb2JlOiBwcm9iaW5nIGRyaXZlcgo+cGNpLWhvc3QtZ2VuZXJpYyB3
-aXRoIGRldmljZSA0MDAwMDAwMC5wY2llLWNvbnRyb2xsZXIKPlsgICAgMS40ODE2NzhdIE9GOiBQ
-Q0k6IGhvc3QgYnJpZGdlIC9wY2llLWNvbnRyb2xsZXJANDAwMDAwMDAgcmFuZ2VzOgo+Cj4uLi4K
-Pgo+WyAgICAyLjE1ODI1OV0gYnVzOiAncGNpJzogZHJpdmVyX3Byb2JlX2RldmljZTogbWF0Y2hl
-ZCBkZXZpY2UKPjAwMDA6MDI6MTAuMCB3aXRoIGRyaXZlciBwY2llcG9ydAo+WyAgICAyLjE2Njcx
-Nl0gYnVzOiAncGNpJzogcmVhbGx5X3Byb2JlOiBwcm9iaW5nIGRyaXZlciBwY2llcG9ydCB3aXRo
-Cj5kZXZpY2UgMDAwMDowMjoxMC4wCj5bICAgIDIuMTc0NTkwXSBwY2kgMDAwMDowMjoxMC4wOiBE
-cml2ZXIgcGNpZXBvcnQgcmVxdWVzdHMgcHJvYmUgZGVmZXJyYWwKPlsgICAgMi4xODA5NzhdIHBj
-aSAwMDAwOjAyOjEwLjA6IEFkZGVkIHRvIGRlZmVycmVkIGxpc3QKPlsgICAgMi4xODU5MTVdIGJ1
-czogJ3BjaSc6IGRyaXZlcl9wcm9iZV9kZXZpY2U6IG1hdGNoZWQgZGV2aWNlCj4wMDAwOjAyOjFm
-LjAgd2l0aCBkcml2ZXIgcGNpZXBvcnQKPlsgICAgMi4xOTQzNjZdIGJ1czogJ3BjaSc6IHJlYWxs
-eV9wcm9iZTogcHJvYmluZyBkcml2ZXIgcGNpZXBvcnQgd2l0aAo+ZGV2aWNlIDAwMDA6MDI6MWYu
-MAo+WyAgICAyLjIwMjIzN10gcGNpIDAwMDA6MDI6MWYuMDogRHJpdmVyIHBjaWVwb3J0IHJlcXVl
-c3RzIHByb2JlIGRlZmVycmFsCj5bICAgIDIuMjA4NjI1XSBwY2kgMDAwMDowMjoxZi4wOiBBZGRl
-ZCB0byBkZWZlcnJlZCBsaXN0Cj5bICAgIDIuMjEzNTgyXSBkcml2ZXI6ICdwY2ktaG9zdC1nZW5l
-cmljJzogZHJpdmVyX2JvdW5kOiBib3VuZCB0byBkZXZpY2UKPifvv73vv73vv71277+977+977+9
-77+9LnBjaWUtY29udHJvbGxlcicKPlsgICAgMi4yMjIyOTNdIGJ1czogJ3BsYXRmb3JtJzogcmVh
-bGx5X3Byb2JlOiBib3VuZCBkZXZpY2UKPu+/ve+/ve+/vXbvv73vv73vv73vv70ucGNpZS1jb250
-cm9sbGVyIHRvIGRyaXZlciBwY2ktaG9zdC1nZW5lcmljCj5bICAgIDIuMjMyMDQxXSBVbmFibGUg
-dG8gaGFuZGxlIGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UgYXQKPnZpcnR1YWwgYWRk
-cmVzcyAwMDAwMDAwMAo+Cj5JIHJlY2FsbCBkZWJ1Z2dpbmcgdGhpcyBzYW1lIGlzc3VlIGJlZm9y
-ZSwgYW5kIEkgc2VlbSB0byBoYXZlIGEgbG9jYWwKPnZlcnNpb24gb2YgdGhpcyBjb21taXQgZGF0
-ZWQgYWJvdXQgNiB3ZWVrcyBhZ28gd2hlcmUgZG1hX2NvbmZpZ3VyZSgpCj5sb29rcyBsaWtlIHRo
-aXM6Cj4KPi0tLT44LS0tCj5pbnQgZG1hX2NvbmZpZ3VyZShzdHJ1Y3QgZGV2aWNlICpkZXYpCj57
-Cj4Jc3RydWN0IGRldmljZSAqYnJpZGdlID0gTlVMTCwgKmRtYV9kZXYgPSBkZXY7Cj4KPglpZiAo
-ZGV2X2lzX3BjaShkZXYpKSB7Cj4JCWJyaWRnZSA9IHBjaV9nZXRfaG9zdF9icmlkZ2VfZGV2aWNl
-KHRvX3BjaV9kZXYoZGV2KSk7Cj4JCWRtYV9kZXYgPSBicmlkZ2UtPnBhcmVudDsKPgl9Cj4KPglp
-ZiAoZG1hX2RldiAmJiBkbWFfZGV2LT5vZl9ub2RlKSB7Cj4JCW9mX2RtYV9jb25maWd1cmUoZGV2
-LCBkbWFfZGV2LT5vZl9ub2RlKTsKPgl9IGVsc2UgaWYgKGRtYV9kZXYgJiYgaGFzX2FjcGlfY29t
-cGFuaW9uKGRtYV9kZXYpKSB7Cj4JCXN0cnVjdCBhY3BpX2RldmljZSAqYWRldiA9IHRvX2FjcGlf
-ZGV2aWNlX25vZGUoZG1hX2Rldi0+Zndub2RlKTsKPgkJZW51bSBkZXZfZG1hX2F0dHIgYXR0ciA9
-IGFjcGlfZ2V0X2RtYV9hdHRyKGFkZXYpOwo+Cj4JCWlmIChhdHRyID09IERFVl9ETUFfTk9UX1NV
-UFBPUlRFRCkKPgkJCWRldl93YXJuKGRldiwgIkRNQSBub3Qgc3VwcG9ydGVkLlxuIik7Cj4JCWVs
-c2UKPgkJCWFyY2hfc2V0dXBfZG1hX29wcyhkZXYsIDAsIDAsIE5VTEwsCj4JCQkJCSAgIGF0dHIg
-PT0gREVWX0RNQV9DT0hFUkVOVCk7Cj4JfQo+Cj4JaWYgKGJyaWRnZSkKPgkJcGNpX3B1dF9ob3N0
-X2JyaWRnZV9kZXZpY2UoYnJpZGdlKTsKPgo+CXJldHVybiAwOwo+fQo+LS0tODwtLS0KPgo+SSBo
-YXZlIGEgZmVlbGluZyBJIHdhcyBoYXZpbmcgYSBnbyBhdCB0aWR5aW5nIHVwIHRoZSAiUENJIGhh
-Y2tzIiBmcm9tIHY0Cj5teXNlbGYsIGJ1dCBvdGhlciB0aGluZ3MgZW5kZWQgdXAgdGFraW5nIHBy
-ZWNlZGVuY2UuCj4KClN1cmUsIGkgd2lsbCByZXBvc3Qgd2l0aCBib3Jyb3dpbmcgdGhlIG5hbWVz
-LgoKUmVnYXJkcywKIFNyaWNoYXJhbgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5k
-YXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2lvbW11
+Hi,
+
+>
+>> > pci_bus_add_devices    =
+(platform/amba)(_device_create/driver_register)
+>> >        |                         |
+>> > pci_bus_add_device     (device_add/driver_register)
+>> >        |                         |
+>> > device_attach           device_initial_probe
+>> >        |                         |
+>> > __device_attach_driver    __device_attach_driver
+>> >        |
+>> > driver_probe_device
+>> >        |
+>> > really_probe
+>> >        |
+>> > dma_configure
+>> >
+>> > Similarly on the device/driver_unregister path =
+__device_release_driver is
+>> > called which inturn calls dma_deconfigure.
+>> >
+>> > Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+>> > ---
+>> >  * Removed the dma configuration for the pci devices in case of DT
+>> >    from pci_dma_configure which was hanging outside separately and
+>> >    doing it in dma_configure function itself.
+>> >
+>> >  drivers/base/dd.c           |  9 +++++++++
+>> >  drivers/base/dma-mapping.c  | 32 ++++++++++++++++++++++++++++++++
+>> >  drivers/of/platform.c       |  5 +----
+>> >  drivers/pci/probe.c         |  5 +----
+>> >  include/linux/dma-mapping.h |  3 +++
+>> >  5 files changed, 46 insertions(+), 8 deletions(-)
+>> >
+>> > diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+>> > index a1fbf55..4882f06 100644
+>> > --- a/drivers/base/dd.c
+>> > +++ b/drivers/base/dd.c
+>> > @@ -19,6 +19,7 @@
+>> >
+>> >  #include <linux/device.h>
+>> >  #include <linux/delay.h>
+>> > +#include <linux/dma-mapping.h>
+>> >  #include <linux/module.h>
+>> >  #include <linux/kthread.h>
+>> >  #include <linux/wait.h>
+>> > @@ -356,6 +357,10 @@ static int really_probe(struct device *dev, =
+struct device_driver *drv)
+>> >  	if (ret)
+>> >  		goto pinctrl_bind_failed;
+>> >
+>> > +	ret =3D dma_configure(dev);
+>> > +	if (ret)
+>> > +		goto dma_failed;
+>> > +
+>> >  	if (driver_sysfs_add(dev)) {
+>> >  		printk(KERN_ERR "%s: driver_sysfs_add(%s) failed\n",
+>> >  			__func__, dev_name(dev));
+>> > @@ -417,6 +422,8 @@ static int really_probe(struct device *dev, =
+struct device_driver *drv)
+>> >  	goto done;
+>> >
+>> >  probe_failed:
+>> > +	dma_deconfigure(dev);
+>> > +dma_failed:
+>> >  	if (dev->bus)
+>> >  		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
+>> >  					     BUS_NOTIFY_DRIVER_NOT_BOUND, dev);
+>> > @@ -826,6 +833,8 @@ static void __device_release_driver(struct =
+device *dev, struct device *parent)
+>> >  			drv->remove(dev);
+>> >
+>> >  		device_links_driver_cleanup(dev);
+>> > +		dma_deconfigure(dev);
+>> > +
+>> >  		devres_release_all(dev);
+>> >  		dev->driver =3D NULL;
+>> >  		dev_set_drvdata(dev, NULL);
+>> > diff --git a/drivers/base/dma-mapping.c =
+b/drivers/base/dma-mapping.c
+>> > index efd71cf..dfe6fd7 100644
+>> > --- a/drivers/base/dma-mapping.c
+>> > +++ b/drivers/base/dma-mapping.c
+>> > @@ -10,6 +10,7 @@
+>> >  #include <linux/dma-mapping.h>
+>> >  #include <linux/export.h>
+>> >  #include <linux/gfp.h>
+>> > +#include <linux/of_device.h>
+>> >  #include <linux/slab.h>
+>> >  #include <linux/vmalloc.h>
+>> >
+>> > @@ -341,3 +342,34 @@ void dma_common_free_remap(void *cpu_addr, =
+size_t size, unsigned long vm_flags)
+>> >  	vunmap(cpu_addr);
+>> >  }
+>> >  #endif
+>> > +
+>> > +/*
+>> > + * Common configuration to enable DMA API use for a device
+>> > + */
+>> > +#include <linux/pci.h>
+>> > +
+>> > +int dma_configure(struct device *dev)
+>> > +{
+>> > +	struct device *_dev =3D dev;
+>> > +	int is_pci =3D dev_is_pci(dev);
+>> > +
+>> > +	if (is_pci) {
+>> > +		_dev =3D pci_get_host_bridge_device(to_pci_dev(dev));
+>> > +		if (IS_ENABLED(CONFIG_OF) && _dev->parent &&
+>> > +		    _dev->parent->of_node)
+>> > +			_dev =3D _dev->parent;
+>> > +	}
+>> > +
+>> > +	if (_dev->of_node)
+>> > +		of_dma_configure(dev, _dev->of_node);
+>> > +
+>> > +	if (is_pci)
+>> > +		pci_put_host_bridge_device(_dev);
+>>
+>> There's a fun bug here - at this point _dev is the *parent* of the
+>> bridge device, so we put the refcount on the wrong device (the =
+platform
+>> device representing the host controller, rather than the PCI device
+>> representing its insides), which frees the guy we're in the middle of
+>> probing, and things rapidly go wrong afterwards:
+>>
+>> [    1.461026] bus: 'platform': driver_probe_device: matched device
+>> 40000000.pcie-controller with driver pci-host-generic
+>> [    1.471640] bus: 'platform': really_probe: probing driver
+>> pci-host-generic with device 40000000.pcie-controller
+>> [    1.481678] OF: PCI: host bridge /pcie-controller@40000000 ranges:
+>>
+>> ...
+>>
+>> [    2.158259] bus: 'pci': driver_probe_device: matched device
+>> 0000:02:10.0 with driver pcieport
+>> [    2.166716] bus: 'pci': really_probe: probing driver pcieport with
+>> device 0000:02:10.0
+>> [    2.174590] pci 0000:02:10.0: Driver pcieport requests probe =
+deferral
+>> [    2.180978] pci 0000:02:10.0: Added to deferred list
+>> [    2.185915] bus: 'pci': driver_probe_device: matched device
+>> 0000:02:1f.0 with driver pcieport
+>> [    2.194366] bus: 'pci': really_probe: probing driver pcieport with
+>> device 0000:02:1f.0
+>> [    2.202237] pci 0000:02:1f.0: Driver pcieport requests probe =
+deferral
+>> [    2.208625] pci 0000:02:1f.0: Added to deferred list
+>> [    2.213582] driver: 'pci-host-generic': driver_bound: bound to =
+device
+>> =
+'=EF=BF=BD=EF=BF=BD=EF=BF=BDv=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD.pcie-co=
+ntroller'
+>> [    2.222293] bus: 'platform': really_probe: bound device
+>> =
+=EF=BF=BD=EF=BF=BD=EF=BF=BDv=EF=BF=BD=EF=BF=BD=EF=BF=BD=EF=BF=BD.pcie-con=
+troller to driver pci-host-generic
+>> [    2.232041] Unable to handle kernel NULL pointer dereference at
+>> virtual address 00000000
+>>
+>> I recall debugging this same issue before, and I seem to have a local
+>> version of this commit dated about 6 weeks ago where dma_configure()
+>> looks like this:
+>>
+>> --->8---
+>> int dma_configure(struct device *dev)
+>> {
+>> 	struct device *bridge =3D NULL, *dma_dev =3D dev;
+>>
+>> 	if (dev_is_pci(dev)) {
+>> 		bridge =3D pci_get_host_bridge_device(to_pci_dev(dev));
+>> 		dma_dev =3D bridge->parent;
+>
+>This would break ACPI, dma_dev would be NULL here, so from
+>this standpoint (ACPI) the current patch is correct (but those =
+[dev,_dev]
+>should be renamed, they are extremely misleading so naming as
+>in this hunk, which fixes DT too, is very welcome).
+>
+
+Ya, I was also thinking about the _ variable names in first place.
+So i will use the names that Robin showed in his hunk and fix the=20
+DT case that he pointed out.
+
+Regards,
+ Sricharan
+
+>On ACPI the DMA attributes are checked on the bridge's companion
+>(ie its associated acpi_device).
