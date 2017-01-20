@@ -1,119 +1,159 @@
-From: Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH 2/3] mm: cma_alloc: allow to specify GFP mask
-Date: Fri, 20 Jan 2017 14:35:06 +0100
-Message-ID: <d9d903e3-3e84-1074-f05d-f5fb20c6051a@suse.cz>
-References: <20170119170707.31741-1-l.stach@pengutronix.de>
- <20170119170707.31741-2-l.stach@pengutronix.de>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170119170707.31741-2-l.stach@pengutronix.de>
-Sender: owner-linux-mm@kvack.org
-To: Lucas Stach <l.stach@pengutronix.de>, Andrew Morton <akpm@linux-foundation.org>
-Cc: Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Paolo Bonzini <pbonzini@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Alexander Graf <agraf@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Michal Hocko <mhocko@suse.com>, linux-arm-kernel@lists.infradead.org, linux-mips@linux-mips.org, kvm@vger.kernel.org, kvm-ppc@vger.kernel.org, linux-xtensa@linux-xtensa.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, kernel@pengutronix.de, patchwork-lst@pengutronix.de
+From: Sricharan R <sricharan@codeaurora.org>
+Subject: [PATCH V6 01/11] iommu/of: Refactor of_iommu_configure() for error handling
+Date: Sat, 21 Jan 2017 00:45:38 +0530
+Message-ID: <1484939748-31591-2-git-send-email-sricharan@codeaurora.org>
+References: <1484939748-31591-1-git-send-email-sricharan@codeaurora.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <1484939748-31591-1-git-send-email-sricharan@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com
+Cc: sricharan@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/19/2017 06:07 PM, Lucas Stach wrote:
-> Most users of this interface just want to use it with the default
-> GFP_KERNEL flags, but for cases where DMA memory is allocated it may
-> be called from a different context.
-> 
-> No functional change yet, just passing through the flag to the
-> underlying alloc_contig_range function.
-> 
-> Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+From: Robin Murphy <robin.murphy@arm.com>
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+In preparation for some upcoming cleverness, rework the control flow in
+of_iommu_configure() to minimise duplication and improve the propogation
+of errors. It's also as good a time as any to switch over from the
+now-just-a-compatibility-wrapper of_iommu_get_ops() to using the generic
+IOMMU instance interface directly.
 
-> ---
->  arch/powerpc/kvm/book3s_hv_builtin.c | 3 ++-
->  drivers/base/dma-contiguous.c        | 2 +-
->  include/linux/cma.h                  | 3 ++-
->  mm/cma.c                             | 5 +++--
->  mm/cma_debug.c                       | 2 +-
->  5 files changed, 9 insertions(+), 6 deletions(-)
-> 
-> diff --git a/arch/powerpc/kvm/book3s_hv_builtin.c b/arch/powerpc/kvm/book3s_hv_builtin.c
-> index 5bb24be0b346..56a62d97ab2d 100644
-> --- a/arch/powerpc/kvm/book3s_hv_builtin.c
-> +++ b/arch/powerpc/kvm/book3s_hv_builtin.c
-> @@ -56,7 +56,8 @@ struct page *kvm_alloc_hpt(unsigned long nr_pages)
->  {
->  	VM_BUG_ON(order_base_2(nr_pages) < KVM_CMA_CHUNK_ORDER - PAGE_SHIFT);
->  
-> -	return cma_alloc(kvm_cma, nr_pages, order_base_2(HPT_ALIGN_PAGES));
-> +	return cma_alloc(kvm_cma, nr_pages, order_base_2(HPT_ALIGN_PAGES),
-> +			 GFP_KERNEL);
->  }
->  EXPORT_SYMBOL_GPL(kvm_alloc_hpt);
->  
-> diff --git a/drivers/base/dma-contiguous.c b/drivers/base/dma-contiguous.c
-> index e167a1e1bccb..d1a9cbabc627 100644
-> --- a/drivers/base/dma-contiguous.c
-> +++ b/drivers/base/dma-contiguous.c
-> @@ -193,7 +193,7 @@ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
->  	if (align > CONFIG_CMA_ALIGNMENT)
->  		align = CONFIG_CMA_ALIGNMENT;
->  
-> -	return cma_alloc(dev_get_cma_area(dev), count, align);
-> +	return cma_alloc(dev_get_cma_area(dev), count, align, GFP_KERNEL);
->  }
->  
->  /**
-> diff --git a/include/linux/cma.h b/include/linux/cma.h
-> index 6f0a91b37f68..03f32d0bd1d8 100644
-> --- a/include/linux/cma.h
-> +++ b/include/linux/cma.h
-> @@ -29,6 +29,7 @@ extern int __init cma_declare_contiguous(phys_addr_t base,
->  extern int cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
->  					unsigned int order_per_bit,
->  					struct cma **res_cma);
-> -extern struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align);
-> +extern struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align,
-> +			      gfp_t gfp_mask);
->  extern bool cma_release(struct cma *cma, const struct page *pages, unsigned int count);
->  #endif
-> diff --git a/mm/cma.c b/mm/cma.c
-> index fbd67d866f67..a33ddfde315d 100644
-> --- a/mm/cma.c
-> +++ b/mm/cma.c
-> @@ -362,7 +362,8 @@ int __init cma_declare_contiguous(phys_addr_t base,
->   * This function allocates part of contiguous memory on specific
->   * contiguous memory area.
->   */
-> -struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align)
-> +struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align,
-> +		       gfp_t gfp_mask)
->  {
->  	unsigned long mask, offset;
->  	unsigned long pfn = -1;
-> @@ -408,7 +409,7 @@ struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align)
->  		pfn = cma->base_pfn + (bitmap_no << cma->order_per_bit);
->  		mutex_lock(&cma_mutex);
->  		ret = alloc_contig_range(pfn, pfn + count, MIGRATE_CMA,
-> -					 GFP_KERNEL);
-> +					 gfp_mask);
->  		mutex_unlock(&cma_mutex);
->  		if (ret == 0) {
->  			page = pfn_to_page(pfn);
-> diff --git a/mm/cma_debug.c b/mm/cma_debug.c
-> index f8e4b60db167..ffc0c3d0ae64 100644
-> --- a/mm/cma_debug.c
-> +++ b/mm/cma_debug.c
-> @@ -138,7 +138,7 @@ static int cma_alloc_mem(struct cma *cma, int count)
->  	if (!mem)
->  		return -ENOMEM;
->  
-> -	p = cma_alloc(cma, count, 0);
-> +	p = cma_alloc(cma, count, 0, GFP_KERNEL);
->  	if (!p) {
->  		kfree(mem);
->  		return -ENOMEM;
-> 
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/iommu/of_iommu.c | 83 +++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 53 insertions(+), 30 deletions(-)
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 0f57ddc..ee49081 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -96,6 +96,28 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
+ }
+ EXPORT_SYMBOL_GPL(of_get_dma_window);
+ 
++static const struct iommu_ops
++*of_iommu_xlate(struct device *dev, struct of_phandle_args *iommu_spec)
++{
++	const struct iommu_ops *ops;
++	struct fwnode_handle *fwnode = &iommu_spec->np->fwnode;
++	int err;
++
++	ops = iommu_get_instance(fwnode);
++	if (!ops || !ops->of_xlate)
++		return NULL;
++
++	err = iommu_fwspec_init(dev, &iommu_spec->np->fwnode, ops);
++	if (err)
++		return ERR_PTR(err);
++
++	err = ops->of_xlate(dev, iommu_spec);
++	if (err)
++		return ERR_PTR(err);
++
++	return ops;
++}
++
+ static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+ {
+ 	struct of_phandle_args *iommu_spec = data;
+@@ -105,10 +127,11 @@ static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+ }
+ 
+ static const struct iommu_ops
+-*of_pci_iommu_configure(struct pci_dev *pdev, struct device_node *bridge_np)
++*of_pci_iommu_init(struct pci_dev *pdev, struct device_node *bridge_np)
+ {
+ 	const struct iommu_ops *ops;
+ 	struct of_phandle_args iommu_spec;
++	int err;
+ 
+ 	/*
+ 	 * Start by tracing the RID alias down the PCI topology as
+@@ -123,56 +146,56 @@ static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+ 	 * bus into the system beyond, and which IOMMU it ends up at.
+ 	 */
+ 	iommu_spec.np = NULL;
+-	if (of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
+-			   "iommu-map-mask", &iommu_spec.np, iommu_spec.args))
+-		return NULL;
++	err = of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
++			     "iommu-map-mask", &iommu_spec.np,
++			     iommu_spec.args);
++	if (err)
++		return ERR_PTR(err);
+ 
+-	ops = of_iommu_get_ops(iommu_spec.np);
+-	if (!ops || !ops->of_xlate ||
+-	    iommu_fwspec_init(&pdev->dev, &iommu_spec.np->fwnode, ops) ||
+-	    ops->of_xlate(&pdev->dev, &iommu_spec))
+-		ops = NULL;
++	ops = of_iommu_xlate(&pdev->dev, &iommu_spec);
+ 
+ 	of_node_put(iommu_spec.np);
+ 	return ops;
+ }
+ 
+-const struct iommu_ops *of_iommu_configure(struct device *dev,
+-					   struct device_node *master_np)
++static const struct iommu_ops
++*of_platform_iommu_init(struct device *dev, struct device_node *np)
+ {
+ 	struct of_phandle_args iommu_spec;
+-	struct device_node *np;
+ 	const struct iommu_ops *ops = NULL;
+ 	int idx = 0;
+ 
+-	if (dev_is_pci(dev))
+-		return of_pci_iommu_configure(to_pci_dev(dev), master_np);
+-
+ 	/*
+ 	 * We don't currently walk up the tree looking for a parent IOMMU.
+ 	 * See the `Notes:' section of
+ 	 * Documentation/devicetree/bindings/iommu/iommu.txt
+ 	 */
+-	while (!of_parse_phandle_with_args(master_np, "iommus",
+-					   "#iommu-cells", idx,
+-					   &iommu_spec)) {
+-		np = iommu_spec.np;
+-		ops = of_iommu_get_ops(np);
+-
+-		if (!ops || !ops->of_xlate ||
+-		    iommu_fwspec_init(dev, &np->fwnode, ops) ||
+-		    ops->of_xlate(dev, &iommu_spec))
+-			goto err_put_node;
+-
+-		of_node_put(np);
++	while (!of_parse_phandle_with_args(np, "iommus", "#iommu-cells",
++					   idx, &iommu_spec)) {
++		ops = of_iommu_xlate(dev, &iommu_spec);
++		of_node_put(iommu_spec.np);
+ 		idx++;
++		if (IS_ERR_OR_NULL(ops))
++			break;
+ 	}
+ 
+ 	return ops;
++}
++
++const struct iommu_ops *of_iommu_configure(struct device *dev,
++					   struct device_node *master_np)
++{
++	const struct iommu_ops *ops;
++
++	if (!master_np)
++		return NULL;
++
++	if (dev_is_pci(dev))
++		ops = of_pci_iommu_init(to_pci_dev(dev), master_np);
++	else
++		ops = of_platform_iommu_init(dev, master_np);
+ 
+-err_put_node:
+-	of_node_put(np);
+-	return NULL;
++	return IS_ERR(ops) ? NULL : ops;
+ }
+ 
+ static int __init of_iommu_init(void)
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
