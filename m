@@ -1,74 +1,108 @@
-From: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH v9 18/18] iommu/arm-smmu: Do not advertise
-	IOMMU_CAP_INTR_REMAP anymore
-Date: Thu, 19 Jan 2017 20:58:03 +0000
-Message-ID: <1484859483-2866-19-git-send-email-eric.auger@redhat.com>
-References: <1484859483-2866-1-git-send-email-eric.auger@redhat.com>
+From: "Sricharan" <sricharan@codeaurora.org>
+Subject: RE: [PATCH V5 10/12] drivers: acpi: Configure acpi devices dma operation at probe time
+Date: Fri, 20 Jan 2017 11:01:55 +0530
+Message-ID: <000001d272de$86fa4320$94eec960$@codeaurora.org>
+References: <1484838356-24962-1-git-send-email-sricharan@codeaurora.org> <1484838356-24962-11-git-send-email-sricharan@codeaurora.org> <20170119164222.GA28483@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain;
+        charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484859483-2866-1-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20170119164222.GA28483@red-moon>
+Content-Language: en-us
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: 'Lorenzo Pieralisi' <lorenzo.pieralisi@arm.com>
+Cc: linux-arm-msm@vger.kernel.org, joro@8bytes.org, will.deacon@arm.com, iommu@lists.linux-foundation.org, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-IOMMU_CAP_INTR_REMAP has been advertised in arm-smmu(-v3) although
-on ARM this property is not attached to the IOMMU but rather is
-implemented in the MSI controller (GICv3 ITS).
+Hi Lorenzo,
 
-Now vfio_iommu_type1 checks MSI remapping capability at MSI controller
-level, let's correct this.
+>On Thu, Jan 19, 2017 at 08:35:54PM +0530, Sricharan R wrote:
+>> With all the DT based devices getting their dma ops configured
+>> during probe time to have the right iommu setup, let us do the
+>> same for acpi based devices as well.
+>>
+>> Configuring DMA ops at probe time will allow deferring device probe when
+>> the IOMMU isn't available yet. The dma_configure for the device is
+>> now called from the generic device_attach callback just before the
+>> bus/driver probe is called. This way, configuring the DMA ops for the
+>> device would be called at the same place for all bus_types, hence the
+>> deferred probing mechanism should work for all buses as well.
+>>
+>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+>> ---
+>>  * Removed the dma configuration for the pci devices in case of ACPI
+>>    from pci_dma_configure which was hanging outside separately and
+>>    doing it in dma_configure function itself.
+>>
+>>  drivers/acpi/glue.c        |  5 -----
+>>  drivers/base/dma-mapping.c | 13 ++++++++++++-
+>>  drivers/pci/probe.c        | 25 -------------------------
+>>  3 files changed, 12 insertions(+), 31 deletions(-)
+>>
+>> diff --git a/drivers/acpi/glue.c b/drivers/acpi/glue.c
+>> index fb19e1c..c05f241 100644
+>> --- a/drivers/acpi/glue.c
+>> +++ b/drivers/acpi/glue.c
+>> @@ -176,7 +176,6 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
+>>  	struct list_head *physnode_list;
+>>  	unsigned int node_id;
+>>  	int retval = -EINVAL;
+>> -	enum dev_dma_attr attr;
+>>
+>>  	if (has_acpi_companion(dev)) {
+>>  		if (acpi_dev) {
+>> @@ -233,10 +232,6 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
+>>  	if (!has_acpi_companion(dev))
+>>  		ACPI_COMPANION_SET(dev, acpi_dev);
+>>
+>> -	attr = acpi_get_dma_attr(acpi_dev);
+>> -	if (attr != DEV_DMA_NOT_SUPPORTED)
+>> -		acpi_dma_configure(dev, attr);
+>> -
+>>  	acpi_physnode_link_name(physical_node_name, node_id);
+>>  	retval = sysfs_create_link(&acpi_dev->dev.kobj, &dev->kobj,
+>>  				   physical_node_name);
+>> diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+>> index f82212c..294942d 100644
+>> --- a/drivers/base/dma-mapping.c
+>> +++ b/drivers/base/dma-mapping.c
+>> @@ -7,6 +7,7 @@
+>>   * This file is released under the GPLv2.
+>>   */
+>>
+>> +#include <linux/acpi.h>
+>>  #include <linux/dma-mapping.h>
+>>  #include <linux/export.h>
+>>  #include <linux/gfp.h>
+>> @@ -352,6 +353,7 @@ int dma_configure(struct device *dev)
+>>  {
+>>  	struct device *_dev = dev;
+>>  	int is_pci = dev_is_pci(dev);
+>> +	enum dev_dma_attr attr;
+>>  	int ret = 0;
+>>
+>>  	if (is_pci) {
+>> @@ -361,8 +363,16 @@ int dma_configure(struct device *dev)
+>>  			_dev = _dev->parent;
+>>  	}
+>>
+>> -	if (_dev->of_node)
+>> +	if (_dev->of_node) {
+>>  		ret = of_dma_configure(dev, _dev->of_node);
+>> +	} else if (has_acpi_companion(_dev)) {
+>> +		attr = acpi_get_dma_attr(to_acpi_device_node(_dev->fwnode));
+>> +
+>> +		if (attr == DEV_DMA_NOT_SUPPORTED)
+>> +			dev_warn(dev, "DMA not supported.\n");
+>
+>The changes you are making are correct but now this dev_warn spits hell
+>for non-pci devices that do not support DMA (ie they do not have a _CCA
+>on CONFIG_ACPI_CCA_REQUIRED systems), so you will have to remove it
+>given that this path is now shared.
+>
 
-Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Reviewed-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Tested-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Tested-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
+ok, will remove this WARN now.
 
----
-
-v7 -> v8:
-- added Will's A-b
----
- drivers/iommu/arm-smmu-v3.c | 2 --
- drivers/iommu/arm-smmu.c    | 2 --
- 2 files changed, 4 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 6c4111c..d9cf6cb 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1375,8 +1375,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- 	switch (cap) {
- 	case IOMMU_CAP_CACHE_COHERENCY:
- 		return true;
--	case IOMMU_CAP_INTR_REMAP:
--		return true; /* MSIs are just memory writes */
- 	case IOMMU_CAP_NOEXEC:
- 		return true;
- 	default:
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index a354572..13d2600 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1374,8 +1374,6 @@ static bool arm_smmu_capable(enum iommu_cap cap)
- 		 * requests.
- 		 */
- 		return true;
--	case IOMMU_CAP_INTR_REMAP:
--		return true; /* MSIs are just memory writes */
- 	case IOMMU_CAP_NOEXEC:
- 		return true;
- 	default:
--- 
-1.9.1
+Regards,
+ Sricharan
