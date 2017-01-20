@@ -1,87 +1,51 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V6 11/11] ACPI/IORT: Remove linker section for IORT entries
-	probing
-Date: Sat, 21 Jan 2017 00:45:48 +0530
-Message-ID: <1484939748-31591-12-git-send-email-sricharan@codeaurora.org>
-References: <1484939748-31591-1-git-send-email-sricharan@codeaurora.org>
+From: "Sricharan" <sricharan@codeaurora.org>
+Subject: RE: [PATCH V5 08/12] iommu/arm-smmu: Clean up early-probing workarounds
+Date: Sat, 21 Jan 2017 00:50:03 +0530
+Message-ID: <000001d27352$37b5cea0$a7216be0$@codeaurora.org>
+References: <1484838356-24962-1-git-send-email-sricharan@codeaurora.org> <1484838356-24962-9-git-send-email-sricharan@codeaurora.org> <20170119161826.GI31594@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain;
+        charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1484939748-31591-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20170119161826.GI31594@arm.com>
+Content-Language: en-us
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: 'Will Deacon' <will.deacon@arm.com>
+Cc: robin.murphy@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Hi Will,
 
-The IORT linker section introduced by commit 34ceea275f62
-("ACPI/IORT: Introduce linker section for IORT entries probing")
-was needed to make sure SMMU drivers are registered (and therefore
-probed) in the kernel before devices using the SMMU have a chance
-to probe in turn.
+>-----Original Message-----
+>From: linux-arm-msm-owner@vger.kernel.org [mailto:linux-arm-msm-owner@vger.kernel.org] On Behalf Of Will Deacon
+>Sent: Thursday, January 19, 2017 9:48 PM
+>To: Sricharan R <sricharan@codeaurora.org>
+>Cc: robin.murphy@arm.com; joro@8bytes.org; lorenzo.pieralisi@arm.com; iommu@lists.linux-foundation.org; linux-arm-
+>kernel@lists.infradead.org; linux-arm-msm@vger.kernel.org; m.szyprowski@samsung.com
+>Subject: Re: [PATCH V5 08/12] iommu/arm-smmu: Clean up early-probing workarounds
+>
+>On Thu, Jan 19, 2017 at 08:35:52PM +0530, Sricharan R wrote:
+>> From: Robin Murphy <robin.murphy@arm.com>
+>>
+>> Now that the appropriate ordering is enforced via profe-deferral of
+>> masters in core code, rip it all out and bask in the simplicity.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> [Sricharan: Rebased on top of ACPI IORT SMMU series]
+>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+>> ---
+>>  * No change
+>>
+>>  drivers/iommu/arm-smmu-v3.c | 46 ++---------------------------------
+>>  drivers/iommu/arm-smmu.c    | 58 +++++++--------------------------------------
+>>  2 files changed, 10 insertions(+), 94 deletions(-)
+>
+>Acked-by: Will Deacon <will.deacon@arm.com>
+>
+>I can't wait to see this series merged. What's the plan for that?
 
-Through the introduction of deferred IOMMU configuration the linker
-section based IORT probing infrastructure is not needed any longer, in
-that device/SMMU probe dependencies are managed through the probe
-deferral mechanism, making the IORT linker section infrastructure
-unused, so that it can be removed.
+Thanks. Posted V6 with your tags and comments for V5 addressed.
 
-Remove the unused IORT linker section probing infrastructure
-from the kernel to complete the ACPI IORT IOMMU configure probe
-deferral mechanism implementation.
-
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- drivers/acpi/arm64/iort.c         | 2 --
- include/asm-generic/vmlinux.lds.h | 1 -
- include/linux/acpi_iort.h         | 3 ---
- 3 files changed, 6 deletions(-)
-
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index d01bae8..ac45623 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -992,6 +992,4 @@ void __init acpi_iort_init(void)
- 	}
- 
- 	iort_init_platform_devices();
--
--	acpi_probe_device_table(iort);
- }
-diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-index 0968d13..9faa26c 100644
---- a/include/asm-generic/vmlinux.lds.h
-+++ b/include/asm-generic/vmlinux.lds.h
-@@ -566,7 +566,6 @@
- 	IRQCHIP_OF_MATCH_TABLE()					\
- 	ACPI_PROBE_TABLE(irqchip)					\
- 	ACPI_PROBE_TABLE(clksrc)					\
--	ACPI_PROBE_TABLE(iort)						\
- 	EARLYCON_TABLE()
- 
- #define INIT_TEXT							\
-diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-index 77e0809..f167e1d04 100644
---- a/include/linux/acpi_iort.h
-+++ b/include/linux/acpi_iort.h
-@@ -52,7 +52,4 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
- { return NULL; }
- #endif
- 
--#define IORT_ACPI_DECLARE(name, table_id, fn)		\
--	ACPI_DECLARE_PROBE_ENTRY(iort, name, table_id, 0, NULL, 0, fn)
--
- #endif /* __ACPI_IORT_H__ */
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+Regards,
+ Sricharan
