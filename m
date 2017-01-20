@@ -1,66 +1,151 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH V5 05/12] drivers: platform: Configure dma operations at probe time
-Date: Fri, 20 Jan 2017 11:04:19 +0530
-Message-ID: <000201d272de$dc6d1c10$95475430$@codeaurora.org>
-References: <1484838356-24962-1-git-send-email-sricharan@codeaurora.org> <1484838356-24962-6-git-send-email-sricharan@codeaurora.org> <20170119164821.GB28483@red-moon>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH V5 05/12] drivers: platform: Configure dma operations at
+	probe time
+Date: Fri, 20 Jan 2017 11:48:18 +0530
+Message-ID: <000c01d272e5$020ba300$0622e900$@codeaurora.org>
+References: <1484838356-24962-1-git-send-email-sricharan@codeaurora.org>
+	<1484838356-24962-6-git-send-email-sricharan@codeaurora.org>
+	<327b5a9b-35f6-f6e0-4ef9-d2ed15bb4e49@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <20170119164821.GB28483@red-moon>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <327b5a9b-35f6-f6e0-4ef9-d2ed15bb4e49-5wv7dgnIgG8@public.gmane.org>
 Content-Language: en-us
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: 'Lorenzo Pieralisi' <lorenzo.pieralisi@arm.com>
-Cc: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Lorenzo,
-
->-----Original Message-----
->From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi@arm.com]
->Sent: Thursday, January 19, 2017 10:18 PM
->To: Sricharan R <sricharan@codeaurora.org>
->Cc: robin.murphy@arm.com; will.deacon@arm.com; joro@8bytes.org; iommu@lists.linux-foundation.org; linux-arm-
->kernel@lists.infradead.org; linux-arm-msm@vger.kernel.org; m.szyprowski@samsung.com
->Subject: Re: [PATCH V5 05/12] drivers: platform: Configure dma operations at probe time
->
->On Thu, Jan 19, 2017 at 08:35:49PM +0530, Sricharan R wrote:
->> Configuring DMA ops at probe time will allow deferring device probe when
->> the IOMMU isn't available yet. The dma_configure for the device is
->> now called from the generic device_attach callback just before the
->> bus/driver probe is called. This way, configuring the DMA ops for the
->> device would be called at the same place for all bus_types, hence the
->> deferred probing mechanism should work for all buses as well.
->>
->> pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
->>        |                         |
->> pci_bus_add_device     (device_add/driver_register)
->>        |                         |
->> device_attach           device_initial_probe
->>        |                         |
->> __device_attach_driver    __device_attach_driver
->>        |
->> driver_probe_device
->>        |
->> really_probe
->>        |
->> dma_configure
->>
->> Similarly on the device/driver_unregister path __device_release_driver is
->> called which inturn calls dma_deconfigure.
->>
->> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
->> ---
->>  * Removed the dma configuration for the pci devices in case of DT
->>    from pci_dma_configure which was hanging outside separately and
->>    doing it in dma_configure function itself.
->
->Rename the patch subject then, it is misleading.
-
-Ha, infact the patch still does what it says. The above words were
-to mention what was changed from V4 to V5. Sorry i should have
-mentioned that explicitly.
-
-Regards,
- Sricharan
+SGkgUm9iaW4sCgo+T24gMTkvMDEvMTcgMTU6MDUsIFNyaWNoYXJhbiBSIHdyb3RlOgo+PiBDb25m
+aWd1cmluZyBETUEgb3BzIGF0IHByb2JlIHRpbWUgd2lsbCBhbGxvdyBkZWZlcnJpbmcgZGV2aWNl
+IHByb2JlIHdoZW4KPj4gdGhlIElPTU1VIGlzbid0IGF2YWlsYWJsZSB5ZXQuIFRoZSBkbWFfY29u
+ZmlndXJlIGZvciB0aGUgZGV2aWNlIGlzCj4+IG5vdyBjYWxsZWQgZnJvbSB0aGUgZ2VuZXJpYyBk
+ZXZpY2VfYXR0YWNoIGNhbGxiYWNrIGp1c3QgYmVmb3JlIHRoZQo+PiBidXMvZHJpdmVyIHByb2Jl
+IGlzIGNhbGxlZC4gVGhpcyB3YXksIGNvbmZpZ3VyaW5nIHRoZSBETUEgb3BzIGZvciB0aGUKPj4g
+ZGV2aWNlIHdvdWxkIGJlIGNhbGxlZCBhdCB0aGUgc2FtZSBwbGFjZSBmb3IgYWxsIGJ1c190eXBl
+cywgaGVuY2UgdGhlCj4+IGRlZmVycmVkIHByb2JpbmcgbWVjaGFuaXNtIHNob3VsZCB3b3JrIGZv
+ciBhbGwgYnVzZXMgYXMgd2VsbC4KPj4KPj4gcGNpX2J1c19hZGRfZGV2aWNlcyAgICAocGxhdGZv
+cm0vYW1iYSkoX2RldmljZV9jcmVhdGUvZHJpdmVyX3JlZ2lzdGVyKQo+PiAgICAgICAgfCAgICAg
+ICAgICAgICAgICAgICAgICAgICB8Cj4+IHBjaV9idXNfYWRkX2RldmljZSAgICAgKGRldmljZV9h
+ZGQvZHJpdmVyX3JlZ2lzdGVyKQo+PiAgICAgICAgfCAgICAgICAgICAgICAgICAgICAgICAgICB8
+Cj4+IGRldmljZV9hdHRhY2ggICAgICAgICAgIGRldmljZV9pbml0aWFsX3Byb2JlCj4+ICAgICAg
+ICB8ICAgICAgICAgICAgICAgICAgICAgICAgIHwKPj4gX19kZXZpY2VfYXR0YWNoX2RyaXZlciAg
+ICBfX2RldmljZV9hdHRhY2hfZHJpdmVyCj4+ICAgICAgICB8Cj4+IGRyaXZlcl9wcm9iZV9kZXZp
+Y2UKPj4gICAgICAgIHwKPj4gcmVhbGx5X3Byb2JlCj4+ICAgICAgICB8Cj4+IGRtYV9jb25maWd1
+cmUKPj4KPj4gU2ltaWxhcmx5IG9uIHRoZSBkZXZpY2UvZHJpdmVyX3VucmVnaXN0ZXIgcGF0aCBf
+X2RldmljZV9yZWxlYXNlX2RyaXZlciBpcwo+PiBjYWxsZWQgd2hpY2ggaW50dXJuIGNhbGxzIGRt
+YV9kZWNvbmZpZ3VyZS4KPj4KPj4gU2lnbmVkLW9mZi1ieTogU3JpY2hhcmFuIFIgPHNyaWNoYXJh
+bkBjb2RlYXVyb3JhLm9yZz4KPj4gLS0tCj4+ICAqIFJlbW92ZWQgdGhlIGRtYSBjb25maWd1cmF0
+aW9uIGZvciB0aGUgcGNpIGRldmljZXMgaW4gY2FzZSBvZiBEVAo+PiAgICBmcm9tIHBjaV9kbWFf
+Y29uZmlndXJlIHdoaWNoIHdhcyBoYW5naW5nIG91dHNpZGUgc2VwYXJhdGVseSBhbmQKPj4gICAg
+ZG9pbmcgaXQgaW4gZG1hX2NvbmZpZ3VyZSBmdW5jdGlvbiBpdHNlbGYuCj4+Cj4+ICBkcml2ZXJz
+L2Jhc2UvZGQuYyAgICAgICAgICAgfCAgOSArKysrKysrKysKPj4gIGRyaXZlcnMvYmFzZS9kbWEt
+bWFwcGluZy5jICB8IDMyICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCj4+ICBkcml2
+ZXJzL29mL3BsYXRmb3JtLmMgICAgICAgfCAgNSArLS0tLQo+PiAgZHJpdmVycy9wY2kvcHJvYmUu
+YyAgICAgICAgIHwgIDUgKy0tLS0KPj4gIGluY2x1ZGUvbGludXgvZG1hLW1hcHBpbmcuaCB8ICAz
+ICsrKwo+PiAgNSBmaWxlcyBjaGFuZ2VkLCA0NiBpbnNlcnRpb25zKCspLCA4IGRlbGV0aW9ucygt
+KQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9iYXNlL2RkLmMgYi9kcml2ZXJzL2Jhc2UvZGQu
+Ywo+PiBpbmRleCBhMWZiZjU1Li40ODgyZjA2IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2Jhc2Uv
+ZGQuYwo+PiArKysgYi9kcml2ZXJzL2Jhc2UvZGQuYwo+PiBAQCAtMTksNiArMTksNyBAQAo+Pgo+
+PiAgI2luY2x1ZGUgPGxpbnV4L2RldmljZS5oPgo+PiAgI2luY2x1ZGUgPGxpbnV4L2RlbGF5Lmg+
+Cj4+ICsjaW5jbHVkZSA8bGludXgvZG1hLW1hcHBpbmcuaD4KPj4gICNpbmNsdWRlIDxsaW51eC9t
+b2R1bGUuaD4KPj4gICNpbmNsdWRlIDxsaW51eC9rdGhyZWFkLmg+Cj4+ICAjaW5jbHVkZSA8bGlu
+dXgvd2FpdC5oPgo+PiBAQCAtMzU2LDYgKzM1NywxMCBAQCBzdGF0aWMgaW50IHJlYWxseV9wcm9i
+ZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBkZXZpY2VfZHJpdmVyICpkcnYpCj4+ICAJaWYg
+KHJldCkKPj4gIAkJZ290byBwaW5jdHJsX2JpbmRfZmFpbGVkOwo+Pgo+PiArCXJldCA9IGRtYV9j
+b25maWd1cmUoZGV2KTsKPj4gKwlpZiAocmV0KQo+PiArCQlnb3RvIGRtYV9mYWlsZWQ7Cj4+ICsK
+Pj4gIAlpZiAoZHJpdmVyX3N5c2ZzX2FkZChkZXYpKSB7Cj4+ICAJCXByaW50ayhLRVJOX0VSUiAi
+JXM6IGRyaXZlcl9zeXNmc19hZGQoJXMpIGZhaWxlZFxuIiwKPj4gIAkJCV9fZnVuY19fLCBkZXZf
+bmFtZShkZXYpKTsKPj4gQEAgLTQxNyw2ICs0MjIsOCBAQCBzdGF0aWMgaW50IHJlYWxseV9wcm9i
+ZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBkZXZpY2VfZHJpdmVyICpkcnYpCj4+ICAJZ290
+byBkb25lOwo+Pgo+PiAgcHJvYmVfZmFpbGVkOgo+PiArCWRtYV9kZWNvbmZpZ3VyZShkZXYpOwo+
+PiArZG1hX2ZhaWxlZDoKPj4gIAlpZiAoZGV2LT5idXMpCj4+ICAJCWJsb2NraW5nX25vdGlmaWVy
+X2NhbGxfY2hhaW4oJmRldi0+YnVzLT5wLT5idXNfbm90aWZpZXIsCj4+ICAJCQkJCSAgICAgQlVT
+X05PVElGWV9EUklWRVJfTk9UX0JPVU5ELCBkZXYpOwo+PiBAQCAtODI2LDYgKzgzMyw4IEBAIHN0
+YXRpYyB2b2lkIF9fZGV2aWNlX3JlbGVhc2VfZHJpdmVyKHN0cnVjdCBkZXZpY2UgKmRldiwgc3Ry
+dWN0IGRldmljZSAqcGFyZW50KQo+PiAgCQkJZHJ2LT5yZW1vdmUoZGV2KTsKPj4KPj4gIAkJZGV2
+aWNlX2xpbmtzX2RyaXZlcl9jbGVhbnVwKGRldik7Cj4+ICsJCWRtYV9kZWNvbmZpZ3VyZShkZXYp
+Owo+PiArCj4+ICAJCWRldnJlc19yZWxlYXNlX2FsbChkZXYpOwo+PiAgCQlkZXYtPmRyaXZlciA9
+IE5VTEw7Cj4+ICAJCWRldl9zZXRfZHJ2ZGF0YShkZXYsIE5VTEwpOwo+PiBkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9iYXNlL2RtYS1tYXBwaW5nLmMgYi9kcml2ZXJzL2Jhc2UvZG1hLW1hcHBpbmcuYwo+
+PiBpbmRleCBlZmQ3MWNmLi5kZmU2ZmQ3IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2Jhc2UvZG1h
+LW1hcHBpbmcuYwo+PiArKysgYi9kcml2ZXJzL2Jhc2UvZG1hLW1hcHBpbmcuYwo+PiBAQCAtMTAs
+NiArMTAsNyBAQAo+PiAgI2luY2x1ZGUgPGxpbnV4L2RtYS1tYXBwaW5nLmg+Cj4+ICAjaW5jbHVk
+ZSA8bGludXgvZXhwb3J0Lmg+Cj4+ICAjaW5jbHVkZSA8bGludXgvZ2ZwLmg+Cj4+ICsjaW5jbHVk
+ZSA8bGludXgvb2ZfZGV2aWNlLmg+Cj4+ICAjaW5jbHVkZSA8bGludXgvc2xhYi5oPgo+PiAgI2lu
+Y2x1ZGUgPGxpbnV4L3ZtYWxsb2MuaD4KPj4KPj4gQEAgLTM0MSwzICszNDIsMzQgQEAgdm9pZCBk
+bWFfY29tbW9uX2ZyZWVfcmVtYXAodm9pZCAqY3B1X2FkZHIsIHNpemVfdCBzaXplLCB1bnNpZ25l
+ZCBsb25nIHZtX2ZsYWdzKQo+PiAgCXZ1bm1hcChjcHVfYWRkcik7Cj4+ICB9Cj4+ICAjZW5kaWYK
+Pj4gKwo+PiArLyoKPj4gKyAqIENvbW1vbiBjb25maWd1cmF0aW9uIHRvIGVuYWJsZSBETUEgQVBJ
+IHVzZSBmb3IgYSBkZXZpY2UKPj4gKyAqLwo+PiArI2luY2x1ZGUgPGxpbnV4L3BjaS5oPgo+PiAr
+Cj4+ICtpbnQgZG1hX2NvbmZpZ3VyZShzdHJ1Y3QgZGV2aWNlICpkZXYpCj4+ICt7Cj4+ICsJc3Ry
+dWN0IGRldmljZSAqX2RldiA9IGRldjsKPj4gKwlpbnQgaXNfcGNpID0gZGV2X2lzX3BjaShkZXYp
+Owo+PiArCj4+ICsJaWYgKGlzX3BjaSkgewo+PiArCQlfZGV2ID0gcGNpX2dldF9ob3N0X2JyaWRn
+ZV9kZXZpY2UodG9fcGNpX2RldihkZXYpKTsKPj4gKwkJaWYgKElTX0VOQUJMRUQoQ09ORklHX09G
+KSAmJiBfZGV2LT5wYXJlbnQgJiYKPj4gKwkJICAgIF9kZXYtPnBhcmVudC0+b2Zfbm9kZSkKPj4g
+KwkJCV9kZXYgPSBfZGV2LT5wYXJlbnQ7Cj4+ICsJfQo+PiArCj4+ICsJaWYgKF9kZXYtPm9mX25v
+ZGUpCj4+ICsJCW9mX2RtYV9jb25maWd1cmUoZGV2LCBfZGV2LT5vZl9ub2RlKTsKPj4gKwo+PiAr
+CWlmIChpc19wY2kpCj4+ICsJCXBjaV9wdXRfaG9zdF9icmlkZ2VfZGV2aWNlKF9kZXYpOwo+Cj5U
+aGVyZSdzIGEgZnVuIGJ1ZyBoZXJlIC0gYXQgdGhpcyBwb2ludCBfZGV2IGlzIHRoZSAqcGFyZW50
+KiBvZiB0aGUKPmJyaWRnZSBkZXZpY2UsIHNvIHdlIHB1dCB0aGUgcmVmY291bnQgb24gdGhlIHdy
+b25nIGRldmljZSAodGhlIHBsYXRmb3JtCj5kZXZpY2UgcmVwcmVzZW50aW5nIHRoZSBob3N0IGNv
+bnRyb2xsZXIsIHJhdGhlciB0aGFuIHRoZSBQQ0kgZGV2aWNlCj5yZXByZXNlbnRpbmcgaXRzIGlu
+c2lkZXMpLCB3aGljaCBmcmVlcyB0aGUgZ3V5IHdlJ3JlIGluIHRoZSBtaWRkbGUgb2YKPnByb2Jp
+bmcsIGFuZCB0aGluZ3MgcmFwaWRseSBnbyB3cm9uZyBhZnRlcndhcmRzOgo+CgpoYSBteSBiYWQs
+IHJpZ2h0LiBJIHdpbGwgY2hhbmdlIHRvIGZpeCB0aGlzLiBJIHdhcyB0ZXN0aW5nIHRoaXMgd2l0
+aCBhIGNvdXBsZQpvZiBwY2kgZGV2aWNlcywgYnV0IGl0IGRpZCBub3Qgc2hvdyB1cC4gVGhhbmtz
+IGZvciBwb2ludGluZyB0aGlzIG91dC4KSSB3aWxsIGJvcnJvdyB0aGUgdmFyaWFibGUgbmFtZXMg
+ZnJvbSB0aGUgaHVuayBiZWxvdy4gCgo+WyAgICAxLjQ2MTAyNl0gYnVzOiAncGxhdGZvcm0nOiBk
+cml2ZXJfcHJvYmVfZGV2aWNlOiBtYXRjaGVkIGRldmljZQo+NDAwMDAwMDAucGNpZS1jb250cm9s
+bGVyIHdpdGggZHJpdmVyIHBjaS1ob3N0LWdlbmVyaWMKPlsgICAgMS40NzE2NDBdIGJ1czogJ3Bs
+YXRmb3JtJzogcmVhbGx5X3Byb2JlOiBwcm9iaW5nIGRyaXZlcgo+cGNpLWhvc3QtZ2VuZXJpYyB3
+aXRoIGRldmljZSA0MDAwMDAwMC5wY2llLWNvbnRyb2xsZXIKPlsgICAgMS40ODE2NzhdIE9GOiBQ
+Q0k6IGhvc3QgYnJpZGdlIC9wY2llLWNvbnRyb2xsZXJANDAwMDAwMDAgcmFuZ2VzOgo+Cj4uLi4K
+Pgo+WyAgICAyLjE1ODI1OV0gYnVzOiAncGNpJzogZHJpdmVyX3Byb2JlX2RldmljZTogbWF0Y2hl
+ZCBkZXZpY2UKPjAwMDA6MDI6MTAuMCB3aXRoIGRyaXZlciBwY2llcG9ydAo+WyAgICAyLjE2Njcx
+Nl0gYnVzOiAncGNpJzogcmVhbGx5X3Byb2JlOiBwcm9iaW5nIGRyaXZlciBwY2llcG9ydCB3aXRo
+Cj5kZXZpY2UgMDAwMDowMjoxMC4wCj5bICAgIDIuMTc0NTkwXSBwY2kgMDAwMDowMjoxMC4wOiBE
+cml2ZXIgcGNpZXBvcnQgcmVxdWVzdHMgcHJvYmUgZGVmZXJyYWwKPlsgICAgMi4xODA5NzhdIHBj
+aSAwMDAwOjAyOjEwLjA6IEFkZGVkIHRvIGRlZmVycmVkIGxpc3QKPlsgICAgMi4xODU5MTVdIGJ1
+czogJ3BjaSc6IGRyaXZlcl9wcm9iZV9kZXZpY2U6IG1hdGNoZWQgZGV2aWNlCj4wMDAwOjAyOjFm
+LjAgd2l0aCBkcml2ZXIgcGNpZXBvcnQKPlsgICAgMi4xOTQzNjZdIGJ1czogJ3BjaSc6IHJlYWxs
+eV9wcm9iZTogcHJvYmluZyBkcml2ZXIgcGNpZXBvcnQgd2l0aAo+ZGV2aWNlIDAwMDA6MDI6MWYu
+MAo+WyAgICAyLjIwMjIzN10gcGNpIDAwMDA6MDI6MWYuMDogRHJpdmVyIHBjaWVwb3J0IHJlcXVl
+c3RzIHByb2JlIGRlZmVycmFsCj5bICAgIDIuMjA4NjI1XSBwY2kgMDAwMDowMjoxZi4wOiBBZGRl
+ZCB0byBkZWZlcnJlZCBsaXN0Cj5bICAgIDIuMjEzNTgyXSBkcml2ZXI6ICdwY2ktaG9zdC1nZW5l
+cmljJzogZHJpdmVyX2JvdW5kOiBib3VuZCB0byBkZXZpY2UKPifvv73vv73vv71277+977+977+9
+77+9LnBjaWUtY29udHJvbGxlcicKPlsgICAgMi4yMjIyOTNdIGJ1czogJ3BsYXRmb3JtJzogcmVh
+bGx5X3Byb2JlOiBib3VuZCBkZXZpY2UKPu+/ve+/ve+/vXbvv73vv73vv73vv70ucGNpZS1jb250
+cm9sbGVyIHRvIGRyaXZlciBwY2ktaG9zdC1nZW5lcmljCj5bICAgIDIuMjMyMDQxXSBVbmFibGUg
+dG8gaGFuZGxlIGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UgYXQKPnZpcnR1YWwgYWRk
+cmVzcyAwMDAwMDAwMAo+Cj5JIHJlY2FsbCBkZWJ1Z2dpbmcgdGhpcyBzYW1lIGlzc3VlIGJlZm9y
+ZSwgYW5kIEkgc2VlbSB0byBoYXZlIGEgbG9jYWwKPnZlcnNpb24gb2YgdGhpcyBjb21taXQgZGF0
+ZWQgYWJvdXQgNiB3ZWVrcyBhZ28gd2hlcmUgZG1hX2NvbmZpZ3VyZSgpCj5sb29rcyBsaWtlIHRo
+aXM6Cj4KPi0tLT44LS0tCj5pbnQgZG1hX2NvbmZpZ3VyZShzdHJ1Y3QgZGV2aWNlICpkZXYpCj57
+Cj4Jc3RydWN0IGRldmljZSAqYnJpZGdlID0gTlVMTCwgKmRtYV9kZXYgPSBkZXY7Cj4KPglpZiAo
+ZGV2X2lzX3BjaShkZXYpKSB7Cj4JCWJyaWRnZSA9IHBjaV9nZXRfaG9zdF9icmlkZ2VfZGV2aWNl
+KHRvX3BjaV9kZXYoZGV2KSk7Cj4JCWRtYV9kZXYgPSBicmlkZ2UtPnBhcmVudDsKPgl9Cj4KPglp
+ZiAoZG1hX2RldiAmJiBkbWFfZGV2LT5vZl9ub2RlKSB7Cj4JCW9mX2RtYV9jb25maWd1cmUoZGV2
+LCBkbWFfZGV2LT5vZl9ub2RlKTsKPgl9IGVsc2UgaWYgKGRtYV9kZXYgJiYgaGFzX2FjcGlfY29t
+cGFuaW9uKGRtYV9kZXYpKSB7Cj4JCXN0cnVjdCBhY3BpX2RldmljZSAqYWRldiA9IHRvX2FjcGlf
+ZGV2aWNlX25vZGUoZG1hX2Rldi0+Zndub2RlKTsKPgkJZW51bSBkZXZfZG1hX2F0dHIgYXR0ciA9
+IGFjcGlfZ2V0X2RtYV9hdHRyKGFkZXYpOwo+Cj4JCWlmIChhdHRyID09IERFVl9ETUFfTk9UX1NV
+UFBPUlRFRCkKPgkJCWRldl93YXJuKGRldiwgIkRNQSBub3Qgc3VwcG9ydGVkLlxuIik7Cj4JCWVs
+c2UKPgkJCWFyY2hfc2V0dXBfZG1hX29wcyhkZXYsIDAsIDAsIE5VTEwsCj4JCQkJCSAgIGF0dHIg
+PT0gREVWX0RNQV9DT0hFUkVOVCk7Cj4JfQo+Cj4JaWYgKGJyaWRnZSkKPgkJcGNpX3B1dF9ob3N0
+X2JyaWRnZV9kZXZpY2UoYnJpZGdlKTsKPgo+CXJldHVybiAwOwo+fQo+LS0tODwtLS0KPgo+SSBo
+YXZlIGEgZmVlbGluZyBJIHdhcyBoYXZpbmcgYSBnbyBhdCB0aWR5aW5nIHVwIHRoZSAiUENJIGhh
+Y2tzIiBmcm9tIHY0Cj5teXNlbGYsIGJ1dCBvdGhlciB0aGluZ3MgZW5kZWQgdXAgdGFraW5nIHBy
+ZWNlZGVuY2UuCj4KClN1cmUsIGkgd2lsbCByZXBvc3Qgd2l0aCBib3Jyb3dpbmcgdGhlIG5hbWVz
+LgoKUmVnYXJkcywKIFNyaWNoYXJhbgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5k
+YXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3Rp
+bmZvL2lvbW11
