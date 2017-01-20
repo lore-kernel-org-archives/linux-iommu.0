@@ -1,68 +1,33 @@
-From: Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH 1/3] mm: alloc_contig_range: allow to specify GFP mask
-Date: Fri, 20 Jan 2017 13:35:40 +0100
-Message-ID: <81849c0d-b7aa-faf2-484c-66b0ea0a7e95@suse.cz>
+From: Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>
+Subject: Re: [PATCH 3/3] mm: wire up GFP flag passing in
+	dma_alloc_from_contiguous
+Date: Fri, 20 Jan 2017 14:35:26 +0100
+Message-ID: <139e94c3-4d03-de35-0c91-217c73c0f5f2@suse.cz>
 References: <20170119170707.31741-1-l.stach@pengutronix.de>
+	<20170119170707.31741-3-l.stach@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <20170119170707.31741-1-l.stach@pengutronix.de>
-Sender: kvm-owner@vger.kernel.org
-To: Lucas Stach <l.stach@pengutronix.de>, Andrew Morton <akpm@linux-foundation.org>
-Cc: Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Ralf Baechle <ralf@linux-mips.org>, Paolo Bonzini <pbonzini@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Alexander Graf <agraf@suse.com>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, "H . Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Michal Hocko <mhocko@suse.com>, linux-arm-kernel@lists.infradead.org, linux-mips@linux-mips.org, kvm@vger.kernel.org, kvm-ppc@vger.kernel.org, linux-xtensa@linux-xtensa.org, iommu@lists.linux-foundation.org, linux-mm@kvack.org, kernel@peng
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170119170707.31741-3-l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>, Andrew Morton <akpm-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: linux-mips-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org, Michal Hocko <mhocko-IBi9RG/b67k@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, "H . Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Russell King <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>, patchwork-lst-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-xtensa-PjhNF2WwrV/0Sa2dR60CXw@public.gmane.org, kvm-ppc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Chris Zankel <chris-YvXeqwSYzG2sTnJN9+BGXg@public.gmane.org>, Max Filippov <jcmvbkbc-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Ralf Baechle <ralf-6z/3iImG2C8G8FEW9MqTrA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kernel-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Alexander Graf <agraf-IBi9RG/b67k@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 On 01/19/2017 06:07 PM, Lucas Stach wrote:
-> Currently alloc_contig_range assumes that the compaction should
-> be done with the default GFP_KERNEL flags. This is probably
-> right for all current uses of this interface, but may change as
-> CMA is used in more use-cases (including being the default DMA
-> memory allocator on some platforms).
+> The callers of the DMA alloc functions already provide the proper
+> context GFP flags. Make sure to pass them through to the CMA
+> allocator, to make the CMA compaction context aware.
 > 
-> Change the function prototype, to allow for passing through the
-> GFP mask set by upper layers. No functional change in this patch,
-> just making the assumptions a bit more obvious.
-> 
-> Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+> Signed-off-by: Lucas Stach <l.stach-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org>
 
-[...]
-
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index eced9fee582b..6d392d8dee36 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -7230,6 +7230,7 @@ static int __alloc_contig_migrate_range(struct compact_control *cc,
->   *			#MIGRATE_MOVABLE or #MIGRATE_CMA).  All pageblocks
->   *			in range must have the same migratetype and it must
->   *			be either of the two.
-> + * @gfp_mask:	GFP mask to use during compaction
->   *
->   * The PFN range does not have to be pageblock or MAX_ORDER_NR_PAGES
->   * aligned, however it's the caller's responsibility to guarantee that
-> @@ -7243,7 +7244,7 @@ static int __alloc_contig_migrate_range(struct compact_control *cc,
->   * need to be freed with free_contig_range().
->   */
->  int alloc_contig_range(unsigned long start, unsigned long end,
-> -		       unsigned migratetype)
-> +		       unsigned migratetype, gfp_t gfp_mask)
->  {
->  	unsigned long outer_start, outer_end;
->  	unsigned int order;
-> @@ -7255,7 +7256,7 @@ int alloc_contig_range(unsigned long start, unsigned long end,
->  		.zone = page_zone(pfn_to_page(start)),
->  		.mode = MIGRATE_SYNC,
->  		.ignore_skip_hint = true,
-> -		.gfp_mask = GFP_KERNEL,
-> +		.gfp_mask = gfp_mask,
-
-I think you should apply memalloc_noio_flags() here (and Michal should
-then convert it to the new name in his scoped gfp_nofs series). Note
-that then it's technically a functional change, but it's needed.
-Otherwise looks good.
-
->  	};
->  	INIT_LIST_HEAD(&cc.migratepages);
->  
-> 
-
+Acked-by: Vlastimil Babka <vbabka-AlSwsSmVLrQ@public.gmane.org>
