@@ -1,94 +1,219 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH v8 6/9] perf/amd/iommu: Modify
-	amd_iommu_pc_get_set_reg_val() API to allow specifying IOMMU index
-Date: Sun, 22 Jan 2017 20:53:34 +0100
-Message-ID: <20170122195334.c54elbsnbdyscd4n@pd.tnic>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v8 8/9] perf/amd/iommu: Fix sysfs perf attribute groups
+Date: Sun, 22 Jan 2017 20:54:36 +0100
+Message-ID: <20170122195436.p5bj4zcq5ndvhkzt@pd.tnic>
 References: <1484551416-5440-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1484551416-5440-7-git-send-email-Suravee.Suthikulpanit@amd.com>
+ <1484551416-5440-9-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1484551416-5440-7-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+In-Reply-To: <1484551416-5440-9-git-send-email-Suravee.Suthikulpanit@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, joro@8bytes.org, peterz@infradead.org, mingo@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 16, 2017 at 01:23:33AM -0600, Suravee Suthikulpanit wrote:
-> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+On Mon, Jan 16, 2017 at 01:23:35AM -0600, Suravee Suthikulpanit wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > 
-> The current amd_iommu_pc_get_set_reg_val() cannot support multiple IOMMUs
-> It is also confusing since it is trying to support set and get in
-> one function.
+> Introduce static amd_iommu_attr_groups to simplify the
+> sysfs attributes initialization code.
 > 
-> So break it down to amd_iommu_pc_[get|set]_reg(),
-> and modifies them to allow callers to specify IOMMU index. This prepares
-
-  and modify
-
-> the driver for supporting multi-IOMMU in subsequent patch.
-> 
-> Also remove unnecessary function declarations in amd_iommu_proto.h.
-> 
-> Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-> Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
 > ---
->  arch/x86/events/amd/iommu.c     | 34 ++++++++++----------------
->  arch/x86/events/amd/iommu.h     |  7 ++++--
->  drivers/iommu/amd_iommu_init.c  | 53 ++++++++++++++++++++++++++---------------
->  drivers/iommu/amd_iommu_proto.h |  5 ----
->  4 files changed, 52 insertions(+), 47 deletions(-)
-
-...
-
-> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-> index ed21307d..5b7fb6c 100644
-> --- a/drivers/iommu/amd_iommu_init.c
-> +++ b/drivers/iommu/amd_iommu_init.c
-> @@ -253,10 +253,6 @@ enum iommu_init_state {
->  static int __init iommu_go_to_state(enum iommu_init_state state);
->  static void init_device_table_dma(void);
+>  arch/x86/events/amd/iommu.c | 85 ++++++++++++++++++++-------------------------
+>  1 file changed, 37 insertions(+), 48 deletions(-)
+> 
+> diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+> index cc7bea4..223c01d 100644
+> --- a/arch/x86/events/amd/iommu.c
+> +++ b/arch/x86/events/amd/iommu.c
+> @@ -43,14 +43,8 @@ struct perf_amd_iommu {
+>  	u8 max_counters;
+>  	u64 cntr_assign_mask;
+>  	raw_spinlock_t lock;
+> -	const struct attribute_group *attr_groups[4];
+>  };
 >  
-> -static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
-> -				    u8 bank, u8 cntr, u8 fxn,
-> -				    u64 *value, bool is_write);
+> -#define format_group	attr_groups[0]
+> -#define cpumask_group	attr_groups[1]
+> -#define events_group	attr_groups[2]
+> -#define null_group	attr_groups[3]
 > -
->  static inline void update_last_devid(u16 devid)
+>  /*---------------------------------------------
+>   * sysfs format attributes
+>   *---------------------------------------------*/
+> @@ -81,6 +75,10 @@ struct perf_amd_iommu {
+>  /*---------------------------------------------
+>   * sysfs events attributes
+>   *---------------------------------------------*/
+> +static struct attribute_group amd_iommu_events_group = {
+> +	.name = "events",
+> +};
+> +
+>  struct amd_iommu_event_desc {
+>  	struct kobj_attribute attr;
+>  	const char *event;
+> @@ -388,76 +386,63 @@ static void perf_iommu_del(struct perf_event *event, int flags)
+>  	perf_event_update_userpage(event);
+>  }
+>  
+> -static __init int _init_events_attrs(struct perf_amd_iommu *perf_iommu)
+> +static __init int _init_events_attrs(void)
 >  {
->  	if (devid > amd_iommu_last_bdf)
-> @@ -1481,6 +1477,14 @@ static int __init init_iommu_all(struct acpi_table_header *table)
+> -	struct attribute **attrs;
+> -	struct attribute_group *attr_group;
+>  	int i = 0, j;
+> +	struct attribute **attrs;
+>  
+>  	while (amd_iommu_v2_event_descs[i].attr.attr.name)
+>  		i++;
+>  
+> -	attr_group = kzalloc(sizeof(struct attribute *)
+> -		* (i + 1) + sizeof(*attr_group), GFP_KERNEL);
+> -	if (!attr_group)
+> +	attrs = kzalloc(sizeof(struct attribute **) * (i + 1), GFP_KERNEL);
+> +	if (!attrs)
+>  		return -ENOMEM;
+>  
+> -	attrs = (struct attribute **)(attr_group + 1);
+>  	for (j = 0; j < i; j++)
+>  		attrs[j] = &amd_iommu_v2_event_descs[j].attr.attr;
+>  
+> -	attr_group->name = "events";
+> -	attr_group->attrs = attrs;
+> -	perf_iommu->events_group = attr_group;
+> -
+> +	amd_iommu_events_group.attrs = attrs;
 >  	return 0;
 >  }
 >  
-> +#define iommu_pc_get_reg(i, b, c, f, v) \
-> +	iommu_pc_get_set_reg(i, b, c, f, v, false)
-> +
-> +#define iommu_pc_set_reg(i, b, c, f, v) \
-> +	iommu_pc_get_set_reg(i, b, c, f, v, true)
-
-
-Those are completely useless indirection. Just call
-iommu_pc_get_set_reg() directly.
-
-> +
-> +static int iommu_pc_get_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
-> +				u8 fxn, u64 *value, bool is_write);
->  
->  static void init_iommu_perf_ctr(struct amd_iommu *iommu)
+>  static __init void amd_iommu_pc_exit(void)
 >  {
+> -	if (__perf_iommu.events_group != NULL) {
+> -		kfree(__perf_iommu.events_group);
+> -		__perf_iommu.events_group = NULL;
+> +	if (amd_iommu_events_group.attrs) {
+> +		kfree(amd_iommu_events_group.attrs);
 
+
+Please integrate scripts/checkpatch.pl in your patch creation workflow.
+Some of the warnings/errors *actually* make sense. Like this one:
+
+WARNING: kfree(NULL) is safe and this check is probably not required
+#98: FILE: arch/x86/events/amd/iommu.c:411:
++       if (amd_iommu_events_group.attrs) {
++               kfree(amd_iommu_events_group.attrs);
+
+> +		amd_iommu_events_group.attrs = NULL;
+
+You keep doing that. Why?
+
+>  	}
+>  }
+>  
+> -static __init int _init_perf_amd_iommu(
+> -	struct perf_amd_iommu *perf_iommu, char *name)
+> +const struct attribute_group *amd_iommu_attr_groups[] = {
+> +	&amd_iommu_format_group,
+> +	&amd_iommu_cpumask_group,
+> +	&amd_iommu_events_group,
+> +	NULL,
+> +};
+> +
+> +static __init int
+> +_init_perf_amd_iommu(struct perf_amd_iommu *perf_iommu, char *name)
+>  {
+>  	int ret;
+>  
+>  	raw_spin_lock_init(&perf_iommu->lock);
+>  
+> -	perf_iommu->format_group = &amd_iommu_format_group;
+> -
+>  	/* Init cpumask attributes to only core 0 */
+>  	cpumask_set_cpu(0, &iommu_cpumask);
+> -	perf_iommu->cpumask_group = &amd_iommu_cpumask_group;
+> -
+> -	ret = _init_events_attrs(perf_iommu);
+> -	if (ret) {
+> -		pr_err("Error initializing AMD IOMMU perf events.\n");
+> -		return ret;
+> -	}
+>  
+>  	perf_iommu->max_banks = amd_iommu_pc_get_max_banks(0);
+>  	perf_iommu->max_counters = amd_iommu_pc_get_max_counters(0);
+>  	if (!perf_iommu->max_banks || !perf_iommu->max_counters)
+>  		return -EINVAL;
+>  
+> -	perf_iommu->null_group = NULL;
+> -	perf_iommu->pmu.attr_groups = perf_iommu->attr_groups;
+> -
+> +	perf_iommu->pmu.attr_groups = amd_iommu_attr_groups;
+>  	ret = perf_pmu_register(&perf_iommu->pmu, name, -1);
+> -	if (ret) {
+> +	if (ret)
+>  		pr_err("Error initializing AMD IOMMU perf counters.\n");
+> -		amd_iommu_pc_exit();
+> -	} else {
+> +	else
+>  		pr_info("perf: amd_iommu: Detected. (%d banks, %d counters/bank)\n",
+>  			amd_iommu_pc_get_max_banks(0),
+>  			amd_iommu_pc_get_max_counters(0));
+> -	}
+> -
+>  	return ret;
+>  }
+>  
+> @@ -471,24 +456,28 @@ static __init int _init_perf_amd_iommu(
+>  		.stop		= perf_iommu_stop,
+>  		.read		= perf_iommu_read,
+>  	},
+> -	.max_banks		= 0x00,
+> -	.max_counters		= 0x00,
+> -	.cntr_assign_mask	= 0ULL,
+> -	.format_group		= NULL,
+> -	.cpumask_group		= NULL,
+> -	.events_group		= NULL,
+> -	.null_group		= NULL,
+>  };
+>  
+>  static __init int amd_iommu_pc_init(void)
+>  {
+> +	int ret;
+> +
+>  	/* Make sure the IOMMU PC resource is available */
+>  	if (!amd_iommu_pc_supported())
+>  		return -ENODEV;
+>  
+> -	_init_perf_amd_iommu(&__perf_iommu, "amd_iommu");
+> +	ret = _init_events_attrs();
+> +	if (ret)
+> +		goto err_out;
+
+So that's actually
+
+	if (ret)
+		return ret;
+
+to propagate the -ENOMEM.
+
+>  
+> -	return 0;
+> +	ret = _init_perf_amd_iommu(&__perf_iommu, "amd_iommu");
+> +	if (ret)
+> +		goto err_out;
+
+Then here you can do:
+
+	if (ret)
+		amd_iommu_pc_exit();
+
+	return ret;
+
+and simplify it a bit and get rid of the err_out label.
 
 -- 
 Regards/Gruss,
