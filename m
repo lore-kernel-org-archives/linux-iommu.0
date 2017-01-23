@@ -1,16 +1,13 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v9 08/18] iommu/vt-d: Implement reserved region get/put
-	callbacks
-Date: Mon, 23 Jan 2017 11:46:24 +0000
-Message-ID: <20170123114624.GH4622@arm.com>
-References: <1484859483-2866-1-git-send-email-eric.auger@redhat.com>
-	<1484859483-2866-9-git-send-email-eric.auger@redhat.com>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v2 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
+Date: Mon, 23 Jan 2017 20:40:29 +0900
+Message-ID: <148517162908.13306.2467186615655446796.sendpatchset@little-apple>
+References: <148517158986.13306.314435910710426381.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1484859483-2866-9-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <148517158986.13306.314435910710426381.sendpatchset@little-apple>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,188 +17,68 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-[adding David Woodhouse, since he maintains this driver]
+From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Will
+Bump up the maximum numbers of micro-TLBS to 48.
 
-On Thu, Jan 19, 2017 at 08:57:53PM +0000, Eric Auger wrote:
-> This patch registers the [FEE0_0000h - FEF0_000h] 1MB MSI
-> range as a reserved region and RMRR regions as direct regions.
-> 
-> This will allow to report those reserved regions in the
-> iommu-group sysfs.
-> 
-> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> 
-> ---
-> v6 -> v7:
-> - report RMRR regions as direct regions
-> - Due to the usage of rcu_read_lock, the rmrr reserved region
->   allocation is done on rmrr allocation.
-> - use IOMMU_RESV_RESERVED
-> 
-> RFCv2 -> RFCv3:
-> - use get/put_resv_region callbacks.
-> 
-> RFC v1 -> RFC v2:
-> - fix intel_iommu_add_reserved_regions name
-> - use IOAPIC_RANGE_START and IOAPIC_RANGE_END defines
-> - return if the MSI region is already registered;
-> ---
->  drivers/iommu/intel-iommu.c | 92 ++++++++++++++++++++++++++++++++++++---------
->  1 file changed, 74 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 8a18525..bce59a5 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -440,6 +440,7 @@ struct dmar_rmrr_unit {
->  	u64	end_address;		/* reserved end address */
->  	struct dmar_dev_scope *devices;	/* target devices */
->  	int	devices_cnt;		/* target device count */
-> +	struct iommu_resv_region *resv; /* reserved region handle */
->  };
->  
->  struct dmar_atsr_unit {
-> @@ -4246,27 +4247,40 @@ static inline void init_iommu_pm_ops(void) {}
->  int __init dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg)
->  {
->  	struct acpi_dmar_reserved_memory *rmrr;
-> +	int prot = DMA_PTE_READ|DMA_PTE_WRITE;
->  	struct dmar_rmrr_unit *rmrru;
-> +	size_t length;
->  
->  	rmrru = kzalloc(sizeof(*rmrru), GFP_KERNEL);
->  	if (!rmrru)
-> -		return -ENOMEM;
-> +		goto out;
->  
->  	rmrru->hdr = header;
->  	rmrr = (struct acpi_dmar_reserved_memory *)header;
->  	rmrru->base_address = rmrr->base_address;
->  	rmrru->end_address = rmrr->end_address;
-> +
-> +	length = rmrr->end_address - rmrr->base_address + 1;
-> +	rmrru->resv = iommu_alloc_resv_region(rmrr->base_address, length, prot,
-> +					      IOMMU_RESV_DIRECT);
-> +	if (!rmrru->resv)
-> +		goto free_rmrru;
-> +
->  	rmrru->devices = dmar_alloc_dev_scope((void *)(rmrr + 1),
->  				((void *)rmrr) + rmrr->header.length,
->  				&rmrru->devices_cnt);
-> -	if (rmrru->devices_cnt && rmrru->devices == NULL) {
-> -		kfree(rmrru);
-> -		return -ENOMEM;
-> -	}
-> +	if (rmrru->devices_cnt && rmrru->devices == NULL)
-> +		goto free_all;
->  
->  	list_add(&rmrru->list, &dmar_rmrr_units);
->  
->  	return 0;
-> +free_all:
-> +	kfree(rmrru->resv);
-> +free_rmrru:
-> +	kfree(rmrru);
-> +out:
-> +	return -ENOMEM;
->  }
->  
->  static struct dmar_atsr_unit *dmar_find_atsr(struct acpi_dmar_atsr *atsr)
-> @@ -4480,6 +4494,7 @@ static void intel_iommu_free_dmars(void)
->  	list_for_each_entry_safe(rmrru, rmrr_n, &dmar_rmrr_units, list) {
->  		list_del(&rmrru->list);
->  		dmar_free_dev_scope(&rmrru->devices, &rmrru->devices_cnt);
-> +		kfree(rmrru->resv);
->  		kfree(rmrru);
->  	}
->  
-> @@ -5203,6 +5218,45 @@ static void intel_iommu_remove_device(struct device *dev)
->  	iommu_device_unlink(iommu->iommu_dev, dev);
->  }
->  
-> +static void intel_iommu_get_resv_regions(struct device *device,
-> +					 struct list_head *head)
-> +{
-> +	struct iommu_resv_region *reg;
-> +	struct dmar_rmrr_unit *rmrr;
-> +	struct device *i_dev;
-> +	int i;
-> +
-> +	rcu_read_lock();
-> +	for_each_rmrr_units(rmrr) {
-> +		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
-> +					  i, i_dev) {
-> +			if (i_dev != device)
-> +				continue;
-> +
-> +			list_add_tail(&rmrr->resv->list, head);
-> +		}
-> +	}
-> +	rcu_read_unlock();
-> +
-> +	reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
-> +				      IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
-> +				      0, IOMMU_RESV_RESERVED);
-> +	if (!reg)
-> +		return;
-> +	list_add_tail(&reg->list, head);
-> +}
-> +
-> +static void intel_iommu_put_resv_regions(struct device *dev,
-> +					 struct list_head *head)
-> +{
-> +	struct iommu_resv_region *entry, *next;
-> +
-> +	list_for_each_entry_safe(entry, next, head, list) {
-> +		if (entry->type == IOMMU_RESV_RESERVED)
-> +			kfree(entry);
-> +	}
-> +}
-> +
->  #ifdef CONFIG_INTEL_IOMMU_SVM
->  #define MAX_NR_PASID_BITS (20)
->  static inline unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
-> @@ -5333,19 +5387,21 @@ struct intel_iommu *intel_svm_device_to_iommu(struct device *dev)
->  #endif /* CONFIG_INTEL_IOMMU_SVM */
->  
->  static const struct iommu_ops intel_iommu_ops = {
-> -	.capable	= intel_iommu_capable,
-> -	.domain_alloc	= intel_iommu_domain_alloc,
-> -	.domain_free	= intel_iommu_domain_free,
-> -	.attach_dev	= intel_iommu_attach_device,
-> -	.detach_dev	= intel_iommu_detach_device,
-> -	.map		= intel_iommu_map,
-> -	.unmap		= intel_iommu_unmap,
-> -	.map_sg		= default_iommu_map_sg,
-> -	.iova_to_phys	= intel_iommu_iova_to_phys,
-> -	.add_device	= intel_iommu_add_device,
-> -	.remove_device	= intel_iommu_remove_device,
-> -	.device_group   = pci_device_group,
-> -	.pgsize_bitmap	= INTEL_IOMMU_PGSIZES,
-> +	.capable		= intel_iommu_capable,
-> +	.domain_alloc		= intel_iommu_domain_alloc,
-> +	.domain_free		= intel_iommu_domain_free,
-> +	.attach_dev		= intel_iommu_attach_device,
-> +	.detach_dev		= intel_iommu_detach_device,
-> +	.map			= intel_iommu_map,
-> +	.unmap			= intel_iommu_unmap,
-> +	.map_sg			= default_iommu_map_sg,
-> +	.iova_to_phys		= intel_iommu_iova_to_phys,
-> +	.add_device		= intel_iommu_add_device,
-> +	.remove_device		= intel_iommu_remove_device,
-> +	.get_resv_regions	= intel_iommu_get_resv_regions,
-> +	.put_resv_regions	= intel_iommu_put_resv_regions,
-> +	.device_group		= pci_device_group,
-> +	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
->  };
->  
->  static void quirk_iommu_g4x_gfx(struct pci_dev *dev)
-> -- 
-> 1.9.1
-> 
+Each IPMMU device instance get micro-TLB assignment via
+the "iommus" property in DT. Older SoCs tend to use a
+maximum number of 32 micro-TLBs per IPMMU instance however
+newer SoCs such as r8a7796 make use of up to 48 micro-TLBs.
+
+At this point no SoC specific handling is done to validate
+the maximum number of micro-TLBs, and because of that the
+DT information is assumed to be within correct range for
+each particular SoC.
+
+If needed in the future SoC specific feature flags can be
+added to handle the maximum number of micro-TLBs without
+requiring DT changes, however at this point this does not
+seem necessary.
+
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+---
+
+ Changes since V1:
+ - Added support for the second I/O range at 0x600.
+
+ drivers/iommu/ipmmu-vmsa.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+--- 0008/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-01-23 19:22:54.150607110 +0900
+@@ -214,7 +214,9 @@ static void set_archdata(struct device *
+ #define IMPMBA(n)			(0x0280 + ((n) * 4))
+ #define IMPMBD(n)			(0x02c0 + ((n) * 4))
+ 
+-#define IMUCTR(n)			(0x0300 + ((n) * 16))
++#define IMUCTR(n)			(n) < 32 ? IMUCTR0(n) : IMUCTR32(n)
++#define IMUCTR0(n)			(0x0300 + ((n) * 16))
++#define IMUCTR32(n)			(0x0600 + (((n) - 32) * 16))
+ #define IMUCTR_FIXADDEN			(1 << 31)
+ #define IMUCTR_FIXADD_MASK		(0xff << 16)
+ #define IMUCTR_FIXADD_SHIFT		16
+@@ -224,7 +226,9 @@ static void set_archdata(struct device *
+ #define IMUCTR_FLUSH			(1 << 1)
+ #define IMUCTR_MMUEN			(1 << 0)
+ 
+-#define IMUASID(n)			(0x0308 + ((n) * 16))
++#define IMUASID(n)			(n) < 32 ? IMUASID0(n) : IMUASID32(n)
++#define IMUASID0(n)			(0x0308 + ((n) * 16))
++#define IMUASID32(n)			(0x0608 + (((n) - 32) * 16))
+ #define IMUASID_ASID8_MASK		(0xff << 8)
+ #define IMUASID_ASID8_SHIFT		8
+ #define IMUASID_ASID0_MASK		(0xff << 0)
+@@ -1141,7 +1145,7 @@ static int ipmmu_probe(struct platform_d
+ 	}
+ 
+ 	mmu->dev = &pdev->dev;
+-	mmu->num_utlbs = 32;
++	mmu->num_utlbs = 48;
+ 	spin_lock_init(&mmu->lock);
+ 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
+ 	mmu->features = match->data;
