@@ -1,16 +1,13 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v9 10/18] iommu/arm-smmu: Implement reserved region
-	get/put callbacks
-Date: Mon, 23 Jan 2017 11:44:57 +0000
-Message-ID: <20170123114457.GG4622@arm.com>
-References: <1484859483-2866-1-git-send-email-eric.auger@redhat.com>
-	<1484859483-2866-11-git-send-email-eric.auger@redhat.com>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v2 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding
+Date: Mon, 23 Jan 2017 20:40:19 +0900
+Message-ID: <148517161983.13306.12375123408367009131.sendpatchset@little-apple>
+References: <148517158986.13306.314435910710426381.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1484859483-2866-11-git-send-email-eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <148517158986.13306.314435910710426381.sendpatchset@little-apple>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,26 +17,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: drjones-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, jason-NLaQJdtUoK4Be96aLqz0jA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, punit.agrawal-5wv7dgnIgG8@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, pranav.sawargaonkar-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org, gpkulkarni-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, christoffer.dall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, eric.auger.pro-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 19, 2017 at 08:57:55PM +0000, Eric Auger wrote:
-> The get() populates the list with the MSI IOVA reserved window.
-> 
-> At the moment an arbitray MSI IOVA window is set at 0x8000000
-> of size 1MB. This will allow to report those info in iommu-group
-> sysfs.
-> 
-> Signed-off-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-> Reviewed-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> Tested-by: Tomasz Nowicki <tomasz.nowicki-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> Tested-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
-> 
-> ---
+From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-I acked this before:
+Update the IPMMU DT binding documentation to include the r8a7796 compat
+string for R-Car M3-W.
 
-Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Acked-by: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Acked-by: Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Acked-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+---
 
-Will
+ Previously posted separately as
+ [PATCH v3] iommu/ipmmu-vmsa: Add r8a7796 DT binding
+
+ Changes since separate V3 version:
+ - Added Acked-by from Geert - thanks!
+
+ Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- 0001/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
++++ work/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt	2016-06-06 11:27:37.560607110 +0900
+@@ -16,6 +16,7 @@ Required Properties:
+     - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
+     - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
+     - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
++    - "renesas,ipmmu-r8a7796" for the R8A7796 (R-Car M3-W) IPMMU.
+     - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
+ 
+   - reg: Base address and size of the IPMMU registers.
