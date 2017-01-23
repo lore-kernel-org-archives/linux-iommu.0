@@ -1,65 +1,83 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
-Date: Mon, 23 Jan 2017 13:42:15 +0100
-Message-ID: <CAMuHMdXc6iMgnN9GCgu4DecX2HVbReu_4=cb+6_LMD39=DYnMA@mail.gmail.com>
-References: <148517158986.13306.314435910710426381.sendpatchset@little-apple> <148517162908.13306.2467186615655446796.sendpatchset@little-apple>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [PATCH/RFC 2/2] iommu/ipmmu-vmsa: Opt-in slave devices based on
+	ES version
+Date: Mon, 23 Jan 2017 13:50:18 +0100
+Message-ID: <CAMuHMdWyV4DWN5pKsp+Z6C0MhZF5fKch4T1g1_Hbk3oxrR6_zw@mail.gmail.com>
+References: <148517349585.18128.10696161017872202809.sendpatchset@little-apple>
+	<148517354599.18128.1970642879780864733.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <148517162908.13306.2467186615655446796.sendpatchset@little-apple>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <joro@8bytes.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Simon Horman <horms+renesas@verge.net.au>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <148517354599.18128.1970642879780864733.sendpatchset@little-apple>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Magnus,
 
-On Mon, Jan 23, 2017 at 12:40 PM, Magnus Damm <magnus.damm@gmail.com> wrote:
-> From: Magnus Damm <damm+renesas@opensource.se>
+On Mon, Jan 23, 2017 at 1:12 PM, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 >
-> Bump up the maximum numbers of micro-TLBS to 48.
+> Match on r8a7795 ES2 and enable a certain DMA controller.
+> In other cases the IPMMU driver remains disabled.
 >
-> Each IPMMU device instance get micro-TLB assignment via
-> the "iommus" property in DT. Older SoCs tend to use a
-> maximum number of 32 micro-TLBs per IPMMU instance however
-> newer SoCs such as r8a7796 make use of up to 48 micro-TLBs.
+> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+> ---
 >
-> At this point no SoC specific handling is done to validate
-> the maximum number of micro-TLBs, and because of that the
-> DT information is assumed to be within correct range for
-> each particular SoC.
+>  drivers/iommu/ipmmu-vmsa.c |   24 ++++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
 >
-> If needed in the future SoC specific feature flags can be
-> added to handle the maximum number of micro-TLBs without
-> requiring DT changes, however at this point this does not
-> seem necessary.
+> --- 0001/drivers/iommu/ipmmu-vmsa.c
+> +++ work/drivers/iommu/ipmmu-vmsa.c     2017-01-23 20:57:02.620607110 +0900
+> @@ -23,6 +23,7 @@
+>  #include <linux/platform_device.h>
+>  #include <linux/sizes.h>
+>  #include <linux/slab.h>
+> +#include <linux/sys_soc.h>
 >
-> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
-
-Thanks for your patch!
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-> @@ -1141,7 +1145,7 @@ static int ipmmu_probe(struct platform_d
+>  #if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
+>  #include <asm/dma-iommu.h>
+> @@ -1002,16 +1003,39 @@ static void ipmmu_domain_free_dma(struct
 >         }
+>  }
 >
->         mmu->dev = &pdev->dev;
-> -       mmu->num_utlbs = 32;
-> +       mmu->num_utlbs = 48;
+> +static const struct soc_device_attribute r8a7795es2[] = {
+> +       { .soc_id = "r8a7795", .revision = "ES2.*" },
+> +       { /* sentinel */ }
+> +};
+> +
+> +static int ipmmu_slave_whitelist(struct device *dev)
+> +{
+> +       /* Opt-in slave devices based on SoC and ES version */
+> +       if (soc_device_match(r8a7795es2)) {
+> +               if (!strcmp(dev_name(dev), "e7310000.dma-controller"))
+> +                       return 0;
+> +       }
 
-This value is only used to validate the utlb channel numbers received from DT,
-in ipmmu_init_platform_device(), right?
-
->         spin_lock_init(&mmu->lock);
->         bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
->         mmu->features = match->data;
+I have two comments about the construct above:
+  1. IPMMU will be disabled on all non-r8a7795 SoCs.
+     Is that what you want?
+  2. Usually we match on the old broken versions instead (e.g. against
+     "ES1.*"), as (1) it marks more clearly support for old SoCs, and
+                (2) it makes it easier to remove the check later when these
+                    old SoCs are deemed extinct later.
 
 Gr{oetje,eeting}s,
 
                         Geert
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
 
 In personal conversations with technical people, I call myself a hacker. But
 when I'm talking to journalists I just say "programmer" or something like that.
