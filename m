@@ -1,73 +1,66 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH/RFC 2/2] iommu/ipmmu-vmsa: Opt-in slave devices based on ES version
-Date: Mon, 23 Jan 2017 21:12:25 +0900
-Message-ID: <148517354599.18128.1970642879780864733.sendpatchset@little-apple>
-References: <148517349585.18128.10696161017872202809.sendpatchset@little-apple>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <148517349585.18128.10696161017872202809.sendpatchset@little-apple>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, joro@8bytes.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>, linux-arm-kernel@lists.infradead.org
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v8 7/9] perf/amd/iommu: Check return value when set and
+ get counter value
+Date: Mon, 23 Jan 2017 13:31:36 +0100
+Message-ID: <20170123123136.GX6485@twins.programming.kicks-ass.net>
+References: <1484551416-5440-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+ <1484551416-5440-8-git-send-email-Suravee.Suthikulpanit@amd.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1484551416-5440-8-git-send-email-Suravee.Suthikulpanit@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, joro@8bytes.org, bp@alien8.de, mingo@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas@opensource.se>
+On Mon, Jan 16, 2017 at 01:23:34AM -0600, Suravee Suthikulpanit wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> 
+> In, perf_iommu_start(), we need to check the return value from
+> amd_iommu_set_reg(). In case of failure, we should not enable the PMU.
+> 
+> Also, in perf_iommu_read(), we need to check the return value from
+> amd_iommu_get_reg() before using the value.
+> 
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>  arch/x86/events/amd/iommu.c | 19 +++++++++++--------
+>  1 file changed, 11 insertions(+), 8 deletions(-)
+> 
+> diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+> index 200d2e8..cc7bea4 100644
+> --- a/arch/x86/events/amd/iommu.c
+> +++ b/arch/x86/events/amd/iommu.c
+> @@ -284,6 +284,7 @@ static void perf_iommu_disable_event(struct perf_event *event)
+>  
+>  static void perf_iommu_start(struct perf_event *event, int flags)
+>  {
+> +	u64 val;
+>  	struct hw_perf_event *hwc = &event->hw;
+>  
+>  	if (WARN_ON_ONCE(!(hwc->state & PERF_HES_STOPPED)))
+> @@ -292,15 +293,16 @@ static void perf_iommu_start(struct perf_event *event, int flags)
+>  	WARN_ON_ONCE(!(hwc->state & PERF_HES_UPTODATE));
+>  	hwc->state = 0;
+>  
+> -	if (flags & PERF_EF_RELOAD) {
+> -		u64 prev_raw_count =  local64_read(&hwc->prev_count);
+> -		amd_iommu_pc_set_reg(0, _GET_BANK(event), _GET_CNTR(event),
+> -				     IOMMU_PC_COUNTER_REG, &prev_raw_count);
+> -	}
+> +	if (!(flags & PERF_EF_RELOAD))
+> +		return;
+> +
+> +	val = local64_read(&hwc->prev_count) & GENMASK_ULL(48, 0);
+> +	if (amd_iommu_pc_set_reg(0, _GET_BANK(event), _GET_CNTR(event),
+> +				   IOMMU_PC_COUNTER_REG, &val))
+> +		return;
 
-Match on r8a7795 ES2 and enable a certain DMA controller.
-In other cases the IPMMU driver remains disabled.
-
-Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
----
-
- drivers/iommu/ipmmu-vmsa.c |   24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
-
---- 0001/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2017-01-23 20:57:02.620607110 +0900
-@@ -23,6 +23,7 @@
- #include <linux/platform_device.h>
- #include <linux/sizes.h>
- #include <linux/slab.h>
-+#include <linux/sys_soc.h>
- 
- #if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
- #include <asm/dma-iommu.h>
-@@ -1002,16 +1003,39 @@ static void ipmmu_domain_free_dma(struct
- 	}
- }
- 
-+static const struct soc_device_attribute r8a7795es2[] = {
-+	{ .soc_id = "r8a7795", .revision = "ES2.*" },
-+	{ /* sentinel */ }
-+};
-+
-+static int ipmmu_slave_whitelist(struct device *dev)
-+{
-+	/* Opt-in slave devices based on SoC and ES version */
-+	if (soc_device_match(r8a7795es2)) {
-+		if (!strcmp(dev_name(dev), "e7310000.dma-controller"))
-+			return 0;
-+	}
-+
-+	/* By default, do not allow use of IPMMU */
-+	return -ENODEV;
-+}
-+
- static int ipmmu_add_device_dma(struct device *dev)
- {
- 	struct ipmmu_vmsa_archdata *archdata = dev->archdata.iommu;
- 	struct iommu_group *group;
-+	int ret;
- 
- 	/* only accept devices with iommus property */
- 	if (of_count_phandle_with_args(dev->of_node, "iommus",
- 				       "#iommu-cells") < 0)
- 		return -ENODEV;
- 
-+	/* opt-in devices based on SoC and ES version */
-+	ret = ipmmu_slave_whitelist(dev);
-+	if (ret)
-+		return ret;
-+
- 	group = iommu_group_get_for_dev(dev);
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
+Under what conditions could this fail? ::start() is not an interface
+that expects failure, if we get this far, things should really just
+work.
