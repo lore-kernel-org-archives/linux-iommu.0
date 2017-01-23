@@ -1,211 +1,305 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v9 08/18] iommu/vt-d: Implement reserved region get/put
- callbacks
-Date: Mon, 23 Jan 2017 12:57:33 +0100
-Message-ID: <baddc4b4-2ef4-e44c-bed3-8e073b3992c1@redhat.com>
-References: <1484859483-2866-1-git-send-email-eric.auger@redhat.com>
- <1484859483-2866-9-git-send-email-eric.auger@redhat.com>
- <20170123114624.GH4622@arm.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH V6 06/11] drivers: platform: Configure dma operations at
+	probe time
+Date: Mon, 23 Jan 2017 12:07:29 +0000
+Message-ID: <20170123120729.GB12593@red-moon>
+References: <1484939748-31591-1-git-send-email-sricharan@codeaurora.org>
+	<1484939748-31591-7-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <20170123114624.GH4622@arm.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Will Deacon <will.deacon@arm.com>
-Cc: eric.auger.pro@gmail.com, christoffer.dall@linaro.org, marc.zyngier@arm.com, robin.murphy@arm.com, alex.williamson@redhat.com, joro@8bytes.org, tglx@linutronix.de, jason@lakedaemon.net, linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org, drjones@redhat.com, linux-kernel@vger.kernel.org, pranav.sawargaonkar@gmail.com, iommu@lists.linux-foundation.org, punit.agrawal@arm.com, diana.craciun@nxp.com, gpkulkarni@gmail.com, shankerd@codeaurora.org, bharat.bhushan@nxp.com, geethasowjanya.akula@gmail.com, dwmw2@infradead.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1484939748-31591-7-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Will,
+[+bjorn]
 
-On 23/01/2017 12:46, Will Deacon wrote:
-> [adding David Woodhouse, since he maintains this driver]
-
-Thank you for adding David to the list.
-
-Whoever is likely to pull this, please let me know if I need to respin
-to add missed Will's Acked-by.
-
-Thanks
-
-Eric
+On Sat, Jan 21, 2017 at 12:45:43AM +0530, Sricharan R wrote:
+> Configuring DMA ops at probe time will allow deferring device probe when
+> the IOMMU isn't available yet. The dma_configure for the device is
+> now called from the generic device_attach callback just before the
+> bus/driver probe is called. This way, configuring the DMA ops for the
+> device would be called at the same place for all bus_types, hence the
+> deferred probing mechanism should work for all buses as well.
 > 
-> Will
+> pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
+>        |                         |
+> pci_bus_add_device     (device_add/driver_register)
+>        |                         |
+> device_attach           device_initial_probe
+>        |                         |
+> __device_attach_driver    __device_attach_driver
+>        |
+> driver_probe_device
+>        |
+> really_probe
+>        |
+> dma_configure
 > 
-> On Thu, Jan 19, 2017 at 08:57:53PM +0000, Eric Auger wrote:
->> This patch registers the [FEE0_0000h - FEF0_000h] 1MB MSI
->> range as a reserved region and RMRR regions as direct regions.
->>
->> This will allow to report those reserved regions in the
->> iommu-group sysfs.
->>
->> Signed-off-by: Eric Auger <eric.auger@redhat.com>
->>
->> ---
->> v6 -> v7:
->> - report RMRR regions as direct regions
->> - Due to the usage of rcu_read_lock, the rmrr reserved region
->>   allocation is done on rmrr allocation.
->> - use IOMMU_RESV_RESERVED
->>
->> RFCv2 -> RFCv3:
->> - use get/put_resv_region callbacks.
->>
->> RFC v1 -> RFC v2:
->> - fix intel_iommu_add_reserved_regions name
->> - use IOAPIC_RANGE_START and IOAPIC_RANGE_END defines
->> - return if the MSI region is already registered;
->> ---
->>  drivers/iommu/intel-iommu.c | 92 ++++++++++++++++++++++++++++++++++++---------
->>  1 file changed, 74 insertions(+), 18 deletions(-)
->>
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->> index 8a18525..bce59a5 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -440,6 +440,7 @@ struct dmar_rmrr_unit {
->>  	u64	end_address;		/* reserved end address */
->>  	struct dmar_dev_scope *devices;	/* target devices */
->>  	int	devices_cnt;		/* target device count */
->> +	struct iommu_resv_region *resv; /* reserved region handle */
->>  };
->>  
->>  struct dmar_atsr_unit {
->> @@ -4246,27 +4247,40 @@ static inline void init_iommu_pm_ops(void) {}
->>  int __init dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg)
->>  {
->>  	struct acpi_dmar_reserved_memory *rmrr;
->> +	int prot = DMA_PTE_READ|DMA_PTE_WRITE;
->>  	struct dmar_rmrr_unit *rmrru;
->> +	size_t length;
->>  
->>  	rmrru = kzalloc(sizeof(*rmrru), GFP_KERNEL);
->>  	if (!rmrru)
->> -		return -ENOMEM;
->> +		goto out;
->>  
->>  	rmrru->hdr = header;
->>  	rmrr = (struct acpi_dmar_reserved_memory *)header;
->>  	rmrru->base_address = rmrr->base_address;
->>  	rmrru->end_address = rmrr->end_address;
->> +
->> +	length = rmrr->end_address - rmrr->base_address + 1;
->> +	rmrru->resv = iommu_alloc_resv_region(rmrr->base_address, length, prot,
->> +					      IOMMU_RESV_DIRECT);
->> +	if (!rmrru->resv)
->> +		goto free_rmrru;
->> +
->>  	rmrru->devices = dmar_alloc_dev_scope((void *)(rmrr + 1),
->>  				((void *)rmrr) + rmrr->header.length,
->>  				&rmrru->devices_cnt);
->> -	if (rmrru->devices_cnt && rmrru->devices == NULL) {
->> -		kfree(rmrru);
->> -		return -ENOMEM;
->> -	}
->> +	if (rmrru->devices_cnt && rmrru->devices == NULL)
->> +		goto free_all;
->>  
->>  	list_add(&rmrru->list, &dmar_rmrr_units);
->>  
->>  	return 0;
->> +free_all:
->> +	kfree(rmrru->resv);
->> +free_rmrru:
->> +	kfree(rmrru);
->> +out:
->> +	return -ENOMEM;
->>  }
->>  
->>  static struct dmar_atsr_unit *dmar_find_atsr(struct acpi_dmar_atsr *atsr)
->> @@ -4480,6 +4494,7 @@ static void intel_iommu_free_dmars(void)
->>  	list_for_each_entry_safe(rmrru, rmrr_n, &dmar_rmrr_units, list) {
->>  		list_del(&rmrru->list);
->>  		dmar_free_dev_scope(&rmrru->devices, &rmrru->devices_cnt);
->> +		kfree(rmrru->resv);
->>  		kfree(rmrru);
->>  	}
->>  
->> @@ -5203,6 +5218,45 @@ static void intel_iommu_remove_device(struct device *dev)
->>  	iommu_device_unlink(iommu->iommu_dev, dev);
->>  }
->>  
->> +static void intel_iommu_get_resv_regions(struct device *device,
->> +					 struct list_head *head)
->> +{
->> +	struct iommu_resv_region *reg;
->> +	struct dmar_rmrr_unit *rmrr;
->> +	struct device *i_dev;
->> +	int i;
->> +
->> +	rcu_read_lock();
->> +	for_each_rmrr_units(rmrr) {
->> +		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
->> +					  i, i_dev) {
->> +			if (i_dev != device)
->> +				continue;
->> +
->> +			list_add_tail(&rmrr->resv->list, head);
->> +		}
->> +	}
->> +	rcu_read_unlock();
->> +
->> +	reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
->> +				      IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
->> +				      0, IOMMU_RESV_RESERVED);
->> +	if (!reg)
->> +		return;
->> +	list_add_tail(&reg->list, head);
->> +}
->> +
->> +static void intel_iommu_put_resv_regions(struct device *dev,
->> +					 struct list_head *head)
->> +{
->> +	struct iommu_resv_region *entry, *next;
->> +
->> +	list_for_each_entry_safe(entry, next, head, list) {
->> +		if (entry->type == IOMMU_RESV_RESERVED)
->> +			kfree(entry);
->> +	}
->> +}
->> +
->>  #ifdef CONFIG_INTEL_IOMMU_SVM
->>  #define MAX_NR_PASID_BITS (20)
->>  static inline unsigned long intel_iommu_get_pts(struct intel_iommu *iommu)
->> @@ -5333,19 +5387,21 @@ struct intel_iommu *intel_svm_device_to_iommu(struct device *dev)
->>  #endif /* CONFIG_INTEL_IOMMU_SVM */
->>  
->>  static const struct iommu_ops intel_iommu_ops = {
->> -	.capable	= intel_iommu_capable,
->> -	.domain_alloc	= intel_iommu_domain_alloc,
->> -	.domain_free	= intel_iommu_domain_free,
->> -	.attach_dev	= intel_iommu_attach_device,
->> -	.detach_dev	= intel_iommu_detach_device,
->> -	.map		= intel_iommu_map,
->> -	.unmap		= intel_iommu_unmap,
->> -	.map_sg		= default_iommu_map_sg,
->> -	.iova_to_phys	= intel_iommu_iova_to_phys,
->> -	.add_device	= intel_iommu_add_device,
->> -	.remove_device	= intel_iommu_remove_device,
->> -	.device_group   = pci_device_group,
->> -	.pgsize_bitmap	= INTEL_IOMMU_PGSIZES,
->> +	.capable		= intel_iommu_capable,
->> +	.domain_alloc		= intel_iommu_domain_alloc,
->> +	.domain_free		= intel_iommu_domain_free,
->> +	.attach_dev		= intel_iommu_attach_device,
->> +	.detach_dev		= intel_iommu_detach_device,
->> +	.map			= intel_iommu_map,
->> +	.unmap			= intel_iommu_unmap,
->> +	.map_sg			= default_iommu_map_sg,
->> +	.iova_to_phys		= intel_iommu_iova_to_phys,
->> +	.add_device		= intel_iommu_add_device,
->> +	.remove_device		= intel_iommu_remove_device,
->> +	.get_resv_regions	= intel_iommu_get_resv_regions,
->> +	.put_resv_regions	= intel_iommu_put_resv_regions,
->> +	.device_group		= pci_device_group,
->> +	.pgsize_bitmap		= INTEL_IOMMU_PGSIZES,
->>  };
->>  
->>  static void quirk_iommu_g4x_gfx(struct pci_dev *dev)
->> -- 
->> 1.9.1
->>
+> Similarly on the device/driver_unregister path __device_release_driver is
+> called which inturn calls dma_deconfigure.
+> 
+> This patch changes the dma ops configuration time to probe time for
+> both OF and ACPI based devices.
+
+For all device types, inclusive of PCI, so please you have to:
+
+- Update the $SUBJECT
+- Copy linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+- Copy linux-acpi-u79uwXL29TZUIDd8j+nm9g@public.gmane.org org (on the series)
+
+Thanks,
+Lorenzo
+
+> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ---
+>  [V5 .. V6]
+>         * Squashed in patch 10 for configuring the dma ops of
+>           ACPI device at probe time from previous post.
+>         * Fixed a bug in dma_configure pointed out by Robin.
+> 
+>  drivers/acpi/glue.c         |  5 -----
+>  drivers/base/dd.c           |  9 +++++++++
+>  drivers/base/dma-mapping.c  | 40 ++++++++++++++++++++++++++++++++++++++++
+>  drivers/of/platform.c       |  5 +----
+>  drivers/pci/probe.c         | 28 ----------------------------
+>  include/linux/dma-mapping.h |  3 +++
+>  6 files changed, 53 insertions(+), 37 deletions(-)
+> 
+> diff --git a/drivers/acpi/glue.c b/drivers/acpi/glue.c
+> index fb19e1c..c05f241 100644
+> --- a/drivers/acpi/glue.c
+> +++ b/drivers/acpi/glue.c
+> @@ -176,7 +176,6 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
+>  	struct list_head *physnode_list;
+>  	unsigned int node_id;
+>  	int retval = -EINVAL;
+> -	enum dev_dma_attr attr;
+>  
+>  	if (has_acpi_companion(dev)) {
+>  		if (acpi_dev) {
+> @@ -233,10 +232,6 @@ int acpi_bind_one(struct device *dev, struct acpi_device *acpi_dev)
+>  	if (!has_acpi_companion(dev))
+>  		ACPI_COMPANION_SET(dev, acpi_dev);
+>  
+> -	attr = acpi_get_dma_attr(acpi_dev);
+> -	if (attr != DEV_DMA_NOT_SUPPORTED)
+> -		acpi_dma_configure(dev, attr);
+> -
+>  	acpi_physnode_link_name(physical_node_name, node_id);
+>  	retval = sysfs_create_link(&acpi_dev->dev.kobj, &dev->kobj,
+>  				   physical_node_name);
+> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
+> index a1fbf55..4882f06 100644
+> --- a/drivers/base/dd.c
+> +++ b/drivers/base/dd.c
+> @@ -19,6 +19,7 @@
+>  
+>  #include <linux/device.h>
+>  #include <linux/delay.h>
+> +#include <linux/dma-mapping.h>
+>  #include <linux/module.h>
+>  #include <linux/kthread.h>
+>  #include <linux/wait.h>
+> @@ -356,6 +357,10 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+>  	if (ret)
+>  		goto pinctrl_bind_failed;
+>  
+> +	ret = dma_configure(dev);
+> +	if (ret)
+> +		goto dma_failed;
+> +
+>  	if (driver_sysfs_add(dev)) {
+>  		printk(KERN_ERR "%s: driver_sysfs_add(%s) failed\n",
+>  			__func__, dev_name(dev));
+> @@ -417,6 +422,8 @@ static int really_probe(struct device *dev, struct device_driver *drv)
+>  	goto done;
+>  
+>  probe_failed:
+> +	dma_deconfigure(dev);
+> +dma_failed:
+>  	if (dev->bus)
+>  		blocking_notifier_call_chain(&dev->bus->p->bus_notifier,
+>  					     BUS_NOTIFY_DRIVER_NOT_BOUND, dev);
+> @@ -826,6 +833,8 @@ static void __device_release_driver(struct device *dev, struct device *parent)
+>  			drv->remove(dev);
+>  
+>  		device_links_driver_cleanup(dev);
+> +		dma_deconfigure(dev);
+> +
+>  		devres_release_all(dev);
+>  		dev->driver = NULL;
+>  		dev_set_drvdata(dev, NULL);
+> diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+> index efd71cf..449b948 100644
+> --- a/drivers/base/dma-mapping.c
+> +++ b/drivers/base/dma-mapping.c
+> @@ -7,9 +7,11 @@
+>   * This file is released under the GPLv2.
+>   */
+>  
+> +#include <linux/acpi.h>
+>  #include <linux/dma-mapping.h>
+>  #include <linux/export.h>
+>  #include <linux/gfp.h>
+> +#include <linux/of_device.h>
+>  #include <linux/slab.h>
+>  #include <linux/vmalloc.h>
+>  
+> @@ -341,3 +343,41 @@ void dma_common_free_remap(void *cpu_addr, size_t size, unsigned long vm_flags)
+>  	vunmap(cpu_addr);
+>  }
+>  #endif
+> +
+> +/*
+> + * Common configuration to enable DMA API use for a device
+> + */
+> +#include <linux/pci.h>
+> +
+> +int dma_configure(struct device *dev)
+> +{
+> +	struct device *bridge = NULL, *dma_dev = dev;
+> +	enum dev_dma_attr attr;
+> +
+> +	if (dev_is_pci(dev)) {
+> +		bridge = pci_get_host_bridge_device(to_pci_dev(dev));
+> +		dma_dev = bridge;
+> +		if (IS_ENABLED(CONFIG_OF) && dma_dev->parent &&
+> +		    dma_dev->parent->of_node)
+> +			dma_dev = dma_dev->parent;
+> +	}
+> +
+> +	if (dma_dev->of_node) {
+> +		of_dma_configure(dev, dma_dev->of_node);
+> +	} else if (has_acpi_companion(dma_dev)) {
+> +		attr = acpi_get_dma_attr(to_acpi_device_node(dma_dev->fwnode));
+> +		if (attr != DEV_DMA_NOT_SUPPORTED)
+> +			acpi_dma_configure(dev, attr);
+> +	}
+> +
+> +	if (bridge)
+> +		pci_put_host_bridge_device(bridge);
+> +
+> +	return 0;
+> +}
+> +
+> +void dma_deconfigure(struct device *dev)
+> +{
+> +	of_dma_deconfigure(dev);
+> +	acpi_dma_deconfigure(dev);
+> +}
+> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
+> index 57418f7..cf35030 100644
+> --- a/drivers/of/platform.c
+> +++ b/drivers/of/platform.c
+> @@ -22,6 +22,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/of_address.h>
+>  #include <linux/of_device.h>
+> +#include <linux/of_iommu.h>
+>  #include <linux/of_irq.h>
+>  #include <linux/of_platform.h>
+>  #include <linux/platform_device.h>
+> @@ -186,11 +187,9 @@ static struct platform_device *of_platform_device_create_pdata(
+>  
+>  	dev->dev.bus = &platform_bus_type;
+>  	dev->dev.platform_data = platform_data;
+> -	of_dma_configure(&dev->dev, dev->dev.of_node);
+>  	of_msi_configure(&dev->dev, dev->dev.of_node);
+>  
+>  	if (of_device_add(dev) != 0) {
+> -		of_dma_deconfigure(&dev->dev);
+>  		platform_device_put(dev);
+>  		goto err_clear_flag;
+>  	}
+> @@ -248,7 +247,6 @@ static struct amba_device *of_amba_device_create(struct device_node *node,
+>  		dev_set_name(&dev->dev, "%s", bus_id);
+>  	else
+>  		of_device_make_bus_id(&dev->dev);
+> -	of_dma_configure(&dev->dev, dev->dev.of_node);
+>  
+>  	/* Allow the HW Peripheral ID to be overridden */
+>  	prop = of_get_property(node, "arm,primecell-periphid", NULL);
+> @@ -542,7 +540,6 @@ static int of_platform_device_destroy(struct device *dev, void *data)
+>  		amba_device_unregister(to_amba_device(dev));
+>  #endif
+>  
+> -	of_dma_deconfigure(dev);
+>  	of_node_clear_flag(dev->of_node, OF_POPULATED);
+>  	of_node_clear_flag(dev->of_node, OF_POPULATED_BUS);
+>  	return 0;
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index 204960e..89ebb6c 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -1864,33 +1864,6 @@ static void pci_set_msi_domain(struct pci_dev *dev)
+>  	dev_set_msi_domain(&dev->dev, d);
+>  }
+>  
+> -/**
+> - * pci_dma_configure - Setup DMA configuration
+> - * @dev: ptr to pci_dev struct of the PCI device
+> - *
+> - * Function to update PCI devices's DMA configuration using the same
+> - * info from the OF node or ACPI node of host bridge's parent (if any).
+> - */
+> -static void pci_dma_configure(struct pci_dev *dev)
+> -{
+> -	struct device *bridge = pci_get_host_bridge_device(dev);
+> -
+> -	if (IS_ENABLED(CONFIG_OF) &&
+> -		bridge->parent && bridge->parent->of_node) {
+> -			of_dma_configure(&dev->dev, bridge->parent->of_node);
+> -	} else if (has_acpi_companion(bridge)) {
+> -		struct acpi_device *adev = to_acpi_device_node(bridge->fwnode);
+> -		enum dev_dma_attr attr = acpi_get_dma_attr(adev);
+> -
+> -		if (attr == DEV_DMA_NOT_SUPPORTED)
+> -			dev_warn(&dev->dev, "DMA not supported.\n");
+> -		else
+> -			acpi_dma_configure(&dev->dev, attr);
+> -	}
+> -
+> -	pci_put_host_bridge_device(bridge);
+> -}
+> -
+>  void pci_device_add(struct pci_dev *dev, struct pci_bus *bus)
+>  {
+>  	int ret;
+> @@ -1904,7 +1877,6 @@ void pci_device_add(struct pci_dev *dev, struct pci_bus *bus)
+>  	dev->dev.dma_mask = &dev->dma_mask;
+>  	dev->dev.dma_parms = &dev->dma_parms;
+>  	dev->dev.coherent_dma_mask = 0xffffffffull;
+> -	pci_dma_configure(dev);
+>  
+>  	pci_set_dma_max_seg_size(dev, 65536);
+>  	pci_set_dma_seg_boundary(dev, 0xffffffff);
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 10c5a17b1..939bf77 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -708,6 +708,9 @@ void *dma_mark_declared_memory_occupied(struct device *dev,
+>  }
+>  #endif /* CONFIG_HAVE_GENERIC_DMA_COHERENT */
+>  
+> +int dma_configure(struct device *dev);
+> +void dma_deconfigure(struct device *dev);
+> +
+>  /*
+>   * Managed DMA API
+>   */
+> -- 
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+> 
