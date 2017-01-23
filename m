@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v2 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
-Date: Mon, 23 Jan 2017 20:40:29 +0900
-Message-ID: <148517162908.13306.2467186615655446796.sendpatchset@little-apple>
+Subject: [PATCH v2 3/3] iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
+Date: Mon, 23 Jan 2017 20:40:38 +0900
+Message-ID: <148517163800.13306.4525529383838653751.sendpatchset@little-apple>
 References: <148517158986.13306.314435910710426381.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,62 +23,48 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Bump up the maximum numbers of micro-TLBS to 48.
-
-Each IPMMU device instance get micro-TLB assignment via
-the "iommus" property in DT. Older SoCs tend to use a
-maximum number of 32 micro-TLBs per IPMMU instance however
-newer SoCs such as r8a7796 make use of up to 48 micro-TLBs.
-
-At this point no SoC specific handling is done to validate
-the maximum number of micro-TLBs, and because of that the
-DT information is assumed to be within correct range for
-each particular SoC.
-
-If needed in the future SoC specific feature flags can be
-added to handle the maximum number of micro-TLBs without
-requiring DT changes, however at this point this does not
-seem necessary.
+Support the r8a7796 IPMMU by sharing feature flags between
+r8a7795 and r8a7796. Also update IOMMU_OF_DECLARE to hook
+up the updated compat string.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
  Changes since V1:
- - Added support for the second I/O range at 0x600.
+ - None
 
- drivers/iommu/ipmmu-vmsa.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- 0008/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2017-01-23 19:22:54.150607110 +0900
-@@ -214,7 +214,9 @@ static void set_archdata(struct device *
- #define IMPMBA(n)			(0x0280 + ((n) * 4))
- #define IMPMBD(n)			(0x02c0 + ((n) * 4))
+--- 0031/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2016-06-06 11:19:40.210607110 +0900
+@@ -1074,7 +1074,7 @@ static const struct ipmmu_features ipmmu
+ 	.twobit_imttbcr_sl0 = false,
+ };
  
--#define IMUCTR(n)			(0x0300 + ((n) * 16))
-+#define IMUCTR(n)			(n) < 32 ? IMUCTR0(n) : IMUCTR32(n)
-+#define IMUCTR0(n)			(0x0300 + ((n) * 16))
-+#define IMUCTR32(n)			(0x0600 + (((n) - 32) * 16))
- #define IMUCTR_FIXADDEN			(1 << 31)
- #define IMUCTR_FIXADD_MASK		(0xff << 16)
- #define IMUCTR_FIXADD_SHIFT		16
-@@ -224,7 +226,9 @@ static void set_archdata(struct device *
- #define IMUCTR_FLUSH			(1 << 1)
- #define IMUCTR_MMUEN			(1 << 0)
+-static const struct ipmmu_features ipmmu_features_r8a7795 = {
++static const struct ipmmu_features ipmmu_features_rcar_gen3 = {
+ 	.use_ns_alias_offset = false,
+ 	.has_cache_leaf_nodes = true,
+ 	.has_eight_ctx = true,
+@@ -1088,7 +1088,10 @@ static const struct of_device_id ipmmu_o
+ 		.data = &ipmmu_features_default,
+ 	}, {
+ 		.compatible = "renesas,ipmmu-r8a7795",
+-		.data = &ipmmu_features_r8a7795,
++		.data = &ipmmu_features_rcar_gen3,
++	}, {
++		.compatible = "renesas,ipmmu-r8a7796",
++		.data = &ipmmu_features_rcar_gen3,
+ 	}, {
+ 		/* Terminator */
+ 	},
+@@ -1268,6 +1271,8 @@ IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "r
+ 		 ipmmu_vmsa_iommu_of_setup);
+ IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795",
+ 		 ipmmu_vmsa_iommu_of_setup);
++IOMMU_OF_DECLARE(ipmmu_r8a7796_iommu_of, "renesas,ipmmu-r8a7796",
++		 ipmmu_vmsa_iommu_of_setup);
+ #endif
  
--#define IMUASID(n)			(0x0308 + ((n) * 16))
-+#define IMUASID(n)			(n) < 32 ? IMUASID0(n) : IMUASID32(n)
-+#define IMUASID0(n)			(0x0308 + ((n) * 16))
-+#define IMUASID32(n)			(0x0608 + (((n) - 32) * 16))
- #define IMUASID_ASID8_MASK		(0xff << 8)
- #define IMUASID_ASID8_SHIFT		8
- #define IMUASID_ASID0_MASK		(0xff << 0)
-@@ -1141,7 +1145,7 @@ static int ipmmu_probe(struct platform_d
- 	}
- 
- 	mmu->dev = &pdev->dev;
--	mmu->num_utlbs = 32;
-+	mmu->num_utlbs = 48;
- 	spin_lock_init(&mmu->lock);
- 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
- 	mmu->features = match->data;
+ MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
