@@ -1,83 +1,71 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH/RFC 1/2] arm64: mm: Silently allow devices lacking IOMMU
-	group
-Date: Mon, 23 Jan 2017 12:34:05 +0000
-Message-ID: <66c082c6-da2e-9765-0db8-e0ba2c5bd501@arm.com>
-References: <148517349585.18128.10696161017872202809.sendpatchset@little-apple>
-	<148517353630.18128.12799811817831597628.sendpatchset@little-apple>
+From: Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH v8 3/9] perf/amd/iommu: Misc fix up perf_iommu_read
+Date: Mon, 23 Jan 2017 13:33:30 +0100
+Message-ID: <20170123123330.GY6485@twins.programming.kicks-ass.net>
+References: <1484551416-5440-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+ <1484551416-5440-4-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <148517353630.18128.12799811817831597628.sendpatchset@little-apple>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org, laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1484551416-5440-4-git-send-email-Suravee.Suthikulpanit@amd.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit@amd.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, joro@8bytes.org, bp@alien8.de, mingo@redhat.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Magnus,
+On Mon, Jan 16, 2017 at 01:23:30AM -0600, Suravee Suthikulpanit wrote:
+>  static void perf_iommu_read(struct perf_event *event)
+>  {
+> -	u64 count = 0ULL;
+> -	u64 prev_raw_count = 0ULL;
+> -	u64 delta = 0ULL;
+> +	u64 count, prev;
+> +	s64 delta;
 
-On 23/01/17 12:12, Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-> 
-> Consider failure of iommu_get_domain_for_dev() as non-critical and
-> get rid of the warning printout. This allows IOMMU properties to be
-> included in the DTB even though the kernel is configured with
-> CONFIG_IOMMU_API=n or in case a particular IOMMU driver refuses to
-> enable IOMMU support for a certain slave device and returns error
-> from the ->add_device() callback.
-> 
-> This is only a cosmetic change that removes console warning printouts.
+I did send that email where I told I was mistaken with that suggestion,
+right? Since the counter always increments (it does, right), a negative
+delta does not make sense.
 
-The warning is there for a reason - at this point, we *expected* the
-device to be using an IOMMU for DMA, so a failure is significant. Rather
-than masking genuine failures in other cases because your case
-deliberately breaks that expectation, simply change the expectation -
-i.e. rather than letting of_xlate() succeed then failing add_device()
-later, reject the of_xlate() call up-front such that the DMA layer never
-gets told about the IOMMU in the first place.
-
-Robin.
-
-> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-> ---
-> 
->  arch/arm64/mm/dma-mapping.c |   10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
-> 
-> --- 0001/arch/arm64/mm/dma-mapping.c
-> +++ work/arch/arm64/mm/dma-mapping.c	2017-01-23 20:54:40.060607110 +0900
-> @@ -827,11 +827,19 @@ static bool do_iommu_attach(struct devic
->  	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+>  	struct hw_perf_event *hwc = &event->hw;
 >  
->  	/*
-> +	 * In case IOMMU support is excluded from the kernel or if the device
-> +	 * is not hooked up to any IOMMU group then be silent and keep the
-> +	 * old dma_ops.
-> +	 */
-> +	if (!domain)
-> +		return false;
-> +
+>  	amd_iommu_pc_get_set_reg_val(_GET_DEVID(event),
+> @@ -330,18 +329,20 @@ static void perf_iommu_read(struct perf_event *event)
+>  				IOMMU_PC_COUNTER_REG, &count, false);
+>  
+>  	/* IOMMU pc counter register is only 48 bits */
+> -	count &= 0xFFFFFFFFFFFFULL;
+> +	count &= GENMASK_ULL(48, 0);
+
+Why do you need that at all? If the counter is only 48 bits, what does
+the hardware do with the upper bits?
+
+>  
+> -	prev_raw_count =  local64_read(&hwc->prev_count);
+> -	if (local64_cmpxchg(&hwc->prev_count, prev_raw_count,
+> -					count) != prev_raw_count)
+> -		return;
+> +	prev = local64_read(&hwc->prev_count);
+
+I'm still not convinced you can do away with that cmpxchg.
+
+>  
+> -	/* Handling 48-bit counter overflowing */
+> -	delta = (count << COUNTER_SHIFT) - (prev_raw_count << COUNTER_SHIFT);
 > +	/*
->  	 * If the IOMMU driver has the DMA domain support that we require,
->  	 * then the IOMMU core will have already configured a group for this
->  	 * device, and allocated the default domain for that group.
->  	 */
-> -	if (!domain || iommu_dma_init_domain(domain, dma_base, size, dev)) {
-> +	if (iommu_dma_init_domain(domain, dma_base, size, dev)) {
->  		pr_warn("Failed to set up IOMMU for device %s; retaining platform DMA ops\n",
->  			dev_name(dev));
->  		return false;
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> +	 * Since we do not enable counter overflow interrupts,
+> +	 * we do not have to worry about prev_count changing on us.
+> +	 */
+> +	local64_set(&hwc->prev_count, count);
+> +
+> +	/* Handle 48-bit counter overflow */
+> +	delta = (count << COUNTER_SHIFT) - (prev << COUNTER_SHIFT);
+>  	delta >>= COUNTER_SHIFT;
+>  	local64_add(delta, &event->count);
+> -
+>  }
+>  
+>  static void perf_iommu_stop(struct perf_event *event, int flags)
+> -- 
+> 1.8.3.1
 > 
