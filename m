@@ -1,124 +1,187 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH/RFC 2/2] iommu/ipmmu-vmsa: Opt-in slave devices based on
- ES version
-Date: Tue, 24 Jan 2017 11:32:40 +0100
-Message-ID: <CAMuHMdULA66ZQrBQC6Fp9LGfDxh3AboBL_ZA+EThqAaRa5iM+Q@mail.gmail.com>
-References: <148517349585.18128.10696161017872202809.sendpatchset@little-apple>
- <148517354599.18128.1970642879780864733.sendpatchset@little-apple>
- <CAMuHMdWyV4DWN5pKsp+Z6C0MhZF5fKch4T1g1_Hbk3oxrR6_zw@mail.gmail.com> <CANqRtoQayo4_nBuTN--6kt4JRGW7VM-6vMvb8AX22bO=MG8-9g@mail.gmail.com>
+From: "Sricharan" <sricharan@codeaurora.org>
+Subject: RE: [PATCH V7 00/11] IOMMU probe deferral support
+Date: Tue, 24 Jan 2017 16:45:20 +0530
+Message-ID: <00fa01d27633$2b468fe0$81d3afa0$@codeaurora.org>
+References: <CGME20170123161926epcas2p1cf464a2978d89d0c1fdd2f7cc6d38317@epcas2p1.samsung.com> <1485188293-20263-1-git-send-email-sricharan@codeaurora.org> <440d69c3-8be9-7729-ff11-10657cc864f0@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <CANqRtoQayo4_nBuTN--6kt4JRGW7VM-6vMvb8AX22bO=MG8-9g@mail.gmail.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel <joro@8bytes.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Simon Horman <horms+renesas@verge.net.au>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain;
+        charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <440d69c3-8be9-7729-ff11-10657cc864f0@samsung.com>
+Content-Language: en-us
+Sender: linux-pci-owner@vger.kernel.org
+To: 'Marek Szyprowski' <m.szyprowski@samsung.com>, robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Magnus,
+Hi Marek,
 
-On Tue, Jan 24, 2017 at 10:38 AM, Magnus Damm <magnus.damm@gmail.com> wrote:
-> On Mon, Jan 23, 2017 at 9:50 PM, Geert Uytterhoeven
-> <geert@linux-m68k.org> wrote:
->> On Mon, Jan 23, 2017 at 1:12 PM, Magnus Damm <magnus.damm@gmail.com> wrote:
->>> From: Magnus Damm <damm+renesas@opensource.se>
->>>
->>> Match on r8a7795 ES2 and enable a certain DMA controller.
->>> In other cases the IPMMU driver remains disabled.
->>>
->>> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
->>> ---
->>>
->>>  drivers/iommu/ipmmu-vmsa.c |   24 ++++++++++++++++++++++++
->>>  1 file changed, 24 insertions(+)
->>>
->>> --- 0001/drivers/iommu/ipmmu-vmsa.c
->>> +++ work/drivers/iommu/ipmmu-vmsa.c     2017-01-23 20:57:02.620607110 +0900
->>> @@ -23,6 +23,7 @@
->>>  #include <linux/platform_device.h>
->>>  #include <linux/sizes.h>
->>>  #include <linux/slab.h>
->>> +#include <linux/sys_soc.h>
->>>
->>>  #if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
->>>  #include <asm/dma-iommu.h>
->>> @@ -1002,16 +1003,39 @@ static void ipmmu_domain_free_dma(struct
->>>         }
->>>  }
->>>
->>> +static const struct soc_device_attribute r8a7795es2[] = {
->>> +       { .soc_id = "r8a7795", .revision = "ES2.*" },
->>> +       { /* sentinel */ }
->>> +};
->>> +
->>> +static int ipmmu_slave_whitelist(struct device *dev)
->>> +{
->>> +       /* Opt-in slave devices based on SoC and ES version */
->>> +       if (soc_device_match(r8a7795es2)) {
->>> +               if (!strcmp(dev_name(dev), "e7310000.dma-controller"))
->>> +                       return 0;
->>> +       }
+>On 2017-01-23 17:18, Sricharan R wrote:
+>> This series calls the dma ops configuration for the devices
+>> at a generic place so that it works for all busses.
+>> The dma_configure_ops for a device is now called during
+>> the device_attach callback just before the probe of the
+>> bus/driver is called. Similarly dma_deconfigure is called during
+>> device/driver_detach path.
 >>
->> I have two comments about the construct above:
->>   1. IPMMU will be disabled on all non-r8a7795 SoCs.
->>      Is that what you want?
+>> pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
+>>         |                         |
+>> pci_bus_add_device     (device_add/driver_register)
+>>         |                         |
+>> device_attach           device_initial_probe
+>>         |                         |
+>> __device_attach_driver    __device_attach_driver
+>>         |
+>> driver_probe_device
+>>         |
+>> really_probe
+>>         |
+>> dma_configure
+>>
+>> Similarly on the device/driver_unregister path __device_release_driver is
+>> called which inturn calls dma_deconfigure.
+>>
+>> Took the reworked patches [2] from Robin's branch and
+>> rebased on top of Lorenzo's ACPI IORT ARM support series [3].
+>>
+>> * Tested with platform and pci devices for probe deferral
+>>    and reprobe on arm64 based platform.
+>> * Need help for testing with ACPI.
 >
-> Sort of. This patch is just an example to stir up some discussion
-> about this topic. I realize this code as-is changes R-Car Gen2
-> behavior (that is merged upstream) so perhaps we should keep devices
-> enabled for those SoCs.
-
-Indeed.
-Note that we don't have any "iommus" in upstream R-Car Gen2 DTSes.
-
->>   2. Usually we match on the old broken versions instead (e.g. against
->>      "ES1.*"), as (1) it marks more clearly support for old SoCs, and
->>                 (2) it makes it easier to remove the check later when these
->>                     old SoCs are deemed extinct later.
+>Once again:
 >
-> Right, if I understand correctly then you're saying opt-out might be
-> better instead of opt-in. In case of IPMMU and R-Car Gen3 I believe it
-> might be less work to use opt-in rather than excluding not-yet-working
-> stuff. =)
-
-Unfortunately that may be true :-(
-
-> With this series I would like to propose to disconnect the DT
-> integration timing from the enablement of IPMMU support for slave
-> devices. If we can enable the IPMMU in DT early on we can reduce
-> potential out-of-tree IPMMU enablement DT patches. So with the DT
-> bindings fixed and accurate data sheet we can merge DT bits ahead of
-> enablement time. And then use run time logic to determine what to
-> enable based on test results.
+>Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
 >
-> As you are aware, currently we have used the presence of "iommus" in
-> DT to determine if a device is going to be enabled or not. So if the
-> IPMMU Kconfig bits enable the IPMMU driver and the "iommus" DT
-> property tie a certain slave device to the IPMMU then we will make use
-> of IPMMU for a certain device. Currently we assume it will work on all
-> ES versions that use that particular DTB.
+>Works fine on Exynos machines (both, ARM and ARM64 based). This patchset is
+>urgently needed as more and more stuff depends on it and cannot be easily
+>workarounded without nasty hacks (for example pending runtime PM changes
+>for clocks and power domains integration for Exynos 5433).
 >
-> However ES specific hardware errata together with a wide range of ES
-> versions for r8a7795 and r8a7796 (and whatever SoCs and ES versions
-> that comes next) makes it difficult to use DT like above to enable
-> stuff seemingly on one ES version without potentially breaking other
-> ES versions. I would like to share DT files between the ES versions as
-> much as possible but still only enable IPMMU support for devices that
-> are known to work.
+
+Ok, Thanks for the testing once again.
+
+>Is there a chance to have it merged to v4.11?
 >
-> Let me know if you think it makes sense to enable DT in a different
-> way than my proposal.
 
-That makes perfect sense to me: DT describes (ideal production) hardware,
-and errata are handled in C code and tables.
+Ya, hoping that this time it would get through.
 
-Gr{oetje,eeting}s,
+Regards,
+ Sricharan
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>> Previous post of this series [6].
+>>
+>>   [V7]
+>>       * Updated the subject and commit log for patch #6 as per
+>>         comments from Lorenzo. No functional changes.
+>>
+>>   [V6]
+>>       * Fixed a bug in dma_configure function pointed out by
+>>         Robin.
+>>       * Reordered the patches as per comments from Robin and
+>>         Lorenzo.
+>>       * Added Tags.
+>>
+>>   [V5]
+>>       * Reworked the pci configuration code hanging outside and
+>>         pushed it to dma_configure as in PATCH#5,6,7.
+>>         Also added a couple of patches that Lorenzo provided for
+>>         correcting the Probe deferring mechanism in case of
+>>         ACPI devices from here [5].
+>>
+>>   [V4]
+>>       * Took the reworked patches [2] from Robin's branch and
+>>         rebased on top of Lorenzo's ACPI IORT ARM support series [3].
+>>
+>>       * Added the patches for moving the dma ops configuration of
+>>         acpi based devices to probe time as well.
+>>   [V3]
+>>       * Removed the patch to split dma_masks/dma_ops configuration
+>>         separately based on review comments that both masks and ops are
+>>         required only during the device probe time.
+>>
+>>       * Reworked the series based on Generic DT bindings series.
+>>
+>>       * Added call to iommu's remove_device in the cleanup path for arm and
+>>         arm64.
+>>
+>>       * Removed the notifier trick in arm64 to handle early device
+>>         registration.
+>>
+>>       * Added reset of dma_ops in cleanup path for arm based on comments.
+>>
+>>       * Fixed the pci_iommu_configure path and tested with PCI device as
+>>         well.
+>>
+>>       * Fixed a bug to return the correct iommu_ops from patch 7 [4] in
+>>         last post.
+>>
+>>       * Fixed few other cosmetic comments.
+>>
+>>   [V2]
+>>       * Updated the Initial post to call dma_configure/deconfigure from
+>>         generic code
+>>
+>>       * Added iommu add_device callback from of_iommu_configure path
+>>
+>>   [V1]
+>>       * Initial post from Laurent Pinchart [1]
+>>
+>> [1] http://lists.linuxfoundation.org/pipermail/iommu/2015-May/013016.html
+>> [2] http://www.linux-arm.org/git?p=linux-rm.git;a=shortlog;h=refs/heads/iommu/defer
+>> [3] https://lkml.org/lkml/2016/11/21/141
+>> [4] https://www.mail-archive.com/iommu@lists.linux-foundation.org/msg13940.html
+>> [5] git://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git iommu/probe-deferral
+>> [6] https://www.spinics.net/lists/arm-kernel/msg556546.html
+>>
+>> Laurent Pinchart (3):
+>>    of: dma: Move range size workaround to of_dma_get_range()
+>>    of: dma: Make of_dma_deconfigure() public
+>>    iommu: of: Handle IOMMU lookup failure with deferred probing or error
+>>
+>> Lorenzo Pieralisi (2):
+>>    ACPI/IORT: Add function to check SMMUs drivers presence
+>>    ACPI/IORT: Remove linker section for IORT entries probing
+>>
+>> Robin Murphy (3):
+>>    iommu/of: Refactor of_iommu_configure() for error handling
+>>    iommu/of: Prepare for deferred IOMMU configuration
+>>    iommu/arm-smmu: Clean up early-probing workarounds
+>>
+>> Sricharan R (3):
+>>    of/acpi: Configure dma operations at probe time for platform/amba/pci bus devices
+>>    drivers: acpi: Handle IOMMU lookup failure with deferred probing or
+>>      error
+>>    arm64: dma-mapping: Remove the notifier trick to handle early setting
+>>      of dma_ops
+>>
+>>   arch/arm64/mm/dma-mapping.c       | 132 ++++----------------------------------
+>>   drivers/acpi/arm64/iort.c         |  40 +++++++++++-
+>>   drivers/acpi/glue.c               |   5 --
+>>   drivers/acpi/scan.c               |   7 +-
+>>   drivers/base/dd.c                 |   9 +++
+>>   drivers/base/dma-mapping.c        |  41 ++++++++++++
+>>   drivers/iommu/arm-smmu-v3.c       |  46 +------------
+>>   drivers/iommu/arm-smmu.c          |  58 +++--------------
+>>   drivers/iommu/of_iommu.c          | 114 +++++++++++++++++++++++---------
+>>   drivers/of/address.c              |  20 +++++-
+>>   drivers/of/device.c               |  36 ++++++-----
+>>   drivers/of/platform.c             |  10 +--
+>>   drivers/pci/probe.c               |  28 --------
+>>   include/acpi/acpi_bus.h           |   2 +-
+>>   include/asm-generic/vmlinux.lds.h |   1 -
+>>   include/linux/acpi.h              |   7 +-
+>>   include/linux/acpi_iort.h         |   3 -
+>>   include/linux/dma-mapping.h       |   3 +
+>>   include/linux/of_device.h         |  10 ++-
+>>   19 files changed, 252 insertions(+), 320 deletions(-)
+>>
+>
+>Best regards
+>--
+>Marek Szyprowski, PhD
+>Samsung R&D Institute Poland
+>
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
