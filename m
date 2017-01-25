@@ -1,15 +1,16 @@
-From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
 Subject: Re: [PATCH v8 9/9] perf/amd/iommu: Enable support for multiple IOMMUs
-Date: Wed, 25 Jan 2017 10:46:53 +0100
-Message-ID: <20170125094653.GO6515@twins.programming.kicks-ass.net>
+Date: Wed, 25 Jan 2017 10:55:38 +0100
+Message-ID: <20170125095538.42n2dnmdkhksuplk@pd.tnic>
 References: <1484551416-5440-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 	<1484551416-5440-10-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<20170125094653.GO6515@twins.programming.kicks-ass.net>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1484551416-5440-10-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <20170125094653.GO6515-ndre7Fmf5hadTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,36 +21,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 16, 2017 at 01:23:36AM -0600, Suravee Suthikulpanit wrote:
+On Wed, Jan 25, 2017 at 10:46:53AM +0100, Peter Zijlstra wrote:
+> Which is absolutely insane.
 
-> +	pi = container_of(event->pmu, struct perf_amd_iommu, pmu);
-> +	hwc->idx              = pi->idx;
-> +	hwc->config           = event->attr.config;
-> +	hwc->extra_reg.config = event->attr.config1;
+Right,
 
->  static void perf_iommu_enable_event(struct perf_event *ev)
->  {
-> +	struct hw_perf_event *hwc = &ev->hw;
->  	u8 csource = _GET_CSOURCE(ev);
->  	u16 devid = _GET_DEVID(ev);
->  	u8 bank = _GET_BANK(ev);
-> @@ -253,30 +248,34 @@ static void perf_iommu_enable_event(struct perf_event *ev)
->  	u64 reg = 0ULL;
->  
->  	reg = csource;
-> -	amd_iommu_pc_set_reg(0, bank, cntr,
-> +	amd_iommu_pc_set_reg(hwc->idx, bank, cntr,
->  			     IOMMU_PC_COUNTER_SRC_REG, &reg);
+IMO, the simplest thing to do for your purposes is to embed a struct
+amd_iommu pointer into struct perf_amd_iommu at init time so that you
+don't have to do all that crazy dance in the PMU functions and iterate
+over the iommus in get_amd_iommu() each time.
 
-Please explain about this IOMMU crud, this looks like fail.
+Which would then simplify all your other functions. For example:
 
-hwc->idx should be the counter, not a random pmu index.
+int amd_iommu_pc_get_reg(unsigned int idx, u8 bank, u8 cntr, u8 fxn, u64 *value)
 
-But instead it looks like you get the counter form:
+should be
 
-  #define _GET_CNTR(ev)       ((u8)(ev->hw.extra_reg.reg))
+int amd_iommu_pc_get_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn, u64 *value)
 
-Which is absolutely insane.
+and you can save yourself a lot of glue code and get rid of that
+get_amd_iommu() thing.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
