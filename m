@@ -1,52 +1,46 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH v8 9/9] perf/amd/iommu: Enable support for multiple IOMMUs
-Date: Wed, 25 Jan 2017 10:55:38 +0100
-Message-ID: <20170125095538.42n2dnmdkhksuplk@pd.tnic>
-References: <1484551416-5440-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1484551416-5440-10-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<20170125094653.GO6515@twins.programming.kicks-ass.net>
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: Re: [PATCH/RFC 1/2] arm64: mm: Silently allow devices lacking IOMMU group
+Date: Wed, 25 Jan 2017 19:02:24 +0900
+Message-ID: <CANqRtoSczM8U+u6ke0cqJ06EExqqQtt-dagqXFJ7CTeB01x=oA@mail.gmail.com>
+References: <148517349585.18128.10696161017872202809.sendpatchset@little-apple>
+ <148517353630.18128.12799811817831597628.sendpatchset@little-apple> <66c082c6-da2e-9765-0db8-e0ba2c5bd501@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170125094653.GO6515-ndre7Fmf5hadTX5a5knrm8zTDFooKrT+cvkQGrU6aU0@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <66c082c6-da2e-9765-0db8-e0ba2c5bd501@arm.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, Geert Uytterhoeven <geert+renesas@glider.be>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Simon Horman <horms+renesas@verge.net.au>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Jan 25, 2017 at 10:46:53AM +0100, Peter Zijlstra wrote:
-> Which is absolutely insane.
+Hi Robin,
 
-Right,
+On Mon, Jan 23, 2017 at 9:34 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+> Hi Magnus,
+>
+> On 23/01/17 12:12, Magnus Damm wrote:
+>> From: Magnus Damm <damm+renesas@opensource.se>
+>>
+>> Consider failure of iommu_get_domain_for_dev() as non-critical and
+>> get rid of the warning printout. This allows IOMMU properties to be
+>> included in the DTB even though the kernel is configured with
+>> CONFIG_IOMMU_API=n or in case a particular IOMMU driver refuses to
+>> enable IOMMU support for a certain slave device and returns error
+>> from the ->add_device() callback.
+>>
+>> This is only a cosmetic change that removes console warning printouts.
+>
+> The warning is there for a reason - at this point, we *expected* the
+> device to be using an IOMMU for DMA, so a failure is significant. Rather
+> than masking genuine failures in other cases because your case
+> deliberately breaks that expectation, simply change the expectation -
+> i.e. rather than letting of_xlate() succeed then failing add_device()
+> later, reject the of_xlate() call up-front such that the DMA layer never
+> gets told about the IOMMU in the first place.
 
-IMO, the simplest thing to do for your purposes is to embed a struct
-amd_iommu pointer into struct perf_amd_iommu at init time so that you
-don't have to do all that crazy dance in the PMU functions and iterate
-over the iommus in get_amd_iommu() each time.
+Thanks for pointing me in the right direction! I will try to handle
+this in xlate() instead.
 
-Which would then simplify all your other functions. For example:
+Cheers,
 
-int amd_iommu_pc_get_reg(unsigned int idx, u8 bank, u8 cntr, u8 fxn, u64 *value)
-
-should be
-
-int amd_iommu_pc_get_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn, u64 *value)
-
-and you can save yourself a lot of glue code and get rid of that
-get_amd_iommu() thing.
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+/ magnus
