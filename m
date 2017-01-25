@@ -1,180 +1,162 @@
-From: Tomasz Nowicki <tn@semihalf.com>
-Subject: Re: [PATCH V7 01/11] iommu/of: Refactor of_iommu_configure() for
- error handling
-Date: Wed, 25 Jan 2017 19:13:20 +0100
-Message-ID: <b350f6d3-dd33-10c4-94ae-a3a7ba5e938a@semihalf.com>
-References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org>
- <1485188293-20263-2-git-send-email-sricharan@codeaurora.org>
- <4388779a-0e83-fadc-83f4-98c46c88d42e@semihalf.com>
- <c7bad124-d9f2-0ddf-168f-0b1950d3e1ed@arm.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 0/2] Fix incorrect warning from dma-debug
+Date: Wed, 25 Jan 2017 21:32:34 +0100
+Message-ID: <CAMuHMdVh2ULYREeNMDeUwhtSgVGzdawoBRGBrBwGUYdVoQXJfw@mail.gmail.com>
+References: <1462705196-10857-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+ <57305A4B.70401@arm.com> <CAMuHMdUnznBCt=V5_PgTaXM5JAZjBvZK-44bahUx+7NFg+f0rA@mail.gmail.com>
+ <0b4dc9d7-e3d1-d18a-e8cf-7ec907d2faf7@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <c7bad124-d9f2-0ddf-168f-0b1950d3e1ed@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, Sricharan R <sricharan@codeaurora.org>, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <0b4dc9d7-e3d1-d18a-e8cf-7ec907d2faf7@arm.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, dmaengine@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
 Hi Robin,
 
-On 25.01.2017 18:35, Robin Murphy wrote:
-> Hi Tomasz,
->
-> On 25/01/17 17:17, Tomasz Nowicki wrote:
->> Hi Sricharan,
+On Wed, Jan 25, 2017 at 6:27 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 25/01/17 16:23, Geert Uytterhoeven wrote:
+>> On Mon, May 9, 2016 at 11:37 AM, Robin Murphy <robin.murphy@arm.com> wro=
+te:
+>>> On 08/05/16 11:59, Niklas S=C3=B6derlund wrote:
+>>>> While using CONFIG_DMA_API_DEBUG i came across this warning which I
+>>>> think is a false positive. As shown dma_sync_single_for_device() are
+>>>> called from the dma_map_single() call path. This triggers the warning
+>>>> since the dma-debug code have not yet been made aware of the mapping.
+>>>
+>>> Almost right ;) The thing being mapped (the SPI device's buffer) and th=
+e
+>>> thing being synced (the IOMMU's PTE) are entirely unrelated. Due to the
+>>> current of_iommu_init() setup, the IOMMU is probed long before
+>>> dma_debug_init() gets called, therefore DMA debug is missing entries fo=
+r
+>>> some of the initial page table mappings and gets confused when we updat=
+e
+>>> them later.
 >>
->> On 23.01.2017 17:18, Sricharan R wrote:
->>> From: Robin Murphy <robin.murphy@arm.com>
+>> I think I've been seeing the same as Niklas since quite a while.
+>> Finally I had a deeper look, and it looks like there is a bug somewhere,
+>> causing the wrong IOMMU PTE to be synced.
+>>
+>>>> I try to solve this by introducing __dma_sync_single_for_device() whic=
+h
+>>>> do not call into the dma-debug code. I'm no expert and this might be a
+>>>> bad way of solving the problem but it allowed me to keep working.
 >>>
->>> In preparation for some upcoming cleverness, rework the control flow in
->>> of_iommu_configure() to minimise duplication and improve the propogation
->>> of errors. It's also as good a time as any to switch over from the
->>> now-just-a-compatibility-wrapper of_iommu_get_ops() to using the generic
->>> IOMMU instance interface directly.
->>>
->>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>> ---
->>>  drivers/iommu/of_iommu.c | 83
->>> +++++++++++++++++++++++++++++++-----------------
->>>  1 file changed, 53 insertions(+), 30 deletions(-)
->>>
->>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->>> index 0f57ddc..ee49081 100644
->>> --- a/drivers/iommu/of_iommu.c
->>> +++ b/drivers/iommu/of_iommu.c
->>> @@ -96,6 +96,28 @@ int of_get_dma_window(struct device_node *dn, const
->>> char *prefix, int index,
->>>  }
->>>  EXPORT_SYMBOL_GPL(of_get_dma_window);
->>>
->>> +static const struct iommu_ops
->>> +*of_iommu_xlate(struct device *dev, struct of_phandle_args *iommu_spec)
->>> +{
->>> +    const struct iommu_ops *ops;
->>> +    struct fwnode_handle *fwnode = &iommu_spec->np->fwnode;
->>> +    int err;
->>> +
->>> +    ops = iommu_get_instance(fwnode);
->>> +    if (!ops || !ops->of_xlate)
->>> +        return NULL;
->>> +
->>> +    err = iommu_fwspec_init(dev, &iommu_spec->np->fwnode, ops);
->>> +    if (err)
->>> +        return ERR_PTR(err);
->>> +
->>> +    err = ops->of_xlate(dev, iommu_spec);
->>> +    if (err)
->>> +        return ERR_PTR(err);
->>> +
->>> +    return ops;
->>> +}
->>> +
->>>  static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
->>>  {
->>>      struct of_phandle_args *iommu_spec = data;
->>> @@ -105,10 +127,11 @@ static int __get_pci_rid(struct pci_dev *pdev,
->>> u16 alias, void *data)
->>>  }
->>>
->>>  static const struct iommu_ops
->>> -*of_pci_iommu_configure(struct pci_dev *pdev, struct device_node
->>> *bridge_np)
->>> +*of_pci_iommu_init(struct pci_dev *pdev, struct device_node *bridge_np)
->>>  {
->>>      const struct iommu_ops *ops;
->>>      struct of_phandle_args iommu_spec;
->>> +    int err;
->>>
->>>      /*
->>>       * Start by tracing the RID alias down the PCI topology as
->>> @@ -123,56 +146,56 @@ static int __get_pci_rid(struct pci_dev *pdev,
->>> u16 alias, void *data)
->>>       * bus into the system beyond, and which IOMMU it ends up at.
->>>       */
->>>      iommu_spec.np = NULL;
->>> -    if (of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
->>> -               "iommu-map-mask", &iommu_spec.np, iommu_spec.args))
->>> -        return NULL;
->>> +    err = of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
->>> +                 "iommu-map-mask", &iommu_spec.np,
->>> +                 iommu_spec.args);
->>> +    if (err)
->>> +        return ERR_PTR(err);
->>>
->>> -    ops = of_iommu_get_ops(iommu_spec.np);
->>> -    if (!ops || !ops->of_xlate ||
->>> -        iommu_fwspec_init(&pdev->dev, &iommu_spec.np->fwnode, ops) ||
->>> -        ops->of_xlate(&pdev->dev, &iommu_spec))
->>> -        ops = NULL;
->>> +    ops = of_iommu_xlate(&pdev->dev, &iommu_spec);
->>>
->>>      of_node_put(iommu_spec.np);
->>>      return ops;
->>>  }
->>>
->>> -const struct iommu_ops *of_iommu_configure(struct device *dev,
->>> -                       struct device_node *master_np)
->>> +static const struct iommu_ops
->>> +*of_platform_iommu_init(struct device *dev, struct device_node *np)
->>>  {
->>>      struct of_phandle_args iommu_spec;
->>> -    struct device_node *np;
->>>      const struct iommu_ops *ops = NULL;
->>>      int idx = 0;
->>>
->>> -    if (dev_is_pci(dev))
->>> -        return of_pci_iommu_configure(to_pci_dev(dev), master_np);
->>> -
->>>      /*
->>>       * We don't currently walk up the tree looking for a parent IOMMU.
->>>       * See the `Notes:' section of
->>>       * Documentation/devicetree/bindings/iommu/iommu.txt
->>>       */
->>> -    while (!of_parse_phandle_with_args(master_np, "iommus",
->>> -                       "#iommu-cells", idx,
->>> -                       &iommu_spec)) {
->>> -        np = iommu_spec.np;
->>> -        ops = of_iommu_get_ops(np);
->>> -
->>> -        if (!ops || !ops->of_xlate ||
->>> -            iommu_fwspec_init(dev, &np->fwnode, ops) ||
->>> -            ops->of_xlate(dev, &iommu_spec))
->>> -            goto err_put_node;
->>> -
->>> -        of_node_put(np);
->>> +    while (!of_parse_phandle_with_args(np, "iommus", "#iommu-cells",
->>> +                       idx, &iommu_spec)) {
->>> +        ops = of_iommu_xlate(dev, &iommu_spec);
->>> +        of_node_put(iommu_spec.np);
->>>          idx++;
->>> +        if (IS_ERR_OR_NULL(ops))
->>> +            break;
->>>      }
->>>
->>>      return ops;
->>> +}
->>> +
->>> +const struct iommu_ops *of_iommu_configure(struct device *dev,
->>> +                       struct device_node *master_np)
->>> +{
->>> +    const struct iommu_ops *ops;
->>> +
->>> +    if (!master_np)
->>> +        return NULL;
->>> +
->>> +    if (dev_is_pci(dev))
->>> +        ops = of_pci_iommu_init(to_pci_dev(dev), master_np);
->> I gave the whole patch set a try on ThunderX. really_probe() is failing
->> on dma_configure()->of_pci_iommu_init() for each PCI device.
-> When you say "failing", do you mean cleanly, or with a crash? I've
-> managed to hit __of_match_node() dereferencing NULL from
-> of_iommu_xlate() in a horribly complicated chain of events, which I'm
-> trying to figure out now, and I wonder if the two might be related.
+>>> The simple fix should be to just call dma_debug_init() from a sufficien=
+tly
+>>> earlier initcall level. The best would be to sort out a proper device
+>>> dependency order to avoid the whole early-IOMMU-creation thing entirely=
+.
+>>
+>> And so I did. After disabling the call to dma_debug_fs_init(), you can c=
+all
+>> dma_debug_init() quite early. But the warning didn't go away:
 >
+> Yet the underlying reason has subtly changed!
+>
+>>     ipmmu-vmsa e67b0000.mmu: DMA-API: device driver tries to sync DMA me=
+mory
+>>         it has not allocated [device address=3D0x000000067bab2ff8] [size=
+=3D8 bytes]
+>>     ------------[ cut here ]------------
+>>     WARNING: CPU: 0 PID: 174 at lib/dma-debug.c:1235 check_sync+0xcc/0x5=
+68
+>>     ...
+>>     [<ffffff800823a3a4>] check_sync+0xcc/0x568
+>>     [<ffffff800823a8d0>] debug_dma_sync_single_for_device+0x44/0x4c
+>>     [<ffffff80082b8d34>] __arm_lpae_set_pte.isra.3+0x6c/0x78
+>>     [<ffffff80082b977c>] __arm_lpae_map+0x318/0x384
+>>     [<ffffff80082b9c58>] arm_lpae_map+0xb0/0xc4
+>>     [<ffffff80082bbc58>] ipmmu_map+0x48/0x58
+>>     [<ffffff80082b6754>] iommu_map+0x120/0x1fc
+>>     [<ffffff80082b7bc8>] __iommu_dma_map+0xb8/0xec
+>>     [<ffffff80082b8514>] iommu_dma_map_page+0x50/0x58
+>>     [<ffffff8008092d28>] __iommu_map_page+0x54/0x98
+>>
+>> So, who allocated that memory?
+>>
+>> During early kernel init (before fs_initcall(dma_debug_init)):
+>>
+>>     arm-lpae io-pgtable: arm_lpae_alloc_pgtable:652: cfg->ias =3D 32
+>
+> Note that you have a 32-bit IAS...
 
-Cleanly, of_pci_iommu_init()->of_pci_map_rid() can't find "iommu-map" 
-property for my case. Probably not related to your crash.
+Ah, so that's what it means...
 
-Thanks,
-Tomasz
+>>         data->pg_shift =3D 12 va_bits =3D 20
+>>     arm-lpae io-pgtable: arm_lpae_alloc_pgtable:657: data->bits_per_leve=
+l =3D 9
+>>         data->levels =3D 3 pgd_bits =3D 2
+>>     ipmmu-vmsa e67b0000.mmu: __arm_lpae_alloc_pages:224
+>>         dma_map_single(0xffffffc63bab2000, 32) returned 0x000000067bab20=
+00
+>>
+>> Hence 0x67bab2000 is the PGD, which has only 4 entries (32 bytes).
+>> Call stack:
+>>
+>>     [<ffffff80082b9240>] __arm_lpae_alloc_pages.isra.11+0x144/0x1e8
+>>     [<ffffff80082b93c0>] arm_64_lpae_alloc_pgtable_s1+0xdc/0x118
+>>     [<ffffff80082b9440>] arm_32_lpae_alloc_pgtable_s1+0x44/0x68
+>>     [<ffffff80082b8b1c>] alloc_io_pgtable_ops+0x4c/0x80
+>>     [<ffffff80082bbf28>] ipmmu_attach_device+0xd0/0x3b0
+>>
+>> When starting DMA from the device:
+>>
+>>     iommu: map: iova 0xfffffff000 pa 0x000000067a555000 size 0x1000 pgsi=
+ze 4096
+>
+> ...then count the f's carefully.
+
+Indeed, 40-bits.
+
+>>     arm-lpae io-pgtable: __arm_lpae_map:318: iova 0xfffffff000
+>>         phys 0x000000067a555000 size 4096 lvl 1 ptep 0xffffffc63bab2000
+>>     arm-lpae io-pgtable: __arm_lpae_map:320: incr. ptep to 0xffffffc63ba=
+b2ff8
+>>     ipmmu-vmsa e67b0000.mmu: __arm_lpae_alloc_pages:224
+>>         dma_map_single(0xffffffc63a490000, 4096) returned 0x000000067a49=
+0000
+>>     ipmmu-vmsa e67b0000.mmu: DMA-API: device driver tries to sync DMA me=
+mory
+>>         it has not allocated [device address=3D0x000000067bab2ff8] [size=
+=3D8 bytes]
+>>
+>> __arm_lpae_map() added "ARM_LPAE_LVL_IDX(iova, lvl, data)" =3D=3D 0xff8 =
+to ptep
+>> (the PGD base address), but the PGD has only 32 bytes, leading to the wa=
+rning.
+>>
+>> Does my analysis make sense?
+>> Do you have a clue?
+>
+> The initial false positive misleads from the fact that this is actually
+> DMA-debug doing its job admirably. The bug lies in however you ended up
+> trying to map a 40-bit IOVA in a 32-bit pagetable.
+
+Right, I completely forgot that I was still running with a patch to
+allow the DMAC to use 40-bit addresses:
+
+    dma_set_mask_and_coherent(dmac->dev, DMA_BIT_MASK(40));
+
+which works fine without IOMMU, but fails with, as the IPMMU-VMSA driver
+doesn't support that yet.
+
+Thanks a lot, and sorry for the noise...
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
