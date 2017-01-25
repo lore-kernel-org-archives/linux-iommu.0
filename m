@@ -1,63 +1,55 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH V7 00/11] IOMMU probe deferral support
-Date: Wed, 25 Jan 2017 13:03:09 +0530
-Message-ID: <001701d276dd$4bac51c0$e304f540$@codeaurora.org>
-References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org> <dc2a024b-2378-3a67-f098-8f2b42982766@linaro.org>
+From: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Subject: Re: [PATCH v8 9/9] perf/amd/iommu: Enable support for multiple IOMMUs
+Date: Wed, 25 Jan 2017 10:46:53 +0100
+Message-ID: <20170125094653.GO6515@twins.programming.kicks-ass.net>
+References: <1484551416-5440-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1484551416-5440-10-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <dc2a024b-2378-3a67-f098-8f2b42982766@linaro.org>
-Content-Language: en-us
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: 'Hanjun Guo' <hanjun.guo@linaro.org>, robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1484551416-5440-10-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Hanjun,
+On Mon, Jan 16, 2017 at 01:23:36AM -0600, Suravee Suthikulpanit wrote:
 
->On 2017/1/24 0:18, Sricharan R wrote:
->> This series calls the dma ops configuration for the devices
->> at a generic place so that it works for all busses.
->> The dma_configure_ops for a device is now called during
->> the device_attach callback just before the probe of the
->> bus/driver is called. Similarly dma_deconfigure is called during
->> device/driver_detach path.
->>
->> pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
->>        |                         |
->> pci_bus_add_device     (device_add/driver_register)
->>        |                         |
->> device_attach           device_initial_probe
->>        |                         |
->> __device_attach_driver    __device_attach_driver
->>        |
->> driver_probe_device
->>        |
->> really_probe
->>        |
->> dma_configure
->>
->> Similarly on the device/driver_unregister path __device_release_driver is
->> called which inturn calls dma_deconfigure.
->>
->> Took the reworked patches [2] from Robin's branch and
->> rebased on top of Lorenzo's ACPI IORT ARM support series [3].
->>
->> * Tested with platform and pci devices for probe deferral
->>   and reprobe on arm64 based platform.
->> * Need help for testing with ACPI.
->
->Cherry picked this patch set with no conflict with my platform
->msi patches, and test it on Hisilicon D03 (ARM64 platform with
->SMMUv3) with ACPI, it boots ok as before and the native NIC and
->SAS (platform devices) are working properly.
->
->for ACPI and the core code changes:
->
->Tested-by: Hanjun Guo <hanjun.guo@linaro.org>
+> +	pi = container_of(event->pmu, struct perf_amd_iommu, pmu);
+> +	hwc->idx              = pi->idx;
+> +	hwc->config           = event->attr.config;
+> +	hwc->extra_reg.config = event->attr.config1;
 
-Thanks for the testing with ACPI + SMMUV3
+>  static void perf_iommu_enable_event(struct perf_event *ev)
+>  {
+> +	struct hw_perf_event *hwc = &ev->hw;
+>  	u8 csource = _GET_CSOURCE(ev);
+>  	u16 devid = _GET_DEVID(ev);
+>  	u8 bank = _GET_BANK(ev);
+> @@ -253,30 +248,34 @@ static void perf_iommu_enable_event(struct perf_event *ev)
+>  	u64 reg = 0ULL;
+>  
+>  	reg = csource;
+> -	amd_iommu_pc_set_reg(0, bank, cntr,
+> +	amd_iommu_pc_set_reg(hwc->idx, bank, cntr,
+>  			     IOMMU_PC_COUNTER_SRC_REG, &reg);
 
-Regards,
- Sricharan
+Please explain about this IOMMU crud, this looks like fail.
+
+hwc->idx should be the counter, not a random pmu index.
+
+But instead it looks like you get the counter form:
+
+  #define _GET_CNTR(ev)       ((u8)(ev->hw.extra_reg.reg))
+
+Which is absolutely insane.
