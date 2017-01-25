@@ -1,15 +1,15 @@
-From: Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH V7 01/11] iommu/of: Refactor of_iommu_configure() for
-	error handling
-Date: Wed, 25 Jan 2017 18:17:27 +0100
-Message-ID: <4388779a-0e83-fadc-83f4-98c46c88d42e@semihalf.com>
-References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org>
-	<1485188293-20263-2-git-send-email-sricharan@codeaurora.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 0/2] Fix incorrect warning from dma-debug
+Date: Wed, 25 Jan 2017 17:27:34 +0000
+Message-ID: <0b4dc9d7-e3d1-d18a-e8cf-7ec907d2faf7@arm.com>
+References: <1462705196-10857-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+	<57305A4B.70401@arm.com>
+	<CAMuHMdUnznBCt=V5_PgTaXM5JAZjBvZK-44bahUx+7NFg+f0rA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1485188293-20263-2-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <CAMuHMdUnznBCt=V5_PgTaXM5JAZjBvZK-44bahUx+7NFg+f0rA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,165 +19,97 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund+renesas-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dmaengine-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Sricharan,
-
-On 23.01.2017 17:18, Sricharan R wrote:
-> From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->
-> In preparation for some upcoming cleverness, rework the control flow in
-> of_iommu_configure() to minimise duplication and improve the propogation
-> of errors. It's also as good a time as any to switch over from the
-> now-just-a-compatibility-wrapper of_iommu_get_ops() to using the generic
-> IOMMU instance interface directly.
->
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/of_iommu.c | 83 +++++++++++++++++++++++++++++++-----------------
->  1 file changed, 53 insertions(+), 30 deletions(-)
->
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 0f57ddc..ee49081 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -96,6 +96,28 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
->  }
->  EXPORT_SYMBOL_GPL(of_get_dma_window);
->
-> +static const struct iommu_ops
-> +*of_iommu_xlate(struct device *dev, struct of_phandle_args *iommu_spec)
-> +{
-> +	const struct iommu_ops *ops;
-> +	struct fwnode_handle *fwnode = &iommu_spec->np->fwnode;
-> +	int err;
-> +
-> +	ops = iommu_get_instance(fwnode);
-> +	if (!ops || !ops->of_xlate)
-> +		return NULL;
-> +
-> +	err = iommu_fwspec_init(dev, &iommu_spec->np->fwnode, ops);
-> +	if (err)
-> +		return ERR_PTR(err);
-> +
-> +	err = ops->of_xlate(dev, iommu_spec);
-> +	if (err)
-> +		return ERR_PTR(err);
-> +
-> +	return ops;
-> +}
-> +
->  static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
->  {
->  	struct of_phandle_args *iommu_spec = data;
-> @@ -105,10 +127,11 @@ static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
->  }
->
->  static const struct iommu_ops
-> -*of_pci_iommu_configure(struct pci_dev *pdev, struct device_node *bridge_np)
-> +*of_pci_iommu_init(struct pci_dev *pdev, struct device_node *bridge_np)
->  {
->  	const struct iommu_ops *ops;
->  	struct of_phandle_args iommu_spec;
-> +	int err;
->
->  	/*
->  	 * Start by tracing the RID alias down the PCI topology as
-> @@ -123,56 +146,56 @@ static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
->  	 * bus into the system beyond, and which IOMMU it ends up at.
->  	 */
->  	iommu_spec.np = NULL;
-> -	if (of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
-> -			   "iommu-map-mask", &iommu_spec.np, iommu_spec.args))
-> -		return NULL;
-> +	err = of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
-> +			     "iommu-map-mask", &iommu_spec.np,
-> +			     iommu_spec.args);
-> +	if (err)
-> +		return ERR_PTR(err);
->
-> -	ops = of_iommu_get_ops(iommu_spec.np);
-> -	if (!ops || !ops->of_xlate ||
-> -	    iommu_fwspec_init(&pdev->dev, &iommu_spec.np->fwnode, ops) ||
-> -	    ops->of_xlate(&pdev->dev, &iommu_spec))
-> -		ops = NULL;
-> +	ops = of_iommu_xlate(&pdev->dev, &iommu_spec);
->
->  	of_node_put(iommu_spec.np);
->  	return ops;
->  }
->
-> -const struct iommu_ops *of_iommu_configure(struct device *dev,
-> -					   struct device_node *master_np)
-> +static const struct iommu_ops
-> +*of_platform_iommu_init(struct device *dev, struct device_node *np)
->  {
->  	struct of_phandle_args iommu_spec;
-> -	struct device_node *np;
->  	const struct iommu_ops *ops = NULL;
->  	int idx = 0;
->
-> -	if (dev_is_pci(dev))
-> -		return of_pci_iommu_configure(to_pci_dev(dev), master_np);
-> -
->  	/*
->  	 * We don't currently walk up the tree looking for a parent IOMMU.
->  	 * See the `Notes:' section of
->  	 * Documentation/devicetree/bindings/iommu/iommu.txt
->  	 */
-> -	while (!of_parse_phandle_with_args(master_np, "iommus",
-> -					   "#iommu-cells", idx,
-> -					   &iommu_spec)) {
-> -		np = iommu_spec.np;
-> -		ops = of_iommu_get_ops(np);
-> -
-> -		if (!ops || !ops->of_xlate ||
-> -		    iommu_fwspec_init(dev, &np->fwnode, ops) ||
-> -		    ops->of_xlate(dev, &iommu_spec))
-> -			goto err_put_node;
-> -
-> -		of_node_put(np);
-> +	while (!of_parse_phandle_with_args(np, "iommus", "#iommu-cells",
-> +					   idx, &iommu_spec)) {
-> +		ops = of_iommu_xlate(dev, &iommu_spec);
-> +		of_node_put(iommu_spec.np);
->  		idx++;
-> +		if (IS_ERR_OR_NULL(ops))
-> +			break;
->  	}
->
->  	return ops;
-> +}
-> +
-> +const struct iommu_ops *of_iommu_configure(struct device *dev,
-> +					   struct device_node *master_np)
-> +{
-> +	const struct iommu_ops *ops;
-> +
-> +	if (!master_np)
-> +		return NULL;
-> +
-> +	if (dev_is_pci(dev))
-> +		ops = of_pci_iommu_init(to_pci_dev(dev), master_np);
-
-I gave the whole patch set a try on ThunderX. really_probe() is failing 
-on dma_configure()->of_pci_iommu_init() for each PCI device. 
-of_pci_iommu_init() tries to setup firmware stuff via "iommu-map" but 
-ThunderX is using legacy "mmu-masters" binding. We need to take care of 
-that case too.
-
-> +	else
-> +		ops = of_platform_iommu_init(dev, master_np);
->
-> -err_put_node:
-> -	of_node_put(np);
-> -	return NULL;
-> +	return IS_ERR(ops) ? NULL : ops;
->  }
->
->  static int __init of_iommu_init(void)
->
-
-Thanks,
-Tomasz
+T24gMjUvMDEvMTcgMTY6MjMsIEdlZXJ0IFV5dHRlcmhvZXZlbiB3cm90ZToKPiBIaSBSb2JpbiwK
+CkhpIEdlZXJ0LAoKPiBPbiBNb24sIE1heSA5LCAyMDE2IGF0IDExOjM3IEFNLCBSb2JpbiBNdXJw
+aHkgPHJvYmluLm11cnBoeUBhcm0uY29tPiB3cm90ZToKPj4gT24gMDgvMDUvMTYgMTE6NTksIE5p
+a2xhcyBTw7ZkZXJsdW5kIHdyb3RlOgo+Pj4gV2hpbGUgdXNpbmcgQ09ORklHX0RNQV9BUElfREVC
+VUcgaSBjYW1lIGFjcm9zcyB0aGlzIHdhcm5pbmcgd2hpY2ggSQo+Pj4gdGhpbmsgaXMgYSBmYWxz
+ZSBwb3NpdGl2ZS4gQXMgc2hvd24gZG1hX3N5bmNfc2luZ2xlX2Zvcl9kZXZpY2UoKSBhcmUKPj4+
+IGNhbGxlZCBmcm9tIHRoZSBkbWFfbWFwX3NpbmdsZSgpIGNhbGwgcGF0aC4gVGhpcyB0cmlnZ2Vy
+cyB0aGUgd2FybmluZwo+Pj4gc2luY2UgdGhlIGRtYS1kZWJ1ZyBjb2RlIGhhdmUgbm90IHlldCBi
+ZWVuIG1hZGUgYXdhcmUgb2YgdGhlIG1hcHBpbmcuCj4+Cj4+IEFsbW9zdCByaWdodCA7KSBUaGUg
+dGhpbmcgYmVpbmcgbWFwcGVkICh0aGUgU1BJIGRldmljZSdzIGJ1ZmZlcikgYW5kIHRoZQo+PiB0
+aGluZyBiZWluZyBzeW5jZWQgKHRoZSBJT01NVSdzIFBURSkgYXJlIGVudGlyZWx5IHVucmVsYXRl
+ZC4gRHVlIHRvIHRoZQo+PiBjdXJyZW50IG9mX2lvbW11X2luaXQoKSBzZXR1cCwgdGhlIElPTU1V
+IGlzIHByb2JlZCBsb25nIGJlZm9yZQo+PiBkbWFfZGVidWdfaW5pdCgpIGdldHMgY2FsbGVkLCB0
+aGVyZWZvcmUgRE1BIGRlYnVnIGlzIG1pc3NpbmcgZW50cmllcyBmb3IKPj4gc29tZSBvZiB0aGUg
+aW5pdGlhbCBwYWdlIHRhYmxlIG1hcHBpbmdzIGFuZCBnZXRzIGNvbmZ1c2VkIHdoZW4gd2UgdXBk
+YXRlCj4+IHRoZW0gbGF0ZXIuCj4gCj4gSSB0aGluayBJJ3ZlIGJlZW4gc2VlaW5nIHRoZSBzYW1l
+IGFzIE5pa2xhcyBzaW5jZSBxdWl0ZSBhIHdoaWxlLgo+IEZpbmFsbHkgSSBoYWQgYSBkZWVwZXIg
+bG9vaywgYW5kIGl0IGxvb2tzIGxpa2UgdGhlcmUgaXMgYSBidWcgc29tZXdoZXJlLAo+IGNhdXNp
+bmcgdGhlIHdyb25nIElPTU1VIFBURSB0byBiZSBzeW5jZWQuCj4gCj4+PiBJIHRyeSB0byBzb2x2
+ZSB0aGlzIGJ5IGludHJvZHVjaW5nIF9fZG1hX3N5bmNfc2luZ2xlX2Zvcl9kZXZpY2UoKSB3aGlj
+aAo+Pj4gZG8gbm90IGNhbGwgaW50byB0aGUgZG1hLWRlYnVnIGNvZGUuIEknbSBubyBleHBlcnQg
+YW5kIHRoaXMgbWlnaHQgYmUgYQo+Pj4gYmFkIHdheSBvZiBzb2x2aW5nIHRoZSBwcm9ibGVtIGJ1
+dCBpdCBhbGxvd2VkIG1lIHRvIGtlZXAgd29ya2luZy4KPj4KPj4gVGhlIHNpbXBsZSBmaXggc2hv
+dWxkIGJlIHRvIGp1c3QgY2FsbCBkbWFfZGVidWdfaW5pdCgpIGZyb20gYSBzdWZmaWNpZW50bHkK
+Pj4gZWFybGllciBpbml0Y2FsbCBsZXZlbC4gVGhlIGJlc3Qgd291bGQgYmUgdG8gc29ydCBvdXQg
+YSBwcm9wZXIgZGV2aWNlCj4+IGRlcGVuZGVuY3kgb3JkZXIgdG8gYXZvaWQgdGhlIHdob2xlIGVh
+cmx5LUlPTU1VLWNyZWF0aW9uIHRoaW5nIGVudGlyZWx5Lgo+IAo+IEFuZCBzbyBJIGRpZC4gQWZ0
+ZXIgZGlzYWJsaW5nIHRoZSBjYWxsIHRvIGRtYV9kZWJ1Z19mc19pbml0KCksIHlvdSBjYW4gY2Fs
+bAo+IGRtYV9kZWJ1Z19pbml0KCkgcXVpdGUgZWFybHkuIEJ1dCB0aGUgd2FybmluZyBkaWRuJ3Qg
+Z28gYXdheToKCllldCB0aGUgdW5kZXJseWluZyByZWFzb24gaGFzIHN1YnRseSBjaGFuZ2VkIQoK
+PiAgICAgaXBtbXUtdm1zYSBlNjdiMDAwMC5tbXU6IERNQS1BUEk6IGRldmljZSBkcml2ZXIgdHJp
+ZXMgdG8gc3luYyBETUEgbWVtb3J5Cj4gICAgICAgICBpdCBoYXMgbm90IGFsbG9jYXRlZCBbZGV2
+aWNlIGFkZHJlc3M9MHgwMDAwMDAwNjdiYWIyZmY4XSBbc2l6ZT04IGJ5dGVzXQo+ICAgICAtLS0t
+LS0tLS0tLS1bIGN1dCBoZXJlIF0tLS0tLS0tLS0tLS0KPiAgICAgV0FSTklORzogQ1BVOiAwIFBJ
+RDogMTc0IGF0IGxpYi9kbWEtZGVidWcuYzoxMjM1IGNoZWNrX3N5bmMrMHhjYy8weDU2OAo+ICAg
+ICAuLi4KPiAgICAgWzxmZmZmZmY4MDA4MjNhM2E0Pl0gY2hlY2tfc3luYysweGNjLzB4NTY4Cj4g
+ICAgIFs8ZmZmZmZmODAwODIzYThkMD5dIGRlYnVnX2RtYV9zeW5jX3NpbmdsZV9mb3JfZGV2aWNl
+KzB4NDQvMHg0Ywo+ICAgICBbPGZmZmZmZjgwMDgyYjhkMzQ+XSBfX2FybV9scGFlX3NldF9wdGUu
+aXNyYS4zKzB4NmMvMHg3OAo+ICAgICBbPGZmZmZmZjgwMDgyYjk3N2M+XSBfX2FybV9scGFlX21h
+cCsweDMxOC8weDM4NAo+ICAgICBbPGZmZmZmZjgwMDgyYjljNTg+XSBhcm1fbHBhZV9tYXArMHhi
+MC8weGM0Cj4gICAgIFs8ZmZmZmZmODAwODJiYmM1OD5dIGlwbW11X21hcCsweDQ4LzB4NTgKPiAg
+ICAgWzxmZmZmZmY4MDA4MmI2NzU0Pl0gaW9tbXVfbWFwKzB4MTIwLzB4MWZjCj4gICAgIFs8ZmZm
+ZmZmODAwODJiN2JjOD5dIF9faW9tbXVfZG1hX21hcCsweGI4LzB4ZWMKPiAgICAgWzxmZmZmZmY4
+MDA4MmI4NTE0Pl0gaW9tbXVfZG1hX21hcF9wYWdlKzB4NTAvMHg1OAo+ICAgICBbPGZmZmZmZjgw
+MDgwOTJkMjg+XSBfX2lvbW11X21hcF9wYWdlKzB4NTQvMHg5OAo+IAo+IFNvLCB3aG8gYWxsb2Nh
+dGVkIHRoYXQgbWVtb3J5Pwo+IAo+IER1cmluZyBlYXJseSBrZXJuZWwgaW5pdCAoYmVmb3JlIGZz
+X2luaXRjYWxsKGRtYV9kZWJ1Z19pbml0KSk6Cj4gCj4gICAgIGFybS1scGFlIGlvLXBndGFibGU6
+IGFybV9scGFlX2FsbG9jX3BndGFibGU6NjUyOiBjZmctPmlhcyA9IDMyCgpOb3RlIHRoYXQgeW91
+IGhhdmUgYSAzMi1iaXQgSUFTLi4uCgo+ICAgICAgICAgZGF0YS0+cGdfc2hpZnQgPSAxMiB2YV9i
+aXRzID0gMjAKPiAgICAgYXJtLWxwYWUgaW8tcGd0YWJsZTogYXJtX2xwYWVfYWxsb2NfcGd0YWJs
+ZTo2NTc6IGRhdGEtPmJpdHNfcGVyX2xldmVsID0gOQo+ICAgICAgICAgZGF0YS0+bGV2ZWxzID0g
+MyBwZ2RfYml0cyA9IDIKPiAgICAgaXBtbXUtdm1zYSBlNjdiMDAwMC5tbXU6IF9fYXJtX2xwYWVf
+YWxsb2NfcGFnZXM6MjI0Cj4gICAgICAgICBkbWFfbWFwX3NpbmdsZSgweGZmZmZmZmM2M2JhYjIw
+MDAsIDMyKSByZXR1cm5lZCAweDAwMDAwMDA2N2JhYjIwMDAKPiAKPiBIZW5jZSAweDY3YmFiMjAw
+MCBpcyB0aGUgUEdELCB3aGljaCBoYXMgb25seSA0IGVudHJpZXMgKDMyIGJ5dGVzKS4KPiBDYWxs
+IHN0YWNrOgo+IAo+ICAgICBbPGZmZmZmZjgwMDgyYjkyNDA+XSBfX2FybV9scGFlX2FsbG9jX3Bh
+Z2VzLmlzcmEuMTErMHgxNDQvMHgxZTgKPiAgICAgWzxmZmZmZmY4MDA4MmI5M2MwPl0gYXJtXzY0
+X2xwYWVfYWxsb2NfcGd0YWJsZV9zMSsweGRjLzB4MTE4Cj4gICAgIFs8ZmZmZmZmODAwODJiOTQ0
+MD5dIGFybV8zMl9scGFlX2FsbG9jX3BndGFibGVfczErMHg0NC8weDY4Cj4gICAgIFs8ZmZmZmZm
+ODAwODJiOGIxYz5dIGFsbG9jX2lvX3BndGFibGVfb3BzKzB4NGMvMHg4MAo+ICAgICBbPGZmZmZm
+ZjgwMDgyYmJmMjg+XSBpcG1tdV9hdHRhY2hfZGV2aWNlKzB4ZDAvMHgzYjAKPiAKPiBXaGVuIHN0
+YXJ0aW5nIERNQSBmcm9tIHRoZSBkZXZpY2U6Cj4gCj4gICAgIGlvbW11OiBtYXA6IGlvdmEgMHhm
+ZmZmZmZmMDAwIHBhIDB4MDAwMDAwMDY3YTU1NTAwMCBzaXplIDB4MTAwMCBwZ3NpemUgNDA5NgoK
+Li4udGhlbiBjb3VudCB0aGUgZidzIGNhcmVmdWxseS4KCj4gICAgIGFybS1scGFlIGlvLXBndGFi
+bGU6IF9fYXJtX2xwYWVfbWFwOjMxODogaW92YSAweGZmZmZmZmYwMDAKPiAgICAgICAgIHBoeXMg
+MHgwMDAwMDAwNjdhNTU1MDAwIHNpemUgNDA5NiBsdmwgMSBwdGVwIDB4ZmZmZmZmYzYzYmFiMjAw
+MAo+ICAgICBhcm0tbHBhZSBpby1wZ3RhYmxlOiBfX2FybV9scGFlX21hcDozMjA6IGluY3IuIHB0
+ZXAgdG8gMHhmZmZmZmZjNjNiYWIyZmY4Cj4gICAgIGlwbW11LXZtc2EgZTY3YjAwMDAubW11OiBf
+X2FybV9scGFlX2FsbG9jX3BhZ2VzOjIyNAo+ICAgICAgICAgZG1hX21hcF9zaW5nbGUoMHhmZmZm
+ZmZjNjNhNDkwMDAwLCA0MDk2KSByZXR1cm5lZCAweDAwMDAwMDA2N2E0OTAwMDAKPiAgICAgaXBt
+bXUtdm1zYSBlNjdiMDAwMC5tbXU6IERNQS1BUEk6IGRldmljZSBkcml2ZXIgdHJpZXMgdG8gc3lu
+YyBETUEgbWVtb3J5Cj4gICAgICAgICBpdCBoYXMgbm90IGFsbG9jYXRlZCBbZGV2aWNlIGFkZHJl
+c3M9MHgwMDAwMDAwNjdiYWIyZmY4XSBbc2l6ZT04IGJ5dGVzXQo+IAo+IF9fYXJtX2xwYWVfbWFw
+KCkgYWRkZWQgIkFSTV9MUEFFX0xWTF9JRFgoaW92YSwgbHZsLCBkYXRhKSIgPT0gMHhmZjggdG8g
+cHRlcAo+ICh0aGUgUEdEIGJhc2UgYWRkcmVzcyksIGJ1dCB0aGUgUEdEIGhhcyBvbmx5IDMyIGJ5
+dGVzLCBsZWFkaW5nIHRvIHRoZSB3YXJuaW5nLgo+IAo+IERvZXMgbXkgYW5hbHlzaXMgbWFrZSBz
+ZW5zZT8KPiBEbyB5b3UgaGF2ZSBhIGNsdWU/CgpUaGUgaW5pdGlhbCBmYWxzZSBwb3NpdGl2ZSBt
+aXNsZWFkcyBmcm9tIHRoZSBmYWN0IHRoYXQgdGhpcyBpcyBhY3R1YWxseQpETUEtZGVidWcgZG9p
+bmcgaXRzIGpvYiBhZG1pcmFibHkuIFRoZSBidWcgbGllcyBpbiBob3dldmVyIHlvdSBlbmRlZCB1
+cAp0cnlpbmcgdG8gbWFwIGEgNDAtYml0IElPVkEgaW4gYSAzMi1iaXQgcGFnZXRhYmxlLgoKUm9i
+aW4uCgo+IAo+IFRoYW5rcyEKPiAKPiBHcntvZXRqZSxlZXRpbmd9cywKPiAKPiAgICAgICAgICAg
+ICAgICAgICAgICAgICBHZWVydAo+IAo+IC0tCj4gR2VlcnQgVXl0dGVyaG9ldmVuIC0tIFRoZXJl
+J3MgbG90cyBvZiBMaW51eCBiZXlvbmQgaWEzMiAtLSBnZWVydEBsaW51eC1tNjhrLm9yZwo+IAo+
+IEluIHBlcnNvbmFsIGNvbnZlcnNhdGlvbnMgd2l0aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNhbGwg
+bXlzZWxmIGEgaGFja2VyLiBCdXQKPiB3aGVuIEknbSB0YWxraW5nIHRvIGpvdXJuYWxpc3RzIEkg
+anVzdCBzYXkgInByb2dyYW1tZXIiIG9yIHNvbWV0aGluZyBsaWtlIHRoYXQuCj4gICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAtLSBMaW51cyBUb3J2YWxkcwo+IAoKX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
+bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
+aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
