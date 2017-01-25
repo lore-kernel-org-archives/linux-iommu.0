@@ -1,186 +1,126 @@
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH/RFC 3/4] iommu: dma: iommu iova domain reset
-Date: Wed, 25 Jan 2017 21:54:01 +0900
-Message-ID: <1485348842-23712-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-References: <1485348842-23712-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 0/2] Fix incorrect warning from dma-debug
+Date: Wed, 25 Jan 2017 17:23:16 +0100
+Message-ID: <CAMuHMdUnznBCt=V5_PgTaXM5JAZjBvZK-44bahUx+7NFg+f0rA@mail.gmail.com>
+References: <1462705196-10857-1-git-send-email-niklas.soderlund+renesas@ragnatech.se>
+ <57305A4B.70401@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1485348842-23712-1-git-send-email-yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <57305A4B.70401@arm.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux-foundation.org, dmaengine@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, Magnus Damm <magnus.damm@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Hi Robin,
 
-To add a workaround code for ipmmu-vmsa driver, this patch adds
-a new geometry "force_reset_when_empty" not to reuse iova space.
-When all pfns happen to get unmapped then ask the IOMMU driver to
-flush the state followed by starting from an empty iova space.
+On Mon, May 9, 2016 at 11:37 AM, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 08/05/16 11:59, Niklas S=C3=B6derlund wrote:
+>> While using CONFIG_DMA_API_DEBUG i came across this warning which I
+>> think is a false positive. As shown dma_sync_single_for_device() are
+>> called from the dma_map_single() call path. This triggers the warning
+>> since the dma-debug code have not yet been made aware of the mapping.
+>
+> Almost right ;) The thing being mapped (the SPI device's buffer) and the
+> thing being synced (the IOMMU's PTE) are entirely unrelated. Due to the
+> current of_iommu_init() setup, the IOMMU is probed long before
+> dma_debug_init() gets called, therefore DMA debug is missing entries for
+> some of the initial page table mappings and gets confused when we update
+> them later.
 
-Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
----
- drivers/iommu/dma-iommu.c | 42 +++++++++++++++++++++++++++++++++++++-----
- drivers/iommu/iova.c      |  9 +++++++++
- include/linux/iommu.h     |  2 ++
- include/linux/iova.h      |  1 +
- 4 files changed, 49 insertions(+), 5 deletions(-)
+I think I've been seeing the same as Niklas since quite a while.
+Finally I had a deeper look, and it looks like there is a bug somewhere,
+causing the wrong IOMMU PTE to be synced.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index a0b8c0f..d0fa0b1 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -42,6 +42,7 @@ struct iommu_dma_cookie {
- 	struct iova_domain	iovad;
- 	struct list_head	msi_page_list;
- 	spinlock_t		msi_lock;
-+	spinlock_t		reset_lock;
- };
- 
- static inline struct iova_domain *cookie_iovad(struct iommu_domain *domain)
-@@ -74,6 +75,7 @@ int iommu_get_dma_cookie(struct iommu_domain *domain)
- 
- 	spin_lock_init(&cookie->msi_lock);
- 	INIT_LIST_HEAD(&cookie->msi_page_list);
-+	spin_lock_init(&cookie->reset_lock);
- 	domain->iova_cookie = cookie;
- 	return 0;
- }
-@@ -208,9 +210,11 @@ int dma_direction_to_prot(enum dma_data_direction dir, bool coherent)
- static struct iova *__alloc_iova(struct iommu_domain *domain, size_t size,
- 		dma_addr_t dma_limit)
- {
-+	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	struct iova_domain *iovad = cookie_iovad(domain);
- 	unsigned long shift = iova_shift(iovad);
- 	unsigned long length = iova_align(iovad, size) >> shift;
-+	unsigned long flags;
- 	struct iova *iova;
- 
- 	if (domain->geometry.force_aperture)
-@@ -219,9 +223,19 @@ static struct iova *__alloc_iova(struct iommu_domain *domain, size_t size,
- 	 * Enforce size-alignment to be safe - there could perhaps be an
- 	 * attribute to control this per-device, or at least per-domain...
- 	 */
--	iova = alloc_iova(iovad, length, dma_limit >> shift, true);
--	if (iova)
--		atomic_add(iova_size(iova), &domain->iova_pfns_mapped);
-+	if (domain->geometry.force_reset_when_empty) {
-+		spin_lock_irqsave(&cookie->reset_lock, flags);
-+
-+		iova = alloc_iova(iovad, length, dma_limit >> shift, true);
-+		if (iova)
-+			atomic_add(iova_size(iova), &domain->iova_pfns_mapped);
-+
-+		spin_unlock_irqrestore(&cookie->reset_lock, flags);
-+	} else {
-+		iova = alloc_iova(iovad, length, dma_limit >> shift, true);
-+		if (iova)
-+			atomic_add(iova_size(iova), &domain->iova_pfns_mapped);
-+	}
- 
- 	return iova;
- }
-@@ -229,10 +243,28 @@ static struct iova *__alloc_iova(struct iommu_domain *domain, size_t size,
- void
- __free_iova_domain(struct iommu_domain *domain, struct iova *iova)
- {
-+	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	struct iova_domain *iovad = cookie_iovad(domain);
-+	unsigned long flags;
- 
--	atomic_sub(iova_size(iova), &domain->iova_pfns_mapped);
--	__free_iova(iovad, iova);
-+	/* In case force_reset_when_empty is set, do not reuse iova space
-+	 * but instead simply keep on expanding seemingly forever.
-+	 * When all pfns happen to get unmapped then ask the IOMMU driver to
-+	 * flush the state followed by starting from an empty iova space.
-+	 */
-+	if (domain->geometry.force_reset_when_empty) {
-+		spin_lock_irqsave(&cookie->reset_lock, flags);
-+		if (atomic_sub_return(iova_size(iova),
-+				      &domain->iova_pfns_mapped) == 0) {
-+			reset_iova_domain(iovad);
-+			if (domain->ops->domain_reset)
-+				domain->ops->domain_reset(domain);
-+		}
-+		spin_unlock_irqrestore(&cookie->reset_lock, flags);
-+	} else {
-+		atomic_sub(iova_size(iova), &domain->iova_pfns_mapped);
-+		__free_iova(iovad, iova);
-+	}
- }
- 
- 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 866ad65..50aaa46 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -464,6 +464,7 @@ void put_iova_domain(struct iova_domain *iovad)
- 	while (node) {
- 		struct iova *iova = rb_entry(node, struct iova, node);
- 
-+		__cached_rbnode_delete_update(iovad, iova);
- 		rb_erase(node, &iovad->rbroot);
- 		free_iova_mem(iova);
- 		node = rb_first(&iovad->rbroot);
-@@ -472,6 +473,14 @@ void put_iova_domain(struct iova_domain *iovad)
- }
- EXPORT_SYMBOL_GPL(put_iova_domain);
- 
-+void
-+reset_iova_domain(struct iova_domain *iovad)
-+{
-+	put_iova_domain(iovad);
-+	init_iova_rcaches(iovad);
-+}
-+EXPORT_SYMBOL_GPL(reset_iova_domain);
-+
- static int
- __is_range_overlap(struct rb_node *node,
- 	unsigned long pfn_lo, unsigned long pfn_hi)
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 91d0159..bd9ba1b 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -51,6 +51,7 @@ struct iommu_domain_geometry {
- 	dma_addr_t aperture_start; /* First address that can be mapped    */
- 	dma_addr_t aperture_end;   /* Last address that can be mapped     */
- 	bool force_aperture;       /* DMA only allowed in mappable range? */
-+	bool force_reset_when_empty;
- };
- 
- /* Domain feature flags */
-@@ -168,6 +169,7 @@ struct iommu_ops {
- 	/* Domain allocation and freeing by the iommu driver */
- 	struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);
- 	void (*domain_free)(struct iommu_domain *);
-+	void (*domain_reset)(struct iommu_domain *);
- 
- 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
- 	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index f27bb2c..31c8496 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -103,6 +103,7 @@ void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	unsigned long start_pfn, unsigned long pfn_32bit);
- struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
- void put_iova_domain(struct iova_domain *iovad);
-+void reset_iova_domain(struct iova_domain *iovad);
- struct iova *split_and_remove_iova(struct iova_domain *iovad,
- 	struct iova *iova, unsigned long pfn_lo, unsigned long pfn_hi);
- void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
--- 
-1.9.1
+>> I try to solve this by introducing __dma_sync_single_for_device() which
+>> do not call into the dma-debug code. I'm no expert and this might be a
+>> bad way of solving the problem but it allowed me to keep working.
+>
+> The simple fix should be to just call dma_debug_init() from a sufficientl=
+y
+> earlier initcall level. The best would be to sort out a proper device
+> dependency order to avoid the whole early-IOMMU-creation thing entirely.
+
+And so I did. After disabling the call to dma_debug_fs_init(), you can call
+dma_debug_init() quite early. But the warning didn't go away:
+
+    ipmmu-vmsa e67b0000.mmu: DMA-API: device driver tries to sync DMA memor=
+y
+        it has not allocated [device address=3D0x000000067bab2ff8] [size=3D=
+8 bytes]
+    ------------[ cut here ]------------
+    WARNING: CPU: 0 PID: 174 at lib/dma-debug.c:1235 check_sync+0xcc/0x568
+    ...
+    [<ffffff800823a3a4>] check_sync+0xcc/0x568
+    [<ffffff800823a8d0>] debug_dma_sync_single_for_device+0x44/0x4c
+    [<ffffff80082b8d34>] __arm_lpae_set_pte.isra.3+0x6c/0x78
+    [<ffffff80082b977c>] __arm_lpae_map+0x318/0x384
+    [<ffffff80082b9c58>] arm_lpae_map+0xb0/0xc4
+    [<ffffff80082bbc58>] ipmmu_map+0x48/0x58
+    [<ffffff80082b6754>] iommu_map+0x120/0x1fc
+    [<ffffff80082b7bc8>] __iommu_dma_map+0xb8/0xec
+    [<ffffff80082b8514>] iommu_dma_map_page+0x50/0x58
+    [<ffffff8008092d28>] __iommu_map_page+0x54/0x98
+
+So, who allocated that memory?
+
+During early kernel init (before fs_initcall(dma_debug_init)):
+
+    arm-lpae io-pgtable: arm_lpae_alloc_pgtable:652: cfg->ias =3D 32
+        data->pg_shift =3D 12 va_bits =3D 20
+    arm-lpae io-pgtable: arm_lpae_alloc_pgtable:657: data->bits_per_level =
+=3D 9
+        data->levels =3D 3 pgd_bits =3D 2
+    ipmmu-vmsa e67b0000.mmu: __arm_lpae_alloc_pages:224
+        dma_map_single(0xffffffc63bab2000, 32) returned 0x000000067bab2000
+
+Hence 0x67bab2000 is the PGD, which has only 4 entries (32 bytes).
+Call stack:
+
+    [<ffffff80082b9240>] __arm_lpae_alloc_pages.isra.11+0x144/0x1e8
+    [<ffffff80082b93c0>] arm_64_lpae_alloc_pgtable_s1+0xdc/0x118
+    [<ffffff80082b9440>] arm_32_lpae_alloc_pgtable_s1+0x44/0x68
+    [<ffffff80082b8b1c>] alloc_io_pgtable_ops+0x4c/0x80
+    [<ffffff80082bbf28>] ipmmu_attach_device+0xd0/0x3b0
+
+When starting DMA from the device:
+
+    iommu: map: iova 0xfffffff000 pa 0x000000067a555000 size 0x1000 pgsize =
+4096
+    arm-lpae io-pgtable: __arm_lpae_map:318: iova 0xfffffff000
+        phys 0x000000067a555000 size 4096 lvl 1 ptep 0xffffffc63bab2000
+    arm-lpae io-pgtable: __arm_lpae_map:320: incr. ptep to 0xffffffc63bab2f=
+f8
+    ipmmu-vmsa e67b0000.mmu: __arm_lpae_alloc_pages:224
+        dma_map_single(0xffffffc63a490000, 4096) returned 0x000000067a49000=
+0
+    ipmmu-vmsa e67b0000.mmu: DMA-API: device driver tries to sync DMA memor=
+y
+        it has not allocated [device address=3D0x000000067bab2ff8] [size=3D=
+8 bytes]
+
+__arm_lpae_map() added "ARM_LPAE_LVL_IDX(iova, lvl, data)" =3D=3D 0xff8 to =
+ptep
+(the PGD base address), but the PGD has only 32 bytes, leading to the warni=
+ng.
+
+Does my analysis make sense?
+Do you have a clue?
+
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
