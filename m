@@ -1,14 +1,12 @@
 From: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 2/2] iommu/vt-d: tylersburg isoch identity map check is done
-	too late.
-Date: Thu, 26 Jan 2017 13:50:34 -0800
-Message-ID: <1485467434-119978-2-git-send-email-ashok.raj@intel.com>
-References: <1485467434-119978-1-git-send-email-ashok.raj@intel.com>
+Subject: [PATCH 1/2] iommu/vt-d: Fix some macros that are incorrectly
+	specified in intel-iommu
+Date: Thu, 26 Jan 2017 13:50:33 -0800
+Message-ID: <1485467434-119978-1-git-send-email-ashok.raj@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1485467434-119978-1-git-send-email-ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,41 +19,65 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The check to set identity map for tylersburg is done too late. It needs
-to be done before the check for identity_map domain is done.
+From: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+
+Some of the macros are incorrect with wrong bit-shifts resulting in picking
+the incorrect invalidation granularity. Incorrect Source-ID in extended
+devtlb invalidation caused device side errors.
 
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
+Signed-off-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Reported-by: Yunhong Jiang <yunhong.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Tested-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 ---
- drivers/iommu/intel-iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/intel-iommu.h | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 8a18525..23eead3 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3325,13 +3325,14 @@ static int __init init_dmars(void)
- 	iommu_identity_mapping |= IDENTMAP_GFX;
- #endif
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index d49e26c..23e129e 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -153,8 +153,8 @@ static inline void dmar_writeq(void __iomem *addr, u64 val)
+ #define DMA_TLB_GLOBAL_FLUSH (((u64)1) << 60)
+ #define DMA_TLB_DSI_FLUSH (((u64)2) << 60)
+ #define DMA_TLB_PSI_FLUSH (((u64)3) << 60)
+-#define DMA_TLB_IIRG(type) ((type >> 60) & 7)
+-#define DMA_TLB_IAIG(val) (((val) >> 57) & 7)
++#define DMA_TLB_IIRG(type) ((type >> 60) & 3)
++#define DMA_TLB_IAIG(val) (((val) >> 57) & 3)
+ #define DMA_TLB_READ_DRAIN (((u64)1) << 49)
+ #define DMA_TLB_WRITE_DRAIN (((u64)1) << 48)
+ #define DMA_TLB_DID(id)	(((u64)((id) & 0xffff)) << 32)
+@@ -164,9 +164,9 @@ static inline void dmar_writeq(void __iomem *addr, u64 val)
  
-+	check_tylersburg_isoch();
-+
- 	if (iommu_identity_mapping) {
- 		ret = si_domain_init(hw_pass_through);
- 		if (ret)
- 			goto free_iommu;
- 	}
+ /* INVALID_DESC */
+ #define DMA_CCMD_INVL_GRANU_OFFSET  61
+-#define DMA_ID_TLB_GLOBAL_FLUSH	(((u64)1) << 3)
+-#define DMA_ID_TLB_DSI_FLUSH	(((u64)2) << 3)
+-#define DMA_ID_TLB_PSI_FLUSH	(((u64)3) << 3)
++#define DMA_ID_TLB_GLOBAL_FLUSH	(((u64)1) << 4)
++#define DMA_ID_TLB_DSI_FLUSH	(((u64)2) << 4)
++#define DMA_ID_TLB_PSI_FLUSH	(((u64)3) << 4)
+ #define DMA_ID_TLB_READ_DRAIN	(((u64)1) << 7)
+ #define DMA_ID_TLB_WRITE_DRAIN	(((u64)1) << 6)
+ #define DMA_ID_TLB_DID(id)	(((u64)((id & 0xffff) << 16)))
+@@ -316,8 +316,8 @@ enum {
+ #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
+ #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
+ #define QI_DEV_EIOTLB_PASID(p)	(((u64)p) << 32)
+-#define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 32)
+-#define QI_DEV_EIOTLB_QDEP(qd)	(((qd) & 0x1f) << 16)
++#define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 16)
++#define QI_DEV_EIOTLB_QDEP(qd)	((u64)((qd) & 0x1f) << 4)
+ #define QI_DEV_EIOTLB_MAX_INVS	32
  
--	check_tylersburg_isoch();
- 
- 	/*
- 	 * If we copied translations from a previous kernel in the kdump
+ #define QI_PGRP_IDX(idx)	(((u64)(idx)) << 55)
 -- 
 2.7.4
