@@ -1,44 +1,63 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to
- 48
-Date: Fri, 27 Jan 2017 12:47:24 +0100
-Message-ID: <20170127114724.GI27598@8bytes.org>
-References: <148517158986.13306.314435910710426381.sendpatchset@little-apple>
- <148517162908.13306.2467186615655446796.sendpatchset@little-apple>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu: Better document the IOMMU_PRIV flag
+Date: Fri, 27 Jan 2017 12:22:54 +0000
+Message-ID: <edc67cc1775f3bafb6895346184e8042fd881ba4.1485519627.git.robin.murphy@arm.com>
+References: <1483709296-32761-1-git-send-email-sricharan@codeaurora.org>
+	<1483709296-32761-2-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <148517162908.13306.2467186615655446796.sendpatchset@little-apple>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Magnus Damm <magnus.damm@gmail.com>
-Cc: iommu@lists.linux-foundation.org, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1483709296-32761-2-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 23, 2017 at 08:40:29PM +0900, Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas@opensource.se>
-> 
-> Bump up the maximum numbers of micro-TLBS to 48.
-> 
-> Each IPMMU device instance get micro-TLB assignment via
-> the "iommus" property in DT. Older SoCs tend to use a
-> maximum number of 32 micro-TLBs per IPMMU instance however
-> newer SoCs such as r8a7796 make use of up to 48 micro-TLBs.
-> 
-> At this point no SoC specific handling is done to validate
-> the maximum number of micro-TLBs, and because of that the
-> DT information is assumed to be within correct range for
-> each particular SoC.
-> 
-> If needed in the future SoC specific feature flags can be
-> added to handle the maximum number of micro-TLBs without
-> requiring DT changes, however at this point this does not
-> seem necessary.
-> 
-> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+This is a fairly subtle thing - let's make sure it's described as
+clearly as possible to avoid potential misunderstandings.
 
-I get a conflict when applying this to v4.10-rc5. What is this based on,
-any patches I missed?
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
 
+Having another look through the IOMMU_PRIV series, I wasn't convinced
+that the original comment was really all that helpful - I'm happy for
+this to be squashed in if you like.
 
-	Joerg
+Robin.
+
+ include/linux/iommu.h | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 69e2417a2965..3c830e153069 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -32,10 +32,13 @@
+ #define IOMMU_NOEXEC	(1 << 3)
+ #define IOMMU_MMIO	(1 << 4) /* e.g. things like MSI doorbells */
+ /*
+- * This is to make the IOMMU API setup privileged
+- * mapppings accessible by the master only at higher
+- * privileged execution level and inaccessible at
+- * less privileged levels.
++ * Where the bus hardware includes a privilege level as part of its access type
++ * markings, and certain devices are capable of issuing transactions marked as
++ * either 'supervisor' or 'user', the IOMMU_PRIV flag requests that the other
++ * given permission flags only apply to accesses at the higher privilege level,
++ * and that unprivileged transactions should have as little access as possible.
++ * This would usually imply the same permissions as kernel mappings on the CPU,
++ * if the IOMMU page table format is equivalent.
+  */
+ #define IOMMU_PRIV	(1 << 5)
+ 
+-- 
+2.11.0.dirty
