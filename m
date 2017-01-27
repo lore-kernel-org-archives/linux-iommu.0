@@ -1,12 +1,16 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [GIT PULL] iommu: KVM PCIe/MSI passthrough on ARM/ARM64 for 4.11
-Date: Fri, 27 Jan 2017 16:50:22 +0000
-Message-ID: <20170127165021.GC10758@arm.com>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH] iommu: Better document the IOMMU_PRIV flag
+Date: Fri, 27 Jan 2017 22:28:46 +0530
+Message-ID: <009101d278be$a388b310$ea9a1930$@codeaurora.org>
+References: <1483709296-32761-1-git-send-email-sricharan@codeaurora.org>
+	<1483709296-32761-2-git-send-email-sricharan@codeaurora.org>
+	<edc67cc1775f3bafb6895346184e8042fd881ba4.1485519627.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
+In-Reply-To: <edc67cc1775f3bafb6895346184e8042fd881ba4.1485519627.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,76 +20,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: 'Robin Murphy' <robin.murphy-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Hi Robin,
 
-Please pull Eric's guest-MSI series for 4.11. This has been through
-considerable review and associated rework (including a session at LPC),
-but it has stabilised at last and we all seem to be happy with it. Eric's
-done a great job of respinning these and remaining patient while we
-pulled him in a bunch of different directions.
+>-----Original Message-----
+>From: linux-arm-kernel [mailto:linux-arm-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org] On Behalf Of Robin Murphy
+>Sent: Friday, January 27, 2017 5:53 PM
+>To: will.deacon-5wv7dgnIgG8@public.gmane.org
+>Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+>Subject: [PATCH] iommu: Better document the IOMMU_PRIV flag
+>
+>This is a fairly subtle thing - let's make sure it's described as
+>clearly as possible to avoid potential misunderstandings.
+>
+>Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>---
+>
+>Having another look through the IOMMU_PRIV series, I wasn't convinced
+>that the original comment was really all that helpful - I'm happy for
+>this to be squashed in if you like.
+>
+>Robin.
+>
+> include/linux/iommu.h | 11 +++++++----
+> 1 file changed, 7 insertions(+), 4 deletions(-)
+>
+>diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>index 69e2417a2965..3c830e153069 100644
+>--- a/include/linux/iommu.h
+>+++ b/include/linux/iommu.h
+>@@ -32,10 +32,13 @@
+> #define IOMMU_NOEXEC	(1 << 3)
+> #define IOMMU_MMIO	(1 << 4) /* e.g. things like MSI doorbells */
+> /*
+>- * This is to make the IOMMU API setup privileged
+>- * mapppings accessible by the master only at higher
+>- * privileged execution level and inaccessible at
+>- * less privileged levels.
+>+ * Where the bus hardware includes a privilege level as part of its access type
+>+ * markings, and certain devices are capable of issuing transactions marked as
+>+ * either 'supervisor' or 'user', the IOMMU_PRIV flag requests that the other
+>+ * given permission flags only apply to accesses at the higher privilege level,
+>+ * and that unprivileged transactions should have as little access as possible.
+>+ * This would usually imply the same permissions as kernel mappings on the CPU,
+>+ * if the IOMMU page table format is equivalent.
+>  */
 
-With these patches applied, it's possible for us to pass PCI devices
-through to KVM guests on arm64 using VFIO and have them signal interrupts
-using MSIs targetting the ITS via the SMMU. Acronym soup, sure, but it's
-much better than legacy wired irqs!
+Agree, gives much more insight.
 
-Cheers,
-
-Will
-
---->8
-
-The following changes since commit a121103c922847ba5010819a3f250f1f7fc84ab8:
-
-  Linux 4.10-rc3 (2017-01-08 14:18:17 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git iommu/guest-msi
-
-for you to fetch changes up to 5018c8d5ef0c172592eb98cf10e253d47b544ba8:
-
-  iommu/arm-smmu: Do not advertise IOMMU_CAP_INTR_REMAP anymore (2017-01-23 15:00:47 +0000)
-
-----------------------------------------------------------------
-Eric Auger (17):
-      iommu: Rename iommu_dm_regions into iommu_resv_regions
-      iommu: Add a new type field in iommu_resv_region
-      iommu: iommu_alloc_resv_region
-      iommu: Only map direct mapped regions
-      iommu: iommu_get_group_resv_regions
-      iommu: Implement reserved_regions iommu-group sysfs file
-      iommu/vt-d: Implement reserved region get/put callbacks
-      iommu/amd: Declare MSI and HT regions as reserved IOVA regions
-      iommu/arm-smmu: Implement reserved region get/put callbacks
-      iommu/arm-smmu-v3: Implement reserved region get/put callbacks
-      irqdomain: Add irq domain MSI and MSI_REMAP flags
-      genirq/msi: Set IRQ_DOMAIN_FLAG_MSI on MSI domain creation
-      irqdomain: irq_domain_check_msi_remap
-      irqchip/gicv3-its: Sets IRQ_DOMAIN_FLAG_MSI_REMAP
-      vfio/type1: Allow transparent MSI IOVA allocation
-      vfio/type1: Check MSI remapping at irq domain level
-      iommu/arm-smmu: Do not advertise IOMMU_CAP_INTR_REMAP anymore
-
-Robin Murphy (1):
-      iommu/dma: Allow MSI-only cookies
-
- .../ABI/testing/sysfs-kernel-iommu_groups          |  12 ++
- drivers/iommu/amd_iommu.c                          |  54 ++++---
- drivers/iommu/arm-smmu-v3.c                        |  30 +++-
- drivers/iommu/arm-smmu.c                           |  30 +++-
- drivers/iommu/dma-iommu.c                          | 119 +++++++++++---
- drivers/iommu/intel-iommu.c                        |  92 ++++++++---
- drivers/iommu/iommu.c                              | 177 +++++++++++++++++++--
- drivers/irqchip/irq-gic-v3-its.c                   |   1 +
- drivers/vfio/vfio_iommu_type1.c                    |  37 ++++-
- include/linux/dma-iommu.h                          |   6 +
- include/linux/iommu.h                              |  46 ++++--
- include/linux/irqdomain.h                          |  36 +++++
- kernel/irq/irqdomain.c                             |  39 +++++
- kernel/irq/msi.c                                   |   4 +-
- 14 files changed, 590 insertions(+), 93 deletions(-)
+Regards,
+  Sricharan
