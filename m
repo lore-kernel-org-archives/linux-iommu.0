@@ -1,116 +1,91 @@
-From: Lucas Stach <l.stach@pengutronix.de>
-Subject: [PATCH v2 2/3] mm: cma_alloc: allow to specify GFP mask
-Date: Fri, 27 Jan 2017 18:23:27 +0100
-Message-ID: <20170127172328.18574-2-l.stach@pengutronix.de>
-References: <20170127172328.18574-1-l.stach@pengutronix.de>
-Return-path: <linux-mips-bounce@linux-mips.org>
-In-Reply-To: <20170127172328.18574-1-l.stach@pengutronix.de>
-Sender: linux-mips-bounce@linux-mips.org
-Errors-to: linux-mips-bounce@linux-mips.org
-List-help: <mailto:ecartis@linux-mips.org?Subject=help>
-List-unsubscribe: <mailto:ecartis@linux-mips.org?subject=unsubscribe%20linux-mips>
-List-software: Ecartis version 1.0.0
-List-subscribe: <mailto:ecartis@linux-mips.org?subject=subscribe%20linux-mips>
-List-owner: <mailto:ralf@linux-mips.org>
-List-post: <mailto:linux-mips@linux-mips.org>
-List-archive: <http://www.linux-mips.org/archives/linux-mips/>
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-mips@linux-mips.org, Michal Hocko <mhocko@suse.com>, kvm@vger.kernel.org, =?UTF-8?q?Radim=20Kr=C4=8Dm=C3=A1=C5=99?= <rkrcmar@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Max Filippov <jcmvbkbc@gmail.com>, "H . Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>, Russell King <linux@armlinux.org.uk>, patchwork-lst@pengutronix.de, Ingo Molnar <mingo@redhat.com>, Vlastimil Babka <vbabka@suse.cz>, linux-xtensa@linux-xtensa.org, kvm-ppc@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Chris Zankel <chris@zankel.net>, linux-mm@kvack.org, Ralf Baechle <ralf@linux-mips.org>, iommu@lists.linux-foundation.org, kernel@pengutronix.de, Paolo Bonzini <pbonzini@redhat.c>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH/RFC] iommu/dma: Per-domain flag to control size-alignment
+Date: Fri, 27 Jan 2017 17:38:05 +0000
+Message-ID: <464656f9-970e-1271-0d9e-b62a0673e1dd@arm.com>
+References: <148549826507.23190.1460689571069015835.sendpatchset@little-apple>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <148549826507.23190.1460689571069015835.sendpatchset@little-apple>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Most users of this interface just want to use it with the default
-GFP_KERNEL flags, but for cases where DMA memory is allocated it may
-be called from a different context.
+Hi Magnus,
 
-No functional change yet, just passing through the flag to the
-underlying alloc_contig_range function.
+On 27/01/17 06:24, Magnus Damm wrote:
+> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+> 
+> Introduce the flag "no_size_align" to allow disabling size-alignment
+> on a per-domain basis. This follows the suggestion by the comment
+> in the code, however a per-device control may be preferred?
+> 
+> Needed to make virtual space contiguous for certain devices.
 
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
-Acked-by: Michal Hocko <mhocko@suse.com>
----
- arch/powerpc/kvm/book3s_hv_builtin.c | 3 ++-
- drivers/base/dma-contiguous.c        | 2 +-
- include/linux/cma.h                  | 3 ++-
- mm/cma.c                             | 5 +++--
- mm/cma_debug.c                       | 2 +-
- 5 files changed, 9 insertions(+), 6 deletions(-)
+That sounds very suspicious - a single allocation is contiguous with
+itself by definition, and anyone relying on multiple allocations being
+contiguous with one another is doing it wrong, because there's no way we
+could ever guarantee that (with this allocator, at any rate). I'd be
+very reticent to touch this without a specific example of what problem
+it solves.
 
-diff --git a/arch/powerpc/kvm/book3s_hv_builtin.c b/arch/powerpc/kvm/book3s_hv_builtin.c
-index 5bb24be0b346..56a62d97ab2d 100644
---- a/arch/powerpc/kvm/book3s_hv_builtin.c
-+++ b/arch/powerpc/kvm/book3s_hv_builtin.c
-@@ -56,7 +56,8 @@ struct page *kvm_alloc_hpt(unsigned long nr_pages)
- {
- 	VM_BUG_ON(order_base_2(nr_pages) < KVM_CMA_CHUNK_ORDER - PAGE_SHIFT);
- 
--	return cma_alloc(kvm_cma, nr_pages, order_base_2(HPT_ALIGN_PAGES));
-+	return cma_alloc(kvm_cma, nr_pages, order_base_2(HPT_ALIGN_PAGES),
-+			 GFP_KERNEL);
- }
- EXPORT_SYMBOL_GPL(kvm_alloc_hpt);
- 
-diff --git a/drivers/base/dma-contiguous.c b/drivers/base/dma-contiguous.c
-index e167a1e1bccb..d1a9cbabc627 100644
---- a/drivers/base/dma-contiguous.c
-+++ b/drivers/base/dma-contiguous.c
-@@ -193,7 +193,7 @@ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
- 	if (align > CONFIG_CMA_ALIGNMENT)
- 		align = CONFIG_CMA_ALIGNMENT;
- 
--	return cma_alloc(dev_get_cma_area(dev), count, align);
-+	return cma_alloc(dev_get_cma_area(dev), count, align, GFP_KERNEL);
- }
- 
- /**
-diff --git a/include/linux/cma.h b/include/linux/cma.h
-index 6f0a91b37f68..03f32d0bd1d8 100644
---- a/include/linux/cma.h
-+++ b/include/linux/cma.h
-@@ -29,6 +29,7 @@ extern int __init cma_declare_contiguous(phys_addr_t base,
- extern int cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
- 					unsigned int order_per_bit,
- 					struct cma **res_cma);
--extern struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align);
-+extern struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align,
-+			      gfp_t gfp_mask);
- extern bool cma_release(struct cma *cma, const struct page *pages, unsigned int count);
- #endif
-diff --git a/mm/cma.c b/mm/cma.c
-index fbd67d866f67..a33ddfde315d 100644
---- a/mm/cma.c
-+++ b/mm/cma.c
-@@ -362,7 +362,8 @@ int __init cma_declare_contiguous(phys_addr_t base,
-  * This function allocates part of contiguous memory on specific
-  * contiguous memory area.
-  */
--struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align)
-+struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align,
-+		       gfp_t gfp_mask)
- {
- 	unsigned long mask, offset;
- 	unsigned long pfn = -1;
-@@ -408,7 +409,7 @@ struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align)
- 		pfn = cma->base_pfn + (bitmap_no << cma->order_per_bit);
- 		mutex_lock(&cma_mutex);
- 		ret = alloc_contig_range(pfn, pfn + count, MIGRATE_CMA,
--					 GFP_KERNEL);
-+					 gfp_mask);
- 		mutex_unlock(&cma_mutex);
- 		if (ret == 0) {
- 			page = pfn_to_page(pfn);
-diff --git a/mm/cma_debug.c b/mm/cma_debug.c
-index f8e4b60db167..ffc0c3d0ae64 100644
---- a/mm/cma_debug.c
-+++ b/mm/cma_debug.c
-@@ -138,7 +138,7 @@ static int cma_alloc_mem(struct cma *cma, int count)
- 	if (!mem)
- 		return -ENOMEM;
- 
--	p = cma_alloc(cma, count, 0);
-+	p = cma_alloc(cma, count, 0, GFP_KERNEL);
- 	if (!p) {
- 		kfree(mem);
- 		return -ENOMEM;
--- 
-2.11.0
+Since I understand all this stuff a lot more deeply now that back when I
+first wrote that comment, I'd say that if there really is some real need
+to implement this feature, it should be a dma_attr flag, i.e. not even
+per-device, but per-allocation. We'd be breaking a behaviour currently
+guaranteed by the DMA API, so we need to be really sure the caller is OK
+with that - having it be their responsibility to explicitly ask is
+definitely safest.
+
+Robin.
+
+> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+> ---
+> 
+>  drivers/iommu/dma-iommu.c |    6 +++++-
+>  include/linux/iommu.h     |    1 +
+>  2 files changed, 6 insertions(+), 1 deletion(-)
+> 
+> --- 0001/drivers/iommu/dma-iommu.c
+> +++ work/drivers/iommu/dma-iommu.c	2017-01-27 15:17:50.280607110 +0900
+> @@ -209,14 +209,18 @@ static struct iova *__alloc_iova(struct
+>  	struct iova_domain *iovad = cookie_iovad(domain);
+>  	unsigned long shift = iova_shift(iovad);
+>  	unsigned long length = iova_align(iovad, size) >> shift;
+> +	bool size_aligned = true;
+>  
+>  	if (domain->geometry.force_aperture)
+>  		dma_limit = min(dma_limit, domain->geometry.aperture_end);
+> +
+> +	if (domain->no_size_align)
+> +		size_aligned = false;
+>  	/*
+>  	 * Enforce size-alignment to be safe - there could perhaps be an
+>  	 * attribute to control this per-device, or at least per-domain...
+>  	 */
+> -	return alloc_iova(iovad, length, dma_limit >> shift, true);
+> +	return alloc_iova(iovad, length, dma_limit >> shift, size_aligned);
+>  }
+>  
+>  /* The IOVA allocator knows what we mapped, so just unmap whatever that was */
+> --- 0001/include/linux/iommu.h
+> +++ work/include/linux/iommu.h	2017-01-27 15:16:37.630607110 +0900
+> @@ -83,6 +83,7 @@ struct iommu_domain {
+>  	iommu_fault_handler_t handler;
+>  	void *handler_token;
+>  	struct iommu_domain_geometry geometry;
+> +	bool no_size_align;
+>  	void *iova_cookie;
+>  };
+>  
+> 
