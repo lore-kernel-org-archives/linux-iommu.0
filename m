@@ -1,12 +1,12 @@
-From: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 1/2] iommu/vt-d: Fix some macros that are incorrectly
-	specified in intel-iommu
-Date: Fri, 27 Jan 2017 08:32:39 -0800
-Message-ID: <1485534760-185590-1-git-send-email-ashok.raj@intel.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [GIT PULL] iommu/arm-smmu: Updates for 4.11
+Date: Fri, 27 Jan 2017 16:44:21 +0000
+Message-ID: <20170127164420.GA10758@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,69 +16,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Hi Joerg,
 
-Some of the macros are incorrect with wrong bit-shifts resulting in picking
-the incorrect invalidation granularity. Incorrect Source-ID in extended
-devtlb invalidation caused device side errors.
+Please pull these arm-smmu updates for 4.11. Not much this time around:
+16-bit SID support on SMMUv2 and a stream table optimisation on SMMUv3.
+There's also a trivial cleanup to of_iommu_{set/get}_ops() [they are
+removed] which we promised to make after the IORT stuff went in last
+time around.
 
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Thanks,
 
-Signed-off-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Tested-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
----
- include/linux/intel-iommu.h | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+Will
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index d49e26c..23e129e 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -153,8 +153,8 @@ static inline void dmar_writeq(void __iomem *addr, u64 val)
- #define DMA_TLB_GLOBAL_FLUSH (((u64)1) << 60)
- #define DMA_TLB_DSI_FLUSH (((u64)2) << 60)
- #define DMA_TLB_PSI_FLUSH (((u64)3) << 60)
--#define DMA_TLB_IIRG(type) ((type >> 60) & 7)
--#define DMA_TLB_IAIG(val) (((val) >> 57) & 7)
-+#define DMA_TLB_IIRG(type) ((type >> 60) & 3)
-+#define DMA_TLB_IAIG(val) (((val) >> 57) & 3)
- #define DMA_TLB_READ_DRAIN (((u64)1) << 49)
- #define DMA_TLB_WRITE_DRAIN (((u64)1) << 48)
- #define DMA_TLB_DID(id)	(((u64)((id) & 0xffff)) << 32)
-@@ -164,9 +164,9 @@ static inline void dmar_writeq(void __iomem *addr, u64 val)
- 
- /* INVALID_DESC */
- #define DMA_CCMD_INVL_GRANU_OFFSET  61
--#define DMA_ID_TLB_GLOBAL_FLUSH	(((u64)1) << 3)
--#define DMA_ID_TLB_DSI_FLUSH	(((u64)2) << 3)
--#define DMA_ID_TLB_PSI_FLUSH	(((u64)3) << 3)
-+#define DMA_ID_TLB_GLOBAL_FLUSH	(((u64)1) << 4)
-+#define DMA_ID_TLB_DSI_FLUSH	(((u64)2) << 4)
-+#define DMA_ID_TLB_PSI_FLUSH	(((u64)3) << 4)
- #define DMA_ID_TLB_READ_DRAIN	(((u64)1) << 7)
- #define DMA_ID_TLB_WRITE_DRAIN	(((u64)1) << 6)
- #define DMA_ID_TLB_DID(id)	(((u64)((id & 0xffff) << 16)))
-@@ -316,8 +316,8 @@ enum {
- #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
- #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
- #define QI_DEV_EIOTLB_PASID(p)	(((u64)p) << 32)
--#define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 32)
--#define QI_DEV_EIOTLB_QDEP(qd)	(((qd) & 0x1f) << 16)
-+#define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 16)
-+#define QI_DEV_EIOTLB_QDEP(qd)	((u64)((qd) & 0x1f) << 4)
- #define QI_DEV_EIOTLB_MAX_INVS	32
- 
- #define QI_PGRP_IDX(idx)	(((u64)(idx)) << 55)
--- 
-2.7.4
+--->8
+
+The following changes since commit a121103c922847ba5010819a3f250f1f7fc84ab8:
+
+  Linux 4.10-rc3 (2017-01-08 14:18:17 -0800)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+
+for you to fetch changes up to 3677a649a751c8f061ba379a98c369473ccac980:
+
+  iommu/arm-smmu: Fix for ThunderX erratum #27704 (2017-01-26 18:16:58 +0000)
+
+----------------------------------------------------------------
+Aleksey Makarov (1):
+      iommu/arm-smmu: Support for Extended Stream ID (16 bit)
+
+Lorenzo Pieralisi (1):
+      iommu: Drop the of_iommu_{set/get}_ops() interface
+
+Nate Watterson (2):
+      iommu/arm-smmu-v3: Clear prior settings when updating STEs
+      iommu/arm-smmu-v3: limit use of 2-level stream tables
+
+Tomasz Nowicki (1):
+      iommu/arm-smmu: Fix for ThunderX erratum #27704
+
+ drivers/iommu/arm-smmu-v3.c  | 31 ++++++++-----------
+ drivers/iommu/arm-smmu.c     | 72 +++++++++++++++++++++++++++++++-------------
+ drivers/iommu/exynos-iommu.c |  2 +-
+ drivers/iommu/msm_iommu.c    |  2 +-
+ drivers/iommu/mtk_iommu.c    |  2 +-
+ drivers/iommu/of_iommu.c     |  4 +--
+ include/linux/of_iommu.h     | 11 -------
+ 7 files changed, 68 insertions(+), 56 deletions(-)
