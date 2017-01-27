@@ -1,8 +1,7 @@
-From: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 1/2] iommu/vt-d: Fix some macros that are incorrectly
-	specified in intel-iommu
-Date: Thu, 26 Jan 2017 13:50:33 -0800
-Message-ID: <1485467434-119978-1-git-send-email-ashok.raj@intel.com>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH/RFC v2 0/4] iommu/ipmmu-vmsa: IPMMU slave device whitelist V2
+Date: Fri, 27 Jan 2017 15:14:07 +0900
+Message-ID: <148549764733.22203.16459470412085471955.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,68 +15,35 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+iommu/ipmmu-vmsa: IPMMU slave device whitelist V2
 
-Some of the macros are incorrect with wrong bit-shifts resulting in picking
-the incorrect invalidation granularity. Incorrect Source-ID in extended
-devtlb invalidation caused device side errors.
+[PATCH/RFC v2 1/4] iommu/of: Skip IOMMU devices disabled in DT
+[PATCH/RFC v2 2/4] iommu/ipmmu-vmsa: Get rid of disabled device check
+[PATCH/RFC v2 3/4] iommu/ipmmu-vmsa: Check devices in xlate()
+[PATCH/RFC v2 3/4] iommu/ipmmu-vmsa: Opt-in slave devices based on ES version
 
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Here's an updated prototype that shows how DT integration of IPMMU details
+may be integrated and merged upstream based on SoC data sheet ahead of
+time followed by enablement in the IPMMU driver code once the appropriate
+SoC ES version has been released and the hardware has been tested.
 
-Signed-off-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Tested-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Changes since V1:
+ - Broke out patch 1 from the IPMMU driver
+ - Moved slave device check from ->add_device() to ->xlate() (Thanks Robin!)
+ - Updated white list patch to hook into ->xlate()
+
+Patch 1 may be suitable for upstream merge, however other patches should
+in the future if agreed on be rolled into the IPMMU driver series.
+
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
- include/linux/intel-iommu.h | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index d49e26c..23e129e 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -153,8 +153,8 @@ static inline void dmar_writeq(void __iomem *addr, u64 val)
- #define DMA_TLB_GLOBAL_FLUSH (((u64)1) << 60)
- #define DMA_TLB_DSI_FLUSH (((u64)2) << 60)
- #define DMA_TLB_PSI_FLUSH (((u64)3) << 60)
--#define DMA_TLB_IIRG(type) ((type >> 60) & 7)
--#define DMA_TLB_IAIG(val) (((val) >> 57) & 7)
-+#define DMA_TLB_IIRG(type) ((type >> 60) & 3)
-+#define DMA_TLB_IAIG(val) (((val) >> 57) & 3)
- #define DMA_TLB_READ_DRAIN (((u64)1) << 49)
- #define DMA_TLB_WRITE_DRAIN (((u64)1) << 48)
- #define DMA_TLB_DID(id)	(((u64)((id) & 0xffff)) << 32)
-@@ -164,9 +164,9 @@ static inline void dmar_writeq(void __iomem *addr, u64 val)
- 
- /* INVALID_DESC */
- #define DMA_CCMD_INVL_GRANU_OFFSET  61
--#define DMA_ID_TLB_GLOBAL_FLUSH	(((u64)1) << 3)
--#define DMA_ID_TLB_DSI_FLUSH	(((u64)2) << 3)
--#define DMA_ID_TLB_PSI_FLUSH	(((u64)3) << 3)
-+#define DMA_ID_TLB_GLOBAL_FLUSH	(((u64)1) << 4)
-+#define DMA_ID_TLB_DSI_FLUSH	(((u64)2) << 4)
-+#define DMA_ID_TLB_PSI_FLUSH	(((u64)3) << 4)
- #define DMA_ID_TLB_READ_DRAIN	(((u64)1) << 7)
- #define DMA_ID_TLB_WRITE_DRAIN	(((u64)1) << 6)
- #define DMA_ID_TLB_DID(id)	(((u64)((id & 0xffff) << 16)))
-@@ -316,8 +316,8 @@ enum {
- #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
- #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
- #define QI_DEV_EIOTLB_PASID(p)	(((u64)p) << 32)
--#define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 32)
--#define QI_DEV_EIOTLB_QDEP(qd)	(((qd) & 0x1f) << 16)
-+#define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 16)
-+#define QI_DEV_EIOTLB_QDEP(qd)	((u64)((qd) & 0x1f) << 4)
- #define QI_DEV_EIOTLB_MAX_INVS	32
- 
- #define QI_PGRP_IDX(idx)	(((u64)(idx)) << 55)
--- 
-2.7.4
+ Developed on top of renesas-drivers-2017-01-24-v4.10-rc5
+
+ drivers/iommu/ipmmu-vmsa.c |   59 +++++++++++++++++++++++---------------------
+ drivers/iommu/of_iommu.c   |    2 -
+ 2 files changed, 33 insertions(+), 28 deletions(-)
