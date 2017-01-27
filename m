@@ -1,57 +1,44 @@
-From: Magnus Damm <magnus.damm@gmail.com>
-Subject: [PATCH/RFC] iommu/dma: Per-domain flag to control size-alignment
-Date: Fri, 27 Jan 2017 15:24:25 +0900
-Message-ID: <148549826507.23190.1460689571069015835.sendpatchset@little-apple>
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-renesas-soc@vger.kernel.org, Magnus Damm <magnus.damm@gmail.com>, robin.murphy@arm.com, joro@8bytes.org
+From: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v2 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to
+ 48
+Date: Fri, 27 Jan 2017 12:47:24 +0100
+Message-ID: <20170127114724.GI27598@8bytes.org>
+References: <148517158986.13306.314435910710426381.sendpatchset@little-apple>
+ <148517162908.13306.2467186615655446796.sendpatchset@little-apple>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <148517162908.13306.2467186615655446796.sendpatchset@little-apple>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Magnus Damm <magnus.damm@gmail.com>
+Cc: iommu@lists.linux-foundation.org, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, horms+renesas@verge.net.au
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas@opensource.se>
+On Mon, Jan 23, 2017 at 08:40:29PM +0900, Magnus Damm wrote:
+> From: Magnus Damm <damm+renesas@opensource.se>
+> 
+> Bump up the maximum numbers of micro-TLBS to 48.
+> 
+> Each IPMMU device instance get micro-TLB assignment via
+> the "iommus" property in DT. Older SoCs tend to use a
+> maximum number of 32 micro-TLBs per IPMMU instance however
+> newer SoCs such as r8a7796 make use of up to 48 micro-TLBs.
+> 
+> At this point no SoC specific handling is done to validate
+> the maximum number of micro-TLBs, and because of that the
+> DT information is assumed to be within correct range for
+> each particular SoC.
+> 
+> If needed in the future SoC specific feature flags can be
+> added to handle the maximum number of micro-TLBs without
+> requiring DT changes, however at this point this does not
+> seem necessary.
+> 
+> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 
-Introduce the flag "no_size_align" to allow disabling size-alignment
-on a per-domain basis. This follows the suggestion by the comment
-in the code, however a per-device control may be preferred?
+I get a conflict when applying this to v4.10-rc5. What is this based on,
+any patches I missed?
 
-Needed to make virtual space contiguous for certain devices.
 
-Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
----
-
- drivers/iommu/dma-iommu.c |    6 +++++-
- include/linux/iommu.h     |    1 +
- 2 files changed, 6 insertions(+), 1 deletion(-)
-
---- 0001/drivers/iommu/dma-iommu.c
-+++ work/drivers/iommu/dma-iommu.c	2017-01-27 15:17:50.280607110 +0900
-@@ -209,14 +209,18 @@ static struct iova *__alloc_iova(struct
- 	struct iova_domain *iovad = cookie_iovad(domain);
- 	unsigned long shift = iova_shift(iovad);
- 	unsigned long length = iova_align(iovad, size) >> shift;
-+	bool size_aligned = true;
- 
- 	if (domain->geometry.force_aperture)
- 		dma_limit = min(dma_limit, domain->geometry.aperture_end);
-+
-+	if (domain->no_size_align)
-+		size_aligned = false;
- 	/*
- 	 * Enforce size-alignment to be safe - there could perhaps be an
- 	 * attribute to control this per-device, or at least per-domain...
- 	 */
--	return alloc_iova(iovad, length, dma_limit >> shift, true);
-+	return alloc_iova(iovad, length, dma_limit >> shift, size_aligned);
- }
- 
- /* The IOVA allocator knows what we mapped, so just unmap whatever that was */
---- 0001/include/linux/iommu.h
-+++ work/include/linux/iommu.h	2017-01-27 15:16:37.630607110 +0900
-@@ -83,6 +83,7 @@ struct iommu_domain {
- 	iommu_fault_handler_t handler;
- 	void *handler_token;
- 	struct iommu_domain_geometry geometry;
-+	bool no_size_align;
- 	void *iova_cookie;
- };
- 
+	Joerg
