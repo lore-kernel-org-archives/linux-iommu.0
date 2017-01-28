@@ -1,15 +1,16 @@
-From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Subject: Re: [PATCH v2 2/2] arm64: Add support for DMA_ATTR_FORCE_CONTIGUOUS
-	to IOMMU
-Date: Sat, 28 Jan 2017 17:43:28 +0200
-Message-ID: <1696731.3PdB1ViRsr@avalon>
-References: <1485531259-17513-1-git-send-email-geert+renesas@glider.be>
-	<1485531259-17513-3-git-send-email-geert+renesas@glider.be>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH V7 07/11] iommu: of: Handle IOMMU lookup failure with
+	deferred probing or error
+Date: Sat, 28 Jan 2017 15:03:59 -0600
+Message-ID: <20170128210359.GE20550@bhelgaas-glaptop.roam.corp.google.com>
+References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org>
+	<1485188293-20263-8-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1485531259-17513-3-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1485188293-20263-8-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,136 +20,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Geert,
+On Mon, Jan 23, 2017 at 09:48:09PM +0530, Sricharan R wrote:
+> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> 
+> Failures to look up an IOMMU when parsing the DT iommus property need to
+> be handled separately from the .of_xlate() failures to support deferred
+> probing.
+> 
+> The lack of a registered IOMMU can be caused by the lack of a driver for
+> the IOMMU, the IOMMU device probe not having been performed yet, having
+> been deferred, or having failed.
+> 
+> The first case occurs when the device tree describes the bus master and
+> IOMMU topology correctly but no device driver exists for the IOMMU yet
+> or the device driver has not been compiled in. Return NULL, the caller
+> will configure the device without an IOMMU.
+> 
+> The second and third cases are handled by deferring the probe of the bus
+> master device which will eventually get reprobed after the IOMMU.
+> 
+> The last case is currently handled by deferring the probe of the bus
+> master device as well. A mechanism to either configure the bus master
+> device without an IOMMU or to fail the bus master device probe depending
+> on whether the IOMMU is optional or mandatory would be a good
+> enhancement.
+> 
+> Signed-off-by: Laurent Pichart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ...
 
-Thank you for the patch.
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 349bd1d..9529d6c 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/of.h>
+>  #include <linux/of_iommu.h>
+>  #include <linux/of_pci.h>
+> +#include <linux/pci.h>
 
-On Friday 27 Jan 2017 16:34:19 Geert Uytterhoeven wrote:
-> Add support for allocation physically contiguous DMA buffers on arm64
-> systems with an IOMMU, by dispatching DMA buffer allocations with the
-> DMA_ATTR_FORCE_CONTIGUOUS attribute to the appropriate IOMMU DMA
-> helpers.
-> 
-> Note that as this uses the CMA allocator, setting this attribute has a
-> runtime-dependency on CONFIG_DMA_CMA, just like on arm32.
-> 
-> For arm64 systems using swiotlb, no changes are needed to support the
-> allocation of physically contiguous DMA buffers:
->   - swiotlb always uses physically contiguous buffers (up to
->     IO_TLB_SEGSIZE = 128 pages),
->   - arm64's __dma_alloc_coherent() already calls
->     dma_alloc_from_contiguous() when CMA is available.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-> ---
-> v2:
->   - New, handle dispatching in the arch (arm64) code, as requested by
->     Robin Murphy.
-> ---
->  arch/arm64/mm/dma-mapping.c | 51 +++++++++++++++++++++++++++++-------------
->  1 file changed, 37 insertions(+), 14 deletions(-)
-> 
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-> index 1d7d5d2881db7c19..325803e0ba79ef26 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -577,20 +577,7 @@ static void *__iommu_alloc_attrs(struct device *dev,
-> size_t size, */
->  	gfp |= __GFP_ZERO;
-> 
-> -	if (gfpflags_allow_blocking(gfp)) {
-> -		struct page **pages;
-> -		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, 
-coherent);
-> -
-> -		pages = iommu_dma_alloc(dev, iosize, gfp, attrs, ioprot,
-> -					handle, flush_page);
-> -		if (!pages)
-> -			return NULL;
-> -
-> -		addr = dma_common_pages_remap(pages, size, VM_USERMAP, prot,
-> -					      __builtin_return_address(0));
-> -		if (!addr)
-> -			iommu_dma_free(dev, pages, iosize, handle);
-> -	} else {
-> +	if (!gfpflags_allow_blocking(gfp)) {
->  		struct page *page;
->  		/*
->  		 * In atomic context we can't remap anything, so we'll only
-> @@ -614,6 +601,35 @@ static void *__iommu_alloc_attrs(struct device *dev,
-> size_t size, __free_from_pool(addr, size);
->  			addr = NULL;
->  		}
-> +	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
-> +		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, 
-coherent);
-> +		struct page *page;
-> +
-> +		page = iommu_dma_alloc_contiguous(dev, iosize, ioprot, 
-handle);
-> +		if (!page)
-> +			return NULL;
-> +
-> +		if (!coherent)
-> +			__dma_flush_area(page_to_virt(page), iosize);
-> +
-> +		addr = dma_common_contiguous_remap(page, size, VM_USERMAP,
-> +						   prot,
-> +						   
-__builtin_return_address(0));
-> +		if (!addr)
-> +			iommu_dma_free_contiguous(dev, page, iosize, handle);
-> +	} else {
-> +		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, 
-coherent);
-> +		struct page **pages;
-> +
-> +		pages = iommu_dma_alloc(dev, iosize, gfp, attrs, ioprot,
-> +					handle, flush_page);
-> +		if (!pages)
-> +			return NULL;
-> +
-> +		addr = dma_common_pages_remap(pages, size, VM_USERMAP, prot,
-> +					      __builtin_return_address(0));
-> +		if (!addr)
-> +			iommu_dma_free(dev, pages, iosize, handle);
+Why do we need this?
+
+>  #include <linux/slab.h>
+>  
+>  static const struct of_device_id __iommu_of_table_sentinel
+> @@ -223,7 +224,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+>  			ops = ERR_PTR(err);
 >  	}
->  	return addr;
+>  
+> -	return IS_ERR(ops) ? NULL : ops;
+> +	return ops;
 >  }
-> @@ -626,6 +642,8 @@ static void __iommu_free_attrs(struct device *dev,
-> size_t size, void *cpu_addr, size = PAGE_ALIGN(size);
->  	/*
->  	 * @cpu_addr will be one of 3 things depending on how it was 
-allocated:
-
-s/one of 3/one of 4/
-
-Apart from that,
-
-Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-
-> +	 * - A remapped array of pages from iommu_dma_alloc_contiguous()
-> +	 *   for contiguous allocations.
->  	 * - A remapped array of pages from iommu_dma_alloc(), for all
->  	 *   non-atomic allocations.
->  	 * - A non-cacheable alias from the atomic pool, for atomic
-> @@ -637,6 +655,11 @@ static void __iommu_free_attrs(struct device *dev,
-> size_t size, void *cpu_addr, if (__in_atomic_pool(cpu_addr, size)) {
->  		iommu_dma_unmap_page(dev, handle, iosize, 0, 0);
->  		__free_from_pool(cpu_addr, size);
-> +	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
-> +		struct page *page = phys_to_page(dma_to_phys(dev, handle));
-> +
-> +		iommu_dma_free_contiguous(dev, page, iosize, &handle);
-> +		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
->  	} else if (is_vmalloc_addr(cpu_addr)){
->  		struct vm_struct *area = find_vm_area(cpu_addr);
-
--- 
-Regards,
-
-Laurent Pinchart
+>  
+>  static int __init of_iommu_init(void)
+> @@ -234,7 +235,7 @@ static int __init of_iommu_init(void)
+>  	for_each_matching_node_and_match(np, matches, &match) {
+>  		const of_iommu_init_fn init_fn = match->data;
+>  
+> -		if (init_fn(np))
+> +		if (init_fn && init_fn(np))
+>  			pr_err("Failed to initialise IOMMU %s\n",
+>  				of_node_full_name(np));
+>  	}
