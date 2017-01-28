@@ -1,70 +1,121 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V7 01/11] iommu/of: Refactor of_iommu_configure() for
-	error handling
-Date: Fri, 27 Jan 2017 18:19:51 +0000
-Message-ID: <d27f04da-7d34-9640-1639-790d0732ed93@arm.com>
-References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org>
-	<1485188293-20263-2-git-send-email-sricharan@codeaurora.org>
-	<4388779a-0e83-fadc-83f4-98c46c88d42e@semihalf.com>
-	<c7bad124-d9f2-0ddf-168f-0b1950d3e1ed@arm.com>
-	<009901d278c7$34fee230$9efca690$@codeaurora.org>
+From: Vlastimil Babka <vbabka@suse.cz>
+Subject: Re: [PATCH v2 1/3] mm: alloc_contig_range: allow to specify GFP mask
+Date: Sat, 28 Jan 2017 09:46:50 +0100
+Message-ID: <c0967c73-29a1-5b99-054c-9e209d4c69e4@suse.cz>
+References: <20170127172328.18574-1-l.stach@pengutronix.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <009901d278c7$34fee230$9efca690$@codeaurora.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, 'Tomasz Nowicki' <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20170127172328.18574-1-l.stach@pengutronix.de>
+Sender: owner-linux-mm@kvack.org
+To: Lucas Stach <l.stach@pengutronix.de>, Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-mips@linux-mips.org, Michal Hocko <mhocko@suse.com>, kvm@vger.kernel.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Max Filippov <jcmvbkbc@gmail.com>, "H . Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>, Russell King <linux@armlinux.org.uk>, patchwork-lst@pengutronix.de, Ingo Molnar <mingo@redhat.com>, linux-xtensa@linux-xtensa.org, kvm-ppc@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Chris Zankel <chris@zankel.net>, linux-mm@kvack.org, Ralf Baechle <ralf@linux-mips.org>, iommu@lists.linux-foundation.org, kernel@pengutronix.de, Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>, Alexander Graf <agraf@suse.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 27/01/17 18:00, Sricharan wrote:
-> Hi Robin,
-> 
-> [..]
-> 
->>>> +const struct iommu_ops *of_iommu_configure(struct device *dev,
->>>> +                       struct device_node *master_np)
->>>> +{
->>>> +    const struct iommu_ops *ops;
->>>> +
->>>> +    if (!master_np)
->>>> +        return NULL;
->>>> +
->>>> +    if (dev_is_pci(dev))
->>>> +        ops = of_pci_iommu_init(to_pci_dev(dev), master_np);
->>>
->>> I gave the whole patch set a try on ThunderX. really_probe() is failing
->>> on dma_configure()->of_pci_iommu_init() for each PCI device.
->>
->> When you say "failing", do you mean cleanly, or with a crash? I've
->> managed to hit __of_match_node() dereferencing NULL from
->> of_iommu_xlate() in a horribly complicated chain of events, which I'm
->> trying to figure out now, and I wonder if the two might be related.
-> 
-> Sorry that there is crash still. __of_match_node seems to checking
-> for NULL arguments , feels like some invalid pointer was passed in.
-> Is there any particular sequence to try for this ?
+On 01/27/2017 06:23 PM, Lucas Stach wrote:
+> Currently alloc_contig_range assumes that the compaction should
+> be done with the default GFP_KERNEL flags. This is probably
+> right for all current uses of this interface, but may change as
+> CMA is used in more use-cases (including being the default DMA
+> memory allocator on some platforms).
+>
+> Change the function prototype, to allow for passing through the
+> GFP mask set by upper layers.
+>
+> Also respect global restrictions by applying memalloc_noio_flags
+> to the passed in flags.
+>
+> Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+> Acked-by: Michal Hocko <mhocko@suse.com>
 
-Ah, I did figure it out - it wasn't actually a NULL dereference, but an
-unmapped address. Turns out __iommu_of_table is in initdata, so any
-driver probing after init, connected to an unprobed IOMMU (in this case
-disabled in DT), trips over trying to match the now-freed table. I'm
-working on the fix - technically the bug's in my patch (#2) anyway ;)
 
-Robin.
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
-> 
-> Regards,
->  Sricharan
-> 
-> 
-> 
-> 
+> ---
+> v2: add memalloc_noio restriction
+> ---
+>  include/linux/gfp.h | 2 +-
+>  mm/cma.c            | 3 ++-
+>  mm/hugetlb.c        | 3 ++-
+>  mm/page_alloc.c     | 5 +++--
+>  4 files changed, 8 insertions(+), 5 deletions(-)
+>
+> diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+> index 4175dca4ac39..1efa221e0e1d 100644
+> --- a/include/linux/gfp.h
+> +++ b/include/linux/gfp.h
+> @@ -549,7 +549,7 @@ static inline bool pm_suspended_storage(void)
+>  #if (defined(CONFIG_MEMORY_ISOLATION) && defined(CONFIG_COMPACTION)) || defined(CONFIG_CMA)
+>  /* The below functions must be run on a range from a single zone. */
+>  extern int alloc_contig_range(unsigned long start, unsigned long end,
+> -			      unsigned migratetype);
+> +			      unsigned migratetype, gfp_t gfp_mask);
+>  extern void free_contig_range(unsigned long pfn, unsigned nr_pages);
+>  #endif
+>
+> diff --git a/mm/cma.c b/mm/cma.c
+> index c960459eda7e..fbd67d866f67 100644
+> --- a/mm/cma.c
+> +++ b/mm/cma.c
+> @@ -407,7 +407,8 @@ struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align)
+>
+>  		pfn = cma->base_pfn + (bitmap_no << cma->order_per_bit);
+>  		mutex_lock(&cma_mutex);
+> -		ret = alloc_contig_range(pfn, pfn + count, MIGRATE_CMA);
+> +		ret = alloc_contig_range(pfn, pfn + count, MIGRATE_CMA,
+> +					 GFP_KERNEL);
+>  		mutex_unlock(&cma_mutex);
+>  		if (ret == 0) {
+>  			page = pfn_to_page(pfn);
+> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+> index 3edb759c5c7d..6ed8b160fc0d 100644
+> --- a/mm/hugetlb.c
+> +++ b/mm/hugetlb.c
+> @@ -1051,7 +1051,8 @@ static int __alloc_gigantic_page(unsigned long start_pfn,
+>  				unsigned long nr_pages)
+>  {
+>  	unsigned long end_pfn = start_pfn + nr_pages;
+> -	return alloc_contig_range(start_pfn, end_pfn, MIGRATE_MOVABLE);
+> +	return alloc_contig_range(start_pfn, end_pfn, MIGRATE_MOVABLE,
+> +				  GFP_KERNEL);
+>  }
+>
+>  static bool pfn_range_valid_gigantic(struct zone *z,
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index eced9fee582b..c5a745b521c0 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -7230,6 +7230,7 @@ static int __alloc_contig_migrate_range(struct compact_control *cc,
+>   *			#MIGRATE_MOVABLE or #MIGRATE_CMA).  All pageblocks
+>   *			in range must have the same migratetype and it must
+>   *			be either of the two.
+> + * @gfp_mask:	GFP mask to use during compaction
+>   *
+>   * The PFN range does not have to be pageblock or MAX_ORDER_NR_PAGES
+>   * aligned, however it's the caller's responsibility to guarantee that
+> @@ -7243,7 +7244,7 @@ static int __alloc_contig_migrate_range(struct compact_control *cc,
+>   * need to be freed with free_contig_range().
+>   */
+>  int alloc_contig_range(unsigned long start, unsigned long end,
+> -		       unsigned migratetype)
+> +		       unsigned migratetype, gfp_t gfp_mask)
+>  {
+>  	unsigned long outer_start, outer_end;
+>  	unsigned int order;
+> @@ -7255,7 +7256,7 @@ int alloc_contig_range(unsigned long start, unsigned long end,
+>  		.zone = page_zone(pfn_to_page(start)),
+>  		.mode = MIGRATE_SYNC,
+>  		.ignore_skip_hint = true,
+> -		.gfp_mask = GFP_KERNEL,
+> +		.gfp_mask = memalloc_noio_flags(gfp_mask),
+>  	};
+>  	INIT_LIST_HEAD(&cc.migratepages);
+>
+>
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
