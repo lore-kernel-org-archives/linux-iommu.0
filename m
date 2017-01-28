@@ -1,121 +1,154 @@
-From: Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH v2 1/3] mm: alloc_contig_range: allow to specify GFP mask
-Date: Sat, 28 Jan 2017 09:46:50 +0100
-Message-ID: <c0967c73-29a1-5b99-054c-9e209d4c69e4@suse.cz>
-References: <20170127172328.18574-1-l.stach@pengutronix.de>
+From: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Subject: Re: [PATCH v2 2/2] arm64: Add support for DMA_ATTR_FORCE_CONTIGUOUS
+	to IOMMU
+Date: Sat, 28 Jan 2017 17:43:28 +0200
+Message-ID: <1696731.3PdB1ViRsr@avalon>
+References: <1485531259-17513-1-git-send-email-geert+renesas@glider.be>
+	<1485531259-17513-3-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170127172328.18574-1-l.stach@pengutronix.de>
-Sender: owner-linux-mm@kvack.org
-To: Lucas Stach <l.stach@pengutronix.de>, Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-mips@linux-mips.org, Michal Hocko <mhocko@suse.com>, kvm@vger.kernel.org, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Max Filippov <jcmvbkbc@gmail.com>, "H . Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>, Russell King <linux@armlinux.org.uk>, patchwork-lst@pengutronix.de, Ingo Molnar <mingo@redhat.com>, linux-xtensa@linux-xtensa.org, kvm-ppc@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org, Chris Zankel <chris@zankel.net>, linux-mm@kvack.org, Ralf Baechle <ralf@linux-mips.org>, iommu@lists.linux-foundation.org, kernel@pengutronix.de, Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>, Alexander Graf <agraf@suse.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1485531259-17513-3-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 01/27/2017 06:23 PM, Lucas Stach wrote:
-> Currently alloc_contig_range assumes that the compaction should
-> be done with the default GFP_KERNEL flags. This is probably
-> right for all current uses of this interface, but may change as
-> CMA is used in more use-cases (including being the default DMA
-> memory allocator on some platforms).
->
-> Change the function prototype, to allow for passing through the
-> GFP mask set by upper layers.
->
-> Also respect global restrictions by applying memalloc_noio_flags
-> to the passed in flags.
->
-> Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-> Acked-by: Michal Hocko <mhocko@suse.com>
+Hi Geert,
 
+Thank you for the patch.
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
-
+On Friday 27 Jan 2017 16:34:19 Geert Uytterhoeven wrote:
+> Add support for allocation physically contiguous DMA buffers on arm64
+> systems with an IOMMU, by dispatching DMA buffer allocations with the
+> DMA_ATTR_FORCE_CONTIGUOUS attribute to the appropriate IOMMU DMA
+> helpers.
+> 
+> Note that as this uses the CMA allocator, setting this attribute has a
+> runtime-dependency on CONFIG_DMA_CMA, just like on arm32.
+> 
+> For arm64 systems using swiotlb, no changes are needed to support the
+> allocation of physically contiguous DMA buffers:
+>   - swiotlb always uses physically contiguous buffers (up to
+>     IO_TLB_SEGSIZE = 128 pages),
+>   - arm64's __dma_alloc_coherent() already calls
+>     dma_alloc_from_contiguous() when CMA is available.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
 > ---
-> v2: add memalloc_noio restriction
+> v2:
+>   - New, handle dispatching in the arch (arm64) code, as requested by
+>     Robin Murphy.
 > ---
->  include/linux/gfp.h | 2 +-
->  mm/cma.c            | 3 ++-
->  mm/hugetlb.c        | 3 ++-
->  mm/page_alloc.c     | 5 +++--
->  4 files changed, 8 insertions(+), 5 deletions(-)
->
-> diff --git a/include/linux/gfp.h b/include/linux/gfp.h
-> index 4175dca4ac39..1efa221e0e1d 100644
-> --- a/include/linux/gfp.h
-> +++ b/include/linux/gfp.h
-> @@ -549,7 +549,7 @@ static inline bool pm_suspended_storage(void)
->  #if (defined(CONFIG_MEMORY_ISOLATION) && defined(CONFIG_COMPACTION)) || defined(CONFIG_CMA)
->  /* The below functions must be run on a range from a single zone. */
->  extern int alloc_contig_range(unsigned long start, unsigned long end,
-> -			      unsigned migratetype);
-> +			      unsigned migratetype, gfp_t gfp_mask);
->  extern void free_contig_range(unsigned long pfn, unsigned nr_pages);
->  #endif
->
-> diff --git a/mm/cma.c b/mm/cma.c
-> index c960459eda7e..fbd67d866f67 100644
-> --- a/mm/cma.c
-> +++ b/mm/cma.c
-> @@ -407,7 +407,8 @@ struct page *cma_alloc(struct cma *cma, size_t count, unsigned int align)
->
->  		pfn = cma->base_pfn + (bitmap_no << cma->order_per_bit);
->  		mutex_lock(&cma_mutex);
-> -		ret = alloc_contig_range(pfn, pfn + count, MIGRATE_CMA);
-> +		ret = alloc_contig_range(pfn, pfn + count, MIGRATE_CMA,
-> +					 GFP_KERNEL);
->  		mutex_unlock(&cma_mutex);
->  		if (ret == 0) {
->  			page = pfn_to_page(pfn);
-> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> index 3edb759c5c7d..6ed8b160fc0d 100644
-> --- a/mm/hugetlb.c
-> +++ b/mm/hugetlb.c
-> @@ -1051,7 +1051,8 @@ static int __alloc_gigantic_page(unsigned long start_pfn,
->  				unsigned long nr_pages)
->  {
->  	unsigned long end_pfn = start_pfn + nr_pages;
-> -	return alloc_contig_range(start_pfn, end_pfn, MIGRATE_MOVABLE);
-> +	return alloc_contig_range(start_pfn, end_pfn, MIGRATE_MOVABLE,
-> +				  GFP_KERNEL);
+>  arch/arm64/mm/dma-mapping.c | 51 +++++++++++++++++++++++++++++-------------
+>  1 file changed, 37 insertions(+), 14 deletions(-)
+> 
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index 1d7d5d2881db7c19..325803e0ba79ef26 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -577,20 +577,7 @@ static void *__iommu_alloc_attrs(struct device *dev,
+> size_t size, */
+>  	gfp |= __GFP_ZERO;
+> 
+> -	if (gfpflags_allow_blocking(gfp)) {
+> -		struct page **pages;
+> -		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, 
+coherent);
+> -
+> -		pages = iommu_dma_alloc(dev, iosize, gfp, attrs, ioprot,
+> -					handle, flush_page);
+> -		if (!pages)
+> -			return NULL;
+> -
+> -		addr = dma_common_pages_remap(pages, size, VM_USERMAP, prot,
+> -					      __builtin_return_address(0));
+> -		if (!addr)
+> -			iommu_dma_free(dev, pages, iosize, handle);
+> -	} else {
+> +	if (!gfpflags_allow_blocking(gfp)) {
+>  		struct page *page;
+>  		/*
+>  		 * In atomic context we can't remap anything, so we'll only
+> @@ -614,6 +601,35 @@ static void *__iommu_alloc_attrs(struct device *dev,
+> size_t size, __free_from_pool(addr, size);
+>  			addr = NULL;
+>  		}
+> +	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+> +		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, 
+coherent);
+> +		struct page *page;
+> +
+> +		page = iommu_dma_alloc_contiguous(dev, iosize, ioprot, 
+handle);
+> +		if (!page)
+> +			return NULL;
+> +
+> +		if (!coherent)
+> +			__dma_flush_area(page_to_virt(page), iosize);
+> +
+> +		addr = dma_common_contiguous_remap(page, size, VM_USERMAP,
+> +						   prot,
+> +						   
+__builtin_return_address(0));
+> +		if (!addr)
+> +			iommu_dma_free_contiguous(dev, page, iosize, handle);
+> +	} else {
+> +		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, 
+coherent);
+> +		struct page **pages;
+> +
+> +		pages = iommu_dma_alloc(dev, iosize, gfp, attrs, ioprot,
+> +					handle, flush_page);
+> +		if (!pages)
+> +			return NULL;
+> +
+> +		addr = dma_common_pages_remap(pages, size, VM_USERMAP, prot,
+> +					      __builtin_return_address(0));
+> +		if (!addr)
+> +			iommu_dma_free(dev, pages, iosize, handle);
+>  	}
+>  	return addr;
 >  }
->
->  static bool pfn_range_valid_gigantic(struct zone *z,
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index eced9fee582b..c5a745b521c0 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -7230,6 +7230,7 @@ static int __alloc_contig_migrate_range(struct compact_control *cc,
->   *			#MIGRATE_MOVABLE or #MIGRATE_CMA).  All pageblocks
->   *			in range must have the same migratetype and it must
->   *			be either of the two.
-> + * @gfp_mask:	GFP mask to use during compaction
->   *
->   * The PFN range does not have to be pageblock or MAX_ORDER_NR_PAGES
->   * aligned, however it's the caller's responsibility to guarantee that
-> @@ -7243,7 +7244,7 @@ static int __alloc_contig_migrate_range(struct compact_control *cc,
->   * need to be freed with free_contig_range().
->   */
->  int alloc_contig_range(unsigned long start, unsigned long end,
-> -		       unsigned migratetype)
-> +		       unsigned migratetype, gfp_t gfp_mask)
->  {
->  	unsigned long outer_start, outer_end;
->  	unsigned int order;
-> @@ -7255,7 +7256,7 @@ int alloc_contig_range(unsigned long start, unsigned long end,
->  		.zone = page_zone(pfn_to_page(start)),
->  		.mode = MIGRATE_SYNC,
->  		.ignore_skip_hint = true,
-> -		.gfp_mask = GFP_KERNEL,
-> +		.gfp_mask = memalloc_noio_flags(gfp_mask),
->  	};
->  	INIT_LIST_HEAD(&cc.migratepages);
->
->
+> @@ -626,6 +642,8 @@ static void __iommu_free_attrs(struct device *dev,
+> size_t size, void *cpu_addr, size = PAGE_ALIGN(size);
+>  	/*
+>  	 * @cpu_addr will be one of 3 things depending on how it was 
+allocated:
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+s/one of 3/one of 4/
+
+Apart from that,
+
+Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+
+> +	 * - A remapped array of pages from iommu_dma_alloc_contiguous()
+> +	 *   for contiguous allocations.
+>  	 * - A remapped array of pages from iommu_dma_alloc(), for all
+>  	 *   non-atomic allocations.
+>  	 * - A non-cacheable alias from the atomic pool, for atomic
+> @@ -637,6 +655,11 @@ static void __iommu_free_attrs(struct device *dev,
+> size_t size, void *cpu_addr, if (__in_atomic_pool(cpu_addr, size)) {
+>  		iommu_dma_unmap_page(dev, handle, iosize, 0, 0);
+>  		__free_from_pool(cpu_addr, size);
+> +	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+> +		struct page *page = phys_to_page(dma_to_phys(dev, handle));
+> +
+> +		iommu_dma_free_contiguous(dev, page, iosize, &handle);
+> +		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
+>  	} else if (is_vmalloc_addr(cpu_addr)){
+>  		struct vm_struct *area = find_vm_area(cpu_addr);
+
+-- 
+Regards,
+
+Laurent Pinchart
