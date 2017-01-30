@@ -1,23 +1,15 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC 1/3] iommu/arm-smmu: Add support to opt-in to stalling
-Date: Mon, 30 Jan 2017 15:51:11 -0500
-Message-ID: <CAF6AEGuQyBdEAg_Rg9FkVFj98spQezwJ8eMerQKYWSXGQe1y4A@mail.gmail.com>
-References: <1483479056-15202-1-git-send-email-robdclark@gmail.com>
-	<1483479056-15202-2-git-send-email-robdclark@gmail.com>
-	<20170105115528.GG679@arm.com>
-	<CAF6AEGsUdZALAQTozmxPV8Os=3pG7ay=1Oqtctx99FV9_4SX7Q@mail.gmail.com>
-	<20170105154950.GM679@arm.com>
-	<CAF6AEGuUidGEONzh92SYg9V2gE812oq_0CoZt-Zv7=bzb3FN3A@mail.gmail.com>
-	<20170110175219.GK527@arm.com>
-	<CAF6AEGsCJ6L-wmBHFYy2jfQ1bfq_d2wmiWVUXno344US9ikLVA@mail.gmail.com>
-	<20170111093606.GA12388@arm.com>
-	<CAF6AEGvGWu+OMED52_Mphpd1K=2QAeeuPV8RaRzL9S+N4YOh2Q@mail.gmail.com>
-	<20170112151717.GB13843@arm.com>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
+Date: Tue, 31 Jan 2017 07:16:23 +0900
+Message-ID: <CANqRtoQGtak34vEd=aAsPaHM2o=MkZwq0WLOjiHi7fmqFnxUQg@mail.gmail.com>
+References: <148517158986.13306.314435910710426381.sendpatchset@little-apple>
+	<148517162908.13306.2467186615655446796.sendpatchset@little-apple>
+	<20170127114724.GI27598@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170112151717.GB13843-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20170127114724.GI27598-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,74 +19,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Jan 12, 2017 at 10:17 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Wed, Jan 11, 2017 at 03:59:30PM -0500, Rob Clark wrote:
->> On Wed, Jan 11, 2017 at 4:36 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
->> > On Tue, Jan 10, 2017 at 02:20:13PM -0500, Rob Clark wrote:
->> >> On Tue, Jan 10, 2017 at 12:52 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
->> >> > On Fri, Jan 06, 2017 at 11:26:49AM -0500, Rob Clark wrote:
->> >> >> Hmm, well we install the fault handler on the iommu_domain..  perhaps
->> >> >> maybe a combo of dts property (or deciding based on more specific
->> >> >> compat string), plus extra param passed in to
->> >> >> iommu_set_fault_hander().  The dts property or compat string to
->> >> >> indicate whether the iommu (and how it is wired up) can handle stalls,
->> >> >> and enable_stall param when fault handler is registered to indicate
->> >> >> whether the device itself can cope.. if either can't do stalling, then
->> >> >> don't set CFCFG.
->> >> >
->> >> > I thought about this some more, and I think you're right. Having
->> >> > iommu_set_fault_handler take a flags parameter indicating that, for example,
->> >> > the fault handler can deal with paging, is all we need to implement the
->> >> > per-master opt-in functionality for stalling faults. There's no real
->> >> > requirement to standardise a generic firmware property for that (but
->> >> > we still need *something* that says stalling is usable on the SMMU --
->> >> > perhaps just the compatible string is ok).
->> >>
->> >> btw, it occurred to me that maybe it should be flags param to
->> >> iommu_attach_device() (just in case fault handler not installed?)
->> >> otoh stalling without a fault handler is silly, but I guess we need it
->> >> to infer whether stalling can be supported by other devices on same
->> >> iommu.. tbh I'm on a bit shaky ground when it comes to multiple
->> >> devices per iommu since the SoC's I'm familiar with do it the other
->> >> way around.  But I guess you have thought more about the multi-device
->> >> case, so figured I should suggest it..
->> >
->> > I don't think it works at attach time, because the stalling property belongs
->> > to the domain, rather than the individual devices within it. Similarly, I
->> > don't think we should allow this property to be toggled once devices have
->> > been attached.
->> >
+Hi Joerg,
+
+On Fri, Jan 27, 2017 at 8:47 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
+> On Mon, Jan 23, 2017 at 08:40:29PM +0900, Magnus Damm wrote:
+>> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 >>
->> hmm, I was more thinking of cases where drivers for particular devices
->> need some work (ie. like potentially disabling hw hang detect during
->> faults).. I guess we could have three levels, that all have to be true
->> in order to enable stall: smmu, domain (pass flags in to
->> iommu_domain_alloc()??), and device (iommu_attach_device())?
+>> Bump up the maximum numbers of micro-TLBS to 48.
+>>
+>> Each IPMMU device instance get micro-TLB assignment via
+>> the "iommus" property in DT. Older SoCs tend to use a
+>> maximum number of 32 micro-TLBs per IPMMU instance however
+>> newer SoCs such as r8a7796 make use of up to 48 micro-TLBs.
+>>
+>> At this point no SoC specific handling is done to validate
+>> the maximum number of micro-TLBs, and because of that the
+>> DT information is assumed to be within correct range for
+>> each particular SoC.
+>>
+>> If needed in the future SoC specific feature flags can be
+>> added to handle the maximum number of micro-TLBs without
+>> requiring DT changes, however at this point this does not
+>> seem necessary.
+>>
+>> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 >
-> Hooking iommu_set_fault_handler, as you originally suggested, is the best
-> way to set the flag on the domain. I think we just need to enforce that
-> iommu_set_fault_handler is called prior to attaching devices to a domain,
-> so that the IOMMU driver can configure the domain appropriately on the
-> first attach.
+> I get a conflict when applying this to v4.10-rc5. What is this based on,
+> any patches I missed?
 
-Hi Will, just (finally) revisiting this..
+Thanks for giving it a go. The second patch in this series should apply as-is:
+[PATCH v2 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding
 
-So I started working on a patch to add can_stall to
-iommu_set_fault_handler() (fortunately not many callers).  And then
-adding an iommu_domain_resume(domain, resume/terminate).  (Ie.
-iommu_domain_resume() would be called by the IOMMU user either
-directly from fault handler callback, or indirectly from a thread
-context..  that seemed a bit less clunky than passing a callback to
-the callback..)
+However for driver code there are two series in between:
+ [PATCH v6 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V6
+ [PATCH v2 00/11] iommu/ipmmu-vmsa: r8a7795 support V2
 
-But is there any good way to iterate all the domains associated w/ the
-arm_smmu_device?  Unfortunately we don't pass in the device ptr to
-iommu_domain_alloc() no I'm not entirely sure at what point we know
-whether all the associated domains can stall..
+For more detailed dependency information please see the cover letter!
 
-BR,
--R
+Regarding the driver code please wait for "IPMMU multi-arch update V7"
+that takes comments from Laurent into consideration. Hopefully I
+should be able to send it out some time this week.
+
+As for "[PATCH v2 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding",
+would it be possible to fast track mainline merge of that particular
+DT binding patch? Can you take it in your tree?
+
+To give some background, we already have the IPMMU DT binding for
+older devices and the sister device r8a7795 in mainline, so the
+r8a7796 DT binding is just a small incremental step. To make sure we
+don't go too wild with DT changes we tend to require that the DT
+binding change should be queued up before starting to merge changes to
+DTS files. So currently some DT changes are blocking on that r8a7796
+DT binding and it would be nice to unblock those if possible..
+
+Thanks!
+
+/ magnus
