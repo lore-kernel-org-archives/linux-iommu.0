@@ -1,59 +1,46 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH V7 01/11] iommu/of: Refactor of_iommu_configure() for error handling
-Date: Mon, 30 Jan 2017 12:30:11 +0530
-Message-ID: <003601d27ac6$84866840$8d9338c0$@codeaurora.org>
-References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org> <1485188293-20263-2-git-send-email-sricharan@codeaurora.org> <4388779a-0e83-fadc-83f4-98c46c88d42e@semihalf.com> <c7bad124-d9f2-0ddf-168f-0b1950d3e1ed@arm.com> <009901d278c7$34fee230$9efca690$@codeaurora.org> <d27f04da-7d34-9640-1639-790d0732ed93@arm.com>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH V7 06/11] of/acpi: Configure dma operations at probe time
+ for platform/amba/pci bus devices
+Date: Mon, 30 Jan 2017 08:09:18 +0100
+Message-ID: <CAJZ5v0jv-q_EeNhJ4F11yPS85aeD7YFQMcpH+fctTFL12Mk4XQ@mail.gmail.com>
+References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org> <1485188293-20263-7-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <d27f04da-7d34-9640-1639-790d0732ed93@arm.com>
-Content-Language: en-us
+In-Reply-To: <1485188293-20263-7-git-send-email-sricharan@codeaurora.org>
 Sender: linux-acpi-owner@vger.kernel.org
-To: 'Robin Murphy' <robin.murphy@arm.com>, 'Tomasz Nowicki' <tn@semihalf.com>, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org
+To: Sricharan R <sricharan@codeaurora.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux-foundation.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, linux-arm-msm@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>, Bjorn Helgaas <bhelgaas@google.com>, Linux PCI <linux-pci@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
->> [..]
->>
->>>>> +const struct iommu_ops *of_iommu_configure(struct device *dev,
->>>>> +                       struct device_node *master_np)
->>>>> +{
->>>>> +    const struct iommu_ops *ops;
->>>>> +
->>>>> +    if (!master_np)
->>>>> +        return NULL;
->>>>> +
->>>>> +    if (dev_is_pci(dev))
->>>>> +        ops = of_pci_iommu_init(to_pci_dev(dev), master_np);
->>>>
->>>> I gave the whole patch set a try on ThunderX. really_probe() is failing
->>>> on dma_configure()->of_pci_iommu_init() for each PCI device.
->>>
->>> When you say "failing", do you mean cleanly, or with a crash? I've
->>> managed to hit __of_match_node() dereferencing NULL from
->>> of_iommu_xlate() in a horribly complicated chain of events, which I'm
->>> trying to figure out now, and I wonder if the two might be related.
->>
->> Sorry that there is crash still. __of_match_node seems to checking
->> for NULL arguments , feels like some invalid pointer was passed in.
->> Is there any particular sequence to try for this ?
+On Mon, Jan 23, 2017 at 5:18 PM, Sricharan R <sricharan@codeaurora.org> wrote:
+> Configuring DMA ops at probe time will allow deferring device probe when
+> the IOMMU isn't available yet. The dma_configure for the device is
+> now called from the generic device_attach callback just before the
+> bus/driver probe is called. This way, configuring the DMA ops for the
+> device would be called at the same place for all bus_types, hence the
+> deferred probing mechanism should work for all buses as well.
 >
->Ah, I did figure it out - it wasn't actually a NULL dereference, but an
->unmapped address. Turns out __iommu_of_table is in initdata, so any
->driver probing after init, connected to an unprobed IOMMU (in this case
->disabled in DT), trips over trying to match the now-freed table. I'm
->working on the fix - technically the bug's in my patch (#2) anyway ;)
+> pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
+>        |                         |
+> pci_bus_add_device     (device_add/driver_register)
+>        |                         |
+> device_attach           device_initial_probe
+>        |                         |
+> __device_attach_driver    __device_attach_driver
+>        |
+> driver_probe_device
+>        |
+> really_probe
+>        |
+> dma_configure
 >
+> Similarly on the device/driver_unregister path __device_release_driver is
+> called which inturn calls dma_deconfigure.
+>
+> This patch changes the dma ops configuration to probe time for
+> both OF and ACPI based platform/amba/pci bus devices.
+>
+> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
 
-Ok, thanks for bringing this out. There is also an issue that
-Sinan has mentioned while testing the ACPI hotplug path, probably
-its related to the above, not sure. I will try to check more on that
-in the meanwhile. Then, taking your fix and fixing the hotplug case
-i will do one more repost.
-
-Regards,
- Sricharan
-
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
