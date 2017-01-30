@@ -1,16 +1,14 @@
 From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: RE: [PATCH V7 10/11] iommu/arm-smmu: Clean up early-probing
-	workarounds
-Date: Mon, 30 Jan 2017 13:35:12 +0530
-Message-ID: <005401d27acf$991e6290$cb5b27b0$@codeaurora.org>
+Subject: RE: [PATCH V7 00/11] IOMMU probe deferral support
+Date: Mon, 30 Jan 2017 14:50:35 +0530
+Message-ID: <005801d27ada$2127ee90$6377cbb0$@codeaurora.org>
 References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org>
-	<1485188293-20263-11-git-send-email-sricharan@codeaurora.org>
-	<20170128210709.GG20550@bhelgaas-glaptop.roam.corp.google.com>
+	<20170128211029.GI20550@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170128210709.GG20550-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
+In-Reply-To: <20170128211029.GI20550-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
 Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
@@ -25,26 +23,43 @@ To: 'Bjorn Helgaas' <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
 Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
->> Now that the appropriate ordering is enforced via profe-deferral of
->
->s/profe-deferral/probe-deferral/
->
+Hi Bjorn,
 
-ha, will change it.
+>On Mon, Jan 23, 2017 at 09:48:02PM +0530, Sricharan R wrote:
+>> This series calls the dma ops configuration for the devices
+>> at a generic place so that it works for all busses.
+>> The dma_configure_ops for a device is now called during
+>> the device_attach callback just before the probe of the
+>> bus/driver is called. Similarly dma_deconfigure is called during
+>> device/driver_detach path.
+>> ...
+>
+>>  arch/arm64/mm/dma-mapping.c       | 132 ++++----------------------------------
+>>  drivers/acpi/arm64/iort.c         |  40 +++++++++++-
+>>  drivers/acpi/glue.c               |   5 --
+>>  drivers/acpi/scan.c               |   7 +-
+>>  drivers/base/dd.c                 |   9 +++
+>>  drivers/base/dma-mapping.c        |  41 ++++++++++++
+>>  drivers/iommu/arm-smmu-v3.c       |  46 +------------
+>>  drivers/iommu/arm-smmu.c          |  58 +++--------------
+>>  drivers/iommu/of_iommu.c          | 114 +++++++++++++++++++++++---------
+>>  drivers/of/address.c              |  20 +++++-
+>>  drivers/of/device.c               |  36 ++++++-----
+>>  drivers/of/platform.c             |  10 +--
+>>  drivers/pci/probe.c               |  28 --------
+>>  include/acpi/acpi_bus.h           |   2 +-
+>>  include/asm-generic/vmlinux.lds.h |   1 -
+>>  include/linux/acpi.h              |   7 +-
+>>  include/linux/acpi_iort.h         |   3 -
+>>  include/linux/dma-mapping.h       |   3 +
+>>  include/linux/of_device.h         |  10 ++-
+>>  19 files changed, 252 insertions(+), 320 deletions(-)
+>
+>I'm assuming this will go via some other tree, maybe the IOMMU tree?
+>I acked the PCI parts, so let me know if you need anything more from me.
+
+Thanks for the review/acks.
+Ya, via the IOMMU tree looks correct.
 
 Regards,
  Sricharan
-
-
->> masters in core code, rip it all out and bask in the simplicity.
->>
->> Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> [Sricharan: Rebased on top of ACPI IORT SMMU series]
->> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> ---
->>  drivers/iommu/arm-smmu-v3.c | 46 ++---------------------------------
->>  drivers/iommu/arm-smmu.c    | 58 +++++++--------------------------------------
->>  2 files changed, 10 insertions(+), 94 deletions(-)
->
->Yay!
