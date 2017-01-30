@@ -1,74 +1,52 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH V7 07/11] iommu: of: Handle IOMMU lookup failure with deferred probing or error
-Date: Mon, 30 Jan 2017 13:31:52 +0530
-Message-ID: <005001d27acf$21c47db0$654d7910$@codeaurora.org>
-References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org> <1485188293-20263-8-git-send-email-sricharan@codeaurora.org> <20170128210359.GE20550@bhelgaas-glaptop.roam.corp.google.com>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH V7 09/11] arm64: dma-mapping: Remove the notifier trick to
+	handle early setting of dma_ops
+Date: Mon, 30 Jan 2017 13:34:18 +0530
+Message-ID: <005201d27acf$7924a7b0$6b6df710$@codeaurora.org>
+References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org>
+	<1485188293-20263-10-git-send-email-sricharan@codeaurora.org>
+	<20170128210611.GF20550@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <20170128210359.GE20550@bhelgaas-glaptop.roam.corp.google.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170128210611.GF20550-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
 Content-Language: en-us
-Sender: linux-acpi-owner@vger.kernel.org
-To: 'Bjorn Helgaas' <helgaas@kernel.org>
-Cc: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: 'Bjorn Helgaas' <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bjorn,
+>> With arch_setup_dma_ops now being called late during device's probe after
+>> the device's iommu is probed, the notifier trick required to handle the
+>> early setup of dma_ops before the iommu group gets created is not
+>> required. So removing the notifier's here.
+>
+>s/notifier's/notifiers/
+>
+ok, will change.
 
->-----Original Message-----
->From: Bjorn Helgaas [mailto:helgaas@kernel.org]
->Sent: Sunday, January 29, 2017 2:34 AM
->To: Sricharan R <sricharan@codeaurora.org>
->Cc: robin.murphy@arm.com; will.deacon@arm.com; joro@8bytes.org; lorenzo.pieralisi@arm.com; iommu@lists.linux-foundation.org;
->linux-arm-kernel@lists.infradead.org; linux-arm-msm@vger.kernel.org; m.szyprowski@samsung.com; bhelgaas@google.com; linux-
->pci@vger.kernel.org; linux-acpi@vger.kernel.org
->Subject: Re: [PATCH V7 07/11] iommu: of: Handle IOMMU lookup failure with deferred probing or error
+>Personally I'd capitalize "IOMMU" in the English text above, too.
 >
->On Mon, Jan 23, 2017 at 09:48:09PM +0530, Sricharan R wrote:
->> From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
->>
->> Failures to look up an IOMMU when parsing the DT iommus property need to
->> be handled separately from the .of_xlate() failures to support deferred
->> probing.
->>
->> The lack of a registered IOMMU can be caused by the lack of a driver for
->> the IOMMU, the IOMMU device probe not having been performed yet, having
->> been deferred, or having failed.
->>
->> The first case occurs when the device tree describes the bus master and
->> IOMMU topology correctly but no device driver exists for the IOMMU yet
->> or the device driver has not been compiled in. Return NULL, the caller
->> will configure the device without an IOMMU.
->>
->> The second and third cases are handled by deferring the probe of the bus
->> master device which will eventually get reprobed after the IOMMU.
->>
->> The last case is currently handled by deferring the probe of the bus
->> master device as well. A mechanism to either configure the bus master
->> device without an IOMMU or to fail the bus master device probe depending
->> on whether the IOMMU is optional or mandatory would be a good
->> enhancement.
->>
->> Signed-off-by: Laurent Pichart <laurent.pinchart+renesas@ideasonboard.com>
->> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
->> ...
->
->> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->> index 349bd1d..9529d6c 100644
->> --- a/drivers/iommu/of_iommu.c
->> +++ b/drivers/iommu/of_iommu.c
->> @@ -23,6 +23,7 @@
->>  #include <linux/of.h>
->>  #include <linux/of_iommu.h>
->>  #include <linux/of_pci.h>
->> +#include <linux/pci.h>
->
->Why do we need this?
-
-Right, will remove it.
+ok, will change this too.
 
 Regards,
  Sricharan
 
+>> Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>> [rm: clean up even more]
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>  arch/arm64/mm/dma-mapping.c | 132 ++++----------------------------------------
+>>  1 file changed, 12 insertions(+), 120 deletions(-)
+>
+>Nice :)
