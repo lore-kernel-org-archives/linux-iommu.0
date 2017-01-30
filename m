@@ -1,58 +1,74 @@
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>
-Subject: RE: [PATCH/RFC] iommu/dma: Per-domain flag to control size-alignment
-Date: Mon, 30 Jan 2017 07:20:18 +0000
-Message-ID: <HK2PR06MB05481A6F9E20CCAC13F9A336D84B0@HK2PR06MB0548.apcprd06.prod.outlook.com>
-References: <148549826507.23190.1460689571069015835.sendpatchset@little-apple>
-	<464656f9-970e-1271-0d9e-b62a0673e1dd@arm.com>
+From: "Sricharan" <sricharan@codeaurora.org>
+Subject: RE: [PATCH V7 07/11] iommu: of: Handle IOMMU lookup failure with deferred probing or error
+Date: Mon, 30 Jan 2017 13:31:52 +0530
+Message-ID: <005001d27acf$21c47db0$654d7910$@codeaurora.org>
+References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org> <1485188293-20263-8-git-send-email-sricharan@codeaurora.org> <20170128210359.GE20550@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain;
+        charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <464656f9-970e-1271-0d9e-b62a0673e1dd-5wv7dgnIgG8@public.gmane.org>
-Content-Language: ja-JP
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170128210359.GE20550@bhelgaas-glaptop.roam.corp.google.com>
+Content-Language: en-us
+Sender: linux-acpi-owner@vger.kernel.org
+To: 'Bjorn Helgaas' <helgaas@kernel.org>
+Cc: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin, Magnus,
+Hi Bjorn,
 
-> -----Original Message-----
-> From: Robin Murphy
-> Sent: Saturday, January 28, 2017 2:38 AM
-> 
-> Hi Magnus,
-> 
-> On 27/01/17 06:24, Magnus Damm wrote:
-> > From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-> >
-> > Introduce the flag "no_size_align" to allow disabling size-alignment
-> > on a per-domain basis. This follows the suggestion by the comment
-> > in the code, however a per-device control may be preferred?
-> >
-> > Needed to make virtual space contiguous for certain devices.
-> 
-> That sounds very suspicious - a single allocation is contiguous with
-> itself by definition, and anyone relying on multiple allocations being
-> contiguous with one another is doing it wrong, because there's no way we
-> could ever guarantee that (with this allocator, at any rate). I'd be
-> very reticent to touch this without a specific example of what problem
-> it solves.
+>-----Original Message-----
+>From: Bjorn Helgaas [mailto:helgaas@kernel.org]
+>Sent: Sunday, January 29, 2017 2:34 AM
+>To: Sricharan R <sricharan@codeaurora.org>
+>Cc: robin.murphy@arm.com; will.deacon@arm.com; joro@8bytes.org; lorenzo.pieralisi@arm.com; iommu@lists.linux-foundation.org;
+>linux-arm-kernel@lists.infradead.org; linux-arm-msm@vger.kernel.org; m.szyprowski@samsung.com; bhelgaas@google.com; linux-
+>pci@vger.kernel.org; linux-acpi@vger.kernel.org
+>Subject: Re: [PATCH V7 07/11] iommu: of: Handle IOMMU lookup failure with deferred probing or error
+>
+>On Mon, Jan 23, 2017 at 09:48:09PM +0530, Sricharan R wrote:
+>> From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+>>
+>> Failures to look up an IOMMU when parsing the DT iommus property need to
+>> be handled separately from the .of_xlate() failures to support deferred
+>> probing.
+>>
+>> The lack of a registered IOMMU can be caused by the lack of a driver for
+>> the IOMMU, the IOMMU device probe not having been performed yet, having
+>> been deferred, or having failed.
+>>
+>> The first case occurs when the device tree describes the bus master and
+>> IOMMU topology correctly but no device driver exists for the IOMMU yet
+>> or the device driver has not been compiled in. Return NULL, the caller
+>> will configure the device without an IOMMU.
+>>
+>> The second and third cases are handled by deferring the probe of the bus
+>> master device which will eventually get reprobed after the IOMMU.
+>>
+>> The last case is currently handled by deferring the probe of the bus
+>> master device as well. A mechanism to either configure the bus master
+>> device without an IOMMU or to fail the bus master device probe depending
+>> on whether the IOMMU is optional or mandatory would be a good
+>> enhancement.
+>>
+>> Signed-off-by: Laurent Pichart <laurent.pinchart+renesas@ideasonboard.com>
+>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+>> ...
+>
+>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+>> index 349bd1d..9529d6c 100644
+>> --- a/drivers/iommu/of_iommu.c
+>> +++ b/drivers/iommu/of_iommu.c
+>> @@ -23,6 +23,7 @@
+>>  #include <linux/of.h>
+>>  #include <linux/of_iommu.h>
+>>  #include <linux/of_pci.h>
+>> +#include <linux/pci.h>
+>
+>Why do we need this?
 
-Thank you for the comment! This patch was from my request.
-But, I completely misunderstood this "size-alignment" behavior.
-And, my concern was already resolved by the following patch at last April:
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/drivers/iommu?id=809eac54cdd62c67afea1e17080e681dfa33dc09
+Right, will remove it.
 
-So, no one needs this patch anymore.
+Regards,
+ Sricharan
 
-Best regards,
-Yoshihiro Shimoda
