@@ -1,15 +1,17 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH/RFC] iommu/dma: Per-domain flag to control size-alignment
-Date: Mon, 30 Jan 2017 12:07:00 +0000
-Message-ID: <584852f8-fb0c-3f29-dfe4-ac9aef918228@arm.com>
-References: <148549826507.23190.1460689571069015835.sendpatchset@little-apple>
-	<464656f9-970e-1271-0d9e-b62a0673e1dd@arm.com>
-	<HK2PR06MB05481A6F9E20CCAC13F9A336D84B0@HK2PR06MB0548.apcprd06.prod.outlook.com>
+Subject: Re: [PATCH V7 08/11] drivers: acpi: Handle IOMMU lookup failure with
+	deferred probing or error
+Date: Mon, 30 Jan 2017 12:22:11 +0000
+Message-ID: <93e79759-d614-9b36-d5ab-63e8eb725009@arm.com>
+References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org>
+	<1485188293-20263-9-git-send-email-sricharan@codeaurora.org>
+	<20170124123711.GA11996@red-moon>
+	<f2370671-ece8-fbee-de19-350dd625088f@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <HK2PR06MB05481A6F9E20CCAC13F9A336D84B0-jAC1QCBx2F3DOGFS7+tQZW0DtJ1/0DrXvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
+In-Reply-To: <f2370671-ece8-fbee-de19-350dd625088f-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,47 +21,42 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh-zM6kxYcvzFBBDgjK7y7TUQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Cc: "linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+To: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, Tomasz Nowicki <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 30/01/17 07:20, Yoshihiro Shimoda wrote:
-> Hi Robin, Magnus,
-> 
->> -----Original Message-----
->> From: Robin Murphy
->> Sent: Saturday, January 28, 2017 2:38 AM
+On 29/01/17 17:53, Sinan Kaya wrote:
+> On 1/24/2017 7:37 AM, Lorenzo Pieralisi wrote:
+>> [+hanjun, tomasz, sinan]
 >>
->> Hi Magnus,
+>> It is quite a key patchset, I would be glad if they can test on their
+>> respective platforms with IORT.
 >>
->> On 27/01/17 06:24, Magnus Damm wrote:
->>> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
->>>
->>> Introduce the flag "no_size_align" to allow disabling size-alignment
->>> on a per-domain basis. This follows the suggestion by the comment
->>> in the code, however a per-device control may be preferred?
->>>
->>> Needed to make virtual space contiguous for certain devices.
->>
->> That sounds very suspicious - a single allocation is contiguous with
->> itself by definition, and anyone relying on multiple allocations being
->> contiguous with one another is doing it wrong, because there's no way we
->> could ever guarantee that (with this allocator, at any rate). I'd be
->> very reticent to touch this without a specific example of what problem
->> it solves.
 > 
-> Thank you for the comment! This patch was from my request.
-> But, I completely misunderstood this "size-alignment" behavior.
-> And, my concern was already resolved by the following patch at last April:
-> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/drivers/iommu?id=809eac54cdd62c67afea1e17080e681dfa33dc09
+> Tested on top of 4.10-rc5.
 > 
-> So, no one needs this patch anymore.
+> 1.	Platform Hidma device passed dmatest
+> 2.	Seeing some USB stalls on a platform USB device.
+> 3.	PCIe NVME drive probed and worked fine with MSI interrupts after boot.
+> 4. 	NVMe driver didn't probe following a hotplug insertion and received an
+> SMMU error event during the insertion.
 
-Cool, thanks for the clarification :)
+What was the SMMU error - a translation/permission fault (implying the
+wrong DMA ops) or a bad STE fault (implying we totally failed to tell
+the SMMU about the device at all)?
 
 Robin.
 
 > 
-> Best regards,
-> Yoshihiro Shimoda
+> /sys/bus/pci/slots/4 #
+> /sys/bus/pci/slots/4 # dmesg | grep nvme
+> [   14.041357] nvme nvme0: pci function 0003:01:00.0
+> [  198.399521] nvme nvme0: pci function 0003:01:00.0
+> [__198.416232]_nvme_0003:01:00.0:_enabling_device_(0000_->_0002)
+> [  264.402216] nvme nvme0: I/O 228 QID 0 timeout, disable controller
+> [  264.402313] nvme nvme0: Identify Controller failed (-4)
+> [  264.421270] nvme nvme0: Removing after probe failure status: -5
+> /sys/bus/pci/slots/4 #
+> 
+> 
 > 
