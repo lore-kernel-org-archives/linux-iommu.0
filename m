@@ -1,115 +1,115 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V7 01/11] iommu/of: Refactor of_iommu_configure() for
-	error handling
-Date: Mon, 30 Jan 2017 18:42:31 +0000
-Message-ID: <8387d057-15bd-500c-134e-0e731ff837d6@arm.com>
-References: <1485188293-20263-1-git-send-email-sricharan@codeaurora.org>
-	<1485188293-20263-2-git-send-email-sricharan@codeaurora.org>
-	<4388779a-0e83-fadc-83f4-98c46c88d42e@semihalf.com>
-	<c7bad124-d9f2-0ddf-168f-0b1950d3e1ed@arm.com>
-	<009901d278c7$34fee230$9efca690$@codeaurora.org>
-	<d27f04da-7d34-9640-1639-790d0732ed93@arm.com>
-	<003601d27ac6$84866840$8d9338c0$@codeaurora.org>
+From: Sinan Kaya <okaya@codeaurora.org>
+Subject: Re: [PATCH V7 08/11] drivers: acpi: Handle IOMMU lookup failure with
+ deferred probing or error
+Date: Mon, 30 Jan 2017 15:03:06 -0500
+Message-ID: <f401e27e-d619-0eec-2401-50d8e2fc2f0f@codeaurora.org>
+References: <1485188293-20263-9-git-send-email-sricharan@codeaurora.org>
+ <20170124123711.GA11996@red-moon>
+ <f2370671-ece8-fbee-de19-350dd625088f@codeaurora.org>
+ <93e79759-d614-9b36-d5ab-63e8eb725009@arm.com>
+ <14751205-f034-7f0d-442a-854c3909425c@codeaurora.org>
+ <5ba9f366d6e25397cdef8ad95b49e199@codeaurora.org>
+ <175a3798-b824-ef1a-e112-9f6f472973ae@codeaurora.org>
+ <20170130143851.GJ16461@arm.com>
+ <b2e50c17de156341deab9fb8e91a8dec@codeaurora.org>
+ <1e048aff-0d77-b9f2-ebf8-2ba315b90ca7@codeaurora.org>
+ <20170130165124.GA11712@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <003601d27ac6$84866840$8d9338c0$@codeaurora.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, 'Tomasz Nowicki' <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170130165124.GA11712@red-moon>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Nate Watterson <nwatters@codeaurora.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Sricharan R <sricharan@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, bhelgaas@google.com, Tomasz Nowicki <tn@semihalf.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 30/01/17 07:00, Sricharan wrote:
-> Hi Robin,
-> 
->>> [..]
->>>
->>>>>> +const struct iommu_ops *of_iommu_configure(struct device *dev,
->>>>>> +                       struct device_node *master_np)
->>>>>> +{
->>>>>> +    const struct iommu_ops *ops;
->>>>>> +
->>>>>> +    if (!master_np)
->>>>>> +        return NULL;
->>>>>> +
->>>>>> +    if (dev_is_pci(dev))
->>>>>> +        ops = of_pci_iommu_init(to_pci_dev(dev), master_np);
+On 1/30/2017 11:51 AM, Lorenzo Pieralisi wrote:
+> On Mon, Jan 30, 2017 at 10:46:39AM -0500, Sinan Kaya wrote:
+>> On 1/30/2017 9:54 AM, Nate Watterson wrote:
+>>> On 2017-01-30 09:38, Will Deacon wrote:
+>>>> On Mon, Jan 30, 2017 at 09:33:50AM -0500, Sinan Kaya wrote:
+>>>>> On 1/30/2017 9:23 AM, Nate Watterson wrote:
+>>>>>> On 2017-01-30 08:59, Sinan Kaya wrote:
+>>>>>>> On 1/30/2017 7:22 AM, Robin Murphy wrote:
+>>>>>>>> On 29/01/17 17:53, Sinan Kaya wrote:
+>>>>>>>>> On 1/24/2017 7:37 AM, Lorenzo Pieralisi wrote:
+>>>>>>>>>> [+hanjun, tomasz, sinan]
+>>>>>>>>>>
+>>>>>>>>>> It is quite a key patchset, I would be glad if they can test on their
+>>>>>>>>>> respective platforms with IORT.
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Tested on top of 4.10-rc5.
+>>>>>>>>>
+>>>>>>>>> 1.    Platform Hidma device passed dmatest
+>>>>>>>>> 2.    Seeing some USB stalls on a platform USB device.
+>>>>>>>>> 3.    PCIe NVME drive probed and worked fine with MSI interrupts after boot.
+>>>>>>>>> 4.     NVMe driver didn't probe following a hotplug insertion and received an
+>>>>>>>>> SMMU error event during the insertion.
+>>>>>>>>
+>>>>>>>> What was the SMMU error - a translation/permission fault (implying the
+>>>>>>>> wrong DMA ops) or a bad STE fault (implying we totally failed to tell
+>>>>>>>> the SMMU about the device at all)?
+>>>>>>>>
+>>>>>>>
+>>>>>>> root@ubuntu:/sys/bus/pci/slots/4# echo 0 > power
+>>>>>>>
+>>>>>>> [__204.698522]_iommu:_Removing_device_0003:01:00.0_from_group_0
+>>>>>>> [  204.708704] pciehp 0003:00:00.0:pcie004: Slot(4): Link Down
+>>>>>>> [  204.708723] pciehp 0003:00:00.0:pcie004: Slot(4): Link Down event
+>>>>>>> ignored; already powering off
+>>>>>>>
+>>>>>>> root@ubuntu:/sys/bus/pci/slots/4#
+>>>>>>>
+>>>>>>> [__254.820440]_iommu:_Adding_device_0003:01:00.0_to_group_8
+>>>>>>> [  254.820599] nvme nvme0: pci function 0003:01:00.0
+>>>>>>> [  254.820621] nvme 0003:01:00.0: enabling device (0000 -> 0002)
+>>>>>>> [  261.948558] arm-smmu-v3 arm-smmu-v3.0.auto: event 0x0a received:
+>>>>>>> [  261.948561] arm-smmu-v3 arm-smmu-v3.0.auto:  0x000001000000000a
+>>>>>>> [  261.948563] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+>>>>>>> [  261.948564] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+>>>>>>> [  261.948566] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
 >>>>>
->>>>> I gave the whole patch set a try on ThunderX. really_probe() is failing
->>>>> on dma_configure()->of_pci_iommu_init() for each PCI device.
+>>>>>> Looks like C_BAD_CD. Can you please try with:
+>>>>>> iommu/arm-smmu-v3: Clear prior settings when updating STEs
+>>>>>
+>>>>> This resolved the issue. Can we pull Nate's patch to 4.10 so that I don't see
+>>>>> this issue again.
 >>>>
->>>> When you say "failing", do you mean cleanly, or with a crash? I've
->>>> managed to hit __of_match_node() dereferencing NULL from
->>>> of_iommu_xlate() in a horribly complicated chain of events, which I'm
->>>> trying to figure out now, and I wonder if the two might be related.
+>>>> I already sent the pull request to Joerg for 4.11. Do you see this problem
+>>>> without Sricharan's patches (i.e. vanilla mainline)? If so, we'll need to
+>>>> send the patch to stable after -rc1.
+>>> Using vanilla mainline, I see it most commonly when directly assigning
+>>> a device to a guest machine. I think I've also seen it after removing then
+>>> re-adding a PCI device. Basically anytime an STE's CTX pointer is changed
+>>> from a non-NULL value and STE[CFG] indicates translation will be performed.
 >>>
->>> Sorry that there is crash still. __of_match_node seems to checking
->>> for NULL arguments , feels like some invalid pointer was passed in.
->>> Is there any particular sequence to try for this ?
 >>
->> Ah, I did figure it out - it wasn't actually a NULL dereference, but an
->> unmapped address. Turns out __iommu_of_table is in initdata, so any
->> driver probing after init, connected to an unprobed IOMMU (in this case
->> disabled in DT), trips over trying to match the now-freed table. I'm
->> working on the fix - technically the bug's in my patch (#2) anyway ;)
->>
+>> I was not able to reproduce the issue with Vanilla kernel. I only
+>> tested hotplug.
 > 
-> Ok, thanks for bringing this out. There is also an issue that
-> Sinan has mentioned while testing the ACPI hotplug path, probably
-> its related to the above, not sure. I will try to check more on that
-> in the meanwhile. Then, taking your fix and fixing the hotplug case
-> i will do one more repost.
+> I would like to get the complete code path leading to this issue, it is
+> not clear to me why the probe deferral code triggers it and why we are
+> not able to trigger it with vanilla mainline, we must understand that first
+> before applying any fix to this series.
+> 
+> I do not have a platform to reproduce this issue I will send you a patch
+> to trace what's going on here please help us debug it.
 
-OK, I've finally settled on the below fixup for patch #2 - I have some
-follow-on ideas for eventually getting of the magic table altogether,
-but they can wait until we've got the baseline functionality sorted.
-Updated full patch here:
+Sure, send it to both Nate and me.
 
-http://www.linux-arm.org/git?p=linux-rm.git;a=commitdiff;h=5616af885f7c5c24f7239d5c689583b2b583c407
+> 
+> Thanks,
+> Lorenzo
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-pci" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
-Robin.
 
------8<-----
-
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 349bd1d01612..1f92d98237d5 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -96,6 +96,19 @@ int of_get_dma_window(struct device_node *dn, const
-char *prefix, int index,
- }
- EXPORT_SYMBOL_GPL(of_get_dma_window);
-
-+static bool of_iommu_driver_present(struct device_node *np)
-+{
-+	/*
-+	 * If the IOMMU still isn't ready by the time we reach init, assume
-+	 * it never will be. We don't want to defer indefinitely, nor attempt
-+	 * to dereference __iommu_of_table after it's been freed.
-+	 */
-+	if (system_state > SYSTEM_BOOTING)
-+		return false;
-+
-+	return of_match_node(&__iommu_of_table, np);
-+}
-+
- static const struct iommu_ops
- *of_iommu_xlate(struct device *dev, struct of_phandle_args *iommu_spec)
- {
-@@ -105,7 +118,7 @@ static const struct iommu_ops
-
- 	ops = iommu_get_instance(fwnode);
- 	if ((ops && !ops->of_xlate) ||
--	    (!ops && !of_match_node(&__iommu_of_table, iommu_spec->np)))
-+	    (!ops && !of_iommu_driver_present(iommu_spec->np)))
- 		return NULL;
-
- 	err = iommu_fwspec_init(dev, &iommu_spec->np->fwnode, ops);
+-- 
+Sinan Kaya
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
