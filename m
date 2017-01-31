@@ -1,12 +1,15 @@
-From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Subject: [PATCH v2] iommu/ipmmu-vmsa: Restrict IOMMU Domain Geometry to 32-bit
-	address space
-Date: Tue, 31 Jan 2017 12:17:07 +0100
-Message-ID: <1485861427-23487-1-git-send-email-geert+renesas@glider.be>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/2] iommu/vt-d: Fix some macros that are incorrectly
+	specified in intel-iommu
+Date: Tue, 31 Jan 2017 12:57:35 +0100
+Message-ID: <20170131115735.GA5690@8bytes.org>
+References: <1485797993-198390-1-git-send-email-ashok.raj@intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1485797993-198390-1-git-send-email-ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,42 +19,31 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund-1zkq55x86MTxsAP9Fp7wbw@public.gmane.org>
+To: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Currently, the IPMMU/VMSA driver supports 32-bit I/O Virtual Addresses
-only, and thus sets io_pgtable_cfg.ias = 32.  However, it doesn't force
-a 32-bit IOVA space through the IOMMU Domain Geometry.
+On Mon, Jan 30, 2017 at 09:39:52AM -0800, Ashok Raj wrote:
+> From: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> 
+> Some of the macros are incorrect with wrong bit-shifts resulting in picking
+> the incorrect invalidation granularity. Incorrect Source-ID in extended
+> devtlb invalidation caused device side errors.
+> 
+> To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+> To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Cc: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> 
+> Fixes: 2f26e0a9 ("iommu/vt-d: Add basic SVM PASID support")
+> Signed-off-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> Tested-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+> ---
+>  include/linux/intel-iommu.h | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
 
-Hence if a device (e.g. SYS-DMAC) rightfully configures a 40-bit DMA
-mask, it will still be handed out a 40-bit IOVA, outside the 32-bit IOVA
-space, leading to out-of-bounds accesses of the PGD when mapping the
-IOVA.
-
-Force a 32-bit IOMMU Domain Geometry to fix this.
-
-Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
-v2:
-  - Add Reviewed-by.
----
- drivers/iommu/ipmmu-vmsa.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 798578f1676480c6..eb8b3df8733b15fb 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -424,6 +424,8 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
- 	domain->cfg.ias = 32;
- 	domain->cfg.oas = 40;
- 	domain->cfg.tlb = &ipmmu_gather_ops;
-+	domain->io_domain.geometry.aperture_end = DMA_BIT_MASK(32);
-+	domain->io_domain.geometry.force_aperture = true;
- 	/*
- 	 * TODO: Add support for coherent walk through CCI with DVM and remove
- 	 * cache handling. For now, delegate it to the io-pgtable code.
--- 
-1.9.1
+Applied both, thanks Ashok.
