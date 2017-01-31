@@ -1,15 +1,12 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v2 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
-Date: Tue, 31 Jan 2017 07:16:23 +0900
-Message-ID: <CANqRtoQGtak34vEd=aAsPaHM2o=MkZwq0WLOjiHi7fmqFnxUQg@mail.gmail.com>
-References: <148517158986.13306.314435910710426381.sendpatchset@little-apple>
-	<148517162908.13306.2467186615655446796.sendpatchset@little-apple>
-	<20170127114724.GI27598@8bytes.org>
+From: David Dillow via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: [PATCH] iommu/vt-d: don't over-free page table directories
+Date: Mon, 30 Jan 2017 19:11:11 -0800
+Message-ID: <20170131031111.18464-1-dillow@google.com>
+Reply-To: David Dillow <dillow-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170127114724.GI27598-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,63 +16,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Ben Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Dillow <dillow-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sridhar Raman <sridharr-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+dma_pte_free_level() recurses down the IOMMU page tables and frees
+directory pages that are entirely contained in the given PFN range.
+Unfortunately, it incorrectly calculates the starting address covered
+by the PTE under consideration, which can lead to it clearing an entry
+that is still in use.
 
-On Fri, Jan 27, 2017 at 8:47 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> On Mon, Jan 23, 2017 at 08:40:29PM +0900, Magnus Damm wrote:
->> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
->>
->> Bump up the maximum numbers of micro-TLBS to 48.
->>
->> Each IPMMU device instance get micro-TLB assignment via
->> the "iommus" property in DT. Older SoCs tend to use a
->> maximum number of 32 micro-TLBs per IPMMU instance however
->> newer SoCs such as r8a7796 make use of up to 48 micro-TLBs.
->>
->> At this point no SoC specific handling is done to validate
->> the maximum number of micro-TLBs, and because of that the
->> DT information is assumed to be within correct range for
->> each particular SoC.
->>
->> If needed in the future SoC specific feature flags can be
->> added to handle the maximum number of micro-TLBs without
->> requiring DT changes, however at this point this does not
->> seem necessary.
->>
->> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
->
-> I get a conflict when applying this to v4.10-rc5. What is this based on,
-> any patches I missed?
+This occurs if we have a scatterlist with an entry that has a length
+greater than 1026 MB and is aligned to 2 MB for both the IOMMU and
+physical addresses. For example, if __domain_mapping() is asked to map a
+two-entry scatterlist with 2 MB and 1028 MB segments to PFN 0xffff80000,
+it will ask if dma_pte_free_pagetable() is asked to PFNs from
+0xffff80200 to 0xffffc05ff, it will also incorrectly clear the PFNs from
+0xffff80000 to 0xffff801ff because of this issue. The current code will
+set level_pfn to 0xffff80200, and 0xffff80200-0xffffc01ff fits inside
+the range being cleared. Properly setting the level_pfn for the current
+level under consideration catches that this PTE is outside of the range
+being cleared.
 
-Thanks for giving it a go. The second patch in this series should apply as-is:
-[PATCH v2 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding
+This patch also changes the value passed into dma_pte_free_level() when
+it recurses. This only affects the first PTE of the range being cleared,
+and is handled by the existing code that ensures we start our cursor no
+lower than start_pfn.
 
-However for driver code there are two series in between:
- [PATCH v6 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V6
- [PATCH v2 00/11] iommu/ipmmu-vmsa: r8a7795 support V2
+This was found when using dma_map_sg() to map large chunks of contiguous
+memory, which immediatedly led to faults on the first access of the
+erroneously-deleted mappings.
 
-For more detailed dependency information please see the cover letter!
+Fixes: 3269ee0bd668 ("intel-iommu: Fix leaks in pagetable freeing")
+Reviewed-by: Benjamin Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Signed-off-by: David Dillow <dillow-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/intel-iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Regarding the driver code please wait for "IPMMU multi-arch update V7"
-that takes comments from Laurent into consideration. Hopefully I
-should be able to send it out some time this week.
-
-As for "[PATCH v2 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding",
-would it be possible to fast track mainline merge of that particular
-DT binding patch? Can you take it in your tree?
-
-To give some background, we already have the IPMMU DT binding for
-older devices and the sister device r8a7795 in mainline, so the
-r8a7796 DT binding is just a small incremental step. To make sure we
-don't go too wild with DT changes we tend to require that the DT
-binding change should be queued up before starting to merge changes to
-DTS files. So currently some DT changes are blocking on that r8a7796
-DT binding and it would be nice to unblock those if possible..
-
-Thanks!
-
-/ magnus
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 8a185250ae5a..0aa0ca9a10e3 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1144,7 +1144,7 @@ static void dma_pte_free_level(struct dmar_domain *domain, int level,
+ 		if (!dma_pte_present(pte) || dma_pte_superpage(pte))
+ 			goto next;
+ 
+-		level_pfn = pfn & level_mask(level - 1);
++		level_pfn = pfn & level_mask(level);
+ 		level_pte = phys_to_virt(dma_pte_addr(pte));
+ 
+ 		if (level > 2)
+-- 
+2.11.0.483.g087da7b7c-goog
