@@ -1,15 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/2] iommu/vt-d: Fix some macros that are incorrectly
-	specified in intel-iommu
-Date: Tue, 31 Jan 2017 12:57:35 +0100
-Message-ID: <20170131115735.GA5690@8bytes.org>
-References: <1485797993-198390-1-git-send-email-ashok.raj@intel.com>
+Subject: Re: [PATCH] iommu/vt-d: don't over-free page table directories
+Date: Tue, 31 Jan 2017 12:58:14 +0100
+Message-ID: <20170131115814.GB5690@8bytes.org>
+References: <20170131031111.18464-1-dillow@google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1485797993-198390-1-git-send-email-ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20170131031111.18464-1-dillow-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,31 +18,16 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: David Dillow <dillow-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Sridhar Raman <sridharr-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Ben Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Jan 30, 2017 at 09:39:52AM -0800, Ashok Raj wrote:
-> From: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> 
-> Some of the macros are incorrect with wrong bit-shifts resulting in picking
-> the incorrect invalidation granularity. Incorrect Source-ID in extended
-> devtlb invalidation caused device side errors.
-> 
-> To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Cc: stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Cc: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> 
-> Fixes: 2f26e0a9 ("iommu/vt-d: Add basic SVM PASID support")
-> Signed-off-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-> Tested-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+On Mon, Jan 30, 2017 at 07:11:11PM -0800, David Dillow wrote:
+> Fixes: 3269ee0bd668 ("intel-iommu: Fix leaks in pagetable freeing")
+> Reviewed-by: Benjamin Serebrin <serebrin-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: David Dillow <dillow-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 > ---
->  include/linux/intel-iommu.h | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
+>  drivers/iommu/intel-iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Applied both, thanks Ashok.
+Applied, thanks.
