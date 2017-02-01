@@ -1,91 +1,115 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu/dma: Remove bogus dma_supported() implementation
-Date: Wed,  1 Feb 2017 17:53:04 +0000
-Message-ID: <143b03c101e727cb156b26a907c8d7e390eb9114.1485971565.git.robin.murphy@arm.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH V7 08/11] drivers: acpi: Handle IOMMU lookup failure with
+ deferred probing or error
+Date: Wed, 1 Feb 2017 18:52:30 +0000
+Message-ID: <20170201185230.GA1922@red-moon>
+References: <f2370671-ece8-fbee-de19-350dd625088f@codeaurora.org>
+ <93e79759-d614-9b36-d5ab-63e8eb725009@arm.com>
+ <14751205-f034-7f0d-442a-854c3909425c@codeaurora.org>
+ <5ba9f366d6e25397cdef8ad95b49e199@codeaurora.org>
+ <175a3798-b824-ef1a-e112-9f6f472973ae@codeaurora.org>
+ <20170130143851.GJ16461@arm.com>
+ <b2e50c17de156341deab9fb8e91a8dec@codeaurora.org>
+ <1e048aff-0d77-b9f2-ebf8-2ba315b90ca7@codeaurora.org>
+ <20170130165124.GA11712@red-moon>
+ <f401e27e-d619-0eec-2401-50d8e2fc2f0f@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <f401e27e-d619-0eec-2401-50d8e2fc2f0f@codeaurora.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Sinan Kaya <okaya@codeaurora.org>
+Cc: Nate Watterson <nwatters@codeaurora.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Sricharan R <sricharan@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, bhelgaas@google.com, Tomasz Nowicki <tn@semihalf.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Back when this was first written, dma_supported() was somewhat of a
-murky mess, with subtly different interpretations being relied upon in
-various places. The "does device X support DMA to address range Y?"
-uses assuming Y to be physical addresses, which motivated the current
-iommu_dma_supported() implementation and are alluded to in the comment
-therein, have since been cleaned up, leaving only the far less ambiguous
-"can device X drive address bits Y" usage internal to DMA API mask
-setting. As such, there is no reason to keep a slightly misleading
-callback which does nothing but duplicate the current default behaviour;
-we already constrain IOVA allocations to the iommu_domain aperture where
-necessary, so let's leave DMA mask business to architecture-specific
-code where it belongs.
+On Mon, Jan 30, 2017 at 03:03:06PM -0500, Sinan Kaya wrote:
+> On 1/30/2017 11:51 AM, Lorenzo Pieralisi wrote:
+> > On Mon, Jan 30, 2017 at 10:46:39AM -0500, Sinan Kaya wrote:
+> >> On 1/30/2017 9:54 AM, Nate Watterson wrote:
+> >>> On 2017-01-30 09:38, Will Deacon wrote:
+> >>>> On Mon, Jan 30, 2017 at 09:33:50AM -0500, Sinan Kaya wrote:
+> >>>>> On 1/30/2017 9:23 AM, Nate Watterson wrote:
+> >>>>>> On 2017-01-30 08:59, Sinan Kaya wrote:
+> >>>>>>> On 1/30/2017 7:22 AM, Robin Murphy wrote:
+> >>>>>>>> On 29/01/17 17:53, Sinan Kaya wrote:
+> >>>>>>>>> On 1/24/2017 7:37 AM, Lorenzo Pieralisi wrote:
+> >>>>>>>>>> [+hanjun, tomasz, sinan]
+> >>>>>>>>>>
+> >>>>>>>>>> It is quite a key patchset, I would be glad if they can test on their
+> >>>>>>>>>> respective platforms with IORT.
+> >>>>>>>>>>
+> >>>>>>>>>
+> >>>>>>>>> Tested on top of 4.10-rc5.
+> >>>>>>>>>
+> >>>>>>>>> 1.    Platform Hidma device passed dmatest
+> >>>>>>>>> 2.    Seeing some USB stalls on a platform USB device.
+> >>>>>>>>> 3.    PCIe NVME drive probed and worked fine with MSI interrupts after boot.
+> >>>>>>>>> 4.     NVMe driver didn't probe following a hotplug insertion and received an
+> >>>>>>>>> SMMU error event during the insertion.
+> >>>>>>>>
+> >>>>>>>> What was the SMMU error - a translation/permission fault (implying the
+> >>>>>>>> wrong DMA ops) or a bad STE fault (implying we totally failed to tell
+> >>>>>>>> the SMMU about the device at all)?
+> >>>>>>>>
+> >>>>>>>
+> >>>>>>> root@ubuntu:/sys/bus/pci/slots/4# echo 0 > power
+> >>>>>>>
+> >>>>>>> [__204.698522]_iommu:_Removing_device_0003:01:00.0_from_group_0
+> >>>>>>> [  204.708704] pciehp 0003:00:00.0:pcie004: Slot(4): Link Down
+> >>>>>>> [  204.708723] pciehp 0003:00:00.0:pcie004: Slot(4): Link Down event
+> >>>>>>> ignored; already powering off
+> >>>>>>>
+> >>>>>>> root@ubuntu:/sys/bus/pci/slots/4#
+> >>>>>>>
+> >>>>>>> [__254.820440]_iommu:_Adding_device_0003:01:00.0_to_group_8
+> >>>>>>> [  254.820599] nvme nvme0: pci function 0003:01:00.0
+> >>>>>>> [  254.820621] nvme 0003:01:00.0: enabling device (0000 -> 0002)
+> >>>>>>> [  261.948558] arm-smmu-v3 arm-smmu-v3.0.auto: event 0x0a received:
+> >>>>>>> [  261.948561] arm-smmu-v3 arm-smmu-v3.0.auto:  0x000001000000000a
+> >>>>>>> [  261.948563] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+> >>>>>>> [  261.948564] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+> >>>>>>> [  261.948566] arm-smmu-v3 arm-smmu-v3.0.auto:  0x0000000000000000
+> >>>>>
+> >>>>>> Looks like C_BAD_CD. Can you please try with:
+> >>>>>> iommu/arm-smmu-v3: Clear prior settings when updating STEs
+> >>>>>
+> >>>>> This resolved the issue. Can we pull Nate's patch to 4.10 so that I don't see
+> >>>>> this issue again.
+> >>>>
+> >>>> I already sent the pull request to Joerg for 4.11. Do you see this problem
+> >>>> without Sricharan's patches (i.e. vanilla mainline)? If so, we'll need to
+> >>>> send the patch to stable after -rc1.
+> >>> Using vanilla mainline, I see it most commonly when directly assigning
+> >>> a device to a guest machine. I think I've also seen it after removing then
+> >>> re-adding a PCI device. Basically anytime an STE's CTX pointer is changed
+> >>> from a non-NULL value and STE[CFG] indicates translation will be performed.
+> >>>
+> >>
+> >> I was not able to reproduce the issue with Vanilla kernel. I only
+> >> tested hotplug.
+> > 
+> > I would like to get the complete code path leading to this issue, it is
+> > not clear to me why the probe deferral code triggers it and why we are
+> > not able to trigger it with vanilla mainline, we must understand that first
+> > before applying any fix to this series.
+> > 
+> > I do not have a platform to reproduce this issue I will send you a patch
+> > to trace what's going on here please help us debug it.
+> 
+> Sure, send it to both Nate and me.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
+I debugged the issue and Nate's fix is correct, the fact that you
+can't it hit it with mainline is just a matter of timing because it has
+to do with the CTX pointer value (we OR it with the existing value), so
+it may work or not depending on how the cdptr memory allocation
+pattern turns out to be (which explains why Nate and I can hit it with
+simple PCI device remove/add execution too).
 
-Techincally an IOMMU patch, but could possibly go via arm64 I suppose.
+So it is neither an ACPI nor an IOMMU probe deferral issue per-se,
+fix is already queued, so it is all good.
 
- arch/arm64/mm/dma-mapping.c |  1 -
- drivers/iommu/dma-iommu.c   | 10 ----------
- include/linux/dma-iommu.h   |  1 -
- 3 files changed, 12 deletions(-)
+What about USB stalls ?
 
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 88493b0ebd5e..351f7595cb3e 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -810,7 +810,6 @@ static struct dma_map_ops iommu_dma_ops = {
- 	.sync_sg_for_device = __iommu_sync_sg_for_device,
- 	.map_resource = iommu_dma_map_resource,
- 	.unmap_resource = iommu_dma_unmap_resource,
--	.dma_supported = iommu_dma_supported,
- 	.mapping_error = iommu_dma_mapping_error,
- };
- 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 1c9ac26e3b68..48d36ce59efb 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -734,16 +734,6 @@ void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
- 	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), handle);
- }
- 
--int iommu_dma_supported(struct device *dev, u64 mask)
--{
--	/*
--	 * 'Special' IOMMUs which don't have the same addressing capability
--	 * as the CPU will have to wait until we have some way to query that
--	 * before they'll be able to use this framework.
--	 */
--	return 1;
--}
--
- int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
- {
- 	return dma_addr == DMA_ERROR_CODE;
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index 3a846f9ec0fd..5725c94b1f12 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -67,7 +67,6 @@ dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
- 		size_t size, enum dma_data_direction dir, unsigned long attrs);
- void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
- 		size_t size, enum dma_data_direction dir, unsigned long attrs);
--int iommu_dma_supported(struct device *dev, u64 mask);
- int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
- 
- /* The DMA API isn't _quite_ the whole story, though... */
--- 
-2.11.0.dirty
+Thanks !
+Lorenzo
