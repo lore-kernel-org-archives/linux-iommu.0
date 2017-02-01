@@ -1,15 +1,11 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC 3/3] iommu/arm-smmu: detach DMA domain if driver is managing
-	iommu
-Date: Wed, 1 Feb 2017 10:30:17 -0500
-Message-ID: <CAF6AEGvXc1dUaqQ6=yp9XCZTv6y1r7jNJohrksO0=EJ1+UFY5g@mail.gmail.com>
-References: <20170201152341.29142-1-robdclark@gmail.com>
-	<20170201152341.29142-4-robdclark@gmail.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/dma: Remove bogus dma_supported() implementation
+Date: Wed,  1 Feb 2017 17:53:04 +0000
+Message-ID: <143b03c101e727cb156b26a907c8d7e390eb9114.1485971565.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170201152341.29142-4-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,65 +15,77 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 1, 2017 at 10:23 AM, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> Before the driver is probed, arm_smmu_add_device() helpfully attaches
-> an IOMMU_DOMAIN_DMA domain.  Which ofc does not support stalling, and
-> when the driver later attaches a domain that can_stall to an smmu that
-> can stall, the default _DMA domain prevents stalling from being enabled.
-> (And will cause further problems later)
->
-> One simple way to deal with this is simply toss the default _DMA domain
-> if the driver attaches it's own domain.
->
-> TODO maybe the tracking of list of attached domains should be done in
-> iommu core, so the detach can happen outside of group->mutex.
->
-> Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu.c | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
->
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 96a1be6..50bf135 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -1323,6 +1323,21 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->
->         smmu = fwspec_smmu(fwspec);
->
-> +       /*
-> +        * If driver is explicitly managing the iommu, detatch any previously
-> +        * attached _DMA domains.
-> +        *
-> +        * TODO maybe this logic should be in iommu_attach_device() so it can
-> +        * happen outside of holding group->mutex??
-> +        */
-> +       if (domain->type != IOMMU_DOMAIN_DMA) {
-> +               struct arm_smmu_domain *other_domain, *n;
-> +
-> +               list_for_each_entry_safe(other_domain, n, &smmu->domain_list, domain_node)
-> +                       if (other_domain->domain.type == IOMMU_DOMAIN_DMA)
-> +                               arm_smmu_detach_dev(&other_domain->domain, dev);
+Back when this was first written, dma_supported() was somewhat of a
+murky mess, with subtly different interpretations being relied upon in
+various places. The "does device X support DMA to address range Y?"
+uses assuming Y to be physical addresses, which motivated the current
+iommu_dma_supported() implementation and are alluded to in the comment
+therein, have since been cleaned up, leaving only the far less ambiguous
+"can device X drive address bits Y" usage internal to DMA API mask
+setting. As such, there is no reason to keep a slightly misleading
+callback which does nothing but duplicate the current default behaviour;
+we already constrain IOVA allocations to the iommu_domain aperture where
+necessary, so let's leave DMA mask business to architecture-specific
+code where it belongs.
 
-hmm, we might want to unhook dev->archdata.dma_ops here too..
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
 
-I'm thinking maybe on arm64 __generic_dma_ops() should fall back to
-swiotlb ops instead of dummy_ops if archdata.dma_ops is NULL, so that
-we could just set it to NULL here?
+Techincally an IOMMU patch, but could possibly go via arm64 I suppose.
 
-(Is there really any purpose for having the dummy-ops??)
+ arch/arm64/mm/dma-mapping.c |  1 -
+ drivers/iommu/dma-iommu.c   | 10 ----------
+ include/linux/dma-iommu.h   |  1 -
+ 3 files changed, 12 deletions(-)
 
-BR,
--R
-
-> +       }
-> +
->         if (WARN_ON(!list_empty(&smmu_domain->domain_node)))
->                 return -EINVAL;
->
-> --
-> 2.9.3
->
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 88493b0ebd5e..351f7595cb3e 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -810,7 +810,6 @@ static struct dma_map_ops iommu_dma_ops = {
+ 	.sync_sg_for_device = __iommu_sync_sg_for_device,
+ 	.map_resource = iommu_dma_map_resource,
+ 	.unmap_resource = iommu_dma_unmap_resource,
+-	.dma_supported = iommu_dma_supported,
+ 	.mapping_error = iommu_dma_mapping_error,
+ };
+ 
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 1c9ac26e3b68..48d36ce59efb 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -734,16 +734,6 @@ void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+ 	__iommu_dma_unmap(iommu_get_domain_for_dev(dev), handle);
+ }
+ 
+-int iommu_dma_supported(struct device *dev, u64 mask)
+-{
+-	/*
+-	 * 'Special' IOMMUs which don't have the same addressing capability
+-	 * as the CPU will have to wait until we have some way to query that
+-	 * before they'll be able to use this framework.
+-	 */
+-	return 1;
+-}
+-
+ int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+ {
+ 	return dma_addr == DMA_ERROR_CODE;
+diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+index 3a846f9ec0fd..5725c94b1f12 100644
+--- a/include/linux/dma-iommu.h
++++ b/include/linux/dma-iommu.h
+@@ -67,7 +67,6 @@ dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs);
+ void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs);
+-int iommu_dma_supported(struct device *dev, u64 mask);
+ int iommu_dma_mapping_error(struct device *dev, dma_addr_t dma_addr);
+ 
+ /* The DMA API isn't _quite_ the whole story, though... */
+-- 
+2.11.0.dirty
