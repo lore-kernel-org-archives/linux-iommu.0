@@ -1,117 +1,176 @@
-From: Rob Clark <robdclark@gmail.com>
-Subject: Re: [RFC 3/3] iommu/arm-smmu: detach DMA domain if driver is managing iommu
-Date: Thu, 2 Feb 2017 07:14:04 -0500
-Message-ID: <CAF6AEGu2eQTom9RwS3M9kjvgN=3Yn8h5ck-qDw0yYR729jj35w@mail.gmail.com>
-References: <20170201152341.29142-1-robdclark@gmail.com> <20170201152341.29142-4-robdclark@gmail.com>
- <CAF6AEGvXc1dUaqQ6=yp9XCZTv6y1r7jNJohrksO0=EJ1+UFY5g@mail.gmail.com> <010801d27d0a$488e8390$d9ab8ab0$@codeaurora.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3] arm64: Add support for DMA_ATTR_FORCE_CONTIGUOUS to
+	IOMMU
+Date: Thu, 2 Feb 2017 13:15:53 +0000
+Message-ID: <30026398-c5d3-1806-33b6-ba2b59ec2703@arm.com>
+References: <1485861178-22694-1-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <010801d27d0a$488e8390$d9ab8ab0$@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Sricharan <sricharan@codeaurora.org>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, Jordan Crouse <jcrouse@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1485861178-22694-1-git-send-email-geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 1, 2017 at 11:10 PM, Sricharan <sricharan@codeaurora.org> wrote:
-> Hi Rob,
->
->>On Wed, Feb 1, 2017 at 10:23 AM, Rob Clark <robdclark@gmail.com> wrote:
->>> Before the driver is probed, arm_smmu_add_device() helpfully attaches
->>> an IOMMU_DOMAIN_DMA domain.  Which ofc does not support stalling, and
->>> when the driver later attaches a domain that can_stall to an smmu that
->>> can stall, the default _DMA domain prevents stalling from being enabled.
->>> (And will cause further problems later)
->>>
->>> One simple way to deal with this is simply toss the default _DMA domain
->>> if the driver attaches it's own domain.
->>>
->>> TODO maybe the tracking of list of attached domains should be done in
->>> iommu core, so the detach can happen outside of group->mutex.
->>>
->>> Signed-off-by: Rob Clark <robdclark@gmail.com>
->>> ---
->>>  drivers/iommu/arm-smmu.c | 15 +++++++++++++++
->>>  1 file changed, 15 insertions(+)
->>>
->>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->>> index 96a1be6..50bf135 100644
->>> --- a/drivers/iommu/arm-smmu.c
->>> +++ b/drivers/iommu/arm-smmu.c
->>> @@ -1323,6 +1323,21 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->>>
->>>         smmu = fwspec_smmu(fwspec);
->>>
->>> +       /*
->>> +        * If driver is explicitly managing the iommu, detatch any previously
->>> +        * attached _DMA domains.
->>> +        *
->>> +        * TODO maybe this logic should be in iommu_attach_device() so it can
->>> +        * happen outside of holding group->mutex??
->>> +        */
->>> +       if (domain->type != IOMMU_DOMAIN_DMA) {
->>> +               struct arm_smmu_domain *other_domain, *n;
->>> +
->>> +               list_for_each_entry_safe(other_domain, n, &smmu->domain_list, domain_node)
->>> +                       if (other_domain->domain.type == IOMMU_DOMAIN_DMA)
->>> +                               arm_smmu_detach_dev(&other_domain->domain, dev);
->>
->
-> So the arm_smmu_detach_dev api is no more there and is removed now.
-> Also this will be a problem when multiple devices share the iommu, we end up
-> removing domains used by other devices. Should this not be done
-> per-device which does not want to use the DMA domain ?
+Hi Geert,
 
-I actually added the _detach fxn in the previous patch.
+On 31/01/17 11:12, Geert Uytterhoeven wrote:
+> Add support for allocating physically contiguous DMA buffers on arm64
+> systems with an IOMMU.  This can be useful when two or more devices
+> with different memory requirements are involved in buffer sharing.
+> 
+> Note that as this uses the CMA allocator, setting the
+> DMA_ATTR_FORCE_CONTIGUOUS attribute has a runtime-dependency on
+> CONFIG_DMA_CMA, just like on arm32.
+> 
+> For arm64 systems using swiotlb, no changes are needed to support the
+> allocation of physically contiguous DMA buffers:
+>   - swiotlb always uses physically contiguous buffers (up to
+>     IO_TLB_SEGSIZE = 128 pages),
+>   - arm64's __dma_alloc_coherent() already calls
+>     dma_alloc_from_contiguous() when CMA is available.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+> Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> ---
+> v3:
+>   - Add Acked-by,
+>   - Update comment to "one of _4_ things",
+>   - Call dma_alloc_from_contiguous() and iommu_dma_map_page() directly,
+>     as suggested by Robin Murphy,
+> 
+> v2:
+>   - New, handle dispatching in the arch (arm64) code, as requested by
+>     Robin Murphy.
+> ---
+>  arch/arm64/mm/dma-mapping.c | 63 ++++++++++++++++++++++++++++++++++-----------
+>  1 file changed, 48 insertions(+), 15 deletions(-)
+> 
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index 1d7d5d2881db7c19..b314256fcee028ce 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -577,20 +577,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+>  	 */
+>  	gfp |= __GFP_ZERO;
+>  
+> -	if (gfpflags_allow_blocking(gfp)) {
+> -		struct page **pages;
+> -		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
+> -
+> -		pages = iommu_dma_alloc(dev, iosize, gfp, attrs, ioprot,
+> -					handle, flush_page);
+> -		if (!pages)
+> -			return NULL;
+> -
+> -		addr = dma_common_pages_remap(pages, size, VM_USERMAP, prot,
+> -					      __builtin_return_address(0));
+> -		if (!addr)
+> -			iommu_dma_free(dev, pages, iosize, handle);
+> -	} else {
+> +	if (!gfpflags_allow_blocking(gfp)) {
+>  		struct page *page;
+>  		/*
+>  		 * In atomic context we can't remap anything, so we'll only
+> @@ -614,6 +601,45 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+>  				__free_from_pool(addr, size);
+>  			addr = NULL;
+>  		}
+> +	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+> +		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
+> +		struct page *page;
+> +
+> +		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
+> +						 get_order(size));
+> +		if (!page)
+> +			return NULL;
+> +
+> +		*handle = iommu_dma_map_page(dev, page, 0, iosize, ioprot);
+> +		if (iommu_dma_mapping_error(dev, *handle)) {
+> +			dma_release_from_contiguous(dev, page,
+> +						    size >> PAGE_SHIFT);
+> +			return NULL;
+> +		}
+> +		if (!coherent)
 
-But I think managing the iommu explicitly is not going to work if
-multiple devices share the same pagetable.  I think that is a scenario
-that should never happen with the gpu.
+I think we might be able to return early if coherent here, as the
+non-IOMMU __dma_alloc() does. We still need a (cacheable) remap in the
+normal coherent case to make whatever pages iommu_dma_alloc() scrapes
+together appear contiguous, but that obviously isn't a concern here.
+However, I'm not entirely confident that that wouldn't break (or at
+least further complicate) the already-horrible "what the hell is this?"
+logic in __iommu_free_attrs() below, so I'm inclined to leave it as-is.
 
->>hmm, we might want to unhook dev->archdata.dma_ops here too..
->>
->>I'm thinking maybe on arm64 __generic_dma_ops() should fall back to
->>swiotlb ops instead of dummy_ops if archdata.dma_ops is NULL, so that
->>we could just set it to NULL here?
->>
->
-> hmm, both not attaching the default dma domain and not setting the dma_ops
-> is tried in this series as well [1]
->
-> [1] https://www.spinics.net/lists/arm-kernel/msg556081.html
+> +			__dma_flush_area(page_to_virt(page), iosize);
+> +
+> +		addr = dma_common_contiguous_remap(page, size, VM_USERMAP,
+> +						   prot,
+> +						   __builtin_return_address(0));
+> +		if (!addr) {
+> +			iommu_dma_unmap_page(dev, *handle, iosize, 0, attrs);
+> +			dma_release_from_contiguous(dev, page,
+> +						    size >> PAGE_SHIFT);
+> +		}
+> +	} else {
+> +		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
+> +		struct page **pages;
+> +
+> +		pages = iommu_dma_alloc(dev, iosize, gfp, attrs, ioprot,
+> +					handle, flush_page);
+> +		if (!pages)
+> +			return NULL;
+> +
+> +		addr = dma_common_pages_remap(pages, size, VM_USERMAP, prot,
+> +					      __builtin_return_address(0));
+> +		if (!addr)
+> +			iommu_dma_free(dev, pages, iosize, handle);
+>  	}
+>  	return addr;
+>  }
+> @@ -625,7 +651,8 @@ static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+>  
+>  	size = PAGE_ALIGN(size);
+>  	/*
+> -	 * @cpu_addr will be one of 3 things depending on how it was allocated:
+> +	 * @cpu_addr will be one of 4 things depending on how it was allocated:
+> +	 * - A remapped array of pages for contiguous allocations.
+>  	 * - A remapped array of pages from iommu_dma_alloc(), for all
+>  	 *   non-atomic allocations.
+>  	 * - A non-cacheable alias from the atomic pool, for atomic
+> @@ -637,6 +664,12 @@ static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+>  	if (__in_atomic_pool(cpu_addr, size)) {
+>  		iommu_dma_unmap_page(dev, handle, iosize, 0, 0);
+>  		__free_from_pool(cpu_addr, size);
+> +	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+> +		struct page *page = phys_to_page(dma_to_phys(dev, handle));
 
-I'll have a look at that series later this morning.
+handle is the IOVA returned by the original iommu_dma_map_page() call,
+so I can't see this working very well. I was about to naively suggest
+virt_to_page(cpu_addr), except of course cpu_addr isn't going to be a
+linear map address :(
 
->>(Is there really any purpose for having the dummy-ops??)
->>
->
-> To enforce setting arch_setup_dma_ops for device so that the
-> devices can do cache coherent transactions, otherwise disable the dma
-> capability of the device. I see that this was introduced as a part of
-> making ACPI_CCA_REQUIRED to be set in arm64 and later
-> generalized.
+I think that works out to another argument in favour of not trying to
+skip the remap when coherent, since that would mean we can consistently
+rely on vmalloc_to_page(cpu_addr) here, and everything *should* be OK
+(crosses fingers...)
 
-hmm, looks like all the dummy ops just fail.  I'm not entirely sure
-how that can be useful.  But I'll poke around the git history.  Seems
-like just always falling back to swiotlb op's would be the equivalent
-to armv7 falling back to arm_dma_ops..
+Robin.
 
-BR,
--R
-
->
-> Regards,
->  Sricharan
->
->>BR,
->>-R
->>
->>> +       }
->>> +
->>>         if (WARN_ON(!list_empty(&smmu_domain->domain_node)))
->>>                 return -EINVAL;
->>>
->>> --
->>> 2.9.3
->>>
->
+> +
+> +		iommu_dma_unmap_page(dev, handle, iosize, 0, attrs);
+> +		dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT);
+> +		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
+>  	} else if (is_vmalloc_addr(cpu_addr)){
+>  		struct vm_struct *area = find_vm_area(cpu_addr);
+>  
+> 
