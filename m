@@ -1,18 +1,17 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 0/5] Implement SMMU passthrough using the default domain
-Date: Thu, 2 Feb 2017 16:10:47 +0000
-Message-ID: <20170202161047.GG13839@arm.com>
-References: <1484849955-1871-1-git-send-email-will.deacon@arm.com>
-	<010801d27654$47b7e450$d727acf0$@codeaurora.org>
-	<20170126171857.GE27598@8bytes.org>
-	<CAF6AEGtfrrwVZ_W86_HqVsiqfcM=XFa+g2LECFYQJmvv7-JSqQ@mail.gmail.com>
-	<012501d27d6b$5e396c80$1aac4580$@codeaurora.org>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC 3/3] iommu/arm-smmu: detach DMA domain if driver is managing
+	iommu
+Date: Thu, 2 Feb 2017 11:20:54 -0500
+Message-ID: <CAF6AEGvVpySdP2LEPRVdG0_DPiGtC-8qxqKNfpGDMQ8Y0No7NQ@mail.gmail.com>
+References: <20170201152341.29142-1-robdclark@gmail.com>
+	<20170201152341.29142-4-robdclark@gmail.com>
+	<CAF6AEGvXc1dUaqQ6=yp9XCZTv6y1r7jNJohrksO0=EJ1+UFY5g@mail.gmail.com>
+	<010801d27d0a$488e8390$d9ab8ab0$@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <012501d27d6b$5e396c80$1aac4580$@codeaurora.org>
+In-Reply-To: <010801d27d0a$488e8390$d9ab8ab0$@codeaurora.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,66 +22,81 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 02, 2017 at 09:15:19PM +0530, Sricharan wrote:
+On Wed, Feb 1, 2017 at 11:10 PM, Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
 > Hi Rob,
-> 
-> >-----Original Message-----
-> >From: linux-arm-kernel [mailto:linux-arm-kernel-bounces-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org] On Behalf Of Rob Clark
-> >Sent: Thursday, February 02, 2017 8:33 PM
-> >To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-> >Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>; linux-arm-
-> >kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-> >Subject: Re: [PATCH 0/5] Implement SMMU passthrough using the default domain
-> >
-> >On Thu, Jan 26, 2017 at 12:18 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> >> On Tue, Jan 24, 2017 at 08:42:23PM +0530, Sricharan wrote:
-> >>> Thanks for this series. We had a case with the GPU.
-> >>> The GPU's iommu was setup by kernel and the GPU
-> >>> also does dynamic updates for on-the-fly switching between
-> >>> process pagetables.  GPU driver was not using DMA domain and
-> >>> the GPU's firmware was always expecting to run out  of contextbank
-> >>>  '0' (although not correct) , which was not the case after the DMA domain
-> >>> was made default  as '0' was getting allocated for DMA domain and
-> >>> there were concerns about reusing the DMA domain as well.
-> >>> Now with this series, looks there is an way out of that that can be tried.
-> >>>
-> >>> So should the default domain not be per device specific selectable ?
-> >>
-> >> Note that iommu-drivers can request direct-mapping for any given device
-> >> on its initializtion. This is used on x86 for devices that need a 1-1
-> >> mapping for some reason.
-> >>
-> >> Also device drivers can use the iommu-api and assign their own domain to
-> >> a device, which allows them to manage the dma address space on their
-> >> own.
-> >
-> >Part of the problem is that dev->archdata.dma_ops gets wired up to
-> >iommu_dma_ops.  Which isn't so bad on it's own, except that cache ops
-> >are not exposed to drivers, forcing us to use dma-mapping API
-> >(dma_map_sg, etc) for cache operations.
-> >
-> >Possibly we should just expose cache op's to drivers bypass this abuse
-> >of dma-mapping.
-> >
-> [1], with this, when the default domain in not DOMAIN_DMA, then
-> dev->archdata.dma_ops is not set to iommu_dma_ops , instead remains
-> to be swiotlb_ops. Is that not correct for gpu's unmanaged domain case ?
-> 
-> https://www.spinics.net/lists/arm-kernel/msg556209.html
-> 
-> >btw, Will, we definitely want this to *not* rely on kcmdline for the
-> >gpu with it's own private iommu case..
-> 
-> Ya, that changes behavior for all devices and some might want 
-> DMA_DOMAIN and some UNMANAGED.
+>
+>>On Wed, Feb 1, 2017 at 10:23 AM, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+>>> Before the driver is probed, arm_smmu_add_device() helpfully attaches
+>>> an IOMMU_DOMAIN_DMA domain.  Which ofc does not support stalling, and
+>>> when the driver later attaches a domain that can_stall to an smmu that
+>>> can stall, the default _DMA domain prevents stalling from being enabled.
+>>> (And will cause further problems later)
+>>>
+>>> One simple way to deal with this is simply toss the default _DMA domain
+>>> if the driver attaches it's own domain.
+>>>
+>>> TODO maybe the tracking of list of attached domains should be done in
+>>> iommu core, so the detach can happen outside of group->mutex.
+>>>
+>>> Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>>> ---
+>>>  drivers/iommu/arm-smmu.c | 15 +++++++++++++++
+>>>  1 file changed, 15 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>>> index 96a1be6..50bf135 100644
+>>> --- a/drivers/iommu/arm-smmu.c
+>>> +++ b/drivers/iommu/arm-smmu.c
+>>> @@ -1323,6 +1323,21 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>>>
+>>>         smmu = fwspec_smmu(fwspec);
+>>>
+>>> +       /*
+>>> +        * If driver is explicitly managing the iommu, detatch any previously
+>>> +        * attached _DMA domains.
+>>> +        *
+>>> +        * TODO maybe this logic should be in iommu_attach_device() so it can
+>>> +        * happen outside of holding group->mutex??
+>>> +        */
+>>> +       if (domain->type != IOMMU_DOMAIN_DMA) {
+>>> +               struct arm_smmu_domain *other_domain, *n;
+>>> +
+>>> +               list_for_each_entry_safe(other_domain, n, &smmu->domain_list, domain_node)
+>>> +                       if (other_domain->domain.type == IOMMU_DOMAIN_DMA)
+>>> +                               arm_smmu_detach_dev(&other_domain->domain, dev);
+>>
+>
+> So the arm_smmu_detach_dev api is no more there and is removed now.
+> Also this will be a problem when multiple devices share the iommu, we end up
+> removing domains used by other devices. Should this not be done
+> per-device which does not want to use the DMA domain ?
+>
+>>hmm, we might want to unhook dev->archdata.dma_ops here too..
+>>
+>>I'm thinking maybe on arm64 __generic_dma_ops() should fall back to
+>>swiotlb ops instead of dummy_ops if archdata.dma_ops is NULL, so that
+>>we could just set it to NULL here?
+>>
+>
+> hmm, both not attaching the default dma domain and not setting the dma_ops
+> is tried in this series as well [1]
+>
+> [1] https://www.spinics.net/lists/arm-kernel/msg556081.html
+>
+>>(Is there really any purpose for having the dummy-ops??)
+>>
+>
+> To enforce setting arch_setup_dma_ops for device so that the
+> devices can do cache coherent transactions, otherwise disable the dma
+> capability of the device. I see that this was introduced as a part of
+> making ACPI_CCA_REQUIRED to be set in arm64 and later
+> generalized.
 
-My patch changes the *default* domain. When would this ever be UNMANAGED?
+hmm, maybe fallback to swiotlb ops vs dummy ops should depend on
+whether it is an ACPI system or not..
 
-If you're using an UNMANAGED domain, I think you need to take care of the
-DMA ops yourself. There are likely missing functions to do that, but they
-should be added in a separate series.
-
-Will
+BR,
+-R
