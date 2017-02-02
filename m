@@ -1,81 +1,63 @@
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V2 1/3] iommu/arm-smmu: Add pm_runtime/sleep ops
-Date: Thu, 2 Feb 2017 17:42:18 +0000
-Message-ID: <20170202174218.GO31394@leverpostej>
-References: <1486055420-19671-1-git-send-email-sricharan@codeaurora.org>
- <1486055420-19671-2-git-send-email-sricharan@codeaurora.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH v3] arm64: Add support for DMA_ATTR_FORCE_CONTIGUOUS to IOMMU
+Date: Thu, 2 Feb 2017 19:35:39 +0100
+Message-ID: <CAMuHMdVDPP64zdXef095D=Ji+ZuY39mQg54e_4SKH0TgZMhKwQ@mail.gmail.com>
+References: <1485861178-22694-1-git-send-email-geert+renesas@glider.be> <30026398-c5d3-1806-33b6-ba2b59ec2703@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1486055420-19671-2-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, mathieu.poirier-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <30026398-c5d3-1806-33b6-ba2b59ec2703@arm.com>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Magnus Damm <magnus.damm@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hi Robin,
 
-On Thu, Feb 02, 2017 at 10:40:18PM +0530, Sricharan R wrote:
-> +- clock-names:    Should be a pair of "smmu_iface_clk" and "smmu_bus_clk"
-> +                  required for smmu's register group access and interface
-> +                  clk for the smmu's underlying bus access.
-> +
-> +- clocks:         Phandles for respective clocks described by clock-names.
+On Thu, Feb 2, 2017 at 2:15 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 31/01/17 11:12, Geert Uytterhoeven wrote:
+>> Add support for allocating physically contiguous DMA buffers on arm64
+>> systems with an IOMMU.  This can be useful when two or more devices
+>> with different memory requirements are involved in buffer sharing.
+>>
+>> Note that as this uses the CMA allocator, setting the
+>> DMA_ATTR_FORCE_CONTIGUOUS attribute has a runtime-dependency on
+>> CONFIG_DMA_CMA, just like on arm32.
 
-Which SMMU implementations are those clock-names valid for?
+>> @@ -625,7 +651,8 @@ static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+>>
+>>       size = PAGE_ALIGN(size);
+>>       /*
+>> -      * @cpu_addr will be one of 3 things depending on how it was allocated:
+>> +      * @cpu_addr will be one of 4 things depending on how it was allocated:
+>> +      * - A remapped array of pages for contiguous allocations.
+>>        * - A remapped array of pages from iommu_dma_alloc(), for all
+>>        *   non-atomic allocations.
+>>        * - A non-cacheable alias from the atomic pool, for atomic
+>> @@ -637,6 +664,12 @@ static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+>>       if (__in_atomic_pool(cpu_addr, size)) {
+>>               iommu_dma_unmap_page(dev, handle, iosize, 0, 0);
+>>               __free_from_pool(cpu_addr, size);
+>> +     } else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+>> +             struct page *page = phys_to_page(dma_to_phys(dev, handle));
+>
+> handle is the IOVA returned by the original iommu_dma_map_page() call,
+> so I can't see this working very well. I was about to naively suggest
+> virt_to_page(cpu_addr), except of course cpu_addr isn't going to be a
+> linear map address :(
 
-The SMMU architecture specifications do not architect the clocks, which
-are implemementation-specific.
+You're right: upon closer look, this will free the wrong pages in the CMA
+allocator. Funny, that the system didn't scream...
 
-AFAICT, this doesn't match MMU-400 or MMU-500.
+Thanks for noticing, I'll look into fixing that...
 
-> +static int arm_smmu_init_clocks(struct arm_smmu_device *smmu)
-> +{
-> +	const char *cname;
-> +	struct property *prop;
-> +	int i = 0;
-> +	struct device *dev = smmu->dev;
-> +
-> +	smmu->num_clocks =
-> +		of_property_count_strings(dev->of_node, "clock-names");
-> +
-> +	if (smmu->num_clocks < 1)
-> +		return 0;
-> +
-> +	smmu->clocks = devm_kzalloc(dev,
-> +				    sizeof(*smmu->clocks) * smmu->num_clocks,
-> +				    GFP_KERNEL);
-> +
-> +	if (!smmu->clocks) {
-> +		dev_err(dev, "Failed to allocate memory for clocks\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	of_property_for_each_string(dev->of_node, "clock-names", prop, cname) {
-> +		struct clk *c = devm_clk_get(dev, cname);
-> +
-> +		if (IS_ERR(c)) {
-> +			dev_err(dev, "Couldn't get clock: %s", cname);
-> +			return -EPROBE_DEFER;
-> +		}
-> +
-> +		smmu->clocks[i] = c;
-> +		++i;
-> +	}
-> +
-> +	return 0;
-> +}
+Gr{oetje,eeting}s,
 
-I am very much not a fan of grabbing hold of resources that don't
-necessarily match the binding, and we likely don't understand the use
-of.
+                        Geert
 
-Either we know the names, and can manage them, or we don't, and cannot.
-
-Thanks,
-Mark.
 --
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
