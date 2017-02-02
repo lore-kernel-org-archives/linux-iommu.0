@@ -1,102 +1,50 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC 3/3] iommu/arm-smmu: detach DMA domain if driver is managing
-	iommu
-Date: Thu, 2 Feb 2017 11:20:54 -0500
-Message-ID: <CAF6AEGvVpySdP2LEPRVdG0_DPiGtC-8qxqKNfpGDMQ8Y0No7NQ@mail.gmail.com>
-References: <20170201152341.29142-1-robdclark@gmail.com>
-	<20170201152341.29142-4-robdclark@gmail.com>
-	<CAF6AEGvXc1dUaqQ6=yp9XCZTv6y1r7jNJohrksO0=EJ1+UFY5g@mail.gmail.com>
-	<010801d27d0a$488e8390$d9ab8ab0$@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <010801d27d0a$488e8390$d9ab8ab0$@codeaurora.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+From: Sricharan R <sricharan@codeaurora.org>
+Subject: [PATCH V2 0/3] iommu/arm-smmu: Add runtime pm/sleep support
+Date: Thu,  2 Feb 2017 22:40:17 +0530
+Message-ID: <1486055420-19671-1-git-send-email-sricharan@codeaurora.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, sboyd@codeaurora.org, devicetree@vger.kernel.org, robh+dt@kernel.org, mathieu.poirier@linaro.org
+Cc: sricharan@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 1, 2017 at 11:10 PM, Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
-> Hi Rob,
->
->>On Wed, Feb 1, 2017 at 10:23 AM, Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->>> Before the driver is probed, arm_smmu_add_device() helpfully attaches
->>> an IOMMU_DOMAIN_DMA domain.  Which ofc does not support stalling, and
->>> when the driver later attaches a domain that can_stall to an smmu that
->>> can stall, the default _DMA domain prevents stalling from being enabled.
->>> (And will cause further problems later)
->>>
->>> One simple way to deal with this is simply toss the default _DMA domain
->>> if the driver attaches it's own domain.
->>>
->>> TODO maybe the tracking of list of attached domains should be done in
->>> iommu core, so the detach can happen outside of group->mutex.
->>>
->>> Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
->>> ---
->>>  drivers/iommu/arm-smmu.c | 15 +++++++++++++++
->>>  1 file changed, 15 insertions(+)
->>>
->>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->>> index 96a1be6..50bf135 100644
->>> --- a/drivers/iommu/arm-smmu.c
->>> +++ b/drivers/iommu/arm-smmu.c
->>> @@ -1323,6 +1323,21 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->>>
->>>         smmu = fwspec_smmu(fwspec);
->>>
->>> +       /*
->>> +        * If driver is explicitly managing the iommu, detatch any previously
->>> +        * attached _DMA domains.
->>> +        *
->>> +        * TODO maybe this logic should be in iommu_attach_device() so it can
->>> +        * happen outside of holding group->mutex??
->>> +        */
->>> +       if (domain->type != IOMMU_DOMAIN_DMA) {
->>> +               struct arm_smmu_domain *other_domain, *n;
->>> +
->>> +               list_for_each_entry_safe(other_domain, n, &smmu->domain_list, domain_node)
->>> +                       if (other_domain->domain.type == IOMMU_DOMAIN_DMA)
->>> +                               arm_smmu_detach_dev(&other_domain->domain, dev);
->>
->
-> So the arm_smmu_detach_dev api is no more there and is removed now.
-> Also this will be a problem when multiple devices share the iommu, we end up
-> removing domains used by other devices. Should this not be done
-> per-device which does not want to use the DMA domain ?
->
->>hmm, we might want to unhook dev->archdata.dma_ops here too..
->>
->>I'm thinking maybe on arm64 __generic_dma_ops() should fall back to
->>swiotlb ops instead of dummy_ops if archdata.dma_ops is NULL, so that
->>we could just set it to NULL here?
->>
->
-> hmm, both not attaching the default dma domain and not setting the dma_ops
-> is tried in this series as well [1]
->
-> [1] https://www.spinics.net/lists/arm-kernel/msg556081.html
->
->>(Is there really any purpose for having the dummy-ops??)
->>
->
-> To enforce setting arch_setup_dma_ops for device so that the
-> devices can do cache coherent transactions, otherwise disable the dma
-> capability of the device. I see that this was introduced as a part of
-> making ACPI_CCA_REQUIRED to be set in arm64 and later
-> generalized.
+This series provides the support for turning on the arm-smmu's
+clocks/power domains using runtime pm. This is done using the
+recently introduced device links patches, which lets the symmu's
+runtime to follow the master's runtime pm, so the smmu remains
+powered only when the masters use it.
 
-hmm, maybe fallback to swiotlb ops vs dummy ops should depend on
-whether it is an ACPI system or not..
+Took some reference from the exynos runtime patches [2].
+Tested this with MDP, GPU, VENUS devices on apq8096-db820c board.
 
-BR,
--R
+Previous version of the patchset [1].
+
+[V2]
+   * Split the patches little differently.
+
+   * Addressed comments.
+
+   * Removed the patch #4 [3] from previous post
+     for arm-smmu context save restore. Planning to
+     post this separately after reworking/addressing Robin's
+     feedback.
+
+   * Reversed the sequence to disable clocks than enabling.
+     This was required for those cases where the 
+     clocks are populated in a dependent order from DT.
+
+[1] https://www.spinics.net/lists/linux-arm-msm/msg23870.html
+[2] https://lkml.org/lkml/2016/10/20/70
+[3] https://patchwork.kernel.org/patch/9389717/
+
+Sricharan R (3):
+  iommu/arm-smmu: Add pm_runtime/sleep ops
+  iommu/arm-smmu: Invoke pm_runtime during probe, add/remove device
+  iommu/arm-smmu: Add the device_link between masters and smmu
+
+ .../devicetree/bindings/iommu/arm,smmu.txt         |  16 +++
+ drivers/iommu/arm-smmu.c                           | 143 ++++++++++++++++++++-
+ 2 files changed, 158 insertions(+), 1 deletion(-)
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
