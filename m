@@ -1,63 +1,60 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v3] arm64: Add support for DMA_ATTR_FORCE_CONTIGUOUS to IOMMU
-Date: Thu, 2 Feb 2017 19:35:39 +0100
-Message-ID: <CAMuHMdVDPP64zdXef095D=Ji+ZuY39mQg54e_4SKH0TgZMhKwQ@mail.gmail.com>
-References: <1485861178-22694-1-git-send-email-geert+renesas@glider.be> <30026398-c5d3-1806-33b6-ba2b59ec2703@arm.com>
+From: Nate Watterson <nwatters@codeaurora.org>
+Subject: Re: [PATCH V7 08/11] drivers: acpi: Handle IOMMU lookup failure with
+ deferred probing or error
+Date: Thu, 02 Feb 2017 14:01:52 -0500
+Message-ID: <3f4aa4c1e660c7e62256de9ca64fc822@codeaurora.org>
+References: <f2370671-ece8-fbee-de19-350dd625088f@codeaurora.org>
+ <93e79759-d614-9b36-d5ab-63e8eb725009@arm.com>
+ <14751205-f034-7f0d-442a-854c3909425c@codeaurora.org>
+ <5ba9f366d6e25397cdef8ad95b49e199@codeaurora.org>
+ <175a3798-b824-ef1a-e112-9f6f472973ae@codeaurora.org>
+ <20170130143851.GJ16461@arm.com>
+ <b2e50c17de156341deab9fb8e91a8dec@codeaurora.org>
+ <1e048aff-0d77-b9f2-ebf8-2ba315b90ca7@codeaurora.org>
+ <20170130165124.GA11712@red-moon>
+ <f401e27e-d619-0eec-2401-50d8e2fc2f0f@codeaurora.org>
+ <20170201185230.GA1922@red-moon>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <30026398-c5d3-1806-33b6-ba2b59ec2703@arm.com>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Magnus Damm <magnus.damm@gmail.com>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>, iommu@lists.linux-foundation.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170201185230.GA1922@red-moon>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Sinan Kaya <okaya@codeaurora.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Sricharan R <sricharan@codeaurora.org>, linux-arm-msm@vger.kernel.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, bhelgaas@google.com, Tomasz Nowicki <tn@semihalf.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On 2017-02-01 13:52, Lorenzo Pieralisi wrote:
+> 
+> I debugged the issue and Nate's fix is correct, the fact that you
+> can't it hit it with mainline is just a matter of timing because it has
+> to do with the CTX pointer value (we OR it with the existing value), so
+> it may work or not depending on how the cdptr memory allocation
+> pattern turns out to be (which explains why Nate and I can hit it with
+> simple PCI device remove/add execution too).
+> 
+> So it is neither an ACPI nor an IOMMU probe deferral issue per-se,
+> fix is already queued, so it is all good.
+> 
+> What about USB stalls ?
+Our fault. The USB controller was getting 48-bit IOVAs, but the
+bus it sits on only supports 44-bits so the controller's DMA
+transactions ended up targeting addresses that were never mapped.
 
-On Thu, Feb 2, 2017 at 2:15 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 31/01/17 11:12, Geert Uytterhoeven wrote:
->> Add support for allocating physically contiguous DMA buffers on arm64
->> systems with an IOMMU.  This can be useful when two or more devices
->> with different memory requirements are involved in buffer sharing.
->>
->> Note that as this uses the CMA allocator, setting the
->> DMA_ATTR_FORCE_CONTIGUOUS attribute has a runtime-dependency on
->> CONFIG_DMA_CMA, just like on arm32.
+It started working once I applied the iort/dma-mapping patches I
+sent out earlier this week that use the iort memory_address_limit
+field to check if a dma_mask is sane.
 
->> @@ -625,7 +651,8 @@ static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
->>
->>       size = PAGE_ALIGN(size);
->>       /*
->> -      * @cpu_addr will be one of 3 things depending on how it was allocated:
->> +      * @cpu_addr will be one of 4 things depending on how it was allocated:
->> +      * - A remapped array of pages for contiguous allocations.
->>        * - A remapped array of pages from iommu_dma_alloc(), for all
->>        *   non-atomic allocations.
->>        * - A non-cacheable alias from the atomic pool, for atomic
->> @@ -637,6 +664,12 @@ static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
->>       if (__in_atomic_pool(cpu_addr, size)) {
->>               iommu_dma_unmap_page(dev, handle, iosize, 0, 0);
->>               __free_from_pool(cpu_addr, size);
->> +     } else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
->> +             struct page *page = phys_to_page(dma_to_phys(dev, handle));
->
-> handle is the IOVA returned by the original iommu_dma_map_page() call,
-> so I can't see this working very well. I was about to naively suggest
-> virt_to_page(cpu_addr), except of course cpu_addr isn't going to be a
-> linear map address :(
+Sorry for the false alarm.
+Nate
+> 
+> Thanks !
+> Lorenzo
 
-You're right: upon closer look, this will free the wrong pages in the CMA
-allocator. Funny, that the system didn't scream...
-
-Thanks for noticing, I'll look into fixing that...
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+Qualcomm Datacenter Technologies, Inc. on behalf of Qualcomm 
+Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a 
+Linux
+Foundation Collaborative Project.
