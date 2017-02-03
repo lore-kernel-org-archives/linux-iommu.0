@@ -1,79 +1,42 @@
-From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: [bug report] iommu: iommu_get_group_resv_regions
-Date: Fri, 3 Feb 2017 12:14:40 +0300
-Message-ID: <20170203091440.GA23426@mwanda>
+From: Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH 1/1] iommu: to avoid an unnecessary assignment
+Date: Fri, 3 Feb 2017 17:35:02 +0800
+Message-ID: <1486114502-10984-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Zefan Li <lizefan@huawei.com>, Xinwei Hu <huxinwei@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Hanjun Guo <guohanjun@huawei.com>, Zhen Lei <thunder.leizhen@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hello Eric Auger,
+Move the assignment statement into if branch above, where it only
+needs to be.
 
-The patch 6c65fb318e8b: "iommu: iommu_get_group_resv_regions" from
-Jan 19, 2017, leads to the following static checker warning:
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ drivers/iommu/iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-	drivers/iommu/iommu.c:215 iommu_insert_device_resv_regions()
-	error: uninitialized symbol 'ret'.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index dbe7f65..b231400 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1714,13 +1714,14 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
+ 		fwspec = krealloc(dev->iommu_fwspec, size, GFP_KERNEL);
+ 		if (!fwspec)
+ 			return -ENOMEM;
++
++		dev->iommu_fwspec = fwspec;
+ 	}
 
-drivers/iommu/iommu.c
-   203  static int
-   204  iommu_insert_device_resv_regions(struct list_head *dev_resv_regions,
-   205                                   struct list_head *group_resv_regions)
-   206  {
-   207          struct iommu_resv_region *entry;
-   208          int ret;
-   209  
-   210          list_for_each_entry(entry, dev_resv_regions, list) {
-   211                  ret = iommu_insert_resv_region(entry, group_resv_regions);
-   212                  if (ret)
-   213                          break;
-   214          }
-   215          return ret;
+ 	for (i = 0; i < num_ids; i++)
+ 		fwspec->ids[fwspec->num_ids + i] = ids[i];
 
-On the one hand, it probably doesn't make sense that the dev_resv_regions
-would ever be empty, but on the other hand, there some code that assumes
-it is possible.  What I mean is that iommu_get_resv_regions() can
-basically do nothing if ->get_resv_regions() isn't implemented.
-
-I guess we should probably set ret = -EINVAL here?
-
-   216  }
-   217  
-   218  int iommu_get_group_resv_regions(struct iommu_group *group,
-   219                                   struct list_head *head)
-   220  {
-   221          struct iommu_device *device;
-   222          int ret = 0;
-   223  
-   224          mutex_lock(&group->mutex);
-   225          list_for_each_entry(device, &group->devices, list) {
-   226                  struct list_head dev_resv_regions;
-   227  
-   228                  INIT_LIST_HEAD(&dev_resv_regions);
-   229                  iommu_get_resv_regions(device->dev, &dev_resv_regions);
-   230                  ret = iommu_insert_device_resv_regions(&dev_resv_regions, head);
-   231                  iommu_put_resv_regions(device->dev, &dev_resv_regions);
-   232                  if (ret)
-   233                          break;
-   234          }
-   235          mutex_unlock(&group->mutex);
-   236          return ret;
-   237  }
-   238  EXPORT_SYMBOL_GPL(iommu_get_group_resv_regions);
-
-
-regards,
-dan carpenter
+ 	fwspec->num_ids += num_ids;
+-	dev->iommu_fwspec = fwspec;
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
+--
+2.5.0
