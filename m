@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 03/10] iommu: Introduce new 'struct iommu_device'
-Date: Fri,  3 Feb 2017 16:17:41 +0100
-Message-ID: <1486135068-23994-4-git-send-email-joro@8bytes.org>
+Subject: [PATCH 04/10] iommu: Add sysfs bindings for struct iommu_device
+Date: Fri,  3 Feb 2017 16:17:42 +0100
+Message-ID: <1486135068-23994-5-git-send-email-joro@8bytes.org>
 References: <1486135068-23994-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,214 +23,313 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This struct represents one hardware iommu in the iommu core
-code. For now it only has the iommu-ops associated with it,
-but that will be extended soon.
+There is currently support for iommu sysfs bindings, but
+those need to be implemented in the IOMMU drivers. Add a
+more generic version of this by adding a struct device to
+struct iommu_device and use that for the sysfs bindings.
 
-The register/unregister interface is also added, as well as
-making use of it in the Intel and AMD IOMMU drivers.
+Also convert the AMD and Intel IOMMU driver to make use of
+it.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       |  4 ++--
- drivers/iommu/amd_iommu_init.c  |  5 +++++
- drivers/iommu/amd_iommu_types.h |  3 +++
- drivers/iommu/dmar.c            |  9 +++++++++
- drivers/iommu/intel-iommu.c     |  4 ++--
- drivers/iommu/iommu.c           | 19 +++++++++++++++++++
- include/linux/intel-iommu.h     |  2 ++
- include/linux/iommu.h           | 14 ++++++++++++++
- 8 files changed, 56 insertions(+), 4 deletions(-)
+ drivers/iommu/amd_iommu.c       | 14 ++++++++-----
+ drivers/iommu/amd_iommu_init.c  |  6 ++----
+ drivers/iommu/amd_iommu_types.h |  3 ---
+ drivers/iommu/dmar.c            | 13 +++++-------
+ drivers/iommu/intel-iommu.c     | 15 ++++++++------
+ drivers/iommu/iommu-sysfs.c     | 45 +++++++++++++++++------------------------
+ include/linux/intel-iommu.h     |  1 -
+ include/linux/iommu.h           | 11 ++++++----
+ 8 files changed, 50 insertions(+), 58 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 3ef0f42..7c11c36 100644
+index 7c11c36..a584ac2 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -112,7 +112,7 @@ struct flush_queue {
-  * Domain for untranslated devices - only allocated
-  * if iommu=pt passed on kernel cmd line.
-  */
--static const struct iommu_ops amd_iommu_ops;
-+const struct iommu_ops amd_iommu_ops;
+@@ -445,6 +445,7 @@ static void init_iommu_group(struct device *dev)
+ static int iommu_init_device(struct device *dev)
+ {
+ 	struct iommu_dev_data *dev_data;
++	struct amd_iommu *iommu;
+ 	int devid;
  
- static ATOMIC_NOTIFIER_HEAD(ppr_notifier);
- int amd_iommu_max_glx_val = -1;
-@@ -3217,7 +3217,7 @@ static void amd_iommu_apply_dm_region(struct device *dev,
- 	WARN_ON_ONCE(reserve_iova(&dma_dom->iovad, start, end) == NULL);
+ 	if (dev->archdata.iommu)
+@@ -454,6 +455,8 @@ static int iommu_init_device(struct device *dev)
+ 	if (devid < 0)
+ 		return devid;
+ 
++	iommu = amd_iommu_rlookup_table[devid];
++
+ 	dev_data = find_dev_data(devid);
+ 	if (!dev_data)
+ 		return -ENOMEM;
+@@ -469,8 +472,7 @@ static int iommu_init_device(struct device *dev)
+ 
+ 	dev->archdata.iommu = dev_data;
+ 
+-	iommu_device_link(amd_iommu_rlookup_table[dev_data->devid]->iommu_dev,
+-			  dev);
++	iommu_device_link(&iommu->iommu.dev, dev);
+ 
+ 	return 0;
  }
+@@ -495,13 +497,16 @@ static void iommu_ignore_device(struct device *dev)
  
--static const struct iommu_ops amd_iommu_ops = {
-+const struct iommu_ops amd_iommu_ops = {
- 	.capable = amd_iommu_capable,
- 	.domain_alloc = amd_iommu_domain_alloc,
- 	.domain_free  = amd_iommu_domain_free,
+ static void iommu_uninit_device(struct device *dev)
+ {
+-	int devid;
+ 	struct iommu_dev_data *dev_data;
++	struct amd_iommu *iommu;
++	int devid;
+ 
+ 	devid = get_device_id(dev);
+ 	if (devid < 0)
+ 		return;
+ 
++	iommu = amd_iommu_rlookup_table[devid];
++
+ 	dev_data = search_dev_data(devid);
+ 	if (!dev_data)
+ 		return;
+@@ -509,8 +514,7 @@ static void iommu_uninit_device(struct device *dev)
+ 	if (dev_data->domain)
+ 		detach_device(dev);
+ 
+-	iommu_device_unlink(amd_iommu_rlookup_table[dev_data->devid]->iommu_dev,
+-			    dev);
++	iommu_device_unlink(&iommu->iommu.dev, dev);
+ 
+ 	iommu_group_remove_device(dev);
+ 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 6799cf9..02a577b 100644
+index 02a577b..88b0070 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -94,6 +94,8 @@
-  * out of it.
-  */
+@@ -1637,10 +1637,8 @@ static int iommu_init_pci(struct amd_iommu *iommu)
+ 	amd_iommu_erratum_746_workaround(iommu);
+ 	amd_iommu_ats_write_check_workaround(iommu);
  
-+extern const struct iommu_ops amd_iommu_ops;
-+
- /*
-  * structure describing one IOMMU in the ACPI table. Typically followed by one
-  * or more ivhd_entrys.
-@@ -1639,6 +1641,9 @@ static int iommu_init_pci(struct amd_iommu *iommu)
- 					       amd_iommu_groups, "ivhd%d",
- 					       iommu->index);
- 
-+	iommu->iommu.ops = &amd_iommu_ops;
-+	iommu_device_register(&iommu->iommu);
-+
- 	return pci_enable_device(iommu->dev);
- }
+-	iommu->iommu_dev = iommu_device_create(&iommu->dev->dev, iommu,
+-					       amd_iommu_groups, "ivhd%d",
+-					       iommu->index);
+-
++	iommu_device_sysfs_add(&iommu->iommu, &iommu->dev->dev,
++			       amd_iommu_groups, "ivhd%d", iommu->index);
+ 	iommu->iommu.ops = &amd_iommu_ops;
+ 	iommu_device_register(&iommu->iommu);
  
 diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 0d91785..0683505 100644
+index 0683505..af00f38 100644
 --- a/drivers/iommu/amd_iommu_types.h
 +++ b/drivers/iommu/amd_iommu_types.h
-@@ -538,6 +538,9 @@ struct amd_iommu {
- 	/* IOMMU sysfs device */
- 	struct device *iommu_dev;
+@@ -535,9 +535,6 @@ struct amd_iommu {
+ 	/* if one, we need to send a completion wait command */
+ 	bool need_sync;
  
-+	/* Handle for IOMMU core code */
-+	struct iommu_device iommu;
-+
- 	/*
- 	 * We can't rely on the BIOS to restore all values on reinit, so we
- 	 * need to stash them
+-	/* IOMMU sysfs device */
+-	struct device *iommu_dev;
+-
+ 	/* Handle for IOMMU core code */
+ 	struct iommu_device iommu;
+ 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 8ccbd70..c55411e 100644
+index c55411e..48264a0 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -74,6 +74,8 @@ struct dmar_res_callback {
- static int alloc_iommu(struct dmar_drhd_unit *drhd);
- static void free_iommu(struct intel_iommu *iommu);
+@@ -1080,14 +1080,11 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 	raw_spin_lock_init(&iommu->register_lock);
  
-+extern const struct iommu_ops intel_iommu_ops;
-+
- static void dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
- {
- 	/*
-@@ -1086,6 +1088,12 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 			err = PTR_ERR(iommu->iommu_dev);
- 			goto err_unmap;
- 		}
-+
-+		iommu->iommu.ops = &intel_iommu_ops;
-+
-+		err = iommu_device_register(&iommu->iommu);
+ 	if (intel_iommu_enabled) {
+-		iommu->iommu_dev = iommu_device_create(NULL, iommu,
+-						       intel_iommu_groups,
+-						       "%s", iommu->name);
+-
+-		if (IS_ERR(iommu->iommu_dev)) {
+-			err = PTR_ERR(iommu->iommu_dev);
++		err = iommu_device_sysfs_add(&iommu->iommu, NULL,
++					     intel_iommu_groups,
++					     "%s", iommu->name);
 +		if (err)
-+			goto err_unmap;
- 	}
+ 			goto err_unmap;
+-		}
  
- 	drhd->iommu = iommu;
-@@ -1104,6 +1112,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 		iommu->iommu.ops = &intel_iommu_ops;
+ 
+@@ -1111,7 +1108,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 
  static void free_iommu(struct intel_iommu *iommu)
  {
- 	iommu_device_destroy(iommu->iommu_dev);
-+	iommu_device_unregister(&iommu->iommu);
+-	iommu_device_destroy(iommu->iommu_dev);
++	iommu_device_sysfs_remove(&iommu->iommu);
+ 	iommu_device_unregister(&iommu->iommu);
  
  	if (iommu->irq) {
- 		if (iommu->pr_irq) {
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 8a18525..ca22872 100644
+index ca22872..3084837 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -547,7 +547,7 @@ static int domain_detach_iommu(struct dmar_domain *domain,
- static DEFINE_SPINLOCK(device_domain_lock);
- static LIST_HEAD(device_domain_list);
+@@ -4853,10 +4853,13 @@ int __init intel_iommu_init(void)
  
--static const struct iommu_ops intel_iommu_ops;
-+const struct iommu_ops intel_iommu_ops;
+ 	init_iommu_pm_ops();
  
- static bool translation_pre_enabled(struct intel_iommu *iommu)
- {
-@@ -5332,7 +5332,7 @@ struct intel_iommu *intel_svm_device_to_iommu(struct device *dev)
+-	for_each_active_iommu(iommu, drhd)
+-		iommu->iommu_dev = iommu_device_create(NULL, iommu,
+-						       intel_iommu_groups,
+-						       "%s", iommu->name);
++	for_each_active_iommu(iommu, drhd) {
++		iommu_device_sysfs_add(&iommu->iommu, NULL,
++				       intel_iommu_groups,
++				       "%s", iommu->name);
++		iommu->iommu.ops = &intel_iommu_ops;
++		iommu_device_register(&iommu->iommu);
++	}
+ 
+ 	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
+ 	bus_register_notifier(&pci_bus_type, &device_nb);
+@@ -5178,7 +5181,7 @@ static int intel_iommu_add_device(struct device *dev)
+ 	if (!iommu)
+ 		return -ENODEV;
+ 
+-	iommu_device_link(iommu->iommu_dev, dev);
++	iommu_device_link(&iommu->iommu.dev, dev);
+ 
+ 	group = iommu_group_get_for_dev(dev);
+ 
+@@ -5200,7 +5203,7 @@ static void intel_iommu_remove_device(struct device *dev)
+ 
+ 	iommu_group_remove_device(dev);
+ 
+-	iommu_device_unlink(iommu->iommu_dev, dev);
++	iommu_device_unlink(&iommu->iommu.dev, dev);
  }
- #endif /* CONFIG_INTEL_IOMMU_SVM */
  
--static const struct iommu_ops intel_iommu_ops = {
-+const struct iommu_ops intel_iommu_ops = {
- 	.capable	= intel_iommu_capable,
- 	.domain_alloc	= intel_iommu_domain_alloc,
- 	.domain_free	= intel_iommu_domain_free,
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e4e8a93..21061da 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -77,6 +77,25 @@ struct iommu_group_attribute iommu_group_attr_##_name =		\
- #define to_iommu_group(_kobj)		\
- 	container_of(_kobj, struct iommu_group, kobj)
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+diff --git a/drivers/iommu/iommu-sysfs.c b/drivers/iommu/iommu-sysfs.c
+index 39b2d91..bb87d35 100644
+--- a/drivers/iommu/iommu-sysfs.c
++++ b/drivers/iommu/iommu-sysfs.c
+@@ -50,54 +50,45 @@ static int __init iommu_dev_init(void)
+ postcore_initcall(iommu_dev_init);
  
-+static LIST_HEAD(iommu_device_list);
-+static DEFINE_SPINLOCK(iommu_device_lock);
-+
-+int iommu_device_register(struct iommu_device *iommu)
-+{
-+	spin_lock(&iommu_device_lock);
-+	list_add_tail(&iommu->list, &iommu_device_list);
-+	spin_unlock(&iommu_device_lock);
-+
+ /*
+- * Create an IOMMU device and return a pointer to it.  IOMMU specific
+- * attributes can be provided as an attribute group, allowing a unique
+- * namespace per IOMMU type.
++ * Init the struct device for the IOMMU. IOMMU specific attributes can
++ * be provided as an attribute group, allowing a unique namespace per
++ * IOMMU type.
+  */
+-struct device *iommu_device_create(struct device *parent, void *drvdata,
+-				   const struct attribute_group **groups,
+-				   const char *fmt, ...)
++int iommu_device_sysfs_add(struct iommu_device *iommu,
++			   struct device *parent,
++			   const struct attribute_group **groups,
++			   const char *fmt, ...)
+ {
+-	struct device *dev;
+ 	va_list vargs;
+ 	int ret;
+ 
+-	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+-	if (!dev)
+-		return ERR_PTR(-ENOMEM);
++	device_initialize(&iommu->dev);
+ 
+-	device_initialize(dev);
+-
+-	dev->class = &iommu_class;
+-	dev->parent = parent;
+-	dev->groups = groups;
+-	dev_set_drvdata(dev, drvdata);
++	iommu->dev.class = &iommu_class;
++	iommu->dev.parent = parent;
++	iommu->dev.groups = groups;
+ 
+ 	va_start(vargs, fmt);
+-	ret = kobject_set_name_vargs(&dev->kobj, fmt, vargs);
++	ret = kobject_set_name_vargs(&iommu->dev.kobj, fmt, vargs);
+ 	va_end(vargs);
+ 	if (ret)
+ 		goto error;
+ 
+-	ret = device_add(dev);
++	ret = device_add(&iommu->dev);
+ 	if (ret)
+ 		goto error;
+ 
+-	return dev;
 +	return 0;
-+}
-+
-+void iommu_device_unregister(struct iommu_device *iommu)
-+{
-+	spin_lock(&iommu_device_lock);
-+	list_del(&iommu->list);
-+	spin_unlock(&iommu_device_lock);
-+}
-+
- static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
- 						 unsigned type);
- static int __iommu_attach_device(struct iommu_domain *domain,
+ 
+ error:
+-	put_device(dev);
+-	return ERR_PTR(ret);
++	put_device(&iommu->dev);
++	return ret;
+ }
+ 
+-void iommu_device_destroy(struct device *dev)
++void iommu_device_sysfs_remove(struct iommu_device *iommu)
+ {
+-	if (!dev || IS_ERR(dev))
+-		return;
+-
+-	device_unregister(dev);
++	device_unregister(&iommu->dev);
+ }
+-
+ /*
+  * IOMMU drivers can indicate a device is managed by a given IOMMU using
+  * this interface.  A link to the device will be created in the "devices"
 diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index d49e26c..99a65a3 100644
+index 99a65a3..3ba9b53 100644
 --- a/include/linux/intel-iommu.h
 +++ b/include/linux/intel-iommu.h
-@@ -29,6 +29,7 @@
- #include <linux/dma_remapping.h>
- #include <linux/mmu_notifier.h>
- #include <linux/list.h>
-+#include <linux/iommu.h>
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
- 
-@@ -440,6 +441,7 @@ struct intel_iommu {
+@@ -440,7 +440,6 @@ struct intel_iommu {
+ 	struct irq_domain *ir_domain;
  	struct irq_domain *ir_msi_domain;
  #endif
- 	struct device	*iommu_dev; /* IOMMU-sysfs device */
-+	struct iommu_device iommu;  /* IOMMU core code handle */
+-	struct device	*iommu_dev; /* IOMMU-sysfs device */
+ 	struct iommu_device iommu;  /* IOMMU core code handle */
  	int		node;
  	u32		flags;      /* Software defined flags */
- };
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 085e1f0..e981577 100644
+index e981577..1b5fbbc 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -204,6 +204,20 @@ struct iommu_ops {
- 	unsigned long pgsize_bitmap;
+@@ -209,14 +209,21 @@ struct iommu_ops {
+  *			 instance
+  * @list: Used by the iommu-core to keep a list of registered iommus
+  * @ops: iommu-ops for talking to this iommu
++ * @dev: struct device for sysfs handling
+  */
+ struct iommu_device {
+ 	struct list_head list;
+ 	const struct iommu_ops *ops;
++	struct device dev;
  };
  
-+/**
-+ * struct iommu_device - IOMMU core representation of one IOMMU hardware
-+ *			 instance
-+ * @list: Used by the iommu-core to keep a list of registered iommus
-+ * @ops: iommu-ops for talking to this iommu
-+ */
-+struct iommu_device {
-+	struct list_head list;
-+	const struct iommu_ops *ops;
-+};
-+
-+int  iommu_device_register(struct iommu_device *iommu);
-+void iommu_device_unregister(struct iommu_device *iommu);
-+
+ int  iommu_device_register(struct iommu_device *iommu);
+ void iommu_device_unregister(struct iommu_device *iommu);
++int  iommu_device_sysfs_add(struct iommu_device *iommu,
++			    struct device *parent,
++			    const struct attribute_group **groups,
++			    const char *fmt, ...) __printf(4, 5);
++void iommu_device_sysfs_remove(struct iommu_device *iommu);
+ 
  #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
  #define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
- #define IOMMU_GROUP_NOTIFY_BIND_DRIVER		3 /* Pre Driver bind */
+@@ -281,10 +288,6 @@ extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
+ 				 void *data);
+ extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+ 				 void *data);
+-struct device *iommu_device_create(struct device *parent, void *drvdata,
+-				   const struct attribute_group **groups,
+-				   const char *fmt, ...) __printf(4, 5);
+-void iommu_device_destroy(struct device *dev);
+ int iommu_device_link(struct device *dev, struct device *link);
+ void iommu_device_unlink(struct device *dev, struct device *link);
+ 
 -- 
 1.9.1
