@@ -1,73 +1,85 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 0/5] Implement SMMU passthrough using the default domain
-Date: Fri, 3 Feb 2017 07:20:51 -0500
-Message-ID: <CAF6AEGvL_WDt0e6FpuCjeMddaGarF7wu8ZEHtzSwx_ygVURtyQ@mail.gmail.com>
-References: <1484849955-1871-1-git-send-email-will.deacon@arm.com>
-	<010801d27654$47b7e450$d727acf0$@codeaurora.org>
-	<20170126171857.GE27598@8bytes.org>
-	<CAF6AEGtfrrwVZ_W86_HqVsiqfcM=XFa+g2LECFYQJmvv7-JSqQ@mail.gmail.com>
-	<20170202151241.GE13839@arm.com>
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: Add r8a7795 DT binding
+Date: Fri, 03 Feb 2017 16:10:30 +0200
+Message-ID: <2144135.6kAFTUafxi@avalon>
+References: <20160229143309.28517.77269.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170202151241.GE13839-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Transfer-Encoding: 7Bit
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+In-Reply-To: <20160229143309.28517.77269.sendpatchset@little-apple>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: robh+dt@kernel.org
+Cc: Magnus Damm <magnus.damm@gmail.com>, devicetree@vger.kernel.org, mark.rutland@arm.com, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, joro@8bytes.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, galak@codeaurora.org, horms+renesas@verge.net.au
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 2, 2017 at 10:12 AM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Thu, Feb 02, 2017 at 10:02:50AM -0500, Rob Clark wrote:
->> On Thu, Jan 26, 2017 at 12:18 PM, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
->> > On Tue, Jan 24, 2017 at 08:42:23PM +0530, Sricharan wrote:
->> >> Thanks for this series. We had a case with the GPU.
->> >> The GPU's iommu was setup by kernel and the GPU
->> >> also does dynamic updates for on-the-fly switching between
->> >> process pagetables.  GPU driver was not using DMA domain and
->> >> the GPU's firmware was always expecting to run out  of contextbank
->> >>  '0' (although not correct) , which was not the case after the DMA domain
->> >> was made default  as '0' was getting allocated for DMA domain and
->> >> there were concerns about reusing the DMA domain as well.
->> >> Now with this series, looks there is an way out of that that can be tried.
->> >>
->> >> So should the default domain not be per device specific selectable ?
->> >
->> > Note that iommu-drivers can request direct-mapping for any given device
->> > on its initializtion. This is used on x86 for devices that need a 1-1
->> > mapping for some reason.
->> >
->> > Also device drivers can use the iommu-api and assign their own domain to
->> > a device, which allows them to manage the dma address space on their
->> > own.
->>
->> Part of the problem is that dev->archdata.dma_ops gets wired up to
->> iommu_dma_ops.  Which isn't so bad on it's own, except that cache ops
->> are not exposed to drivers, forcing us to use dma-mapping API
->> (dma_map_sg, etc) for cache operations.
->>
->> Possibly we should just expose cache op's to drivers bypass this abuse
->> of dma-mapping.
->>
->> btw, Will, we definitely want this to *not* rely on kcmdline for the
->> gpu with it's own private iommu case..
->
-> I still need to understand the unmanaged domain case, but I don't really
-> see why that's related to this series to be honest.
->
+Hi Rob,
 
-Only relation is if we were trying to solve the case of a driver that
-needs to manage it's own domain with this patchset..  but that seems a
-bit like "when all you have is a hammer, everything looks like a
-nail"..
+On Monday 29 Feb 2016 23:33:09 Magnus Damm wrote:
+> From: Magnus Damm <damm+renesas@opensource.se>
+> 
+> Update the IPMMU DT binding documentation to include the r8a7795 compat
+> string as well as the "renesas,ipmmu-main" property that on r8a7795 will
+> be used to describe the topology and the relationship between the various
+> cache IPMMU instances and the main IPMMU.
+> 
+> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 
-BR,
--R
+This DT binding has been merged already, but isn't used upstream (nor in the 
+dts nor in the drivers). We plan to start using it, and I'd like to seize this 
+last opportunity to change it if needed and ask you for a review.
+
+> ---
+> 
+>  Written against linux-next tag next-20160229
+> 
+>  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |   15 ++++-
+>  1 file changed, 13 insertions(+), 2 deletions(-)
+> 
+> --- 0001/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+> +++
+> work/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt	
+2016-02
+> -29 23:25:15.540513000 +0900 @@ -7,23 +7,34 @@ connected to the IPMMU
+> through a port ca
+> 
+>  Required Properties:
+> 
+> -  - compatible: Must contain SoC-specific and generic entries from below.
+> +  - compatible: Must contain SoC-specific and generic entry below in case
+> +    the device is compatible with the R-Car Gen2 VMSA-compatible IPMMU.
+> 
+>      - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
+>      - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
+>      - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
+>      - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
+>      - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
+> +    - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
+>      - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
+> 
+>    - reg: Base address and size of the IPMMU registers.
+>    - interrupts: Specifiers for the MMU fault interrupts. For instances that
+> support secure mode two interrupts must be specified, for non-secure and
+> secure mode, in that order. For instances that don't support secure mode a
+> -    single interrupt must be specified.
+> +    single interrupt must be specified. Not required for cache IPMMUs.
+> 
+>    - #iommu-cells: Must be 1.
+> 
+> +Optional properties:
+> +
+> +  - renesas,ipmmu-main: reference to the main IPMMU instance in two cells.
+> +    The first cell is a phandle to the main IPMMU and the second cell is
+> +    the interrupt bit number associated with the particular cache IPMMU
+> device.
+> +    The interrupt bit number needs to match the main IPMMU IMSSTR register.
+> +    Only used by cache IPMMU instances.
+> +
+> +
+>  Each bus master connected to an IPMMU must reference the IPMMU in its
+> device node with the following property:
+
+-- 
+Regards,
+
+Laurent Pinchart
