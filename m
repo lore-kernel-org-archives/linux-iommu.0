@@ -1,7 +1,7 @@
 From: Sricharan R <sricharan@codeaurora.org>
-Subject: [PATCH V8 07/11] iommu: of: Handle IOMMU lookup failure with deferred probing or error
-Date: Fri,  3 Feb 2017 21:18:49 +0530
-Message-ID: <1486136933-20328-8-git-send-email-sricharan@codeaurora.org>
+Subject: [PATCH V8 10/11] iommu/arm-smmu: Clean up early-probing workarounds
+Date: Fri,  3 Feb 2017 21:18:52 +0530
+Message-ID: <1486136933-20328-11-git-send-email-sricharan@codeaurora.org>
 References: <1486136933-20328-1-git-send-email-sricharan@codeaurora.org>
 Return-path: <linux-acpi-owner@vger.kernel.org>
 In-Reply-To: <1486136933-20328-1-git-send-email-sricharan@codeaurora.org>
@@ -10,151 +10,148 @@ To: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralis
 Cc: sricharan@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+From: Robin Murphy <robin.murphy@arm.com>
 
-Failures to look up an IOMMU when parsing the DT iommus property need to
-be handled separately from the .of_xlate() failures to support deferred
-probing.
+Now that the appropriate ordering is enforced via probe-deferral of
+masters in core code, rip it all out and bask in the simplicity.
 
-The lack of a registered IOMMU can be caused by the lack of a driver for
-the IOMMU, the IOMMU device probe not having been performed yet, having
-been deferred, or having failed.
-
-The first case occurs when the device tree describes the bus master and
-IOMMU topology correctly but no device driver exists for the IOMMU yet
-or the device driver has not been compiled in. Return NULL, the caller
-will configure the device without an IOMMU.
-
-The second and third cases are handled by deferring the probe of the bus
-master device which will eventually get reprobed after the IOMMU.
-
-The last case is currently handled by deferring the probe of the bus
-master device as well. A mechanism to either configure the bus master
-device without an IOMMU or to fail the bus master device probe depending
-on whether the IOMMU is optional or mandatory would be a good
-enhancement.
-
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Laurent Pichart <laurent.pinchart+renesas@ideasonboard.com>
+Tested-by: Hanjun Guo <hanjun.guo@linaro.org>
+Acked-by: Will Deacon <will.deacon@arm.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+[Sricharan: Rebased on top of ACPI IORT SMMU series]
 Signed-off-by: Sricharan R <sricharan@codeaurora.org>
 ---
- [*] Fixed minor comment from Bjorn for removing the pci.h header inclusion
-     in of_iommu.c
+ drivers/iommu/arm-smmu-v3.c | 46 ++---------------------------------
+ drivers/iommu/arm-smmu.c    | 58 +++++++--------------------------------------
+ 2 files changed, 10 insertions(+), 94 deletions(-)
 
- drivers/base/dma-mapping.c | 5 +++--
- drivers/iommu/of_iommu.c   | 4 ++--
- drivers/of/device.c        | 7 ++++++-
- include/linux/of_device.h  | 9 ++++++---
- 4 files changed, 17 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
-index 449b948..82bd45c 100644
---- a/drivers/base/dma-mapping.c
-+++ b/drivers/base/dma-mapping.c
-@@ -353,6 +353,7 @@ int dma_configure(struct device *dev)
- {
- 	struct device *bridge = NULL, *dma_dev = dev;
- 	enum dev_dma_attr attr;
-+	int ret = 0;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 7bb157c..eba4ac8 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2743,51 +2743,9 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 	.probe	= arm_smmu_device_probe,
+ 	.remove	= arm_smmu_device_remove,
+ };
++module_platform_driver(arm_smmu_driver);
  
- 	if (dev_is_pci(dev)) {
- 		bridge = pci_get_host_bridge_device(to_pci_dev(dev));
-@@ -363,7 +364,7 @@ int dma_configure(struct device *dev)
- 	}
- 
- 	if (dma_dev->of_node) {
--		of_dma_configure(dev, dma_dev->of_node);
-+		ret = of_dma_configure(dev, dma_dev->of_node);
- 	} else if (has_acpi_companion(dma_dev)) {
- 		attr = acpi_get_dma_attr(to_acpi_device_node(dma_dev->fwnode));
- 		if (attr != DEV_DMA_NOT_SUPPORTED)
-@@ -373,7 +374,7 @@ int dma_configure(struct device *dev)
- 	if (bridge)
- 		pci_put_host_bridge_device(bridge);
- 
+-static int __init arm_smmu_init(void)
+-{
+-	static bool registered;
+-	int ret = 0;
+-
+-	if (!registered) {
+-		ret = platform_driver_register(&arm_smmu_driver);
+-		registered = !ret;
+-	}
+-	return ret;
+-}
+-
+-static void __exit arm_smmu_exit(void)
+-{
+-	return platform_driver_unregister(&arm_smmu_driver);
+-}
+-
+-subsys_initcall(arm_smmu_init);
+-module_exit(arm_smmu_exit);
+-
+-static int __init arm_smmu_of_init(struct device_node *np)
+-{
+-	int ret = arm_smmu_init();
+-
+-	if (ret)
+-		return ret;
+-
+-	if (!of_platform_device_create(np, NULL, platform_bus_type.dev_root))
+-		return -ENODEV;
+-
 -	return 0;
-+	return ret;
- }
+-}
+-IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3", arm_smmu_of_init);
+-
+-#ifdef CONFIG_ACPI
+-static int __init acpi_smmu_v3_init(struct acpi_table_header *table)
+-{
+-	if (iort_node_match(ACPI_IORT_NODE_SMMU_V3))
+-		return arm_smmu_init();
+-
+-	return 0;
+-}
+-IORT_ACPI_DECLARE(arm_smmu_v3, ACPI_SIG_IORT, acpi_smmu_v3_init);
+-#endif
++IOMMU_OF_DECLARE(arm_smmuv3, "arm,smmu-v3", NULL);
  
- void dma_deconfigure(struct device *dev)
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 1f92d98..2d04663 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -236,7 +236,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 			ops = ERR_PTR(err);
- 	}
- 
--	return IS_ERR(ops) ? NULL : ops;
-+	return ops;
- }
- 
- static int __init of_iommu_init(void)
-@@ -247,7 +247,7 @@ static int __init of_iommu_init(void)
- 	for_each_matching_node_and_match(np, matches, &match) {
- 		const of_iommu_init_fn init_fn = match->data;
- 
--		if (init_fn(np))
-+		if (init_fn && init_fn(np))
- 			pr_err("Failed to initialise IOMMU %s\n",
- 				of_node_full_name(np));
- 	}
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index c17c19d..ba51ca6 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -82,7 +82,7 @@ int of_device_add(struct platform_device *ofdev)
-  * can use a platform bus notifier and handle BUS_NOTIFY_ADD_DEVICE events
-  * to fix up DMA configuration.
-  */
--void of_dma_configure(struct device *dev, struct device_node *np)
-+int of_dma_configure(struct device *dev, struct device_node *np)
- {
- 	u64 dma_addr, paddr, size;
- 	int ret;
-@@ -129,10 +129,15 @@ void of_dma_configure(struct device *dev, struct device_node *np)
- 		coherent ? " " : " not ");
- 
- 	iommu = of_iommu_configure(dev, np);
-+	if (IS_ERR(iommu))
-+		return PTR_ERR(iommu);
+ MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
+ MODULE_AUTHOR("Will Deacon <will.deacon@arm.com>");
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 091d4a6..faea579 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -2190,56 +2190,14 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 	.probe	= arm_smmu_device_probe,
+ 	.remove	= arm_smmu_device_remove,
+ };
+-
+-static int __init arm_smmu_init(void)
+-{
+-	static bool registered;
+-	int ret = 0;
+-
+-	if (!registered) {
+-		ret = platform_driver_register(&arm_smmu_driver);
+-		registered = !ret;
+-	}
+-	return ret;
+-}
+-
+-static void __exit arm_smmu_exit(void)
+-{
+-	return platform_driver_unregister(&arm_smmu_driver);
+-}
+-
+-subsys_initcall(arm_smmu_init);
+-module_exit(arm_smmu_exit);
+-
+-static int __init arm_smmu_of_init(struct device_node *np)
+-{
+-	int ret = arm_smmu_init();
+-
+-	if (ret)
+-		return ret;
+-
+-	if (!of_platform_device_create(np, NULL, platform_bus_type.dev_root))
+-		return -ENODEV;
+-
+-	return 0;
+-}
+-IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1", arm_smmu_of_init);
+-IOMMU_OF_DECLARE(arm_smmuv2, "arm,smmu-v2", arm_smmu_of_init);
+-IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400", arm_smmu_of_init);
+-IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401", arm_smmu_of_init);
+-IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500", arm_smmu_of_init);
+-IOMMU_OF_DECLARE(cavium_smmuv2, "cavium,smmu-v2", arm_smmu_of_init);
+-
+-#ifdef CONFIG_ACPI
+-static int __init arm_smmu_acpi_init(struct acpi_table_header *table)
+-{
+-	if (iort_node_match(ACPI_IORT_NODE_SMMU))
+-		return arm_smmu_init();
+-
+-	return 0;
+-}
+-IORT_ACPI_DECLARE(arm_smmu, ACPI_SIG_IORT, arm_smmu_acpi_init);
+-#endif
++module_platform_driver(arm_smmu_driver);
 +
- 	dev_dbg(dev, "device is%sbehind an iommu\n",
- 		iommu ? " " : " not ");
++IOMMU_OF_DECLARE(arm_smmuv1, "arm,smmu-v1", NULL);
++IOMMU_OF_DECLARE(arm_smmuv2, "arm,smmu-v2", NULL);
++IOMMU_OF_DECLARE(arm_mmu400, "arm,mmu-400", NULL);
++IOMMU_OF_DECLARE(arm_mmu401, "arm,mmu-401", NULL);
++IOMMU_OF_DECLARE(arm_mmu500, "arm,mmu-500", NULL);
++IOMMU_OF_DECLARE(cavium_smmuv2, "cavium,smmu-v2", NULL);
  
- 	arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
-+
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(of_dma_configure);
- 
-diff --git a/include/linux/of_device.h b/include/linux/of_device.h
-index 3cb2288..9499861 100644
---- a/include/linux/of_device.h
-+++ b/include/linux/of_device.h
-@@ -56,7 +56,7 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
- 	return of_node_get(cpu_dev->of_node);
- }
- 
--void of_dma_configure(struct device *dev, struct device_node *np);
-+int of_dma_configure(struct device *dev, struct device_node *np);
- void of_dma_deconfigure(struct device *dev);
- #else /* CONFIG_OF */
- 
-@@ -105,8 +105,11 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
- {
- 	return NULL;
- }
--static inline void of_dma_configure(struct device *dev, struct device_node *np)
--{}
-+
-+static inline int of_dma_configure(struct device *dev, struct device_node *np)
-+{
-+	return 0;
-+}
- static inline void of_dma_deconfigure(struct device *dev)
- {}
- #endif /* CONFIG_OF */
+ MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
+ MODULE_AUTHOR("Will Deacon <will.deacon@arm.com>");
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
 
