@@ -1,85 +1,75 @@
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Subject: Re: [PATCH] iommu/ipmmu-vmsa: Add r8a7795 DT binding
-Date: Fri, 03 Feb 2017 16:10:30 +0200
-Message-ID: <2144135.6kAFTUafxi@avalon>
-References: <20160229143309.28517.77269.sendpatchset@little-apple>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7Bit
-Return-path: <linux-renesas-soc-owner@vger.kernel.org>
-In-Reply-To: <20160229143309.28517.77269.sendpatchset@little-apple>
-Sender: linux-renesas-soc-owner@vger.kernel.org
-To: robh+dt@kernel.org
-Cc: Magnus Damm <magnus.damm@gmail.com>, devicetree@vger.kernel.org, mark.rutland@arm.com, laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, pawel.moll@arm.com, ijc+devicetree@hellion.org.uk, joro@8bytes.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, galak@codeaurora.org, horms+renesas@verge.net.au
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 02/10] iommu: Rename struct iommu_device
+Date: Fri,  3 Feb 2017 16:17:40 +0100
+Message-ID: <1486135068-23994-3-git-send-email-joro@8bytes.org>
+References: <1486135068-23994-1-git-send-email-joro@8bytes.org>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1486135068-23994-1-git-send-email-joro@8bytes.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Rob,
+From: Joerg Roedel <jroedel@suse.de>
 
-On Monday 29 Feb 2016 23:33:09 Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas@opensource.se>
-> 
-> Update the IPMMU DT binding documentation to include the r8a7795 compat
-> string as well as the "renesas,ipmmu-main" property that on r8a7795 will
-> be used to describe the topology and the relationship between the various
-> cache IPMMU instances and the main IPMMU.
-> 
-> Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+The struct is used to link devices to iommu-groups, so
+'struct group_device' is a better name. Further this makes
+the name iommu_device available for a struct representing
+hardware iommus.
 
-This DT binding has been merged already, but isn't used upstream (nor in the 
-dts nor in the drivers). We plan to start using it, and I'd like to seize this 
-last opportunity to change it if needed and ask you for a review.
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+---
+ drivers/iommu/iommu.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-> ---
-> 
->  Written against linux-next tag next-20160229
-> 
->  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |   15 ++++-
->  1 file changed, 13 insertions(+), 2 deletions(-)
-> 
-> --- 0001/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
-> +++
-> work/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt	
-2016-02
-> -29 23:25:15.540513000 +0900 @@ -7,23 +7,34 @@ connected to the IPMMU
-> through a port ca
-> 
->  Required Properties:
-> 
-> -  - compatible: Must contain SoC-specific and generic entries from below.
-> +  - compatible: Must contain SoC-specific and generic entry below in case
-> +    the device is compatible with the R-Car Gen2 VMSA-compatible IPMMU.
-> 
->      - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
->      - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
->      - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
->      - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
->      - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
-> +    - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
->      - "renesas,ipmmu-vmsa" for generic R-Car Gen2 VMSA-compatible IPMMU.
-> 
->    - reg: Base address and size of the IPMMU registers.
->    - interrupts: Specifiers for the MMU fault interrupts. For instances that
-> support secure mode two interrupts must be specified, for non-secure and
-> secure mode, in that order. For instances that don't support secure mode a
-> -    single interrupt must be specified.
-> +    single interrupt must be specified. Not required for cache IPMMUs.
-> 
->    - #iommu-cells: Must be 1.
-> 
-> +Optional properties:
-> +
-> +  - renesas,ipmmu-main: reference to the main IPMMU instance in two cells.
-> +    The first cell is a phandle to the main IPMMU and the second cell is
-> +    the interrupt bit number associated with the particular cache IPMMU
-> device.
-> +    The interrupt bit number needs to match the main IPMMU IMSSTR register.
-> +    Only used by cache IPMMU instances.
-> +
-> +
->  Each bus master connected to an IPMMU must reference the IPMMU in its
-> device node with the following property:
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 0ee05bb..e4e8a93 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -55,7 +55,7 @@ struct iommu_group {
+ 	struct iommu_domain *domain;
+ };
+ 
+-struct iommu_device {
++struct group_device {
+ 	struct list_head list;
+ 	struct device *dev;
+ 	char *name;
+@@ -374,7 +374,7 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
+ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ {
+ 	int ret, i = 0;
+-	struct iommu_device *device;
++	struct group_device *device;
+ 
+ 	device = kzalloc(sizeof(*device), GFP_KERNEL);
+ 	if (!device)
+@@ -449,7 +449,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ void iommu_group_remove_device(struct device *dev)
+ {
+ 	struct iommu_group *group = dev->iommu_group;
+-	struct iommu_device *tmp_device, *device = NULL;
++	struct group_device *tmp_device, *device = NULL;
+ 
+ 	pr_info("Removing device %s from group %d\n", dev_name(dev), group->id);
+ 
+@@ -484,7 +484,7 @@ void iommu_group_remove_device(struct device *dev)
+ 
+ static int iommu_group_device_count(struct iommu_group *group)
+ {
+-	struct iommu_device *entry;
++	struct group_device *entry;
+ 	int ret = 0;
+ 
+ 	list_for_each_entry(entry, &group->devices, list)
+@@ -507,7 +507,7 @@ static int iommu_group_device_count(struct iommu_group *group)
+ static int __iommu_group_for_each_dev(struct iommu_group *group, void *data,
+ 				      int (*fn)(struct device *, void *))
+ {
+-	struct iommu_device *device;
++	struct group_device *device;
+ 	int ret = 0;
+ 
+ 	list_for_each_entry(device, &group->devices, list) {
 -- 
-Regards,
-
-Laurent Pinchart
+1.9.1
