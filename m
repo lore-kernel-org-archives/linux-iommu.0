@@ -1,20 +1,28 @@
-From: kbuild test robot <lkp@intel.com>
-Subject: Re: [PATCH 03/10] iommu: Introduce new 'struct iommu_device'
-Date: Sat, 4 Feb 2017 03:25:21 +0800
-Message-ID: <201702040328.eaqZ5tRV%fengguang.wu@intel.com>
-References: <1486135068-23994-4-git-send-email-joro@8bytes.org>
+From: kbuild test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 04/10] iommu: Add sysfs bindings for struct iommu_device
+Date: Sat, 4 Feb 2017 03:53:46 +0800
+Message-ID: <201702040343.8Y9UuQXZ%fengguang.wu@intel.com>
+References: <1486135068-23994-5-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="0F1p//8PRICkK4MW"
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: multipart/mixed; boundary="vtzGhvizbBRQ85DL"
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1486135068-23994-4-git-send-email-joro@8bytes.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: kbuild-all@01.org, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+In-Reply-To: <1486135068-23994-5-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, kbuild-all-JC7UmRfGjtg@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
 
---0F1p//8PRICkK4MW
+--vtzGhvizbBRQ85DL
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
@@ -35,63 +43,76 @@ reproduce:
 All errors (new ones prefixed by >>):
 
    In file included from drivers/iommu/dmar.c:34:0:
-   include/linux/intel-iommu.h:444:22: error: field 'iommu' has incomplete type
+   include/linux/intel-iommu.h:443:22: error: field 'iommu' has incomplete type
      struct iommu_device iommu;  /* IOMMU core code handle */
                          ^
    drivers/iommu/dmar.c: In function 'alloc_iommu':
->> drivers/iommu/dmar.c:1094:3: error: implicit declaration of function 'iommu_device_register' [-Werror=implicit-function-declaration]
+>> drivers/iommu/dmar.c:1083:3: error: implicit declaration of function 'iommu_device_sysfs_add' [-Werror=implicit-function-declaration]
+      err = iommu_device_sysfs_add(&iommu->iommu, NULL,
+      ^
+   drivers/iommu/dmar.c:1091:3: error: implicit declaration of function 'iommu_device_register' [-Werror=implicit-function-declaration]
       err = iommu_device_register(&iommu->iommu);
       ^
    drivers/iommu/dmar.c: In function 'free_iommu':
->> drivers/iommu/dmar.c:1115:2: error: implicit declaration of function 'iommu_device_unregister' [-Werror=implicit-function-declaration]
+>> drivers/iommu/dmar.c:1111:2: error: implicit declaration of function 'iommu_device_sysfs_remove' [-Werror=implicit-function-declaration]
+     iommu_device_sysfs_remove(&iommu->iommu);
+     ^
+   drivers/iommu/dmar.c:1112:2: error: implicit declaration of function 'iommu_device_unregister' [-Werror=implicit-function-declaration]
      iommu_device_unregister(&iommu->iommu);
      ^
    cc1: some warnings being treated as errors
 
-vim +/iommu_device_register +1094 drivers/iommu/dmar.c
+vim +/iommu_device_sysfs_add +1083 drivers/iommu/dmar.c
 
-  1088				err = PTR_ERR(iommu->iommu_dev);
-  1089				goto err_unmap;
-  1090			}
-  1091	
-  1092			iommu->iommu.ops = &intel_iommu_ops;
-  1093	
-> 1094			err = iommu_device_register(&iommu->iommu);
-  1095			if (err)
-  1096				goto err_unmap;
-  1097		}
-  1098	
-  1099		drhd->iommu = iommu;
-  1100	
-  1101		return 0;
-  1102	
-  1103	err_unmap:
-  1104		unmap_iommu(iommu);
-  1105	error_free_seq_id:
-  1106		dmar_free_seq_id(iommu);
-  1107	error:
-  1108		kfree(iommu);
-  1109		return err;
-  1110	}
-  1111	
-  1112	static void free_iommu(struct intel_iommu *iommu)
-  1113	{
-  1114		iommu_device_destroy(iommu->iommu_dev);
-> 1115		iommu_device_unregister(&iommu->iommu);
-  1116	
-  1117		if (iommu->irq) {
-  1118			if (iommu->pr_irq) {
+  1077		if (sts & DMA_GSTS_QIES)
+  1078			iommu->gcmd |= DMA_GCMD_QIE;
+  1079	
+  1080		raw_spin_lock_init(&iommu->register_lock);
+  1081	
+  1082		if (intel_iommu_enabled) {
+> 1083			err = iommu_device_sysfs_add(&iommu->iommu, NULL,
+  1084						     intel_iommu_groups,
+  1085						     "%s", iommu->name);
+  1086			if (err)
+  1087				goto err_unmap;
+  1088	
+  1089			iommu->iommu.ops = &intel_iommu_ops;
+  1090	
+  1091			err = iommu_device_register(&iommu->iommu);
+  1092			if (err)
+  1093				goto err_unmap;
+  1094		}
+  1095	
+  1096		drhd->iommu = iommu;
+  1097	
+  1098		return 0;
+  1099	
+  1100	err_unmap:
+  1101		unmap_iommu(iommu);
+  1102	error_free_seq_id:
+  1103		dmar_free_seq_id(iommu);
+  1104	error:
+  1105		kfree(iommu);
+  1106		return err;
+  1107	}
+  1108	
+  1109	static void free_iommu(struct intel_iommu *iommu)
+  1110	{
+> 1111		iommu_device_sysfs_remove(&iommu->iommu);
+  1112		iommu_device_unregister(&iommu->iommu);
+  1113	
+  1114		if (iommu->irq) {
 
 ---
 0-DAY kernel test infrastructure                Open Source Technology Center
 https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
---0F1p//8PRICkK4MW
+--vtzGhvizbBRQ85DL
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICJvVlFgAAy5jb25maWcAhFzbc9s2s3/vX6FJz0O/hya+JG46Z/wAgqCEiiQQAJRkv2Bc
+H4sICGzelFgAAy5jb25maWcAhFzbc9s2s3/vX6FJz0O/hya+JG46Z/wAgqCEiiQQAJRkv2Bc
 R0k9dex+ttzL+evPLkCKAAi6nWlr7i4uBPby2wWo77/7fkFeDo/fbg53tzf39/8svu4f9k83
 h/3nxZe7+/3/LkqxaIVZsJKbtyBc3z28/P3u748X9uL94v3b05O3Jz8+3V4s1vunh/39gj4+
 fLn7+gId3D0+fPf9d1S0FV+CbMHN5T/D4841j57HB95qozpquGhtyagomRqZojOyM7YSqiHm
@@ -565,4 +586,11 @@ M0JWGglmRZ1mxHmoAVGBraKOBJbBmacEWF9xxTbrmGo+IquKgTMdAupuA366qiisPwhBBk3T
 BTximVqqjP7CIsCTq5IGwfKyh0zYZKMrnUe9ifOc5jPWj6AbiwUxb2pJChYqqEYuVrKZFUBo
 wEmxTCUoh8QbKtb8JFkbmEcm0eqZoBoM3cSCM0G2Opo1/qLPPEx1LmrrbfQfVSLKKDiDAQA=
 
---0F1p//8PRICkK4MW--
+--vtzGhvizbBRQ85DL
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--vtzGhvizbBRQ85DL--
