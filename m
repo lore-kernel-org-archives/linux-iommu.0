@@ -1,48 +1,79 @@
-From: "Sricharan" <sricharan@codeaurora.org>
-Subject: RE: [PATCH V7 08/11] drivers: acpi: Handle IOMMU lookup failure with deferred probing or error
-Date: Fri, 3 Feb 2017 09:07:07 +0530
-Message-ID: <013f01d27dce$cf8f5da0$6eae18e0$@codeaurora.org>
-References: <f2370671-ece8-fbee-de19-350dd625088f@codeaurora.org> <93e79759-d614-9b36-d5ab-63e8eb725009@arm.com> <14751205-f034-7f0d-442a-854c3909425c@codeaurora.org> <5ba9f366d6e25397cdef8ad95b49e199@codeaurora.org> <175a3798-b824-ef1a-e112-9f6f472973ae@codeaurora.org> <20170130143851.GJ16461@arm.com> <b2e50c17de156341deab9fb8e91a8dec@codeaurora.org> <1e048aff-0d77-b9f2-ebf8-2ba315b90ca7@codeaurora.org> <20170130165124.GA11712@red-moon> <f401e27e-d619-0eec-2401-50d8e2fc2f0f@codeaurora.org> <20170201185230.GA1922@red-moon> <3f4aa4c1e660c7e62256de9ca64fc822@codeaurora.org>
+From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: [bug report] iommu: iommu_get_group_resv_regions
+Date: Fri, 3 Feb 2017 12:14:40 +0300
+Message-ID: <20170203091440.GA23426@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain;
-        charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <3f4aa4c1e660c7e62256de9ca64fc822@codeaurora.org>
-Content-Language: en-us
-Sender: linux-acpi-owner@vger.kernel.org
-To: 'Nate Watterson' <nwatters@codeaurora.org>, 'Lorenzo Pieralisi' <lorenzo.pieralisi@arm.com>
-Cc: linux-arm-msm@vger.kernel.org, 'Will Deacon' <will.deacon@arm.com>, 'Sinan Kaya' <okaya@codeaurora.org>, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, bhelgaas@google.com, 'Robin Murphy' <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, 'Tomasz Nowicki' <tn@semihalf.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+Hello Eric Auger,
 
->On 2017-02-01 13:52, Lorenzo Pieralisi wrote:
->>
->> I debugged the issue and Nate's fix is correct, the fact that you
->> can't it hit it with mainline is just a matter of timing because it has
->> to do with the CTX pointer value (we OR it with the existing value), so
->> it may work or not depending on how the cdptr memory allocation
->> pattern turns out to be (which explains why Nate and I can hit it with
->> simple PCI device remove/add execution too).
->>
->> So it is neither an ACPI nor an IOMMU probe deferral issue per-se,
->> fix is already queued, so it is all good.
->>
->> What about USB stalls ?
->Our fault. The USB controller was getting 48-bit IOVAs, but the
->bus it sits on only supports 44-bits so the controller's DMA
->transactions ended up targeting addresses that were never mapped.
->
->It started working once I applied the iort/dma-mapping patches I
->sent out earlier this week that use the iort memory_address_limit
->field to check if a dma_mask is sane.
->
->Sorry for the false alarm.
+The patch 6c65fb318e8b: "iommu: iommu_get_group_resv_regions" from
+Jan 19, 2017, leads to the following static checker warning:
 
-Ok, thanks for closing on it. I will just post V8 with all acks picked up and
-Robin's fix , right away.
+	drivers/iommu/iommu.c:215 iommu_insert_device_resv_regions()
+	error: uninitialized symbol 'ret'.
 
-Regards,
- Sricharan
+drivers/iommu/iommu.c
+   203  static int
+   204  iommu_insert_device_resv_regions(struct list_head *dev_resv_regions,
+   205                                   struct list_head *group_resv_regions)
+   206  {
+   207          struct iommu_resv_region *entry;
+   208          int ret;
+   209  
+   210          list_for_each_entry(entry, dev_resv_regions, list) {
+   211                  ret = iommu_insert_resv_region(entry, group_resv_regions);
+   212                  if (ret)
+   213                          break;
+   214          }
+   215          return ret;
 
+On the one hand, it probably doesn't make sense that the dev_resv_regions
+would ever be empty, but on the other hand, there some code that assumes
+it is possible.  What I mean is that iommu_get_resv_regions() can
+basically do nothing if ->get_resv_regions() isn't implemented.
+
+I guess we should probably set ret = -EINVAL here?
+
+   216  }
+   217  
+   218  int iommu_get_group_resv_regions(struct iommu_group *group,
+   219                                   struct list_head *head)
+   220  {
+   221          struct iommu_device *device;
+   222          int ret = 0;
+   223  
+   224          mutex_lock(&group->mutex);
+   225          list_for_each_entry(device, &group->devices, list) {
+   226                  struct list_head dev_resv_regions;
+   227  
+   228                  INIT_LIST_HEAD(&dev_resv_regions);
+   229                  iommu_get_resv_regions(device->dev, &dev_resv_regions);
+   230                  ret = iommu_insert_device_resv_regions(&dev_resv_regions, head);
+   231                  iommu_put_resv_regions(device->dev, &dev_resv_regions);
+   232                  if (ret)
+   233                          break;
+   234          }
+   235          mutex_unlock(&group->mutex);
+   236          return ret;
+   237  }
+   238  EXPORT_SYMBOL_GPL(iommu_get_group_resv_regions);
+
+
+regards,
+dan carpenter
