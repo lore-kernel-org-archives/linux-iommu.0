@@ -1,8 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 09/10] iommu/exynos: Make use of iommu_device_register
-	interface
-Date: Fri,  3 Feb 2017 16:17:47 +0100
-Message-ID: <1486135068-23994-10-git-send-email-joro@8bytes.org>
+Subject: [PATCH 05/10] iommu: Make iommu_device_link/unlink take a struct
+	iommu_device
+Date: Fri,  3 Feb 2017 16:17:43 +0100
+Message-ID: <1486135068-23994-6-git-send-email-joro@8bytes.org>
 References: <1486135068-23994-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,70 +19,131 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Register Exynos IOMMUs to the IOMMU core and make them
-visible in sysfs. This patch does not add the links between
-IOMMUs and translated devices yet.
+This makes the interface more consistent with
+iommu_device_sysfs_add/remove.
 
-Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/iommu/amd_iommu.c   |  4 ++--
+ drivers/iommu/intel-iommu.c |  4 ++--
+ drivers/iommu/iommu-sysfs.c | 16 ++++++++--------
+ include/linux/iommu.h       |  4 ++--
+ 4 files changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 57ba0d3..90f0f52 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -276,6 +276,8 @@ struct sysmmu_drvdata {
- 	struct list_head owner_node;	/* node for owner controllers list */
- 	phys_addr_t pgtable;		/* assigned page table structure */
- 	unsigned int version;		/* our version */
-+
-+	struct iommu_device iommu;	/* IOMMU core handle */
- };
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index a584ac2..b8adfcc 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -472,7 +472,7 @@ static int iommu_init_device(struct device *dev)
  
- static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
-@@ -556,6 +558,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct sysmmu_drvdata *data;
- 	struct resource *res;
-+	resource_size_t ioaddr;
+ 	dev->archdata.iommu = dev_data;
  
- 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
- 	if (!data)
-@@ -565,6 +568,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 	data->sfrbase = devm_ioremap_resource(dev, res);
- 	if (IS_ERR(data->sfrbase))
- 		return PTR_ERR(data->sfrbase);
-+	ioaddr = res->start;
+-	iommu_device_link(&iommu->iommu.dev, dev);
++	iommu_device_link(&iommu->iommu, dev);
  
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq <= 0) {
-@@ -611,6 +615,18 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 	data->sysmmu = dev;
- 	spin_lock_init(&data->lock);
+ 	return 0;
+ }
+@@ -514,7 +514,7 @@ static void iommu_uninit_device(struct device *dev)
+ 	if (dev_data->domain)
+ 		detach_device(dev);
  
-+	ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL,
-+				     "sysmmu.%pa", &ioaddr);
-+	if (ret)
-+		return ret;
-+
-+	data->iommu.ops    = &exynos_iommu_ops;
-+	data->iommu.fwnode = &dev->of_node->fwnode;
-+
-+	ret = iommu_device_register(&data->iommu);
-+	if (ret)
-+		return ret;
-+
- 	platform_set_drvdata(pdev, data);
+-	iommu_device_unlink(&iommu->iommu.dev, dev);
++	iommu_device_unlink(&iommu->iommu, dev);
  
- 	__sysmmu_get_version(data);
+ 	iommu_group_remove_device(dev);
+ 
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 3084837..364c54e 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5181,7 +5181,7 @@ static int intel_iommu_add_device(struct device *dev)
+ 	if (!iommu)
+ 		return -ENODEV;
+ 
+-	iommu_device_link(&iommu->iommu.dev, dev);
++	iommu_device_link(&iommu->iommu, dev);
+ 
+ 	group = iommu_group_get_for_dev(dev);
+ 
+@@ -5203,7 +5203,7 @@ static void intel_iommu_remove_device(struct device *dev)
+ 
+ 	iommu_group_remove_device(dev);
+ 
+-	iommu_device_unlink(&iommu->iommu.dev, dev);
++	iommu_device_unlink(&iommu->iommu, dev);
+ }
+ 
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+diff --git a/drivers/iommu/iommu-sysfs.c b/drivers/iommu/iommu-sysfs.c
+index bb87d35..c58351e 100644
+--- a/drivers/iommu/iommu-sysfs.c
++++ b/drivers/iommu/iommu-sysfs.c
+@@ -95,31 +95,31 @@ void iommu_device_sysfs_remove(struct iommu_device *iommu)
+  * directory of the IOMMU device in sysfs and an "iommu" link will be
+  * created under the linked device, pointing back at the IOMMU device.
+  */
+-int iommu_device_link(struct device *dev, struct device *link)
++int iommu_device_link(struct iommu_device *iommu, struct device *link)
+ {
+ 	int ret;
+ 
+-	if (!dev || IS_ERR(dev))
++	if (!iommu || IS_ERR(iommu))
+ 		return -ENODEV;
+ 
+-	ret = sysfs_add_link_to_group(&dev->kobj, "devices",
++	ret = sysfs_add_link_to_group(&iommu->dev.kobj, "devices",
+ 				      &link->kobj, dev_name(link));
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = sysfs_create_link_nowarn(&link->kobj, &dev->kobj, "iommu");
++	ret = sysfs_create_link_nowarn(&link->kobj, &iommu->dev.kobj, "iommu");
+ 	if (ret)
+-		sysfs_remove_link_from_group(&dev->kobj, "devices",
++		sysfs_remove_link_from_group(&iommu->dev.kobj, "devices",
+ 					     dev_name(link));
+ 
+ 	return ret;
+ }
+ 
+-void iommu_device_unlink(struct device *dev, struct device *link)
++void iommu_device_unlink(struct iommu_device *iommu, struct device *link)
+ {
+-	if (!dev || IS_ERR(dev))
++	if (!iommu || IS_ERR(iommu))
+ 		return;
+ 
+ 	sysfs_remove_link(&link->kobj, "iommu");
+-	sysfs_remove_link_from_group(&dev->kobj, "devices", dev_name(link));
++	sysfs_remove_link_from_group(&iommu->dev.kobj, "devices", dev_name(link));
+ }
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 1b5fbbc..e53452f 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -224,6 +224,8 @@ int  iommu_device_sysfs_add(struct iommu_device *iommu,
+ 			    const struct attribute_group **groups,
+ 			    const char *fmt, ...) __printf(4, 5);
+ void iommu_device_sysfs_remove(struct iommu_device *iommu);
++int  iommu_device_link(struct iommu_device   *iommu, struct device *link);
++void iommu_device_unlink(struct iommu_device *iommu, struct device *link);
+ 
+ #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
+ #define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
+@@ -288,8 +290,6 @@ extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
+ 				 void *data);
+ extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+ 				 void *data);
+-int iommu_device_link(struct device *dev, struct device *link);
+-void iommu_device_unlink(struct device *dev, struct device *link);
+ 
+ /* Window handling function prototypes */
+ extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
 -- 
 1.9.1
