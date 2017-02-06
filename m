@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 09/10] iommu/exynos: Make use of iommu_device_register
-	interface
-Date: Mon,  6 Feb 2017 17:10:28 +0100
-Message-ID: <1486397429-29327-10-git-send-email-joro@8bytes.org>
+Subject: [PATCH 07/10] iommu/msm: Make use of iommu_device_register interface
+Date: Mon,  6 Feb 2017 17:10:26 +0100
+Message-ID: <1486397429-29327-8-git-send-email-joro@8bytes.org>
 References: <1486397429-29327-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -19,70 +18,152 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Register Exynos IOMMUs to the IOMMU core and make them
-visible in sysfs. This patch does not add the links between
-IOMMUs and translated devices yet.
+Register the MSM IOMMUs to the iommu core and add sysfs
+entries for that driver.
 
-Cc: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/exynos-iommu.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/iommu/msm_iommu.c | 73 +++++++++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/msm_iommu.h |  3 ++
+ 2 files changed, 76 insertions(+)
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 57ba0d3..90f0f52 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -276,6 +276,8 @@ struct sysmmu_drvdata {
- 	struct list_head owner_node;	/* node for owner controllers list */
- 	phys_addr_t pgtable;		/* assigned page table structure */
- 	unsigned int version;		/* our version */
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index b09692b..38d19f9 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -371,6 +371,58 @@ static int msm_iommu_domain_config(struct msm_priv *priv)
+ 	return 0;
+ }
+ 
++/* Must be called under msm_iommu_lock */
++static struct msm_iommu_dev *find_iommu_for_dev(struct device *dev)
++{
++	struct msm_iommu_dev *iommu, *ret = NULL;
++	struct msm_iommu_ctx_dev *master;
 +
-+	struct iommu_device iommu;	/* IOMMU core handle */
++	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node) {
++		master = list_first_entry(&iommu->ctx_list,
++					  struct msm_iommu_ctx_dev,
++					  list);
++		if (master->of_node == dev->of_node) {
++			ret = iommu;
++			break;
++		}
++	}
++
++	return ret;
++}
++
++static int msm_iommu_add_device(struct device *dev)
++{
++	struct msm_iommu_dev *iommu;
++	unsigned long flags;
++	int ret = 0;
++
++	spin_lock_irqsave(&msm_iommu_lock, flags);
++
++	iommu = find_iommu_for_dev(dev);
++	if (iommu)
++		iommu_device_link(&iommu->iommu, dev);
++	else
++		ret = -ENODEV;
++
++	spin_unlock_irqrestore(&msm_iommu_lock, flags);
++
++	return ret;
++}
++
++static void msm_iommu_remove_device(struct device *dev)
++{
++	struct msm_iommu_dev *iommu;
++	unsigned long flags;
++
++	spin_lock_irqsave(&msm_iommu_lock, flags);
++
++	iommu = find_iommu_for_dev(dev);
++	if (iommu)
++		iommu_device_unlink(&iommu->iommu, dev);
++
++	spin_unlock_irqrestore(&msm_iommu_lock, flags);
++}
++
+ static int msm_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ {
+ 	int ret = 0;
+@@ -646,6 +698,8 @@ irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id)
+ 	.unmap = msm_iommu_unmap,
+ 	.map_sg = default_iommu_map_sg,
+ 	.iova_to_phys = msm_iommu_iova_to_phys,
++	.add_device = msm_iommu_add_device,
++	.remove_device = msm_iommu_remove_device,
+ 	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
+ 	.of_xlate = qcom_iommu_of_xlate,
+ };
+@@ -653,6 +707,7 @@ irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id)
+ static int msm_iommu_probe(struct platform_device *pdev)
+ {
+ 	struct resource *r;
++	resource_size_t ioaddr;
+ 	struct msm_iommu_dev *iommu;
+ 	int ret, par, val;
+ 
+@@ -696,6 +751,7 @@ static int msm_iommu_probe(struct platform_device *pdev)
+ 		ret = PTR_ERR(iommu->base);
+ 		goto fail;
+ 	}
++	ioaddr = r->start;
+ 
+ 	iommu->irq = platform_get_irq(pdev, 0);
+ 	if (iommu->irq < 0) {
+@@ -737,6 +793,23 @@ static int msm_iommu_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	list_add(&iommu->dev_node, &qcom_iommu_devices);
++
++	ret = iommu_device_sysfs_add(&iommu->iommu, iommu->dev, NULL,
++				     "msm-smmu.%pa", &ioaddr);
++	if (ret) {
++		pr_err("Could not add msm-smmu at %pa to sysfs\n", &ioaddr);
++		goto fail;
++	}
++
++	iommu->iommu.ops    = &msm_iommu_ops;
++	iommu->iommu.fwnode = &pdev->dev.of_node->fwnode;
++
++	ret = iommu_device_register(&iommu->iommu);
++	if (ret) {
++		pr_err("Could not register msm-smmu at %pa\n", &ioaddr);
++		goto fail;
++	}
++
+ 	of_iommu_set_ops(pdev->dev.of_node, &msm_iommu_ops);
+ 
+ 	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
+diff --git a/drivers/iommu/msm_iommu.h b/drivers/iommu/msm_iommu.h
+index 4ca25d5..ae92d27 100644
+--- a/drivers/iommu/msm_iommu.h
++++ b/drivers/iommu/msm_iommu.h
+@@ -19,6 +19,7 @@
+ #define MSM_IOMMU_H
+ 
+ #include <linux/interrupt.h>
++#include <linux/iommu.h>
+ #include <linux/clk.h>
+ 
+ /* Sharability attributes of MSM IOMMU mappings */
+@@ -68,6 +69,8 @@ struct msm_iommu_dev {
+ 	struct list_head dom_node;
+ 	struct list_head ctx_list;
+ 	DECLARE_BITMAP(context_map, IOMMU_MAX_CBS);
++
++	struct iommu_device iommu;
  };
  
- static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
-@@ -556,6 +558,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct sysmmu_drvdata *data;
- 	struct resource *res;
-+	resource_size_t ioaddr;
- 
- 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
- 	if (!data)
-@@ -565,6 +568,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 	data->sfrbase = devm_ioremap_resource(dev, res);
- 	if (IS_ERR(data->sfrbase))
- 		return PTR_ERR(data->sfrbase);
-+	ioaddr = res->start;
- 
- 	irq = platform_get_irq(pdev, 0);
- 	if (irq <= 0) {
-@@ -611,6 +615,18 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
- 	data->sysmmu = dev;
- 	spin_lock_init(&data->lock);
- 
-+	ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL,
-+				     "sysmmu.%pa", &ioaddr);
-+	if (ret)
-+		return ret;
-+
-+	data->iommu.ops    = &exynos_iommu_ops;
-+	data->iommu.fwnode = &dev->of_node->fwnode;
-+
-+	ret = iommu_device_register(&data->iommu);
-+	if (ret)
-+		return ret;
-+
- 	platform_set_drvdata(pdev, data);
- 
- 	__sysmmu_get_version(data);
+ /**
 -- 
 1.9.1
