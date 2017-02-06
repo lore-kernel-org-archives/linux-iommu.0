@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 01/10] iommu: Rename iommu_get_instance()
-Date: Mon,  6 Feb 2017 17:10:20 +0100
-Message-ID: <1486397429-29327-2-git-send-email-joro@8bytes.org>
+Subject: [PATCH 05/10] iommu: Make iommu_device_link/unlink take a struct
+	iommu_device
+Date: Mon,  6 Feb 2017 17:10:24 +0100
+Message-ID: <1486397429-29327-6-git-send-email-joro@8bytes.org>
 References: <1486397429-29327-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,78 +24,126 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Rename the function to iommu_ops_from_fwnode(), because that
-is what the function actually does. The new name is much
-more descriptive about what the function does.
+This makes the interface more consistent with
+iommu_device_sysfs_add/remove.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/acpi/arm64/iort.c | 2 +-
- drivers/iommu/iommu.c     | 2 +-
- include/linux/iommu.h     | 4 ++--
- include/linux/of_iommu.h  | 2 +-
- 4 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/iommu/amd_iommu.c   |  4 ++--
+ drivers/iommu/intel-iommu.c |  4 ++--
+ drivers/iommu/iommu-sysfs.c | 16 ++++++++--------
+ include/linux/iommu.h       |  4 ++--
+ 4 files changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index e0d2e6e..3752521 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -536,7 +536,7 @@ static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
- 		if (!iort_fwnode)
- 			return NULL;
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index a584ac2..b8adfcc 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -472,7 +472,7 @@ static int iommu_init_device(struct device *dev)
  
--		ops = iommu_get_instance(iort_fwnode);
-+		ops = iommu_ops_from_fwnode(iort_fwnode);
- 		if (!ops)
- 			return NULL;
+ 	dev->archdata.iommu = dev_data;
  
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index dbe7f65..0ee05bb 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1653,7 +1653,7 @@ void iommu_register_instance(struct fwnode_handle *fwnode,
- 	spin_unlock(&iommu_instance_lock);
+-	iommu_device_link(&iommu->iommu.dev, dev);
++	iommu_device_link(&iommu->iommu, dev);
+ 
+ 	return 0;
+ }
+@@ -514,7 +514,7 @@ static void iommu_uninit_device(struct device *dev)
+ 	if (dev_data->domain)
+ 		detach_device(dev);
+ 
+-	iommu_device_unlink(&iommu->iommu.dev, dev);
++	iommu_device_unlink(&iommu->iommu, dev);
+ 
+ 	iommu_group_remove_device(dev);
+ 
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 3084837..364c54e 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5181,7 +5181,7 @@ static int intel_iommu_add_device(struct device *dev)
+ 	if (!iommu)
+ 		return -ENODEV;
+ 
+-	iommu_device_link(&iommu->iommu.dev, dev);
++	iommu_device_link(&iommu->iommu, dev);
+ 
+ 	group = iommu_group_get_for_dev(dev);
+ 
+@@ -5203,7 +5203,7 @@ static void intel_iommu_remove_device(struct device *dev)
+ 
+ 	iommu_group_remove_device(dev);
+ 
+-	iommu_device_unlink(&iommu->iommu.dev, dev);
++	iommu_device_unlink(&iommu->iommu, dev);
  }
  
--const struct iommu_ops *iommu_get_instance(struct fwnode_handle *fwnode)
-+const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+diff --git a/drivers/iommu/iommu-sysfs.c b/drivers/iommu/iommu-sysfs.c
+index bb87d35..c58351e 100644
+--- a/drivers/iommu/iommu-sysfs.c
++++ b/drivers/iommu/iommu-sysfs.c
+@@ -95,31 +95,31 @@ void iommu_device_sysfs_remove(struct iommu_device *iommu)
+  * directory of the IOMMU device in sysfs and an "iommu" link will be
+  * created under the linked device, pointing back at the IOMMU device.
+  */
+-int iommu_device_link(struct device *dev, struct device *link)
++int iommu_device_link(struct iommu_device *iommu, struct device *link)
  {
- 	struct iommu_instance *instance;
- 	const struct iommu_ops *ops = NULL;
+ 	int ret;
+ 
+-	if (!dev || IS_ERR(dev))
++	if (!iommu || IS_ERR(iommu))
+ 		return -ENODEV;
+ 
+-	ret = sysfs_add_link_to_group(&dev->kobj, "devices",
++	ret = sysfs_add_link_to_group(&iommu->dev.kobj, "devices",
+ 				      &link->kobj, dev_name(link));
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = sysfs_create_link_nowarn(&link->kobj, &dev->kobj, "iommu");
++	ret = sysfs_create_link_nowarn(&link->kobj, &iommu->dev.kobj, "iommu");
+ 	if (ret)
+-		sysfs_remove_link_from_group(&dev->kobj, "devices",
++		sysfs_remove_link_from_group(&iommu->dev.kobj, "devices",
+ 					     dev_name(link));
+ 
+ 	return ret;
+ }
+ 
+-void iommu_device_unlink(struct device *dev, struct device *link)
++void iommu_device_unlink(struct iommu_device *iommu, struct device *link)
+ {
+-	if (!dev || IS_ERR(dev))
++	if (!iommu || IS_ERR(iommu))
+ 		return;
+ 
+ 	sysfs_remove_link(&link->kobj, "iommu");
+-	sysfs_remove_link_from_group(&dev->kobj, "devices", dev_name(link));
++	sysfs_remove_link_from_group(&iommu->dev.kobj, "devices", dev_name(link));
+ }
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 0ff5111..085e1f0 100644
+index b6544b6..7e2ba06 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -354,7 +354,7 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
- void iommu_register_instance(struct fwnode_handle *fwnode,
- 			     const struct iommu_ops *ops);
--const struct iommu_ops *iommu_get_instance(struct fwnode_handle *fwnode);
-+const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
+@@ -224,6 +224,8 @@ int  iommu_device_sysfs_add(struct iommu_device *iommu,
+ 			    const struct attribute_group **groups,
+ 			    const char *fmt, ...) __printf(4, 5);
+ void iommu_device_sysfs_remove(struct iommu_device *iommu);
++int  iommu_device_link(struct iommu_device   *iommu, struct device *link);
++void iommu_device_unlink(struct iommu_device *iommu, struct device *link);
  
- #else /* CONFIG_IOMMU_API */
+ #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
+ #define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
+@@ -288,8 +290,6 @@ extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
+ 				 void *data);
+ extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+ 				 void *data);
+-int iommu_device_link(struct device *dev, struct device *link);
+-void iommu_device_unlink(struct device *dev, struct device *link);
  
-@@ -590,7 +590,7 @@ static inline void iommu_register_instance(struct fwnode_handle *fwnode,
- }
- 
- static inline
--const struct iommu_ops *iommu_get_instance(struct fwnode_handle *fwnode)
-+const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
- {
- 	return NULL;
- }
-diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
-index 6a7fc50..66fcbc9 100644
---- a/include/linux/of_iommu.h
-+++ b/include/linux/of_iommu.h
-@@ -39,7 +39,7 @@ static inline void of_iommu_set_ops(struct device_node *np,
- 
- static inline const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
- {
--	return iommu_get_instance(&np->fwnode);
-+	return iommu_ops_from_fwnode(&np->fwnode);
- }
- 
- extern struct of_device_id __iommu_of_table;
+ /* Window handling function prototypes */
+ extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
 -- 
 1.9.1
