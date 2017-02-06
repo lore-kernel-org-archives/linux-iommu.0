@@ -1,7 +1,8 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 02/10] iommu: Rename struct iommu_device
-Date: Mon,  6 Feb 2017 17:10:21 +0100
-Message-ID: <1486397429-29327-3-git-send-email-joro@8bytes.org>
+Subject: [PATCH 08/10] iommu/mediatek: Make use of iommu_device_register
+	interface
+Date: Mon,  6 Feb 2017 17:10:27 +0100
+Message-ID: <1486397429-29327-9-git-send-email-joro@8bytes.org>
 References: <1486397429-29327-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,69 +19,115 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-The struct is used to link devices to iommu-groups, so
-'struct group_device' is a better name. Further this makes
-the name iommu_device available for a struct representing
-hardware iommus.
+Register individual Mediatek IOMMUs to the iommu core and
+add sysfs entries.
 
+Cc: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/iommu.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/iommu/mtk_iommu.c | 26 ++++++++++++++++++++++++++
+ drivers/iommu/mtk_iommu.h |  2 ++
+ 2 files changed, 28 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 0ee05bb..e4e8a93 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -55,7 +55,7 @@ struct iommu_group {
- 	struct iommu_domain *domain;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 1479c76..9fb7258 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -360,11 +360,15 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 
+ static int mtk_iommu_add_device(struct device *dev)
+ {
++	struct mtk_iommu_data *data;
+ 	struct iommu_group *group;
+ 
+ 	if (!dev->iommu_fwspec || dev->iommu_fwspec->ops != &mtk_iommu_ops)
+ 		return -ENODEV; /* Not a iommu client device */
+ 
++	data = dev->iommu_fwspec->iommu_priv;
++	iommu_device_link(&data->iommu, dev);
++
+ 	group = iommu_group_get_for_dev(dev);
+ 	if (IS_ERR(group))
+ 		return PTR_ERR(group);
+@@ -375,9 +379,14 @@ static int mtk_iommu_add_device(struct device *dev)
+ 
+ static void mtk_iommu_remove_device(struct device *dev)
+ {
++	struct mtk_iommu_data *data;
++
+ 	if (!dev->iommu_fwspec || dev->iommu_fwspec->ops != &mtk_iommu_ops)
+ 		return;
+ 
++	data = dev->iommu_fwspec->iommu_priv;
++	iommu_device_unlink(&data->iommu, dev);
++
+ 	iommu_group_remove_device(dev);
+ 	iommu_fwspec_free(dev);
+ }
+@@ -497,6 +506,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	struct mtk_iommu_data   *data;
+ 	struct device           *dev = &pdev->dev;
+ 	struct resource         *res;
++	resource_size_t		ioaddr;
+ 	struct component_match  *match = NULL;
+ 	void                    *protect;
+ 	int                     i, larb_nr, ret;
+@@ -519,6 +529,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	data->base = devm_ioremap_resource(dev, res);
+ 	if (IS_ERR(data->base))
+ 		return PTR_ERR(data->base);
++	ioaddr = res->start;
+ 
+ 	data->irq = platform_get_irq(pdev, 0);
+ 	if (data->irq < 0)
+@@ -567,6 +578,18 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = iommu_device_sysfs_add(&data->iommu, dev, NULL,
++				     "mtk-iommu.%pa", &ioaddr);
++	if (ret)
++		return ret;
++
++	data->iommu.ops    = &mtk_iommu_ops;
++	data->iommu.fwnode = &pdev->dev.of_node->fwnode;
++
++	ret = iommu_device_register(&data->iommu);
++	if (ret)
++		return ret;
++
+ 	if (!iommu_present(&platform_bus_type))
+ 		bus_set_iommu(&platform_bus_type, &mtk_iommu_ops);
+ 
+@@ -577,6 +600,9 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ {
+ 	struct mtk_iommu_data *data = platform_get_drvdata(pdev);
+ 
++	iommu_device_sysfs_remove(&data->iommu);
++	iommu_device_unregister(&data->iommu);
++
+ 	if (iommu_present(&platform_bus_type))
+ 		bus_set_iommu(&platform_bus_type, NULL);
+ 
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index 50177f7..2a28ead 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -47,6 +47,8 @@ struct mtk_iommu_data {
+ 	struct iommu_group		*m4u_group;
+ 	struct mtk_smi_iommu		smi_imu;      /* SMI larb iommu info */
+ 	bool                            enable_4GB;
++
++	struct iommu_device		iommu;
  };
  
--struct iommu_device {
-+struct group_device {
- 	struct list_head list;
- 	struct device *dev;
- 	char *name;
-@@ -374,7 +374,7 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
- int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- {
- 	int ret, i = 0;
--	struct iommu_device *device;
-+	struct group_device *device;
- 
- 	device = kzalloc(sizeof(*device), GFP_KERNEL);
- 	if (!device)
-@@ -449,7 +449,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- void iommu_group_remove_device(struct device *dev)
- {
- 	struct iommu_group *group = dev->iommu_group;
--	struct iommu_device *tmp_device, *device = NULL;
-+	struct group_device *tmp_device, *device = NULL;
- 
- 	pr_info("Removing device %s from group %d\n", dev_name(dev), group->id);
- 
-@@ -484,7 +484,7 @@ void iommu_group_remove_device(struct device *dev)
- 
- static int iommu_group_device_count(struct iommu_group *group)
- {
--	struct iommu_device *entry;
-+	struct group_device *entry;
- 	int ret = 0;
- 
- 	list_for_each_entry(entry, &group->devices, list)
-@@ -507,7 +507,7 @@ static int iommu_group_device_count(struct iommu_group *group)
- static int __iommu_group_for_each_dev(struct iommu_group *group, void *data,
- 				      int (*fn)(struct device *, void *))
- {
--	struct iommu_device *device;
-+	struct group_device *device;
- 	int ret = 0;
- 
- 	list_for_each_entry(device, &group->devices, list) {
+ static inline int compare_of(struct device *dev, void *data)
 -- 
 1.9.1
