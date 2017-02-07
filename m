@@ -1,7 +1,7 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v9 2/8] perf/amd/iommu: Clean up bitwise operations
-Date: Tue, 7 Feb 2017 02:40:30 -0600
-Message-ID: <1486456836-17428-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH v9 3/8] perf/amd/iommu: Clean up perf_iommu_read()
+Date: Tue, 7 Feb 2017 02:40:31 -0600
+Message-ID: <1486456836-17428-4-git-send-email-Suravee.Suthikulpanit@amd.com>
 References: <1486456836-17428-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,66 +21,54 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFL
 Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-
-Clean up register initialization and make use of BIT_ULL(x)
-where appropriate. This should not affect logic and functionality.
+Fix coding style and make use of GENMASK_ULL macro.
 
 Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- arch/x86/events/amd/iommu.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ arch/x86/events/amd/iommu.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
 diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
-index 44638d0..85b634e 100644
+index 85b634e..5bef429 100644
 --- a/arch/x86/events/amd/iommu.c
 +++ b/arch/x86/events/amd/iommu.c
-@@ -164,11 +164,11 @@ static int get_next_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu)
- 	for (bank = 0, shift = 0; bank < max_banks; bank++) {
- 		for (cntr = 0; cntr < max_cntrs; cntr++) {
- 			shift = bank + (bank*3) + cntr;
--			if (perf_iommu->cntr_assign_mask & (1ULL<<shift)) {
-+			if (perf_iommu->cntr_assign_mask & BIT_ULL(shift)) {
- 				continue;
- 			} else {
--				perf_iommu->cntr_assign_mask |= (1ULL<<shift);
--				retval = ((u16)((u16)bank<<8) | (u8)(cntr));
-+				perf_iommu->cntr_assign_mask |= BIT_ULL(shift);
-+				retval = ((bank & 0xFF) << 8) | (cntr & 0xFF);
- 				goto out;
- 			}
- 		}
-@@ -265,23 +265,23 @@ static void perf_iommu_enable_event(struct perf_event *ev)
- 			_GET_BANK(ev), _GET_CNTR(ev) ,
- 			 IOMMU_PC_COUNTER_SRC_REG, &reg, true);
+@@ -320,9 +320,7 @@ static void perf_iommu_start(struct perf_event *event, int flags)
  
--	reg = 0ULL | devid | (_GET_DEVID_MASK(ev) << 32);
-+	reg = devid | (_GET_DEVID_MASK(ev) << 32);
- 	if (reg)
--		reg |= (1UL << 31);
-+		reg |= BIT(31);
- 	amd_iommu_pc_get_set_reg_val(devid,
- 			_GET_BANK(ev), _GET_CNTR(ev) ,
- 			 IOMMU_PC_DEVID_MATCH_REG, &reg, true);
+ static void perf_iommu_read(struct perf_event *event)
+ {
+-	u64 count = 0ULL;
+-	u64 prev_raw_count = 0ULL;
+-	u64 delta = 0ULL;
++	u64 count, prev, delta;
+ 	struct hw_perf_event *hwc = &event->hw;
  
--	reg = 0ULL | _GET_PASID(ev) | (_GET_PASID_MASK(ev) << 32);
-+	reg = _GET_PASID(ev) | (_GET_PASID_MASK(ev) << 32);
- 	if (reg)
--		reg |= (1UL << 31);
-+		reg |= BIT(31);
- 	amd_iommu_pc_get_set_reg_val(devid,
- 			_GET_BANK(ev), _GET_CNTR(ev) ,
- 			 IOMMU_PC_PASID_MATCH_REG, &reg, true);
+ 	amd_iommu_pc_get_set_reg_val(_GET_DEVID(event),
+@@ -330,18 +328,16 @@ static void perf_iommu_read(struct perf_event *event)
+ 				IOMMU_PC_COUNTER_REG, &count, false);
  
--	reg = 0ULL | _GET_DOMID(ev) | (_GET_DOMID_MASK(ev) << 32);
-+	reg = _GET_DOMID(ev) | (_GET_DOMID_MASK(ev) << 32);
- 	if (reg)
--		reg |= (1UL << 31);
-+		reg |= BIT(31);
- 	amd_iommu_pc_get_set_reg_val(devid,
- 			_GET_BANK(ev), _GET_CNTR(ev) ,
- 			 IOMMU_PC_DOMID_MATCH_REG, &reg, true);
+ 	/* IOMMU pc counter register is only 48 bits */
+-	count &= 0xFFFFFFFFFFFFULL;
++	count &= GENMASK_ULL(47, 0);
+ 
+-	prev_raw_count =  local64_read(&hwc->prev_count);
+-	if (local64_cmpxchg(&hwc->prev_count, prev_raw_count,
+-					count) != prev_raw_count)
++	prev = local64_read(&hwc->prev_count);
++	if (local64_cmpxchg(&hwc->prev_count, prev, count) != prev)
+ 		return;
+ 
+-	/* Handling 48-bit counter overflowing */
+-	delta = (count << COUNTER_SHIFT) - (prev_raw_count << COUNTER_SHIFT);
++	/* Handle 48-bit counter overflow */
++	delta = (count << COUNTER_SHIFT) - (prev << COUNTER_SHIFT);
+ 	delta >>= COUNTER_SHIFT;
+ 	local64_add(delta, &event->count);
+-
+ }
+ 
+ static void perf_iommu_stop(struct perf_event *event, int flags)
 -- 
 1.8.3.1
