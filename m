@@ -1,252 +1,96 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v9 8/8] perf/amd/iommu: Enable support for multiple IOMMUs
-Date: Tue, 7 Feb 2017 02:40:36 -0600
-Message-ID: <1486456836-17428-9-git-send-email-Suravee.Suthikulpanit@amd.com>
-References: <1486456836-17428-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH 09/10] iommu/exynos: Make use of iommu_device_register
+ interface
+Date: Tue, 07 Feb 2017 13:36:15 +0100
+Message-ID: <3e4709a7-2231-7c76-18bd-6e2d6b802b8e@samsung.com>
+References: <1486397429-29327-1-git-send-email-joro@8bytes.org>
+ <CGME20170206161330epcas3p185c7719afc89ab2ad87e55e9f62ccfa1@epcas3p1.samsung.com>
+ <1486397429-29327-10-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1486456836-17428-1-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
+Return-path: <linux-samsung-soc-owner@vger.kernel.org>
+In-reply-to: <1486397429-29327-10-git-send-email-joro@8bytes.org>
+Sender: linux-samsung-soc-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Hi Joerg,
 
-Add multi-IOMMU support for perf by exposing an AMD IOMMU PMU
-for each IOMMU found in the system via:
+On 2017-02-06 17:10, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
+>
+> Register Exynos IOMMUs to the IOMMU core and make them
+> visible in sysfs. This patch does not add the links between
+> IOMMUs and translated devices yet.
+>
+> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-samsung-soc@vger.kernel.org
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> ---
+>   drivers/iommu/exynos-iommu.c | 16 ++++++++++++++++
+>   1 file changed, 16 insertions(+)
+>
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 57ba0d3..90f0f52 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -276,6 +276,8 @@ struct sysmmu_drvdata {
+>   	struct list_head owner_node;	/* node for owner controllers list */
+>   	phys_addr_t pgtable;		/* assigned page table structure */
+>   	unsigned int version;		/* our version */
+> +
+> +	struct iommu_device iommu;	/* IOMMU core handle */
+>   };
+>   
+>   static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
+> @@ -556,6 +558,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+>   	struct device *dev = &pdev->dev;
+>   	struct sysmmu_drvdata *data;
+>   	struct resource *res;
+> +	resource_size_t ioaddr;
+>   
+>   	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+>   	if (!data)
+> @@ -565,6 +568,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+>   	data->sfrbase = devm_ioremap_resource(dev, res);
+>   	if (IS_ERR(data->sfrbase))
+>   		return PTR_ERR(data->sfrbase);
+> +	ioaddr = res->start;
+>   
+>   	irq = platform_get_irq(pdev, 0);
+>   	if (irq <= 0) {
+> @@ -611,6 +615,18 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
+>   	data->sysmmu = dev;
+>   	spin_lock_init(&data->lock);
+>   
+> +	ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL,
+> +				     "sysmmu.%pa", &ioaddr);
 
-  /bus/event_source/devices/amd_iommu_x
+Can we stick to the common name across the /sysfs and use 
+dev_name(data->sysmmu)
+or even dev_name(dev) here?
 
-where x is the IOMMU index. This allows users to specify
-different events to be programmed onto performance counters
-of each IOMMU.
+ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL, 
+dev_name(dev));
 
-Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
----
- arch/x86/events/amd/iommu.c | 108 ++++++++++++++++++++++++++------------------
- 1 file changed, 64 insertions(+), 44 deletions(-)
+> +	if (ret)
+> +		return ret;
+> +
+> +	data->iommu.ops    = &exynos_iommu_ops;
+> +	data->iommu.fwnode = &dev->of_node->fwnode;
+> +
+> +	ret = iommu_device_register(&data->iommu);
+> +	if (ret)
+> +		return ret;
+> +
+>   	platform_set_drvdata(pdev, data);
+>   
+>   	__sysmmu_get_version(data);
 
-diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
-index 7bbf405..d9313d2 100644
---- a/arch/x86/events/amd/iommu.c
-+++ b/arch/x86/events/amd/iommu.c
-@@ -35,16 +35,21 @@
- #define _GET_PASID_MASK(ev) ((ev->hw.extra_reg.config >> 16) & 0xFFFFULL)
- #define _GET_DOMID_MASK(ev) ((ev->hw.extra_reg.config >> 32) & 0xFFFFULL)
- 
--static struct perf_amd_iommu __perf_iommu;
-+#define PERF_AMD_IOMMU_NAME_SIZE	16
- 
- struct perf_amd_iommu {
-+	struct list_head list;
- 	struct pmu pmu;
-+	struct amd_iommu *iommu;
-+	char name[PERF_AMD_IOMMU_NAME_SIZE];
- 	u8 max_banks;
- 	u8 max_counters;
- 	u64 cntr_assign_mask;
- 	raw_spinlock_t lock;
- };
- 
-+static LIST_HEAD(perf_amd_iommu_list);
-+
- /*---------------------------------------------
-  * sysfs format attributes
-  *---------------------------------------------*/
-@@ -202,8 +207,6 @@ static int clear_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu,
- static int perf_iommu_event_init(struct perf_event *event)
- {
- 	struct hw_perf_event *hwc = &event->hw;
--	struct perf_amd_iommu *perf_iommu;
--	u64 config, config1;
- 
- 	/* test the event attr type check for PMU enumeration */
- 	if (event->attr.type != event->pmu->type)
-@@ -225,28 +228,21 @@ static int perf_iommu_event_init(struct perf_event *event)
- 	if (event->cpu < 0)
- 		return -EINVAL;
- 
--	perf_iommu = &__perf_iommu;
--
--	if (event->pmu != &perf_iommu->pmu)
--		return -ENOENT;
--
--	if (perf_iommu) {
--		config = event->attr.config;
--		config1 = event->attr.config1;
--	} else {
--		return -EINVAL;
--	}
--
- 	/* update the hw_perf_event struct with the iommu config data */
--	hwc->config = config;
--	hwc->extra_reg.config = config1;
-+	hwc->config           = event->attr.config;
-+	hwc->extra_reg.config = event->attr.config1;
- 
- 	return 0;
- }
- 
-+static inline struct amd_iommu *perf_event_2_iommu(struct perf_event *ev)
-+{
-+	return (container_of(ev->pmu, struct perf_amd_iommu, pmu))->iommu;
-+}
-+
- static void perf_iommu_enable_event(struct perf_event *ev)
- {
--	struct amd_iommu *iommu = get_amd_iommu(0);
-+	struct amd_iommu *iommu = perf_event_2_iommu(ev);
- 	u8 csource = _GET_CSOURCE(ev);
- 	u16 devid = _GET_DEVID(ev);
- 	u8 bank = _GET_BANK(ev);
-@@ -274,7 +270,7 @@ static void perf_iommu_enable_event(struct perf_event *ev)
- 
- static void perf_iommu_disable_event(struct perf_event *event)
- {
--	struct amd_iommu *iommu = get_amd_iommu(0);
-+	struct amd_iommu *iommu = perf_event_2_iommu(event);
- 	u64 reg = 0ULL;
- 
- 	amd_iommu_pc_set_reg(iommu, _GET_BANK(event), _GET_CNTR(event),
-@@ -284,7 +280,7 @@ static void perf_iommu_disable_event(struct perf_event *event)
- static void perf_iommu_start(struct perf_event *event, int flags)
- {
- 	struct hw_perf_event *hwc = &event->hw;
--	struct amd_iommu *iommu = get_amd_iommu(0);
-+	struct amd_iommu *iommu = perf_event_2_iommu(event);
- 
- 	if (WARN_ON_ONCE(!(hwc->state & PERF_HES_STOPPED)))
- 		return;
-@@ -307,7 +303,7 @@ static void perf_iommu_read(struct perf_event *event)
- {
- 	u64 count, prev, delta;
- 	struct hw_perf_event *hwc = &event->hw;
--	struct amd_iommu *iommu = get_amd_iommu(0);
-+	struct amd_iommu *iommu = perf_event_2_iommu(event);
- 
- 	if (amd_iommu_pc_get_reg(iommu, _GET_BANK(event), _GET_CNTR(event),
- 				 IOMMU_PC_COUNTER_REG, &count))
-@@ -403,6 +399,13 @@ static __init int _init_events_attrs(void)
- 
- static __init void amd_iommu_pc_exit(void)
- {
-+	struct perf_amd_iommu *pi, *next;
-+
-+	list_for_each_entry_safe(pi, next, &perf_amd_iommu_list, list) {
-+		list_del(&pi->list);
-+		kfree(pi);
-+	}
-+
- 	kfree(amd_iommu_events_group.attrs);
- }
- 
-@@ -414,46 +417,46 @@ static __init void amd_iommu_pc_exit(void)
- };
- 
- static __init int
--_init_perf_amd_iommu(struct perf_amd_iommu *perf_iommu, char *name)
-+init_one_perf_amd_iommu(struct perf_amd_iommu *perf_iommu, unsigned int idx)
- {
- 	int ret;
- 
- 	raw_spin_lock_init(&perf_iommu->lock);
- 
--	/* Init cpumask attributes to only core 0 */
--	cpumask_set_cpu(0, &iommu_cpumask);
--
--	perf_iommu->max_banks    = amd_iommu_pc_get_max_banks(0);
--	perf_iommu->max_counters = amd_iommu_pc_get_max_counters(0);
-+	perf_iommu->iommu	 = get_amd_iommu(idx);
-+	perf_iommu->max_banks    = amd_iommu_pc_get_max_banks(idx);
-+	perf_iommu->max_counters = amd_iommu_pc_get_max_counters(idx);
- 	if (!perf_iommu->max_banks || !perf_iommu->max_counters)
- 		return -EINVAL;
- 
-+	snprintf(perf_iommu->name, PERF_AMD_IOMMU_NAME_SIZE, "amd_iommu_%u", idx);
-+
-+	perf_iommu->pmu.event_init  = perf_iommu_event_init;
-+	perf_iommu->pmu.add         = perf_iommu_add;
-+	perf_iommu->pmu.del         = perf_iommu_del;
-+	perf_iommu->pmu.start       = perf_iommu_start;
-+	perf_iommu->pmu.stop        = perf_iommu_stop;
-+	perf_iommu->pmu.read        = perf_iommu_read;
-+	perf_iommu->pmu.task_ctx_nr = perf_invalid_context;
- 	perf_iommu->pmu.attr_groups = amd_iommu_attr_groups;
--	ret = perf_pmu_register(&perf_iommu->pmu, name, -1);
-+
-+	ret = perf_pmu_register(&perf_iommu->pmu, perf_iommu->name, -1);
- 	if (ret)
- 		pr_err("Error initializing AMD IOMMU perf counters.\n");
- 	else
--		pr_info("perf: amd_iommu: Detected. (%d banks, %d counters/bank)\n",
--			amd_iommu_pc_get_max_banks(0),
--			amd_iommu_pc_get_max_counters(0));
-+	pr_info("Detected AMD IOMMU #%d (%d banks, %d counters/bank)\n",
-+		idx, amd_iommu_pc_get_max_banks(idx),
-+		amd_iommu_pc_get_max_counters(idx));
- 	return ret;
- }
- 
--static struct perf_amd_iommu __perf_iommu = {
--	.pmu = {
--		.task_ctx_nr    = perf_invalid_context,
--		.event_init	= perf_iommu_event_init,
--		.add		= perf_iommu_add,
--		.del		= perf_iommu_del,
--		.start		= perf_iommu_start,
--		.stop		= perf_iommu_stop,
--		.read		= perf_iommu_read,
--	},
--};
--
- static __init int amd_iommu_pc_init(void)
- {
- 	int ret;
-+	unsigned int i;
-+
-+	/* Init cpumask attributes to only core 0 */
-+	cpumask_set_cpu(0, &iommu_cpumask);
- 
- 	/* Make sure the IOMMU PC resource is available */
- 	if (!amd_iommu_pc_supported())
-@@ -463,7 +466,24 @@ static __init int amd_iommu_pc_init(void)
- 	if (ret)
- 		return ret;
- 
--	ret = _init_perf_amd_iommu(&__perf_iommu, "amd_iommu");
-+	for (i = 0 ; i < amd_iommu_get_num_iommus(); i++) {
-+		struct perf_amd_iommu *pi;
-+
-+		pi = kzalloc(sizeof(struct perf_amd_iommu), GFP_KERNEL);
-+		if (!pi) {
-+			ret = -ENOMEM;
-+			break;
-+		}
-+
-+		ret = init_one_perf_amd_iommu(pi, i);
-+		if (ret) {
-+			kfree(pi);
-+			break;
-+		}
-+
-+		list_add_tail(&pi->list, &perf_amd_iommu_list);
-+	}
-+
- 	if (ret)
- 		amd_iommu_pc_exit();
- 
+Best regards
 -- 
-1.8.3.1
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
