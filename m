@@ -1,96 +1,70 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH 09/10] iommu/exynos: Make use of iommu_device_register
- interface
-Date: Tue, 07 Feb 2017 13:36:15 +0100
-Message-ID: <3e4709a7-2231-7c76-18bd-6e2d6b802b8e@samsung.com>
-References: <1486397429-29327-1-git-send-email-joro@8bytes.org>
- <CGME20170206161330epcas3p185c7719afc89ab2ad87e55e9f62ccfa1@epcas3p1.samsung.com>
- <1486397429-29327-10-git-send-email-joro@8bytes.org>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [PATCH v2 05/11] iommu/ipmmu-vmsa: Make use of IOMMU_OF_DECLARE()
+Date: Tue, 7 Feb 2017 13:59:11 +0100
+Message-ID: <CAMuHMdWSDrcbrh5+hQ4SqwOxobG0b1zpRN0+Gpgopi+kzLOLQg@mail.gmail.com>
+References: <20160606035723.31763.66500.sendpatchset@little-apple>
+	<20160606035810.31763.53611.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-In-reply-to: <1486397429-29327-10-git-send-email-joro@8bytes.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20160606035810.31763.53611.sendpatchset@little-apple>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Hi Magnus,
 
-On 2017-02-06 17:10, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel@suse.de>
+On Mon, Jun 6, 2016 at 5:58 AM, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 >
-> Register Exynos IOMMUs to the IOMMU core and make them
-> visible in sysfs. This patch does not add the links between
-> IOMMUs and translated devices yet.
+> Hook up IOMMU_OF_DECLARE() support in case CONFIG_IOMMU_DMA
+> is enabled. The only current supported case for 32-bit ARM
+> is disabled, however for 64-bit ARM this is required.
 >
-> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-samsung-soc@vger.kernel.org
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 > ---
->   drivers/iommu/exynos-iommu.c | 16 ++++++++++++++++
->   1 file changed, 16 insertions(+)
 >
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index 57ba0d3..90f0f52 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -276,6 +276,8 @@ struct sysmmu_drvdata {
->   	struct list_head owner_node;	/* node for owner controllers list */
->   	phys_addr_t pgtable;		/* assigned page table structure */
->   	unsigned int version;		/* our version */
-> +
-> +	struct iommu_device iommu;	/* IOMMU core handle */
->   };
->   
->   static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
-> @@ -556,6 +558,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
->   	struct device *dev = &pdev->dev;
->   	struct sysmmu_drvdata *data;
->   	struct resource *res;
-> +	resource_size_t ioaddr;
->   
->   	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
->   	if (!data)
-> @@ -565,6 +568,7 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
->   	data->sfrbase = devm_ioremap_resource(dev, res);
->   	if (IS_ERR(data->sfrbase))
->   		return PTR_ERR(data->sfrbase);
-> +	ioaddr = res->start;
->   
->   	irq = platform_get_irq(pdev, 0);
->   	if (irq <= 0) {
-> @@ -611,6 +615,18 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
->   	data->sysmmu = dev;
->   	spin_lock_init(&data->lock);
->   
-> +	ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL,
-> +				     "sysmmu.%pa", &ioaddr);
+>  Changes since V1:
+>  - Reworked slightly to fit updated patch order and
+>    [PATCH v3 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update V3
+>
+>  drivers/iommu/ipmmu-vmsa.c |   26 ++++++++++++++++++++++++++
+>  1 file changed, 26 insertions(+)
+>
+> --- 0015/drivers/iommu/ipmmu-vmsa.c
+> +++ work/drivers/iommu/ipmmu-vmsa.c     2016-06-06 10:57:26.790607110 +0900
 
-Can we stick to the common name across the /sysfs and use 
-dev_name(data->sysmmu)
-or even dev_name(dev) here?
-
-ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL, 
-dev_name(dev));
-
-> +	if (ret)
-> +		return ret;
+> +#ifdef CONFIG_IOMMU_DMA
+> +static int __init ipmmu_vmsa_iommu_of_setup(struct device_node *np)
+> +{
+> +       static const struct iommu_ops *ops = &ipmmu_ops;
 > +
-> +	data->iommu.ops    = &exynos_iommu_ops;
-> +	data->iommu.fwnode = &dev->of_node->fwnode;
+> +       ipmmu_init();
 > +
-> +	ret = iommu_device_register(&data->iommu);
-> +	if (ret)
-> +		return ret;
-> +
->   	platform_set_drvdata(pdev, data);
->   
->   	__sysmmu_get_version(data);
+> +       of_iommu_set_ops(np, (struct iommu_ops *)ops);
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+As of commit 65e251a4634c5644 ("iommu: Drop the of_iommu_{set/get}_ops()
+interface"), this should become:
+
+        iommu_register_instance(&np->fwnode, (struct iommu_ops *)ops);
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
