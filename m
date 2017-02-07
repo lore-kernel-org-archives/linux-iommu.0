@@ -1,14 +1,14 @@
 From: kbuild test robot <lkp-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 08/10] iommu/mediatek: Make use of iommu_device_register
+Subject: Re: [PATCH 09/10] iommu/exynos: Make use of iommu_device_register
 	interface
-Date: Tue, 7 Feb 2017 12:51:28 +0800
-Message-ID: <201702071256.v8ex5COX%fengguang.wu@intel.com>
-References: <1486397429-29327-9-git-send-email-joro@8bytes.org>
+Date: Tue, 7 Feb 2017 13:12:07 +0800
+Message-ID: <201702071323.LHot8M9l%fengguang.wu@intel.com>
+References: <1486397429-29327-10-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="2oS5YaxWCcQjTEyO"
+Content-Type: multipart/mixed; boundary="7AUc2qLy4jB3hD7Z"
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1486397429-29327-9-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1486397429-29327-10-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,11 +19,11 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, kbuild-all-JC7UmRfGjtg@public.gmane.org, Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, kbuild-all-JC7UmRfGjtg@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 
---2oS5YaxWCcQjTEyO
+--7AUc2qLy4jB3hD7Z
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
@@ -48,34 +48,34 @@ Note: the linux-review/Joerg-Roedel/Let-IOMMU-core-know-about-individual-IOMMUs/
 
 All errors (new ones prefixed by >>):
 
-   drivers/iommu/mtk_iommu.c: In function 'mtk_iommu_probe':
->> drivers/iommu/mtk_iommu.c:587:13: error: 'struct iommu_device' has no member named 'fwnode'
-     data->iommu.fwnode = &pdev->dev.of_node->fwnode;
+   drivers/iommu/exynos-iommu.c: In function 'exynos_sysmmu_probe':
+>> drivers/iommu/exynos-iommu.c:624:13: error: 'struct iommu_device' has no member named 'fwnode'
+     data->iommu.fwnode = &dev->of_node->fwnode;
                 ^
 
-vim +587 drivers/iommu/mtk_iommu.c
+vim +624 drivers/iommu/exynos-iommu.c
 
-   581		ret = iommu_device_sysfs_add(&data->iommu, dev, NULL,
-   582					     "mtk-iommu.%pa", &ioaddr);
-   583		if (ret)
-   584			return ret;
-   585	
-   586		data->iommu.ops    = &mtk_iommu_ops;
- > 587		data->iommu.fwnode = &pdev->dev.of_node->fwnode;
-   588	
-   589		ret = iommu_device_register(&data->iommu);
-   590		if (ret)
+   618		ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL,
+   619					     "sysmmu.%pa", &ioaddr);
+   620		if (ret)
+   621			return ret;
+   622	
+   623		data->iommu.ops    = &exynos_iommu_ops;
+ > 624		data->iommu.fwnode = &dev->of_node->fwnode;
+   625	
+   626		ret = iommu_device_register(&data->iommu);
+   627		if (ret)
 
 ---
 0-DAY kernel test infrastructure                Open Source Technology Center
 https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
---2oS5YaxWCcQjTEyO
+--7AUc2qLy4jB3hD7Z
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICNxQmVgAAy5jb25maWcAjFxbk9u2kn7Pr1A5+7D7kIzu0uzWPIAkJCEiCQ4ASpp5QSkT
+H4sICJ5VmVgAAy5jb25maWcAjFxbk9u2kn7Pr1A5+7D7kIzu0uzWPIAkJCEiCQ4ASpp5QSkT
 2VGduXg145x4f/02AFLETXJSp46trxtAA2j0DaB//unnHvr28fay/zg+7Z+fv/e+HF4Pp/3H
 4Y/e5+Pz4X96Ge2VVPRwRsSvwJwfX7/9fbM/vfTGvw76v/Z/OT3NeuvD6fXw3EvfXj8fv3yD
 1se3159+/iml5YIsJWLF3Xfrh1whLvlSpitEyo5SYpwpOCuQzHG5FCu3lcJrjiWhRVGHJA1L
@@ -1183,11 +1183,11 @@ eytCs1/UpyFCoOyaOBL0ZStkDhz8rzfjX47MBlZNMkepJDr0fnmeAQ8Hv4YkKwFquAl9NhUQ
 TDN3mVAKGHYsOB6OsDAqqKmpMG2C4dhQ+0l8Z3ip3oFGJMgQJgTem49vFgrbCeacAUHzO4wT
 Dl6TYj/TXqsly/8DdLQxTAfPAwA=
 
---2oS5YaxWCcQjTEyO
+--7AUc2qLy4jB3hD7Z
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
 
 
---2oS5YaxWCcQjTEyO--
+--7AUc2qLy4jB3hD7Z--
