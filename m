@@ -1,18 +1,21 @@
-From: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH 09/10] iommu/exynos: Make use of iommu_device_register
-	interface
-Date: Wed, 08 Feb 2017 15:09:33 +0100
-Message-ID: <5fef7241-bb87-54ed-2516-d3207334274d@samsung.com>
-References: <1486397429-29327-1-git-send-email-joro@8bytes.org>
-	<CGME20170206161330epcas3p185c7719afc89ab2ad87e55e9f62ccfa1@epcas3p1.samsung.com>
-	<1486397429-29327-10-git-send-email-joro@8bytes.org>
-	<3e4709a7-2231-7c76-18bd-6e2d6b802b8e@samsung.com>
-	<20170208135742.GE7339@8bytes.org>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH V2 1/3] iommu/arm-smmu: Add pm_runtime/sleep ops
+Date: Wed, 8 Feb 2017 14:30:46 +0000
+Message-ID: <db9bc01c-635d-1a57-8a6c-9be19a0cda16@arm.com>
+References: <1486055420-19671-1-git-send-email-sricharan@codeaurora.org>
+	<1486055420-19671-2-git-send-email-sricharan@codeaurora.org>
+	<20170202174218.GO31394@leverpostej>
+	<017701d281f9$927c5fb0$b7751f10$@codeaurora.org>
+	<20170208114002.GD15459@leverpostej>
+	<018401d28207$34db60a0$9e9221e0$@codeaurora.org>
+	<b55359d8-2665-aef0-3215-53a0e8f21bcd@arm.com>
+	<000301d28211$a5233a90$ef69afb0$@codeaurora.org>
+	<20170208135252.GF15459@leverpostej>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20170208135742.GE7339-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <20170208135252.GF15459@leverpostej>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,54 +25,54 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-samsung-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, mathieu.poirier-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
-
-On 2017-02-08 14:57, Joerg Roedel wrote:
-> On Tue, Feb 07, 2017 at 01:36:15PM +0100, Marek Szyprowski wrote:
->>> +	ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL,
->>> +				     "sysmmu.%pa", &ioaddr);
->> Can we stick to the common name across the /sysfs and use
->> dev_name(data->sysmmu)
->> or even dev_name(dev) here?
+On 08/02/17 13:52, Mark Rutland wrote:
+> On Wed, Feb 08, 2017 at 07:15:37PM +0530, Sricharan wrote:
+>>> Clocks are not architectural, so it only makes sense to associate them
+>>> with an implementation-specific compatible string. There's also no
 >>
->> ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL,
->> dev_name(dev));
-> That means that we have multiple 'struct device' with the same name,
-> no? I think will lead to confusion when using dev_printk, as its not
-> clear anymore which device is refered to in the message.
+>> ok, it for this the QCOM specific implementation binding is tried(going to).
+>>
+>>> guarantee that different microarchitectures have equivalent internal
+>>> clock domains - I'm not sure if "the SMMU's underlying bus access" is
+>>> meant to refer to accesses *by* the SMMU, i.e. page table walks,
+>>> accesses *through* the SMMU by upstream masters, or both
+>>
+>> In the above QCOM case, it is actually both. Its the same path for both the
+>> page table walker and upstream masters.
 
-Each sysmmu device has unique name, like every other platform device
-instantiated from device tree. Here is an example from the OdroidXU3
-(Exynos5422 based):
+Right, that's what I feared. As far as I can make out the current ARM
+implementations, transactions passing through will require at least
+TBUn_BCLK for the appropriate TBU, but would also need the page table
+walker clocked with CCLK to resolve TLB misses. But then the programming
+interface is also in the CCLK domain (not counting the incoming APB or
+AXI clock for the actual slave port itself). Thus this 'generic' clock
+binding already isn't compatible with MMU-40x/500.
 
-# ls -1 /sys/bus/platform/devices/ | grep sysmmu
-10a60000.sysmmu
-10a70000.sysmmu
-11200000.sysmmu
-11210000.sysmmu
-11d40000.sysmmu
-11f10000.sysmmu
-11f20000.sysmmu
-12880000.sysmmu
-12890000.sysmmu
-128a0000.sysmmu
-128c0000.sysmmu
-128d0000.sysmmu
-128e0000.sysmmu
-13e80000.sysmmu
-13e90000.sysmmu
-14640000.sysmmu
-14650000.sysmmu
-14680000.sysmmu
+>>> differences are rather significant. I'd also note that an MMU-500
+>>> configuration may have up to *33* clocks.
+>>>
+>>> Either way, the QCOM implementation deserves its own compatible if only
+>>> for the sake of the imp-def gaps in the architecture (e.g. FSR.SS
+>>> behaviour WRT to IRQs as touched upon in the other thread).
+>>>
+>>
+>> Ok, slightly unclear, so you mean then *clocks* are not good enough reason
+>> to have a new compatible ?
+> 
+> I beleive Robin's point was even if the clocks didn't matter, there are
+> other reasons we should have the QCOM-specific compatible string.
+> 
+> So we should have one regardless.
 
-IMHO there is no need for open coding new unique names if device name,
-which already contains the base address, can be used instead.
+Exactly.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Robin.
+
+> 
+> Thanks,
+> Mark.
+> 
