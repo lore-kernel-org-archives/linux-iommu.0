@@ -1,16 +1,16 @@
 From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH v9 5/8] perf/amd/iommu: Modify functions to query max
-	banks and counters
-Date: Wed, 8 Feb 2017 20:31:40 +0100
-Message-ID: <20170208193140.pzljikzicjaix6vw@pd.tnic>
+Subject: Re: [PATCH v9 6/8] perf/amd/iommu: Modify
+	amd_iommu_pc_get_set_reg_val() to allow specifying IOMMU
+Date: Wed, 8 Feb 2017 20:32:33 +0100
+Message-ID: <20170208193233.qp53skb7cjhqwdut@pd.tnic>
 References: <1486456836-17428-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1486456836-17428-6-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1486456836-17428-7-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1486456836-17428-6-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+In-Reply-To: <1486456836-17428-7-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,17 +24,12 @@ To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 07, 2017 at 02:40:33AM -0600, Suravee Suthikulpanit wrote:
-> Currently, amd_iommu_pc_get_max_[banks|counters]() use end-point
-> device ID to locate an IOMMU and check the reported max banks/counters.
-> The logic assumes that the IOMMU_BASE_DEVID belongs to the first IOMMU,
-> and uses it to acquire a reference to the first IOMMU, which does not work
-> on certain systems. Instead, modify the function to take an IOMMU index,
-> and use it to query the corresponding AMD IOMMU instance.
+On Tue, Feb 07, 2017 at 02:40:34AM -0600, Suravee Suthikulpanit wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 > 
-> Currently, hardcodes the IOMMU index to 0 since the current AMD IOMMU
-> perf implementation only supports a single IOMMU. A subsequent
-> patch will add support for multiple IOMMUs, and will use a proper IOMMU index.
+> The current amd_iommu_pc_get_set_reg_val() cannot support multiple IOMMUs.
+> So, modify it to allow callers to specify IOMMU. This prepares the driver
+> for supporting multi-IOMMU in subsequent patch.
 > 
 > Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 > Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
@@ -44,33 +39,36 @@ On Tue, Feb 07, 2017 at 02:40:33AM -0600, Suravee Suthikulpanit wrote:
 
 ...
 
-> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-> index 1b5adb4..eb654e7 100644
-> --- a/drivers/iommu/amd_iommu_init.c
-> +++ b/drivers/iommu/amd_iommu_init.c
-> @@ -2715,6 +2715,21 @@ bool amd_iommu_v2_supported(void)
+> @@ -2765,48 +2763,58 @@ u8 amd_iommu_pc_get_max_counters(unsigned int idx)
 >  }
->  EXPORT_SYMBOL(amd_iommu_v2_supported);
+>  EXPORT_SYMBOL(amd_iommu_pc_get_max_counters);
 >  
-> +struct amd_iommu *get_amd_iommu(unsigned int idx)
-> +{
-> +	unsigned int i = 0;
-> +	struct amd_iommu *iommu, *ret = NULL;
+> -static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
+> -				    u8 bank, u8 cntr, u8 fxn,
+> -				    u64 *value, bool is_write)
+> +static int iommu_pc_get_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
+> +				u8 fxn, u64 *value, bool is_write)
+>  {
+
+...
+
+>  	if (is_write) {
+> -		writel((u32)*value, iommu->mmio_base + offset);
+> -		writel((*value >> 32), iommu->mmio_base + offset + 4);
+> +		u64 val = *value & GENMASK_ULL(47, 0);
 > +
-> +	for_each_iommu(iommu) {
-> +		if (i++ == idx) {
-> +			ret = iommu;
-> +			break;
+> +		writel((u32)val, iommu->mmio_base + offset);
+> +		writel((val >> 32), iommu->mmio_base + offset + 4);
+>  	} else {
+>  		*value = readl(iommu->mmio_base + offset + 4);
+>  		*value <<= 32;
+> -		*value = readl(iommu->mmio_base + offset);
+> +		*value |= readl(iommu->mmio_base + offset);
+> +		*value &= GENMASK_ULL(47, 0);
+>  	}
+>  
 
-			return iommu;
-
-no need for the assignment and the break.
-
-> +		}
-> +	}
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(get_amd_iommu);
+This is an unrelated cleanup - please put in a separate patch.
 
 -- 
 Regards/Gruss,
