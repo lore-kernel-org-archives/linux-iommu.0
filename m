@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 08/11] iommu/msm: Make use of iommu_device_register interface
-Date: Thu,  9 Feb 2017 12:32:57 +0100
-Message-ID: <1486639981-32368-9-git-send-email-joro@8bytes.org>
+Subject: [PATCH 06/11] iommu: Add iommu_device_set_fwnode() interface
+Date: Thu,  9 Feb 2017 12:32:55 +0100
+Message-ID: <1486639981-32368-7-git-send-email-joro@8bytes.org>
 References: <1486639981-32368-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,147 +23,49 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Register the MSM IOMMUs to the iommu core and add sysfs
-entries for that driver.
+Allow to store a fwnode in 'struct iommu_device';
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/msm_iommu.c | 73 +++++++++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/msm_iommu.h |  3 ++
- 2 files changed, 76 insertions(+)
+ include/linux/iommu.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index b09692b..30795cb 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -371,6 +371,58 @@ static int msm_iommu_domain_config(struct msm_priv *priv)
- 	return 0;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index bae3cfc..626c935 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -214,6 +214,7 @@ struct iommu_ops {
+ struct iommu_device {
+ 	struct list_head list;
+ 	const struct iommu_ops *ops;
++	struct fwnode_handle *fwnode;
+ 	struct device dev;
+ };
+ 
+@@ -233,6 +234,12 @@ static inline void iommu_device_set_ops(struct iommu_device *iommu,
+ 	iommu->ops = ops;
  }
  
-+/* Must be called under msm_iommu_lock */
-+static struct msm_iommu_dev *find_iommu_for_dev(struct device *dev)
++static inline void iommu_device_set_fwnode(struct iommu_device *iommu,
++					   struct fwnode_handle *fwnode)
 +{
-+	struct msm_iommu_dev *iommu, *ret = NULL;
-+	struct msm_iommu_ctx_dev *master;
-+
-+	list_for_each_entry(iommu, &qcom_iommu_devices, dev_node) {
-+		master = list_first_entry(&iommu->ctx_list,
-+					  struct msm_iommu_ctx_dev,
-+					  list);
-+		if (master->of_node == dev->of_node) {
-+			ret = iommu;
-+			break;
-+		}
-+	}
-+
-+	return ret;
++	iommu->fwnode = fwnode;
 +}
 +
-+static int msm_iommu_add_device(struct device *dev)
-+{
-+	struct msm_iommu_dev *iommu;
-+	unsigned long flags;
-+	int ret = 0;
-+
-+	spin_lock_irqsave(&msm_iommu_lock, flags);
-+
-+	iommu = find_iommu_for_dev(dev);
-+	if (iommu)
-+		iommu_device_link(&iommu->iommu, dev);
-+	else
-+		ret = -ENODEV;
-+
-+	spin_unlock_irqrestore(&msm_iommu_lock, flags);
-+
-+	return ret;
-+}
-+
-+static void msm_iommu_remove_device(struct device *dev)
-+{
-+	struct msm_iommu_dev *iommu;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&msm_iommu_lock, flags);
-+
-+	iommu = find_iommu_for_dev(dev);
-+	if (iommu)
-+		iommu_device_unlink(&iommu->iommu, dev);
-+
-+	spin_unlock_irqrestore(&msm_iommu_lock, flags);
-+}
-+
- static int msm_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
+ #define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
+ #define IOMMU_GROUP_NOTIFY_BIND_DRIVER		3 /* Pre Driver bind */
+@@ -580,6 +587,11 @@ static inline void iommu_device_set_ops(struct iommu_device *iommu,
  {
- 	int ret = 0;
-@@ -646,6 +698,8 @@ irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id)
- 	.unmap = msm_iommu_unmap,
- 	.map_sg = default_iommu_map_sg,
- 	.iova_to_phys = msm_iommu_iova_to_phys,
-+	.add_device = msm_iommu_add_device,
-+	.remove_device = msm_iommu_remove_device,
- 	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
- 	.of_xlate = qcom_iommu_of_xlate,
- };
-@@ -653,6 +707,7 @@ irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id)
- static int msm_iommu_probe(struct platform_device *pdev)
+ }
+ 
++static inline void iommu_device_set_fwnode(struct iommu_device *iommu,
++					   struct fwnode_handle *fwnode)
++{
++}
++
+ static inline void iommu_device_unregister(struct iommu_device *iommu)
  {
- 	struct resource *r;
-+	resource_size_t ioaddr;
- 	struct msm_iommu_dev *iommu;
- 	int ret, par, val;
- 
-@@ -696,6 +751,7 @@ static int msm_iommu_probe(struct platform_device *pdev)
- 		ret = PTR_ERR(iommu->base);
- 		goto fail;
- 	}
-+	ioaddr = r->start;
- 
- 	iommu->irq = platform_get_irq(pdev, 0);
- 	if (iommu->irq < 0) {
-@@ -737,6 +793,23 @@ static int msm_iommu_probe(struct platform_device *pdev)
- 	}
- 
- 	list_add(&iommu->dev_node, &qcom_iommu_devices);
-+
-+	ret = iommu_device_sysfs_add(&iommu->iommu, iommu->dev, NULL,
-+				     "msm-smmu.%pa", &ioaddr);
-+	if (ret) {
-+		pr_err("Could not add msm-smmu at %pa to sysfs\n", &ioaddr);
-+		goto fail;
-+	}
-+
-+	iommu_device_set_ops(&iommu->iommu, &msm_iommu_ops);
-+	iommu_device_set_fwnode(&iommu->iommu, &pdev->dev.of_node->fwnode);
-+
-+	ret = iommu_device_register(&iommu->iommu);
-+	if (ret) {
-+		pr_err("Could not register msm-smmu at %pa\n", &ioaddr);
-+		goto fail;
-+	}
-+
- 	of_iommu_set_ops(pdev->dev.of_node, &msm_iommu_ops);
- 
- 	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
-diff --git a/drivers/iommu/msm_iommu.h b/drivers/iommu/msm_iommu.h
-index 4ca25d5..ae92d27 100644
---- a/drivers/iommu/msm_iommu.h
-+++ b/drivers/iommu/msm_iommu.h
-@@ -19,6 +19,7 @@
- #define MSM_IOMMU_H
- 
- #include <linux/interrupt.h>
-+#include <linux/iommu.h>
- #include <linux/clk.h>
- 
- /* Sharability attributes of MSM IOMMU mappings */
-@@ -68,6 +69,8 @@ struct msm_iommu_dev {
- 	struct list_head dom_node;
- 	struct list_head ctx_list;
- 	DECLARE_BITMAP(context_map, IOMMU_MAX_CBS);
-+
-+	struct iommu_device iommu;
- };
- 
- /**
+ }
 -- 
 1.9.1
