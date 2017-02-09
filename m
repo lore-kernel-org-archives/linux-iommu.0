@@ -1,8 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 05/11] iommu: Make iommu_device_link/unlink take a struct
-	iommu_device
-Date: Thu,  9 Feb 2017 12:32:54 +0100
-Message-ID: <1486639981-32368-6-git-send-email-joro@8bytes.org>
+Subject: [PATCH 07/11] iommu/arm-smmu: Make use of the iommu_register interface
+Date: Thu,  9 Feb 2017 12:32:56 +0100
+Message-ID: <1486639981-32368-8-git-send-email-joro@8bytes.org>
 References: <1486639981-32368-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,126 +23,170 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-This makes the interface more consistent with
-iommu_device_sysfs_add/remove.
+Also add the smmu devices to sysfs.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c   |  4 ++--
- drivers/iommu/intel-iommu.c |  4 ++--
- drivers/iommu/iommu-sysfs.c | 16 ++++++++--------
- include/linux/iommu.h       |  4 ++--
- 4 files changed, 14 insertions(+), 14 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 22 +++++++++++++++++++++-
+ drivers/iommu/arm-smmu.c    | 30 ++++++++++++++++++++++++++++++
+ 2 files changed, 51 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index a584ac2..b8adfcc 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -472,7 +472,7 @@ static int iommu_init_device(struct device *dev)
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 4d6ec44..32133e2 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -616,6 +616,9 @@ struct arm_smmu_device {
+ 	unsigned int			sid_bits;
  
- 	dev->archdata.iommu = dev_data;
+ 	struct arm_smmu_strtab_cfg	strtab_cfg;
++
++	/* IOMMU core code handle */
++	struct iommu_device		iommu;
+ };
  
--	iommu_device_link(&iommu->iommu.dev, dev);
-+	iommu_device_link(&iommu->iommu, dev);
- 
- 	return 0;
- }
-@@ -514,7 +514,7 @@ static void iommu_uninit_device(struct device *dev)
- 	if (dev_data->domain)
- 		detach_device(dev);
- 
--	iommu_device_unlink(&iommu->iommu.dev, dev);
-+	iommu_device_unlink(&iommu->iommu, dev);
- 
- 	iommu_group_remove_device(dev);
- 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 0e52086..e1e8ec4 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -5181,7 +5181,7 @@ static int intel_iommu_add_device(struct device *dev)
- 	if (!iommu)
- 		return -ENODEV;
- 
--	iommu_device_link(&iommu->iommu.dev, dev);
-+	iommu_device_link(&iommu->iommu, dev);
+ /* SMMU private data for each master */
+@@ -1795,8 +1798,10 @@ static int arm_smmu_add_device(struct device *dev)
+ 	}
  
  	group = iommu_group_get_for_dev(dev);
+-	if (!IS_ERR(group))
++	if (!IS_ERR(group)) {
+ 		iommu_group_put(group);
++		iommu_device_link(&smmu->iommu, dev);
++	}
  
-@@ -5203,7 +5203,7 @@ static void intel_iommu_remove_device(struct device *dev)
- 
- 	iommu_group_remove_device(dev);
- 
--	iommu_device_unlink(&iommu->iommu.dev, dev);
-+	iommu_device_unlink(&iommu->iommu, dev);
+ 	return PTR_ERR_OR_ZERO(group);
  }
- 
- #ifdef CONFIG_INTEL_IOMMU_SVM
-diff --git a/drivers/iommu/iommu-sysfs.c b/drivers/iommu/iommu-sysfs.c
-index bb87d35..c58351e 100644
---- a/drivers/iommu/iommu-sysfs.c
-+++ b/drivers/iommu/iommu-sysfs.c
-@@ -95,31 +95,31 @@ void iommu_device_sysfs_remove(struct iommu_device *iommu)
-  * directory of the IOMMU device in sysfs and an "iommu" link will be
-  * created under the linked device, pointing back at the IOMMU device.
-  */
--int iommu_device_link(struct device *dev, struct device *link)
-+int iommu_device_link(struct iommu_device *iommu, struct device *link)
+@@ -1805,14 +1810,17 @@ static void arm_smmu_remove_device(struct device *dev)
  {
- 	int ret;
+ 	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+ 	struct arm_smmu_master_data *master;
++	struct arm_smmu_device *smmu;
  
--	if (!dev || IS_ERR(dev))
-+	if (!iommu || IS_ERR(iommu))
- 		return -ENODEV;
- 
--	ret = sysfs_add_link_to_group(&dev->kobj, "devices",
-+	ret = sysfs_add_link_to_group(&iommu->dev.kobj, "devices",
- 				      &link->kobj, dev_name(link));
- 	if (ret)
- 		return ret;
- 
--	ret = sysfs_create_link_nowarn(&link->kobj, &dev->kobj, "iommu");
-+	ret = sysfs_create_link_nowarn(&link->kobj, &iommu->dev.kobj, "iommu");
- 	if (ret)
--		sysfs_remove_link_from_group(&dev->kobj, "devices",
-+		sysfs_remove_link_from_group(&iommu->dev.kobj, "devices",
- 					     dev_name(link));
- 
- 	return ret;
- }
- 
--void iommu_device_unlink(struct device *dev, struct device *link)
-+void iommu_device_unlink(struct iommu_device *iommu, struct device *link)
- {
--	if (!dev || IS_ERR(dev))
-+	if (!iommu || IS_ERR(iommu))
+ 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
  		return;
  
- 	sysfs_remove_link(&link->kobj, "iommu");
--	sysfs_remove_link_from_group(&dev->kobj, "devices", dev_name(link));
-+	sysfs_remove_link_from_group(&iommu->dev.kobj, "devices", dev_name(link));
+ 	master = fwspec->iommu_priv;
++	smmu = master->smmu;
+ 	if (master && master->ste.valid)
+ 		arm_smmu_detach_dev(dev);
+ 	iommu_group_remove_device(dev);
++	iommu_device_unlink(&smmu->iommu, dev);
+ 	kfree(master);
+ 	iommu_fwspec_free(dev);
  }
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index c578ca1..bae3cfc 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -224,6 +224,8 @@ int  iommu_device_sysfs_add(struct iommu_device *iommu,
- 			    const struct attribute_group **groups,
- 			    const char *fmt, ...) __printf(4, 5);
- void iommu_device_sysfs_remove(struct iommu_device *iommu);
-+int  iommu_device_link(struct iommu_device   *iommu, struct device *link);
-+void iommu_device_unlink(struct iommu_device *iommu, struct device *link);
+@@ -2613,6 +2621,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ {
+ 	int irq, ret;
+ 	struct resource *res;
++	resource_size_t ioaddr;
+ 	struct arm_smmu_device *smmu;
+ 	struct device *dev = &pdev->dev;
+ 	bool bypass;
+@@ -2630,6 +2639,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 		dev_err(dev, "MMIO region too small (%pr)\n", res);
+ 		return -EINVAL;
+ 	}
++	ioaddr = res->start;
  
- static inline void iommu_device_set_ops(struct iommu_device *iommu,
- 					const struct iommu_ops *ops)
-@@ -294,8 +296,6 @@ extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
- 				 void *data);
- extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
- 				 void *data);
--int iommu_device_link(struct device *dev, struct device *link);
--void iommu_device_unlink(struct device *dev, struct device *link);
+ 	smmu->base = devm_ioremap_resource(dev, res);
+ 	if (IS_ERR(smmu->base))
+@@ -2682,6 +2692,16 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 		return ret;
  
- /* Window handling function prototypes */
- extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
+ 	/* And we're up. Go go go! */
++	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
++				     "smmu3.%pa", &ioaddr);
++	if (ret)
++		return ret;
++
++	iommu_device_set_ops(&smmu->iommu, &arm_smmu_ops);
++	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
++
++	ret = iommu_device_register(&smmu->iommu);
++
+ 	iommu_register_instance(dev->fwnode, &arm_smmu_ops);
+ 
+ #ifdef CONFIG_PCI
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index a60cded..f4ce1e7 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -380,6 +380,9 @@ struct arm_smmu_device {
+ 	unsigned int			*irqs;
+ 
+ 	u32				cavium_id_base; /* Specific to Cavium */
++
++	/* IOMMU core code handle */
++	struct iommu_device		iommu;
+ };
+ 
+ enum arm_smmu_context_fmt {
+@@ -1444,6 +1447,8 @@ static int arm_smmu_add_device(struct device *dev)
+ 	if (ret)
+ 		goto out_free;
+ 
++	iommu_device_link(&smmu->iommu, dev);
++
+ 	return 0;
+ 
+ out_free:
+@@ -1456,10 +1461,17 @@ static int arm_smmu_add_device(struct device *dev)
+ static void arm_smmu_remove_device(struct device *dev)
+ {
+ 	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++	struct arm_smmu_master_cfg *cfg;
++	struct arm_smmu_device *smmu;
++
+ 
+ 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
+ 		return;
+ 
++	cfg  = fwspec->iommu_priv;
++	smmu = cfg->smmu;
++
++	iommu_device_unlink(&smmu->iommu, dev);
+ 	arm_smmu_master_free_smes(fwspec);
+ 	iommu_group_remove_device(dev);
+ 	kfree(fwspec->iommu_priv);
+@@ -2011,6 +2023,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+ static int arm_smmu_device_probe(struct platform_device *pdev)
+ {
+ 	struct resource *res;
++	resource_size_t ioaddr;
+ 	struct arm_smmu_device *smmu;
+ 	struct device *dev = &pdev->dev;
+ 	int num_irqs, i, err;
+@@ -2031,6 +2044,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 		return err;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	ioaddr = res->start;
+ 	smmu->base = devm_ioremap_resource(dev, res);
+ 	if (IS_ERR(smmu->base))
+ 		return PTR_ERR(smmu->base);
+@@ -2091,6 +2105,22 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
++	err = iommu_device_sysfs_add(&smmu->iommu, smmu->dev, NULL,
++				     "smmu.%pa", &ioaddr);
++	if (err) {
++		dev_err(dev, "Failed to register iommu in sysfs\n");
++		return err;
++	}
++
++	iommu_device_set_ops(&smmu->iommu, &arm_smmu_ops);
++	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
++
++	err = iommu_device_register(&smmu->iommu);
++	if (err) {
++		dev_err(dev, "Failed to register iommu\n");
++		return err;
++	}
++
+ 	iommu_register_instance(dev->fwnode, &arm_smmu_ops);
+ 	platform_set_drvdata(pdev, smmu);
+ 	arm_smmu_device_reset(smmu);
 -- 
 1.9.1
