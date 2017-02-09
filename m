@@ -1,274 +1,207 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 03/11] iommu: Introduce new 'struct iommu_device'
-Date: Thu,  9 Feb 2017 12:32:52 +0100
-Message-ID: <1486639981-32368-4-git-send-email-joro@8bytes.org>
+From: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 11/11] iommu: Remove iommu_register_instance interface
+Date: Thu,  9 Feb 2017 12:33:00 +0100
+Message-ID: <1486639981-32368-12-git-send-email-joro@8bytes.org>
 References: <1486639981-32368-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1486639981-32368-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <1486639981-32368-1-git-send-email-joro@8bytes.org>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>
+Cc: devicetree@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>, Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+From: Joerg Roedel <jroedel@suse.de>
 
-This struct represents one hardware iommu in the iommu core
-code. For now it only has the iommu-ops associated with it,
-but that will be extended soon.
+And also move its remaining functionality to
+iommu_device_register() and 'struct iommu_device'.
 
-The register/unregister interface is also added, as well as
-making use of it in the Intel and AMD IOMMU drivers.
-
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Frank Rowand <frowand.list@gmail.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: devicetree@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/amd_iommu.c       |  4 ++--
- drivers/iommu/amd_iommu_init.c  |  5 +++++
- drivers/iommu/amd_iommu_types.h |  3 +++
- drivers/iommu/dmar.c            |  9 +++++++++
- drivers/iommu/intel-iommu.c     |  4 ++--
- drivers/iommu/iommu.c           | 19 +++++++++++++++++++
- include/linux/intel-iommu.h     |  2 ++
- include/linux/iommu.h           | 35 +++++++++++++++++++++++++++++------
- 8 files changed, 71 insertions(+), 10 deletions(-)
+ drivers/iommu/arm-smmu-v3.c  |  2 --
+ drivers/iommu/arm-smmu.c     |  1 -
+ drivers/iommu/exynos-iommu.c |  2 --
+ drivers/iommu/iommu.c        | 37 ++++++-------------------------------
+ drivers/iommu/msm_iommu.c    |  2 --
+ drivers/iommu/mtk_iommu.c    |  1 -
+ include/linux/iommu.h        |  7 -------
+ include/linux/of_iommu.h     |  6 ------
+ 8 files changed, 6 insertions(+), 52 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 3ef0f42..7c11c36 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -112,7 +112,7 @@ struct flush_queue {
-  * Domain for untranslated devices - only allocated
-  * if iommu=pt passed on kernel cmd line.
-  */
--static const struct iommu_ops amd_iommu_ops;
-+const struct iommu_ops amd_iommu_ops;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 32133e2..5375137 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2702,8 +2702,6 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
  
- static ATOMIC_NOTIFIER_HEAD(ppr_notifier);
- int amd_iommu_max_glx_val = -1;
-@@ -3217,7 +3217,7 @@ static void amd_iommu_apply_dm_region(struct device *dev,
- 	WARN_ON_ONCE(reserve_iova(&dma_dom->iovad, start, end) == NULL);
- }
+ 	ret = iommu_device_register(&smmu->iommu);
  
--static const struct iommu_ops amd_iommu_ops = {
-+const struct iommu_ops amd_iommu_ops = {
- 	.capable = amd_iommu_capable,
- 	.domain_alloc = amd_iommu_domain_alloc,
- 	.domain_free  = amd_iommu_domain_free,
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 6799cf9..b7ccfb2 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -94,6 +94,8 @@
-  * out of it.
-  */
- 
-+extern const struct iommu_ops amd_iommu_ops;
-+
- /*
-  * structure describing one IOMMU in the ACPI table. Typically followed by one
-  * or more ivhd_entrys.
-@@ -1639,6 +1641,9 @@ static int iommu_init_pci(struct amd_iommu *iommu)
- 					       amd_iommu_groups, "ivhd%d",
- 					       iommu->index);
- 
-+	iommu_device_set_ops(&iommu->iommu, &amd_iommu_ops);
-+	iommu_device_register(&iommu->iommu);
-+
- 	return pci_enable_device(iommu->dev);
- }
- 
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 0d91785..0683505 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -538,6 +538,9 @@ struct amd_iommu {
- 	/* IOMMU sysfs device */
- 	struct device *iommu_dev;
- 
-+	/* Handle for IOMMU core code */
-+	struct iommu_device iommu;
-+
- 	/*
- 	 * We can't rely on the BIOS to restore all values on reinit, so we
- 	 * need to stash them
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 8ccbd70..8e8a48e 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -74,6 +74,8 @@ struct dmar_res_callback {
- static int alloc_iommu(struct dmar_drhd_unit *drhd);
- static void free_iommu(struct intel_iommu *iommu);
- 
-+extern const struct iommu_ops intel_iommu_ops;
-+
- static void dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
- {
- 	/*
-@@ -1086,6 +1088,12 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 			err = PTR_ERR(iommu->iommu_dev);
- 			goto err_unmap;
- 		}
-+
-+		iommu_device_set_ops(&iommu->iommu, &intel_iommu_ops);
-+
-+		err = iommu_device_register(&iommu->iommu);
-+		if (err)
-+			goto err_unmap;
+-	iommu_register_instance(dev->fwnode, &arm_smmu_ops);
+-
+ #ifdef CONFIG_PCI
+ 	if (pci_bus_type.iommu_ops != &arm_smmu_ops) {
+ 		pci_request_acs();
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index f4ce1e7..8fb4af2 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -2121,7 +2121,6 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 		return err;
  	}
  
- 	drhd->iommu = iommu;
-@@ -1104,6 +1112,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- static void free_iommu(struct intel_iommu *iommu)
- {
- 	iommu_device_destroy(iommu->iommu_dev);
-+	iommu_device_unregister(&iommu->iommu);
+-	iommu_register_instance(dev->fwnode, &arm_smmu_ops);
+ 	platform_set_drvdata(pdev, smmu);
+ 	arm_smmu_device_reset(smmu);
  
- 	if (iommu->irq) {
- 		if (iommu->pr_irq) {
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 8a18525..ca22872 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -547,7 +547,7 @@ static int domain_detach_iommu(struct dmar_domain *domain,
- static DEFINE_SPINLOCK(device_domain_lock);
- static LIST_HEAD(device_domain_list);
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 64325d8..778eccc 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -642,8 +642,6 @@ static int __init exynos_sysmmu_probe(struct platform_device *pdev)
  
--static const struct iommu_ops intel_iommu_ops;
-+const struct iommu_ops intel_iommu_ops;
+ 	pm_runtime_enable(dev);
  
- static bool translation_pre_enabled(struct intel_iommu *iommu)
- {
-@@ -5332,7 +5332,7 @@ struct intel_iommu *intel_svm_device_to_iommu(struct device *dev)
+-	of_iommu_set_ops(dev->of_node, &exynos_iommu_ops);
+-
+ 	return 0;
  }
- #endif /* CONFIG_INTEL_IOMMU_SVM */
  
--static const struct iommu_ops intel_iommu_ops = {
-+const struct iommu_ops intel_iommu_ops = {
- 	.capable	= intel_iommu_capable,
- 	.domain_alloc	= intel_iommu_domain_alloc,
- 	.domain_free	= intel_iommu_domain_free,
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e4e8a93..21061da 100644
+index 21061da..a7e14b4 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -77,6 +77,25 @@ struct iommu_group_attribute iommu_group_attr_##_name =		\
- #define to_iommu_group(_kobj)		\
- 	container_of(_kobj, struct iommu_group, kobj)
+@@ -1647,43 +1647,18 @@ int iommu_request_dm_for_dev(struct device *dev)
+ 	return ret;
+ }
  
-+static LIST_HEAD(iommu_device_list);
-+static DEFINE_SPINLOCK(iommu_device_lock);
-+
-+int iommu_device_register(struct iommu_device *iommu)
-+{
-+	spin_lock(&iommu_device_lock);
-+	list_add_tail(&iommu->list, &iommu_device_list);
-+	spin_unlock(&iommu_device_lock);
-+
-+	return 0;
-+}
-+
-+void iommu_device_unregister(struct iommu_device *iommu)
-+{
-+	spin_lock(&iommu_device_lock);
-+	list_del(&iommu->list);
-+	spin_unlock(&iommu_device_lock);
-+}
-+
- static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
- 						 unsigned type);
- static int __iommu_attach_device(struct iommu_domain *domain,
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index d49e26c..99a65a3 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -29,6 +29,7 @@
- #include <linux/dma_remapping.h>
- #include <linux/mmu_notifier.h>
- #include <linux/list.h>
-+#include <linux/iommu.h>
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
+-struct iommu_instance {
+-	struct list_head list;
+-	struct fwnode_handle *fwnode;
+-	const struct iommu_ops *ops;
+-};
+-static LIST_HEAD(iommu_instance_list);
+-static DEFINE_SPINLOCK(iommu_instance_lock);
+-
+-void iommu_register_instance(struct fwnode_handle *fwnode,
+-			     const struct iommu_ops *ops)
+-{
+-	struct iommu_instance *iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
+-
+-	if (WARN_ON(!iommu))
+-		return;
+-
+-	of_node_get(to_of_node(fwnode));
+-	INIT_LIST_HEAD(&iommu->list);
+-	iommu->fwnode = fwnode;
+-	iommu->ops = ops;
+-	spin_lock(&iommu_instance_lock);
+-	list_add_tail(&iommu->list, &iommu_instance_list);
+-	spin_unlock(&iommu_instance_lock);
+-}
+-
+ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+ {
+-	struct iommu_instance *instance;
+ 	const struct iommu_ops *ops = NULL;
++	struct iommu_device *iommu;
  
-@@ -440,6 +441,7 @@ struct intel_iommu {
- 	struct irq_domain *ir_msi_domain;
- #endif
- 	struct device	*iommu_dev; /* IOMMU-sysfs device */
-+	struct iommu_device iommu;  /* IOMMU core code handle */
- 	int		node;
- 	u32		flags;      /* Software defined flags */
- };
+-	spin_lock(&iommu_instance_lock);
+-	list_for_each_entry(instance, &iommu_instance_list, list)
+-		if (instance->fwnode == fwnode) {
+-			ops = instance->ops;
++	spin_lock(&iommu_device_lock);
++	list_for_each_entry(iommu, &iommu_device_list, list)
++		if (iommu->fwnode == fwnode) {
++			ops = iommu->ops;
+ 			break;
+ 		}
+-	spin_unlock(&iommu_instance_lock);
++	spin_unlock(&iommu_device_lock);
+ 	return ops;
+ }
+ 
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 30795cb..d044835 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -810,8 +810,6 @@ static int msm_iommu_probe(struct platform_device *pdev)
+ 		goto fail;
+ 	}
+ 
+-	of_iommu_set_ops(pdev->dev.of_node, &msm_iommu_ops);
+-
+ 	pr_info("device mapped at %p, irq %d with %d ctx banks\n",
+ 		iommu->base, iommu->irq, iommu->ncb);
+ 
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index d484fa6..5d14cd1 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -681,7 +681,6 @@ static int mtk_iommu_init_fn(struct device_node *np)
+ 		return ret;
+ 	}
+ 
+-	of_iommu_set_ops(np, &mtk_iommu_ops);
+ 	return 0;
+ }
+ 
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 085e1f0..5803c1a 100644
+index 626c935..9e82fc8 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -204,6 +204,26 @@ struct iommu_ops {
- 	unsigned long pgsize_bitmap;
- };
+@@ -382,8 +382,6 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+ 		      const struct iommu_ops *ops);
+ void iommu_fwspec_free(struct device *dev);
+ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
+-void iommu_register_instance(struct fwnode_handle *fwnode,
+-			     const struct iommu_ops *ops);
+ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
  
-+/**
-+ * struct iommu_device - IOMMU core representation of one IOMMU hardware
-+ *			 instance
-+ * @list: Used by the iommu-core to keep a list of registered iommus
-+ * @ops: iommu-ops for talking to this iommu
-+ */
-+struct iommu_device {
-+	struct list_head list;
-+	const struct iommu_ops *ops;
-+};
-+
-+int  iommu_device_register(struct iommu_device *iommu);
-+void iommu_device_unregister(struct iommu_device *iommu);
-+
-+static inline void iommu_device_set_ops(struct iommu_device *iommu,
-+					const struct iommu_ops *ops)
-+{
-+	iommu->ops = ops;
-+}
-+
- #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
- #define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
- #define IOMMU_GROUP_NOTIFY_BIND_DRIVER		3 /* Pre Driver bind */
-@@ -361,6 +381,7 @@ void iommu_register_instance(struct fwnode_handle *fwnode,
- struct iommu_ops {};
- struct iommu_group {};
- struct iommu_fwspec {};
-+struct iommu_device {};
- 
- static inline bool iommu_present(struct bus_type *bus)
- {
-@@ -546,15 +567,17 @@ static inline int iommu_domain_set_attr(struct iommu_domain *domain,
- 	return -EINVAL;
+ #else /* CONFIG_IOMMU_API */
+@@ -634,11 +632,6 @@ static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
+ 	return -ENODEV;
  }
  
--static inline struct device *iommu_device_create(struct device *parent,
--					void *drvdata,
--					const struct attribute_group **groups,
--					const char *fmt, ...)
-+static inline int  iommu_device_register(struct iommu_device *iommu)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline void iommu_device_set_ops(struct iommu_device *iommu,
-+					const struct iommu_ops *ops)
+-static inline void iommu_register_instance(struct fwnode_handle *fwnode,
+-					   const struct iommu_ops *ops)
+-{
+-}
+-
+ static inline
+ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
  {
--	return ERR_PTR(-ENODEV);
- }
+diff --git a/include/linux/of_iommu.h b/include/linux/of_iommu.h
+index 66fcbc9..fc4add3 100644
+--- a/include/linux/of_iommu.h
++++ b/include/linux/of_iommu.h
+@@ -31,12 +31,6 @@ static inline const struct iommu_ops *of_iommu_configure(struct device *dev,
  
--static inline void iommu_device_destroy(struct device *dev)
-+static inline void iommu_device_unregister(struct iommu_device *iommu)
+ #endif	/* CONFIG_OF_IOMMU */
+ 
+-static inline void of_iommu_set_ops(struct device_node *np,
+-				    const struct iommu_ops *ops)
+-{
+-	iommu_register_instance(&np->fwnode, ops);
+-}
+-
+ static inline const struct iommu_ops *of_iommu_get_ops(struct device_node *np)
  {
- }
- 
+ 	return iommu_ops_from_fwnode(&np->fwnode);
 -- 
 1.9.1
