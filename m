@@ -1,11 +1,14 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 00/11 v3] Let IOMMU core know about individual IOMMUs
-Date: Thu,  9 Feb 2017 12:32:49 +0100
-Message-ID: <1486639981-32368-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 05/11] iommu: Make iommu_device_link/unlink take a struct
+	iommu_device
+Date: Thu,  9 Feb 2017 12:32:54 +0100
+Message-ID: <1486639981-32368-6-git-send-email-joro@8bytes.org>
+References: <1486639981-32368-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1486639981-32368-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,81 +19,131 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Changes since v2:
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-	* Fixed build issues resulting from wrong patch
-	  order, everything should be nicely bisectable now
-	* Introduced wrapper functions around
-	  'struct iommu_device' members, to keep the struct
-	  empty when !CONFIG_IOMMU_API
-	* Renamed the iommu-devices on Exynos as suggested
-	  by Marek Szyprowski
+This makes the interface more consistent with
+iommu_device_sysfs_add/remove.
 
-Changes since v1:
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+---
+ drivers/iommu/amd_iommu.c   |  4 ++--
+ drivers/iommu/intel-iommu.c |  4 ++--
+ drivers/iommu/iommu-sysfs.c | 16 ++++++++--------
+ include/linux/iommu.h       |  4 ++--
+ 4 files changed, 14 insertions(+), 14 deletions(-)
 
-	* Rebased to v4.10-rc7
-	* Fixed build failures found by the
-	  kbuild test robot
-
-Hi,
-
-the IOMMU core code already has two ways of representing
-individual hardware IOMMUs. One is the sysfs code and the
-other is the newer iommu_register_instance interface. These
-two interfaces are special purpose and can be unified.
-
-This unification is attempted in this patch-set. It
-introduces an extensible 'struct iommu_device' which
-represents a hardware IOMMU in the IOMMU core code.
-
-For now the struct contains a pointer to the iommu_ops, which
-is a step to get rid of the per-bus iommu_ops, and a pointer
-to a firmware-node structure.
-
-The patches have been tested on x86 hardware and an AMD Seattle
-ARM64 system.
-
-Please review, test and provide feedback!
-
-Thanks a lot,
-
-       Joerg
-
-Joerg Roedel (11):
-  iommu: Rename iommu_get_instance()
-  iommu: Rename struct iommu_device
-  iommu: Introduce new 'struct iommu_device'
-  iommu: Add sysfs bindings for struct iommu_device
-  iommu: Make iommu_device_link/unlink take a struct iommu_device
-  iommu: Add iommu_device_set_fwnode() interface
-  iommu/arm-smmu: Make use of the iommu_register interface
-  iommu/msm: Make use of iommu_device_register interface
-  iommu/mediatek: Make use of iommu_device_register interface
-  iommu/exynos: Make use of iommu_device_register interface
-  iommu: Remove iommu_register_instance interface
-
- drivers/acpi/arm64/iort.c       |  2 +-
- drivers/iommu/amd_iommu.c       | 18 +++++----
- drivers/iommu/amd_iommu_init.c  |  9 +++--
- drivers/iommu/amd_iommu_types.h |  4 +-
- drivers/iommu/arm-smmu-v3.c     | 22 ++++++++++-
- drivers/iommu/arm-smmu.c        | 31 ++++++++++++++-
- drivers/iommu/dmar.c            | 20 ++++++----
- drivers/iommu/exynos-iommu.c    | 16 +++++++-
- drivers/iommu/intel-iommu.c     | 19 +++++----
- drivers/iommu/iommu-sysfs.c     | 61 +++++++++++++----------------
- drivers/iommu/iommu.c           | 68 +++++++++++++++------------------
- drivers/iommu/msm_iommu.c       | 73 ++++++++++++++++++++++++++++++++++-
- drivers/iommu/msm_iommu.h       |  3 ++
- drivers/iommu/mtk_iommu.c       | 27 ++++++++++++-
- drivers/iommu/mtk_iommu.h       |  2 +
- include/linux/intel-iommu.h     |  3 +-
- include/linux/iommu.h           | 85 +++++++++++++++++++++++++++++++----------
- include/linux/of_iommu.h        |  8 +---
- 18 files changed, 335 insertions(+), 136 deletions(-)
-
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index a584ac2..b8adfcc 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -472,7 +472,7 @@ static int iommu_init_device(struct device *dev)
+ 
+ 	dev->archdata.iommu = dev_data;
+ 
+-	iommu_device_link(&iommu->iommu.dev, dev);
++	iommu_device_link(&iommu->iommu, dev);
+ 
+ 	return 0;
+ }
+@@ -514,7 +514,7 @@ static void iommu_uninit_device(struct device *dev)
+ 	if (dev_data->domain)
+ 		detach_device(dev);
+ 
+-	iommu_device_unlink(&iommu->iommu.dev, dev);
++	iommu_device_unlink(&iommu->iommu, dev);
+ 
+ 	iommu_group_remove_device(dev);
+ 
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 0e52086..e1e8ec4 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5181,7 +5181,7 @@ static int intel_iommu_add_device(struct device *dev)
+ 	if (!iommu)
+ 		return -ENODEV;
+ 
+-	iommu_device_link(&iommu->iommu.dev, dev);
++	iommu_device_link(&iommu->iommu, dev);
+ 
+ 	group = iommu_group_get_for_dev(dev);
+ 
+@@ -5203,7 +5203,7 @@ static void intel_iommu_remove_device(struct device *dev)
+ 
+ 	iommu_group_remove_device(dev);
+ 
+-	iommu_device_unlink(&iommu->iommu.dev, dev);
++	iommu_device_unlink(&iommu->iommu, dev);
+ }
+ 
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+diff --git a/drivers/iommu/iommu-sysfs.c b/drivers/iommu/iommu-sysfs.c
+index bb87d35..c58351e 100644
+--- a/drivers/iommu/iommu-sysfs.c
++++ b/drivers/iommu/iommu-sysfs.c
+@@ -95,31 +95,31 @@ void iommu_device_sysfs_remove(struct iommu_device *iommu)
+  * directory of the IOMMU device in sysfs and an "iommu" link will be
+  * created under the linked device, pointing back at the IOMMU device.
+  */
+-int iommu_device_link(struct device *dev, struct device *link)
++int iommu_device_link(struct iommu_device *iommu, struct device *link)
+ {
+ 	int ret;
+ 
+-	if (!dev || IS_ERR(dev))
++	if (!iommu || IS_ERR(iommu))
+ 		return -ENODEV;
+ 
+-	ret = sysfs_add_link_to_group(&dev->kobj, "devices",
++	ret = sysfs_add_link_to_group(&iommu->dev.kobj, "devices",
+ 				      &link->kobj, dev_name(link));
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = sysfs_create_link_nowarn(&link->kobj, &dev->kobj, "iommu");
++	ret = sysfs_create_link_nowarn(&link->kobj, &iommu->dev.kobj, "iommu");
+ 	if (ret)
+-		sysfs_remove_link_from_group(&dev->kobj, "devices",
++		sysfs_remove_link_from_group(&iommu->dev.kobj, "devices",
+ 					     dev_name(link));
+ 
+ 	return ret;
+ }
+ 
+-void iommu_device_unlink(struct device *dev, struct device *link)
++void iommu_device_unlink(struct iommu_device *iommu, struct device *link)
+ {
+-	if (!dev || IS_ERR(dev))
++	if (!iommu || IS_ERR(iommu))
+ 		return;
+ 
+ 	sysfs_remove_link(&link->kobj, "iommu");
+-	sysfs_remove_link_from_group(&dev->kobj, "devices", dev_name(link));
++	sysfs_remove_link_from_group(&iommu->dev.kobj, "devices", dev_name(link));
+ }
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index c578ca1..bae3cfc 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -224,6 +224,8 @@ int  iommu_device_sysfs_add(struct iommu_device *iommu,
+ 			    const struct attribute_group **groups,
+ 			    const char *fmt, ...) __printf(4, 5);
+ void iommu_device_sysfs_remove(struct iommu_device *iommu);
++int  iommu_device_link(struct iommu_device   *iommu, struct device *link);
++void iommu_device_unlink(struct iommu_device *iommu, struct device *link);
+ 
+ static inline void iommu_device_set_ops(struct iommu_device *iommu,
+ 					const struct iommu_ops *ops)
+@@ -294,8 +296,6 @@ extern int iommu_domain_get_attr(struct iommu_domain *domain, enum iommu_attr,
+ 				 void *data);
+ extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+ 				 void *data);
+-int iommu_device_link(struct device *dev, struct device *link);
+-void iommu_device_unlink(struct device *dev, struct device *link);
+ 
+ /* Window handling function prototypes */
+ extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
 -- 
 1.9.1
