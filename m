@@ -1,14 +1,15 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 06/11] iommu: Add iommu_device_set_fwnode() interface
-Date: Fri, 10 Feb 2017 14:16:54 +0000
-Message-ID: <417eee8c-4e1b-57f0-2c00-d6c3926ce66d@arm.com>
+Subject: Re: [PATCH 07/11] iommu/arm-smmu: Make use of the iommu_register
+	interface
+Date: Fri, 10 Feb 2017 14:20:34 +0000
+Message-ID: <9bba214f-4d83-1e37-2df8-2f7db11f7d1f@arm.com>
 References: <1486639981-32368-1-git-send-email-joro@8bytes.org>
-	<1486639981-32368-7-git-send-email-joro@8bytes.org>
+	<1486639981-32368-8-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1486639981-32368-7-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1486639981-32368-8-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,56 +26,176 @@ List-Id: iommu@lists.linux-foundation.org
 On 09/02/17 11:32, Joerg Roedel wrote:
 > From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 > 
-> Allow to store a fwnode in 'struct iommu_device';
+> Also add the smmu devices to sysfs.
 > 
 > Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 > ---
->  include/linux/iommu.h | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
+>  drivers/iommu/arm-smmu-v3.c | 22 +++++++++++++++++++++-
+>  drivers/iommu/arm-smmu.c    | 30 ++++++++++++++++++++++++++++++
+>  2 files changed, 51 insertions(+), 1 deletion(-)
 > 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index bae3cfc..626c935 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -214,6 +214,7 @@ struct iommu_ops {
->  struct iommu_device {
->  	struct list_head list;
->  	const struct iommu_ops *ops;
-> +	struct fwnode_handle *fwnode;
->  	struct device dev;
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 4d6ec44..32133e2 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -616,6 +616,9 @@ struct arm_smmu_device {
+>  	unsigned int			sid_bits;
+>  
+>  	struct arm_smmu_strtab_cfg	strtab_cfg;
+> +
+> +	/* IOMMU core code handle */
+> +	struct iommu_device		iommu;
 >  };
 >  
-> @@ -233,6 +234,12 @@ static inline void iommu_device_set_ops(struct iommu_device *iommu,
->  	iommu->ops = ops;
->  }
+>  /* SMMU private data for each master */
+> @@ -1795,8 +1798,10 @@ static int arm_smmu_add_device(struct device *dev)
+>  	}
 >  
-> +static inline void iommu_device_set_fwnode(struct iommu_device *iommu,
-> +					   struct fwnode_handle *fwnode)
-> +{
-> +	iommu->fwnode = fwnode;
-> +}
+>  	group = iommu_group_get_for_dev(dev);
+> -	if (!IS_ERR(group))
+> +	if (!IS_ERR(group)) {
+>  		iommu_group_put(group);
+> +		iommu_device_link(&smmu->iommu, dev);
 
-Would it make sense to simply make the ops and fwnode additional
-arguments to iommu_device_register() (permitting fwnode to be NULL)?
-AFAICS they should typically all have the same effective lifetime so
-there doesn't seem to be any real need to handle everything separately.
+Given the coupling evident from this and the other patches, might it
+work to simply do the linking/unlinking automatically in
+iommu_group_{add,remove}_device()?
 
 Robin.
 
-> +
->  #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
->  #define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
->  #define IOMMU_GROUP_NOTIFY_BIND_DRIVER		3 /* Pre Driver bind */
-> @@ -580,6 +587,11 @@ static inline void iommu_device_set_ops(struct iommu_device *iommu,
->  {
->  }
+> +	}
 >  
-> +static inline void iommu_device_set_fwnode(struct iommu_device *iommu,
-> +					   struct fwnode_handle *fwnode)
-> +{
-> +}
-> +
->  static inline void iommu_device_unregister(struct iommu_device *iommu)
->  {
+>  	return PTR_ERR_OR_ZERO(group);
 >  }
+> @@ -1805,14 +1810,17 @@ static void arm_smmu_remove_device(struct device *dev)
+>  {
+>  	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+>  	struct arm_smmu_master_data *master;
+> +	struct arm_smmu_device *smmu;
+>  
+>  	if (!fwspec || fwspec->ops != &arm_smmu_ops)
+>  		return;
+>  
+>  	master = fwspec->iommu_priv;
+> +	smmu = master->smmu;
+>  	if (master && master->ste.valid)
+>  		arm_smmu_detach_dev(dev);
+>  	iommu_group_remove_device(dev);
+> +	iommu_device_unlink(&smmu->iommu, dev);
+>  	kfree(master);
+>  	iommu_fwspec_free(dev);
+>  }
+> @@ -2613,6 +2621,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  {
+>  	int irq, ret;
+>  	struct resource *res;
+> +	resource_size_t ioaddr;
+>  	struct arm_smmu_device *smmu;
+>  	struct device *dev = &pdev->dev;
+>  	bool bypass;
+> @@ -2630,6 +2639,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  		dev_err(dev, "MMIO region too small (%pr)\n", res);
+>  		return -EINVAL;
+>  	}
+> +	ioaddr = res->start;
+>  
+>  	smmu->base = devm_ioremap_resource(dev, res);
+>  	if (IS_ERR(smmu->base))
+> @@ -2682,6 +2692,16 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  		return ret;
+>  
+>  	/* And we're up. Go go go! */
+> +	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
+> +				     "smmu3.%pa", &ioaddr);
+> +	if (ret)
+> +		return ret;
+> +
+> +	iommu_device_set_ops(&smmu->iommu, &arm_smmu_ops);
+> +	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
+> +
+> +	ret = iommu_device_register(&smmu->iommu);
+> +
+>  	iommu_register_instance(dev->fwnode, &arm_smmu_ops);
+>  
+>  #ifdef CONFIG_PCI
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index a60cded..f4ce1e7 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -380,6 +380,9 @@ struct arm_smmu_device {
+>  	unsigned int			*irqs;
+>  
+>  	u32				cavium_id_base; /* Specific to Cavium */
+> +
+> +	/* IOMMU core code handle */
+> +	struct iommu_device		iommu;
+>  };
+>  
+>  enum arm_smmu_context_fmt {
+> @@ -1444,6 +1447,8 @@ static int arm_smmu_add_device(struct device *dev)
+>  	if (ret)
+>  		goto out_free;
+>  
+> +	iommu_device_link(&smmu->iommu, dev);
+> +
+>  	return 0;
+>  
+>  out_free:
+> @@ -1456,10 +1461,17 @@ static int arm_smmu_add_device(struct device *dev)
+>  static void arm_smmu_remove_device(struct device *dev)
+>  {
+>  	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+> +	struct arm_smmu_master_cfg *cfg;
+> +	struct arm_smmu_device *smmu;
+> +
+>  
+>  	if (!fwspec || fwspec->ops != &arm_smmu_ops)
+>  		return;
+>  
+> +	cfg  = fwspec->iommu_priv;
+> +	smmu = cfg->smmu;
+> +
+> +	iommu_device_unlink(&smmu->iommu, dev);
+>  	arm_smmu_master_free_smes(fwspec);
+>  	iommu_group_remove_device(dev);
+>  	kfree(fwspec->iommu_priv);
+> @@ -2011,6 +2023,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+>  static int arm_smmu_device_probe(struct platform_device *pdev)
+>  {
+>  	struct resource *res;
+> +	resource_size_t ioaddr;
+>  	struct arm_smmu_device *smmu;
+>  	struct device *dev = &pdev->dev;
+>  	int num_irqs, i, err;
+> @@ -2031,6 +2044,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  		return err;
+>  
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	ioaddr = res->start;
+>  	smmu->base = devm_ioremap_resource(dev, res);
+>  	if (IS_ERR(smmu->base))
+>  		return PTR_ERR(smmu->base);
+> @@ -2091,6 +2105,22 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+>  		}
+>  	}
+>  
+> +	err = iommu_device_sysfs_add(&smmu->iommu, smmu->dev, NULL,
+> +				     "smmu.%pa", &ioaddr);
+> +	if (err) {
+> +		dev_err(dev, "Failed to register iommu in sysfs\n");
+> +		return err;
+> +	}
+> +
+> +	iommu_device_set_ops(&smmu->iommu, &arm_smmu_ops);
+> +	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
+> +
+> +	err = iommu_device_register(&smmu->iommu);
+> +	if (err) {
+> +		dev_err(dev, "Failed to register iommu\n");
+> +		return err;
+> +	}
+> +
+>  	iommu_register_instance(dev->fwnode, &arm_smmu_ops);
+>  	platform_set_drvdata(pdev, smmu);
+>  	arm_smmu_device_reset(smmu);
 > 
