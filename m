@@ -1,11 +1,14 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 1/2] firmware/qcom: add qcom_scm_restore_sec_cfg()
-Date: Fri, 10 Feb 2017 13:41:53 -0500
-Message-ID: <20170210184154.20193-1-robdclark@gmail.com>
+From: Oleksandr Tyshchenko <olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [RFC PATCH v1] iommu/io-pgtable-arm: Check for leaf entry right
+	after finding it
+Date: Mon, 13 Feb 2017 13:07:02 +0200
+Message-ID: <CAPD2p-=TtT9ZHpLu8w9jUdKR5u6JG_BGtz0BDDKejmWS-jQ9WQ@mail.gmail.com>
+References: <1486648600-27457-1-git-send-email-olekstysh@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1486648600-27457-1-git-send-email-olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,106 +18,87 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Andy Gross <agross-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>, Volodymyr Babchuk <vlad.babchuk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, Andrii Anisov <andrii.anisov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Oleksandr Andrushchenko <andr2000-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, al1img <al1img-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Artem Mygaiev <joculator-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
- drivers/firmware/qcom_scm-32.c |  6 ++++++
- drivers/firmware/qcom_scm-64.c | 16 ++++++++++++++++
- drivers/firmware/qcom_scm.c    |  6 ++++++
- drivers/firmware/qcom_scm.h    |  5 +++++
- include/linux/qcom_scm.h       |  2 ++
- 5 files changed, 35 insertions(+)
+Hi, all.
 
-diff --git a/drivers/firmware/qcom_scm-32.c b/drivers/firmware/qcom_scm-32.c
-index 8ad226c..722e65a 100644
---- a/drivers/firmware/qcom_scm-32.c
-+++ b/drivers/firmware/qcom_scm-32.c
-@@ -578,3 +578,9 @@ int __qcom_scm_set_remote_state(struct device *dev, u32 state, u32 id)
- 
- 	return ret ? : le32_to_cpu(scm_ret);
- }
-+
-+int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id,
-+			       u32 spare)
-+{
-+	return -ENODEV;
-+}
-diff --git a/drivers/firmware/qcom_scm-64.c b/drivers/firmware/qcom_scm-64.c
-index c933259..550e3a3 100644
---- a/drivers/firmware/qcom_scm-64.c
-+++ b/drivers/firmware/qcom_scm-64.c
-@@ -381,3 +381,19 @@ int __qcom_scm_set_remote_state(struct device *dev, u32 state, u32 id)
- 
- 	return ret ? : res.a1;
- }
-+
-+int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id, u32 spare)
-+{
-+	struct qcom_scm_desc desc = {0};
-+	struct arm_smccc_res res;
-+	int ret;
-+
-+	desc.args[0] = device_id;
-+	desc.args[1] = spare;
-+	desc.arginfo = QCOM_SCM_ARGS(2);
-+
-+	ret = qcom_scm_call(dev, QCOM_SCM_SVC_MP, QCOM_SCM_RESTORE_SEC_CFG,
-+			    &desc, &res);
-+
-+	return ret ? : res.a1;
-+}
-diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
-index d987bcc..ae1f473 100644
---- a/drivers/firmware/qcom_scm.c
-+++ b/drivers/firmware/qcom_scm.c
-@@ -315,6 +315,12 @@ static const struct reset_control_ops qcom_scm_pas_reset_ops = {
- 	.deassert = qcom_scm_pas_reset_deassert,
- };
- 
-+int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare)
-+{
-+	return __qcom_scm_restore_sec_cfg(__scm->dev, device_id, spare);
-+}
-+EXPORT_SYMBOL(qcom_scm_restore_sec_cfg);
-+
- /**
-  * qcom_scm_is_available() - Checks if SCM is available
-  */
-diff --git a/drivers/firmware/qcom_scm.h b/drivers/firmware/qcom_scm.h
-index 6a0f154..31fc732 100644
---- a/drivers/firmware/qcom_scm.h
-+++ b/drivers/firmware/qcom_scm.h
-@@ -85,4 +85,9 @@ static inline int qcom_scm_remap_error(int err)
- 	return -EINVAL;
- }
- 
-+#define QCOM_SCM_SVC_MP			0xc
-+#define QCOM_SCM_RESTORE_SEC_CFG	2
-+extern int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id,
-+				      u32 spare);
-+
- #endif
-diff --git a/include/linux/qcom_scm.h b/include/linux/qcom_scm.h
-index d32f6f1..22017f5d 100644
---- a/include/linux/qcom_scm.h
-+++ b/include/linux/qcom_scm.h
-@@ -40,6 +40,7 @@ extern int qcom_scm_pas_shutdown(u32 peripheral);
- extern void qcom_scm_cpu_power_down(u32 flags);
- extern u32 qcom_scm_get_version(void);
- extern int qcom_scm_set_remote_state(u32 state, u32 id);
-+extern int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare);
- #else
- static inline
- int qcom_scm_set_cold_boot_addr(void *entry, const cpumask_t *cpus)
-@@ -67,5 +68,6 @@ static inline void qcom_scm_cpu_power_down(u32 flags) {}
- static inline u32 qcom_scm_get_version(void) { return 0; }
- static inline u32
- qcom_scm_set_remote_state(u32 state,u32 id) { return -ENODEV; }
-+static inline int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare) { return -ENODEV; }
- #endif
- #endif
+Any comments?
+
+On Thu, Feb 9, 2017 at 3:56 PM, Oleksandr Tyshchenko
+<olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> From: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+>
+> Do a check for already installed leaf entry at the current level before
+> performing any actions when trying to map.
+>
+> This check is already present in arm_lpae_init_pte(), i.e. before
+> installing new leaf entry at the current level if conditions to do so
+> are met (size == block_size).
+>
+> But, this might be insufficient in case when we have already
+> installed block mapping at this level and it is not time to
+> install new leaf entry (size != block_size).
+> In that case we continue walking the page table down with wrong pointer
+> to the next level.
+>
+> So, move check from arm_lpae_init_pte() to __arm_lpae_map() in order to
+> avoid all cases.
+>
+> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
+> ---
+> I hope that following actions can help to catch it:
+> 1. Call iommu_map for a block mapping (e.g. 2M) at some address
+>    (e.g. iova 0x80000000 pa 0x80000000).
+> 2. Call iommu_map for a page mapping (4k) at some address from
+>    the previous mapped region (e.g. iova 0x80008000 pa 0x90000000).
+>
+> I understand that after iommu_map should be iommu_unmap, but
+> different scenarios may occur).
+> ---
+> ---
+>  drivers/iommu/io-pgtable-arm.c | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index f5c90e1..ebdb82f 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -272,11 +272,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+>         arm_lpae_iopte pte = prot;
+>         struct io_pgtable_cfg *cfg = &data->iop.cfg;
+>
+> -       if (iopte_leaf(*ptep, lvl)) {
+> -               /* We require an unmap first */
+> -               WARN_ON(!selftest_running);
+> -               return -EEXIST;
+> -       } else if (iopte_type(*ptep, lvl) == ARM_LPAE_PTE_TYPE_TABLE) {
+> +       if (iopte_type(*ptep, lvl) == ARM_LPAE_PTE_TYPE_TABLE) {
+>                 /*
+>                  * We need to unmap and free the old table before
+>                  * overwriting it with a block entry.
+> @@ -315,6 +311,13 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+>         /* Find our entry at the current level */
+>         ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
+>
+> +       /* Check for already installed leaf entry */
+> +       if (iopte_leaf(*ptep, lvl)) {
+> +               /* We require an unmap first */
+> +               WARN_ON(!selftest_running);
+> +               return -EEXIST;
+> +       }
+> +
+>         /* If we can install a leaf entry at this level, then do so */
+>         if (size == block_size && (size & cfg->pgsize_bitmap))
+>                 return arm_lpae_init_pte(data, iova, paddr, prot, lvl, ptep);
+> --
+> 2.7.4
+>
+
+
+
 -- 
-2.9.3
+Regards,
+
+Oleksandr Tyshchenko
