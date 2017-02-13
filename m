@@ -1,80 +1,99 @@
-From: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: RFC on No ACS Support and SMMUv3 Support
-Date: Mon, 13 Feb 2017 17:24:40 -0500
-Message-ID: <2944ff12-d5c0-179a-7c07-fbbafcd022da@codeaurora.org>
+From: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: RFC on No ACS Support and SMMUv3 Support
+Date: Mon, 13 Feb 2017 16:06:52 -0700
+Message-ID: <20170213160652.7c141eb1@t450s.home>
+References: <2944ff12-d5c0-179a-7c07-fbbafcd022da@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Vikram Sethi <vikrams-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <2944ff12-d5c0-179a-7c07-fbbafcd022da@codeaurora.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Sinan Kaya <okaya@codeaurora.org>
+Cc: Will Deacon <will.deacon@arm.com>, Linux PCI <linux-pci@vger.kernel.org>, Nate Watterson <nwatters@codeaurora.org>, Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>, iommu@lists.linux-foundation.org, Vikram Sethi <vikrams@codeaurora.org>, Bjorn Helgaas <bhelgaas@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-I am getting ready to submit a quirk patch. Before I go ahead and submit
-it for review, I wanted to get ARM IOMMU developers and PCI/VFIO maintainers
-together to figure out what the best approach would be.
+On Mon, 13 Feb 2017 17:24:40 -0500
+Sinan Kaya <okaya@codeaurora.org> wrote:
 
-The Qualcomm QDF2400 server does not support the ACS functionality. 
-The server chip implements the ARM SMMUv3 specification with Stream Id = BDF. 
+> Hi,
+> I am getting ready to submit a quirk patch. Before I go ahead and submit
+> it for review, I wanted to get ARM IOMMU developers and PCI/VFIO maintainers
+> together to figure out what the best approach would be.
+> 
+> The Qualcomm QDF2400 server does not support the ACS functionality. 
+> The server chip implements the ARM SMMUv3 specification with Stream Id = BDF. 
+> 
+> SMMUv3 allows each PCIe function to have unique SMMU mappings and provides
+> some level of isolation. 
 
-SMMUv3 allows each PCIe function to have unique SMMU mappings and provides
-some level of isolation. 
+"some level"?  Regardless, this is irrelevant.  ACS is how PCIe
+describes the specific forwarding behavior of transactions within the
+PCIe hierarchy.  The granularity of the SMMU translation is different
+from ACS.
 
-With the current upstream SMMUv3 driver, we are unable to do a passthrough
-for a virtual function. This is caused by the pci_device_group() function's
-failure to find the smallest isolation group in pci_acs_path_enabled()
-function. 
+> With the current upstream SMMUv3 driver, we are unable to do a passthrough
+> for a virtual function. This is caused by the pci_device_group() function's
+> failure to find the smallest isolation group in pci_acs_path_enabled()
+> function. 
+> 
+> Since no group is found, all the PCI functions are placed into the same
+> group at the end of the function. 
+> 
+> There are numerous quirk patches when it comes to ACS.
+> 
+> pci_quirk_amd_sb_acs()
+> pci_quirk_cavium_acs()
+> pci_quirk_intel_pch_acs_match()
+> 
+> These quirk patches allow a group to be generated per PCI function. Everything
+> works fine.
+> 
+> I can go ahead and add 
+> 
+> pci_quirk_qualcomm_acs() with the same contents as pci_quirk_cavium_acs()
 
-Since no group is found, all the PCI functions are placed into the same
-group at the end of the function. 
+Creating a quirk is not simply a matter of making the code do what you
+want, an ACS quirk is you, on behalf of Qualcomm, vouching for the
+hardware behaving in a certain way.  Specifically you're saying that
+the device does Source Validation (ie. a downstream device cannot spoof
+translations for devices on a different bus), the device does not do
+Request Redirection (ie. peer-to-peer shortcuts that may bypass the
+IOMMU), the device does not do Completion Redirection (same, but for
+completions), and the device does Upstream Forwarding (ie. no
+shortcuts).  If the hardware does not honor these behaviors then adding
+a quirk is only putting customers at risk.
 
-There are numerous quirk patches when it comes to ACS.
+> Tomorrow, some other ARM64 vendors like up and start adding pci_quirk_vendor_acs()
+> functions. IMO, it leads to unnecessary code duplication. 
 
-pci_quirk_amd_sb_acs()
-pci_quirk_cavium_acs()
-pci_quirk_intel_pch_acs_match()
+Which is exactly why they should be implementing ACS in their hardware!
 
-These quirk patches allow a group to be generated per PCI function. Everything
-works fine.
+> I can go ahead and try to make the patches similar with generic names like pci_quirk_no_acs()
+> so that every vendor can use to it. Still, it would require some quirk patch from a vendor.
+> 
+> Nate has been changing the arm_smmu_device_group() function internally to always
+> use generic_device_group(). This provides support for the Virtual Function passthrough
+> but it is not future proof. Tomorrow, some HW with ACS capability can show up and
+> the ARM SMMUv3 driver wouldn't bother to see if there is actual HW isolation path
+> available.
+> 
+> What I really would like to do is to find a balance between what Nate has been doing
+> internally and what pci_device_group() does by changing the SMMUv3 driver to query if
+> ACS path is supported or not similar to the loop in pci_device_group. If not supported,
+> fallback to generic_device_group() function in arm_smmu_device_group().
 
-I can go ahead and add 
+Intel VT-d and AMD-Vi already manage to do this, what is it about an
+SMMU topology that makes it significantly different.  Note that like
+SMMU, both of these have BDF level granularity for identifying devices,
+but defer to the ACS based isolation for grouping based on downstream
+components.  The best IOMMU available cannot overcome transactions that
+it never sees because they're rerouted before reaching the IOMMU.
 
-pci_quirk_qualcomm_acs() with the same contents as pci_quirk_cavium_acs()
+> I'm just looking for a more permanent solution rather than relying on quirks for chips
+> A, B, C and D.
 
-Tomorrow, some other ARM64 vendors like up and start adding pci_quirk_vendor_acs()
-functions. IMO, it leads to unnecessary code duplication. 
+Implement ACS in all downstream ports and multifunction endpoints!
+Thanks,
 
-I can go ahead and try to make the patches similar with generic names like pci_quirk_no_acs()
-so that every vendor can use to it. Still, it would require some quirk patch from a vendor.
-
-Nate has been changing the arm_smmu_device_group() function internally to always
-use generic_device_group(). This provides support for the Virtual Function passthrough
-but it is not future proof. Tomorrow, some HW with ACS capability can show up and
-the ARM SMMUv3 driver wouldn't bother to see if there is actual HW isolation path
-available.
-
-What I really would like to do is to find a balance between what Nate has been doing
-internally and what pci_device_group() does by changing the SMMUv3 driver to query if
-ACS path is supported or not similar to the loop in pci_device_group. If not supported,
-fallback to generic_device_group() function in arm_smmu_device_group().
-
-I'm just looking for a more permanent solution rather than relying on quirks for chips
-A, B, C and D.
-
-Please let me know the preferred path.
-
-Sinan
-
--- 
-Sinan Kaya
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+Alex
