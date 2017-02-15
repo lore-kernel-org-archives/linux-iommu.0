@@ -1,8 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v1 2/6] iommu/dmar: Rectify return code handling in
-	detect_intel_iommu()
-Date: Wed, 15 Feb 2017 16:42:22 +0200
-Message-ID: <20170215144226.34519-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 4/6] iommu/dmar: Remove redundant assignment of ret
+Date: Wed, 15 Feb 2017 16:42:24 +0200
+Message-ID: <20170215144226.34519-4-andriy.shevchenko@linux.intel.com>
 References: <20170215144226.34519-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,63 +21,38 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwB
 Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-There is inconsistency in return codes across the functions called from
-detect_intel_iommu().
+There is no need to assign ret to 0 in some cases. Moreover it might
+shadow some errors in the future.
 
-Make it consistent and propagate return code to the caller.
+Remove such assignments.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/dmar.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ drivers/iommu/dmar.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 36e3f430d265..322765a0a210 100644
+index 24bb0fcca860..47b4044a5219 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -551,7 +551,7 @@ static int __init dmar_table_detect(void)
- 		status = AE_NOT_FOUND;
- 	}
- 
--	return (ACPI_SUCCESS(status) ? 1 : 0);
-+	return (ACPI_SUCCESS(status) ? 0 : -ENOENT);
- }
- 
- static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
-@@ -891,17 +891,17 @@ int __init detect_intel_iommu(void)
- 
- 	down_write(&dmar_global_lock);
- 	ret = dmar_table_detect();
--	if (ret)
--		ret = !dmar_walk_dmar_table((struct acpi_table_dmar *)dmar_tbl,
--					    &validate_drhd_cb);
--	if (ret && !no_iommu && !iommu_detected && !dmar_disabled) {
-+	if (!ret)
-+		ret = dmar_walk_dmar_table((struct acpi_table_dmar *)dmar_tbl,
-+					   &validate_drhd_cb);
-+	if (!ret && !no_iommu && !iommu_detected && !dmar_disabled) {
- 		iommu_detected = 1;
- 		/* Make sure ACS will be enabled */
- 		pci_request_acs();
- 	}
- 
- #ifdef CONFIG_X86
--	if (ret)
-+	if (!ret)
- 		x86_init.iommu.iommu_init = intel_iommu_init;
- #endif
- 
-@@ -911,10 +911,9 @@ int __init detect_intel_iommu(void)
- 	}
- 	up_write(&dmar_global_lock);
- 
--	return ret ? 1 : -ENODEV;
-+	return ret;
- }
- 
--
- static void unmap_iommu(struct intel_iommu *iommu)
+@@ -391,7 +391,7 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
  {
- 	iounmap(iommu->reg);
+ 	struct acpi_dmar_hardware_unit *drhd;
+ 	struct dmar_drhd_unit *dmaru;
+-	int ret = 0;
++	int ret;
+ 
+ 	drhd = (struct acpi_dmar_hardware_unit *)header;
+ 	dmaru = dmar_find_dmaru(drhd);
+@@ -609,8 +609,8 @@ static int __init
+ parse_dmar_table(void)
+ {
+ 	struct acpi_table_dmar *dmar;
+-	int ret = 0;
+ 	int drhd_count = 0;
++	int ret;
+ 	struct dmar_res_callback cb = {
+ 		.print_entry = true,
+ 		.ignore_unhandled = true,
 -- 
 2.11.0
