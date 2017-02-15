@@ -1,7 +1,8 @@
 From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v1 4/6] iommu/dmar: Remove redundant assignment of ret
-Date: Wed, 15 Feb 2017 16:42:24 +0200
-Message-ID: <20170215144226.34519-4-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 5/6] iommu/dmar: Remove redundant ' != 0' when check return
+	code
+Date: Wed, 15 Feb 2017 16:42:25 +0200
+Message-ID: <20170215144226.34519-5-andriy.shevchenko@linux.intel.com>
 References: <20170215144226.34519-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,38 +22,28 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwB
 Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-There is no need to assign ret to 0 in some cases. Moreover it might
-shadow some errors in the future.
+Usual patter when we check for return code, which might be negative
+errno, is either ret or !ret.
 
-Remove such assignments.
+Remove extra ' != 0' from condition.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/dmar.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iommu/dmar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 24bb0fcca860..47b4044a5219 100644
+index 47b4044a5219..685e3a2d7e5f 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -391,7 +391,7 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
- {
- 	struct acpi_dmar_hardware_unit *drhd;
- 	struct dmar_drhd_unit *dmaru;
--	int ret = 0;
-+	int ret;
- 
- 	drhd = (struct acpi_dmar_hardware_unit *)header;
- 	dmaru = dmar_find_dmaru(drhd);
-@@ -609,8 +609,8 @@ static int __init
- parse_dmar_table(void)
- {
- 	struct acpi_table_dmar *dmar;
--	int ret = 0;
- 	int drhd_count = 0;
-+	int ret;
- 	struct dmar_res_callback cb = {
- 		.print_entry = true,
- 		.ignore_unhandled = true,
+@@ -311,7 +311,7 @@ static int dmar_pci_bus_add_dev(struct dmar_pci_notify_info *info)
+ 				((void *)drhd) + drhd->header.length,
+ 				dmaru->segment,
+ 				dmaru->devices, dmaru->devices_cnt);
+-		if (ret != 0)
++		if (ret)
+ 			break;
+ 	}
+ 	if (ret >= 0)
 -- 
 2.11.0
