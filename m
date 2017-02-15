@@ -1,8 +1,8 @@
 From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v1 5/6] iommu/dmar: Remove redundant ' != 0' when check return
-	code
-Date: Wed, 15 Feb 2017 16:42:25 +0200
-Message-ID: <20170215144226.34519-5-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 3/6] iommu/dmar: Return directly from a loop in
+	dmar_dev_scope_status()
+Date: Wed, 15 Feb 2017 16:42:23 +0200
+Message-ID: <20170215144226.34519-3-andriy.shevchenko@linux.intel.com>
 References: <20170215144226.34519-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,28 +22,61 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwB
 Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Usual patter when we check for return code, which might be negative
-errno, is either ret or !ret.
-
-Remove extra ' != 0' from condition.
+There is no need to have a temporary variable.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/dmar.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/dmar.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 47b4044a5219..685e3a2d7e5f 100644
+index 322765a0a210..24bb0fcca860 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -311,7 +311,7 @@ static int dmar_pci_bus_add_dev(struct dmar_pci_notify_info *info)
- 				((void *)drhd) + drhd->header.length,
- 				dmaru->segment,
- 				dmaru->devices, dmaru->devices_cnt);
--		if (ret != 0)
-+		if (ret)
- 			break;
+@@ -557,11 +557,10 @@ static int __init dmar_table_detect(void)
+ static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
+ 				       size_t len, struct dmar_res_callback *cb)
+ {
+-	int ret = 0;
+ 	struct acpi_dmar_header *iter, *next;
+ 	struct acpi_dmar_header *end = ((void *)start) + len;
+ 
+-	for (iter = start; iter < end && ret == 0; iter = next) {
++	for (iter = start; iter < end; iter = next) {
+ 		next = (void *)iter + iter->length;
+ 		if (iter->length == 0) {
+ 			/* Avoid looping forever on bad ACPI tables */
+@@ -570,8 +569,7 @@ static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
+ 		} else if (next > end) {
+ 			/* Avoid passing table end */
+ 			pr_warn(FW_BUG "Record passes table end\n");
+-			ret = -EINVAL;
+-			break;
++			return -EINVAL;
+ 		}
+ 
+ 		if (cb->print_entry)
+@@ -582,15 +580,19 @@ static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
+ 			pr_debug("Unknown DMAR structure type %d\n",
+ 				 iter->type);
+ 		} else if (cb->cb[iter->type]) {
++			int ret;
++
+ 			ret = cb->cb[iter->type](iter, cb->arg[iter->type]);
++			if (ret)
++				return ret;
+ 		} else if (!cb->ignore_unhandled) {
+ 			pr_warn("No handler for DMAR structure type %d\n",
+ 				iter->type);
+-			ret = -EINVAL;
++			return -EINVAL;
+ 		}
  	}
- 	if (ret >= 0)
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ static inline int dmar_walk_dmar_table(struct acpi_table_dmar *dmar,
 -- 
 2.11.0
