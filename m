@@ -1,148 +1,475 @@
-From: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu: add warning when sharing groups
-Date: Wed, 15 Feb 2017 16:43:17 -0500
-Message-ID: <9a327a29-ec4c-e936-13c1-675ec6d17df2@codeaurora.org>
-References: <1487107522-8695-1-git-send-email-okaya@codeaurora.org>
-	<1487107522-8695-2-git-send-email-okaya@codeaurora.org>
-	<20170214165155.7c49485e@t450s.home>
-	<e7535138133c514c77004d64e40b4180@codeaurora.org>
-	<20170215123613.1df4b33a@t450s.home>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170215123613.1df4b33a-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, timur-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+From: Rob Clark <robdclark@gmail.com>
+Subject: [PATCH 1/2] iommu/arm-smmu: split out register defines
+Date: Wed, 15 Feb 2017 16:57:42 -0500
+Message-ID: <20170215215743.5673-1-robdclark@gmail.com>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will.deacon@arm.com>, Sricharan <sricharan@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Rob Clark <robdclark@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2/15/2017 2:36 PM, Alex Williamson wrote:
-> On Tue, 14 Feb 2017 22:53:35 -0500
-> okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org wrote:
-> 
->> On 2017-02-14 18:51, Alex Williamson wrote:
->>> On Tue, 14 Feb 2017 16:25:22 -0500
->>> Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->>>   
->>>> The ACS requirement has been obscured in the current code and is only
->>>> known by certain individuals who happen to read the code. Print out a
->>>> warning with ACS path failure when ACS requirement is not met.
->>>>
->>>> Signed-off-by: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>> ---
->>>>  drivers/iommu/iommu.c | 3 +++
->>>>  1 file changed, 3 insertions(+)
->>>>
->>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>> index dbe7f65..049ee0a 100644
->>>> --- a/drivers/iommu/iommu.c
->>>> +++ b/drivers/iommu/iommu.c
->>>> @@ -811,6 +811,9 @@ struct iommu_group *pci_device_group(struct device 
->>>> *dev)
->>>>  	if (IS_ERR(group))
->>>>  		return NULL;
->>>>
->>>> +	if (pci_is_root_bus(bus))
->>>> +		dev_warn_once(&pdev->dev, "using shared group due to ACS path 
->>>> failure\n");
->>>> +
->>>>  	return group;
->>>>  }
->>>>   
->>>
->>> The premise here is flawed.  An IOMMU group based at the root bus
->>> doesn't necessarily imply a lack of ACS.  There are devices on root
->>> buses, integrated endpoints and root ports.  Naturally an IOMMU group
->>> for these devices needs to be based at the root bus.  Additionally,
->>> there can be IOMMU groups developed around a lack of ACS that don't
->>> intersect with the root bus.  Since this is a warn_once, the false
->>> positives for root bus devices are going to be enumerated first.  On an
->>> Intel system there's typically a device as 00.0 that will always be
->>> pointlessly listed first.  Also, it's not clear that grouping devices
->>> together is always wrong, as Robin pointed out in the EHCI/OHCI
->>> example.  Lack of ACS on downtream ports is likely to cause problems,
->>> especially if that downstream port exposes a slot.  Maybe that would be
->>> a good place to start.  Also, what is someone supposed to do when they
->>> see this error?  If we can hope they'll look for the error in the code
->>> (unlikely) a big comment with useful external links might be
->>> necessary.  Based on how easily vendors ignore kernel warnings, I'm
->>> dubious there's any value to this path though.  Thanks,  
->>
->> Maybe, a better solution would be to add some sentences into vfio.txt 
->> documentation.
->>
->> I'm ready to drop this patch. I just don't want ACS requirement to be 
->> hidden between the source code.
->>
->> Would you be willing to do that?
->>
->> I know I read all pci and vfio documents in the past. I could have 
->> captured this requirement if it was there.
-> 
-> We already have this:
-> 
-> Documentation/vfio.txt:
-> ...
-> This isolation is not always at the granularity of a single device
-> though.  Even when an IOMMU is capable of this, properties of devices,
-> interconnects, and IOMMU topologies can each reduce this isolation.
-> For instance, an individual device may be part of a larger multi-
-> function enclosure.  While the IOMMU may be able to distinguish
-> between devices within the enclosure, the enclosure may not require
-> transactions between devices to reach the IOMMU.  Examples of this
-> could be anything from a multi-function PCI device with backdoors
-> between functions to a non-PCI-ACS (Access Control Services) capable
-> bridge allowing redirection without reaching the IOMMU.  Topology
-> can also play a factor in terms of hiding devices.  A PCIe-to-PCI
-> bridge masks the devices behind it, making transaction appear as if
-> from the bridge itself.  Obviously IOMMU design plays a major factor
-> as well.
-> ...
-> 
-> Additionally if you google for "iommu group", this is the first hit:
-> 
-> http://vfio.blogspot.com/2014/08/iommu-groups-inside-and-out.html
-> 
-> This talks extensively about ACS.  A few hits below that you can find a
-> presentation I've given with ACS examples.  What additional
-> documentation do you think would have helped you discover or understand
-> this problem earlier?
-> 
-> I agree that device isolation is not a spec requirement.  The specs
-> give us the tools that we need, but valid uses cases exist where a lack
-> of isolation may be preferred.  If we logically deduce how we can give
-> a device or set of devices to a user for an untrusted environment,
-> isolated from other devices, I think it's pretty logical to come to the
-> conclusion that ACS is the only way that PCIe hardware can allow that
-> sort of control in a standard way.  Clearly we also recognize that this
-> is a commonly overlooked area where hardware vendors may fail to
-> incorporate this subtly into their platform design guidelines and thus
-> we have numerous quirks for exposing virtual ACS-like isolation.  The
-> hope is that adding a quirk for this devices means that feedback was
-> provided to the hardware teams and system architects within the
-> companies developing these devices to consider this use case and
-> implement native ACS in the next generation.  Thanks,
+I want to re-use some of these for qcom_iommu, which has (roughly) the
+same context-bank registers.
 
+Signed-off-by: Rob Clark <robdclark@gmail.com>
+---
+ drivers/iommu/arm-smmu-regs.h | 225 ++++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/arm-smmu.c      | 200 +------------------------------------
+ 2 files changed, 226 insertions(+), 199 deletions(-)
+ create mode 100644 drivers/iommu/arm-smmu-regs.h
 
-I see, Maybe I was not familiar with ACS to understand these words
-by the time I read it.
-
-
-> 
-> Alex
-> 
-
-
+diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
+new file mode 100644
+index 0000000..632240f
+--- /dev/null
++++ b/drivers/iommu/arm-smmu-regs.h
+@@ -0,0 +1,225 @@
++/*
++ * IOMMU API for ARM architected SMMU implementations.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
++ *
++ * Copyright (C) 2013 ARM Limited
++ *
++ * Author: Will Deacon <will.deacon@arm.com>
++ */
++
++#ifndef _ARM_SMMU_REGS_H
++#define _ARM_SMMU_REGS_H
++
++
++/* Configuration registers */
++#define ARM_SMMU_GR0_sCR0		0x0
++#define sCR0_CLIENTPD			(1 << 0)
++#define sCR0_GFRE			(1 << 1)
++#define sCR0_GFIE			(1 << 2)
++#define sCR0_EXIDENABLE			(1 << 3)
++#define sCR0_GCFGFRE			(1 << 4)
++#define sCR0_GCFGFIE			(1 << 5)
++#define sCR0_USFCFG			(1 << 10)
++#define sCR0_VMIDPNE			(1 << 11)
++#define sCR0_PTM			(1 << 12)
++#define sCR0_FB				(1 << 13)
++#define sCR0_VMID16EN			(1 << 31)
++#define sCR0_BSU_SHIFT			14
++#define sCR0_BSU_MASK			0x3
++
++/* Auxiliary Configuration register */
++#define ARM_SMMU_GR0_sACR		0x10
++
++/* Identification registers */
++#define ARM_SMMU_GR0_ID0		0x20
++#define ARM_SMMU_GR0_ID1		0x24
++#define ARM_SMMU_GR0_ID2		0x28
++#define ARM_SMMU_GR0_ID3		0x2c
++#define ARM_SMMU_GR0_ID4		0x30
++#define ARM_SMMU_GR0_ID5		0x34
++#define ARM_SMMU_GR0_ID6		0x38
++#define ARM_SMMU_GR0_ID7		0x3c
++#define ARM_SMMU_GR0_sGFSR		0x48
++#define ARM_SMMU_GR0_sGFSYNR0		0x50
++#define ARM_SMMU_GR0_sGFSYNR1		0x54
++#define ARM_SMMU_GR0_sGFSYNR2		0x58
++
++#define ID0_S1TS			(1 << 30)
++#define ID0_S2TS			(1 << 29)
++#define ID0_NTS				(1 << 28)
++#define ID0_SMS				(1 << 27)
++#define ID0_ATOSNS			(1 << 26)
++#define ID0_PTFS_NO_AARCH32		(1 << 25)
++#define ID0_PTFS_NO_AARCH32S		(1 << 24)
++#define ID0_CTTW			(1 << 14)
++#define ID0_NUMIRPT_SHIFT		16
++#define ID0_NUMIRPT_MASK		0xff
++#define ID0_NUMSIDB_SHIFT		9
++#define ID0_NUMSIDB_MASK		0xf
++#define ID0_EXIDS			(1 << 8)
++#define ID0_NUMSMRG_SHIFT		0
++#define ID0_NUMSMRG_MASK		0xff
++
++#define ID1_PAGESIZE			(1 << 31)
++#define ID1_NUMPAGENDXB_SHIFT		28
++#define ID1_NUMPAGENDXB_MASK		7
++#define ID1_NUMS2CB_SHIFT		16
++#define ID1_NUMS2CB_MASK		0xff
++#define ID1_NUMCB_SHIFT			0
++#define ID1_NUMCB_MASK			0xff
++
++#define ID2_OAS_SHIFT			4
++#define ID2_OAS_MASK			0xf
++#define ID2_IAS_SHIFT			0
++#define ID2_IAS_MASK			0xf
++#define ID2_UBS_SHIFT			8
++#define ID2_UBS_MASK			0xf
++#define ID2_PTFS_4K			(1 << 12)
++#define ID2_PTFS_16K			(1 << 13)
++#define ID2_PTFS_64K			(1 << 14)
++#define ID2_VMID16			(1 << 15)
++
++#define ID7_MAJOR_SHIFT			4
++#define ID7_MAJOR_MASK			0xf
++
++/* Global TLB invalidation */
++#define ARM_SMMU_GR0_TLBIVMID		0x64
++#define ARM_SMMU_GR0_TLBIALLNSNH	0x68
++#define ARM_SMMU_GR0_TLBIALLH		0x6c
++#define ARM_SMMU_GR0_sTLBGSYNC		0x70
++#define ARM_SMMU_GR0_sTLBGSTATUS	0x74
++#define sTLBGSTATUS_GSACTIVE		(1 << 0)
++#define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
++
++/* Stream mapping registers */
++#define ARM_SMMU_GR0_SMR(n)		(0x800 + ((n) << 2))
++#define SMR_VALID			(1 << 31)
++#define SMR_MASK_SHIFT			16
++#define SMR_ID_SHIFT			0
++
++#define ARM_SMMU_GR0_S2CR(n)		(0xc00 + ((n) << 2))
++#define S2CR_CBNDX_SHIFT		0
++#define S2CR_CBNDX_MASK			0xff
++#define S2CR_EXIDVALID			(1 << 10)
++#define S2CR_TYPE_SHIFT			16
++#define S2CR_TYPE_MASK			0x3
++enum arm_smmu_s2cr_type {
++	S2CR_TYPE_TRANS,
++	S2CR_TYPE_BYPASS,
++	S2CR_TYPE_FAULT,
++};
++
++#define S2CR_PRIVCFG_SHIFT		24
++#define S2CR_PRIVCFG_MASK		0x3
++enum arm_smmu_s2cr_privcfg {
++	S2CR_PRIVCFG_DEFAULT,
++	S2CR_PRIVCFG_DIPAN,
++	S2CR_PRIVCFG_UNPRIV,
++	S2CR_PRIVCFG_PRIV,
++};
++
++/* Context bank attribute registers */
++#define ARM_SMMU_GR1_CBAR(n)		(0x0 + ((n) << 2))
++#define CBAR_VMID_SHIFT			0
++#define CBAR_VMID_MASK			0xff
++#define CBAR_S1_BPSHCFG_SHIFT		8
++#define CBAR_S1_BPSHCFG_MASK		3
++#define CBAR_S1_BPSHCFG_NSH		3
++#define CBAR_S1_MEMATTR_SHIFT		12
++#define CBAR_S1_MEMATTR_MASK		0xf
++#define CBAR_S1_MEMATTR_WB		0xf
++#define CBAR_TYPE_SHIFT			16
++#define CBAR_TYPE_MASK			0x3
++#define CBAR_TYPE_S2_TRANS		(0 << CBAR_TYPE_SHIFT)
++#define CBAR_TYPE_S1_TRANS_S2_BYPASS	(1 << CBAR_TYPE_SHIFT)
++#define CBAR_TYPE_S1_TRANS_S2_FAULT	(2 << CBAR_TYPE_SHIFT)
++#define CBAR_TYPE_S1_TRANS_S2_TRANS	(3 << CBAR_TYPE_SHIFT)
++#define CBAR_IRPTNDX_SHIFT		24
++#define CBAR_IRPTNDX_MASK		0xff
++
++#define ARM_SMMU_GR1_CBA2R(n)		(0x800 + ((n) << 2))
++#define CBA2R_RW64_32BIT		(0 << 0)
++#define CBA2R_RW64_64BIT		(1 << 0)
++#define CBA2R_VMID_SHIFT		16
++#define CBA2R_VMID_MASK			0xffff
++
++#define ARM_SMMU_CB_SCTLR		0x0
++#define ARM_SMMU_CB_ACTLR		0x4
++#define ARM_SMMU_CB_RESUME		0x8
++#define ARM_SMMU_CB_TTBCR2		0x10
++#define ARM_SMMU_CB_TTBR0		0x20
++#define ARM_SMMU_CB_TTBR1		0x28
++#define ARM_SMMU_CB_TTBCR		0x30
++#define ARM_SMMU_CB_CONTEXTIDR		0x34
++#define ARM_SMMU_CB_S1_MAIR0		0x38
++#define ARM_SMMU_CB_S1_MAIR1		0x3c
++#define ARM_SMMU_CB_PAR			0x50
++#define ARM_SMMU_CB_FSR			0x58
++#define ARM_SMMU_CB_FAR			0x60
++#define ARM_SMMU_CB_FSYNR0		0x68
++#define ARM_SMMU_CB_S1_TLBIVA		0x600
++#define ARM_SMMU_CB_S1_TLBIASID		0x610
++#define ARM_SMMU_CB_S1_TLBIVAL		0x620
++#define ARM_SMMU_CB_S2_TLBIIPAS2	0x630
++#define ARM_SMMU_CB_S2_TLBIIPAS2L	0x638
++#define ARM_SMMU_CB_ATS1PR		0x800
++#define ARM_SMMU_CB_ATSR		0x8f0
++
++#define SCTLR_S1_ASIDPNE		(1 << 12)
++#define SCTLR_CFCFG			(1 << 7)
++#define SCTLR_CFIE			(1 << 6)
++#define SCTLR_CFRE			(1 << 5)
++#define SCTLR_E				(1 << 4)
++#define SCTLR_AFE			(1 << 2)
++#define SCTLR_TRE			(1 << 1)
++#define SCTLR_M				(1 << 0)
++
++#define ARM_MMU500_ACTLR_CPRE		(1 << 1)
++
++#define ARM_MMU500_ACR_CACHE_LOCK	(1 << 26)
++#define ARM_MMU500_ACR_SMTNMB_TLBEN	(1 << 8)
++
++#define CB_PAR_F			(1 << 0)
++
++#define ATSR_ACTIVE			(1 << 0)
++
++#define RESUME_RETRY			(0 << 0)
++#define RESUME_TERMINATE		(1 << 0)
++
++#define TTBCR2_SEP_SHIFT		15
++#define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
++#define TTBCR2_AS			(1 << 4)
++
++#define TTBRn_ASID_SHIFT		48
++
++#define FSR_MULTI			(1 << 31)
++#define FSR_SS				(1 << 30)
++#define FSR_UUT				(1 << 8)
++#define FSR_ASF				(1 << 7)
++#define FSR_TLBLKF			(1 << 6)
++#define FSR_TLBMCF			(1 << 5)
++#define FSR_EF				(1 << 4)
++#define FSR_PF				(1 << 3)
++#define FSR_AFF				(1 << 2)
++#define FSR_TF				(1 << 1)
++
++#define FSR_IGN				(FSR_AFF | FSR_ASF | \
++					 FSR_TLBMCF | FSR_TLBLKF)
++#define FSR_FAULT			(FSR_MULTI | FSR_SS | FSR_UUT | \
++					 FSR_EF | FSR_PF | FSR_TF | FSR_IGN)
++
++#define FSYNR0_WNR			(1 << 4)
++
++#endif /* _ARM_SMMU_REGS_H */
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index faea579..f15375a 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -54,6 +54,7 @@
+ #include <linux/amba/bus.h>
+ 
+ #include "io-pgtable.h"
++#include "arm-smmu-regs.h"
+ 
+ /* Maximum number of context banks per SMMU */
+ #define ARM_SMMU_MAX_CBS		128
+@@ -83,209 +84,10 @@
+ #define smmu_write_atomic_lq		writel_relaxed
+ #endif
+ 
+-/* Configuration registers */
+-#define ARM_SMMU_GR0_sCR0		0x0
+-#define sCR0_CLIENTPD			(1 << 0)
+-#define sCR0_GFRE			(1 << 1)
+-#define sCR0_GFIE			(1 << 2)
+-#define sCR0_EXIDENABLE			(1 << 3)
+-#define sCR0_GCFGFRE			(1 << 4)
+-#define sCR0_GCFGFIE			(1 << 5)
+-#define sCR0_USFCFG			(1 << 10)
+-#define sCR0_VMIDPNE			(1 << 11)
+-#define sCR0_PTM			(1 << 12)
+-#define sCR0_FB				(1 << 13)
+-#define sCR0_VMID16EN			(1 << 31)
+-#define sCR0_BSU_SHIFT			14
+-#define sCR0_BSU_MASK			0x3
+-
+-/* Auxiliary Configuration register */
+-#define ARM_SMMU_GR0_sACR		0x10
+-
+-/* Identification registers */
+-#define ARM_SMMU_GR0_ID0		0x20
+-#define ARM_SMMU_GR0_ID1		0x24
+-#define ARM_SMMU_GR0_ID2		0x28
+-#define ARM_SMMU_GR0_ID3		0x2c
+-#define ARM_SMMU_GR0_ID4		0x30
+-#define ARM_SMMU_GR0_ID5		0x34
+-#define ARM_SMMU_GR0_ID6		0x38
+-#define ARM_SMMU_GR0_ID7		0x3c
+-#define ARM_SMMU_GR0_sGFSR		0x48
+-#define ARM_SMMU_GR0_sGFSYNR0		0x50
+-#define ARM_SMMU_GR0_sGFSYNR1		0x54
+-#define ARM_SMMU_GR0_sGFSYNR2		0x58
+-
+-#define ID0_S1TS			(1 << 30)
+-#define ID0_S2TS			(1 << 29)
+-#define ID0_NTS				(1 << 28)
+-#define ID0_SMS				(1 << 27)
+-#define ID0_ATOSNS			(1 << 26)
+-#define ID0_PTFS_NO_AARCH32		(1 << 25)
+-#define ID0_PTFS_NO_AARCH32S		(1 << 24)
+-#define ID0_CTTW			(1 << 14)
+-#define ID0_NUMIRPT_SHIFT		16
+-#define ID0_NUMIRPT_MASK		0xff
+-#define ID0_NUMSIDB_SHIFT		9
+-#define ID0_NUMSIDB_MASK		0xf
+-#define ID0_EXIDS			(1 << 8)
+-#define ID0_NUMSMRG_SHIFT		0
+-#define ID0_NUMSMRG_MASK		0xff
+-
+-#define ID1_PAGESIZE			(1 << 31)
+-#define ID1_NUMPAGENDXB_SHIFT		28
+-#define ID1_NUMPAGENDXB_MASK		7
+-#define ID1_NUMS2CB_SHIFT		16
+-#define ID1_NUMS2CB_MASK		0xff
+-#define ID1_NUMCB_SHIFT			0
+-#define ID1_NUMCB_MASK			0xff
+-
+-#define ID2_OAS_SHIFT			4
+-#define ID2_OAS_MASK			0xf
+-#define ID2_IAS_SHIFT			0
+-#define ID2_IAS_MASK			0xf
+-#define ID2_UBS_SHIFT			8
+-#define ID2_UBS_MASK			0xf
+-#define ID2_PTFS_4K			(1 << 12)
+-#define ID2_PTFS_16K			(1 << 13)
+-#define ID2_PTFS_64K			(1 << 14)
+-#define ID2_VMID16			(1 << 15)
+-
+-#define ID7_MAJOR_SHIFT			4
+-#define ID7_MAJOR_MASK			0xf
+-
+-/* Global TLB invalidation */
+-#define ARM_SMMU_GR0_TLBIVMID		0x64
+-#define ARM_SMMU_GR0_TLBIALLNSNH	0x68
+-#define ARM_SMMU_GR0_TLBIALLH		0x6c
+-#define ARM_SMMU_GR0_sTLBGSYNC		0x70
+-#define ARM_SMMU_GR0_sTLBGSTATUS	0x74
+-#define sTLBGSTATUS_GSACTIVE		(1 << 0)
+-#define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
+-
+-/* Stream mapping registers */
+-#define ARM_SMMU_GR0_SMR(n)		(0x800 + ((n) << 2))
+-#define SMR_VALID			(1 << 31)
+-#define SMR_MASK_SHIFT			16
+-#define SMR_ID_SHIFT			0
+-
+-#define ARM_SMMU_GR0_S2CR(n)		(0xc00 + ((n) << 2))
+-#define S2CR_CBNDX_SHIFT		0
+-#define S2CR_CBNDX_MASK			0xff
+-#define S2CR_EXIDVALID			(1 << 10)
+-#define S2CR_TYPE_SHIFT			16
+-#define S2CR_TYPE_MASK			0x3
+-enum arm_smmu_s2cr_type {
+-	S2CR_TYPE_TRANS,
+-	S2CR_TYPE_BYPASS,
+-	S2CR_TYPE_FAULT,
+-};
+-
+-#define S2CR_PRIVCFG_SHIFT		24
+-#define S2CR_PRIVCFG_MASK		0x3
+-enum arm_smmu_s2cr_privcfg {
+-	S2CR_PRIVCFG_DEFAULT,
+-	S2CR_PRIVCFG_DIPAN,
+-	S2CR_PRIVCFG_UNPRIV,
+-	S2CR_PRIVCFG_PRIV,
+-};
+-
+-/* Context bank attribute registers */
+-#define ARM_SMMU_GR1_CBAR(n)		(0x0 + ((n) << 2))
+-#define CBAR_VMID_SHIFT			0
+-#define CBAR_VMID_MASK			0xff
+-#define CBAR_S1_BPSHCFG_SHIFT		8
+-#define CBAR_S1_BPSHCFG_MASK		3
+-#define CBAR_S1_BPSHCFG_NSH		3
+-#define CBAR_S1_MEMATTR_SHIFT		12
+-#define CBAR_S1_MEMATTR_MASK		0xf
+-#define CBAR_S1_MEMATTR_WB		0xf
+-#define CBAR_TYPE_SHIFT			16
+-#define CBAR_TYPE_MASK			0x3
+-#define CBAR_TYPE_S2_TRANS		(0 << CBAR_TYPE_SHIFT)
+-#define CBAR_TYPE_S1_TRANS_S2_BYPASS	(1 << CBAR_TYPE_SHIFT)
+-#define CBAR_TYPE_S1_TRANS_S2_FAULT	(2 << CBAR_TYPE_SHIFT)
+-#define CBAR_TYPE_S1_TRANS_S2_TRANS	(3 << CBAR_TYPE_SHIFT)
+-#define CBAR_IRPTNDX_SHIFT		24
+-#define CBAR_IRPTNDX_MASK		0xff
+-
+-#define ARM_SMMU_GR1_CBA2R(n)		(0x800 + ((n) << 2))
+-#define CBA2R_RW64_32BIT		(0 << 0)
+-#define CBA2R_RW64_64BIT		(1 << 0)
+-#define CBA2R_VMID_SHIFT		16
+-#define CBA2R_VMID_MASK			0xffff
+-
+ /* Translation context bank */
+ #define ARM_SMMU_CB_BASE(smmu)		((smmu)->base + ((smmu)->size >> 1))
+ #define ARM_SMMU_CB(smmu, n)		((n) * (1 << (smmu)->pgshift))
+ 
+-#define ARM_SMMU_CB_SCTLR		0x0
+-#define ARM_SMMU_CB_ACTLR		0x4
+-#define ARM_SMMU_CB_RESUME		0x8
+-#define ARM_SMMU_CB_TTBCR2		0x10
+-#define ARM_SMMU_CB_TTBR0		0x20
+-#define ARM_SMMU_CB_TTBR1		0x28
+-#define ARM_SMMU_CB_TTBCR		0x30
+-#define ARM_SMMU_CB_CONTEXTIDR		0x34
+-#define ARM_SMMU_CB_S1_MAIR0		0x38
+-#define ARM_SMMU_CB_S1_MAIR1		0x3c
+-#define ARM_SMMU_CB_PAR			0x50
+-#define ARM_SMMU_CB_FSR			0x58
+-#define ARM_SMMU_CB_FAR			0x60
+-#define ARM_SMMU_CB_FSYNR0		0x68
+-#define ARM_SMMU_CB_S1_TLBIVA		0x600
+-#define ARM_SMMU_CB_S1_TLBIASID		0x610
+-#define ARM_SMMU_CB_S1_TLBIVAL		0x620
+-#define ARM_SMMU_CB_S2_TLBIIPAS2	0x630
+-#define ARM_SMMU_CB_S2_TLBIIPAS2L	0x638
+-#define ARM_SMMU_CB_ATS1PR		0x800
+-#define ARM_SMMU_CB_ATSR		0x8f0
+-
+-#define SCTLR_S1_ASIDPNE		(1 << 12)
+-#define SCTLR_CFCFG			(1 << 7)
+-#define SCTLR_CFIE			(1 << 6)
+-#define SCTLR_CFRE			(1 << 5)
+-#define SCTLR_E				(1 << 4)
+-#define SCTLR_AFE			(1 << 2)
+-#define SCTLR_TRE			(1 << 1)
+-#define SCTLR_M				(1 << 0)
+-
+-#define ARM_MMU500_ACTLR_CPRE		(1 << 1)
+-
+-#define ARM_MMU500_ACR_CACHE_LOCK	(1 << 26)
+-#define ARM_MMU500_ACR_SMTNMB_TLBEN	(1 << 8)
+-
+-#define CB_PAR_F			(1 << 0)
+-
+-#define ATSR_ACTIVE			(1 << 0)
+-
+-#define RESUME_RETRY			(0 << 0)
+-#define RESUME_TERMINATE		(1 << 0)
+-
+-#define TTBCR2_SEP_SHIFT		15
+-#define TTBCR2_SEP_UPSTREAM		(0x7 << TTBCR2_SEP_SHIFT)
+-#define TTBCR2_AS			(1 << 4)
+-
+-#define TTBRn_ASID_SHIFT		48
+-
+-#define FSR_MULTI			(1 << 31)
+-#define FSR_SS				(1 << 30)
+-#define FSR_UUT				(1 << 8)
+-#define FSR_ASF				(1 << 7)
+-#define FSR_TLBLKF			(1 << 6)
+-#define FSR_TLBMCF			(1 << 5)
+-#define FSR_EF				(1 << 4)
+-#define FSR_PF				(1 << 3)
+-#define FSR_AFF				(1 << 2)
+-#define FSR_TF				(1 << 1)
+-
+-#define FSR_IGN				(FSR_AFF | FSR_ASF | \
+-					 FSR_TLBMCF | FSR_TLBLKF)
+-#define FSR_FAULT			(FSR_MULTI | FSR_SS | FSR_UUT | \
+-					 FSR_EF | FSR_PF | FSR_TF | FSR_IGN)
+-
+-#define FSYNR0_WNR			(1 << 4)
+-
+ #define MSI_IOVA_BASE			0x8000000
+ #define MSI_IOVA_LENGTH			0x100000
+ 
 -- 
-Sinan Kaya
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+2.9.3
