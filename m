@@ -1,7 +1,7 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v10 4/9] iommu/amd: Clean up iommu_pc_get_set_reg()
-Date: Wed, 15 Feb 2017 14:56:20 -0600
-Message-ID: <1487192185-31272-5-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH v10 3/9] perf/amd/iommu: Clean up perf_iommu_read()
+Date: Wed, 15 Feb 2017 14:56:19 -0600
+Message-ID: <1487192185-31272-4-git-send-email-Suravee.Suthikulpanit@amd.com>
 References: <1487192185-31272-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,50 +21,54 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFL
 Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Fix coding style and make use of GENMASK_ULL macro.
 
-Clean up coding style and fix a bug in the 64-bit register read
-logic since it overwrites the upper 32-bit when reading the lower 32-bit.
-
+Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ arch/x86/events/amd/iommu.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 6799cf9..c7edc18 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2760,22 +2760,25 @@ static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
- 	if (WARN_ON((fxn > 0x28) || (fxn & 7)))
- 		return -ENODEV;
+diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+index 85b634e..5bef429 100644
+--- a/arch/x86/events/amd/iommu.c
++++ b/arch/x86/events/amd/iommu.c
+@@ -320,9 +320,7 @@ static void perf_iommu_start(struct perf_event *event, int flags)
  
--	offset = (u32)(((0x40|bank) << 12) | (cntr << 8) | fxn);
-+	offset = (u32)(((0x40 | bank) << 12) | (cntr << 8) | fxn);
+ static void perf_iommu_read(struct perf_event *event)
+ {
+-	u64 count = 0ULL;
+-	u64 prev_raw_count = 0ULL;
+-	u64 delta = 0ULL;
++	u64 count, prev, delta;
+ 	struct hw_perf_event *hwc = &event->hw;
  
- 	/* Limit the offset to the hw defined mmio region aperture */
--	max_offset_lim = (u32)(((0x40|iommu->max_banks) << 12) |
-+	max_offset_lim = (u32)(((0x40 | iommu->max_banks) << 12) |
- 				(iommu->max_counters << 8) | 0x28);
- 	if ((offset < MMIO_CNTR_REG_OFFSET) ||
- 	    (offset > max_offset_lim))
- 		return -EINVAL;
+ 	amd_iommu_pc_get_set_reg_val(_GET_DEVID(event),
+@@ -330,18 +328,16 @@ static void perf_iommu_read(struct perf_event *event)
+ 				IOMMU_PC_COUNTER_REG, &count, false);
  
- 	if (is_write) {
--		writel((u32)*value, iommu->mmio_base + offset);
--		writel((*value >> 32), iommu->mmio_base + offset + 4);
-+		u64 val = *value & GENMASK_ULL(47, 0);
-+
-+		writel((u32)val, iommu->mmio_base + offset);
-+		writel((val >> 32), iommu->mmio_base + offset + 4);
- 	} else {
- 		*value = readl(iommu->mmio_base + offset + 4);
- 		*value <<= 32;
--		*value = readl(iommu->mmio_base + offset);
-+		*value |= readl(iommu->mmio_base + offset);
-+		*value &= GENMASK_ULL(47, 0);
- 	}
+ 	/* IOMMU pc counter register is only 48 bits */
+-	count &= 0xFFFFFFFFFFFFULL;
++	count &= GENMASK_ULL(47, 0);
  
- 	return 0;
+-	prev_raw_count =  local64_read(&hwc->prev_count);
+-	if (local64_cmpxchg(&hwc->prev_count, prev_raw_count,
+-					count) != prev_raw_count)
++	prev = local64_read(&hwc->prev_count);
++	if (local64_cmpxchg(&hwc->prev_count, prev, count) != prev)
+ 		return;
+ 
+-	/* Handling 48-bit counter overflowing */
+-	delta = (count << COUNTER_SHIFT) - (prev_raw_count << COUNTER_SHIFT);
++	/* Handle 48-bit counter overflow */
++	delta = (count << COUNTER_SHIFT) - (prev << COUNTER_SHIFT);
+ 	delta >>= COUNTER_SHIFT;
+ 	local64_add(delta, &event->count);
+-
+ }
+ 
+ static void perf_iommu_stop(struct perf_event *event, int flags)
 -- 
 1.8.3.1
