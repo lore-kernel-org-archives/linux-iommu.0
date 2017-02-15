@@ -1,7 +1,8 @@
 From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v1 6/6] iommu/vt-d: Use lo_hi_readq() / lo_hi_writeq()
-Date: Wed, 15 Feb 2017 16:42:26 +0200
-Message-ID: <20170215144226.34519-6-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 2/6] iommu/dmar: Rectify return code handling in
+	detect_intel_iommu()
+Date: Wed, 15 Feb 2017 16:42:22 +0200
+Message-ID: <20170215144226.34519-2-andriy.shevchenko@linux.intel.com>
 References: <20170215144226.34519-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,51 +22,63 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwB
 Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-There is already helper functions to do 64-bit I/O on 32-bit machines or
-buses, thus we don't need to reinvent the wheel.
+There is inconsistency in return codes across the functions called from
+detect_intel_iommu().
+
+Make it consistent and propagate return code to the caller.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- include/linux/intel-iommu.h | 18 ++----------------
- 1 file changed, 2 insertions(+), 16 deletions(-)
+ drivers/iommu/dmar.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index c573a52ae440..485a5b48f038 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -30,6 +30,8 @@
- #include <linux/mmu_notifier.h>
- #include <linux/list.h>
- #include <linux/iommu.h>
-+#include <linux/io-64-nonatomic-lo-hi.h>
-+
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 36e3f430d265..322765a0a210 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -551,7 +551,7 @@ static int __init dmar_table_detect(void)
+ 		status = AE_NOT_FOUND;
+ 	}
  
-@@ -72,24 +74,8 @@
+-	return (ACPI_SUCCESS(status) ? 1 : 0);
++	return (ACPI_SUCCESS(status) ? 0 : -ENOENT);
+ }
  
- #define OFFSET_STRIDE		(9)
+ static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
+@@ -891,17 +891,17 @@ int __init detect_intel_iommu(void)
  
--#ifdef CONFIG_64BIT
- #define dmar_readq(a) readq(a)
- #define dmar_writeq(a,v) writeq(v,a)
--#else
--static inline u64 dmar_readq(void __iomem *addr)
--{
--	u32 lo, hi;
--	lo = readl(addr);
--	hi = readl(addr + 4);
--	return (((u64) hi) << 32) + lo;
--}
+ 	down_write(&dmar_global_lock);
+ 	ret = dmar_table_detect();
+-	if (ret)
+-		ret = !dmar_walk_dmar_table((struct acpi_table_dmar *)dmar_tbl,
+-					    &validate_drhd_cb);
+-	if (ret && !no_iommu && !iommu_detected && !dmar_disabled) {
++	if (!ret)
++		ret = dmar_walk_dmar_table((struct acpi_table_dmar *)dmar_tbl,
++					   &validate_drhd_cb);
++	if (!ret && !no_iommu && !iommu_detected && !dmar_disabled) {
+ 		iommu_detected = 1;
+ 		/* Make sure ACS will be enabled */
+ 		pci_request_acs();
+ 	}
+ 
+ #ifdef CONFIG_X86
+-	if (ret)
++	if (!ret)
+ 		x86_init.iommu.iommu_init = intel_iommu_init;
+ #endif
+ 
+@@ -911,10 +911,9 @@ int __init detect_intel_iommu(void)
+ 	}
+ 	up_write(&dmar_global_lock);
+ 
+-	return ret ? 1 : -ENODEV;
++	return ret;
+ }
+ 
 -
--static inline void dmar_writeq(void __iomem *addr, u64 val)
--{
--	writel((u32)val, addr);
--	writel((u32)(val >> 32), addr + 4);
--}
--#endif
- 
- #define DMAR_VER_MAJOR(v)		(((v) & 0xf0) >> 4)
- #define DMAR_VER_MINOR(v)		((v) & 0x0f)
+ static void unmap_iommu(struct intel_iommu *iommu)
+ {
+ 	iounmap(iommu->reg);
 -- 
 2.11.0
