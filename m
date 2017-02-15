@@ -1,15 +1,15 @@
-From: okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Subject: Re: [PATCH 2/2] iommu: add warning when sharing groups
-Date: Tue, 14 Feb 2017 22:53:35 -0500
-Message-ID: <e7535138133c514c77004d64e40b4180@codeaurora.org>
-References: <1487107522-8695-1-git-send-email-okaya@codeaurora.org>
-	<1487107522-8695-2-git-send-email-okaya@codeaurora.org>
-	<20170214165155.7c49485e@t450s.home>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [PATCH v9 8/8] perf/amd/iommu: Enable support for multiple IOMMUs
+Date: Wed, 15 Feb 2017 14:13:29 +0700
+Message-ID: <483deec0-412f-bc34-de30-ce6ffcce3d4b@amd.com>
+References: <1486456836-17428-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1486456836-17428-9-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<20170208193340.x7lka54ismqqy7nw@pd.tnic>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170214165155.7c49485e-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
+In-Reply-To: <20170208193340.x7lka54ismqqy7nw-fF5Pk5pvG8Y@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,68 +19,88 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, timur-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2017-02-14 18:51, Alex Williamson wrote:
-> On Tue, 14 Feb 2017 16:25:22 -0500
-> Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
-> 
->> The ACS requirement has been obscured in the current code and is only
->> known by certain individuals who happen to read the code. Print out a
->> warning with ACS path failure when ACS requirement is not met.
->> 
->> Signed-off-by: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> ---
->>  drivers/iommu/iommu.c | 3 +++
->>  1 file changed, 3 insertions(+)
->> 
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index dbe7f65..049ee0a 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -811,6 +811,9 @@ struct iommu_group *pci_device_group(struct device 
->> *dev)
->>  	if (IS_ERR(group))
->>  		return NULL;
->> 
->> +	if (pci_is_root_bus(bus))
->> +		dev_warn_once(&pdev->dev, "using shared group due to ACS path 
->> failure\n");
+Boris,
+
+On 2/9/17 02:33, Borislav Petkov wrote:
+> On Tue, Feb 07, 2017 at 02:40:36AM -0600, Suravee Suthikulpanit wrote:
+>> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+>>  [......]
+>> +	perf_iommu->max_banks    = amd_iommu_pc_get_max_banks(idx);
+>> +	perf_iommu->max_counters = amd_iommu_pc_get_max_counters(idx);
+>>  	if (!perf_iommu->max_banks || !perf_iommu->max_counters)
+>>  		return -EINVAL;
+>>
+>> +	snprintf(perf_iommu->name, PERF_AMD_IOMMU_NAME_SIZE, "amd_iommu_%u", idx);
 >> +
->>  	return group;
->>  }
->> 
-> 
-> The premise here is flawed.  An IOMMU group based at the root bus
-> doesn't necessarily imply a lack of ACS.  There are devices on root
-> buses, integrated endpoints and root ports.  Naturally an IOMMU group
-> for these devices needs to be based at the root bus.  Additionally,
-> there can be IOMMU groups developed around a lack of ACS that don't
-> intersect with the root bus.  Since this is a warn_once, the false
-> positives for root bus devices are going to be enumerated first.  On an
-> Intel system there's typically a device as 00.0 that will always be
-> pointlessly listed first.  Also, it's not clear that grouping devices
-> together is always wrong, as Robin pointed out in the EHCI/OHCI
-> example.  Lack of ACS on downtream ports is likely to cause problems,
-> especially if that downstream port exposes a slot.  Maybe that would be
-> a good place to start.  Also, what is someone supposed to do when they
-> see this error?  If we can hope they'll look for the error in the code
-> (unlikely) a big comment with useful external links might be
-> necessary.  Based on how easily vendors ignore kernel warnings, I'm
-> dubious there's any value to this path though.  Thanks,
+>> +	perf_iommu->pmu.event_init  = perf_iommu_event_init;
+>> +	perf_iommu->pmu.add         = perf_iommu_add;
+>> +	perf_iommu->pmu.del         = perf_iommu_del;
+>> +	perf_iommu->pmu.start       = perf_iommu_start;
+>> +	perf_iommu->pmu.stop        = perf_iommu_stop;
+>> +	perf_iommu->pmu.read        = perf_iommu_read;
+>> +	perf_iommu->pmu.task_ctx_nr = perf_invalid_context;
+>>  	perf_iommu->pmu.attr_groups = amd_iommu_attr_groups;
+>
+> So you can define a static struct pmu in the driver and do struct
+> assignment directly instead of writing them one-by-one.
 
-Maybe, a better solution would be to add some sentences into vfio.txt 
-documentation.
+I believe this is the same suggestion you have made in V8.
+Here our previous discussion in V8:
 
-I'm ready to drop this patch. I just don't want ACS requirement to be 
-hidden between the source code.
+On 2/7/17 08:42, Suravee Suthikulpanit wrote:
+ >
+ > On 1/23/17 02:55, Borislav Petkov wrote:
+ >> Because otherwise you're carrying a struct pmu in each struct
+ >> perf_amd_iommu which has identical contents.
+ >
+ > Actually, only the callbacks above will be identical on each pmu, but
+ > there are other parts of the structure which are different
+ > (e.g. pmu->name, pmu->type, etc.) Also, we need one pmu instance per
+ > IOMMU since each pmu reference will get assigned to perf_event, and
+ > also used to reference back to struct perf_amd_iommu. Note that each
+ > pmu can also have different events.
 
-Would you be willing to do that?
+So, I still don't think we can have just one static PMU structure and
+assign it to each IOMMU. Lemme know if I am missing your point here.
 
-I know I read all pci and vfio documents in the past. I could have 
-captured this requirement if it was there.
 
-> 
-> Alex
+>> [...]
+ >> @@ -463,7 +466,24 @@ static __init int amd_iommu_pc_init(void)
+>>  	if (ret)
+>>  		return ret;
+>>
+>> -	ret = _init_perf_amd_iommu(&__perf_iommu, "amd_iommu");
+>> +	for (i = 0 ; i < amd_iommu_get_num_iommus(); i++) {
+>> +		struct perf_amd_iommu *pi;
+>> +
+>> +		pi = kzalloc(sizeof(struct perf_amd_iommu), GFP_KERNEL);
+>> +		if (!pi) {
+>> +			ret = -ENOMEM;
+>> +			break;
+>> +		}
+>> +
+>> +		ret = init_one_perf_amd_iommu(pi, i);
+>> +		if (ret) {
+>> +			kfree(pi);
+>> +			break;
+>
+> What happens with the iommus that have been initialized successfully
+> before this one fails? They remain in use?
+>
+> I think we need at least a warning saying here:
+>
+> 	pr_warning("Error initializing IOMMU %d ...")
+>
+> so that we at least know why some are missing.
+>
+
+The initialized ones should be functioning independently (as separate PMUs).
+So, it should be alright to just leave them. I'll add the warning message
+as you suggested.
+
+Thanks,
+Suravee
