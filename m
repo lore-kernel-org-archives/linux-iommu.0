@@ -1,125 +1,82 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH 2/2] iommu: add warning when sharing groups
-Date: Wed, 15 Feb 2017 12:36:13 -0700
-Message-ID: <20170215123613.1df4b33a@t450s.home>
-References: <1487107522-8695-1-git-send-email-okaya@codeaurora.org>
-        <1487107522-8695-2-git-send-email-okaya@codeaurora.org>
-        <20170214165155.7c49485e@t450s.home>
-        <e7535138133c514c77004d64e40b4180@codeaurora.org>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH v10 0/9] perf/amd/iommu: Enable multi-IOMMU support
+Date: Wed, 15 Feb 2017 14:56:16 -0600
+Message-ID: <1487192185-31272-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <e7535138133c514c77004d64e40b4180@codeaurora.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: okaya@codeaurora.org
-Cc: linux-pci@vger.kernel.org, timur@codeaurora.org, iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 14 Feb 2017 22:53:35 -0500
-okaya@codeaurora.org wrote:
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-> On 2017-02-14 18:51, Alex Williamson wrote:
-> > On Tue, 14 Feb 2017 16:25:22 -0500
-> > Sinan Kaya <okaya@codeaurora.org> wrote:
-> >   
-> >> The ACS requirement has been obscured in the current code and is only
-> >> known by certain individuals who happen to read the code. Print out a
-> >> warning with ACS path failure when ACS requirement is not met.
-> >> 
-> >> Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
-> >> ---
-> >>  drivers/iommu/iommu.c | 3 +++
-> >>  1 file changed, 3 insertions(+)
-> >> 
-> >> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> >> index dbe7f65..049ee0a 100644
-> >> --- a/drivers/iommu/iommu.c
-> >> +++ b/drivers/iommu/iommu.c
-> >> @@ -811,6 +811,9 @@ struct iommu_group *pci_device_group(struct device 
-> >> *dev)
-> >>  	if (IS_ERR(group))
-> >>  		return NULL;
-> >> 
-> >> +	if (pci_is_root_bus(bus))
-> >> +		dev_warn_once(&pdev->dev, "using shared group due to ACS path 
-> >> failure\n");
-> >> +
-> >>  	return group;
-> >>  }
-> >>   
-> > 
-> > The premise here is flawed.  An IOMMU group based at the root bus
-> > doesn't necessarily imply a lack of ACS.  There are devices on root
-> > buses, integrated endpoints and root ports.  Naturally an IOMMU group
-> > for these devices needs to be based at the root bus.  Additionally,
-> > there can be IOMMU groups developed around a lack of ACS that don't
-> > intersect with the root bus.  Since this is a warn_once, the false
-> > positives for root bus devices are going to be enumerated first.  On an
-> > Intel system there's typically a device as 00.0 that will always be
-> > pointlessly listed first.  Also, it's not clear that grouping devices
-> > together is always wrong, as Robin pointed out in the EHCI/OHCI
-> > example.  Lack of ACS on downtream ports is likely to cause problems,
-> > especially if that downstream port exposes a slot.  Maybe that would be
-> > a good place to start.  Also, what is someone supposed to do when they
-> > see this error?  If we can hope they'll look for the error in the code
-> > (unlikely) a big comment with useful external links might be
-> > necessary.  Based on how easily vendors ignore kernel warnings, I'm
-> > dubious there's any value to this path though.  Thanks,  
-> 
-> Maybe, a better solution would be to add some sentences into vfio.txt 
-> documentation.
-> 
-> I'm ready to drop this patch. I just don't want ACS requirement to be 
-> hidden between the source code.
-> 
-> Would you be willing to do that?
-> 
-> I know I read all pci and vfio documents in the past. I could have 
-> captured this requirement if it was there.
+This patch series modifies the existing IOMMU and Perf drivers to support
+systems with multiple IOMMUs by allocating an amd_iommu PMU per IOMMU instance.
+This allows users to specify performance events and filters separately for each
+IOMMU.
 
-We already have this:
+This has been tested on the new family17h-based server w/ multiple IOMMUs.
 
-Documentation/vfio.txt:
-...
-This isolation is not always at the granularity of a single device
-though.  Even when an IOMMU is capable of this, properties of devices,
-interconnects, and IOMMU topologies can each reduce this isolation.
-For instance, an individual device may be part of a larger multi-
-function enclosure.  While the IOMMU may be able to distinguish
-between devices within the enclosure, the enclosure may not require
-transactions between devices to reach the IOMMU.  Examples of this
-could be anything from a multi-function PCI device with backdoors
-between functions to a non-PCI-ACS (Access Control Services) capable
-bridge allowing redirection without reaching the IOMMU.  Topology
-can also play a factor in terms of hiding devices.  A PCIe-to-PCI
-bridge masks the devices behind it, making transaction appear as if
-from the bridge itself.  Obviously IOMMU design plays a major factor
-as well.
-...
+Git branch containing this patch series is available here:
 
-Additionally if you google for "iommu group", this is the first hit:
+    https://github.com/ssuthiku/linux.git  perf-iommu-v10
 
-http://vfio.blogspot.com/2014/08/iommu-groups-inside-and-out.html
+Changes from V9 (https://lkml.org/lkml/2017/2/7/105)
+  * Since each IOMMU PMU in a system functions independently from 
+    one another, the amd_iommu_pc_init() function has been modified
+    to allow certain IOMMU PMU initialization to fail w/o disabling
+    the others (patch 9/9).
+  * Define a static pmu (iommu_pmu), and stuct assignment directly.
+    (per Boris)
+  * Refactor code clean up into a separate patch (4/9) (per Boris)
 
-This talks extensively about ACS.  A few hits below that you can find a
-presentation I've given with ACS examples.  What additional
-documentation do you think would have helped you discover or understand
-this problem earlier?
+Changes from V8 (https://lkml.org/lkml/2017/1/16/48)
+  * Rebase to v4.10
+  * Do not use hwc->idx as pmu index. Instead, include pointers
+    to struct amd_iommu in the perf_amd_iommu.
+  * Do not remove local64_cmpxchg() in perf_iommu_read().
+  * Fix incorrect bitfield when using GENMASK_ULL().
 
-I agree that device isolation is not a spec requirement.  The specs
-give us the tools that we need, but valid uses cases exist where a lack
-of isolation may be preferred.  If we logically deduce how we can give
-a device or set of devices to a user for an untrusted environment,
-isolated from other devices, I think it's pretty logical to come to the
-conclusion that ACS is the only way that PCIe hardware can allow that
-sort of control in a standard way.  Clearly we also recognize that this
-is a commonly overlooked area where hardware vendors may fail to
-incorporate this subtly into their platform design guidelines and thus
-we have numerous quirks for exposing virtual ACS-like isolation.  The
-hope is that adding a quirk for this devices means that feedback was
-provided to the hardware teams and system architects within the
-companies developing these devices to consider this use case and
-implement native ACS in the next generation.  Thanks,
+Changes from V7 (https://lkml.org/lkml/2017/1/9/917)
+  * Re-order patches to clean up first before introducing new stuff.
+  * Always use amd_iommu_get_num_iommus() to access amd_iommus_present
+    variable now.
+  * Fix Perf IOMMU sysfs attributes initialization.
+  * Miscellaneous clean up 
 
-Alex
+Thanks,
+Suravee
+
+Suravee Suthikulpanit (9):
+  perf/amd/iommu: Declare pr_fmt and remove unnecessary pr_debug
+  perf/amd/iommu: Clean up bitwise operations
+  perf/amd/iommu: Clean up perf_iommu_read()
+  iommu/amd: Clean up iommu_pc_get_set_reg()
+  iommu/amd: Introduce amd_iommu_get_num_iommus()
+  perf/amd/iommu: Modify functions to query max banks and counters
+  perf/amd/iommu: Modify amd_iommu_pc_get_set_reg_val() to      allow
+    specifying IOMMU
+  perf/amd/iommu: Fix sysfs perf attribute groups
+  perf/amd/iommu: Enable support for multiple IOMMUs
+
+ arch/x86/events/amd/iommu.c     | 259 +++++++++++++++++++---------------------
+ arch/x86/events/amd/iommu.h     |  18 ++-
+ drivers/iommu/amd_iommu.c       |   6 +-
+ drivers/iommu/amd_iommu_init.c  | 101 +++++++++-------
+ drivers/iommu/amd_iommu_proto.h |   8 +-
+ drivers/iommu/amd_iommu_types.h |   3 -
+ 6 files changed, 198 insertions(+), 197 deletions(-)
+
+-- 
+1.8.3.1
