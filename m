@@ -1,15 +1,12 @@
-From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v9 8/8] perf/amd/iommu: Enable support for multiple IOMMUs
-Date: Wed, 15 Feb 2017 14:13:29 +0700
-Message-ID: <483deec0-412f-bc34-de30-ce6ffcce3d4b@amd.com>
-References: <1486456836-17428-1-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<1486456836-17428-9-git-send-email-Suravee.Suthikulpanit@amd.com>
-	<20170208193340.x7lka54ismqqy7nw@pd.tnic>
+From: Dan Carpenter <dan.carpenter-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: [bug report] iommu/arm-smmu: Make use of the iommu_register interface
+Date: Wed, 15 Feb 2017 11:36:48 +0300
+Message-ID: <20170215083648.GA12604@mwanda>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170208193340.x7lka54ismqqy7nw-fF5Pk5pvG8Y@public.gmane.org>
+Content-Disposition: inline
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,88 +16,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: jroedel-l3A5Bk7waGM@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Boris,
+Hello Joerg Roedel,
 
-On 2/9/17 02:33, Borislav Petkov wrote:
-> On Tue, Feb 07, 2017 at 02:40:36AM -0600, Suravee Suthikulpanit wrote:
->> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
->>  [......]
->> +	perf_iommu->max_banks    = amd_iommu_pc_get_max_banks(idx);
->> +	perf_iommu->max_counters = amd_iommu_pc_get_max_counters(idx);
->>  	if (!perf_iommu->max_banks || !perf_iommu->max_counters)
->>  		return -EINVAL;
->>
->> +	snprintf(perf_iommu->name, PERF_AMD_IOMMU_NAME_SIZE, "amd_iommu_%u", idx);
->> +
->> +	perf_iommu->pmu.event_init  = perf_iommu_event_init;
->> +	perf_iommu->pmu.add         = perf_iommu_add;
->> +	perf_iommu->pmu.del         = perf_iommu_del;
->> +	perf_iommu->pmu.start       = perf_iommu_start;
->> +	perf_iommu->pmu.stop        = perf_iommu_stop;
->> +	perf_iommu->pmu.read        = perf_iommu_read;
->> +	perf_iommu->pmu.task_ctx_nr = perf_invalid_context;
->>  	perf_iommu->pmu.attr_groups = amd_iommu_attr_groups;
->
-> So you can define a static struct pmu in the driver and do struct
-> assignment directly instead of writing them one-by-one.
+This is a semi-automatic email about new static checker warnings.
 
-I believe this is the same suggestion you have made in V8.
-Here our previous discussion in V8:
+The patch 9648cbc9625b: "iommu/arm-smmu: Make use of the 
+iommu_register interface" from Feb 1, 2017, leads to the following 
+Smatch complaint:
 
-On 2/7/17 08:42, Suravee Suthikulpanit wrote:
- >
- > On 1/23/17 02:55, Borislav Petkov wrote:
- >> Because otherwise you're carrying a struct pmu in each struct
- >> perf_amd_iommu which has identical contents.
- >
- > Actually, only the callbacks above will be identical on each pmu, but
- > there are other parts of the structure which are different
- > (e.g. pmu->name, pmu->type, etc.) Also, we need one pmu instance per
- > IOMMU since each pmu reference will get assigned to perf_event, and
- > also used to reference back to struct perf_amd_iommu. Note that each
- > pmu can also have different events.
+drivers/iommu/arm-smmu-v3.c:1810 arm_smmu_remove_device()
+	 warn: variable dereferenced before check 'master' (see line 1809)
 
-So, I still don't think we can have just one static PMU structure and
-assign it to each IOMMU. Lemme know if I am missing your point here.
+drivers/iommu/arm-smmu-v3.c
+  1808		master = fwspec->iommu_priv;
+  1809		smmu = master->smmu;
+                       ^^^^^^^^^^^^
+New dereference.
 
+  1810		if (master && master->ste.valid)
+                    ^^^^^^
+Old code checked for NULL.
 
->> [...]
- >> @@ -463,7 +466,24 @@ static __init int amd_iommu_pc_init(void)
->>  	if (ret)
->>  		return ret;
->>
->> -	ret = _init_perf_amd_iommu(&__perf_iommu, "amd_iommu");
->> +	for (i = 0 ; i < amd_iommu_get_num_iommus(); i++) {
->> +		struct perf_amd_iommu *pi;
->> +
->> +		pi = kzalloc(sizeof(struct perf_amd_iommu), GFP_KERNEL);
->> +		if (!pi) {
->> +			ret = -ENOMEM;
->> +			break;
->> +		}
->> +
->> +		ret = init_one_perf_amd_iommu(pi, i);
->> +		if (ret) {
->> +			kfree(pi);
->> +			break;
->
-> What happens with the iommus that have been initialized successfully
-> before this one fails? They remain in use?
->
-> I think we need at least a warning saying here:
->
-> 	pr_warning("Error initializing IOMMU %d ...")
->
-> so that we at least know why some are missing.
->
+  1811			arm_smmu_detach_dev(dev);
+  1812		iommu_group_remove_device(dev);
 
-The initialized ones should be functioning independently (as separate PMUs).
-So, it should be alright to just leave them. I'll add the warning message
-as you suggested.
-
-Thanks,
-Suravee
+regards,
+dan carpenter
