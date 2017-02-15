@@ -1,62 +1,86 @@
-From: Alex Williamson <alex.williamson@redhat.com>
+From: okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 Subject: Re: [PATCH 2/2] iommu: add warning when sharing groups
-Date: Tue, 14 Feb 2017 16:51:55 -0700
-Message-ID: <20170214165155.7c49485e@t450s.home>
+Date: Tue, 14 Feb 2017 22:53:35 -0500
+Message-ID: <e7535138133c514c77004d64e40b4180@codeaurora.org>
 References: <1487107522-8695-1-git-send-email-okaya@codeaurora.org>
-        <1487107522-8695-2-git-send-email-okaya@codeaurora.org>
+	<1487107522-8695-2-git-send-email-okaya@codeaurora.org>
+	<20170214165155.7c49485e@t450s.home>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1487107522-8695-2-git-send-email-okaya@codeaurora.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Sinan Kaya <okaya@codeaurora.org>
-Cc: linux-pci@vger.kernel.org, timur@codeaurora.org, iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, open list <linux-kernel@vger.kernel.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170214165155.7c49485e-1yVPhWWZRC1BDLzU/O5InQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, timur-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 14 Feb 2017 16:25:22 -0500
-Sinan Kaya <okaya@codeaurora.org> wrote:
-
-> The ACS requirement has been obscured in the current code and is only
-> known by certain individuals who happen to read the code. Print out a
-> warning with ACS path failure when ACS requirement is not met.
+On 2017-02-14 18:51, Alex Williamson wrote:
+> On Tue, 14 Feb 2017 16:25:22 -0500
+> Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
 > 
-> Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
-> ---
->  drivers/iommu/iommu.c | 3 +++
->  1 file changed, 3 insertions(+)
+>> The ACS requirement has been obscured in the current code and is only
+>> known by certain individuals who happen to read the code. Print out a
+>> warning with ACS path failure when ACS requirement is not met.
+>> 
+>> Signed-off-by: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+>> ---
+>>  drivers/iommu/iommu.c | 3 +++
+>>  1 file changed, 3 insertions(+)
+>> 
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index dbe7f65..049ee0a 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -811,6 +811,9 @@ struct iommu_group *pci_device_group(struct device 
+>> *dev)
+>>  	if (IS_ERR(group))
+>>  		return NULL;
+>> 
+>> +	if (pci_is_root_bus(bus))
+>> +		dev_warn_once(&pdev->dev, "using shared group due to ACS path 
+>> failure\n");
+>> +
+>>  	return group;
+>>  }
+>> 
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index dbe7f65..049ee0a 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -811,6 +811,9 @@ struct iommu_group *pci_device_group(struct device *dev)
->  	if (IS_ERR(group))
->  		return NULL;
->  
-> +	if (pci_is_root_bus(bus))
-> +		dev_warn_once(&pdev->dev, "using shared group due to ACS path failure\n");
-> +
->  	return group;
->  }
->  
+> The premise here is flawed.  An IOMMU group based at the root bus
+> doesn't necessarily imply a lack of ACS.  There are devices on root
+> buses, integrated endpoints and root ports.  Naturally an IOMMU group
+> for these devices needs to be based at the root bus.  Additionally,
+> there can be IOMMU groups developed around a lack of ACS that don't
+> intersect with the root bus.  Since this is a warn_once, the false
+> positives for root bus devices are going to be enumerated first.  On an
+> Intel system there's typically a device as 00.0 that will always be
+> pointlessly listed first.  Also, it's not clear that grouping devices
+> together is always wrong, as Robin pointed out in the EHCI/OHCI
+> example.  Lack of ACS on downtream ports is likely to cause problems,
+> especially if that downstream port exposes a slot.  Maybe that would be
+> a good place to start.  Also, what is someone supposed to do when they
+> see this error?  If we can hope they'll look for the error in the code
+> (unlikely) a big comment with useful external links might be
+> necessary.  Based on how easily vendors ignore kernel warnings, I'm
+> dubious there's any value to this path though.  Thanks,
 
-The premise here is flawed.  An IOMMU group based at the root bus
-doesn't necessarily imply a lack of ACS.  There are devices on root
-buses, integrated endpoints and root ports.  Naturally an IOMMU group
-for these devices needs to be based at the root bus.  Additionally,
-there can be IOMMU groups developed around a lack of ACS that don't
-intersect with the root bus.  Since this is a warn_once, the false
-positives for root bus devices are going to be enumerated first.  On an
-Intel system there's typically a device as 00.0 that will always be
-pointlessly listed first.  Also, it's not clear that grouping devices
-together is always wrong, as Robin pointed out in the EHCI/OHCI
-example.  Lack of ACS on downtream ports is likely to cause problems,
-especially if that downstream port exposes a slot.  Maybe that would be
-a good place to start.  Also, what is someone supposed to do when they
-see this error?  If we can hope they'll look for the error in the code
-(unlikely) a big comment with useful external links might be
-necessary.  Based on how easily vendors ignore kernel warnings, I'm
-dubious there's any value to this path though.  Thanks,
+Maybe, a better solution would be to add some sentences into vfio.txt 
+documentation.
 
-Alex
+I'm ready to drop this patch. I just don't want ACS requirement to be 
+hidden between the source code.
+
+Would you be willing to do that?
+
+I know I read all pci and vfio documents in the past. I could have 
+captured this requirement if it was there.
+
+> 
+> Alex
