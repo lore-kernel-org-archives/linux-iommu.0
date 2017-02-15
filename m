@@ -1,7 +1,7 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v10 2/9] perf/amd/iommu: Clean up bitwise operations
-Date: Wed, 15 Feb 2017 14:56:18 -0600
-Message-ID: <1487192185-31272-3-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH v10 4/9] iommu/amd: Clean up iommu_pc_get_set_reg()
+Date: Wed, 15 Feb 2017 14:56:20 -0600
+Message-ID: <1487192185-31272-5-git-send-email-Suravee.Suthikulpanit@amd.com>
 References: <1487192185-31272-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,64 +23,48 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-Clean up register initializaton and make use of BIT_ULL(x)
-where appropriate. This should not affect logic and functionality.
+Clean up coding style and fix a bug in the 64-bit register read
+logic since it overwrites the upper 32-bit when reading the lower 32-bit.
 
-Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- arch/x86/events/amd/iommu.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/iommu/amd_iommu_init.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
-index 44638d0..85b634e 100644
---- a/arch/x86/events/amd/iommu.c
-+++ b/arch/x86/events/amd/iommu.c
-@@ -164,11 +164,11 @@ static int get_next_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu)
- 	for (bank = 0, shift = 0; bank < max_banks; bank++) {
- 		for (cntr = 0; cntr < max_cntrs; cntr++) {
- 			shift = bank + (bank*3) + cntr;
--			if (perf_iommu->cntr_assign_mask & (1ULL<<shift)) {
-+			if (perf_iommu->cntr_assign_mask & BIT_ULL(shift)) {
- 				continue;
- 			} else {
--				perf_iommu->cntr_assign_mask |= (1ULL<<shift);
--				retval = ((u16)((u16)bank<<8) | (u8)(cntr));
-+				perf_iommu->cntr_assign_mask |= BIT_ULL(shift);
-+				retval = ((bank & 0xFF) << 8) | (cntr & 0xFF);
- 				goto out;
- 			}
- 		}
-@@ -265,23 +265,23 @@ static void perf_iommu_enable_event(struct perf_event *ev)
- 			_GET_BANK(ev), _GET_CNTR(ev) ,
- 			 IOMMU_PC_COUNTER_SRC_REG, &reg, true);
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 6799cf9..c7edc18 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -2760,22 +2760,25 @@ static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
+ 	if (WARN_ON((fxn > 0x28) || (fxn & 7)))
+ 		return -ENODEV;
  
--	reg = 0ULL | devid | (_GET_DEVID_MASK(ev) << 32);
-+	reg = devid | (_GET_DEVID_MASK(ev) << 32);
- 	if (reg)
--		reg |= (1UL << 31);
-+		reg |= BIT(31);
- 	amd_iommu_pc_get_set_reg_val(devid,
- 			_GET_BANK(ev), _GET_CNTR(ev) ,
- 			 IOMMU_PC_DEVID_MATCH_REG, &reg, true);
+-	offset = (u32)(((0x40|bank) << 12) | (cntr << 8) | fxn);
++	offset = (u32)(((0x40 | bank) << 12) | (cntr << 8) | fxn);
  
--	reg = 0ULL | _GET_PASID(ev) | (_GET_PASID_MASK(ev) << 32);
-+	reg = _GET_PASID(ev) | (_GET_PASID_MASK(ev) << 32);
- 	if (reg)
--		reg |= (1UL << 31);
-+		reg |= BIT(31);
- 	amd_iommu_pc_get_set_reg_val(devid,
- 			_GET_BANK(ev), _GET_CNTR(ev) ,
- 			 IOMMU_PC_PASID_MATCH_REG, &reg, true);
+ 	/* Limit the offset to the hw defined mmio region aperture */
+-	max_offset_lim = (u32)(((0x40|iommu->max_banks) << 12) |
++	max_offset_lim = (u32)(((0x40 | iommu->max_banks) << 12) |
+ 				(iommu->max_counters << 8) | 0x28);
+ 	if ((offset < MMIO_CNTR_REG_OFFSET) ||
+ 	    (offset > max_offset_lim))
+ 		return -EINVAL;
  
--	reg = 0ULL | _GET_DOMID(ev) | (_GET_DOMID_MASK(ev) << 32);
-+	reg = _GET_DOMID(ev) | (_GET_DOMID_MASK(ev) << 32);
- 	if (reg)
--		reg |= (1UL << 31);
-+		reg |= BIT(31);
- 	amd_iommu_pc_get_set_reg_val(devid,
- 			_GET_BANK(ev), _GET_CNTR(ev) ,
- 			 IOMMU_PC_DOMID_MATCH_REG, &reg, true);
+ 	if (is_write) {
+-		writel((u32)*value, iommu->mmio_base + offset);
+-		writel((*value >> 32), iommu->mmio_base + offset + 4);
++		u64 val = *value & GENMASK_ULL(47, 0);
++
++		writel((u32)val, iommu->mmio_base + offset);
++		writel((val >> 32), iommu->mmio_base + offset + 4);
+ 	} else {
+ 		*value = readl(iommu->mmio_base + offset + 4);
+ 		*value <<= 32;
+-		*value = readl(iommu->mmio_base + offset);
++		*value |= readl(iommu->mmio_base + offset);
++		*value &= GENMASK_ULL(47, 0);
+ 	}
+ 
+ 	return 0;
 -- 
 1.8.3.1
