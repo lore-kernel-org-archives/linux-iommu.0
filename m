@@ -1,55 +1,100 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [RFC PATCH v4 03/28] x86: Add the Secure Memory Encryption CPU
-	feature
-Date: Thu, 16 Feb 2017 21:06:08 +0100
-Message-ID: <20170216200608.xli5fybhh3mhlujw@pd.tnic>
-References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
-	<20170216154236.19244.7580.stgit@tlendack-t1.amdoffice.net>
-	<20170216181355.bjxo2h6vlhukz4ih@pd.tnic>
-	<a1a6a6d7-3aac-3138-1e75-6160f0427a6b@amd.com>
+From: Sinan Kaya <okaya@codeaurora.org>
+Subject: Re: [PATCH 2/2] iommu: add warning when sharing groups
+Date: Thu, 16 Feb 2017 17:09:35 -0500
+Message-ID: <0cfe7346-b86d-1e92-8e80-0bf6c68f7606@codeaurora.org>
+References: <1487107522-8695-1-git-send-email-okaya@codeaurora.org>
+ <1487107522-8695-2-git-send-email-okaya@codeaurora.org>
+ <20170214165155.7c49485e@t450s.home>
+ <e7535138133c514c77004d64e40b4180@codeaurora.org>
+ <20170215123613.1df4b33a@t450s.home>
+ <9a327a29-ec4c-e936-13c1-675ec6d17df2@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <a1a6a6d7-3aac-3138-1e75-6160f0427a6b-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <9a327a29-ec4c-e936-13c1-675ec6d17df2@codeaurora.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: linux-pci@vger.kernel.org, timur@codeaurora.org, iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 16, 2017 at 01:42:13PM -0600, Tom Lendacky wrote:
-> I realize it's a bit more code and expands the changes but I thought it
-> would be a bit clearer as to what was going on this way. And then the
-> follow on patch for the physical address reduction goes in nicely, too.
+Hi Alex,
 
-Well, the code from the next patch should go to AMD-specific place like
-arch/x86/kernel/cpu/amd.c anyway, where you don't have to do vendor
-checks.
+On 2/15/2017 4:43 PM, Sinan Kaya wrote:
+> On 2/15/2017 2:36 PM, Alex Williamson wrote:
+>> On Tue, 14 Feb 2017 22:53:35 -0500
+>> okaya@codeaurora.org wrote:
+>>
+>>> On 2017-02-14 18:51, Alex Williamson wrote:
+>>>> On Tue, 14 Feb 2017 16:25:22 -0500
+>>>> Sinan Kaya <okaya@codeaurora.org> wrote:
+>>>>   
+>>>>> The ACS requirement has been obscured in the current code and is only
+>>>>> known by certain individuals who happen to read the code. Print out a
+>>>>> warning with ACS path failure when ACS requirement is not met.
+>>>>>
+>>>>> Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
+>>>>> ---
+>>>>>  drivers/iommu/iommu.c | 3 +++
+>>>>>  1 file changed, 3 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>>>> index dbe7f65..049ee0a 100644
+>>>>> --- a/drivers/iommu/iommu.c
+>>>>> +++ b/drivers/iommu/iommu.c
+>>>>> @@ -811,6 +811,9 @@ struct iommu_group *pci_device_group(struct device 
+>>>>> *dev)
+>>>>>  	if (IS_ERR(group))
+>>>>>  		return NULL;
+>>>>>
+>>>>> +	if (pci_is_root_bus(bus))
+>>>>> +		dev_warn_once(&pdev->dev, "using shared group due to ACS path 
+>>>>> failure\n");
+>>>>> +
+>>>>>  	return group;
+>>>>>  }
+>>>>>   
+>>>>
+>>>> The premise here is flawed.  An IOMMU group based at the root bus
+>>>> doesn't necessarily imply a lack of ACS.  There are devices on root
+>>>> buses, integrated endpoints and root ports.  Naturally an IOMMU group
+>>>> for these devices needs to be based at the root bus.  Additionally,
+>>>> there can be IOMMU groups developed around a lack of ACS that don't
+>>>> intersect with the root bus.  Since this is a warn_once, the false
+>>>> positives for root bus devices are going to be enumerated first.  On an
+>>>> Intel system there's typically a device as 00.0 that will always be
+>>>> pointlessly listed first.  Also, it's not clear that grouping devices
+>>>> together is always wrong, as Robin pointed out in the EHCI/OHCI
+>>>> example.  Lack of ACS on downtream ports is likely to cause problems,
+>>>> especially if that downstream port exposes a slot.  Maybe that would be
+>>>> a good place to start.  Also, what is someone supposed to do when they
+>>>> see this error?  If we can hope they'll look for the error in the code
+>>>> (unlikely) a big comment with useful external links might be
+>>>> necessary.  Based on how easily vendors ignore kernel warnings, I'm
+>>>> dubious there's any value to this path though.  Thanks,  
+>>>
+>>> Maybe, a better solution would be to add some sentences into vfio.txt 
+>>> documentation.
+>>>
+>>> I'm ready to drop this patch. I just don't want ACS requirement to be 
+>>> hidden between the source code.
+>>>
 
-> If you prefer I stay with the scattered feature approach and then clear
-> the bit based on the MSR at the end of init_amd() I can do that. I'm
-> not attached to either method.
+I posted V2 to linux-pci maillist but forgot to CC the iommu group.
 
-Yes please. We should keep the shole X86_FEATURE machinery from
-exploding in size. Especially if CPUID_0x8000001f is not a leaf we're
-going to be adding the majority of its bits, to warrant a separate
-->x86_capability array element.
+[PATCH V2] PCI: add QCOM root port quirks for ACS
 
-  [If it does later, we can always move it to a separate element. ]
+I dropped the second patch (this one I'm replying to) as discussed. 
+I did minor cleanups in the first commit including
 
-Thanks.
+1- commit message change
+2- replace dev_info_once with dev_info
+
+https://patchwork.codeaurora.org/patch/177033/
+
+Sinan
 
 -- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+Sinan Kaya
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
