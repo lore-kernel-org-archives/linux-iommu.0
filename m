@@ -1,100 +1,56 @@
-From: Sinan Kaya <okaya@codeaurora.org>
-Subject: Re: [PATCH 2/2] iommu: add warning when sharing groups
-Date: Thu, 16 Feb 2017 17:09:35 -0500
-Message-ID: <0cfe7346-b86d-1e92-8e80-0bf6c68f7606@codeaurora.org>
-References: <1487107522-8695-1-git-send-email-okaya@codeaurora.org>
- <1487107522-8695-2-git-send-email-okaya@codeaurora.org>
- <20170214165155.7c49485e@t450s.home>
- <e7535138133c514c77004d64e40b4180@codeaurora.org>
- <20170215123613.1df4b33a@t450s.home>
- <9a327a29-ec4c-e936-13c1-675ec6d17df2@codeaurora.org>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [RFC PATCH v4 04/28] x86: Handle reduction in physical address
+ size with SME
+Date: Fri, 17 Feb 2017 12:04:32 +0100
+Message-ID: <20170217110432.tgi4cnkl22vyspk5@pd.tnic>
+References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
+ <20170216154253.19244.70114.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <9a327a29-ec4c-e936-13c1-675ec6d17df2@codeaurora.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: linux-pci@vger.kernel.org, timur@codeaurora.org, iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Return-path: <linux-doc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170216154253.19244.70114.stgit@tlendack-t1.amdoffice.net>
+Sender: linux-doc-owner@vger.kernel.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Alex,
+On Thu, Feb 16, 2017 at 09:42:54AM -0600, Tom Lendacky wrote:
+> When System Memory Encryption (SME) is enabled, the physical address
+> space is reduced. Adjust the x86_phys_bits value to reflect this
+> reduction.
+> 
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> ---
+>  arch/x86/kernel/cpu/common.c |   10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+> index b33bc06..358208d7 100644
+> --- a/arch/x86/kernel/cpu/common.c
+> +++ b/arch/x86/kernel/cpu/common.c
+> @@ -771,11 +771,15 @@ void get_cpu_cap(struct cpuinfo_x86 *c)
+>  			u64 msr;
+>  
+>  			/*
+> -			 * For SME, BIOS support is required. If BIOS has not
+> -			 * enabled SME don't advertise the feature.
+> +			 * For SME, BIOS support is required. If BIOS has
+> +			 * enabled SME adjust x86_phys_bits by the SME
+> +			 * physical address space reduction value. If BIOS
+> +			 * has not enabled SME don't advertise the feature.
+>  			 */
+>  			rdmsrl(MSR_K8_SYSCFG, msr);
+> -			if (!(msr & MSR_K8_SYSCFG_MEM_ENCRYPT))
+> +			if (msr & MSR_K8_SYSCFG_MEM_ENCRYPT)
+> +				c->x86_phys_bits -= (ebx >> 6) & 0x3f;
+> +			else
+>  				eax &= ~0x01;
 
-On 2/15/2017 4:43 PM, Sinan Kaya wrote:
-> On 2/15/2017 2:36 PM, Alex Williamson wrote:
->> On Tue, 14 Feb 2017 22:53:35 -0500
->> okaya@codeaurora.org wrote:
->>
->>> On 2017-02-14 18:51, Alex Williamson wrote:
->>>> On Tue, 14 Feb 2017 16:25:22 -0500
->>>> Sinan Kaya <okaya@codeaurora.org> wrote:
->>>>   
->>>>> The ACS requirement has been obscured in the current code and is only
->>>>> known by certain individuals who happen to read the code. Print out a
->>>>> warning with ACS path failure when ACS requirement is not met.
->>>>>
->>>>> Signed-off-by: Sinan Kaya <okaya@codeaurora.org>
->>>>> ---
->>>>>  drivers/iommu/iommu.c | 3 +++
->>>>>  1 file changed, 3 insertions(+)
->>>>>
->>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>>> index dbe7f65..049ee0a 100644
->>>>> --- a/drivers/iommu/iommu.c
->>>>> +++ b/drivers/iommu/iommu.c
->>>>> @@ -811,6 +811,9 @@ struct iommu_group *pci_device_group(struct device 
->>>>> *dev)
->>>>>  	if (IS_ERR(group))
->>>>>  		return NULL;
->>>>>
->>>>> +	if (pci_is_root_bus(bus))
->>>>> +		dev_warn_once(&pdev->dev, "using shared group due to ACS path 
->>>>> failure\n");
->>>>> +
->>>>>  	return group;
->>>>>  }
->>>>>   
->>>>
->>>> The premise here is flawed.  An IOMMU group based at the root bus
->>>> doesn't necessarily imply a lack of ACS.  There are devices on root
->>>> buses, integrated endpoints and root ports.  Naturally an IOMMU group
->>>> for these devices needs to be based at the root bus.  Additionally,
->>>> there can be IOMMU groups developed around a lack of ACS that don't
->>>> intersect with the root bus.  Since this is a warn_once, the false
->>>> positives for root bus devices are going to be enumerated first.  On an
->>>> Intel system there's typically a device as 00.0 that will always be
->>>> pointlessly listed first.  Also, it's not clear that grouping devices
->>>> together is always wrong, as Robin pointed out in the EHCI/OHCI
->>>> example.  Lack of ACS on downtream ports is likely to cause problems,
->>>> especially if that downstream port exposes a slot.  Maybe that would be
->>>> a good place to start.  Also, what is someone supposed to do when they
->>>> see this error?  If we can hope they'll look for the error in the code
->>>> (unlikely) a big comment with useful external links might be
->>>> necessary.  Based on how easily vendors ignore kernel warnings, I'm
->>>> dubious there's any value to this path though.  Thanks,  
->>>
->>> Maybe, a better solution would be to add some sentences into vfio.txt 
->>> documentation.
->>>
->>> I'm ready to drop this patch. I just don't want ACS requirement to be 
->>> hidden between the source code.
->>>
-
-I posted V2 to linux-pci maillist but forgot to CC the iommu group.
-
-[PATCH V2] PCI: add QCOM root port quirks for ACS
-
-I dropped the second patch (this one I'm replying to) as discussed. 
-I did minor cleanups in the first commit including
-
-1- commit message change
-2- replace dev_info_once with dev_info
-
-https://patchwork.codeaurora.org/patch/177033/
-
-Sinan
+Right, as I mentioned yesterday, this should go to arch/x86/kernel/cpu/amd.c
 
 -- 
-Sinan Kaya
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
