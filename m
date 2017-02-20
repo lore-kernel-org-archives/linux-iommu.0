@@ -1,14 +1,13 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [RFC PATCH v4 00/28] x86: Secure Memory Encryption (AMD)
-Date: Sat, 18 Feb 2017 19:12:09 +0100
-Message-ID: <20170218181209.xk5ut4g65f2fedzi@pd.tnic>
-References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [PATCH v1 1/6] iommu/dmar: Fix crash on boot when DMAR is disabled
+Date: Mon, 20 Feb 2017 13:58:57 +0200
+Message-ID: <1487591937.20145.0.camel@linux.intel.com>
+References: <20170215144226.34519-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170216154158.19244.66630.stgit-qCXWGYdRb2BnqfbPTmsdiZQ+2ll4COg0XqFh9Ls21Oc@public.gmane.org>
+In-Reply-To: <20170215144226.34519-1-andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,28 +17,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 16, 2017 at 09:41:59AM -0600, Tom Lendacky wrote:
->  create mode 100644 Documentation/x86/amd-memory-encryption.txt
->  create mode 100644 arch/x86/include/asm/mem_encrypt.h
->  create mode 100644 arch/x86/kernel/mem_encrypt_boot.S
->  create mode 100644 arch/x86/kernel/mem_encrypt_init.c
->  create mode 100644 arch/x86/mm/mem_encrypt.c
-
-I don't see anything standing in the way of merging those last two and
-having a single:
-
-arch/x86/kernel/mem_encrypt.c
-
-with all functionality in there with ifdeffery around it so
-that sme_encrypt_kernel() et all are still visible in the
-!CONFIG_AMD_MEM_ENCRYPT case.
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+T24gV2VkLCAyMDE3LTAyLTE1IGF0IDE2OjQyICswMjAwLCBBbmR5IFNoZXZjaGVua28gd3JvdGU6
+Cj4gQnkgZGVmYXVsdCBDT05GSUdfSU5URUxfSU9NTVVfREVGQVVMVF9PTiBpcyBub3Qgc2V0IGFu
+ZCB0aHVzCj4gZG1hcl9kaXNhYmxlZCB2YXJpYWJsZSBpcyBzZXQuCj4gCj4gSW50ZWwgSU9NTVUg
+ZHJpdmVyIGJhc2VkIG9uIGFib3ZlIGRvZXNuJ3Qgc2V0IGludGVsX2lvbW11X2VuYWJsZWQKPiB2
+YXJpYWJsZS4KPiAKPiBUaGUgY29tbWl0IGIwMTE5ZTg3MDgzNyAoImlvbW11OiBJbnRyb2R1Y2Ug
+bmV3ICdzdHJ1Y3QgaW9tbXVfZGV2aWNlJyIpCj4gbWlzdGFrZW5seSBhc3N1bWVzIGl0IG5ldmVy
+IGhhcHBlbnMgYW5kIHRyaWVzIHRvIHVucmVnaXN0ZXIgbm90IGV2ZXIKPiByZWdpc3RlcmVkIHJl
+c291cmNlcywgd2hpY2ggY3Jhc2hlcyB0aGUga2VybmVsIGF0IGJvb3QgdGltZToKPiAKPiAJQlVH
+OiB1bmFibGUgdG8gaGFuZGxlIGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UgYXQKPiAw
+MDAwMDAwMDAwMDAwMDA4Cj4gCUlQOiBpb21tdV9kZXZpY2VfdW5yZWdpc3RlcisweDMxLzB4NjAK
+PiAKPiBNYWtlIHVucmVnaXN0ZXIgcHJvY2VkdXJlIGNvbmRpdGlvbmFsIGluIGZyZWVfaW9tbXUo
+KS4KCkpvZXJnLCBpdCBsb29rcyBsaWtlIGJ1ZyBpcyBzdGlsbCBwcmVzZW50LiBDYW4gd2UgZ2V0
+IHRoZSBmaXggbWVyZ2VkPwpPciBkbyB5b3UgaGF2ZSBiZXR0ZXIgaWRlYXM/Cgo+IAo+IEZpeGVz
+OiBiMDExOWU4NzA4MzcgKCJpb21tdTogSW50cm9kdWNlIG5ldyAnc3RydWN0IGlvbW11X2Rldmlj
+ZSciKQo+IENjOiBKb2VyZyBSb2VkZWwgPGpyb2VkZWxAc3VzZS5kZT4KPiBTaWduZWQtb2ZmLWJ5
+OiBBbmR5IFNoZXZjaGVua28gPGFuZHJpeS5zaGV2Y2hlbmtvQGxpbnV4LmludGVsLmNvbT4KPiAt
+LS0KPiDCoGRyaXZlcnMvaW9tbXUvZG1hci5jIHwgNiArKysrLS0KPiDCoDEgZmlsZSBjaGFuZ2Vk
+LCA0IGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZl
+cnMvaW9tbXUvZG1hci5jIGIvZHJpdmVycy9pb21tdS9kbWFyLmMKPiBpbmRleCBkOWMwZGVjZmM5
+MWEuLjM2ZTNmNDMwZDI2NSAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2lvbW11L2RtYXIuYwo+ICsr
+KyBiL2RyaXZlcnMvaW9tbXUvZG1hci5jCj4gQEAgLTExMDgsOCArMTEwOCwxMCBAQCBzdGF0aWMg
+aW50IGFsbG9jX2lvbW11KHN0cnVjdCBkbWFyX2RyaGRfdW5pdAo+ICpkcmhkKQo+IMKgCj4gwqBz
+dGF0aWMgdm9pZCBmcmVlX2lvbW11KHN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXUpCj4gwqB7Cj4g
+LQlpb21tdV9kZXZpY2Vfc3lzZnNfcmVtb3ZlKCZpb21tdS0+aW9tbXUpOwo+IC0JaW9tbXVfZGV2
+aWNlX3VucmVnaXN0ZXIoJmlvbW11LT5pb21tdSk7Cj4gKwlpZiAoaW50ZWxfaW9tbXVfZW5hYmxl
+ZCkgewo+ICsJCWlvbW11X2RldmljZV91bnJlZ2lzdGVyKCZpb21tdS0+aW9tbXUpOwo+ICsJCWlv
+bW11X2RldmljZV9zeXNmc19yZW1vdmUoJmlvbW11LT5pb21tdSk7Cj4gKwl9Cj4gwqAKPiDCoAlp
+ZiAoaW9tbXUtPmlycSkgewo+IMKgCQlpZiAoaW9tbXUtPnByX2lycSkgewoKLS0gCkFuZHkgU2hl
+dmNoZW5rbyA8YW5kcml5LnNoZXZjaGVua29AbGludXguaW50ZWwuY29tPgpJbnRlbCBGaW5sYW5k
+IE95Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11
+IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xp
+c3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
