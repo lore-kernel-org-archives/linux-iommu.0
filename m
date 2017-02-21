@@ -1,16 +1,14 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [RFC PATCH v4 11/28] x86: Add support to determine the E820 type
-	of an address
-Date: Mon, 20 Feb 2017 21:09:55 +0100
-Message-ID: <20170220200955.32e2wqxgulswnr55@pd.tnic>
-References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
-	<20170216154430.19244.95519.stgit@tlendack-t1.amdoffice.net>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH v1] iommu/io-pgtable-arm-v7s: Check for leaf entry
+	right after finding it
+Date: Tue, 21 Feb 2017 12:00:28 +0000
+Message-ID: <bc24299c-748a-4b86-fead-a9ed6b5e5b9f@arm.com>
+References: <1487253137-13792-1-git-send-email-olekstysh@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170216154430.19244.95519.stgit-qCXWGYdRb2BnqfbPTmsdiZQ+2ll4COg0XqFh9Ls21Oc@public.gmane.org>
+In-Reply-To: <1487253137-13792-1-git-send-email-olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,62 +18,105 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Oleksandr Tyshchenko <olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>, vlad.babchuk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, andrii.anisov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, andr2000-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, al1img-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joculator-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 16, 2017 at 09:44:30AM -0600, Tom Lendacky wrote:
-> This patch adds support to return the E820 type associated with an address
-
-s/This patch adds/Add/
-
-> range.
+On 16/02/17 13:52, Oleksandr Tyshchenko wrote:
+> From: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
 > 
-> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+> Do a check for already installed leaf entry at the current level before
+> performing any actions when trying to map.
+> 
+> This check is already present in arm_v7s_init_pte(), i.e. before
+> installing new leaf entry at the current level if conditions to do so
+> are met (num_entries > 0).
+> 
+> But, this might be insufficient in case when we have already
+> installed block mapping at this level and it is not time to
+> install new leaf entry (num_entries == 0).
+> In that case we continue walking the page table down with wrong pointer
+> to the next level.
+> 
+> So, move check from arm_v7s_init_pte() to __arm_v7s_map() in order to
+> avoid all cases.
+
+Would it not be more logical (and simpler) to just check that the thing
+we dereference is valid to dereference when we dereference it? i.e.:
+
+-----8<-----
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c
+b/drivers/iommu/io-pgtable-arm-v7s.c
+index 0769276c0537..f3112f9ff494 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -418,8 +418,10 @@ static int __arm_v7s_map(struct arm_v7s_io_pgtable
+*data, unsigned long iova,
+                        pte |= ARM_V7S_ATTR_NS_TABLE;
+
+                __arm_v7s_set_pte(ptep, pte, 1, cfg);
+-       } else {
++       } else if (ARM_V7S_PTE_IS_TABLE(pte, lvl)) {
+                cptep = iopte_deref(pte, lvl);
++       } else {
++               return -EEXIST;
+        }
+
+        /* Rinse, repeat */
+----->8-----
+
+I think the equivalent could be done in LPAE as well.
+
+Robin.
+
+> Signed-off-by: Oleksandr Tyshchenko <oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org>
 > ---
->  arch/x86/include/asm/e820/api.h   |    2 ++
->  arch/x86/include/asm/e820/types.h |    2 ++
->  arch/x86/kernel/e820.c            |   26 +++++++++++++++++++++++---
->  3 files changed, 27 insertions(+), 3 deletions(-)
+> This patch does similar things as the patch I have pushed a week ago
+> for long-descriptor format [1].
+> The reason why this patch is RFC is because I am not sure I did the right
+> thing and I even didn't test it.
 > 
-> diff --git a/arch/x86/include/asm/e820/api.h b/arch/x86/include/asm/e820/api.h
-> index 8e0f8b8..7c1bdc9 100644
-> --- a/arch/x86/include/asm/e820/api.h
-> +++ b/arch/x86/include/asm/e820/api.h
-> @@ -38,6 +38,8 @@
->  extern void e820__reallocate_tables(void);
->  extern void e820__register_nosave_regions(unsigned long limit_pfn);
+> [1] https://lists.linuxfoundation.org/pipermail/iommu/2017-February/020411.html
+> ---
+> ---
+>  drivers/iommu/io-pgtable-arm-v7s.c | 15 ++++++++++-----
+>  1 file changed, 10 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+> index f50e51c..7f7594b 100644
+> --- a/drivers/iommu/io-pgtable-arm-v7s.c
+> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
+> @@ -364,10 +364,6 @@ static int arm_v7s_init_pte(struct arm_v7s_io_pgtable *data,
+>  			if (WARN_ON(__arm_v7s_unmap(data, iova + i * sz,
+>  						    sz, lvl, tblp) != sz))
+>  				return -EINVAL;
+> -		} else if (ptep[i]) {
+> -			/* We require an unmap first */
+> -			WARN_ON(!selftest_running);
+> -			return -EEXIST;
+>  		}
 >  
-> +extern enum e820_type e820__get_entry_type(u64 start, u64 end);
+>  	pte |= ARM_V7S_PTE_TYPE_PAGE;
+> @@ -392,11 +388,20 @@ static int __arm_v7s_map(struct arm_v7s_io_pgtable *data, unsigned long iova,
+>  {
+>  	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+>  	arm_v7s_iopte pte, *cptep;
+> -	int num_entries = size >> ARM_V7S_LVL_SHIFT(lvl);
+> +	int i = 0, num_entries = size >> ARM_V7S_LVL_SHIFT(lvl);
+>  
+>  	/* Find our entry at the current level */
+>  	ptep += ARM_V7S_LVL_IDX(iova, lvl);
+>  
+> +	/* Check for already installed leaf entry */
+> +	do {
+> +		if (ptep[i] && !ARM_V7S_PTE_IS_TABLE(ptep[i], lvl)) {
+> +			/* We require an unmap first */
+> +			WARN_ON(!selftest_running);
+> +			return -EEXIST;
+> +		}
+> +	} while (++i < num_entries);
 > +
->  /*
->   * Returns true iff the specified range [start,end) is completely contained inside
->   * the ISA region.
-> diff --git a/arch/x86/include/asm/e820/types.h b/arch/x86/include/asm/e820/types.h
-> index 4adeed0..bf49591 100644
-> --- a/arch/x86/include/asm/e820/types.h
-> +++ b/arch/x86/include/asm/e820/types.h
-> @@ -7,6 +7,8 @@
->   * These are the E820 types known to the kernel:
->   */
->  enum e820_type {
-> +	E820_TYPE_INVALID	= 0,
-> +
-
-Now this is strange - ACPI spec doesn't explicitly say that range type 0
-is invalid. Am I looking at the wrong place?
-
-"Table 15-312 Address Range Types12" in ACPI spec 6.
-
-If 0 is really the invalid entry, then e820_print_type() needs updating
-too. And then the invalid-entry-add should be a separate patch.
-
->  	E820_TYPE_RAM		= 1,
->  	E820_TYPE_RESERVED	= 2,
->  	E820_TYPE_ACPI		= 3,
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+>  	/* If we can install a leaf entry at this level, then do so */
+>  	if (num_entries)
+>  		return arm_v7s_init_pte(data, iova, paddr, prot,
+> 
