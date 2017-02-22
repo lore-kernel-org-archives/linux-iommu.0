@@ -1,10 +1,17 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [git pull] IOMMU Fix for Linux v4.11-rc0
-Date: Wed, 22 Feb 2017 14:22:00 +0100
-Message-ID: <20170222132153.GA21744@8bytes.org>
+From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: RE: [PATCH 2/2] iommu: add qcom_iommu
+Date: Wed, 22 Feb 2017 18:56:46 +0530
+Message-ID: <008201d28d0f$53d59da0$fb80d8e0$@codeaurora.org>
+References: <20170215215743.5673-1-robdclark@gmail.com>
+	<20170215215743.5673-2-robdclark@gmail.com>
+	<008001d28cee$6527d4e0$2f777ea0$@codeaurora.org>
+	<CAF6AEGv5Qmmaj6eS2og1k6694Axr0oO5HUsktVj-jZOH9SHEGA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="===============1074491675274183826=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAF6AEGv5Qmmaj6eS2og1k6694Axr0oO5HUsktVj-jZOH9SHEGA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-us
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -14,83 +21,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: 'Rob Clark' <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: 'Mark Rutland' <mark.rutland-5wv7dgnIgG8@public.gmane.org>, 'linux-arm-msm' <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, 'Will Deacon' <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Rob,
 
---===============1074491675274183826==
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="RnlQjJ0d97Da+TV1"
-Content-Disposition: inline
+<..>
 
+>>>+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+>>>@@ -0,0 +1,45 @@
+>>>+* QCOM IOMMU Implementation
+>>>+
+>>>+Qualcomm "B" family devices which are not compatible with arm-smmu have
+>>>+a similar looking IOMMU but without access to the global register space.
+>>>+This is modelled as separate IOMMU devices which have just a single
+>>>+master.
+>>>+
+>>>+** Required properties:
+>>>+
+>>>+- compatible    : Should be one of:
+>>>+
+>>>+                        "qcom,msm8916-iommu-context-bank"
+>>>+
+>>>+                  depending on the particular implementation and/or the
+>>>+                  version of the architecture implemented.
+>>>+
+>>>+- reg           : Base address and size of the SMMU.  And optionally,
+>>>+                  if present, the "smmu_local_base"
+>>>+
+>>>+- interrupts    : The context fault irq.
+>>>+
+>>>+- #iommu-cells  : Must be 0
+>>>+
+>>>+- qcom,iommu-ctx-asid   : context ASID
+>>>+
+>>>+- qcom,iommu-secure-id  : secure-id
+>>>+
+>>>+- clocks        : The interface clock (iface_clk) and bus clock (bus_clk)
+>>>+
+>>>+** Examples:
+>>>+
+>>>+      mdp_iommu: iommu-context-bank@1e24000 {
+>>>+              compatible = "qcom,msm8916-iommu-context-bank";
+>>>+              reg = <0x1e24000 0x1000
+>>>+                      0x1ef0000 0x3000>;
+>>>+              reg-names = "iommu_base", "smmu_local_base";
+>>>+              interrupts = <GIC_SPI 70 0>;
+>>>+              qcom,iommu-ctx-asid = <4>;
+>>>+              qcom,iommu-secure-id = <17>;
+>>
+>> This is not an per context bank property and can be programmed for an
+>> given iommu only once. So we call qcom_iommu_sec_init for
+>> each context bank once, which does not look correct. Similarly for
+>> smmu_local_base as well. So should this be handled using an global
+>> once for all contexts ?
+>
+>yeah, smmu_local_base and secure-id would be duplicate for all context
+>banks that are part of the same actual iommu.  (But it was Robin's
+>suggestion to just model this as separate context-bank devices, since
+>we cannot touch the global space).
+>
+>Did I misunderstand the downstream driver code?  It looked like
+>qcom_scm_restore_sec_cfg() was called once on first attach per
+>context-bank, not globally for the entire iommu, which is what I'm
+>doing with this driver.  But I haven't yet tried to enable other
+>context-banks in the apps iommu yet.
+>
 
---RnlQjJ0d97Da+TV1
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+The downstream driver seems to be calling the sec_cfg once
+for an iommu when a context is attached for the first time and not for
+the subsequent's contexts that are attached. So, means programmed
+only once and not for every context. I see it that way. Anyways when you
+add more than context-banks, we can see if that causes trouble..
 
-Hi Linus,
-
-The following changes since commit ebb4949eb32ff500602f960525592fc4e614c5a7:
-
-  Merge tag 'iommu-updates-v4.11' of git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu (2017-02-20 16:42:43 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v4.11-rc0
-
-for you to fetch changes up to c37a01779b3954d9c8f9ac4f663a03c11f69fded:
-
-  iommu/vt-d: Fix crash on boot when DMAR is disabled (2017-02-22 12:25:31 +0100)
-
-----------------------------------------------------------------
-IOMMU Fix for v4.11-rc0
-
-	* Fix a boot crash caused by the VT-d driver when booted with IOMMU
-	  disabled. This was introduced with the recent IOMMU changes.
-
-----------------------------------------------------------------
-Andy Shevchenko (1):
-      iommu/vt-d: Fix crash on boot when DMAR is disabled
-
- drivers/iommu/dmar.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---RnlQjJ0d97Da+TV1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAEBAgAGBQJYrZBwAAoJECvwRC2XARrjASoP/iEGs00KF+QeCgEe8wlFgp5l
-aU1dbUFM1p0vxv1+iWtooVfAFiyDupfN9YE29JgHh4+GChAG379afTQDDKtpHq3z
-h7BelhAEHXEG5etC/EjcjhpNgKeoYvSSH5rbgZGlb9Gn0R9wxw75JLnmD7aX8ZnP
-PKKxBbt+rxXIepbLelxMWk3Rmgu66zGvgZ63XBY0wsyfI6+jF5q9IzXlL+HTCTH0
-6ifFeh6OTYnMyZTEZtUCGiaphBUomjBchJ1tDVqSj4+k/edJ5eeApTcFwE/6BxdL
-ZmOd4MgR7j39or2deiGBFNtwtYchBNLx2MzyPAP9zd6AG2LDq7jGFuNwqFSKDSxq
-J8c6wEhBWXhqGUFJQQHhZVcOospP8G0abv/shxXKElqTUUIYJ1WsDUV1nNZzEk3E
-qhOTfA12ZNQfwOBnLQBNstAcO85utjTJwSK8neihaWzd4NvuyQ/IA5vfYHb/M2X6
-RhCHYz6PSrINDHNoYl0gOWrgqLq82Pi7lkPY6MIYMYXGfF2Yu9VtQtRRb7aS0VFC
-bzr3FHCJzmIUx19Hn6FJ+1XTpg6EnqsOX17hE9XghmuJEQ/7dyKT5+9CS4CZ8F0z
-b270+lwOCYz9gugHy4xK2y5JsPvttkiFB4OQeIzQwQEE+kUyPCy6o7sZ5FT6NurX
-/OnHsr0kFZ92Z1ALCjec
-=lc32
------END PGP SIGNATURE-----
-
---RnlQjJ0d97Da+TV1--
-
---===============1074491675274183826==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-
---===============1074491675274183826==--
+Regards,
+ Sricharan
