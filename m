@@ -1,146 +1,102 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [RFC PATCH v4 16/28] x86: Add support for changing memory
- encryption attribute
-Date: Wed, 22 Feb 2017 19:52:15 +0100
-Message-ID: <20170222185215.atbntnyw7252kkbk@pd.tnic>
-References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
- <20170216154535.19244.6294.stgit@tlendack-t1.amdoffice.net>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: Partial BAR Address Allocation
+Date: Wed, 22 Feb 2017 17:39:44 -0600
+Message-ID: <20170222233944.GB4359@bhelgaas-glaptop.roam.corp.google.com>
+References: <35c6bec9-58e8-a1f7-5a85-d80c23480d32@codeaurora.org>
+	<20170222184440.GA2132@bhelgaas-glaptop.roam.corp.google.com>
+	<43c1ff36-fc50-8ea4-02fe-7b1d573a1efd@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <owner-linux-mm@kvack.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170216154535.19244.6294.stgit@tlendack-t1.amdoffice.net>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Thomas Gleixner <tglx@linutronix.de>
+In-Reply-To: <43c1ff36-fc50-8ea4-02fe-7b1d573a1efd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: Linux PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 16, 2017 at 09:45:35AM -0600, Tom Lendacky wrote:
-> Add support for changing the memory encryption attribute for one or more
-> memory pages.
+[+cc Joerg, iommu list]
 
-"This will be useful when we, ...., for example."
-
-> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-> ---
->  arch/x86/include/asm/cacheflush.h |    3 ++
->  arch/x86/mm/pageattr.c            |   66 +++++++++++++++++++++++++++++++++++++
->  2 files changed, 69 insertions(+)
+On Wed, Feb 22, 2017 at 03:44:53PM -0500, Sinan Kaya wrote:
+> On 2/22/2017 1:44 PM, Bjorn Helgaas wrote:
+> > There is no way for a driver to say "I only need this memory BAR and
+> > not the other ones."  The reason is because the PCI_COMMAND_MEMORY bit
+> > enables *all* the memory BARs; there's no way to enable memory BARs
+> > selectively.  If we enable memory BARs and one of them is unassigned,
+> > that unassigned BAR is enabled, and the device will respond at
+> > whatever address the register happens to contain, and that may cause
+> > conflicts.
+> > 
+> > I'm not sure this answers your question.  Do you want to get rid of
+> > 32-bit BAR addresses because your host bridge doesn't have a window to
+> > 32-bit PCI addresses?  It's typical for a bridge to support a window
+> > to the 32-bit PCI space as well as one to the 64-bit PCI space.  Often
+> > it performs address translation for the 32-bit window so it doesn't
+> > have to be in the 32-bit area on the CPU side, e.g., you could have
+> > something like this where we have three host bridges and the 2-4GB
+> > space on each PCI root bus is addressable:
+> > 
+> >   pci_bus 0000:00: root bus resource [mem 0x1080000000-0x10ffffffff] (bus address [0x80000000-0xffffffff])
+> >   pci_bus 0001:00: root bus resource [mem 0x1180000000-0x11ffffffff] (bus address [0x80000000-0xffffffff])
+> >   pci_bus 0002:00: root bus resource [mem 0x1280000000-0x12ffffffff] (bus address [0x80000000-0xffffffff])
 > 
-> diff --git a/arch/x86/include/asm/cacheflush.h b/arch/x86/include/asm/cacheflush.h
-> index 872877d..33ae60a 100644
-> --- a/arch/x86/include/asm/cacheflush.h
-> +++ b/arch/x86/include/asm/cacheflush.h
-> @@ -12,6 +12,7 @@
->   * Executability : eXeutable, NoteXecutable
->   * Read/Write    : ReadOnly, ReadWrite
->   * Presence      : NotPresent
-> + * Encryption    : Encrypted, Decrypted
->   *
->   * Within a category, the attributes are mutually exclusive.
->   *
-> @@ -47,6 +48,8 @@
->  int set_memory_rw(unsigned long addr, int numpages);
->  int set_memory_np(unsigned long addr, int numpages);
->  int set_memory_4k(unsigned long addr, int numpages);
-> +int set_memory_encrypted(unsigned long addr, int numpages);
-> +int set_memory_decrypted(unsigned long addr, int numpages);
->  
->  int set_memory_array_uc(unsigned long *addr, int addrinarray);
->  int set_memory_array_wc(unsigned long *addr, int addrinarray);
-> diff --git a/arch/x86/mm/pageattr.c b/arch/x86/mm/pageattr.c
-> index 91c5c63..9710f5c 100644
-> --- a/arch/x86/mm/pageattr.c
-> +++ b/arch/x86/mm/pageattr.c
-> @@ -1742,6 +1742,72 @@ int set_memory_4k(unsigned long addr, int numpages)
->  					__pgprot(0), 1, 0, NULL);
->  }
->  
-> +static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
-> +{
-> +	struct cpa_data cpa;
-> +	unsigned long start;
-> +	int ret;
-> +
-> +	/* Nothing to do if the _PAGE_ENC attribute is zero */
-> +	if (_PAGE_ENC == 0)
+> The problem is that according to PCI specification BAR addresses and
+> DMA addresses cannot overlap.
+> 
+> From PCI-to-PCI Bridge Arch. spec.: "A bridge forwards PCI memory
+> transactions from its primary interface to its secondary interface
+> (downstream) if a memory address is in the range defined by the
+> Memory Base and Memory Limit registers (when the base is less than
+> or equal to the limit) as illustrated in Figure 4-3. Conversely, a
+> memory transaction on the secondary interface that is within this
+> address range will not be forwarded upstream to the primary
+> interface."
+> 
+> To be specific, if your DMA address happens to be in
+> [0x80000000-0xffffffff] and root port's aperture includes this
+> range; the DMA will never make to the system memory.
+> 
+> Lorenzo and Robin took some steps to carve out PCI addresses out of
+> DMA addresses in IOMMU drivers by using iova_reserve_pci_windows()
+> function.
+> 
+> However, I see that we are still exposed when the operating system
+> doesn't have any IOMMU driver and is using the SWIOTLB for instance. 
 
-Why not:
+Hmmm.  I guess SWIOTLB assumes there's no address translation in the
+DMA direction, right?  If there's no address translation in the PIO
+direction, PCI bus BAR addresses are identical to the CPU-side
+addresses.  In that case, there's no conflict because we already have
+to assign BARs so they never look like a system memory address.
 
-	if (!sme_active())
+But if there *is* address translation in the PIO direction, we can
+have conflicts because the bridge can translate CPU-side PIO accesses
+to arbitrary PCI bus addresses.
 
-?
+> The FW solution I'm looking at requires carving out some part of the
+> DDR from before OS boot so that OS doesn't reclaim that area for
+> DMA.
 
-> +		return 0;
-> +
-> +	/* Save original start address since it will be modified */
+If you want to reach system RAM, I guess you need to make sure you
+only DMA to bus addresses outside the host bridge windows, as you said
+above.  DMA inside the windows would be handled as peer-to-peer DMA.
 
-That's obvious - it is a small-enough function to fit on the screen. No
-need for the comment.
+> I'm not very happy with this solution. I'm also surprised that there
+> is no generic solution in the kernel takes care of this for all root
+> ports regardless of IOMMU driver presence.
 
-> +	start = addr;
-> +
-> +	memset(&cpa, 0, sizeof(cpa));
-> +	cpa.vaddr = &addr;
-> +	cpa.numpages = numpages;
-> +	cpa.mask_set = enc ? __pgprot(_PAGE_ENC) : __pgprot(0);
-> +	cpa.mask_clr = enc ? __pgprot(0) : __pgprot(_PAGE_ENC);
-> +	cpa.pgd = init_mm.pgd;
-> +
-> +	/* Should not be working on unaligned addresses */
-> +	if (WARN_ONCE(*cpa.vaddr & ~PAGE_MASK,
-> +		      "misaligned address: %#lx\n", *cpa.vaddr))
+The PCI core isn't really involved in allocating DMA addresses,
+although there definitely is the connection with PCI-to-PCI bridge
+windows that you mentioned.  I added IOMMU guys, who would know a lot
+more than I do.
 
-Use addr here so that you don't have to deref. gcc is probably smart
-enough but the code should look more readable this way too.
-
-> +		*cpa.vaddr &= PAGE_MASK;
-
-I know, you must use cpa.vaddr here but if you move that alignment check
-over the cpa assignment, you can use addr solely.
-
-> +
-> +	/* Must avoid aliasing mappings in the highmem code */
-> +	kmap_flush_unused();
-> +	vm_unmap_aliases();
-> +
-> +	/*
-> +	 * Before changing the encryption attribute, we need to flush caches.
-> +	 */
-> +	if (static_cpu_has(X86_FEATURE_CLFLUSH))
-> +		cpa_flush_range(start, numpages, 1);
-> +	else
-> +		cpa_flush_all(1);
-
-I guess we don't really need the distinction since a SME CPU most
-definitely implies CLFLUSH support but ok, let's be careful.
-
-> +
-> +	ret = __change_page_attr_set_clr(&cpa, 1);
-> +
-> +	/*
-> +	 * After changing the encryption attribute, we need to flush TLBs
-> +	 * again in case any speculative TLB caching occurred (but no need
-> +	 * to flush caches again).  We could just use cpa_flush_all(), but
-> +	 * in case TLB flushing gets optimized in the cpa_flush_range()
-> +	 * path use the same logic as above.
-> +	 */
-> +	if (static_cpu_has(X86_FEATURE_CLFLUSH))
-> +		cpa_flush_range(start, numpages, 0);
-> +	else
-> +		cpa_flush_all(0);
-> +
-> +	return ret;
-> +}
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+Bjorn
