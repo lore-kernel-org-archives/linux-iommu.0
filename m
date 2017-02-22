@@ -1,17 +1,16 @@
-From: "Sricharan" <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: RE: [PATCH 2/2] iommu: add qcom_iommu
-Date: Wed, 22 Feb 2017 18:56:46 +0530
-Message-ID: <008201d28d0f$53d59da0$fb80d8e0$@codeaurora.org>
-References: <20170215215743.5673-1-robdclark@gmail.com>
-	<20170215215743.5673-2-robdclark@gmail.com>
-	<008001d28cee$6527d4e0$2f777ea0$@codeaurora.org>
-	<CAF6AEGv5Qmmaj6eS2og1k6694Axr0oO5HUsktVj-jZOH9SHEGA@mail.gmail.com>
+From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Subject: Re: [RFC PATCH v4 08/28] x86: Extend the early_memremap support with
+	additional attrs
+Date: Wed, 22 Feb 2017 09:42:02 -0600
+Message-ID: <f9ff9b86-1b6e-d5e6-95f8-89892da52051@amd.com>
+References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
+	<20170216154348.19244.11884.stgit@tlendack-t1.amdoffice.net>
+	<20170220154354.ggb7yzpjotmbrd5a@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAF6AEGv5Qmmaj6eS2og1k6694Axr0oO5HUsktVj-jZOH9SHEGA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-us
+In-Reply-To: <20170220154354.ggb7yzpjotmbrd5a-fF5Pk5pvG8Y@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,79 +20,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: 'Rob Clark' <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: 'Mark Rutland' <mark.rutland-5wv7dgnIgG8@public.gmane.org>, 'linux-arm-msm' <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, 'Will Deacon' <will.deacon-5wv7dgnIgG8@public.gmane.org>
+To: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter
+	Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Michael S.
+	Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Rob,
+On 2/20/2017 9:43 AM, Borislav Petkov wrote:
+> On Thu, Feb 16, 2017 at 09:43:48AM -0600, Tom Lendacky wrote:
+>> Add to the early_memremap support to be able to specify encrypted and
+>
+> early_memremap()
+>
+> Please append "()" to function names in your commit messages text.
+>
+>> decrypted mappings with and without write-protection. The use of
+>> write-protection is necessary when encrypting data "in place". The
+>> write-protect attribute is considered cacheable for loads, but not
+>> stores. This implies that the hardware will never give the core a
+>> dirty line with this memtype.
+>
+> By "hardware will never give" you mean that WP writes won't land dirty
+> in the cache but will go out to mem and when some other core needs them,
+> they will have to come from memory?
 
-<..>
+I think this best explains it, from Table 7-8 of the APM Vol 2:
 
->>>+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
->>>@@ -0,0 +1,45 @@
->>>+* QCOM IOMMU Implementation
->>>+
->>>+Qualcomm "B" family devices which are not compatible with arm-smmu have
->>>+a similar looking IOMMU but without access to the global register space.
->>>+This is modelled as separate IOMMU devices which have just a single
->>>+master.
->>>+
->>>+** Required properties:
->>>+
->>>+- compatible    : Should be one of:
->>>+
->>>+                        "qcom,msm8916-iommu-context-bank"
->>>+
->>>+                  depending on the particular implementation and/or the
->>>+                  version of the architecture implemented.
->>>+
->>>+- reg           : Base address and size of the SMMU.  And optionally,
->>>+                  if present, the "smmu_local_base"
->>>+
->>>+- interrupts    : The context fault irq.
->>>+
->>>+- #iommu-cells  : Must be 0
->>>+
->>>+- qcom,iommu-ctx-asid   : context ASID
->>>+
->>>+- qcom,iommu-secure-id  : secure-id
->>>+
->>>+- clocks        : The interface clock (iface_clk) and bus clock (bus_clk)
->>>+
->>>+** Examples:
->>>+
->>>+      mdp_iommu: iommu-context-bank@1e24000 {
->>>+              compatible = "qcom,msm8916-iommu-context-bank";
->>>+              reg = <0x1e24000 0x1000
->>>+                      0x1ef0000 0x3000>;
->>>+              reg-names = "iommu_base", "smmu_local_base";
->>>+              interrupts = <GIC_SPI 70 0>;
->>>+              qcom,iommu-ctx-asid = <4>;
->>>+              qcom,iommu-secure-id = <17>;
+"Reads allocate cache lines on a cache miss, but only to the shared
+state. All writes update main memory. Cache lines are not allocated
+on a write miss. Write hits invalidate the cache line and update
+main memory."
+
+We're early enough that only the BSP is running and we don't have
+to worry about accesses from other cores.  If this was to be used
+outside of early boot processing, then some safeties might have to
+be added.
+
+>
+>> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+>> ---
+>>  arch/x86/Kconfig                     |    4 +++
+>>  arch/x86/include/asm/fixmap.h        |   13 ++++++++++
+>>  arch/x86/include/asm/pgtable_types.h |    8 ++++++
+>>  arch/x86/mm/ioremap.c                |   44 ++++++++++++++++++++++++++++++++++
+>>  include/asm-generic/early_ioremap.h  |    2 ++
+>>  mm/early_ioremap.c                   |   10 ++++++++
+>>  6 files changed, 81 insertions(+)
 >>
->> This is not an per context bank property and can be programmed for an
->> given iommu only once. So we call qcom_iommu_sec_init for
->> each context bank once, which does not look correct. Similarly for
->> smmu_local_base as well. So should this be handled using an global
->> once for all contexts ?
+>> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+>> index a3b8c71..581eae4 100644
+>> --- a/arch/x86/Kconfig
+>> +++ b/arch/x86/Kconfig
+>> @@ -1417,6 +1417,10 @@ config AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT
+>>  	  If set to N, then the encryption of system memory can be
+>>  	  activated with the mem_encrypt=on command line option.
+>>
+>> +config ARCH_USE_MEMREMAP_PROT
+>> +	def_bool y
+>> +	depends on AMD_MEM_ENCRYPT
 >
->yeah, smmu_local_base and secure-id would be duplicate for all context
->banks that are part of the same actual iommu.  (But it was Robin's
->suggestion to just model this as separate context-bank devices, since
->we cannot touch the global space).
+> Why do we need this?
 >
->Did I misunderstand the downstream driver code?  It looked like
->qcom_scm_restore_sec_cfg() was called once on first attach per
->context-bank, not globally for the entire iommu, which is what I'm
->doing with this driver.  But I haven't yet tried to enable other
->context-banks in the apps iommu yet.
->
+> IOW, all those helpers below will end up being defined unconditionally,
+> in practice. Think distro kernels. Then saving the couple of bytes is
+> not really worth the overhead.
 
-The downstream driver seems to be calling the sec_cfg once
-for an iommu when a context is attached for the first time and not for
-the subsequent's contexts that are attached. So, means programmed
-only once and not for every context. I see it that way. Anyways when you
-add more than context-banks, we can see if that causes trouble..
+I added this because some other architectures use a u64 for the
+protection value instead of an unsigned long (i386 for one) and it
+was causing build errors/warnings on those archs. And trying to bring
+in the header to use pgprot_t instead of an unsigned long caused a ton
+of build issues. This seemed to be the simplest and least intrusive way
+to approach the issue.
 
-Regards,
- Sricharan
+Thanks,
+Tom
+
+>
