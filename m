@@ -1,173 +1,159 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu: iova: Consolidate code for adding new node to
-	iovad domain rbtree
-Date: Thu, 23 Feb 2017 11:59:11 +0000
-Message-ID: <54ade5ee-a7e7-e048-8eed-7ebace656ea0@arm.com>
-References: <CGME20170223081743eucas1p2c4cec04758bd5fd950d5990eea6b84ae@eucas1p2.samsung.com>
-	<1487837853-3195-1-git-send-email-m.szyprowski@samsung.com>
+From: Sinan Kaya <okaya@codeaurora.org>
+Subject: Re: Partial BAR Address Allocation
+Date: Thu, 23 Feb 2017 08:54:23 -0500
+Message-ID: <c1f4c1ab-2a2a-82dd-a793-525e80487f5c@codeaurora.org>
+References: <35c6bec9-58e8-a1f7-5a85-d80c23480d32@codeaurora.org>
+ <20170222184440.GA2132@bhelgaas-glaptop.roam.corp.google.com>
+ <43c1ff36-fc50-8ea4-02fe-7b1d573a1efd@codeaurora.org>
+ <20170222233944.GB4359@bhelgaas-glaptop.roam.corp.google.com>
+ <4f5d4e62-41d1-dc99-71ae-b7875541117a@foss.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1487837853-3195-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <4f5d4e62-41d1-dc99-71ae-b7875541117a@foss.arm.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@foss.arm.com>, Bjorn Helgaas <helgaas@kernel.org>
+Cc: Linux PCI <linux-pci@vger.kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 23/02/17 08:17, Marek Szyprowski wrote:
-> This patch consolidates almost the same code used in iova_insert_rbtree()
-> and __alloc_and_insert_iova_range() functions. There is no functional change.
+Hi Robin,
+
+On 2/23/2017 6:40 AM, Robin Murphy wrote:
+> On 22/02/17 23:39, Bjorn Helgaas wrote:
+>> [+cc Joerg, iommu list]
+>>
+>> On Wed, Feb 22, 2017 at 03:44:53PM -0500, Sinan Kaya wrote:
+>>> On 2/22/2017 1:44 PM, Bjorn Helgaas wrote:
+>>>> There is no way for a driver to say "I only need this memory BAR and
+>>>> not the other ones."  The reason is because the PCI_COMMAND_MEMORY bit
+>>>> enables *all* the memory BARs; there's no way to enable memory BARs
+>>>> selectively.  If we enable memory BARs and one of them is unassigned,
+>>>> that unassigned BAR is enabled, and the device will respond at
+>>>> whatever address the register happens to contain, and that may cause
+>>>> conflicts.
+>>>>
+>>>> I'm not sure this answers your question.  Do you want to get rid of
+>>>> 32-bit BAR addresses because your host bridge doesn't have a window to
+>>>> 32-bit PCI addresses?  It's typical for a bridge to support a window
+>>>> to the 32-bit PCI space as well as one to the 64-bit PCI space.  Often
+>>>> it performs address translation for the 32-bit window so it doesn't
+>>>> have to be in the 32-bit area on the CPU side, e.g., you could have
+>>>> something like this where we have three host bridges and the 2-4GB
+>>>> space on each PCI root bus is addressable:
+>>>>
+>>>>   pci_bus 0000:00: root bus resource [mem 0x1080000000-0x10ffffffff] (bus address [0x80000000-0xffffffff])
+>>>>   pci_bus 0001:00: root bus resource [mem 0x1180000000-0x11ffffffff] (bus address [0x80000000-0xffffffff])
+>>>>   pci_bus 0002:00: root bus resource [mem 0x1280000000-0x12ffffffff] (bus address [0x80000000-0xffffffff])
+>>>
+>>> The problem is that according to PCI specification BAR addresses and
+>>> DMA addresses cannot overlap.
+>>>
+>>> From PCI-to-PCI Bridge Arch. spec.: "A bridge forwards PCI memory
+>>> transactions from its primary interface to its secondary interface
+>>> (downstream) if a memory address is in the range defined by the
+>>> Memory Base and Memory Limit registers (when the base is less than
+>>> or equal to the limit) as illustrated in Figure 4-3. Conversely, a
+>>> memory transaction on the secondary interface that is within this
+>>> address range will not be forwarded upstream to the primary
+>>> interface."
+>>>
+>>> To be specific, if your DMA address happens to be in
+>>> [0x80000000-0xffffffff] and root port's aperture includes this
+>>> range; the DMA will never make to the system memory.
+>>>
+>>> Lorenzo and Robin took some steps to carve out PCI addresses out of
+>>> DMA addresses in IOMMU drivers by using iova_reserve_pci_windows()
+>>> function.
+>>>
+>>> However, I see that we are still exposed when the operating system
+>>> doesn't have any IOMMU driver and is using the SWIOTLB for instance. 
+>>
+>> Hmmm.  I guess SWIOTLB assumes there's no address translation in the
+>> DMA direction, right?
 > 
-> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> ---
->  drivers/iommu/iova.c | 85 +++++++++++++++++++---------------------------------
->  1 file changed, 31 insertions(+), 54 deletions(-)
+> Not entirely - it does rely on arch-provided dma_to_phys() and
+> phys_to_dma() helpers which are free to accommodate such translations in
+> a device-specific manner. On arm64 we use these to account for
+> dev->dma_pfn_offset describing a straightforward linear offset, but
+> unless one constant offset would apply to all possible outbound windows
+> I'm not sure that's much help here.
+
+yeah, that won't help. This is a PCI only problem. Arch layer solution
+will move the entire DMA ranges for all peripherals in the SOC to a specific offset.
+This would be most useful if the entire DDR would start at some non-zero offset.
+
+Even then, PCI usually has several ranges. One range like this to have some
+space below 4GB and another untranslated range for true 64bit cards. 
+
+>>>>   pci_bus 0002:00: root bus resource [mem 0x1280000000-0x12ffffffff] (bus address [0x80000000-0xffffffff])
+
+We have to emulate some range in the first 4GB to make PCI cards happy.
+
 > 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index b7268a14184f..32b9c2fb37b6 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -100,6 +100,32 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
->  	}
->  }
->  
-> +/* Insert the iova into domain rbtree by holding writer lock */
-> +static void
-> +iova_insert_rbtree(struct rb_root *root, struct iova *iova,
-> +		   struct rb_node *start)
-> +{
-> +	struct rb_node **new, *parent = NULL;
-> +
-> +	new = (start) ? &start : &(root->rb_node);
-> +	/* Figure out where to put new node */
-> +	while (*new) {
-> +		struct iova *this = rb_entry(*new, struct iova, node);
-> +
-> +		parent = *new;
-> +
-> +		if (iova->pfn_lo < this->pfn_lo)
-> +			new = &((*new)->rb_left);
-> +		else if (iova->pfn_lo > this->pfn_lo)
-> +			new = &((*new)->rb_right);
-> +		else
-> +			BUG(); /* this should not happen */
-
-Ooh, if we're touching this, can we downgrade it to a WARN()? Granted,
-allocating an IOVA region of size 0 is not a reasonable thing to do
-intentionally, but the fact that it's guaranteed to take down the kernel
-is perhaps a bit much (I hit it soooo many times back when debugging the
-iommu_dma_map_sg() stuff).
-
-Nice tidyup otherwise, though.
-
-Robin.
-
-> +	}
-> +	/* Add new node and rebalance tree. */
-> +	rb_link_node(&iova->node, parent, new);
-> +	rb_insert_color(&iova->node, root);
-> +}
-> +
->  /*
->   * Computes the padding size required, to make the start address
->   * naturally aligned on the power-of-two order of its size
-> @@ -157,35 +183,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->  	new->pfn_lo = limit_pfn - (size + pad_size) + 1;
->  	new->pfn_hi = new->pfn_lo + size - 1;
->  
-> -	/* Insert the new_iova into domain rbtree by holding writer lock */
-> -	/* Add new node and rebalance tree. */
-> -	{
-> -		struct rb_node **entry, *parent = NULL;
-> -
-> -		/* If we have 'prev', it's a valid place to start the
-> -		   insertion. Otherwise, start from the root. */
-> -		if (prev)
-> -			entry = &prev;
-> -		else
-> -			entry = &iovad->rbroot.rb_node;
-> -
-> -		/* Figure out where to put new node */
-> -		while (*entry) {
-> -			struct iova *this = rb_entry(*entry, struct iova, node);
-> -			parent = *entry;
-> -
-> -			if (new->pfn_lo < this->pfn_lo)
-> -				entry = &((*entry)->rb_left);
-> -			else if (new->pfn_lo > this->pfn_lo)
-> -				entry = &((*entry)->rb_right);
-> -			else
-> -				BUG(); /* this should not happen */
-> -		}
-> -
-> -		/* Add new node and rebalance tree. */
-> -		rb_link_node(&new->node, parent, entry);
-> -		rb_insert_color(&new->node, &iovad->rbroot);
-> -	}
-> +	/* If we have 'prev', it's a valid place to start the insertion. */
-> +	iova_insert_rbtree(&iovad->rbroot, new, prev);
->  	__cached_rbnode_insert_update(iovad, saved_pfn, new);
->  
->  	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-> @@ -194,28 +193,6 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->  	return 0;
->  }
->  
-> -static void
-> -iova_insert_rbtree(struct rb_root *root, struct iova *iova)
-> -{
-> -	struct rb_node **new = &(root->rb_node), *parent = NULL;
-> -	/* Figure out where to put new node */
-> -	while (*new) {
-> -		struct iova *this = rb_entry(*new, struct iova, node);
-> -
-> -		parent = *new;
-> -
-> -		if (iova->pfn_lo < this->pfn_lo)
-> -			new = &((*new)->rb_left);
-> -		else if (iova->pfn_lo > this->pfn_lo)
-> -			new = &((*new)->rb_right);
-> -		else
-> -			BUG(); /* this should not happen */
-> -	}
-> -	/* Add new node and rebalance tree. */
-> -	rb_link_node(&iova->node, parent, new);
-> -	rb_insert_color(&iova->node, root);
-> -}
-> -
->  static struct kmem_cache *iova_cache;
->  static unsigned int iova_cache_users;
->  static DEFINE_MUTEX(iova_cache_mutex);
-> @@ -505,7 +482,7 @@ void put_iova_domain(struct iova_domain *iovad)
->  
->  	iova = alloc_and_init_iova(pfn_lo, pfn_hi);
->  	if (iova)
-> -		iova_insert_rbtree(&iovad->rbroot, iova);
-> +		iova_insert_rbtree(&iovad->rbroot, iova, NULL);
->  
->  	return iova;
->  }
-> @@ -612,11 +589,11 @@ struct iova *
->  	rb_erase(&iova->node, &iovad->rbroot);
->  
->  	if (prev) {
-> -		iova_insert_rbtree(&iovad->rbroot, prev);
-> +		iova_insert_rbtree(&iovad->rbroot, prev, NULL);
->  		iova->pfn_lo = pfn_lo;
->  	}
->  	if (next) {
-> -		iova_insert_rbtree(&iovad->rbroot, next);
-> +		iova_insert_rbtree(&iovad->rbroot, next, NULL);
->  		iova->pfn_hi = pfn_hi;
->  	}
->  	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+>>  If there's no address translation in the PIO
+>> direction, PCI bus BAR addresses are identical to the CPU-side
+>> addresses.  In that case, there's no conflict because we already have
+>> to assign BARs so they never look like a system memory address.
+>>
+>> But if there *is* address translation in the PIO direction, we can
+>> have conflicts because the bridge can translate CPU-side PIO accesses
+>> to arbitrary PCI bus addresses.
+>>
+>>> The FW solution I'm looking at requires carving out some part of the
+>>> DDR from before OS boot so that OS doesn't reclaim that area for
+>>> DMA.
+>>
+>> If you want to reach system RAM, I guess you need to make sure you
+>> only DMA to bus addresses outside the host bridge windows, as you said
+>> above.  DMA inside the windows would be handled as peer-to-peer DMA.
+>>
+>>> I'm not very happy with this solution. I'm also surprised that there
+>>> is no generic solution in the kernel takes care of this for all root
+>>> ports regardless of IOMMU driver presence.
+>>
+>> The PCI core isn't really involved in allocating DMA addresses,
+>> although there definitely is the connection with PCI-to-PCI bridge
+>> windows that you mentioned.  I added IOMMU guys, who would know a lot
+>> more than I do.
 > 
+> To me, having the bus addresses of windows shadow assigned physical
+> addresses sounds mostly like a broken system configuration. Can the
+> firmware not reprogram them elsewhere, or is the entire bottom 4GB of
+> the physical memory map occupied by system RAM?
+
+I think your suggestion is also going in the same direction where FW 
+moves the things around so that there is some hole in the first 4GB 
+that OS doesn't see it and PCI has exclusive access to it.
+
+I was looking to see if there is a better solution via some ACPI
+table entry like PNP0C02 to tell the OS what range PCI drivers are not
+allowed to touch but could be used for something else.
+
+Problem with UEFI reserved region is that we are prohibiting the 
+region from being used for anything else besides PCI. That region
+is gone forever.
+
+Another solution like you suggested is to move the DDR around so that
+I don't need reserved regions.
+
+Thanks for the suggestions,
+Sinan
+
+> 
+> Robin.
+> 
+>>
+>> Bjorn
+>> _______________________________________________
+>> iommu mailing list
+>> iommu@lists.linux-foundation.org
+>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>>
+> 
+
+
+-- 
+Sinan Kaya
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
