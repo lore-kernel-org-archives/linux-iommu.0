@@ -1,159 +1,79 @@
-From: Sinan Kaya <okaya@codeaurora.org>
-Subject: Re: Partial BAR Address Allocation
-Date: Thu, 23 Feb 2017 08:54:23 -0500
-Message-ID: <c1f4c1ab-2a2a-82dd-a793-525e80487f5c@codeaurora.org>
-References: <35c6bec9-58e8-a1f7-5a85-d80c23480d32@codeaurora.org>
- <20170222184440.GA2132@bhelgaas-glaptop.roam.corp.google.com>
- <43c1ff36-fc50-8ea4-02fe-7b1d573a1efd@codeaurora.org>
- <20170222233944.GB4359@bhelgaas-glaptop.roam.corp.google.com>
- <4f5d4e62-41d1-dc99-71ae-b7875541117a@foss.arm.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [RFC PATCH v4 13/28] efi: Update efi_mem_type() to return defined
+ EFI mem types
+Date: Thu, 23 Feb 2017 11:27:55 -0600
+Message-ID: <41d5df05-14be-ff33-a7e2-6b2f51e2605a@amd.com>
+References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
+ <20170216154457.19244.5369.stgit@tlendack-t1.amdoffice.net>
+ <20170221120505.GQ28416@codeblueprint.co.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <4f5d4e62-41d1-dc99-71ae-b7875541117a@foss.arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@foss.arm.com>, Bjorn Helgaas <helgaas@kernel.org>
-Cc: Linux PCI <linux-pci@vger.kernel.org>, iommu@lists.linux-foundation.org
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20170221120505.GQ28416@codeblueprint.co.uk>
+Sender: owner-linux-mm@kvack.org
+To: Matt Fleming <matt@codeblueprint.co.uk>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Thomas Gleixner <tglx@linutronix.>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-On 2/23/2017 6:40 AM, Robin Murphy wrote:
-> On 22/02/17 23:39, Bjorn Helgaas wrote:
->> [+cc Joerg, iommu list]
+On 2/21/2017 6:05 AM, Matt Fleming wrote:
+> On Thu, 16 Feb, at 09:44:57AM, Tom Lendacky wrote:
+>> Update the efi_mem_type() to return EFI_RESERVED_TYPE instead of a
+>> hardcoded 0.
 >>
->> On Wed, Feb 22, 2017 at 03:44:53PM -0500, Sinan Kaya wrote:
->>> On 2/22/2017 1:44 PM, Bjorn Helgaas wrote:
->>>> There is no way for a driver to say "I only need this memory BAR and
->>>> not the other ones."  The reason is because the PCI_COMMAND_MEMORY bit
->>>> enables *all* the memory BARs; there's no way to enable memory BARs
->>>> selectively.  If we enable memory BARs and one of them is unassigned,
->>>> that unassigned BAR is enabled, and the device will respond at
->>>> whatever address the register happens to contain, and that may cause
->>>> conflicts.
->>>>
->>>> I'm not sure this answers your question.  Do you want to get rid of
->>>> 32-bit BAR addresses because your host bridge doesn't have a window to
->>>> 32-bit PCI addresses?  It's typical for a bridge to support a window
->>>> to the 32-bit PCI space as well as one to the 64-bit PCI space.  Often
->>>> it performs address translation for the 32-bit window so it doesn't
->>>> have to be in the 32-bit area on the CPU side, e.g., you could have
->>>> something like this where we have three host bridges and the 2-4GB
->>>> space on each PCI root bus is addressable:
->>>>
->>>>   pci_bus 0000:00: root bus resource [mem 0x1080000000-0x10ffffffff] (bus address [0x80000000-0xffffffff])
->>>>   pci_bus 0001:00: root bus resource [mem 0x1180000000-0x11ffffffff] (bus address [0x80000000-0xffffffff])
->>>>   pci_bus 0002:00: root bus resource [mem 0x1280000000-0x12ffffffff] (bus address [0x80000000-0xffffffff])
->>>
->>> The problem is that according to PCI specification BAR addresses and
->>> DMA addresses cannot overlap.
->>>
->>> From PCI-to-PCI Bridge Arch. spec.: "A bridge forwards PCI memory
->>> transactions from its primary interface to its secondary interface
->>> (downstream) if a memory address is in the range defined by the
->>> Memory Base and Memory Limit registers (when the base is less than
->>> or equal to the limit) as illustrated in Figure 4-3. Conversely, a
->>> memory transaction on the secondary interface that is within this
->>> address range will not be forwarded upstream to the primary
->>> interface."
->>>
->>> To be specific, if your DMA address happens to be in
->>> [0x80000000-0xffffffff] and root port's aperture includes this
->>> range; the DMA will never make to the system memory.
->>>
->>> Lorenzo and Robin took some steps to carve out PCI addresses out of
->>> DMA addresses in IOMMU drivers by using iova_reserve_pci_windows()
->>> function.
->>>
->>> However, I see that we are still exposed when the operating system
->>> doesn't have any IOMMU driver and is using the SWIOTLB for instance. 
+>> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+>> ---
+>>  arch/x86/platform/efi/efi.c |    4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
 >>
->> Hmmm.  I guess SWIOTLB assumes there's no address translation in the
->> DMA direction, right?
-> 
-> Not entirely - it does rely on arch-provided dma_to_phys() and
-> phys_to_dma() helpers which are free to accommodate such translations in
-> a device-specific manner. On arm64 we use these to account for
-> dev->dma_pfn_offset describing a straightforward linear offset, but
-> unless one constant offset would apply to all possible outbound windows
-> I'm not sure that's much help here.
-
-yeah, that won't help. This is a PCI only problem. Arch layer solution
-will move the entire DMA ranges for all peripherals in the SOC to a specific offset.
-This would be most useful if the entire DDR would start at some non-zero offset.
-
-Even then, PCI usually has several ranges. One range like this to have some
-space below 4GB and another untranslated range for true 64bit cards. 
-
->>>>   pci_bus 0002:00: root bus resource [mem 0x1280000000-0x12ffffffff] (bus address [0x80000000-0xffffffff])
-
-We have to emulate some range in the first 4GB to make PCI cards happy.
-
-> 
->>  If there's no address translation in the PIO
->> direction, PCI bus BAR addresses are identical to the CPU-side
->> addresses.  In that case, there's no conflict because we already have
->> to assign BARs so they never look like a system memory address.
+>> diff --git a/arch/x86/platform/efi/efi.c b/arch/x86/platform/efi/efi.c
+>> index a15cf81..6407103 100644
+>> --- a/arch/x86/platform/efi/efi.c
+>> +++ b/arch/x86/platform/efi/efi.c
+>> @@ -1037,7 +1037,7 @@ u32 efi_mem_type(unsigned long phys_addr)
+>>  	efi_memory_desc_t *md;
 >>
->> But if there *is* address translation in the PIO direction, we can
->> have conflicts because the bridge can translate CPU-side PIO accesses
->> to arbitrary PCI bus addresses.
+>>  	if (!efi_enabled(EFI_MEMMAP))
+>> -		return 0;
+>> +		return EFI_RESERVED_TYPE;
 >>
->>> The FW solution I'm looking at requires carving out some part of the
->>> DDR from before OS boot so that OS doesn't reclaim that area for
->>> DMA.
->>
->> If you want to reach system RAM, I guess you need to make sure you
->> only DMA to bus addresses outside the host bridge windows, as you said
->> above.  DMA inside the windows would be handled as peer-to-peer DMA.
->>
->>> I'm not very happy with this solution. I'm also surprised that there
->>> is no generic solution in the kernel takes care of this for all root
->>> ports regardless of IOMMU driver presence.
->>
->> The PCI core isn't really involved in allocating DMA addresses,
->> although there definitely is the connection with PCI-to-PCI bridge
->> windows that you mentioned.  I added IOMMU guys, who would know a lot
->> more than I do.
-> 
-> To me, having the bus addresses of windows shadow assigned physical
-> addresses sounds mostly like a broken system configuration. Can the
-> firmware not reprogram them elsewhere, or is the entire bottom 4GB of
-> the physical memory map occupied by system RAM?
+>>  	for_each_efi_memory_desc(md) {
+>>  		if ((md->phys_addr <= phys_addr) &&
+>> @@ -1045,7 +1045,7 @@ u32 efi_mem_type(unsigned long phys_addr)
+>>  				  (md->num_pages << EFI_PAGE_SHIFT))))
+>>  			return md->type;
+>>  	}
+>> -	return 0;
+>> +	return EFI_RESERVED_TYPE;
+>>  }
+>
+> I see what you're getting at here, but arguably the return value in
+> these cases never should have been zero to begin with (your change
+> just makes that more obvious).
+>
+> Returning EFI_RESERVED_TYPE implies an EFI memmap entry exists for
+> this address, which is misleading because it doesn't in the hunks
+> you've modified above.
+>
+> Instead, could you look at returning a negative error value in the
+> usual way we do in the Linux kernel, and update the function prototype
+> to match? I don't think any callers actually require the return type
+> to be u32.
 
-I think your suggestion is also going in the same direction where FW 
-moves the things around so that there is some hole in the first 4GB 
-that OS doesn't see it and PCI has exclusive access to it.
+I can do that, I'll change the return type to an int. For the
+!efi_enabled I can return -ENOTSUPP and for when an entry isn't
+found I can return -EINVAL.  Sound good?
 
-I was looking to see if there is a better solution via some ACPI
-table entry like PNP0C02 to tell the OS what range PCI drivers are not
-allowed to touch but could be used for something else.
+The ia64 arch is the only other arch that defines the function. It
+has just a single return 0 that I'll change to -EINVAL.
 
-Problem with UEFI reserved region is that we are prohibiting the 
-region from being used for anything else besides PCI. That region
-is gone forever.
+Thanks,
+Tom
 
-Another solution like you suggested is to move the DDR around so that
-I don't need reserved regions.
+>
 
-Thanks for the suggestions,
-Sinan
-
-> 
-> Robin.
-> 
->>
->> Bjorn
->> _______________________________________________
->> iommu mailing list
->> iommu@lists.linux-foundation.org
->> https://lists.linuxfoundation.org/mailman/listinfo/iommu
->>
-> 
-
-
--- 
-Sinan Kaya
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
