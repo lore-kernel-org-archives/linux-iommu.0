@@ -1,52 +1,101 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [RFC PATCH v4 07/28] x86: Provide general kernel support for
- memory encryption
-Date: Thu, 23 Feb 2017 17:12:38 -0600
-Message-ID: <73a2c1f7-bc71-3ca8-c312-9a930250cb18@amd.com>
-References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
- <20170216154332.19244.55451.stgit@tlendack-t1.amdoffice.net>
- <a3f56612-396e-b230-d909-93a7128ea2fc@intel.com>
+From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Subject: Re: intel-iommu sysfs oops.
+Date: Fri, 24 Feb 2017 00:30:38 +0100
+Message-ID: <20170223233038.GH4154@suse.de>
+References: <20170223194406.i3scsushn7bbizdv@codemonkey.org.uk>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <a3f56612-396e-b230-d909-93a7128ea2fc@intel.com>
-Sender: owner-linux-mm@kvack.org
-To: Dave Hansen <dave.hansen@intel.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org
-Cc: Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Thomas Gleixner <tglx@linutronix.de>, Larry Woodman <lwoodman@redhat.com>, Dmitry Vyukov <dvyukov@google.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170223194406.i3scsushn7bbizdv-rdkfGonbjUTCLXcRTR1eJlpr/1R2p/CL@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Dave Jones <davej-rdkfGonbjUTCLXcRTR1eJlpr/1R2p/CL@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 2/22/2017 12:13 PM, Dave Hansen wrote:
-> On 02/16/2017 07:43 AM, Tom Lendacky wrote:
->>  static inline unsigned long pte_pfn(pte_t pte)
->>  {
->> -	return (pte_val(pte) & PTE_PFN_MASK) >> PAGE_SHIFT;
->> +	return (pte_val(pte) & ~sme_me_mask & PTE_PFN_MASK) >> PAGE_SHIFT;
->>  }
->>
->>  static inline unsigned long pmd_pfn(pmd_t pmd)
->>  {
->> -	return (pmd_val(pmd) & pmd_pfn_mask(pmd)) >> PAGE_SHIFT;
->> +	return (pmd_val(pmd) & ~sme_me_mask & pmd_pfn_mask(pmd)) >> PAGE_SHIFT;
->>  }
->
-> Could you talk a bit about why you chose to do the "~sme_me_mask" bit in
-> here instead of making it a part of PTE_PFN_MASK / pmd_pfn_mask(pmd)?
+Hi Dave,
 
-I think that's a good catch.  Let me look at it, but I believe that it
-should be possible to do and avoid what you're worried about below.
+On Thu, Feb 23, 2017 at 02:44:06PM -0500, Dave Jones wrote:
+> cat /sys/devices/virtual/iommu/dmar0/intel-iommu/version
+> 
+> Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC
 
-Thanks,
-Tom
+Thanks for the report, the problem reproduces easily here. The diff
+below fixes the issue on Intel, AMD has the same problem and needs a
+similar fix I'll do shortly.
 
->
-> It might not matter, but I'd be worried that this ends up breaking
-> direct users of PTE_PFN_MASK / pmd_pfn_mask(pmd) since they now no
-> longer mask the PFN out of a PTE.
->
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index f5e02f8..ec3f6c8 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4730,11 +4730,16 @@ static int intel_iommu_cpu_dead(unsigned int cpu)
+ 	return 0;
+ }
+ 
++static struct intel_iommu *dev_to_intel_iommu(struct device *dev)
++{
++	return container_of(dev, struct intel_iommu, iommu.dev);
++}
++
+ static ssize_t intel_iommu_show_version(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
+ {
+-	struct intel_iommu *iommu = dev_get_drvdata(dev);
++	struct intel_iommu *iommu = dev_to_intel_iommu(dev);
+ 	u32 ver = readl(iommu->reg + DMAR_VER_REG);
+ 	return sprintf(buf, "%d:%d\n",
+ 		       DMAR_VER_MAJOR(ver), DMAR_VER_MINOR(ver));
+@@ -4745,7 +4750,7 @@ static ssize_t intel_iommu_show_address(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
+ {
+-	struct intel_iommu *iommu = dev_get_drvdata(dev);
++	struct intel_iommu *iommu = dev_to_intel_iommu(dev);
+ 	return sprintf(buf, "%llx\n", iommu->reg_phys);
+ }
+ static DEVICE_ATTR(address, S_IRUGO, intel_iommu_show_address, NULL);
+@@ -4754,7 +4759,7 @@ static ssize_t intel_iommu_show_cap(struct device *dev,
+ 				    struct device_attribute *attr,
+ 				    char *buf)
+ {
+-	struct intel_iommu *iommu = dev_get_drvdata(dev);
++	struct intel_iommu *iommu = dev_to_intel_iommu(dev);
+ 	return sprintf(buf, "%llx\n", iommu->cap);
+ }
+ static DEVICE_ATTR(cap, S_IRUGO, intel_iommu_show_cap, NULL);
+@@ -4763,7 +4768,7 @@ static ssize_t intel_iommu_show_ecap(struct device *dev,
+ 				    struct device_attribute *attr,
+ 				    char *buf)
+ {
+-	struct intel_iommu *iommu = dev_get_drvdata(dev);
++	struct intel_iommu *iommu = dev_to_intel_iommu(dev);
+ 	return sprintf(buf, "%llx\n", iommu->ecap);
+ }
+ static DEVICE_ATTR(ecap, S_IRUGO, intel_iommu_show_ecap, NULL);
+@@ -4772,7 +4777,7 @@ static ssize_t intel_iommu_show_ndoms(struct device *dev,
+ 				      struct device_attribute *attr,
+ 				      char *buf)
+ {
+-	struct intel_iommu *iommu = dev_get_drvdata(dev);
++	struct intel_iommu *iommu = dev_to_intel_iommu(dev);
+ 	return sprintf(buf, "%ld\n", cap_ndoms(iommu->cap));
+ }
+ static DEVICE_ATTR(domains_supported, S_IRUGO, intel_iommu_show_ndoms, NULL);
+@@ -4781,7 +4786,7 @@ static ssize_t intel_iommu_show_ndoms_used(struct device *dev,
+ 					   struct device_attribute *attr,
+ 					   char *buf)
+ {
+-	struct intel_iommu *iommu = dev_get_drvdata(dev);
++	struct intel_iommu *iommu = dev_to_intel_iommu(dev);
+ 	return sprintf(buf, "%d\n", bitmap_weight(iommu->domain_ids,
+ 						  cap_ndoms(iommu->cap)));
+ }
