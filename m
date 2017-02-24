@@ -1,177 +1,80 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v2] iommu: iova: Consolidate code for adding new node to
-	iovad domain rbtree
-Date: Fri, 24 Feb 2017 12:15:28 +0000
-Message-ID: <3b217301-59d7-0822-8879-dd197a82fcc7@arm.com>
-References: <CGME20170224111346eucas1p2039e4d85e34f2a4cdd3adc298e2a1b6f@eucas1p2.samsung.com>
-	<1487934817-11725-1-git-send-email-m.szyprowski@samsung.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [RFC PATCH v4 14/28] Add support to access boot related data in
+ the clear
+Date: Fri, 24 Feb 2017 09:04:21 -0600
+Message-ID: <8c8bf255-c48d-ac7f-e344-8059e1ffedb3@amd.com>
+References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
+ <20170216154508.19244.58580.stgit@tlendack-t1.amdoffice.net>
+ <20170221150625.lohyskz5bjuey7fa@pd.tnic>
+ <031277bf-25ad-3d41-d189-1ad6b4d27c93@amd.com>
+ <20170224102155.4pauis3acrzp3rwz@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1487934817-11725-1-git-send-email-m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20170224102155.4pauis3acrzp3rwz@pd.tnic>
+Sender: owner-linux-mm@kvack.org
+To: Borislav Petkov <bp@alien8.de>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S.
+ Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter
+ Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Thomas Gleixner <tglx@li>
 List-Id: iommu@lists.linux-foundation.org
 
-On 24/02/17 11:13, Marek Szyprowski wrote:
-> This patch consolidates almost the same code used in iova_insert_rbtree()
-> and __alloc_and_insert_iova_range() functions. While touching this code,
-> replace BUG() with WARN_ON(1) to avoid taking down the whole system in
-> case of corrupted iova tree or incorrect calls.
+On 2/24/2017 4:21 AM, Borislav Petkov wrote:
+> On Thu, Feb 23, 2017 at 03:34:30PM -0600, Tom Lendacky wrote:
+>> Hmm... maybe I'm missing something here.  This doesn't have anything to
+>> do with kexec or efi_reuse_config.  This has to do with the fact that
+>
+> I said kexec because kexec uses the setup_data mechanism to pass config
+> tables to the second kernel, for example.
+>
+>> when a system boots the setup data and the EFI data are not encrypted.
+>> Since it's not encrypted we need to be sure that any early_memremap()
+>> and memremap() calls remove the encryption mask from the resulting
+>> pagetable entry that is created so the data can be accessed properly.
+>
+> Anyway, I'd prefer not to do this ad-hoc caching if it can be
+> helped. You're imposing an arbitrary limit of 32 there which the
+> setup_data linked list doesn't have. So if you really want to go
+> inspect those elements, you could iterate over them starting from
+> boot_params.hdr.setup_data, just like parse_setup_data() does. Most of
+> the time that list should be non-existent and if it is, it will be short
+> anyway.
+>
 
-Thanks Marek!
+I looked at doing that but you get into this cyclical situation unless
+you specifically map each setup data elemement as decrypted. This is ok
+for early_memremap since we have early_memremap_decrypted() but a new
+memremap_decrypted() would have to be added. But I was trying to avoid
+having to do multiple mapping calls inside the current mapping call.
 
-Tested-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+I can always look at converting the setup_data_list from an array
+into a list to eliminate the 32 entry limit, too.
 
-> Signed-off-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-> ---
-> v2:
-> - replaced BUG() with WARN_ON(1) as suggested by Robin Murphy
-> 
-> v1:
-> - initial version
-> ---
->  drivers/iommu/iova.c | 87 ++++++++++++++++++++--------------------------------
->  1 file changed, 33 insertions(+), 54 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index b7268a14184f..e80a4105ac2a 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -100,6 +100,34 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
->  	}
->  }
->  
-> +/* Insert the iova into domain rbtree by holding writer lock */
-> +static void
-> +iova_insert_rbtree(struct rb_root *root, struct iova *iova,
-> +		   struct rb_node *start)
-> +{
-> +	struct rb_node **new, *parent = NULL;
-> +
-> +	new = (start) ? &start : &(root->rb_node);
-> +	/* Figure out where to put new node */
-> +	while (*new) {
-> +		struct iova *this = rb_entry(*new, struct iova, node);
-> +
-> +		parent = *new;
-> +
-> +		if (iova->pfn_lo < this->pfn_lo)
-> +			new = &((*new)->rb_left);
-> +		else if (iova->pfn_lo > this->pfn_lo)
-> +			new = &((*new)->rb_right);
-> +		else {
-> +			WARN_ON(1); /* this should not happen */
-> +			return;
-> +		}
-> +	}
-> +	/* Add new node and rebalance tree. */
-> +	rb_link_node(&iova->node, parent, new);
-> +	rb_insert_color(&iova->node, root);
-> +}
-> +
->  /*
->   * Computes the padding size required, to make the start address
->   * naturally aligned on the power-of-two order of its size
-> @@ -157,35 +185,8 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->  	new->pfn_lo = limit_pfn - (size + pad_size) + 1;
->  	new->pfn_hi = new->pfn_lo + size - 1;
->  
-> -	/* Insert the new_iova into domain rbtree by holding writer lock */
-> -	/* Add new node and rebalance tree. */
-> -	{
-> -		struct rb_node **entry, *parent = NULL;
-> -
-> -		/* If we have 'prev', it's a valid place to start the
-> -		   insertion. Otherwise, start from the root. */
-> -		if (prev)
-> -			entry = &prev;
-> -		else
-> -			entry = &iovad->rbroot.rb_node;
-> -
-> -		/* Figure out where to put new node */
-> -		while (*entry) {
-> -			struct iova *this = rb_entry(*entry, struct iova, node);
-> -			parent = *entry;
-> -
-> -			if (new->pfn_lo < this->pfn_lo)
-> -				entry = &((*entry)->rb_left);
-> -			else if (new->pfn_lo > this->pfn_lo)
-> -				entry = &((*entry)->rb_right);
-> -			else
-> -				BUG(); /* this should not happen */
-> -		}
-> -
-> -		/* Add new node and rebalance tree. */
-> -		rb_link_node(&new->node, parent, entry);
-> -		rb_insert_color(&new->node, &iovad->rbroot);
-> -	}
-> +	/* If we have 'prev', it's a valid place to start the insertion. */
-> +	iova_insert_rbtree(&iovad->rbroot, new, prev);
->  	__cached_rbnode_insert_update(iovad, saved_pfn, new);
->  
->  	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-> @@ -194,28 +195,6 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->  	return 0;
->  }
->  
-> -static void
-> -iova_insert_rbtree(struct rb_root *root, struct iova *iova)
-> -{
-> -	struct rb_node **new = &(root->rb_node), *parent = NULL;
-> -	/* Figure out where to put new node */
-> -	while (*new) {
-> -		struct iova *this = rb_entry(*new, struct iova, node);
-> -
-> -		parent = *new;
-> -
-> -		if (iova->pfn_lo < this->pfn_lo)
-> -			new = &((*new)->rb_left);
-> -		else if (iova->pfn_lo > this->pfn_lo)
-> -			new = &((*new)->rb_right);
-> -		else
-> -			BUG(); /* this should not happen */
-> -	}
-> -	/* Add new node and rebalance tree. */
-> -	rb_link_node(&iova->node, parent, new);
-> -	rb_insert_color(&iova->node, root);
-> -}
-> -
->  static struct kmem_cache *iova_cache;
->  static unsigned int iova_cache_users;
->  static DEFINE_MUTEX(iova_cache_mutex);
-> @@ -505,7 +484,7 @@ void put_iova_domain(struct iova_domain *iovad)
->  
->  	iova = alloc_and_init_iova(pfn_lo, pfn_hi);
->  	if (iova)
-> -		iova_insert_rbtree(&iovad->rbroot, iova);
-> +		iova_insert_rbtree(&iovad->rbroot, iova, NULL);
->  
->  	return iova;
->  }
-> @@ -612,11 +591,11 @@ struct iova *
->  	rb_erase(&iova->node, &iovad->rbroot);
->  
->  	if (prev) {
-> -		iova_insert_rbtree(&iovad->rbroot, prev);
-> +		iova_insert_rbtree(&iovad->rbroot, prev, NULL);
->  		iova->pfn_lo = pfn_lo;
->  	}
->  	if (next) {
-> -		iova_insert_rbtree(&iovad->rbroot, next);
-> +		iova_insert_rbtree(&iovad->rbroot, next, NULL);
->  		iova->pfn_hi = pfn_hi;
->  	}
->  	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-> 
+Let me look at adding the early_memremap_decrypted() type support to
+memremap() and see how that looks.
+
+> And if we really decide that we need to cache it for later inspection
+> due to speed considerations, as you do in memremap_is_setup_data(), you
+> could do that in the default: branch of parse_setup_data() and do it
+> just once: I don't see why you need to do add_to_setup_data_list() *and*
+> update_setup_data_list() when you could add both pointer and updated
+> size once.
+
+I do the add followed by the update because we can't determine the true
+size of the setup data until it is first mapped so that the data->len
+field can be accessed. In order to map it properly the physical
+address range needs to be added to the list before it is mapped. After
+it's mapped, the true physical address range can be calculated and
+updated.
+
+Thanks,
+Tom
+
+>
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
