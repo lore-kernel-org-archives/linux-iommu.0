@@ -1,52 +1,40 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [RFC PATCH v4 14/28] Add support to access boot related data in
- the clear
-Date: Fri, 24 Feb 2017 16:22:26 +0100
-Message-ID: <20170224152226.gzs4qquv7b7gmamu@pd.tnic>
-References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
- <20170216154508.19244.58580.stgit@tlendack-t1.amdoffice.net>
- <20170221150625.lohyskz5bjuey7fa@pd.tnic>
- <031277bf-25ad-3d41-d189-1ad6b4d27c93@amd.com>
- <20170224102155.4pauis3acrzp3rwz@pd.tnic>
- <8c8bf255-c48d-ac7f-e344-8059e1ffedb3@amd.com>
+From: Dave Jones <davej-rdkfGonbjUTCLXcRTR1eJlpr/1R2p/CL@public.gmane.org>
+Subject: Re: intel-iommu sysfs oops.
+Date: Fri, 24 Feb 2017 16:28:13 -0500
+Message-ID: <20170224212813.37vdalqonor2jwoz@codemonkey.org.uk>
+References: <20170223194406.i3scsushn7bbizdv@codemonkey.org.uk>
+	<20170223233038.GH4154@suse.de>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <8c8bf255-c48d-ac7f-e344-8059e1ffedb3@amd.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>
+In-Reply-To: <20170223233038.GH4154-l3A5Bk7waGM@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Feb 24, 2017 at 09:04:21AM -0600, Tom Lendacky wrote:
-> I looked at doing that but you get into this cyclical situation unless
-> you specifically map each setup data elemement as decrypted. This is ok
-> for early_memremap since we have early_memremap_decrypted() but a new
-> memremap_decrypted() would have to be added. But I was trying to avoid
-> having to do multiple mapping calls inside the current mapping call.
-> 
-> I can always look at converting the setup_data_list from an array
-> into a list to eliminate the 32 entry limit, too.
-> 
-> Let me look at adding the early_memremap_decrypted() type support to
-> memremap() and see how that looks.
+On Fri, Feb 24, 2017 at 12:30:38AM +0100, Joerg Roedel wrote:
+ > Hi Dave,
+ > 
+ > On Thu, Feb 23, 2017 at 02:44:06PM -0500, Dave Jones wrote:
+ > > cat /sys/devices/virtual/iommu/dmar0/intel-iommu/version
+ > > 
+ > > Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC
+ > 
+ > Thanks for the report, the problem reproduces easily here. The diff
+ > below fixes the issue on Intel, AMD has the same problem and needs a
+ > similar fix I'll do shortly.
 
-Yes, so this sounds better than the cyclic thing you explained
-where you have to add and update since early_memremap() calls into
-memremap_should_map_encrypted() which touches the list we're updating at
-the same time.
+Seems to do the job. Thanks for the quick fix Joerg!
 
-So in the case where you absolutely know that those ranges should
-be mapped decrypted, we should have special helpers which do that
-explicitly and they are called when we access those special regions.
-Well, special for SME. I'm thinking that should simplify the handling
-but you'll know better once you write it. :)
-
-Thanks.
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+	Dave
