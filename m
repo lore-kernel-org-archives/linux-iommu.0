@@ -1,14 +1,11 @@
-From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Subject: Re: intel-iommu sysfs oops.
-Date: Fri, 24 Feb 2017 00:30:38 +0100
-Message-ID: <20170223233038.GH4154@suse.de>
-References: <20170223194406.i3scsushn7bbizdv@codemonkey.org.uk>
+From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Subject: [PATCH v11 00/10] perf/amd/iommu: Enable multi-IOMMU support
+Date: Fri, 24 Feb 2017 02:48:12 -0600
+Message-ID: <1487926102-13073-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170223194406.i3scsushn7bbizdv-rdkfGonbjUTCLXcRTR1eJlpr/1R2p/CL@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,84 +15,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dave Jones <davej-rdkfGonbjUTCLXcRTR1eJlpr/1R2p/CL@public.gmane.org>, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Dave,
+From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-On Thu, Feb 23, 2017 at 02:44:06PM -0500, Dave Jones wrote:
-> cat /sys/devices/virtual/iommu/dmar0/intel-iommu/version
-> 
-> Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC
+This patch series modifies the existing IOMMU and Perf drivers to support
+systems with multiple IOMMUs by allocating an amd_iommu PMU per IOMMU instance.
+This allows users to specify performance events and filters separately for each
+IOMMU.
 
-Thanks for the report, the problem reproduces easily here. The diff
-below fixes the issue on Intel, AMD has the same problem and needs a
-similar fix I'll do shortly.
+This has been tested on the new family17h-based server w/ multiple IOMMUs.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index f5e02f8..ec3f6c8 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4730,11 +4730,16 @@ static int intel_iommu_cpu_dead(unsigned int cpu)
- 	return 0;
- }
- 
-+static struct intel_iommu *dev_to_intel_iommu(struct device *dev)
-+{
-+	return container_of(dev, struct intel_iommu, iommu.dev);
-+}
-+
- static ssize_t intel_iommu_show_version(struct device *dev,
- 					struct device_attribute *attr,
- 					char *buf)
- {
--	struct intel_iommu *iommu = dev_get_drvdata(dev);
-+	struct intel_iommu *iommu = dev_to_intel_iommu(dev);
- 	u32 ver = readl(iommu->reg + DMAR_VER_REG);
- 	return sprintf(buf, "%d:%d\n",
- 		       DMAR_VER_MAJOR(ver), DMAR_VER_MINOR(ver));
-@@ -4745,7 +4750,7 @@ static ssize_t intel_iommu_show_address(struct device *dev,
- 					struct device_attribute *attr,
- 					char *buf)
- {
--	struct intel_iommu *iommu = dev_get_drvdata(dev);
-+	struct intel_iommu *iommu = dev_to_intel_iommu(dev);
- 	return sprintf(buf, "%llx\n", iommu->reg_phys);
- }
- static DEVICE_ATTR(address, S_IRUGO, intel_iommu_show_address, NULL);
-@@ -4754,7 +4759,7 @@ static ssize_t intel_iommu_show_cap(struct device *dev,
- 				    struct device_attribute *attr,
- 				    char *buf)
- {
--	struct intel_iommu *iommu = dev_get_drvdata(dev);
-+	struct intel_iommu *iommu = dev_to_intel_iommu(dev);
- 	return sprintf(buf, "%llx\n", iommu->cap);
- }
- static DEVICE_ATTR(cap, S_IRUGO, intel_iommu_show_cap, NULL);
-@@ -4763,7 +4768,7 @@ static ssize_t intel_iommu_show_ecap(struct device *dev,
- 				    struct device_attribute *attr,
- 				    char *buf)
- {
--	struct intel_iommu *iommu = dev_get_drvdata(dev);
-+	struct intel_iommu *iommu = dev_to_intel_iommu(dev);
- 	return sprintf(buf, "%llx\n", iommu->ecap);
- }
- static DEVICE_ATTR(ecap, S_IRUGO, intel_iommu_show_ecap, NULL);
-@@ -4772,7 +4777,7 @@ static ssize_t intel_iommu_show_ndoms(struct device *dev,
- 				      struct device_attribute *attr,
- 				      char *buf)
- {
--	struct intel_iommu *iommu = dev_get_drvdata(dev);
-+	struct intel_iommu *iommu = dev_to_intel_iommu(dev);
- 	return sprintf(buf, "%ld\n", cap_ndoms(iommu->cap));
- }
- static DEVICE_ATTR(domains_supported, S_IRUGO, intel_iommu_show_ndoms, NULL);
-@@ -4781,7 +4786,7 @@ static ssize_t intel_iommu_show_ndoms_used(struct device *dev,
- 					   struct device_attribute *attr,
- 					   char *buf)
- {
--	struct intel_iommu *iommu = dev_get_drvdata(dev);
-+	struct intel_iommu *iommu = dev_to_intel_iommu(dev);
- 	return sprintf(buf, "%d\n", bitmap_weight(iommu->domain_ids,
- 						  cap_ndoms(iommu->cap)));
- }
+Git branch containing this patch series is available here:
+
+    https://github.com/ssuthiku/linux.git  perf-iommu-v11
+
+Changes from V10 (https://lkml.org/lkml/2017/2/15/1202)
+  * Introduce amd_iommu specific struct in struct hw_perf_event
+    (patch 9/10).
+  * Minor clean up on pr_info (patch 1/10 per Joe Perches).
+
+Changes from V9 (https://lkml.org/lkml/2017/2/7/105)
+  * Since each IOMMU PMU in a system functions independently from 
+    one another, the amd_iommu_pc_init() function has been modified
+    to allow certain IOMMU PMU initialization to fail w/o disabling
+    the others (patch 9/9).
+  * Define a static pmu (iommu_pmu), and stuct assignment directly.
+    (per Boris)
+  * Refactor code clean up into a separate patch (4/9) (per Boris)
+
+Changes from V8 (https://lkml.org/lkml/2017/1/16/48)
+  * Rebase to v4.10
+  * Do not use hwc->idx as pmu index. Instead, include pointers
+    to struct amd_iommu in the perf_amd_iommu.
+  * Do not remove local64_cmpxchg() in perf_iommu_read().
+  * Fix incorrect bitfield when using GENMASK_ULL().
+
+Changes from V7 (https://lkml.org/lkml/2017/1/9/917)
+  * Re-order patches to clean up first before introducing new stuff.
+  * Always use amd_iommu_get_num_iommus() to access amd_iommus_present
+    variable now.
+  * Fix Perf IOMMU sysfs attributes initialization.
+  * Miscellaneous clean up 
+
+Thanks,
+Suravee
+
+Suravee Suthikulpanit (10):
+  perf/amd/iommu: Declare pr_fmt and remove unnecessary pr_debug
+  perf/amd/iommu: Clean up bitwise operations
+  perf/amd/iommu: Clean up perf_iommu_read()
+  iommu/amd: Clean up iommu_pc_get_set_reg()
+  iommu/amd: Introduce amd_iommu_get_num_iommus()
+  perf/amd/iommu: Modify functions to query max banks and counters
+  perf/amd/iommu: Modify amd_iommu_pc_get_set_reg_val() to allow
+    specifying IOMMU
+  perf/amd/iommu: Fix sysfs perf attribute groups
+  perf/amd/iommu: Introduce amd_iommu-specific struct in struct
+    hw_perf_event
+  perf/amd/iommu: Enable support for multiple IOMMUs
+
+ arch/x86/events/amd/iommu.c     | 326 +++++++++++++++++++---------------------
+ arch/x86/events/amd/iommu.h     |  18 ++-
+ drivers/iommu/amd_iommu.c       |   6 +-
+ drivers/iommu/amd_iommu_init.c  | 101 ++++++++-----
+ drivers/iommu/amd_iommu_proto.h |   8 +-
+ drivers/iommu/amd_iommu_types.h |   3 -
+ include/linux/perf_event.h      |  12 ++
+ 7 files changed, 247 insertions(+), 227 deletions(-)
+
+-- 
+1.8.3.1
