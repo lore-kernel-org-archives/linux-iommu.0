@@ -1,40 +1,67 @@
-From: Dave Jones <davej-rdkfGonbjUTCLXcRTR1eJlpr/1R2p/CL@public.gmane.org>
-Subject: Re: intel-iommu sysfs oops.
-Date: Fri, 24 Feb 2017 16:28:13 -0500
-Message-ID: <20170224212813.37vdalqonor2jwoz@codemonkey.org.uk>
-References: <20170223194406.i3scsushn7bbizdv@codemonkey.org.uk>
-	<20170223233038.GH4154@suse.de>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [RFC PATCH v4 05/28] x86: Add Secure Memory Encryption (SME)
+ support
+Date: Sat, 25 Feb 2017 16:29:31 +0100
+Message-ID: <20170225152931.p4lws753myepkkb3@pd.tnic>
+References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
+ <20170216154307.19244.72895.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <owner-linux-mm@kvack.org>
 Content-Disposition: inline
-In-Reply-To: <20170223233038.GH4154-l3A5Bk7waGM@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, Linux Kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+In-Reply-To: <20170216154307.19244.72895.stgit@tlendack-t1.amdoffice.net>
+Sender: owner-linux-mm@kvack.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Thomas Gleixner <tglx@linutronix.de>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Feb 24, 2017 at 12:30:38AM +0100, Joerg Roedel wrote:
- > Hi Dave,
- > 
- > On Thu, Feb 23, 2017 at 02:44:06PM -0500, Dave Jones wrote:
- > > cat /sys/devices/virtual/iommu/dmar0/intel-iommu/version
- > > 
- > > Oops: 0000 [#1] PREEMPT SMP DEBUG_PAGEALLOC
- > 
- > Thanks for the report, the problem reproduces easily here. The diff
- > below fixes the issue on Intel, AMD has the same problem and needs a
- > similar fix I'll do shortly.
+On Thu, Feb 16, 2017 at 09:43:07AM -0600, Tom Lendacky wrote:
+> Add support for Secure Memory Encryption (SME). This initial support
+> provides a Kconfig entry to build the SME support into the kernel and
+> defines the memory encryption mask that will be used in subsequent
+> patches to mark pages as encrypted.
+> 
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
 
-Seems to do the job. Thanks for the quick fix Joerg!
+...
 
-	Dave
+> +++ b/arch/x86/include/asm/mem_encrypt.h
+> @@ -0,0 +1,42 @@
+> +/*
+> + * AMD Memory Encryption Support
+> + *
+> + * Copyright (C) 2016 Advanced Micro Devices, Inc.
+> + *
+> + * Author: Tom Lendacky <thomas.lendacky@amd.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + */
+> +
+> +#ifndef __X86_MEM_ENCRYPT_H__
+> +#define __X86_MEM_ENCRYPT_H__
+> +
+> +#ifndef __ASSEMBLY__
+> +
+> +#ifdef CONFIG_AMD_MEM_ENCRYPT
+> +
+> +extern unsigned long sme_me_mask;
+> +
+> +static inline bool sme_active(void)
+> +{
+> +	return (sme_me_mask) ? true : false;
+
+	return !!sme_me_mask;
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
