@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 21/30] iommu/arm-smmu-v3: Handle device faults from PRI
-Date: Mon, 27 Feb 2017 19:54:32 +0000
-Message-ID: <20170227195441.5170-22-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH 22/30] iommu: Bind/unbind tasks to/from devices
+Date: Mon, 27 Feb 2017 19:54:33 +0000
+Message-ID: <20170227195441.5170-23-jean-philippe.brucker@arm.com>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,674 +20,401 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-When we receive a PRI Page Request (PPR) from the SMMU, it contains a
-context identifier SID:SSID, an IOVA and the requested access flags.
+Add three functions to the IOMMU API. iommu_bind_task takes a device and a
+task as argument. If the IOMMU, the device and the bus support it, attach
+task to device and create a Process Address Space ID (PASID) unique to the
+device. DMA from the device can then use the PASID to read or write into
+the address space. iommu_unbind_task removes a bond created with
+iommu_bind_task. iommu_set_svm_ops allows a device driver to set some
+callbacks for specific SVM-related operations.
 
-Search the domain corresponding to SID:SSID, and call handle_mm_fault on
-its mm. If memory management is able to fix the fault, we ask the device
-to retry the access with a PRI_SUCCESS message. Otherwise send PRI_FAIL.
+Try to accommodate current implementations (AMD, Intel and ARM), by
+letting the IOMMU driver do all the work, but attempt by the same occasion
+to find intersections between implementations.
 
-PPRs can be sent in batches identified by a Page Request Group (PRG). The
-last request of a group is always marked with a flag, which tells the
-fault handler to send a reply for the group. If a page request in the
-group failed, reply with PRI_FAIL for the whole group.
+* amd_iommu_v2 expects the device to allocate a PASID and pass it to the
+  IOMMU. The driver also provides separate functions to register callbacks
+  that handles failed PRI requests and invalidate PASIDs.
 
-Each device gets a number of credits, describing the number of PPRs it can
-have in flight. The SMMU architecture says that the kernel should
-carefully assign those credits such that the sum of all credits isn't
-greater than the PRI queue size. Otherwise it is a programming error, says
-the spec. This is impossible for us since we have no idea how many devices
-will use PRI when we start assigning credits. In addition, new PRI-capable
-devices might get hotplugged at any time, which would require us to stop
-all existing devices and shrink their credits if we wanted to be fair.
-This is not viable. Overcommit the PRI queue size and hand a fixed number
-of credits to each device.
+  int amd_iommu_bind_pasid(struct pci_dev *pdev, int pasid,
+			   struct task_struct *task)
+  void amd_iommu_unbind_pasid(struct pci_dev *pdev, int pasid)
+  int amd_iommu_set_invalid_ppr_cb(struct pci_dev *pdev,
+				   amd_iommu_invalid_ppr_cb cb)
+  int amd_iommu_set_invalidate_ctx_cb(struct pci_dev *pdev,
+				      amd_iommu_invalidate_ctx cb)
 
-Our priority is therefore on relieving the PRI queue as fast as possible,
-by moving all PPRs to a workqueue that we'll call "fault queue". When
-adding support for handling page faults from platform devices, we'll
-receive these events on the event queue, and inject them in the same fault
-queue. Note that stall support is just around the corner, so this patch
-attempts to abstract PCI notions where necessary.
+* intel-svm allocates a PASID, and requires the driver to pass
+  "svm_dev_ops", which currently contains a fault callback. It also
+  doesn't take a task as argument, but uses 'current'.
 
-The PCI specification defines a special PPR called "Stop Marker Message",
-characterized by flags Read=Write=Last=0. This tells software that all
-previous PPRs containing this PASID are invalid, and the next PPRs with
-this PASID belong to a different address space. Subsequent patches handle
-Stop Markers and overflow of the queue.
+  int intel_svm_bind_mm(struct device *dev, int *pasid, int flags,
+			struct svm_dev_ops *ops)
+  int intel_svm_unbind_mm(struct device *dev, int pasid)
+
+* For arm-smmu-v3, PASID must be allocated by the SMMU driver since it
+  indexes contexts in an array handled by the SMMU device.
+
+
+  Bind and unbind
+  ===============
+
+The following could suit existing implementations:
+
+int iommu_bind_task(struct device *dev, struct task_struct *task,
+		    int *pasid, int flags, void *priv);
+
+int iommu_unbind_task(struct device *dev, int pasid, int flags);
+
+This is similar to existing functions.
+* @dev is a SVM-capable device. If it is not, bind fails,
+* @task is a userspace task. It doesn't have to be current, but
+  implementations can reject the call if they only support current.
+* @pasid is a handle for the bond. It would be nice to have the IOMMU
+  driver handle PASID allocation, for consistency. Otherwise, the
+  requirement for drivers to allocate PASIDs might be advertised in a
+  capability.
+* @flags represents parameters of bind/unbind. We might want to reserve a
+  few bits, maybe the bottom half, for the API, and give the rest to the
+  driver.
+* @priv will be passed to SVM callbacks targeting this bond
+
+
+  SVM device callbacks
+  =====================
+
+Making svm_dev_ops (here iommu_svm_ops) a first-class citizen of struct
+device would be a useful next step. Device drivers could set this
+structure when they want to participate in SVM. For the moment,
+iommu_set_svm_ops must be called. I'm not sure what to do when assigning a
+device via VFIO. Should we remove the SVM ops when detaching from a
+domain, or have the device driver remove them when detaching itself from a
+device?
+
+  Fault handling
+  --------------
+
+The first callback allows a driver to be notified when the IOMMU driver
+cannot handle a fault.
+
+amd_iommu_v2 has:
+
+int (*amd_iommu_invalid_ppr_cb)(struct pci_dev *pdev, int pasid,
+				unsigned long address, u16 prot)
+
+intel-svm has (called for all faults):
+
+void (*fault_cb)(struct device *dev, int pasid, u64 address, u32 private,
+		 int rwxp, int response)
+
+We put the following in iommu_svm_ops:
+
+int (*handle_fault)(struct device *dev, int pasid, u64 address, int prot,
+		    int status, void *priv);
+
+The IOMMU driver calls handle_mm_fault and sends the result back to the
+device. If the fault cannot be handled, it gives a chance to the device
+driver to record the fault and maybe even fix it up. @pasid, @address and
+@prot are copied from the page request. @status is the return value of
+handle_mm_fault. @prot could use the format defined in iommu.h
+(IOMMU_READ, IOMMU_WRITE, etc.) @status could be a combination of
+VM_FAULT_* as returned by handle_mm_fault, but this leaves out the case
+where we don't even reach the fault handling part. We could instead define
+new status flags: one for failure to locate the context associated to the
+PASID, one for failure of mm to handle the fault. We cannot piggy-back on
+existing IOMMU_FAULT_READ and WRITE in their current state, because
+devices might request both read and write permissions at the same time.
+They would need to be redefined as flags.
+
+All callbacks have a @priv field. This is an opaque pointer set by the
+device driver when binding. This way the device driver gets both a PASID
+and its metadata in the callback, and we avoid duplicating pasid state
+lookups in both IOMMU driver and device driver.
+
+Another question is the location of the callback. IOMMU driver could
+notify device driver either:
+
+* before handle_mm_fault, to do some custom fault handling and perhaps
+  bypass the IOMMU handler entirely,
+* after handle_mm_fault, to notify the driver of an error (AMD),
+* after handle_mm_fault, to notify the driver of any page request (Intel),
+
+We might want to let the driver decide when binding a PASID, or offer two
+callbacks: handle_fault and report_fault. I don't have a proposal for this
+yet.
+
+handle_fault returns the response that the IOMMU driver should send to the
+device. Either success, meaning that the page has been mapped (or it is
+likely to succeed later), or failure, meaning that the device shouldn't
+bother retrying.
+
+It would be nice to reconcile with the iommu_fault_handler API, that isn't
+widely used yet but is being considered for handling domain faults from
+platform devices on the SMMUv2, using the stall model instead of ATS/PRI.
+Yet another concern for ARM is that platform devices may issue traffic
+over multiple stream IDs, for instance one stream ID per channel in a DMA
+engine. handle_fault doesn't provide a way to pass those stream IDs back
+to the driver.
+
+  PASID invalidation
+  ------------------
+
+Next, we need to let the IOMMU driver notify the device driver before it
+attempts to unbind a PASID. Subsequent patches discuss PASID invalidation
+in more details, so we'll simply propose the following interface for now.
+
+AMD has:
+
+void (*amd_iommu_invalidate_ctx)(struct pci_dev *pdev, int pasid);
+
+We put the following in iommu_svm_ops:
+
+int (*invalidate_pasid)(struct device *dev, int pasid, void *priv);
+
+  Capability detection
+  ====================
+
+I didn't add any public function for detecting SVM capability yet. In my
+opinion, a nice way to do it is to have user query the state of the device
+to know if they can call bind/unbind. If the IOMMU supports SVM, and the
+IOMMU driver was able to enable it successfully in the device, then user
+can call bind/unbind on the device.
+
+In the VFIO patch later in this series, I implemented the PCIe detection
+like this: if ATS, PRI and PASID are enabled (by the IOMMU driver), then
+the device can do SVM. If for some reason the IOMMU is incompatible with
+the device's SVM properties or is incompatible with the MMU page tables,
+then it shouldn't enable PRI or PASID. For platform devices, the
+requirements are very blurry at the moment. We'll probably add a device-
+tree property saying that a device and its bus are SVM-capable. The
+following interface could be added to the API:
+
+int iommu_svm_capable(struct device *dev, int flags);
+
+This tells the device driver whether the IOMMU driver is capable of
+binding a task to the device. @flags may contain specific SVM capabilities
+(paging/pinned, executable, etc) and the function could return a subset of
+these flags. For PCI devices, everything is enabled when this call is
+successful. For platform devices the device driver would have to enable
+SVM itself.
+
+  API naming
+  ==========
+
+I realize that "SVM" as a name isn't great because the svm namespace is
+already taken by AMD-V (Secure Virtual Machine) in arch/x86. Also, the
+name itself doesn't say much.
+
+I personally prefer "Unified Virtual Addressing" (UVA), adopted by CUDA,
+or rather Unified Virtual Address Space (UVAS). Another possibility is
+Unified Virtual Memory (UVM). Acronym UAS for Unified Address Space is
+already used by USB. Same for Shared Address Space (SAS), already in use
+in the kernel, but SVAS would work (although it doesn't look good).
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 434 +++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 392 insertions(+), 42 deletions(-)
+ drivers/iommu/iommu.c | 108 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iommu.h |  41 +++++++++++++++++++
+ 2 files changed, 149 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 37fd061405e9..5e0008ac68cb 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -270,6 +270,8 @@
- #define STRTAB_STE_1_S1COR_SHIFT	4
- #define STRTAB_STE_1_S1CSH_SHIFT	6
- 
-+#define STRTAB_STE_1_PPAR		(1UL << 18)
-+
- #define STRTAB_STE_1_S1STALLD		(1UL << 27)
- 
- #define STRTAB_STE_1_EATS_ABT		0UL
-@@ -465,10 +467,13 @@ module_param_named(disable_ats_check, disable_ats_check, bool, S_IRUGO);
- MODULE_PARM_DESC(disable_ats_check,
- 	"By default, the SMMU checks whether each incoming transaction marked as translated is allowed by the stream configuration. This option disables the check.");
- 
--enum pri_resp {
--	PRI_RESP_DENY,
--	PRI_RESP_FAIL,
--	PRI_RESP_SUCC,
-+enum fault_status {
-+	/* Non-paging error. SMMU will not handle any fault from this device */
-+	ARM_SMMU_FAULT_DENY,
-+	/* Page fault is permanent, device shouldn't retry this access */
-+	ARM_SMMU_FAULT_FAIL,
-+	/* Fault has been handled, the access should be retried */
-+	ARM_SMMU_FAULT_SUCC,
- };
- 
- enum arm_smmu_msi_index {
-@@ -553,7 +558,7 @@ struct arm_smmu_cmdq_ent {
- 			u32			sid;
- 			u32			ssid;
- 			u16			grpid;
--			enum pri_resp		resp;
-+			enum fault_status	resp;
- 		} pri;
- 
- 		#define CMDQ_OP_CMD_SYNC	0x46
-@@ -642,6 +647,8 @@ struct arm_smmu_strtab_ent {
- 	struct arm_smmu_cd_cfg		cd_cfg;
- 	struct arm_smmu_s1_cfg		*s1_cfg;
- 	struct arm_smmu_s2_cfg		*s2_cfg;
-+
-+	bool				prg_response_needs_ssid;
- };
- 
- struct arm_smmu_strtab_cfg {
-@@ -710,6 +717,8 @@ struct arm_smmu_device {
- 	struct rb_root			streams;
- 	struct list_head		tasks;
- 
-+	struct workqueue_struct		*fault_queue;
-+
- 	struct list_head		domains;
- 	struct mutex			domains_mutex;
- };
-@@ -731,6 +740,7 @@ struct arm_smmu_master_data {
- 	struct arm_smmu_stream		*streams;
- 	struct rb_root			contexts;
- 
-+	bool				can_fault;
- 	u32				avail_contexts;
- };
- 
-@@ -762,6 +772,31 @@ struct arm_smmu_domain {
- 	struct list_head		list; /* For domain search by ASID */
- };
- 
-+struct arm_smmu_fault {
-+	struct arm_smmu_device		*smmu;
-+	u32				sid;
-+	u32				ssid;
-+	bool				ssv;
-+	u16				grpid;
-+
-+	u64				iova;
-+	bool				read;
-+	bool				write;
-+	bool				exec;
-+	bool				priv;
-+
-+	bool				last;
-+
-+	struct work_struct		work;
-+};
-+
-+struct arm_smmu_pri_group {
-+	u16				index;
-+	enum fault_status		resp;
-+
-+	struct list_head		list;
-+};
-+
- struct arm_smmu_task {
- 	struct pid			*pid;
- 
-@@ -775,6 +810,8 @@ struct arm_smmu_task {
- 	struct mmu_notifier		mmu_notifier;
- 	struct mm_struct		*mm;
- 
-+	struct list_head		prgs;
-+
- 	struct kref			kref;
- };
- 
-@@ -815,6 +852,8 @@ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
- 	return container_of(dom, struct arm_smmu_domain, domain);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 8ea14f41a979..26c5f6528c69 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1438,6 +1438,114 @@ void iommu_detach_group(struct iommu_domain *domain, struct iommu_group *group)
  }
+ EXPORT_SYMBOL_GPL(iommu_detach_group);
  
-+static struct kmem_cache *arm_smmu_fault_cache;
-+
- #define to_smmu_group iommu_group_get_iommudata
- 
- static void parse_driver_options(struct arm_smmu_device *smmu)
-@@ -1019,13 +1058,13 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 		cmd[0] |= (u64)ent->pri.sid << CMDQ_PRI_0_SID_SHIFT;
- 		cmd[1] |= ent->pri.grpid << CMDQ_PRI_1_GRPID_SHIFT;
- 		switch (ent->pri.resp) {
--		case PRI_RESP_DENY:
-+		case ARM_SMMU_FAULT_DENY:
- 			cmd[1] |= CMDQ_PRI_1_RESP_DENY;
- 			break;
--		case PRI_RESP_FAIL:
-+		case ARM_SMMU_FAULT_FAIL:
- 			cmd[1] |= CMDQ_PRI_1_RESP_FAIL;
- 			break;
--		case PRI_RESP_SUCC:
-+		case ARM_SMMU_FAULT_SUCC:
- 			cmd[1] |= CMDQ_PRI_1_RESP_SUCC;
- 			break;
- 		default:
-@@ -1124,6 +1163,28 @@ static void arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
- 	spin_unlock_irqrestore(&smmu->cmdq.lock, flags);
- }
- 
-+static void arm_smmu_fault_reply(struct arm_smmu_fault *fault,
-+				 enum fault_status resp)
++int iommu_set_svm_ops(struct device *dev, const struct iommu_svm_ops *svm_ops)
 +{
-+	struct arm_smmu_cmdq_ent cmd = {
-+		.opcode			= CMDQ_OP_PRI_RESP,
-+		.substream_valid	= fault->ssv,
-+		.pri			= {
-+			.sid	= fault->sid,
-+			.ssid	= fault->ssid,
-+			.grpid	= fault->grpid,
-+			.resp	= resp,
-+		},
-+	};
-+
-+	if (!fault->last)
-+		return;
-+
-+	arm_smmu_cmdq_issue_cmd(fault->smmu, &cmd);
-+	cmd.opcode = CMDQ_OP_CMD_SYNC;
-+	arm_smmu_cmdq_issue_cmd(fault->smmu, &cmd);
-+}
-+
- /* Context descriptor manipulation functions */
- static void arm_smmu_sync_cd(struct arm_smmu_master_data *master, u32 ssid,
- 			     bool leaf)
-@@ -1587,6 +1648,9 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
- 			  STRTAB_STE_1_STRW_EL2 : STRTAB_STE_1_STRW_NSEL1) <<
- 			 STRTAB_STE_1_STRW_SHIFT);
- 
-+		if (ste->prg_response_needs_ssid)
-+			dst[1] |= STRTAB_STE_1_PPAR;
-+
- 		if (smmu->features & ARM_SMMU_FEAT_STALLS)
- 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
- 
-@@ -1704,42 +1768,37 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 	return IRQ_HANDLED;
- }
- 
-+static void arm_smmu_handle_fault(struct work_struct *work);
-+
- static void arm_smmu_handle_ppr(struct arm_smmu_device *smmu, u64 *evt)
- {
--	u32 sid, ssid;
--	u16 grpid;
--	bool ssv, last;
--
--	sid = evt[0] >> PRIQ_0_SID_SHIFT & PRIQ_0_SID_MASK;
--	ssv = evt[0] & PRIQ_0_SSID_V;
--	ssid = ssv ? evt[0] >> PRIQ_0_SSID_SHIFT & PRIQ_0_SSID_MASK : 0;
--	last = evt[0] & PRIQ_0_PRG_LAST;
--	grpid = evt[1] >> PRIQ_1_PRG_IDX_SHIFT & PRIQ_1_PRG_IDX_MASK;
--
--	dev_info(smmu->dev, "unexpected PRI request received:\n");
--	dev_info(smmu->dev,
--		 "\tsid 0x%08x.0x%05x: [%u%s] %sprivileged %s%s%s access at iova 0x%016llx\n",
--		 sid, ssid, grpid, last ? "L" : "",
--		 evt[0] & PRIQ_0_PERM_PRIV ? "" : "un",
--		 evt[0] & PRIQ_0_PERM_READ ? "R" : "",
--		 evt[0] & PRIQ_0_PERM_WRITE ? "W" : "",
--		 evt[0] & PRIQ_0_PERM_EXEC ? "X" : "",
--		 evt[1] & PRIQ_1_ADDR_MASK << PRIQ_1_ADDR_SHIFT);
--
--	if (last) {
--		struct arm_smmu_cmdq_ent cmd = {
--			.opcode			= CMDQ_OP_PRI_RESP,
--			.substream_valid	= ssv,
--			.pri			= {
--				.sid	= sid,
--				.ssid	= ssid,
--				.grpid	= grpid,
--				.resp	= PRI_RESP_DENY,
--			},
--		};
-+	struct arm_smmu_fault *fault;
-+	struct arm_smmu_fault params = {
-+		.smmu	= smmu,
-+
-+		.sid	= evt[0] >> PRIQ_0_SID_SHIFT & PRIQ_0_SID_MASK,
-+		.ssv	= evt[0] & PRIQ_0_SSID_V,
-+		.ssid	= evt[0] >> PRIQ_0_SSID_SHIFT & PRIQ_0_SSID_MASK,
-+		.last	= evt[0] & PRIQ_0_PRG_LAST,
-+		.grpid	= evt[1] >> PRIQ_1_PRG_IDX_SHIFT & PRIQ_1_PRG_IDX_MASK,
-+
-+		.iova	= evt[1] & PRIQ_1_ADDR_MASK << PRIQ_1_ADDR_SHIFT,
-+		.read	= evt[0] & PRIQ_0_PERM_READ,
-+		.write	= evt[0] & PRIQ_0_PERM_WRITE,
-+		.exec	= evt[0] & PRIQ_0_PERM_EXEC,
-+		.priv	= evt[0] & PRIQ_0_PERM_PRIV,
-+	};
- 
--		arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-+	fault = kmem_cache_alloc(arm_smmu_fault_cache, GFP_KERNEL);
-+	if (!fault) {
-+		/* Out of memory, tell the device to retry later */
-+		arm_smmu_fault_reply(&params, ARM_SMMU_FAULT_SUCC);
-+		return;
- 	}
-+
-+	*fault = params;
-+	INIT_WORK(&fault->work, arm_smmu_handle_fault);
-+	queue_work(smmu->fault_queue, &fault->work);
- }
- 
- static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
-@@ -2138,7 +2197,6 @@ static void _arm_smmu_put_context(struct arm_smmu_context *smmu_context)
- 	kref_put(&smmu_context->kref, arm_smmu_free_context);
- }
- 
--__maybe_unused
- static void arm_smmu_put_context(struct arm_smmu_device *smmu,
- 				 struct arm_smmu_context *smmu_context)
- {
-@@ -2147,6 +2205,62 @@ static void arm_smmu_put_context(struct arm_smmu_device *smmu,
- 	spin_unlock(&smmu->contexts_lock);
- }
- 
-+/*
-+ * Find context associated to a (@sid, @ssid) pair. If found, take a reference
-+ * to the context and return it. Otherwise, return NULL. If a non-NULL master
-+ * is provided, search context by @ssid, ignoring argument @sid.
-+ */
-+static struct arm_smmu_context *
-+arm_smmu_get_context_by_id(struct arm_smmu_device *smmu,
-+			   struct arm_smmu_master_data *master,
-+			   u32 sid, u32 ssid)
-+{
-+	struct rb_node *node;
-+	struct arm_smmu_stream *stream;
-+	struct arm_smmu_context *cur_context, *smmu_context = NULL;
-+
-+	spin_lock(&smmu->contexts_lock);
-+
-+	if (!master) {
-+		node = smmu->streams.rb_node;
-+		while (node) {
-+			stream = rb_entry(node, struct arm_smmu_stream, node);
-+			if (stream->id < sid) {
-+				node = node->rb_right;
-+			} else if (stream->id > sid) {
-+				node = node->rb_left;
-+			} else {
-+				master = stream->master;
-+				break;
-+			}
-+		}
-+	}
-+
-+	if (!master)
-+		goto out_unlock;
-+
-+	node = master->contexts.rb_node;
-+	while (node) {
-+		cur_context = rb_entry(node, struct arm_smmu_context,
-+				       master_node);
-+
-+		if (cur_context->ssid < ssid) {
-+			node = node->rb_right;
-+		} else if (cur_context->ssid > ssid) {
-+			node = node->rb_left;
-+		} else {
-+			smmu_context = cur_context;
-+			kref_get(&smmu_context->kref);
-+			break;
-+		}
-+	}
-+
-+out_unlock:
-+	spin_unlock(&smmu->contexts_lock);
-+
-+	return smmu_context;
-+}
-+
- static struct arm_smmu_task *mn_to_task(struct mmu_notifier *mn)
- {
- 	return container_of(mn, struct arm_smmu_task, mmu_notifier);
-@@ -2353,6 +2467,7 @@ static struct arm_smmu_task *arm_smmu_alloc_task(struct arm_smmu_device *smmu,
- 	smmu_task->mmu_notifier.ops = &arm_smmu_mmu_notifier_ops;
- 	smmu_task->mm = mm;
- 	INIT_LIST_HEAD(&smmu_task->contexts);
-+	INIT_LIST_HEAD(&smmu_task->prgs);
- 	kref_init(&smmu_task->kref);
- 
- 	ret = arm_smmu_init_task_pgtable(smmu_task);
-@@ -2399,6 +2514,7 @@ static void arm_smmu_free_task(struct kref *kref)
- 	struct arm_smmu_device *smmu;
- 	struct arm_smmu_task *smmu_task;
- 	struct arm_smmu_master_data *master;
-+	struct arm_smmu_pri_group *prg, *next_prg;
- 	struct arm_smmu_context *smmu_context, *next;
- 
- 	smmu_task = container_of(kref, struct arm_smmu_task, kref);
-@@ -2428,6 +2544,9 @@ static void arm_smmu_free_task(struct kref *kref)
- 
- 	mmu_notifier_unregister(&smmu_task->mmu_notifier, smmu_task->mm);
- 
-+	list_for_each_entry_safe(prg, next_prg, &smmu_task->prgs, list)
-+		list_del(&prg->list);
-+
- 	put_pid(smmu_task->pid);
- 	kfree(smmu_task);
- 
-@@ -2451,7 +2570,6 @@ static void arm_smmu_detach_task(struct arm_smmu_context *smmu_context)
- 	arm_smmu_write_ctx_desc(smmu_context->master, smmu_context->ssid, NULL);
- }
- 
--__maybe_unused
- static void arm_smmu_put_task(struct arm_smmu_device *smmu,
- 			      struct arm_smmu_task *smmu_task)
- {
-@@ -2460,6 +2578,167 @@ static void arm_smmu_put_task(struct arm_smmu_device *smmu,
- 	spin_unlock(&smmu->contexts_lock);
- }
- 
-+static int arm_smmu_handle_mm_fault(struct arm_smmu_device *smmu,
-+				    struct mm_struct *mm,
-+				    struct arm_smmu_fault *fault)
-+{
++	const struct iommu_ops *ops;
++	struct iommu_group *group;
 +	int ret;
-+	struct vm_area_struct *vma;
-+	unsigned long access_flags = 0;
-+	unsigned long fault_flags = FAULT_FLAG_USER | FAULT_FLAG_REMOTE;
 +
-+	/*
-+	 * We're holding smmu_task, which holds the mmu notifier, so mm is
-+	 * guaranteed to be here, but mm_users might still drop to zero when
-+	 * the task exits.
-+	 */
-+	if (!mmget_not_zero(mm)) {
-+		dev_dbg(smmu->dev, "mm dead\n");
++	group = iommu_group_get_for_dev(dev);
++	if (IS_ERR(group))
++		return PTR_ERR(group);
++
++	ops = dev->bus->iommu_ops;
++	if (!ops->set_svm_ops) {
++		iommu_group_put(group);
++		return -ENODEV;
++	}
++
++	mutex_lock(&group->mutex);
++	ret = ops->set_svm_ops(dev, svm_ops);
++	mutex_unlock(&group->mutex);
++
++	iommu_group_put(group);
++	return ret;
++
++}
++EXPORT_SYMBOL_GPL(iommu_set_svm_ops);
++
++/*
++ * iommu_bind_task - Share task address space with device
++ *
++ * @dev: device to bind
++ * @task: task to bind
++ * @pasid: valid address where the PASID is stored
++ * @flags: driver-specific flags
++ * @priv: private data to associate with the bond
++ *
++ * Create a bond between device and task, allowing the device to access the task
++ * address space using @pasid. Intel and ARM SMMU drivers allocate and return
++ * the PASID, while AMD requires the caller to allocate a PASID beforehand.
++ *
++ * iommu_unbind_task must be called with this PASID before the task exits.
++ */
++int iommu_bind_task(struct device *dev, struct task_struct *task, int *pasid,
++		    int flags, void *priv)
++{
++	const struct iommu_ops *ops;
++	struct iommu_group *group;
++	int ret;
++
++	if (!pasid)
 +		return -EINVAL;
++
++	group = iommu_group_get(dev);
++	if (!group)
++		return -ENODEV;
++
++	ops = dev->bus->iommu_ops;
++	if (!ops->bind_task) {
++		iommu_group_put(group);
++		return -ENODEV;
 +	}
 +
-+	down_read(&mm->mmap_sem);
++	mutex_lock(&group->mutex);
++	if (!group->domain)
++		ret = -EINVAL;
++	else
++		ret = ops->bind_task(dev, task, pasid, flags, priv);
++	mutex_unlock(&group->mutex);
 +
-+	vma = find_extend_vma(mm, fault->iova);
-+	if (!vma) {
-+		ret = -ESRCH;
-+		dev_dbg(smmu->dev, "VMA not found\n");
-+		goto out_release;
-+	}
-+
-+	if (fault->read)
-+		access_flags |= VM_READ;
-+
-+	if (fault->write) {
-+		access_flags |= VM_WRITE;
-+		fault_flags |= FAULT_FLAG_WRITE;
-+	}
-+
-+	if (fault->exec) {
-+		access_flags |= VM_EXEC;
-+		fault_flags |= FAULT_FLAG_INSTRUCTION;
-+	}
-+
-+	if (access_flags & ~vma->vm_flags) {
-+		ret = -EFAULT;
-+		dev_dbg(smmu->dev, "access flags mismatch\n");
-+		goto out_release;
-+	}
-+
-+	ret = handle_mm_fault(vma, fault->iova, fault_flags);
-+	dev_dbg(smmu->dev, "handle_mm_fault(%#x:%#x:%#llx, %#lx) -> %#x\n",
-+		fault->sid, fault->ssid, fault->iova, fault_flags, ret);
-+
-+	ret = ret & VM_FAULT_ERROR ? -EFAULT : 0;
-+
-+out_release:
-+	up_read(&mm->mmap_sem);
-+	mmput(mm);
-+
++	iommu_group_put(group);
 +	return ret;
 +}
++EXPORT_SYMBOL_GPL(iommu_bind_task);
 +
-+static enum fault_status _arm_smmu_handle_fault(struct arm_smmu_fault *fault)
++/*
++ * iommu_unbind_task - Remove a bond created with iommu_bind_task
++ *
++ * @dev: device bound to the task
++ * @pasid: identifier of the bond
++ * @flags: state of the PASID and driver-specific flags
++ */
++int iommu_unbind_task(struct device *dev, int pasid, int flags)
 +{
-+	struct arm_smmu_task *smmu_task = NULL;
-+	struct arm_smmu_device *smmu = fault->smmu;
-+	struct arm_smmu_context *smmu_context = NULL;
-+	enum fault_status resp = ARM_SMMU_FAULT_FAIL;
-+	struct arm_smmu_pri_group *prg = NULL, *tmp_prg;
++	const struct iommu_ops *ops;
++	struct iommu_group *group;
++	int ret;
 +
-+	if (!fault->ssv)
-+		return ARM_SMMU_FAULT_DENY;
++	group = iommu_group_get(dev);
++	if (!group)
++		return -ENODEV;
 +
-+	if (fault->priv)
-+		return resp;
-+
-+	smmu_context = arm_smmu_get_context_by_id(smmu, NULL, fault->sid,
-+						  fault->ssid);
-+	if (!smmu_context) {
-+		dev_dbg(smmu->dev, "unable to find context %#x:%#x\n",
-+			fault->sid, fault->ssid);
-+		/*
-+		 * Note that we don't have prg_response_needs_ssid yet. Reply
-+		 * might be inconsistent with what the device expects.
-+		 */
-+		return resp;
++	ops = dev->bus->iommu_ops;
++	if (!ops->unbind_task) {
++		iommu_group_put(group);
++		return -ENODEV;
 +	}
 +
-+	fault->ssv = smmu_context->master->ste.prg_response_needs_ssid;
++	mutex_lock(&group->mutex);
++	if (!group->domain)
++		ret = -EINVAL;
++	else
++		ret = ops->unbind_task(dev, pasid, flags);
++	mutex_unlock(&group->mutex);
 +
-+	spin_lock(&smmu->contexts_lock);
-+	smmu_task = smmu_context->task;
-+	if (smmu_task)
-+		kref_get(&smmu_task->kref);
-+	spin_unlock(&smmu->contexts_lock);
-+
-+	if (!smmu_task)
-+		goto out_put_context;
-+
-+	list_for_each_entry(tmp_prg, &smmu_task->prgs, list) {
-+		if (tmp_prg->index == fault->grpid) {
-+			prg = tmp_prg;
-+			break;
-+		}
-+	}
-+
-+	if (!prg && !fault->last) {
-+		prg = kzalloc(sizeof(*prg), GFP_KERNEL);
-+		if (!prg) {
-+			resp = ARM_SMMU_FAULT_SUCC;
-+			goto out_put_task;
-+		}
-+
-+		prg->index = fault->grpid;
-+		list_add(&prg->list, &smmu_task->prgs);
-+	} else if (prg && prg->resp != ARM_SMMU_FAULT_SUCC) {
-+		resp = prg->resp;
-+		goto out_put_task;
-+	}
-+
-+	if (!arm_smmu_handle_mm_fault(smmu, smmu_task->mm, fault))
-+		resp = ARM_SMMU_FAULT_SUCC;
-+
-+	if (prg) {
-+		if (fault->last) {
-+			list_del(&prg->list);
-+			kfree(prg);
-+		} else {
-+			prg->resp = resp;
-+		}
-+	}
-+
-+out_put_task:
-+	arm_smmu_put_task(smmu, smmu_task);
-+
-+out_put_context:
-+	arm_smmu_put_context(smmu, smmu_context);
-+
-+	return resp;
++	iommu_group_put(group);
++	return ret;
 +}
++EXPORT_SYMBOL_GPL(iommu_unbind_task);
 +
-+static void arm_smmu_handle_fault(struct work_struct *work)
-+{
-+	enum fault_status resp;
-+	struct arm_smmu_fault *fault = container_of(work, struct arm_smmu_fault,
-+						    work);
-+
-+	resp = _arm_smmu_handle_fault(fault);
-+	if (resp != ARM_SMMU_FAULT_SUCC)
-+		dev_info_ratelimited(fault->smmu->dev, "%s fault:\n"
-+			"\t0x%08x.0x%05x: [%u%s] %sprivileged %s%s%s access at iova "
-+			"0x%016llx\n",
-+			resp == ARM_SMMU_FAULT_DENY ? "unexpected" : "unhandled",
-+			fault->sid, fault->ssid, fault->grpid,
-+			fault->last ? "L" : "", fault->priv ? "" : "un",
-+			fault->read ? "R" : "", fault->write ? "W" : "",
-+			fault->exec ? "X" : "", fault->iova);
-+
-+	arm_smmu_fault_reply(fault, resp);
-+
-+	kfree(fault);
-+}
-+
- static bool arm_smmu_master_supports_svm(struct arm_smmu_master_data *master)
+ phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
  {
- 	return false;
-@@ -2997,6 +3276,57 @@ static void arm_smmu_disable_ssid(struct arm_smmu_master_data *master)
- 	pci_disable_pasid(pdev);
+ 	if (unlikely(domain->ops->iova_to_phys == NULL))
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 6a6de187ddc0..9554f45d4305 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -145,6 +145,16 @@ struct iommu_resv_region {
+ 	int			type;
+ };
+ 
++/*
++ * @handle_fault: report or handle a fault from the device (FIXME: imprecise)
++ * @invalidate_pasid: stop using a PASID.
++ */
++struct iommu_svm_ops {
++	int (*handle_fault)(struct device *dev, int pasid, u64 address,
++			    int prot, int status, void *priv);
++	int (*invalidate_pasid)(struct device *dev, int pasid, void *priv);
++};
++
+ #ifdef CONFIG_IOMMU_API
+ 
+ /**
+@@ -154,6 +164,9 @@ struct iommu_resv_region {
+  * @domain_free: free iommu domain
+  * @attach_dev: attach device to an iommu domain
+  * @detach_dev: detach device from an iommu domain
++ * @set_svm_ops: set SVM callbacks for device
++ * @bind_task: attach a task address space to a device
++ * @unbind_task: detach a task address space from a device
+  * @map: map a physically contiguous memory region to an iommu domain
+  * @unmap: unmap a physically contiguous memory region from an iommu domain
+  * @map_sg: map a scatter-gather list of physically contiguous memory chunks
+@@ -183,6 +196,10 @@ struct iommu_ops {
+ 
+ 	int (*attach_dev)(struct iommu_domain *domain, struct device *dev);
+ 	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
++	int (*set_svm_ops)(struct device *dev, const struct iommu_svm_ops *ops);
++	int (*bind_task)(struct device *dev, struct task_struct *task,
++			 int *pasid, int flags, void *priv);
++	int (*unbind_task)(struct device *dev, int pasid, int flags);
+ 	int (*map)(struct iommu_domain *domain, unsigned long iova,
+ 		   phys_addr_t paddr, size_t size, int prot);
+ 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
+@@ -403,6 +420,13 @@ void iommu_fwspec_free(struct device *dev);
+ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids);
+ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode);
+ 
++extern int iommu_set_svm_ops(struct device *dev,
++			     const struct iommu_svm_ops *svm_ops);
++extern int iommu_bind_task(struct device *dev, struct task_struct *task,
++			   int *pasid, int flags, void *priv);
++
++extern int iommu_unbind_task(struct device *dev, int pasid, int flags);
++
+ #else /* CONFIG_IOMMU_API */
+ 
+ struct iommu_ops {};
+@@ -663,6 +687,23 @@ const struct iommu_ops *iommu_ops_from_fwnode(struct fwnode_handle *fwnode)
+ 	return NULL;
  }
  
-+static int arm_smmu_enable_pri(struct arm_smmu_master_data *master)
++static inline int iommu_set_svm_ops(struct device *dev,
++				    const struct iommu_svm_ops *svm_ops)
 +{
-+	int ret, pos;
-+	struct pci_dev *pdev;
-+	size_t max_requests = 64;
-+	struct arm_smmu_device *smmu = master->smmu;
-+
-+	/* Do not enable PRI if SVM isn't supported */
-+	unsigned long feat_mask = ARM_SMMU_FEAT_PRI | ARM_SMMU_FEAT_SVM;
-+
-+	if ((smmu->features & feat_mask) != feat_mask || !dev_is_pci(master->dev))
-+		return -ENOSYS;
-+
-+	pdev = to_pci_dev(master->dev);
-+
-+	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
-+	if (!pos)
-+		return -ENOSYS;
-+
-+	ret = pci_reset_pri(pdev);
-+	if (ret)
-+		return ret;
-+
-+	ret = pci_enable_pri(pdev, max_requests);
-+	if (ret) {
-+		dev_err(master->dev, "cannot enable PRI: %d\n", ret);
-+		return ret;
-+	}
-+
-+	master->can_fault = true;
-+	master->ste.prg_response_needs_ssid = pci_prg_resp_requires_prefix(pdev);
-+
-+	dev_dbg(master->dev, "enabled PRI");
-+
-+	return 0;
++	return -ENODEV;
 +}
 +
-+static void arm_smmu_disable_pri(struct arm_smmu_master_data *master)
++static inline int iommu_bind_task(struct device *dev, struct task_struct *task,
++				  int *pasid, int flags, void *priv)
 +{
-+	struct pci_dev *pdev;
-+
-+	if (!master->can_fault || !dev_is_pci(master->dev))
-+		return;
-+
-+	pdev = to_pci_dev(master->dev);
-+
-+	pci_disable_pri(pdev);
-+
-+	master->can_fault = false;
++	return -ENODEV;
 +}
 +
- static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
- 				  struct arm_smmu_master_data *master)
- {
-@@ -3114,6 +3444,8 @@ static int arm_smmu_add_device(struct device *dev)
- 	master->avail_contexts = nr_ssids - 1;
- 
- 	ats_enabled = !arm_smmu_enable_ats(master);
-+	if (ats_enabled)
-+		arm_smmu_enable_pri(master);
- 
- 	if (arm_smmu_master_supports_svm(master))
- 		arm_smmu_insert_master(smmu, master);
-@@ -3138,6 +3470,7 @@ static int arm_smmu_add_device(struct device *dev)
- 	return 0;
- 
- err_disable_ats:
-+	arm_smmu_disable_pri(master);
- 	arm_smmu_disable_ats(master);
- 
- 	arm_smmu_free_cd_tables(master);
-@@ -3186,6 +3519,7 @@ static void arm_smmu_remove_device(struct device *dev)
- 
- 		iommu_group_put(group);
- 
-+		arm_smmu_disable_pri(master);
- 		/* PCIe PASID must be disabled after ATS */
- 		arm_smmu_disable_ats(master);
- 		arm_smmu_disable_ssid(master);
-@@ -3490,6 +3824,18 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
- 	if (ret)
- 		return ret;
- 
-+	if (smmu->features & ARM_SMMU_FEAT_SVM &&
-+	    smmu->features & ARM_SMMU_FEAT_PRI) {
-+		/*
-+		 * Ensure strict ordering of the queue. We can't go reordering
-+		 * page faults willy nilly since they work in groups, with a
-+		 * flag "last" denoting when we should send a PRI response.
-+		 */
-+		smmu->fault_queue = alloc_ordered_workqueue("smmu_fault_queue", 0);
-+		if (!smmu->fault_queue)
-+			return -ENOMEM;
-+	}
++static int iommu_unbind_task(struct device *dev, int pasid, int flags)
++{
++	return -ENODEV;
++}
 +
- 	return arm_smmu_init_strtab(smmu);
- }
+ #endif /* CONFIG_IOMMU_API */
  
-@@ -4250,6 +4596,10 @@ static int __init arm_smmu_init(void)
- 	int ret = 0;
- 
- 	if (!registered) {
-+		arm_smmu_fault_cache = KMEM_CACHE(arm_smmu_fault, 0);
-+		if (!arm_smmu_fault_cache)
-+			return -ENOMEM;
-+
- 		ret = platform_driver_register(&arm_smmu_driver);
- 		registered = !ret;
- 	}
+ #endif /* __LINUX_IOMMU_H */
 -- 
 2.11.0
