@@ -1,39 +1,109 @@
-From: Oleksandr Tyshchenko <olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v1 0/2] Misc fixes for ARM page table allocator (long/short
-	descriptor format)
-Date: Mon, 27 Feb 2017 14:30:24 +0200
-Message-ID: <1488198626-1884-1-git-send-email-olekstysh@gmail.com>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [RFC PATCH v4 19/28] swiotlb: Add warnings for use of bounce
+ buffers with SME
+Date: Mon, 27 Feb 2017 18:52:59 +0100
+Message-ID: <20170227175259.whl75utazbzxp7jo@pd.tnic>
+References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
+ <20170216154619.19244.76653.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: vlad.babchuk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, andrii.anisov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, andr2000-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, al1img-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joculator-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <20170216154619.19244.76653.stgit@tlendack-t1.amdoffice.net>
+Sender: owner-linux-mm@kvack.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Thomas Gleixner <tglx@linutronix.de>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi.
+On Thu, Feb 16, 2017 at 09:46:19AM -0600, Tom Lendacky wrote:
+> Add warnings to let the user know when bounce buffers are being used for
+> DMA when SME is active.  Since the bounce buffers are not in encrypted
+> memory, these notifications are to allow the user to determine some
+> appropriate action - if necessary.
+> 
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> ---
+>  arch/x86/include/asm/mem_encrypt.h |   11 +++++++++++
+>  include/linux/dma-mapping.h        |   11 +++++++++++
+>  include/linux/mem_encrypt.h        |    6 ++++++
+>  lib/swiotlb.c                      |    3 +++
+>  4 files changed, 31 insertions(+)
+> 
+> diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
+> index 87e816f..5a17f1b 100644
+> --- a/arch/x86/include/asm/mem_encrypt.h
+> +++ b/arch/x86/include/asm/mem_encrypt.h
+> @@ -26,6 +26,11 @@ static inline bool sme_active(void)
+>  	return (sme_me_mask) ? true : false;
+>  }
+>  
+> +static inline u64 sme_dma_mask(void)
+> +{
+> +	return ((u64)sme_me_mask << 1) - 1;
+> +}
+> +
+>  void __init sme_early_encrypt(resource_size_t paddr,
+>  			      unsigned long size);
+>  void __init sme_early_decrypt(resource_size_t paddr,
+> @@ -53,6 +58,12 @@ static inline bool sme_active(void)
+>  {
+>  	return false;
+>  }
+> +
+> +static inline u64 sme_dma_mask(void)
+> +{
+> +	return 0ULL;
+> +}
+> +
+>  #endif
+>  
+>  static inline void __init sme_early_encrypt(resource_size_t paddr,
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 10c5a17..130bef7 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -10,6 +10,7 @@
+>  #include <linux/scatterlist.h>
+>  #include <linux/kmemcheck.h>
+>  #include <linux/bug.h>
+> +#include <linux/mem_encrypt.h>
+>  
+>  /**
+>   * List of possible attributes associated with a DMA mapping. The semantics
+> @@ -557,6 +558,11 @@ static inline int dma_set_mask(struct device *dev, u64 mask)
+>  
+>  	if (!dev->dma_mask || !dma_supported(dev, mask))
+>  		return -EIO;
+> +
+> +	if (sme_active() && (mask < sme_dma_mask()))
+> +		dev_warn(dev,
+> +			 "SME is active, device will require DMA bounce buffers\n");
+> +
 
-There is a small patch series which contains the same fix for both
-descriptor formats based on the preceding RFC patches:
-https://lists.linuxfoundation.org/pipermail/iommu/2017-February/020411.html
-https://lists.linuxfoundation.org/pipermail/iommu/2017-February/020477.html
+Yes, definitely _once() here.
 
-Oleksandr Tyshchenko (2):
-  iommu/io-pgtable-arm: Check for leaf entry before dereferencing it
-  iommu/io-pgtable-arm-v7s: Check for leaf entry before dereferencing it
+It could be extended later to be per-device if the need arises.
 
- drivers/iommu/io-pgtable-arm-v7s.c | 6 +++++-
- drivers/iommu/io-pgtable-arm.c     | 6 +++++-
- 2 files changed, 10 insertions(+), 2 deletions(-)
+Also, a bit above in this function, we test if (ops->set_dma_mask) so
+device drivers which supply even an empty ->set_dma_mask will circumvent
+this check.
+
+It probably doesn't matter all that much right now because the
+only driver I see right now defining this method, though, is
+ethernet/intel/fm10k/fm10k_pf.c and some other arches' functionality
+which is unrelated here.
+
+But still...
+
 
 -- 
-2.7.4
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
