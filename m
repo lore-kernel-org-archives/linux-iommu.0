@@ -1,7 +1,8 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 14/30] iommu/arm-smmu-v3: Share process page tables
-Date: Mon, 27 Feb 2017 19:54:25 +0000
-Message-ID: <20170227195441.5170-15-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH 18/30] PCI: Make "PRG Response PASID Required" handling
+	common
+Date: Mon, 27 Feb 2017 19:54:29 +0000
+Message-ID: <20170227195441.5170-19-jean-philippe.brucker@arm.com>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,77 +21,113 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Copy the content of TCR, MAIR and TTBR of a given task into a context
-descriptor.
+The PASID ECN to the PCIe spec added a bit in the PRI status register that
+allows a Function to declare whether a PRG Response should contain the
+PASID prefix or not.
+
+Move the helper that accesses it from amd_iommu into the PCI subsystem,
+renaming it to something more consistent with the spec, and introducing
+another obscure acronym to make it all fit.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 39 +++++++++++++++++++++++++++++++++++++--
- 1 file changed, 37 insertions(+), 2 deletions(-)
+ drivers/iommu/amd_iommu.c     | 19 +------------------
+ drivers/pci/ats.c             | 17 +++++++++++++++++
+ include/linux/pci-ats.h       |  8 ++++++++
+ include/uapi/linux/pci_regs.h |  1 +
+ 4 files changed, 27 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index ab49164bf09b..c3fa4616bd58 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -44,6 +44,7 @@
- #include <linux/amba/bus.h>
- 
- #include "io-pgtable.h"
-+#include "io-pgtable-arm.h"
- 
- /* MMIO registers */
- #define ARM_SMMU_IDR0			0x0
-@@ -2191,6 +2192,9 @@ static int arm_smmu_init_task_pgtable(struct arm_smmu_task *smmu_task)
- {
- 	int ret;
- 	int asid;
-+	unsigned long tcr;
-+	unsigned long reg, par;
-+	struct arm_smmu_s1_cfg *cfg = &smmu_task->s1_cfg;
- 
- 	/* Pin ASID on the CPU side */
- 	asid = mm_context_get(smmu_task->mm);
-@@ -2203,8 +2207,39 @@ static int arm_smmu_init_task_pgtable(struct arm_smmu_task *smmu_task)
- 		return ret;
- 	}
- 
--	/* TODO: Initialize the rest of s1_cfg */
--	smmu_task->s1_cfg.asid = asid;
-+	tcr = TCR_T0SZ(VA_BITS) | TCR_IRGN0_WBWA | TCR_ORGN0_WBWA |
-+		TCR_SH0_INNER | ARM_LPAE_TCR_EPD1;
-+
-+	switch (PAGE_SIZE) {
-+	case SZ_4K:
-+		tcr |= TCR_TG0_4K;
-+		break;
-+	case SZ_16K:
-+		tcr |= TCR_TG0_16K;
-+		break;
-+	case SZ_64K:
-+		tcr |= TCR_TG0_64K;
-+		break;
-+	default:
-+		WARN_ON(1);
-+		return -EFAULT;
-+	}
-+
-+	reg = read_system_reg(SYS_ID_AA64MMFR0_EL1);
-+	par = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_PARANGE_SHIFT);
-+	tcr |= par << ARM_LPAE_TCR_IPS_SHIFT;
-+
-+	/* Enable this by default, it will be filtered when writing the CD */
-+	tcr |= TCR_TBI0;
-+
-+	cfg->asid	= asid;
-+	cfg->ttbr	= virt_to_phys(smmu_task->mm->pgd);
-+	/*
-+	 * MAIR value is pretty much constant and global, so we can just get it
-+	 * from the current CPU register
-+	 */
-+	cfg->mair	= read_sysreg(mair_el1);
-+	cfg->tcr	= tcr;
- 
- 	return 0;
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 98940d1392cb..c5c598bf4ba3 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2024,23 +2024,6 @@ static int pdev_iommuv2_enable(struct pci_dev *pdev)
+ 	return ret;
  }
+ 
+-/* FIXME: Move this to PCI code */
+-#define PCI_PRI_TLP_OFF		(1 << 15)
+-
+-static bool pci_pri_tlp_required(struct pci_dev *pdev)
+-{
+-	u16 status;
+-	int pos;
+-
+-	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
+-	if (!pos)
+-		return false;
+-
+-	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
+-
+-	return (status & PCI_PRI_TLP_OFF) ? true : false;
+-}
+-
+ /*
+  * If a device is not yet associated with a domain, this function
+  * assigns it visible for the hardware
+@@ -2069,7 +2052,7 @@ static int attach_device(struct device *dev,
+ 
+ 			dev_data->ats.enabled = true;
+ 			dev_data->ats.qdep    = pci_ats_queue_depth(pdev);
+-			dev_data->pri_tlp     = pci_pri_tlp_required(pdev);
++			dev_data->pri_tlp     = pci_prg_resp_requires_prefix(pdev);
+ 		}
+ 	} else if (amd_iommu_iotlb_sup &&
+ 		   pci_enable_ats(pdev, PAGE_SHIFT) == 0) {
+diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+index eeb9fb2b47aa..331376e9bb8b 100644
+--- a/drivers/pci/ats.c
++++ b/drivers/pci/ats.c
+@@ -334,3 +334,20 @@ int pci_max_pasids(struct pci_dev *pdev)
+ }
+ EXPORT_SYMBOL_GPL(pci_max_pasids);
+ #endif /* CONFIG_PCI_PASID */
++
++#if defined(CONFIG_PCI_PASID) && defined(CONFIG_PCI_PRI)
++bool pci_prg_resp_requires_prefix(struct pci_dev *pdev)
++{
++	u16 status;
++	int pos;
++
++	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
++	if (!pos)
++		return false;
++
++	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
++
++	return !!(status & PCI_PRI_STATUS_PRPR);
++}
++EXPORT_SYMBOL_GPL(pci_prg_resp_requires_prefix);
++#endif /* CONFIG_PCI_PASID && CONFIG_PCI_PRI */
+diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+index 57e0b8250947..e21bcacbe80c 100644
+--- a/include/linux/pci-ats.h
++++ b/include/linux/pci-ats.h
+@@ -57,5 +57,13 @@ static inline int pci_max_pasids(struct pci_dev *pdev)
+ 
+ #endif /* CONFIG_PCI_PASID */
+ 
++#if defined(CONFIG_PCI_PASID) && defined(CONFIG_PCI_PRI)
++bool pci_prg_resp_requires_prefix(struct pci_dev *pdev);
++#else
++static inline bool pci_prg_resp_requires_prefix(struct pci_dev *pdev)
++{
++	return false;
++}
++#endif /* CONFIG_PCI_PASID && CONFIG_PCI_PRI */
+ 
+ #endif /* LINUX_PCI_ATS_H*/
+diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
+index 634c9c44ed6c..bae815876be6 100644
+--- a/include/uapi/linux/pci_regs.h
++++ b/include/uapi/linux/pci_regs.h
+@@ -864,6 +864,7 @@
+ #define  PCI_PRI_STATUS_RF	0x001	/* Response Failure */
+ #define  PCI_PRI_STATUS_UPRGI	0x002	/* Unexpected PRG index */
+ #define  PCI_PRI_STATUS_STOPPED	0x100	/* PRI Stopped */
++#define  PCI_PRI_STATUS_PRPR	0x8000	/* PRG Response requires PASID prefix */
+ #define PCI_PRI_MAX_REQ		0x08	/* PRI max reqs supported */
+ #define PCI_PRI_ALLOC_REQ	0x0c	/* PRI max reqs allowed */
+ #define PCI_EXT_CAP_PRI_SIZEOF	16
 -- 
 2.11.0
