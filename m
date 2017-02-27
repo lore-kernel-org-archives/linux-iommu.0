@@ -1,8 +1,8 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 12/30] iommu/arm-smmu-v3: Keep track of process address
-	spaces
-Date: Mon, 27 Feb 2017 19:54:23 +0000
-Message-ID: <20170227195441.5170-13-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH 13/30] iommu/io-pgtable-arm: Factor out ARM LPAE register
+	defines
+Date: Mon, 27 Feb 2017 19:54:24 +0000
+Message-ID: <20170227195441.5170-14-jean-philippe.brucker@arm.com>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,250 +21,170 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Binding to a task requires the following steps:
+For unified address space, we'll need to extract CPU page table
+information and mirror it in the substream setup. Move relevant defines
+to a common header.
 
-* Pin down the mm context, and use its ASID to tag SMMU mappings. If
-  the ASID is already in use by the SMMU for a domain using the DMA API,
-  abort the binding. We can steal the domain's ASID since it is allocated
-  by the SMMU, but this deserves a patch of its own.
-
-* Register an MMU notifier to mirror invalidations of the system's TLBs
-  with a device's ATC.
+Fix TCR_SZ_MASK while we're at it.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 171 +++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 169 insertions(+), 2 deletions(-)
+ MAINTAINERS                    |  1 +
+ drivers/iommu/io-pgtable-arm.c | 48 +-----------------------------
+ drivers/iommu/io-pgtable-arm.h | 67 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 69 insertions(+), 47 deletions(-)
+ create mode 100644 drivers/iommu/io-pgtable-arm.h
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 5b4d1f265194..ab49164bf09b 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -29,6 +29,8 @@
- #include <linux/interrupt.h>
- #include <linux/iommu.h>
- #include <linux/iopoll.h>
-+#include <linux/mmu_context.h>
-+#include <linux/mmu_notifier.h>
- #include <linux/module.h>
- #include <linux/msi.h>
- #include <linux/of.h>
-@@ -761,6 +763,9 @@ struct arm_smmu_task {
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8d97b1d83c3e..bb089396cdd1 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2025,6 +2025,7 @@ S:	Maintained
+ F:	drivers/iommu/arm-smmu.c
+ F:	drivers/iommu/arm-smmu-v3.c
+ F:	drivers/iommu/io-pgtable-arm.c
++F:	drivers/iommu/io-pgtable-arm.h
+ F:	drivers/iommu/io-pgtable-arm-v7s.c
  
- 	struct arm_smmu_s1_cfg		s1_cfg;
+ ARM64 PORT (AARCH64 ARCHITECTURE)
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index feacc54bec68..973c335afd04 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -30,6 +30,7 @@
+ #include <asm/barrier.h>
  
-+	struct mmu_notifier		mmu_notifier;
-+	struct mm_struct		*mm;
-+
- 	struct kref			kref;
- };
+ #include "io-pgtable.h"
++#include "io-pgtable-arm.h"
  
-@@ -1984,6 +1989,33 @@ static size_t arm_smmu_atc_invalidate_domain(struct arm_smmu_domain *smmu_domain
- 	return size;
- }
+ #define ARM_LPAE_MAX_ADDR_BITS		48
+ #define ARM_LPAE_S2_MAX_CONCAT_PAGES	16
+@@ -115,53 +116,6 @@
+ #define ARM_LPAE_PTE_MEMATTR_DEV	(((arm_lpae_iopte)0x1) << 2)
  
-+static size_t arm_smmu_atc_invalidate_task(struct arm_smmu_task *smmu_task,
-+					   unsigned long iova, size_t size)
-+{
-+	struct arm_smmu_cmdq_ent cmd;
-+	struct arm_smmu_context *smmu_context;
-+	struct arm_smmu_device *smmu = smmu_task->smmu;
-+	struct arm_smmu_cmdq_ent sync_cmd = {
-+		.opcode = CMDQ_OP_CMD_SYNC,
-+	};
+ /* Register bits */
+-#define ARM_32_LPAE_TCR_EAE		(1 << 31)
+-#define ARM_64_LPAE_S2_TCR_RES1		(1 << 31)
+-
+-#define ARM_LPAE_TCR_EPD1		(1 << 23)
+-
+-#define ARM_LPAE_TCR_TG0_4K		(0 << 14)
+-#define ARM_LPAE_TCR_TG0_64K		(1 << 14)
+-#define ARM_LPAE_TCR_TG0_16K		(2 << 14)
+-
+-#define ARM_LPAE_TCR_SH0_SHIFT		12
+-#define ARM_LPAE_TCR_SH0_MASK		0x3
+-#define ARM_LPAE_TCR_SH_NS		0
+-#define ARM_LPAE_TCR_SH_OS		2
+-#define ARM_LPAE_TCR_SH_IS		3
+-
+-#define ARM_LPAE_TCR_ORGN0_SHIFT	10
+-#define ARM_LPAE_TCR_IRGN0_SHIFT	8
+-#define ARM_LPAE_TCR_RGN_MASK		0x3
+-#define ARM_LPAE_TCR_RGN_NC		0
+-#define ARM_LPAE_TCR_RGN_WBWA		1
+-#define ARM_LPAE_TCR_RGN_WT		2
+-#define ARM_LPAE_TCR_RGN_WB		3
+-
+-#define ARM_LPAE_TCR_SL0_SHIFT		6
+-#define ARM_LPAE_TCR_SL0_MASK		0x3
+-
+-#define ARM_LPAE_TCR_T0SZ_SHIFT		0
+-#define ARM_LPAE_TCR_SZ_MASK		0xf
+-
+-#define ARM_LPAE_TCR_PS_SHIFT		16
+-#define ARM_LPAE_TCR_PS_MASK		0x7
+-
+-#define ARM_LPAE_TCR_IPS_SHIFT		32
+-#define ARM_LPAE_TCR_IPS_MASK		0x7
+-
+-#define ARM_LPAE_TCR_PS_32_BIT		0x0ULL
+-#define ARM_LPAE_TCR_PS_36_BIT		0x1ULL
+-#define ARM_LPAE_TCR_PS_40_BIT		0x2ULL
+-#define ARM_LPAE_TCR_PS_42_BIT		0x3ULL
+-#define ARM_LPAE_TCR_PS_44_BIT		0x4ULL
+-#define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
+-
+-#define ARM_LPAE_MAIR_ATTR_SHIFT(n)	((n) << 3)
+-#define ARM_LPAE_MAIR_ATTR_MASK		0xff
+-#define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
+-#define ARM_LPAE_MAIR_ATTR_NC		0x44
+-#define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
+ #define ARM_LPAE_MAIR_ATTR_IDX_NC	0
+ #define ARM_LPAE_MAIR_ATTR_IDX_CACHE	1
+ #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
+diff --git a/drivers/iommu/io-pgtable-arm.h b/drivers/iommu/io-pgtable-arm.h
+new file mode 100644
+index 000000000000..cb31314971ac
+--- /dev/null
++++ b/drivers/iommu/io-pgtable-arm.h
+@@ -0,0 +1,67 @@
++/*
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ *
++ * Copyright (C) 2017 ARM Limited
++ */
++#ifndef __IO_PGTABLE_ARM_H
++#define __IO_PGTABLE_ARM_H
 +
-+	arm_smmu_atc_invalidate_to_cmd(smmu, iova, size, &cmd);
-+	cmd.substream_valid = true;
++#define ARM_32_LPAE_TCR_EAE		(1 << 31)
++#define ARM_64_LPAE_S2_TCR_RES1		(1 << 31)
 +
-+	spin_lock(&smmu->contexts_lock);
++#define ARM_LPAE_TCR_EPD1		(1 << 23)
 +
-+	list_for_each_entry(smmu_context, &smmu_task->contexts, task_head) {
-+		cmd.atc.ssid = smmu_context->ssid;
-+		arm_smmu_atc_invalidate_master(smmu_context->master, &cmd);
-+	}
++#define ARM_LPAE_TCR_TG0_4K		(0 << 14)
++#define ARM_LPAE_TCR_TG0_64K		(1 << 14)
++#define ARM_LPAE_TCR_TG0_16K		(2 << 14)
 +
-+	spin_unlock(&smmu->contexts_lock);
++#define ARM_LPAE_TCR_SH0_SHIFT		12
++#define ARM_LPAE_TCR_SH0_MASK		0x3
++#define ARM_LPAE_TCR_SH_NS		0
++#define ARM_LPAE_TCR_SH_OS		2
++#define ARM_LPAE_TCR_SH_IS		3
 +
-+	arm_smmu_cmdq_issue_cmd(smmu, &sync_cmd);
++#define ARM_LPAE_TCR_ORGN0_SHIFT	10
++#define ARM_LPAE_TCR_IRGN0_SHIFT	8
++#define ARM_LPAE_TCR_RGN_MASK		0x3
++#define ARM_LPAE_TCR_RGN_NC		0
++#define ARM_LPAE_TCR_RGN_WBWA		1
++#define ARM_LPAE_TCR_RGN_WT		2
++#define ARM_LPAE_TCR_RGN_WB		3
 +
-+	return size;
-+}
++#define ARM_LPAE_TCR_SL0_SHIFT		6
++#define ARM_LPAE_TCR_SL0_MASK		0x3
 +
- /* IOMMU API */
- static bool arm_smmu_capable(enum iommu_cap cap)
- {
-@@ -2105,26 +2137,148 @@ static void arm_smmu_put_context(struct arm_smmu_device *smmu,
- 	spin_unlock(&smmu->contexts_lock);
- }
- 
-+static struct arm_smmu_task *mn_to_task(struct mmu_notifier *mn)
-+{
-+	return container_of(mn, struct arm_smmu_task, mmu_notifier);
-+}
++#define ARM_LPAE_TCR_T0SZ_SHIFT		0
++#define ARM_LPAE_TCR_SZ_MASK		0x3f
 +
-+static void arm_smmu_notifier_invalidate_range(struct mmu_notifier *mn,
-+					       struct mm_struct *mm,
-+					       unsigned long start,
-+					       unsigned long end)
-+{
-+	struct arm_smmu_task *smmu_task = mn_to_task(mn);
++#define ARM_LPAE_TCR_PS_SHIFT		16
++#define ARM_LPAE_TCR_PS_MASK		0x7
 +
-+	arm_smmu_atc_invalidate_task(smmu_task, start, end - start);
-+}
++#define ARM_LPAE_TCR_IPS_SHIFT		32
++#define ARM_LPAE_TCR_IPS_MASK		0x7
 +
-+static void arm_smmu_notifier_invalidate_page(struct mmu_notifier *mn,
-+					      struct mm_struct *mm,
-+					      unsigned long address)
-+{
-+	arm_smmu_notifier_invalidate_range(mn, mm, address, address + PAGE_SIZE);
-+}
++#define ARM_LPAE_TCR_PS_32_BIT		0x0ULL
++#define ARM_LPAE_TCR_PS_36_BIT		0x1ULL
++#define ARM_LPAE_TCR_PS_40_BIT		0x2ULL
++#define ARM_LPAE_TCR_PS_42_BIT		0x3ULL
++#define ARM_LPAE_TCR_PS_44_BIT		0x4ULL
++#define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
 +
-+static int arm_smmu_notifier_clear_flush_young(struct mmu_notifier *mn,
-+					       struct mm_struct *mm,
-+					       unsigned long start,
-+					       unsigned long end)
-+{
-+	arm_smmu_notifier_invalidate_range(mn, mm, start, end);
++#define ARM_LPAE_MAIR_ATTR_SHIFT(n)	((n) << 3)
++#define ARM_LPAE_MAIR_ATTR_MASK		0xff
++#define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
++#define ARM_LPAE_MAIR_ATTR_NC		0x44
++#define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
 +
-+	return 0;
-+}
-+
-+static const struct mmu_notifier_ops arm_smmu_mmu_notifier_ops = {
-+	.invalidate_page	= arm_smmu_notifier_invalidate_page,
-+	.invalidate_range	= arm_smmu_notifier_invalidate_range,
-+	.clear_flush_young	= arm_smmu_notifier_clear_flush_young,
-+};
-+
-+static int arm_smmu_context_share(struct arm_smmu_task *smmu_task, int asid)
-+{
-+	int ret = 0;
-+	struct arm_smmu_device *smmu = smmu_task->smmu;
-+
-+	if (test_and_set_bit(asid, smmu->asid_map))
-+		/* ASID is already used for a domain */
-+		return -EEXIST;
-+
-+	return ret;
-+}
-+
-+static int arm_smmu_init_task_pgtable(struct arm_smmu_task *smmu_task)
-+{
-+	int ret;
-+	int asid;
-+
-+	/* Pin ASID on the CPU side */
-+	asid = mm_context_get(smmu_task->mm);
-+	if (!asid)
-+		return -ENOSPC;
-+
-+	ret = arm_smmu_context_share(smmu_task, asid);
-+	if (ret) {
-+		mm_context_put(smmu_task->mm);
-+		return ret;
-+	}
-+
-+	/* TODO: Initialize the rest of s1_cfg */
-+	smmu_task->s1_cfg.asid = asid;
-+
-+	return 0;
-+}
-+
-+static void arm_smmu_free_task_pgtable(struct arm_smmu_task *smmu_task)
-+{
-+	struct arm_smmu_device *smmu = smmu_task->smmu;
-+
-+	mm_context_put(smmu_task->mm);
-+
-+	arm_smmu_bitmap_free(smmu->asid_map, smmu_task->s1_cfg.asid);
-+}
-+
- __maybe_unused
- static struct arm_smmu_task *arm_smmu_alloc_task(struct arm_smmu_device *smmu,
- 						 struct task_struct *task)
- {
-+	int ret;
-+	struct mm_struct *mm;
- 	struct arm_smmu_task *smmu_task;
- 
-+	mm = get_task_mm(task);
-+	if (!mm)
-+		return ERR_PTR(-EINVAL);
-+
- 	smmu_task = kzalloc(sizeof(*smmu_task), GFP_KERNEL);
--	if (!smmu_task)
--		return ERR_PTR(-ENOMEM);
-+	if (!smmu_task) {
-+		ret = -ENOMEM;
-+		goto err_put_mm;
-+	}
- 
- 	smmu_task->smmu = smmu;
- 	smmu_task->pid = get_task_pid(task, PIDTYPE_PID);
-+	smmu_task->mmu_notifier.ops = &arm_smmu_mmu_notifier_ops;
-+	smmu_task->mm = mm;
- 	INIT_LIST_HEAD(&smmu_task->contexts);
- 	kref_init(&smmu_task->kref);
- 
-+	ret = arm_smmu_init_task_pgtable(smmu_task);
-+	if (ret)
-+		goto err_free_task;
-+
-+	/*
-+	 * TODO: check conflicts between task mappings and reserved HW
-+	 * mappings. It is unclear which reserved mappings might be affected
-+	 * because, for instance, devices are unlikely to send MSIs tagged with
-+	 * PASIDs so we (probably) don't need to carve out MSI regions from the
-+	 * task address space. Clarify this.
-+	 */
-+
-+	ret = mmu_notifier_register(&smmu_task->mmu_notifier, mm);
-+	if (ret)
-+		goto err_free_pgtable;
-+
- 	spin_lock(&smmu->contexts_lock);
- 	list_add(&smmu_task->smmu_head, &smmu->tasks);
- 	spin_unlock(&smmu->contexts_lock);
- 
-+	/* A reference to mm is kept by the notifier */
-+	mmput(mm);
-+
- 	return smmu_task;
-+
-+err_free_pgtable:
-+	arm_smmu_free_task_pgtable(smmu_task);
-+
-+err_free_task:
-+	put_pid(smmu_task->pid);
-+	kfree(smmu_task);
-+
-+err_put_mm:
-+	mmput(mm);
-+
-+	return ERR_PTR(ret);
- }
- 
- /* Caller must hold contexts_lock */
-@@ -2151,8 +2305,21 @@ static void arm_smmu_free_task(struct kref *kref)
- 
- 	list_del(&smmu_task->smmu_head);
- 
-+	/*
-+	 * Release the lock temporarily to unregister the notifier. This is safe
-+	 * because the task is not accessible anymore.
-+	 */
-+	spin_unlock(&smmu->contexts_lock);
-+
-+	/* Unpin ASID */
-+	arm_smmu_free_task_pgtable(smmu_task);
-+
-+	mmu_notifier_unregister(&smmu_task->mmu_notifier, smmu_task->mm);
-+
- 	put_pid(smmu_task->pid);
- 	kfree(smmu_task);
-+
-+	spin_lock(&smmu->contexts_lock);
- }
- 
- static void _arm_smmu_put_task(struct arm_smmu_task *smmu_task)
++#endif /* __IO_PGTABLE_ARM_H */
 -- 
 2.11.0
