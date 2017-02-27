@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 01/30] iommu/arm-smmu-v3: Link groups and devices
-Date: Mon, 27 Feb 2017 19:54:12 +0000
-Message-ID: <20170227195441.5170-2-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH 02/30] iommu/arm-smmu-v3: Link groups and domains
+Date: Mon, 27 Feb 2017 19:54:13 +0000
+Message-ID: <20170227195441.5170-3-jean-philippe.brucker@arm.com>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,185 +20,106 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Reintroduce smmu_group. This structure was removed during the generic DT
-bindings rework, but will be needed when implementing PCIe ATS, to lookup
-devices attached to a given domain.
+When removing a mapping from a domain, we need to send an invalidation to
+all of devices that might have stored it in their Address Translation
+Cache (ATC). This requires a lookup from smmu_domain to smmu_group. Add a
+list of groups in each domain.
 
-When unmapping from a domain, we need to send an invalidation to all
-devices that could have stored the mapping in their ATC. It would be nice
-to use IOMMU API's iommu_group_for_each_dev, but that list is protected by
-group->mutex, which we can't use because atc_invalidate won't be allowed
-to sleep. So add a list of devices, protected by a spinlock.
+Although this domain-group link is already protected by
+iommu_group->mutex, the domain-to-group lookup will be done outside of the
+sections protected by that mutex. Add a spinlock for this case.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 74 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 74 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 44 ++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 42 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 5806a6acc94e..ce8b68fe254b 100644
+index ce8b68fe254b..69d00416990d 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -625,6 +625,9 @@ struct arm_smmu_device {
- struct arm_smmu_master_data {
- 	struct arm_smmu_device		*smmu;
- 	struct arm_smmu_strtab_ent	ste;
-+
-+	struct device			*dev;
-+	struct list_head		group_head;
- };
+@@ -651,9 +651,15 @@ struct arm_smmu_domain {
+ 	};
  
- /* SMMU private data for an IOMMU domain */
-@@ -650,6 +653,11 @@ struct arm_smmu_domain {
  	struct iommu_domain		domain;
++
++	struct list_head		groups;
++	spinlock_t			groups_lock;
  };
  
-+struct arm_smmu_group {
-+	struct list_head		devices;
-+	spinlock_t			devices_lock;
-+};
+ struct arm_smmu_group {
++	struct arm_smmu_domain		*domain;
++	struct list_head		domain_head;
 +
- struct arm_smmu_option_prop {
- 	u32 opt;
- 	const char *prop;
-@@ -665,6 +673,8 @@ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
- 	return container_of(dom, struct arm_smmu_domain, domain);
+ 	struct list_head		devices;
+ 	spinlock_t			devices_lock;
+ };
+@@ -1408,6 +1414,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 
+ 	mutex_init(&smmu_domain->init_mutex);
+ 	spin_lock_init(&smmu_domain->pgtbl_lock);
++	INIT_LIST_HEAD(&smmu_domain->groups);
++	spin_lock_init(&smmu_domain->groups_lock);
++
+ 	return &smmu_domain->domain;
  }
  
-+#define to_smmu_group iommu_group_get_iommudata
-+
- static void parse_driver_options(struct arm_smmu_device *smmu)
- {
- 	int i = 0;
-@@ -1595,6 +1605,30 @@ static int arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
- 	return 0;
- }
- 
-+static void arm_smmu_group_release(void *smmu_group)
-+{
-+	kfree(smmu_group);
-+}
-+
-+static struct arm_smmu_group *arm_smmu_group_alloc(struct iommu_group *group)
-+{
-+	struct arm_smmu_group *smmu_group = to_smmu_group(group);
-+
-+	if (smmu_group)
-+		return smmu_group;
-+
-+	smmu_group = kzalloc(sizeof(*smmu_group), GFP_KERNEL);
-+	if (!smmu_group)
-+		return NULL;
-+
-+	INIT_LIST_HEAD(&smmu_group->devices);
-+	spin_lock_init(&smmu_group->devices_lock);
-+
-+	iommu_group_set_iommudata(group, smmu_group, arm_smmu_group_release);
-+
-+	return smmu_group;
-+}
-+
- static void arm_smmu_detach_dev(struct device *dev)
- {
- 	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
-@@ -1607,7 +1641,9 @@ static void arm_smmu_detach_dev(struct device *dev)
+@@ -1641,6 +1650,7 @@ static void arm_smmu_detach_dev(struct device *dev)
  static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
  {
  	int ret = 0;
-+	struct iommu_group *group;
- 	struct arm_smmu_device *smmu;
-+	struct arm_smmu_group *smmu_group;
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_master_data *master;
- 	struct arm_smmu_strtab_ent *ste;
-@@ -1619,6 +1655,17 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	smmu = master->smmu;
- 	ste = &master->ste;
- 
-+	/*
-+	 * When adding devices, this is the first occasion we have to create the
-+	 * smmu_group and attach it to iommu_group.
-+	 */
-+	group = iommu_group_get(dev);
-+	smmu_group = arm_smmu_group_alloc(group);
-+	if (!smmu_group) {
-+		iommu_group_put(group);
-+		return -ENOMEM;
-+	}
-+
- 	/* Already attached to a different domain? */
- 	if (!ste->bypass)
- 		arm_smmu_detach_dev(dev);
-@@ -1659,6 +1706,9 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 
- out_unlock:
- 	mutex_unlock(&smmu_domain->init_mutex);
-+
-+	iommu_group_put(group);
-+
- 	return ret;
- }
- 
-@@ -1745,7 +1795,9 @@ static struct iommu_ops arm_smmu_ops;
- static int arm_smmu_add_device(struct device *dev)
- {
- 	int i, ret;
 +	unsigned long flags;
- 	struct arm_smmu_device *smmu;
-+	struct arm_smmu_group *smmu_group;
- 	struct arm_smmu_master_data *master;
- 	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
  	struct iommu_group *group;
-@@ -1769,6 +1821,7 @@ static int arm_smmu_add_device(struct device *dev)
- 			return -ENOMEM;
- 
- 		master->smmu = smmu;
-+		master->dev = dev;
- 		fwspec->iommu_priv = master;
- 	}
- 
-@@ -1789,6 +1842,12 @@ static int arm_smmu_add_device(struct device *dev)
- 
- 	group = iommu_group_get_for_dev(dev);
- 	if (!IS_ERR(group)) {
-+		smmu_group = to_smmu_group(group);
-+
-+		spin_lock_irqsave(&smmu_group->devices_lock, flags);
-+		list_add(&master->group_head, &smmu_group->devices);
-+		spin_unlock_irqrestore(&smmu_group->devices_lock, flags);
-+
- 		iommu_group_put(group);
- 		iommu_device_link(&smmu->iommu, dev);
- 	}
-@@ -1800,7 +1859,10 @@ static void arm_smmu_remove_device(struct device *dev)
- {
- 	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
- 	struct arm_smmu_master_data *master;
-+	struct arm_smmu_group *smmu_group;
  	struct arm_smmu_device *smmu;
-+	struct iommu_group *group;
-+	unsigned long flags;
+ 	struct arm_smmu_group *smmu_group;
+@@ -1666,9 +1676,31 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		return -ENOMEM;
+ 	}
  
- 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
- 		return;
-@@ -1809,6 +1871,18 @@ static void arm_smmu_remove_device(struct device *dev)
- 	smmu = master->smmu;
- 	if (master && master->ste.valid)
+-	/* Already attached to a different domain? */
+-	if (!ste->bypass)
++	/*
++	 * Already attached to a different domain? This happens when we're
++	 * switching from default domain to unmanaged domain, and back. We
++	 * assume here that, when switching from old domain to new domain, old
++	 * domain doesn't have any live mapping anymore. This is an important
++	 * requirement because here we remove the group-domain link when we
++	 * re-attach the first device in a group. Other devices in that group
++	 * might still be attached to the old domain, and will be reattached in
++	 * a moment.
++	 *
++	 * We also take this path when attaching for the very first time, just
++	 * after the STE is initialized.
++	 */
++	if (!ste->bypass) {
++		struct arm_smmu_domain *other_domain = smmu_group->domain;
++
++		if (other_domain) {
++			spin_lock_irqsave(&other_domain->groups_lock, flags);
++			list_del(&smmu_group->domain_head);
++			spin_unlock_irqrestore(&other_domain->groups_lock, flags);
++
++			smmu_group->domain = NULL;
++		}
  		arm_smmu_detach_dev(dev);
++	}
+ 
+ 	mutex_lock(&smmu_domain->init_mutex);
+ 
+@@ -1688,6 +1720,14 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		goto out_unlock;
+ 	}
+ 
++	if (!smmu_group->domain) {
++		smmu_group->domain = smmu_domain;
 +
-+	if (master) {
-+		group = iommu_group_get(dev);
-+		smmu_group = to_smmu_group(group);
-+
-+		spin_lock_irqsave(&smmu_group->devices_lock, flags);
-+		list_del(&master->group_head);
-+		spin_unlock_irqrestore(&smmu_group->devices_lock, flags);
-+
-+		iommu_group_put(group);
++		spin_lock_irqsave(&smmu_domain->groups_lock, flags);
++		list_add(&smmu_group->domain_head, &smmu_domain->groups);
++		spin_unlock_irqrestore(&smmu_domain->groups_lock, flags);
 +	}
 +
- 	iommu_group_remove_device(dev);
- 	iommu_device_unlink(&smmu->iommu, dev);
- 	kfree(master);
+ 	ste->bypass = false;
+ 	ste->valid = true;
+ 
 -- 
 2.11.0
