@@ -1,8 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 18/30] PCI: Make "PRG Response PASID Required" handling
-	common
-Date: Mon, 27 Feb 2017 19:54:29 +0000
-Message-ID: <20170227195441.5170-19-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH 17/30] iommu/arm-smmu-v3: Add SVM feature checking
+Date: Mon, 27 Feb 2017 19:54:28 +0000
+Message-ID: <20170227195441.5170-18-jean-philippe.brucker@arm.com>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,113 +20,102 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The PASID ECN to the PCIe spec added a bit in the PRI status register that
-allows a Function to declare whether a PRG Response should contain the
-PASID prefix or not.
-
-Move the helper that accesses it from amd_iommu into the PCI subsystem,
-renaming it to something more consistent with the spec, and introducing
-another obscure acronym to make it all fit.
+Aggregate all sanity-checks for SVM under a single ARM_SMMU_FEAT_SVM bit.
+For PCIe SVM, users also need to check FEAT_ATS and FEAT_PRI. For platform
+SVM, they will most likely have to check ARM_SMMU_FEAT_STALLS.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c     | 19 +------------------
- drivers/pci/ats.c             | 17 +++++++++++++++++
- include/linux/pci-ats.h       |  8 ++++++++
- include/uapi/linux/pci_regs.h |  1 +
- 4 files changed, 27 insertions(+), 18 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 63 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 63 insertions(+)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 98940d1392cb..c5c598bf4ba3 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2024,23 +2024,6 @@ static int pdev_iommuv2_enable(struct pci_dev *pdev)
- 	return ret;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 86d5430bd68d..499dc1cd07eb 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -674,6 +674,7 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_HYP		(1 << 12)
+ #define ARM_SMMU_FEAT_E2H		(1 << 13)
+ #define ARM_SMMU_FEAT_BTM		(1 << 14)
++#define ARM_SMMU_FEAT_SVM		(1 << 15)
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+@@ -3744,6 +3745,65 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+ 	return 0;
  }
  
--/* FIXME: Move this to PCI code */
--#define PCI_PRI_TLP_OFF		(1 << 15)
--
--static bool pci_pri_tlp_required(struct pci_dev *pdev)
--{
--	u16 status;
--	int pos;
--
--	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
--	if (!pos)
--		return false;
--
--	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
--
--	return (status & PCI_PRI_TLP_OFF) ? true : false;
--}
--
- /*
-  * If a device is not yet associated with a domain, this function
-  * assigns it visible for the hardware
-@@ -2069,7 +2052,7 @@ static int attach_device(struct device *dev,
- 
- 			dev_data->ats.enabled = true;
- 			dev_data->ats.qdep    = pci_ats_queue_depth(pdev);
--			dev_data->pri_tlp     = pci_pri_tlp_required(pdev);
-+			dev_data->pri_tlp     = pci_prg_resp_requires_prefix(pdev);
- 		}
- 	} else if (amd_iommu_iotlb_sup &&
- 		   pci_enable_ats(pdev, PAGE_SHIFT) == 0) {
-diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-index eeb9fb2b47aa..331376e9bb8b 100644
---- a/drivers/pci/ats.c
-+++ b/drivers/pci/ats.c
-@@ -334,3 +334,20 @@ int pci_max_pasids(struct pci_dev *pdev)
- }
- EXPORT_SYMBOL_GPL(pci_max_pasids);
- #endif /* CONFIG_PCI_PASID */
-+
-+#if defined(CONFIG_PCI_PASID) && defined(CONFIG_PCI_PRI)
-+bool pci_prg_resp_requires_prefix(struct pci_dev *pdev)
++static bool arm_smmu_supports_svm(struct arm_smmu_device *smmu)
 +{
-+	u16 status;
-+	int pos;
++	unsigned long reg, fld;
++	unsigned long oas;
++	unsigned long asid_bits;
 +
-+	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
-+	if (!pos)
++	u32 feat_mask = ARM_SMMU_FEAT_BTM | ARM_SMMU_FEAT_COHERENCY;
++
++	if ((smmu->features & feat_mask) != feat_mask)
 +		return false;
 +
-+	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
++	if (!smmu->ssid_bits)
++		return false;
 +
-+	return !!(status & PCI_PRI_STATUS_PRPR);
++	if (!(smmu->pgsize_bitmap & PAGE_SIZE))
++		return false;
++
++	/*
++	 * Get the smallest PA size of all CPUs (sanitized by cpufeature). We're
++	 * not even pretending to support AArch32 here.
++	 */
++	reg = read_system_reg(SYS_ID_AA64MMFR0_EL1);
++	fld = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_PARANGE_SHIFT);
++	switch (fld) {
++	case 0x0:
++		oas = 32;
++		break;
++	case 0x1:
++		oas = 36;
++		break;
++	case 0x2:
++		oas = 40;
++		break;
++	case 0x3:
++		oas = 42;
++		break;
++	case 0x4:
++		oas = 44;
++		break;
++	case 0x5:
++		oas = 48;
++		break;
++	default:
++		return false;
++	}
++
++	/* abort if MMU outputs addresses greater than what we support. */
++	if (smmu->oas < oas)
++		return false;
++
++	/* We can support bigger ASIDs than the CPU, but not smaller */
++	fld = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_ASID_SHIFT);
++	asid_bits = fld ? 16 : 8;
++	if (smmu->asid_bits < asid_bits)
++		return false;
++
++	return true;
 +}
-+EXPORT_SYMBOL_GPL(pci_prg_resp_requires_prefix);
-+#endif /* CONFIG_PCI_PASID && CONFIG_PCI_PRI */
-diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-index 57e0b8250947..e21bcacbe80c 100644
---- a/include/linux/pci-ats.h
-+++ b/include/linux/pci-ats.h
-@@ -57,5 +57,13 @@ static inline int pci_max_pasids(struct pci_dev *pdev)
++
+ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ {
+ 	u32 reg;
+@@ -3937,6 +3997,9 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
  
- #endif /* CONFIG_PCI_PASID */
+ 	smmu->ias = max(smmu->ias, smmu->oas);
  
-+#if defined(CONFIG_PCI_PASID) && defined(CONFIG_PCI_PRI)
-+bool pci_prg_resp_requires_prefix(struct pci_dev *pdev);
-+#else
-+static inline bool pci_prg_resp_requires_prefix(struct pci_dev *pdev)
-+{
-+	return false;
-+}
-+#endif /* CONFIG_PCI_PASID && CONFIG_PCI_PRI */
- 
- #endif /* LINUX_PCI_ATS_H*/
-diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
-index 634c9c44ed6c..bae815876be6 100644
---- a/include/uapi/linux/pci_regs.h
-+++ b/include/uapi/linux/pci_regs.h
-@@ -864,6 +864,7 @@
- #define  PCI_PRI_STATUS_RF	0x001	/* Response Failure */
- #define  PCI_PRI_STATUS_UPRGI	0x002	/* Unexpected PRG index */
- #define  PCI_PRI_STATUS_STOPPED	0x100	/* PRI Stopped */
-+#define  PCI_PRI_STATUS_PRPR	0x8000	/* PRG Response requires PASID prefix */
- #define PCI_PRI_MAX_REQ		0x08	/* PRI max reqs supported */
- #define PCI_PRI_ALLOC_REQ	0x0c	/* PRI max reqs allowed */
- #define PCI_EXT_CAP_PRI_SIZEOF	16
++	if (arm_smmu_supports_svm(smmu))
++		smmu->features |= ARM_SMMU_FEAT_SVM;
++
+ 	dev_info(smmu->dev, "ias %lu-bit, oas %lu-bit (features 0x%08x)\n",
+ 		 smmu->ias, smmu->oas, smmu->features);
+ 	return 0;
 -- 
 2.11.0
