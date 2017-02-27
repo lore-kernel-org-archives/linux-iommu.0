@@ -1,15 +1,11 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [RFC PATCH v4 21/28] x86: Check for memory encryption on the APs
-Date: Mon, 27 Feb 2017 19:17:01 +0100
-Message-ID: <20170227181701.2lynk4rm77yk4msf@pd.tnic>
-References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
-	<20170216154647.19244.18733.stgit@tlendack-t1.amdoffice.net>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: [RFC PATCH 00/30] Add PCIe SVM support to ARM SMMUv3
+Date: Mon, 27 Feb 2017 19:54:11 +0000
+Message-ID: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170216154647.19244.18733.stgit-qCXWGYdRb2BnqfbPTmsdiZQ+2ll4COg0XqFh9Ls21Oc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,106 +15,157 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Feb 16, 2017 at 09:46:47AM -0600, Tom Lendacky wrote:
-> Add support to check if memory encryption is active in the kernel and that
-> it has been enabled on the AP. If memory encryption is active in the kernel
-> but has not been enabled on the AP, then set the SYS_CFG MSR bit to enable
-> memory encryption on that AP and allow the AP to continue start up.
-> 
-> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-> ---
->  arch/x86/include/asm/realmode.h      |   12 ++++++++++++
->  arch/x86/realmode/init.c             |    4 ++++
->  arch/x86/realmode/rm/trampoline_64.S |   17 +++++++++++++++++
->  3 files changed, 33 insertions(+)
-> 
-> diff --git a/arch/x86/include/asm/realmode.h b/arch/x86/include/asm/realmode.h
-> index 230e190..4f7ef53 100644
-> --- a/arch/x86/include/asm/realmode.h
-> +++ b/arch/x86/include/asm/realmode.h
-> @@ -1,6 +1,15 @@
->  #ifndef _ARCH_X86_REALMODE_H
->  #define _ARCH_X86_REALMODE_H
->  
-> +/*
-> + * Flag bit definitions for use with the flags field of the trampoline header
-> + * int the CONFIG_X86_64 variant.
+Hi,
 
-s/int/in/
+This series adds support for PCI ATS, PRI and PASID extensions to the
+SMMUv3 driver. In systems that support it, it is now possible for some
+high-end devices to perform DMA into process address spaces. Page tables
+are shared between MMU and SMMU; page faults from devices are recoverable
+and handled by the mm subsystem.
 
-> + */
-> +#define TH_FLAGS_SME_ACTIVE_BIT		0
-> +#define TH_FLAGS_SME_ACTIVE		BIT(TH_FLAGS_SME_ACTIVE_BIT)
-> +
-> +#ifndef __ASSEMBLY__
-> +
->  #include <linux/types.h>
->  #include <asm/io.h>
->  
-> @@ -38,6 +47,7 @@ struct trampoline_header {
->  	u64 start;
->  	u64 efer;
->  	u32 cr4;
-> +	u32 flags;
->  #endif
->  };
->  
-> @@ -69,4 +79,6 @@ static inline size_t real_mode_size_needed(void)
->  void set_real_mode_mem(phys_addr_t mem, size_t size);
->  void reserve_real_mode(void);
->  
-> +#endif /* __ASSEMBLY__ */
-> +
->  #endif /* _ARCH_X86_REALMODE_H */
-> diff --git a/arch/x86/realmode/init.c b/arch/x86/realmode/init.c
-> index 21d7506..5010089 100644
-> --- a/arch/x86/realmode/init.c
-> +++ b/arch/x86/realmode/init.c
-> @@ -102,6 +102,10 @@ static void __init setup_real_mode(void)
->  	trampoline_cr4_features = &trampoline_header->cr4;
->  	*trampoline_cr4_features = mmu_cr4_features;
->  
-> +	trampoline_header->flags = 0;
-> +	if (sme_active())
-> +		trampoline_header->flags |= TH_FLAGS_SME_ACTIVE;
-> +
->  	trampoline_pgd = (u64 *) __va(real_mode_header->trampoline_pgd);
->  	trampoline_pgd[0] = trampoline_pgd_entry.pgd;
->  	trampoline_pgd[511] = init_level4_pgt[511].pgd;
-> diff --git a/arch/x86/realmode/rm/trampoline_64.S b/arch/x86/realmode/rm/trampoline_64.S
-> index dac7b20..a88c3d1 100644
-> --- a/arch/x86/realmode/rm/trampoline_64.S
-> +++ b/arch/x86/realmode/rm/trampoline_64.S
-> @@ -30,6 +30,7 @@
->  #include <asm/msr.h>
->  #include <asm/segment.h>
->  #include <asm/processor-flags.h>
-> +#include <asm/realmode.h>
->  #include "realmode.h"
->  
->  	.text
-> @@ -92,6 +93,21 @@ ENTRY(startup_32)
->  	movl	%edx, %fs
->  	movl	%edx, %gs
->  
-> +	/* Check for memory encryption support */
+We propose an extension to the IOMMU API that unifies existing SVM
+implementations (AMD, Intel and ARM) in patches 22 and 24. Nothing is set
+in stone, the goal is to start discussions and find an intersection
+between implementations.
 
-Let's add some blurb here about this being a safety net in case BIOS
-f*cks up. Which wouldn't be that far-fetched... :-)
+We also propose a VFIO interface in patches 29 and 30, that allows
+userspace device drivers to make use of SVM. It would also serve as
+example implementation for other device drivers.
 
-> +	bt	$TH_FLAGS_SME_ACTIVE_BIT, pa_tr_flags
-> +	jnc	.Ldone
-> +	movl	$MSR_K8_SYSCFG, %ecx
-> +	rdmsr
-> +	bts	$MSR_K8_SYSCFG_MEM_ENCRYPT_BIT, %eax
-> +	jc	.Ldone
+Overview of the patches:
+
+* 1 and 2 prepare the SMMUv3 structures for ATS,
+* 3 to 5 enable ATS for devices that support it.
+* 6 to 10 prepare the SMMUv3 structures for PASID and PRI. Patch 9,
+  in particular, provides details on the structure requirements.
+* 11 introduces an interface for sharing ASIDs on ARM64,
+* 12 to 17 add more infrastructure for sharing page tables,
+* 18 and 19 add minor helpers to PCI,
+* 20 enables PASID in devices that support it,
+* 21 enables PRI and adds device fault handler,
+* 22 and 24 draft a possible interface for SVM in the IOMMU API
+* 23 and 25-28 finalize support for SVM in SMMUv3
+* 29 and 30 draft a possible interface for SVM in VFIO. 
+
+The series is available on git://linux-arm.org/linux-jpb.git svm/rfc1
+Enable CONFIG_PCI_PASID, CONFIG_PCI_PRI and you should be good to go.
+
+So far, this has only been tested with a software model of an SMMUv3 and a
+PCIe DMA engine. We don't intend to get this merged until it has been
+tested on silicon, but at least the driver implementation should be mature
+enough. I might split next versions depending on what is ready and what
+needs more work so we can merge it progressively.
+
+A lot of open questions remain:
+
+1. Can we declare that PASID 0 is always invalid?
+
+2. For this prototype, I kept the interface simple from an implementation
+   perspective. At the moment is is "bind this device to that address
+   space". For consistency with the rest of VFIO and IOMMU, I think "bind
+   this container to that address space" would be more in line with VFIO,
+   and "bind that group to that address space" more in line with IOMMU.
+   VFIO would tell the IOMMU "for all groups in this container, bind to
+   that address space".
+   This raises the question of inconsistency between device capabilities.
+   When adding a device that supports less PASID bits to a group, what do
+   we do? What if we already allocated a PASID that is out of range for
+   the new device?
+
+3. How do we reconcile the IOMMU fault reporting infrastructure with the
+   SVM interface?
+
+4. SVM is the product of two features: handling device faults, and devices
+   having multiple address spaces. What about one feature without the
+   other?
+   a. If we cannot afford to have a device fault, can we at least share a
+      pinned address space? Pinning all current memory would be done by
+      vfio, but there also need to be pinning of all future mappings.
+      (mlock isn't sufficient, still allows for minor faults.)
+   b. If the device has a single address space, can we still bind it to a
+      process? The main issue with unifying DMA and process page tables is
+      reserved regions on the device side. What do we do if, for instance,
+      and MSI frame address clashes with a process mapping? Or if a
+      process mapping exists outside of the device's DMA window?
+
+Please find more details in the IOMMU API and VFIO patches.
+
+Thanks,
+Jean-Philippe
+
+Cc: Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
+Cc: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Cc: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Cc: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
+Cc: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+
+Jean-Philippe Brucker (30):
+  iommu/arm-smmu-v3: Link groups and devices
+  iommu/arm-smmu-v3: Link groups and domains
+  PCI: Move ATS declarations outside of CONFIG_PCI
+  iommu/arm-smmu-v3: Add support for PCI ATS
+  iommu/arm-smmu-v3: Disable tagged pointers when ATS is in use
+  iommu/arm-smmu-v3: Add support for Substream IDs
+  iommu/arm-smmu-v3: Add second level of context descriptor table
+  iommu/arm-smmu-v3: Add support for VHE
+  iommu/arm-smmu-v3: Support broadcast TLB maintenance
+  iommu/arm-smmu-v3: Add task contexts
+  arm64: mm: Pin down ASIDs for sharing contexts with devices
+  iommu/arm-smmu-v3: Keep track of process address spaces
+  iommu/io-pgtable-arm: Factor out ARM LPAE register defines
+  iommu/arm-smmu-v3: Share process page tables
+  iommu/arm-smmu-v3: Steal private ASID from a domain
+  iommu/arm-smmu-v3: Use shared ASID set
+  iommu/arm-smmu-v3: Add SVM feature checking
+  PCI: Make "PRG Response PASID Required" handling common
+  PCI: Cache PRI and PASID bits in pci_dev
+  iommu/arm-smmu-v3: Enable PCI PASID in masters
+  iommu/arm-smmu-v3: Handle device faults from PRI
+  iommu: Bind/unbind tasks to/from devices
+  iommu/arm-smmu-v3: Bind/unbind device and task
+  iommu: Specify PASID state when unbinding a task
+  iommu/arm-smmu-v3: Safe invalidation and recycling of PASIDs
+  iommu/arm-smmu-v3: Fix PRI queue overflow acknowledgement
+  iommu/arm-smmu-v3: Handle PRI queue overflow
+  iommu/arm-smmu-v3: Add support for Hardware Translation Table Update
+    at stage 1
+  vfio: Add support for Shared Virtual Memory
+  vfio: Allow to bind foreign task
+
+ MAINTAINERS                          |    1 +
+ arch/arm64/include/asm/mmu.h         |    1 +
+ arch/arm64/include/asm/mmu_context.h |   11 +-
+ arch/arm64/mm/context.c              |   80 +-
+ drivers/iommu/amd_iommu.c            |   19 +-
+ drivers/iommu/arm-smmu-v3.c          | 2593 ++++++++++++++++++++++++++++++++--
+ drivers/iommu/io-pgtable-arm.c       |   48 +-
+ drivers/iommu/io-pgtable-arm.h       |   67 +
+ drivers/iommu/iommu.c                |  116 ++
+ drivers/pci/ats.c                    |   40 +
+ drivers/vfio/pci/vfio_pci.c          |   24 +
+ drivers/vfio/vfio.c                  |  135 ++
+ include/linux/iommu.h                |   57 +
+ include/linux/pci-ats.h              |    8 +
+ include/linux/pci.h                  |   28 +-
+ include/uapi/linux/pci_regs.h        |    1 +
+ include/uapi/linux/vfio.h            |   70 +
+ 17 files changed, 3084 insertions(+), 215 deletions(-)
+ create mode 100644 drivers/iommu/io-pgtable-arm.h
 
 -- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+2.11.0
