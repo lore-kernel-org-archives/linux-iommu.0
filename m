@@ -1,8 +1,8 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 11/30] arm64: mm: Pin down ASIDs for sharing contexts with
-	devices
-Date: Mon, 27 Feb 2017 19:54:22 +0000
-Message-ID: <20170227195441.5170-12-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH 12/30] iommu/arm-smmu-v3: Keep track of process address
+	spaces
+Date: Mon, 27 Feb 2017 19:54:23 +0000
+Message-ID: <20170227195441.5170-13-jean-philippe.brucker@arm.com>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,205 +21,250 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-In order to enable address space sharing with the IOMMU, we introduce
-functions mm_context_get and mm_context_put, that pin down a context and
-ensure that its ASID won't be modified willy-nilly after a rollover.
+Binding to a task requires the following steps:
 
-Pinning is necessary because, once a device is using an ASID, it needs a
-valid and unique one at all times, whether the associated task is running
-or not.
+* Pin down the mm context, and use its ASID to tag SMMU mappings. If
+  the ASID is already in use by the SMMU for a domain using the DMA API,
+  abort the binding. We can steal the domain's ASID since it is allocated
+  by the SMMU, but this deserves a patch of its own.
 
-Without pinning, we would need to notify the IOMMU when we're about to use
-a new ASID for a task. Things would get messy when a new task is assigned
-a shared ASID. Consider the following scenario:
-
-1. Task t1 is running on CPUx with shared ASID (1, 1)
-2. Task t2 is scheduled on CPUx, gets ASID (1, 2)
-3. Task tn is scheduled on CPUy, a rollover occurs, tn gets ASID (2, 1)
-   We would now have to immediately generate a new ASID for t1, notify
-   the IOMMU, and finally enable task tn. We are holding the lock during
-   all that time, since we can't afford having another CPU trigger a
-   rollover.
-
-It gets needlessly complicated, and all we wanted to do was schedule poor
-task tn, that has no business with the IOMMU. By letting the IOMMU pin
-tasks when needed, we avoid stalling the slow path, and let the pinning
-fail when we're out of potential ASIDs.
-
-After a rollover, we assume that there is at least one more ASID than
-number of CPUs. So we can use (NR_ASIDS - NR_CPUS - 1) as a hard limit for
-the number of ASIDs we can afford to share with the IOMMU.
-
-Since multiple IOMMUs could pin the same context, we need to keep track of
-the number of references. Add a refcount value in mm_context_t for this
-purpose.
+* Register an MMU notifier to mirror invalidations of the system's TLBs
+  with a device's ATC.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- arch/arm64/include/asm/mmu.h         |  1 +
- arch/arm64/include/asm/mmu_context.h | 11 ++++-
- arch/arm64/mm/context.c              | 80 +++++++++++++++++++++++++++++++++++-
- 3 files changed, 90 insertions(+), 2 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 171 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 169 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/include/asm/mmu.h b/arch/arm64/include/asm/mmu.h
-index 47619411f0ff..e18a6dfcf745 100644
---- a/arch/arm64/include/asm/mmu.h
-+++ b/arch/arm64/include/asm/mmu.h
-@@ -18,6 +18,7 @@
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 5b4d1f265194..ab49164bf09b 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -29,6 +29,8 @@
+ #include <linux/interrupt.h>
+ #include <linux/iommu.h>
+ #include <linux/iopoll.h>
++#include <linux/mmu_context.h>
++#include <linux/mmu_notifier.h>
+ #include <linux/module.h>
+ #include <linux/msi.h>
+ #include <linux/of.h>
+@@ -761,6 +763,9 @@ struct arm_smmu_task {
  
- typedef struct {
- 	atomic64_t	id;
-+	unsigned long	refcount;
- 	void		*vdso;
- 	unsigned long	flags;
- } mm_context_t;
-diff --git a/arch/arm64/include/asm/mmu_context.h b/arch/arm64/include/asm/mmu_context.h
-index 1ef40d82cfd3..ce4216e09e13 100644
---- a/arch/arm64/include/asm/mmu_context.h
-+++ b/arch/arm64/include/asm/mmu_context.h
-@@ -152,7 +152,13 @@ static inline void cpu_replace_ttbr1(pgd_t *pgd)
- #define destroy_context(mm)		do { } while(0)
- void check_and_switch_context(struct mm_struct *mm, unsigned int cpu);
+ 	struct arm_smmu_s1_cfg		s1_cfg;
  
--#define init_new_context(tsk,mm)	({ atomic64_set(&(mm)->context.id, 0); 0; })
-+static inline int
-+init_new_context(struct task_struct *tsk, struct mm_struct *mm)
++	struct mmu_notifier		mmu_notifier;
++	struct mm_struct		*mm;
++
+ 	struct kref			kref;
+ };
+ 
+@@ -1984,6 +1989,33 @@ static size_t arm_smmu_atc_invalidate_domain(struct arm_smmu_domain *smmu_domain
+ 	return size;
+ }
+ 
++static size_t arm_smmu_atc_invalidate_task(struct arm_smmu_task *smmu_task,
++					   unsigned long iova, size_t size)
 +{
-+	atomic64_set(&mm->context.id, 0);
-+	mm->context.refcount = 0;
++	struct arm_smmu_cmdq_ent cmd;
++	struct arm_smmu_context *smmu_context;
++	struct arm_smmu_device *smmu = smmu_task->smmu;
++	struct arm_smmu_cmdq_ent sync_cmd = {
++		.opcode = CMDQ_OP_CMD_SYNC,
++	};
++
++	arm_smmu_atc_invalidate_to_cmd(smmu, iova, size, &cmd);
++	cmd.substream_valid = true;
++
++	spin_lock(&smmu->contexts_lock);
++
++	list_for_each_entry(smmu_context, &smmu_task->contexts, task_head) {
++		cmd.atc.ssid = smmu_context->ssid;
++		arm_smmu_atc_invalidate_master(smmu_context->master, &cmd);
++	}
++
++	spin_unlock(&smmu->contexts_lock);
++
++	arm_smmu_cmdq_issue_cmd(smmu, &sync_cmd);
++
++	return size;
++}
++
+ /* IOMMU API */
+ static bool arm_smmu_capable(enum iommu_cap cap)
+ {
+@@ -2105,26 +2137,148 @@ static void arm_smmu_put_context(struct arm_smmu_device *smmu,
+ 	spin_unlock(&smmu->contexts_lock);
+ }
+ 
++static struct arm_smmu_task *mn_to_task(struct mmu_notifier *mn)
++{
++	return container_of(mn, struct arm_smmu_task, mmu_notifier);
++}
++
++static void arm_smmu_notifier_invalidate_range(struct mmu_notifier *mn,
++					       struct mm_struct *mm,
++					       unsigned long start,
++					       unsigned long end)
++{
++	struct arm_smmu_task *smmu_task = mn_to_task(mn);
++
++	arm_smmu_atc_invalidate_task(smmu_task, start, end - start);
++}
++
++static void arm_smmu_notifier_invalidate_page(struct mmu_notifier *mn,
++					      struct mm_struct *mm,
++					      unsigned long address)
++{
++	arm_smmu_notifier_invalidate_range(mn, mm, address, address + PAGE_SIZE);
++}
++
++static int arm_smmu_notifier_clear_flush_young(struct mmu_notifier *mn,
++					       struct mm_struct *mm,
++					       unsigned long start,
++					       unsigned long end)
++{
++	arm_smmu_notifier_invalidate_range(mn, mm, start, end);
++
 +	return 0;
 +}
- 
- /*
-  * This is called when "tsk" is about to enter lazy TLB mode.
-@@ -224,6 +230,9 @@ switch_mm(struct mm_struct *prev, struct mm_struct *next,
- 
- void verify_cpu_asid_bits(void);
- 
-+unsigned long mm_context_get(struct mm_struct *mm);
-+void mm_context_put(struct mm_struct *mm);
 +
- #endif /* !__ASSEMBLY__ */
- 
- #endif /* !__ASM_MMU_CONTEXT_H */
-diff --git a/arch/arm64/mm/context.c b/arch/arm64/mm/context.c
-index 68634c630cdd..b8ddd46bedb6 100644
---- a/arch/arm64/mm/context.c
-+++ b/arch/arm64/mm/context.c
-@@ -37,6 +37,10 @@ static DEFINE_PER_CPU(atomic64_t, active_asids);
- static DEFINE_PER_CPU(u64, reserved_asids);
- static cpumask_t tlb_flush_pending;
- 
-+static unsigned long max_pinned_asids;
-+static unsigned long nr_pinned_asids;
-+static unsigned long *pinned_asid_map;
++static const struct mmu_notifier_ops arm_smmu_mmu_notifier_ops = {
++	.invalidate_page	= arm_smmu_notifier_invalidate_page,
++	.invalidate_range	= arm_smmu_notifier_invalidate_range,
++	.clear_flush_young	= arm_smmu_notifier_clear_flush_young,
++};
 +
- #define ASID_MASK		(~GENMASK(asid_bits - 1, 0))
- #define ASID_FIRST_VERSION	(1UL << asid_bits)
- #define NUM_USER_ASIDS		ASID_FIRST_VERSION
-@@ -92,7 +96,7 @@ static void flush_context(unsigned int cpu)
- 	u64 asid;
- 
- 	/* Update the list of reserved ASIDs and the ASID bitmap. */
--	bitmap_clear(asid_map, 0, NUM_USER_ASIDS);
-+	bitmap_copy(asid_map, pinned_asid_map, NUM_USER_ASIDS);
- 
- 	set_reserved_asid_bits();
- 
-@@ -157,6 +161,10 @@ static u64 new_context(struct mm_struct *mm, unsigned int cpu)
- 	if (asid != 0) {
- 		u64 newasid = generation | (asid & ~ASID_MASK);
- 
-+		/* That ASID is pinned for us, we're good to go. */
-+		if (mm->context.refcount)
-+			return newasid;
-+
- 		/*
- 		 * If our current ASID was active during a rollover, we
- 		 * can continue to use it and this was just a false alarm.
-@@ -238,6 +246,63 @@ void check_and_switch_context(struct mm_struct *mm, unsigned int cpu)
- 		cpu_switch_mm(mm->pgd, mm);
- }
- 
-+unsigned long mm_context_get(struct mm_struct *mm)
++static int arm_smmu_context_share(struct arm_smmu_task *smmu_task, int asid)
 +{
-+	unsigned long flags;
-+	u64 asid;
++	int ret = 0;
++	struct arm_smmu_device *smmu = smmu_task->smmu;
 +
-+	raw_spin_lock_irqsave(&cpu_asid_lock, flags);
++	if (test_and_set_bit(asid, smmu->asid_map))
++		/* ASID is already used for a domain */
++		return -EEXIST;
 +
-+	asid = atomic64_read(&mm->context.id);
-+
-+	if (mm->context.refcount) {
-+		mm->context.refcount++;
-+		asid &= ~ASID_MASK;
-+		goto out_unlock;
-+	}
-+
-+	if (nr_pinned_asids >= max_pinned_asids) {
-+		asid = 0;
-+		goto out_unlock;
-+	}
-+
-+	if (((asid ^ atomic64_read(&asid_generation)) >> asid_bits)) {
-+		/*
-+		 * We went through one or more rollover since that ASID was
-+		 * used. Ensure that it is still valid, or generate a new one.
-+		 * The cpu argument isn't used by new_context.
-+		 */
-+		asid = new_context(mm, 0);
-+		atomic64_set(&mm->context.id, asid);
-+	}
-+
-+	asid &= ~ASID_MASK;
-+
-+	nr_pinned_asids++;
-+	__set_bit(asid, pinned_asid_map);
-+	mm->context.refcount++;
-+
-+out_unlock:
-+	raw_spin_unlock_irqrestore(&cpu_asid_lock, flags);
-+
-+	return asid;
++	return ret;
 +}
 +
-+void mm_context_put(struct mm_struct *mm)
++static int arm_smmu_init_task_pgtable(struct arm_smmu_task *smmu_task)
 +{
-+	unsigned long flags;
-+	u64 asid = atomic64_read(&mm->context.id) & ~ASID_MASK;
++	int ret;
++	int asid;
 +
-+	raw_spin_lock_irqsave(&cpu_asid_lock, flags);
++	/* Pin ASID on the CPU side */
++	asid = mm_context_get(smmu_task->mm);
++	if (!asid)
++		return -ENOSPC;
 +
-+	if (--mm->context.refcount == 0) {
-+		__clear_bit(asid, pinned_asid_map);
-+		nr_pinned_asids--;
++	ret = arm_smmu_context_share(smmu_task, asid);
++	if (ret) {
++		mm_context_put(smmu_task->mm);
++		return ret;
 +	}
 +
-+	raw_spin_unlock_irqrestore(&cpu_asid_lock, flags);
++	/* TODO: Initialize the rest of s1_cfg */
++	smmu_task->s1_cfg.asid = asid;
++
++	return 0;
 +}
 +
- static int asids_init(void)
++static void arm_smmu_free_task_pgtable(struct arm_smmu_task *smmu_task)
++{
++	struct arm_smmu_device *smmu = smmu_task->smmu;
++
++	mm_context_put(smmu_task->mm);
++
++	arm_smmu_bitmap_free(smmu->asid_map, smmu_task->s1_cfg.asid);
++}
++
+ __maybe_unused
+ static struct arm_smmu_task *arm_smmu_alloc_task(struct arm_smmu_device *smmu,
+ 						 struct task_struct *task)
  {
- 	asid_bits = get_cpu_asid_bits();
-@@ -255,6 +320,19 @@ static int asids_init(void)
++	int ret;
++	struct mm_struct *mm;
+ 	struct arm_smmu_task *smmu_task;
  
- 	set_reserved_asid_bits();
++	mm = get_task_mm(task);
++	if (!mm)
++		return ERR_PTR(-EINVAL);
++
+ 	smmu_task = kzalloc(sizeof(*smmu_task), GFP_KERNEL);
+-	if (!smmu_task)
+-		return ERR_PTR(-ENOMEM);
++	if (!smmu_task) {
++		ret = -ENOMEM;
++		goto err_put_mm;
++	}
  
-+	pinned_asid_map = kzalloc(BITS_TO_LONGS(NUM_USER_ASIDS)
-+				  * sizeof(*pinned_asid_map), GFP_KERNEL);
-+	if (!pinned_asid_map)
-+		panic("Failed to allocate pinned bitmap\n");
+ 	smmu_task->smmu = smmu;
+ 	smmu_task->pid = get_task_pid(task, PIDTYPE_PID);
++	smmu_task->mmu_notifier.ops = &arm_smmu_mmu_notifier_ops;
++	smmu_task->mm = mm;
+ 	INIT_LIST_HEAD(&smmu_task->contexts);
+ 	kref_init(&smmu_task->kref);
+ 
++	ret = arm_smmu_init_task_pgtable(smmu_task);
++	if (ret)
++		goto err_free_task;
 +
 +	/*
-+	 * We assume that an ASID is always available after a rollback. This
-+	 * means that even if all CPUs have a reserved ASID, there still is at
-+	 * least one slot available in the asid_bitmap.
++	 * TODO: check conflicts between task mappings and reserved HW
++	 * mappings. It is unclear which reserved mappings might be affected
++	 * because, for instance, devices are unlikely to send MSIs tagged with
++	 * PASIDs so we (probably) don't need to carve out MSI regions from the
++	 * task address space. Clarify this.
 +	 */
-+	max_pinned_asids = NUM_USER_ASIDS - num_possible_cpus() - 2;
-+	nr_pinned_asids = 0;
 +
- 	pr_info("ASID allocator initialised with %lu entries\n", NUM_USER_ASIDS);
- 	return 0;
++	ret = mmu_notifier_register(&smmu_task->mmu_notifier, mm);
++	if (ret)
++		goto err_free_pgtable;
++
+ 	spin_lock(&smmu->contexts_lock);
+ 	list_add(&smmu_task->smmu_head, &smmu->tasks);
+ 	spin_unlock(&smmu->contexts_lock);
+ 
++	/* A reference to mm is kept by the notifier */
++	mmput(mm);
++
+ 	return smmu_task;
++
++err_free_pgtable:
++	arm_smmu_free_task_pgtable(smmu_task);
++
++err_free_task:
++	put_pid(smmu_task->pid);
++	kfree(smmu_task);
++
++err_put_mm:
++	mmput(mm);
++
++	return ERR_PTR(ret);
  }
+ 
+ /* Caller must hold contexts_lock */
+@@ -2151,8 +2305,21 @@ static void arm_smmu_free_task(struct kref *kref)
+ 
+ 	list_del(&smmu_task->smmu_head);
+ 
++	/*
++	 * Release the lock temporarily to unregister the notifier. This is safe
++	 * because the task is not accessible anymore.
++	 */
++	spin_unlock(&smmu->contexts_lock);
++
++	/* Unpin ASID */
++	arm_smmu_free_task_pgtable(smmu_task);
++
++	mmu_notifier_unregister(&smmu_task->mmu_notifier, smmu_task->mm);
++
+ 	put_pid(smmu_task->pid);
+ 	kfree(smmu_task);
++
++	spin_lock(&smmu->contexts_lock);
+ }
+ 
+ static void _arm_smmu_put_task(struct arm_smmu_task *smmu_task)
 -- 
 2.11.0
