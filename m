@@ -1,7 +1,8 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 09/30] iommu/arm-smmu-v3: Support broadcast TLB maintenance
-Date: Mon, 27 Feb 2017 19:54:20 +0000
-Message-ID: <20170227195441.5170-10-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH 11/30] arm64: mm: Pin down ASIDs for sharing contexts with
+	devices
+Date: Mon, 27 Feb 2017 19:54:22 +0000
+Message-ID: <20170227195441.5170-12-jean-philippe.brucker@arm.com>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,84 +21,205 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The SMMUv3 can handle invalidation targeted at TLB entries with shared
-ASIDs. If the implementation supports broadcast TLB maintenance, enable
-it and keep track of it in a feature bit. The SMMU will then take into
-account the following CPU instruction for ASIDs in the shared set:
+In order to enable address space sharing with the IOMMU, we introduce
+functions mm_context_get and mm_context_put, that pin down a context and
+ensure that its ASID won't be modified willy-nilly after a rollover.
 
-* TLBI VAE1IS(ASID, VA)
-* TLBI ASIDE1IS(ASID)
+Pinning is necessary because, once a device is using an ASID, it needs a
+valid and unique one at all times, whether the associated task is running
+or not.
+
+Without pinning, we would need to notify the IOMMU when we're about to use
+a new ASID for a task. Things would get messy when a new task is assigned
+a shared ASID. Consider the following scenario:
+
+1. Task t1 is running on CPUx with shared ASID (1, 1)
+2. Task t2 is scheduled on CPUx, gets ASID (1, 2)
+3. Task tn is scheduled on CPUy, a rollover occurs, tn gets ASID (2, 1)
+   We would now have to immediately generate a new ASID for t1, notify
+   the IOMMU, and finally enable task tn. We are holding the lock during
+   all that time, since we can't afford having another CPU trigger a
+   rollover.
+
+It gets needlessly complicated, and all we wanted to do was schedule poor
+task tn, that has no business with the IOMMU. By letting the IOMMU pin
+tasks when needed, we avoid stalling the slow path, and let the pinning
+fail when we're out of potential ASIDs.
+
+After a rollover, we assume that there is at least one more ASID than
+number of CPUs. So we can use (NR_ASIDS - NR_CPUS - 1) as a hard limit for
+the number of ASIDs we can afford to share with the IOMMU.
+
+Since multiple IOMMUs could pin the same context, we need to keep track of
+the number of references. Add a refcount value in mm_context_t for this
+purpose.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ arch/arm64/include/asm/mmu.h         |  1 +
+ arch/arm64/include/asm/mmu_context.h | 11 ++++-
+ arch/arm64/mm/context.c              | 80 +++++++++++++++++++++++++++++++++++-
+ 3 files changed, 90 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 0981159ada04..2724788157a5 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -65,6 +65,7 @@
- #define IDR0_ASID16			(1 << 12)
- #define IDR0_ATS			(1 << 10)
- #define IDR0_HYP			(1 << 9)
-+#define IDR0_BTM			(1 << 5)
- #define IDR0_COHACC			(1 << 4)
- #define IDR0_TTF_SHIFT			2
- #define IDR0_TTF_MASK			0x3
-@@ -669,6 +670,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_STALLS		(1 << 11)
- #define ARM_SMMU_FEAT_HYP		(1 << 12)
- #define ARM_SMMU_FEAT_E2H		(1 << 13)
-+#define ARM_SMMU_FEAT_BTM		(1 << 14)
- 	u32				features;
+diff --git a/arch/arm64/include/asm/mmu.h b/arch/arm64/include/asm/mmu.h
+index 47619411f0ff..e18a6dfcf745 100644
+--- a/arch/arm64/include/asm/mmu.h
++++ b/arch/arm64/include/asm/mmu.h
+@@ -18,6 +18,7 @@
  
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-@@ -3023,11 +3025,14 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
- 	writel_relaxed(reg, smmu->base + ARM_SMMU_CR1);
+ typedef struct {
+ 	atomic64_t	id;
++	unsigned long	refcount;
+ 	void		*vdso;
+ 	unsigned long	flags;
+ } mm_context_t;
+diff --git a/arch/arm64/include/asm/mmu_context.h b/arch/arm64/include/asm/mmu_context.h
+index 1ef40d82cfd3..ce4216e09e13 100644
+--- a/arch/arm64/include/asm/mmu_context.h
++++ b/arch/arm64/include/asm/mmu_context.h
+@@ -152,7 +152,13 @@ static inline void cpu_replace_ttbr1(pgd_t *pgd)
+ #define destroy_context(mm)		do { } while(0)
+ void check_and_switch_context(struct mm_struct *mm, unsigned int cpu);
  
- 	/* CR2 (random crap) */
--	reg = CR2_PTM | CR2_RECINVSID;
-+	reg = CR2_RECINVSID;
+-#define init_new_context(tsk,mm)	({ atomic64_set(&(mm)->context.id, 0); 0; })
++static inline int
++init_new_context(struct task_struct *tsk, struct mm_struct *mm)
++{
++	atomic64_set(&mm->context.id, 0);
++	mm->context.refcount = 0;
++	return 0;
++}
  
- 	if (smmu->features & ARM_SMMU_FEAT_E2H)
- 		reg |= CR2_E2H;
+ /*
+  * This is called when "tsk" is about to enter lazy TLB mode.
+@@ -224,6 +230,9 @@ switch_mm(struct mm_struct *prev, struct mm_struct *next,
  
-+	if (!(smmu->features & ARM_SMMU_FEAT_BTM))
-+		reg |= CR2_PTM;
+ void verify_cpu_asid_bits(void);
+ 
++unsigned long mm_context_get(struct mm_struct *mm);
++void mm_context_put(struct mm_struct *mm);
 +
- 	writel_relaxed(reg, smmu->base + ARM_SMMU_CR2);
+ #endif /* !__ASSEMBLY__ */
  
- 	/* Stream table */
-@@ -3138,6 +3143,7 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ #endif /* !__ASM_MMU_CONTEXT_H */
+diff --git a/arch/arm64/mm/context.c b/arch/arm64/mm/context.c
+index 68634c630cdd..b8ddd46bedb6 100644
+--- a/arch/arm64/mm/context.c
++++ b/arch/arm64/mm/context.c
+@@ -37,6 +37,10 @@ static DEFINE_PER_CPU(atomic64_t, active_asids);
+ static DEFINE_PER_CPU(u64, reserved_asids);
+ static cpumask_t tlb_flush_pending;
+ 
++static unsigned long max_pinned_asids;
++static unsigned long nr_pinned_asids;
++static unsigned long *pinned_asid_map;
++
+ #define ASID_MASK		(~GENMASK(asid_bits - 1, 0))
+ #define ASID_FIRST_VERSION	(1UL << asid_bits)
+ #define NUM_USER_ASIDS		ASID_FIRST_VERSION
+@@ -92,7 +96,7 @@ static void flush_context(unsigned int cpu)
+ 	u64 asid;
+ 
+ 	/* Update the list of reserved ASIDs and the ASID bitmap. */
+-	bitmap_clear(asid_map, 0, NUM_USER_ASIDS);
++	bitmap_copy(asid_map, pinned_asid_map, NUM_USER_ASIDS);
+ 
+ 	set_reserved_asid_bits();
+ 
+@@ -157,6 +161,10 @@ static u64 new_context(struct mm_struct *mm, unsigned int cpu)
+ 	if (asid != 0) {
+ 		u64 newasid = generation | (asid & ~ASID_MASK);
+ 
++		/* That ASID is pinned for us, we're good to go. */
++		if (mm->context.refcount)
++			return newasid;
++
+ 		/*
+ 		 * If our current ASID was active during a rollover, we
+ 		 * can continue to use it and this was just a false alarm.
+@@ -238,6 +246,63 @@ void check_and_switch_context(struct mm_struct *mm, unsigned int cpu)
+ 		cpu_switch_mm(mm->pgd, mm);
+ }
+ 
++unsigned long mm_context_get(struct mm_struct *mm)
++{
++	unsigned long flags;
++	u64 asid;
++
++	raw_spin_lock_irqsave(&cpu_asid_lock, flags);
++
++	asid = atomic64_read(&mm->context.id);
++
++	if (mm->context.refcount) {
++		mm->context.refcount++;
++		asid &= ~ASID_MASK;
++		goto out_unlock;
++	}
++
++	if (nr_pinned_asids >= max_pinned_asids) {
++		asid = 0;
++		goto out_unlock;
++	}
++
++	if (((asid ^ atomic64_read(&asid_generation)) >> asid_bits)) {
++		/*
++		 * We went through one or more rollover since that ASID was
++		 * used. Ensure that it is still valid, or generate a new one.
++		 * The cpu argument isn't used by new_context.
++		 */
++		asid = new_context(mm, 0);
++		atomic64_set(&mm->context.id, asid);
++	}
++
++	asid &= ~ASID_MASK;
++
++	nr_pinned_asids++;
++	__set_bit(asid, pinned_asid_map);
++	mm->context.refcount++;
++
++out_unlock:
++	raw_spin_unlock_irqrestore(&cpu_asid_lock, flags);
++
++	return asid;
++}
++
++void mm_context_put(struct mm_struct *mm)
++{
++	unsigned long flags;
++	u64 asid = atomic64_read(&mm->context.id) & ~ASID_MASK;
++
++	raw_spin_lock_irqsave(&cpu_asid_lock, flags);
++
++	if (--mm->context.refcount == 0) {
++		__clear_bit(asid, pinned_asid_map);
++		nr_pinned_asids--;
++	}
++
++	raw_spin_unlock_irqrestore(&cpu_asid_lock, flags);
++}
++
+ static int asids_init(void)
  {
- 	u32 reg;
- 	bool coherent = smmu->features & ARM_SMMU_FEAT_COHERENCY;
-+	bool vhe = cpus_have_cap(ARM64_HAS_VIRT_HOST_EXTN);
+ 	asid_bits = get_cpu_asid_bits();
+@@ -255,6 +320,19 @@ static int asids_init(void)
  
- 	/* IDR0 */
- 	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR0);
-@@ -3187,11 +3193,20 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 	set_reserved_asid_bits();
  
- 	if (reg & IDR0_HYP) {
- 		smmu->features |= ARM_SMMU_FEAT_HYP;
--		if (cpus_have_cap(ARM64_HAS_VIRT_HOST_EXTN))
-+		if (vhe)
- 			smmu->features |= ARM_SMMU_FEAT_E2H;
- 	}
- 
- 	/*
-+	 * If the CPU is using VHE, but the SMMU doesn't support it, the SMMU
-+	 * will create TLB entries for NH-EL1 world and will miss the
-+	 * broadcasted TLB invalidations that target EL2-E2H world. Don't enable
-+	 * BTM in that case.
-+	 */
-+	if (reg & IDR0_BTM && (!vhe || reg & IDR0_HYP))
-+		smmu->features |= ARM_SMMU_FEAT_BTM;
++	pinned_asid_map = kzalloc(BITS_TO_LONGS(NUM_USER_ASIDS)
++				  * sizeof(*pinned_asid_map), GFP_KERNEL);
++	if (!pinned_asid_map)
++		panic("Failed to allocate pinned bitmap\n");
 +
 +	/*
- 	 * The coherency feature as set by FW is used in preference to the ID
- 	 * register, but warn on mismatch.
- 	 */
++	 * We assume that an ASID is always available after a rollback. This
++	 * means that even if all CPUs have a reserved ASID, there still is at
++	 * least one slot available in the asid_bitmap.
++	 */
++	max_pinned_asids = NUM_USER_ASIDS - num_possible_cpus() - 2;
++	nr_pinned_asids = 0;
++
+ 	pr_info("ASID allocator initialised with %lu entries\n", NUM_USER_ASIDS);
+ 	return 0;
+ }
 -- 
 2.11.0
