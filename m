@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 15/30] iommu/arm-smmu-v3: Steal private ASID from a domain
-Date: Mon, 27 Feb 2017 19:54:26 +0000
-Message-ID: <20170227195441.5170-16-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH 16/30] iommu/arm-smmu-v3: Use shared ASID set
+Date: Mon, 27 Feb 2017 19:54:27 +0000
+Message-ID: <20170227195441.5170-17-jean-philippe.brucker@arm.com>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -20,216 +20,29 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-The SMMU only has one ASID space, so the task allocator competes with the
-domain allocator for ASIDs. Task ASIDs are shared with CPUs, whereas
-domain ASIDs are private to the SMMU, and not affected by broadcast TLB
-invalidations. When the task allocator pins a mm_context and gets an ASID
-already used by the SMMU, it belongs to a domain. Attempt to assign a new
-ASID to the domain, and steal the old one for our shared context.
-
-Replacing an ASID requires some pretty invasive introspection. We could
-try to do fine-grained locking on asid_map, domains list, context
-descriptors and domains themselves, but it gets terribly complicated and
-my brain melted twice before I could find solutions to all lock
-dependencies.
-
-Instead, introduce a big fat mutex around domains and (default) contexts
-modifications. It ensures that arm_smmu_context_share finds the domain
-that owns the ASID we want, and then changes all associated stream table
-entries without racing with attach/detach_dev. Note that domain_free is
-called after devices have been removed from the group, so
-arm_smmu_context_share might do the whole ASID replacement dance for
-nothing, but it is harmless.
+We now have two exclusive sets of ASIDs: private and shared. SMMUv3 allows
+for contexts to take part in distributed TLB maintenance via the ASET bit.
+When this bit is 0 for a given context, TLB entries tagged with its ASID
+are invalidated by broadcast TLB maintenance. Set ASET=0 for task contexts.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 98 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 94 insertions(+), 4 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index c3fa4616bd58..3af47b1427a6 100644
+index 3af47b1427a6..86d5430bd68d 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -708,6 +708,9 @@ struct arm_smmu_device {
- 	spinlock_t			contexts_lock;
- 	struct rb_root			streams;
- 	struct list_head		tasks;
-+
-+	struct list_head		domains;
-+	struct mutex			domains_mutex;
- };
- 
- struct arm_smmu_stream {
-@@ -752,6 +755,8 @@ struct arm_smmu_domain {
- 
- 	struct list_head		groups;
- 	spinlock_t			groups_lock;
-+
-+	struct list_head		list; /* For domain search by ASID */
- };
- 
- struct arm_smmu_task {
-@@ -2179,11 +2184,79 @@ static const struct mmu_notifier_ops arm_smmu_mmu_notifier_ops = {
- static int arm_smmu_context_share(struct arm_smmu_task *smmu_task, int asid)
- {
- 	int ret = 0;
-+	int new_asid;
-+	unsigned long flags;
-+	struct arm_smmu_group *smmu_group;
-+	struct arm_smmu_master_data *master;
- 	struct arm_smmu_device *smmu = smmu_task->smmu;
-+	struct arm_smmu_domain *tmp_domain, *smmu_domain = NULL;
-+	struct arm_smmu_cmdq_ent cmd = {
-+		.opcode = smmu->features & ARM_SMMU_FEAT_E2H ?
-+			  CMDQ_OP_TLBI_EL2_ASID : CMDQ_OP_TLBI_NH_ASID,
-+	};
-+
-+	mutex_lock(&smmu->domains_mutex);
-+
-+	if (!test_and_set_bit(asid, smmu->asid_map))
-+		goto out_unlock;
-+
-+	/* ASID is used by a domain. Try to replace it with a new one. */
-+	new_asid = arm_smmu_bitmap_alloc(smmu->asid_map, smmu->asid_bits);
-+	if (new_asid < 0) {
-+		ret = new_asid;
-+		goto out_unlock;
-+	}
-+
-+	list_for_each_entry(tmp_domain, &smmu->domains, list) {
-+		if (tmp_domain->stage != ARM_SMMU_DOMAIN_S1 ||
-+		    tmp_domain->s1_cfg.asid != asid)
-+			continue;
-+
-+		smmu_domain = tmp_domain;
-+		break;
-+	}
-+
-+	/*
-+	 * We didn't find the domain that owns this ASID. It is a bug, since we
-+	 * hold domains_mutex
-+	 */
-+	if (WARN_ON(!smmu_domain)) {
-+		ret = -ENOSPC;
-+		goto out_unlock;
-+	}
-+
-+	/*
-+	 * Race with smmu_unmap; TLB invalidations will start targeting the
-+	 * new ASID, which isn't assigned yet. We'll do an invalidate-all on
-+	 * the old ASID later, so it doesn't matter.
-+	 */
-+	smmu_domain->s1_cfg.asid = new_asid;
- 
--	if (test_and_set_bit(asid, smmu->asid_map))
--		/* ASID is already used for a domain */
--		return -EEXIST;
-+	/*
-+	 * Update ASID and invalidate CD in all associated masters. There will
-+	 * be some overlapping between use of both ASIDs, until we invalidate
-+	 * the TLB.
-+	 */
-+	spin_lock_irqsave(&smmu_domain->groups_lock, flags);
-+
-+	list_for_each_entry(smmu_group, &smmu_domain->groups, domain_head) {
-+		spin_lock(&smmu_group->devices_lock);
-+		list_for_each_entry(master, &smmu_group->devices, group_head) {
-+			arm_smmu_write_ctx_desc(master, 0, &smmu_domain->s1_cfg);
-+		}
-+		spin_unlock(&smmu_group->devices_lock);
-+	}
-+
-+	spin_unlock_irqrestore(&smmu_domain->groups_lock, flags);
-+
-+	/* Invalidate TLB entries previously associated with that domain */
-+	cmd.tlbi.asid = asid;
-+	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-+	cmd.opcode = CMDQ_OP_CMD_SYNC;
-+	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-+
-+out_unlock:
-+	mutex_unlock(&smmu->domains_mutex);
- 
- 	return ret;
- }
-@@ -2426,16 +2499,23 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
- 	iommu_put_dma_cookie(domain);
- 	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
- 
-+	mutex_lock(&smmu->domains_mutex);
-+
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
- 		struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
--		if (cfg->asid)
-+		if (cfg->asid) {
- 			arm_smmu_bitmap_free(smmu->asid_map, cfg->asid);
-+
-+			list_del(&smmu_domain->list);
-+		}
- 	} else {
- 		struct arm_smmu_s2_cfg *cfg = &smmu_domain->s2_cfg;
- 		if (cfg->vmid)
- 			arm_smmu_bitmap_free(smmu->vmid_map, cfg->vmid);
- 	}
- 
-+	mutex_unlock(&smmu->domains_mutex);
-+
- 	kfree(smmu_domain);
- }
- 
-@@ -2455,6 +2535,8 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
- 	cfg->tcr	= pgtbl_cfg->arm_lpae_s1_cfg.tcr;
- 	cfg->mair	= pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
- 
-+	list_add(&smmu_domain->list, &smmu->domains);
-+
- 	return 0;
- }
- 
-@@ -2604,12 +2686,16 @@ static void arm_smmu_detach_dev(struct device *dev)
- 	struct arm_smmu_context *smmu_context;
- 	struct rb_node *node, *next;
- 
-+	mutex_lock(&smmu->domains_mutex);
-+
- 	master->ste.bypass = true;
- 	if (arm_smmu_install_ste_for_dev(dev->iommu_fwspec) < 0)
- 		dev_warn(dev, "failed to install bypass STE\n");
- 
- 	arm_smmu_write_ctx_desc(master, 0, NULL);
- 
-+	mutex_unlock(&smmu->domains_mutex);
-+
- 	if (!master->ste.valid)
- 		return;
- 
-@@ -2682,6 +2768,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		arm_smmu_detach_dev(dev);
- 	}
- 
-+	mutex_lock(&smmu->domains_mutex);
- 	mutex_lock(&smmu_domain->init_mutex);
- 
- 	if (!smmu_domain->smmu) {
-@@ -2726,6 +2813,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 
- out_unlock:
- 	mutex_unlock(&smmu_domain->init_mutex);
-+	mutex_unlock(&smmu->domains_mutex);
- 
- 	iommu_group_put(group);
- 
-@@ -3330,9 +3418,11 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
- {
- 	int ret;
- 
-+	mutex_init(&smmu->domains_mutex);
- 	spin_lock_init(&smmu->contexts_lock);
- 	smmu->streams = RB_ROOT;
- 	INIT_LIST_HEAD(&smmu->tasks);
-+	INIT_LIST_HEAD(&smmu->domains);
- 
- 	ret = arm_smmu_init_queues(smmu);
- 	if (ret)
+@@ -1263,7 +1263,8 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_master_data *master,
+ 		      CTXDESC_CD_0_ENDI |
+ #endif
+ 		      CTXDESC_CD_0_R | CTXDESC_CD_0_A |
+-		      CTXDESC_CD_0_ASET_PRIVATE |
++		      (ssid ? CTXDESC_CD_0_ASET_SHARED :
++			      CTXDESC_CD_0_ASET_PRIVATE) |
+ 		      CTXDESC_CD_0_AA64 |
+ 		      (u64)cfg->asid << CTXDESC_CD_0_ASID_SHIFT |
+ 		      CTXDESC_CD_0_V;
 -- 
 2.11.0
