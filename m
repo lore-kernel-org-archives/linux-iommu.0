@@ -1,8 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: [RFC PATCH 13/30] iommu/io-pgtable-arm: Factor out ARM LPAE register
-	defines
-Date: Mon, 27 Feb 2017 19:54:24 +0000
-Message-ID: <20170227195441.5170-14-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH 15/30] iommu/arm-smmu-v3: Steal private ASID from a domain
+Date: Mon, 27 Feb 2017 19:54:26 +0000
+Message-ID: <20170227195441.5170-16-jean-philippe.brucker@arm.com>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,170 +20,216 @@ Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gman
 Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-For unified address space, we'll need to extract CPU page table
-information and mirror it in the substream setup. Move relevant defines
-to a common header.
+The SMMU only has one ASID space, so the task allocator competes with the
+domain allocator for ASIDs. Task ASIDs are shared with CPUs, whereas
+domain ASIDs are private to the SMMU, and not affected by broadcast TLB
+invalidations. When the task allocator pins a mm_context and gets an ASID
+already used by the SMMU, it belongs to a domain. Attempt to assign a new
+ASID to the domain, and steal the old one for our shared context.
 
-Fix TCR_SZ_MASK while we're at it.
+Replacing an ASID requires some pretty invasive introspection. We could
+try to do fine-grained locking on asid_map, domains list, context
+descriptors and domains themselves, but it gets terribly complicated and
+my brain melted twice before I could find solutions to all lock
+dependencies.
+
+Instead, introduce a big fat mutex around domains and (default) contexts
+modifications. It ensures that arm_smmu_context_share finds the domain
+that owns the ASID we want, and then changes all associated stream table
+entries without racing with attach/detach_dev. Note that domain_free is
+called after devices have been removed from the group, so
+arm_smmu_context_share might do the whole ASID replacement dance for
+nothing, but it is harmless.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 ---
- MAINTAINERS                    |  1 +
- drivers/iommu/io-pgtable-arm.c | 48 +-----------------------------
- drivers/iommu/io-pgtable-arm.h | 67 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 69 insertions(+), 47 deletions(-)
- create mode 100644 drivers/iommu/io-pgtable-arm.h
+ drivers/iommu/arm-smmu-v3.c | 98 +++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 94 insertions(+), 4 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 8d97b1d83c3e..bb089396cdd1 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -2025,6 +2025,7 @@ S:	Maintained
- F:	drivers/iommu/arm-smmu.c
- F:	drivers/iommu/arm-smmu-v3.c
- F:	drivers/iommu/io-pgtable-arm.c
-+F:	drivers/iommu/io-pgtable-arm.h
- F:	drivers/iommu/io-pgtable-arm-v7s.c
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index c3fa4616bd58..3af47b1427a6 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -708,6 +708,9 @@ struct arm_smmu_device {
+ 	spinlock_t			contexts_lock;
+ 	struct rb_root			streams;
+ 	struct list_head		tasks;
++
++	struct list_head		domains;
++	struct mutex			domains_mutex;
+ };
  
- ARM64 PORT (AARCH64 ARCHITECTURE)
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index feacc54bec68..973c335afd04 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -30,6 +30,7 @@
- #include <asm/barrier.h>
+ struct arm_smmu_stream {
+@@ -752,6 +755,8 @@ struct arm_smmu_domain {
  
- #include "io-pgtable.h"
-+#include "io-pgtable-arm.h"
+ 	struct list_head		groups;
+ 	spinlock_t			groups_lock;
++
++	struct list_head		list; /* For domain search by ASID */
+ };
  
- #define ARM_LPAE_MAX_ADDR_BITS		48
- #define ARM_LPAE_S2_MAX_CONCAT_PAGES	16
-@@ -115,53 +116,6 @@
- #define ARM_LPAE_PTE_MEMATTR_DEV	(((arm_lpae_iopte)0x1) << 2)
+ struct arm_smmu_task {
+@@ -2179,11 +2184,79 @@ static const struct mmu_notifier_ops arm_smmu_mmu_notifier_ops = {
+ static int arm_smmu_context_share(struct arm_smmu_task *smmu_task, int asid)
+ {
+ 	int ret = 0;
++	int new_asid;
++	unsigned long flags;
++	struct arm_smmu_group *smmu_group;
++	struct arm_smmu_master_data *master;
+ 	struct arm_smmu_device *smmu = smmu_task->smmu;
++	struct arm_smmu_domain *tmp_domain, *smmu_domain = NULL;
++	struct arm_smmu_cmdq_ent cmd = {
++		.opcode = smmu->features & ARM_SMMU_FEAT_E2H ?
++			  CMDQ_OP_TLBI_EL2_ASID : CMDQ_OP_TLBI_NH_ASID,
++	};
++
++	mutex_lock(&smmu->domains_mutex);
++
++	if (!test_and_set_bit(asid, smmu->asid_map))
++		goto out_unlock;
++
++	/* ASID is used by a domain. Try to replace it with a new one. */
++	new_asid = arm_smmu_bitmap_alloc(smmu->asid_map, smmu->asid_bits);
++	if (new_asid < 0) {
++		ret = new_asid;
++		goto out_unlock;
++	}
++
++	list_for_each_entry(tmp_domain, &smmu->domains, list) {
++		if (tmp_domain->stage != ARM_SMMU_DOMAIN_S1 ||
++		    tmp_domain->s1_cfg.asid != asid)
++			continue;
++
++		smmu_domain = tmp_domain;
++		break;
++	}
++
++	/*
++	 * We didn't find the domain that owns this ASID. It is a bug, since we
++	 * hold domains_mutex
++	 */
++	if (WARN_ON(!smmu_domain)) {
++		ret = -ENOSPC;
++		goto out_unlock;
++	}
++
++	/*
++	 * Race with smmu_unmap; TLB invalidations will start targeting the
++	 * new ASID, which isn't assigned yet. We'll do an invalidate-all on
++	 * the old ASID later, so it doesn't matter.
++	 */
++	smmu_domain->s1_cfg.asid = new_asid;
  
- /* Register bits */
--#define ARM_32_LPAE_TCR_EAE		(1 << 31)
--#define ARM_64_LPAE_S2_TCR_RES1		(1 << 31)
--
--#define ARM_LPAE_TCR_EPD1		(1 << 23)
--
--#define ARM_LPAE_TCR_TG0_4K		(0 << 14)
--#define ARM_LPAE_TCR_TG0_64K		(1 << 14)
--#define ARM_LPAE_TCR_TG0_16K		(2 << 14)
--
--#define ARM_LPAE_TCR_SH0_SHIFT		12
--#define ARM_LPAE_TCR_SH0_MASK		0x3
--#define ARM_LPAE_TCR_SH_NS		0
--#define ARM_LPAE_TCR_SH_OS		2
--#define ARM_LPAE_TCR_SH_IS		3
--
--#define ARM_LPAE_TCR_ORGN0_SHIFT	10
--#define ARM_LPAE_TCR_IRGN0_SHIFT	8
--#define ARM_LPAE_TCR_RGN_MASK		0x3
--#define ARM_LPAE_TCR_RGN_NC		0
--#define ARM_LPAE_TCR_RGN_WBWA		1
--#define ARM_LPAE_TCR_RGN_WT		2
--#define ARM_LPAE_TCR_RGN_WB		3
--
--#define ARM_LPAE_TCR_SL0_SHIFT		6
--#define ARM_LPAE_TCR_SL0_MASK		0x3
--
--#define ARM_LPAE_TCR_T0SZ_SHIFT		0
--#define ARM_LPAE_TCR_SZ_MASK		0xf
--
--#define ARM_LPAE_TCR_PS_SHIFT		16
--#define ARM_LPAE_TCR_PS_MASK		0x7
--
--#define ARM_LPAE_TCR_IPS_SHIFT		32
--#define ARM_LPAE_TCR_IPS_MASK		0x7
--
--#define ARM_LPAE_TCR_PS_32_BIT		0x0ULL
--#define ARM_LPAE_TCR_PS_36_BIT		0x1ULL
--#define ARM_LPAE_TCR_PS_40_BIT		0x2ULL
--#define ARM_LPAE_TCR_PS_42_BIT		0x3ULL
--#define ARM_LPAE_TCR_PS_44_BIT		0x4ULL
--#define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
--
--#define ARM_LPAE_MAIR_ATTR_SHIFT(n)	((n) << 3)
--#define ARM_LPAE_MAIR_ATTR_MASK		0xff
--#define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
--#define ARM_LPAE_MAIR_ATTR_NC		0x44
--#define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
- #define ARM_LPAE_MAIR_ATTR_IDX_NC	0
- #define ARM_LPAE_MAIR_ATTR_IDX_CACHE	1
- #define ARM_LPAE_MAIR_ATTR_IDX_DEV	2
-diff --git a/drivers/iommu/io-pgtable-arm.h b/drivers/iommu/io-pgtable-arm.h
-new file mode 100644
-index 000000000000..cb31314971ac
---- /dev/null
-+++ b/drivers/iommu/io-pgtable-arm.h
-@@ -0,0 +1,67 @@
-+/*
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
-+ *
-+ * Copyright (C) 2017 ARM Limited
-+ */
-+#ifndef __IO_PGTABLE_ARM_H
-+#define __IO_PGTABLE_ARM_H
+-	if (test_and_set_bit(asid, smmu->asid_map))
+-		/* ASID is already used for a domain */
+-		return -EEXIST;
++	/*
++	 * Update ASID and invalidate CD in all associated masters. There will
++	 * be some overlapping between use of both ASIDs, until we invalidate
++	 * the TLB.
++	 */
++	spin_lock_irqsave(&smmu_domain->groups_lock, flags);
 +
-+#define ARM_32_LPAE_TCR_EAE		(1 << 31)
-+#define ARM_64_LPAE_S2_TCR_RES1		(1 << 31)
++	list_for_each_entry(smmu_group, &smmu_domain->groups, domain_head) {
++		spin_lock(&smmu_group->devices_lock);
++		list_for_each_entry(master, &smmu_group->devices, group_head) {
++			arm_smmu_write_ctx_desc(master, 0, &smmu_domain->s1_cfg);
++		}
++		spin_unlock(&smmu_group->devices_lock);
++	}
 +
-+#define ARM_LPAE_TCR_EPD1		(1 << 23)
++	spin_unlock_irqrestore(&smmu_domain->groups_lock, flags);
 +
-+#define ARM_LPAE_TCR_TG0_4K		(0 << 14)
-+#define ARM_LPAE_TCR_TG0_64K		(1 << 14)
-+#define ARM_LPAE_TCR_TG0_16K		(2 << 14)
++	/* Invalidate TLB entries previously associated with that domain */
++	cmd.tlbi.asid = asid;
++	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
++	cmd.opcode = CMDQ_OP_CMD_SYNC;
++	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
 +
-+#define ARM_LPAE_TCR_SH0_SHIFT		12
-+#define ARM_LPAE_TCR_SH0_MASK		0x3
-+#define ARM_LPAE_TCR_SH_NS		0
-+#define ARM_LPAE_TCR_SH_OS		2
-+#define ARM_LPAE_TCR_SH_IS		3
++out_unlock:
++	mutex_unlock(&smmu->domains_mutex);
+ 
+ 	return ret;
+ }
+@@ -2426,16 +2499,23 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
+ 	iommu_put_dma_cookie(domain);
+ 	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
+ 
++	mutex_lock(&smmu->domains_mutex);
 +
-+#define ARM_LPAE_TCR_ORGN0_SHIFT	10
-+#define ARM_LPAE_TCR_IRGN0_SHIFT	8
-+#define ARM_LPAE_TCR_RGN_MASK		0x3
-+#define ARM_LPAE_TCR_RGN_NC		0
-+#define ARM_LPAE_TCR_RGN_WBWA		1
-+#define ARM_LPAE_TCR_RGN_WT		2
-+#define ARM_LPAE_TCR_RGN_WB		3
+ 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+ 		struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
+-		if (cfg->asid)
++		if (cfg->asid) {
+ 			arm_smmu_bitmap_free(smmu->asid_map, cfg->asid);
 +
-+#define ARM_LPAE_TCR_SL0_SHIFT		6
-+#define ARM_LPAE_TCR_SL0_MASK		0x3
++			list_del(&smmu_domain->list);
++		}
+ 	} else {
+ 		struct arm_smmu_s2_cfg *cfg = &smmu_domain->s2_cfg;
+ 		if (cfg->vmid)
+ 			arm_smmu_bitmap_free(smmu->vmid_map, cfg->vmid);
+ 	}
+ 
++	mutex_unlock(&smmu->domains_mutex);
 +
-+#define ARM_LPAE_TCR_T0SZ_SHIFT		0
-+#define ARM_LPAE_TCR_SZ_MASK		0x3f
+ 	kfree(smmu_domain);
+ }
+ 
+@@ -2455,6 +2535,8 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+ 	cfg->tcr	= pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+ 	cfg->mair	= pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
+ 
++	list_add(&smmu_domain->list, &smmu->domains);
 +
-+#define ARM_LPAE_TCR_PS_SHIFT		16
-+#define ARM_LPAE_TCR_PS_MASK		0x7
+ 	return 0;
+ }
+ 
+@@ -2604,12 +2686,16 @@ static void arm_smmu_detach_dev(struct device *dev)
+ 	struct arm_smmu_context *smmu_context;
+ 	struct rb_node *node, *next;
+ 
++	mutex_lock(&smmu->domains_mutex);
 +
-+#define ARM_LPAE_TCR_IPS_SHIFT		32
-+#define ARM_LPAE_TCR_IPS_MASK		0x7
+ 	master->ste.bypass = true;
+ 	if (arm_smmu_install_ste_for_dev(dev->iommu_fwspec) < 0)
+ 		dev_warn(dev, "failed to install bypass STE\n");
+ 
+ 	arm_smmu_write_ctx_desc(master, 0, NULL);
+ 
++	mutex_unlock(&smmu->domains_mutex);
 +
-+#define ARM_LPAE_TCR_PS_32_BIT		0x0ULL
-+#define ARM_LPAE_TCR_PS_36_BIT		0x1ULL
-+#define ARM_LPAE_TCR_PS_40_BIT		0x2ULL
-+#define ARM_LPAE_TCR_PS_42_BIT		0x3ULL
-+#define ARM_LPAE_TCR_PS_44_BIT		0x4ULL
-+#define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
-+
-+#define ARM_LPAE_MAIR_ATTR_SHIFT(n)	((n) << 3)
-+#define ARM_LPAE_MAIR_ATTR_MASK		0xff
-+#define ARM_LPAE_MAIR_ATTR_DEVICE	0x04
-+#define ARM_LPAE_MAIR_ATTR_NC		0x44
-+#define ARM_LPAE_MAIR_ATTR_WBRWA	0xff
-+
-+#endif /* __IO_PGTABLE_ARM_H */
+ 	if (!master->ste.valid)
+ 		return;
+ 
+@@ -2682,6 +2768,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		arm_smmu_detach_dev(dev);
+ 	}
+ 
++	mutex_lock(&smmu->domains_mutex);
+ 	mutex_lock(&smmu_domain->init_mutex);
+ 
+ 	if (!smmu_domain->smmu) {
+@@ -2726,6 +2813,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 
+ out_unlock:
+ 	mutex_unlock(&smmu_domain->init_mutex);
++	mutex_unlock(&smmu->domains_mutex);
+ 
+ 	iommu_group_put(group);
+ 
+@@ -3330,9 +3418,11 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
+ {
+ 	int ret;
+ 
++	mutex_init(&smmu->domains_mutex);
+ 	spin_lock_init(&smmu->contexts_lock);
+ 	smmu->streams = RB_ROOT;
+ 	INIT_LIST_HEAD(&smmu->tasks);
++	INIT_LIST_HEAD(&smmu->domains);
+ 
+ 	ret = arm_smmu_init_queues(smmu);
+ 	if (ret)
 -- 
 2.11.0
