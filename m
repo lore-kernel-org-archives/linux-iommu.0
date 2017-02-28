@@ -1,71 +1,93 @@
-From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC Design Doc v3] Enable Shared Virtual Memory feature in
-	pass-through scenarios
-Date: Tue, 28 Feb 2017 17:07:19 -0500
-Message-ID: <20170228220719.GD2352@char.us.ORACLE.com>
-References: <A2975661238FB949B60364EF0F2C257436DE3165@shsmsx102.ccr.corp.intel.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [RFC PATCH v4 11/28] x86: Add support to determine the E820 type
+ of an address
+Date: Tue, 28 Feb 2017 16:34:39 -0600
+Message-ID: <e6146786-16c5-99ab-52c9-2bdd50c7d9ba@amd.com>
+References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
+ <20170216154430.19244.95519.stgit@tlendack-t1.amdoffice.net>
+ <20170220200955.32e2wqxgulswnr55@pd.tnic>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <A2975661238FB949B60364EF0F2C257436DE3165-E2R4CRU6q/6iAffOGbnezLfspsVTdybXVpNB7YpNyf8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Peng, Chao P" <chao.p.peng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Hao,
-	Xudong" <xudong.hao-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "Sun,
-	Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Pan, Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20170220200955.32e2wqxgulswnr55@pd.tnic>
+Sender: owner-linux-mm@kvack.org
+To: Borislav Petkov <bp@alien8.de>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S.
+ Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter
+ Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Thomas Gleixner <tglx@li>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Nov 30, 2016 at 08:49:24AM +0000, Liu, Yi L wrote:
-> What's changed from v2:
-> a) Detailed feature description
-> b) refine description in "Address translation in virtual SVM"
-> b) "Terms" is added
-> 
-> Content
-> ===============================================
-> 1. Feature description
-> 2. Why use it?
-> 3. How to enable it
-> 4. How to test
-> 5. Terms
-> 
-> Details
-> ===============================================
-> 1. Feature description
-> Shared virtual memory(SVM) is to let application program share its virtual
-> address with SVM capable devices. 
-> 
-> Shared virtual memory details:
-> a) SVM feature requires ATS/PRQ/PASID support on both device side and
-> IOMMU side.
-> b) SVM capable devices could send DMA requests with PASID, the address
-> in the request would be a virtual address within a program's virtual address
-> space.
-> c) IOMMU would use first level page table to translate the address in the
-> request.
-> d) First level page table is a HVA->HPA mapping on bare metal.
-> 
-> Shared Virtual Memory feature in pass-through scenarios is actually SVM
-> virtualization. It is to let application programs(running in guest)share their
-> virtual address with assigned device(e.g. graphics processors or accelerators).
+On 2/20/2017 2:09 PM, Borislav Petkov wrote:
+> On Thu, Feb 16, 2017 at 09:44:30AM -0600, Tom Lendacky wrote:
+>> This patch adds support to return the E820 type associated with an address
+>
+> s/This patch adds/Add/
+>
+>> range.
+>>
+>> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+>> ---
+>>  arch/x86/include/asm/e820/api.h   |    2 ++
+>>  arch/x86/include/asm/e820/types.h |    2 ++
+>>  arch/x86/kernel/e820.c            |   26 +++++++++++++++++++++++---
+>>  3 files changed, 27 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/arch/x86/include/asm/e820/api.h b/arch/x86/include/asm/e820/api.h
+>> index 8e0f8b8..7c1bdc9 100644
+>> --- a/arch/x86/include/asm/e820/api.h
+>> +++ b/arch/x86/include/asm/e820/api.h
+>> @@ -38,6 +38,8 @@
+>>  extern void e820__reallocate_tables(void);
+>>  extern void e820__register_nosave_regions(unsigned long limit_pfn);
+>>
+>> +extern enum e820_type e820__get_entry_type(u64 start, u64 end);
+>> +
+>>  /*
+>>   * Returns true iff the specified range [start,end) is completely contained inside
+>>   * the ISA region.
+>> diff --git a/arch/x86/include/asm/e820/types.h b/arch/x86/include/asm/e820/types.h
+>> index 4adeed0..bf49591 100644
+>> --- a/arch/x86/include/asm/e820/types.h
+>> +++ b/arch/x86/include/asm/e820/types.h
+>> @@ -7,6 +7,8 @@
+>>   * These are the E820 types known to the kernel:
+>>   */
+>>  enum e820_type {
+>> +	E820_TYPE_INVALID	= 0,
+>> +
+>
+> Now this is strange - ACPI spec doesn't explicitly say that range type 0
+> is invalid. Am I looking at the wrong place?
+>
+> "Table 15-312 Address Range Types12" in ACPI spec 6.
+>
+> If 0 is really the invalid entry, then e820_print_type() needs updating
+> too. And then the invalid-entry-add should be a separate patch.
 
-I think I am missing something obvious, but the current way that DRM
-works is that the kernel sets up its VA addresses for the GPU and it uses
-that for its ring. It also setups an user level mapping for the GPU if the
-application (Xorg) really wants it - but most of the time the kernel is
-in charge of poking at the ring, and the memory that is shared with the
-Xorg is normal RAM allocated via alloc_pages (see drivers/gpu/drm/ttm/ttm_page_alloc_dma.c
-and drivers/gpu/drm/ttm/ttm_page_alloc.c).
+The 0 return (originally) was to indicate that an e820 entry for the
+range wasn't found. This series just gave it a name.  So it's not that
+the type field held a 0.  Since 0 isn't defined in the ACPI spec I don't
+see an issue with creating it and I can add a comment to the effect that
+this value is used for the type when an e820 entry isn't found. I could
+always rename it to E820_TYPE_NOT_FOUND if that would help.
 
-So are talking about the guest applications having access to the 
-ring of the GPU?
+Or if we want to guard against ACPI adding a type 0 in the future, I
+could make the function return an int and then return -EINVAL if an e820
+entry isn't found.  This might be the better option.
+
+Thanks,
+Tom
+
+
+>
+>>  	E820_TYPE_RAM		= 1,
+>>  	E820_TYPE_RESERVED	= 2,
+>>  	E820_TYPE_ACPI		= 3,
+>
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
