@@ -1,17 +1,10 @@
-From: Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 30/30] vfio: Allow to bind foreign task
-Date: Tue, 28 Feb 2017 15:22:30 +0000
-Message-ID: <20170228152230.GB15153@e106794-lin.localdomain>
-References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
-	<20170227195441.5170-31-jean-philippe.brucker@arm.com>
-	<20170227205411.1abca59a@t450s.home>
-	<AADFC41AFE54684AB9EE6CBC0274A5D190C4CB9C@SHSMSX101.ccr.corp.intel.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [git pull] IOMMU Fixes for Linux v4.11-rc1
+Date: Tue, 28 Feb 2017 16:24:34 +0100
+Message-ID: <20170228152428.GA26932@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============1615568488142577796=="
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190C4CB9C-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,125 +14,90 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
+To: Linus Torvalds <torvalds-de/tnXTf+JLsfHDXvbKv3WD2FQJk+8+b@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Kevin,
 
-On Tue, Feb 28, 2017 at 06:43:31AM +0000, Tian, Kevin wrote:
-> > From: Alex Williamson
-> > Sent: Tuesday, February 28, 2017 11:54 AM
-> > 
-> > On Mon, 27 Feb 2017 19:54:41 +0000
-> > Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
-> > 
-> [...]
-> > > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> > > index 3fe4197a5ea0..41ae8a231d42 100644
-> > > --- a/include/uapi/linux/vfio.h
-> > > +++ b/include/uapi/linux/vfio.h
-> > > @@ -415,7 +415,9 @@ struct vfio_device_svm {
-> > >  	__u32	flags;
-> > >  #define VFIO_SVM_PASID_RELEASE_FLUSHED	(1 << 0)
-> > >  #define VFIO_SVM_PASID_RELEASE_CLEAN	(1 << 1)
-> > > +#define VFIO_SVM_PID			(1 << 2)
-> > >  	__u32	pasid;
-> > > +	__u32	pid;
-> > >  };
-> > >  /*
-> > >   * VFIO_DEVICE_BIND_TASK - _IOWR(VFIO_TYPE, VFIO_BASE + 22,
-> > > @@ -432,6 +434,19 @@ struct vfio_device_svm {
-> > >   * On success, VFIO writes a Process Address Space ID (PASID) into @pasid. This
-> > >   * ID is unique to a device.
-> > >   *
-> > > + * VFIO_SVM_PID: bind task @pid instead of current task. The shared address
-> > > + *        space identified by @pasid is that of task identified by @pid.
-> > > + *
-> > > + *        Given that the caller owns the device, setting this flag grants the
-> > > + *        caller read and write permissions on the entire address space of
-> > > + *        foreign task described by @pid. Therefore, permission to perform the
-> > > + *        bind operation on a foreign process is governed by the ptrace access
-> > > + *        mode PTRACE_MODE_ATTACH_REALCREDS check. See man ptrace(2) for
-> > more
-> > > + *        information.
-> > > + *
-> > > + *        If the VFIO_SVM_PID flag is not set, @pid is unused and it is the
-> > > + *        current task that is bound to the device.
-> > > + *
-> > >   * The bond between device and process must be removed with
-> > >   * VFIO_DEVICE_UNBIND_TASK before exiting.
-> > >   *
-> > 
-> > BTW, nice commit logs throughout this series, I probably need to read
-> > through them a few more times to really digest it all.  AIUI, the VFIO
-> > support here is really only useful for basic userspace drivers, I don't
-> > see how we could take advantage of it for a VM use case where the guest
-> > manages the PASID space for a domain.  Perhaps it hasn't spent enough
-> > cycles bouncing around in my head yet.  Thanks,
-> > 
-> 
-> Current definition doesn't work with virtualization usage, at least on Intel
-> VT-d. To enable virtualized SVM within a VM, architecturally VT-d needs
-> be in a nested mode - go through guest PASID table to find guest CR3, 
-> use guest CR3 as 1st level translation for GVA->GPA and then use 2nd 
-> level translation for GPA->HPA. PASID table is fully allocated/managed
-> by VM. Within the translation process each guest pointer (PASID or 1st 
-> level paging structures) is treated as GPA which also goes through 2nd 
-> level translation. I didn't read ARM SMMU spec yet, but hope the basic 
-> mechanism stays similar.
+--===============1615568488142577796==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="0F1p//8PRICkK4MW"
+Content-Disposition: inline
 
-If I understand correctly, it is very similar on ARM SMMU, where we have
-two stages of translation. Stage-1 is GVA->GPA and stage-2 is GPA->HPA,
-with all intermediate tables of stage-1 translation obtained via stage-2
-as well. The SMMU holds stage-1 paging structure in the PASID tables.
- 
-> Here we need an API which allows Qemu vIOMMU to bind guest PASID
-> table pointer and enable nested mode for target device in underlying 
-> IOMMU hardware, while proposed API is only for user space driver 
-> regarding to binding a specific host address space.
-> 
-> Based on above requirement difference, Alex, do you prefer to 
-> introducing one API covering both usages or separate APIs for their
-> own purposes?
-> 
-> btw Yi is working on a SVM virtualization prototype based on Intel 
-> VT-d. I hope soon he will send out a RFC so we can align the high
-> level API requirement better. :-)
 
-For IO virtualization on ARM, I'm currently working on a generic
-para-virtualized IOMMU, where the IOMMU presented to the VM is different
-from the hardware SMMU (I'll try not to go into details here, to avoid
-derailing the discussion too much). For virtual SVM, the PASID table
-format would be different between vIOMMU and pIOMMU, but the page table
-formats would be the same as the MMU.
+--0F1p//8PRICkK4MW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-The VFIO interface for this would therefore have to be more fine-grained
-than passing the whole PASID table. And could be implemented by
-extending the interface proposed here.
+Hi Linus,
 
-User passes an opaque architecture-specific structure containing page
-table format and pgd via the BIND_TASK VFIO ioctl. And the pIOMMU can
-manage its own PASID tables, pointing to VM page tables. I was thinking
-of letting the physical IOMMU handle PASID allocation and return it to
-the VM via BIND_TASK instead of letting the guest do it, but that's more
-of an implementation detail.
+The following changes since commit 86292b33d4b79ee03e2f43ea0381ef85f077c760:
 
-When talking about SVM virtualization, there also is the case where the
-VMM wants to avoid pinning all of the guest RAM prior to assigning
-devices to a VM. In short, stage-2 SVM, where a device fault is handled
-by KVM to map GPA->HPA. I think the interface presented in this patch
-could also be reused, but there wouldn't be a lot of overlapping. The
-PASID wouldn't be used, and we'd need to pass an eventfd or another
-mechanism that allows KVM or the VMM to handle faults. This makes me
-more confident that the name "VFIO_IOMMU_SVM_BIND" might be more
-suitable than "VFIO_IOMMU_BIND_TASK".
+  Merge branch 'akpm' (patches from Andrew) (2017-02-27 23:09:29 -0800)
 
-To summarize, I think that this API can be reused when implementing a
-para-virtualized IOMMU. But for the "full" virtualization case, a
-somewhat orthogonal API would be needed. The fault reporting
-infrastructure would most likely be common. So I don't think that this
-proposal will collide with the SVM virtualization work for VT-d.
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v4.11-rc0-2
+
+for you to fetch changes up to b7a42b9d38063e58cdf201c575da75943f71051e:
+
+  iommu/amd: Fix crash when accessing AMD-Vi sysfs entries (2017-02-28 15:48:23 +0100)
+
+----------------------------------------------------------------
+IOMMU Fixes:
+
+	* Fix and issue introduced this merge window into the AMD and
+	  Intel IOMMU drivers that causes an oops when the
+	  vendor-specific sysfs-entries are accessed.
+	  Reason for this issue is that I forgot to update the sysfs
+	  code in the drivers when moving the iommu 'struct device' to
+	  the iommu-core.
+
+----------------------------------------------------------------
+Joerg Roedel (2):
+      iommu/vt-d: Fix crash when accessing VT-d sysfs entries
+      iommu/amd: Fix crash when accessing AMD-Vi sysfs entries
+
+ drivers/iommu/amd_iommu_init.c  |  4 ++--
+ drivers/iommu/amd_iommu_types.h |  5 +++++
+ drivers/iommu/intel-iommu.c     | 17 +++++++++++------
+ 3 files changed, 18 insertions(+), 8 deletions(-)
+
+Please pull.
 
 Thanks,
-Jean-Philippe
+
+	Joerg
+
+--0F1p//8PRICkK4MW
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAEBAgAGBQJYtZYsAAoJECvwRC2XARrjuHMP/3JR93s+FzL8OQkVVm/6szp1
+mvon6mBFFf5hjRVk7XHkTAT4Zrb52O4b4jB1jWCIa0sdUHhJ1zdDQ25UGWIoYNPs
+ub+2o9X2ruGuGU9tC2pVaBIomapDyimNJVophdrTxWuqXApa3e3ORIOTJMitweDm
+w2cK6snD1V3jqkMJhGTeHUGp1bXBO2MbNE1ggB+NNwSgyqOGGtu2nQhzlFRhc8My
+T3VkEuNSuCSTmUEN0N44k6A5eCBghD5rwFmeOcZatCPRvtQgWaSshEXYy+UXuVX8
+2XcK3C6MSn4/uscPFzLff45iX6+Mwn4Hg9PKrA29qNN6QAs7d0z6was0QelEj6xh
+1a84zC8G5ld+E4XJsRUFH4zCuNyfpxQ+PgIdY8IbIvgofAoLOddBPDQnl2FYMDZ/
+r3yYMnPzrIdbTD+npOxqbY7iWSS8p7o5cLDhpI/02A0bpu/zSvfsuv4AuIj48qtk
+Rh9s0kpxiePvfuZL55Ywb6jvob3d29I0jNo06ekCwoPY9+/qYtt9dzk2owRcE12u
+qbj7txmjzazMkSDCm4CxBpnrYF9zHOhWB3BFBlHeyVMHuKIjw0JBCHl/OfXixbNy
+iNB65VcgwWunXGQ79TEbPwm0rgd4u6zADDxv4UVwn3w7JtNN9z9OVYg07SR1Qglh
+XZqjaav/s0NkIon9gCQw
+=tOdu
+-----END PGP SIGNATURE-----
+
+--0F1p//8PRICkK4MW--
+
+--===============1615568488142577796==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+
+--===============1615568488142577796==--
