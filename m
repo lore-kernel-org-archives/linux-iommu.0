@@ -1,142 +1,68 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 2/9] firmware: qcom_scm: add two scm calls for iommu secure
-	page table
-Date: Wed,  1 Mar 2017 12:42:51 -0500
-Message-ID: <20170301174258.14618-3-robdclark@gmail.com>
+From: Rob Clark <robdclark@gmail.com>
+Subject: [PATCH 8/9] ARM64: DT: add video codec devicetree node
+Date: Wed,  1 Mar 2017 12:42:57 -0500
+Message-ID: <20170301174258.14618-9-robdclark@gmail.com>
 References: <20170301174258.14618-1-robdclark@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170301174258.14618-1-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20170301174258.14618-1-robdclark@gmail.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Sricharan <sricharan@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Stanimir Varbanov <stanimir.varbanov@linaro.org>, Rob Clark <robdclark@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+From: Stanimir Varbanov <stanimir.varbanov@linaro.org>
 
-Those two new SCM calls are needed from qcom-iommu driver in order
-to initialize secure iommu page table.
-
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
-Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Rob Clark <robdclark@gmail.com>
 ---
- drivers/firmware/qcom_scm-64.c | 42 ++++++++++++++++++++++++++++++++++++++++++
- drivers/firmware/qcom_scm.c    | 12 ++++++++++++
- drivers/firmware/qcom_scm.h    |  6 ++++++
- include/linux/qcom_scm.h       |  2 ++
- 4 files changed, 62 insertions(+)
+ arch/arm64/boot/dts/qcom/msm8916.dtsi | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/drivers/firmware/qcom_scm-64.c b/drivers/firmware/qcom_scm-64.c
-index 550e3a3..6e6d561 100644
---- a/drivers/firmware/qcom_scm-64.c
-+++ b/drivers/firmware/qcom_scm-64.c
-@@ -397,3 +397,45 @@ int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id, u32 spare)
+diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+index b0daf39..7bcf4cd 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+@@ -88,6 +88,13 @@
+ 			no-map;
+ 		};
  
- 	return ret ? : res.a1;
- }
++		venus_mem: venus@89900000 {
++			compatible = "shared-dma-pool";
++			reg = <0x0 0x89900000 0x0 0x800000>;
++			alignment = <0x1000>;
++			no-map;
++		};
 +
-+int __qcom_scm_iommu_secure_ptbl_size(struct device *dev, u32 spare,
-+				      size_t *size)
-+{
-+	struct qcom_scm_desc desc = {0};
-+	struct arm_smccc_res res;
-+	int ret;
+ 		mba_mem: mba@8ea00000 {
+ 			no-map;
+ 			reg = <0 0x8ea00000 0 0x100000>;
+@@ -1190,6 +1197,27 @@
+ 				};
+ 			};
+ 		};
 +
-+	desc.args[0] = spare;
-+	desc.arginfo = QCOM_SCM_ARGS(1);
++		venus: video-codec@1d00000 {
++			compatible = "qcom,msm8916-venus";
++			reg = <0x01d00000 0xff000>;
++			interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
++			power-domains = <&gcc VENUS_GDSC>;
++			clocks = <&gcc GCC_VENUS0_VCODEC0_CLK>,
++				 <&gcc GCC_VENUS0_AHB_CLK>,
++				 <&gcc GCC_VENUS0_AXI_CLK>;
++			clock-names = "core", "iface", "bus";
++			memory-region = <&venus_mem>;
++			status = "okay";
 +
-+	ret = qcom_scm_call(dev, QCOM_SCM_SVC_MP,
-+			    QCOM_SCM_IOMMU_SECURE_PTBL_SIZE, &desc, &res);
++			video-decoder {
++				compatible = "venus-decoder";
++			};
 +
-+	if (size)
-+		*size = res.a1;
-+
-+	return ret ? : res.a2;
-+}
-+
-+int __qcom_scm_iommu_secure_ptbl_init(struct device *dev, u64 addr, u32 size,
-+				      u32 spare)
-+{
-+	struct qcom_scm_desc desc = {0};
-+	struct arm_smccc_res res;
-+	int ret;
-+
-+	desc.args[0] = addr;
-+	desc.args[1] = size;
-+	desc.args[2] = spare;
-+	desc.arginfo = QCOM_SCM_ARGS(3, QCOM_SCM_RW, QCOM_SCM_VAL,
-+				     QCOM_SCM_VAL);
-+
-+	ret = qcom_scm_call(dev, QCOM_SCM_SVC_MP,
-+			    QCOM_SCM_IOMMU_SECURE_PTBL_INIT, &desc, &res);
-+
-+	/* the pg table has been initialized already, ignore the error */
-+	if (ret == -EPERM)
-+		ret = 0;
-+
-+	return ret;
-+}
-diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
-index ae1f473..bb16510 100644
---- a/drivers/firmware/qcom_scm.c
-+++ b/drivers/firmware/qcom_scm.c
-@@ -321,6 +321,18 @@ int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare)
- }
- EXPORT_SYMBOL(qcom_scm_restore_sec_cfg);
++			video-encoder {
++				compatible = "venus-encoder";
++			};
++		};
+ 	};
  
-+int qcom_scm_iommu_secure_ptbl_size(u32 spare, size_t *size)
-+{
-+	return __qcom_scm_iommu_secure_ptbl_size(__scm->dev, spare, size);
-+}
-+EXPORT_SYMBOL(qcom_scm_iommu_secure_ptbl_size);
-+
-+int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare)
-+{
-+	return __qcom_scm_iommu_secure_ptbl_init(__scm->dev, addr, size, spare);
-+}
-+EXPORT_SYMBOL(qcom_scm_iommu_secure_ptbl_init);
-+
- /**
-  * qcom_scm_is_available() - Checks if SCM is available
-  */
-diff --git a/drivers/firmware/qcom_scm.h b/drivers/firmware/qcom_scm.h
-index 31fc732..9bea691 100644
---- a/drivers/firmware/qcom_scm.h
-+++ b/drivers/firmware/qcom_scm.h
-@@ -89,5 +89,11 @@ static inline int qcom_scm_remap_error(int err)
- #define QCOM_SCM_RESTORE_SEC_CFG	2
- extern int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id,
- 				      u32 spare);
-+#define QCOM_SCM_IOMMU_SECURE_PTBL_SIZE	3
-+#define QCOM_SCM_IOMMU_SECURE_PTBL_INIT	4
-+extern int __qcom_scm_iommu_secure_ptbl_size(struct device *dev, u32 spare,
-+					     size_t *size);
-+extern int __qcom_scm_iommu_secure_ptbl_init(struct device *dev, u64 addr,
-+					     u32 size, u32 spare);
- 
- #endif
-diff --git a/include/linux/qcom_scm.h b/include/linux/qcom_scm.h
-index 22017f5d..c46c3c2 100644
---- a/include/linux/qcom_scm.h
-+++ b/include/linux/qcom_scm.h
-@@ -41,6 +41,8 @@ extern void qcom_scm_cpu_power_down(u32 flags);
- extern u32 qcom_scm_get_version(void);
- extern int qcom_scm_set_remote_state(u32 state, u32 id);
- extern int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare);
-+extern int qcom_scm_iommu_secure_ptbl_size(u32 spare, size_t *size);
-+extern int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare);
- #else
- static inline
- int qcom_scm_set_cold_boot_addr(void *entry, const cpumask_t *cpus)
+ 	smd {
 -- 
 2.9.3
