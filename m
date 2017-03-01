@@ -1,7 +1,8 @@
 From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 3/9] Docs: dt: document qcom iommu bindings
-Date: Wed,  1 Mar 2017 12:42:52 -0500
-Message-ID: <20170301174258.14618-4-robdclark@gmail.com>
+Subject: [PATCH 2/9] firmware: qcom_scm: add two scm calls for iommu secure
+	page table
+Date: Wed,  1 Mar 2017 12:42:51 -0500
+Message-ID: <20170301174258.14618-3-robdclark@gmail.com>
 References: <20170301174258.14618-1-robdclark@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -18,127 +19,124 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+
+Those two new SCM calls are needed from qcom-iommu driver in order
+to initialize secure iommu page table.
+
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- .../devicetree/bindings/iommu/qcom,iommu.txt       | 106 +++++++++++++++++++++
- 1 file changed, 106 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+ drivers/firmware/qcom_scm-64.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+ drivers/firmware/qcom_scm.c    | 12 ++++++++++++
+ drivers/firmware/qcom_scm.h    |  6 ++++++
+ include/linux/qcom_scm.h       |  2 ++
+ 4 files changed, 62 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-new file mode 100644
-index 0000000..2e69b78
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-@@ -0,0 +1,106 @@
-+* QCOM IOMMU v1 Implementation
+diff --git a/drivers/firmware/qcom_scm-64.c b/drivers/firmware/qcom_scm-64.c
+index 550e3a3..6e6d561 100644
+--- a/drivers/firmware/qcom_scm-64.c
++++ b/drivers/firmware/qcom_scm-64.c
+@@ -397,3 +397,45 @@ int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id, u32 spare)
+ 
+ 	return ret ? : res.a1;
+ }
 +
-+Qualcomm "B" family devices which are not compatible with arm-smmu have
-+a similar looking IOMMU but without access to the global register space,
-+and optionally requiring additional configuration to route context irqs
-+to non-secure vs secure interrupt line.
++int __qcom_scm_iommu_secure_ptbl_size(struct device *dev, u32 spare,
++				      size_t *size)
++{
++	struct qcom_scm_desc desc = {0};
++	struct arm_smccc_res res;
++	int ret;
 +
-+** Required properties:
++	desc.args[0] = spare;
++	desc.arginfo = QCOM_SCM_ARGS(1);
 +
-+- compatible       : Should be "qcom,msm-iommu-v1".
-+- clocks           : The interface clock (iface_clk) and bus clock (bus_clk).
-+- #address-cells   : must be 1.
-+- #size-cells      : must be 1.
-+- #iommu-cells     : Must be 1.
-+- ranges           : Base address and size of the iommu context banks.
-+- qcom,iommu-secure-id  : secure-id.
++	ret = qcom_scm_call(dev, QCOM_SCM_SVC_MP,
++			    QCOM_SCM_IOMMU_SECURE_PTBL_SIZE, &desc, &res);
 +
-+- List of sub-nodes, one per translation context bank.  Each sub-node
-+  has the following required properties:
++	if (size)
++		*size = res.a1;
 +
-+  - compatible     : Should be one of:
-+        - "qcom,msm-iommu-v1-ns"  : non-secure context bank
-+        - "qcom,msm-iommu-v1-sec" : secure context bank
-+  - reg            : Base address and size of context bank within the iommu
-+  - interrupts     : The context fault irq.
++	return ret ? : res.a2;
++}
 +
-+** Optional properties:
++int __qcom_scm_iommu_secure_ptbl_init(struct device *dev, u64 addr, u32 size,
++				      u32 spare)
++{
++	struct qcom_scm_desc desc = {0};
++	struct arm_smccc_res res;
++	int ret;
 +
-+- reg              : Base address and size of the SMMU local base, should
-+                     be only specified if the iommu requires configuration
-+                     for routing of context bank irq's to secure vs non-
-+                     secure lines.  (Ie. if the iommu contains secure
-+                     context banks)
++	desc.args[0] = addr;
++	desc.args[1] = size;
++	desc.args[2] = spare;
++	desc.arginfo = QCOM_SCM_ARGS(3, QCOM_SCM_RW, QCOM_SCM_VAL,
++				     QCOM_SCM_VAL);
 +
++	ret = qcom_scm_call(dev, QCOM_SCM_SVC_MP,
++			    QCOM_SCM_IOMMU_SECURE_PTBL_INIT, &desc, &res);
 +
-+** Examples:
++	/* the pg table has been initialized already, ignore the error */
++	if (ret == -EPERM)
++		ret = 0;
 +
-+	apps_iommu: msm-iommu-v1@1e20000 {
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		#iommu-cells = <1>;
-+		compatible = "qcom,msm-iommu-v1";
-+		ranges = <0 0x1e20000 0x40000>;
-+		reg = <0x1ef0000 0x3000>;
-+		clocks = <&gcc GCC_SMMU_CFG_CLK>,
-+			 <&gcc GCC_APSS_TCU_CLK>;
-+		clock-names = "iface_clk", "bus_clk";
-+		qcom,iommu-secure-id = <17>;
++	return ret;
++}
+diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
+index ae1f473..bb16510 100644
+--- a/drivers/firmware/qcom_scm.c
++++ b/drivers/firmware/qcom_scm.c
+@@ -321,6 +321,18 @@ int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare)
+ }
+ EXPORT_SYMBOL(qcom_scm_restore_sec_cfg);
+ 
++int qcom_scm_iommu_secure_ptbl_size(u32 spare, size_t *size)
++{
++	return __qcom_scm_iommu_secure_ptbl_size(__scm->dev, spare, size);
++}
++EXPORT_SYMBOL(qcom_scm_iommu_secure_ptbl_size);
 +
-+		// mdp_0:
-+		msm-iommu-v1-ctx@4000 {
-+			compatible = "qcom,msm-iommu-v1-ns";
-+			reg = <0x4000 0x1000>;
-+			interrupts = <GIC_SPI 70 0>;
-+		};
++int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare)
++{
++	return __qcom_scm_iommu_secure_ptbl_init(__scm->dev, addr, size, spare);
++}
++EXPORT_SYMBOL(qcom_scm_iommu_secure_ptbl_init);
 +
-+		// venus_ns:
-+		msm-iommu-v1-ctx@5000 {
-+			compatible = "qcom,msm-iommu-v1-sec";
-+			reg = <0x5000 0x1000>;
-+			interrupts = <GIC_SPI 70 0>;
-+		};
-+	};
-+
-+	gpu_iommu: msm-iommu-v1@1f08000 {
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		#iommu-cells = <1>;
-+		compatible = "qcom,msm-iommu-v1";
-+		ranges = <0 0x1f08000 0x10000>;
-+		clocks = <&gcc GCC_SMMU_CFG_CLK>,
-+			 <&gcc GCC_GFX_TCU_CLK>;
-+		clock-names = "iface_clk", "bus_clk";
-+		qcom,iommu-secure-id = <18>;
-+
-+		// gfx3d_user:
-+		msm-iommu-v1-ctx@1f09000 {
-+			compatible = "qcom,msm-iommu-v1-ns";
-+			reg = <0x1000 0x1000>;
-+			interrupts = <GIC_SPI 241 0>;
-+		};
-+
-+		// gfx3d_priv:
-+		msm-iommu-v1-ctx@1f0a000 {
-+			compatible = "qcom,msm-iommu-v1-ns";
-+			reg = <0x2000 0x1000>;
-+			interrupts = <GIC_SPI 242 0>;
-+		};
-+	};
-+
-+	...
-+
-+	venus: video-codec@1d00000 {
-+		...
-+		iommus = <&apps_iommu 5>;
-+	};
-+
-+	mdp: mdp@1a01000 {
-+		...
-+		iommus = <&apps_iommu 4>;
-+	};
-+
-+	gpu@01c00000 {
-+		...
-+		iommus = <&gpu_iommu 1>, <&gpu_iommu 2>;
-+	};
+ /**
+  * qcom_scm_is_available() - Checks if SCM is available
+  */
+diff --git a/drivers/firmware/qcom_scm.h b/drivers/firmware/qcom_scm.h
+index 31fc732..9bea691 100644
+--- a/drivers/firmware/qcom_scm.h
++++ b/drivers/firmware/qcom_scm.h
+@@ -89,5 +89,11 @@ static inline int qcom_scm_remap_error(int err)
+ #define QCOM_SCM_RESTORE_SEC_CFG	2
+ extern int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id,
+ 				      u32 spare);
++#define QCOM_SCM_IOMMU_SECURE_PTBL_SIZE	3
++#define QCOM_SCM_IOMMU_SECURE_PTBL_INIT	4
++extern int __qcom_scm_iommu_secure_ptbl_size(struct device *dev, u32 spare,
++					     size_t *size);
++extern int __qcom_scm_iommu_secure_ptbl_init(struct device *dev, u64 addr,
++					     u32 size, u32 spare);
+ 
+ #endif
+diff --git a/include/linux/qcom_scm.h b/include/linux/qcom_scm.h
+index 22017f5d..c46c3c2 100644
+--- a/include/linux/qcom_scm.h
++++ b/include/linux/qcom_scm.h
+@@ -41,6 +41,8 @@ extern void qcom_scm_cpu_power_down(u32 flags);
+ extern u32 qcom_scm_get_version(void);
+ extern int qcom_scm_set_remote_state(u32 state, u32 id);
+ extern int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare);
++extern int qcom_scm_iommu_secure_ptbl_size(u32 spare, size_t *size);
++extern int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare);
+ #else
+ static inline
+ int qcom_scm_set_cold_boot_addr(void *entry, const cpumask_t *cpus)
 -- 
 2.9.3
