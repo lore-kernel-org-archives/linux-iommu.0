@@ -1,122 +1,108 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 1/9] firmware/qcom: add qcom_scm_restore_sec_cfg()
-Date: Wed,  1 Mar 2017 12:42:50 -0500
-Message-ID: <20170301174258.14618-2-robdclark@gmail.com>
+From: Rob Clark <robdclark@gmail.com>
+Subject: [PATCH 9/9] ARM64: DT: add iommu for msm8916
+Date: Wed,  1 Mar 2017 12:42:58 -0500
+Message-ID: <20170301174258.14618-10-robdclark@gmail.com>
 References: <20170301174258.14618-1-robdclark@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170301174258.14618-1-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20170301174258.14618-1-robdclark@gmail.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Sricharan <sricharan@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Stanimir Varbanov <stanimir.varbanov@linaro.org>, Rob Clark <robdclark@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Rob Clark <robdclark@gmail.com>
 ---
- drivers/firmware/qcom_scm-32.c |  6 ++++++
- drivers/firmware/qcom_scm-64.c | 16 ++++++++++++++++
- drivers/firmware/qcom_scm.c    |  6 ++++++
- drivers/firmware/qcom_scm.h    |  5 +++++
- include/linux/qcom_scm.h       |  2 ++
- 5 files changed, 35 insertions(+)
+ arch/arm64/boot/dts/qcom/msm8916.dtsi | 57 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 57 insertions(+)
 
-diff --git a/drivers/firmware/qcom_scm-32.c b/drivers/firmware/qcom_scm-32.c
-index 8ad226c..722e65a 100644
---- a/drivers/firmware/qcom_scm-32.c
-+++ b/drivers/firmware/qcom_scm-32.c
-@@ -578,3 +578,9 @@ int __qcom_scm_set_remote_state(struct device *dev, u32 state, u32 id)
+diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+index 7bcf4cd..10ca05a 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+@@ -705,6 +705,59 @@
+ 			#thermal-sensor-cells = <1>;
+ 		};
  
- 	return ret ? : le32_to_cpu(scm_ret);
- }
++		apps_iommu: msm-iommu-v1@1e20000 {
++			#address-cells = <1>;
++			#size-cells = <1>;
++			#iommu-cells = <1>;
++			compatible = "qcom,msm-iommu-v1";
++			ranges = <0 0x1e20000 0x40000>;
++			reg = <0x1ef0000 0x3000>;
++			clocks = <&gcc GCC_SMMU_CFG_CLK>,
++				 <&gcc GCC_APSS_TCU_CLK>;
++			clock-names = "iface_clk", "bus_clk";
++			qcom,iommu-secure-id = <17>;
 +
-+int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id,
-+			       u32 spare)
-+{
-+	return -ENODEV;
-+}
-diff --git a/drivers/firmware/qcom_scm-64.c b/drivers/firmware/qcom_scm-64.c
-index c933259..550e3a3 100644
---- a/drivers/firmware/qcom_scm-64.c
-+++ b/drivers/firmware/qcom_scm-64.c
-@@ -381,3 +381,19 @@ int __qcom_scm_set_remote_state(struct device *dev, u32 state, u32 id)
++			// mdp_0:
++			msm-iommu-v1-ctx@4000 {
++				compatible = "qcom,msm-iommu-v1-ns";
++				reg = <0x4000 0x1000>;
++				interrupts = <GIC_SPI 70 0>;
++			};
++
++			// venus_ns:
++			msm-iommu-v1-ctx@5000 {
++				compatible = "qcom,msm-iommu-v1-sec";
++				reg = <0x5000 0x1000>;
++				interrupts = <GIC_SPI 70 0>;
++			};
++		};
++
++		gpu_iommu: msm-iommu-v1@1f08000 {
++			#address-cells = <1>;
++			#size-cells = <1>;
++			#iommu-cells = <1>;
++			compatible = "qcom,msm-iommu-v1";
++			ranges = <0 0x1f08000 0x10000>;
++			clocks = <&gcc GCC_SMMU_CFG_CLK>,
++				 <&gcc GCC_GFX_TCU_CLK>;
++			clock-names = "iface_clk", "bus_clk";
++			qcom,iommu-secure-id = <18>;
++
++			// gfx3d_user:
++			msm-iommu-v1-ctx@1f09000 {
++				compatible = "qcom,msm-iommu-v1-ns";
++				reg = <0x1000 0x1000>;
++				interrupts = <GIC_SPI 241 0>;
++			};
++
++			// gfx3d_priv:
++			msm-iommu-v1-ctx@1f0a000 {
++				compatible = "qcom,msm-iommu-v1-ns";
++				reg = <0x2000 0x1000>;
++				interrupts = <GIC_SPI 242 0>;
++			};
++		};
++
+ 		gpu@01c00000 {
+ 			compatible = "qcom,adreno-306.0", "qcom,adreno";
+ 			reg = <0x01c00000 0x20000>;
+@@ -726,6 +779,7 @@
+ 			    <&gcc GCC_BIMC_GPU_CLK>,
+ 			    <&gcc GFX3D_CLK_SRC>;
+ 			power-domains = <&gcc OXILI_GDSC>;
++			iommus = <&gpu_iommu 1>, <&gpu_iommu 2>;
+ 		};
  
- 	return ret ? : res.a1;
- }
-+
-+int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id, u32 spare)
-+{
-+	struct qcom_scm_desc desc = {0};
-+	struct arm_smccc_res res;
-+	int ret;
-+
-+	desc.args[0] = device_id;
-+	desc.args[1] = spare;
-+	desc.arginfo = QCOM_SCM_ARGS(2);
-+
-+	ret = qcom_scm_call(dev, QCOM_SCM_SVC_MP, QCOM_SCM_RESTORE_SEC_CFG,
-+			    &desc, &res);
-+
-+	return ret ? : res.a1;
-+}
-diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
-index d987bcc..ae1f473 100644
---- a/drivers/firmware/qcom_scm.c
-+++ b/drivers/firmware/qcom_scm.c
-@@ -315,6 +315,12 @@ static const struct reset_control_ops qcom_scm_pas_reset_ops = {
- 	.deassert = qcom_scm_pas_reset_deassert,
- };
+ 		mdss: mdss@1a00000 {
+@@ -769,6 +823,8 @@
+ 					      "core_clk",
+ 					      "vsync_clk";
  
-+int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare)
-+{
-+	return __qcom_scm_restore_sec_cfg(__scm->dev, device_id, spare);
-+}
-+EXPORT_SYMBOL(qcom_scm_restore_sec_cfg);
++				iommus = <&apps_iommu 4>;
 +
- /**
-  * qcom_scm_is_available() - Checks if SCM is available
-  */
-diff --git a/drivers/firmware/qcom_scm.h b/drivers/firmware/qcom_scm.h
-index 6a0f154..31fc732 100644
---- a/drivers/firmware/qcom_scm.h
-+++ b/drivers/firmware/qcom_scm.h
-@@ -85,4 +85,9 @@ static inline int qcom_scm_remap_error(int err)
- 	return -EINVAL;
- }
+ 				ports {
+ 					#address-cells = <1>;
+ 					#size-cells = <0>;
+@@ -1207,6 +1263,7 @@
+ 				 <&gcc GCC_VENUS0_AHB_CLK>,
+ 				 <&gcc GCC_VENUS0_AXI_CLK>;
+ 			clock-names = "core", "iface", "bus";
++			iommus = <&apps_iommu 5>;
+ 			memory-region = <&venus_mem>;
+ 			status = "okay";
  
-+#define QCOM_SCM_SVC_MP			0xc
-+#define QCOM_SCM_RESTORE_SEC_CFG	2
-+extern int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id,
-+				      u32 spare);
-+
- #endif
-diff --git a/include/linux/qcom_scm.h b/include/linux/qcom_scm.h
-index d32f6f1..22017f5d 100644
---- a/include/linux/qcom_scm.h
-+++ b/include/linux/qcom_scm.h
-@@ -40,6 +40,7 @@ extern int qcom_scm_pas_shutdown(u32 peripheral);
- extern void qcom_scm_cpu_power_down(u32 flags);
- extern u32 qcom_scm_get_version(void);
- extern int qcom_scm_set_remote_state(u32 state, u32 id);
-+extern int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare);
- #else
- static inline
- int qcom_scm_set_cold_boot_addr(void *entry, const cpumask_t *cpus)
-@@ -67,5 +68,6 @@ static inline void qcom_scm_cpu_power_down(u32 flags) {}
- static inline u32 qcom_scm_get_version(void) { return 0; }
- static inline u32
- qcom_scm_set_remote_state(u32 state,u32 id) { return -ENODEV; }
-+static inline int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare) { return -ENODEV; }
- #endif
- #endif
 -- 
 2.9.3
