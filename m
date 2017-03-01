@@ -1,14 +1,17 @@
-From: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [RFC PATCH 04/30] iommu/arm-smmu-v3: Add support for PCI ATS
-Date: Wed, 1 Mar 2017 14:24:00 -0500
-Message-ID: <5a7822f2-3991-aa51-169f-78ef49567feb@codeaurora.org>
-References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
-	<20170227195441.5170-5-jean-philippe.brucker@arm.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk-QHcLZuEGTsvQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [RFC Design Doc v3] Enable Shared Virtual Memory feature in
+	pass-through scenarios
+Date: Wed, 1 Mar 2017 16:09:38 -0500
+Message-ID: <20170301210938.GE9043@char.us.ORACLE.com>
+References: <A2975661238FB949B60364EF0F2C257436DE3165@shsmsx102.ccr.corp.intel.com>
+	<20170228220719.GD2352@char.us.ORACLE.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D190C4FF94@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170227195441.5170-5-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190C4FF94-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,31 +21,45 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Harb Abdulhamid <harba-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
+To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "Lan, Tianyu" <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Peng,
+	Chao P" <chao.p.peng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Hao, Xudong" <xudong.hao-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org" <qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org>, "Sun,
+	Yi Y" <yi.y.sun-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "Pan, Jacob jun" <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2/27/2017 2:54 PM, Jean-Philippe Brucker wrote:
-> /* Initialise command lazily */
-> +		if (!cmd.opcode)
-> +			arm_smmu_atc_invalidate_to_cmd(smmu, iova, size, &cmd);
-> +
-> +		spin_lock(&smmu_group->devices_lock);
-> +
-> +		list_for_each_entry(master, &smmu_group->devices, group_head)
-> +			arm_smmu_atc_invalidate_master(master, &cmd);
-> +
-> +		/*
-> +		 * TODO: ensure we do a sync whenever we have sent ats_queue_depth
-> +		 * invalidations to the same device.
-> +		 */
-> +		arm_smmu_cmdq_issue_cmd(smmu, &sync_cmd);
-> +
+.snip..
+> > > Shared Virtual Memory feature in pass-through scenarios is actually SVM
+> > > virtualization. It is to let application programs(running in guest)share their
+> > > virtual address with assigned device(e.g. graphics processors or accelerators).
+> > 
+> > I think I am missing something obvious, but the current way that DRM
+> > works is that the kernel sets up its VA addresses for the GPU and it uses
+> > that for its ring. It also setups an user level mapping for the GPU if the
+> > application (Xorg) really wants it - but most of the time the kernel is
+> > in charge of poking at the ring, and the memory that is shared with the
+> > Xorg is normal RAM allocated via alloc_pages (see
+> > drivers/gpu/drm/ttm/ttm_page_alloc_dma.c
+> > and drivers/gpu/drm/ttm/ttm_page_alloc.c).
+> > 
+> > So are talking about the guest applications having access to the
+> > ring of the GPU?
+> 
+> No. SVM is purely about sharing CPU address space with device. Command
+> submission is still through kernel driver which controls rings (with SVM then
+> you can put VA into those commands). There are other vendor specific 
+> features to enable direct user space submission which is orthogonal to SVM.
 
-It is possible to observe ATS invalidation timeout up to 90 seconds according to PCIe
-spec. How does the current code deal with this?
+Apologies for my ignorance but how is this beneficial? As in
+currently you would put in bus addresses on the ring, but now you
+can put VA addresses.
 
--- 
-Sinan Kaya
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
+The obvious benefit I see is that you omit the DMA ops which means there is
+less of 'lookup' (VA->bus address) in software - but I would have thought this
+would be negligible performance impact? And now the IOMMU alongside with
+the CPU would do this lookup.
+
+Or are there some other improvements in this?
+
+> 
+> Thanks
+> Kevin
