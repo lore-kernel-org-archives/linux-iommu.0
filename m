@@ -1,16 +1,15 @@
-From: okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Subject: Re: [RFC PATCH 04/30] iommu/arm-smmu-v3: Add support for PCI ATS
-Date: Thu, 02 Mar 2017 08:11:03 -0500
-Message-ID: <e9a266680830b40907bfd5441200e4df@codeaurora.org>
-References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
-	<20170227195441.5170-5-jean-philippe.brucker@arm.com>
-	<5a7822f2-3991-aa51-169f-78ef49567feb@codeaurora.org>
-	<20170302105153.GB15742@e106794-lin.localdomain>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH] iommu/arm-smmu: Add global SMR masking property
+Date: Thu, 2 Mar 2017 16:48:03 +0000
+Message-ID: <72610bd3-71b2-0b4b-eb6c-5e9df7ec1aac@arm.com>
+References: <ad6b6a4937b1fe183e6d48ccbaf4cb46db92fed4.1481893907.git.robin.murphy@arm.com>
+	<DB6PR0402MB2694957C2D7C648CC342627FE69F0@DB6PR0402MB2694.eurprd04.prod.outlook.com>
+	<AM5PR0401MB251438AFDE691D570353B537E6280@AM5PR0401MB2514.eurprd04.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170302105153.GB15742-lfHAr0XZR/FyySVAYrpuPyZi+YwRKgec@public.gmane.org>
+In-Reply-To: <AM5PR0401MB251438AFDE691D570353B537E6280-oQ3wXcTHOqqdzUSUbRy2lY3W/0Ik+aLCnBOFsp37pqbUKgpGm//BTAC/G2K4zDHf@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,77 +19,124 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jean-Philippe Brucker <Jean-Philippe.Brucker-5wv7dgnIgG8@public.gmane.org>
-Cc: Harb Abdulhamid <harba-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <Catalin.Marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <Will.Deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
+To: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Cc: "mark.rutland-5wv7dgnIgG8@public.gmane.org" <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org" <stuyoder-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2017-03-02 05:51, Jean-Philippe Brucker wrote:
-> Hi Sinan,
+On 02/03/17 04:18, Nipun Gupta wrote:
 > 
-> On 01/03/17 19:24, Sinan Kaya wrote:
->> On 2/27/2017 2:54 PM, Jean-Philippe Brucker wrote:
->>> /* Initialise command lazily */
->>> +		if (!cmd.opcode)
->>> +			arm_smmu_atc_invalidate_to_cmd(smmu, iova, size, &cmd);
->>> +
->>> +		spin_lock(&smmu_group->devices_lock);
->>> +
->>> +		list_for_each_entry(master, &smmu_group->devices, group_head)
->>> +			arm_smmu_atc_invalidate_master(master, &cmd);
->>> +
->>> +		/*
->>> +		 * TODO: ensure we do a sync whenever we have sent ats_queue_depth
->>> +		 * invalidations to the same device.
->>> +		 */
->>> +		arm_smmu_cmdq_issue_cmd(smmu, &sync_cmd);
->>> +
->> 
->> It is possible to observe ATS invalidation timeout up to 90 seconds 
->> according to PCIe
->> spec. How does the current code deal with this?
->> 
+> Hi Robin/Will,
 > 
-> Currently we give up waiting for sync after 100us 
-> (ARM_SMMU_POLL_TIMEOUT_US).
-> A successful sync guarantees that all ATC invalidations since last sync
-> were successful, so in case of timeout we should resend all of them.
-> The delay itself isn't important at the moment, since we don't handle
-> invalidaton failure at all. It's fire and forget, and I haven't come up
-> with a complete solution yet.
-> 
-> The simplest error handling would be to retry invalidation after 90
-> seconds if the sync didn't complete. Then after a number of failed
-> attempts, maybe try to reset the device. Given that ats_invalidate is
-> generally called in irq-safe context, we would be blocking the CPU for
-> minutes at a time, which seems unwise. A proper solution would be to
-> postpone the unmap and return an error, although unmap errors are
-> usually ignored.
-> 
-> To avoid letting anyone remap something at that address until we're 
-> sure
-> the invalidation succeeded, we would need to repopulate the page tables
-> with the stale mapping, and add a delayed work that inspects the status
-> of the invalidation and tries again if it failed. If the invalidation
-> comes from the IOMMU core, we control the page tables and it should be
-> doable. If it comes from mm/ however, it's more complicated. MMU
-> notifiers only tell us that the mapping is going away, they don't
-> provide us with a way to hold on to them. Until all stale mappings have
-> been invalidated, we also need to hold on to the address space.
-> 
-> I think the problem is complex enough to deserve a series of its own,
-> once we confirm that it may happen in hardware and have a rough idea of
-> the timeout values encountered.
+> This patch is currently not applied on the tree.
+> I had verified the patch and it seems good.
+> Is ack required on the patch or do I need to send a non RFC patch (with Robin's signoff)?
+> This is very much required to support SMMU on NXP platform.
 
-Ok, fair enough. I think arm smmuv3 driver should follow the same design 
-pattern other iommu drivers are following to solve this issue as other 
-drivers are already handling this.
+It's still sat in my "patches to do something with" queue - I don't
+think we ever reached a concrete decision on the property name for a DT
+maintainer ack, but I've tweaked the description per Will's comment;
+thanks for the reminder. I'll send an rc1-based version out next week to
+reboot the discussion.
 
-Based on what I see, if there is a timeout happenibg; your sync 
-operation will not complete (consumer! = producer) until timeout 
-finishes.
-
-
+Robin.
 
 > 
 > Thanks,
-> Jean-Philippe
+> Nipun
+> 
+> 
+>> -----Original Message-----
+>> From: Nipun Gupta
+>> Sent: Sunday, December 18, 2016 2:37
+>> To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+>> foundation.org; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-arm-
+>> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+>> Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org; Stuart Yoder
+>> <stuart.yoder-3arQi8VN3Tc@public.gmane.org>
+>> Subject: RE: [RFC PATCH] iommu/arm-smmu: Add global SMR masking property
+>>
+>>
+>>
+>>> -----Original Message-----
+>>> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+>>> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Robin Murphy
+>>> Sent: Friday, December 16, 2016 18:49
+>>> To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
+>> arm-
+>>> kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+>>> Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org; Stuart Yoder
+>>> <stuart.yoder-3arQi8VN3Tc@public.gmane.org>
+>>> Subject: [RFC PATCH] iommu/arm-smmu: Add global SMR masking property
+>>>
+>>> The current SMR masking support using a 2-cell iommu-specifier is
+>>> primarily intended to handle individual masters with large and/or
+>>> complex Stream ID assignments; it quickly gets a bit clunky in other SMR
+>>> use-cases where we just want to consistently mask out the same part of
+>>> every Stream ID (e.g. for MMU-500 configurations where the appended TBU
+>>> number gets in the way unnecessarily). Let's add a new property to allow
+>>> a single global mask value to better fit the latter situation.
+>>>
+>>> CC: Stuart Yoder <stuart.yoder-3arQi8VN3Tc@public.gmane.org>
+>>
+>> Tested-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+>>
+>>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>>> ---
+>>>
+>>> Compile-tested only...
+>>>
+>>>  Documentation/devicetree/bindings/iommu/arm,smmu.txt | 8 ++++++++
+>>>  drivers/iommu/arm-smmu.c                             | 4 +++-
+>>>  2 files changed, 11 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>>> b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>>> index e862d1485205..98f5cbe5fdb4 100644
+>>> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>>> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+>>> @@ -60,6 +60,14 @@ conditions.
+>>>                    aliases of secure registers have to be used during
+>>>                    SMMU configuration.
+>>>
+>>> +- stream-match-mask : Specifies a fixed SMR mask value to combine with
+>>> +                  the Stream ID value from every iommu-specifier. This
+>>> +                  may be used instead of an "#iommu-cells" value of 2
+>>> +                  when there is no need for per-master SMR masks, but
+>>> +                  it is still desired to mask some portion of every
+>>> +                  Stream ID (e.g. for certain MMU-500 configurations
+>>> +                  given globally unique external IDs).
+>>> +
+>>>  ** Deprecated properties:
+>>>
+>>>  - mmu-masters (deprecated in favour of the generic "iommus" binding) :
+>>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>>> index 8f7281444551..f1abcb7dde36 100644
+>>> --- a/drivers/iommu/arm-smmu.c
+>>> +++ b/drivers/iommu/arm-smmu.c
+>>> @@ -1534,13 +1534,15 @@ static int arm_smmu_domain_set_attr(struct
+>>> iommu_domain *domain,
+>>>
+>>>  static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args
+>> *args)
+>>>  {
+>>> -	u32 fwid = 0;
+>>> +	u32 mask, fwid = 0;
+>>>
+>>>  	if (args->args_count > 0)
+>>>  		fwid |= (u16)args->args[0];
+>>>
+>>>  	if (args->args_count > 1)
+>>>  		fwid |= (u16)args->args[1] << SMR_MASK_SHIFT;
+>>> +	else if (!of_property_read_u32(args->np, "stream-match-mask",
+>>> &mask))
+>>> +		fwid |= (u16)mask << SMR_MASK_SHIFT;
+>>>
+>>>  	return iommu_fwspec_add_ids(dev, &fwid, 1);
+>>>  }
+>>> --
+>>> 2.10.2.dirty
+>>>
+>>> _______________________________________________
+>>> iommu mailing list
+>>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+>>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
