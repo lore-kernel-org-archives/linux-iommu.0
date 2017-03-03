@@ -1,37 +1,207 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [RFC PATCH v4 11/28] x86: Add support to determine the E820 type
- of an address
-Date: Fri, 3 Mar 2017 10:52:23 +0100
-Message-ID: <20170303095223.eri4u4l7agofqri7@pd.tnic>
-References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
- <20170216154430.19244.95519.stgit@tlendack-t1.amdoffice.net>
- <20170220200955.32e2wqxgulswnr55@pd.tnic>
- <e6146786-16c5-99ab-52c9-2bdd50c7d9ba@amd.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 3/9] Docs: dt: document qcom iommu bindings
+Date: Fri, 3 Mar 2017 11:04:57 -0500
+Message-ID: <CAF6AEGu-La5jeUKMRYsPSw69UpBpSqW_+UepHXLpyQxqd0oNjA@mail.gmail.com>
+References: <20170301174258.14618-1-robdclark@gmail.com>
+	<20170301174258.14618-4-robdclark@gmail.com>
+	<20170303062143.x6m3mxfnavn4iwlo@rob-hp-laptop>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <owner-linux-mm@kvack.org>
-Content-Disposition: inline
-In-Reply-To: <e6146786-16c5-99ab-52c9-2bdd50c7d9ba@amd.com>
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Thomas Gleixner <tglx@linutronix.de>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170303062143.x6m3mxfnavn4iwlo@rob-hp-laptop>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Feb 28, 2017 at 04:34:39PM -0600, Tom Lendacky wrote:
-> Or if we want to guard against ACPI adding a type 0 in the future, I
-> could make the function return an int and then return -EINVAL if an e820
-> entry isn't found.  This might be the better option.
+On Fri, Mar 3, 2017 at 1:21 AM, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+> On Wed, Mar 01, 2017 at 12:42:52PM -0500, Rob Clark wrote:
+>
+> Nit: use "dt-bindings: iommu: ..." for subject. And a commit message
+> would be nice.
+>
+>> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>> Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+>> ---
+>>  .../devicetree/bindings/iommu/qcom,iommu.txt       | 106 +++++++++++++++++++++
+>>  1 file changed, 106 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+>> new file mode 100644
+>> index 0000000..2e69b78
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+>> @@ -0,0 +1,106 @@
+>> +* QCOM IOMMU v1 Implementation
+>> +
+>> +Qualcomm "B" family devices which are not compatible with arm-smmu have
+>> +a similar looking IOMMU but without access to the global register space,
+>> +and optionally requiring additional configuration to route context irqs
+>> +to non-secure vs secure interrupt line.
+>> +
+>> +** Required properties:
+>> +
+>> +- compatible       : Should be "qcom,msm-iommu-v1".
+>
+> Fine as a fallback, but this needs chip specific compatibles.
 
-Yap, think so too. I don't trust specs anyway :)
+ok, so maybe:
 
--- 
-Regards/Gruss,
-    Boris.
+   compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
 
-Good mailing practices for 400: avoid top-posting and trim the reply.
+>> +- clocks           : The interface clock (iface_clk) and bus clock (bus_clk).
+>
+> The names need to be documented under clock-names prop.
+>
+> '_clk' is redundant.
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+ok
+
+>> +- #address-cells   : must be 1.
+>> +- #size-cells      : must be 1.
+>> +- #iommu-cells     : Must be 1.
+>> +- ranges           : Base address and size of the iommu context banks.
+>> +- qcom,iommu-secure-id  : secure-id.
+>> +
+>> +- List of sub-nodes, one per translation context bank.  Each sub-node
+>> +  has the following required properties:
+>> +
+>> +  - compatible     : Should be one of:
+>> +        - "qcom,msm-iommu-v1-ns"  : non-secure context bank
+>> +        - "qcom,msm-iommu-v1-sec" : secure context bank
+>
+> These are okay without chip specific strings.
+>
+>> +  - reg            : Base address and size of context bank within the iommu
+>> +  - interrupts     : The context fault irq.
+>> +
+>> +** Optional properties:
+>> +
+>> +- reg              : Base address and size of the SMMU local base, should
+>> +                     be only specified if the iommu requires configuration
+>> +                     for routing of context bank irq's to secure vs non-
+>> +                     secure lines.  (Ie. if the iommu contains secure
+>> +                     context banks)
+>> +
+>> +
+>> +** Examples:
+>> +
+>> +     apps_iommu: msm-iommu-v1@1e20000 {
+>
+> iommu@...
+>
+> And this should be the reg address, not the ranges address.
+
+ok.. but I'm not entirely sure what to do w/ gpu_iommu, which doesn't
+have a reg address.
+
+I guess I could have a required reg address (which is the unaccessible
+global register space), and make the "SMMU local base" thing a 2nd
+optional address.  Not sure if that is weird, since we can't actually
+do anything with the global register space.
+
+>> +             #address-cells = <1>;
+>> +             #size-cells = <1>;
+>> +             #iommu-cells = <1>;
+>> +             compatible = "qcom,msm-iommu-v1";
+>> +             ranges = <0 0x1e20000 0x40000>;
+>> +             reg = <0x1ef0000 0x3000>;
+>> +             clocks = <&gcc GCC_SMMU_CFG_CLK>,
+>> +                      <&gcc GCC_APSS_TCU_CLK>;
+>> +             clock-names = "iface_clk", "bus_clk";
+>> +             qcom,iommu-secure-id = <17>;
+>> +
+>> +             // mdp_0:
+>> +             msm-iommu-v1-ctx@4000 {
+>
+> iommu@...
+
+it's not weird to have:
+
+  iommu@1e20000 {
+    ...
+    iommu@4000 {
+       ...
+    };
+  };
+
+??
+
+BR,
+-R
+
+>> +                     compatible = "qcom,msm-iommu-v1-ns";
+>> +                     reg = <0x4000 0x1000>;
+>> +                     interrupts = <GIC_SPI 70 0>;
+>> +             };
+>> +
+>> +             // venus_ns:
+>> +             msm-iommu-v1-ctx@5000 {
+>> +                     compatible = "qcom,msm-iommu-v1-sec";
+>> +                     reg = <0x5000 0x1000>;
+>> +                     interrupts = <GIC_SPI 70 0>;
+>> +             };
+>> +     };
+>> +
+>> +     gpu_iommu: msm-iommu-v1@1f08000 {
+>
+> ditto.
+>
+>> +             #address-cells = <1>;
+>> +             #size-cells = <1>;
+>> +             #iommu-cells = <1>;
+>> +             compatible = "qcom,msm-iommu-v1";
+>> +             ranges = <0 0x1f08000 0x10000>;
+>> +             clocks = <&gcc GCC_SMMU_CFG_CLK>,
+>> +                      <&gcc GCC_GFX_TCU_CLK>;
+>> +             clock-names = "iface_clk", "bus_clk";
+>> +             qcom,iommu-secure-id = <18>;
+>> +
+>> +             // gfx3d_user:
+>> +             msm-iommu-v1-ctx@1f09000 {
+>> +                     compatible = "qcom,msm-iommu-v1-ns";
+>> +                     reg = <0x1000 0x1000>;
+>> +                     interrupts = <GIC_SPI 241 0>;
+>> +             };
+>> +
+>> +             // gfx3d_priv:
+>> +             msm-iommu-v1-ctx@1f0a000 {
+>> +                     compatible = "qcom,msm-iommu-v1-ns";
+>> +                     reg = <0x2000 0x1000>;
+>> +                     interrupts = <GIC_SPI 242 0>;
+>> +             };
+>> +     };
+>> +
+>> +     ...
+>> +
+>> +     venus: video-codec@1d00000 {
+>> +             ...
+>> +             iommus = <&apps_iommu 5>;
+>> +     };
+>> +
+>> +     mdp: mdp@1a01000 {
+>> +             ...
+>> +             iommus = <&apps_iommu 4>;
+>> +     };
+>> +
+>> +     gpu@01c00000 {
+>> +             ...
+>> +             iommus = <&gpu_iommu 1>, <&gpu_iommu 2>;
+>> +     };
+>> --
+>> 2.9.3
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+>> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
