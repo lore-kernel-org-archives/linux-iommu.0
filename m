@@ -1,16 +1,15 @@
 From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH 18/30] PCI: Make "PRG Response PASID Required"
-	handling common
-Date: Fri, 3 Mar 2017 15:11:40 -0600
-Message-ID: <20170303211140.GC31767@bhelgaas-glaptop.roam.corp.google.com>
+Subject: Re: [RFC PATCH 19/30] PCI: Cache PRI and PASID bits in pci_dev
+Date: Fri, 3 Mar 2017 15:12:16 -0600
+Message-ID: <20170303211216.GD31767@bhelgaas-glaptop.roam.corp.google.com>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
-	<20170227195441.5170-19-jean-philippe.brucker@arm.com>
+	<20170227195441.5170-20-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170227195441.5170-19-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20170227195441.5170-20-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,120 +23,121 @@ To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Feb 27, 2017 at 07:54:29PM +0000, Jean-Philippe Brucker wrote:
-> The PASID ECN to the PCIe spec added a bit in the PRI status register that
-> allows a Function to declare whether a PRG Response should contain the
-> PASID prefix or not.
+On Mon, Feb 27, 2017 at 07:54:30PM +0000, Jean-Philippe Brucker wrote:
+> Device drivers need to check if an IOMMU enabled ATS, PRI and PASID in
+> order to know when they can use the SVM API. Cache PRI and PASID bits in
+> the pci_dev structure, similarly to what is currently done for ATS.
 > 
-> Move the helper that accesses it from amd_iommu into the PCI subsystem,
-> renaming it to something more consistent with the spec, and introducing
-> another obscure acronym to make it all fit.
-
-Maybe mention the acronym itelf and spell it out here?
-
 > Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 
 Acked-by: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
 
 > ---
->  drivers/iommu/amd_iommu.c     | 19 +------------------
->  drivers/pci/ats.c             | 17 +++++++++++++++++
->  include/linux/pci-ats.h       |  8 ++++++++
->  include/uapi/linux/pci_regs.h |  1 +
->  4 files changed, 27 insertions(+), 18 deletions(-)
+>  drivers/pci/ats.c   | 23 +++++++++++++++++++++++
+>  include/linux/pci.h |  2 ++
+>  2 files changed, 25 insertions(+)
 > 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index 98940d1392cb..c5c598bf4ba3 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -2024,23 +2024,6 @@ static int pdev_iommuv2_enable(struct pci_dev *pdev)
->  	return ret;
->  }
->  
-> -/* FIXME: Move this to PCI code */
-> -#define PCI_PRI_TLP_OFF		(1 << 15)
-> -
-> -static bool pci_pri_tlp_required(struct pci_dev *pdev)
-> -{
-> -	u16 status;
-> -	int pos;
-> -
-> -	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
-> -	if (!pos)
-> -		return false;
-> -
-> -	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
-> -
-> -	return (status & PCI_PRI_TLP_OFF) ? true : false;
-> -}
-> -
->  /*
->   * If a device is not yet associated with a domain, this function
->   * assigns it visible for the hardware
-> @@ -2069,7 +2052,7 @@ static int attach_device(struct device *dev,
->  
->  			dev_data->ats.enabled = true;
->  			dev_data->ats.qdep    = pci_ats_queue_depth(pdev);
-> -			dev_data->pri_tlp     = pci_pri_tlp_required(pdev);
-> +			dev_data->pri_tlp     = pci_prg_resp_requires_prefix(pdev);
->  		}
->  	} else if (amd_iommu_iotlb_sup &&
->  		   pci_enable_ats(pdev, PAGE_SHIFT) == 0) {
 > diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> index eeb9fb2b47aa..331376e9bb8b 100644
+> index 331376e9bb8b..486dc2208119 100644
 > --- a/drivers/pci/ats.c
 > +++ b/drivers/pci/ats.c
-> @@ -334,3 +334,20 @@ int pci_max_pasids(struct pci_dev *pdev)
+> @@ -153,6 +153,9 @@ int pci_enable_pri(struct pci_dev *pdev, u32 reqs)
+>  	u32 max_requests;
+>  	int pos;
+>  
+> +	if (WARN_ON(pdev->pri_enabled))
+> +		return -EBUSY;
+> +
+>  	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
+>  	if (!pos)
+>  		return -EINVAL;
+> @@ -170,6 +173,8 @@ int pci_enable_pri(struct pci_dev *pdev, u32 reqs)
+>  	control |= PCI_PRI_CTRL_ENABLE;
+>  	pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
+>  
+> +	pdev->pri_enabled = 1;
+> +
+>  	return 0;
 >  }
->  EXPORT_SYMBOL_GPL(pci_max_pasids);
->  #endif /* CONFIG_PCI_PASID */
-> +
-> +#if defined(CONFIG_PCI_PASID) && defined(CONFIG_PCI_PRI)
-> +bool pci_prg_resp_requires_prefix(struct pci_dev *pdev)
-> +{
-> +	u16 status;
-> +	int pos;
-> +
-> +	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
-> +	if (!pos)
-> +		return false;
-> +
-> +	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
-> +
-> +	return !!(status & PCI_PRI_STATUS_PRPR);
-> +}
-> +EXPORT_SYMBOL_GPL(pci_prg_resp_requires_prefix);
-> +#endif /* CONFIG_PCI_PASID && CONFIG_PCI_PRI */
-> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-> index 57e0b8250947..e21bcacbe80c 100644
-> --- a/include/linux/pci-ats.h
-> +++ b/include/linux/pci-ats.h
-> @@ -57,5 +57,13 @@ static inline int pci_max_pasids(struct pci_dev *pdev)
+>  EXPORT_SYMBOL_GPL(pci_enable_pri);
+> @@ -185,6 +190,9 @@ void pci_disable_pri(struct pci_dev *pdev)
+>  	u16 control;
+>  	int pos;
 >  
->  #endif /* CONFIG_PCI_PASID */
+> +	if (WARN_ON(!pdev->pri_enabled))
+> +		return;
+> +
+>  	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
+>  	if (!pos)
+>  		return;
+> @@ -192,6 +200,8 @@ void pci_disable_pri(struct pci_dev *pdev)
+>  	pci_read_config_word(pdev, pos + PCI_PRI_CTRL, &control);
+>  	control &= ~PCI_PRI_CTRL_ENABLE;
+>  	pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
+> +
+> +	pdev->pri_enabled = 0;
+>  }
+>  EXPORT_SYMBOL_GPL(pci_disable_pri);
 >  
-> +#if defined(CONFIG_PCI_PASID) && defined(CONFIG_PCI_PRI)
-> +bool pci_prg_resp_requires_prefix(struct pci_dev *pdev);
-> +#else
-> +static inline bool pci_prg_resp_requires_prefix(struct pci_dev *pdev)
-> +{
-> +	return false;
-> +}
-> +#endif /* CONFIG_PCI_PASID && CONFIG_PCI_PRI */
+> @@ -207,6 +217,9 @@ int pci_reset_pri(struct pci_dev *pdev)
+>  	u16 control;
+>  	int pos;
 >  
->  #endif /* LINUX_PCI_ATS_H*/
-> diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
-> index 634c9c44ed6c..bae815876be6 100644
-> --- a/include/uapi/linux/pci_regs.h
-> +++ b/include/uapi/linux/pci_regs.h
-> @@ -864,6 +864,7 @@
->  #define  PCI_PRI_STATUS_RF	0x001	/* Response Failure */
->  #define  PCI_PRI_STATUS_UPRGI	0x002	/* Unexpected PRG index */
->  #define  PCI_PRI_STATUS_STOPPED	0x100	/* PRI Stopped */
-> +#define  PCI_PRI_STATUS_PRPR	0x8000	/* PRG Response requires PASID prefix */
->  #define PCI_PRI_MAX_REQ		0x08	/* PRI max reqs supported */
->  #define PCI_PRI_ALLOC_REQ	0x0c	/* PRI max reqs allowed */
->  #define PCI_EXT_CAP_PRI_SIZEOF	16
+> +	if (WARN_ON(pdev->pri_enabled))
+> +		return -EBUSY;
+> +
+>  	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
+>  	if (!pos)
+>  		return -EINVAL;
+> @@ -239,6 +252,9 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+>  	u16 control, supported;
+>  	int pos;
+>  
+> +	if (WARN_ON(pdev->pasid_enabled))
+> +		return -EBUSY;
+> +
+>  	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PASID);
+>  	if (!pos)
+>  		return -EINVAL;
+> @@ -259,6 +275,8 @@ int pci_enable_pasid(struct pci_dev *pdev, int features)
+>  
+>  	pci_write_config_word(pdev, pos + PCI_PASID_CTRL, control);
+>  
+> +	pdev->pasid_enabled = 1;
+> +
+>  	return 0;
+>  }
+>  EXPORT_SYMBOL_GPL(pci_enable_pasid);
+> @@ -273,11 +291,16 @@ void pci_disable_pasid(struct pci_dev *pdev)
+>  	u16 control = 0;
+>  	int pos;
+>  
+> +	if (WARN_ON(!pdev->pasid_enabled))
+> +		return;
+> +
+>  	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PASID);
+>  	if (!pos)
+>  		return;
+>  
+>  	pci_write_config_word(pdev, pos + PCI_PASID_CTRL, control);
+> +
+> +	pdev->pasid_enabled = 0;
+>  }
+>  EXPORT_SYMBOL_GPL(pci_disable_pasid);
+>  
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index e606f289bf5f..47c353ca9957 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -351,6 +351,8 @@ struct pci_dev {
+>  	unsigned int	msix_enabled:1;
+>  	unsigned int	ari_enabled:1;	/* ARI forwarding */
+>  	unsigned int	ats_enabled:1;	/* Address Translation Service */
+> +	unsigned int	pasid_enabled:1;	/* Process Address Space ID */
+> +	unsigned int	pri_enabled:1;		/* Page Request Interface */
+>  	unsigned int	is_managed:1;
+>  	unsigned int    needs_freset:1; /* Dev requires fundamental reset */
+>  	unsigned int	state_saved:1;
 > -- 
 > 2.11.0
 > 
