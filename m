@@ -1,17 +1,15 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: Partial BAR Address Allocation
-Date: Mon, 6 Mar 2017 12:04:39 +0100
-Message-ID: <20170306110439.GC27724@8bytes.org>
-References: <35c6bec9-58e8-a1f7-5a85-d80c23480d32@codeaurora.org>
-	<20170222184440.GA2132@bhelgaas-glaptop.roam.corp.google.com>
-	<43c1ff36-fc50-8ea4-02fe-7b1d573a1efd@codeaurora.org>
-	<20170222233944.GB4359@bhelgaas-glaptop.roam.corp.google.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 00/30] Add PCIe SVM support to ARM SMMUv3
+Date: Mon, 6 Mar 2017 11:14:51 +0000
+Message-ID: <20170306111451.GA28804@e106794-lin.localdomain>
+References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
+	<A2975661238FB949B60364EF0F2C2574390186B8@shsmsx102.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170222233944.GB4359-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C2574390186B8-E2R4CRU6q/6iAffOGbnezLfspsVTdybXVpNB7YpNyf8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,64 +19,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Linux PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Liu, Yi L" <yi.l.liu-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Feb 22, 2017 at 05:39:44PM -0600, Bjorn Helgaas wrote:
-> [+cc Joerg, iommu list]
+Hi Yi,
+
+On 06/03/17 08:20, Liu, Yi L wrote:
 > 
-> On Wed, Feb 22, 2017 at 03:44:53PM -0500, Sinan Kaya wrote:
-> > On 2/22/2017 1:44 PM, Bjorn Helgaas wrote:
-> > > There is no way for a driver to say "I only need this memory BAR and
-> > > not the other ones."  The reason is because the PCI_COMMAND_MEMORY bit
-> > > enables *all* the memory BARs; there's no way to enable memory BARs
-> > > selectively.  If we enable memory BARs and one of them is unassigned,
-> > > that unassigned BAR is enabled, and the device will respond at
-> > > whatever address the register happens to contain, and that may cause
-> > > conflicts.
+> 
+>> -----Original Message-----
+>> From: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org [mailto:iommu-
+>> bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org] On Behalf Of Jean-Philippe Brucker
+>> Sent: Tuesday, February 28, 2017 3:54 AM
+>> Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>; kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+>> Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>; Sinan Kaya
+>> <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>; Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>;
+>> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>;
+>> linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>; David
+>> Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; Nate
+>> Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
+>> Subject: [RFC PATCH 00/30] Add PCIe SVM support to ARM SMMUv3
+>>
+>> Hi,
+>>
+>> This series adds support for PCI ATS, PRI and PASID extensions to the
+>> SMMUv3 driver. In systems that support it, it is now possible for some high-end
+>> devices to perform DMA into process address spaces. Page tables are shared
+>> between MMU and SMMU; page faults from devices are recoverable and handled by
+>> the mm subsystem.
+>>
+>> We propose an extension to the IOMMU API that unifies existing SVM
+>> implementations (AMD, Intel and ARM) in patches 22 and 24. Nothing is set in stone,
+>> the goal is to start discussions and find an intersection between implementations.
+>>
+>> We also propose a VFIO interface in patches 29 and 30, that allows userspace device
+>> drivers to make use of SVM. It would also serve as example implementation for
+>> other device drivers.
+>>
+>> Overview of the patches:
+>>
+>> * 1 and 2 prepare the SMMUv3 structures for ATS,
+>> * 3 to 5 enable ATS for devices that support it.
+>> * 6 to 10 prepare the SMMUv3 structures for PASID and PRI. Patch 9,
+>>   in particular, provides details on the structure requirements.
+>> * 11 introduces an interface for sharing ASIDs on ARM64,
+>> * 12 to 17 add more infrastructure for sharing page tables,
+>> * 18 and 19 add minor helpers to PCI,
+>> * 20 enables PASID in devices that support it,
+> 
+> Jean, supposedly, you will introduce a PASID management mechanism in
+> SMMU v3 driver. Here I have a question about PASID management on ARM.
+> Will there be a system wide PASID table? Or there is equivalent implementation.
 
-Hmm, maybe I am missing something, but isn't this only a problem if the
-'unassigned' BAR as an address configured that also falls into the
-Bridge-Window of the parent bridge? Otherwise no requests should be
-routed to the BAR anyway, right?
+Yes the SMMUv3 driver allocates and manages PASIDs. In this series I
+implemented one PASID table for each device (for simplicity), but as
+explained in my reply on patch 22, I'd like to introduce a PASID table
+for each IOMMU domain in the next version.
 
-> > The problem is that according to PCI specification BAR addresses and
-> > DMA addresses cannot overlap.
-> > 
-> > From PCI-to-PCI Bridge Arch. spec.: "A bridge forwards PCI memory
-> > transactions from its primary interface to its secondary interface
-> > (downstream) if a memory address is in the range defined by the
-> > Memory Base and Memory Limit registers (when the base is less than
-> > or equal to the limit) as illustrated in Figure 4-3. Conversely, a
-> > memory transaction on the secondary interface that is within this
-> > address range will not be forwarded upstream to the primary
-> > interface."
-> > 
-> > To be specific, if your DMA address happens to be in
-> > [0x80000000-0xffffffff] and root port's aperture includes this
-> > range; the DMA will never make to the system memory.
-
-If there is no translation by an IOMMU this shouldn't be a problem, as
-long as the bridge windows don't overlap with system ram. With
-translation the IOMMU driver has to take care of that, which they
-usually do.
-
-> Hmmm.  I guess SWIOTLB assumes there's no address translation in the
-> DMA direction, right?  If there's no address translation in the PIO
-> direction, PCI bus BAR addresses are identical to the CPU-side
-> addresses.  In that case, there's no conflict because we already have
-> to assign BARs so they never look like a system memory address.
-
-Yes, SWIOTLB assumes that IOVA == PA.
-
-> But if there *is* address translation in the PIO direction, we can
-> have conflicts because the bridge can translate CPU-side PIO accesses
-> to arbitrary PCI bus addresses.
-
-I am not aware of any hardware that does translation on the PIO space.
-The IOMMUs I know of don't care about PIO at all.
-
-
-
-	Joerg
+Thanks,
+Jean-Philippe
