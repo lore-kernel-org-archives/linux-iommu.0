@@ -1,14 +1,17 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH/RFC v2 0/4] iommu/ipmmu-vmsa: IPMMU slave device whitelist
-	V2
-Date: Mon, 6 Mar 2017 18:00:03 +0900
-Message-ID: <CANqRtoQR3S=MbVE91s5Ku=XZZ6XxpPFUfZ0FYFxiEcqts5N-pA@mail.gmail.com>
-References: <148549764733.22203.16459470412085471955.sendpatchset@little-apple>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: Partial BAR Address Allocation
+Date: Mon, 6 Mar 2017 12:04:39 +0100
+Message-ID: <20170306110439.GC27724@8bytes.org>
+References: <35c6bec9-58e8-a1f7-5a85-d80c23480d32@codeaurora.org>
+	<20170222184440.GA2132@bhelgaas-glaptop.roam.corp.google.com>
+	<43c1ff36-fc50-8ea4-02fe-7b1d573a1efd@codeaurora.org>
+	<20170222233944.GB4359@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <148549764733.22203.16459470412085471955.sendpatchset@little-apple>
+Content-Disposition: inline
+In-Reply-To: <20170222233944.GB4359-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,54 +21,64 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Cc: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Linux PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Jan 27, 2017 at 3:14 PM, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> iommu/ipmmu-vmsa: IPMMU slave device whitelist V2
->
-> [PATCH/RFC v2 1/4] iommu/of: Skip IOMMU devices disabled in DT
-> [PATCH/RFC v2 2/4] iommu/ipmmu-vmsa: Get rid of disabled device check
-> [PATCH/RFC v2 3/4] iommu/ipmmu-vmsa: Check devices in xlate()
-> [PATCH/RFC v2 3/4] iommu/ipmmu-vmsa: Opt-in slave devices based on ES version
->
-> Here's an updated prototype that shows how DT integration of IPMMU details
-> may be integrated and merged upstream based on SoC data sheet ahead of
-> time followed by enablement in the IPMMU driver code once the appropriate
-> SoC ES version has been released and the hardware has been tested.
->
-> Changes since V1:
->  - Broke out patch 1 from the IPMMU driver
->  - Moved slave device check from ->add_device() to ->xlate() (Thanks Robin!)
->  - Updated white list patch to hook into ->xlate()
->
-> Patch 1 may be suitable for upstream merge, however other patches should
-> in the future if agreed on be rolled into the IPMMU driver series.
+On Wed, Feb 22, 2017 at 05:39:44PM -0600, Bjorn Helgaas wrote:
+> [+cc Joerg, iommu list]
+> 
+> On Wed, Feb 22, 2017 at 03:44:53PM -0500, Sinan Kaya wrote:
+> > On 2/22/2017 1:44 PM, Bjorn Helgaas wrote:
+> > > There is no way for a driver to say "I only need this memory BAR and
+> > > not the other ones."  The reason is because the PCI_COMMAND_MEMORY bit
+> > > enables *all* the memory BARs; there's no way to enable memory BARs
+> > > selectively.  If we enable memory BARs and one of them is unassigned,
+> > > that unassigned BAR is enabled, and the device will respond at
+> > > whatever address the register happens to contain, and that may cause
+> > > conflicts.
 
-Hi Geert, everyone,
+Hmm, maybe I am missing something, but isn't this only a problem if the
+'unassigned' BAR as an address configured that also falls into the
+Bridge-Window of the parent bridge? Otherwise no requests should be
+routed to the BAR anyway, right?
 
-Do you have any opinion about the code in this version of the series?
+> > The problem is that according to PCI specification BAR addresses and
+> > DMA addresses cannot overlap.
+> > 
+> > From PCI-to-PCI Bridge Arch. spec.: "A bridge forwards PCI memory
+> > transactions from its primary interface to its secondary interface
+> > (downstream) if a memory address is in the range defined by the
+> > Memory Base and Memory Limit registers (when the base is less than
+> > or equal to the limit) as illustrated in Figure 4-3. Conversely, a
+> > memory transaction on the secondary interface that is within this
+> > address range will not be forwarded upstream to the primary
+> > interface."
+> > 
+> > To be specific, if your DMA address happens to be in
+> > [0x80000000-0xffffffff] and root port's aperture includes this
+> > range; the DMA will never make to the system memory.
 
-I recall that you agreed with the approach in "[PATCH/RFC 2/2]
-iommu/ipmmu-vmsa: Opt-in slave devices based on ES version", however
-it was suggested to me by Robin that my code in "[PATCH/RFC 1/2]
-arm64: mm: Silently allow devices lacking IOMMU group" should be
-reworked to use ->xlate().
+If there is no translation by an IOMMU this shouldn't be a problem, as
+long as the bridge windows don't overlap with system ram. With
+translation the IOMMU driver has to take care of that, which they
+usually do.
 
-Now this series makes use of ->xlate() to implement the white list, so
-I hope that makes everyone happy.
+> Hmmm.  I guess SWIOTLB assumes there's no address translation in the
+> DMA direction, right?  If there's no address translation in the PIO
+> direction, PCI bus BAR addresses are identical to the CPU-side
+> addresses.  In that case, there's no conflict because we already have
+> to assign BARs so they never look like a system memory address.
 
-Also, based on your suggestion I finally managed to break out the code
-that skips over disabled devices in "[PATCH/RFC v2 1/4] iommu/of: Skip
-IOMMU devices disabled in DT" but I'm not sure if this will cause
-problem for other platforms.
+Yes, SWIOTLB assumes that IOVA == PA.
 
-Anyway, my current plan is to wait for feedback for "[PATCH/RFC v2
-1/4] iommu/of: Skip IOMMU devices disabled in DT" and handle that
-independently, and also roll in the other changes in this series into
-my other IPMMU code.
+> But if there *is* address translation in the PIO direction, we can
+> have conflicts because the bridge can translate CPU-side PIO accesses
+> to arbitrary PCI bus addresses.
 
-Thanks,
+I am not aware of any hardware that does translation on the PIO space.
+The IOMMUs I know of don't care about PIO at all.
 
-/ magnus
+
+
+	Joerg
