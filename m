@@ -1,47 +1,47 @@
 From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 2/7] iommu: Add DOMAIN_ATTR_ENABLE_TTBR1
-Date: Tue,  7 Mar 2017 09:39:50 -0700
-Message-ID: <1488904795-870-3-git-send-email-jcrouse@codeaurora.org>
+Subject: [PATCH 4/7] iommu: introduce TTBR0 domain attribute
+Date: Tue,  7 Mar 2017 09:39:52 -0700
+Message-ID: <1488904795-870-5-git-send-email-jcrouse@codeaurora.org>
 References: <1488904795-870-1-git-send-email-jcrouse@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 In-Reply-To: <1488904795-870-1-git-send-email-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Add a new domain attribute to enable the TTBR1 pagetable for drivers
-and devices that support it.  This will enabled using a TTBR1 (otherwise
-known as a "global" or "system" pagetable for devices that support a split
-pagetable scheme for switching pagetables quickly and safely.
-
-Signed-off-by: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
----
- include/linux/iommu.h | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 436dc21..d537cc9 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -114,6 +114,7 @@ enum iommu_attr {
- 	DOMAIN_ATTR_FSL_PAMU_ENABLE,
- 	DOMAIN_ATTR_FSL_PAMUV1,
- 	DOMAIN_ATTR_NESTING,	/* two stages of translation */
-+	DOMAIN_ATTR_ENABLE_TTBR1,
- 	DOMAIN_ATTR_MAX,
- };
- 
--- 
-1.9.1
+RnJvbTogSmVyZW15IEdlYmJlbiA8amdlYmJlbkBjb2RlYXVyb3JhLm9yZz4KCkluIHRoZSBBUk0g
+U01NVSBhcmNoaXRlY3R1cmUsIHBhZ2V0YWJsZSBwcm9ncmFtbWluZyBpcyBjb250cm9sbGVkCmJ5
+IHRoZSBUVEJSMCByZWdpc3Rlci4gVGhlIGxheW91dCBvZiB0aGlzCnJlZ2lzdGVycyB2YXJpZXMg
+ZGVwZW5kaW5nIG9uIHRoZSBwYWdldGFibGUgZm9ybWF0IGluIHVzZS4KSW4gcGFydGljdWxhciwg
+dGhlIEFTSUQgKGFkZHJlc3Mgc3BhY2UgSUQpIGZpZWxkIGlzIGZvdW5kIGluCkNPTlRFWFRJRFIg
+d2hlbiB1c2luZyBWN1MgZm9ybWF0IGFuZCBpbiB0aGUgdG9wIGJpdHMgb2YgVFRCUjAKZm9yIFY3
+TCBhbmQgVjhMLgoKU29tZSBkcml2ZXJzIG5lZWQgdG8gcHJvZ3JhbSBoYXJkd2FyZSB0byBzd2l0
+Y2ggZG9tYWlucyBvbiB0aGUKZmx5LiBUaGlzIGF0dHJpYnV0ZSBhbGxvd3MgdGhlIGNvcnJlY3Qg
+c2V0dGluZyB0byBiZSBkZXRlcm1pbmVkCmJ5IHF1ZXJ5aW5nIHRoZSBkb21haW4gcmF0aGVyIHRo
+YW4gZGlyZWN0bHkgcmVhZGluZyByZWdpc3RlcnMgYW5kCm1ha2luZyBhc3N1bXB0aW9ucyBhYm91
+dCB0aGUgcGFnZXRhYmxlIGZvcm1hdC4gVGhlIGRvbWFpbiBtdXN0IGJlCmF0dGFjaGVkIGJlZm9y
+ZSBUVEJSMCBtYXkgYmUgcXVlcmllZC4KClNpZ25lZC1vZmYtYnk6IEplcmVteSBHZWJiZW4gPGpn
+ZWJiZW5AY29kZWF1cm9yYS5vcmc+ClNpZ25lZC1vZmYtYnk6IEpvcmRhbiBDcm91c2UgPGpjcm91
+c2VAY29kZWF1cm9yYS5vcmc+Ci0tLQogaW5jbHVkZS9saW51eC9pb21tdS5oIHwgMSArCiAxIGZp
+bGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKykKCmRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2lv
+bW11LmggYi9pbmNsdWRlL2xpbnV4L2lvbW11LmgKaW5kZXggZDUzN2NjOS4uNTQ0Y2ZjNiAxMDA2
+NDQKLS0tIGEvaW5jbHVkZS9saW51eC9pb21tdS5oCisrKyBiL2luY2x1ZGUvbGludXgvaW9tbXUu
+aApAQCAtMTE1LDYgKzExNSw3IEBAIGVudW0gaW9tbXVfYXR0ciB7CiAJRE9NQUlOX0FUVFJfRlNM
+X1BBTVVWMSwKIAlET01BSU5fQVRUUl9ORVNUSU5HLAkvKiB0d28gc3RhZ2VzIG9mIHRyYW5zbGF0
+aW9uICovCiAJRE9NQUlOX0FUVFJfRU5BQkxFX1RUQlIxLAorCURPTUFJTl9BVFRSX1RUQlIwLAog
+CURPTUFJTl9BVFRSX01BWCwKIH07CiAKLS0gCjEuOS4xCgpfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwpGcmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVkcmVu
+b0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFp
+bG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
