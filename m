@@ -1,8 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v7 02/07] iommu/ipmmu-vmsa: Rework interrupt code and use
-	bitmap for context
-Date: Tue, 07 Mar 2017 12:17:03 +0900
-Message-ID: <148885662362.28553.15859075114068448611.sendpatchset@little-apple>
+Subject: [PATCH v7 03/07] iommu/ipmmu-vmsa: Break out utlb parsing code
+Date: Tue, 07 Mar 2017 12:17:13 +0900
+Message-ID: <148885663361.28553.16605169682314363447.sendpatchset@little-apple>
 References: <148885660307.28553.995847796823338863.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,168 +23,120 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Introduce a bitmap for context handing and convert the
-interrupt routine to handle all registered contexts.
-
-At this point the number of contexts are still limited.
-
-Also remove the use of the ARM specific mapping variable
-from ipmmu_irq() to allow compile on ARM64.
+Break out the utlb parsing code and dev_data allocation into a
+separate function. This is preparation for future code sharing.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
 
- Changes since V6:
+Changes since V6:
  - None
 
- drivers/iommu/ipmmu-vmsa.c |   76 ++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 66 insertions(+), 10 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |   58 ++++++++++++++++++++++++++++----------------
+ 1 file changed, 37 insertions(+), 21 deletions(-)
 
---- 0003/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2017-03-06 18:32:38.350607110 +0900
-@@ -8,6 +8,7 @@
-  * the Free Software Foundation; version 2 of the License.
-  */
- 
-+#include <linux/bitmap.h>
- #include <linux/delay.h>
- #include <linux/dma-mapping.h>
- #include <linux/err.h>
-@@ -26,12 +27,17 @@
- 
- #include "io-pgtable.h"
- 
-+#define IPMMU_CTX_MAX 1
-+
- struct ipmmu_vmsa_device {
- 	struct device *dev;
- 	void __iomem *base;
- 	struct list_head list;
- 
- 	unsigned int num_utlbs;
-+	spinlock_t lock;			/* Protects ctx and domains[] */
-+	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
-+	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
- 
- 	struct dma_iommu_mapping *mapping;
- };
-@@ -293,9 +299,29 @@ static struct iommu_gather_ops ipmmu_gat
-  * Domain/Context Management
-  */
- 
-+static int ipmmu_domain_allocate_context(struct ipmmu_vmsa_device *mmu,
-+					 struct ipmmu_vmsa_domain *domain)
-+{
-+	unsigned long flags;
-+	int ret;
-+
-+	spin_lock_irqsave(&mmu->lock, flags);
-+
-+	ret = find_first_zero_bit(mmu->ctx, IPMMU_CTX_MAX);
-+	if (ret != IPMMU_CTX_MAX) {
-+		mmu->domains[ret] = domain;
-+		set_bit(ret, mmu->ctx);
-+	}
-+
-+	spin_unlock_irqrestore(&mmu->lock, flags);
-+
-+	return ret;
-+}
-+
- static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
- {
- 	u64 ttbr;
-+	int ret;
- 
- 	/*
- 	 * Allocate the page table operations.
-@@ -327,10 +353,15 @@ static int ipmmu_domain_init_context(str
- 		return -EINVAL;
- 
- 	/*
--	 * TODO: When adding support for multiple contexts, find an unused
--	 * context.
-+	 * Find an unused context.
- 	 */
--	domain->context_id = 0;
-+	ret = ipmmu_domain_allocate_context(domain->mmu, domain);
-+	if (ret == IPMMU_CTX_MAX) {
-+		free_io_pgtable_ops(domain->iop);
-+		return -EBUSY;
-+	}
-+
-+	domain->context_id = ret;
- 
- 	/* TTBR0 */
- 	ttbr = domain->cfg.arm_lpae_s1_cfg.ttbr[0];
-@@ -372,6 +403,19 @@ static int ipmmu_domain_init_context(str
+--- 0004/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-03-06 18:33:38.600607110 +0900
+@@ -649,22 +649,15 @@ static int ipmmu_find_utlbs(struct ipmmu
  	return 0;
  }
  
-+static void ipmmu_domain_free_context(struct ipmmu_vmsa_device *mmu,
-+				      unsigned int context_id)
-+{
-+	unsigned long flags;
+-static int ipmmu_add_device(struct device *dev)
++static int ipmmu_init_platform_device(struct device *dev)
+ {
+ 	struct ipmmu_vmsa_archdata *archdata;
+ 	struct ipmmu_vmsa_device *mmu;
+-	struct iommu_group *group = NULL;
+ 	unsigned int *utlbs;
+ 	unsigned int i;
+ 	int num_utlbs;
+ 	int ret = -ENODEV;
+ 
+-	if (dev->archdata.iommu) {
+-		dev_warn(dev, "IOMMU driver already assigned to device %s\n",
+-			 dev_name(dev));
+-		return -EINVAL;
+-	}
+-
+ 	/* Find the master corresponding to the device. */
+ 
+ 	num_utlbs = of_count_phandle_with_args(dev->of_node, "iommus",
+@@ -701,6 +694,36 @@ static int ipmmu_add_device(struct devic
+ 		}
+ 	}
+ 
++	archdata = kzalloc(sizeof(*archdata), GFP_KERNEL);
++	if (!archdata) {
++		ret = -ENOMEM;
++		goto error;
++	}
 +
-+	spin_lock_irqsave(&mmu->lock, flags);
++	archdata->mmu = mmu;
++	archdata->utlbs = utlbs;
++	archdata->num_utlbs = num_utlbs;
++	dev->archdata.iommu = archdata;
++	return 0;
 +
-+	clear_bit(context_id, mmu->ctx);
-+	mmu->domains[context_id] = NULL;
-+
-+	spin_unlock_irqrestore(&mmu->lock, flags);
++error:
++	kfree(utlbs);
++	return ret;
 +}
 +
- static void ipmmu_domain_destroy_context(struct ipmmu_vmsa_domain *domain)
- {
- 	/*
-@@ -382,6 +426,7 @@ static void ipmmu_domain_destroy_context
- 	 */
- 	ipmmu_ctx_write(domain, IMCTR, IMCTR_FLUSH);
- 	ipmmu_tlb_sync(domain);
-+	ipmmu_domain_free_context(domain->mmu, domain->context_id);
- }
- 
- /* -----------------------------------------------------------------------------
-@@ -439,16 +484,25 @@ static irqreturn_t ipmmu_domain_irq(stru
- static irqreturn_t ipmmu_irq(int irq, void *dev)
- {
- 	struct ipmmu_vmsa_device *mmu = dev;
--	struct iommu_domain *io_domain;
--	struct ipmmu_vmsa_domain *domain;
-+	irqreturn_t status = IRQ_NONE;
-+	unsigned int i;
-+	unsigned long flags;
- 
--	if (!mmu->mapping)
--		return IRQ_NONE;
-+	spin_lock_irqsave(&mmu->lock, flags);
++static int ipmmu_add_device(struct device *dev)
++{
++	struct ipmmu_vmsa_archdata *archdata;
++	struct ipmmu_vmsa_device *mmu = NULL;
++	struct iommu_group *group;
++	int ret;
 +
-+	/*
-+	 * Check interrupts for all active contexts.
-+	 */
-+	for (i = 0; i < IPMMU_CTX_MAX; i++) {
-+		if (!mmu->domains[i])
-+			continue;
-+		if (ipmmu_domain_irq(mmu->domains[i]) == IRQ_HANDLED)
-+			status = IRQ_HANDLED;
++	if (dev->archdata.iommu) {
++		dev_warn(dev, "IOMMU driver already assigned to device %s\n",
++			 dev_name(dev));
++		return -EINVAL;
 +	}
++
+ 	/* Create a device group and add the device to it. */
+ 	group = iommu_group_alloc();
+ 	if (IS_ERR(group)) {
+@@ -718,16 +741,9 @@ static int ipmmu_add_device(struct devic
+ 		goto error;
+ 	}
  
--	io_domain = mmu->mapping->domain;
--	domain = to_vmsa_domain(io_domain);
-+	spin_unlock_irqrestore(&mmu->lock, flags);
+-	archdata = kzalloc(sizeof(*archdata), GFP_KERNEL);
+-	if (!archdata) {
+-		ret = -ENOMEM;
++	ret = ipmmu_init_platform_device(dev);
++	if (ret < 0)
+ 		goto error;
+-	}
+-
+-	archdata->mmu = mmu;
+-	archdata->utlbs = utlbs;
+-	archdata->num_utlbs = num_utlbs;
+-	dev->archdata.iommu = archdata;
  
--	return ipmmu_domain_irq(domain);
-+	return status;
- }
+ 	/*
+ 	 * Create the ARM mapping, used by the ARM DMA mapping core to allocate
+@@ -738,6 +754,8 @@ static int ipmmu_add_device(struct devic
+ 	 * - Make the mapping size configurable ? We currently use a 2GB mapping
+ 	 *   at a 1GB offset to ensure that NULL VAs will fault.
+ 	 */
++	archdata = dev->archdata.iommu;
++	mmu = archdata->mmu;
+ 	if (!mmu->mapping) {
+ 		struct dma_iommu_mapping *mapping;
  
- /* -----------------------------------------------------------------------------
-@@ -776,6 +830,8 @@ static int ipmmu_probe(struct platform_d
+@@ -762,10 +780,8 @@ static int ipmmu_add_device(struct devic
+ 	return 0;
  
- 	mmu->dev = &pdev->dev;
- 	mmu->num_utlbs = 32;
-+	spin_lock_init(&mmu->lock);
-+	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
+ error:
+-	arm_iommu_release_mapping(mmu->mapping);
+-
+-	kfree(dev->archdata.iommu);
+-	kfree(utlbs);
++	if (mmu)
++		arm_iommu_release_mapping(mmu->mapping);
  
- 	/* Map I/O memory and request IRQ. */
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	dev->archdata.iommu = NULL;
+ 
