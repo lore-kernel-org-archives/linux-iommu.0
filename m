@@ -1,193 +1,69 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [RFC PATCH v4 28/28] x86: Add support to make use of Secure
- Memory Encryption
-Date: Tue, 7 Mar 2017 10:05:00 -0600
-Message-ID: <7e6c308f-3caf-5531-3cb2-9b6986f4288e@amd.com>
-References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
- <20170216154825.19244.32545.stgit@tlendack-t1.amdoffice.net>
- <20170301184055.gl3iic3gir6zzb23@pd.tnic>
+From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: [PATCH 1/7] iommu/arm-smmu: save the pgtbl_cfg in the
+	domain
+Date: Tue,  7 Mar 2017 09:39:49 -0700
+Message-ID: <1488904795-870-2-git-send-email-jcrouse@codeaurora.org>
+References: <1488904795-870-1-git-send-email-jcrouse@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170301184055.gl3iic3gir6zzb23@pd.tnic>
-Sender: owner-linux-mm@kvack.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S.
- Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter
- Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Thomas Gleixner <tglx@li>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <1488904795-870-1-git-send-email-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/freedreno>
+List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
+ <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mitchel Humpherys <mitchelh-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 3/1/2017 12:40 PM, Borislav Petkov wrote:
-> On Thu, Feb 16, 2017 at 09:48:25AM -0600, Tom Lendacky wrote:
->> This patch adds the support to check if SME has been enabled and if
->> memory encryption should be activated (checking of command line option
->> based on the configuration of the default state).  If memory encryption
->> is to be activated, then the encryption mask is set and the kernel is
->> encrypted "in place."
->>
->> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
->> ---
->>  arch/x86/kernel/head_64.S          |    1 +
->>  arch/x86/kernel/mem_encrypt_init.c |   71 +++++++++++++++++++++++++++++++++++-
->>  arch/x86/mm/mem_encrypt.c          |    2 +
->>  3 files changed, 73 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
->> index edd2f14..e6820e7 100644
->> --- a/arch/x86/kernel/head_64.S
->> +++ b/arch/x86/kernel/head_64.S
->> @@ -97,6 +97,7 @@ startup_64:
->>  	 * Save the returned mask in %r12 for later use.
->>  	 */
->>  	push	%rsi
->> +	movq	%rsi, %rdi
->>  	call	sme_enable
->>  	pop	%rsi
->>  	movq	%rax, %r12
->> diff --git a/arch/x86/kernel/mem_encrypt_init.c b/arch/x86/kernel/mem_encrypt_init.c
->> index 07cbb90..35c5e3d 100644
->> --- a/arch/x86/kernel/mem_encrypt_init.c
->> +++ b/arch/x86/kernel/mem_encrypt_init.c
->> @@ -19,6 +19,12 @@
->>  #include <linux/mm.h>
->>
->>  #include <asm/sections.h>
->> +#include <asm/processor-flags.h>
->> +#include <asm/msr.h>
->> +#include <asm/cmdline.h>
->> +
->> +static char sme_cmdline_arg_on[] __initdata = "mem_encrypt=on";
->> +static char sme_cmdline_arg_off[] __initdata = "mem_encrypt=off";
->>
->>  extern void sme_encrypt_execute(unsigned long, unsigned long, unsigned long,
->>  				void *, pgd_t *);
->> @@ -217,8 +223,71 @@ unsigned long __init sme_get_me_mask(void)
->>  	return sme_me_mask;
->>  }
->>
->> -unsigned long __init sme_enable(void)
->> +unsigned long __init sme_enable(void *boot_data)
->
-> unsigned long __init sme_enable(struct boot_params *bp)
->
-> works too.
-
-Ok, will do.
-
->
-> And then you need to correct the function signature in the
-> !CONFIG_AMD_MEM_ENCRYPT case, at the end of this file, too:
->
-> unsigned long __init sme_enable(struct boot_params *bp)		{ return 0; }
-
-Yup, missed that.  I'll make it match.
-
->
->>  {
->> +	struct boot_params *bp = boot_data;
->> +	unsigned int eax, ebx, ecx, edx;
->> +	unsigned long cmdline_ptr;
->> +	bool enable_if_found;
->> +	void *cmdline_arg;
->> +	u64 msr;
->> +
->> +	/* Check for an AMD processor */
->> +	eax = 0;
->> +	ecx = 0;
->> +	native_cpuid(&eax, &ebx, &ecx, &edx);
->> +	if ((ebx != 0x68747541) || (edx != 0x69746e65) || (ecx != 0x444d4163))
->> +		goto out;
->> +
->> +	/* Check for the SME support leaf */
->> +	eax = 0x80000000;
->> +	ecx = 0;
->> +	native_cpuid(&eax, &ebx, &ecx, &edx);
->> +	if (eax < 0x8000001f)
->> +		goto out;
->> +
->> +	/*
->> +	 * Check for the SME feature:
->> +	 *   CPUID Fn8000_001F[EAX] - Bit 0
->> +	 *     Secure Memory Encryption support
->> +	 *   CPUID Fn8000_001F[EBX] - Bits 5:0
->> +	 *     Pagetable bit position used to indicate encryption
->> +	 */
->> +	eax = 0x8000001f;
->> +	ecx = 0;
->> +	native_cpuid(&eax, &ebx, &ecx, &edx);
->> +	if (!(eax & 1))
->> +		goto out;
->> +
->> +	/* Check if SME is enabled */
->> +	msr = native_read_msr(MSR_K8_SYSCFG);
->
-> This native_read_msr() wankery is adding this check:
->
-> 	if (msr_tracepoint_active(__tracepoint_read_msr))
->
-> and here it is clearly too early for tracepoints. Please use __rdmsr()
-> which is purely doing the MSR operation. (... and exception handling for
-
-Ah, good catch.  I'll switch to __rdmsr().
-
-> when the RDMSR itself raises an exception but we're very early here too
-> so the MSR better be there, otherwise we'll blow up).
-
-Yes, it will be there if SME support is indicated in the CPUID result.
-
->
->> +	if (!(msr & MSR_K8_SYSCFG_MEM_ENCRYPT))
->> +		goto out;
->> +
->> +	/*
->> +	 * Fixups have not been to applied phys_base yet, so we must obtain
->
-> 		...    not been applied to phys_base yet ...
-
-Yup.
-
->
->> +	 * the address to the SME command line option in the following way.
->> +	 */
->> +	if (IS_ENABLED(CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT)) {
->> +		asm ("lea sme_cmdline_arg_off(%%rip), %0"
->> +		     : "=r" (cmdline_arg)
->> +		     : "p" (sme_cmdline_arg_off));
->> +		enable_if_found = false;
->> +	} else {
->> +		asm ("lea sme_cmdline_arg_on(%%rip), %0"
->> +		     : "=r" (cmdline_arg)
->> +		     : "p" (sme_cmdline_arg_on));
->> +		enable_if_found = true;
->> +	}
->> +
->> +	cmdline_ptr = bp->hdr.cmd_line_ptr | ((u64)bp->ext_cmd_line_ptr << 32);
->> +
->> +	if (cmdline_find_option_bool((char *)cmdline_ptr, cmdline_arg))
->> +		sme_me_mask = enable_if_found ? 1UL << (ebx & 0x3f) : 0;
->> +	else
->> +		sme_me_mask = enable_if_found ? 0 : 1UL << (ebx & 0x3f);
->
-> I have a better idea: you can copy __cmdline_find_option() +
-> cmdline_find_option() to arch/x86/lib/cmdline.c in a pre-patch. Then,
-> pass in a buffer and check for "on" and "off". This way you don't
-> have to misuse the _bool() variant for something which is actually
-> "option=argument".
-
-I can do that.  Because phys_base hasn't been updated yet, I'll have to
-create "on" and "off" constants and get their address in a similar way
-to the command line option so that I can do the strncmp properly.
-
-Thanks,
-Tom
-
->
-> Thanks.
->
-
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+RnJvbTogTWl0Y2hlbCBIdW1waGVyeXMgPG1pdGNoZWxoQGNvZGVhdXJvcmEub3JnPgoKVGhlIHBn
+dGJsX2NmZyBvYmplY3QgaGFzIGEgZmV3IGhhbmR5IHByb3BlcnRpZXMgdGhhdCB3ZSdkIGxpa2Ug
+dG8gbWFrZQp1c2Ugb2YgbGF0ZXIgKHJldHVybmluZyB0aGUgcGdkIGluIGEgZG9tYWluIGF0dHJp
+YnV0ZSwgZm9yIGV4YW1wbGUpLgpLZWVwIHRyYWNrIG9mIHRoZSBkb21haW4gcGd0YmxfY2ZnIGlu
+IHRoZSBkb21haW4gc3RydWN0dXJlLgoKU2lnbmVkLW9mZi1ieTogTWl0Y2hlbCBIdW1waGVyeXMg
+PG1pdGNoZWxoQGNvZGVhdXJvcmEub3JnPgotLS0KIGRyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyB8
+IDExICsrKysrKy0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgNiBpbnNlcnRpb25zKCspLCA1IGRlbGV0
+aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBiL2RyaXZlcnMv
+aW9tbXUvYXJtLXNtbXUuYwppbmRleCA1N2JjZjE0Li5jNDdmODgzIDEwMDY0NAotLS0gYS9kcml2
+ZXJzL2lvbW11L2FybS1zbW11LmMKKysrIGIvZHJpdmVycy9pb21tdS9hcm0tc21tdS5jCkBAIC00
+MDksNiArNDA5LDcgQEAgZW51bSBhcm1fc21tdV9kb21haW5fc3RhZ2Ugewogc3RydWN0IGFybV9z
+bW11X2RvbWFpbiB7CiAJc3RydWN0IGFybV9zbW11X2RldmljZQkJKnNtbXU7CiAJc3RydWN0IGlv
+X3BndGFibGVfb3BzCQkqcGd0Ymxfb3BzOworCXN0cnVjdCBpb19wZ3RhYmxlX2NmZwkJcGd0Ymxf
+Y2ZnOwogCXNwaW5sb2NrX3QJCQlwZ3RibF9sb2NrOwogCXN0cnVjdCBhcm1fc21tdV9jZmcJCWNm
+ZzsKIAllbnVtIGFybV9zbW11X2RvbWFpbl9zdGFnZQlzdGFnZTsKQEAgLTg0MCw3ICs4NDEsNiBA
+QCBzdGF0aWMgaW50IGFybV9zbW11X2luaXRfZG9tYWluX2NvbnRleHQoc3RydWN0IGlvbW11X2Rv
+bWFpbiAqZG9tYWluLAogCWludCBpcnEsIHN0YXJ0LCByZXQgPSAwOwogCXVuc2lnbmVkIGxvbmcg
+aWFzLCBvYXM7CiAJc3RydWN0IGlvX3BndGFibGVfb3BzICpwZ3RibF9vcHM7Ci0Jc3RydWN0IGlv
+X3BndGFibGVfY2ZnIHBndGJsX2NmZzsKIAllbnVtIGlvX3BndGFibGVfZm10IGZtdDsKIAlzdHJ1
+Y3QgYXJtX3NtbXVfZG9tYWluICpzbW11X2RvbWFpbiA9IHRvX3NtbXVfZG9tYWluKGRvbWFpbik7
+CiAJc3RydWN0IGFybV9zbW11X2NmZyAqY2ZnID0gJnNtbXVfZG9tYWluLT5jZmc7CkBAIC05NTIs
+NyArOTUyLDcgQEAgc3RhdGljIGludCBhcm1fc21tdV9pbml0X2RvbWFpbl9jb250ZXh0KHN0cnVj
+dCBpb21tdV9kb21haW4gKmRvbWFpbiwKIAkJY2ZnLT5pcnB0bmR4ID0gY2ZnLT5jYm5keDsKIAl9
+CiAKLQlwZ3RibF9jZmcgPSAoc3RydWN0IGlvX3BndGFibGVfY2ZnKSB7CisJc21tdV9kb21haW4t
+PnBndGJsX2NmZyA9IChzdHJ1Y3QgaW9fcGd0YWJsZV9jZmcpIHsKIAkJLnBnc2l6ZV9iaXRtYXAJ
+PSBzbW11LT5wZ3NpemVfYml0bWFwLAogCQkuaWFzCQk9IGlhcywKIAkJLm9hcwkJPSBvYXMsCkBA
+IC05NjEsMTkgKzk2MSwyMCBAQCBzdGF0aWMgaW50IGFybV9zbW11X2luaXRfZG9tYWluX2NvbnRl
+eHQoc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLAogCX07CiAKIAlzbW11X2RvbWFpbi0+c21t
+dSA9IHNtbXU7Ci0JcGd0Ymxfb3BzID0gYWxsb2NfaW9fcGd0YWJsZV9vcHMoZm10LCAmcGd0Ymxf
+Y2ZnLCBzbW11X2RvbWFpbik7CisJcGd0Ymxfb3BzID0gYWxsb2NfaW9fcGd0YWJsZV9vcHMoZm10
+LCAmc21tdV9kb21haW4tPnBndGJsX2NmZywKKwkJCQkJIHNtbXVfZG9tYWluKTsKIAlpZiAoIXBn
+dGJsX29wcykgewogCQlyZXQgPSAtRU5PTUVNOwogCQlnb3RvIG91dF9jbGVhcl9zbW11OwogCX0K
+IAogCS8qIFVwZGF0ZSB0aGUgZG9tYWluJ3MgcGFnZSBzaXplcyB0byByZWZsZWN0IHRoZSBwYWdl
+IHRhYmxlIGZvcm1hdCAqLwotCWRvbWFpbi0+cGdzaXplX2JpdG1hcCA9IHBndGJsX2NmZy5wZ3Np
+emVfYml0bWFwOworCWRvbWFpbi0+cGdzaXplX2JpdG1hcCA9IHNtbXVfZG9tYWluLT5wZ3RibF9j
+ZmcucGdzaXplX2JpdG1hcDsKIAlkb21haW4tPmdlb21ldHJ5LmFwZXJ0dXJlX2VuZCA9ICgxVUwg
+PDwgaWFzKSAtIDE7CiAJZG9tYWluLT5nZW9tZXRyeS5mb3JjZV9hcGVydHVyZSA9IHRydWU7CiAK
+IAkvKiBJbml0aWFsaXNlIHRoZSBjb250ZXh0IGJhbmsgd2l0aCBvdXIgcGFnZSB0YWJsZSBjZmcg
+Ki8KLQlhcm1fc21tdV9pbml0X2NvbnRleHRfYmFuayhzbW11X2RvbWFpbiwgJnBndGJsX2NmZyk7
+CisJYXJtX3NtbXVfaW5pdF9jb250ZXh0X2Jhbmsoc21tdV9kb21haW4sICZzbW11X2RvbWFpbi0+
+cGd0YmxfY2ZnKTsKIAogCS8qCiAJICogUmVxdWVzdCBjb250ZXh0IGZhdWx0IGludGVycnVwdC4g
+RG8gdGhpcyBsYXN0IHRvIGF2b2lkIHRoZQotLSAKMS45LjEKCl9fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fCkZyZWVkcmVubyBtYWlsaW5nIGxpc3QKRnJlZWRy
+ZW5vQGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9t
+YWlsbWFuL2xpc3RpbmZvL2ZyZWVkcmVubwo=
