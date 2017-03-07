@@ -1,13 +1,11 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Report smmu type in dmesg
-Date: Mon, 6 Mar 2017 18:22:08 +0000
-Message-ID: <d055d4c2-4d06-caba-4d84-21c22718fe76@arm.com>
-References: <20170306135833.21455-1-rrichter@cavium.com>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH v7 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V7
+Date: Tue, 07 Mar 2017 12:16:43 +0900
+Message-ID: <148885660307.28553.995847796823338863.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170306135833.21455-1-rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,220 +15,67 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robert Richter <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/03/17 13:58, Robert Richter wrote:
-> The ARM SMMU detection especially depends from system firmware. For
-> better diagnostic, log the detected type in dmesg.
+iommu/ipmmu-vmsa: IPMMU multi-arch update V7
 
-This paragraph especially depends from grammar. I think.
+[PATCH v7 01/07] iommu/ipmmu-vmsa: Remove platform data handling
+[PATCH v7 02/07] iommu/ipmmu-vmsa: Rework interrupt code and use bitmap for context
+[PATCH v7 03/07] iommu/ipmmu-vmsa: Break out utlb parsing code
+[PATCH v7 04/07] iommu/ipmmu-vmsa: Break out domain allocation code
+[PATCH v7 05/07] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
+[PATCH v7 06/07] iommu/ipmmu-vmsa: ARM and ARM64 archdata access
+[PATCH v7 07/07] iommu/ipmmu-vmsa: Drop LPAE Kconfig dependency
 
-> The smmu type's name is now stored in struct arm_smmu_type and ACPI
-> code is modified to use that struct too. Rename ARM_SMMU_MATCH_DATA()
-> macro to ARM_SMMU_TYPE() for better readability.
-> =
+These patches update the IPMMU driver with a couple of changes to support
+build on multiple architectures. In the process of doing so the interrupt
+code gets reworked, the foundation for supporting multiple contexts are
+added and in case of CONFIG_IOMMU_DMA=y (on 64-bit or 32-bit ARM) devices
+are grouped together and handled via ->xlate() - thanks Robin! Support for
+existing 32-bit ARM SoCs from R-Car Gen2 is kept as-is.
 
-> Signed-off-by: Robert Richter <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu.c | 61 ++++++++++++++++++++++++------------------=
-------
->  1 file changed, 30 insertions(+), 31 deletions(-)
+Changes since V6:
+ - Rebased on top of v4.11-rc1 and the following fast-tracked change:
+   3b6bb5b iommu/ipmmu-vmsa: Restrict IOMMU Domain Geometry to 32-bit address spac
+ - Updated patch 5/7 to roll in a few patches from other series
+   See individual patch for more details
+ - Build tested on 32-bit and 64-bit ARM
+ - Run time tested on 64-bit ARM (with additional SoC-specific patches)
 
-That seems a relatively invasive diffstat for the sake of printing a
-string once at boot time to what I can only assume is a small audience
-of firmware developers who find "cat
-/sys/firmware/devicetree/base/iommu*/compatible" (or the ACPI
-equivalent) too hard ;)
+Changes since V5:
+ - Rebased series on top of next-20161019
+ - Updated patch 5/7 to simplify domain allocation/free code - thanks Joerg!
+ - Added reviewed-by tag from Joerg for patch 1-4 and 6-7.
+ 
+Changes since V4:
+ - Updated patch 3/7 to work on top on the following commit in next-20160920:
+   b1e2afc iommu/ipmmu-vmsa: Fix wrong error handle of ipmmu_add_device
+ - Add Kconfig hunk to patch 5/7 to avoid undeclared ipmmu_ops if COMPILE_TEST
+ - Rebased patch 7/7 to fit on top of new Kconfig bits in 5/7
 
-Assuming there is a really good reason somewhere to justify this, I
-still wonder if a simple self-contained "smmu->model to string" function
-wouldn't do, if we really want to do this? Maybe it's not quite that
-simple if the generic case needs to key off smmu->version as well, but
-still. Arguably, just searching the of_match_table by model/version and
-printing the corresponding DT compatible would do the job (given an
-MMU-400 model to disambiguate those).
+Changes since V3:
+ - Updated patch 3/7 to fix hang-on-boot issue on 32-bit ARM - thanks Geert!
+ - Reworked group parameter handling in patch 3/7 and 5/7.
+ - Added patch 6/7 to fix build of the driver on s390/tile/um architectures
 
-Either way it ought to be replacing the "SMMUv%d with:" message in
-arm_smmu_device_cfg_probe() - this driver is noisy enough already
-without starting to repeat itself.
+Changes since V2:
+ - Got rid of patch 3 from the V2 however patch 1, 2 and 4 are kept.
+ - V3 patch 3, 4 and 5 come from
+   [PATCH 00/04] iommu/ipmmu-vmsa: IPMMU CONFIG_IOMMU_DMA update
+ - Patch 5 has been reworked to include patch 3 of the V1 of this series 
 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index abf6496843a6..5c793b3d3173 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -366,6 +366,7 @@ struct arm_smmu_device {
->  	u32				options;
->  	enum arm_smmu_arch_version	version;
->  	enum arm_smmu_implementation	model;
-> +	const char			*name;
+Changes since V1:
+ - Got rid of patch 2 and 3 from initial series
+ - Updated bitmap code locking and also used lighter bitop functions
+ - Updated the Kconfig bits to apply on top of ARCH_RENESAS
 
-If we are going to add a pointer to static implementation data, it may
-as well be a "const arm_smmu_type *type" pointer to subsume version and
-model as well.
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+---
 
->  =
+ Built on top v4.11-rc1:
 
->  	u32				num_context_banks;
->  	u32				num_s2_context_banks;
-> @@ -1955,19 +1956,20 @@ static int arm_smmu_device_cfg_probe(struct arm_s=
-mmu_device *smmu)
->  	return 0;
->  }
->  =
-
-> -struct arm_smmu_match_data {
-> +struct arm_smmu_type {
->  	enum arm_smmu_arch_version version;
->  	enum arm_smmu_implementation model;
-> +	const char *name;
->  };
->  =
-
-> -#define ARM_SMMU_MATCH_DATA(name, ver, imp)	\
-> -static struct arm_smmu_match_data name =3D { .version =3D ver, .model =
-=3D imp }
-> +#define ARM_SMMU_TYPE(var, ver, imp, _name)	\
-> +static struct arm_smmu_type var =3D { .version =3D ver, .model =3D imp, =
-.name =3D _name }
->  =
-
-> -ARM_SMMU_MATCH_DATA(smmu_generic_v1, ARM_SMMU_V1, GENERIC_SMMU);
-> -ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
-> -ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
-> -ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
-> -ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
-> +ARM_SMMU_TYPE(smmu_generic_v1, ARM_SMMU_V1, GENERIC_SMMU, "smmu-generic-=
-v1");
-> +ARM_SMMU_TYPE(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU, "smmu-generic-=
-v2");
-> +ARM_SMMU_TYPE(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU, "arm-mmu401");
-
-Strictly, I think you mean "ARM=AE CoreLink=99 MMU-401". Printing the name
-of a driver-internal structure looks like someone left a debugging hack in.
-
-> +ARM_SMMU_TYPE(arm_mmu500, ARM_SMMU_V2, ARM_MMU500, "arm-mmu500");
-
-And similarly. Of course, I'm not actually suggesting that using the
-full marketing names of things is a great idea, but then again if we do
-go naming specific IPs, and anyone gets sniffy about using the names
-"properly", then guess what's going to get removed again? You'll always
-find me firmly in the "easier not to go there" camp.
-
-Robin.
-
-> +ARM_SMMU_TYPE(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2, "cavium-smmuv2"=
-);
->  =
-
->  static const struct of_device_id arm_smmu_of_match[] =3D {
->  	{ .compatible =3D "arm,smmu-v1", .data =3D &smmu_generic_v1 },
-> @@ -1981,29 +1983,19 @@ static const struct of_device_id arm_smmu_of_matc=
-h[] =3D {
->  MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
->  =
-
->  #ifdef CONFIG_ACPI
-> -static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
-> +static struct arm_smmu_type *acpi_smmu_get_type(u32 model)
->  {
-> -	int ret =3D 0;
-> -
->  	switch (model) {
->  	case ACPI_IORT_SMMU_V1:
->  	case ACPI_IORT_SMMU_CORELINK_MMU400:
-> -		smmu->version =3D ARM_SMMU_V1;
-> -		smmu->model =3D GENERIC_SMMU;
-> -		break;
-> +		return &smmu_generic_v1;
->  	case ACPI_IORT_SMMU_V2:
-> -		smmu->version =3D ARM_SMMU_V2;
-> -		smmu->model =3D GENERIC_SMMU;
-> -		break;
-> +		return &smmu_generic_v2;
->  	case ACPI_IORT_SMMU_CORELINK_MMU500:
-> -		smmu->version =3D ARM_SMMU_V2;
-> -		smmu->model =3D ARM_MMU500;
-> -		break;
-> -	default:
-> -		ret =3D -ENODEV;
-> +		return &arm_mmu500;
->  	}
->  =
-
-> -	return ret;
-> +	return NULL;
->  }
->  =
-
->  static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
-> @@ -2013,14 +2005,18 @@ static int arm_smmu_device_acpi_probe(struct plat=
-form_device *pdev,
->  	struct acpi_iort_node *node =3D
->  		*(struct acpi_iort_node **)dev_get_platdata(dev);
->  	struct acpi_iort_smmu *iort_smmu;
-> -	int ret;
-> +	struct arm_smmu_type *type;
->  =
-
->  	/* Retrieve SMMU1/2 specific data */
->  	iort_smmu =3D (struct acpi_iort_smmu *)node->node_data;
->  =
-
-> -	ret =3D acpi_smmu_get_data(iort_smmu->model, smmu);
-> -	if (ret < 0)
-> -		return ret;
-> +	type =3D acpi_smmu_get_type(iort_smmu->model);
-> +	if (!type)
-> +		return -ENODEV;
-> +
-> +	smmu->version	=3D type->version;
-> +	smmu->model	=3D type->model;
-> +	smmu->name	=3D type->name;
->  =
-
->  	/* Ignore the configuration access interrupt */
->  	smmu->num_global_irqs =3D 1;
-> @@ -2041,8 +2037,8 @@ static inline int arm_smmu_device_acpi_probe(struct=
- platform_device *pdev,
->  static int arm_smmu_device_dt_probe(struct platform_device *pdev,
->  				    struct arm_smmu_device *smmu)
->  {
-> -	const struct arm_smmu_match_data *data;
->  	struct device *dev =3D &pdev->dev;
-> +	const struct arm_smmu_type *type;
->  	bool legacy_binding;
->  =
-
->  	if (of_property_read_u32(dev->of_node, "#global-interrupts",
-> @@ -2051,9 +2047,10 @@ static int arm_smmu_device_dt_probe(struct platfor=
-m_device *pdev,
->  		return -ENODEV;
->  	}
->  =
-
-> -	data =3D of_device_get_match_data(dev);
-> -	smmu->version =3D data->version;
-> -	smmu->model =3D data->model;
-> +	type =3D of_device_get_match_data(dev);
-> +	smmu->version	=3D type->version;
-> +	smmu->model	=3D type->model;
-> +	smmu->name	=3D type->name;
->  =
-
->  	parse_driver_options(smmu);
->  =
-
-> @@ -2098,6 +2095,8 @@ static int arm_smmu_device_probe(struct platform_de=
-vice *pdev)
->  	if (err)
->  		return err;
->  =
-
-> +	dev_notice(dev, "%s detected", smmu->name);
-> +
->  	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
->  	ioaddr =3D res->start;
->  	smmu->base =3D devm_ioremap_resource(dev, res);
-> =
+ drivers/iommu/Kconfig      |    2 
+ drivers/iommu/ipmmu-vmsa.c |  359 ++++++++++++++++++++++++++++++++++++--------
+ 2 files changed, 299 insertions(+), 62 deletions(-)
