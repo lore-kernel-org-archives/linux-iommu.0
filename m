@@ -1,78 +1,60 @@
 From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH 0/7] RFC: iommu/arm-smmu-v2: Dynamic domains
-Date: Tue,  7 Mar 2017 09:39:48 -0700
-Message-ID: <1488904795-870-1-git-send-email-jcrouse@codeaurora.org>
+Subject: [PATCH 5/7] iommu/arm-smmu: add support for TTBR0 attribute
+Date: Tue,  7 Mar 2017 09:39:53 -0700
+Message-ID: <1488904795-870-6-git-send-email-jcrouse@codeaurora.org>
+References: <1488904795-870-1-git-send-email-jcrouse@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1488904795-870-1-git-send-email-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-UHVyc3VhbnQgdG8gdGhlIGFybS1zbW11LXYzIFNWTSBzdXBwb3J0OgoKaHR0cHM6Ly9saXN0cy5s
-aW51eGZvdW5kYXRpb24ub3JnL3BpcGVybWFpbC9pb21tdS8yMDE3LUZlYnJ1YXJ5LzAyMDU5OS5o
-dG1sCgpJIGZlbHQgaXQgd291bGQgYmUgaGVscGZ1bCBpZiBJIHdvdWxkIGRlbW9uc3RyYXRlIGhv
-dyBRdWFsY29tbSBpbXBsZW1lbnRzCnBlci1wcm9jZXNzIHBhZ2V0YWJsZXMgZm9yIHNldmVyYWwg
-Z2VuZXJhdGlvbnMgb2YgU29DcyBhbmQgR1BVcyBmb2N1c2luZyBvbiB0aGUKQWRyZW5vIEE1NDAg
-R1BVIGFuZCBhbiBhcm0tc21tdS12MiBJT01NVSBvbiB0aGUgU25hcGRyYWdvbiA4MjAgU29DLgoK
-VGhlIHJlcXVpcmVtZW50IGlzIHRvIGltcGxlbWVudCBwZXItcHJvY2VzcyBHUFUgYWRkcmVzcyBz
-cGFjZXMgZm9yIHNlY3VyaXR5CnJlYXNvbnMuIFRob3VnaCBzb21lIHZlcnkgY3J1ZGUgU1ZNIHN1
-cHBvcnQgaXMgcG9zc2libGUgd2UgZm9jdXMgbWFpbmx5IG9uCmluZGl2aWR1YWwgYWRkcmVzcyBz
-cGFjZXMgdGhhdCBhcmUgbWFpbnRhaW5lZCBhbmQgbWFwcGVkIGJ5IHRoZSBHUFUgZHJpdmVyLgoK
-SW4gYSBudXRzaGVsbCwgdGhlIHNvbHV0aW9uIGlzIHRvIGNyZWF0ZSBzcGVjaWFsIHZpcnR1YWwg
-b3IgImR5bmFtaWMiIGRvbWFpbnMKdGhhdCBhcmUgYXNzb2NpYXRlZCB3aXRoIGEgcmVhbCBkb21h
-aW4uIFRoZSBkeW5hbWljIGRvbWFpbnMgYWxsb2NhdGUgcGFnZXRhYmxlcwpidXQgZG8gbm90IHJl
-cHJvZ3JhbSB0aGUgaGFyZHdhcmUuIFdoZW4gYSBjb21tYW5kIGlzIHN1Ym1pdHRlZCwgdGhlIGtl
-cm5lbApkcml2ZXIgcHJvdmlkZXMgdGhlIHBoeXNpYWwgYWRkcmVzcyBvZiB0aGUgcGFnZXRhYmxl
-IChUVEJSMCkgdG8gdGhlIEdQVSB3aGljaApyZXByb2dyYW1zIHRoZSBUVEJSMCByZWdpc3RlciBp
-biBjb250ZXh0IGJhbmsgMCBvZiB0aGUgR1BNVSBTTU1VIG9uIHRoZSBmbHkgKGFuZApkb2VzIHRo
-ZSByZXF1aXNpdGUgZmx1c2hpbmcgYW5kIHN0YWxsaW5nKS4KClRoZSBUVEJSMSBhZGRyZXNzIHNw
-YWNlIGlzIHVzZWQgdG8gbWFpbnRhaW4gYSBzcGxpdCBiZXR3ZWVuIHRoZSBwcm9jZXNzIGFuZCB0
-aGUKZ2xvYmFsIEdQVSBidWZmZXJzIChyaW5nYnVmZmVycywgZXRjKS4gVGhpcyBncmVhdGx5IGZh
-Y2lsaXRhdGVzIHRoZSBzd2l0Y2hpbmcKcHJvY2Vzcy4KCkluIG1vcmUgZGV0YWlsIHRoaXMgaXMg
-dGhlIHdvcmtmbG93OgoKIC0gVGhlIGtlcm5lbCBkcml2ZXIgYXR0YWNoZXMgYSBVTk1BTkFHRUQg
-ZG9tYWluIHRvIGNvbnRleHQgYmFuayAwCgogLSBHbG9iYWwgR1BVIGJ1ZmZlcnMgYXJlIGFsbG9j
-YXRlZCBpbiB0aGUgVFRCUjEgYWRkcmVzcyBzcGFjZQogCiAtIEVhY2ggbmV3IHByb2Nlc3MgY3Jl
-YXRlcyBhIGR5bmFtaWMgZG9tYWluIGNsb25lZCBmcm9tIHRoZSAicmVhbCIgZG9tYWluCgogLSBO
-ZXcgYnVmZmVycyBmb3IgdGhlIHByb2Nlc3MgYXJlIG1hcHBlZCBpbnRvIHRoZSBkeW5hbWljIGRv
-bWFpbgoKIC0gVGhlIGtlcm5lbCBkcml2ZXIgZ2V0cyB0aGUgVFRCUjAvQVNJRCByZWdpc3RlciB2
-YWx1ZSBmcm9tIHRoZSBkeW5hbWljIGRvbWFpbgogICB2aWEgYW4gYXR0cmlidXRlCgogLSBBdCBj
-b21tYW5kIHN1Ym1pc3Npb24gdGltZSwgdGhlIGtlcm5lbCBkcml2ZXIgc2VuZHMgdGhlIFRUQlIw
-L0FTSUQgdmFsdWUgdG8KICAgdGhlIEdQVSBiZWZvcmUgdGhlIGNvbW1hbmQuIFRoZSBHUFUgc3dp
-dGNoZXMgdGhlIHBhZ2V0YWJsZSBieSBwcm9ncmFtbWluZwogICB0aGUgU01NVSBoYXJkd2FyZSBi
-ZWZvcmUgZXhlY3V0aW5nIHRoZSBjb21tYW5kLgoKSSdsbCBiZSB1cGxvYWRpbmcgdGhlIHNlcmll
-cyB0byBpbXBsZW1lbnQgdGhpcyBpbiB0aGUgTVNNIERSTSBkcml2ZXIgdG8gc2hvdyBob3cKaXQg
-d29ya3MgZnJvbSB0aGUgR1BVIHBlcnNwZWN0aXZlLiBJJ20gYWRkaW5nIGl0IGFzIGEgc2VwYXJh
-dGUgdGhyZWFkIHRvIGF2b2lkCmNyb3NzaW5nIHRoZSBzdHJlYW1zIGFuZCBjb25mdXNpbmcgZm9s
-a3MgLSBJJ2xsIHJlcGx5IHRvIHRoaXMgZW1haWwgd2l0aCBhIGxpbmsuCgpPYnZpb3VzbHkgdGhl
-cmUgYXJlIHNvbWUgc2ltaWxhcml0aWVzIHdpdGggSmVhbi1QaGlsaXBwZSdzIGNvZGUgYW5kIEkg
-dGhpbmsgaXRzCndvcnRoIGhhdmluZyB0aGUgZGlzY3Vzc2lvbiBhYm91dCB3YXlzIHdlIGNhbiBt
-ZXJnZSB0aGUgY29uY2VwdHMgb24gdGhhdCB0aHJlYWQuClRoZXJlIGFyZSBhIGZldyBiYXJyaWVy
-cyB0byBvdmVyY29tZSBidXQgaW4gZ2VuZXJhbCBJIHRoaW5rIHdlIGNhbiBmaW5kIGEgd2F5CmZv
-cndhcmQuCgpQbGVhc2UgcmV2aWV3IGlmIHlvdSB3YW50IGFuZCBwcm92aWRlIGNvbW1lbnQgb3Ig
-anVzdCBmb2xsb3cgYWxvbmcuCgpUaGFua3MhCkpvcmRhbgoKSmVyZW15IEdlYmJlbiAoMik6CiAg
-aW9tbXU6IGludHJvZHVjZSBUVEJSMCBkb21haW4gYXR0cmlidXRlCiAgaW9tbXUvYXJtLXNtbXU6
-IGFkZCBzdXBwb3J0IGZvciBUVEJSMCBhdHRyaWJ1dGUKCkpvcmRhbiBDcm91c2UgKDQpOgogIGlv
-bW11OiBBZGQgRE9NQUlOX0FUVFJfRU5BQkxFX1RUQlIxCiAgaW9tbXUvYXJtLXNtbXU6IEFkZCBz
-dXBwb3J0IGZvciBUVEJSMQogIGlvbW11OiBBZGQgZHluYW1pYyBkb21haW5zCiAgaW9tbXUvYXJt
-LXNtbXU6IGFkZCBzdXBwb3J0IGZvciBkeW5hbWljIGRvbWFpbnMKCk1pdGNoZWwgSHVtcGhlcnlz
-ICgxKToKICBpb21tdS9hcm0tc21tdTogc2F2ZSB0aGUgcGd0YmxfY2ZnIGluIHRoZSBkb21haW4K
-CiBkcml2ZXJzL2lvbW11L2FybS1zbW11LmMgICAgICAgfCAxOTggKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKystLS0tLS0KIGRyaXZlcnMvaW9tbXUvaW8tcGd0YWJsZS1hcm0uYyB8
-IDE2OCArKysrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0tCiBkcml2ZXJzL2lvbW11L2lv
-LXBndGFibGUuaCAgICAgfCAgIDYgKysKIGRyaXZlcnMvaW9tbXUvaW9tbXUuYyAgICAgICAgICB8
-ICAzNyArKysrKysrKwogaW5jbHVkZS9saW51eC9pb21tdS5oICAgICAgICAgIHwgIDE5ICsrKy0K
-IDUgZmlsZXMgY2hhbmdlZCwgMzgyIGluc2VydGlvbnMoKyksIDQ2IGRlbGV0aW9ucygtKQoKLS0g
-CjEuOS4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpG
-cmVlZHJlbm8gbWFpbGluZyBsaXN0CkZyZWVkcmVub0BsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0
-cHM6Ly9saXN0cy5mcmVlZGVza3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9mcmVlZHJlbm8K
+From: Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+
+Add support to return the value of the TTBR0 register in response
+to a request via DOMAIN_ATTR_TTBR0.
+
+Signed-off-by: Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Signed-off-by: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+---
+ drivers/iommu/arm-smmu.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 2e3879f..e051750 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1544,6 +1544,19 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+ 		*((int *)data) = !!(smmu_domain->attributes
+ 					& (1 << DOMAIN_ATTR_ENABLE_TTBR1));
+ 		return 0;
++	case DOMAIN_ATTR_TTBR0: {
++		u64 val;
++		/* not valid until we are attached */
++		if (smmu_domain->smmu == NULL)
++			return -ENODEV;
++
++		val = smmu_domain->pgtbl_cfg.arm_lpae_s1_cfg.ttbr[0];
++		if (smmu_domain->cfg.cbar != CBAR_TYPE_S2_TRANS)
++			val |= (u64)ARM_SMMU_CB_ASID(smmu_domain->smmu,
++				&smmu_domain->cfg) << TTBRn_ASID_SHIFT;
++		*((u64 *)data) = val;
++		return 0;
++	}
+ 	default:
+ 		return -ENODEV;
+ 	}
+-- 
+1.9.1
