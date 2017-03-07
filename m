@@ -1,14 +1,18 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [Freedreno] [PATCH 0/7] RFC: iommu/arm-smmu-v2: Dynamic domains
-Date: Tue, 7 Mar 2017 10:22:41 -0700
-Message-ID: <20170307172241.GB20962@jcrouse-lnx.qualcomm.com>
-References: <1488904795-870-1-git-send-email-jcrouse@codeaurora.org>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [RFC PATCH v4 28/28] x86: Add support to make use of Secure
+	Memory Encryption
+Date: Tue, 7 Mar 2017 18:42:51 +0100
+Message-ID: <20170307174251.qrg4kgi34anuxd33@pd.tnic>
+References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
+	<20170216154825.19244.32545.stgit@tlendack-t1.amdoffice.net>
+	<20170301184055.gl3iic3gir6zzb23@pd.tnic>
+	<7e6c308f-3caf-5531-3cb2-9b6986f4288e@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1488904795-870-1-git-send-email-jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+In-Reply-To: <7e6c308f-3caf-5531-3cb2-9b6986f4288e-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,62 +22,24 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Mar 07, 2017 at 09:39:48AM -0700, Jordan Crouse wrote:
-> Pursuant to the arm-smmu-v3 SVM support:
-> 
-> https://lists.linuxfoundation.org/pipermail/iommu/2017-February/020599.html
-> 
-> I felt it would be helpful if I would demonstrate how Qualcomm implements
-> per-process pagetables for several generations of SoCs and GPUs focusing on the
-> Adreno A540 GPU and an arm-smmu-v2 IOMMU on the Snapdragon 820 SoC.
-> 
-> The requirement is to implement per-process GPU address spaces for security
-> reasons. Though some very crude SVM support is possible we focus mainly on
-> individual address spaces that are maintained and mapped by the GPU driver.
-> 
-> In a nutshell, the solution is to create special virtual or "dynamic" domains
-> that are associated with a real domain. The dynamic domains allocate pagetables
-> but do not reprogram the hardware. When a command is submitted, the kernel
-> driver provides the physial address of the pagetable (TTBR0) to the GPU which
-> reprograms the TTBR0 register in context bank 0 of the GPMU SMMU on the fly (and
-> does the requisite flushing and stalling).
-> 
-> The TTBR1 address space is used to maintain a split between the process and the
-> global GPU buffers (ringbuffers, etc). This greatly facilitates the switching
-> process.
-> 
-> In more detail this is the workflow:
-> 
->  - The kernel driver attaches a UNMANAGED domain to context bank 0
-> 
->  - Global GPU buffers are allocated in the TTBR1 address space
->  
->  - Each new process creates a dynamic domain cloned from the "real" domain
-> 
->  - New buffers for the process are mapped into the dynamic domain
-> 
->  - The kernel driver gets the TTBR0/ASID register value from the dynamic domain
->    via an attribute
-> 
->  - At command submission time, the kernel driver sends the TTBR0/ASID value to
->    the GPU before the command. The GPU switches the pagetable by programming
->    the SMMU hardware before executing the command.
-> 
-> I'll be uploading the series to implement this in the MSM DRM driver to show how
-> it works from the GPU perspective. I'm adding it as a separate thread to avoid
-> crossing the streams and confusing folks - I'll reply to this email with a link.
+On Tue, Mar 07, 2017 at 10:05:00AM -0600, Tom Lendacky wrote:
+> I can do that.  Because phys_base hasn't been updated yet, I'll have to
+> create "on" and "off" constants and get their address in a similar way
+> to the command line option so that I can do the strncmp properly.
 
-Here is a link to the GPU implementation. I'll leave the link here but if
-enough folks think it is useful I can reply append the actual patches to this
-thread too.
+Actually, wouldn't it be simpler to inspect the passed in buffer for
+containing the chars 'o', 'n' - in that order, or 'o', 'f', 'f' - in
+that order too? Because __cmdline_find_option() does copy the option
+characters into the buffer.
 
-https://lists.freedesktop.org/archives/freedreno/2017-March/001049.html
+Then you wouldn't need those "on" and "off" constants...
 
-Jordan
 -- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
