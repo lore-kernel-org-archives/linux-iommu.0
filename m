@@ -1,14 +1,15 @@
-From: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Add global SMR masking property
-Date: Tue, 7 Mar 2017 18:35:55 +0000
-Message-ID: <20170307183555.GH3514@leverpostej>
-References: <f26137836bb8416e38390ba68973ae5cd19c2c53.1488910978.git.robin.murphy@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: Report smmu type in dmesg
+Date: Tue, 7 Mar 2017 18:41:33 +0000
+Message-ID: <bdf70e78-5ffd-4458-f485-4a508705e3e6@arm.com>
+References: <20170306135833.21455-1-rrichter@cavium.com>
+	<d055d4c2-4d06-caba-4d84-21c22718fe76@arm.com>
+	<20170307140607.GY16822@rric.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <f26137836bb8416e38390ba68973ae5cd19c2c53.1488910978.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20170307140607.GY16822-vWBEXY7mpu582hYKe6nXyg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,91 +19,119 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Mar 07, 2017 at 06:26:28PM +0000, Robin Murphy wrote:
-> The current SMR masking support using a 2-cell iommu-specifier is
-> primarily intended to handle individual masters with large and/or
-> complex Stream ID assignments; it quickly gets a bit clunky in other SMR
-> use-cases where we just want to consistently mask out the same part of
-> every Stream ID (e.g. for MMU-500 configurations where the appended TBU
-> number gets in the way unnecessarily). Let's add a new property to allow
-> a single global mask value to better fit the latter situation.
-> 
-> Tested-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
-> 
-> Time to rekindle the discussion about whether an architecture-level
-> concept with a rather specific name needs a vendor prefix ;)
-> 
-> Robin.
-> 
->  Documentation/devicetree/bindings/iommu/arm,smmu.txt | 10 ++++++++++
->  drivers/iommu/arm-smmu.c                             |  4 +++-
->  2 files changed, 13 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> index 6cdf32d037fc..d66f355e174f 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
-> @@ -60,6 +60,16 @@ conditions.
->                    aliases of secure registers have to be used during
->                    SMMU configuration.
->  
-> +- stream-match-mask : Specifies a fixed SMR mask value to combine with
-> +                  the Stream ID value from every iommu-specifier. This
-> +                  may be used instead of an "#iommu-cells" value of 2
-> +                  when there is no need for per-master SMR masks, but
-> +                  it is still desired to mask some portion of every
-> +                  Stream ID (e.g. for certain MMU-500 configurations
-> +                  given globally unique external IDs). This property is
-> +                  not valid for SMMUs using stream indexing, and may be
-> +                  ignored if stream matching is not supported.
-> +
-
-Generally, this sounds fine.
-
-However, there is an ambiguity here (inherited from the existing
-#iommu-cells = <2> case), in that it's not clear what is meant by "to
-combine".
-
->From the example at the end of the file, this appears to be a mask of
-bits to not consider for matching purposes?
-
-Would you mind clarifying that in both cases?
-
-This could also do with an example.
-
-Thanks,
-Mark.
-
->  ** Deprecated properties:
->  
->  - mmu-masters (deprecated in favour of the generic "iommus" binding) :
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index abf6496843a6..e394d55146a6 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -1590,13 +1590,15 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
->  
->  static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
->  {
-> -	u32 fwid = 0;
-> +	u32 mask, fwid = 0;
->  
->  	if (args->args_count > 0)
->  		fwid |= (u16)args->args[0];
->  
->  	if (args->args_count > 1)
->  		fwid |= (u16)args->args[1] << SMR_MASK_SHIFT;
-> +	else if (!of_property_read_u32(args->np, "stream-match-mask", &mask))
-> +		fwid |= (u16)mask << SMR_MASK_SHIFT;
->  
->  	return iommu_fwspec_add_ids(dev, &fwid, 1);
->  }
-> -- 
-> 2.11.0.dirty
-> 
+T24gMDcvMDMvMTcgMTQ6MDYsIFJvYmVydCBSaWNodGVyIHdyb3RlOgo+IE9uIDA2LjAzLjE3IDE4
+OjIyOjA4LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+IE9uIDA2LzAzLzE3IDEzOjU4LCBSb2JlcnQg
+UmljaHRlciB3cm90ZToKPj4+IFRoZSBBUk0gU01NVSBkZXRlY3Rpb24gZXNwZWNpYWxseSBkZXBl
+bmRzIGZyb20gc3lzdGVtIGZpcm13YXJlLiBGb3IKPj4+IGJldHRlciBkaWFnbm9zdGljLCBsb2cg
+dGhlIGRldGVjdGVkIHR5cGUgaW4gZG1lc2cuCj4+Cj4+IFRoaXMgcGFyYWdyYXBoIGVzcGVjaWFs
+bHkgZGVwZW5kcyBmcm9tIGdyYW1tYXIuIEkgdGhpbmsuCj4gCj4gVGhhbmtzIGZvciB0aGUgbWFp
+bCBvbiB5b3UuIDopCj4gCj4+Cj4+PiBUaGUgc21tdSB0eXBlJ3MgbmFtZSBpcyBub3cgc3RvcmVk
+IGluIHN0cnVjdCBhcm1fc21tdV90eXBlIGFuZCBBQ1BJCj4+PiBjb2RlIGlzIG1vZGlmaWVkIHRv
+IHVzZSB0aGF0IHN0cnVjdCB0b28uIFJlbmFtZSBBUk1fU01NVV9NQVRDSF9EQVRBKCkKPj4+IG1h
+Y3JvIHRvIEFSTV9TTU1VX1RZUEUoKSBmb3IgYmV0dGVyIHJlYWRhYmlsaXR5Lgo+Pj4KPj4+IFNp
+Z25lZC1vZmYtYnk6IFJvYmVydCBSaWNodGVyIDxycmljaHRlckBjYXZpdW0uY29tPgo+Pj4gLS0t
+Cj4+PiAgZHJpdmVycy9pb21tdS9hcm0tc21tdS5jIHwgNjEgKysrKysrKysrKysrKysrKysrKysr
+KysrLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4+PiAgMSBmaWxlIGNoYW5nZWQsIDMwIGluc2Vy
+dGlvbnMoKyksIDMxIGRlbGV0aW9ucygtKQo+Pgo+PiBUaGF0IHNlZW1zIGEgcmVsYXRpdmVseSBp
+bnZhc2l2ZSBkaWZmc3RhdCBmb3IgdGhlIHNha2Ugb2YgcHJpbnRpbmcgYQo+PiBzdHJpbmcgb25j
+ZSBhdCBib290IHRpbWUgdG8gd2hhdCBJIGNhbiBvbmx5IGFzc3VtZSBpcyBhIHNtYWxsIGF1ZGll
+bmNlCj4+IG9mIGZpcm13YXJlIGRldmVsb3BlcnMgd2hvIGZpbmQgImNhdAo+PiAvc3lzL2Zpcm13
+YXJlL2RldmljZXRyZWUvYmFzZS9pb21tdSovY29tcGF0aWJsZSIgKG9yIHRoZSBBQ1BJCj4+IGVx
+dWl2YWxlbnQpIHRvbyBoYXJkIDspCj4gCj4gUmVhZGluZyBmaXJtd2FyZSBkYXRhIGlzIG5vdCBy
+ZWFsbHkgYSBzb2x1dGlvbiBhcyB5b3UgZG9uJ3Qga25vdyB3aGF0Cj4gdGhlIGRyaXZlciBpcyBk
+b2luZyB3aXRoIGl0LiBUaGUgYWN0dWFsIGJhY2tncm91bmQgb2YgdGhpcyBwYXRjaCBpcyB0bwo+
+IGJlIHN1cmUgYSBjZXJ0YWluIHdvcmthcm91bmQgd2FzIGVuYWJsZWQgaW4gdGhlIGtlcm5lbC4g
+QVJNJ3MgY3B1Cj4gZXJyYXRhIGZyYW1ld29yayBkb2VzIHRoaXMgbmljZWx5LiBJbiBjYXNlIG9m
+IHNtbXVzIHdlIGp1c3QgaGF2ZSB0aGUKPiBpbnRlcm5hbCBtb2RlbCBpbXBsZW1lbnRhdGlvbiB0
+eXBlIHdoaWNoIGlzIG5vdCB2aXNpYmxlIGluIHRoZSBsb2dzLgo+IFJpZ2h0IG5vdywgdGhlcmUg
+aXMgbm8gd2F5IHRvIGZpZ3VyZSB0aGF0IG91dCB3aXRob3V0IGtub3dpbmcgZncKPiBzcGVjaWZp
+Y3MgYW5kIGtlcm5lbCBzb3VyY2VzLgoKQWgsIG5vdyBpdCBzdGFydHMgdG8gYmVjb21lIGNsZWFy
+LiBJbiB0aGF0IGNhc2UsIGlmIHdlIHdhbnQgdG8gY29uZmlybQp0aGUgcHJlc2VuY2Ugb2Ygc3Bl
+Y2lmaWMgd29ya2Fyb3VuZHMsIHdlIHNob3VsZCBhY3R1YWxseSBfY29uZmlybSB0aGUKcHJlc2Vu
+Y2Ugb2Ygc3BlY2lmaWMgd29ya2Fyb3VuZHNfLiBJJ2QgaGF2ZSBubyBjb21wbGFpbnQgd2l0aCBl
+LmcuIHRoaXM6CgotLS0tLTg8LS0tLS0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNt
+bXUuYyBiL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYwppbmRleCBmNzQxMTEwOTY3MGYuLjllNTBh
+MDkyNjMyYyAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9hcm0tc21tdS5jCisrKyBiL2RyaXZl
+cnMvaW9tbXUvYXJtLXNtbXUuYwpAQCAtMTkzNCw2ICsxOTM0LDggQEAgc3RhdGljIGludCBhcm1f
+c21tdV9kZXZpY2VfY2ZnX3Byb2JlKHN0cnVjdAphcm1fc21tdV9kZXZpY2UgKnNtbXUpCiAgICAg
+ICAgICAgICAgICAgICAgICAgIGF0b21pY19hZGRfcmV0dXJuKHNtbXUtPm51bV9jb250ZXh0X2Jh
+bmtzLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAmY2F2aXVtX3Nt
+bXVfY29udGV4dF9jb3VudCk7CiAgICAgICAgICAgICAgICBzbW11LT5jYXZpdW1faWRfYmFzZSAt
+PSBzbW11LT5udW1fY29udGV4dF9iYW5rczsKKyAgICAgICAgICAgICAgIGRldl9ub3RpY2Uoc21t
+dS0+ZGV2LCAiXHR1c2luZyBBU0lEL1ZNSUQgb2Zmc2V0ICV1XG4iLAorICAgICAgICAgICAgICAg
+ICAgICAgICAgICBzbW11LT5jYXZpdW1faWRfYmFzZSk7CiAgICAgICAgfQoKICAgICAgICAvKiBJ
+RDIgKi8KLS0tLS0+OC0tLS0tCgphbmQgdGhlIGVxdWl2YWxlbnQgZm9yIG90aGVyIHRoaW5ncywg
+aWYgbmVlZCBiZS4gSWYgeW91IGp1c3QgcHJpbnQgImhleSwKdGhpcyBpcyBTTU1VLXgiLCB0aGUg
+dXNlciBpcyBpbiBmYWN0IG5vIGJldHRlciBvZmYsIHNpbmNlIHRoZXkgd291bGQKdGhlbiBzdGls
+bCBoYXZlIHRvIGdvIGFuZCBsb29rIGF0IHRoZSBzb3VyY2UgZm9yIHdoYXRldmVyIGtlcm5lbCB0
+aGV5J3JlCnJ1bm5pbmcgdG8gZmluZCBvdXQgd2hpY2ggcGFydGljdWxhciB3b3JrYXJvdW5kcyBm
+b3IgU01NVS14IGJ1Z3MgdGhhdApwYXJ0aWN1bGFyIGtlcm5lbCBpbXBsZW1lbnRzLgoKUm9iaW4u
+Cgo+IFRoZSBjaGFuZ2UgaXMgYmlnIGJ1dCBtb3N0IG9mIGl0IGlzIGEgcmVhc29uYWJsZSByZXdv
+cmsgYW55d2F5LiBJCj4gZGlkbid0IHdhbnQgdG8gc3BsaXQgdGhhdCBpbnRvIGEgc2VyaWVzIG9m
+IHBhdGNoZXMuIEJ1dCBJIGNvdWxkIGRvCj4gdGhhdC4KPiAKPj4gQXNzdW1pbmcgdGhlcmUgaXMg
+YSByZWFsbHkgZ29vZCByZWFzb24gc29tZXdoZXJlIHRvIGp1c3RpZnkgdGhpcywgSQo+PiBzdGls
+bCB3b25kZXIgaWYgYSBzaW1wbGUgc2VsZi1jb250YWluZWQgInNtbXUtPm1vZGVsIHRvIHN0cmlu
+ZyIgZnVuY3Rpb24KPj4gd291bGRuJ3QgZG8sIGlmIHdlIHJlYWxseSB3YW50IHRvIGRvIHRoaXM/
+IE1heWJlIGl0J3Mgbm90IHF1aXRlIHRoYXQKPj4gc2ltcGxlIGlmIHRoZSBnZW5lcmljIGNhc2Ug
+bmVlZHMgdG8ga2V5IG9mZiBzbW11LT52ZXJzaW9uIGFzIHdlbGwsIGJ1dAo+PiBzdGlsbC4gQXJn
+dWFibHksIGp1c3Qgc2VhcmNoaW5nIHRoZSBvZl9tYXRjaF90YWJsZSBieSBtb2RlbC92ZXJzaW9u
+IGFuZAo+PiBwcmludGluZyB0aGUgY29ycmVzcG9uZGluZyBEVCBjb21wYXRpYmxlIHdvdWxkIGRv
+IHRoZSBqb2IgKGdpdmVuIGFuCj4+IE1NVS00MDAgbW9kZWwgdG8gZGlzYW1iaWd1YXRlIHRob3Nl
+KS4KPiAKPiBXaGF0ZXZlciB5b3UgcHJlZmVyLiBUbyBtZSBhIGR5bmFtaWMgc2VhcmNoIG1ha2Vz
+IHRoaW5ncyBtb3JlIGNvbXBsZXgKPiBmb3Igbm8gYmVuZWZpdC4gQW5kIHByb3ZpZGluZyBEVCBu
+YW1lcyBpbiBhbiBBQ1BJIGNvbnRleHQgaXMgY29uZnVzaW5nCj4gZWl0aGVyLgo+IAo+PiBFaXRo
+ZXIgd2F5IGl0IG91Z2h0IHRvIGJlIHJlcGxhY2luZyB0aGUgIlNNTVV2JWQgd2l0aDoiIG1lc3Nh
+Z2UgaW4KPj4gYXJtX3NtbXVfZGV2aWNlX2NmZ19wcm9iZSgpIC0gdGhpcyBkcml2ZXIgaXMgbm9p
+c3kgZW5vdWdoIGFscmVhZHkKPj4gd2l0aG91dCBzdGFydGluZyB0byByZXBlYXQgaXRzZWxmLgo+
+Pgo+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUuYyBiL2RyaXZlcnMvaW9t
+bXUvYXJtLXNtbXUuYwo+Pj4gaW5kZXggYWJmNjQ5Njg0M2E2Li41Yzc5M2IzZDMxNzMgMTAwNjQ0
+Cj4+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LmMKPj4+ICsrKyBiL2RyaXZlcnMvaW9t
+bXUvYXJtLXNtbXUuYwo+Pj4gQEAgLTM2Niw2ICszNjYsNyBAQCBzdHJ1Y3QgYXJtX3NtbXVfZGV2
+aWNlIHsKPj4+ICAJdTMyCQkJCW9wdGlvbnM7Cj4+PiAgCWVudW0gYXJtX3NtbXVfYXJjaF92ZXJz
+aW9uCXZlcnNpb247Cj4+PiAgCWVudW0gYXJtX3NtbXVfaW1wbGVtZW50YXRpb24JbW9kZWw7Cj4+
+PiArCWNvbnN0IGNoYXIJCQkqbmFtZTsKPj4KPj4gSWYgd2UgYXJlIGdvaW5nIHRvIGFkZCBhIHBv
+aW50ZXIgdG8gc3RhdGljIGltcGxlbWVudGF0aW9uIGRhdGEsIGl0IG1heQo+PiBhcyB3ZWxsIGJl
+IGEgImNvbnN0IGFybV9zbW11X3R5cGUgKnR5cGUiIHBvaW50ZXIgdG8gc3Vic3VtZSB2ZXJzaW9u
+IGFuZAo+PiBtb2RlbCBhcyB3ZWxsLgo+IAo+IFRoZSBuYW1lIHN0aWxsIG1heSBjaGFuZ2UgYnV0
+IG5vdCB0aGUgcGFydGljdWxhciBzdHJpbmcuIEJvdGggd29yayBmb3IKPiBtZS4KPiAKPj4KPj4+
+ICAKPj4+ICAJdTMyCQkJCW51bV9jb250ZXh0X2JhbmtzOwo+Pj4gIAl1MzIJCQkJbnVtX3MyX2Nv
+bnRleHRfYmFua3M7Cj4+PiBAQCAtMTk1NSwxOSArMTk1NiwyMCBAQCBzdGF0aWMgaW50IGFybV9z
+bW11X2RldmljZV9jZmdfcHJvYmUoc3RydWN0IGFybV9zbW11X2RldmljZSAqc21tdSkKPj4+ICAJ
+cmV0dXJuIDA7Cj4+PiAgfQo+Pj4gIAo+Pj4gLXN0cnVjdCBhcm1fc21tdV9tYXRjaF9kYXRhIHsK
+Pj4+ICtzdHJ1Y3QgYXJtX3NtbXVfdHlwZSB7Cj4+PiAgCWVudW0gYXJtX3NtbXVfYXJjaF92ZXJz
+aW9uIHZlcnNpb247Cj4+PiAgCWVudW0gYXJtX3NtbXVfaW1wbGVtZW50YXRpb24gbW9kZWw7Cj4+
+PiArCWNvbnN0IGNoYXIgKm5hbWU7Cj4+PiAgfTsKPj4+ICAKPj4+IC0jZGVmaW5lIEFSTV9TTU1V
+X01BVENIX0RBVEEobmFtZSwgdmVyLCBpbXApCVwKPj4+IC1zdGF0aWMgc3RydWN0IGFybV9zbW11
+X21hdGNoX2RhdGEgbmFtZSA9IHsgLnZlcnNpb24gPSB2ZXIsIC5tb2RlbCA9IGltcCB9Cj4+PiAr
+I2RlZmluZSBBUk1fU01NVV9UWVBFKHZhciwgdmVyLCBpbXAsIF9uYW1lKQlcCj4+PiArc3RhdGlj
+IHN0cnVjdCBhcm1fc21tdV90eXBlIHZhciA9IHsgLnZlcnNpb24gPSB2ZXIsIC5tb2RlbCA9IGlt
+cCwgLm5hbWUgPSBfbmFtZSB9Cj4+PiAgCj4+PiAtQVJNX1NNTVVfTUFUQ0hfREFUQShzbW11X2dl
+bmVyaWNfdjEsIEFSTV9TTU1VX1YxLCBHRU5FUklDX1NNTVUpOwo+Pj4gLUFSTV9TTU1VX01BVENI
+X0RBVEEoc21tdV9nZW5lcmljX3YyLCBBUk1fU01NVV9WMiwgR0VORVJJQ19TTU1VKTsKPj4+IC1B
+Uk1fU01NVV9NQVRDSF9EQVRBKGFybV9tbXU0MDEsIEFSTV9TTU1VX1YxXzY0SywgR0VORVJJQ19T
+TU1VKTsKPj4+IC1BUk1fU01NVV9NQVRDSF9EQVRBKGFybV9tbXU1MDAsIEFSTV9TTU1VX1YyLCBB
+Uk1fTU1VNTAwKTsKPj4+IC1BUk1fU01NVV9NQVRDSF9EQVRBKGNhdml1bV9zbW11djIsIEFSTV9T
+TU1VX1YyLCBDQVZJVU1fU01NVVYyKTsKPj4+ICtBUk1fU01NVV9UWVBFKHNtbXVfZ2VuZXJpY192
+MSwgQVJNX1NNTVVfVjEsIEdFTkVSSUNfU01NVSwgInNtbXUtZ2VuZXJpYy12MSIpOwo+Pj4gK0FS
+TV9TTU1VX1RZUEUoc21tdV9nZW5lcmljX3YyLCBBUk1fU01NVV9WMiwgR0VORVJJQ19TTU1VLCAi
+c21tdS1nZW5lcmljLXYyIik7Cj4+PiArQVJNX1NNTVVfVFlQRShhcm1fbW11NDAxLCBBUk1fU01N
+VV9WMV82NEssIEdFTkVSSUNfU01NVSwgImFybS1tbXU0MDEiKTsKPj4KPj4gU3RyaWN0bHksIEkg
+dGhpbmsgeW91IG1lYW4gIkFSTcKuIENvcmVMaW5r4oSiIE1NVS00MDEiLiBQcmludGluZyB0aGUg
+bmFtZQo+PiBvZiBhIGRyaXZlci1pbnRlcm5hbCBzdHJ1Y3R1cmUgbG9va3MgbGlrZSBzb21lb25l
+IGxlZnQgYSBkZWJ1Z2dpbmcgaGFjayBpbi4KPj4KPj4+ICtBUk1fU01NVV9UWVBFKGFybV9tbXU1
+MDAsIEFSTV9TTU1VX1YyLCBBUk1fTU1VNTAwLCAiYXJtLW1tdTUwMCIpOwo+Pgo+PiBBbmQgc2lt
+aWxhcmx5LiBPZiBjb3Vyc2UsIEknbSBub3QgYWN0dWFsbHkgc3VnZ2VzdGluZyB0aGF0IHVzaW5n
+IHRoZQo+PiBmdWxsIG1hcmtldGluZyBuYW1lcyBvZiB0aGluZ3MgaXMgYSBncmVhdCBpZGVhLCBi
+dXQgdGhlbiBhZ2FpbiBpZiB3ZSBkbwo+PiBnbyBuYW1pbmcgc3BlY2lmaWMgSVBzLCBhbmQgYW55
+b25lIGdldHMgc25pZmZ5IGFib3V0IHVzaW5nIHRoZSBuYW1lcwo+PiAicHJvcGVybHkiLCB0aGVu
+IGd1ZXNzIHdoYXQncyBnb2luZyB0byBnZXQgcmVtb3ZlZCBhZ2Fpbj8gWW91J2xsIGFsd2F5cwo+
+PiBmaW5kIG1lIGZpcm1seSBpbiB0aGUgImVhc2llciBub3QgdG8gZ28gdGhlcmUiIGNhbXAuCj4g
+Cj4gQSBjaGFuZ2Ugb2YgbmFtaW5nIGlzIHVucmVsYXRlZCB0byB0aGlzIHBhdGNoLiBJIGxlYXZl
+IHRoaXMgdXAgdG8geW91Lgo+IAo+IFRoYW5rIHlvdSBmb3IgcmV2aWV3Lgo+IAo+IC1Sb2JlcnQK
+PiAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11
+IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xp
+c3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
