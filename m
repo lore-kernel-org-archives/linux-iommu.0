@@ -1,62 +1,50 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH 7/7] iommu/arm-smmu: add support for dynamic
-	domains
-Date: Tue, 7 Mar 2017 13:40:37 -0700
-Message-ID: <20170307204036.GC20962@jcrouse-lnx.qualcomm.com>
-References: <1488904795-870-1-git-send-email-jcrouse@codeaurora.org>
- <1488904795-870-8-git-send-email-jcrouse@codeaurora.org>
- <20170307181138.GF3514@leverpostej>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH 5/9] iommu: add qcom_iommu
+Date: Tue, 7 Mar 2017 17:44:39 -0500
+Message-ID: <CAF6AEGuH_PZsVCBKeh_=Ev39UZcdgN1Xpn5ekPbC9yr1z_ONQA@mail.gmail.com>
+References: <20170301174258.14618-1-robdclark@gmail.com>
+	<20170301174258.14618-6-robdclark@gmail.com>
+	<e82dbbc8-c81f-13ea-6ffc-d67204afb748@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170307181138.GF3514@leverpostej>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/freedreno>
-List-Post: <mailto:freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/freedreno>,
- <mailto:freedreno-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "Freedreno" <freedreno-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>
-Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, freedreno-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, Jeremy Gebben <jgebben-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <e82dbbc8-c81f-13ea-6ffc-d67204afb748-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVHVlLCBNYXIgMDcsIDIwMTcgYXQgMDY6MTE6MzhQTSArMDAwMCwgTWFyayBSdXRsYW5kIHdy
-b3RlOgo+IE9uIFR1ZSwgTWFyIDA3LCAyMDE3IGF0IDA5OjM5OjU1QU0gLTA3MDAsIEpvcmRhbiBD
-cm91c2Ugd3JvdGU6Cj4gPiBJbXBsZW1lbnQgc3VwcG9ydCBmb3IgZHluYW1pYyBkb21haW4gc3dp
-dGNoaW5nLiBUaGlzIGZlYXR1cmUgaXMKPiA+IG9ubHkgZW5hYmxlZCB3aGVuIHRoZSBxY29tLGR5
-bmFtaWMgZGV2aWNlIHRyZWUgYXR0cmlidXRlIGZvciBhbiBzbW11Cj4gPiBpbnN0YW5jZS4KPiA+
-IAo+ID4gSW4gb3JkZXIgdG8gdXNlIGR5bmFtaWMgZG9tYWlucywgYSBub24tZHluYW1pYyBkb21h
-aW4gbXVzdCBmaXJzdAo+ID4gYmUgY3JlYXRlZCBhbmQgYXR0YWNoZWQuICBUaGUgbm9uLWR5bmFt
-aWMgZG9tYWluIG11c3QgcmVtYWluCj4gPiBhdHRhY2hlZCB3aGlsZSB0aGUgZGV2aWNlIGlzIGlu
-IHVzZS4KPiA+IAo+ID4gVGhlIGR5bmFtaWMgZG9tYWluIGlzIGNsb25lZCBmcm9tIHRoZSBub24t
-ZHluYW1pYyBkb21haW4uIEltcG9ydGFudAo+ID4gY29uZmlndXJhdGlvbiBpbmZvcm1hdGlvbiBp
-cyBjb3BpZWQgZnJvbSB0aGUgbm9uLWR5bmFtaWMgZG9tYWluIGFuZAo+ID4gdGhlIGR5bmFtaWMg
-ZG9tYWluIGlzIGF1dG9tYXRpY2FsbHkgImF0dGFjaGVkIiAodGhvdWdoIGl0IGRvZXNuJ3QKPiA+
-IHByb2dyYW0gdGhlIGhhcmR3YXJlKS4KPiA+IAo+ID4gVG8gc3dpdGNoIGRvbWFpbnMgZHluYW1p
-Y2FsbHkgdGhlIGhhcmR3YXJlIG11c3QgcHJvZ3JhbSB0aGUgVFRCUjAgcmVnaXN0ZXIKPiA+IHdp
-dGggdGhlIHZhbHVlIGZyb20gdGhlIERPTUFJTl9BVFRSX1RUQlIwIGF0dHJpYnV0ZSBmb3IgdGhl
-IGR5bmFtaWMgZG9tYWluLgo+ID4gVGhlIHVwc3RyZWFtIGRyaXZlciBtYXkgYWxzbyBuZWVkIHRv
-IGRvIG90aGVyIGhhcmR3YXJlIHNwZWNpZmljIHJlZ2lzdGVyCj4gPiBwcm9ncmFtbWluZyB0byBw
-cm9wZXJseSBzeW5jaHJvbml6ZSB0aGUgZG9tYWluIHN3aXRjaC4gSXQgbXVzdCBlbnN1cmUgdGhh
-dAo+ID4gYWxsIHJlZ2lzdGVyIHN0YXRlIGV4Y2VwdCBmb3IgdGhlIFRUQlIwIHJlZ2lzdGVyIGlz
-IHJlc3RvcmVkCj4gPiBhdCB0aGUgZW5kIG9mIHRoZSBzd2l0Y2ggb3BlcmF0aW9uLgo+IAo+ID4g
-Kwl7IEFSTV9TTU1VX09QVF9EWU5BTUlDLCAicWNvbSxkeW5hbWljIiB9LAo+IAo+IFdoYXQgKnBy
-ZWNpc2VseSogaXMgdGhlIGludGVuZGVkIHNlbWFudGljIG9mIHRoaXMgcHJvcGVydHk/Cj4gCj4g
-SXQncyBub3QgY2xlYXIgdG8gbWUgd2hhdCBhIGR5bmFtaWMgZG9tYWluIGlzLCB0aGVyZSdzIG5v
-IGRvY3VtZW50YXRpb24KPiBpbiB0aGlzIHNlcmllcyBmb3IgdGhpcyBwcm9wZXJ0eSwgYW5kIGZy
-b20gYSBnbGFuY2UgaXQgc291bmRzIGxpa2UgYQo+IHB1cmUgU1cgZGV0YWlsIHJhdGhlciB0aGFu
-IGEgaGFyZHdhcmUvc3lzdGVtIGRldGFpbCAoaS5lLiBpdCBzaG91bGRuO3QKPiBiZSBpbiB0aGUg
-RFQgYXQgYWxsKS4KClllcCwgSSBhZ3JlZS4gIFRoZSBvcmlnaW5hbCBpbnRlbnQgd2FzIHRvIHRy
-eSB0byBrZWVwIG90aGVyIGNsaWVudHMgZnJvbSBnZXR0aW5nCnRoZW1zZWx2ZXMgaW50byAidHJv
-dWJsZSIgYnV0IHdlIGFyZSBhbGwgYWR1bHRzIGhlcmUuIEknbGwgemFwIGl0IGlmIHdlIGRvCmFu
-b3RoZXIgcmVmcmVzaC4KClRoYW5rcywKSm9yZGFuCgotLSAKVGhlIFF1YWxjb21tIElubm92YXRp
-b24gQ2VudGVyLCBJbmMuIGlzIGEgbWVtYmVyIG9mIENvZGUgQXVyb3JhIEZvcnVtLAphIExpbnV4
-IEZvdW5kYXRpb24gQ29sbGFib3JhdGl2ZSBQcm9qZWN0Cl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCkZyZWVkcmVubyBtYWlsaW5nIGxpc3QKRnJlZWRyZW5v
-QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL2ZyZWVkcmVubwo=
+On Tue, Mar 7, 2017 at 12:48 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> On 01/03/17 17:42, Rob Clark wrote:
+>> An iommu driver for Qualcomm "B" family devices which do not completely
+>> implement the ARM SMMU spec.
+>
+> Is that actually true, or is it just that it's a compliant SMMU on which
+> firmware has set SCR1.GASRAE? (which makes the global address space
+> secure-access-only). I don't know which Qualcomm SoCs are the ones
+> apparently using a plain ARM MMU-500 IP, but if any of those are also
+> running this particular firmware configuration that puts us in a
+> somewhat weird situation with respect to drivers :/
+>
+
+I can't say for sure, I don't really know exactly what tz is doing.
+Although the net effect from linux kernel perspective is that it isn't
+really "compliant".  And I think the SMMU_INTR_SEL_NS part (for
+controlling routing of cb irqs) is non-standard.
+
+As far as I can tell, if there was firmware that allowed access to the
+global address space, I don't think it ever escaped outside of qcom's
+labs (ie. might have existed on early versions of chips for new SoC
+bring-up.. but I think from upstream perspective we can ignore that).
+
+BR,
+-R
