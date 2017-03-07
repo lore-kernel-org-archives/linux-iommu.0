@@ -1,18 +1,11 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [RFC PATCH v4 28/28] x86: Add support to make use of Secure
-	Memory Encryption
-Date: Tue, 7 Mar 2017 18:42:51 +0100
-Message-ID: <20170307174251.qrg4kgi34anuxd33@pd.tnic>
-References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
-	<20170216154825.19244.32545.stgit@tlendack-t1.amdoffice.net>
-	<20170301184055.gl3iic3gir6zzb23@pd.tnic>
-	<7e6c308f-3caf-5531-3cb2-9b6986f4288e@amd.com>
+From: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Subject: [PATCH v5] arm64: Add support for DMA_ATTR_FORCE_CONTIGUOUS to IOMMU
+Date: Tue,  7 Mar 2017 18:43:32 +0100
+Message-ID: <1488908612-22522-1-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <7e6c308f-3caf-5531-3cb2-9b6986f4288e-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,24 +15,150 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+To: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Mar 07, 2017 at 10:05:00AM -0600, Tom Lendacky wrote:
-> I can do that.  Because phys_base hasn't been updated yet, I'll have to
-> create "on" and "off" constants and get their address in a similar way
-> to the command line option so that I can do the strncmp properly.
+Add support for allocating physically contiguous DMA buffers on arm64
+systems with an IOMMU.  This can be useful when two or more devices
+with different memory requirements are involved in buffer sharing.
 
-Actually, wouldn't it be simpler to inspect the passed in buffer for
-containing the chars 'o', 'n' - in that order, or 'o', 'f', 'f' - in
-that order too? Because __cmdline_find_option() does copy the option
-characters into the buffer.
+Note that as this uses the CMA allocator, setting the
+DMA_ATTR_FORCE_CONTIGUOUS attribute has a runtime-dependency on
+CONFIG_DMA_CMA, just like on arm32.
 
-Then you wouldn't need those "on" and "off" constants...
+For arm64 systems using swiotlb, no changes are needed to support the
+allocation of physically contiguous DMA buffers:
+  - swiotlb always uses physically contiguous buffers (up to
+    IO_TLB_SEGSIZE = 128 pages),
+  - arm64's __dma_alloc_coherent() already calls
+    dma_alloc_from_contiguous() when CMA is available.
 
+Signed-off-by: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>
+Acked-by: Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+v5:
+  - Add Reviewed-by,
+  - Pass GFP flags to dma_alloc_from_contiguous(), cfr. commit
+    712c604dcdf818629 ("mm: wire up GFP flag passing in
+    dma_alloc_from_contiguous"),
+
+v4:
+  - Replace dma_to_phys()/phys_to_page() by vmalloc_to_page(), to pass
+    the correct page pointer to dma_release_from_contiguous().
+    Note that the latter doesn't scream when passed a wrong pointer, but
+    just returns false.  While this makes life easier for callers who
+    may want to call another deallocator, it makes it harder catching
+    bugs.
+
+v3:
+  - Add Acked-by,
+  - Update comment to "one of _4_ things",
+  - Call dma_alloc_from_contiguous() and iommu_dma_map_page() directly,
+    as suggested by Robin Murphy,
+
+v2:
+  - New, handle dispatching in the arch (arm64) code, as requested by
+    Robin Murphy.
+---
+ arch/arm64/mm/dma-mapping.c | 63 ++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 48 insertions(+), 15 deletions(-)
+
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 81cdb2e844ed9fe8..f7b54019ef55378d 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -584,20 +584,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+ 	 */
+ 	gfp |= __GFP_ZERO;
+ 
+-	if (gfpflags_allow_blocking(gfp)) {
+-		struct page **pages;
+-		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
+-
+-		pages = iommu_dma_alloc(dev, iosize, gfp, attrs, ioprot,
+-					handle, flush_page);
+-		if (!pages)
+-			return NULL;
+-
+-		addr = dma_common_pages_remap(pages, size, VM_USERMAP, prot,
+-					      __builtin_return_address(0));
+-		if (!addr)
+-			iommu_dma_free(dev, pages, iosize, handle);
+-	} else {
++	if (!gfpflags_allow_blocking(gfp)) {
+ 		struct page *page;
+ 		/*
+ 		 * In atomic context we can't remap anything, so we'll only
+@@ -621,6 +608,45 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+ 				__free_from_pool(addr, size);
+ 			addr = NULL;
+ 		}
++	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
++		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
++		struct page *page;
++
++		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
++						 get_order(size), gfp);
++		if (!page)
++			return NULL;
++
++		*handle = iommu_dma_map_page(dev, page, 0, iosize, ioprot);
++		if (iommu_dma_mapping_error(dev, *handle)) {
++			dma_release_from_contiguous(dev, page,
++						    size >> PAGE_SHIFT);
++			return NULL;
++		}
++		if (!coherent)
++			__dma_flush_area(page_to_virt(page), iosize);
++
++		addr = dma_common_contiguous_remap(page, size, VM_USERMAP,
++						   prot,
++						   __builtin_return_address(0));
++		if (!addr) {
++			iommu_dma_unmap_page(dev, *handle, iosize, 0, attrs);
++			dma_release_from_contiguous(dev, page,
++						    size >> PAGE_SHIFT);
++		}
++	} else {
++		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
++		struct page **pages;
++
++		pages = iommu_dma_alloc(dev, iosize, gfp, attrs, ioprot,
++					handle, flush_page);
++		if (!pages)
++			return NULL;
++
++		addr = dma_common_pages_remap(pages, size, VM_USERMAP, prot,
++					      __builtin_return_address(0));
++		if (!addr)
++			iommu_dma_free(dev, pages, iosize, handle);
+ 	}
+ 	return addr;
+ }
+@@ -632,7 +658,8 @@ static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+ 
+ 	size = PAGE_ALIGN(size);
+ 	/*
+-	 * @cpu_addr will be one of 3 things depending on how it was allocated:
++	 * @cpu_addr will be one of 4 things depending on how it was allocated:
++	 * - A remapped array of pages for contiguous allocations.
+ 	 * - A remapped array of pages from iommu_dma_alloc(), for all
+ 	 *   non-atomic allocations.
+ 	 * - A non-cacheable alias from the atomic pool, for atomic
+@@ -644,6 +671,12 @@ static void __iommu_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+ 	if (__in_atomic_pool(cpu_addr, size)) {
+ 		iommu_dma_unmap_page(dev, handle, iosize, 0, 0);
+ 		__free_from_pool(cpu_addr, size);
++	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
++		struct page *page = vmalloc_to_page(cpu_addr);
++
++		iommu_dma_unmap_page(dev, handle, iosize, 0, attrs);
++		dma_release_from_contiguous(dev, page, size >> PAGE_SHIFT);
++		dma_common_free_remap(cpu_addr, size, VM_USERMAP);
+ 	} else if (is_vmalloc_addr(cpu_addr)){
+ 		struct vm_struct *area = find_vm_area(cpu_addr);
+ 
 -- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+2.7.4
