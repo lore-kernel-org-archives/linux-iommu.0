@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 03/09] iommu/ipmmu-vmsa: Enable multi context support
-Date: Wed, 08 Mar 2017 20:01:53 +0900
-Message-ID: <148897091345.16106.2935423334300744039.sendpatchset@little-apple>
+Subject: [PATCH v3 04/09] iommu/ipmmu-vmsa: Make use of IOMMU_OF_DECLARE()
+Date: Wed, 08 Mar 2017 20:02:03 +0900
+Message-ID: <148897092335.16106.10892669490439039957.sendpatchset@little-apple>
 References: <148897088333.16106.13237004440297956899.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,133 +23,108 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Add support for up to 8 contexts. Each context is mapped to one
-domain. One domain is assigned one or more slave devices. Contexts
-are allocated dynamically and slave devices are grouped together
-based on which IPMMU device they are connected to. This makes slave
-devices tied to the same IPMMU device share the same IOVA space.
+Hook up IOMMU_OF_DECLARE() support in case CONFIG_IOMMU_DMA
+is enabled. The only current supported case for 32-bit ARM
+is disabled, however for 64-bit ARM usage of OF is required.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
  Changes since V2:
- - Updated patch description to reflect code included in:
-   [PATCH v7 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V7
+ - Reworked registration code to make use of recently introduced:
+     iommu_device_register()
+     iommu_device_set_ops()
+     iommu_device_set_fwnode()
 
  Changes since V1:
- - Support up to 8 contexts instead of 4
- - Use feature flag and runtime handling
- - Default to single context
+ - Reworked slightly to fit updated patch order and
+   [PATCH v3 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update V3
 
- drivers/iommu/ipmmu-vmsa.c |   38 ++++++++++++++++++++++++++++++--------
- 1 file changed, 30 insertions(+), 8 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |   39 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
 
 --- 0012/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2017-03-08 17:59:19.900607110 +0900
-@@ -30,11 +30,12 @@
- 
- #include "io-pgtable.h"
- 
--#define IPMMU_CTX_MAX 1
-+#define IPMMU_CTX_MAX 8
- 
- struct ipmmu_features {
- 	bool use_ns_alias_offset;
- 	bool has_cache_leaf_nodes;
-+	bool has_eight_ctx;
- };
- 
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-03-08 19:08:31.610607110 +0900
+@@ -19,6 +19,7 @@
+ #include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
++#include <linux/of_iommu.h>
+ #include <linux/platform_device.h>
+ #include <linux/sizes.h>
+ #include <linux/slab.h>
+@@ -41,6 +42,7 @@ struct ipmmu_features {
  struct ipmmu_vmsa_device {
-@@ -44,6 +45,7 @@ struct ipmmu_vmsa_device {
+ 	struct device *dev;
+ 	void __iomem *base;
++	struct iommu_device iommu;
+ 	struct list_head list;
  	const struct ipmmu_features *features;
  	bool is_leaf;
- 	unsigned int num_utlbs;
-+	unsigned int num_ctx;
- 	spinlock_t lock;			/* Protects ctx and domains[] */
- 	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
- 	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
-@@ -376,11 +378,12 @@ static int ipmmu_domain_allocate_context
- 
- 	spin_lock_irqsave(&mmu->lock, flags);
- 
--	ret = find_first_zero_bit(mmu->ctx, IPMMU_CTX_MAX);
--	if (ret != IPMMU_CTX_MAX) {
-+	ret = find_first_zero_bit(mmu->ctx, mmu->num_ctx);
-+	if (ret != mmu->num_ctx) {
- 		mmu->domains[ret] = domain;
- 		set_bit(ret, mmu->ctx);
--	}
-+	} else
-+		ret = -EBUSY;
- 
- 	spin_unlock_irqrestore(&mmu->lock, flags);
- 
-@@ -425,9 +428,9 @@ static int ipmmu_domain_init_context(str
- 	 * Find an unused context.
- 	 */
- 	ret = ipmmu_domain_allocate_context(domain->root, domain);
--	if (ret == IPMMU_CTX_MAX) {
-+	if (ret < 0) {
- 		free_io_pgtable_ops(domain->iop);
--		return -EBUSY;
-+		return ret;
+@@ -1161,6 +1163,25 @@ static int ipmmu_probe(struct platform_d
+ 		ipmmu_device_reset(mmu);
  	}
  
- 	domain->context_id = ret;
-@@ -562,7 +565,7 @@ static irqreturn_t ipmmu_irq(int irq, vo
++#if defined(CONFIG_IOMMU_DMA)
++	/*
++	 * Register the IPMMU to the IOMMU subsystem in the following cases:
++	 * - R-Car Gen2 IPMMU (all devices registered)
++	 * - R-Car Gen3 IPMMU (leaf devices only - skip root IPMMU-MM device)
++	 */
++	if (!mmu->features->has_cache_leaf_nodes || mmu->is_leaf) {
++		ret = iommu_device_register(&mmu->iommu);
++		if (ret)
++			return ret;
++
++		iommu_device_set_ops(&mmu->iommu, &ipmmu_ops);
++		iommu_device_set_fwnode(&mmu->iommu,
++					&pdev->dev.of_node->fwnode);
++
++		if (!iommu_present(&platform_bus_type))
++			bus_set_iommu(&platform_bus_type, &ipmmu_ops);
++	}
++#endif
  	/*
- 	 * Check interrupts for all active contexts.
- 	 */
--	for (i = 0; i < IPMMU_CTX_MAX; i++) {
-+	for (i = 0; i < mmu->num_ctx; i++) {
- 		if (!mmu->domains[i])
- 			continue;
- 		if (ipmmu_domain_irq(mmu->domains[i]) == IRQ_HANDLED)
-@@ -632,6 +635,13 @@ static int ipmmu_attach_device(struct io
- 		domain->mmu = mmu;
- 		domain->root = root;
- 		ret = ipmmu_domain_init_context(domain);
-+		if (ret < 0) {
-+			dev_err(dev, "Unable to initialize IPMMU context\n");
-+			domain->mmu = NULL;
-+		} else {
-+			dev_info(dev, "Using IPMMU context %u\n",
-+				 domain->context_id);
-+		}
- 	} else if (domain->mmu != mmu) {
- 		/*
- 		 * Something is wrong, we can't attach two devices using
-@@ -1047,13 +1057,14 @@ static void ipmmu_device_reset(struct ip
- 	unsigned int i;
+ 	 * We can't create the ARM mapping here as it requires the bus to have
+ 	 * an IOMMU, which only happens when bus_set_iommu() is called in
+@@ -1204,15 +1225,22 @@ static struct platform_driver ipmmu_driv
  
- 	/* Disable all contexts. */
--	for (i = 0; i < 4; ++i)
-+	for (i = 0; i < mmu->num_ctx; ++i)
- 		ipmmu_write(mmu, i * IM_CTX_SIZE + IMCTR, 0);
+ static int __init ipmmu_init(void)
+ {
++	static bool setup_done;
+ 	int ret;
+ 
++	if (setup_done)
++		return 0;
++
+ 	ret = platform_driver_register(&ipmmu_driver);
+ 	if (ret < 0)
+ 		return ret;
+ 
++#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
+ 	if (!iommu_present(&platform_bus_type))
+ 		bus_set_iommu(&platform_bus_type, &ipmmu_ops);
++#endif
+ 
++	setup_done = true;
+ 	return 0;
  }
  
- static const struct ipmmu_features ipmmu_features_default = {
- 	.use_ns_alias_offset = true,
- 	.has_cache_leaf_nodes = false,
-+	.has_eight_ctx = false,
- };
+@@ -1224,6 +1252,17 @@ static void __exit ipmmu_exit(void)
+ subsys_initcall(ipmmu_init);
+ module_exit(ipmmu_exit);
  
- static const struct of_device_id ipmmu_of_ids[] = {
-@@ -1112,6 +1123,17 @@ static int ipmmu_probe(struct platform_d
- 	if (mmu->features->use_ns_alias_offset)
- 		mmu->base += IM_NS_ALIAS_OFFSET;
- 
-+	/*
-+	 * The number of contexts varies with generation and instance.
-+	 * Newer SoCs get a total of 8 contexts enabled, older ones just one.
-+	 */
-+	if (mmu->features->has_eight_ctx)
-+		mmu->num_ctx = 8;
-+	else
-+		mmu->num_ctx = 1;
++#ifdef CONFIG_IOMMU_DMA
++static int __init ipmmu_vmsa_iommu_of_setup(struct device_node *np)
++{
++	ipmmu_init();
++	return 0;
++}
 +
-+	WARN_ON(mmu->num_ctx > IPMMU_CTX_MAX);
++IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa",
++		 ipmmu_vmsa_iommu_of_setup);
++#endif
 +
- 	irq = platform_get_irq(pdev, 0);
- 
- 	/*
+ MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
+ MODULE_AUTHOR("Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>");
+ MODULE_LICENSE("GPL v2");
