@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 02/09] iommu/ipmmu-vmsa: Add optional root device feature
-Date: Wed, 08 Mar 2017 20:01:43 +0900
-Message-ID: <148897090350.16106.1978549972946371705.sendpatchset@little-apple>
+Subject: [PATCH v3 03/09] iommu/ipmmu-vmsa: Enable multi context support
+Date: Wed, 08 Mar 2017 20:01:53 +0900
+Message-ID: <148897091345.16106.2935423334300744039.sendpatchset@little-apple>
 References: <148897088333.16106.13237004440297956899.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,216 +23,133 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-Add root device handling to the IPMMU driver by allowing certain
-DT compat strings to enable has_cache_leaf_nodes that in turn will
-support both root devices with interrupts and leaf devices that
-face the actual IPMMU consumer devices.
+Add support for up to 8 contexts. Each context is mapped to one
+domain. One domain is assigned one or more slave devices. Contexts
+are allocated dynamically and slave devices are grouped together
+based on which IPMMU device they are connected to. This makes slave
+devices tied to the same IPMMU device share the same IOVA space.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
  Changes since V2:
- - Fixed a bug in ipmmu_find_root() when only leaf devices are present
- - Broke out __ipmmu_find_root() to allow ->xlate() check for root devices
+ - Updated patch description to reflect code included in:
+   [PATCH v7 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V7
 
  Changes since V1:
- - Moved patch to earlier in the series
- - Updated code to work with recent changes in:
-   [PATCH v3 00/06] iommu/ipmmu-vmsa: IPMMU multi-arch update V3
+ - Support up to 8 contexts instead of 4
+ - Use feature flag and runtime handling
+ - Default to single context
 
- drivers/iommu/ipmmu-vmsa.c |   95 ++++++++++++++++++++++++++++++++++++--------
- 1 file changed, 78 insertions(+), 17 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c |   38 ++++++++++++++++++++++++++++++--------
+ 1 file changed, 30 insertions(+), 8 deletions(-)
 
---- 0011/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2017-03-08 17:56:51.770607110 +0900
-@@ -34,6 +34,7 @@
+--- 0012/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-03-08 17:59:19.900607110 +0900
+@@ -30,11 +30,12 @@
+ 
+ #include "io-pgtable.h"
+ 
+-#define IPMMU_CTX_MAX 1
++#define IPMMU_CTX_MAX 8
  
  struct ipmmu_features {
  	bool use_ns_alias_offset;
-+	bool has_cache_leaf_nodes;
+ 	bool has_cache_leaf_nodes;
++	bool has_eight_ctx;
  };
  
  struct ipmmu_vmsa_device {
-@@ -41,6 +42,7 @@ struct ipmmu_vmsa_device {
- 	void __iomem *base;
- 	struct list_head list;
+@@ -44,6 +45,7 @@ struct ipmmu_vmsa_device {
  	const struct ipmmu_features *features;
-+	bool is_leaf;
+ 	bool is_leaf;
  	unsigned int num_utlbs;
++	unsigned int num_ctx;
  	spinlock_t lock;			/* Protects ctx and domains[] */
  	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
-@@ -51,6 +53,7 @@ struct ipmmu_vmsa_device {
+ 	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
+@@ -376,11 +378,12 @@ static int ipmmu_domain_allocate_context
  
- struct ipmmu_vmsa_domain {
- 	struct ipmmu_vmsa_device *mmu;
-+	struct ipmmu_vmsa_device *root;
- 	struct iommu_domain io_domain;
+ 	spin_lock_irqsave(&mmu->lock, flags);
  
- 	struct io_pgtable_cfg cfg;
-@@ -216,6 +219,44 @@ static void set_archdata(struct device *
- #define IMUASID_ASID0_SHIFT		0
+-	ret = find_first_zero_bit(mmu->ctx, IPMMU_CTX_MAX);
+-	if (ret != IPMMU_CTX_MAX) {
++	ret = find_first_zero_bit(mmu->ctx, mmu->num_ctx);
++	if (ret != mmu->num_ctx) {
+ 		mmu->domains[ret] = domain;
+ 		set_bit(ret, mmu->ctx);
+-	}
++	} else
++		ret = -EBUSY;
  
- /* -----------------------------------------------------------------------------
-+ * Root device handling
-+ */
-+
-+static bool ipmmu_is_root(struct ipmmu_vmsa_device *mmu)
-+{
-+	if (mmu->features->has_cache_leaf_nodes)
-+		return mmu->is_leaf ? false : true;
-+	else
-+		return true; /* older IPMMU hardware treated as single root */
-+}
-+
-+static struct ipmmu_vmsa_device *__ipmmu_find_root(void)
-+{
-+	struct ipmmu_vmsa_device *mmu;
-+	bool found = false;
-+
-+	spin_lock(&ipmmu_devices_lock);
-+
-+	list_for_each_entry(mmu, &ipmmu_devices, list) {
-+		if (ipmmu_is_root(mmu)) {
-+			found = true;
-+			break;
-+		}
-+	}
-+
-+	spin_unlock(&ipmmu_devices_lock);
-+	return found ? mmu : NULL;
-+}
-+
-+static struct ipmmu_vmsa_device *ipmmu_find_root(struct ipmmu_vmsa_device *leaf)
-+{
-+	if (ipmmu_is_root(leaf))
-+		return leaf;
-+	else
-+		return __ipmmu_find_root();
-+}
-+
-+/* -----------------------------------------------------------------------------
-  * Read/Write Access
-  */
+ 	spin_unlock_irqrestore(&mmu->lock, flags);
  
-@@ -232,13 +273,13 @@ static void ipmmu_write(struct ipmmu_vms
- 
- static u32 ipmmu_ctx_read(struct ipmmu_vmsa_domain *domain, unsigned int reg)
- {
--	return ipmmu_read(domain->mmu, domain->context_id * IM_CTX_SIZE + reg);
-+	return ipmmu_read(domain->root, domain->context_id * IM_CTX_SIZE + reg);
- }
- 
- static void ipmmu_ctx_write(struct ipmmu_vmsa_domain *domain, unsigned int reg,
- 			    u32 data)
- {
--	ipmmu_write(domain->mmu, domain->context_id * IM_CTX_SIZE + reg, data);
-+	ipmmu_write(domain->root, domain->context_id * IM_CTX_SIZE + reg, data);
- }
- 
- /* -----------------------------------------------------------------------------
-@@ -373,7 +414,7 @@ static int ipmmu_domain_init_context(str
- 	 * TODO: Add support for coherent walk through CCI with DVM and remove
- 	 * cache handling. For now, delegate it to the io-pgtable code.
- 	 */
--	domain->cfg.iommu_dev = domain->mmu->dev;
-+	domain->cfg.iommu_dev = domain->root->dev;
- 
- 	domain->iop = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &domain->cfg,
- 					   domain);
-@@ -383,7 +424,7 @@ static int ipmmu_domain_init_context(str
- 	/*
+@@ -425,9 +428,9 @@ static int ipmmu_domain_init_context(str
  	 * Find an unused context.
  	 */
--	ret = ipmmu_domain_allocate_context(domain->mmu, domain);
-+	ret = ipmmu_domain_allocate_context(domain->root, domain);
- 	if (ret == IPMMU_CTX_MAX) {
+ 	ret = ipmmu_domain_allocate_context(domain->root, domain);
+-	if (ret == IPMMU_CTX_MAX) {
++	if (ret < 0) {
  		free_io_pgtable_ops(domain->iop);
- 		return -EBUSY;
-@@ -454,7 +495,7 @@ static void ipmmu_domain_destroy_context
- 	 */
- 	ipmmu_ctx_write(domain, IMCTR, IMCTR_FLUSH);
- 	ipmmu_tlb_sync(domain);
--	ipmmu_domain_free_context(domain->mmu, domain->context_id);
-+	ipmmu_domain_free_context(domain->root, domain->context_id);
- }
- 
- /* -----------------------------------------------------------------------------
-@@ -567,7 +608,7 @@ static int ipmmu_attach_device(struct io
- 			       struct device *dev)
- {
- 	struct ipmmu_vmsa_archdata *archdata = to_archdata(dev);
--	struct ipmmu_vmsa_device *mmu = archdata->mmu;
-+	struct ipmmu_vmsa_device *root, *mmu = archdata->mmu;
- 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
- 	unsigned long flags;
- 	unsigned int i;
-@@ -578,11 +619,18 @@ static int ipmmu_attach_device(struct io
- 		return -ENXIO;
+-		return -EBUSY;
++		return ret;
  	}
  
-+	root = ipmmu_find_root(archdata->mmu);
-+	if (!root) {
-+		dev_err(dev, "Unable to locate root IPMMU\n");
-+		return -EAGAIN;
-+	}
-+
- 	spin_lock_irqsave(&domain->lock, flags);
- 
- 	if (!domain->mmu) {
- 		/* The domain hasn't been used yet, initialize it. */
+ 	domain->context_id = ret;
+@@ -562,7 +565,7 @@ static irqreturn_t ipmmu_irq(int irq, vo
+ 	/*
+ 	 * Check interrupts for all active contexts.
+ 	 */
+-	for (i = 0; i < IPMMU_CTX_MAX; i++) {
++	for (i = 0; i < mmu->num_ctx; i++) {
+ 		if (!mmu->domains[i])
+ 			continue;
+ 		if (ipmmu_domain_irq(mmu->domains[i]) == IRQ_HANDLED)
+@@ -632,6 +635,13 @@ static int ipmmu_attach_device(struct io
  		domain->mmu = mmu;
-+		domain->root = root;
+ 		domain->root = root;
  		ret = ipmmu_domain_init_context(domain);
++		if (ret < 0) {
++			dev_err(dev, "Unable to initialize IPMMU context\n");
++			domain->mmu = NULL;
++		} else {
++			dev_info(dev, "Using IPMMU context %u\n",
++				 domain->context_id);
++		}
  	} else if (domain->mmu != mmu) {
  		/*
-@@ -1005,6 +1053,7 @@ static void ipmmu_device_reset(struct ip
+ 		 * Something is wrong, we can't attach two devices using
+@@ -1047,13 +1057,14 @@ static void ipmmu_device_reset(struct ip
+ 	unsigned int i;
+ 
+ 	/* Disable all contexts. */
+-	for (i = 0; i < 4; ++i)
++	for (i = 0; i < mmu->num_ctx; ++i)
+ 		ipmmu_write(mmu, i * IM_CTX_SIZE + IMCTR, 0);
+ }
  
  static const struct ipmmu_features ipmmu_features_default = {
  	.use_ns_alias_offset = true,
-+	.has_cache_leaf_nodes = false,
+ 	.has_cache_leaf_nodes = false,
++	.has_eight_ctx = false,
  };
  
  static const struct of_device_id ipmmu_of_ids[] = {
-@@ -1064,19 +1113,31 @@ static int ipmmu_probe(struct platform_d
+@@ -1112,6 +1123,17 @@ static int ipmmu_probe(struct platform_d
+ 	if (mmu->features->use_ns_alias_offset)
  		mmu->base += IM_NS_ALIAS_OFFSET;
  
- 	irq = platform_get_irq(pdev, 0);
--	if (irq < 0) {
--		dev_err(&pdev->dev, "no IRQ found\n");
--		return irq;
--	}
- 
--	ret = devm_request_irq(&pdev->dev, irq, ipmmu_irq, 0,
--			       dev_name(&pdev->dev), mmu);
--	if (ret < 0) {
--		dev_err(&pdev->dev, "failed to request IRQ %d\n", irq);
--		return ret;
--	}
 +	/*
-+	 * Determine if this IPMMU instance is a leaf device by checking
-+	 * if the renesas,ipmmu-main property exists or not.
++	 * The number of contexts varies with generation and instance.
++	 * Newer SoCs get a total of 8 contexts enabled, older ones just one.
 +	 */
-+	if (mmu->features->has_cache_leaf_nodes &&
-+	    of_find_property(pdev->dev.of_node, "renesas,ipmmu-main", NULL))
-+		mmu->is_leaf = true;
++	if (mmu->features->has_eight_ctx)
++		mmu->num_ctx = 8;
++	else
++		mmu->num_ctx = 1;
 +
-+	/* Root devices have mandatory IRQs */
-+	if (ipmmu_is_root(mmu)) {
-+		if (irq < 0) {
-+			dev_err(&pdev->dev, "no IRQ found\n");
-+			return irq;
-+		}
- 
--	ipmmu_device_reset(mmu);
-+		ret = devm_request_irq(&pdev->dev, irq, ipmmu_irq, 0,
-+				       dev_name(&pdev->dev), mmu);
-+		if (ret < 0) {
-+			dev_err(&pdev->dev, "failed to request IRQ %d\n", irq);
-+			return ret;
-+		}
++	WARN_ON(mmu->num_ctx > IPMMU_CTX_MAX);
 +
-+		ipmmu_device_reset(mmu);
-+	}
+ 	irq = platform_get_irq(pdev, 0);
  
  	/*
- 	 * We can't create the ARM mapping here as it requires the bus to have
