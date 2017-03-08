@@ -1,14 +1,14 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v3 03/09] iommu/ipmmu-vmsa: Enable multi context support
-Date: Wed, 8 Mar 2017 12:21:56 +0000
-Message-ID: <bdf40dff-c958-b749-1149-f9417c84466a@arm.com>
+Subject: Re: [PATCH v3 06/09] iommu/ipmmu-vmsa: Write IMCTR twice
+Date: Wed, 8 Mar 2017 12:34:25 +0000
+Message-ID: <fa6696c3-30d0-b7a4-de0b-9cecd485d5a5@arm.com>
 References: <148897088333.16106.13237004440297956899.sendpatchset@little-apple>
-	<148897091345.16106.2935423334300744039.sendpatchset@little-apple>
+	<148897094380.16106.17145886836361556040.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <148897091345.16106.2935423334300744039.sendpatchset@little-apple>
+In-Reply-To: <148897094380.16106.17145886836361556040.sendpatchset@little-apple>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,155 +22,76 @@ To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, joro-zLv9
 Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/03/17 11:01, Magnus Damm wrote:
+On 08/03/17 11:02, Magnus Damm wrote:
 > From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 > 
-> Add support for up to 8 contexts. Each context is mapped to one
-> domain. One domain is assigned one or more slave devices. Contexts
-> are allocated dynamically and slave devices are grouped together
-> based on which IPMMU device they are connected to. This makes slave
-> devices tied to the same IPMMU device share the same IOVA space.
+> Write IMCTR both in the root device and the leaf node.
 > 
 > Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 > ---
 > 
 >  Changes since V2:
->  - Updated patch description to reflect code included in:
->    [PATCH v7 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V7
+>  - None
 > 
 >  Changes since V1:
->  - Support up to 8 contexts instead of 4
->  - Use feature flag and runtime handling
->  - Default to single context
+>  - None
 > 
->  drivers/iommu/ipmmu-vmsa.c |   38 ++++++++++++++++++++++++++++++--------
->  1 file changed, 30 insertions(+), 8 deletions(-)
+>  drivers/iommu/ipmmu-vmsa.c |   17 ++++++++++++++---
+>  1 file changed, 14 insertions(+), 3 deletions(-)
 > 
-> --- 0012/drivers/iommu/ipmmu-vmsa.c
-> +++ work/drivers/iommu/ipmmu-vmsa.c	2017-03-08 17:59:19.900607110 +0900
-> @@ -30,11 +30,12 @@
->  
->  #include "io-pgtable.h"
->  
-> -#define IPMMU_CTX_MAX 1
-> +#define IPMMU_CTX_MAX 8
->  
->  struct ipmmu_features {
->  	bool use_ns_alias_offset;
->  	bool has_cache_leaf_nodes;
-> +	bool has_eight_ctx;
-
-Wouldn't it be more sensible to just encode a number of contexts
-directly, if it isn't reported by the hardware itself? I'm just
-imagining future hardware generations... :P
-
-bool also_has_another_eight_ctx_on_top_of_that;
-bool wait_no_this_is_the_one_where_ctx_15_isnt_usable;
-
->  };
->  
->  struct ipmmu_vmsa_device {
-> @@ -44,6 +45,7 @@ struct ipmmu_vmsa_device {
->  	const struct ipmmu_features *features;
->  	bool is_leaf;
->  	unsigned int num_utlbs;
-> +	unsigned int num_ctx;
->  	spinlock_t lock;			/* Protects ctx and domains[] */
->  	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
->  	struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
-> @@ -376,11 +378,12 @@ static int ipmmu_domain_allocate_context
->  
->  	spin_lock_irqsave(&mmu->lock, flags);
->  
-> -	ret = find_first_zero_bit(mmu->ctx, IPMMU_CTX_MAX);
-> -	if (ret != IPMMU_CTX_MAX) {
-> +	ret = find_first_zero_bit(mmu->ctx, mmu->num_ctx);
-> +	if (ret != mmu->num_ctx) {
->  		mmu->domains[ret] = domain;
->  		set_bit(ret, mmu->ctx);
-
-Using test_and_set_bit() in a loop would avoid having to take a lock here.
-
-> -	}
-> +	} else
-> +		ret = -EBUSY;
->  
->  	spin_unlock_irqrestore(&mmu->lock, flags);
->  
-> @@ -425,9 +428,9 @@ static int ipmmu_domain_init_context(str
->  	 * Find an unused context.
->  	 */
->  	ret = ipmmu_domain_allocate_context(domain->root, domain);
-> -	if (ret == IPMMU_CTX_MAX) {
-> +	if (ret < 0) {
->  		free_io_pgtable_ops(domain->iop);
-> -		return -EBUSY;
-> +		return ret;
->  	}
->  
->  	domain->context_id = ret;
-> @@ -562,7 +565,7 @@ static irqreturn_t ipmmu_irq(int irq, vo
->  	/*
->  	 * Check interrupts for all active contexts.
->  	 */
-> -	for (i = 0; i < IPMMU_CTX_MAX; i++) {
-> +	for (i = 0; i < mmu->num_ctx; i++) {
->  		if (!mmu->domains[i])
->  			continue;
->  		if (ipmmu_domain_irq(mmu->domains[i]) == IRQ_HANDLED)
-> @@ -632,6 +635,13 @@ static int ipmmu_attach_device(struct io
->  		domain->mmu = mmu;
->  		domain->root = root;
->  		ret = ipmmu_domain_init_context(domain);
-> +		if (ret < 0) {
-> +			dev_err(dev, "Unable to initialize IPMMU context\n");
-> +			domain->mmu = NULL;
-> +		} else {
-> +			dev_info(dev, "Using IPMMU context %u\n",
-> +				 domain->context_id);
-> +		}
->  	} else if (domain->mmu != mmu) {
->  		/*
->  		 * Something is wrong, we can't attach two devices using
-> @@ -1047,13 +1057,14 @@ static void ipmmu_device_reset(struct ip
->  	unsigned int i;
->  
->  	/* Disable all contexts. */
-> -	for (i = 0; i < 4; ++i)
-> +	for (i = 0; i < mmu->num_ctx; ++i)
->  		ipmmu_write(mmu, i * IM_CTX_SIZE + IMCTR, 0);
+> --- 0018/drivers/iommu/ipmmu-vmsa.c
+> +++ work/drivers/iommu/ipmmu-vmsa.c	2017-03-08 18:30:36.870607110 +0900
+> @@ -286,6 +286,16 @@ static void ipmmu_ctx_write(struct ipmmu
+>  	ipmmu_write(domain->root, domain->context_id * IM_CTX_SIZE + reg, data);
 >  }
 >  
->  static const struct ipmmu_features ipmmu_features_default = {
->  	.use_ns_alias_offset = true,
->  	.has_cache_leaf_nodes = false,
-> +	.has_eight_ctx = false,
->  };
->  
->  static const struct of_device_id ipmmu_of_ids[] = {
-> @@ -1112,6 +1123,17 @@ static int ipmmu_probe(struct platform_d
->  	if (mmu->features->use_ns_alias_offset)
->  		mmu->base += IM_NS_ALIAS_OFFSET;
->  
-> +	/*
-> +	 * The number of contexts varies with generation and instance.
-> +	 * Newer SoCs get a total of 8 contexts enabled, older ones just one.
-> +	 */
-> +	if (mmu->features->has_eight_ctx)
-> +		mmu->num_ctx = 8;
-> +	else
-> +		mmu->num_ctx = 1;
-> +
-> +	WARN_ON(mmu->num_ctx > IPMMU_CTX_MAX);
+> +static void ipmmu_ctx_write2(struct ipmmu_vmsa_domain *domain, unsigned int reg,
+> +			     u32 data)
 
-The likelihood of that happening doesn't appear to warrant a runtime
-check. Especially one which probably isn't even generated because it's
-trivially resolvable to "if (false)..." at compile time.
+That's pretty cryptic. Maybe both functions could do with less ambiguous
+names - something like ipmmu_ctx_write_root() vs. ipmmu_ctx_write_all(),
+perhaps? (and if there's a more specific hardware term than "all" that
+describes this kind of configuration, even better).
 
 Robin.
 
+> +{
+> +	if (domain->mmu != domain->root)
+> +		ipmmu_write(domain->mmu,
+> +			    domain->context_id * IM_CTX_SIZE + reg, data);
 > +
->  	irq = platform_get_irq(pdev, 0);
+> +	ipmmu_write(domain->root, domain->context_id * IM_CTX_SIZE + reg, data);
+> +}
+> +
+>  /* -----------------------------------------------------------------------------
+>   * TLB and microTLB Management
+>   */
+> @@ -312,7 +322,7 @@ static void ipmmu_tlb_invalidate(struct
 >  
->  	/*
+>  	reg = ipmmu_ctx_read(domain, IMCTR);
+>  	reg |= IMCTR_FLUSH;
+> -	ipmmu_ctx_write(domain, IMCTR, reg);
+> +	ipmmu_ctx_write2(domain, IMCTR, reg);
+>  
+>  	ipmmu_tlb_sync(domain);
+>  }
+> @@ -472,7 +482,8 @@ static int ipmmu_domain_init_context(str
+>  	 * software management as we have no use for it. Flush the TLB as
+>  	 * required when modifying the context registers.
+>  	 */
+> -	ipmmu_ctx_write(domain, IMCTR, IMCTR_INTEN | IMCTR_FLUSH | IMCTR_MMUEN);
+> +	ipmmu_ctx_write2(domain, IMCTR,
+> +			 IMCTR_INTEN | IMCTR_FLUSH | IMCTR_MMUEN);
+>  
+>  	return 0;
+>  }
+> @@ -498,7 +509,7 @@ static void ipmmu_domain_destroy_context
+>  	 *
+>  	 * TODO: Is TLB flush really needed ?
+>  	 */
+> -	ipmmu_ctx_write(domain, IMCTR, IMCTR_FLUSH);
+> +	ipmmu_ctx_write2(domain, IMCTR, IMCTR_FLUSH);
+>  	ipmmu_tlb_sync(domain);
+>  	ipmmu_domain_free_context(domain->root, domain->context_id);
+>  }
 > 
