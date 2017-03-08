@@ -1,14 +1,15 @@
 From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH v3 04/09] iommu/ipmmu-vmsa: Make use of IOMMU_OF_DECLARE()
-Date: Wed, 8 Mar 2017 14:52:47 +0100
-Message-ID: <CAMuHMdVrNMY41k2arM_sZc3cWh+Ac0anRzRLuk8B3PDi8v+i2g@mail.gmail.com>
+Subject: Re: [PATCH v3 09/09] iommu/ipmmu-vmsa: Hook up r8a7795 DT matching
+	code
+Date: Wed, 8 Mar 2017 14:58:51 +0100
+Message-ID: <CAMuHMdVQgdZyn0YGYCWEwnhvkxKMGG_T0vDL5ir=vC-pvLOY6A@mail.gmail.com>
 References: <148897088333.16106.13237004440297956899.sendpatchset@little-apple>
-	<148897092335.16106.10892669490439039957.sendpatchset@little-apple>
+	<148897097336.16106.17118406255063350893.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <148897092335.16106.10892669490439039957.sendpatchset@little-apple>
+In-Reply-To: <148897097336.16106.17118406255063350893.sendpatchset@little-apple>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -27,16 +28,63 @@ Hi Magnus,
 On Wed, Mar 8, 2017 at 12:02 PM, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
 > From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 >
-> Hook up IOMMU_OF_DECLARE() support in case CONFIG_IOMMU_DMA
-> is enabled. The only current supported case for 32-bit ARM
-> is disabled, however for 64-bit ARM usage of OF is required.
+> Tie in r8a7795 features and update the IOMMU_OF_DECLARE
+> compat string to include the updated compat string.
 >
-> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org
+> TODO:
+>  - Consider making use of iommu_fwspec_add_ids() for uTLB handling
+>      Needed to coexist with non-OF R-Car Gen2 somehow...
+>  - Break out stuff useful for R-Car Gen2 from this series
+>      Fix up the Gen2 IPMMU support code
+>        and/or
+>      Fold more stuff into the multi-arch series
+>  - Add support for sysfs and iommu_device_link()/unlink()
+>
+> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-While I'm not such a big fan of *_OF_DECLARE() (it doesn't support deferred
-probing, which is needed for any device with dependencies, like clocks and
-power domains), what's the rationale for not using IOMMU_OF_DECLARE()
-on arm32, and thus the need for setup_done?
+> --- 0018/drivers/iommu/ipmmu-vmsa.c
+> +++ work/drivers/iommu/ipmmu-vmsa.c     2017-03-08 19:11:53.600607110 +0900
+
+> @@ -1043,6 +1048,17 @@ static struct iommu_group *ipmmu_find_gr
+>         return group;
+>  }
+>
+> +static bool ipmmu_slave_whitelist(struct device *dev)
+> +{
+> +       /* By default, do not allow use of IPMMU */
+> +       return false;
+> +}
+> +
+> +static const struct soc_device_attribute soc_r8a7795[] = {
+> +       { .soc_id = "r8a7795", },
+
+If/when the whitelist is/becomes device/revision specific, you probably want
+to store a  pointer to the *_slave_whitelist() function in the .data member?
+
+> +       { /* sentinel */ }
+> +};
+> +
+>  static int ipmmu_of_xlate_dma(struct device *dev,
+>                               struct of_phandle_args *spec)
+>  {
+> @@ -1053,6 +1069,18 @@ static int ipmmu_of_xlate_dma(struct dev
+>         if (!of_device_is_available(spec->np))
+>                 return -ENODEV;
+>
+> +       /* Failing in ->attach_device() results in a hang, so make
+> +        * sure the root device is installed before going there
+> +        */
+> +       if (!__ipmmu_find_root()) {
+> +               dev_info(dev, "Unable to locate IPMMU root device\n");
+
+dev_err?
+
+> +               return -ENODEV;
+> +       }
+> +
+> +       /* For R-Car Gen3 use a white list to opt-in slave devices */
+> +       if (soc_device_match(soc_r8a7795) && !ipmmu_slave_whitelist(dev))
+> +               return -ENODEV;
 
 Gr{oetje,eeting}s,
 
