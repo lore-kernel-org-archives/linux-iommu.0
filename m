@@ -1,7 +1,7 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 05/09] iommu/ipmmu-vmsa: IPMMU device is 40-bit bus master
-Date: Wed, 08 Mar 2017 20:02:13 +0900
-Message-ID: <148897093339.16106.5329228083105867675.sendpatchset@little-apple>
+Subject: [PATCH v3 06/09] iommu/ipmmu-vmsa: Write IMCTR twice
+Date: Wed, 08 Mar 2017 20:02:23 +0900
+Message-ID: <148897094380.16106.17145886836361556040.sendpatchset@little-apple>
 References: <148897088333.16106.13237004440297956899.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,30 +23,64 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-The r8a7795 IPMMU supports 40-bit bus mastering. Both
-the coherent DMA mask and the streaming DMA mask are
-set to unlock the 40-bit address space for coherent
-allocations and streaming operations.
+Write IMCTR both in the root device and the leaf node.
 
 Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 ---
 
  Changes since V2:
- - Updated the code and commit message to use 40 bits instead of 64 bits
+ - None
 
  Changes since V1:
- - Updated the commit message
+ - None
 
- drivers/iommu/ipmmu-vmsa.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/iommu/ipmmu-vmsa.c |   17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
---- 0016/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2017-03-08 18:29:56.390607110 +0900
-@@ -1103,6 +1103,7 @@ static int ipmmu_probe(struct platform_d
- 	spin_lock_init(&mmu->lock);
- 	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
- 	mmu->features = match->data;
-+	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
+--- 0018/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-03-08 18:30:36.870607110 +0900
+@@ -286,6 +286,16 @@ static void ipmmu_ctx_write(struct ipmmu
+ 	ipmmu_write(domain->root, domain->context_id * IM_CTX_SIZE + reg, data);
+ }
  
- 	/* Map I/O memory and request IRQ. */
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++static void ipmmu_ctx_write2(struct ipmmu_vmsa_domain *domain, unsigned int reg,
++			     u32 data)
++{
++	if (domain->mmu != domain->root)
++		ipmmu_write(domain->mmu,
++			    domain->context_id * IM_CTX_SIZE + reg, data);
++
++	ipmmu_write(domain->root, domain->context_id * IM_CTX_SIZE + reg, data);
++}
++
+ /* -----------------------------------------------------------------------------
+  * TLB and microTLB Management
+  */
+@@ -312,7 +322,7 @@ static void ipmmu_tlb_invalidate(struct
+ 
+ 	reg = ipmmu_ctx_read(domain, IMCTR);
+ 	reg |= IMCTR_FLUSH;
+-	ipmmu_ctx_write(domain, IMCTR, reg);
++	ipmmu_ctx_write2(domain, IMCTR, reg);
+ 
+ 	ipmmu_tlb_sync(domain);
+ }
+@@ -472,7 +482,8 @@ static int ipmmu_domain_init_context(str
+ 	 * software management as we have no use for it. Flush the TLB as
+ 	 * required when modifying the context registers.
+ 	 */
+-	ipmmu_ctx_write(domain, IMCTR, IMCTR_INTEN | IMCTR_FLUSH | IMCTR_MMUEN);
++	ipmmu_ctx_write2(domain, IMCTR,
++			 IMCTR_INTEN | IMCTR_FLUSH | IMCTR_MMUEN);
+ 
+ 	return 0;
+ }
+@@ -498,7 +509,7 @@ static void ipmmu_domain_destroy_context
+ 	 *
+ 	 * TODO: Is TLB flush really needed ?
+ 	 */
+-	ipmmu_ctx_write(domain, IMCTR, IMCTR_FLUSH);
++	ipmmu_ctx_write2(domain, IMCTR, IMCTR_FLUSH);
+ 	ipmmu_tlb_sync(domain);
+ 	ipmmu_domain_free_context(domain->root, domain->context_id);
+ }
