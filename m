@@ -1,43 +1,79 @@
-From: Caesar Wang <sasukewxt@163.com>
-Subject: Re: iommu/rockchip: Fix bugs and enable on ARM64
-Date: Wed, 8 Mar 2017 13:50:04 +0800
-Message-ID: <fd2e0b00-bb7f-6383-7f79-f17713cbf244@163.com>
-References: <1466734413-7453-1-git-send-email-zhengsq@rock-chips.com>
- <20160627125751.GN11432@8bytes.org> <577EFB86.1060502@rock-chips.com>
- <575f6cd7-6e03-e701-78ed-ea2fe9f7573c@suse.com>
- <20160715161651.GS12639@8bytes.org>
+From: Dave Young <dyoung@redhat.com>
+Subject: Re: [RFC PATCH v4 14/28] Add support to access boot related data in
+ the clear
+Date: Wed, 8 Mar 2017 14:55:55 +0800
+Message-ID: <20170308065555.GA11045@dhcp-128-65.nay.redhat.com>
+References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
+ <20170216154508.19244.58580.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Content-Transfer-Encoding: base64
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <20160715161651.GS12639@8bytes.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Shunqian Zheng <zhengsq@rock-chips.com>
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, Matthias Brugger <mbrugger@suse.com>, heiko@sntech.de, linux-rockchip@lists.infradead.org, airlied@linux.ie, Joerg Roedel <joro@8bytes.org>, linux@armlinux.org.uk, dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, tfiga@google.com, iommu@lists.linux-foundation.org, robh+dt@kernel.org, Mark yao <mark.yao@rock-chips.com>, linux-arm-kernel@lists.infradead.org, xxm@rock-chips.com
+Content-Type: text/plain; charset=us-ascii
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <20170216154508.19244.58580.stgit@tlendack-t1.amdoffice.net>
+Sender: owner-linux-mm@kvack.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa>
 List-Id: iommu@lists.linux-foundation.org
 
-U2h1bnFpYW4sCnNvbWV0aGluZyBpcyBkZXBlbmRpbmcgb24gdGhlc2UgcGF0Y2hlcywgY2FuIHlv
-dSByZXNlbmQgdGhlc2UgcGF0Y2hlcyB0byAKc29sdmUgdGhlCmNvbXBpbGUgZXJyb3JzPwoKLUNh
-ZXNhcgrlnKggMjAxNuW5tDA35pyIMTbml6UgMDA6MTYsIEpvZXJnIFJvZWRlbCDlhpnpgZM6Cj4g
-T24gRnJpLCBKdWwgMTUsIDIwMTYgYXQgMDU6MzI6MDJQTSArMDIwMCwgTWF0dGhpYXMgQnJ1Z2dl
-ciB3cm90ZToKPj4+IFRoZSBkcm0gcm9ja2NoaXAgcGF0Y2hlcyBhcmUgZGVwZW5kZW50IG9uIGlv
-bW11L3JvY2tjaGlwIHBhdGNoZXMsIGNhbgo+Pj4geW91IGFsc28gYXBwbHkgdGhlc2UgcGF0Y2hl
-cyB0b2dldGhlcj8gU28gdGhhdCBjYW4gYXZvaWQgY29tcGlsZSBwcm9ibGVtLgo+Pj4KPj4gV2hp
-bGUgYXQgaXQuIEkgZG9uJ3Qgc2VlIHBhdGNoIDggKGlvbW11L0tjb25maWcpIGluIGxpbnV4LW5l
-eHQuCj4+IEkgc3VwcG9zZSB5b3UgZm9yZ290IHRvIHBpY2sgdGhhdCBvbmUuCj4gSSBwaWNrZWQg
-aXQgdXAgZmlyc3QsIGJ1dCBpdCBjYXVzZXMgY29tcGlsZSBlcnJvcnMsIHNvIEkgcmVtb3ZlZCBp
-dCBmb3IKPiBub3cuCj4KPgo+IAlKb2VyZwo+Cj4KPiBfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXwo+IExpbnV4LXJvY2tjaGlwIG1haWxpbmcgbGlzdAo+IExp
-bnV4LXJvY2tjaGlwQGxpc3RzLmluZnJhZGVhZC5vcmcKPiBodHRwOi8vbGlzdHMuaW5mcmFkZWFk
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LXJvY2tjaGlwCgoKCl9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmxpbnV4LWFybS1rZXJuZWwgbWFpbGluZyBs
-aXN0CmxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZwpodHRwOi8vbGlzdHMuaW5m
-cmFkZWFkLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2xpbnV4LWFybS1rZXJuZWwK
+On 02/16/17 at 09:45am, Tom Lendacky wrote:
+[snip]
+> + * This function determines if an address should be mapped encrypted.
+> + * Boot setup data, EFI data and E820 areas are checked in making this
+> + * determination.
+> + */
+> +static bool memremap_should_map_encrypted(resource_size_t phys_addr,
+> +					  unsigned long size)
+> +{
+> +	/*
+> +	 * SME is not active, return true:
+> +	 *   - For early_memremap_pgprot_adjust(), returning true or false
+> +	 *     results in the same protection value
+> +	 *   - For arch_memremap_do_ram_remap(), returning true will allow
+> +	 *     the RAM remap to occur instead of falling back to ioremap()
+> +	 */
+> +	if (!sme_active())
+> +		return true;
+
+>From the function name shouldn't above be return false? 
+
+> +
+> +	/* Check if the address is part of the setup data */
+> +	if (memremap_is_setup_data(phys_addr, size))
+> +		return false;
+> +
+> +	/* Check if the address is part of EFI boot/runtime data */
+> +	switch (efi_mem_type(phys_addr)) {
+> +	case EFI_BOOT_SERVICES_DATA:
+> +	case EFI_RUNTIME_SERVICES_DATA:
+
+Only these two types needed? I'm not sure about this, just bring up the
+question.
+
+> +		return false;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	/* Check if the address is outside kernel usable area */
+> +	switch (e820__get_entry_type(phys_addr, phys_addr + size - 1)) {
+> +	case E820_TYPE_RESERVED:
+> +	case E820_TYPE_ACPI:
+> +	case E820_TYPE_NVS:
+> +	case E820_TYPE_UNUSABLE:
+> +		return false;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+
+Thanks
+Dave
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
