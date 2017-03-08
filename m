@@ -1,98 +1,56 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH v3 09/09] iommu/ipmmu-vmsa: Hook up r8a7795 DT matching
-	code
-Date: Wed, 8 Mar 2017 14:58:51 +0100
-Message-ID: <CAMuHMdVQgdZyn0YGYCWEwnhvkxKMGG_T0vDL5ir=vC-pvLOY6A@mail.gmail.com>
-References: <148897088333.16106.13237004440297956899.sendpatchset@little-apple>
-	<148897097336.16106.17118406255063350893.sendpatchset@little-apple>
+From: Borislav Petkov <bp@alien8.de>
+Subject: Re: [RFC PATCH v4 28/28] x86: Add support to make use of Secure
+ Memory Encryption
+Date: Wed, 8 Mar 2017 16:05:20 +0100
+Message-ID: <20170308150520.fwdrit6bjweqsztq@pd.tnic>
+References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
+ <20170216154825.19244.32545.stgit@tlendack-t1.amdoffice.net>
+ <20170301184055.gl3iic3gir6zzb23@pd.tnic>
+ <7e6c308f-3caf-5531-3cb2-9b6986f4288e@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <148897097336.16106.17118406255063350893.sendpatchset@little-apple>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Return-path: <owner-linux-mm@kvack.org>
+Content-Disposition: inline
+In-Reply-To: <7e6c308f-3caf-5531-3cb2-9b6986f4288e@amd.com>
+Sender: owner-linux-mm@kvack.org
+To: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Thomas Gleixner <tglx@linutronix.de>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Magnus,
+On Tue, Mar 07, 2017 at 10:05:00AM -0600, Tom Lendacky wrote:
+> > And then you need to correct the function signature in the
+> > !CONFIG_AMD_MEM_ENCRYPT case, at the end of this file, too:
+> > 
+> > unsigned long __init sme_enable(struct boot_params *bp)		{ return 0; }
+> 
+> Yup, missed that.  I'll make it match.
 
-On Wed, Mar 8, 2017 at 12:02 PM, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
-> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
->
-> Tie in r8a7795 features and update the IOMMU_OF_DECLARE
-> compat string to include the updated compat string.
->
-> TODO:
->  - Consider making use of iommu_fwspec_add_ids() for uTLB handling
->      Needed to coexist with non-OF R-Car Gen2 somehow...
->  - Break out stuff useful for R-Car Gen2 from this series
->      Fix up the Gen2 IPMMU support code
->        and/or
->      Fold more stuff into the multi-arch series
->  - Add support for sysfs and iommu_device_link()/unlink()
->
-> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Or, you can do this:
 
-> --- 0018/drivers/iommu/ipmmu-vmsa.c
-> +++ work/drivers/iommu/ipmmu-vmsa.c     2017-03-08 19:11:53.600607110 +0900
+unsigned long __init sme_enable(void *boot_data)
+{
+#ifdef CONFIG_AMD_MEM_ENCRYPT
+        struct boot_params *bp = boot_data;
+        unsigned int eax, ebx, ecx, edx;
+        unsigned long cmdline_ptr;
 
-> @@ -1043,6 +1048,17 @@ static struct iommu_group *ipmmu_find_gr
->         return group;
->  }
->
-> +static bool ipmmu_slave_whitelist(struct device *dev)
-> +{
-> +       /* By default, do not allow use of IPMMU */
-> +       return false;
-> +}
-> +
-> +static const struct soc_device_attribute soc_r8a7795[] = {
-> +       { .soc_id = "r8a7795", },
+	...
 
-If/when the whitelist is/becomes device/revision specific, you probably want
-to store a  pointer to the *_slave_whitelist() function in the .data member?
+out:
+#endif /* CONFIG_AMD_MEM_ENCRYPT */
+        return sme_me_mask;
+}
 
-> +       { /* sentinel */ }
-> +};
-> +
->  static int ipmmu_of_xlate_dma(struct device *dev,
->                               struct of_phandle_args *spec)
->  {
-> @@ -1053,6 +1069,18 @@ static int ipmmu_of_xlate_dma(struct dev
->         if (!of_device_is_available(spec->np))
->                 return -ENODEV;
->
-> +       /* Failing in ->attach_device() results in a hang, so make
-> +        * sure the root device is installed before going there
-> +        */
-> +       if (!__ipmmu_find_root()) {
-> +               dev_info(dev, "Unable to locate IPMMU root device\n");
+and never worry for function headers going out of whack.
 
-dev_err?
+-- 
+Regards/Gruss,
+    Boris.
 
-> +               return -ENODEV;
-> +       }
-> +
-> +       /* For R-Car Gen3 use a white list to opt-in slave devices */
-> +       if (soc_device_match(soc_r8a7795) && !ipmmu_slave_whitelist(dev))
-> +               return -ENODEV;
-
-Gr{oetje,eeting}s,
-
-                        Geert
+Good mailing practices for 400: avoid top-posting and trim the reply.
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
