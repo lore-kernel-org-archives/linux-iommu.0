@@ -1,17 +1,15 @@
-From: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: Partial BAR Address Allocation
-Date: Wed, 8 Mar 2017 10:42:16 -0500
-Message-ID: <041fd918-818b-5a3e-7976-d67cf896106d@codeaurora.org>
-References: <35c6bec9-58e8-a1f7-5a85-d80c23480d32@codeaurora.org>
-	<20170222184440.GA2132@bhelgaas-glaptop.roam.corp.google.com>
-	<43c1ff36-fc50-8ea4-02fe-7b1d573a1efd@codeaurora.org>
-	<20170222233944.GB4359@bhelgaas-glaptop.roam.corp.google.com>
-	<20170306110439.GC27724@8bytes.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH V8 01/11] iommu/of: Refactor of_iommu_configure() for
+	error handling
+Date: Wed, 8 Mar 2017 18:58:20 +0000
+Message-ID: <8701bfbe-e52e-0e26-2a71-f5f81684de70@arm.com>
+References: <1486136933-20328-1-git-send-email-sricharan@codeaurora.org>
+	<1486136933-20328-2-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170306110439.GC27724-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <1486136933-20328-2-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,92 +19,183 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: Linux PCI <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 3/6/2017 6:04 AM, Joerg Roedel wrote:
-> On Wed, Feb 22, 2017 at 05:39:44PM -0600, Bjorn Helgaas wrote:
->> [+cc Joerg, iommu list]
->>
->> On Wed, Feb 22, 2017 at 03:44:53PM -0500, Sinan Kaya wrote:
->>> On 2/22/2017 1:44 PM, Bjorn Helgaas wrote:
->>>> There is no way for a driver to say "I only need this memory BAR and
->>>> not the other ones."  The reason is because the PCI_COMMAND_MEMORY bit
->>>> enables *all* the memory BARs; there's no way to enable memory BARs
->>>> selectively.  If we enable memory BARs and one of them is unassigned,
->>>> that unassigned BAR is enabled, and the device will respond at
->>>> whatever address the register happens to contain, and that may cause
->>>> conflicts.
-> 
-> Hmm, maybe I am missing something, but isn't this only a problem if the
-> 'unassigned' BAR as an address configured that also falls into the
-> Bridge-Window of the parent bridge? Otherwise no requests should be
-> routed to the BAR anyway, right?
+Hello,
 
-Correct, in order for this to happen you need to have multiple devices under
-a bridge. One device sends a read request towards the system address that
-happens to overlap with the BAR address of the unassigned BAR. The device
-with unassigned resource will start responding. This is one of those P2P 
-use cases.
+On 03/02/17 15:48, Sricharan R wrote:
+> From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> 
+> In preparation for some upcoming cleverness, rework the control flow in
+> of_iommu_configure() to minimise duplication and improve the propogation
+> of errors. It's also as good a time as any to switch over from the
+> now-just-a-compatibility-wrapper of_iommu_get_ops() to using the generic
+> IOMMU instance interface directly.
+> 
+> Tested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  [*] Resolved a conflict while rebasing on top linux-next as the patch
+>      is not there in mainline master.
+> 
+>         "iommu: Drop the of_iommu_{set/get}_ops() interface"
+>         https://lkml.org/lkml/2017/1/3/489
+> 
+>  drivers/iommu/of_iommu.c | 83 +++++++++++++++++++++++++++++++-----------------
+>  1 file changed, 53 insertions(+), 30 deletions(-)
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index d7f480a..ee49081 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -96,6 +96,28 @@ int of_get_dma_window(struct device_node *dn, const char *prefix, int index,
+>  }
+>  EXPORT_SYMBOL_GPL(of_get_dma_window);
+>  
+> +static const struct iommu_ops
+> +*of_iommu_xlate(struct device *dev, struct of_phandle_args *iommu_spec)
+> +{
+> +	const struct iommu_ops *ops;
+> +	struct fwnode_handle *fwnode = &iommu_spec->np->fwnode;
+> +	int err;
+> +
+> +	ops = iommu_get_instance(fwnode);
+> +	if (!ops || !ops->of_xlate)
+> +		return NULL;
+> +
+> +	err = iommu_fwspec_init(dev, &iommu_spec->np->fwnode, ops);
+> +	if (err)
+> +		return ERR_PTR(err);
+> +
+> +	err = ops->of_xlate(dev, iommu_spec);
+> +	if (err)
+> +		return ERR_PTR(err);
+> +
+> +	return ops;
+> +}
+> +
+>  static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+>  {
+>  	struct of_phandle_args *iommu_spec = data;
+> @@ -105,10 +127,11 @@ static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+>  }
+>  
+>  static const struct iommu_ops
+> -*of_pci_iommu_configure(struct pci_dev *pdev, struct device_node *bridge_np)
+> +*of_pci_iommu_init(struct pci_dev *pdev, struct device_node *bridge_np)
+>  {
+>  	const struct iommu_ops *ops;
+>  	struct of_phandle_args iommu_spec;
+> +	int err;
+>  
+>  	/*
+>  	 * Start by tracing the RID alias down the PCI topology as
+> @@ -123,56 +146,56 @@ static int __get_pci_rid(struct pci_dev *pdev, u16 alias, void *data)
+>  	 * bus into the system beyond, and which IOMMU it ends up at.
+>  	 */
+>  	iommu_spec.np = NULL;
+> -	if (of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
+> -			   "iommu-map-mask", &iommu_spec.np, iommu_spec.args))
+> -		return NULL;
+> +	err = of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
+> +			     "iommu-map-mask", &iommu_spec.np,
+> +			     iommu_spec.args);
+> +	if (err)
+> +		return ERR_PTR(err);
 
-> 
->>> The problem is that according to PCI specification BAR addresses and
->>> DMA addresses cannot overlap.
->>>
->>> From PCI-to-PCI Bridge Arch. spec.: "A bridge forwards PCI memory
->>> transactions from its primary interface to its secondary interface
->>> (downstream) if a memory address is in the range defined by the
->>> Memory Base and Memory Limit registers (when the base is less than
->>> or equal to the limit) as illustrated in Figure 4-3. Conversely, a
->>> memory transaction on the secondary interface that is within this
->>> address range will not be forwarded upstream to the primary
->>> interface."
->>>
->>> To be specific, if your DMA address happens to be in
->>> [0x80000000-0xffffffff] and root port's aperture includes this
->>> range; the DMA will never make to the system memory.
-> 
-> If there is no translation by an IOMMU this shouldn't be a problem, as
-> long as the bridge windows don't overlap with system ram. With
-> translation the IOMMU driver has to take care of that, which they
-> usually do.
+This change doesn't work with of_pci_map_rid when the PCI RC isn't behind
+an IOMMU:
 
-Correct, IOMMU drivers that I have reviewed all carve out the bridge
-windows out of the IOMMU driver allocatable address range in 
-iova_reserve_pci_windows() function.
+        map = of_get_property(np, map_name, &map_len);
+        if (!map) {
+                if (target)
+                        return -ENODEV;
+                /* Otherwise, no map implies no translation */
+                *id_out = rid;
+                return 0;
+        }
 
-> 
->> Hmmm.  I guess SWIOTLB assumes there's no address translation in the
->> DMA direction, right?  If there's no address translation in the PIO
->> direction, PCI bus BAR addresses are identical to the CPU-side
->> addresses.  In that case, there's no conflict because we already have
->> to assign BARs so they never look like a system memory address.
-> 
-> Yes, SWIOTLB assumes that IOVA == PA.
-> 
->> But if there *is* address translation in the PIO direction, we can
->> have conflicts because the bridge can translate CPU-side PIO accesses
->> to arbitrary PCI bus addresses.
-> 
-> I am not aware of any hardware that does translation on the PIO space.
-> The IOMMUs I know of don't care about PIO at all.
+Previously with no iommu-map, we returned -ENODEV but it was discarded by
+of_pci_iommu_configure. Now it is propagated and the whole device probing
+fails. Instead, maybe of_pci_map_rid should always return 0 if no
+iommu-map, and the caller should check if *target is still NULL?
 
-IOMMUs are used in the in inbound path mostly. 
+Thanks,
+Jean-Philippe
 
-Most of the HW has some sort of reserved address in the 4 GB whether
-with or without translation to support existing 32 bit only cards.
-We are talking about a problem in the outbound/PIO path.
-
+>  
+> -	ops = iommu_get_instance(&iommu_spec.np->fwnode);
+> -	if (!ops || !ops->of_xlate ||
+> -	    iommu_fwspec_init(&pdev->dev, &iommu_spec.np->fwnode, ops) ||
+> -	    ops->of_xlate(&pdev->dev, &iommu_spec))
+> -		ops = NULL;
+> +	ops = of_iommu_xlate(&pdev->dev, &iommu_spec);
+>  
+>  	of_node_put(iommu_spec.np);
+>  	return ops;
+>  }
+>  
+> -const struct iommu_ops *of_iommu_configure(struct device *dev,
+> -					   struct device_node *master_np)
+> +static const struct iommu_ops
+> +*of_platform_iommu_init(struct device *dev, struct device_node *np)
+>  {
+>  	struct of_phandle_args iommu_spec;
+> -	struct device_node *np;
+>  	const struct iommu_ops *ops = NULL;
+>  	int idx = 0;
+>  
+> -	if (dev_is_pci(dev))
+> -		return of_pci_iommu_configure(to_pci_dev(dev), master_np);
+> -
+>  	/*
+>  	 * We don't currently walk up the tree looking for a parent IOMMU.
+>  	 * See the `Notes:' section of
+>  	 * Documentation/devicetree/bindings/iommu/iommu.txt
+>  	 */
+> -	while (!of_parse_phandle_with_args(master_np, "iommus",
+> -					   "#iommu-cells", idx,
+> -					   &iommu_spec)) {
+> -		np = iommu_spec.np;
+> -		ops = iommu_get_instance(&np->fwnode);
+> -
+> -		if (!ops || !ops->of_xlate ||
+> -		    iommu_fwspec_init(dev, &np->fwnode, ops) ||
+> -		    ops->of_xlate(dev, &iommu_spec))
+> -			goto err_put_node;
+> -
+> -		of_node_put(np);
+> +	while (!of_parse_phandle_with_args(np, "iommus", "#iommu-cells",
+> +					   idx, &iommu_spec)) {
+> +		ops = of_iommu_xlate(dev, &iommu_spec);
+> +		of_node_put(iommu_spec.np);
+>  		idx++;
+> +		if (IS_ERR_OR_NULL(ops))
+> +			break;
+>  	}
+>  
+>  	return ops;
+> +}
+> +
+> +const struct iommu_ops *of_iommu_configure(struct device *dev,
+> +					   struct device_node *master_np)
+> +{
+> +	const struct iommu_ops *ops;
+> +
+> +	if (!master_np)
+> +		return NULL;
+> +
+> +	if (dev_is_pci(dev))
+> +		ops = of_pci_iommu_init(to_pci_dev(dev), master_np);
+> +	else
+> +		ops = of_platform_iommu_init(dev, master_np);
+>  
+> -err_put_node:
+> -	of_node_put(np);
+> -	return NULL;
+> +	return IS_ERR(ops) ? NULL : ops;
+>  }
+>  
+>  static int __init of_iommu_init(void)
 > 
-> 
-> 
-> 	Joerg
-> 
-> 
-
-
--- 
-Sinan Kaya
-Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
-Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
