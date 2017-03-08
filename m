@@ -1,13 +1,15 @@
-From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH v3 09/09] iommu/ipmmu-vmsa: Hook up r8a7795 DT matching code
-Date: Wed, 08 Mar 2017 20:02:53 +0900
-Message-ID: <148897097336.16106.17118406255063350893.sendpatchset@little-apple>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v3 01/09] iommu/ipmmu-vmsa: Introduce features, break out
+	alias
+Date: Wed, 8 Mar 2017 11:53:48 +0000
+Message-ID: <fe78313c-5cb8-d6d3-428e-deff2851d938@arm.com>
 References: <148897088333.16106.13237004440297956899.sendpatchset@little-apple>
+	<148897089355.16106.305846051553789544.sendpatchset@little-apple>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <148897088333.16106.13237004440297956899.sendpatchset@little-apple>
+In-Reply-To: <148897089355.16106.305846051553789544.sendpatchset@little-apple>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,128 +19,124 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
+To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+Hi Magnus,
 
-Tie in r8a7795 features and update the IOMMU_OF_DECLARE
-compat string to include the updated compat string.
+On 08/03/17 11:01, Magnus Damm wrote:
+> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+> 
+> Introduce struct ipmmu_features to track various hardware
+> and software implementation changes inside the driver for
+> different kinds of IPMMU hardware. Add use_ns_alias_offset
+> as a first example of a feature to control if the secure
+> register bank offset should be used or not.
+> 
+> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+> ---
+> 
+>  Changes since V2:
+>  - None
+> 
+>  Changes since V1:
+>  - Moved patch to front of the series
+> 
+>  drivers/iommu/ipmmu-vmsa.c |   35 ++++++++++++++++++++++++++++-------
+>  1 file changed, 28 insertions(+), 7 deletions(-)
+> 
+> --- 0007/drivers/iommu/ipmmu-vmsa.c
+> +++ work/drivers/iommu/ipmmu-vmsa.c	2017-03-07 12:25:47.000000000 +0900
+> @@ -32,11 +32,15 @@
+>  
+>  #define IPMMU_CTX_MAX 1
+>  
+> +struct ipmmu_features {
+> +	bool use_ns_alias_offset;
+> +};
+> +
+>  struct ipmmu_vmsa_device {
+>  	struct device *dev;
+>  	void __iomem *base;
+>  	struct list_head list;
+> -
+> +	const struct ipmmu_features *features;
+>  	unsigned int num_utlbs;
+>  	spinlock_t lock;			/* Protects ctx and domains[] */
+>  	DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
+> @@ -999,13 +1003,33 @@ static void ipmmu_device_reset(struct ip
+>  		ipmmu_write(mmu, i * IM_CTX_SIZE + IMCTR, 0);
+>  }
+>  
+> +static const struct ipmmu_features ipmmu_features_default = {
+> +	.use_ns_alias_offset = true,
+> +};
+> +
+> +static const struct of_device_id ipmmu_of_ids[] = {
+> +	{
+> +		.compatible = "renesas,ipmmu-vmsa",
+> +		.data = &ipmmu_features_default,
+> +	}, {
+> +		/* Terminator */
+> +	},
+> +};
+> +
+> +MODULE_DEVICE_TABLE(of, ipmmu_of_ids);
+> +
+>  static int ipmmu_probe(struct platform_device *pdev)
+>  {
+>  	struct ipmmu_vmsa_device *mmu;
+> +	const struct of_device_id *match;
+>  	struct resource *res;
+>  	int irq;
+>  	int ret;
+>  
+> +	match = of_match_node(ipmmu_of_ids, pdev->dev.of_node);
 
-TODO:
- - Consider making use of iommu_fwspec_add_ids() for uTLB handling
-     Needed to coexist with non-OF R-Car Gen2 somehow...
- - Break out stuff useful for R-Car Gen2 from this series
-     Fix up the Gen2 IPMMU support code
-       and/or
-     Fold more stuff into the multi-arch series
- - Add support for sysfs and iommu_device_link()/unlink()
+of_device_get_match_data() makes this a lot easier.
 
-Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
----
+> +	if (!match)
+> +		return -EINVAL;
 
- Changes since V2:
- - Check for lack of root device in ->xlate()
-   This fixed a bug when IPMMU-MM is disabled in DT the system hangs on boot
- - Added code to ipmmu_init_platform_device() to handle multiple ->xlate() calls
- - Include empty white list by default
- - Updated TODO list
+Also, if the driver is DT-only per the other series, note that this
+cannot happen anyway, since of_driver_match_device() would have to have
+found a match for your probe function to be called in the first place.
 
- Changes since V1:
- - Enable multi context feature
- - Update TODO list
+Robin.
 
- drivers/iommu/ipmmu-vmsa.c |   41 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
-
---- 0018/drivers/iommu/ipmmu-vmsa.c
-+++ work/drivers/iommu/ipmmu-vmsa.c	2017-03-08 19:11:53.600607110 +0900
-@@ -23,6 +23,7 @@
- #include <linux/platform_device.h>
- #include <linux/sizes.h>
- #include <linux/slab.h>
-+#include <linux/sys_soc.h>
- 
- #if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
- #include <asm/dma-iommu.h>
-@@ -770,6 +771,10 @@ static int ipmmu_init_platform_device(st
- 	int num_utlbs;
- 	int ret = -ENODEV;
- 
-+	/* Initialize once - xlate() will call multiple times */
-+	if (to_archdata(dev))
-+		return 0;
-+
- 	/* Find the master corresponding to the device. */
- 
- 	num_utlbs = of_count_phandle_with_args(dev->of_node, "iommus",
-@@ -1043,6 +1048,17 @@ static struct iommu_group *ipmmu_find_gr
- 	return group;
- }
- 
-+static bool ipmmu_slave_whitelist(struct device *dev)
-+{
-+	/* By default, do not allow use of IPMMU */
-+	return false;
-+}
-+
-+static const struct soc_device_attribute soc_r8a7795[] = {
-+	{ .soc_id = "r8a7795", },
-+	{ /* sentinel */ }
-+};
-+
- static int ipmmu_of_xlate_dma(struct device *dev,
- 			      struct of_phandle_args *spec)
- {
-@@ -1053,6 +1069,18 @@ static int ipmmu_of_xlate_dma(struct dev
- 	if (!of_device_is_available(spec->np))
- 		return -ENODEV;
- 
-+	/* Failing in ->attach_device() results in a hang, so make
-+	 * sure the root device is installed before going there
-+	 */
-+	if (!__ipmmu_find_root()) {
-+		dev_info(dev, "Unable to locate IPMMU root device\n");
-+		return -ENODEV;
-+	}
-+
-+	/* For R-Car Gen3 use a white list to opt-in slave devices */
-+	if (soc_device_match(soc_r8a7795) && !ipmmu_slave_whitelist(dev))
-+		return -ENODEV;
-+
- 	return ipmmu_init_platform_device(dev);
- }
- 
-@@ -1095,11 +1123,22 @@ static const struct ipmmu_features ipmmu
- 	.twobit_imttbcr_sl0 = false,
- };
- 
-+static const struct ipmmu_features ipmmu_features_r8a7795 = {
-+	.use_ns_alias_offset = false,
-+	.has_cache_leaf_nodes = true,
-+	.has_eight_ctx = true,
-+	.setup_imbuscr = false,
-+	.twobit_imttbcr_sl0 = true,
-+};
-+
- static const struct of_device_id ipmmu_of_ids[] = {
- 	{
- 		.compatible = "renesas,ipmmu-vmsa",
- 		.data = &ipmmu_features_default,
- 	}, {
-+		.compatible = "renesas,ipmmu-r8a7795",
-+		.data = &ipmmu_features_r8a7795,
-+	}, {
- 		/* Terminator */
- 	},
- };
-@@ -1288,6 +1327,8 @@ static int __init ipmmu_vmsa_iommu_of_se
- 
- IOMMU_OF_DECLARE(ipmmu_vmsa_iommu_of, "renesas,ipmmu-vmsa",
- 		 ipmmu_vmsa_iommu_of_setup);
-+IOMMU_OF_DECLARE(ipmmu_r8a7795_iommu_of, "renesas,ipmmu-r8a7795",
-+		 ipmmu_vmsa_iommu_of_setup);
- #endif
- 
- MODULE_DESCRIPTION("IOMMU API for Renesas VMSA-compatible IPMMU");
+> +
+>  	mmu = devm_kzalloc(&pdev->dev, sizeof(*mmu), GFP_KERNEL);
+>  	if (!mmu) {
+>  		dev_err(&pdev->dev, "cannot allocate device data\n");
+> @@ -1016,6 +1040,7 @@ static int ipmmu_probe(struct platform_d
+>  	mmu->num_utlbs = 32;
+>  	spin_lock_init(&mmu->lock);
+>  	bitmap_zero(mmu->ctx, IPMMU_CTX_MAX);
+> +	mmu->features = match->data;
+>  
+>  	/* Map I/O memory and request IRQ. */
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> @@ -1035,7 +1060,8 @@ static int ipmmu_probe(struct platform_d
+>  	 * Offset the registers base unconditionally to point to the non-secure
+>  	 * alias space for now.
+>  	 */
+> -	mmu->base += IM_NS_ALIAS_OFFSET;
+> +	if (mmu->features->use_ns_alias_offset)
+> +		mmu->base += IM_NS_ALIAS_OFFSET;
+>  
+>  	irq = platform_get_irq(pdev, 0);
+>  	if (irq < 0) {
+> @@ -1084,11 +1110,6 @@ static int ipmmu_remove(struct platform_
+>  	return 0;
+>  }
+>  
+> -static const struct of_device_id ipmmu_of_ids[] = {
+> -	{ .compatible = "renesas,ipmmu-vmsa", },
+> -	{ }
+> -};
+> -
+>  static struct platform_driver ipmmu_driver = {
+>  	.driver = {
+>  		.name = "ipmmu-vmsa",
+> 
