@@ -1,18 +1,16 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH V8 01/11] iommu/of: Refactor of_iommu_configure() for
-	error handling
-Date: Thu, 9 Mar 2017 11:21:05 +0000
-Message-ID: <ee887c44-b3c3-f9e3-8e94-1619bf34dd5b@arm.com>
-References: <1486136933-20328-1-git-send-email-sricharan@codeaurora.org>
-	<1486136933-20328-2-git-send-email-sricharan@codeaurora.org>
-	<8701bfbe-e52e-0e26-2a71-f5f81684de70@arm.com>
-	<76844d3e-ae7a-5113-1a76-18312e9f51ce@arm.com>
-	<1cba01d298ba$ee931000$cbb93000$@codeaurora.org>
+Subject: Re: [PATCH v7 06/07] iommu/ipmmu-vmsa: ARM and ARM64 archdata access
+Date: Thu, 9 Mar 2017 11:40:24 +0000
+Message-ID: <60a12f1e-968d-be3c-babb-5fcf4e18f232@arm.com>
+References: <148885660307.28553.995847796823338863.sendpatchset@little-apple>
+	<148885666392.28553.6653211200015255398.sendpatchset@little-apple>
+	<d7db1ada-863a-ab92-7936-47d0306eaa8f@arm.com>
+	<CANqRtoSE3nE5d9tGWwbowDkFAbXSQRBzjtBoACmR0BwQB5SK-Q@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1cba01d298ba$ee931000$cbb93000$@codeaurora.org>
+In-Reply-To: <CANqRtoSE3nE5d9tGWwbowDkFAbXSQRBzjtBoACmR0BwQB5SK-Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,97 +20,53 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, 'Jean-Philippe Brucker' <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/03/17 09:52, sricharan wrote:
+On 09/03/17 03:44, Magnus Damm wrote:
 > Hi Robin,
 > 
->> On 08/03/17 18:58, Jean-Philippe Brucker wrote:
->> [...]
->>>>  static const struct iommu_ops
->>>> -*of_pci_iommu_configure(struct pci_dev *pdev, struct device_node
->>>> *bridge_np)
->>>> +*of_pci_iommu_init(struct pci_dev *pdev, struct device_node
->>>> +*bridge_np)
->>>>  {
->>>>  	const struct iommu_ops *ops;
->>>>  	struct of_phandle_args iommu_spec;
->>>> +	int err;
->>>>
->>>>  	/*
->>>>  	 * Start by tracing the RID alias down the PCI topology as @@
->>>> -123,56 +146,56 @@ static int __get_pci_rid(struct pci_dev *pdev, u16
->> alias, void *data)
->>>>  	 * bus into the system beyond, and which IOMMU it ends up at.
->>>>  	 */
->>>>  	iommu_spec.np = NULL;
->>>> -	if (of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
->>>> -			   "iommu-map-mask", &iommu_spec.np,
->> iommu_spec.args))
->>>> -		return NULL;
->>>> +	err = of_pci_map_rid(bridge_np, iommu_spec.args[0], "iommu-map",
->>>> +			     "iommu-map-mask", &iommu_spec.np,
->>>> +			     iommu_spec.args);
->>>> +	if (err)
->>>> +		return ERR_PTR(err);
+> On Wed, Mar 8, 2017 at 9:48 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>> On 07/03/17 03:17, Magnus Damm wrote:
+>>> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 >>>
->>> This change doesn't work with of_pci_map_rid when the PCI RC isn't
->>> behind an IOMMU:
->>>
->>>         map = of_get_property(np, map_name, &map_len);
->>>         if (!map) {
->>>                 if (target)
->>>                         return -ENODEV;
->>>                 /* Otherwise, no map implies no translation */
->>>                 *id_out = rid;
->>>                 return 0;
->>>         }
->>>
->>> Previously with no iommu-map, we returned -ENODEV but it was discarded
->>> by of_pci_iommu_configure. Now it is propagated and the whole device
->>> probing fails. Instead, maybe of_pci_map_rid should always return 0 if
->>> no iommu-map, and the caller should check if *target is still NULL?
+>>> Not all architectures have an iommu member in their archdata, so
+>>> use #ifdefs support build with COMPILE_TEST on any architecture.
 >>
->> Ah yes, Tomasz had found breakages with the "mmu-masters" binding
->> before, and I'd already pushed out a fixup for this one[1], but I forgot
-> that
->> that discussion was all off-list (out of diplomatic concern that the
-> breakage
->> might have been intentional - it wasn't, honest!)
->>
->> Now that rc1 is out I should re-do that branch with v8 of this series plus
-> the
->> fixups folded in, unless Sricharan beats me to it.
->>
+>> I have a feeling I might be repeating myself, but ipmmu_vmsa_archdata
+>> looks to be trivially convertible to iommu_fwspec, which I strongly
+>> encourage, not least because it would obviate bodges like this.
 > 
-> Right, I had this one [1] as V9 which had all your fixes that we discussed
-> offline as
-> well.  I was about to post a V9 today on top of -rc1 today as well.
-> 
-> [1] https://github.com/sricharanaz/iommu/tree/pd_v9
+> Yeah, I think it should be possible to use iommu_fwspec for this
+> purpose. The question is when to do it. =)
 
-Awesome, I'll try to get on with testing that ASAP. Thanks!
+I'd actually be inclined to do it *before* any other major changes, as
+it would be pretty minimal given the current structure of the driver.
+But then I'm free to wilfully ignore the burden of maintaining patch
+stacks between both mainline and older trees ;)
+
+> I actually looked into it recently, but then realised that for this to
+> work then due to code sharing I need to make use of iommu_fwspec on
+> both 32-bit and 64-bit ARM. So it requires rework of the existing
+> IPMMU for 32-bit ARM (including hairy legacy CONFIG_IOMMU_DMA=n code).
+> I was actually thinking of doing some rework of 32-bit ARM IPMMU code
+> anyway (I suspect iommu_device_* conversion caused breakage) and it
+> probably has to happen on top of current -next. I would also like to
+> start reducing burden of forward porting all these patches, and
+> stirring up the ground does not really help much there...
+
+Note that iommu_fwspec can be used pretty much orthogonally to any of
+the core DMA ops support, so it shouldn't be as invasive as you might
+think. See 84672f192671 ("iommu/mediatek: Convert M4Uv1 to
+iommu_fwspec") as an example of an archdata-to-fwspec conversion of a
+driver which only supports 32-bit ARM, and notably borrows its master
+handling directly from the the IPMMU driver.
 
 Robin.
 
 > 
-> Regards,
->  Sricharan
+> Cheers,
 > 
-> 
->> Thanks for the reminder,
->> Robin.
->>
->> [1]:http://www.linux-arm.org/git?p=linux-
->> rm.git;a=commitdiff;h=0049a34e523506813995c05766f5e2c16d616354
->>
->>>
->>> Thanks,
->>> Jean-Philippe
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
->> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org More majordomo info
->> at  http://vger.kernel.org/majordomo-info.html
+> / magnus
 > 
