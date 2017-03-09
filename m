@@ -1,126 +1,164 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Report smmu type in dmesg
-Date: Thu, 9 Mar 2017 12:25:46 +0000
-Message-ID: <56bfa59e-b387-90e8-c2cc-1628495bf2af@arm.com>
-References: <20170306135833.21455-1-rrichter@cavium.com>
-	<d055d4c2-4d06-caba-4d84-21c22718fe76@arm.com>
-	<20170307140607.GY16822@rric.localdomain>
-	<bdf70e78-5ffd-4458-f485-4a508705e3e6@arm.com>
-	<20170309120206.GP16822@rric.localdomain>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170309120206.GP16822-vWBEXY7mpu582hYKe6nXyg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+From: Sricharan R <sricharan@codeaurora.org>
+Subject: [PATCH V3 1/5] iommu/arm-smmu: Add pm_runtime/sleep ops
+Date: Thu,  9 Mar 2017 21:05:44 +0530
+Message-ID: <1489073748-3659-2-git-send-email-sricharan@codeaurora.org>
+References: <1489073748-3659-1-git-send-email-sricharan@codeaurora.org>
+Return-path: <linux-clk-owner@vger.kernel.org>
+In-Reply-To: <1489073748-3659-1-git-send-email-sricharan@codeaurora.org>
+Sender: linux-clk-owner@vger.kernel.org
+To: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, linux-clk@vger.kernel.org, sboyd@codeaurora.org, devicetree@vger.kernel.org, robh+dt@kernel.org, mathieu.poirier@linaro.org, mark.rutland@arm.com
+Cc: sricharan@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/03/17 12:02, Robert Richter wrote:
-> On 07.03.17 18:41:33, Robin Murphy wrote:
->> On 07/03/17 14:06, Robert Richter wrote:
->>> On 06.03.17 18:22:08, Robin Murphy wrote:
->>>> On 06/03/17 13:58, Robert Richter wrote:
->>>>> The ARM SMMU detection especially depends from system firmware. For
->>>>> better diagnostic, log the detected type in dmesg.
->>>>
->>>> This paragraph especially depends from grammar. I think.
->>>
->>> Thanks for the mail on you. :)
->>>
->>>>
->>>>> The smmu type's name is now stored in struct arm_smmu_type and ACPI
->>>>> code is modified to use that struct too. Rename ARM_SMMU_MATCH_DATA()
->>>>> macro to ARM_SMMU_TYPE() for better readability.
->>>>>
->>>>> Signed-off-by: Robert Richter <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
->>>>> ---
->>>>>  drivers/iommu/arm-smmu.c | 61 ++++++++++++++++++++++++------------------------
->>>>>  1 file changed, 30 insertions(+), 31 deletions(-)
->>>>
->>>> That seems a relatively invasive diffstat for the sake of printing a
->>>> string once at boot time to what I can only assume is a small audience
->>>> of firmware developers who find "cat
->>>> /sys/firmware/devicetree/base/iommu*/compatible" (or the ACPI
->>>> equivalent) too hard ;)
->>>
->>> Reading firmware data is not really a solution as you don't know what
->>> the driver is doing with it. The actual background of this patch is to
->>> be sure a certain workaround was enabled in the kernel. ARM's cpu
->>> errata framework does this nicely. In case of smmus we just have the
->>> internal model implementation type which is not visible in the logs.
->>> Right now, there is no way to figure that out without knowing fw
->>> specifics and kernel sources.
->>
->> Ah, now it starts to become clear. In that case, if we want to confirm
->> the presence of specific workarounds, we should actually _confirm the
->> presence of specific workarounds_. I'd have no complaint with e.g. this:
->>
->> -----8<-----
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index f7411109670f..9e50a092632c 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -1934,6 +1934,8 @@ static int arm_smmu_device_cfg_probe(struct
->> arm_smmu_device *smmu)
->>                         atomic_add_return(smmu->num_context_banks,
->>                                           &cavium_smmu_context_count);
->>                 smmu->cavium_id_base -= smmu->num_context_banks;
->> +               dev_notice(smmu->dev, "\tusing ASID/VMID offset %u\n",
->> +                          smmu->cavium_id_base);
->>         }
->>
->>         /* ID2 */
->> ----->8-----
->>
->> and the equivalent for other things, if need be. If you just print "hey,
->> this is SMMU-x", the user is in fact no better off, since they would
->> then still have to go and look at the source for whatever kernel they're
->> running to find out which particular workarounds for SMMU-x bugs that
->> particular kernel implements.
-> 
-> I don't understand why you don't want to expose in some way the smmu
-> type. There are a lot of things that can go wrong, esp. with firmware,
-> to detect the proper smmu type.
+The smmu needs to be functional only when the respective
+master's using it are active. The device_link feature
+helps to track such functional dependencies, so that the
+iommu gets powered when the master device enables itself
+using pm_runtime. So by adapting the smmu driver for
+runtime pm, above said dependency can be addressed.
 
-Because there is only one reason for which detecting the "proper SMMU
-type" matters - implementation-specific workarounds for areas in which a
-given hardware implementation deviates from the architecture assumed by
-the driver.
+This patch adds the pm runtime/sleep callbacks to the
+driver and also the functions to parse the smmu clocks
+from DT and enable them in resume/suspend.
 
-OK, let's print the model name. Now, if I give you this:
+Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+---
+ drivers/iommu/arm-smmu.c | 74 ++++++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 65 insertions(+), 9 deletions(-)
 
-[    0.475009] arm-smmu 2b500000.iommu: probing hardware configuration...
-[    0.481650] arm-smmu 2b500000.iommu: ARM MMU-401 r0p0 with:
-[    0.486436] arm-smmu 2b500000.iommu: 	stage 2 translation
-[    0.491925] arm-smmu 2b500000.iommu: 	coherent table walk
-[    0.497420] arm-smmu 2b500000.iommu: 	stream matching with 32
-register groups
-[    0.504678] arm-smmu 2b500000.iommu: 	4 context banks (4 stage-2 only)
-[    0.511312] arm-smmu 2b500000.iommu: 	Supported page sizes: 0x60211000
-[    0.517943] arm-smmu 2b500000.iommu: 	Stage-2: 40-bit IPA -> 40-bit PA
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index abf6496..f7e11d3 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -48,6 +48,7 @@
+ #include <linux/of_iommu.h>
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+ 
+@@ -340,6 +341,13 @@ struct arm_smmu_master_cfg {
+ #define for_each_cfg_sme(fw, i, idx) \
+ 	for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
+ 
++struct arm_smmu_clks {
++	void *clks;
++	int (*init_clocks)(struct arm_smmu_device *smmu);
++	int (*enable_clocks)(struct arm_smmu_device *smmu);
++	void (*disable_clocks)(struct arm_smmu_device *smmu);
++};
++
+ struct arm_smmu_device {
+ 	struct device			*dev;
+ 
+@@ -387,7 +395,7 @@ struct arm_smmu_device {
+ 	u32				num_global_irqs;
+ 	u32				num_context_irqs;
+ 	unsigned int			*irqs;
+-
++	struct arm_smmu_clks		smmu_clks;
+ 	u32				cavium_id_base; /* Specific to Cavium */
+ 
+ 	/* IOMMU core code handle */
+@@ -1958,16 +1966,24 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+ struct arm_smmu_match_data {
+ 	enum arm_smmu_arch_version version;
+ 	enum arm_smmu_implementation model;
++	struct arm_smmu_clks smmu_clks;
+ };
+ 
+-#define ARM_SMMU_MATCH_DATA(name, ver, imp)	\
+-static struct arm_smmu_match_data name = { .version = ver, .model = imp }
+-
+-ARM_SMMU_MATCH_DATA(smmu_generic_v1, ARM_SMMU_V1, GENERIC_SMMU);
+-ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU);
+-ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU);
+-ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500);
+-ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2);
++#define ARM_SMMU_MATCH_DATA(name, ver, imp, init, enable, disable)	\
++static struct arm_smmu_match_data name = { .version = ver, .model = imp, \
++					   .smmu_clks.init_clocks = init, \
++					   .smmu_clks.enable_clocks = enable, \
++					   .smmu_clks.disable_clocks = disable }
++
++ARM_SMMU_MATCH_DATA(smmu_generic_v1, ARM_SMMU_V1, GENERIC_SMMU,
++		    NULL, NULL, NULL);
++ARM_SMMU_MATCH_DATA(smmu_generic_v2, ARM_SMMU_V2, GENERIC_SMMU,
++		    NULL, NULL, NULL);
++ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU,
++		    NULL, NULL, NULL);
++ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500, NULL, NULL, NULL);
++ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2,
++		    NULL, NULL, NULL);
+ 
+ static const struct of_device_id arm_smmu_of_match[] = {
+ 	{ .compatible = "arm,smmu-v1", .data = &smmu_generic_v1 },
+@@ -2054,6 +2070,7 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+ 	data = of_device_get_match_data(dev);
+ 	smmu->version = data->version;
+ 	smmu->model = data->model;
++	smmu->smmu_clks = data->smmu_clks;
+ 
+ 	parse_driver_options(smmu);
+ 
+@@ -2135,6 +2152,13 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 		smmu->irqs[i] = irq;
+ 	}
+ 
++	if (smmu->smmu_clks.init_clocks) {
++		err = smmu->smmu_clks.init_clocks(smmu);
++		if (err)
++			return err;
++	}
++
++	pm_runtime_enable(dev);
+ 	err = arm_smmu_device_cfg_probe(smmu);
+ 	if (err)
+ 		return err;
+@@ -2211,10 +2235,42 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_PM
++static int arm_smmu_resume(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
++	int ret = 0;
++
++	if (smmu->smmu_clks.enable_clocks)
++		ret = smmu->smmu_clks.enable_clocks(smmu);
++
++	return ret;
++}
++
++static int arm_smmu_suspend(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
++
++	if (smmu->smmu_clks.disable_clocks)
++		smmu->smmu_clks.disable_clocks(smmu);
++
++	return 0;
++}
++#endif
++
++static const struct dev_pm_ops arm_smmu_pm_ops = {
++	SET_RUNTIME_PM_OPS(arm_smmu_suspend, arm_smmu_resume, NULL)
++	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
++				pm_runtime_force_resume)
++};
++
+ static struct platform_driver arm_smmu_driver = {
+ 	.driver	= {
+ 		.name		= "arm-smmu",
+ 		.of_match_table	= of_match_ptr(arm_smmu_of_match),
++		.pm = &arm_smmu_pm_ops,
+ 	},
+ 	.probe	= arm_smmu_device_probe,
+ 	.remove	= arm_smmu_device_remove,
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
 
-please tell me which hardware problems this system has kernel
-workarounds in place for, and which it doesn't. If you want another
-hint, the version is 4.11.0-rc1+. Note the "+".
-
-Robin.
-
-> The above change is not a general solution too for reporting the
-> enablement of smmu errata workarounds. The check could be done
-> multiple times and in the fast path. For the particular problem the
-> above would work, but still some message on the type detected would be
-> fine. I could rework my patch in a way that .name is not permanently
-> stored in struct arm_smmu_device.
-> 
-> -Robert
-> 
