@@ -1,11 +1,13 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 1/3] iommu: Disambiguate MSI region types
-Date: Thu,  9 Mar 2017 19:50:36 +0000
-Message-ID: <1b012c7e82ccef1a34be38d81e82e74f129dfedc.1489088954.git.robin.murphy@arm.com>
+Subject: [PATCH 2/3] iommu/dma: Don't reserve PCI I/O windows
+Date: Thu,  9 Mar 2017 19:50:37 +0000
+Message-ID: <65d11acdff57a3f448df6c90da338750ce7733e9.1489088954.git.robin.murphy@arm.com>
+References: <1b012c7e82ccef1a34be38d81e82e74f129dfedc.1489088954.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1b012c7e82ccef1a34be38d81e82e74f129dfedc.1489088954.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,135 +18,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Whilst it doesn't matter much to VFIO at the moment, when parsing
-reserved regions on the host side we really needs to be able to tell
-the difference between the software-reserved region used to map MSIs
-translated by an IOMMU, and hardware regions for which the write might
-never even reach the IOMMU. In particular, ARM systems assume the former
-topology, but may need to cope with the latter as well, which will
-require rather different handling in the iommu-dma layer.
+Even if a host controller's CPU-side MMIO windows into PCI I/O space do
+happen to leak into PCI memory space such that it might treat them as
+peer addresses, trying to reserve the corresponding I/O space addresses
+doesn't do anything to help solve that problem. Stop doing a silly thing.
 
-For clarity, rename the software-managed type to IOMMU_RESV_SW_MSI, use
-IOMMU_RESV_MSI to describe the hardware type, and document everything a
-little bit. Since the x86 MSI remapping hardware falls squarely under
-this meaning of IOMMU_RESV_MSI, apply that type to their regions as well,
-so that we tell a consistent story to userspace across platforms (and
-have future consistency if those drivers start migrating to iommu-dma).
-
-Fixes: d30ddcaa7b02 ("iommu: Add a new type field in iommu_resv_region")
-CC: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-CC: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-CC: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-CC: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Fixes: fade1ec055dc ("iommu/dma: Avoid PCI host bridge windows")
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/iommu/amd_iommu.c       | 2 +-
- drivers/iommu/arm-smmu-v3.c     | 2 +-
- drivers/iommu/arm-smmu.c        | 2 +-
- drivers/iommu/intel-iommu.c     | 2 +-
- drivers/iommu/iommu.c           | 1 +
- drivers/vfio/vfio_iommu_type1.c | 2 +-
- include/linux/iommu.h           | 5 +++++
- 7 files changed, 11 insertions(+), 5 deletions(-)
+ drivers/iommu/dma-iommu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 98940d1392cb..b17536d6e69b 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3202,7 +3202,7 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 48d36ce59efb..1e0983488a8d 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -175,8 +175,7 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
+ 	unsigned long lo, hi;
  
- 	region = iommu_alloc_resv_region(MSI_RANGE_START,
- 					 MSI_RANGE_END - MSI_RANGE_START + 1,
--					 0, IOMMU_RESV_RESERVED);
-+					 0, IOMMU_RESV_MSI);
- 	if (!region)
- 		return;
- 	list_add_tail(&region->list, head);
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 5806a6acc94e..591bb96047c9 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1888,7 +1888,7 @@ static void arm_smmu_get_resv_regions(struct device *dev,
- 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+ 	resource_list_for_each_entry(window, &bridge->windows) {
+-		if (resource_type(window->res) != IORESOURCE_MEM &&
+-		    resource_type(window->res) != IORESOURCE_IO)
++		if (resource_type(window->res) != IORESOURCE_MEM)
+ 			continue;
  
- 	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
--					 prot, IOMMU_RESV_MSI);
-+					 prot, IOMMU_RESV_SW_MSI);
- 	if (!region)
- 		return;
- 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index abf6496843a6..b493c99e17f7 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1608,7 +1608,7 @@ static void arm_smmu_get_resv_regions(struct device *dev,
- 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
- 
- 	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
--					 prot, IOMMU_RESV_MSI);
-+					 prot, IOMMU_RESV_SW_MSI);
- 	if (!region)
- 		return;
- 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 238ad3447712..f1611fd6f5b0 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -5249,7 +5249,7 @@ static void intel_iommu_get_resv_regions(struct device *device,
- 
- 	reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
- 				      IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
--				      0, IOMMU_RESV_RESERVED);
-+				      0, IOMMU_RESV_MSI);
- 	if (!reg)
- 		return;
- 	list_add_tail(&reg->list, head);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8ea14f41a979..7dbc05f10d5a 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -72,6 +72,7 @@ static const char * const iommu_group_resv_type_string[] = {
- 	[IOMMU_RESV_DIRECT]	= "direct",
- 	[IOMMU_RESV_RESERVED]	= "reserved",
- 	[IOMMU_RESV_MSI]	= "msi",
-+	[IOMMU_RESV_SW_MSI]	= "msi",
- };
- 
- #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index c26fa1f3ed86..e32abdebd2df 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -1192,7 +1192,7 @@ static bool vfio_iommu_has_resv_msi(struct iommu_group *group,
- 	INIT_LIST_HEAD(&group_resv_regions);
- 	iommu_get_group_resv_regions(group, &group_resv_regions);
- 	list_for_each_entry(region, &group_resv_regions, list) {
--		if (region->type & IOMMU_RESV_MSI) {
-+		if (region->type & IOMMU_RESV_SW_MSI) {
- 			*base = region->start;
- 			ret = true;
- 			goto out;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 6a6de187ddc0..fad2c4913be4 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -125,9 +125,14 @@ enum iommu_attr {
- };
- 
- /* These are the possible reserved region types */
-+/* Memory regions which must have 1:1 translations present at all times */
- #define IOMMU_RESV_DIRECT	(1 << 0)
-+/* Arbitrary "never map this or give it to a device" address ranges */
- #define IOMMU_RESV_RESERVED	(1 << 1)
-+/* Hardware MSI region (untranslated) */
- #define IOMMU_RESV_MSI		(1 << 2)
-+/* Software-managed MSI translation window */
-+#define IOMMU_RESV_SW_MSI	(1 << 3)
- 
- /**
-  * struct iommu_resv_region - descriptor for a reserved memory region
+ 		lo = iova_pfn(iovad, window->res->start - window->offset);
 -- 
 2.11.0.dirty
