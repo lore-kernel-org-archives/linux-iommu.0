@@ -1,16 +1,17 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v7 06/07] iommu/ipmmu-vmsa: ARM and ARM64 archdata access
-Date: Thu, 9 Mar 2017 11:40:24 +0000
-Message-ID: <60a12f1e-968d-be3c-babb-5fcf4e18f232@arm.com>
-References: <148885660307.28553.995847796823338863.sendpatchset@little-apple>
-	<148885666392.28553.6653211200015255398.sendpatchset@little-apple>
-	<d7db1ada-863a-ab92-7936-47d0306eaa8f@arm.com>
-	<CANqRtoSE3nE5d9tGWwbowDkFAbXSQRBzjtBoACmR0BwQB5SK-Q@mail.gmail.com>
+From: Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: Report smmu type in dmesg
+Date: Thu, 9 Mar 2017 13:02:06 +0100
+Message-ID: <20170309120206.GP16822@rric.localdomain>
+References: <20170306135833.21455-1-rrichter@cavium.com>
+	<d055d4c2-4d06-caba-4d84-21c22718fe76@arm.com>
+	<20170307140607.GY16822@rric.localdomain>
+	<bdf70e78-5ffd-4458-f485-4a508705e3e6@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CANqRtoSE3nE5d9tGWwbowDkFAbXSQRBzjtBoACmR0BwQB5SK-Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <bdf70e78-5ffd-4458-f485-4a508705e3e6-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,53 +21,81 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 09/03/17 03:44, Magnus Damm wrote:
-> Hi Robin,
+On 07.03.17 18:41:33, Robin Murphy wrote:
+> On 07/03/17 14:06, Robert Richter wrote:
+> > On 06.03.17 18:22:08, Robin Murphy wrote:
+> >> On 06/03/17 13:58, Robert Richter wrote:
+> >>> The ARM SMMU detection especially depends from system firmware. For
+> >>> better diagnostic, log the detected type in dmesg.
+> >>
+> >> This paragraph especially depends from grammar. I think.
+> > 
+> > Thanks for the mail on you. :)
+> > 
+> >>
+> >>> The smmu type's name is now stored in struct arm_smmu_type and ACPI
+> >>> code is modified to use that struct too. Rename ARM_SMMU_MATCH_DATA()
+> >>> macro to ARM_SMMU_TYPE() for better readability.
+> >>>
+> >>> Signed-off-by: Robert Richter <rrichter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> >>> ---
+> >>>  drivers/iommu/arm-smmu.c | 61 ++++++++++++++++++++++++------------------------
+> >>>  1 file changed, 30 insertions(+), 31 deletions(-)
+> >>
+> >> That seems a relatively invasive diffstat for the sake of printing a
+> >> string once at boot time to what I can only assume is a small audience
+> >> of firmware developers who find "cat
+> >> /sys/firmware/devicetree/base/iommu*/compatible" (or the ACPI
+> >> equivalent) too hard ;)
+> > 
+> > Reading firmware data is not really a solution as you don't know what
+> > the driver is doing with it. The actual background of this patch is to
+> > be sure a certain workaround was enabled in the kernel. ARM's cpu
+> > errata framework does this nicely. In case of smmus we just have the
+> > internal model implementation type which is not visible in the logs.
+> > Right now, there is no way to figure that out without knowing fw
+> > specifics and kernel sources.
 > 
-> On Wed, Mar 8, 2017 at 9:48 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->> On 07/03/17 03:17, Magnus Damm wrote:
->>> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
->>>
->>> Not all architectures have an iommu member in their archdata, so
->>> use #ifdefs support build with COMPILE_TEST on any architecture.
->>
->> I have a feeling I might be repeating myself, but ipmmu_vmsa_archdata
->> looks to be trivially convertible to iommu_fwspec, which I strongly
->> encourage, not least because it would obviate bodges like this.
+> Ah, now it starts to become clear. In that case, if we want to confirm
+> the presence of specific workarounds, we should actually _confirm the
+> presence of specific workarounds_. I'd have no complaint with e.g. this:
 > 
-> Yeah, I think it should be possible to use iommu_fwspec for this
-> purpose. The question is when to do it. =)
-
-I'd actually be inclined to do it *before* any other major changes, as
-it would be pretty minimal given the current structure of the driver.
-But then I'm free to wilfully ignore the burden of maintaining patch
-stacks between both mainline and older trees ;)
-
-> I actually looked into it recently, but then realised that for this to
-> work then due to code sharing I need to make use of iommu_fwspec on
-> both 32-bit and 64-bit ARM. So it requires rework of the existing
-> IPMMU for 32-bit ARM (including hairy legacy CONFIG_IOMMU_DMA=n code).
-> I was actually thinking of doing some rework of 32-bit ARM IPMMU code
-> anyway (I suspect iommu_device_* conversion caused breakage) and it
-> probably has to happen on top of current -next. I would also like to
-> start reducing burden of forward porting all these patches, and
-> stirring up the ground does not really help much there...
-
-Note that iommu_fwspec can be used pretty much orthogonally to any of
-the core DMA ops support, so it shouldn't be as invasive as you might
-think. See 84672f192671 ("iommu/mediatek: Convert M4Uv1 to
-iommu_fwspec") as an example of an archdata-to-fwspec conversion of a
-driver which only supports 32-bit ARM, and notably borrows its master
-handling directly from the the IPMMU driver.
-
-Robin.
-
+> -----8<-----
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index f7411109670f..9e50a092632c 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1934,6 +1934,8 @@ static int arm_smmu_device_cfg_probe(struct
+> arm_smmu_device *smmu)
+>                         atomic_add_return(smmu->num_context_banks,
+>                                           &cavium_smmu_context_count);
+>                 smmu->cavium_id_base -= smmu->num_context_banks;
+> +               dev_notice(smmu->dev, "\tusing ASID/VMID offset %u\n",
+> +                          smmu->cavium_id_base);
+>         }
 > 
-> Cheers,
+>         /* ID2 */
+> ----->8-----
 > 
-> / magnus
-> 
+> and the equivalent for other things, if need be. If you just print "hey,
+> this is SMMU-x", the user is in fact no better off, since they would
+> then still have to go and look at the source for whatever kernel they're
+> running to find out which particular workarounds for SMMU-x bugs that
+> particular kernel implements.
+
+I don't understand why you don't want to expose in some way the smmu
+type. There are a lot of things that can go wrong, esp. with firmware,
+to detect the proper smmu type.
+
+The above change is not a general solution too for reporting the
+enablement of smmu errata workarounds. The check could be done
+multiple times and in the fast path. For the particular problem the
+above would work, but still some message on the type detected would be
+fine. I could rework my patch in a way that .name is not permanently
+stored in struct arm_smmu_device.
+
+-Robert
