@@ -1,16 +1,15 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v3 01/09] iommu/ipmmu-vmsa: Introduce features,
-	break out alias
-Date: Thu, 9 Mar 2017 13:01:59 +0900
-Message-ID: <CANqRtoR6VVJGuYZaQVqpE+=83Sjyp5=8BKKr3tDcVc_gS0dYxw@mail.gmail.com>
+Subject: Re: [PATCH v3 03/09] iommu/ipmmu-vmsa: Enable multi context support
+Date: Thu, 9 Mar 2017 13:16:05 +0900
+Message-ID: <CANqRtoQ37DhHkV=k-b09_cvyiXMwaqFhATa=vOpU4mhHvuYdPA@mail.gmail.com>
 References: <148897088333.16106.13237004440297956899.sendpatchset@little-apple>
-	<148897089355.16106.305846051553789544.sendpatchset@little-apple>
-	<fe78313c-5cb8-d6d3-428e-deff2851d938@arm.com>
+	<148897091345.16106.2935423334300744039.sendpatchset@little-apple>
+	<bdf40dff-c958-b749-1149-f9417c84466a@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <fe78313c-5cb8-d6d3-428e-deff2851d938-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <bdf40dff-c958-b749-1149-f9417c84466a-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -26,95 +25,118 @@ List-Id: iommu@lists.linux-foundation.org
 
 Hi Robin,
 
-On Wed, Mar 8, 2017 at 8:53 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> Hi Magnus,
->
+Thanks for your feedback!
+
+On Wed, Mar 8, 2017 at 9:21 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
 > On 08/03/17 11:01, Magnus Damm wrote:
 >> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 >>
->> Introduce struct ipmmu_features to track various hardware
->> and software implementation changes inside the driver for
->> different kinds of IPMMU hardware. Add use_ns_alias_offset
->> as a first example of a feature to control if the secure
->> register bank offset should be used or not.
+>> Add support for up to 8 contexts. Each context is mapped to one
+>> domain. One domain is assigned one or more slave devices. Contexts
+>> are allocated dynamically and slave devices are grouped together
+>> based on which IPMMU device they are connected to. This makes slave
+>> devices tied to the same IPMMU device share the same IOVA space.
 >>
 >> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 >> ---
 >>
 >>  Changes since V2:
->>  - None
+>>  - Updated patch description to reflect code included in:
+>>    [PATCH v7 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V7
 >>
 >>  Changes since V1:
->>  - Moved patch to front of the series
+>>  - Support up to 8 contexts instead of 4
+>>  - Use feature flag and runtime handling
+>>  - Default to single context
 >>
->>  drivers/iommu/ipmmu-vmsa.c |   35 ++++++++++++++++++++++++++++-------
->>  1 file changed, 28 insertions(+), 7 deletions(-)
+>>  drivers/iommu/ipmmu-vmsa.c |   38 ++++++++++++++++++++++++++++++--------
+>>  1 file changed, 30 insertions(+), 8 deletions(-)
 >>
->> --- 0007/drivers/iommu/ipmmu-vmsa.c
->> +++ work/drivers/iommu/ipmmu-vmsa.c   2017-03-07 12:25:47.000000000 +0900
->> @@ -32,11 +32,15 @@
+>> --- 0012/drivers/iommu/ipmmu-vmsa.c
+>> +++ work/drivers/iommu/ipmmu-vmsa.c   2017-03-08 17:59:19.900607110 +0900
+>> @@ -30,11 +30,12 @@
 >>
->>  #define IPMMU_CTX_MAX 1
+>>  #include "io-pgtable.h"
 >>
->> +struct ipmmu_features {
->> +     bool use_ns_alias_offset;
->> +};
->> +
+>> -#define IPMMU_CTX_MAX 1
+>> +#define IPMMU_CTX_MAX 8
+>>
+>>  struct ipmmu_features {
+>>       bool use_ns_alias_offset;
+>>       bool has_cache_leaf_nodes;
+>> +     bool has_eight_ctx;
+>
+> Wouldn't it be more sensible to just encode a number of contexts
+> directly, if it isn't reported by the hardware itself? I'm just
+> imagining future hardware generations... :P
+>
+> bool also_has_another_eight_ctx_on_top_of_that;
+> bool wait_no_this_is_the_one_where_ctx_15_isnt_usable;
+
+=)
+
+Sure, I agree with you!
+
+Please note that this is currently a mix of software and hardware
+policy. On R-Car Gen2 (ARM32) the legacy code only uses a single
+context for now but 4 contexts are supported by hardware according to
+the data sheet. The remaining 3 contexts are untested at this point.
+For R-Car Gen3 (ARM64) the hardware supports 8 contexts and this patch
+enables all of them.
+
+>>  };
+>>
 >>  struct ipmmu_vmsa_device {
->>       struct device *dev;
->>       void __iomem *base;
->>       struct list_head list;
->> -
->> +     const struct ipmmu_features *features;
+>> @@ -44,6 +45,7 @@ struct ipmmu_vmsa_device {
+>>       const struct ipmmu_features *features;
+>>       bool is_leaf;
 >>       unsigned int num_utlbs;
+>> +     unsigned int num_ctx;
 >>       spinlock_t lock;                        /* Protects ctx and domains[] */
 >>       DECLARE_BITMAP(ctx, IPMMU_CTX_MAX);
->> @@ -999,13 +1003,33 @@ static void ipmmu_device_reset(struct ip
->>               ipmmu_write(mmu, i * IM_CTX_SIZE + IMCTR, 0);
->>  }
+>>       struct ipmmu_vmsa_domain *domains[IPMMU_CTX_MAX];
+>> @@ -376,11 +378,12 @@ static int ipmmu_domain_allocate_context
 >>
->> +static const struct ipmmu_features ipmmu_features_default = {
->> +     .use_ns_alias_offset = true,
->> +};
->> +
->> +static const struct of_device_id ipmmu_of_ids[] = {
->> +     {
->> +             .compatible = "renesas,ipmmu-vmsa",
->> +             .data = &ipmmu_features_default,
->> +     }, {
->> +             /* Terminator */
->> +     },
->> +};
->> +
->> +MODULE_DEVICE_TABLE(of, ipmmu_of_ids);
->> +
->>  static int ipmmu_probe(struct platform_device *pdev)
->>  {
->>       struct ipmmu_vmsa_device *mmu;
->> +     const struct of_device_id *match;
->>       struct resource *res;
->>       int irq;
->>       int ret;
+>>       spin_lock_irqsave(&mmu->lock, flags);
 >>
->> +     match = of_match_node(ipmmu_of_ids, pdev->dev.of_node);
+>> -     ret = find_first_zero_bit(mmu->ctx, IPMMU_CTX_MAX);
+>> -     if (ret != IPMMU_CTX_MAX) {
+>> +     ret = find_first_zero_bit(mmu->ctx, mmu->num_ctx);
+>> +     if (ret != mmu->num_ctx) {
+>>               mmu->domains[ret] = domain;
+>>               set_bit(ret, mmu->ctx);
 >
-> of_device_get_match_data() makes this a lot easier.
+> Using test_and_set_bit() in a loop would avoid having to take a lock here.
+
+So you mean that in case of test_and_set_bit() returns 1 then we try
+find_first_zero_bit() again?
+
+This is not really a performance sensitive part of the driver, so I'm
+currently optimizing for code readability. I'm of course all for
+dropping the lock, but I have a hard time figuring out how your
+suggestion could result in semi-readable code. Any pointers? =)
+
+>> @@ -1112,6 +1123,17 @@ static int ipmmu_probe(struct platform_d
+>>       if (mmu->features->use_ns_alias_offset)
+>>               mmu->base += IM_NS_ALIAS_OFFSET;
+>>
+>> +     /*
+>> +      * The number of contexts varies with generation and instance.
+>> +      * Newer SoCs get a total of 8 contexts enabled, older ones just one.
+>> +      */
+>> +     if (mmu->features->has_eight_ctx)
+>> +             mmu->num_ctx = 8;
+>> +     else
+>> +             mmu->num_ctx = 1;
+>> +
+>> +     WARN_ON(mmu->num_ctx > IPMMU_CTX_MAX);
 >
->> +     if (!match)
->> +             return -EINVAL;
->
-> Also, if the driver is DT-only per the other series, note that this
-> cannot happen anyway, since of_driver_match_device() would have to have
-> found a match for your probe function to be called in the first place.
+> The likelihood of that happening doesn't appear to warrant a runtime
+> check. Especially one which probably isn't even generated because it's
+> trivially resolvable to "if (false)..." at compile time.
 
-Yeah, you are right. As you know, in the IPMMU driver (with the
-r8a7795 V3 series applied) the init handling is a bit special with
-ARM32 and ARM64 being treated differently. I would like to clean it up
-and share a common implementation.
+Sure, I agree. Will drop.
 
-Until that happens, how do you think we should handle the (!match)
-case? BUG_ON()?
-
-Cheers,
+Thanks,
 
 / magnus
