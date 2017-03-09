@@ -1,15 +1,15 @@
 From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v7 06/07] iommu/ipmmu-vmsa: ARM and ARM64 archdata access
-Date: Thu, 9 Mar 2017 12:44:27 +0900
-Message-ID: <CANqRtoSE3nE5d9tGWwbowDkFAbXSQRBzjtBoACmR0BwQB5SK-Q@mail.gmail.com>
-References: <148885660307.28553.995847796823338863.sendpatchset@little-apple>
-	<148885666392.28553.6653211200015255398.sendpatchset@little-apple>
-	<d7db1ada-863a-ab92-7936-47d0306eaa8f@arm.com>
+Subject: Re: [PATCH v3 04/09] iommu/ipmmu-vmsa: Make use of IOMMU_OF_DECLARE()
+Date: Thu, 9 Mar 2017 12:55:02 +0900
+Message-ID: <CANqRtoQsf4i8URyAYP3Rv-io8WJi_tGMOPvwfbFf4NhoZnwF=g@mail.gmail.com>
+References: <148897088333.16106.13237004440297956899.sendpatchset@little-apple>
+	<148897092335.16106.10892669490439039957.sendpatchset@little-apple>
+	<CAMuHMdVrNMY41k2arM_sZc3cWh+Ac0anRzRLuk8B3PDi8v+i2g@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <d7db1ada-863a-ab92-7936-47d0306eaa8f-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <CAMuHMdVrNMY41k2arM_sZc3cWh+Ac0anRzRLuk8B3PDi8v+i2g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,35 +19,44 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+Hi Geert,
 
-On Wed, Mar 8, 2017 at 9:48 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On 07/03/17 03:17, Magnus Damm wrote:
+On Wed, Mar 8, 2017 at 10:52 PM, Geert Uytterhoeven
+<geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org> wrote:
+> Hi Magnus,
+>
+> On Wed, Mar 8, 2017 at 12:02 PM, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
 >> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 >>
->> Not all architectures have an iommu member in their archdata, so
->> use #ifdefs support build with COMPILE_TEST on any architecture.
+>> Hook up IOMMU_OF_DECLARE() support in case CONFIG_IOMMU_DMA
+>> is enabled. The only current supported case for 32-bit ARM
+>> is disabled, however for 64-bit ARM usage of OF is required.
+>>
+>> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org
 >
-> I have a feeling I might be repeating myself, but ipmmu_vmsa_archdata
-> looks to be trivially convertible to iommu_fwspec, which I strongly
-> encourage, not least because it would obviate bodges like this.
+> While I'm not such a big fan of *_OF_DECLARE() (it doesn't support deferred
+> probing, which is needed for any device with dependencies, like clocks and
+> power domains), what's the rationale for not using IOMMU_OF_DECLARE()
+> on arm32, and thus the need for setup_done?
 
-Yeah, I think it should be possible to use iommu_fwspec for this
-purpose. The question is when to do it. =)
+ARM32 could (and should) be converted over to IOMMU_OF_DECLARE(), but
+it is just a matter of timing. If we try to do it before ARM32 is
+converted over to CONFIG_IOMMU_DMA=y then we have to handle all the
+hairy legacy implementation details of IOMMU support in case of
+CONFIG_IOMMU_DMA=n _and_ deal with just moving over the init order
+bits to OF. Testing and keeping all the combinations working is a lot
+of work.
 
-I actually looked into it recently, but then realised that for this to
-work then due to code sharing I need to make use of iommu_fwspec on
-both 32-bit and 64-bit ARM. So it requires rework of the existing
-IPMMU for 32-bit ARM (including hairy legacy CONFIG_IOMMU_DMA=n code).
-I was actually thinking of doing some rework of 32-bit ARM IPMMU code
-anyway (I suspect iommu_device_* conversion caused breakage) and it
-probably has to happen on top of current -next. I would also like to
-start reducing burden of forward porting all these patches, and
-stirring up the ground does not really help much there...
+I prefer to kill two birds with one stone and do a larger feature jump
+and move over ARM32 to same state of ARM64 (with OF init) once
+CONFIG_IOMMU_DMA=y is ready for 32-bit ARM. Just changing the init
+order bits to OF while keeping legacy CONFIG_IOMMU_DMA=n code is
+introducing potential errors with not much upside. Unless there is
+some other reason to do it that I can't see that is. =)
 
 Cheers,
 
