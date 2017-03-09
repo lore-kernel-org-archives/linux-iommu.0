@@ -1,77 +1,150 @@
-From: Sricharan R <sricharan@codeaurora.org>
-Subject: [PATCH V9 11/11] ACPI/IORT: Remove linker section for IORT entries probing
-Date: Fri, 10 Mar 2017 00:31:01 +0530
-Message-ID: <1489086061-9356-12-git-send-email-sricharan@codeaurora.org>
-References: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, tn@semihalf.com, hanjun.guo@linaro.org, okaya@codeaurora.org
-Cc: sricharan@codeaurora.org
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH 1/3] iommu: Disambiguate MSI region types
+Date: Thu,  9 Mar 2017 19:50:36 +0000
+Message-ID: <1b012c7e82ccef1a34be38d81e82e74f129dfedc.1489088954.git.robin.murphy@arm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Whilst it doesn't matter much to VFIO at the moment, when parsing
+reserved regions on the host side we really needs to be able to tell
+the difference between the software-reserved region used to map MSIs
+translated by an IOMMU, and hardware regions for which the write might
+never even reach the IOMMU. In particular, ARM systems assume the former
+topology, but may need to cope with the latter as well, which will
+require rather different handling in the iommu-dma layer.
 
-The IORT linker section introduced by commit 34ceea275f62
-("ACPI/IORT: Introduce linker section for IORT entries probing")
-was needed to make sure SMMU drivers are registered (and therefore
-probed) in the kernel before devices using the SMMU have a chance
-to probe in turn.
+For clarity, rename the software-managed type to IOMMU_RESV_SW_MSI, use
+IOMMU_RESV_MSI to describe the hardware type, and document everything a
+little bit. Since the x86 MSI remapping hardware falls squarely under
+this meaning of IOMMU_RESV_MSI, apply that type to their regions as well,
+so that we tell a consistent story to userspace across platforms (and
+have future consistency if those drivers start migrating to iommu-dma).
 
-Through the introduction of deferred IOMMU configuration the linker
-section based IORT probing infrastructure is not needed any longer, in
-that device/SMMU probe dependencies are managed through the probe
-deferral mechanism, making the IORT linker section infrastructure
-unused, so that it can be removed.
-
-Remove the unused IORT linker section probing infrastructure
-from the kernel to complete the ACPI IORT IOMMU configure probe
-deferral mechanism implementation.
-
-Tested-by: Hanjun Guo <hanjun.guo@linaro.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Sricharan R <sricharan@codeaurora.org>
+Fixes: d30ddcaa7b02 ("iommu: Add a new type field in iommu_resv_region")
+CC: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+CC: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+CC: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+CC: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
- drivers/acpi/arm64/iort.c         | 2 --
- include/asm-generic/vmlinux.lds.h | 1 -
- include/linux/acpi_iort.h         | 3 ---
- 3 files changed, 6 deletions(-)
+ drivers/iommu/amd_iommu.c       | 2 +-
+ drivers/iommu/arm-smmu-v3.c     | 2 +-
+ drivers/iommu/arm-smmu.c        | 2 +-
+ drivers/iommu/intel-iommu.c     | 2 +-
+ drivers/iommu/iommu.c           | 1 +
+ drivers/vfio/vfio_iommu_type1.c | 2 +-
+ include/linux/iommu.h           | 5 +++++
+ 7 files changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index a1000fb..36a9abf 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -992,6 +992,4 @@ void __init acpi_iort_init(void)
- 	}
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 98940d1392cb..b17536d6e69b 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -3202,7 +3202,7 @@ static void amd_iommu_get_resv_regions(struct device *dev,
  
- 	iort_init_platform_devices();
--
--	acpi_probe_device_table(iort);
- }
-diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-index 0968d13..9faa26c 100644
---- a/include/asm-generic/vmlinux.lds.h
-+++ b/include/asm-generic/vmlinux.lds.h
-@@ -566,7 +566,6 @@
- 	IRQCHIP_OF_MATCH_TABLE()					\
- 	ACPI_PROBE_TABLE(irqchip)					\
- 	ACPI_PROBE_TABLE(clksrc)					\
--	ACPI_PROBE_TABLE(iort)						\
- 	EARLYCON_TABLE()
+ 	region = iommu_alloc_resv_region(MSI_RANGE_START,
+ 					 MSI_RANGE_END - MSI_RANGE_START + 1,
+-					 0, IOMMU_RESV_RESERVED);
++					 0, IOMMU_RESV_MSI);
+ 	if (!region)
+ 		return;
+ 	list_add_tail(&region->list, head);
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 5806a6acc94e..591bb96047c9 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1888,7 +1888,7 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
  
- #define INIT_TEXT							\
-diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-index 77e0809..f167e1d04 100644
---- a/include/linux/acpi_iort.h
-+++ b/include/linux/acpi_iort.h
-@@ -52,7 +52,4 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
- { return NULL; }
- #endif
+ 	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+-					 prot, IOMMU_RESV_MSI);
++					 prot, IOMMU_RESV_SW_MSI);
+ 	if (!region)
+ 		return;
  
--#define IORT_ACPI_DECLARE(name, table_id, fn)		\
--	ACPI_DECLARE_PROBE_ENTRY(iort, name, table_id, 0, NULL, 0, fn)
--
- #endif /* __ACPI_IORT_H__ */
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index abf6496843a6..b493c99e17f7 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1608,7 +1608,7 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+ 
+ 	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+-					 prot, IOMMU_RESV_MSI);
++					 prot, IOMMU_RESV_SW_MSI);
+ 	if (!region)
+ 		return;
+ 
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 238ad3447712..f1611fd6f5b0 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5249,7 +5249,7 @@ static void intel_iommu_get_resv_regions(struct device *device,
+ 
+ 	reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
+ 				      IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
+-				      0, IOMMU_RESV_RESERVED);
++				      0, IOMMU_RESV_MSI);
+ 	if (!reg)
+ 		return;
+ 	list_add_tail(&reg->list, head);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 8ea14f41a979..7dbc05f10d5a 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -72,6 +72,7 @@ static const char * const iommu_group_resv_type_string[] = {
+ 	[IOMMU_RESV_DIRECT]	= "direct",
+ 	[IOMMU_RESV_RESERVED]	= "reserved",
+ 	[IOMMU_RESV_MSI]	= "msi",
++	[IOMMU_RESV_SW_MSI]	= "msi",
+ };
+ 
+ #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index c26fa1f3ed86..e32abdebd2df 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -1192,7 +1192,7 @@ static bool vfio_iommu_has_resv_msi(struct iommu_group *group,
+ 	INIT_LIST_HEAD(&group_resv_regions);
+ 	iommu_get_group_resv_regions(group, &group_resv_regions);
+ 	list_for_each_entry(region, &group_resv_regions, list) {
+-		if (region->type & IOMMU_RESV_MSI) {
++		if (region->type & IOMMU_RESV_SW_MSI) {
+ 			*base = region->start;
+ 			ret = true;
+ 			goto out;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 6a6de187ddc0..fad2c4913be4 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -125,9 +125,14 @@ enum iommu_attr {
+ };
+ 
+ /* These are the possible reserved region types */
++/* Memory regions which must have 1:1 translations present at all times */
+ #define IOMMU_RESV_DIRECT	(1 << 0)
++/* Arbitrary "never map this or give it to a device" address ranges */
+ #define IOMMU_RESV_RESERVED	(1 << 1)
++/* Hardware MSI region (untranslated) */
+ #define IOMMU_RESV_MSI		(1 << 2)
++/* Software-managed MSI translation window */
++#define IOMMU_RESV_SW_MSI	(1 << 3)
+ 
+ /**
+  * struct iommu_resv_region - descriptor for a reserved memory region
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+2.11.0.dirty
