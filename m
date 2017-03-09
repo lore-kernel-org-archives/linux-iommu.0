@@ -1,167 +1,196 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: [PATCH V9 07/11] iommu: of: Handle IOMMU lookup failure with deferred
-	probing or error
-Date: Fri, 10 Mar 2017 00:30:57 +0530
-Message-ID: <1489086061-9356-8-git-send-email-sricharan@codeaurora.org>
+From: Sricharan R <sricharan@codeaurora.org>
+Subject: [PATCH V9 09/11] arm64: dma-mapping: Remove the notifier trick to handle early setting of dma_ops
+Date: Fri, 10 Mar 2017 00:30:59 +0530
+Message-ID: <1489086061-9356-10-git-send-email-sricharan@codeaurora.org>
 References: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1489086061-9356-1-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, tn@semihalf.com, hanjun.guo@linaro.org, okaya@codeaurora.org
+Cc: sricharan@codeaurora.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+With arch_setup_dma_ops now being called late during device's probe after
+the device's iommu is probed, the notifier trick required to handle the
+early setup of dma_ops before the iommu group gets created is not
+required. So removing the notifier's here.
 
-Failures to look up an IOMMU when parsing the DT iommus property need to
-be handled separately from the .of_xlate() failures to support deferred
-probing.
-
-The lack of a registered IOMMU can be caused by the lack of a driver for
-the IOMMU, the IOMMU device probe not having been performed yet, having
-been deferred, or having failed.
-
-The first case occurs when the device tree describes the bus master and
-IOMMU topology correctly but no device driver exists for the IOMMU yet
-or the device driver has not been compiled in. Return NULL, the caller
-will configure the device without an IOMMU.
-
-The second and third cases are handled by deferring the probe of the bus
-master device which will eventually get reprobed after the IOMMU.
-
-The last case is currently handled by deferring the probe of the bus
-master device as well. A mechanism to either configure the bus master
-device without an IOMMU or to fail the bus master device probe depending
-on whether the IOMMU is optional or mandatory would be a good
-enhancement.
-
-Tested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Signed-off-by: Laurent Pichart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
-Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Hanjun Guo <hanjun.guo@linaro.org>
+Acked-by: Will Deacon <will.deacon@arm.com>
+Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+[rm: clean up even more]
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/base/dma-mapping.c | 5 +++--
- drivers/iommu/of_iommu.c   | 4 ++--
- drivers/of/device.c        | 7 ++++++-
- include/linux/of_device.h  | 9 ++++++---
- 4 files changed, 17 insertions(+), 8 deletions(-)
+ arch/arm64/mm/dma-mapping.c | 142 ++++++--------------------------------------
+ 1 file changed, 18 insertions(+), 124 deletions(-)
 
-diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
-index 449b948..82bd45c 100644
---- a/drivers/base/dma-mapping.c
-+++ b/drivers/base/dma-mapping.c
-@@ -353,6 +353,7 @@ int dma_configure(struct device *dev)
- {
- 	struct device *bridge = NULL, *dma_dev = dev;
- 	enum dev_dma_attr attr;
-+	int ret = 0;
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 81cdb2e..b465759 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -813,34 +813,26 @@ static void __iommu_unmap_sg_attrs(struct device *dev,
+ 	.mapping_error = iommu_dma_mapping_error,
+ };
  
- 	if (dev_is_pci(dev)) {
- 		bridge = pci_get_host_bridge_device(to_pci_dev(dev));
-@@ -363,7 +364,7 @@ int dma_configure(struct device *dev)
- 	}
- 
- 	if (dma_dev->of_node) {
--		of_dma_configure(dev, dma_dev->of_node);
-+		ret = of_dma_configure(dev, dma_dev->of_node);
- 	} else if (has_acpi_companion(dma_dev)) {
- 		attr = acpi_get_dma_attr(to_acpi_device_node(dma_dev->fwnode));
- 		if (attr != DEV_DMA_NOT_SUPPORTED)
-@@ -373,7 +374,7 @@ int dma_configure(struct device *dev)
- 	if (bridge)
- 		pci_put_host_bridge_device(bridge);
- 
--	return 0;
-+	return ret;
- }
- 
- void dma_deconfigure(struct device *dev)
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index c8be889..9f44ee8 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -236,7 +236,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 			ops = ERR_PTR(err);
- 	}
- 
--	return IS_ERR(ops) ? NULL : ops;
-+	return ops;
- }
- 
- static int __init of_iommu_init(void)
-@@ -247,7 +247,7 @@ static int __init of_iommu_init(void)
- 	for_each_matching_node_and_match(np, matches, &match) {
- 		const of_iommu_init_fn init_fn = match->data;
- 
--		if (init_fn(np))
-+		if (init_fn && init_fn(np))
- 			pr_err("Failed to initialise IOMMU %s\n",
- 				of_node_full_name(np));
- 	}
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index c17c19d..ba51ca6 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -82,7 +82,7 @@ int of_device_add(struct platform_device *ofdev)
-  * can use a platform bus notifier and handle BUS_NOTIFY_ADD_DEVICE events
-  * to fix up DMA configuration.
-  */
--void of_dma_configure(struct device *dev, struct device_node *np)
-+int of_dma_configure(struct device *dev, struct device_node *np)
- {
- 	u64 dma_addr, paddr, size;
- 	int ret;
-@@ -129,10 +129,15 @@ void of_dma_configure(struct device *dev, struct device_node *np)
- 		coherent ? " " : " not ");
- 
- 	iommu = of_iommu_configure(dev, np);
-+	if (IS_ERR(iommu))
-+		return PTR_ERR(iommu);
-+
- 	dev_dbg(dev, "device is%sbehind an iommu\n",
- 		iommu ? " " : " not ");
- 
- 	arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
-+
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(of_dma_configure);
- 
-diff --git a/include/linux/of_device.h b/include/linux/of_device.h
-index af98455..2cacdd8 100644
---- a/include/linux/of_device.h
-+++ b/include/linux/of_device.h
-@@ -55,7 +55,7 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
- 	return of_node_get(cpu_dev->of_node);
- }
- 
--void of_dma_configure(struct device *dev, struct device_node *np);
-+int of_dma_configure(struct device *dev, struct device_node *np);
- void of_dma_deconfigure(struct device *dev);
- #else /* CONFIG_OF */
- 
-@@ -104,8 +104,11 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
- {
- 	return NULL;
- }
--static inline void of_dma_configure(struct device *dev, struct device_node *np)
--{}
-+
-+static inline int of_dma_configure(struct device *dev, struct device_node *np)
+-/*
+- * TODO: Right now __iommu_setup_dma_ops() gets called too early to do
+- * everything it needs to - the device is only partially created and the
+- * IOMMU driver hasn't seen it yet, so it can't have a group. Thus we
+- * need this delayed attachment dance. Once IOMMU probe ordering is sorted
+- * to move the arch_setup_dma_ops() call later, all the notifier bits below
+- * become unnecessary, and will go away.
+- */
+-struct iommu_dma_notifier_data {
+-	struct list_head list;
+-	struct device *dev;
+-	const struct iommu_ops *ops;
+-	u64 dma_base;
+-	u64 size;
+-};
+-static LIST_HEAD(iommu_dma_masters);
+-static DEFINE_MUTEX(iommu_dma_notifier_lock);
++static int __init __iommu_dma_init(void)
 +{
-+	return 0;
++	return iommu_dma_init();
 +}
- static inline void of_dma_deconfigure(struct device *dev)
- {}
- #endif /* CONFIG_OF */
++arch_initcall(__iommu_dma_init);
+ 
+-static bool do_iommu_attach(struct device *dev, const struct iommu_ops *ops,
+-			   u64 dma_base, u64 size)
++static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
++				  const struct iommu_ops *ops)
+ {
+-	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	struct iommu_domain *domain;
++
++	if (!ops)
++		return;
+ 
+ 	/*
+-	 * If the IOMMU driver has the DMA domain support that we require,
+-	 * then the IOMMU core will have already configured a group for this
+-	 * device, and allocated the default domain for that group.
++	 * The IOMMU core code allocates the default DMA domain, which the
++	 * underlying IOMMU driver needs to support via the dma-iommu layer.
+ 	 */
++	domain = iommu_get_domain_for_dev(dev);
++
+ 	if (!domain)
+ 		goto out_err;
+ 
+@@ -851,109 +843,11 @@ static bool do_iommu_attach(struct device *dev, const struct iommu_ops *ops,
+ 		dev->dma_ops = &iommu_dma_ops;
+ 	}
+ 
+-	return true;
++	return;
++
+ out_err:
+-	pr_warn("Failed to set up IOMMU for device %s; retaining platform DMA ops\n",
++	 pr_warn("Failed to set up IOMMU for device %s; retaining platform DMA ops\n",
+ 		 dev_name(dev));
+-	return false;
+-}
+-
+-static void queue_iommu_attach(struct device *dev, const struct iommu_ops *ops,
+-			      u64 dma_base, u64 size)
+-{
+-	struct iommu_dma_notifier_data *iommudata;
+-
+-	iommudata = kzalloc(sizeof(*iommudata), GFP_KERNEL);
+-	if (!iommudata)
+-		return;
+-
+-	iommudata->dev = dev;
+-	iommudata->ops = ops;
+-	iommudata->dma_base = dma_base;
+-	iommudata->size = size;
+-
+-	mutex_lock(&iommu_dma_notifier_lock);
+-	list_add(&iommudata->list, &iommu_dma_masters);
+-	mutex_unlock(&iommu_dma_notifier_lock);
+-}
+-
+-static int __iommu_attach_notifier(struct notifier_block *nb,
+-				   unsigned long action, void *data)
+-{
+-	struct iommu_dma_notifier_data *master, *tmp;
+-
+-	if (action != BUS_NOTIFY_BIND_DRIVER)
+-		return 0;
+-
+-	mutex_lock(&iommu_dma_notifier_lock);
+-	list_for_each_entry_safe(master, tmp, &iommu_dma_masters, list) {
+-		if (data == master->dev && do_iommu_attach(master->dev,
+-				master->ops, master->dma_base, master->size)) {
+-			list_del(&master->list);
+-			kfree(master);
+-			break;
+-		}
+-	}
+-	mutex_unlock(&iommu_dma_notifier_lock);
+-	return 0;
+-}
+-
+-static int __init register_iommu_dma_ops_notifier(struct bus_type *bus)
+-{
+-	struct notifier_block *nb = kzalloc(sizeof(*nb), GFP_KERNEL);
+-	int ret;
+-
+-	if (!nb)
+-		return -ENOMEM;
+-
+-	nb->notifier_call = __iommu_attach_notifier;
+-
+-	ret = bus_register_notifier(bus, nb);
+-	if (ret) {
+-		pr_warn("Failed to register DMA domain notifier; IOMMU DMA ops unavailable on bus '%s'\n",
+-			bus->name);
+-		kfree(nb);
+-	}
+-	return ret;
+-}
+-
+-static int __init __iommu_dma_init(void)
+-{
+-	int ret;
+-
+-	ret = iommu_dma_init();
+-	if (!ret)
+-		ret = register_iommu_dma_ops_notifier(&platform_bus_type);
+-	if (!ret)
+-		ret = register_iommu_dma_ops_notifier(&amba_bustype);
+-#ifdef CONFIG_PCI
+-	if (!ret)
+-		ret = register_iommu_dma_ops_notifier(&pci_bus_type);
+-#endif
+-	return ret;
+-}
+-arch_initcall(__iommu_dma_init);
+-
+-static void __iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+-				  const struct iommu_ops *ops)
+-{
+-	struct iommu_group *group;
+-
+-	if (!ops)
+-		return;
+-	/*
+-	 * TODO: As a concession to the future, we're ready to handle being
+-	 * called both early and late (i.e. after bus_add_device). Once all
+-	 * the platform bus code is reworked to call us late and the notifier
+-	 * junk above goes away, move the body of do_iommu_attach here.
+-	 */
+-	group = iommu_group_get(dev);
+-	if (group) {
+-		do_iommu_attach(dev, ops, dma_base, size);
+-		iommu_group_put(group);
+-	} else {
+-		queue_iommu_attach(dev, ops, dma_base, size);
+-	}
+ }
+ 
+ void arch_teardown_dma_ops(struct device *dev)
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
