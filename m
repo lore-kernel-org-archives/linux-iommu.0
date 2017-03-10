@@ -1,14 +1,14 @@
 From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: [PATCH 4.9 039/153] iommu/vt-d: Fix some macros that are incorrectly
+Subject: [PATCH 4.10 042/167] iommu/vt-d: Fix some macros that are incorrectly
 	specified in intel-iommu
-Date: Fri, 10 Mar 2017 10:07:52 +0100
-Message-ID: <20170310083949.466048906@linuxfoundation.org>
-References: <20170310083947.108106897@linuxfoundation.org>
+Date: Fri, 10 Mar 2017 10:08:05 +0100
+Message-ID: <20170310083959.769323081@linuxfoundation.org>
+References: <20170310083956.767605269@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170310083947.108106897-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+In-Reply-To: <20170310083956.767605269-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,7 +22,7 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <joro-zLv
 Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-4.9-stable review patch.  If anyone has any objections, please let me know.
+4.10-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
