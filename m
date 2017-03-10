@@ -1,14 +1,11 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 3/5] iommu/arm-smmu-v3: Make arm_smmu_install_ste_for_dev
-	return void
-Date: Fri, 10 Mar 2017 20:49:34 +0000
-Message-ID: <1489178976-15353-4-git-send-email-will.deacon@arm.com>
-References: <1489178976-15353-1-git-send-email-will.deacon@arm.com>
+Subject: [PATCH v2 0/5] Implement SMMU passthrough using the default domain
+Date: Fri, 10 Mar 2017 20:49:31 +0000
+Message-ID: <1489178976-15353-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1489178976-15353-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,62 +19,35 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-arm_smmu_install_ste_for_dev cannot fail and always returns 0, however
-the fact that it returns int means that callers end up implementing
-redundant error handling code which complicates STE tracking and is
-never executed.
+Hi all,
 
-This patch changes the return type of arm_smmu_install_ste_for_dev
-to avoid, to make it explicit that it cannot fail.
+This is version two of the patches previously posted here:
 
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+  http://lists.infradead.org/pipermail/linux-arm-kernel/2017-January/481275.html
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 3d38e682071a..e18dbcd26f66 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1579,7 +1579,7 @@ static __le64 *arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid)
- 	return step;
- }
- 
--static int arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
-+static void arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
- {
- 	int i;
- 	struct arm_smmu_master_data *master = fwspec->iommu_priv;
-@@ -1591,8 +1591,6 @@ static int arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
- 
- 		arm_smmu_write_strtab_ent(smmu, sid, step, &master->ste);
- 	}
--
--	return 0;
- }
- 
- static void arm_smmu_detach_dev(struct device *dev)
-@@ -1600,8 +1598,7 @@ static void arm_smmu_detach_dev(struct device *dev)
- 	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
- 
- 	master->ste.bypass = true;
--	if (arm_smmu_install_ste_for_dev(dev->iommu_fwspec) < 0)
--		dev_warn(dev, "failed to install bypass STE\n");
-+	arm_smmu_install_ste_for_dev(dev->iommu_fwspec);
- }
- 
- static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
-@@ -1653,10 +1650,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		ste->s2_cfg = &smmu_domain->s2_cfg;
- 	}
- 
--	ret = arm_smmu_install_ste_for_dev(dev->iommu_fwspec);
--	if (ret < 0)
--		ste->valid = false;
--
-+	arm_smmu_install_ste_for_dev(dev->iommu_fwspec);
- out_unlock:
- 	mutex_unlock(&smmu_domain->init_mutex);
- 	return ret;
+I've addressed the review feedback I receive there, but the main change
+is that the SMMUv3 driver now handles passthrough domains independently
+of the disable_bypass parameter.
+
+All feedback welcome,
+
+Will
+
+--->8
+
+Will Deacon (5):
+  iommu/arm-smmu: Restrict domain attributes to UNMANAGED domains
+  iommu/arm-smmu: Install bypass S2CRs for IOMMU_DOMAIN_IDENTITY domains
+  iommu/arm-smmu-v3: Make arm_smmu_install_ste_for_dev return void
+  iommu/arm-smmu-v3: Install bypass STEs for IOMMU_DOMAIN_IDENTITY
+    domains
+  iommu: Allow default domain type to be set on the kernel command line
+
+ Documentation/admin-guide/kernel-parameters.txt |  6 ++
+ drivers/iommu/arm-smmu-v3.c                     | 76 +++++++++++++++----------
+ drivers/iommu/arm-smmu.c                        | 26 ++++++++-
+ drivers/iommu/iommu.c                           | 17 +++++-
+ 4 files changed, 90 insertions(+), 35 deletions(-)
+
 -- 
 2.1.4
