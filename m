@@ -1,69 +1,59 @@
-From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: [PATCH 4.10 043/167] iommu/vt-d: Tylersburg isoch identity map check
-	is done too late.
-Date: Fri, 10 Mar 2017 10:08:06 +0100
-Message-ID: <20170310083959.809777595@linuxfoundation.org>
-References: <20170310083956.767605269@linuxfoundation.org>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: Partial BAR Address Allocation
+Date: Fri, 10 Mar 2017 14:14:52 -0600
+Message-ID: <20170310201452.GH19517@bhelgaas-glaptop.roam.corp.google.com>
+References: <35c6bec9-58e8-a1f7-5a85-d80c23480d32@codeaurora.org>
+ <20170222184440.GA2132@bhelgaas-glaptop.roam.corp.google.com>
+ <43c1ff36-fc50-8ea4-02fe-7b1d573a1efd@codeaurora.org>
+ <20170222233944.GB4359@bhelgaas-glaptop.roam.corp.google.com>
+ <20170306110439.GC27724@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170310083956.767605269-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Yunhong Jiang <yunhong.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170306110439.GC27724@8bytes.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Sinan Kaya <okaya@codeaurora.org>, Linux PCI <linux-pci@vger.kernel.org>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-4.10-stable review patch.  If anyone has any objections, please let me know.
+On Mon, Mar 06, 2017 at 12:04:39PM +0100, Joerg Roedel wrote:
+> On Wed, Feb 22, 2017 at 05:39:44PM -0600, Bjorn Helgaas wrote:
+> > [+cc Joerg, iommu list]
+> > 
+> > On Wed, Feb 22, 2017 at 03:44:53PM -0500, Sinan Kaya wrote:
+> > > On 2/22/2017 1:44 PM, Bjorn Helgaas wrote:
+> > > > There is no way for a driver to say "I only need this memory BAR and
+> > > > not the other ones."  The reason is because the PCI_COMMAND_MEMORY bit
+> > > > enables *all* the memory BARs; there's no way to enable memory BARs
+> > > > selectively.  If we enable memory BARs and one of them is unassigned,
+> > > > that unassigned BAR is enabled, and the device will respond at
+> > > > whatever address the register happens to contain, and that may cause
+> > > > conflicts.
+> 
+> Hmm, maybe I am missing something, but isn't this only a problem if the
+> 'unassigned' BAR as an address configured that also falls into the
+> Bridge-Window of the parent bridge? Otherwise no requests should be
+> routed to the BAR anyway, right?
 
-------------------
+I guess it's true that we could safely enable a memory BAR if the
+upstream bridge would never route anything to it.
 
-From: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+But it would depend on the size of the BAR and the upstream bridge's
+configuration, so it doesn't feel like it would really be reliable in
+general.
 
-commit 21e722c4c8377b5bc82ad058fed12165af739c1b upstream.
+> > But if there *is* address translation in the PIO direction, we can
+> > have conflicts because the bridge can translate CPU-side PIO accesses
+> > to arbitrary PCI bus addresses.
+> 
+> I am not aware of any hardware that does translation on the PIO space.
+> The IOMMUs I know of don't care about PIO at all.
 
-The check to set identity map for tylersburg is done too late. It needs
-to be done before the check for identity_map domain is done.
+Right, address translation in the PIO direction would be done by the
+host bridge, not the IOMMU.  There are a fair number of bridges that
+do this -- basically all the callers of pci_add_resource_offset().
+They just apply a constant offset, often by chopping off some
+high-order bits of the CPU address.
 
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-
-Fixes: 86080ccc22 ("iommu/vt-d: Allocate si_domain in init_dmars()")
-Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Reported-by: Yunhong Jiang <yunhong.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-
----
- drivers/iommu/intel-iommu.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3325,13 +3325,14 @@ static int __init init_dmars(void)
- 	iommu_identity_mapping |= IDENTMAP_GFX;
- #endif
- 
-+	check_tylersburg_isoch();
-+
- 	if (iommu_identity_mapping) {
- 		ret = si_domain_init(hw_pass_through);
- 		if (ret)
- 			goto free_iommu;
- 	}
- 
--	check_tylersburg_isoch();
- 
- 	/*
- 	 * If we copied translations from a previous kernel in the kdump
+Bjorn
