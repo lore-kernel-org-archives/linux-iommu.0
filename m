@@ -1,8 +1,8 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 5/5] iommu: Allow default domain type to be set on the
-	kernel command line
-Date: Fri, 10 Mar 2017 20:49:36 +0000
-Message-ID: <1489178976-15353-6-git-send-email-will.deacon@arm.com>
+Subject: [PATCH v2 2/5] iommu/arm-smmu: Install bypass S2CRs for
+	IOMMU_DOMAIN_IDENTITY domains
+Date: Fri, 10 Mar 2017 20:49:33 +0000
+Message-ID: <1489178976-15353-3-git-send-email-will.deacon@arm.com>
 References: <1489178976-15353-1-git-send-email-will.deacon@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,82 +22,81 @@ To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-The IOMMU core currently initialises the default domain for each group
-to IOMMU_DOMAIN_DMA, under the assumption that devices will use
-IOMMU-backed DMA ops by default. However, in some cases it is desirable
-for the DMA ops to bypass the IOMMU for performance reasons, reserving
-use of translation for subsystems such as VFIO that require it for
-enforcing device isolation.
+In preparation for allowing the default domain type to be overridden,
+this patch adds support for IOMMU_DOMAIN_IDENTITY domains to the
+ARM SMMU driver.
 
-Rather than modify each IOMMU driver to provide different semantics for
-DMA domains, instead we introduce a command line parameter that can be
-used to change the type of the default domain. Passthrough can then be
-specified using "iommu.passthrough=1" on the kernel command line.
+An identity domain is created by placing the corresponding S2CR
+registers into "bypass" mode, which allows transactions to flow through
+the SMMU without any translation.
 
+Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 ---
- Documentation/admin-guide/kernel-parameters.txt |  6 ++++++
- drivers/iommu/iommu.c                           | 17 +++++++++++++++--
- 2 files changed, 21 insertions(+), 2 deletions(-)
+ drivers/iommu/arm-smmu.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 986e44387dad..243895f6872e 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -1635,6 +1635,12 @@
- 		nobypass	[PPC/POWERNV]
- 			Disable IOMMU bypass, using IOMMU for PCI devices.
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 6426819348be..04530e968132 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -416,6 +416,7 @@ enum arm_smmu_domain_stage {
+ 	ARM_SMMU_DOMAIN_S1 = 0,
+ 	ARM_SMMU_DOMAIN_S2,
+ 	ARM_SMMU_DOMAIN_NESTED,
++	ARM_SMMU_DOMAIN_BYPASS,
+ };
  
-+	iommu.passthrough=
-+			[ARM64] Configure DMA to bypass the IOMMU by default.
-+			Format: { "0" | "1" }
-+			0 - Use IOMMU translation for DMA.
-+			1 - Bypass the IOMMU for DMA.
-+			unset - Use IOMMU translation for DMA.
+ struct arm_smmu_domain {
+@@ -838,6 +839,12 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	if (smmu_domain->smmu)
+ 		goto out_unlock;
  
- 	io7=		[HW] IO7 for Marvel based alpha systems
- 			See comment before marvel_specify_io7 in
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8ea14f41a979..42a842e3f95f 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -36,6 +36,7 @@
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-+static unsigned int iommu_def_domain_type = IOMMU_DOMAIN_DMA;
- 
- struct iommu_callback_data {
- 	const struct iommu_ops *ops;
-@@ -111,6 +112,18 @@ static int __iommu_attach_group(struct iommu_domain *domain,
- static void __iommu_detach_group(struct iommu_domain *domain,
- 				 struct iommu_group *group);
- 
-+static int __init iommu_set_def_domain_type(char *str)
-+{
-+	bool pt;
++	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
++		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
++		smmu_domain->smmu = smmu;
++		goto out_unlock;
++	}
 +
-+	if (!str || strtobool(str, &pt))
-+		return -EINVAL;
-+
-+	iommu_def_domain_type = pt ? IOMMU_DOMAIN_IDENTITY : IOMMU_DOMAIN_DMA;
-+	return 0;
-+}
-+early_param("iommu.passthrough", iommu_set_def_domain_type);
-+
- static ssize_t iommu_group_attr_show(struct kobject *kobj,
- 				     struct attribute *__attr, char *buf)
+ 	/*
+ 	 * Mapping the requested stage onto what we support is surprisingly
+ 	 * complicated, mainly because the spec allows S1+S2 SMMUs without
+@@ -998,7 +1005,7 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
+ 	void __iomem *cb_base;
+ 	int irq;
+ 
+-	if (!smmu)
++	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
+ 		return;
+ 
+ 	/*
+@@ -1021,7 +1028,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
  {
-@@ -1014,8 +1027,8 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
- 	 * IOMMU driver.
- 	 */
- 	if (!group->default_domain) {
--		group->default_domain = __iommu_domain_alloc(dev->bus,
--							     IOMMU_DOMAIN_DMA);
-+		group->default_domain =
-+			__iommu_domain_alloc(dev->bus, iommu_def_domain_type);
- 		if (!group->domain)
- 			group->domain = group->default_domain;
- 	}
+ 	struct arm_smmu_domain *smmu_domain;
+ 
+-	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
++	if (type != IOMMU_DOMAIN_UNMANAGED &&
++	    type != IOMMU_DOMAIN_DMA &&
++	    type != IOMMU_DOMAIN_IDENTITY)
+ 		return NULL;
+ 	/*
+ 	 * Allocate the domain and initialise some of its data structures.
+@@ -1250,10 +1259,15 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ {
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 	struct arm_smmu_s2cr *s2cr = smmu->s2crs;
+-	enum arm_smmu_s2cr_type type = S2CR_TYPE_TRANS;
+ 	u8 cbndx = smmu_domain->cfg.cbndx;
++	enum arm_smmu_s2cr_type type;
+ 	int i, idx;
+ 
++	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS)
++		type = S2CR_TYPE_BYPASS;
++	else
++		type = S2CR_TYPE_TRANS;
++
+ 	for_each_cfg_sme(fwspec, i, idx) {
+ 		if (type == s2cr[idx].type && cbndx == s2cr[idx].cbndx)
+ 			continue;
 -- 
 2.1.4
