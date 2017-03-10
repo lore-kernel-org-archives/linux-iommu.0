@@ -1,14 +1,14 @@
 From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
-Subject: [PATCH 4.4 27/91] iommu/vt-d: Tylersburg isoch identity map check is
-	done too late.
-Date: Fri, 10 Mar 2017 10:08:26 +0100
-Message-ID: <20170310083902.113369001@linuxfoundation.org>
-References: <20170310083900.730556986@linuxfoundation.org>
+Subject: [PATCH 4.9 040/153] iommu/vt-d: Tylersburg isoch identity map check
+	is done too late.
+Date: Fri, 10 Mar 2017 10:07:53 +0100
+Message-ID: <20170310083949.519312810@linuxfoundation.org>
+References: <20170310083947.108106897@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170310083900.730556986-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+In-Reply-To: <20170310083947.108106897-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,7 +22,7 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <joro-zLv
 Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, Yunhong Jiang <yunhong.jiang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-4.4-stable review patch.  If anyone has any objections, please let me know.
+4.9-stable review patch.  If anyone has any objections, please let me know.
 
 ------------------
 
@@ -51,7 +51,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@publi
 
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -3238,13 +3238,14 @@ static int __init init_dmars(void)
+@@ -3325,13 +3325,14 @@ static int __init init_dmars(void)
  	iommu_identity_mapping |= IDENTMAP_GFX;
  #endif
  
