@@ -1,15 +1,14 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH 3/3] iommu/dma: Handle IOMMU API reserved regions
-Date: Fri, 10 Mar 2017 09:03:30 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA8174CC2D5@lhreml504-mbs>
-References: <1b012c7e82ccef1a34be38d81e82e74f129dfedc.1489088954.git.robin.murphy@arm.com>
-	<ccb0f5ef6822c760c253038e27e55752210b754b.1489088954.git.robin.murphy@arm.com>
+From: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+Subject: [PATCH 4.4 26/91] iommu/vt-d: Fix some macros that are incorrectly
+	specified in intel-iommu
+Date: Fri, 10 Mar 2017 10:08:25 +0100
+Message-ID: <20170310083902.062772242@linuxfoundation.org>
+References: <20170310083900.730556986@linuxfoundation.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <ccb0f5ef6822c760c253038e27e55752210b754b.1489088954.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20170310083900.730556986-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,47 +18,74 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, John Garry <john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, Gabriele Paoloni <gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>, stable-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+4.4-stable review patch.  If anyone has any objections, please let me know.
 
-> -----Original Message-----
-> From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
-> Sent: Thursday, March 09, 2017 7:51 PM
-> To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-> Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
-> marc.zyngier-5wv7dgnIgG8@public.gmane.org; Gabriele Paoloni; John Garry; Shameerali Kolothum
-> Thodi
-> Subject: [PATCH 3/3] iommu/dma: Handle IOMMU API reserved regions
-> 
-> Now that it's simple to discover the necessary reservations for a given
-> device/IOMMU combination, let's wire up the appropriate handling. Basic
-> reserved regions and direct-mapped regions are obvious enough to
-> handle; hardware MSI regions we can handle by pre-populating the
-> appropriate msi_pages in the cookie. That way, irqchip drivers which
-> normally assume MSIs to require mapping at the IOMMU can keep working
-> without having to special-case their iommu_dma_map_msi_msg() hook, or
-> indeed be aware at all of integration quirks preventing the IOMMU
-> translating certain addresses.
+------------------
 
-Many thanks for this. This will help us to avoid the ugly ITS quirk to
-support the D03/D05. I will go through this.
+From: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 
-Cheers,
-Thanks.
+commit aaa59306b0b7e0ca4ba92cc04c5db101cbb1c096 upstream.
 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/dma-iommu.c | 65
-> +++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 65 insertions(+)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 1e0983488a8d..1082ebf8a415 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -167,6 +167,69 @@ void iommu_put_dma_cookie(struct iommu_domain
-> *domain)  }  EXPORT_SYMBOL(iommu_put_dma_cookie);
-[...]
+Some of the macros are incorrect with wrong bit-shifts resulting in picking
+the incorrect invalidation granularity. Incorrect Source-ID in extended
+devtlb invalidation caused device side errors.
+
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+To: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+
+Fixes: 2f26e0a9 ("iommu/vt-d: Add basic SVM PASID support")
+Signed-off-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Ashok Raj <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Tested-by: CQ Tang <cq.tang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh-hQyY1W1yCW8ekmWlsbkhG0B+6BGkLq7r@public.gmane.org>
+
+---
+ include/linux/intel-iommu.h |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -153,8 +153,8 @@ static inline void dmar_writeq(void __io
+ #define DMA_TLB_GLOBAL_FLUSH (((u64)1) << 60)
+ #define DMA_TLB_DSI_FLUSH (((u64)2) << 60)
+ #define DMA_TLB_PSI_FLUSH (((u64)3) << 60)
+-#define DMA_TLB_IIRG(type) ((type >> 60) & 7)
+-#define DMA_TLB_IAIG(val) (((val) >> 57) & 7)
++#define DMA_TLB_IIRG(type) ((type >> 60) & 3)
++#define DMA_TLB_IAIG(val) (((val) >> 57) & 3)
+ #define DMA_TLB_READ_DRAIN (((u64)1) << 49)
+ #define DMA_TLB_WRITE_DRAIN (((u64)1) << 48)
+ #define DMA_TLB_DID(id)	(((u64)((id) & 0xffff)) << 32)
+@@ -164,9 +164,9 @@ static inline void dmar_writeq(void __io
+ 
+ /* INVALID_DESC */
+ #define DMA_CCMD_INVL_GRANU_OFFSET  61
+-#define DMA_ID_TLB_GLOBAL_FLUSH	(((u64)1) << 3)
+-#define DMA_ID_TLB_DSI_FLUSH	(((u64)2) << 3)
+-#define DMA_ID_TLB_PSI_FLUSH	(((u64)3) << 3)
++#define DMA_ID_TLB_GLOBAL_FLUSH	(((u64)1) << 4)
++#define DMA_ID_TLB_DSI_FLUSH	(((u64)2) << 4)
++#define DMA_ID_TLB_PSI_FLUSH	(((u64)3) << 4)
+ #define DMA_ID_TLB_READ_DRAIN	(((u64)1) << 7)
+ #define DMA_ID_TLB_WRITE_DRAIN	(((u64)1) << 6)
+ #define DMA_ID_TLB_DID(id)	(((u64)((id & 0xffff) << 16)))
+@@ -316,8 +316,8 @@ enum {
+ #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
+ #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
+ #define QI_DEV_EIOTLB_PASID(p)	(((u64)p) << 32)
+-#define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 32)
+-#define QI_DEV_EIOTLB_QDEP(qd)	(((qd) & 0x1f) << 16)
++#define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 16)
++#define QI_DEV_EIOTLB_QDEP(qd)	((u64)((qd) & 0x1f) << 4)
+ #define QI_DEV_EIOTLB_MAX_INVS	32
+ 
+ #define QI_PGRP_IDX(idx)	(((u64)(idx)) << 55)
