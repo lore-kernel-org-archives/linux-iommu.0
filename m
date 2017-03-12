@@ -1,102 +1,48 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 2/5] iommu/arm-smmu: Install bypass S2CRs for
-	IOMMU_DOMAIN_IDENTITY domains
-Date: Fri, 10 Mar 2017 20:49:33 +0000
-Message-ID: <1489178976-15353-3-git-send-email-will.deacon@arm.com>
-References: <1489178976-15353-1-git-send-email-will.deacon@arm.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1489178976-15353-1-git-send-email-will.deacon-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+From: Magnus Damm <magnus.damm@gmail.com>
+Subject: [PATCH v3 0/3] iommu/ipmmu-vmsa: r8a7796 support V3
+Date: Sun, 12 Mar 2017 14:38:20 +0900
+Message-ID: <148929710090.20744.10912918031085568693.sendpatchset@little-apple>
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: laurent.pinchart+renesas@ideasonboard.com, geert+renesas@glider.be, linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, horms+renesas@verge.net.au, Magnus Damm <magnus.damm@gmail.com>, robin.murphy@arm.com, m.szyprowski@samsung.com
 List-Id: iommu@lists.linux-foundation.org
 
-In preparation for allowing the default domain type to be overridden,
-this patch adds support for IOMMU_DOMAIN_IDENTITY domains to the
-ARM SMMU driver.
+iommu/ipmmu-vmsa: r8a7796 support V3
 
-An identity domain is created by placing the corresponding S2CR
-registers into "bypass" mode, which allows transactions to flow through
-the SMMU without any translation.
+[PATCH v3 1/3] iommu/ipmmu-vmsa: Add r8a7796 DT binding
+[PATCH v3 2/3] iommu/ipmmu-vmsa: Increase maximum micro-TLBS to 48
+[PATCH v3 3/3] iommu/ipmmu-vmsa: Hook up r8a7796 DT matching code
 
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Signed-off-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+This series adds r8a7796 support to the IPMMU driver. The DT binding
+gets updated, maximum number of micro-TLBs are increased and the
+driver is adjusted to match on the new DT binding.
+
+Changes since V2:
+ - Patch 2/3 updated with an outer set of () - thanks Ramesh!
+ - Patch 2/3 updated with Reviewed-by - thanks Geert!
+ - Patch 3/3 updated to include white list support
+
+Changes since V1:
+ - Patch 1/3 updated with more Acked-by tags
+ - Patch 2/3 updated with high I/O register range support
+
+Patch 1/3 is ready for upstream merge and includes the following tags:
+Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
+Acked-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Acked-by: Rob Herring <robh@kernel.org>
+Acked-by: Simon Horman <horms+renesas@verge.net.au>
+Acked-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Patch 2/3 and 3/3 are quite trivial but have now acked-by so far.
+
+Signed-off-by: Magnus Damm <damm+renesas@opensource.se>
 ---
- drivers/iommu/arm-smmu.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 6426819348be..04530e968132 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -416,6 +416,7 @@ enum arm_smmu_domain_stage {
- 	ARM_SMMU_DOMAIN_S1 = 0,
- 	ARM_SMMU_DOMAIN_S2,
- 	ARM_SMMU_DOMAIN_NESTED,
-+	ARM_SMMU_DOMAIN_BYPASS,
- };
- 
- struct arm_smmu_domain {
-@@ -838,6 +839,12 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	if (smmu_domain->smmu)
- 		goto out_unlock;
- 
-+	if (domain->type == IOMMU_DOMAIN_IDENTITY) {
-+		smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
-+		smmu_domain->smmu = smmu;
-+		goto out_unlock;
-+	}
-+
- 	/*
- 	 * Mapping the requested stage onto what we support is surprisingly
- 	 * complicated, mainly because the spec allows S1+S2 SMMUs without
-@@ -998,7 +1005,7 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- 	void __iomem *cb_base;
- 	int irq;
- 
--	if (!smmu)
-+	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
- 		return;
- 
- 	/*
-@@ -1021,7 +1028,9 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- {
- 	struct arm_smmu_domain *smmu_domain;
- 
--	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
-+	if (type != IOMMU_DOMAIN_UNMANAGED &&
-+	    type != IOMMU_DOMAIN_DMA &&
-+	    type != IOMMU_DOMAIN_IDENTITY)
- 		return NULL;
- 	/*
- 	 * Allocate the domain and initialise some of its data structures.
-@@ -1250,10 +1259,15 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- {
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	struct arm_smmu_s2cr *s2cr = smmu->s2crs;
--	enum arm_smmu_s2cr_type type = S2CR_TYPE_TRANS;
- 	u8 cbndx = smmu_domain->cfg.cbndx;
-+	enum arm_smmu_s2cr_type type;
- 	int i, idx;
- 
-+	if (smmu_domain->stage == ARM_SMMU_DOMAIN_BYPASS)
-+		type = S2CR_TYPE_BYPASS;
-+	else
-+		type = S2CR_TYPE_TRANS;
-+
- 	for_each_cfg_sme(fwspec, i, idx) {
- 		if (type == s2cr[idx].type && cbndx == s2cr[idx].cbndx)
- 			continue;
--- 
-2.1.4
+ Developed on top of v4.11-rc1 with the following series applied:
+ [PATCH v7 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V7
+ [PATCH v3 00/09] iommu/ipmmu-vmsa: r8a7795 support V3
+
+ Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt |    1 
+ drivers/iommu/ipmmu-vmsa.c                                     |   24 +++++++---
+ 2 files changed, 18 insertions(+), 7 deletions(-)
