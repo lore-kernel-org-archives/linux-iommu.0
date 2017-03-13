@@ -1,204 +1,464 @@
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH 1/3] iommu: Disambiguate MSI region types
-Date: Mon, 13 Mar 2017 15:58:31 +0100
-Message-ID: <f4522eff-4cdc-2dd5-dcb1-afd2d15ecd02@redhat.com>
-References: <1b012c7e82ccef1a34be38d81e82e74f129dfedc.1489088954.git.robin.murphy@arm.com>
- <a4b012cc-e95d-37af-374a-f06661798168@redhat.com>
- <5db5c64f-05e4-6167-3c29-b1607a794ce3@arm.com>
+From: Rob Clark <robdclark@gmail.com>
+Subject: Re: [PATCH 5/9] iommu: add qcom_iommu
+Date: Mon, 13 Mar 2017 14:19:49 -0400
+Message-ID: <CAF6AEGsoHwDRR02nxz_fkeSPrXBRmG_38xvkF6f0=m+Ucj_soA@mail.gmail.com>
+References: <20170301174258.14618-1-robdclark@gmail.com> <20170301174258.14618-6-robdclark@gmail.com>
+ <075356ad9df70ee2a54ea782f143522c@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <5db5c64f-05e4-6167-3c29-b1607a794ce3@arm.com>
-Sender: kvm-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
-Cc: iommu@lists.linux-foundation.org, will.deacon@arm.com, marc.zyngier@arm.com, gabriele.paoloni@huawei.com, john.garry@huawei.com, shameerali.kolothum.thodi@huawei.com, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, kvm@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <075356ad9df70ee2a54ea782f143522c@codeaurora.org>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Sricharan R <sricharan@codeaurora.org>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, Stanimir Varbanov <stanimir.varbanov@linaro.org>, linux-arm-msm-owner@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
+On Mon, Mar 13, 2017 at 9:38 AM,  <sricharan@codeaurora.org> wrote:
+> Hi Rob,
+>
+> [..]
+>
+>
+>> +static int qcom_iommu_init_domain(struct iommu_domain *domain,
+>> +                                 struct qcom_iommu_dev *qcom_iommu,
+>> +                                 struct iommu_fwspec *fwspec)
+>> +{
+>> +       struct qcom_iommu_domain *qcom_domain =
+>> to_qcom_iommu_domain(domain);
+>> +       struct io_pgtable_ops *pgtbl_ops;
+>> +       struct io_pgtable_cfg pgtbl_cfg;
+>> +       int i, ret = 0;
+>> +       u32 reg;
+>> +
+>> +       mutex_lock(&qcom_domain->init_mutex);
+>> +       if (qcom_domain->iommu)
+>> +               goto out_unlock;
+>> +
+>> +       pgtbl_cfg = (struct io_pgtable_cfg) {
+>> +               .pgsize_bitmap  = qcom_iommu_ops.pgsize_bitmap,
+>> +               .ias            = 32,
+>> +               .oas            = 40,
+>> +               .tlb            = &qcom_gather_ops,
+>> +               .iommu_dev      = qcom_iommu->dev,
+>> +       };
+>> +
+>> +       qcom_domain->iommu = qcom_iommu;
+>> +       pgtbl_ops = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &pgtbl_cfg,
+>> fwspec);
+>
+>
+> So why not pass in the ctx pointer itself
+> that we get below as a cookie ? That would basically
+> avoid iterating through the list in the tlb_ops ?
 
-On 13/03/2017 15:24, Robin Murphy wrote:
-> On 13/03/17 13:08, Auger Eric wrote:
->> Hi Robin,
->>
->> On 09/03/2017 20:50, Robin Murphy wrote:
->>> Whilst it doesn't matter much to VFIO at the moment, when parsing
->>> reserved regions on the host side we really needs to be able to tell
->> s/needs/need
-> 
-> Oops!
-> 
->>> the difference between the software-reserved region used to map MSIs
->>> translated by an IOMMU, and hardware regions for which the write might
->>> never even reach the IOMMU. In particular, ARM systems assume the former
->>> topology, but may need to cope with the latter as well, which will
->>> require rather different handling in the iommu-dma layer.
->>>
->>> For clarity, rename the software-managed type to IOMMU_RESV_SW_MSI, use
->>> IOMMU_RESV_MSI to describe the hardware type, and document everything a
->>> little bit. Since the x86 MSI remapping hardware falls squarely under
->>> this meaning of IOMMU_RESV_MSI, apply that type to their regions as well,
->>> so that we tell a consistent story to userspace across platforms (and
->>> have future consistency if those drivers start migrating to iommu-dma).
->>>
->>> Fixes: d30ddcaa7b02 ("iommu: Add a new type field in iommu_resv_region")
->> does it really fall under the category of fix here?
-> 
-> I was somewhat on the fence about that, as the rationale above does tend
-> towards future new functionality, but the primary effect of this patch
-> alone is an ABI-visible change for x86 in terms of "expose the MSI
-> region as an MSI region". IMO it would be better to get that in before
-> said ABI gets baked into a kernel release, hence leaning towards the
-> "fix" side of things. I'm happy to rewrite the commit message in reverse
-> order (i.e. "clean up this ABI inconsistency, with these additional
-> benefits") if it would be clearer.
-OK no worries. I understand what you meant.
-> 
->>> CC: Eric Auger <eric.auger@redhat.com>
->>> CC: Alex Williamson <alex.williamson@redhat.com>
->>> CC: David Woodhouse <dwmw2@infradead.org>
->>> CC: kvm@vger.kernel.org
->>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>> ---
->>>  drivers/iommu/amd_iommu.c       | 2 +-
->>>  drivers/iommu/arm-smmu-v3.c     | 2 +-
->>>  drivers/iommu/arm-smmu.c        | 2 +-
->>>  drivers/iommu/intel-iommu.c     | 2 +-
->>>  drivers/iommu/iommu.c           | 1 +
->>>  drivers/vfio/vfio_iommu_type1.c | 2 +-
->>>  include/linux/iommu.h           | 5 +++++
->>>  7 files changed, 11 insertions(+), 5 deletions(-)
->>>
->>> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
->>> index 98940d1392cb..b17536d6e69b 100644
->>> --- a/drivers/iommu/amd_iommu.c
->>> +++ b/drivers/iommu/amd_iommu.c
->>> @@ -3202,7 +3202,7 @@ static void amd_iommu_get_resv_regions(struct device *dev,
->>>  
->>>  	region = iommu_alloc_resv_region(MSI_RANGE_START,
->>>  					 MSI_RANGE_END - MSI_RANGE_START + 1,
->>> -					 0, IOMMU_RESV_RESERVED);
->>> +					 0, IOMMU_RESV_MSI);
->>>  	if (!region)
->>>  		return;
->>>  	list_add_tail(&region->list, head);
->>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->>> index 5806a6acc94e..591bb96047c9 100644
->>> --- a/drivers/iommu/arm-smmu-v3.c
->>> +++ b/drivers/iommu/arm-smmu-v3.c
->>> @@ -1888,7 +1888,7 @@ static void arm_smmu_get_resv_regions(struct device *dev,
->>>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
->>>  
->>>  	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
->>> -					 prot, IOMMU_RESV_MSI);
->>> +					 prot, IOMMU_RESV_SW_MSI);
->>>  	if (!region)
->>>  		return;
->>>  
->>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->>> index abf6496843a6..b493c99e17f7 100644
->>> --- a/drivers/iommu/arm-smmu.c
->>> +++ b/drivers/iommu/arm-smmu.c
->>> @@ -1608,7 +1608,7 @@ static void arm_smmu_get_resv_regions(struct device *dev,
->>>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
->>>  
->>>  	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
->>> -					 prot, IOMMU_RESV_MSI);
->>> +					 prot, IOMMU_RESV_SW_MSI);
->>>  	if (!region)
->>>  		return;
->>>  
->>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->>> index 238ad3447712..f1611fd6f5b0 100644
->>> --- a/drivers/iommu/intel-iommu.c
->>> +++ b/drivers/iommu/intel-iommu.c
->>> @@ -5249,7 +5249,7 @@ static void intel_iommu_get_resv_regions(struct device *device,
->>>  
->>>  	reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
->>>  				      IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
->>> -				      0, IOMMU_RESV_RESERVED);
->>> +				      0, IOMMU_RESV_MSI);
->>>  	if (!reg)
->>>  		return;
->>>  	list_add_tail(&reg->list, head);
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>> index 8ea14f41a979..7dbc05f10d5a 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -72,6 +72,7 @@ static const char * const iommu_group_resv_type_string[] = {
->>>  	[IOMMU_RESV_DIRECT]	= "direct",
->>>  	[IOMMU_RESV_RESERVED]	= "reserved",
->>>  	[IOMMU_RESV_MSI]	= "msi",
->>> +	[IOMMU_RESV_SW_MSI]	= "msi",
-> 
-> As a side note, is it intentional that the values are bitfields, in
-> other words, is it ever going to make sense to combine them? The fact
-> that we use them directly to index an array here suggests not, and that
-> we might be better off with a plain enum. Otherwise, another possibility
-> would be to keep a single "MSI" type flag and add a separate
-> "software-managed" flag alongside it, with a corresponding tweak to
-> iommu_group_show_resv_regions(). Does anyone have a strong opinion
-> either way?
+The issue is that one domain might be attached to a device with multiple ctx's.
 
-Originally this stems from "IOMMU_NOMAP" flavored define but I think
-this should be transformed into an enum instead.
+Although perhaps __to_ctx() could be made a bit more clever.  I was
+mostly in "make it work, optimize later" mode ;-)
 
-Thanks
+Note also, I'm thinking (both for qcom_iommu and arm-smmu) that we
+want to move pgtbl alloc into _domain_alloc().. or at least that would
+allow the driver to iommu_map/unmap() before attaching the domain.
+(Partly this depends on how the iommu task and/or dynamic domain stuff
+works out.. but one way or another we want to be able to map things to
+pagetables that aren't the currently attached pagetables)
 
-Eric
-> 
->>>  };
->>>  
->>>  #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
->>> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
->>> index c26fa1f3ed86..e32abdebd2df 100644
->>> --- a/drivers/vfio/vfio_iommu_type1.c
->>> +++ b/drivers/vfio/vfio_iommu_type1.c
->>> @@ -1192,7 +1192,7 @@ static bool vfio_iommu_has_resv_msi(struct iommu_group *group,
->> Maybe we should change the name of the function into
->> vfio_iommu_has_resv_sw_msi?
-> 
-> Good idea, will do.
-> 
->> Besides
->> Reviewed-by: Eric Auger <eric.auger@redhat.com>
-> 
-> Thanks!
-> 
-> Robin.
-> 
->>
->> Thanks
->>
->> Eric
->>
->>
->>>  	INIT_LIST_HEAD(&group_resv_regions);
->>>  	iommu_get_group_resv_regions(group, &group_resv_regions);
->>>  	list_for_each_entry(region, &group_resv_regions, list) {
->>> -		if (region->type & IOMMU_RESV_MSI) {
->>> +		if (region->type & IOMMU_RESV_SW_MSI) {
->>>  			*base = region->start;
->>>  			ret = true;
->>>  			goto out;
->>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->>> index 6a6de187ddc0..fad2c4913be4 100644
->>> --- a/include/linux/iommu.h
->>> +++ b/include/linux/iommu.h
->>> @@ -125,9 +125,14 @@ enum iommu_attr {
->>>  };
->>>  
->>>  /* These are the possible reserved region types */
->>> +/* Memory regions which must have 1:1 translations present at all times */
->>>  #define IOMMU_RESV_DIRECT	(1 << 0)
->>> +/* Arbitrary "never map this or give it to a device" address ranges */
->>>  #define IOMMU_RESV_RESERVED	(1 << 1)
->>> +/* Hardware MSI region (untranslated) */
->>>  #define IOMMU_RESV_MSI		(1 << 2)
->>> +/* Software-managed MSI translation window */
->>> +#define IOMMU_RESV_SW_MSI	(1 << 3)
->>>  
->>>  /**
->>>   * struct iommu_resv_region - descriptor for a reserved memory region
->>>
-> 
+> [..]
+>
+>
+>> +static int qcom_iommu_add_device(struct device *dev)
+>> +{
+>> +       struct qcom_iommu_dev *qcom_iommu = __to_iommu(dev->iommu_fwspec);
+>> +       struct iommu_group *group;
+>> +       struct device_link *link;
+>> +
+>> +       if (!qcom_iommu)
+>> +               return -ENODEV;
+>> +
+>> +       group = iommu_group_get_for_dev(dev);
+>> +       if (IS_ERR_OR_NULL(group))
+>> +               return PTR_ERR_OR_ZERO(group);
+>> +
+>> +       iommu_group_put(group);
+>> +       iommu_device_link(&qcom_iommu->iommu, dev);
+>> +
+>> +       /*
+>> +        * Establish the link between iommu and master, so that the
+>> +        * iommu gets runtime enabled/disabled as per the master's
+>> +        * needs.
+>> +        */
+>> +       link = device_link_add(dev, qcom_iommu->dev, DL_FLAG_PM_RUNTIME);
+>> +       if (!link) {
+>> +               dev_warn(qcom_iommu->dev, "Unable to create device link
+>> between %s and %s\n",
+>> +                        dev_name(qcom_iommu->dev), dev_name(dev));
+>> +               /* TODO fatal or ignore? */
+>> +       }
+>
+>
+> Yes, should be fatal when depend on master's pm_runtime to call
+> the iommu's runtime. The iommu may remain unclocked if the link
+> is not there. Might have to fixed in my patch as well.
+
+ok, I've made it -ENODEV
+
+>
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static void qcom_iommu_remove_device(struct device *dev)
+>> +{
+>> +       struct qcom_iommu_dev *qcom_iommu = __to_iommu(dev->iommu_fwspec);
+>> +
+>> +       if (!qcom_iommu)
+>> +               return;
+>> +
+>> +       iommu_group_remove_device(dev);
+>> +       iommu_device_unlink(&qcom_iommu->iommu, dev);
+>> +       iommu_fwspec_free(dev);
+>> +}
+>> +
+>> +static struct iommu_group *qcom_iommu_device_group(struct device *dev)
+>> +{
+>> +       struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+>> +       struct iommu_group *group = NULL;
+>> +       unsigned i;
+>> +
+>> +       for (i = 0; i < fwspec->num_ids; i++) {
+>> +               struct qcom_iommu_ctx *ctx = __to_ctx(fwspec,
+>> fwspec->ids[i]);
+>> +
+>> +               if (group && ctx->group && group != ctx->group)
+>> +                       return ERR_PTR(-EINVAL);
+>> +
+>> +               group = ctx->group;
+>> +       }
+>
+>
+> I think in this case, the master may devices may not populate the
+> same asid/ctx bank more than once intentionally or is this to
+> catch accidental wrong DT entry. Just thinking
+> if we ever need this logic to get an already existing group in
+> our case, simply create a new group always ?
+
+mostly just to catch wrong DT entry.. I don't think we'd need it
+anyways.  Perhaps it justifies a WARN_ON()?
+
+>> +
+>> +       if (group)
+>> +               return iommu_group_ref_get(group);
+>> +
+>> +       group = generic_device_group(dev);
+>> +
+>> +       for (i = 0; i < fwspec->num_ids; i++) {
+>> +               struct qcom_iommu_ctx *ctx = __to_ctx(fwspec,
+>> fwspec->ids[i]);
+>> +               ctx->group = iommu_group_ref_get(group);
+>> +       }
+>> +
+>> +       return group;
+>> +}
+>> +
+>> +static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args
+>> *args)
+>> +{
+>> +       struct platform_device *iommu_pdev;
+>> +
+>> +       if (args->args_count != 1) {
+>> +               dev_err(dev, "incorrect number of iommu params found for
+>> %s "
+>> +                       "(found %d, expected 1)\n",
+>> +                       args->np->full_name, args->args_count);
+>> +               return -EINVAL;
+>> +       }
+>> +
+>> +       if (!dev->iommu_fwspec->iommu_priv) {
+>> +               iommu_pdev = of_find_device_by_node(args->np);
+>> +               if (WARN_ON(!iommu_pdev))
+>> +                       return -EINVAL;
+>> +
+>> +               dev->iommu_fwspec->iommu_priv =
+>> platform_get_drvdata(iommu_pdev);
+>> +       }
+>> +
+>> +       return iommu_fwspec_add_ids(dev, &args->args[0], 1);
+>> +}
+>> +
+>> +static const struct iommu_ops qcom_iommu_ops = {
+>> +       .capable        = qcom_iommu_capable,
+>> +       .domain_alloc   = qcom_iommu_domain_alloc,
+>> +       .domain_free    = qcom_iommu_domain_free,
+>> +       .attach_dev     = qcom_iommu_attach_dev,
+>> +       .detach_dev     = qcom_iommu_detach_dev,
+>> +       .map            = qcom_iommu_map,
+>> +       .unmap          = qcom_iommu_unmap,
+>> +       .map_sg         = default_iommu_map_sg,
+>> +       .iova_to_phys   = qcom_iommu_iova_to_phys,
+>> +       .add_device     = qcom_iommu_add_device,
+>> +       .remove_device  = qcom_iommu_remove_device,
+>> +       .device_group   = qcom_iommu_device_group,
+>> +       .of_xlate       = qcom_iommu_of_xlate,
+>> +       .pgsize_bitmap  = SZ_4K | SZ_64K | SZ_1M | SZ_16M,
+>> +};
+>> +
+>> +static int qcom_iommu_enable_clocks(struct qcom_iommu_dev *qcom_iommu)
+>> +{
+>> +       int ret;
+>> +
+>> +       ret = clk_prepare_enable(qcom_iommu->iface_clk);
+>> +       if (ret) {
+>> +               dev_err(qcom_iommu->dev, "Couldn't enable iface_clk\n");
+>> +               return ret;
+>> +       }
+>> +
+>> +       ret = clk_prepare_enable(qcom_iommu->bus_clk);
+>> +       if (ret) {
+>> +               dev_err(qcom_iommu->dev, "Couldn't enable bus_clk\n");
+>> +               clk_disable_unprepare(qcom_iommu->iface_clk);
+>> +               return ret;
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static void qcom_iommu_disable_clocks(struct qcom_iommu_dev *qcom_iommu)
+>> +{
+>> +       clk_disable_unprepare(qcom_iommu->bus_clk);
+>> +       clk_disable_unprepare(qcom_iommu->iface_clk);
+>> +}
+>> +
+>> +static int qcom_iommu_ctx_probe(struct platform_device *pdev)
+>> +{
+>> +       struct qcom_iommu_ctx *ctx;
+>> +       struct device *dev = &pdev->dev;
+>> +       struct qcom_iommu_dev *qcom_iommu = dev_get_drvdata(dev->parent);
+>> +       struct resource *res;
+>> +       int ret;
+>> +       u32 reg;
+>> +
+>> +       ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
+>> +       if (!ctx) {
+>> +               dev_err(dev, "failed to allocate qcom_iommu_context\n");
+>> +               return -ENOMEM;
+>> +       }
+>> +
+>> +       ctx->dev = dev;
+>> +       platform_set_drvdata(pdev, ctx);
+>> +
+>> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>> +       ctx->base = devm_ioremap_resource(dev, res);
+>> +       if (IS_ERR(ctx->base))
+>> +               return PTR_ERR(ctx->base);
+>> +
+>> +       ctx->irq = platform_get_irq(pdev, 0);
+>> +       if (ctx->irq < 0) {
+>> +               dev_err(dev, "failed to get irq\n");
+>> +               return -ENODEV;
+>> +       }
+>> +
+>> +       ret = devm_request_irq(dev, ctx->irq,
+>> +                              qcom_iommu_fault,
+>> +                              IRQF_SHARED,
+>> +                              "qcom-iommu-fault",
+>> +                              ctx);
+>> +       if (ret) {
+>> +               dev_err(dev, "failed to request IRQ %u\n", ctx->irq);
+>> +               return ret;
+>> +       }
+>> +
+>> +       /* read the "reg" property directly to get the relative address
+>> +        * of the context bank, and calculate the asid from that:
+>> +        */
+>> +       if (of_property_read_u32_index(dev->of_node, "reg", 0, &reg)) {
+>> +               dev_err(dev, "missing reg property\n");
+>> +               return -ENODEV;
+>> +       }
+>> +
+>> +       ctx->asid = reg / 0x1000;
+>
+>
+> hmm, are doing new set of bindings only because of the local_base issue ?
+
+not *just* because of local_base.. actually the bigger reason right
+now is so we know which context banks are secure vs not.  I was
+thinking that we would later add secure cb support to qcom_iommu.
+(But I have really no idea how we'll handle that on arm-smmu for later
+devices)
+
+BR,
+-R
+
+> Regards,
+>  Sricharan
+>
+>
+>
+>> +
+>> +       dev_info(dev, "found asid %u\n", ctx->asid);
+>> +
+>> +       list_add_tail(&ctx->node, &qcom_iommu->context_list);
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static int qcom_iommu_ctx_remove(struct platform_device *pdev)
+>> +{
+>> +       struct qcom_iommu_ctx *ctx = platform_get_drvdata(pdev);
+>> +
+>> +       if (!ctx)
+>> +               return 0;
+>> +
+>> +       iommu_group_put(ctx->group);
+>> +       platform_set_drvdata(pdev, NULL);
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static const struct of_device_id ctx_of_match[] = {
+>> +       { .compatible = "qcom,msm-iommu-v1-ns" },
+>> +       { .compatible = "qcom,msm-iommu-v1-sec" },
+>> +       { /* sentinel */ }
+>> +};
+>> +
+>> +static struct platform_driver qcom_iommu_ctx_driver = {
+>> +       .driver = {
+>> +               .name           = "qcom-iommu-ctx",
+>> +               .of_match_table = of_match_ptr(ctx_of_match),
+>> +       },
+>> +       .probe  = qcom_iommu_ctx_probe,
+>> +       .remove = qcom_iommu_ctx_remove,
+>> +};
+>> +module_platform_driver(qcom_iommu_ctx_driver);
+>> +
+>> +static int qcom_iommu_device_probe(struct platform_device *pdev)
+>> +{
+>> +       struct qcom_iommu_dev *qcom_iommu;
+>> +       struct device *dev = &pdev->dev;
+>> +       struct resource *res;
+>> +       int ret;
+>> +
+>> +       qcom_iommu = devm_kzalloc(dev, sizeof(*qcom_iommu), GFP_KERNEL);
+>> +       if (!qcom_iommu) {
+>> +               dev_err(dev, "failed to allocate qcom_iommu_device\n");
+>> +               return -ENOMEM;
+>> +       }
+>> +       qcom_iommu->dev = dev;
+>> +
+>> +       INIT_LIST_HEAD(&qcom_iommu->context_list);
+>> +
+>> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>> +       if (res)
+>> +               qcom_iommu->local_base = devm_ioremap_resource(dev, res);
+>> +
+>> +       qcom_iommu->iface_clk = devm_clk_get(dev, "iface_clk");
+>> +       if (IS_ERR(qcom_iommu->iface_clk)) {
+>> +               dev_err(dev, "failed to get iface_clk\n");
+>> +               return PTR_ERR(qcom_iommu->iface_clk);
+>> +       }
+>> +
+>> +       qcom_iommu->bus_clk = devm_clk_get(dev, "bus_clk");
+>> +       if (IS_ERR(qcom_iommu->bus_clk)) {
+>> +               dev_err(dev, "failed to get bus_clk\n");
+>> +               return PTR_ERR(qcom_iommu->bus_clk);
+>> +       }
+>> +
+>> +       if (of_property_read_u32(dev->of_node, "qcom,iommu-secure-id",
+>> +                                &qcom_iommu->sec_id)) {
+>> +               dev_err(dev, "missing qcom,iommu-secure-id property\n");
+>> +               return -ENODEV;
+>> +       }
+>> +
+>> +       platform_set_drvdata(pdev, qcom_iommu);
+>> +
+>> +       /* register context bank devices, which are child nodes: */
+>> +       ret = of_platform_populate(dev->of_node, ctx_of_match, NULL, dev);
+>> +       if (ret) {
+>> +               dev_err(dev, "Failed to populate iommu contexts\n");
+>> +               return ret;
+>> +       }
+>> +
+>> +       ret = iommu_device_sysfs_add(&qcom_iommu->iommu, dev, NULL,
+>> +                                    "smmu.%pa", &res->start);
+>> +       if (ret) {
+>> +               dev_err(dev, "Failed to register iommu in sysfs\n");
+>> +               return ret;
+>> +       }
+>> +
+>> +       iommu_device_set_ops(&qcom_iommu->iommu, &qcom_iommu_ops);
+>> +       iommu_device_set_fwnode(&qcom_iommu->iommu, dev->fwnode);
+>> +
+>> +       ret = iommu_device_register(&qcom_iommu->iommu);
+>> +       if (ret) {
+>> +               dev_err(dev, "Failed to register iommu\n");
+>> +               return ret;
+>> +       }
+>> +
+>> +       pm_runtime_enable(dev);
+>> +       bus_set_iommu(&platform_bus_type, &qcom_iommu_ops);
+>> +
+>> +       if (qcom_iommu->local_base) {
+>> +               pm_runtime_get_sync(dev);
+>> +               writel_relaxed(0xffffffff, qcom_iommu->local_base +
+>> SMMU_INTR_SEL_NS);
+>> +               pm_runtime_put_sync(dev);
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static int qcom_iommu_device_remove(struct platform_device *pdev)
+>> +{
+>> +       pm_runtime_force_suspend(&pdev->dev);
+>> +       platform_set_drvdata(pdev, NULL);
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +#ifdef CONFIG_PM
+>> +static int qcom_iommu_resume(struct device *dev)
+>> +{
+>> +       struct platform_device *pdev = to_platform_device(dev);
+>> +       struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
+>> +
+>> +       return qcom_iommu_enable_clocks(qcom_iommu);
+>> +}
+>> +
+>> +static int qcom_iommu_suspend(struct device *dev)
+>> +{
+>> +       struct platform_device *pdev = to_platform_device(dev);
+>> +       struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
+>> +
+>> +       qcom_iommu_disable_clocks(qcom_iommu);
+>> +
+>> +       return 0;
+>> +}
+>> +#endif
+>> +
+>> +static const struct dev_pm_ops qcom_iommu_pm_ops = {
+>> +       SET_RUNTIME_PM_OPS(qcom_iommu_suspend, qcom_iommu_resume, NULL)
+>> +       SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+>> +                               pm_runtime_force_resume)
+>> +};
+>> +
+>> +static const struct of_device_id qcom_iommu_of_match[] = {
+>> +       { .compatible = "qcom,msm-iommu-v1" },
+>> +       { /* sentinel */ }
+>> +};
+>> +MODULE_DEVICE_TABLE(of, qcom_iommu_of_match);
+>> +
+>> +static struct platform_driver qcom_iommu_driver = {
+>> +       .driver = {
+>> +               .name           = "qcom-iommu",
+>> +               .of_match_table = of_match_ptr(qcom_iommu_of_match),
+>> +               .pm             = &qcom_iommu_pm_ops,
+>> +       },
+>> +       .probe  = qcom_iommu_device_probe,
+>> +       .remove = qcom_iommu_device_remove,
+>> +};
+>> +module_platform_driver(qcom_iommu_driver);
+>> +
+>> +IOMMU_OF_DECLARE(qcom_iommu_dev, "qcom,msm-iommu-v1", NULL);
+>> +
+>> +MODULE_DESCRIPTION("IOMMU API for QCOM IOMMU v1 implementations");
+>> +MODULE_LICENSE("GPL v2");
