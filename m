@@ -1,15 +1,14 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH 3/3] iommu/dma: Handle IOMMU API reserved regions
-Date: Mon, 13 Mar 2017 13:55:49 +0000
-Message-ID: <80188ad9-a2ff-0e3a-90ba-f3db37060fbc@arm.com>
+Subject: Re: [PATCH 1/3] iommu: Disambiguate MSI region types
+Date: Mon, 13 Mar 2017 14:24:57 +0000
+Message-ID: <5db5c64f-05e4-6167-3c29-b1607a794ce3@arm.com>
 References: <1b012c7e82ccef1a34be38d81e82e74f129dfedc.1489088954.git.robin.murphy@arm.com>
-	<ccb0f5ef6822c760c253038e27e55752210b754b.1489088954.git.robin.murphy@arm.com>
-	<de0cbfa3-473a-e761-6ffa-aee5cf729c0f@redhat.com>
+	<a4b012cc-e95d-37af-374a-f06661798168@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <de0cbfa3-473a-e761-6ffa-aee5cf729c0f-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <a4b012cc-e95d-37af-374a-f06661798168-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,131 +19,142 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Auger Eric <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, marc.zyngier-5wv7dgnIgG8@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Eric,
-
-On 13/03/17 13:07, Auger Eric wrote:
+On 13/03/17 13:08, Auger Eric wrote:
 > Hi Robin,
 > 
 > On 09/03/2017 20:50, Robin Murphy wrote:
->> Now that it's simple to discover the necessary reservations for a given
->> device/IOMMU combination, let's wire up the appropriate handling. Basic
->> reserved regions and direct-mapped regions are obvious enough to handle;
->> hardware MSI regions we can handle by pre-populating the appropriate
->> msi_pages in the cookie. That way, irqchip drivers which normally assume
->> MSIs to require mapping at the IOMMU can keep working without having
->> to special-case their iommu_dma_map_msi_msg() hook, or indeed be aware
->> at all of integration quirks preventing the IOMMU translating certain
->> addresses.
+>> Whilst it doesn't matter much to VFIO at the moment, when parsing
+>> reserved regions on the host side we really needs to be able to tell
+> s/needs/need
+
+Oops!
+
+>> the difference between the software-reserved region used to map MSIs
+>> translated by an IOMMU, and hardware regions for which the write might
+>> never even reach the IOMMU. In particular, ARM systems assume the former
+>> topology, but may need to cope with the latter as well, which will
+>> require rather different handling in the iommu-dma layer.
 >>
+>> For clarity, rename the software-managed type to IOMMU_RESV_SW_MSI, use
+>> IOMMU_RESV_MSI to describe the hardware type, and document everything a
+>> little bit. Since the x86 MSI remapping hardware falls squarely under
+>> this meaning of IOMMU_RESV_MSI, apply that type to their regions as well,
+>> so that we tell a consistent story to userspace across platforms (and
+>> have future consistency if those drivers start migrating to iommu-dma).
+>>
+>> Fixes: d30ddcaa7b02 ("iommu: Add a new type field in iommu_resv_region")
+> does it really fall under the category of fix here?
+
+I was somewhat on the fence about that, as the rationale above does tend
+towards future new functionality, but the primary effect of this patch
+alone is an ABI-visible change for x86 in terms of "expose the MSI
+region as an MSI region". IMO it would be better to get that in before
+said ABI gets baked into a kernel release, hence leaning towards the
+"fix" side of things. I'm happy to rewrite the commit message in reverse
+order (i.e. "clean up this ABI inconsistency, with these additional
+benefits") if it would be clearer.
+
+>> CC: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>> CC: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+>> CC: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+>> CC: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 >> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 >> ---
->>  drivers/iommu/dma-iommu.c | 65 +++++++++++++++++++++++++++++++++++++++++++++++
->>  1 file changed, 65 insertions(+)
+>>  drivers/iommu/amd_iommu.c       | 2 +-
+>>  drivers/iommu/arm-smmu-v3.c     | 2 +-
+>>  drivers/iommu/arm-smmu.c        | 2 +-
+>>  drivers/iommu/intel-iommu.c     | 2 +-
+>>  drivers/iommu/iommu.c           | 1 +
+>>  drivers/vfio/vfio_iommu_type1.c | 2 +-
+>>  include/linux/iommu.h           | 5 +++++
+>>  7 files changed, 11 insertions(+), 5 deletions(-)
 >>
->> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->> index 1e0983488a8d..1082ebf8a415 100644
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -167,6 +167,69 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
->>  }
->>  EXPORT_SYMBOL(iommu_put_dma_cookie);
+>> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+>> index 98940d1392cb..b17536d6e69b 100644
+>> --- a/drivers/iommu/amd_iommu.c
+>> +++ b/drivers/iommu/amd_iommu.c
+>> @@ -3202,7 +3202,7 @@ static void amd_iommu_get_resv_regions(struct device *dev,
 >>  
->> +static int cookie_init_hw_msi_region(struct iommu_dma_cookie *cookie,
->> +		phys_addr_t start, phys_addr_t end)
->> +{
->> +	struct iova_domain *iovad = &cookie->iovad;
->> +	struct iommu_dma_msi_page *msi_page;
->> +	int i, num_pages;
->> +
->> +	start &= ~iova_mask(iovad);
->> +	end = iova_align(iovad, end);
-> Is it always safe if second argument is a phys_addr_t?
+>>  	region = iommu_alloc_resv_region(MSI_RANGE_START,
+>>  					 MSI_RANGE_END - MSI_RANGE_START + 1,
+>> -					 0, IOMMU_RESV_RESERVED);
+>> +					 0, IOMMU_RESV_MSI);
+>>  	if (!region)
+>>  		return;
+>>  	list_add_tail(&region->list, head);
+>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>> index 5806a6acc94e..591bb96047c9 100644
+>> --- a/drivers/iommu/arm-smmu-v3.c
+>> +++ b/drivers/iommu/arm-smmu-v3.c
+>> @@ -1888,7 +1888,7 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+>>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+>>  
+>>  	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+>> -					 prot, IOMMU_RESV_MSI);
+>> +					 prot, IOMMU_RESV_SW_MSI);
+>>  	if (!region)
+>>  		return;
+>>  
+>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> index abf6496843a6..b493c99e17f7 100644
+>> --- a/drivers/iommu/arm-smmu.c
+>> +++ b/drivers/iommu/arm-smmu.c
+>> @@ -1608,7 +1608,7 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+>>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+>>  
+>>  	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+>> -					 prot, IOMMU_RESV_MSI);
+>> +					 prot, IOMMU_RESV_SW_MSI);
+>>  	if (!region)
+>>  		return;
+>>  
+>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+>> index 238ad3447712..f1611fd6f5b0 100644
+>> --- a/drivers/iommu/intel-iommu.c
+>> +++ b/drivers/iommu/intel-iommu.c
+>> @@ -5249,7 +5249,7 @@ static void intel_iommu_get_resv_regions(struct device *device,
+>>  
+>>  	reg = iommu_alloc_resv_region(IOAPIC_RANGE_START,
+>>  				      IOAPIC_RANGE_END - IOAPIC_RANGE_START + 1,
+>> -				      0, IOMMU_RESV_RESERVED);
+>> +				      0, IOMMU_RESV_MSI);
+>>  	if (!reg)
+>>  		return;
+>>  	list_add_tail(&reg->list, head);
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 8ea14f41a979..7dbc05f10d5a 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -72,6 +72,7 @@ static const char * const iommu_group_resv_type_string[] = {
+>>  	[IOMMU_RESV_DIRECT]	= "direct",
+>>  	[IOMMU_RESV_RESERVED]	= "reserved",
+>>  	[IOMMU_RESV_MSI]	= "msi",
+>> +	[IOMMU_RESV_SW_MSI]	= "msi",
 
-Ooh, I think you're right - for the corner case of 32-bit unsigned long
-and a crazy system with a doorbell above 4GB, end would get truncated
-too early. I'll rework the arithmetic here to be safer.
+As a side note, is it intentional that the values are bitfields, in
+other words, is it ever going to make sense to combine them? The fact
+that we use them directly to index an array here suggests not, and that
+we might be better off with a plain enum. Otherwise, another possibility
+would be to keep a single "MSI" type flag and add a separate
+"software-managed" flag alongside it, with a corresponding tweak to
+iommu_group_show_resv_regions(). Does anyone have a strong opinion
+either way?
 
->> +	num_pages = (end - start) >> iova_shift(iovad);
->> +
->> +	msi_page = kcalloc(num_pages, sizeof(*msi_page), GFP_KERNEL);
->> +	if (!msi_page)
->> +		return -ENOMEM;
->> +
->> +	for (i = 0; i < num_pages; i++) {
->> +		msi_page[i].phys = start;
->> +		msi_page[i].iova = start;
->> +		INIT_LIST_HEAD(&msi_page[i].list);
->> +		list_add(&msi_page[i].list, &cookie->msi_page_list);
->> +		start += iovad->granule;
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static int iova_reserve_iommu_regions(struct device *dev,
->> +		struct iommu_domain *domain)
->> +{
->> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
->> +	struct iova_domain *iovad = &cookie->iovad;
->> +	struct iommu_resv_region *region;
->> +	struct list_head resv_regions;
->> +	unsigned long lo, hi;
->> +	int ret = 0;
->> +
->> +	INIT_LIST_HEAD(&resv_regions);
->> +	iommu_get_resv_regions(dev, &resv_regions);
->> +	list_for_each_entry(region, &resv_regions, list) {
->> +		/* We ARE the software that manages these! */
->> +		if (region->type & IOMMU_RESV_SW_MSI)
->> +			continue;
->> +
->> +		lo = iova_pfn(iovad, region->start);
->> +		hi = iova_pfn(iovad, region->start + region->length);
->> +		reserve_iova(iovad, lo, hi);
->> +
->> +		if (region->type & IOMMU_RESV_DIRECT) {
->> +			ret = iommu_map(domain, region->start, region->start,
->> +					region->length, region->prot);
-> 
-> in iommu.c, iommu_group_create_direct_mappings also iommu_map() direct
-> regions in some cases. Just to make sure cases don't overlap here.
+>>  };
+>>  
+>>  #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
+>> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+>> index c26fa1f3ed86..e32abdebd2df 100644
+>> --- a/drivers/vfio/vfio_iommu_type1.c
+>> +++ b/drivers/vfio/vfio_iommu_type1.c
+>> @@ -1192,7 +1192,7 @@ static bool vfio_iommu_has_resv_msi(struct iommu_group *group,
+> Maybe we should change the name of the function into
+> vfio_iommu_has_resv_sw_msi?
 
-Ah, I had indeed managed to overlook that, thanks for the reminder. We
-should only get here long after iommu_group_add_device(), so I think it
-should be safe to assume that any direct regions are already mapped and
-just reserve the IOVAs here.
-
->> +		} else if (region->type & IOMMU_RESV_MSI) {
->> +			ret = cookie_init_hw_msi_region(cookie, region->start,
->> +					region->start + region->length);
->> +		}
->> +
->> +		if (ret)
->> +			break;
->> +	}
->> +	iommu_put_resv_regions(dev, &resv_regions);
->> +
->> +	return ret;
->> +}
->> +
->>  static void iova_reserve_pci_windows(struct pci_dev *dev,
->>  		struct iova_domain *iovad)
->>  {
->> @@ -251,6 +314,8 @@ int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
->>  		init_iova_domain(iovad, 1UL << order, base_pfn, end_pfn);
->>  		if (pci)
->>  			iova_reserve_pci_windows(to_pci_dev(dev), iovad);
->> +		if (dev)
->> +			iova_reserve_iommu_regions(dev, domain);
-> Don't you want to escalate the returned value?
-
-Yes, I'd posted this before I actually wrote the follow-on patch to make
-proper reserved regions of the PCI windows as well (which I'll include
-in v2) - that one does rearrange the return value logic here, but that's
-no excuse for not doing it in this patch. Will fix.
+Good idea, will do.
 
 > Besides
 > Reviewed-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
@@ -157,7 +167,33 @@ Robin.
 > Thanks
 > 
 > Eric
->>  	}
->>  	return 0;
->>  }
+> 
+> 
+>>  	INIT_LIST_HEAD(&group_resv_regions);
+>>  	iommu_get_group_resv_regions(group, &group_resv_regions);
+>>  	list_for_each_entry(region, &group_resv_regions, list) {
+>> -		if (region->type & IOMMU_RESV_MSI) {
+>> +		if (region->type & IOMMU_RESV_SW_MSI) {
+>>  			*base = region->start;
+>>  			ret = true;
+>>  			goto out;
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index 6a6de187ddc0..fad2c4913be4 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -125,9 +125,14 @@ enum iommu_attr {
+>>  };
+>>  
+>>  /* These are the possible reserved region types */
+>> +/* Memory regions which must have 1:1 translations present at all times */
+>>  #define IOMMU_RESV_DIRECT	(1 << 0)
+>> +/* Arbitrary "never map this or give it to a device" address ranges */
+>>  #define IOMMU_RESV_RESERVED	(1 << 1)
+>> +/* Hardware MSI region (untranslated) */
+>>  #define IOMMU_RESV_MSI		(1 << 2)
+>> +/* Software-managed MSI translation window */
+>> +#define IOMMU_RESV_SW_MSI	(1 << 3)
+>>  
+>>  /**
+>>   * struct iommu_resv_region - descriptor for a reserved memory region
 >>
