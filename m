@@ -1,16 +1,13 @@
-From: Oza Oza via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: RE: [RFC PATCH] iommu/dma: check pci host bridge dma_mask for IOVA
-	allocation
-Date: Tue, 14 Mar 2017 17:15:54 +0530
-Message-ID: <545868358a73cbc5bd1911eb64b3bdc6@mail.gmail.com>
-References: <1489481327-2862-1-git-send-email-oza.oza@broadcom.com>
-	<e24a46f0-bd25-8fff-d19e-cafd615d7c37@arm.com>
-Reply-To: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 1/9] firmware/qcom: add qcom_scm_restore_sec_cfg()
+Date: Tue, 14 Mar 2017 11:18:03 -0400
+Message-ID: <20170314151811.17234-2-robdclark@gmail.com>
+References: <20170314151811.17234-1-robdclark@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <e24a46f0-bd25-8fff-d19e-cafd615d7c37-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20170314151811.17234-1-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,173 +17,106 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Nikita Yushchenko <nikita.yoush-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-My responses inline:
+Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ drivers/firmware/qcom_scm-32.c |  6 ++++++
+ drivers/firmware/qcom_scm-64.c | 16 ++++++++++++++++
+ drivers/firmware/qcom_scm.c    |  6 ++++++
+ drivers/firmware/qcom_scm.h    |  5 +++++
+ include/linux/qcom_scm.h       |  2 ++
+ 5 files changed, 35 insertions(+)
 
------Original Message-----
-From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
-Sent: Tuesday, March 14, 2017 4:27 PM
-To: Oza Pawandeep; Joerg Roedel
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org;
-bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org; arnd-r2nGTMty4D4@public.gmane.org; Nikita Yushchenko
-Subject: Re: [RFC PATCH] iommu/dma: check pci host bridge dma_mask for
-IOVA allocation
-
-On 14/03/17 08:48, Oza Pawandeep wrote:
-> It is possible that PCI device supports 64-bit DMA addressing, and
-> thus it's driver sets device's dma_mask to DMA_BIT_MASK(64), however
-> PCI host bridge may have limitations on the inbound transaction
-> addressing. As an example, consider NVME SSD device connected to
-> iproc-PCIe controller.
-
-Aw heck, not another one :(
-
-> Currently, the IOMMU DMA ops only considers PCI device dma_mask when
-> allocating an IOVA. This is particularly problematic on
-> ARM/ARM64 SOCs where the IOMMU (i.e. SMMU) translates IOVA to PA for
-> in-bound transactions only after PCI Host has forwarded these
-> transactions on SOC IO bus. This means on such ARM/ARM64 SOCs the IOVA
-> of in-bound transactions has to honor the addressing restrictions of
-> the PCI Host.
-
-Depending on whether this most closely matches the R-Car situation[1] or
-the X-Gene situation[2], this may not address the real problem at all (if
-the non-IOMMU case is also affected). Either way it also fails to help
-non-PCI devices which can face the exact same problem.
-
-I am not fully aware of R-car and X-gene situation, but for iproc based
-SOCs, our pcie host floats addresses in higher order dma_mask is set.
-
-> This patch tries to solve above described IOVA allocation problem by:
-> 1. Adding iommu_get_dma_mask() to get dma_mask of any device 2. For
-> PCI device, iommu_get_dma_mask() compare dma_mask of PCI device and
-> corresponding PCI Host dma_mask (if set).
-> 3. Use iommu_get_dma_mask() in IOMMU DMA ops implementation instead of
-> dma_get_mask()
-
-Sorry, but NAK to this approach - not only is the implementation rather
-ugly, and incomplete as above, but the fact that it starts with a clear
-description of the underlying problem and then goes on to bodge around it
-down the line instead of actually fixing it is the kicker.
-
-:)
-that is why this is RFC patch, and I had something similar in mind to go
-and poke around which you have provided.. [1] and [3].
-Let me try this on our platform, and see if that solves the issue.
-
-I've got a simple arm64 patch for proper DMA mask inheritance based on the
-various discussions at [1] which I will try to clean up and send out for
-4.12 if nobody else sends anything soon, but it does depend on getting [3]
-merged first to avoid regressing certain platforms.
-
-Robin.
-
-[1]:http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1306545.ht
-ml
-[2]:http://www.spinics.net/lists/arm-kernel/msg552422.html
-[3]:http://www.spinics.net/lists/arm-kernel/msg566947.html
-
-
-
-> Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-> Reviewed-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-> Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-> ---
->  drivers/iommu/dma-iommu.c | 44
-> ++++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 40 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 48d36ce..e93e536 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -108,6 +108,42 @@ int iommu_get_dma_cookie(struct iommu_domain
-> *domain)  }  EXPORT_SYMBOL(iommu_get_dma_cookie);
->
-> +static u64 __iommu_dma_mask(struct device *dev, bool is_coherent) {
-> +#ifdef CONFIG_PCI
-> +	u64 pci_hb_dma_mask;
-> +
-> +	if (dev_is_pci(dev)) {
-> +		struct pci_dev *pdev = to_pci_dev(dev);
-> +		struct pci_host_bridge *br =
-pci_find_host_bridge(pdev->bus);
-> +
-> +		if ((!is_coherent) && !(br->dev.dma_mask))
-> +			goto default_dev_dma_mask;
-> +
-> +		/* pci host bridge dma-mask. */
-> +		pci_hb_dma_mask = (!is_coherent) ? *br->dev.dma_mask :
-> +				   br->dev.coherent_dma_mask;
-> +
-> +		if (pci_hb_dma_mask && ((pci_hb_dma_mask) <
-(*dev->dma_mask)))
-> +			return pci_hb_dma_mask;
-> +	}
-> +default_dev_dma_mask:
-> +#endif
-> +	return (!is_coherent) ? dma_get_mask(dev) :
-> +		dev->coherent_dma_mask;
-> +}
-> +
-> +static u64 __iommu_dma_get_coherent_mask(struct device *dev) {
-> +	return __iommu_dma_mask(dev, true);
-> +}
-> +
-> +static u64 __iommu_dma_get_mask(struct device *dev) {
-> +	return __iommu_dma_mask(dev, false); }
-> +
-> +
->  /**
->   * iommu_get_msi_cookie - Acquire just MSI remapping resources
->   * @domain: IOMMU domain to prepare
-> @@ -461,7 +497,7 @@ struct page **iommu_dma_alloc(struct device *dev,
-size_t size, gfp_t gfp,
->  	if (!pages)
->  		return NULL;
->
-> -	iova = __alloc_iova(domain, size, dev->coherent_dma_mask, dev);
-> +	iova = __alloc_iova(domain, size,
-> +__iommu_dma_get_coherent_mask(dev), dev);
->  	if (!iova)
->  		goto out_free_pages;
->
-> @@ -532,7 +568,7 @@ static dma_addr_t __iommu_dma_map(struct device
-*dev, phys_addr_t phys,
->  	struct iova_domain *iovad = cookie_iovad(domain);
->  	size_t iova_off = iova_offset(iovad, phys);
->  	size_t len = iova_align(iovad, size + iova_off);
-> -	struct iova *iova = __alloc_iova(domain, len, dma_get_mask(dev),
-dev);
-> +	struct iova *iova = __alloc_iova(domain, len,
-> +__iommu_dma_get_mask(dev), dev);
->
->  	if (!iova)
->  		return DMA_ERROR_CODE;
-> @@ -690,7 +726,7 @@ int iommu_dma_map_sg(struct device *dev, struct
-scatterlist *sg,
->  		prev = s;
->  	}
->
-> -	iova = __alloc_iova(domain, iova_len, dma_get_mask(dev), dev);
-> +	iova = __alloc_iova(domain, iova_len, __iommu_dma_get_mask(dev),
-> +dev);
->  	if (!iova)
->  		goto out_restore_sg;
->
-> @@ -760,7 +796,7 @@ static struct iommu_dma_msi_page
-> *iommu_dma_get_msi_page(struct device *dev,
->
->  	msi_page->phys = msi_addr;
->  	if (iovad) {
-> -		iova = __alloc_iova(domain, size, dma_get_mask(dev), dev);
-> +		iova = __alloc_iova(domain, size,
-__iommu_dma_get_mask(dev), dev);
->  		if (!iova)
->  			goto out_free_page;
->  		msi_page->iova = iova_dma_addr(iovad, iova);
->
+diff --git a/drivers/firmware/qcom_scm-32.c b/drivers/firmware/qcom_scm-32.c
+index 8ad226c..722e65a 100644
+--- a/drivers/firmware/qcom_scm-32.c
++++ b/drivers/firmware/qcom_scm-32.c
+@@ -578,3 +578,9 @@ int __qcom_scm_set_remote_state(struct device *dev, u32 state, u32 id)
+ 
+ 	return ret ? : le32_to_cpu(scm_ret);
+ }
++
++int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id,
++			       u32 spare)
++{
++	return -ENODEV;
++}
+diff --git a/drivers/firmware/qcom_scm-64.c b/drivers/firmware/qcom_scm-64.c
+index c933259..550e3a3 100644
+--- a/drivers/firmware/qcom_scm-64.c
++++ b/drivers/firmware/qcom_scm-64.c
+@@ -381,3 +381,19 @@ int __qcom_scm_set_remote_state(struct device *dev, u32 state, u32 id)
+ 
+ 	return ret ? : res.a1;
+ }
++
++int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id, u32 spare)
++{
++	struct qcom_scm_desc desc = {0};
++	struct arm_smccc_res res;
++	int ret;
++
++	desc.args[0] = device_id;
++	desc.args[1] = spare;
++	desc.arginfo = QCOM_SCM_ARGS(2);
++
++	ret = qcom_scm_call(dev, QCOM_SCM_SVC_MP, QCOM_SCM_RESTORE_SEC_CFG,
++			    &desc, &res);
++
++	return ret ? : res.a1;
++}
+diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
+index d987bcc..ae1f473 100644
+--- a/drivers/firmware/qcom_scm.c
++++ b/drivers/firmware/qcom_scm.c
+@@ -315,6 +315,12 @@ static const struct reset_control_ops qcom_scm_pas_reset_ops = {
+ 	.deassert = qcom_scm_pas_reset_deassert,
+ };
+ 
++int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare)
++{
++	return __qcom_scm_restore_sec_cfg(__scm->dev, device_id, spare);
++}
++EXPORT_SYMBOL(qcom_scm_restore_sec_cfg);
++
+ /**
+  * qcom_scm_is_available() - Checks if SCM is available
+  */
+diff --git a/drivers/firmware/qcom_scm.h b/drivers/firmware/qcom_scm.h
+index 6a0f154..31fc732 100644
+--- a/drivers/firmware/qcom_scm.h
++++ b/drivers/firmware/qcom_scm.h
+@@ -85,4 +85,9 @@ static inline int qcom_scm_remap_error(int err)
+ 	return -EINVAL;
+ }
+ 
++#define QCOM_SCM_SVC_MP			0xc
++#define QCOM_SCM_RESTORE_SEC_CFG	2
++extern int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id,
++				      u32 spare);
++
+ #endif
+diff --git a/include/linux/qcom_scm.h b/include/linux/qcom_scm.h
+index d32f6f1..22017f5d 100644
+--- a/include/linux/qcom_scm.h
++++ b/include/linux/qcom_scm.h
+@@ -40,6 +40,7 @@ extern int qcom_scm_pas_shutdown(u32 peripheral);
+ extern void qcom_scm_cpu_power_down(u32 flags);
+ extern u32 qcom_scm_get_version(void);
+ extern int qcom_scm_set_remote_state(u32 state, u32 id);
++extern int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare);
+ #else
+ static inline
+ int qcom_scm_set_cold_boot_addr(void *entry, const cpumask_t *cpus)
+@@ -67,5 +68,6 @@ static inline void qcom_scm_cpu_power_down(u32 flags) {}
+ static inline u32 qcom_scm_get_version(void) { return 0; }
+ static inline u32
+ qcom_scm_set_remote_state(u32 state,u32 id) { return -ENODEV; }
++static inline int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare) { return -ENODEV; }
+ #endif
+ #endif
+-- 
+2.9.3
