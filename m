@@ -1,68 +1,151 @@
-From: Rob Clark <robdclark@gmail.com>
-Subject: [PATCH 8/9] ARM64: DT: add video codec devicetree node
-Date: Tue, 14 Mar 2017 11:18:10 -0400
-Message-ID: <20170314151811.17234-9-robdclark@gmail.com>
+From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 3/9] Docs: dt: document qcom iommu bindings
+Date: Tue, 14 Mar 2017 11:18:05 -0400
+Message-ID: <20170314151811.17234-4-robdclark@gmail.com>
 References: <20170314151811.17234-1-robdclark@gmail.com>
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <20170314151811.17234-1-robdclark@gmail.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org
-Cc: linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Sricharan <sricharan@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Stanimir Varbanov <stanimir.varbanov@linaro.org>, Rob Clark <robdclark@gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170314151811.17234-1-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Stanimir Varbanov <stanimir.varbanov@linaro.org>
-
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@gmail.com>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 ---
- arch/arm64/boot/dts/qcom/msm8916.dtsi | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ .../devicetree/bindings/iommu/qcom,iommu.txt       | 113 +++++++++++++++++++++
+ 1 file changed, 113 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-index b0daf39..7bcf4cd 100644
---- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-@@ -88,6 +88,13 @@
- 			no-map;
- 		};
- 
-+		venus_mem: venus@89900000 {
-+			compatible = "shared-dma-pool";
-+			reg = <0x0 0x89900000 0x0 0x800000>;
-+			alignment = <0x1000>;
-+			no-map;
+diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+new file mode 100644
+index 0000000..fd5b7fa
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+@@ -0,0 +1,113 @@
++* QCOM IOMMU v1 Implementation
++
++Qualcomm "B" family devices which are not compatible with arm-smmu have
++a similar looking IOMMU but without access to the global register space,
++and optionally requiring additional configuration to route context irqs
++to non-secure vs secure interrupt line.
++
++** Required properties:
++
++- compatible       : Should be one of:
++
++                        "qcom,msm8916-iommu"
++
++- clock-names      : Should be a pair of "iface" (required for IOMMUs
++                     register group access) and "bus" (required for
++                     the IOMMUs underlying bus access).
++- clocks           : Phandles for respective clocks described by
++                     clock-names.
++- #address-cells   : must be 1.
++- #size-cells      : must be 1.
++- #iommu-cells     : Must be 1.
++- ranges           : Base address and size of the iommu context banks.
++- qcom,iommu-secure-id  : secure-id.
++
++- List of sub-nodes, one per translation context bank.  Each sub-node
++  has the following required properties:
++
++  - compatible     : Should be one of:
++        - "qcom,msm-iommu-v1-ns"  : non-secure context bank
++        - "qcom,msm-iommu-v1-sec" : secure context bank
++  - reg            : Base address and size of context bank within the iommu
++  - interrupts     : The context fault irq.
++
++** Optional properties:
++
++- reg              : Base address and size of the SMMU local base, should
++                     be only specified if the iommu requires configuration
++                     for routing of context bank irq's to secure vs non-
++                     secure lines.  (Ie. if the iommu contains secure
++                     context banks)
++
++
++** Examples:
++
++	apps_iommu: iommu@1e20000 {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		#iommu-cells = <1>;
++		compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
++		ranges = <0 0x1e20000 0x40000>;
++		reg = <0x1ef0000 0x3000>;
++		clocks = <&gcc GCC_SMMU_CFG_CLK>,
++			 <&gcc GCC_APSS_TCU_CLK>;
++		clock-names = "iface", "bus";
++		qcom,iommu-secure-id = <17>;
++
++		// mdp_0:
++		iommu-ctx@4000 {
++			compatible = "qcom,msm-iommu-v1-ns";
++			reg = <0x4000 0x1000>;
++			interrupts = <GIC_SPI 70 0>;
 +		};
 +
- 		mba_mem: mba@8ea00000 {
- 			no-map;
- 			reg = <0 0x8ea00000 0 0x100000>;
-@@ -1190,6 +1197,27 @@
- 				};
- 			};
- 		};
-+
-+		venus: video-codec@1d00000 {
-+			compatible = "qcom,msm8916-venus";
-+			reg = <0x01d00000 0xff000>;
-+			interrupts = <GIC_SPI 44 IRQ_TYPE_LEVEL_HIGH>;
-+			power-domains = <&gcc VENUS_GDSC>;
-+			clocks = <&gcc GCC_VENUS0_VCODEC0_CLK>,
-+				 <&gcc GCC_VENUS0_AHB_CLK>,
-+				 <&gcc GCC_VENUS0_AXI_CLK>;
-+			clock-names = "core", "iface", "bus";
-+			memory-region = <&venus_mem>;
-+			status = "okay";
-+
-+			video-decoder {
-+				compatible = "venus-decoder";
-+			};
-+
-+			video-encoder {
-+				compatible = "venus-encoder";
-+			};
++		// venus_ns:
++		iommu-ctx@5000 {
++			compatible = "qcom,msm-iommu-v1-sec";
++			reg = <0x5000 0x1000>;
++			interrupts = <GIC_SPI 70 0>;
 +		};
- 	};
- 
- 	smd {
++	};
++
++	gpu_iommu: iommu@1f08000 {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		#iommu-cells = <1>;
++		compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
++		ranges = <0 0x1f08000 0x10000>;
++		clocks = <&gcc GCC_SMMU_CFG_CLK>,
++			 <&gcc GCC_GFX_TCU_CLK>;
++		clock-names = "iface", "bus";
++		qcom,iommu-secure-id = <18>;
++
++		// gfx3d_user:
++		iommu-ctx@1f09000 {
++			compatible = "qcom,msm-iommu-v1-ns";
++			reg = <0x1000 0x1000>;
++			interrupts = <GIC_SPI 241 0>;
++		};
++
++		// gfx3d_priv:
++		iommu-ctx@1f0a000 {
++			compatible = "qcom,msm-iommu-v1-ns";
++			reg = <0x2000 0x1000>;
++			interrupts = <GIC_SPI 242 0>;
++		};
++	};
++
++	...
++
++	venus: video-codec@1d00000 {
++		...
++		iommus = <&apps_iommu 5>;
++	};
++
++	mdp: mdp@1a01000 {
++		...
++		iommus = <&apps_iommu 4>;
++	};
++
++	gpu@01c00000 {
++		...
++		iommus = <&gpu_iommu 1>, <&gpu_iommu 2>;
++	};
 -- 
 2.9.3
