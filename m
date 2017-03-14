@@ -1,13 +1,11 @@
 From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 1/9] firmware/qcom: add qcom_scm_restore_sec_cfg()
-Date: Tue, 14 Mar 2017 11:18:03 -0400
-Message-ID: <20170314151811.17234-2-robdclark@gmail.com>
-References: <20170314151811.17234-1-robdclark@gmail.com>
+Subject: [PATCH 0/9] iommu: add qcom_iommu for early "B" family devices (v2)
+Date: Tue, 14 Mar 2017 11:18:02 -0400
+Message-ID: <20170314151811.17234-1-robdclark@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170314151811.17234-1-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,102 +19,56 @@ To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
- drivers/firmware/qcom_scm-32.c |  6 ++++++
- drivers/firmware/qcom_scm-64.c | 16 ++++++++++++++++
- drivers/firmware/qcom_scm.c    |  6 ++++++
- drivers/firmware/qcom_scm.h    |  5 +++++
- include/linux/qcom_scm.h       |  2 ++
- 5 files changed, 35 insertions(+)
+An iommu driver for Qualcomm "B" family devices which do not completely
+implement the ARM SMMU spec.  These devices have context-bank register
+layout that is similar to ARM SMMU, but no global register space (or at
+least not one that is accessible).
 
-diff --git a/drivers/firmware/qcom_scm-32.c b/drivers/firmware/qcom_scm-32.c
-index 8ad226c..722e65a 100644
---- a/drivers/firmware/qcom_scm-32.c
-+++ b/drivers/firmware/qcom_scm-32.c
-@@ -578,3 +578,9 @@ int __qcom_scm_set_remote_state(struct device *dev, u32 state, u32 id)
- 
- 	return ret ? : le32_to_cpu(scm_ret);
- }
-+
-+int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id,
-+			       u32 spare)
-+{
-+	return -ENODEV;
-+}
-diff --git a/drivers/firmware/qcom_scm-64.c b/drivers/firmware/qcom_scm-64.c
-index c933259..550e3a3 100644
---- a/drivers/firmware/qcom_scm-64.c
-+++ b/drivers/firmware/qcom_scm-64.c
-@@ -381,3 +381,19 @@ int __qcom_scm_set_remote_state(struct device *dev, u32 state, u32 id)
- 
- 	return ret ? : res.a1;
- }
-+
-+int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id, u32 spare)
-+{
-+	struct qcom_scm_desc desc = {0};
-+	struct arm_smccc_res res;
-+	int ret;
-+
-+	desc.args[0] = device_id;
-+	desc.args[1] = spare;
-+	desc.arginfo = QCOM_SCM_ARGS(2);
-+
-+	ret = qcom_scm_call(dev, QCOM_SCM_SVC_MP, QCOM_SCM_RESTORE_SEC_CFG,
-+			    &desc, &res);
-+
-+	return ret ? : res.a1;
-+}
-diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
-index d987bcc..ae1f473 100644
---- a/drivers/firmware/qcom_scm.c
-+++ b/drivers/firmware/qcom_scm.c
-@@ -315,6 +315,12 @@ static const struct reset_control_ops qcom_scm_pas_reset_ops = {
- 	.deassert = qcom_scm_pas_reset_deassert,
- };
- 
-+int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare)
-+{
-+	return __qcom_scm_restore_sec_cfg(__scm->dev, device_id, spare);
-+}
-+EXPORT_SYMBOL(qcom_scm_restore_sec_cfg);
-+
- /**
-  * qcom_scm_is_available() - Checks if SCM is available
-  */
-diff --git a/drivers/firmware/qcom_scm.h b/drivers/firmware/qcom_scm.h
-index 6a0f154..31fc732 100644
---- a/drivers/firmware/qcom_scm.h
-+++ b/drivers/firmware/qcom_scm.h
-@@ -85,4 +85,9 @@ static inline int qcom_scm_remap_error(int err)
- 	return -EINVAL;
- }
- 
-+#define QCOM_SCM_SVC_MP			0xc
-+#define QCOM_SCM_RESTORE_SEC_CFG	2
-+extern int __qcom_scm_restore_sec_cfg(struct device *dev, u32 device_id,
-+				      u32 spare);
-+
- #endif
-diff --git a/include/linux/qcom_scm.h b/include/linux/qcom_scm.h
-index d32f6f1..22017f5d 100644
---- a/include/linux/qcom_scm.h
-+++ b/include/linux/qcom_scm.h
-@@ -40,6 +40,7 @@ extern int qcom_scm_pas_shutdown(u32 peripheral);
- extern void qcom_scm_cpu_power_down(u32 flags);
- extern u32 qcom_scm_get_version(void);
- extern int qcom_scm_set_remote_state(u32 state, u32 id);
-+extern int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare);
- #else
- static inline
- int qcom_scm_set_cold_boot_addr(void *entry, const cpumask_t *cpus)
-@@ -67,5 +68,6 @@ static inline void qcom_scm_cpu_power_down(u32 flags) {}
- static inline u32 qcom_scm_get_version(void) { return 0; }
- static inline u32
- qcom_scm_set_remote_state(u32 state,u32 id) { return -ENODEV; }
-+static inline int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare) { return -ENODEV; }
- #endif
- #endif
+There are a couple vaguely unrelated patches to add venus and gpu dt nodes,
+so that we have something to wire up the iommu to.
+
+These patches apply on top of some in-flight patches to support IOMMU
+probe deferral.  You can find full branch on top of linux-next here:
+
+   git://people.freedesktop.org/~robclark/linux  next-20170307-db410c-qcom-smmu-3-venus
+
+or github if you prefer:
+
+   https://github.com/freedreno/kernel-msm/commits/next-20170307-db410c-qcom-smmu-3-venus
+
+Compared to previous patchset, there have been some (mostly binding related)
+cleanups.  Also fixed some other-config related build issues that kbuild
+robot spotted.
+
+Rob Clark (6):
+  firmware/qcom: add qcom_scm_restore_sec_cfg()
+  Docs: dt: document qcom iommu bindings
+  iommu: arm-smmu: split out register defines
+  iommu: add qcom_iommu
+  ARM64: DT: add gpu for msm8916
+  ARM64: DT: add iommu for msm8916
+
+Stanimir Varbanov (3):
+  firmware: qcom_scm: add two scm calls for iommu secure page table
+  iommu: qcom: initialize secure page table
+  ARM64: DT: add video codec devicetree node
+
+ .../devicetree/bindings/iommu/qcom,iommu.txt       | 113 +++
+ arch/arm64/boot/dts/qcom/msm8916.dtsi              | 108 +++
+ drivers/firmware/qcom_scm-32.c                     |  18 +
+ drivers/firmware/qcom_scm-64.c                     |  58 ++
+ drivers/firmware/qcom_scm.c                        |  18 +
+ drivers/firmware/qcom_scm.h                        |  11 +
+ drivers/iommu/Kconfig                              |  10 +
+ drivers/iommu/Makefile                             |   1 +
+ drivers/iommu/arm-smmu-regs.h                      | 227 ++++++
+ drivers/iommu/arm-smmu.c                           | 200 +----
+ drivers/iommu/qcom_iommu.c                         | 882 +++++++++++++++++++++
+ include/linux/qcom_scm.h                           |   6 +
+ 12 files changed, 1453 insertions(+), 199 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+ create mode 100644 drivers/iommu/arm-smmu-regs.h
+ create mode 100644 drivers/iommu/qcom_iommu.c
+
 -- 
 2.9.3
