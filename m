@@ -1,151 +1,114 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 3/9] Docs: dt: document qcom iommu bindings
-Date: Tue, 14 Mar 2017 11:18:05 -0400
-Message-ID: <20170314151811.17234-4-robdclark@gmail.com>
+From: Rob Clark <robdclark@gmail.com>
+Subject: [PATCH 6/9] iommu: qcom: initialize secure page table
+Date: Tue, 14 Mar 2017 11:18:08 -0400
+Message-ID: <20170314151811.17234-7-robdclark@gmail.com>
 References: <20170314151811.17234-1-robdclark@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170314151811.17234-1-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20170314151811.17234-1-robdclark@gmail.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org
+Cc: linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Sricharan <sricharan@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, Stanimir Varbanov <stanimir.varbanov@linaro.org>, Rob Clark <robdclark@gmail.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
- .../devicetree/bindings/iommu/qcom,iommu.txt       | 113 +++++++++++++++++++++
- 1 file changed, 113 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+From: Stanimir Varbanov <stanimir.varbanov@linaro.org>
 
-diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-new file mode 100644
-index 0000000..fd5b7fa
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-@@ -0,0 +1,113 @@
-+* QCOM IOMMU v1 Implementation
+This basically gets the secure page table size, allocates memory for
+secure pagetables and passes the physical address to the trusted zone.
+
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Rob Clark <robdclark@gmail.com>
+---
+ drivers/iommu/qcom_iommu.c | 64 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 64 insertions(+)
+
+diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+index 6b7adbf..743a628 100644
+--- a/drivers/iommu/qcom_iommu.c
++++ b/drivers/iommu/qcom_iommu.c
+@@ -608,6 +608,51 @@ static void qcom_iommu_disable_clocks(struct qcom_iommu_dev *qcom_iommu)
+ 	clk_disable_unprepare(qcom_iommu->iface_clk);
+ }
+ 
++static int qcom_iommu_sec_ptbl_init(struct device *dev)
++{
++	size_t psize = 0;
++	unsigned int spare = 0;
++	void *cpu_addr;
++	dma_addr_t paddr;
++	unsigned long attrs;
++	static bool allocated = false;
++	int ret;
 +
-+Qualcomm "B" family devices which are not compatible with arm-smmu have
-+a similar looking IOMMU but without access to the global register space,
-+and optionally requiring additional configuration to route context irqs
-+to non-secure vs secure interrupt line.
++	if (allocated)
++		return 0;
 +
-+** Required properties:
++	ret = qcom_scm_iommu_secure_ptbl_size(spare, &psize);
++	if (ret) {
++		dev_err(dev, "failed to get iommu secure pgtable size (%d)\n",
++			ret);
++		return ret;
++	}
 +
-+- compatible       : Should be one of:
++	dev_info(dev, "iommu sec: pgtable size: %zu\n", psize);
 +
-+                        "qcom,msm8916-iommu"
++	attrs = DMA_ATTR_NO_KERNEL_MAPPING;
 +
-+- clock-names      : Should be a pair of "iface" (required for IOMMUs
-+                     register group access) and "bus" (required for
-+                     the IOMMUs underlying bus access).
-+- clocks           : Phandles for respective clocks described by
-+                     clock-names.
-+- #address-cells   : must be 1.
-+- #size-cells      : must be 1.
-+- #iommu-cells     : Must be 1.
-+- ranges           : Base address and size of the iommu context banks.
-+- qcom,iommu-secure-id  : secure-id.
++	cpu_addr = dma_alloc_attrs(dev, psize, &paddr, GFP_KERNEL, attrs);
++	if (!cpu_addr) {
++		dev_err(dev, "failed to allocate %zu bytes for pgtable\n",
++			psize);
++		return -ENOMEM;
++	}
 +
-+- List of sub-nodes, one per translation context bank.  Each sub-node
-+  has the following required properties:
++	ret = qcom_scm_iommu_secure_ptbl_init(paddr, psize, spare);
++	if (ret) {
++		dev_err(dev, "failed to init iommu pgtable (%d)\n", ret);
++		goto free_mem;
++	}
 +
-+  - compatible     : Should be one of:
-+        - "qcom,msm-iommu-v1-ns"  : non-secure context bank
-+        - "qcom,msm-iommu-v1-sec" : secure context bank
-+  - reg            : Base address and size of context bank within the iommu
-+  - interrupts     : The context fault irq.
++	allocated = true;
++	return 0;
 +
-+** Optional properties:
++free_mem:
++	dma_free_attrs(dev, psize, cpu_addr, paddr, attrs);
++	return ret;
++}
 +
-+- reg              : Base address and size of the SMMU local base, should
-+                     be only specified if the iommu requires configuration
-+                     for routing of context bank irq's to secure vs non-
-+                     secure lines.  (Ie. if the iommu contains secure
-+                     context banks)
+ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
+ {
+ 	struct qcom_iommu_ctx *ctx;
+@@ -688,6 +733,17 @@ static struct platform_driver qcom_iommu_ctx_driver = {
+ };
+ module_platform_driver(qcom_iommu_ctx_driver);
+ 
++static bool qcom_iommu_has_secure_context(struct qcom_iommu_dev *qcom_iommu)
++{
++	struct device_node *child;
 +
++	for_each_child_of_node(qcom_iommu->dev->of_node, child)
++		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec"))
++			return true;
 +
-+** Examples:
++	return false;
++}
 +
-+	apps_iommu: iommu@1e20000 {
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		#iommu-cells = <1>;
-+		compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
-+		ranges = <0 0x1e20000 0x40000>;
-+		reg = <0x1ef0000 0x3000>;
-+		clocks = <&gcc GCC_SMMU_CFG_CLK>,
-+			 <&gcc GCC_APSS_TCU_CLK>;
-+		clock-names = "iface", "bus";
-+		qcom,iommu-secure-id = <17>;
+ static int qcom_iommu_device_probe(struct platform_device *pdev)
+ {
+ 	struct qcom_iommu_dev *qcom_iommu;
+@@ -724,6 +780,14 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 	}
+ 
++	if (qcom_iommu_has_secure_context(qcom_iommu)) {
++		ret = qcom_iommu_sec_ptbl_init(dev);
++		if (ret) {
++			dev_err(dev, "cannot init secure pg table(%d)\n", ret);
++			return ret;
++		}
++	}
 +
-+		// mdp_0:
-+		iommu-ctx@4000 {
-+			compatible = "qcom,msm-iommu-v1-ns";
-+			reg = <0x4000 0x1000>;
-+			interrupts = <GIC_SPI 70 0>;
-+		};
-+
-+		// venus_ns:
-+		iommu-ctx@5000 {
-+			compatible = "qcom,msm-iommu-v1-sec";
-+			reg = <0x5000 0x1000>;
-+			interrupts = <GIC_SPI 70 0>;
-+		};
-+	};
-+
-+	gpu_iommu: iommu@1f08000 {
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		#iommu-cells = <1>;
-+		compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
-+		ranges = <0 0x1f08000 0x10000>;
-+		clocks = <&gcc GCC_SMMU_CFG_CLK>,
-+			 <&gcc GCC_GFX_TCU_CLK>;
-+		clock-names = "iface", "bus";
-+		qcom,iommu-secure-id = <18>;
-+
-+		// gfx3d_user:
-+		iommu-ctx@1f09000 {
-+			compatible = "qcom,msm-iommu-v1-ns";
-+			reg = <0x1000 0x1000>;
-+			interrupts = <GIC_SPI 241 0>;
-+		};
-+
-+		// gfx3d_priv:
-+		iommu-ctx@1f0a000 {
-+			compatible = "qcom,msm-iommu-v1-ns";
-+			reg = <0x2000 0x1000>;
-+			interrupts = <GIC_SPI 242 0>;
-+		};
-+	};
-+
-+	...
-+
-+	venus: video-codec@1d00000 {
-+		...
-+		iommus = <&apps_iommu 5>;
-+	};
-+
-+	mdp: mdp@1a01000 {
-+		...
-+		iommus = <&apps_iommu 4>;
-+	};
-+
-+	gpu@01c00000 {
-+		...
-+		iommus = <&gpu_iommu 1>, <&gpu_iommu 2>;
-+	};
+ 	platform_set_drvdata(pdev, qcom_iommu);
+ 
+ 	/* register context bank devices, which are child nodes: */
 -- 
 2.9.3
