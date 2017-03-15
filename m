@@ -1,13 +1,17 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH 5/9] iommu: add qcom_iommu
-Date: Tue, 14 Mar 2017 11:18:07 -0400
-Message-ID: <20170314151811.17234-6-robdclark@gmail.com>
-References: <20170314151811.17234-1-robdclark@gmail.com>
+From: Oza Oza via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: RE: [RFC PATCH] iommu/dma: check pci host bridge dma_mask for IOVA
+	allocation
+Date: Wed, 15 Mar 2017 14:38:15 +0530
+Message-ID: <74299555a97ff1ee38ef014333f2e4a1@mail.gmail.com>
+References: <1489481327-2862-1-git-send-email-oza.oza@broadcom.com>
+	<e24a46f0-bd25-8fff-d19e-cafd615d7c37@arm.com>
+	545868358a73cbc5bd1911eb64b3bdc6@mail.gmail.com
+Reply-To: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170314151811.17234-1-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: 545868358a73cbc5bd1911eb64b3bdc6-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,889 +21,251 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Nikita Yushchenko <nikita.yoush-M4DtvfQ/ZS1MRgGoP+s0PdBPR1lH4CV8@public.gmane.org>, arnd-r2nGTMty4D4@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-An iommu driver for Qualcomm "B" family devices which do not completely
-implement the ARM SMMU spec.  These devices have context-bank register
-layout that is similar to ARM SMMU, but no global register space (or at
-least not one that is accessible).
+Hi Robin,
 
-Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
----
- drivers/iommu/Kconfig         |  10 +
- drivers/iommu/Makefile        |   1 +
- drivers/iommu/arm-smmu-regs.h |   2 +
- drivers/iommu/qcom_iommu.c    | 818 ++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 831 insertions(+)
- create mode 100644 drivers/iommu/qcom_iommu.c
+I tried applying
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 37e204f..400a404 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -359,4 +359,14 @@ config MTK_IOMMU_V1
- 
- 	  if unsure, say N here.
- 
-+config QCOM_IOMMU
-+	bool "Qualcomm IOMMU Support"
-+	depends on ARM || ARM64
-+	depends on ARCH_QCOM || COMPILE_TEST
-+	select IOMMU_API
-+	select IOMMU_IO_PGTABLE_LPAE
-+	select ARM_DMA_USE_IOMMU
-+	help
-+	  Support for IOMMU on certain Qualcomm SoCs.
-+
- endif # IOMMU_SUPPORT
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 195f7b9..b910aea 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -27,3 +27,4 @@ obj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o
- obj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o
- obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
- obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
-+obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
-diff --git a/drivers/iommu/arm-smmu-regs.h b/drivers/iommu/arm-smmu-regs.h
-index 632240f..e643164 100644
---- a/drivers/iommu/arm-smmu-regs.h
-+++ b/drivers/iommu/arm-smmu-regs.h
-@@ -174,6 +174,8 @@ enum arm_smmu_s2cr_privcfg {
- #define ARM_SMMU_CB_S1_TLBIVAL		0x620
- #define ARM_SMMU_CB_S2_TLBIIPAS2	0x630
- #define ARM_SMMU_CB_S2_TLBIIPAS2L	0x638
-+#define ARM_SMMU_CB_TLBSYNC		0x7f0
-+#define ARM_SMMU_CB_TLBSTATUS		0x7f4
- #define ARM_SMMU_CB_ATS1PR		0x800
- #define ARM_SMMU_CB_ATSR		0x8f0
- 
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-new file mode 100644
-index 0000000..6b7adbf
---- /dev/null
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -0,0 +1,818 @@
-+/*
-+ * IOMMU API for QCOM secure IOMMUs.  Somewhat based on arm-smmu.c
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-+ *
-+ * Copyright (C) 2013 ARM Limited
-+ * Copyright (C) 2017 Red Hat
-+ */
-+
-+#define pr_fmt(fmt) "qcom-iommu: " fmt
-+
-+#include <linux/atomic.h>
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/dma-iommu.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/err.h>
-+#include <linux/interrupt.h>
-+#include <linux/io.h>
-+#include <linux/io-64-nonatomic-hi-lo.h>
-+#include <linux/iommu.h>
-+#include <linux/iopoll.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_device.h>
-+#include <linux/of_iommu.h>
-+#include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/qcom_scm.h>
-+#include <linux/slab.h>
-+#include <linux/spinlock.h>
-+
-+#include "io-pgtable.h"
-+#include "arm-smmu-regs.h"
-+
-+#define SMMU_INTR_SEL_NS     0x2000
-+
-+struct qcom_iommu_dev {
-+	/* IOMMU core code handle */
-+	struct iommu_device	 iommu;
-+	struct device		*dev;
-+	struct clk		*iface_clk;
-+	struct clk		*bus_clk;
-+	void __iomem		*local_base;
-+	u32			 sec_id;
-+	struct list_head	 context_list;   /* list of qcom_iommu_context */
-+};
-+
-+struct qcom_iommu_ctx {
-+	struct device		*dev;
-+	void __iomem		*base;
-+	unsigned int		 irq;
-+	bool			 secure_init;
-+	u32			 asid;      /* asid and ctx bank # are 1:1 */
-+	struct iommu_group	*group;
-+	struct list_head	 node;      /* head in qcom_iommu_device::context_list */
-+};
-+
-+struct qcom_iommu_domain {
-+	struct io_pgtable_ops	*pgtbl_ops;
-+	spinlock_t		 pgtbl_lock;
-+	struct mutex		 init_mutex; /* Protects iommu pointer */
-+	struct iommu_domain	 domain;
-+	struct qcom_iommu_dev	*iommu;
-+};
-+
-+static struct qcom_iommu_domain *to_qcom_iommu_domain(struct iommu_domain *dom)
-+{
-+	return container_of(dom, struct qcom_iommu_domain, domain);
-+}
-+
-+static const struct iommu_ops qcom_iommu_ops;
-+
-+static struct qcom_iommu_dev * __to_iommu(struct iommu_fwspec *fwspec)
-+{
-+	if (WARN_ON(!fwspec || fwspec->ops != &qcom_iommu_ops))
-+		return NULL;
-+	return fwspec->iommu_priv;
-+}
-+
-+static struct qcom_iommu_ctx * __to_ctx(struct iommu_fwspec *fwspec, unsigned asid)
-+{
-+	struct qcom_iommu_dev *qcom_iommu = __to_iommu(fwspec);
-+	struct qcom_iommu_ctx *ctx;
-+
-+	if (!qcom_iommu)
-+		return NULL;
-+
-+	list_for_each_entry(ctx, &qcom_iommu->context_list, node)
-+		if (ctx->asid == asid)
-+			return ctx;
-+
-+	WARN(1, "no ctx for asid %u\n", asid);
-+	return NULL;
-+}
-+
-+static inline void
-+iommu_writel(struct qcom_iommu_ctx *ctx, unsigned reg, u32 val)
-+{
-+	writel_relaxed(val, ctx->base + reg);
-+}
-+
-+static inline void
-+iommu_writeq(struct qcom_iommu_ctx *ctx, unsigned reg, u64 val)
-+{
-+	writeq_relaxed(val, ctx->base + reg);
-+}
-+
-+static inline u32
-+iommu_readl(struct qcom_iommu_ctx *ctx, unsigned reg)
-+{
-+	return readl_relaxed(ctx->base + reg);
-+}
-+
-+static inline u32
-+iommu_readq(struct qcom_iommu_ctx *ctx, unsigned reg)
-+{
-+	return readq_relaxed(ctx->base + reg);
-+}
-+
-+static void __sync_tlb(struct qcom_iommu_ctx *ctx)
-+{
-+	unsigned int val;
-+	unsigned int ret;
-+
-+	iommu_writel(ctx, ARM_SMMU_CB_TLBSYNC, 0);
-+
-+	ret = readl_poll_timeout(ctx->base + ARM_SMMU_CB_TLBSTATUS, val,
-+				 (val & 0x1) == 0, 0, 5000000);
-+	if (ret)
-+		dev_err(ctx->dev, "timeout waiting for TLB SYNC\n");
-+}
-+
-+static void qcom_iommu_tlb_sync(void *cookie)
-+{
-+	struct iommu_fwspec *fwspec = cookie;
-+	unsigned i;
-+
-+	for (i = 0; i < fwspec->num_ids; i++)
-+		__sync_tlb(__to_ctx(fwspec, fwspec->ids[i]));
-+}
-+
-+static void qcom_iommu_tlb_inv_context(void *cookie)
-+{
-+	struct iommu_fwspec *fwspec = cookie;
-+	unsigned i;
-+
-+	for (i = 0; i < fwspec->num_ids; i++) {
-+		struct qcom_iommu_ctx *ctx = __to_ctx(fwspec, fwspec->ids[i]);
-+
-+		iommu_writel(ctx, ARM_SMMU_CB_S1_TLBIASID, ctx->asid);
-+		__sync_tlb(ctx);
-+	}
-+}
-+
-+static void qcom_iommu_tlb_inv_range_nosync(unsigned long iova, size_t size,
-+					    size_t granule, bool leaf, void *cookie)
-+{
-+	struct iommu_fwspec *fwspec = cookie;
-+	unsigned i, reg;
-+
-+	reg = leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
-+
-+	for (i = 0; i < fwspec->num_ids; i++) {
-+		struct qcom_iommu_ctx *ctx = __to_ctx(fwspec, fwspec->ids[i]);
-+		size_t s = size;
-+
-+		iova &= ~12UL;
-+		iova |= ctx->asid;
-+		do {
-+			iommu_writel(ctx, reg, iova);
-+			iova += granule;
-+		} while (s -= granule);
-+	}
-+}
-+
-+static const struct iommu_gather_ops qcom_gather_ops = {
-+	.tlb_flush_all	= qcom_iommu_tlb_inv_context,
-+	.tlb_add_flush	= qcom_iommu_tlb_inv_range_nosync,
-+	.tlb_sync	= qcom_iommu_tlb_sync,
-+};
-+
-+static irqreturn_t qcom_iommu_fault(int irq, void *dev)
-+{
-+	struct qcom_iommu_ctx *ctx = dev;
-+	u32 fsr, fsynr;
-+	unsigned long iova;
-+
-+	fsr = iommu_readl(ctx, ARM_SMMU_CB_FSR);
-+
-+	if (!(fsr & FSR_FAULT))
-+		return IRQ_NONE;
-+
-+	fsynr = iommu_readl(ctx, ARM_SMMU_CB_FSYNR0);
-+	iova = iommu_readq(ctx, ARM_SMMU_CB_FAR);
-+
-+	dev_err_ratelimited(ctx->dev,
-+			    "Unhandled context fault: fsr=0x%x, "
-+			    "iova=0x%08lx, fsynr=0x%x, cb=%d\n",
-+			    fsr, iova, fsynr, ctx->asid);
-+
-+	iommu_writel(ctx, ARM_SMMU_CB_FSR, fsr);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int qcom_iommu_init_domain(struct iommu_domain *domain,
-+				  struct qcom_iommu_dev *qcom_iommu,
-+				  struct iommu_fwspec *fwspec)
-+{
-+	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
-+	struct io_pgtable_ops *pgtbl_ops;
-+	struct io_pgtable_cfg pgtbl_cfg;
-+	int i, ret = 0;
-+	u32 reg;
-+
-+	mutex_lock(&qcom_domain->init_mutex);
-+	if (qcom_domain->iommu)
-+		goto out_unlock;
-+
-+	pgtbl_cfg = (struct io_pgtable_cfg) {
-+		.pgsize_bitmap	= qcom_iommu_ops.pgsize_bitmap,
-+		.ias		= 32,
-+		.oas		= 40,
-+		.tlb		= &qcom_gather_ops,
-+		.iommu_dev	= qcom_iommu->dev,
-+	};
-+
-+	qcom_domain->iommu = qcom_iommu;
-+	pgtbl_ops = alloc_io_pgtable_ops(ARM_32_LPAE_S1, &pgtbl_cfg, fwspec);
-+	if (!pgtbl_ops) {
-+		dev_err(qcom_iommu->dev, "failed to allocate pagetable ops\n");
-+		ret = -ENOMEM;
-+		goto out_clear_iommu;
-+	}
-+
-+	/* Update the domain's page sizes to reflect the page table format */
-+	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
-+	domain->geometry.aperture_end = (1ULL << pgtbl_cfg.ias) - 1;
-+	domain->geometry.force_aperture = true;
-+
-+	for (i = 0; i < fwspec->num_ids; i++) {
-+		struct qcom_iommu_ctx *ctx = __to_ctx(fwspec, fwspec->ids[i]);
-+
-+		if (!ctx->secure_init) {
-+			ret = qcom_scm_restore_sec_cfg(qcom_iommu->sec_id, ctx->asid);
-+			if (ret) {
-+				dev_err(qcom_iommu->dev, "secure init failed: %d\n", ret);
-+				goto out_clear_iommu;
-+			}
-+			ctx->secure_init = true;
-+		}
-+
-+		/* TTBRs */
-+		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
-+				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[0] |
-+				((u64)ctx->asid << TTBRn_ASID_SHIFT));
-+		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1,
-+				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[1] |
-+				((u64)ctx->asid << TTBRn_ASID_SHIFT));
-+
-+		/* TTBCR */
-+		iommu_writel(ctx, ARM_SMMU_CB_TTBCR2,
-+				(pgtbl_cfg.arm_lpae_s1_cfg.tcr >> 32) |
-+				TTBCR2_SEP_UPSTREAM);
-+		iommu_writel(ctx, ARM_SMMU_CB_TTBCR,
-+				pgtbl_cfg.arm_lpae_s1_cfg.tcr);
-+
-+		/* MAIRs (stage-1 only) */
-+		iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR0,
-+				pgtbl_cfg.arm_lpae_s1_cfg.mair[0]);
-+		iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR1,
-+				pgtbl_cfg.arm_lpae_s1_cfg.mair[1]);
-+
-+		/* SCTLR */
-+		reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE |
-+			SCTLR_M | SCTLR_S1_ASIDPNE;
-+#ifdef __BIG_ENDIAN
-+		reg |= SCTLR_E;
-+#endif
-+		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, reg);
-+	}
-+
-+	mutex_unlock(&qcom_domain->init_mutex);
-+
-+	/* Publish page table ops for map/unmap */
-+	qcom_domain->pgtbl_ops = pgtbl_ops;
-+
-+	return 0;
-+
-+out_clear_iommu:
-+	qcom_domain->iommu = NULL;
-+out_unlock:
-+	mutex_unlock(&qcom_domain->init_mutex);
-+	return ret;
-+}
-+
-+static struct iommu_domain *qcom_iommu_domain_alloc(unsigned type)
-+{
-+	struct qcom_iommu_domain *qcom_domain;
-+
-+	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
-+		return NULL;
-+	/*
-+	 * Allocate the domain and initialise some of its data structures.
-+	 * We can't really do anything meaningful until we've added a
-+	 * master.
-+	 */
-+	qcom_domain = kzalloc(sizeof(*qcom_domain), GFP_KERNEL);
-+	if (!qcom_domain)
-+		return NULL;
-+
-+	if (type == IOMMU_DOMAIN_DMA &&
-+	    iommu_get_dma_cookie(&qcom_domain->domain)) {
-+		kfree(qcom_domain);
-+		return NULL;
-+	}
-+
-+	mutex_init(&qcom_domain->init_mutex);
-+	spin_lock_init(&qcom_domain->pgtbl_lock);
-+
-+	return &qcom_domain->domain;
-+}
-+
-+static void qcom_iommu_domain_free(struct iommu_domain *domain)
-+{
-+	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
-+
-+	if (WARN_ON(qcom_domain->iommu))    /* forgot to detach? */
-+		return;
-+
-+	iommu_put_dma_cookie(domain);
-+
-+	free_io_pgtable_ops(qcom_domain->pgtbl_ops);
-+
-+	kfree(qcom_domain);
-+}
-+
-+static int qcom_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
-+{
-+	struct qcom_iommu_dev *qcom_iommu = __to_iommu(dev->iommu_fwspec);
-+	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
-+	int ret;
-+
-+	if (!qcom_iommu) {
-+		dev_err(dev, "cannot attach to IOMMU, is it on the same bus?\n");
-+		return -ENXIO;
-+	}
-+
-+	/* Ensure that the domain is finalized */
-+	pm_runtime_get_sync(qcom_iommu->dev);
-+	ret = qcom_iommu_init_domain(domain, qcom_iommu, dev->iommu_fwspec);
-+	pm_runtime_put_sync(qcom_iommu->dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	/*
-+	 * Sanity check the domain. We don't support domains across
-+	 * different IOMMUs.
-+	 */
-+	if (qcom_domain->iommu != qcom_iommu) {
-+		dev_err(dev, "cannot attach to IOMMU %s while already "
-+			"attached to domain on IOMMU %s\n",
-+			dev_name(qcom_domain->iommu->dev),
-+			dev_name(qcom_iommu->dev));
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static void qcom_iommu_detach_dev(struct iommu_domain *domain, struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	struct qcom_iommu_dev *qcom_iommu = __to_iommu(fwspec);
-+	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
-+	unsigned i;
-+
-+	if (!qcom_domain->iommu)
-+		return;
-+
-+	pm_runtime_get_sync(qcom_iommu->dev);
-+	for (i = 0; i < fwspec->num_ids; i++) {
-+		struct qcom_iommu_ctx *ctx = __to_ctx(fwspec, fwspec->ids[i]);
-+
-+		/* Disable the context bank: */
-+		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
-+	}
-+	pm_runtime_put_sync(qcom_iommu->dev);
-+
-+	qcom_domain->iommu = NULL;
-+}
-+
-+static int qcom_iommu_map(struct iommu_domain *domain, unsigned long iova,
-+			  phys_addr_t paddr, size_t size, int prot)
-+{
-+	int ret;
-+	unsigned long flags;
-+	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
-+	struct io_pgtable_ops *ops = qcom_domain->pgtbl_ops;
-+
-+	if (!ops)
-+		return -ENODEV;
-+
-+	spin_lock_irqsave(&qcom_domain->pgtbl_lock, flags);
-+	ret = ops->map(ops, iova, paddr, size, prot);
-+	spin_unlock_irqrestore(&qcom_domain->pgtbl_lock, flags);
-+	return ret;
-+}
-+
-+static size_t qcom_iommu_unmap(struct iommu_domain *domain, unsigned long iova,
-+			       size_t size)
-+{
-+	size_t ret;
-+	unsigned long flags;
-+	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
-+	struct io_pgtable_ops *ops = qcom_domain->pgtbl_ops;
-+
-+	if (!ops)
-+		return 0;
-+
-+	spin_lock_irqsave(&qcom_domain->pgtbl_lock, flags);
-+	ret = ops->unmap(ops, iova, size);
-+	spin_unlock_irqrestore(&qcom_domain->pgtbl_lock, flags);
-+	return ret;
-+}
-+
-+static phys_addr_t qcom_iommu_iova_to_phys(struct iommu_domain *domain,
-+					   dma_addr_t iova)
-+{
-+	phys_addr_t ret;
-+	unsigned long flags;
-+	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
-+	struct io_pgtable_ops *ops = qcom_domain->pgtbl_ops;
-+
-+	if (!ops)
-+		return 0;
-+
-+	spin_lock_irqsave(&qcom_domain->pgtbl_lock, flags);
-+	ret = ops->iova_to_phys(ops, iova);
-+	spin_unlock_irqrestore(&qcom_domain->pgtbl_lock, flags);
-+
-+	return ret;
-+}
-+
-+static bool qcom_iommu_capable(enum iommu_cap cap)
-+{
-+	switch (cap) {
-+	case IOMMU_CAP_CACHE_COHERENCY:
-+		/*
-+		 * Return true here as the SMMU can always send out coherent
-+		 * requests.
-+		 */
-+		return true;
-+	case IOMMU_CAP_NOEXEC:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+static int qcom_iommu_add_device(struct device *dev)
-+{
-+	struct qcom_iommu_dev *qcom_iommu = __to_iommu(dev->iommu_fwspec);
-+	struct iommu_group *group;
-+	struct device_link *link;
-+
-+	if (!qcom_iommu)
-+		return -ENODEV;
-+
-+	/*
-+	 * Establish the link between iommu and master, so that the
-+	 * iommu gets runtime enabled/disabled as per the master's
-+	 * needs.
-+	 */
-+	link = device_link_add(dev, qcom_iommu->dev, DL_FLAG_PM_RUNTIME);
-+	if (!link) {
-+		dev_err(qcom_iommu->dev, "Unable to create device link between %s and %s\n",
-+			dev_name(qcom_iommu->dev), dev_name(dev));
-+		return -ENODEV;
-+	}
-+
-+	group = iommu_group_get_for_dev(dev);
-+	if (IS_ERR_OR_NULL(group))
-+		return PTR_ERR_OR_ZERO(group);
-+
-+	iommu_group_put(group);
-+	iommu_device_link(&qcom_iommu->iommu, dev);
-+
-+	return 0;
-+}
-+
-+static void qcom_iommu_remove_device(struct device *dev)
-+{
-+	struct qcom_iommu_dev *qcom_iommu = __to_iommu(dev->iommu_fwspec);
-+
-+	if (!qcom_iommu)
-+		return;
-+
-+	iommu_group_remove_device(dev);
-+	iommu_device_unlink(&qcom_iommu->iommu, dev);
-+	iommu_fwspec_free(dev);
-+}
-+
-+static struct iommu_group *qcom_iommu_device_group(struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+	struct iommu_group *group = NULL;
-+	unsigned i;
-+
-+	for (i = 0; i < fwspec->num_ids; i++) {
-+		struct qcom_iommu_ctx *ctx = __to_ctx(fwspec, fwspec->ids[i]);
-+
-+		if (group && ctx->group && group != ctx->group)
-+			return ERR_PTR(-EINVAL);
-+
-+		group = ctx->group;
-+	}
-+
-+	if (group)
-+		return iommu_group_ref_get(group);
-+
-+	group = generic_device_group(dev);
-+
-+	for (i = 0; i < fwspec->num_ids; i++) {
-+		struct qcom_iommu_ctx *ctx = __to_ctx(fwspec, fwspec->ids[i]);
-+		ctx->group = iommu_group_ref_get(group);
-+	}
-+
-+	return group;
-+}
-+
-+static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
-+{
-+	struct platform_device *iommu_pdev;
-+
-+	if (args->args_count != 1) {
-+		dev_err(dev, "incorrect number of iommu params found for %s "
-+			"(found %d, expected 1)\n",
-+			args->np->full_name, args->args_count);
-+		return -EINVAL;
-+	}
-+
-+	if (!dev->iommu_fwspec->iommu_priv) {
-+		iommu_pdev = of_find_device_by_node(args->np);
-+		if (WARN_ON(!iommu_pdev))
-+			return -EINVAL;
-+
-+		dev->iommu_fwspec->iommu_priv = platform_get_drvdata(iommu_pdev);
-+	}
-+
-+	return iommu_fwspec_add_ids(dev, &args->args[0], 1);
-+}
-+
-+static const struct iommu_ops qcom_iommu_ops = {
-+	.capable	= qcom_iommu_capable,
-+	.domain_alloc	= qcom_iommu_domain_alloc,
-+	.domain_free	= qcom_iommu_domain_free,
-+	.attach_dev	= qcom_iommu_attach_dev,
-+	.detach_dev	= qcom_iommu_detach_dev,
-+	.map		= qcom_iommu_map,
-+	.unmap		= qcom_iommu_unmap,
-+	.map_sg		= default_iommu_map_sg,
-+	.iova_to_phys	= qcom_iommu_iova_to_phys,
-+	.add_device	= qcom_iommu_add_device,
-+	.remove_device	= qcom_iommu_remove_device,
-+	.device_group	= qcom_iommu_device_group,
-+	.of_xlate	= qcom_iommu_of_xlate,
-+	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
-+};
-+
-+static int qcom_iommu_enable_clocks(struct qcom_iommu_dev *qcom_iommu)
-+{
-+	int ret;
-+
-+	ret = clk_prepare_enable(qcom_iommu->iface_clk);
-+	if (ret) {
-+		dev_err(qcom_iommu->dev, "Couldn't enable iface_clk\n");
-+		return ret;
-+	}
-+
-+	ret = clk_prepare_enable(qcom_iommu->bus_clk);
-+	if (ret) {
-+		dev_err(qcom_iommu->dev, "Couldn't enable bus_clk\n");
-+		clk_disable_unprepare(qcom_iommu->iface_clk);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static void qcom_iommu_disable_clocks(struct qcom_iommu_dev *qcom_iommu)
-+{
-+	clk_disable_unprepare(qcom_iommu->bus_clk);
-+	clk_disable_unprepare(qcom_iommu->iface_clk);
-+}
-+
-+static int qcom_iommu_ctx_probe(struct platform_device *pdev)
-+{
-+	struct qcom_iommu_ctx *ctx;
-+	struct device *dev = &pdev->dev;
-+	struct qcom_iommu_dev *qcom_iommu = dev_get_drvdata(dev->parent);
-+	struct resource *res;
-+	int ret;
-+	u32 reg;
-+
-+	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return -ENOMEM;
-+
-+	ctx->dev = dev;
-+	platform_set_drvdata(pdev, ctx);
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	ctx->base = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(ctx->base))
-+		return PTR_ERR(ctx->base);
-+
-+	ctx->irq = platform_get_irq(pdev, 0);
-+	if (ctx->irq < 0) {
-+		dev_err(dev, "failed to get irq\n");
-+		return -ENODEV;
-+	}
-+
-+	ret = devm_request_irq(dev, ctx->irq,
-+			       qcom_iommu_fault,
-+			       IRQF_SHARED,
-+			       "qcom-iommu-fault",
-+			       ctx);
-+	if (ret) {
-+		dev_err(dev, "failed to request IRQ %u\n", ctx->irq);
-+		return ret;
-+	}
-+
-+	/* read the "reg" property directly to get the relative address
-+	 * of the context bank, and calculate the asid from that:
-+	 */
-+	if (of_property_read_u32_index(dev->of_node, "reg", 0, &reg)) {
-+		dev_err(dev, "missing reg property\n");
-+		return -ENODEV;
-+	}
-+
-+	ctx->asid = reg / 0x1000;      /* context banks are 0x1000 apart */
-+
-+	dev_dbg(dev, "found asid %u\n", ctx->asid);
-+
-+	list_add_tail(&ctx->node, &qcom_iommu->context_list);
-+
-+	return 0;
-+}
-+
-+static int qcom_iommu_ctx_remove(struct platform_device *pdev)
-+{
-+	struct qcom_iommu_ctx *ctx = platform_get_drvdata(pdev);
-+
-+	iommu_group_put(ctx->group);
-+	platform_set_drvdata(pdev, NULL);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id ctx_of_match[] = {
-+	{ .compatible = "qcom,msm-iommu-v1-ns" },
-+	{ .compatible = "qcom,msm-iommu-v1-sec" },
-+	{ /* sentinel */ }
-+};
-+
-+static struct platform_driver qcom_iommu_ctx_driver = {
-+	.driver	= {
-+		.name		= "qcom-iommu-ctx",
-+		.of_match_table	= of_match_ptr(ctx_of_match),
-+	},
-+	.probe	= qcom_iommu_ctx_probe,
-+	.remove = qcom_iommu_ctx_remove,
-+};
-+module_platform_driver(qcom_iommu_ctx_driver);
-+
-+static int qcom_iommu_device_probe(struct platform_device *pdev)
-+{
-+	struct qcom_iommu_dev *qcom_iommu;
-+	struct device *dev = &pdev->dev;
-+	struct resource *res;
-+	int ret;
-+
-+	qcom_iommu = devm_kzalloc(dev, sizeof(*qcom_iommu), GFP_KERNEL);
-+	if (!qcom_iommu)
-+		return -ENOMEM;
-+	qcom_iommu->dev = dev;
-+
-+	INIT_LIST_HEAD(&qcom_iommu->context_list);
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (res)
-+		qcom_iommu->local_base = devm_ioremap_resource(dev, res);
-+
-+	qcom_iommu->iface_clk = devm_clk_get(dev, "iface");
-+	if (IS_ERR(qcom_iommu->iface_clk)) {
-+		dev_err(dev, "failed to get iface clock\n");
-+		return PTR_ERR(qcom_iommu->iface_clk);
-+	}
-+
-+	qcom_iommu->bus_clk = devm_clk_get(dev, "bus");
-+	if (IS_ERR(qcom_iommu->bus_clk)) {
-+		dev_err(dev, "failed to get bus clock\n");
-+		return PTR_ERR(qcom_iommu->bus_clk);
-+	}
-+
-+	if (of_property_read_u32(dev->of_node, "qcom,iommu-secure-id",
-+				 &qcom_iommu->sec_id)) {
-+		dev_err(dev, "missing qcom,iommu-secure-id property\n");
-+		return -ENODEV;
-+	}
-+
-+	platform_set_drvdata(pdev, qcom_iommu);
-+
-+	/* register context bank devices, which are child nodes: */
-+	ret = of_platform_populate(dev->of_node, ctx_of_match, NULL, dev);
-+	if (ret) {
-+		dev_err(dev, "Failed to populate iommu contexts\n");
-+		return ret;
-+	}
-+
-+	ret = iommu_device_sysfs_add(&qcom_iommu->iommu, dev, NULL,
-+				     "smmu.%pa", &res->start);
-+	if (ret) {
-+		dev_err(dev, "Failed to register iommu in sysfs\n");
-+		return ret;
-+	}
-+
-+	iommu_device_set_ops(&qcom_iommu->iommu, &qcom_iommu_ops);
-+	iommu_device_set_fwnode(&qcom_iommu->iommu, dev->fwnode);
-+
-+	ret = iommu_device_register(&qcom_iommu->iommu);
-+	if (ret) {
-+		dev_err(dev, "Failed to register iommu\n");
-+		return ret;
-+	}
-+
-+	pm_runtime_enable(dev);
-+	bus_set_iommu(&platform_bus_type, &qcom_iommu_ops);
-+
-+	if (qcom_iommu->local_base) {
-+		pm_runtime_get_sync(dev);
-+		writel_relaxed(0xffffffff, qcom_iommu->local_base + SMMU_INTR_SEL_NS);
-+		pm_runtime_put_sync(dev);
-+	}
-+
-+	return 0;
-+}
-+
-+static int qcom_iommu_device_remove(struct platform_device *pdev)
-+{
-+	pm_runtime_force_suspend(&pdev->dev);
-+	platform_set_drvdata(pdev, NULL);
-+
-+	return 0;
-+}
-+
-+#ifdef CONFIG_PM
-+static int qcom_iommu_resume(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
-+
-+	return qcom_iommu_enable_clocks(qcom_iommu);
-+}
-+
-+static int qcom_iommu_suspend(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
-+
-+	qcom_iommu_disable_clocks(qcom_iommu);
-+
-+	return 0;
-+}
-+#endif
-+
-+static const struct dev_pm_ops qcom_iommu_pm_ops = {
-+	SET_RUNTIME_PM_OPS(qcom_iommu_suspend, qcom_iommu_resume, NULL)
-+	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
-+				pm_runtime_force_resume)
-+};
-+
-+static const struct of_device_id qcom_iommu_of_match[] = {
-+	{ .compatible = "qcom,msm-iommu-v1" },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, qcom_iommu_of_match);
-+
-+static struct platform_driver qcom_iommu_driver = {
-+	.driver	= {
-+		.name		= "qcom-iommu",
-+		.of_match_table	= of_match_ptr(qcom_iommu_of_match),
-+		.pm		= &qcom_iommu_pm_ops,
-+	},
-+	.probe	= qcom_iommu_device_probe,
-+	.remove	= qcom_iommu_device_remove,
-+};
-+module_platform_driver(qcom_iommu_driver);
-+
-+IOMMU_OF_DECLARE(qcom_iommu_dev, "qcom,msm-iommu-v1", NULL);
-+
-+MODULE_DESCRIPTION("IOMMU API for QCOM IOMMU v1 implementations");
-+MODULE_LICENSE("GPL v2");
--- 
-2.9.3
+[1]:http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1306545.ht
+ml
+[3]:http://www.spinics.net/lists/arm-kernel/msg566947.html
+
+Because of 3 its crashing on our platform. (with SDHCI running with iommu
+both enabled and disabled)
+
+[   19.925018] PC is at sdhci_send_command+0x648/0xb30
+[   19.930048] LR is at sdhci_send_command+0x588/0xb30
+[   19.935078] pc : [<ffff0000085c9cb0>] lr : [<ffff0000085c9bf0>] pstate:
+a00001c5
+[   19.942707] sp : ffff80097ff1ede0
+[   19.946123] x29: ffff80097ff1ede0 x28: 0000000000000000
+[   19.951623] x27: 0000000000000001 x26: ffff000008923ca8
+[   19.957124] x25: ffff8009750dc0d8 x24: ffff8009750dacc0
+[   19.962625] x23: 0000000000418958 x22: 0000000000000003
+[   19.968125] x21: ffff8009750dc118 x20: ffff8009750dc198
+[   19.973626] x19: ffff8009750dac00 x18: 0000000000000400
+[   19.979126] x17: 0000000000000000 x16: 0000000000000000
+[   19.984627] x15: ffff8009764e4880 x14: ffff800976811548
+[   19.990128] x13: 0000000000000008 x12: ffff7e0025ff9580
+[   19.995628] x11: ffff800976d28080 x10: 0000000000000840
+[   20.001129] x9 : 0000000000000040 x8 : ffff800976801020
+[   20.006629] x7 : 00000009ffffd000 x6 : ffff000008441358
+[   20.012130] x5 : 0000000000000000 x4 : 0000000000000000
+[   20.017631] x3 : ffff800976465080 x2 : 0000000000000000
+[   20.023130] x1 : ffff7e0025ce7802 x0 : 00000000ffffffe4
+[   20.028630]
+[   20.030165] ---[ end trace cd394f1ca2a1b19b ]---
+[   20.034925] Call trace:
+[   20.037446] Exception stack(0xffff80097ff1ec10 to 0xffff80097ff1ed40)
+[   20.044089] ec00:                                   ffff8009750dac00
+0001000000000000
+[   20.052165] ec20: ffff80097ff1ede0 ffff0000085c9cb0 0000000000000000
+0000000000000001
+[   20.060242] ec40: ffff80097ff1ec90 ffff0000084402b4 ffff800976421000
+ffff800976465040
+[   20.068318] ec60: ffff800976465040 00000000ffff0000 ffff80097659c850
+ffff80097653d810
+[   20.076393] ec80: 0000000000000001 ffff800973cb9300 ffff80097ff1ecb0
+ffff000008440324
+[   20.084470] eca0: ffff800976421000 00000000000001c0 00000000ffffffe4
+ffff7e0025ce7802
+[   20.092547] ecc0: 0000000000000000 ffff800976465080 0000000000000000
+0000000000000000
+[   20.100623] ece0: ffff000008441358 00000009ffffd000 ffff800976801020
+0000000000000040
+[   20.108699] ed00: 0000000000000840 ffff800976d28080 ffff7e0025ff9580
+0000000000000008
+[   20.116776] ed20: ffff800976811548 ffff8009764e4880 0000000000000000
+0000000000000000
+[   20.124853] [<ffff0000085c9cb0>] sdhci_send_command+0x648/0xb30
+[   20.130959] [<ffff0000085cb020>] sdhci_irq+0x9e8/0xa20
+[   20.136259] [<ffff0000080e2be4>] __handle_irq_event_percpu+0x9c/0x128
+[   20.142901] [<ffff0000080e2c8c>] handle_irq_event_percpu+0x1c/0x58
+[   20.149275] [<ffff0000080e2d10>] handle_irq_event+0x48/0x78
+[   20.155022] [<ffff0000080e6610>] handle_fasteoi_irq+0xb8/0x1a0
+[   20.161036] [<ffff0000080e1ce4>] generic_handle_irq+0x24/0x38
+[   20.166962] [<ffff0000080e2354>] __handle_domain_irq+0x5c/0xb8
+[   20.172977] [<ffff0000080815cc>] gic_handle_irq+0xbc/0x168
+
+Regards,
+Oza.
+-----Original Message-----
+From: Oza Oza [mailto:oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org]
+Sent: Tuesday, March 14, 2017 5:16 PM
+To: 'Robin Murphy'; 'Joerg Roedel'
+Cc: 'iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org'; 'linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org';
+'linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org';
+'bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org'; 'arnd-r2nGTMty4D4@public.gmane.org'; 'Nikita
+Yushchenko'
+Subject: RE: [RFC PATCH] iommu/dma: check pci host bridge dma_mask for
+IOVA allocation
+
+My responses inline:
+
+-----Original Message-----
+From: Robin Murphy [mailto:robin.murphy-5wv7dgnIgG8@public.gmane.org]
+Sent: Tuesday, March 14, 2017 4:27 PM
+To: Oza Pawandeep; Joerg Roedel
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org;
+bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org; arnd-r2nGTMty4D4@public.gmane.org; Nikita Yushchenko
+Subject: Re: [RFC PATCH] iommu/dma: check pci host bridge dma_mask for
+IOVA allocation
+
+On 14/03/17 08:48, Oza Pawandeep wrote:
+> It is possible that PCI device supports 64-bit DMA addressing, and
+> thus it's driver sets device's dma_mask to DMA_BIT_MASK(64), however
+> PCI host bridge may have limitations on the inbound transaction
+> addressing. As an example, consider NVME SSD device connected to
+> iproc-PCIe controller.
+
+Aw heck, not another one :(
+
+> Currently, the IOMMU DMA ops only considers PCI device dma_mask when
+> allocating an IOVA. This is particularly problematic on
+> ARM/ARM64 SOCs where the IOMMU (i.e. SMMU) translates IOVA to PA for
+> in-bound transactions only after PCI Host has forwarded these
+> transactions on SOC IO bus. This means on such ARM/ARM64 SOCs the IOVA
+> of in-bound transactions has to honor the addressing restrictions of
+> the PCI Host.
+
+Depending on whether this most closely matches the R-Car situation[1] or
+the X-Gene situation[2], this may not address the real problem at all (if
+the non-IOMMU case is also affected). Either way it also fails to help
+non-PCI devices which can face the exact same problem.
+
+I am not fully aware of R-car and X-gene situation, but for iproc based
+SOCs, our pcie host floats addresses in higher order dma_mask is set.
+
+> This patch tries to solve above described IOVA allocation problem by:
+> 1. Adding iommu_get_dma_mask() to get dma_mask of any device 2. For
+> PCI device, iommu_get_dma_mask() compare dma_mask of PCI device and
+> corresponding PCI Host dma_mask (if set).
+> 3. Use iommu_get_dma_mask() in IOMMU DMA ops implementation instead of
+> dma_get_mask()
+
+Sorry, but NAK to this approach - not only is the implementation rather
+ugly, and incomplete as above, but the fact that it starts with a clear
+description of the underlying problem and then goes on to bodge around it
+down the line instead of actually fixing it is the kicker.
+
+:)
+that is why this is RFC patch, and I had something similar in mind to go
+and poke around which you have provided.. [1] and [3].
+Let me try this on our platform, and see if that solves the issue.
+
+I've got a simple arm64 patch for proper DMA mask inheritance based on the
+various discussions at [1] which I will try to clean up and send out for
+4.12 if nobody else sends anything soon, but it does depend on getting [3]
+merged first to avoid regressing certain platforms.
+
+Robin.
+
+[1]:http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1306545.ht
+ml
+[2]:http://www.spinics.net/lists/arm-kernel/msg552422.html
+[3]:http://www.spinics.net/lists/arm-kernel/msg566947.html
+
+
+
+> Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Reviewed-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> ---
+>  drivers/iommu/dma-iommu.c | 44
+> ++++++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 40 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 48d36ce..e93e536 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -108,6 +108,42 @@ int iommu_get_dma_cookie(struct iommu_domain
+> *domain)  }  EXPORT_SYMBOL(iommu_get_dma_cookie);
+>
+> +static u64 __iommu_dma_mask(struct device *dev, bool is_coherent) {
+> +#ifdef CONFIG_PCI
+> +	u64 pci_hb_dma_mask;
+> +
+> +	if (dev_is_pci(dev)) {
+> +		struct pci_dev *pdev = to_pci_dev(dev);
+> +		struct pci_host_bridge *br =
+pci_find_host_bridge(pdev->bus);
+> +
+> +		if ((!is_coherent) && !(br->dev.dma_mask))
+> +			goto default_dev_dma_mask;
+> +
+> +		/* pci host bridge dma-mask. */
+> +		pci_hb_dma_mask = (!is_coherent) ? *br->dev.dma_mask :
+> +				   br->dev.coherent_dma_mask;
+> +
+> +		if (pci_hb_dma_mask && ((pci_hb_dma_mask) <
+(*dev->dma_mask)))
+> +			return pci_hb_dma_mask;
+> +	}
+> +default_dev_dma_mask:
+> +#endif
+> +	return (!is_coherent) ? dma_get_mask(dev) :
+> +		dev->coherent_dma_mask;
+> +}
+> +
+> +static u64 __iommu_dma_get_coherent_mask(struct device *dev) {
+> +	return __iommu_dma_mask(dev, true);
+> +}
+> +
+> +static u64 __iommu_dma_get_mask(struct device *dev) {
+> +	return __iommu_dma_mask(dev, false); }
+> +
+> +
+>  /**
+>   * iommu_get_msi_cookie - Acquire just MSI remapping resources
+>   * @domain: IOMMU domain to prepare
+> @@ -461,7 +497,7 @@ struct page **iommu_dma_alloc(struct device *dev,
+size_t size, gfp_t gfp,
+>  	if (!pages)
+>  		return NULL;
+>
+> -	iova = __alloc_iova(domain, size, dev->coherent_dma_mask, dev);
+> +	iova = __alloc_iova(domain, size,
+> +__iommu_dma_get_coherent_mask(dev), dev);
+>  	if (!iova)
+>  		goto out_free_pages;
+>
+> @@ -532,7 +568,7 @@ static dma_addr_t __iommu_dma_map(struct device
+*dev, phys_addr_t phys,
+>  	struct iova_domain *iovad = cookie_iovad(domain);
+>  	size_t iova_off = iova_offset(iovad, phys);
+>  	size_t len = iova_align(iovad, size + iova_off);
+> -	struct iova *iova = __alloc_iova(domain, len, dma_get_mask(dev),
+dev);
+> +	struct iova *iova = __alloc_iova(domain, len,
+> +__iommu_dma_get_mask(dev), dev);
+>
+>  	if (!iova)
+>  		return DMA_ERROR_CODE;
+> @@ -690,7 +726,7 @@ int iommu_dma_map_sg(struct device *dev, struct
+scatterlist *sg,
+>  		prev = s;
+>  	}
+>
+> -	iova = __alloc_iova(domain, iova_len, dma_get_mask(dev), dev);
+> +	iova = __alloc_iova(domain, iova_len, __iommu_dma_get_mask(dev),
+> +dev);
+>  	if (!iova)
+>  		goto out_restore_sg;
+>
+> @@ -760,7 +796,7 @@ static struct iommu_dma_msi_page
+> *iommu_dma_get_msi_page(struct device *dev,
+>
+>  	msi_page->phys = msi_addr;
+>  	if (iovad) {
+> -		iova = __alloc_iova(domain, size, dma_get_mask(dev), dev);
+> +		iova = __alloc_iova(domain, size,
+__iommu_dma_get_mask(dev), dev);
+>  		if (!iova)
+>  			goto out_free_page;
+>  		msi_page->iova = iova_dma_addr(iovad, iova);
+>
