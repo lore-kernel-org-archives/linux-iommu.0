@@ -1,55 +1,82 @@
-From: Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Subject: Re: [PATCH 0/3] IOVA allocation improvements for iommu-dma
-Date: Thu, 16 Mar 2017 18:48:57 +0530
-Message-ID: <CA+sq2CfGgYXVEfckC=4VoFaQOuEhn4_vdfH0ZmUjpV_jyCkEHw@mail.gmail.com>
-References: <cover.1489581865.git.robin.murphy@arm.com>
+From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: [PATCH v2 2/5] iommu/dmar: Return directly from a loop in
+	dmar_dev_scope_status()
+Date: Thu, 16 Mar 2017 16:23:52 +0200
+Message-ID: <20170316142355.16307-2-andriy.shevchenko@linux.intel.com>
+References: <20170316142355.16307-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-In-Reply-To: <cover.1489581865.git.robin.murphy@arm.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>, joro@8bytes.org, damm+renesas@opensource.se, iommu@lists.linux-foundation.org, nwatters@codeaurora.org, sgoutham@caviumnetworks.com, yoshihiro.shimoda.uh@renesas.com, LAKML <linux-arm-kernel@lists.infradead.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170316142355.16307-1-andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Mika Westerberg <mika.westerberg-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, "Rafael J . Wysocki" <rafael.j.wysocki-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 15, 2017 at 7:03 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> Hi all,
->
-> Here's the first bit of lock contention removal to chew on - feedback
-> welcome! Note that for the current users of the io-pgtable framework,
-> this is most likely to simply push more contention onto the io-pgtable
-> lock, so may not show a great improvement alone. Will and I both have
-> rough proof-of-concept implementations of lock-free io-pgtable code
-> which we need to sit down and agree on at some point, hopefullt fairly
-> soon.
+There is no need to have a temporary variable.
 
-Thanks for working on this.
-As you said, it's indeed pushing lock contention down to pgtable lock from
-iova rbtree lock but now morethan lock I see issue is with yielding CPU while
-waiting for tlb_sync. Below are some numbers.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+---
+ drivers/iommu/dmar.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-I have tweaked '__arm_smmu_tlb_sync' in SMMUv2 driver i.e basically removed
-cpu_relax() and udelay() to make it a busy loop.
-
-Before: 1.1 Gbps
-With your patches: 1.45Gbps
-With your patches + busy loop in tlb_sync: 7Gbps
-
-If we reduce pgtable contention a bit
-With your patches + busy loop in tlb_sync + Iperf threads reduced to 8
-from 16: ~9Gbps
-
-So looks like along with pgtable lock, some optimization can be done
-to tlb_sync code as well.
-
-Thanks,
-Sunil.
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index edcf7410f736..71d774f1d406 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -557,11 +557,10 @@ static int __init dmar_table_detect(void)
+ static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
+ 				       size_t len, struct dmar_res_callback *cb)
+ {
+-	int ret = 0;
+ 	struct acpi_dmar_header *iter, *next;
+ 	struct acpi_dmar_header *end = ((void *)start) + len;
+ 
+-	for (iter = start; iter < end && ret == 0; iter = next) {
++	for (iter = start; iter < end; iter = next) {
+ 		next = (void *)iter + iter->length;
+ 		if (iter->length == 0) {
+ 			/* Avoid looping forever on bad ACPI tables */
+@@ -570,8 +569,7 @@ static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
+ 		} else if (next > end) {
+ 			/* Avoid passing table end */
+ 			pr_warn(FW_BUG "Record passes table end\n");
+-			ret = -EINVAL;
+-			break;
++			return -EINVAL;
+ 		}
+ 
+ 		if (cb->print_entry)
+@@ -582,15 +580,19 @@ static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
+ 			pr_debug("Unknown DMAR structure type %d\n",
+ 				 iter->type);
+ 		} else if (cb->cb[iter->type]) {
++			int ret;
++
+ 			ret = cb->cb[iter->type](iter, cb->arg[iter->type]);
++			if (ret)
++				return ret;
+ 		} else if (!cb->ignore_unhandled) {
+ 			pr_warn("No handler for DMAR structure type %d\n",
+ 				iter->type);
+-			ret = -EINVAL;
++			return -EINVAL;
+ 		}
+ 	}
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ static inline int dmar_walk_dmar_table(struct acpi_table_dmar *dmar,
+-- 
+2.11.0
