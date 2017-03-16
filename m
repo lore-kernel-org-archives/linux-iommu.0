@@ -1,8 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v2 2/5] iommu/dmar: Return directly from a loop in
-	dmar_dev_scope_status()
-Date: Thu, 16 Mar 2017 16:23:52 +0200
-Message-ID: <20170316142355.16307-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 5/5] iommu/vt-d: Use lo_hi_readq() / lo_hi_writeq()
+Date: Thu, 16 Mar 2017 16:23:55 +0200
+Message-ID: <20170316142355.16307-5-andriy.shevchenko@linux.intel.com>
 References: <20170316142355.16307-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,61 +21,51 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwB
 Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-There is no need to have a temporary variable.
+There is already helper functions to do 64-bit I/O on 32-bit machines or
+buses, thus we don't need to reinvent the wheel.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- drivers/iommu/dmar.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ include/linux/intel-iommu.h | 18 ++----------------
+ 1 file changed, 2 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index edcf7410f736..71d774f1d406 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -557,11 +557,10 @@ static int __init dmar_table_detect(void)
- static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
- 				       size_t len, struct dmar_res_callback *cb)
- {
--	int ret = 0;
- 	struct acpi_dmar_header *iter, *next;
- 	struct acpi_dmar_header *end = ((void *)start) + len;
- 
--	for (iter = start; iter < end && ret == 0; iter = next) {
-+	for (iter = start; iter < end; iter = next) {
- 		next = (void *)iter + iter->length;
- 		if (iter->length == 0) {
- 			/* Avoid looping forever on bad ACPI tables */
-@@ -570,8 +569,7 @@ static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
- 		} else if (next > end) {
- 			/* Avoid passing table end */
- 			pr_warn(FW_BUG "Record passes table end\n");
--			ret = -EINVAL;
--			break;
-+			return -EINVAL;
- 		}
- 
- 		if (cb->print_entry)
-@@ -582,15 +580,19 @@ static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
- 			pr_debug("Unknown DMAR structure type %d\n",
- 				 iter->type);
- 		} else if (cb->cb[iter->type]) {
-+			int ret;
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index c573a52ae440..485a5b48f038 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -30,6 +30,8 @@
+ #include <linux/mmu_notifier.h>
+ #include <linux/list.h>
+ #include <linux/iommu.h>
++#include <linux/io-64-nonatomic-lo-hi.h>
 +
- 			ret = cb->cb[iter->type](iter, cb->arg[iter->type]);
-+			if (ret)
-+				return ret;
- 		} else if (!cb->ignore_unhandled) {
- 			pr_warn("No handler for DMAR structure type %d\n",
- 				iter->type);
--			ret = -EINVAL;
-+			return -EINVAL;
- 		}
- 	}
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
  
--	return ret;
-+	return 0;
- }
+@@ -72,24 +74,8 @@
  
- static inline int dmar_walk_dmar_table(struct acpi_table_dmar *dmar,
+ #define OFFSET_STRIDE		(9)
+ 
+-#ifdef CONFIG_64BIT
+ #define dmar_readq(a) readq(a)
+ #define dmar_writeq(a,v) writeq(v,a)
+-#else
+-static inline u64 dmar_readq(void __iomem *addr)
+-{
+-	u32 lo, hi;
+-	lo = readl(addr);
+-	hi = readl(addr + 4);
+-	return (((u64) hi) << 32) + lo;
+-}
+-
+-static inline void dmar_writeq(void __iomem *addr, u64 val)
+-{
+-	writel((u32)val, addr);
+-	writel((u32)(val >> 32), addr + 4);
+-}
+-#endif
+ 
+ #define DMAR_VER_MAJOR(v)		(((v) & 0xf0) >> 4)
+ #define DMAR_VER_MINOR(v)		((v) & 0x0f)
 -- 
 2.11.0
