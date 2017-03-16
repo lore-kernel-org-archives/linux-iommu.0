@@ -1,7 +1,7 @@
 From: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Subject: [PATCH v2 5/5] iommu/vt-d: Use lo_hi_readq() / lo_hi_writeq()
-Date: Thu, 16 Mar 2017 16:23:55 +0200
-Message-ID: <20170316142355.16307-5-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 3/5] iommu/dmar: Remove redundant assignment of ret
+Date: Thu, 16 Mar 2017 16:23:53 +0200
+Message-ID: <20170316142355.16307-3-andriy.shevchenko@linux.intel.com>
 References: <20170316142355.16307-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,51 +21,38 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwB
 Cc: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-There is already helper functions to do 64-bit I/O on 32-bit machines or
-buses, thus we don't need to reinvent the wheel.
+There is no need to assign ret to 0 in some cases. Moreover it might
+shadow some errors in the future.
+
+Remove such assignments.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 ---
- include/linux/intel-iommu.h | 18 ++----------------
- 1 file changed, 2 insertions(+), 16 deletions(-)
+ drivers/iommu/dmar.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index c573a52ae440..485a5b48f038 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -30,6 +30,8 @@
- #include <linux/mmu_notifier.h>
- #include <linux/list.h>
- #include <linux/iommu.h>
-+#include <linux/io-64-nonatomic-lo-hi.h>
-+
- #include <asm/cacheflush.h>
- #include <asm/iommu.h>
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 71d774f1d406..9a44e20d7d88 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -391,7 +391,7 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
+ {
+ 	struct acpi_dmar_hardware_unit *drhd;
+ 	struct dmar_drhd_unit *dmaru;
+-	int ret = 0;
++	int ret;
  
-@@ -72,24 +74,8 @@
- 
- #define OFFSET_STRIDE		(9)
- 
--#ifdef CONFIG_64BIT
- #define dmar_readq(a) readq(a)
- #define dmar_writeq(a,v) writeq(v,a)
--#else
--static inline u64 dmar_readq(void __iomem *addr)
--{
--	u32 lo, hi;
--	lo = readl(addr);
--	hi = readl(addr + 4);
--	return (((u64) hi) << 32) + lo;
--}
--
--static inline void dmar_writeq(void __iomem *addr, u64 val)
--{
--	writel((u32)val, addr);
--	writel((u32)(val >> 32), addr + 4);
--}
--#endif
- 
- #define DMAR_VER_MAJOR(v)		(((v) & 0xf0) >> 4)
- #define DMAR_VER_MINOR(v)		((v) & 0x0f)
+ 	drhd = (struct acpi_dmar_hardware_unit *)header;
+ 	dmaru = dmar_find_dmaru(drhd);
+@@ -609,8 +609,8 @@ static int __init
+ parse_dmar_table(void)
+ {
+ 	struct acpi_table_dmar *dmar;
+-	int ret = 0;
+ 	int drhd_count = 0;
++	int ret;
+ 	struct dmar_res_callback cb = {
+ 		.print_entry = true,
+ 		.ignore_unhandled = true,
 -- 
 2.11.0
