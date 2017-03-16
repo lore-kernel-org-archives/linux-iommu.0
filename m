@@ -1,75 +1,55 @@
-From: Oleksandr Tyshchenko <olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH v1 0/2] Misc fixes for ARM page table allocator
-	(long/short descriptor format)
-Date: Thu, 16 Mar 2017 13:22:46 +0200
-Message-ID: <CAPD2p-ktwFGNYCfgaxtaQ_WgGNzzEvNqcaaVDWBGQm0=1um3_A@mail.gmail.com>
-References: <1488198626-1884-1-git-send-email-olekstysh@gmail.com>
-	<CAPD2p-=3Q7KKct29kjSi0=_-R7e3L5sgC-N4zS=BDa1vGc8uuQ@mail.gmail.com>
-	<9c726317-6669-91d9-ff42-9ad47c144a3e@arm.com>
+From: Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Subject: Re: [PATCH 0/3] IOVA allocation improvements for iommu-dma
+Date: Thu, 16 Mar 2017 18:48:57 +0530
+Message-ID: <CA+sq2CfGgYXVEfckC=4VoFaQOuEhn4_vdfH0ZmUjpV_jyCkEHw@mail.gmail.com>
+References: <cover.1489581865.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <9c726317-6669-91d9-ff42-9ad47c144a3e-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Volodymyr Babchuk <vlad.babchuk-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Andrii Anisov <andrii.anisov-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Oleksandr Andrushchenko <andr2000-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, al1img <al1img-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Artem Mygaiev <joculator-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <cover.1489581865.git.robin.murphy@arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will.deacon@arm.com>, joro@8bytes.org, damm+renesas@opensource.se, iommu@lists.linux-foundation.org, nwatters@codeaurora.org, sgoutham@caviumnetworks.com, yoshihiro.shimoda.uh@renesas.com, LAKML <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 16, 2017 at 1:19 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On 16/03/17 09:19, Oleksandr Tyshchenko wrote:
->> Hi, all.
->>
->> Any comments?
+On Wed, Mar 15, 2017 at 7:03 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+> Hi all,
 >
-> Er, no, but in a good way ;)
->
-> Patches look fine to me, and I see Will's already queued them anyway.
->
-> Thanks for the respin, and apologies for losing it in my inbox!
->
-> Robin.
+> Here's the first bit of lock contention removal to chew on - feedback
+> welcome! Note that for the current users of the io-pgtable framework,
+> this is most likely to simply push more contention onto the io-pgtable
+> lock, so may not show a great improvement alone. Will and I both have
+> rough proof-of-concept implementations of lock-free io-pgtable code
+> which we need to sit down and agree on at some point, hopefullt fairly
+> soon.
 
-Great, thank you.
+Thanks for working on this.
+As you said, it's indeed pushing lock contention down to pgtable lock from
+iova rbtree lock but now morethan lock I see issue is with yielding CPU while
+waiting for tlb_sync. Below are some numbers.
 
->
->>
->> On Mon, Feb 27, 2017 at 2:30 PM, Oleksandr Tyshchenko
->> <olekstysh-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
->>> Hi.
->>>
->>> There is a small patch series which contains the same fix for both
->>> descriptor formats based on the preceding RFC patches:
->>> https://lists.linuxfoundation.org/pipermail/iommu/2017-February/020411.html
->>> https://lists.linuxfoundation.org/pipermail/iommu/2017-February/020477.html
->>>
->>> Oleksandr Tyshchenko (2):
->>>   iommu/io-pgtable-arm: Check for leaf entry before dereferencing it
->>>   iommu/io-pgtable-arm-v7s: Check for leaf entry before dereferencing it
->>>
->>>  drivers/iommu/io-pgtable-arm-v7s.c | 6 +++++-
->>>  drivers/iommu/io-pgtable-arm.c     | 6 +++++-
->>>  2 files changed, 10 insertions(+), 2 deletions(-)
->>>
->>> --
->>> 2.7.4
->>>
->>
->>
->>
->
+I have tweaked '__arm_smmu_tlb_sync' in SMMUv2 driver i.e basically removed
+cpu_relax() and udelay() to make it a busy loop.
 
+Before: 1.1 Gbps
+With your patches: 1.45Gbps
+With your patches + busy loop in tlb_sync: 7Gbps
 
+If we reduce pgtable contention a bit
+With your patches + busy loop in tlb_sync + Iperf threads reduced to 8
+from 16: ~9Gbps
 
--- 
-Regards,
+So looks like along with pgtable lock, some optimization can be done
+to tlb_sync code as well.
 
-Oleksandr Tyshchenko
+Thanks,
+Sunil.
