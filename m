@@ -1,275 +1,117 @@
-From: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Subject: RE: [RFC PATCH] iommu/dma: account pci host bridge dma_mask for IOVA allocation
-Date: Fri, 17 Mar 2017 11:45:12 +0530
-Message-ID: <d70f83cb517c082ee4ac280b96f1aa60@mail.gmail.com>
-References: <1489731045-6719-1-git-send-email-oza.oza@broadcom.com>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH v11 09/10] perf/amd/iommu: Introduce amd_iommu-specific
+	struct in struct hw_perf_event
+Date: Fri, 17 Mar 2017 11:00:30 +0100
+Message-ID: <20170317100030.2pga4ev2435lcr7s@pd.tnic>
+References: <1487926102-13073-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1487926102-13073-10-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <1489731045-6719-1-git-send-email-oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1487926102-13073-10-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On Fri, Feb 24, 2017 at 02:48:21AM -0600, Suravee Suthikulpanit wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> 
+> Current AMD IOMMU Perf PMU inappropriately uses hardware struct
+> inside the union inside the struct hw_perf_event, mainly the use of
+> extra_reg.
+> 
+> Instead, introduce amd_iommu-specific struct with required
+> parameters to be programmed onto the IOMMU performance counter
+> control register.
+> 
+> Also update the pasid field from 16 to 20 bits.
+> 
+> Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> ---
+>  arch/x86/events/amd/iommu.c | 91 ++++++++++++++++++++++++---------------------
+>  include/linux/perf_event.h  | 12 ++++++
+>  2 files changed, 61 insertions(+), 42 deletions(-)
 
-There are certain areas which requires contemplation.
-And this problem requires more attention from Pci of framework and iommu,
-and integration of both.
+...
 
-Regards,
-Oza.
+> @@ -150,10 +149,13 @@ static ssize_t _iommu_cpumask_show(struct device *dev,
+>  
+>  /*---------------------------------------------*/
+>  
+> -static int get_next_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu)
+> +static int get_next_avail_iommu_bnk_cntr(struct perf_event *event)
+>  {
+>  	unsigned long flags;
+> -	int shift, bank, cntr, retval;
+> +	u32 shift, bank, cntr;
+> +	int retval;
+> +	struct perf_amd_iommu *perf_iommu =
+> +			container_of(event->pmu, struct perf_amd_iommu, pmu);
+>  	int max_banks = perf_iommu->max_banks;
+>  	int max_cntrs = perf_iommu->max_counters;
+>  
+> @@ -166,7 +168,9 @@ static int get_next_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu)
+>  				continue;
+>  			} else {
+>  				perf_iommu->cntr_assign_mask |= BIT_ULL(shift);
+> -				retval = ((bank & 0xFF) << 8) | (cntr & 0xFF);
+> +				event->hw.iommu_bank = bank;
+> +				event->hw.iommu_cntr = cntr;
+> +				retval = 0;
+>  				goto out;
+>  			}
+>  		}
+> @@ -238,8 +242,13 @@ static int perf_iommu_event_init(struct perf_event *event)
+>  	}
 
------Original Message-----
-From: Oza Pawandeep [mailto:oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org]
-Sent: Friday, March 17, 2017 11:41 AM
-To: Joerg Roedel; Robin Murphy
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org; Oza Pawandeep
-Subject: [RFC PATCH] iommu/dma: account pci host bridge dma_mask for IOVA
-allocation
+It is not in the diff here but you have this above the assignment below:
 
-It is possible that PCI device supports 64-bit DMA addressing, and thus
-it's driver sets device's dma_mask to DMA_BIT_MASK(64), however PCI host
-bridge may have limitations on the inbound transaction addressing. As an
-example, consider NVME SSD device connected to iproc-PCIe controller.
+        if (perf_iommu) {
+                config = event->attr.config;
+                config1 = event->attr.config1;
+        } else {
+                return -EINVAL;
+        }
 
-Currently, the IOMMU DMA ops only considers PCI device dma_mask when
-allocating an IOVA. This is particularly problematic on
-ARM/ARM64 SOCs where the IOMMU (i.e. SMMU) translates IOVA to PA for
-in-bound transactions only after PCI Host has forwarded these transactions
-on SOC IO bus. This means on such ARM/ARM64 SOCs the IOVA of in-bound
-transactions has to honor the addressing restrictions of the PCI Host.
+Those two config and config1 get assigned and never used. I see that
+you're removing them in the next patch though.
 
-this patch is inspired by
-http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1306545.html
-http://www.spinics.net/lists/arm-kernel/msg566947.html
+>  	/* update the hw_perf_event struct with the iommu config data */
+> -	hwc->config = config;
+> -	hwc->extra_reg.config = config1;
+> +	hwc->iommu_csource   = GET_CSOURCE(event->attr.config);
+> +	hwc->iommu_devid     = GET_DEVID(event->attr.config);
+> +	hwc->iommu_domid     = GET_DOMID(event->attr.config);
+> +	hwc->iommu_pasid     = GET_PASID(event->attr.config);
+> +	hwc->iommu_devid_msk = GET_DEVID_MASK(event->attr.config1);
+> +	hwc->iommu_domid_msk = GET_DOMID_MASK(event->attr.config1);
+> +	hwc->iommu_pasid_msk = GET_PASID_MASK(event->attr.config1);
 
-but above inspiraiton solves the half of the problem.
-the rest of the problem is descrbied below, what we face on iproc based
-SOCs.
+You produce all those from two u64 values. So you can just as well do
 
-current pcie frmework and of framework integration assumes dma-ranges in a
-way where memory-mapped devices define their dma-ranges.
-dma-ranges: (child-bus-address, parent-bus-address, length).
+                struct { /* amd_iommu */
+			u64 a;
+			u64 b;
+                };
 
-but iproc based SOCs and even Rcar based SOCs has PCI world dma-ranges.
-dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
+and produce all the rest with the macros at the usage sites. (The naming
+of the variables is purely arbitrary).
 
-of_dma_configure is specifically witten to take care of memory mapped
-devices.
-but no implementation exists for pci to take care of pcie based memory
-ranges.
-in fact pci world doesnt seem to define standard dma-ranges since there is
-an absense of the same, the dma_mask used to remain 32bit because of
-0 size return (parsed by of_dma_configure())
+-- 
+Regards/Gruss,
+    Boris.
 
-this patch also implements of_pci_get_dma_ranges to cater to pci world
-dma-ranges.
-so then the returned size get best possible (largest) dma_mask.
-for e.g.
-dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>; we should get
-dev->coherent_dma_mask=0x7fffffffff.
-
-conclusion: there are following problems
-1) linux pci and iommu framework integration has glitches with respect to
-dma-ranges
-2) pci linux framework look very uncertain about dma-ranges, rather
-binding is not defined
-   the way it is defined for memory mapped devices.
-   rcar and iproc based SOCs use their custom one dma-ranges
-   (rather can be standard)
-3) even if in case of default parser of_dma_get_ranges,:
-   it throws and erro"
-   "no dma-ranges found for node"
-   because of the bug which exists.
-   following lines should be moved to the end of while(1)
-	839                 node = of_get_next_parent(node);
-	840                 if (!node)
-	841                         break;
-
-Reviewed-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig index
-8c7c244..20cfff7 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -217,6 +217,9 @@ config NEED_DMA_MAP_STATE  config NEED_SG_DMA_LENGTH
- 	def_bool y
-
-+config ARCH_HAS_DMA_SET_COHERENT_MASK
-+	def_bool y
-+
- config SMP
- 	def_bool y
-
-diff --git a/arch/arm64/include/asm/device.h
-b/arch/arm64/include/asm/device.h index 73d5bab..64b4dc3 100644
---- a/arch/arm64/include/asm/device.h
-+++ b/arch/arm64/include/asm/device.h
-@@ -20,6 +20,7 @@ struct dev_archdata {
- #ifdef CONFIG_IOMMU_API
- 	void *iommu;			/* private IOMMU data */
- #endif
-+	u64 parent_dma_mask;
- 	bool dma_coherent;
- };
-
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index 81cdb2e..5845ecd 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -564,6 +564,7 @@ static void flush_page(struct device *dev, const void
-*virt, phys_addr_t phys)
- 	__dma_flush_area(virt, PAGE_SIZE);
- }
-
-+
- static void *__iommu_alloc_attrs(struct device *dev, size_t size,
- 				 dma_addr_t *handle, gfp_t gfp,
- 				 unsigned long attrs)
-@@ -795,6 +796,20 @@ static void __iommu_unmap_sg_attrs(struct device
-*dev,
- 	iommu_dma_unmap_sg(dev, sgl, nelems, dir, attrs);  }
-
-+static int __iommu_set_dma_mask(struct device *dev, u64 mask) {
-+	/* device is not DMA capable */
-+	if (!dev->dma_mask)
-+		return -EIO;
-+
-+	if (mask > dev->archdata.parent_dma_mask)
-+		mask = dev->archdata.parent_dma_mask;
-+
-+	*dev->dma_mask = mask;
-+
-+	return 0;
-+}
-+
- static const struct dma_map_ops iommu_dma_ops = {
- 	.alloc = __iommu_alloc_attrs,
- 	.free = __iommu_free_attrs,
-@@ -811,8 +826,21 @@ static void __iommu_unmap_sg_attrs(struct device
-*dev,
- 	.map_resource = iommu_dma_map_resource,
- 	.unmap_resource = iommu_dma_unmap_resource,
- 	.mapping_error = iommu_dma_mapping_error,
-+	.set_dma_mask = __iommu_set_dma_mask,
- };
-
-+int dma_set_coherent_mask(struct device *dev, u64 mask) {
-+	if (get_dma_ops(dev) == &iommu_dma_ops &&
-+	    mask > dev->archdata.parent_dma_mask)
-+		mask = dev->archdata.parent_dma_mask;
-+
-+	dev->coherent_dma_mask = mask;
-+	return 0;
-+}
-+EXPORT_SYMBOL(dma_set_coherent_mask);
-+
-+
- /*
-  * TODO: Right now __iommu_setup_dma_ops() gets called too early to do
-  * everything it needs to - the device is only partially created and the
-@@ -975,6 +1003,8 @@ void arch_setup_dma_ops(struct device *dev, u64
-dma_base, u64 size,
- 	if (!dev->dma_ops)
- 		dev->dma_ops = &swiotlb_dma_ops;
-
-+	dev->archdata.parent_dma_mask = size - 1;
-+
- 	dev->archdata.dma_coherent = coherent;
- 	__iommu_setup_dma_ops(dev, dma_base, size, iommu);  } diff --git
-a/drivers/of/of_pci.c b/drivers/of/of_pci.c index 0ee42c3..5804717 100644
---- a/drivers/of/of_pci.c
-+++ b/drivers/of/of_pci.c
-@@ -283,6 +283,51 @@ int of_pci_get_host_bridge_resources(struct
-device_node *dev,
- 	return err;
- }
- EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
-+
-+int of_pci_get_dma_ranges(struct device_node *np, u64 *dma_addr, u64
-+*paddr, u64 *size) {
-+	struct device_node *node = of_node_get(np);
-+	int rlen, naddr, nsize, pna;
-+	int ret = 0;
-+	const int na = 3, ns = 2;
-+	struct of_pci_range_parser parser;
-+	struct of_pci_range range;
-+
-+	if (!node)
-+		return -EINVAL;
-+
-+	parser.node = node;
-+	parser.pna = of_n_addr_cells(node);
-+	parser.np = parser.pna + na + ns;
-+
-+	parser.range = of_get_property(node, "dma-ranges", &rlen);
-+
-+	if (!parser.range) {
-+		pr_debug("pcie device has no dma-ranges defined for
-node(%s)\n", np->full_name);
-+		ret = -ENODEV;
-+		goto out;
-+	}
-+
-+	parser.end = parser.range + rlen / sizeof(__be32);
-+
-+	/* how do we take care of multiple dma windows ?. */
-+	for_each_of_pci_range(&parser, &range) {
-+		*dma_addr = range.pci_addr;
-+		*size = range.size;
-+		*paddr = range.cpu_addr;
-+	}
-+
-+	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
-+		 *dma_addr, *paddr, *size);
-+		 *dma_addr = range.pci_addr;
-+		 *size = range.size;
-+
-+out:
-+	of_node_put(node);
-+	return ret;
-+
-+}
-+EXPORT_SYMBOL_GPL(of_pci_get_dma_ranges);
- #endif /* CONFIG_OF_ADDRESS */
-
- #ifdef CONFIG_PCI_MSI
-diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h index
-0e0974e..907ace0 100644
---- a/include/linux/of_pci.h
-+++ b/include/linux/of_pci.h
-@@ -76,6 +76,7 @@ static inline void of_pci_check_probe_only(void) { }
-int of_pci_get_host_bridge_resources(struct device_node *dev,
- 			unsigned char busno, unsigned char bus_max,
- 			struct list_head *resources, resource_size_t
-*io_base);
-+int of_pci_get_dma_ranges(struct device_node *np, u64 *dma_addr, u64
-+*paddr, u64 *size);
- #else
- static inline int of_pci_get_host_bridge_resources(struct device_node
-*dev,
- 			unsigned char busno, unsigned char bus_max, @@
--83,6 +84,11 @@ static inline int of_pci_get_host_bridge_resources(struct
-device_node *dev,  {
- 	return -EINVAL;
- }
-+
-+static inline int of_pci_get_dma_ranges(struct device_node *np, u64
-+*dma_addr, u64 *paddr, u64 *size) {
-+	return -EINVAL;
-+}
- #endif
-
- #if defined(CONFIG_OF) && defined(CONFIG_PCI_MSI)
---
-1.9.1
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Good mailing practices for 400: avoid top-posting and trim the reply.
