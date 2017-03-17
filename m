@@ -1,15 +1,13 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH V3 2/5] iommu/arm-smmu: Add support for MMU40x/500 clocks
-Date: Fri, 17 Mar 2017 10:13:38 +0530
-Message-ID: <6d4a47e3-bab7-4dda-c9db-cef6a699adf1@codeaurora.org>
-References: <1489073748-3659-1-git-send-email-sricharan@codeaurora.org>
-	<1489073748-3659-3-git-send-email-sricharan@codeaurora.org>
-	<CAF6AEGv3FAyWfXGT_8=bcn+UL8Ug1pE8EGu=MQC70U++wUOioA@mail.gmail.com>
+From: Oza Pawandeep via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: [RFC PATCH] iommu/dma: account pci host bridge dma_mask for IOVA
+	allocation
+Date: Fri, 17 Mar 2017 11:40:45 +0530
+Message-ID: <1489731045-6719-1-git-send-email-oza.oza@broadcom.com>
+Reply-To: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAF6AEGv3FAyWfXGT_8=bcn+UL8Ug1pE8EGu=MQC70U++wUOioA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,241 +17,239 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, mathieu.poirier-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+It is possible that PCI device supports 64-bit DMA addressing,
+and thus it's driver sets device's dma_mask to DMA_BIT_MASK(64),
+however PCI host bridge may have limitations on the inbound
+transaction addressing. As an example, consider NVME SSD device
+connected to iproc-PCIe controller.
 
-On 3/17/2017 4:22 AM, Rob Clark wrote:
-> On Thu, Mar 9, 2017 at 10:35 AM, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->> The MMU400x/500 is the implementation of the SMMUv2
->> arch specification. It is split in to two blocks
->> TBU, TCU. TBU caches the page table, instantiated
->> for each master locally, clocked by the TBUn_clk.
->> TCU manages the address translation with PTW and has
->> the programming interface as well, clocked using the
->> TCU_CLK. The TBU can also be sharing the same clock
->> domain as TCU, in which case both are clocked using
->> the TCU_CLK.
->>
->> This defines the clock bindings for the same and adds the
->> init, enable and disable functions for handling the
->> clocks.
->>
->> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->> ---
->>  .../devicetree/bindings/iommu/arm,smmu.txt         | 27 ++++++
->>  drivers/iommu/arm-smmu.c                           | 95 +++++++++++++++++++++-
->>  2 files changed, 121 insertions(+), 1 deletion(-)
->>
->> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
->> index 6cdf32d..b369c13 100644
->> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
->> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
->> @@ -60,6 +60,28 @@ conditions.
->>                    aliases of secure registers have to be used during
->>                    SMMU configuration.
->>
->> +- clock-names:    Should be "tbu_clk" and "tcu_clk" and "cfg_clk" for
->> +                  "arm,mmu-400", "arm,mmu-401" and "arm,mmu-500"
->
-> I guess that should be: "Should be "tbu_clk" *or* "tcu_clk" and
-> "cfg_clk" for..."
->
-> Also, possibly we should define our own compat strings for various
-> SoC's that require these clks so we can properly describe when they
-> are required?  I guess that would address Rob H's comment.
->
+Currently, the IOMMU DMA ops only considers PCI device dma_mask
+when allocating an IOVA. This is particularly problematic on
+ARM/ARM64 SOCs where the IOMMU (i.e. SMMU) translates IOVA to
+PA for in-bound transactions only after PCI Host has forwarded
+these transactions on SOC IO bus. This means on such ARM/ARM64
+SOCs the IOVA of in-bound transactions has to honor the addressing
+restrictions of the PCI Host.
 
-Ok, calling "optional" does not look correct. But i was trying to define
-something which would be right for all implementations of MMU-500, but
-looks like that's not the right way. Making it soc specific would give a
-exact description, except for the number of compatibles and have to
-change the code to not consider any of tbu , tcu, cfg clk as mandatory
-for adding support for other compatibles later which are mostly similar.
-So i am trying to setup the clocks using functions specific for each
-compatible. Not sure, if at this point, some soc specific callback from 
-the driver where these things can be initialized might be good.
+this patch is inspired by
+http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1306545.html
+http://www.spinics.net/lists/arm-kernel/msg566947.html
 
-Regards,
-  Sricharan
+but above inspiraiton solves the half of the problem.
+the rest of the problem is descrbied below, what we face on iproc based
+SOCs.
 
+current pcie frmework and of framework integration assumes dma-ranges
+in a way where memory-mapped devices define their dma-ranges.
+dma-ranges: (child-bus-address, parent-bus-address, length).
 
+but iproc based SOCs and even Rcar based SOCs has PCI world dma-ranges.
+dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
 
-Regards,
-  Sricharan
+of_dma_configure is specifically witten to take care of memory mapped devices.
+but no implementation exists for pci to take care of pcie based memory ranges.
+in fact pci world doesnt seem to define standard dma-ranges
+since there is an absense of the same, the dma_mask used to remain 32bit because of
+0 size return (parsed by of_dma_configure())
 
-> BR,
-> -R
->
->> +                  "tcu_clk" is required for smmu's register access using the
->> +                  programming interface and ptw for downstream bus access.
->> +
->> +                  "tbu_clk" is required for access to the TBU connected to the
->> +                  master locally. This clock is optional and not required when
->> +                  TBU is in the same clock domain as the TCU or when the TBU is
->> +                  clocked along with the master.
->> +
->> +                  "cfg_clk" is optional if required to access the TCU's programming
->> +                  interface, apart from the "tcu_clk".
->> +
->> +- clocks:         Phandles for respective clocks described by clock-names.
->> +
->> +- power-domains:  Phandles to SMMU's power domain specifier. This is
->> +                  required even if SMMU belongs to the master's power
->> +                  domain, as the SMMU will have to be enabled and
->> +                  accessed before master gets enabled and linked to its
->> +                  SMMU.
->> +
->>  ** Deprecated properties:
->>
->>  - mmu-masters (deprecated in favour of the generic "iommus" binding) :
->> @@ -84,6 +106,11 @@ conditions.
->>                               <0 36 4>,
->>                               <0 37 4>;
->>                  #iommu-cells = <1>;
->> +                clocks = <&gcc GCC_SMMU_CFG_CLK>,
->> +                         <&gcc GCC_APSS_TCU_CLK>,
->> +                        <&gcc GCC_MDP_TBU_CLK>;
->> +
->> +               clock-names = "cfg_clk", "tcu_clk", "tbu_clk";
->>          };
->>
->>          /* device with two stream IDs, 0 and 7 */
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index f7e11d3..720a1ef 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -341,6 +341,12 @@ struct arm_smmu_master_cfg {
->>  #define for_each_cfg_sme(fw, i, idx) \
->>         for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
->>
->> +struct mmu500_clk {
->> +       struct clk *cfg_clk;
->> +       struct clk *tcu_clk;
->> +       struct clk *tbu_clk;
->> +};
->> +
->>  struct arm_smmu_clks {
->>         void *clks;
->>         int (*init_clocks)(struct arm_smmu_device *smmu);
->> @@ -455,6 +461,92 @@ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
->>         return container_of(dom, struct arm_smmu_domain, domain);
->>  }
->>
->> +static int mmu500_enable_clocks(struct arm_smmu_device *smmu)
->> +{
->> +       int ret = 0;
->> +       struct mmu500_clk *sclks = smmu->smmu_clks.clks;
->> +
->> +       if (!sclks)
->> +               return 0;
->> +
->> +       ret = clk_prepare_enable(sclks->cfg_clk);
->> +       if (ret) {
->> +               dev_err(smmu->dev, "Couldn't enable cfg_clk");
->> +               return ret;
->> +       }
->> +
->> +       ret = clk_prepare_enable(sclks->tcu_clk);
->> +       if (ret) {
->> +               dev_err(smmu->dev, "Couldn't enable tcu_clk");
->> +               clk_disable_unprepare(sclks->cfg_clk);
->> +               return ret;
->> +       }
->> +
->> +       ret = clk_prepare_enable(sclks->tbu_clk);
->> +       if (ret) {
->> +               dev_err(smmu->dev, "Couln't enable tbu_clk");
->> +               clk_disable_unprepare(sclks->tcu_clk);
->> +               clk_disable_unprepare(sclks->cfg_clk);
->> +               return ret;
->> +       }
->> +
->> +       return 0;
->> +}
->> +
->> +static void mmu500_disable_clocks(struct arm_smmu_device *smmu)
->> +{
->> +       struct mmu500_clk *sclks = smmu->smmu_clks.clks;
->> +
->> +       if (!sclks) {
->> +               clk_disable_unprepare(sclks->tbu_clk);
->> +               clk_disable_unprepare(sclks->tcu_clk);
->> +               clk_disable_unprepare(sclks->cfg_clk);
->> +       }
->> +}
->> +
->> +static int mmu500_init_clocks(struct arm_smmu_device *smmu)
->> +{
->> +       struct device *dev = smmu->dev;
->> +       struct mmu500_clk *sclks;
->> +       int err;
->> +
->> +       if (!of_find_property(dev->of_node, "clocks", NULL))
->> +               return 0;
->> +
->> +       sclks = devm_kzalloc(dev, sizeof(*sclks), GFP_KERNEL);
->> +       if (!sclks)
->> +               return -ENOMEM;
->> +
->> +       sclks->cfg_clk = devm_clk_get(dev, "cfg_clk");
->> +       if (IS_ERR(sclks->cfg_clk)) {
->> +               err = PTR_ERR(sclks->cfg_clk);
->> +               /* Ignore all, except -EPROBE_DEFER for optional clocks */
->> +               if (err == -EPROBE_DEFER)
->> +                       return err;
->> +               else
->> +                       sclks->cfg_clk = NULL;
->> +       }
->> +
->> +       sclks->tcu_clk = devm_clk_get(dev, "tcu_clk");
->> +       if (IS_ERR(sclks->tcu_clk)) {
->> +               dev_err(dev, "Couldn't get tcu_clk");
->> +               return PTR_ERR(sclks->tcu_clk);
->> +       }
->> +
->> +       sclks->tbu_clk = devm_clk_get(dev, "tbu_clk");
->> +       if (IS_ERR(sclks->tbu_clk)) {
->> +               err = PTR_ERR(sclks->tbu_clk);
->> +               /* Ignore all, ecept -EPROBE_DEFER for optional clocks */
->> +               if (err == -EPROBE_DEFER)
->> +                       return err;
->> +               else
->> +                       sclks->tbu_clk = NULL;
->> +       }
->> +
->> +       smmu->smmu_clks.clks = sclks;
->> +       return 0;
->> +}
->> +
->>  static void parse_driver_options(struct arm_smmu_device *smmu)
->>  {
->>         int i = 0;
->> @@ -1981,7 +2073,8 @@ struct arm_smmu_match_data {
->>                     NULL, NULL, NULL);
->>  ARM_SMMU_MATCH_DATA(arm_mmu401, ARM_SMMU_V1_64K, GENERIC_SMMU,
->>                     NULL, NULL, NULL);
->> -ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500, NULL, NULL, NULL);
->> +ARM_SMMU_MATCH_DATA(arm_mmu500, ARM_SMMU_V2, ARM_MMU500, mmu500_init_clocks,
->> +                   mmu500_enable_clocks, mmu500_disable_clocks);
->>  ARM_SMMU_MATCH_DATA(cavium_smmuv2, ARM_SMMU_V2, CAVIUM_SMMUV2,
->>                     NULL, NULL, NULL);
->>
->> --
->> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
->>
->> _______________________________________________
->> iommu mailing list
->> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
->> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+this patch also implements of_pci_get_dma_ranges to cater to pci world dma-ranges.
+so then the returned size get best possible (largest) dma_mask.
+for e.g.
+dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
+we should get dev->coherent_dma_mask=0x7fffffffff.
 
+conclusion: there are following problems
+1) linux pci and iommu framework integration has glitches with respect to dma-ranges
+2) pci linux framework look very uncertain about dma-ranges, rather binding is not defined
+   the way it is defined for memory mapped devices.
+   rcar and iproc based SOCs use their custom one dma-ranges
+   (rather can be standard)
+3) even if in case of default parser of_dma_get_ranges,:
+   it throws and erro"
+   "no dma-ranges found for node"
+   because of the bug which exists.
+   following lines should be moved to the end of while(1)
+	839                 node = of_get_next_parent(node);
+	840                 if (!node)
+	841                         break;
+
+Reviewed-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 8c7c244..20cfff7 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -217,6 +217,9 @@ config NEED_DMA_MAP_STATE
+ config NEED_SG_DMA_LENGTH
+ 	def_bool y
+ 
++config ARCH_HAS_DMA_SET_COHERENT_MASK
++	def_bool y
++
+ config SMP
+ 	def_bool y
+ 
+diff --git a/arch/arm64/include/asm/device.h b/arch/arm64/include/asm/device.h
+index 73d5bab..64b4dc3 100644
+--- a/arch/arm64/include/asm/device.h
++++ b/arch/arm64/include/asm/device.h
+@@ -20,6 +20,7 @@ struct dev_archdata {
+ #ifdef CONFIG_IOMMU_API
+ 	void *iommu;			/* private IOMMU data */
+ #endif
++	u64 parent_dma_mask;
+ 	bool dma_coherent;
+ };
+ 
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 81cdb2e..5845ecd 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -564,6 +564,7 @@ static void flush_page(struct device *dev, const void *virt, phys_addr_t phys)
+ 	__dma_flush_area(virt, PAGE_SIZE);
+ }
+ 
++
+ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+ 				 dma_addr_t *handle, gfp_t gfp,
+ 				 unsigned long attrs)
+@@ -795,6 +796,20 @@ static void __iommu_unmap_sg_attrs(struct device *dev,
+ 	iommu_dma_unmap_sg(dev, sgl, nelems, dir, attrs);
+ }
+ 
++static int __iommu_set_dma_mask(struct device *dev, u64 mask)
++{
++	/* device is not DMA capable */
++	if (!dev->dma_mask)
++		return -EIO;
++
++	if (mask > dev->archdata.parent_dma_mask)
++		mask = dev->archdata.parent_dma_mask;
++
++	*dev->dma_mask = mask;
++
++	return 0;
++}
++
+ static const struct dma_map_ops iommu_dma_ops = {
+ 	.alloc = __iommu_alloc_attrs,
+ 	.free = __iommu_free_attrs,
+@@ -811,8 +826,21 @@ static void __iommu_unmap_sg_attrs(struct device *dev,
+ 	.map_resource = iommu_dma_map_resource,
+ 	.unmap_resource = iommu_dma_unmap_resource,
+ 	.mapping_error = iommu_dma_mapping_error,
++	.set_dma_mask = __iommu_set_dma_mask,
+ };
+ 
++int dma_set_coherent_mask(struct device *dev, u64 mask)
++{
++	if (get_dma_ops(dev) == &iommu_dma_ops &&
++	    mask > dev->archdata.parent_dma_mask)
++		mask = dev->archdata.parent_dma_mask;
++
++	dev->coherent_dma_mask = mask;
++	return 0;
++}
++EXPORT_SYMBOL(dma_set_coherent_mask);
++
++
+ /*
+  * TODO: Right now __iommu_setup_dma_ops() gets called too early to do
+  * everything it needs to - the device is only partially created and the
+@@ -975,6 +1003,8 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ 	if (!dev->dma_ops)
+ 		dev->dma_ops = &swiotlb_dma_ops;
+ 
++	dev->archdata.parent_dma_mask = size - 1;
++
+ 	dev->archdata.dma_coherent = coherent;
+ 	__iommu_setup_dma_ops(dev, dma_base, size, iommu);
+ }
+diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
+index 0ee42c3..5804717 100644
+--- a/drivers/of/of_pci.c
++++ b/drivers/of/of_pci.c
+@@ -283,6 +283,51 @@ int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
++
++int of_pci_get_dma_ranges(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
++{
++	struct device_node *node = of_node_get(np);
++	int rlen, naddr, nsize, pna;
++	int ret = 0;
++	const int na = 3, ns = 2;
++	struct of_pci_range_parser parser;
++	struct of_pci_range range;
++
++	if (!node)
++		return -EINVAL;
++
++	parser.node = node;
++	parser.pna = of_n_addr_cells(node);
++	parser.np = parser.pna + na + ns;
++
++	parser.range = of_get_property(node, "dma-ranges", &rlen);
++
++	if (!parser.range) {
++		pr_debug("pcie device has no dma-ranges defined for node(%s)\n", np->full_name);
++		ret = -ENODEV;
++		goto out;
++	}
++
++	parser.end = parser.range + rlen / sizeof(__be32);
++
++	/* how do we take care of multiple dma windows ?. */
++	for_each_of_pci_range(&parser, &range) {
++		*dma_addr = range.pci_addr;
++		*size = range.size;
++		*paddr = range.cpu_addr;
++	}
++
++	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
++		 *dma_addr, *paddr, *size);
++		 *dma_addr = range.pci_addr;
++		 *size = range.size;
++
++out:
++	of_node_put(node);
++	return ret;
++
++}
++EXPORT_SYMBOL_GPL(of_pci_get_dma_ranges);
+ #endif /* CONFIG_OF_ADDRESS */
+ 
+ #ifdef CONFIG_PCI_MSI
+diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
+index 0e0974e..907ace0 100644
+--- a/include/linux/of_pci.h
++++ b/include/linux/of_pci.h
+@@ -76,6 +76,7 @@ static inline void of_pci_check_probe_only(void) { }
+ int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 			unsigned char busno, unsigned char bus_max,
+ 			struct list_head *resources, resource_size_t *io_base);
++int of_pci_get_dma_ranges(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size);
+ #else
+ static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 			unsigned char busno, unsigned char bus_max,
+@@ -83,6 +84,11 @@ static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
+ {
+ 	return -EINVAL;
+ }
++
++static inline int of_pci_get_dma_ranges(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
++{
++	return -EINVAL;
++}
+ #endif
+ 
+ #if defined(CONFIG_OF) && defined(CONFIG_PCI_MSI)
 -- 
-"QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member of Code Aurora Forum, hosted by The Linux Foundation
+1.9.1
