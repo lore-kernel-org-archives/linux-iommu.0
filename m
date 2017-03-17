@@ -1,55 +1,98 @@
-From: Alex Deucher <alexdeucher-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: amd-iommu: can't boot with amdgpu, AMD-Vi: Completion-Wait loop
- timed out
-Date: Fri, 17 Mar 2017 11:53:09 -0400
-Message-ID: <CADnq5_Oyfm-BzU9YV_QLjm6HxtMwnJcFkfYtjmCWpuah35TFvA@mail.gmail.com>
-References: <CAD8Lp457TE1CnJ-DHnB6NB2LWxgA5K5K57Q6L7XcSHeYNpvARQ@mail.gmail.com>
- <CY4PR12MB16533C83151D6FCFC11ED457F7250@CY4PR12MB1653.namprd12.prod.outlook.com>
- <CAD8Lp47zjJvqxY3TMMAhjz3OnLR52CtsQh_PQFPmsEW-xHfDwg@mail.gmail.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [RFC PATCH v4 14/28] Add support to access boot related data in
+ the clear
+Date: Fri, 17 Mar 2017 14:50:14 -0500
+Message-ID: <79f1c44e-0138-8b50-8931-723a5d243644@amd.com>
+References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
+ <20170216154508.19244.58580.stgit@tlendack-t1.amdoffice.net>
+ <20170308065555.GA11045@dhcp-128-65.nay.redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <CAD8Lp47zjJvqxY3TMMAhjz3OnLR52CtsQh_PQFPmsEW-xHfDwg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
- <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
-List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
- <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
-Cc: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Chris Chiu <chiu-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "Nath,
- Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Suthikulpanit, Suravee" <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>, "Deucher,
- Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, Linux Upstreaming Team <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: 7bit
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20170308065555.GA11045@dhcp-128-65.nay.redhat.com>
+Sender: owner-linux-mm@kvack.org
+To: Dave Young <dyoung@redhat.com>
+Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S.
+ Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter
+ Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Andrey Ryabinin <aryabinin@virtuozz>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gRnJpLCBNYXIgMTcsIDIwMTcgYXQgODoxNSBBTSwgRGFuaWVsIERyYWtlIDxkcmFrZUBlbmRs
-ZXNzbS5jb20+IHdyb3RlOgo+IEhpLAo+Cj4gT24gTW9uLCBNYXIgMTMsIDIwMTcgYXQgMjowMSBQ
-TSwgRGV1Y2hlciwgQWxleGFuZGVyCj4gPEFsZXhhbmRlci5EZXVjaGVyQGFtZC5jb20+IHdyb3Rl
-Ogo+PiA+IFdlIGFyZSB1bmFibGUgdG8gYm9vdCBBY2VyIEFzcGlyZSBFNS01NTNHIChBTUQgRlgt
-OTgwMFAgUkFERU9OIFI3KSBub3IKPj4gPiBBY2VyIEFzcGlyZSBFNS01MjMgd2l0aCBzdGFuZGFy
-ZCBjb25maWd1cmF0aW9ucyBiZWNhdXNlIGR1cmluZyBib290Cj4+ID4gdGhlIHNjcmVlbiBpcyBm
-bG9vZGVkIHdpdGggdGhlIGZvbGxvd2luZyBlcnJvciBtZXNzYWdlIG92ZXIgYW5kIG92ZXI6Cj4+
-ID4KPj4gPiAgIEFNRC1WaTogQ29tcGxldGlvbi1XYWl0IGxvb3AgdGltZWQgb3V0Cj4+Cj4+IFdl
-IHJhbiBpbnRvIHNpbWlsYXIgaXNzdWVzIGFuZCBiaXNlY3RlZCBpdCB0byBjb21taXQgYjE1MTZh
-MTQ2NTdhY2Y4MWE1ODdlOWE2ZTczM2E4ODE2MjVlZWU1My4gIEknbSBub3QgdG9vIGZhbWlsaWFy
-IHdpdGggdGhlIElPTU1VIGhhcmR3YXJlIHRvIGtub3cgaWYgdGhpcyBpcyBhbiBpb21tdSBvciBk
-aXNwbGF5IGRyaXZlciBpc3N1ZSB5ZXQuCj4KPiBXZSBjYW4gY29uZmlybSB0aGF0IHJldmVydGlu
-ZyB0aGlzIGNvbW1pdCBzb2x2ZXMgdGhlIGlzc3VlLgo+Cj4gR2l2ZW4gdGhhdCB0aGF0IGNvbW1p
-dCBpcyBhbiBvcHRpbWl6YXRpb24sIGJ1dCBpdCBoYXMgaW50cm9kdWNlZCBhCj4gcmVncmVzc2lv
-biBvbiBtdWx0aXBsZSBwbGF0Zm9ybXMsIGFuZCBoYXMgYmVlbiBsaWtlIHRoaXMgZm9yIDggbW9u
-dGhzLAo+IGl0IHdvdWxkIGJlIGNvbW1vbiBwcmFjdGljZSB0byBub3cgcmV2ZXJ0IHRoaXMgcGF0
-Y2ggdXBzdHJlYW0gdW50aWwKPiB0aGUgcmVncmVzc2lvbiBpcyBmaXhlZC4gQ291bGQgeW91IHBs
-ZWFzZSBzZW5kIGEgbmV3IHBhdGNoIHRvIGRvIHRoaXM/Cj4KPiBBbHNvLCB3ZSB3b3VsZCBiZSBo
-YXBweSB0byB0ZXN0IGFueSByZWFsIHNvbHV0aW9ucyB0byB0aGlzIGlzc3VlIHdoaWxlCj4gd2Ug
-c3RpbGwgaGF2ZSB0aGUgYWZmZWN0ZWQgdW5pdHMgaW4gaGFuZC4KCk5vIG9iamVjdGlvbnMgdG8g
-YSByZXZlcnQgaGVyZS4KCkFsZXgKCgo+Cj4gVGhhbmtzCj4gRGFuaWVsCj4gX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KPiBhbWQtZ2Z4IG1haWxpbmcgbGlz
-dAo+IGFtZC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCj4gaHR0cHM6Ly9saXN0cy5mcmVlZGVz
-a3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9hbWQtZ2Z4Cl9fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fCmFtZC1nZnggbWFpbGluZyBsaXN0CmFtZC1nZnhAbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4v
-bGlzdGluZm8vYW1kLWdmeAo=
+On 3/8/2017 12:55 AM, Dave Young wrote:
+> On 02/16/17 at 09:45am, Tom Lendacky wrote:
+> [snip]
+>> + * This function determines if an address should be mapped encrypted.
+>> + * Boot setup data, EFI data and E820 areas are checked in making this
+>> + * determination.
+>> + */
+>> +static bool memremap_should_map_encrypted(resource_size_t phys_addr,
+>> +					  unsigned long size)
+>> +{
+>> +	/*
+>> +	 * SME is not active, return true:
+>> +	 *   - For early_memremap_pgprot_adjust(), returning true or false
+>> +	 *     results in the same protection value
+>> +	 *   - For arch_memremap_do_ram_remap(), returning true will allow
+>> +	 *     the RAM remap to occur instead of falling back to ioremap()
+>> +	 */
+>> +	if (!sme_active())
+>> +		return true;
+>
+> From the function name shouldn't above be return false?
+
+I've re-worked this so that the check is in a different location and
+doesn't cause confusion.
+
+>
+>> +
+>> +	/* Check if the address is part of the setup data */
+>> +	if (memremap_is_setup_data(phys_addr, size))
+>> +		return false;
+>> +
+>> +	/* Check if the address is part of EFI boot/runtime data */
+>> +	switch (efi_mem_type(phys_addr)) {
+>> +	case EFI_BOOT_SERVICES_DATA:
+>> +	case EFI_RUNTIME_SERVICES_DATA:
+>
+> Only these two types needed? I'm not sure about this, just bring up the
+> question.
+
+I've re-worked this code so that there is a single EFI routine that
+checks boot_params.efi_info.efi_memmap/efi_systab, EFI tables and the
+EFI memtype.  As for the EFI memtypes, I believe those are the only
+ones required.  Some of the other types will be picked up by the e820
+checks (ACPI, NVS, etc.).
+
+Thanks,
+Tom
+
+>
+>> +		return false;
+>> +	default:
+>> +		break;
+>> +	}
+>> +
+>> +	/* Check if the address is outside kernel usable area */
+>> +	switch (e820__get_entry_type(phys_addr, phys_addr + size - 1)) {
+>> +	case E820_TYPE_RESERVED:
+>> +	case E820_TYPE_ACPI:
+>> +	case E820_TYPE_NVS:
+>> +	case E820_TYPE_UNUSABLE:
+>> +		return false;
+>> +	default:
+>> +		break;
+>> +	}
+>> +
+>> +	return true;
+>> +}
+>> +
+>
+> Thanks
+> Dave
+>
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
