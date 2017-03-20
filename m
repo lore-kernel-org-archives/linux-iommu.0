@@ -1,71 +1,276 @@
-From: "Elliott, Robert (Persistent Memory)" <elliott@hpe.com>
-Subject: RE: [RFC PATCH v4 15/28] Add support to access persistent memory in
- the clear
-Date: Fri, 17 Mar 2017 22:58:21 +0000
-Message-ID: <DF4PR84MB01694A716568EFB01F5C1C5EAB390@DF4PR84MB0169.NAMPRD84.PROD.OUTLOOK.COM>
-References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
- <20170216154521.19244.89502.stgit@tlendack-t1.amdoffice.net>
+From: Oza Oza via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: [RFC PATCH] iommu/dma/pci: account pci host bridge dma_mask for IOVA
+	allocation
+Date: Mon, 20 Mar 2017 14:27:51 +0530
+Message-ID: <6c34297b77de0fc7fc4b44b17749cfd2@mail.gmail.com>
+Reply-To: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170216154521.19244.89502.stgit@tlendack-t1.amdoffice.net>
-Content-Language: en-US
-Sender: owner-linux-mm@kvack.org
-To: Tom Lendacky <thomas.lendacky@amd.com>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: Rik van Riel <riel@redhat.com>, =?utf-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, "Kani, Toshimitsu" <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg
- Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Thomas Gleixner <tglx@linutronix.de>, Larry Woodman <lwoodman@redhat.com>, Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbGludXgta2VybmVsLW93
-bmVyQHZnZXIua2VybmVsLm9yZyBbbWFpbHRvOmxpbnV4LWtlcm5lbC0NCj4gb3duZXJAdmdlci5r
-ZXJuZWwub3JnXSBPbiBCZWhhbGYgT2YgVG9tIExlbmRhY2t5DQo+IFNlbnQ6IFRodXJzZGF5LCBG
-ZWJydWFyeSAxNiwgMjAxNyA5OjQ1IEFNDQo+IFN1YmplY3Q6IFtSRkMgUEFUQ0ggdjQgMTUvMjhd
-IEFkZCBzdXBwb3J0IHRvIGFjY2VzcyBwZXJzaXN0ZW50IG1lbW9yeSBpbg0KPiB0aGUgY2xlYXIN
-Cj4gDQo+IFBlcnNpc3RlbnQgbWVtb3J5IGlzIGV4cGVjdGVkIHRvIHBlcnNpc3QgYWNyb3NzIHJl
-Ym9vdHMuIFRoZSBlbmNyeXB0aW9uDQo+IGtleSB1c2VkIGJ5IFNNRSB3aWxsIGNoYW5nZSBhY3Jv
-c3MgcmVib290cyB3aGljaCB3aWxsIHJlc3VsdCBpbiBjb3JydXB0ZWQNCj4gcGVyc2lzdGVudCBt
-ZW1vcnkuICBQZXJzaXN0ZW50IG1lbW9yeSBpcyBoYW5kZWQgb3V0IGJ5IGJsb2NrIGRldmljZXMN
-Cj4gdGhyb3VnaCBtZW1vcnkgcmVtYXBwaW5nIGZ1bmN0aW9ucywgc28gYmUgc3VyZSBub3QgdG8g
-bWFwIHRoaXMgbWVtb3J5IGFzDQo+IGVuY3J5cHRlZC4NCg0KVGhlIHN5c3RlbSBtaWdodCBiZSBh
-YmxlIHRvIHNhdmUgYW5kIHJlc3RvcmUgdGhlIGNvcnJlY3QgZW5jcnlwdGlvbiBrZXkgZm9yIGEg
-DQpyZWdpb24gb2YgcGVyc2lzdGVudCBtZW1vcnksIGluIHdoaWNoIGNhc2UgaXQgZG9lcyBuZWVk
-IHRvIGJlIG1hcHBlZCBhcw0KZW5jcnlwdGVkLg0KDQpUaGlzIG1pZ2h0IGRlc2VydmUgYSBuZXcg
-RUZJX01FTU9SWV9FTkNSWVBURUQgYXR0cmlidXRlIGJpdCBzbyB0aGUNCnN5c3RlbSBmaXJtd2Fy
-ZSBjYW4gY29tbXVuaWNhdGUgdGhhdCBpbmZvcm1hdGlvbiB0byB0aGUgT1MgKGluIHRoZQ0KVUVG
-SSBtZW1vcnkgbWFwIGFuZCB0aGUgQUNQSSBORklUIFNQQSBSYW5nZSBzdHJ1Y3R1cmVzKS4gIEl0
-IHdvdWxkbid0DQpsaWtlbHkgZXZlciBiZSBhZGRlZCB0byB0aGUgRTgyMGggdGFibGUgLSBBQ1BJ
-IDYuMSBhbHJlYWR5IG9ic29sZXRlZCB0aGUNCkV4dGVuZGVkIEF0dHJpYnV0ZSBmb3IgQWRkcmVz
-c1JhbmdlTm9uVm9sYXRpbGUuDQoNCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFRvbSBMZW5kYWNreSA8
-dGhvbWFzLmxlbmRhY2t5QGFtZC5jb20+DQo+IC0tLQ0KPiAgYXJjaC94ODYvbW0vaW9yZW1hcC5j
-IHwgICAgMiArKw0KPiAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKQ0KPiANCj4gZGlm
-ZiAtLWdpdCBhL2FyY2gveDg2L21tL2lvcmVtYXAuYyBiL2FyY2gveDg2L21tL2lvcmVtYXAuYw0K
-PiBpbmRleCBiMGZmNmJjLi5jNmNiOTIxIDEwMDY0NA0KPiAtLS0gYS9hcmNoL3g4Ni9tbS9pb3Jl
-bWFwLmMNCj4gKysrIGIvYXJjaC94ODYvbW0vaW9yZW1hcC5jDQo+IEBAIC00OTgsNiArNDk4LDgg
-QEAgc3RhdGljIGJvb2wNCj4gbWVtcmVtYXBfc2hvdWxkX21hcF9lbmNyeXB0ZWQocmVzb3VyY2Vf
-c2l6ZV90IHBoeXNfYWRkciwNCj4gIAljYXNlIEU4MjBfVFlQRV9BQ1BJOg0KPiAgCWNhc2UgRTgy
-MF9UWVBFX05WUzoNCj4gIAljYXNlIEU4MjBfVFlQRV9VTlVTQUJMRToNCj4gKwljYXNlIEU4MjBf
-VFlQRV9QTUVNOg0KPiArCWNhc2UgRTgyMF9UWVBFX1BSQU06DQo+ICAJCXJldHVybiBmYWxzZTsN
-Cj4gIAlkZWZhdWx0Og0KPiAgCQlicmVhazsNCg0KRTgyMF9UWVBFX1JFU0VSVkVEIGlzIGFsc28g
-dXNlZCB0byByZXBvcnQgcGVyc2lzdGVudCBtZW1vcnkgaW4NCnNvbWUgc3lzdGVtcyAocGF0Y2gg
-MTYgYWRkcyB0aGF0IGZvciBvdGhlciByZWFzb25zKS4NCg0KWW91IG1pZ2h0IHdhbnQgdG8gaW50
-ZXJjZXB0IHRoZSBwZXJzaXN0ZW50IG1lbW9yeSB0eXBlcyBpbiB0aGUgDQplZmlfbWVtX3R5cGUo
-cGh5c19hZGRyKSBzd2l0Y2ggc3RhdGVtZW50IGVhcmxpZXIgaW4gdGhlIGZ1bmN0aW9uDQphcyB3
-ZWxsLiAgaHR0cHM6Ly9sa21sLm9yZy9sa21sLzIwMTcvMy8xMy8zNTcgcmVjZW50bHkgbWVudGlv
-bmVkIHRoYXQNCiJpbiBxZW11IGhvdHBsdWdnYWJsZSBtZW1vcnkgaXNuJ3QgcHV0IGludG8gRTgy
-MCwiIHdpdGggdGhlIGxhdGVzdCANCmluZm9ybWF0aW9uIG9ubHkgaW4gdGhlIFVFRkkgbWVtb3J5
-IG1hcC4NCg0KUGVyc2lzdGVudCBtZW1vcnkgY2FuIGJlIHJlcG9ydGVkIHRoZXJlIGFzOg0KKiBF
-ZmlSZXNlcnZlZE1lbW9yeVR5cGUgdHlwZSB3aXRoIHRoZSBFRklfTUVNT1JZX05WIGF0dHJpYnV0
-ZQ0KKiBFZmlQZXJzaXN0ZW50TWVtb3J5IHR5cGUgd2l0aCB0aGUgRUZJX01FTU9SWV9OViBhdHRy
-aWJ1dGUNCg0KRXZlbiB0aGUgVUVGSSBtZW1vcnkgbWFwIGlzIG5vdCBhdXRob3JpdGF0aXZlLCB0
-aG91Z2guICBUbyByZWFsbHkNCmRldGVybWluZSB3aGF0IGlzIGluIHRoZXNlIHJlZ2lvbnMgcmVx
-dWlyZXMgcGFyc2luZyB0aGUgQUNQSSBORklUDQpTUEEgUmFuZ2VzIHN0cnVjdHVyZXMuICBQYXJ0
-cyBvZiB0aGUgRTgyMCBvciBVRUZJIHJlZ2lvbnMgY291bGQgYmUNCnJlcG9ydGVkIGFzIHZvbGF0
-aWxlIHRoZXJlIGFuZCBzaG91bGQgdGh1cyBiZSBlbmNyeXB0ZWQuDQoNCi0tLQ0KUm9iZXJ0IEVs
-bGlvdHQsIEhQRSBQZXJzaXN0ZW50IE1lbW9yeQ0KDQoNCg0K
++  linux-pci
 
+Regards,
+Oza.
+
+-----Original Message-----
+From: Oza Pawandeep [mailto:oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org]
+Sent: Friday, March 17, 2017 11:41 AM
+To: Joerg Roedel; Robin Murphy
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
+bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org; Oza Pawandeep
+Subject: [RFC PATCH] iommu/dma: account pci host bridge dma_mask for IOVA
+allocation
+
+It is possible that PCI device supports 64-bit DMA addressing, and thus
+it's driver sets device's dma_mask to DMA_BIT_MASK(64), however PCI host
+bridge may have limitations on the inbound transaction addressing. As an
+example, consider NVME SSD device connected to iproc-PCIe controller.
+
+Currently, the IOMMU DMA ops only considers PCI device dma_mask when
+allocating an IOVA. This is particularly problematic on
+ARM/ARM64 SOCs where the IOMMU (i.e. SMMU) translates IOVA to PA for
+in-bound transactions only after PCI Host has forwarded these transactions
+on SOC IO bus. This means on such ARM/ARM64 SOCs the IOVA of in-bound
+transactions has to honor the addressing restrictions of the PCI Host.
+
+this patch is inspired by
+http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1306545.html
+http://www.spinics.net/lists/arm-kernel/msg566947.html
+
+but above inspiraiton solves the half of the problem.
+the rest of the problem is descrbied below, what we face on iproc based
+SOCs.
+
+current pcie frmework and of framework integration assumes dma-ranges in a
+way where memory-mapped devices define their dma-ranges.
+dma-ranges: (child-bus-address, parent-bus-address, length).
+
+but iproc based SOCs and even Rcar based SOCs has PCI world dma-ranges.
+dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
+
+of_dma_configure is specifically witten to take care of memory mapped
+devices.
+but no implementation exists for pci to take care of pcie based memory
+ranges.
+in fact pci world doesnt seem to define standard dma-ranges since there is
+an absense of the same, the dma_mask used to remain 32bit because of
+0 size return (parsed by of_dma_configure())
+
+this patch also implements of_pci_get_dma_ranges to cater to pci world
+dma-ranges.
+so then the returned size get best possible (largest) dma_mask.
+for e.g.
+dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>; we should get
+dev->coherent_dma_mask=0x7fffffffff.
+
+conclusion: there are following problems
+1) linux pci and iommu framework integration has glitches with respect to
+dma-ranges
+2) pci linux framework look very uncertain about dma-ranges, rather
+binding is not defined
+   the way it is defined for memory mapped devices.
+   rcar and iproc based SOCs use their custom one dma-ranges
+   (rather can be standard)
+3) even if in case of default parser of_dma_get_ranges,:
+   it throws and erro"
+   "no dma-ranges found for node"
+   because of the bug which exists.
+   following lines should be moved to the end of while(1)
+	839                 node = of_get_next_parent(node);
+	840                 if (!node)
+	841                         break;
+
+Reviewed-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig index
+8c7c244..20cfff7 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -217,6 +217,9 @@ config NEED_DMA_MAP_STATE  config NEED_SG_DMA_LENGTH
+ 	def_bool y
+
++config ARCH_HAS_DMA_SET_COHERENT_MASK
++	def_bool y
++
+ config SMP
+ 	def_bool y
+
+diff --git a/arch/arm64/include/asm/device.h
+b/arch/arm64/include/asm/device.h index 73d5bab..64b4dc3 100644
+--- a/arch/arm64/include/asm/device.h
++++ b/arch/arm64/include/asm/device.h
+@@ -20,6 +20,7 @@ struct dev_archdata {
+ #ifdef CONFIG_IOMMU_API
+ 	void *iommu;			/* private IOMMU data */
+ #endif
++	u64 parent_dma_mask;
+ 	bool dma_coherent;
+ };
+
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 81cdb2e..5845ecd 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -564,6 +564,7 @@ static void flush_page(struct device *dev, const void
+*virt, phys_addr_t phys)
+ 	__dma_flush_area(virt, PAGE_SIZE);
+ }
+
++
+ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+ 				 dma_addr_t *handle, gfp_t gfp,
+ 				 unsigned long attrs)
+@@ -795,6 +796,20 @@ static void __iommu_unmap_sg_attrs(struct device
+*dev,
+ 	iommu_dma_unmap_sg(dev, sgl, nelems, dir, attrs);  }
+
++static int __iommu_set_dma_mask(struct device *dev, u64 mask) {
++	/* device is not DMA capable */
++	if (!dev->dma_mask)
++		return -EIO;
++
++	if (mask > dev->archdata.parent_dma_mask)
++		mask = dev->archdata.parent_dma_mask;
++
++	*dev->dma_mask = mask;
++
++	return 0;
++}
++
+ static const struct dma_map_ops iommu_dma_ops = {
+ 	.alloc = __iommu_alloc_attrs,
+ 	.free = __iommu_free_attrs,
+@@ -811,8 +826,21 @@ static void __iommu_unmap_sg_attrs(struct device
+*dev,
+ 	.map_resource = iommu_dma_map_resource,
+ 	.unmap_resource = iommu_dma_unmap_resource,
+ 	.mapping_error = iommu_dma_mapping_error,
++	.set_dma_mask = __iommu_set_dma_mask,
+ };
+
++int dma_set_coherent_mask(struct device *dev, u64 mask) {
++	if (get_dma_ops(dev) == &iommu_dma_ops &&
++	    mask > dev->archdata.parent_dma_mask)
++		mask = dev->archdata.parent_dma_mask;
++
++	dev->coherent_dma_mask = mask;
++	return 0;
++}
++EXPORT_SYMBOL(dma_set_coherent_mask);
++
++
+ /*
+  * TODO: Right now __iommu_setup_dma_ops() gets called too early to do
+  * everything it needs to - the device is only partially created and the
+@@ -975,6 +1003,8 @@ void arch_setup_dma_ops(struct device *dev, u64
+dma_base, u64 size,
+ 	if (!dev->dma_ops)
+ 		dev->dma_ops = &swiotlb_dma_ops;
+
++	dev->archdata.parent_dma_mask = size - 1;
++
+ 	dev->archdata.dma_coherent = coherent;
+ 	__iommu_setup_dma_ops(dev, dma_base, size, iommu);  } diff --git
+a/drivers/of/of_pci.c b/drivers/of/of_pci.c index 0ee42c3..5804717 100644
+--- a/drivers/of/of_pci.c
++++ b/drivers/of/of_pci.c
+@@ -283,6 +283,51 @@ int of_pci_get_host_bridge_resources(struct
+device_node *dev,
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
++
++int of_pci_get_dma_ranges(struct device_node *np, u64 *dma_addr, u64
++*paddr, u64 *size) {
++	struct device_node *node = of_node_get(np);
++	int rlen, naddr, nsize, pna;
++	int ret = 0;
++	const int na = 3, ns = 2;
++	struct of_pci_range_parser parser;
++	struct of_pci_range range;
++
++	if (!node)
++		return -EINVAL;
++
++	parser.node = node;
++	parser.pna = of_n_addr_cells(node);
++	parser.np = parser.pna + na + ns;
++
++	parser.range = of_get_property(node, "dma-ranges", &rlen);
++
++	if (!parser.range) {
++		pr_debug("pcie device has no dma-ranges defined for
+node(%s)\n", np->full_name);
++		ret = -ENODEV;
++		goto out;
++	}
++
++	parser.end = parser.range + rlen / sizeof(__be32);
++
++	/* how do we take care of multiple dma windows ?. */
++	for_each_of_pci_range(&parser, &range) {
++		*dma_addr = range.pci_addr;
++		*size = range.size;
++		*paddr = range.cpu_addr;
++	}
++
++	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
++		 *dma_addr, *paddr, *size);
++		 *dma_addr = range.pci_addr;
++		 *size = range.size;
++
++out:
++	of_node_put(node);
++	return ret;
++
++}
++EXPORT_SYMBOL_GPL(of_pci_get_dma_ranges);
+ #endif /* CONFIG_OF_ADDRESS */
+
+ #ifdef CONFIG_PCI_MSI
+diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h index
+0e0974e..907ace0 100644
+--- a/include/linux/of_pci.h
++++ b/include/linux/of_pci.h
+@@ -76,6 +76,7 @@ static inline void of_pci_check_probe_only(void) { }
+int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 			unsigned char busno, unsigned char bus_max,
+ 			struct list_head *resources, resource_size_t
+*io_base);
++int of_pci_get_dma_ranges(struct device_node *np, u64 *dma_addr, u64
++*paddr, u64 *size);
+ #else
+ static inline int of_pci_get_host_bridge_resources(struct device_node
+*dev,
+ 			unsigned char busno, unsigned char bus_max, @@
+-83,6 +84,11 @@ static inline int of_pci_get_host_bridge_resources(struct
+device_node *dev,  {
+ 	return -EINVAL;
+ }
++
++static inline int of_pci_get_dma_ranges(struct device_node *np, u64
++*dma_addr, u64 *paddr, u64 *size) {
++	return -EINVAL;
++}
+ #endif
+
+ #if defined(CONFIG_OF) && defined(CONFIG_PCI_MSI)
 --
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+1.9.1
