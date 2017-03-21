@@ -1,64 +1,85 @@
-From: Thibaud Cornic <thibaud_cornic@sigmadesigns.com>
+From: Mason <slash.tmp@free.fr>
 Subject: Re: [RFC PATCH v0.001] PCI: Add support for tango PCIe controller
-Date: Tue, 21 Mar 2017 13:53:41 +0100
-Message-ID: <3b91a0e8-c913-06bd-fa3f-6ba1acdd731c@sigmadesigns.com>
+Date: Tue, 21 Mar 2017 14:01:57 +0100
+Message-ID: <d5062453-39cc-1435-bb13-87c81b6ef0b3@free.fr>
 References: <ab110ce2-8678-9b34-6bd1-6cfaaa7fea04@free.fr>
  <f13c385d-dcc9-dacd-2b2c-ca098228f4f4@free.fr>
- <9d23357c-fa59-d638-11ba-f1ab24dbeb43@arm.com>
- <89fab12d-82b1-512f-df48-666861eab22f@free.fr>
+ <20170321123129.GB6816@e110455-lin.cambridge.arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: 8BIT
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <89fab12d-82b1-512f-df48-666861eab22f@free.fr>
-Sender: linux-pci-owner@vger.kernel.org
-To: Mason <slash.tmp@free.fr>, Robin Murphy <robin.murphy@arm.com>
-Cc: Bjorn Helgaas <helgaas@kernel.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Liviu Dudau <liviu.dudau@arm.com>, David Laight <david.laight@aculab.com>, linux-pci <linux-pci@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>, Phuong Nguyen <phuong_nguyen@sigmadesigns.com>, Joerg Roedel <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
+In-Reply-To: <20170321123129.GB6816@e110455-lin.cambridge.arm.com>
+List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
+List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
+List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
+List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
+List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
+ <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
+Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
+Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+To: Liviu Dudau <liviu.dudau@arm.com>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, linux-pci <linux-pci@vger.kernel.org>, Thibaud Cornic <thibaud_cornic@sigmadesigns.com>, iommu <iommu@lists.linux-foundation.org>, David Laight <david.laight@aculab.com>, Bjorn Helgaas <helgaas@kernel.org>, Phuong Nguyen <phuong_nguyen@sigmadesigns.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 21/03/2017 13:43, Mason wrote:
-> On 21/03/2017 12:36, Robin Murphy wrote:
->
->> On 21/03/17 10:15, Mason wrote:
+On 21/03/2017 13:31, Liviu Dudau wrote:
+
+> On Tue, Mar 21, 2017 at 11:15:16AM +0100, Mason wrote:
 >>
->>> I suppose one may consider the above limitation ("Only transfers
->>> within the BAR are forwarded to the host") as some form of weird
->>> IOMMU? (There is, in fact, some remapping logic in the controller
->>> setup which I haven't discussed so far.)
->> Not really. If it's the 8x128MB region thing mentioned elsewhere, that's
->> far too coarse a granularity to be much use with the existing IOMMU API
->> (this vaguely reminds me of a similar discussion about programmable
->> interconnects ages ago). Unless it's actually got some sort of GART-type
->> thing or better capable of page-granularity mappings within a
->> significantly-sized region, I'd put that idea to bed.
-> I had a feeling my use-case was too quirky for a sane API :-)
->
->>> Since this SoC is used for TV, the media cartels mandate some way
->>> to limit where PCI bus masters can peek/poke in RAM.
->> FWIW, since that sounds like more of a box-ticking exercise than a real
->> practical concern, I'd point out that content protection is more or less
->> the poster child for TrustZone, and your TZASC should help tick that box
->> regardless.
-> Interesting. In fact, our Linux runs as the non-secure OS,
-> and we do have a custom "secure" OS running in parallel.
->
-> My knowledge of TZ is limited to "call this SMC to offline
-> that CPU", but our local TZ expert is CCed :-)
->
-> TZASC = TrustZone Address Space Controller
->
-> http://infocenter.arm.com/help/topic/com.arm.doc.ddi0431c/CHDBBGIC.html
->
-> Is there a TZASC embedded in every ARM core?
-> We're using Cortex-A9 MPCore r3p0 + PL310 r3p2
-We don't have the TZASC, but a proprietary solution, on which the PCIe
-can't be distinguished from other I/Os (e.g. SATA, USB).
-But the requirement of limiting device accesses to only certain regions
-of the DRAM is only for PCIe (it's special in the sense the device can
-initiate accesses without any action on our chip's side).
-Since we already had those 8x128MB remaps (which we now understand seem
-wrong, as the root complex is not supposed to expose a BAR, but rather
-forward all accesses to the internal bus), we simply put a lock on them,
-and our partners were satisfied.
+>> On 17/03/2017 17:11, Mason wrote:
+>>
+>>> + * QUIRK #5
+>>> + * Only transfers within the BAR are forwarded to the host.
+>>> + * By default, the DMA framework expects that
+>>> + * PCI address 0x8000_0000 -> CPU address 0x8000_0000
+>>> + * which is where DRAM0 is mapped.
+>>
+>> I have an additional question on this topic.
+>>
+>> In a typical system, PCI bus masters are able to access all of RAM,
+>> unless there is some kind of IOMMU, right?
+> 
+> Depends where the ATS (Address translation service) lives and what gets
+> programmed there, but usually one can restrict the RAM (or system address
+> space, to be more precise) that can be accessed from the PCI bus masters
+> by only providing PCI(e)-to-system bus mappings that make sense. Remember
+> that on any PCI bus you can only see addresses that are a subset of your
+> parent bus addresses. If the root PCI bus only allows access to a predefined
+> range of addresses, then that is all you can access in the system.
+
+Hmmm, where do I configure the range of addresses which the root
+PCI bus allows access to? In the DT?
+
+>> I suppose one may consider the above limitation ("Only transfers
+>> within the BAR are forwarded to the host") as some form of weird
+>> IOMMU? (There is, in fact, some remapping logic in the controller
+>> setup which I haven't discussed so far.)
+> 
+> Not sure I understand the quirk. What BAR are you referring to when you say
+> "within the BAR"? The bus master's? Are you saying that only if you write
+> to a PCI bus address XXXXXXX that is in the range assigned by the parent
+> bus then you can escape your bus hierarchy and target the system RAM? That
+> sounds backwards to me.
+
+My PCIe controller is b/d/f 0/0/0.
+It ignores all PCI addresses that do not fall within the range
+defined in BAR0 of b/d/f 0/0/0.
+
+BAR0 has a configurable width of 2^(23+i) bytes, i < 8
+It is implicitly split in 8 regions, which can map to
+anywhere in CPU space. However, my understanding is that,
+by default, the DMA framework expects PCI address X to
+map to CPU address X...
+(My understanding of that part is still a bit hazy.)
+
+>> Since this SoC is used for TV, the media cartels mandate some way
+>> to limit where PCI bus masters can peek/poke in RAM.
+> 
+> And that is usually done by either having a TrustZone controller on top of
+> your PCI host bridge or by putting an IOMMU.
+
+It seems we don't have this HW, therefore some kind of custom
+HW quirk was required.
 
 Regards.
