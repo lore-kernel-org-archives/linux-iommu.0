@@ -1,64 +1,71 @@
-From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: amd-iommu: can't boot with amdgpu, AMD-Vi: Completion-Wait loop
-	timed out
-Date: Tue, 21 Mar 2017 16:57:25 +0100
-Message-ID: <20170321155725.GD29659@8bytes.org>
+From: "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>
+Subject: RE: amd-iommu: can't boot with amdgpu, AMD-Vi: Completion-Wait loop
+ timed out
+Date: Tue, 21 Mar 2017 16:01:53 +0000
+Message-ID: <BN6PR12MB16526DD4A3B60DB4E20B9907F73D0@BN6PR12MB1652.namprd12.prod.outlook.com>
 References: <CAD8Lp457TE1CnJ-DHnB6NB2LWxgA5K5K57Q6L7XcSHeYNpvARQ@mail.gmail.com>
-	<CY4PR12MB16533C83151D6FCFC11ED457F7250@CY4PR12MB1653.namprd12.prod.outlook.com>
-	<CAD8Lp47zjJvqxY3TMMAhjz3OnLR52CtsQh_PQFPmsEW-xHfDwg@mail.gmail.com>
-	<CADnq5_Oyfm-BzU9YV_QLjm6HxtMwnJcFkfYtjmCWpuah35TFvA@mail.gmail.com>
+ <CY4PR12MB16533C83151D6FCFC11ED457F7250@CY4PR12MB1653.namprd12.prod.outlook.com>
+ <CAD8Lp47zjJvqxY3TMMAhjz3OnLR52CtsQh_PQFPmsEW-xHfDwg@mail.gmail.com>
+ <CADnq5_Oyfm-BzU9YV_QLjm6HxtMwnJcFkfYtjmCWpuah35TFvA@mail.gmail.com>
+ <20170321155725.GD29659@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CADnq5_Oyfm-BzU9YV_QLjm6HxtMwnJcFkfYtjmCWpuah35TFvA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Alex Deucher <alexdeucher-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: Chris Chiu <chiu-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, Linux Upstreaming Team <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <20170321155725.GD29659-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: "'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Alex Deucher <alexdeucher-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Chris Chiu <chiu-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Suthikulpanit, Suravee" <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>, Linux Upstreaming Team <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 17, 2017 at 11:53:09AM -0400, Alex Deucher wrote:
-> On Fri, Mar 17, 2017 at 8:15 AM, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org> wrote:
-> > Hi,
-> >
-> > On Mon, Mar 13, 2017 at 2:01 PM, Deucher, Alexander
-> > <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org> wrote:
-> >> > We are unable to boot Acer Aspire E5-553G (AMD FX-9800P RADEON R7) nor
-> >> > Acer Aspire E5-523 with standard configurations because during boot
-> >> > the screen is flooded with the following error message over and over:
-> >> >
-> >> >   AMD-Vi: Completion-Wait loop timed out
-> >>
-> >> We ran into similar issues and bisected it to commit b1516a14657acf81a587e9a6e733a881625eee53.  I'm not too familiar with the IOMMU hardware to know if this is an iommu or display driver issue yet.
-> >
-> > We can confirm that reverting this commit solves the issue.
-> >
-> > Given that that commit is an optimization, but it has introduced a
-> > regression on multiple platforms, and has been like this for 8 months,
-> > it would be common practice to now revert this patch upstream until
-> > the regression is fixed. Could you please send a new patch to do this?
-> >
-> > Also, we would be happy to test any real solutions to this issue while
-> > we still have the affected units in hand.
-> 
-> No objections to a revert here.
-
-Big objection here. Since this only happens with amdgpu so far we
-shouldn't rule out a display-driver issue.
-
-Reverting that patch basically destroys iommu-performance on AMD
-systems. Doing this for all devices just to make amdgpu working is
-overkill at this stage of the debugging.
-
-
-
-	Joerg
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQo+IEZyb206IGpvcm9AOGJ5dGVzLm9yZyBbbWFp
+bHRvOmpvcm9AOGJ5dGVzLm9yZ10KPiBTZW50OiBUdWVzZGF5LCBNYXJjaCAyMSwgMjAxNyAxMTo1
+NyBBTQo+IFRvOiBBbGV4IERldWNoZXIKPiBDYzogRGFuaWVsIERyYWtlOyBEZXVjaGVyLCBBbGV4
+YW5kZXI7IENocmlzIENoaXU7IGFtZC0KPiBnZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnOyBOYXRo
+LCBBcmluZGFtOyBpb21tdUBsaXN0cy5saW51eC0KPiBmb3VuZGF0aW9uLm9yZzsgU3V0aGlrdWxw
+YW5pdCwgU3VyYXZlZTsgTGludXggVXBzdHJlYW1pbmcgVGVhbQo+IFN1YmplY3Q6IFJlOiBhbWQt
+aW9tbXU6IGNhbid0IGJvb3Qgd2l0aCBhbWRncHUsIEFNRC1WaTogQ29tcGxldGlvbi1XYWl0Cj4g
+bG9vcCB0aW1lZCBvdXQKPiAKPiBPbiBGcmksIE1hciAxNywgMjAxNyBhdCAxMTo1MzowOUFNIC0w
+NDAwLCBBbGV4IERldWNoZXIgd3JvdGU6Cj4gPiBPbiBGcmksIE1hciAxNywgMjAxNyBhdCA4OjE1
+IEFNLCBEYW5pZWwgRHJha2UgPGRyYWtlQGVuZGxlc3NtLmNvbT4KPiB3cm90ZToKPiA+ID4gSGks
+Cj4gPiA+Cj4gPiA+IE9uIE1vbiwgTWFyIDEzLCAyMDE3IGF0IDI6MDEgUE0sIERldWNoZXIsIEFs
+ZXhhbmRlcgo+ID4gPiA8QWxleGFuZGVyLkRldWNoZXJAYW1kLmNvbT4gd3JvdGU6Cj4gPiA+PiA+
+IFdlIGFyZSB1bmFibGUgdG8gYm9vdCBBY2VyIEFzcGlyZSBFNS01NTNHIChBTUQgRlgtOTgwMFAg
+UkFERU9OCj4gUjcpIG5vcgo+ID4gPj4gPiBBY2VyIEFzcGlyZSBFNS01MjMgd2l0aCBzdGFuZGFy
+ZCBjb25maWd1cmF0aW9ucyBiZWNhdXNlIGR1cmluZyBib290Cj4gPiA+PiA+IHRoZSBzY3JlZW4g
+aXMgZmxvb2RlZCB3aXRoIHRoZSBmb2xsb3dpbmcgZXJyb3IgbWVzc2FnZSBvdmVyIGFuZCBvdmVy
+Ogo+ID4gPj4gPgo+ID4gPj4gPiAgIEFNRC1WaTogQ29tcGxldGlvbi1XYWl0IGxvb3AgdGltZWQg
+b3V0Cj4gPiA+Pgo+ID4gPj4gV2UgcmFuIGludG8gc2ltaWxhciBpc3N1ZXMgYW5kIGJpc2VjdGVk
+IGl0IHRvIGNvbW1pdAo+IGIxNTE2YTE0NjU3YWNmODFhNTg3ZTlhNmU3MzNhODgxNjI1ZWVlNTMu
+ICBJJ20gbm90IHRvbyBmYW1pbGlhciB3aXRoIHRoZQo+IElPTU1VIGhhcmR3YXJlIHRvIGtub3cg
+aWYgdGhpcyBpcyBhbiBpb21tdSBvciBkaXNwbGF5IGRyaXZlciBpc3N1ZSB5ZXQuCj4gPiA+Cj4g
+PiA+IFdlIGNhbiBjb25maXJtIHRoYXQgcmV2ZXJ0aW5nIHRoaXMgY29tbWl0IHNvbHZlcyB0aGUg
+aXNzdWUuCj4gPiA+Cj4gPiA+IEdpdmVuIHRoYXQgdGhhdCBjb21taXQgaXMgYW4gb3B0aW1pemF0
+aW9uLCBidXQgaXQgaGFzIGludHJvZHVjZWQgYQo+ID4gPiByZWdyZXNzaW9uIG9uIG11bHRpcGxl
+IHBsYXRmb3JtcywgYW5kIGhhcyBiZWVuIGxpa2UgdGhpcyBmb3IgOCBtb250aHMsCj4gPiA+IGl0
+IHdvdWxkIGJlIGNvbW1vbiBwcmFjdGljZSB0byBub3cgcmV2ZXJ0IHRoaXMgcGF0Y2ggdXBzdHJl
+YW0gdW50aWwKPiA+ID4gdGhlIHJlZ3Jlc3Npb24gaXMgZml4ZWQuIENvdWxkIHlvdSBwbGVhc2Ug
+c2VuZCBhIG5ldyBwYXRjaCB0byBkbyB0aGlzPwo+ID4gPgo+ID4gPiBBbHNvLCB3ZSB3b3VsZCBi
+ZSBoYXBweSB0byB0ZXN0IGFueSByZWFsIHNvbHV0aW9ucyB0byB0aGlzIGlzc3VlIHdoaWxlCj4g
+PiA+IHdlIHN0aWxsIGhhdmUgdGhlIGFmZmVjdGVkIHVuaXRzIGluIGhhbmQuCj4gPgo+ID4gTm8g
+b2JqZWN0aW9ucyB0byBhIHJldmVydCBoZXJlLgo+IAo+IEJpZyBvYmplY3Rpb24gaGVyZS4gU2lu
+Y2UgdGhpcyBvbmx5IGhhcHBlbnMgd2l0aCBhbWRncHUgc28gZmFyIHdlCj4gc2hvdWxkbid0IHJ1
+bGUgb3V0IGEgZGlzcGxheS1kcml2ZXIgaXNzdWUuCj4gCj4gUmV2ZXJ0aW5nIHRoYXQgcGF0Y2gg
+YmFzaWNhbGx5IGRlc3Ryb3lzIGlvbW11LXBlcmZvcm1hbmNlIG9uIEFNRAo+IHN5c3RlbXMuIERv
+aW5nIHRoaXMgZm9yIGFsbCBkZXZpY2VzIGp1c3QgdG8gbWFrZSBhbWRncHUgd29ya2luZyBpcwo+
+IG92ZXJraWxsIGF0IHRoaXMgc3RhZ2Ugb2YgdGhlIGRlYnVnZ2luZy4KCkl0IHNlZW1zIHRvIG9u
+bHkgYWZmZWN0IFN0b25leSBzeXN0ZW1zLCBidXQgbm90IG90aGVycyAoQ2Fycml6bywgQnJpc3Rv
+bCwgZXRjLikuICBNYXliZSB3ZSBjb3VsZCBqdXN0IGRpc2FibGUgaXQgb24gU3RvbmV5IHVudGls
+IHdlIHJvb3QgY2F1c2UgaXQuCgpBbGV4CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwphbWQtZ2Z4IG1haWxpbmcgbGlzdAphbWQtZ2Z4QGxpc3RzLmZyZWVk
+ZXNrdG9wLm9yZwpodHRwczovL2xpc3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2FtZC1nZngK
