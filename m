@@ -1,39 +1,85 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 04/30] iommu/arm-smmu-v3: Add support for PCI ATS
-Date: Tue, 21 Mar 2017 19:38:29 +0000
-Message-ID: <8abb07bc-5660-6071-528f-7a810ad778d0@arm.com>
+From: jacob pan <jacob.jun.pan@intel.com>
+Subject: Re: [RFC PATCH 29/30] vfio: Add support for Shared Virtual Memory
+Date: Tue, 21 Mar 2017 13:56:25 -0700
+Message-ID: <20170321135625.0000229b@intel.com>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
-	<20170227195441.5170-5-jean-philippe.brucker@arm.com>
-	<c0f74140-f1f6-7c52-295a-5d4722017664@codeaurora.org>
+        <20170227195441.5170-30-jean-philippe.brucker@arm.com>
+        <A2975661238FB949B60364EF0F2C2574390206F0@shsmsx102.ccr.corp.intel.com>
+        <d12a4a91-1fae-2fee-6109-3e9a1b7f5abe@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <c0f74140-f1f6-7c52-295a-5d4722017664-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sinan Kaya <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <d12a4a91-1fae-2fee-6109-3e9a1b7f5abe@arm.com>
+Sender: kvm-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Sinan Kaya <okaya@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Harv Abdulhamid <harba@qti.qualcomm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, David Woodhouse <dwmw2@infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Nate Watterson <nwatters@qti.qualcomm.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Lan, Tianyu" <tianyu.lan@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, Alex Williamson <alex.williamson>
 List-Id: iommu@lists.linux-foundation.org
 
-On 08/03/17 15:26, Sinan Kaya wrote:
-> On 2/27/2017 2:54 PM, Jean-Philippe Brucker wrote:
->> +	ats_enabled = !arm_smmu_enable_ats(master);
->> +
-> 
-> You should make ats_supported field in IORT table part of the decision
-> process for when to enable ATS.
-> 
+On Tue, 21 Mar 2017 19:37:56 +0000
+Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
 
-Agreed. I will also draft a proposal for adding the ATS property to PCI
-host controller DT bindings, it seems to be missing.
+> > For invalidation, I've following info in in pseudo code.
+> > struct iommu_svm_tlb_invalidate_info
+> > {
+> >        __u32 inv_type;
+> > #define IOTLB_INV			(1 << 0)
+> > #define EXTENDED_IOTLB_INV		(1 << 1)
+> > #define DEVICE_IOTLB_INV		(1 << 2)
+> > #define EXTENDED_DEVICE_IOTLB_INV	(1 << 3)
+> > #define PASID_CACHE_INV		(1 << 4)
+> >        __u32 pasid;
+> >        __u64 addr;
+> >        __u64 size;
+> >        __u8 granularity;
+> > #define DEFAULT_INV_GRN        0
+> > #define PAGE_SELECTIVE_INV     (1 << 0)
+> > #define PASID_SELECVIVE_INV    (1 << 1)
+> >        __u64 flags;
+> > #define INVALIDATE_HINT_BIT    (1 << 0)
+> > #define GLOBAL_HINT_BIT        (1 << 1)
+> > #define DRAIN_READ_BIT         (1 << 2)
+> > #define DRAIN_WRITE_BIT        (1 << 3)
+> > #define DEVICE_TLB_GLOBAL_BIT  (1 << 4)
+> >        __u8 mip;
+> >        __u16 pfsid;
+> > };  
+> 
+> This would also benefit from being split into generic and
+> architectural parts. Former would be defined in VFIO, latter would be
+> in the IOMMU driver.
+> 
+> struct tlb_invalidate_info
+> {
+> 	__u8 granularity
+> #define DEFAULT_INV_GRN		0	/* What is default? */
+> #define PAGE_SELECTIVE_INV	(1 << 0)
+> #define PASID_SELECTIVE_INV	(1 << 1)
+> 	__u32 pasid;
+> 	__u64 addr;
+> 	__u64 size;
+> 
+> 	/* Since IOMMU format has already been validated for this
+> table, the IOMMU driver knows that the following structure is in a
+> 	   format it knows */
+> 	__u8 opaque[];
+> };
+> 
+> struct tlb_invalidate_info_intel
+> {
+> 	__u32 inv_type;
+> 	...
+> 	__u64 flags;
+> 	...
+> 	__u8 mip;
+> 	__u16 pfsid;
+> };
 
-Thanks,
-Jean-Philippe
+I presume for Intel/arch specific part, the opaque data can simply be
+the descriptor itself. i.e. struct qi_desc. There is no need to
+generalize since it has already been validated to be architecture
+specific data.
+
+Arch specific IOMMU driver can take further action on the opaque data,
+e.g. replace guest DID with host DID based on other info passed down
+from the caller.
