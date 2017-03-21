@@ -1,21 +1,17 @@
-From: "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>
-Subject: RE: amd-iommu: can't boot with amdgpu, AMD-Vi: Completion-Wait loop
-	timed out
-Date: Tue, 21 Mar 2017 16:17:40 +0000
-Message-ID: <BN6PR12MB16528AF8E5577E9ACB483212F73D0@BN6PR12MB1652.namprd12.prod.outlook.com>
-References: <CAD8Lp457TE1CnJ-DHnB6NB2LWxgA5K5K57Q6L7XcSHeYNpvARQ@mail.gmail.com>
-	<CY4PR12MB16533C83151D6FCFC11ED457F7250@CY4PR12MB1653.namprd12.prod.outlook.com>
-	<CAD8Lp47zjJvqxY3TMMAhjz3OnLR52CtsQh_PQFPmsEW-xHfDwg@mail.gmail.com>
-	<CADnq5_Oyfm-BzU9YV_QLjm6HxtMwnJcFkfYtjmCWpuah35TFvA@mail.gmail.com>
-	<20170321155725.GD29659@8bytes.org>
-	<BN6PR12MB16526DD4A3B60DB4E20B9907F73D0@BN6PR12MB1652.namprd12.prod.outlook.com>
-	<20170321161056.GE29659@8bytes.org>
+From: Mason <slash.tmp-GANU6spQydw@public.gmane.org>
+Subject: Re: [RFC PATCH v0.001] PCI: Add support for tango PCIe controller
+Date: Tue, 21 Mar 2017 17:19:29 +0100
+Message-ID: <c4115685-577c-aa6a-3bf7-422ab711d214@free.fr>
+References: <ab110ce2-8678-9b34-6bd1-6cfaaa7fea04@free.fr>
+	<f13c385d-dcc9-dacd-2b2c-ca098228f4f4@free.fr>
+	<20170321123129.GB6816@e110455-lin.cambridge.arm.com>
+	<d5062453-39cc-1435-bb13-87c81b6ef0b3@free.fr>
+	<20170321142305.GC6816@e110455-lin.cambridge.arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170321161056.GE29659-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <20170321142305.GC6816-A/Nd4k6kWRHZROr8t4l/smS4ubULX0JqMm0uRHvK7Nw@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -25,36 +21,57 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "Bridgman, John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>
-Cc: Chris Chiu <chiu-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Alex Deucher <alexdeucher-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linux Upstreaming Team <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+To: Liviu Dudau <liviu.dudau-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thibaud Cornic <thibaud_cornic-y1yR0Z3OICC7zZZRDBGcUA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Laight <david.laight-JxhZ9S5GRejQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Phuong Nguyen <phuong_nguyen-y1yR0Z3OICC7zZZRDBGcUA@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-> -----Original Message-----
-> From: 'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org' [mailto:joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org]
-> Sent: Tuesday, March 21, 2017 12:11 PM
-> To: Deucher, Alexander
-> Cc: Alex Deucher; Daniel Drake; Chris Chiu; amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org;
-> Nath, Arindam; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Suthikulpanit, Suravee;
-> Linux Upstreaming Team
-> Subject: Re: amd-iommu: can't boot with amdgpu, AMD-Vi: Completion-Wait
-> loop timed out
+On 21/03/2017 15:23, Liviu Dudau wrote:
+
+> On Tue, Mar 21, 2017 at 02:01:57PM +0100, Mason wrote:
+>
+>> My PCIe controller is b/d/f 0/0/0.
+>> It ignores all PCI addresses that do not fall within the range
+>> defined in BAR0 of b/d/f 0/0/0.
+>>
+>> BAR0 has a configurable width of 2^(23+i) bytes, i < 8
+>> It is implicitly split in 8 regions, which can map to
+>> anywhere in CPU space. However, my understanding is that,
+>> by default, the DMA framework expects PCI address X to
+>> map to CPU address X...
+>> (My understanding of that part is still a bit hazy.)
 > 
-> On Tue, Mar 21, 2017 at 04:01:53PM +0000, Deucher, Alexander wrote:
-> > It seems to only affect Stoney systems, but not others (Carrizo,
-> > Bristol, etc.).  Maybe we could just disable it on Stoney until we
-> > root cause it.
-> 
-> Completion-wait loop timeouts indicate something is seriously wrong. How
-> can I detect whether I am running on a 'Stoney' system?
+> It looks very much like your PCIe controller (host bridge) has the configuration
+> registers on the wrong side of the bridge (PCIe one vs the more normal host side).
+> But otherwise it does look very much like an ATS system, where you program how the
+> PCIe bus addresses map into the system (you call them CPU) addresses. Do you also
+> have a way of controlling the direction of the mapping? (in other words, those 8
+> regions are only for translating request coming out of the PCIe bus into system
+> addresses, or can you also set the direct mapping of system address to PCIe address?).
 
-+ John
+There are two (asymmetric) features for these mappings.
 
-I'm not sure if the iommu ids are different on stoney systems compared to Carrizo/Bristol systems.  The pci ids of the GPUs are different.  Stoney parts have 0x98E4 as the pci id for the GPU.
+For bus-to-system accesses, the scheme described above
+of "bus addresses within BAR0 fall into 1 of 8 regions,
+and 8 registers define 8 target system addresses".
 
-> 
-> Other question, a shot into the dark, does the GPU on these systems have
-> ATS? Probably yes, as they are likely HSA compatible.
+For system-to-bus accesses, there is a single "offset"
+register which gets added to the system address, to form
+the bus address. I just use a 0 offset.
 
-Stoney is a small APU.  Kind of a mini Carrizo.  While it may claim to support ATS, I don't think it was ever validated on Stoney, only Carrizo/Bristol.
+(This is made slightly more complex on later chips because
+someone in marketing thought it would look good on the
+data sheet to support 4 GB of RAM in a SoC using 32-bit
+processors. There is an additional cpu-to-foo mapping.)
 
-Alex
+> As for DMA framework expectations, I'm not sure how that plays a role, unless you
+> have some DMA engines on the PCIe bus.
+
+I think the USB3 PCIe card I'm using is a bus master, so
+it's able to push data to RAM without any help from the
+ARM core.
+
+Regards.
+
+P.S. something in your message is confusing my MUA, likely
+your Mail-Followup-To field. My MUA thinks it should not
+send you my reply. Is that really what you want?
