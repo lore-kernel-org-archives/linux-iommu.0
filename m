@@ -1,75 +1,52 @@
-From: "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>
-Subject: RE: amd-iommu: can't boot with amdgpu, AMD-Vi: Completion-Wait loop
- timed out
-Date: Tue, 21 Mar 2017 16:30:55 +0000
-Message-ID: <BN6PR12MB165268CA4C460215950409D5F73D0@BN6PR12MB1652.namprd12.prod.outlook.com>
-References: <CAD8Lp457TE1CnJ-DHnB6NB2LWxgA5K5K57Q6L7XcSHeYNpvARQ@mail.gmail.com>
- <CY4PR12MB16533C83151D6FCFC11ED457F7250@CY4PR12MB1653.namprd12.prod.outlook.com>
- <CAD8Lp47zjJvqxY3TMMAhjz3OnLR52CtsQh_PQFPmsEW-xHfDwg@mail.gmail.com>
- <CADnq5_Oyfm-BzU9YV_QLjm6HxtMwnJcFkfYtjmCWpuah35TFvA@mail.gmail.com>
- <20170321155725.GD29659@8bytes.org>
- <BN6PR12MB16526DD4A3B60DB4E20B9907F73D0@BN6PR12MB1652.namprd12.prod.outlook.com>
- <20170321161056.GE29659@8bytes.org>
- <BN6PR12MB16528AF8E5577E9ACB483212F73D0@BN6PR12MB1652.namprd12.prod.outlook.com>
- <20170321162532.GG29659@8bytes.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2 0/5] Implement SMMU passthrough using the default domain
+Date: Tue, 21 Mar 2017 16:42:41 +0000
+Message-ID: <20170321164241.GD30948@arm.com>
+References: <1489178976-15353-1-git-send-email-will.deacon@arm.com>
+	<20170321154624.GC29659@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <20170321162532.GG29659-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
- <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
-List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
- <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: "'joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org'" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "Bridgman, John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, Chris Chiu <chiu-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>, "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Suthikulpanit, Suravee" <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>, Alex Deucher <alexdeucher-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Linux Upstreaming Team <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170321154624.GC29659-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQo+IEZyb206ICdqb3JvQDhieXRlcy5vcmcnIFtt
-YWlsdG86am9yb0A4Ynl0ZXMub3JnXQo+IFNlbnQ6IFR1ZXNkYXksIE1hcmNoIDIxLCAyMDE3IDEy
-OjI2IFBNCj4gVG86IERldWNoZXIsIEFsZXhhbmRlcgo+IENjOiBCcmlkZ21hbiwgSm9objsgQWxl
-eCBEZXVjaGVyOyBEYW5pZWwgRHJha2U7IENocmlzIENoaXU7IGFtZC0KPiBnZnhAbGlzdHMuZnJl
-ZWRlc2t0b3Aub3JnOyBOYXRoLCBBcmluZGFtOyBpb21tdUBsaXN0cy5saW51eC0KPiBmb3VuZGF0
-aW9uLm9yZzsgU3V0aGlrdWxwYW5pdCwgU3VyYXZlZTsgTGludXggVXBzdHJlYW1pbmcgVGVhbQo+
-IFN1YmplY3Q6IFJlOiBhbWQtaW9tbXU6IGNhbid0IGJvb3Qgd2l0aCBhbWRncHUsIEFNRC1WaTog
-Q29tcGxldGlvbi1XYWl0Cj4gbG9vcCB0aW1lZCBvdXQKPiAKPiBPbiBUdWUsIE1hciAyMSwgMjAx
-NyBhdCAwNDoxNzo0MFBNICswMDAwLCBEZXVjaGVyLCBBbGV4YW5kZXIgd3JvdGU6Cj4gPiA+IC0t
-LS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tCj4gPiA+IEZyb206ICdqb3JvQDhieXRlcy5vcmcnIFtt
-YWlsdG86am9yb0A4Ynl0ZXMub3JnXQo+ID4gPiBTZW50OiBUdWVzZGF5LCBNYXJjaCAyMSwgMjAx
-NyAxMjoxMSBQTQo+ID4gPiBUbzogRGV1Y2hlciwgQWxleGFuZGVyCj4gPiA+IENjOiBBbGV4IERl
-dWNoZXI7IERhbmllbCBEcmFrZTsgQ2hyaXMgQ2hpdTsgYW1kLQo+IGdmeEBsaXN0cy5mcmVlZGVz
-a3RvcC5vcmc7Cj4gPiA+IE5hdGgsIEFyaW5kYW07IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnOyBTdXRoaWt1bHBhbml0LAo+IFN1cmF2ZWU7Cj4gPiA+IExpbnV4IFVwc3RyZWFtaW5n
-IFRlYW0KPiA+ID4gU3ViamVjdDogUmU6IGFtZC1pb21tdTogY2FuJ3QgYm9vdCB3aXRoIGFtZGdw
-dSwgQU1ELVZpOiBDb21wbGV0aW9uLQo+IFdhaXQKPiA+ID4gbG9vcCB0aW1lZCBvdXQKPiA+ID4K
-PiA+ID4gT24gVHVlLCBNYXIgMjEsIDIwMTcgYXQgMDQ6MDE6NTNQTSArMDAwMCwgRGV1Y2hlciwg
-QWxleGFuZGVyIHdyb3RlOgo+ID4gPiA+IEl0IHNlZW1zIHRvIG9ubHkgYWZmZWN0IFN0b25leSBz
-eXN0ZW1zLCBidXQgbm90IG90aGVycyAoQ2Fycml6bywKPiA+ID4gPiBCcmlzdG9sLCBldGMuKS4g
-IE1heWJlIHdlIGNvdWxkIGp1c3QgZGlzYWJsZSBpdCBvbiBTdG9uZXkgdW50aWwgd2UKPiA+ID4g
-PiByb290IGNhdXNlIGl0Lgo+ID4gPgo+ID4gPiBDb21wbGV0aW9uLXdhaXQgbG9vcCB0aW1lb3V0
-cyBpbmRpY2F0ZSBzb21ldGhpbmcgaXMgc2VyaW91c2x5IHdyb25nLgo+IEhvdwo+ID4gPiBjYW4g
-SSBkZXRlY3Qgd2hldGhlciBJIGFtIHJ1bm5pbmcgb24gYSAnU3RvbmV5JyBzeXN0ZW0/Cj4gPgo+
-ID4gKyBKb2huCj4gPgo+ID4gSSdtIG5vdCBzdXJlIGlmIHRoZSBpb21tdSBpZHMgYXJlIGRpZmZl
-cmVudCBvbiBzdG9uZXkgc3lzdGVtcyBjb21wYXJlZCB0bwo+IENhcnJpem8vQnJpc3RvbCBzeXN0
-ZW1zLiAgVGhlIHBjaSBpZHMgb2YgdGhlIEdQVXMgYXJlIGRpZmZlcmVudC4gIFN0b25leSBwYXJ0
-cwo+IGhhdmUgMHg5OEU0IGFzIHRoZSBwY2kgaWQgZm9yIHRoZSBHUFUuCj4gPgo+ID4gPgo+ID4g
-PiBPdGhlciBxdWVzdGlvbiwgYSBzaG90IGludG8gdGhlIGRhcmssIGRvZXMgdGhlIEdQVSBvbiB0
-aGVzZSBzeXN0ZW1zCj4gaGF2ZQo+ID4gPiBBVFM/IFByb2JhYmx5IHllcywgYXMgdGhleSBhcmUg
-bGlrZWx5IEhTQSBjb21wYXRpYmxlLgo+ID4KPiA+IFN0b25leSBpcyBhIHNtYWxsIEFQVS4gIEtp
-bmQgb2YgYSBtaW5pIENhcnJpem8uICBXaGlsZSBpdCBtYXkgY2xhaW0gdG8gc3VwcG9ydAo+IEFU
-UywgSSBkb24ndCB0aGluayBpdCB3YXMgZXZlciB2YWxpZGF0ZWQgb24gU3RvbmV5LCBvbmx5IENh
-cnJpem8vQnJpc3RvbC4KPiAKPiBPa2F5LCBzbyBtYXliZSBBVFMgaXMgYnJva2VuIGluIHNvbWUg
-d2F5IG9uIHRoZXNlIGNoaXBzLiBXaGVuIHF1ZXVlCj4gZmx1c2hlcyBoYXBwZW4gaXQgd2lsbCBh
-bHNvIHNlbmQgdGhlIEFUUy1pbnZhbGlkYXRlcywgYW5kIGEgcXVldWUgZmx1c2gKPiBjYW4gY2F1
-c2UgYSBzdG9ybSBvZiB0aG9zZS4gVGhpcyBtYXkgYmUgdGhlIGlzc3VlLgo+IAo+IEkgYW0gcHJl
-cGFyaW5nIGEgZGVidWctcGF0Y2ggdGhhdCBkaXNhYmxlcyBBVFMgZm9yIHRoZXNlIEdQVXMgc28g
-c29tZW9uZQo+IHdpdGggc3VjaCBhIGNoaXAgY2FuIHRlc3QgaXQuCgpUaGFua3MgSm9lcmcuCgpB
-bGV4CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwphbWQt
-Z2Z4IG1haWxpbmcgbGlzdAphbWQtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xp
-c3RzLmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2FtZC1nZngK
+Hi Joerg,
+
+On Tue, Mar 21, 2017 at 04:46:24PM +0100, Joerg Roedel wrote:
+> On Fri, Mar 10, 2017 at 08:49:31PM +0000, Will Deacon wrote:
+> > Will Deacon (5):
+> >   iommu/arm-smmu: Restrict domain attributes to UNMANAGED domains
+> >   iommu/arm-smmu: Install bypass S2CRs for IOMMU_DOMAIN_IDENTITY domains
+> >   iommu/arm-smmu-v3: Make arm_smmu_install_ste_for_dev return void
+> >   iommu/arm-smmu-v3: Install bypass STEs for IOMMU_DOMAIN_IDENTITY
+> >     domains
+> >   iommu: Allow default domain type to be set on the kernel command line
+> > 
+> >  Documentation/admin-guide/kernel-parameters.txt |  6 ++
+> >  drivers/iommu/arm-smmu-v3.c                     | 76 +++++++++++++++----------
+> >  drivers/iommu/arm-smmu.c                        | 26 ++++++++-
+> >  drivers/iommu/iommu.c                           | 17 +++++-
+> >  4 files changed, 90 insertions(+), 35 deletions(-)
+> 
+> Besides my one comment on the last patch this series looks good to me.
+> Do you plan to include it (with the fall-back) into your pull-request?
+
+Yes, that would certainly be easiest for me, given the changes to the
+SMMU drivers. However, if you prefer it separately then I can do that too.
+
+Cheers,
+
+Will
