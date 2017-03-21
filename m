@@ -1,32 +1,94 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2] iommu: iova: Consolidate code for adding new node to
- iovad domain rbtree
-Date: Tue, 21 Mar 2017 14:59:29 +0100
-Message-ID: <20170321135928.GA29659@8bytes.org>
-References: <CGME20170224111346eucas1p2039e4d85e34f2a4cdd3adc298e2a1b6f@eucas1p2.samsung.com>
- <1487934817-11725-1-git-send-email-m.szyprowski@samsung.com>
+From: Liviu Dudau <liviu.dudau-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH v0.001] PCI: Add support for tango PCIe controller
+Date: Tue, 21 Mar 2017 14:23:05 +0000
+Message-ID: <20170321142305.GC6816@e110455-lin.cambridge.arm.com>
+References: <ab110ce2-8678-9b34-6bd1-6cfaaa7fea04@free.fr>
+	<f13c385d-dcc9-dacd-2b2c-ca098228f4f4@free.fr>
+	<20170321123129.GB6816@e110455-lin.cambridge.arm.com>
+	<d5062453-39cc-1435-bb13-87c81b6ef0b3@free.fr>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-kernel-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1487934817-11725-1-git-send-email-m.szyprowski@samsung.com>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <d5062453-39cc-1435-bb13-87c81b6ef0b3-GANU6spQydw@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Mason <slash.tmp-GANU6spQydw@public.gmane.org>
+Cc: linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Thibaud Cornic <thibaud_cornic-y1yR0Z3OICC7zZZRDBGcUA@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Laight <david.laight-JxhZ9S5GRejQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Phuong Nguyen <phuong_nguyen-y1yR0Z3OICC7zZZRDBGcUA@public.gmane.org>, Linux ARM <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Feb 24, 2017 at 12:13:37PM +0100, Marek Szyprowski wrote:
-> This patch consolidates almost the same code used in iova_insert_rbtree()
-> and __alloc_and_insert_iova_range() functions. While touching this code,
-> replace BUG() with WARN_ON(1) to avoid taking down the whole system in
-> case of corrupted iova tree or incorrect calls.
-> 
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
-> v2:
-> - replaced BUG() with WARN_ON(1) as suggested by Robin Murphy
-> 
-> v1:
-> - initial version
-
-Applied, thanks.
+T24gVHVlLCBNYXIgMjEsIDIwMTcgYXQgMDI6MDE6NTdQTSArMDEwMCwgTWFzb24gd3JvdGU6Cj4g
+T24gMjEvMDMvMjAxNyAxMzozMSwgTGl2aXUgRHVkYXUgd3JvdGU6Cj4gCj4gPiBPbiBUdWUsIE1h
+ciAyMSwgMjAxNyBhdCAxMToxNToxNkFNICswMTAwLCBNYXNvbiB3cm90ZToKPiA+Pgo+ID4+IE9u
+IDE3LzAzLzIwMTcgMTc6MTEsIE1hc29uIHdyb3RlOgo+ID4+Cj4gPj4+ICsgKiBRVUlSSyAjNQo+
+ID4+PiArICogT25seSB0cmFuc2ZlcnMgd2l0aGluIHRoZSBCQVIgYXJlIGZvcndhcmRlZCB0byB0
+aGUgaG9zdC4KPiA+Pj4gKyAqIEJ5IGRlZmF1bHQsIHRoZSBETUEgZnJhbWV3b3JrIGV4cGVjdHMg
+dGhhdAo+ID4+PiArICogUENJIGFkZHJlc3MgMHg4MDAwXzAwMDAgLT4gQ1BVIGFkZHJlc3MgMHg4
+MDAwXzAwMDAKPiA+Pj4gKyAqIHdoaWNoIGlzIHdoZXJlIERSQU0wIGlzIG1hcHBlZC4KPiA+Pgo+
+ID4+IEkgaGF2ZSBhbiBhZGRpdGlvbmFsIHF1ZXN0aW9uIG9uIHRoaXMgdG9waWMuCj4gPj4KPiA+
+PiBJbiBhIHR5cGljYWwgc3lzdGVtLCBQQ0kgYnVzIG1hc3RlcnMgYXJlIGFibGUgdG8gYWNjZXNz
+IGFsbCBvZiBSQU0sCj4gPj4gdW5sZXNzIHRoZXJlIGlzIHNvbWUga2luZCBvZiBJT01NVSwgcmln
+aHQ/Cj4gPiAKPiA+IERlcGVuZHMgd2hlcmUgdGhlIEFUUyAoQWRkcmVzcyB0cmFuc2xhdGlvbiBz
+ZXJ2aWNlKSBsaXZlcyBhbmQgd2hhdCBnZXRzCj4gPiBwcm9ncmFtbWVkIHRoZXJlLCBidXQgdXN1
+YWxseSBvbmUgY2FuIHJlc3RyaWN0IHRoZSBSQU0gKG9yIHN5c3RlbSBhZGRyZXNzCj4gPiBzcGFj
+ZSwgdG8gYmUgbW9yZSBwcmVjaXNlKSB0aGF0IGNhbiBiZSBhY2Nlc3NlZCBmcm9tIHRoZSBQQ0kg
+YnVzIG1hc3RlcnMKPiA+IGJ5IG9ubHkgcHJvdmlkaW5nIFBDSShlKS10by1zeXN0ZW0gYnVzIG1h
+cHBpbmdzIHRoYXQgbWFrZSBzZW5zZS4gUmVtZW1iZXIKPiA+IHRoYXQgb24gYW55IFBDSSBidXMg
+eW91IGNhbiBvbmx5IHNlZSBhZGRyZXNzZXMgdGhhdCBhcmUgYSBzdWJzZXQgb2YgeW91cgo+ID4g
+cGFyZW50IGJ1cyBhZGRyZXNzZXMuIElmIHRoZSByb290IFBDSSBidXMgb25seSBhbGxvd3MgYWNj
+ZXNzIHRvIGEgcHJlZGVmaW5lZAo+ID4gcmFuZ2Ugb2YgYWRkcmVzc2VzLCB0aGVuIHRoYXQgaXMg
+YWxsIHlvdSBjYW4gYWNjZXNzIGluIHRoZSBzeXN0ZW0uCj4gCj4gSG1tbSwgd2hlcmUgZG8gSSBj
+b25maWd1cmUgdGhlIHJhbmdlIG9mIGFkZHJlc3NlcyB3aGljaCB0aGUgcm9vdAo+IFBDSSBidXMg
+YWxsb3dzIGFjY2VzcyB0bz8gSW4gdGhlIERUPwoKTm8sIHRoYXQgc2hvdWxkIGJlIHRoZSBmaXJt
+d2FyZSdzIGpvYi4gT3IgdGhlIHNlY3VyZSB3b3JsZCBPUy4KCj4gCj4gPj4gSSBzdXBwb3NlIG9u
+ZSBtYXkgY29uc2lkZXIgdGhlIGFib3ZlIGxpbWl0YXRpb24gKCJPbmx5IHRyYW5zZmVycwo+ID4+
+IHdpdGhpbiB0aGUgQkFSIGFyZSBmb3J3YXJkZWQgdG8gdGhlIGhvc3QiKSBhcyBzb21lIGZvcm0g
+b2Ygd2VpcmQKPiA+PiBJT01NVT8gKFRoZXJlIGlzLCBpbiBmYWN0LCBzb21lIHJlbWFwcGluZyBs
+b2dpYyBpbiB0aGUgY29udHJvbGxlcgo+ID4+IHNldHVwIHdoaWNoIEkgaGF2ZW4ndCBkaXNjdXNz
+ZWQgc28gZmFyLikKPiA+IAo+ID4gTm90IHN1cmUgSSB1bmRlcnN0YW5kIHRoZSBxdWlyay4gV2hh
+dCBCQVIgYXJlIHlvdSByZWZlcnJpbmcgdG8gd2hlbiB5b3Ugc2F5Cj4gPiAid2l0aGluIHRoZSBC
+QVIiPyBUaGUgYnVzIG1hc3RlcidzPyBBcmUgeW91IHNheWluZyB0aGF0IG9ubHkgaWYgeW91IHdy
+aXRlCj4gPiB0byBhIFBDSSBidXMgYWRkcmVzcyBYWFhYWFhYIHRoYXQgaXMgaW4gdGhlIHJhbmdl
+IGFzc2lnbmVkIGJ5IHRoZSBwYXJlbnQKPiA+IGJ1cyB0aGVuIHlvdSBjYW4gZXNjYXBlIHlvdXIg
+YnVzIGhpZXJhcmNoeSBhbmQgdGFyZ2V0IHRoZSBzeXN0ZW0gUkFNPyBUaGF0Cj4gPiBzb3VuZHMg
+YmFja3dhcmRzIHRvIG1lLgo+IAo+IE15IFBDSWUgY29udHJvbGxlciBpcyBiL2QvZiAwLzAvMC4K
+PiBJdCBpZ25vcmVzIGFsbCBQQ0kgYWRkcmVzc2VzIHRoYXQgZG8gbm90IGZhbGwgd2l0aGluIHRo
+ZSByYW5nZQo+IGRlZmluZWQgaW4gQkFSMCBvZiBiL2QvZiAwLzAvMC4KPiAKPiBCQVIwIGhhcyBh
+IGNvbmZpZ3VyYWJsZSB3aWR0aCBvZiAyXigyMytpKSBieXRlcywgaSA8IDgKPiBJdCBpcyBpbXBs
+aWNpdGx5IHNwbGl0IGluIDggcmVnaW9ucywgd2hpY2ggY2FuIG1hcCB0bwo+IGFueXdoZXJlIGlu
+IENQVSBzcGFjZS4gSG93ZXZlciwgbXkgdW5kZXJzdGFuZGluZyBpcyB0aGF0LAo+IGJ5IGRlZmF1
+bHQsIHRoZSBETUEgZnJhbWV3b3JrIGV4cGVjdHMgUENJIGFkZHJlc3MgWCB0bwo+IG1hcCB0byBD
+UFUgYWRkcmVzcyBYLi4uCj4gKE15IHVuZGVyc3RhbmRpbmcgb2YgdGhhdCBwYXJ0IGlzIHN0aWxs
+IGEgYml0IGhhenkuKQoKSXQgbG9va3MgdmVyeSBtdWNoIGxpa2UgeW91ciBQQ0llIGNvbnRyb2xs
+ZXIgKGhvc3QgYnJpZGdlKSBoYXMgdGhlIGNvbmZpZ3VyYXRpb24KcmVnaXN0ZXJzIG9uIHRoZSB3
+cm9uZyBzaWRlIG9mIHRoZSBicmlkZ2UgKFBDSWUgb25lIHZzIHRoZSBtb3JlIG5vcm1hbCBob3N0
+IHNpZGUpLgpCdXQgb3RoZXJ3aXNlIGl0IGRvZXMgbG9vayB2ZXJ5IG11Y2ggbGlrZSBhbiBBVFMg
+c3lzdGVtLCB3aGVyZSB5b3UgcHJvZ3JhbSBob3cgdGhlClBDSWUgYnVzIGFkZHJlc3NlcyBtYXAg
+aW50byB0aGUgc3lzdGVtICh5b3UgY2FsbCB0aGVtIENQVSkgYWRkcmVzc2VzLiBEbyB5b3UgYWxz
+bwpoYXZlIGEgd2F5IG9mIGNvbnRyb2xsaW5nIHRoZSBkaXJlY3Rpb24gb2YgdGhlIG1hcHBpbmc/
+IChpbiBvdGhlciB3b3JkcywgdGhvc2UgOApyZWdpb25zIGFyZSBvbmx5IGZvciB0cmFuc2xhdGlu
+ZyByZXF1ZXN0IGNvbWluZyBvdXQgb2YgdGhlIFBDSWUgYnVzIGludG8gc3lzdGVtCmFkZHJlc3Nl
+cywgb3IgY2FuIHlvdSBhbHNvIHNldCB0aGUgZGlyZWN0IG1hcHBpbmcgb2Ygc3lzdGVtIGFkZHJl
+c3MgdG8gUENJZSBhZGRyZXNzPykuCgpBcyBmb3IgRE1BIGZyYW1ld29yayBleHBlY3RhdGlvbnMs
+IEknbSBub3Qgc3VyZSBob3cgdGhhdCBwbGF5cyBhIHJvbGUsIHVubGVzcyB5b3UKaGF2ZSBzb21l
+IERNQSBlbmdpbmVzIG9uIHRoZSBQQ0llIGJ1cy4KCkJlc3QgcmVnYXJkcywKTGl2aXUKCj4gCj4g
+Pj4gU2luY2UgdGhpcyBTb0MgaXMgdXNlZCBmb3IgVFYsIHRoZSBtZWRpYSBjYXJ0ZWxzIG1hbmRh
+dGUgc29tZSB3YXkKPiA+PiB0byBsaW1pdCB3aGVyZSBQQ0kgYnVzIG1hc3RlcnMgY2FuIHBlZWsv
+cG9rZSBpbiBSQU0uCj4gPiAKPiA+IEFuZCB0aGF0IGlzIHVzdWFsbHkgZG9uZSBieSBlaXRoZXIg
+aGF2aW5nIGEgVHJ1c3Rab25lIGNvbnRyb2xsZXIgb24gdG9wIG9mCj4gPiB5b3VyIFBDSSBob3N0
+IGJyaWRnZSBvciBieSBwdXR0aW5nIGFuIElPTU1VLgo+IAo+IEl0IHNlZW1zIHdlIGRvbid0IGhh
+dmUgdGhpcyBIVywgdGhlcmVmb3JlIHNvbWUga2luZCBvZiBjdXN0b20KPiBIVyBxdWlyayB3YXMg
+cmVxdWlyZWQuCj4gCj4gUmVnYXJkcy4KCi0tIAo9PT09PT09PT09PT09PT09PT09PQp8IEkgd291
+bGQgbGlrZSB0byB8CnwgZml4IHRoZSB3b3JsZCwgIHwKfCBidXQgdGhleSdyZSBub3QgfAp8IGdp
+dmluZyBtZSB0aGUgICB8CiBcIHNvdXJjZSBjb2RlISAgLwogIC0tLS0tLS0tLS0tLS0tLQogICAg
+wq9cXyjjg4QpXy/CrwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcK
+aHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
