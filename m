@@ -1,36 +1,44 @@
-From: Joerg Roedel <joro@8bytes.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 Subject: Re: [RFC PATCH 22/30] iommu: Bind/unbind tasks to/from devices
-Date: Wed, 22 Mar 2017 16:36:10 +0100
-Message-ID: <20170322153610.GC7266@8bytes.org>
+Date: Wed, 22 Mar 2017 16:38:50 +0100
+Message-ID: <20170322153850.GD7266@8bytes.org>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
- <20170227195441.5170-23-jean-philippe.brucker@arm.com>
- <1488534044.6234.14.camel@infradead.org>
- <20170303183958.GA15146@e106794-lin.localdomain>
+	<20170227195441.5170-23-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170303183958.GA15146@e106794-lin.localdomain>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jean-Philippe Brucker <Jean-Philippe.Brucker@arm.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, Harv Abdulhamid <harba@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, Bjorn Helgaas <bhelgaas@google.com>, Sinan Kaya <okaya@qti.qualcomm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Nate Watterson <nwatters@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org
+In-Reply-To: <20170227195441.5170-23-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 03, 2017 at 06:39:58PM +0000, Jean-Philippe Brucker wrote:
-> Yes, it would be nice to have a common PASID allocator. But I don't
-> think that a system-wide PASID space is workable for us. At the moment
-> systems might have a few identical devices all supporting 20 bits of
-> PASID. But consider the case where one odd device can only handle four
-> address spaces, and supports a maximum of two PASID bits. We'd quickly
-> run out of PASIDs to hand to such devices, even though we could easily
-> have one PASID space per endpoint (from a quick glance at the specs, I
-> assume that both Intel and AMD IOMMUs offer one PASID table per RID.)
+Hi Jean-Philippe,
 
-But that shouldn't be a problem if we allocate PASIDs top-down (meaning
-starting from the biggest value supported by a given device), right?
+On Mon, Feb 27, 2017 at 07:54:33PM +0000, Jean-Philippe Brucker wrote:
+> +extern int iommu_set_svm_ops(struct device *dev,
+> +			     const struct iommu_svm_ops *svm_ops);
+> +extern int iommu_bind_task(struct device *dev, struct task_struct *task,
+> +			   int *pasid, int flags, void *priv);
+> +
+> +extern int iommu_unbind_task(struct device *dev, int pasid, int flags);
 
-Then we can satisfy the devices with 16 or 20 bit PASIDs and still have
-the 2-bit PASIDs free for the devices that need it.
+I really like that API, it is simpler than what the AMD driver
+currently implements but should work for it too (once we adapt the
+AMD-KFD driver to it).
+
+One issue I like to have discussed is whether we can make a global PASID
+allocation (with a one-PASID per-task model) workable with SMMU too.
 
 
 
