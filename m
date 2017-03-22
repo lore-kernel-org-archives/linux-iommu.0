@@ -1,29 +1,38 @@
-From: Jayachandran C <jnair@caviumnetworks.com>
-Subject: Re: [PATCH v3 1/2] PCI: Add device flag
- PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT
-Date: Wed, 22 Mar 2017 09:09:45 +0000
-Message-ID: <20170322090945.GA2907@localhost>
-References: <1490172671-2648-1-git-send-email-jnair@caviumnetworks.com>
- <1490172671-2648-2-git-send-email-jnair@caviumnetworks.com>
+From: Gabor Locsei <gabor.locsei-IzeFyvvaP7pWk0Htik3J/w@public.gmane.org>
+Subject: IOMMU detection via sysfs
+Date: Wed, 22 Mar 2017 11:06:47 +0000
+Message-ID: <DB4PR07MB0701CD0B470B1B18ECF99D98E13C0@DB4PR07MB0701.eurprd07.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1490172671-2648-2-git-send-email-jnair@caviumnetworks.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org
-Cc: Jayachandran C <jchandra@broadcom.com>, linux-arm-kernel@lists.infradead.org, Jon Masters <jcm@redhat.com>, Robin Murphy <robin.murphy@arm.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 22, 2017 at 08:51:10AM +0000, Jayachandran C wrote:
+Hello,
 
-> From: Jayachandran C <jchandra@broadcom.com>
+I have systems with IOMMU optionally enabled, and I would like to find a method to check these capabilities that doesn't rely on dmesg.
+The evident problem is that dmesg eventually clear boot time messages so the relevant lines may just disappear.
 
-Looks like I did not fix up the author to my new mail ID. Please ignore
-this part.
+Looks like there are sysfs entries that seem to be fit for this purpose. 
 
-I can send out a clean revision if needed, until then please drop the
-broadcom.com mail id in any reply to avoid bounces. Sorry for the mess up.
+DMAR			The file /sys/firmware/acpi/tables/DMAR exists. (This file exists on every lab node.)
+IOMMU			The directory /sys/devices/virtual/iommu/ exists and there are dmar0, etc device subdirectories in it
 
-Thanks,
-JC.
+I have looked into the ACPI DMAR tables with iasl, but they look the same regardless of the cmdline iommu settings.
+The question is, provided that the platform has ACPI, is it safe to rely on sysfs, is the above enough to prove that IOMMU is available? The oldest kernel version to verify against is 3.10.0 from RHEL.
+
+Thanks!
+
+best regards,
+Gabor
