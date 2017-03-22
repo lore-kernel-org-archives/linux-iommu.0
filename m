@@ -1,64 +1,48 @@
-From: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu: Add dummy implementations for !IOMMU_IOVA
-Date: Wed, 22 Mar 2017 19:07:59 +0100
-Message-ID: <20170322180759.GA2113@ulmo.ba.sec>
-References: <20170320191128.26474-1-thierry.reding@gmail.com>
- <20170320191128.26474-2-thierry.reding@gmail.com>
- <20170320191431.GF14787@ulmo.ba.sec>
- <20170322145530.GC7315@8bytes.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: Re: [RFC PATCH 22/30] iommu: Bind/unbind tasks to/from devices
+Date: Wed, 22 Mar 2017 18:30:56 +0000
+Message-ID: <426ce726-e4e3-ea7c-81ac-154ee40a2d79@arm.com>
+References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
+ <20170227195441.5170-23-jean-philippe.brucker@arm.com>
+ <1488534044.6234.14.camel@infradead.org>
+ <20170303183958.GA15146@e106794-lin.localdomain>
+ <20170322153610.GC7266@8bytes.org>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="EVF5PPMfhYS0aIcm"
-Return-path: <linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170322145530.GC7315-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Sender: linux-tegra-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Mikko Perttunen <mperttunen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <20170322153610.GC7266@8bytes.org>
+Sender: kvm-owner@vger.kernel.org
+To: Joerg Roedel <joro@8bytes.org>
+Cc: David Woodhouse <dwmw2@infradead.org>, Harv Abdulhamid <harba@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, Bjorn Helgaas <bhelgaas@google.com>, Sinan Kaya <okaya@qti.qualcomm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Nate Watterson <nwatters@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
+Hi Joerg,
 
---EVF5PPMfhYS0aIcm
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On 22/03/17 15:36, Joerg Roedel wrote:
+> On Fri, Mar 03, 2017 at 06:39:58PM +0000, Jean-Philippe Brucker wrote:
+>> Yes, it would be nice to have a common PASID allocator. But I don't
+>> think that a system-wide PASID space is workable for us. At the moment
+>> systems might have a few identical devices all supporting 20 bits of
+>> PASID. But consider the case where one odd device can only handle four
+>> address spaces, and supports a maximum of two PASID bits. We'd quickly
+>> run out of PASIDs to hand to such devices, even though we could easily
+>> have one PASID space per endpoint (from a quick glance at the specs, I
+>> assume that both Intel and AMD IOMMUs offer one PASID table per RID.)
+> 
+> But that shouldn't be a problem if we allocate PASIDs top-down (meaning
+> starting from the biggest value supported by a given device), right?
+> 
+> Then we can satisfy the devices with 16 or 20 bit PASIDs and still have
+> the 2-bit PASIDs free for the devices that need it.
 
-On Wed, Mar 22, 2017 at 03:55:30PM +0100, Joerg Roedel wrote:
-> Hi Thierry
->=20
-> On Mon, Mar 20, 2017 at 08:14:31PM +0100, Thierry Reding wrote:
-> > I've got a series of patches that I'd like to merge for v4.12 that have
-> > a build-time dependency on this patch. It would therefore be great to
-> > get your Acked-by on this so that I can merge it through the DRM tree
-> > with the rest of the patches. I can provide a stable branch with only
-> > this patch for you to pull into the IOMMU tree.
->=20
-> I applied both patches to my 'core' branch. There is not much in there
-> yet besides your patches, so you can easily pull that branch in once it
-> is published (later today).
+But if there is more than 4 devices that only support 2 bit PASIDs, you
+still get a starvation that you wouldn't get with per-domain/device PASID
+allocator. Arguably I have no real-world example to back this up, we can
+probably expect vendors to always implement a sane amount of PASID bits.
+Unifying the API is certainly more important than imagining all the
+twisted configurations possible, and a PASID allocator with per-task
+top-down allocation seems to me like an acceptable compromise.
 
-Works for me. Thanks!
-
-Thierry
-
---EVF5PPMfhYS0aIcm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAljSvXwACgkQ3SOs138+
-s6EFhA//T5LFaDVujdLOGQsZvFtVo/k/DSxBJ4f6dD/tJ53NANQKXRuAPoGhQ8nk
-sJkZlD2NFBehhF3RGTMleZMJGThWOX/mCzL8FGVTTZsLOuL0VzdxCAphSjEWUziw
-dyOoFnvb3XMTAAEXqUwadR8oKtld2ESwlC+A9yAvkDeX1of8yFmfCzyDk7sMvnK7
-Hi9h9szr51d6Ls+54MveW3SUpJgs/2CBfSAJfBnw0q12iSgw7giAzgCmYbd/uTqB
-+Bbh2Gfad4tzicuJDQ90dds+5gryXJnufffdLLWvyc51TB/Y/qJTYrGnUFVokAiX
-FfnUZ87aDmEAJca7n6x8FUAQkH1jhUts4N1dD4SdII4P+9hWY60ykhKDBRAD91BK
-R/kO4ldwM9RZvFDvewVIXnW/+/eVEj1UIzQtiKfgPb96aXzCazFAwJPjk6+eJOzy
-8Dn/XvNzU1xfa9on1NK1rGQ5WfXJNJ3o+IeJnUwTBRvX1CRe+aHyzdHMhVElgxXH
-oGjoQCwvDzxgPdcajkVJK0MaahOWRV99Pma13p520UOqRihcqVNUamIUKoaeqAvL
-jhu5cPUMR9LhSnnelUgWmGilTFoowbeYdAU27m9OaZ0lDWaJ0mHnl3DcKMsv/ERH
-Ev98FJzpjqw8mjhGArEInRg9++9Y+UN6a9OqwSopBhaLiH0Mxaw=
-=tvK4
------END PGP SIGNATURE-----
-
---EVF5PPMfhYS0aIcm--
+Thanks,
+Jean-Philippe
