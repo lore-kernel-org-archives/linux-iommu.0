@@ -1,78 +1,72 @@
 From: Jayachandran C <jnair@caviumnetworks.com>
-Subject: [PATCH v3 0/2] Handle Cavium ThunderX2 PCI topology quirk
-Date: Wed, 22 Mar 2017 08:51:09 +0000
-Message-ID: <1490172671-2648-1-git-send-email-jnair@caviumnetworks.com>
+Subject: [PATCH v3 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
+Date: Wed, 22 Mar 2017 08:51:11 +0000
+Message-ID: <1490172671-2648-3-git-send-email-jnair@caviumnetworks.com>
+References: <1490172671-2648-1-git-send-email-jnair@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
+Content-Type: text/plain
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1490172671-2648-1-git-send-email-jnair@caviumnetworks.com>
+Sender: linux-pci-owner@vger.kernel.org
 To: Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org
-Cc: Jon Masters <jcm@redhat.com>, Robin Murphy <robin.murphy@arm.com>, Jayachandran C <jnair@caviumnetworks.com>, linux-arm-kernel@lists.infradead.org
+Cc: Jayachandran C <jchandra@broadcom.com>, linux-arm-kernel@lists.infradead.org, Jon Masters <jcm@redhat.com>, Robin Murphy <robin.murphy@arm.com>, Jayachandran C <jnair@caviumnetworks.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Bjorn, Alex,
+From: Jayachandran C <jchandra@broadcom.com>
 
-Here is v3 of the patchset to handle the PCIe topology quirk of
-Cavium ThunderX2 (previously called Broadcom Vulcan).
+The Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the PCI
+topology is slightly unusual. For a multi-node system, it looks like:
 
-The earlier discussions on this can be seen at:
-http://www.spinics.net/lists/linux-pci/msg51001.html
-https://patchwork.ozlabs.org/patch/582633/ and
-https://lists.linuxfoundation.org/pipermail/iommu/2016-June/017681.html
+[node level PCI bridges - one per node]
+    [SoC PCI devices with MSI-X but no IOMMU]
+    [PCI-PCIe "glue" bridges - upto 14, one per real bridge below]
+        [PCIe real root ports associated with IOMMU and GICv3 ITS]
+            [External PCI devices connected to PCIe links]
 
-The earlier discussion on this patchset had stalled with a suggestion
-that it may be possible to fix up this quirk by handling the issue in
-the function argument of pci_for_each_dma_alias(). But at that point
-all the ACPI and OF code for SMMU and GIC was to merged, and we did not
-have reasonable codebase to make the changes.
+The top two levels of bridges should have introduced aliases since they
+are PCI and PCI/PCIe bridges, but in the case of ThunderX2 they do not.
+In the case of external PCIe devices, the "real" root ports are connected
+to the SMMU and the GIC ITS, so there is no aliases. The SoC PCI devices
+are directly connected to the GIC ITS and the bridges do not introduce
+an alias either.
 
-For 4.11, I tried to fix it in both the SMMU and the GIC ITS code based
-on this suggestion, but after going thru the effort, that does not look
-like the right approach. I have the code changes at:
-https://github.com/jchandra-cavm/linux/commits/rid-xlate-fixup
-if anyone want to look over the code.
+To handle this quirk, we mark the real PCIe root ports and node level
+PCIe bridges with the flag PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT.  With this,
+pci_for_each_dma_alias() works correctly for external PCIe devices and
+SoC PCI devices.
 
-The problems with that approach is:
- - of the 14 uses of pci_for_each_dma_alias in the function in the kernel
-   tree, I have to fixup 6 callers (which is all but one ofthe callers
-   outside x86)
- - 4 of these can be reasonably handled (please see the github repo above),
-   but the calls in drivers/irqchip/irq-gic-v3-its-pci-msi.c and
-   drivers/iommu/iommu.c cannot be reasonably fixed up.
- - Even without the 2 above two changes I can get it to work for now.
-   But pci_for_each_dma_alias does not work as expected on this platform
-   and we have to be aware of that for all future uses of the function.
-  
-For now, I have ruled out that approach, and I have rebased the earlier
-patch on to 4.11-rc and submitting again for review. The changes are:
+For the current revision of Cavium ThunderX2, the VendorID and Device ID
+are from Broadcom Vulcan (14e4:90XX).
 
-v2>v3:
- - changed device flag name from PCI_DEV_FLAGS_DMA_ALIAS_ROOT to
-   PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT
- - updated commit message to make the quirk clearer.
-
-Let me know your comments and suggestions.
-
-Thanks,
-JC.
-
-Jayachandran C (2):
-  PCI: Add device flag PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT
-  PCI: quirks: Fix ThunderX2 dma alias handling
-
+Signed-off-by: Jayachandran C <jnair@caviumnetworks.com>
+---
  drivers/pci/quirks.c | 14 ++++++++++++++
- drivers/pci/search.c |  4 ++++
- include/linux/pci.h  |  2 ++
- 3 files changed, 20 insertions(+)
+ 1 file changed, 14 insertions(+)
 
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 6736836..564a84a 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -3958,6 +3958,20 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2260, quirk_mic_x200_dma_alias);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2264, quirk_mic_x200_dma_alias);
+ 
+ /*
++ * The IOMMU and interrupt controller on Broadcom Vulcan/Cavium ThunderX2 are
++ * associated not at the root bus, but at a bridge below. This quirk flag
++ * will ensure that the aliases are identified correctly.
++ */
++static void quirk_bridge_cavm_thrx2_pcie_root(struct pci_dev *pdev)
++{
++	pdev->dev_flags |= PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT;
++}
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
++				quirk_bridge_cavm_thrx2_pcie_root);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
++				quirk_bridge_cavm_thrx2_pcie_root);
++
++/*
+  * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
+  * class code.  Fix it.
+  */
 -- 
 2.7.4
