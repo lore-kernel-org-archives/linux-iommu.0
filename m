@@ -1,15 +1,15 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [RFC PATCH 22/30] iommu: Bind/unbind tasks to/from devices
-Date: Wed, 22 Mar 2017 16:38:50 +0100
-Message-ID: <20170322153850.GD7266@8bytes.org>
+Subject: Re: [RFC PATCH 24/30] iommu: Specify PASID state when unbinding a task
+Date: Wed, 22 Mar 2017 16:44:29 +0100
+Message-ID: <20170322154429.GE7266@8bytes.org>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
-	<20170227195441.5170-23-jean-philippe.brucker@arm.com>
+	<20170227195441.5170-25-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170227195441.5170-23-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <20170227195441.5170-25-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,22 +23,23 @@ To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Jean-Philippe,
+On Mon, Feb 27, 2017 at 07:54:35PM +0000, Jean-Philippe Brucker wrote:
+> It is an important distinction because, if the IOMMU driver reassigns a
+> PASID while the IOMMU still holds pending PPR targeting that PASID
+> internally, the PPR will trigger a fault in the wrong address space.
 
-On Mon, Feb 27, 2017 at 07:54:33PM +0000, Jean-Philippe Brucker wrote:
-> +extern int iommu_set_svm_ops(struct device *dev,
-> +			     const struct iommu_svm_ops *svm_ops);
-> +extern int iommu_bind_task(struct device *dev, struct task_struct *task,
-> +			   int *pasid, int flags, void *priv);
-> +
-> +extern int iommu_unbind_task(struct device *dev, int pasid, int flags);
+The IOMMU driver also controls a devices apbility to issue PPR requests
+(at least on PCI), so it already knows whether a device has still
+requests pending or if it even can create new ones.
 
-I really like that API, it is simpler than what the AMD driver
-currently implements but should work for it too (once we adapt the
-AMD-KFD driver to it).
+Furhter, the IOMMU driver can already wait for all pending faults to be
+processed before it shuts down a PASID. So it is not clear to me why the
+device driver needs to be involved here.
 
-One issue I like to have discussed is whether we can make a global PASID
-allocation (with a one-PASID per-task model) workable with SMMU too.
+When the device driver issues a PASID-unbind call the iommu driver
+just waits until all pending faults are processed, answers new faults
+with INVALID, then switch off the devices capability to issue new
+faults, and then release the PASID.
 
 
 
