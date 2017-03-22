@@ -1,14 +1,13 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH v3 0/3] iommu/ipmmu-vmsa: r8a7796 support V3
-Date: Wed, 22 Mar 2017 15:33:13 +0100
-Message-ID: <CAMuHMdVXL6CG1Wxxqua1vnKp5wLmYzD+rYAc107KzCA5vWamFQ@mail.gmail.com>
-References: <148929710090.20744.10912918031085568693.sendpatchset@little-apple>
-	<20170322142312.GB7266@8bytes.org>
+From: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: IOMMU detection via sysfs
+Date: Wed, 22 Mar 2017 08:39:25 -0600
+Message-ID: <20170322083925.39c0f815@t450s.home>
+References: <DB4PR07MB0701CD0B470B1B18ECF99D98E13C0@DB4PR07MB0701.eurprd07.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170322142312.GB7266-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+In-Reply-To: <DB4PR07MB0701CD0B470B1B18ECF99D98E13C0-+uUz27+Iw09nNELNIBuVYjzdlHkvsOLVvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,38 +17,33 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
+To: Gabor Locsei <gabor.locsei-IzeFyvvaP7pWk0Htik3J/w@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgSsO2cmcsCgpPbiBXZWQsIE1hciAyMiwgMjAxNyBhdCAzOjIzIFBNLCBKb2VyZyBSb2VkZWwg
-PGpvcm9AOGJ5dGVzLm9yZz4gd3JvdGU6Cj4gT24gU3VuLCBNYXIgMTIsIDIwMTcgYXQgMDI6Mzg6
-MjBQTSArMDkwMCwgTWFnbnVzIERhbW0gd3JvdGU6Cj4+IGlvbW11L2lwbW11LXZtc2E6IHI4YTc3
-OTYgc3VwcG9ydCBWMwo+Pgo+PiBbUEFUQ0ggdjMgMS8zXSBpb21tdS9pcG1tdS12bXNhOiBBZGQg
-cjhhNzc5NiBEVCBiaW5kaW5nCj4+IFtQQVRDSCB2MyAyLzNdIGlvbW11L2lwbW11LXZtc2E6IElu
-Y3JlYXNlIG1heGltdW0gbWljcm8tVExCUyB0byA0OAo+PiBbUEFUQ0ggdjMgMy8zXSBpb21tdS9p
-cG1tdS12bXNhOiBIb29rIHVwIHI4YTc3OTYgRFQgbWF0Y2hpbmcgY29kZQo+Cj4gSSBqdXN0IHRy
-aWVkIHRvIGFwcGx5IGEgZmV3IG9mIHlvdXIgcGF0Y2gtc2V0cywgYnV0IGZhaWxlZCBiZWNhdXNl
-IHRoZXkKPiBkb24ndCBhcHBseSBjbGVhbmx5IGFuZCBpdCBpcyBub3QgY2xlYXIgd2hhdCB0aGUg
-ZGVwZW5kZW5jaWVzIGFyZSBhbmQgaW4KPiB3aGljaCBvcmRlciB0aGV5IG5lZWQgdG8gYmUgYXBw
-bGllZC4KPgo+IFNvIGZvciBub3cgSSBza2lwcGVkIGFsbCBpcG1tdS12bXNhIHBhdGNoZXMgdGhh
-dCBhcmUgY3VycmVudGx5IGluIG15Cj4gaW5ib3guIFBsZWFzZSByZWJhc2UgeW91ciBkaWZmZXJl
-bnQgc2VyaWVzIHRvIHY0LjExLXJjMyBhbmQgcmVzZW5kIHRoZW0KPiBpbiB0aGUgcmlnaHQgb3Jk
-ZXIsIHdpdGggYWxsIFJldmlld2VkLWJ5cyBhbmQgb3RoZXIgdGFncyB0aGF0IHBlb3BsZQo+IGdh
-dmUgeW91IGluY2x1ZGVkLiBUaGVuIEkgYW0gdGFraW5nIGFub3RoZXIgbG9vayBpbnRvIGFwcGx5
-aW5nIHRoZW0uCgpGb3IgdGhlIHJlY29yZCwgdGhleSBhcHBseSBjbGVhbmx5IG9uIHY0LjExLXJj
-MSwgY2ZyLgpodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9n
-ZWVydC9yZW5lc2FzLWRyaXZlcnMuZ2l0L2xvZy8/aD10b3BpYy9yOGE3Nzk2LWlwbW11LXYzCgpB
-cyBJIGhhZCBubyBjb25mbGljdHMgd2hlbiBjcmVhdGluZwpodHRwczovL2dpdC5rZXJuZWwub3Jn
-L3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9nZWVydC9yZW5lc2FzLWRyaXZlcnMuZ2l0L3RhZy8/
-aD1yZW5lc2FzLWRyaXZlcnMtMjAxNy0wMy0yMS12NC4xMS1yYzMKSSBleHBlY3QgdGhlbSB0byBh
-cHBseSBjbGVhbmx5IHRvIHlvdXIgbmV4dCBicmFuY2gsIHRvby4KCkdye29ldGplLGVldGluZ31z
-LAoKICAgICAgICAgICAgICAgICAgICAgICAgR2VlcnQKCi0tCkdlZXJ0IFV5dHRlcmhvZXZlbiAt
-LSBUaGVyZSdzIGxvdHMgb2YgTGludXggYmV5b25kIGlhMzIgLS0gZ2VlcnRAbGludXgtbTY4ay5v
-cmcKCkluIHBlcnNvbmFsIGNvbnZlcnNhdGlvbnMgd2l0aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNh
-bGwgbXlzZWxmIGEgaGFja2VyLiBCdXQKd2hlbiBJJ20gdGFsa2luZyB0byBqb3VybmFsaXN0cyBJ
-IGp1c3Qgc2F5ICJwcm9ncmFtbWVyIiBvciBzb21ldGhpbmcgbGlrZSB0aGF0LgogICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIC0tIExpbnVzIFRvcnZhbGRzCl9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
-aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
-cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Wed, 22 Mar 2017 11:06:47 +0000
+Gabor Locsei <gabor.locsei-IzeFyvvaP7pWk0Htik3J/w@public.gmane.org> wrote:
+
+> Hello,
+> 
+> I have systems with IOMMU optionally enabled, and I would like to find a method to check these capabilities that doesn't rely on dmesg.
+> The evident problem is that dmesg eventually clear boot time messages so the relevant lines may just disappear.
+> 
+> Looks like there are sysfs entries that seem to be fit for this purpose. 
+> 
+> DMAR			The file /sys/firmware/acpi/tables/DMAR exists. (This file exists on every lab node.)
+> IOMMU			The directory /sys/devices/virtual/iommu/ exists and there are dmar0, etc device subdirectories in it
+> 
+> I have looked into the ACPI DMAR tables with iasl, but they look the same regardless of the cmdline iommu settings.
+> The question is, provided that the platform has ACPI, is it safe to rely on sysfs, is the above enough to prove that IOMMU is available? The oldest kernel version to verify against is 3.10.0 from RHEL.
+
+DMAR is a firmware table, it's present so long as VT-d is enabled in
+the BIOS, irrespective of whether the IOMMU is enabled in the kernel.
+The IOMMU sysfs support was added exactly for this purpose (I tend to
+prefer reference via /sys/class/iommu).
+
+IOMMU sysfs support was added in v3.17, but note that the RHEL version
+of v3.10 is a moving target, not a fixed point in time.  This support
+was added in the RHEL 7.1 kernel.  Thanks,
+
+Alex
