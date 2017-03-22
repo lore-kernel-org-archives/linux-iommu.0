@@ -1,13 +1,15 @@
-From: Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v3 0/2] Handle Cavium ThunderX2 PCI topology quirk
-Date: Wed, 22 Mar 2017 11:13:05 -0400
-Message-ID: <122d7df5-8fde-c6fb-a608-9091dd59e79b@redhat.com>
-References: <1490172671-2648-1-git-send-email-jnair@caviumnetworks.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v2 1/4] iommu: Disambiguate MSI region types
+Date: Wed, 22 Mar 2017 16:16:42 +0100
+Message-ID: <20170322151642.GD7315@8bytes.org>
+References: <cover.1489683129.git.robin.murphy@arm.com>
+	<a56c76f7276a12120ecd0675be4c69de58aec8ff.1489683129.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1490172671-2648-1-git-send-email-jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <a56c76f7276a12120ecd0675be4c69de58aec8ff.1489683129.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,68 +19,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, gabriele.paoloni-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, john.garry-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/22/2017 04:51 AM, Jayachandran C wrote:
-> Hi Bjorn, Alex,
+On Thu, Mar 16, 2017 at 05:00:16PM +0000, Robin Murphy wrote:
+> The introduction of reserved regions has left a couple of rough edges
+> which we could do with sorting out sooner rather than later. Since we
+> are not yet addressing the potential dynamic aspect of software-managed
+> reservations and presenting them at arbitrary fixed addresses, it is
+> incongruous that we end up displaying hardware vs. software-managed MSI
+> regions to userspace differently, especially since ARM-based systems may
+> actually require one or the other, or even potentially both at once,
+> (which iommu-dma currently has no hope of dealing with at all). Let's
+> resolve the former user-visible inconsistency ASAP before the ABI has
+> been baked into a kernel release, in a way that also lays the groundwork
+> for the latter shortcoming to be addressed by follow-up patches.
 > 
-> Here is v3 of the patchset to handle the PCIe topology quirk of
-> Cavium ThunderX2 (previously called Broadcom Vulcan).
+> For clarity, rename the software-managed type to IOMMU_RESV_SW_MSI, use
+> IOMMU_RESV_MSI to describe the hardware type, and document everything a
+> little bit. Since the x86 MSI remapping hardware falls squarely under
+> this meaning of IOMMU_RESV_MSI, apply that type to their regions as well,
+> so that we tell the same story to userspace across all platforms.
 > 
-> The earlier discussions on this can be seen at:
-> http://www.spinics.net/lists/linux-pci/msg51001.html
-> https://patchwork.ozlabs.org/patch/582633/ and
-> https://lists.linuxfoundation.org/pipermail/iommu/2016-June/017681.html
+> Secondly, as the various region types require quite different handling,
+> and it really makes little sense to ever try combining them, convert the
+> bitfield-esque #defines to a plain enum in the process before anyone
+> gets the wrong impression.
 > 
-> The earlier discussion on this patchset had stalled with a suggestion
-> that it may be possible to fix up this quirk by handling the issue in
-> the function argument of pci_for_each_dma_alias(). But at that point
-> all the ACPI and OF code for SMMU and GIC was to merged, and we did not
-> have reasonable codebase to make the changes.
-> 
-> For 4.11, I tried to fix it in both the SMMU and the GIC ITS code based
-> on this suggestion, but after going thru the effort, that does not look
-> like the right approach. I have the code changes at:
-> https://github.com/jchandra-cavm/linux/commits/rid-xlate-fixup
-> if anyone want to look over the code.
-> 
-> The problems with that approach is:
->  - of the 14 uses of pci_for_each_dma_alias in the function in the kernel
->    tree, I have to fixup 6 callers (which is all but one ofthe callers
->    outside x86)
->  - 4 of these can be reasonably handled (please see the github repo above),
->    but the calls in drivers/irqchip/irq-gic-v3-its-pci-msi.c and
->    drivers/iommu/iommu.c cannot be reasonably fixed up.
->  - Even without the 2 above two changes I can get it to work for now.
->    But pci_for_each_dma_alias does not work as expected on this platform
->    and we have to be aware of that for all future uses of the function.
->   
-> For now, I have ruled out that approach, and I have rebased the earlier
-> patch on to 4.11-rc and submitting again for review. The changes are:
-> 
-> v2>v3:
->  - changed device flag name from PCI_DEV_FLAGS_DMA_ALIAS_ROOT to
->    PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT
->  - updated commit message to make the quirk clearer.
-> 
-> Let me know your comments and suggestions.
+> Fixes: d30ddcaa7b02 ("iommu: Add a new type field in iommu_resv_region")
+> Reviewed-by: Eric Auger <eric.auger-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> CC: Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> CC: David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> CC: kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 
-My opinion FWIW is that the quirk you have is one of the least intrusive
-ways of handling this. Generally in the case of ARM servers, we have a
-difference vs. x86 in that the latter usually have a magic RC at the
-top level that everything sits beneath (and then, presumably, Intel
-do some magic for multi-socket to fudge things over Q/UPI so that
-things look nice and boring to software). On ARM, we're typically
-dealing with third party RC IP that's disjoint from other parts of
-the SoC. We're certainly in the process of bolstering the specs to
-set some expectations and greater guidance around topologies that
-we would like to avoid, so I don't see this getting out of hand.
-
-That's my $0.02.
-
-Jon.
-
--- 
-Computer Architect | Sent from my Fedora powered laptop
+Applied this one to iommu/fixes.
