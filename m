@@ -1,85 +1,89 @@
-From: jacob pan <jacob.jun.pan@intel.com>
-Subject: Re: [RFC PATCH 29/30] vfio: Add support for Shared Virtual Memory
-Date: Tue, 21 Mar 2017 13:56:25 -0700
-Message-ID: <20170321135625.0000229b@intel.com>
-References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
-        <20170227195441.5170-30-jean-philippe.brucker@arm.com>
-        <A2975661238FB949B60364EF0F2C2574390206F0@shsmsx102.ccr.corp.intel.com>
-        <d12a4a91-1fae-2fee-6109-3e9a1b7f5abe@arm.com>
+From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH 0/7] iommu/iova: improve the allocation performance of dma64
+Date: Wed, 22 Mar 2017 14:27:40 +0800
+Message-ID: <1490164067-12552-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <d12a4a91-1fae-2fee-6109-3e9a1b7f5abe@arm.com>
-Sender: kvm-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Sinan Kaya <okaya@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Harv Abdulhamid <harba@qti.qualcomm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, David Woodhouse <dwmw2@infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Nate Watterson <nwatters@qti.qualcomm.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Lan, Tianyu" <tianyu.lan@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, Alex Williamson <alex.williamson>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashutosh Dixit <ashutosh.dixit-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, 21 Mar 2017 19:37:56 +0000
-Jean-Philippe Brucker <jean-philippe.brucker@arm.com> wrote:
+64 bits devices is very common now. But currently we only defined a cached32_node
+to optimize the allocation performance of dma32, and I saw some dma64 drivers chose
+to allocate iova from dma32 space first, maybe becuase of current dma64 performance
+problem or some other reasons.
 
-> > For invalidation, I've following info in in pseudo code.
-> > struct iommu_svm_tlb_invalidate_info
-> > {
-> >        __u32 inv_type;
-> > #define IOTLB_INV			(1 << 0)
-> > #define EXTENDED_IOTLB_INV		(1 << 1)
-> > #define DEVICE_IOTLB_INV		(1 << 2)
-> > #define EXTENDED_DEVICE_IOTLB_INV	(1 << 3)
-> > #define PASID_CACHE_INV		(1 << 4)
-> >        __u32 pasid;
-> >        __u64 addr;
-> >        __u64 size;
-> >        __u8 granularity;
-> > #define DEFAULT_INV_GRN        0
-> > #define PAGE_SELECTIVE_INV     (1 << 0)
-> > #define PASID_SELECVIVE_INV    (1 << 1)
-> >        __u64 flags;
-> > #define INVALIDATE_HINT_BIT    (1 << 0)
-> > #define GLOBAL_HINT_BIT        (1 << 1)
-> > #define DRAIN_READ_BIT         (1 << 2)
-> > #define DRAIN_WRITE_BIT        (1 << 3)
-> > #define DEVICE_TLB_GLOBAL_BIT  (1 << 4)
-> >        __u8 mip;
-> >        __u16 pfsid;
-> > };  
-> 
-> This would also benefit from being split into generic and
-> architectural parts. Former would be defined in VFIO, latter would be
-> in the IOMMU driver.
-> 
-> struct tlb_invalidate_info
-> {
-> 	__u8 granularity
-> #define DEFAULT_INV_GRN		0	/* What is default? */
-> #define PAGE_SELECTIVE_INV	(1 << 0)
-> #define PASID_SELECTIVE_INV	(1 << 1)
-> 	__u32 pasid;
-> 	__u64 addr;
-> 	__u64 size;
-> 
-> 	/* Since IOMMU format has already been validated for this
-> table, the IOMMU driver knows that the following structure is in a
-> 	   format it knows */
-> 	__u8 opaque[];
-> };
-> 
-> struct tlb_invalidate_info_intel
-> {
-> 	__u32 inv_type;
-> 	...
-> 	__u64 flags;
-> 	...
-> 	__u8 mip;
-> 	__u16 pfsid;
-> };
+For example:(in drivers/iommu/amd_iommu.c)
+static unsigned long dma_ops_alloc_iova(......
+{
+	......
+	if (dma_mask > DMA_BIT_MASK(32))
+		pfn = alloc_iova_fast(&dma_dom->iovad, pages,
+				      IOVA_PFN(DMA_BIT_MASK(32)));
+	if (!pfn)
+		pfn = alloc_iova_fast(&dma_dom->iovad, pages, IOVA_PFN(dma_mask));
+		
+For the details of why dma64 iova allocation performance is very bad, please refer the
+description of patch-5.
 
-I presume for Intel/arch specific part, the opaque data can simply be
-the descriptor itself. i.e. struct qi_desc. There is no need to
-generalize since it has already been validated to be architecture
-specific data.
+In this patch series, I added a cached64_node to manage the dma64 iova space(iova>=4G), it
+takes the same effect as cached32_node(iova<4G).
 
-Arch specific IOMMU driver can take further action on the opaque data,
-e.g. replace guest DID with host DID based on other info passed down
-from the caller.
+Below it's the performance data before and after my patch series:
+(before)$ iperf -s
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size: 85.3 KByte (default)
+------------------------------------------------------------
+[  4] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 35898
+[ ID] Interval       Transfer     Bandwidth
+[  4]  0.0-10.2 sec  7.88 MBytes  6.48 Mbits/sec
+[  5] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 35900
+[  5]  0.0-10.3 sec  7.88 MBytes  6.43 Mbits/sec
+[  4] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 35902
+[  4]  0.0-10.3 sec  7.88 MBytes  6.43 Mbits/sec
+
+(after)$ iperf -s
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size: 85.3 KByte (default)
+------------------------------------------------------------
+[  4] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 36330
+[ ID] Interval       Transfer     Bandwidth
+[  4]  0.0-10.0 sec  1.09 GBytes   933 Mbits/sec
+[  5] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 36332
+[  5]  0.0-10.0 sec  1.10 GBytes   939 Mbits/sec
+[  4] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 36334
+[  4]  0.0-10.0 sec  1.10 GBytes   938 Mbits/sec
+
+
+Zhen Lei (7):
+  iommu/iova: fix incorrect variable types
+  iommu/iova: cut down judgement times
+  iommu/iova: insert start_pfn boundary of dma32
+  iommu/iova: adjust __cached_rbnode_insert_update
+  iommu/iova: to optimize the allocation performance of dma64
+  iommu/iova: move the caculation of pad mask out of loop
+  iommu/iova: fix iovad->dma_32bit_pfn as the last pfn of dma32
+
+ drivers/iommu/amd_iommu.c        |   7 +-
+ drivers/iommu/dma-iommu.c        |  22 ++----
+ drivers/iommu/intel-iommu.c      |  11 +--
+ drivers/iommu/iova.c             | 143 +++++++++++++++++++++------------------
+ drivers/misc/mic/scif/scif_rma.c |   3 +-
+ include/linux/iova.h             |   7 +-
+ 6 files changed, 94 insertions(+), 99 deletions(-)
+
+-- 
+2.5.0
