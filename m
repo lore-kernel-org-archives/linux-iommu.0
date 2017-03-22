@@ -1,7 +1,8 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v12 04/10] iommu/amd: Clean up iommu_pc_get_set_reg()
-Date: Wed, 22 Mar 2017 02:02:36 -0500
-Message-ID: <1490166162-10002-5-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH v12 01/10] perf/amd/iommu: Declare pr_fmt and remove
+	unnecessary pr_debug
+Date: Wed, 22 Mar 2017 02:02:33 -0500
+Message-ID: <1490166162-10002-2-git-send-email-Suravee.Suthikulpanit@amd.com>
 References: <1490166162-10002-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -21,50 +22,105 @@ To: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFL
 Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Declare pr_fmt for perf/amd_iommu and remove unnecessary pr_debug.
 
-Clean up coding style and fix a bug in the 64-bit register read
-logic since it overwrites the upper 32-bit when reading the lower 32-bit.
+Also check return value when _init_events_attrs fails.
 
+Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- drivers/iommu/amd_iommu_init.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ arch/x86/events/amd/iommu.c | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 6130278..ce65a47 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2763,22 +2763,25 @@ static int iommu_pc_get_set_reg_val(struct amd_iommu *iommu,
- 	if (WARN_ON((fxn > 0x28) || (fxn & 7)))
- 		return -ENODEV;
+diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+index b28200d..8d8ed40 100644
+--- a/arch/x86/events/amd/iommu.c
++++ b/arch/x86/events/amd/iommu.c
+@@ -11,6 +11,8 @@
+  * published by the Free Software Foundation.
+  */
  
--	offset = (u32)(((0x40|bank) << 12) | (cntr << 8) | fxn);
-+	offset = (u32)(((0x40 | bank) << 12) | (cntr << 8) | fxn);
- 
- 	/* Limit the offset to the hw defined mmio region aperture */
--	max_offset_lim = (u32)(((0x40|iommu->max_banks) << 12) |
-+	max_offset_lim = (u32)(((0x40 | iommu->max_banks) << 12) |
- 				(iommu->max_counters << 8) | 0x28);
- 	if ((offset < MMIO_CNTR_REG_OFFSET) ||
- 	    (offset > max_offset_lim))
- 		return -EINVAL;
- 
- 	if (is_write) {
--		writel((u32)*value, iommu->mmio_base + offset);
--		writel((*value >> 32), iommu->mmio_base + offset + 4);
-+		u64 val = *value & GENMASK_ULL(47, 0);
++#define pr_fmt(fmt)	"perf/amd_iommu: " fmt
 +
-+		writel((u32)val, iommu->mmio_base + offset);
-+		writel((val >> 32), iommu->mmio_base + offset + 4);
- 	} else {
- 		*value = readl(iommu->mmio_base + offset + 4);
- 		*value <<= 32;
--		*value = readl(iommu->mmio_base + offset);
-+		*value |= readl(iommu->mmio_base + offset);
-+		*value &= GENMASK_ULL(47, 0);
- 	}
+ #include <linux/perf_event.h>
+ #include <linux/init.h>
+ #include <linux/cpumask.h>
+@@ -298,7 +300,6 @@ static void perf_iommu_start(struct perf_event *event, int flags)
+ {
+ 	struct hw_perf_event *hwc = &event->hw;
  
- 	return 0;
+-	pr_debug("perf: amd_iommu:perf_iommu_start\n");
+ 	if (WARN_ON_ONCE(!(hwc->state & PERF_HES_STOPPED)))
+ 		return;
+ 
+@@ -323,7 +324,6 @@ static void perf_iommu_read(struct perf_event *event)
+ 	u64 prev_raw_count = 0ULL;
+ 	u64 delta = 0ULL;
+ 	struct hw_perf_event *hwc = &event->hw;
+-	pr_debug("perf: amd_iommu:perf_iommu_read\n");
+ 
+ 	amd_iommu_pc_get_set_reg_val(_GET_DEVID(event),
+ 				_GET_BANK(event), _GET_CNTR(event),
+@@ -349,8 +349,6 @@ static void perf_iommu_stop(struct perf_event *event, int flags)
+ 	struct hw_perf_event *hwc = &event->hw;
+ 	u64 config;
+ 
+-	pr_debug("perf: amd_iommu:perf_iommu_stop\n");
+-
+ 	if (hwc->state & PERF_HES_UPTODATE)
+ 		return;
+ 
+@@ -372,7 +370,6 @@ static int perf_iommu_add(struct perf_event *event, int flags)
+ 	struct perf_amd_iommu *perf_iommu =
+ 			container_of(event->pmu, struct perf_amd_iommu, pmu);
+ 
+-	pr_debug("perf: amd_iommu:perf_iommu_add\n");
+ 	event->hw.state = PERF_HES_UPTODATE | PERF_HES_STOPPED;
+ 
+ 	/* request an iommu bank/counter */
+@@ -393,7 +390,6 @@ static void perf_iommu_del(struct perf_event *event, int flags)
+ 	struct perf_amd_iommu *perf_iommu =
+ 			container_of(event->pmu, struct perf_amd_iommu, pmu);
+ 
+-	pr_debug("perf: amd_iommu:perf_iommu_del\n");
+ 	perf_iommu_stop(event, PERF_EF_UPDATE);
+ 
+ 	/* clear the assigned iommu bank/counter */
+@@ -444,27 +440,27 @@ static __init int _init_perf_amd_iommu(
+ 
+ 	raw_spin_lock_init(&perf_iommu->lock);
+ 
+-	/* Init format attributes */
+ 	perf_iommu->format_group = &amd_iommu_format_group;
+ 
+ 	/* Init cpumask attributes to only core 0 */
+ 	cpumask_set_cpu(0, &iommu_cpumask);
+ 	perf_iommu->cpumask_group = &amd_iommu_cpumask_group;
+ 
+-	/* Init events attributes */
+-	if (_init_events_attrs(perf_iommu) != 0)
+-		pr_err("perf: amd_iommu: Only support raw events.\n");
++	ret = _init_events_attrs(perf_iommu);
++	if (ret) {
++		pr_err("Error initializing AMD IOMMU perf events.\n");
++		return ret;
++	}
+ 
+-	/* Init null attributes */
+ 	perf_iommu->null_group = NULL;
+ 	perf_iommu->pmu.attr_groups = perf_iommu->attr_groups;
+ 
+ 	ret = perf_pmu_register(&perf_iommu->pmu, name, -1);
+ 	if (ret) {
+-		pr_err("perf: amd_iommu: Failed to initialized.\n");
++		pr_err("Error initializing AMD IOMMU perf counters.\n");
+ 		amd_iommu_pc_exit();
+ 	} else {
+-		pr_info("perf: amd_iommu: Detected. (%d banks, %d counters/bank)\n",
++		pr_info("Detected AMD IOMMU (%d banks, %d counters/bank).\n",
+ 			amd_iommu_pc_get_max_banks(IOMMU_BASE_DEVID),
+ 			amd_iommu_pc_get_max_counters(IOMMU_BASE_DEVID));
+ 	}
 -- 
 1.8.3.1
