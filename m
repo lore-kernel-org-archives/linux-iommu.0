@@ -1,8 +1,7 @@
 From: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
-Subject: [PATCH v12 09/10] perf/amd/iommu: Introduce amd_iommu-specific struct
-	in struct hw_perf_event
-Date: Wed, 22 Mar 2017 02:02:41 -0500
-Message-ID: <1490166162-10002-10-git-send-email-Suravee.Suthikulpanit@amd.com>
+Subject: [PATCH v12 10/10] perf/amd/iommu: Enable support for multiple IOMMUs
+Date: Wed, 22 Mar 2017 02:02:42 -0500
+Message-ID: <1490166162-10002-11-git-send-email-Suravee.Suthikulpanit@amd.com>
 References: <1490166162-10002-1-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,280 +23,218 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 
-Current AMD IOMMU Perf PMU inappropriately uses hardware struct
-inside the union inside the struct hw_perf_event, mainly the use of
-extra_reg.
+Add multi-IOMMU support for perf by exposing an AMD IOMMU PMU
+for each IOMMU found in the system via:
 
-Instead, introduce amd_iommu-specific struct with required
-parameters to be programmed onto the IOMMU performance counter
-control register.
+  /bus/event_source/devices/amd_iommu_x
 
-Also update the pasid field from 16 to 20 bits.
+where x is the IOMMU index. This allows users to specify
+different events to be programmed onto performance counters
+of each IOMMU.
 
-Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
 Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+Signed-off-by: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 ---
- arch/x86/events/amd/iommu.c | 102 +++++++++++++++++++-------------------------
- include/linux/perf_event.h  |   7 +++
- 2 files changed, 52 insertions(+), 57 deletions(-)
+ arch/x86/events/amd/iommu.c | 111 ++++++++++++++++++++++++++++----------------
+ 1 file changed, 70 insertions(+), 41 deletions(-)
 
 diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
-index 7ac8138..915a20c 100644
+index 915a20c..9a12077 100644
 --- a/arch/x86/events/amd/iommu.c
 +++ b/arch/x86/events/amd/iommu.c
-@@ -23,17 +23,16 @@
+@@ -34,16 +34,21 @@
+ #define GET_DOMID_MASK(x)  ((x->conf1 >> 16) & 0xFFFFULL)
+ #define GET_PASID_MASK(x)  ((x->conf1 >> 32) & 0xFFFFFULL)
  
- #define COUNTER_SHIFT		16
+-static struct perf_amd_iommu __perf_iommu;
++#define PERF_AMD_IOMMU_NAME_SIZE	16
  
--#define _GET_BANK(ev)       ((u8)(ev->hw.extra_reg.reg >> 8))
--#define _GET_CNTR(ev)       ((u8)(ev->hw.extra_reg.reg))
--
--/* iommu pmu config masks */
--#define _GET_CSOURCE(ev)    ((ev->hw.config & 0xFFULL))
--#define _GET_DEVID(ev)      ((ev->hw.config >> 8)  & 0xFFFFULL)
--#define _GET_PASID(ev)      ((ev->hw.config >> 24) & 0xFFFFULL)
--#define _GET_DOMID(ev)      ((ev->hw.config >> 40) & 0xFFFFULL)
--#define _GET_DEVID_MASK(ev) ((ev->hw.extra_reg.config)  & 0xFFFFULL)
--#define _GET_PASID_MASK(ev) ((ev->hw.extra_reg.config >> 16) & 0xFFFFULL)
--#define _GET_DOMID_MASK(ev) ((ev->hw.extra_reg.config >> 32) & 0xFFFFULL)
-+/* iommu pmu conf masks */
-+#define GET_CSOURCE(x)     (x->conf & 0xFFULL)
-+#define GET_DEVID(x)       ((x->conf >> 8)  & 0xFFFFULL)
-+#define GET_DOMID(x)       ((x->conf >> 24) & 0xFFFFULL)
-+#define GET_PASID(x)       ((x->conf >> 40) & 0xFFFFFULL)
+ struct perf_amd_iommu {
++	struct list_head list;
+ 	struct pmu pmu;
++	struct amd_iommu *iommu;
++	char name[PERF_AMD_IOMMU_NAME_SIZE];
+ 	u8 max_banks;
+ 	u8 max_counters;
+ 	u64 cntr_assign_mask;
+ 	raw_spinlock_t lock;
+ };
+ 
++static LIST_HEAD(perf_amd_iommu_list);
 +
-+/* iommu pmu conf1 masks */
-+#define GET_DEVID_MASK(x)  (x->conf1  & 0xFFFFULL)
-+#define GET_DOMID_MASK(x)  ((x->conf1 >> 16) & 0xFFFFULL)
-+#define GET_PASID_MASK(x)  ((x->conf1 >> 32) & 0xFFFFFULL)
- 
- static struct perf_amd_iommu __perf_iommu;
- 
-@@ -50,11 +49,11 @@ struct perf_amd_iommu {
+ /*---------------------------------------------
+  * sysfs format attributes
   *---------------------------------------------*/
- PMU_FORMAT_ATTR(csource,    "config:0-7");
- PMU_FORMAT_ATTR(devid,      "config:8-23");
--PMU_FORMAT_ATTR(pasid,      "config:24-39");
--PMU_FORMAT_ATTR(domid,      "config:40-55");
-+PMU_FORMAT_ATTR(domid,      "config:24-39");
-+PMU_FORMAT_ATTR(pasid,      "config:40-59");
- PMU_FORMAT_ATTR(devid_mask, "config1:0-15");
--PMU_FORMAT_ATTR(pasid_mask, "config1:16-31");
--PMU_FORMAT_ATTR(domid_mask, "config1:32-47");
-+PMU_FORMAT_ATTR(domid_mask, "config1:16-31");
-+PMU_FORMAT_ATTR(pasid_mask, "config1:32-51");
- 
- static struct attribute *iommu_format_attrs[] = {
- 	&format_attr_csource.attr,
-@@ -150,10 +149,13 @@ static ssize_t _iommu_cpumask_show(struct device *dev,
- 
- /*---------------------------------------------*/
- 
--static int get_next_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu)
-+static int get_next_avail_iommu_bnk_cntr(struct perf_event *event)
- {
- 	unsigned long flags;
--	int shift, bank, cntr, retval;
-+	u32 shift, bank, cntr;
-+	int retval;
-+	struct perf_amd_iommu *perf_iommu =
-+			container_of(event->pmu, struct perf_amd_iommu, pmu);
- 	int max_banks = perf_iommu->max_banks;
- 	int max_cntrs = perf_iommu->max_counters;
- 
-@@ -166,7 +168,9 @@ static int get_next_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu)
- 				continue;
- 			} else {
- 				perf_iommu->cntr_assign_mask |= BIT_ULL(shift);
--				retval = ((bank & 0xFF) << 8) | (cntr & 0xFF);
-+				event->hw.iommu_bank = bank;
-+				event->hw.iommu_cntr = cntr;
-+				retval = 0;
- 				goto out;
- 			}
- 		}
-@@ -202,8 +206,6 @@ static int clear_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu,
- static int perf_iommu_event_init(struct perf_event *event)
- {
- 	struct hw_perf_event *hwc = &event->hw;
--	struct perf_amd_iommu *perf_iommu;
--	u64 config, config1;
- 
- 	/* test the event attr type check for PMU enumeration */
- 	if (event->attr.type != event->pmu->type)
-@@ -225,21 +227,9 @@ static int perf_iommu_event_init(struct perf_event *event)
- 	if (event->cpu < 0)
- 		return -EINVAL;
- 
--	perf_iommu = &__perf_iommu;
--
--	if (event->pmu != &perf_iommu->pmu)
--		return -ENOENT;
--
--	if (perf_iommu) {
--		config = event->attr.config;
--		config1 = event->attr.config1;
--	} else {
--		return -EINVAL;
--	}
--
- 	/* update the hw_perf_event struct with the iommu config data */
--	hwc->config = config;
--	hwc->extra_reg.config = config1;
-+	hwc->conf  = event->attr.config;
-+	hwc->conf1 = event->attr.config1;
- 
+@@ -234,9 +239,14 @@ static int perf_iommu_event_init(struct perf_event *event)
  	return 0;
  }
-@@ -247,26 +237,28 @@ static int perf_iommu_event_init(struct perf_event *event)
+ 
++static inline struct amd_iommu *perf_event_2_iommu(struct perf_event *ev)
++{
++	return (container_of(ev->pmu, struct perf_amd_iommu, pmu))->iommu;
++}
++
  static void perf_iommu_enable_event(struct perf_event *ev)
  {
- 	struct amd_iommu *iommu = get_amd_iommu(0);
--	u8 csource = _GET_CSOURCE(ev);
--	u16 devid = _GET_DEVID(ev);
--	u8 bank = _GET_BANK(ev);
--	u8 cntr = _GET_CNTR(ev);
-+	struct hw_perf_event *hwc = &ev->hw;
-+	u8 bank = hwc->iommu_bank;
-+	u8 cntr = hwc->iommu_cntr;
- 	u64 reg = 0ULL;
+-	struct amd_iommu *iommu = get_amd_iommu(0);
++	struct amd_iommu *iommu = perf_event_2_iommu(ev);
+ 	struct hw_perf_event *hwc = &ev->hw;
+ 	u8 bank = hwc->iommu_bank;
+ 	u8 cntr = hwc->iommu_cntr;
+@@ -266,7 +276,7 @@ static void perf_iommu_enable_event(struct perf_event *ev)
  
--	reg = csource;
-+	reg = GET_CSOURCE(hwc);
- 	amd_iommu_pc_set_reg(iommu, bank, cntr, IOMMU_PC_COUNTER_SRC_REG, &reg);
- 
--	reg = devid | (_GET_DEVID_MASK(ev) << 32);
-+	reg = GET_DEVID_MASK(hwc);
-+	reg = GET_DEVID(hwc) | (reg << 32);
- 	if (reg)
- 		reg |= BIT(31);
- 	amd_iommu_pc_set_reg(iommu, bank, cntr, IOMMU_PC_DEVID_MATCH_REG, &reg);
- 
--	reg = _GET_PASID(ev) | (_GET_PASID_MASK(ev) << 32);
-+	reg = GET_PASID_MASK(hwc);
-+	reg = GET_PASID(hwc) | (reg << 32);
- 	if (reg)
- 		reg |= BIT(31);
- 	amd_iommu_pc_set_reg(iommu, bank, cntr, IOMMU_PC_PASID_MATCH_REG, &reg);
- 
--	reg = _GET_DOMID(ev) | (_GET_DOMID_MASK(ev) << 32);
-+	reg = GET_DOMID_MASK(hwc);
-+	reg = GET_DOMID(hwc) | (reg << 32);
- 	if (reg)
- 		reg |= BIT(31);
- 	amd_iommu_pc_set_reg(iommu, bank, cntr, IOMMU_PC_DOMID_MATCH_REG, &reg);
-@@ -275,16 +267,16 @@ static void perf_iommu_enable_event(struct perf_event *ev)
  static void perf_iommu_disable_event(struct perf_event *event)
  {
- 	struct amd_iommu *iommu = get_amd_iommu(0);
-+	struct hw_perf_event *hwc = &event->hw;
+-	struct amd_iommu *iommu = get_amd_iommu(0);
++	struct amd_iommu *iommu = perf_event_2_iommu(event);
+ 	struct hw_perf_event *hwc = &event->hw;
  	u64 reg = 0ULL;
  
--	amd_iommu_pc_set_reg(iommu, _GET_BANK(event), _GET_CNTR(event),
-+	amd_iommu_pc_set_reg(iommu, hwc->iommu_bank, hwc->iommu_cntr,
- 			     IOMMU_PC_COUNTER_SRC_REG, &reg);
- }
- 
- static void perf_iommu_start(struct perf_event *event, int flags)
- {
- 	struct hw_perf_event *hwc = &event->hw;
--	struct amd_iommu *iommu = get_amd_iommu(0);
- 
- 	if (WARN_ON_ONCE(!(hwc->state & PERF_HES_STOPPED)))
- 		return;
-@@ -293,8 +285,10 @@ static void perf_iommu_start(struct perf_event *event, int flags)
- 	hwc->state = 0;
+@@ -286,7 +296,7 @@ static void perf_iommu_start(struct perf_event *event, int flags)
  
  	if (flags & PERF_EF_RELOAD) {
--		u64 prev_raw_count =  local64_read(&hwc->prev_count);
--		amd_iommu_pc_set_reg(iommu, _GET_BANK(event), _GET_CNTR(event),
-+		u64 prev_raw_count = local64_read(&hwc->prev_count);
-+		struct amd_iommu *iommu = get_amd_iommu(0);
-+
-+		amd_iommu_pc_set_reg(iommu, hwc->iommu_bank, hwc->iommu_cntr,
+ 		u64 prev_raw_count = local64_read(&hwc->prev_count);
+-		struct amd_iommu *iommu = get_amd_iommu(0);
++		struct amd_iommu *iommu = perf_event_2_iommu(event);
+ 
+ 		amd_iommu_pc_set_reg(iommu, hwc->iommu_bank, hwc->iommu_cntr,
  				     IOMMU_PC_COUNTER_REG, &prev_raw_count);
- 	}
- 
-@@ -309,7 +303,7 @@ static void perf_iommu_read(struct perf_event *event)
+@@ -301,7 +311,7 @@ static void perf_iommu_read(struct perf_event *event)
+ {
+ 	u64 count, prev, delta;
  	struct hw_perf_event *hwc = &event->hw;
- 	struct amd_iommu *iommu = get_amd_iommu(0);
+-	struct amd_iommu *iommu = get_amd_iommu(0);
++	struct amd_iommu *iommu = perf_event_2_iommu(event);
  
--	if (amd_iommu_pc_get_reg(iommu, _GET_BANK(event), _GET_CNTR(event),
-+	if (amd_iommu_pc_get_reg(iommu, hwc->iommu_bank, hwc->iommu_cntr,
+ 	if (amd_iommu_pc_get_reg(iommu, hwc->iommu_bank, hwc->iommu_cntr,
  				 IOMMU_PC_COUNTER_REG, &count))
- 		return;
- 
-@@ -329,7 +323,6 @@ static void perf_iommu_read(struct perf_event *event)
- static void perf_iommu_stop(struct perf_event *event, int flags)
- {
- 	struct hw_perf_event *hwc = &event->hw;
--	u64 config;
- 
- 	if (hwc->state & PERF_HES_UPTODATE)
- 		return;
-@@ -341,7 +334,6 @@ static void perf_iommu_stop(struct perf_event *event, int flags)
- 	if (hwc->state & PERF_HES_UPTODATE)
- 		return;
- 
--	config = hwc->config;
- 	perf_iommu_read(event);
- 	hwc->state |= PERF_HES_UPTODATE;
+@@ -389,11 +399,6 @@ static __init int _init_events_attrs(void)
+ 	return 0;
  }
-@@ -349,16 +341,12 @@ static void perf_iommu_stop(struct perf_event *event, int flags)
- static int perf_iommu_add(struct perf_event *event, int flags)
+ 
+-static __init void amd_iommu_pc_exit(void)
+-{
+-	kfree(amd_iommu_events_group.attrs);
+-}
+-
+ const struct attribute_group *amd_iommu_attr_groups[] = {
+ 	&amd_iommu_format_group,
+ 	&amd_iommu_cpumask_group,
+@@ -401,47 +406,56 @@ static __init void amd_iommu_pc_exit(void)
+ 	NULL,
+ };
+ 
++static struct pmu iommu_pmu = {
++	.event_init	= perf_iommu_event_init,
++	.add		= perf_iommu_add,
++	.del		= perf_iommu_del,
++	.start		= perf_iommu_start,
++	.stop		= perf_iommu_stop,
++	.read		= perf_iommu_read,
++	.task_ctx_nr	= perf_invalid_context,
++	.attr_groups	= amd_iommu_attr_groups,
++};
++
+ static __init int
+-_init_perf_amd_iommu(struct perf_amd_iommu *perf_iommu, char *name)
++init_one_iommu(unsigned int idx)
  {
- 	int retval;
--	struct perf_amd_iommu *perf_iommu =
--			container_of(event->pmu, struct perf_amd_iommu, pmu);
+ 	int ret;
++	struct perf_amd_iommu *perf_iommu;
  
- 	event->hw.state = PERF_HES_UPTODATE | PERF_HES_STOPPED;
+-	raw_spin_lock_init(&perf_iommu->lock);
++	perf_iommu = kzalloc(sizeof(struct perf_amd_iommu), GFP_KERNEL);
++	if (!perf_iommu)
++		return -ENOMEM;
  
- 	/* request an iommu bank/counter */
--	retval = get_next_avail_iommu_bnk_cntr(perf_iommu);
--	if (retval != -ENOSPC)
--		event->hw.extra_reg.reg = (u16)retval;
+-	/* Init cpumask attributes to only core 0 */
+-	cpumask_set_cpu(0, &iommu_cpumask);
++	raw_spin_lock_init(&perf_iommu->lock);
+ 
+-	perf_iommu->max_banks    = amd_iommu_pc_get_max_banks(0);
+-	perf_iommu->max_counters = amd_iommu_pc_get_max_counters(0);
+-	if (!perf_iommu->max_banks || !perf_iommu->max_counters)
++	perf_iommu->pmu          = iommu_pmu;
++	perf_iommu->iommu        = get_amd_iommu(idx);
++	perf_iommu->max_banks    = amd_iommu_pc_get_max_banks(idx);
++	perf_iommu->max_counters = amd_iommu_pc_get_max_counters(idx);
++	if (!perf_iommu->iommu || !perf_iommu->max_banks ||
++	    !perf_iommu->max_counters) {
++		kfree(perf_iommu);
+ 		return -EINVAL;
++	}
+ 
+-	perf_iommu->pmu.attr_groups = amd_iommu_attr_groups;
+-	ret = perf_pmu_register(&perf_iommu->pmu, name, -1);
+-	if (ret)
+-		pr_err("Error initializing AMD IOMMU perf counters.\n");
 -	else
-+	retval = get_next_avail_iommu_bnk_cntr(event);
-+	if (retval)
- 		return retval;
- 
- 	if (flags & PERF_EF_START)
-@@ -369,6 +357,7 @@ static int perf_iommu_add(struct perf_event *event, int flags)
- 
- static void perf_iommu_del(struct perf_event *event, int flags)
- {
-+	struct hw_perf_event *hwc = &event->hw;
- 	struct perf_amd_iommu *perf_iommu =
- 			container_of(event->pmu, struct perf_amd_iommu, pmu);
- 
-@@ -376,8 +365,7 @@ static void perf_iommu_del(struct perf_event *event, int flags)
- 
- 	/* clear the assigned iommu bank/counter */
- 	clear_avail_iommu_bnk_cntr(perf_iommu,
--				     _GET_BANK(event),
--				     _GET_CNTR(event));
-+				   hwc->iommu_bank, hwc->iommu_cntr);
- 
- 	perf_event_update_userpage(event);
+-		pr_info("Detected AMD IOMMU (%d banks, %d counters/bank).\n",
+-			amd_iommu_pc_get_max_banks(0),
+-			amd_iommu_pc_get_max_counters(0));
++	snprintf(perf_iommu->name, PERF_AMD_IOMMU_NAME_SIZE, "amd_iommu_%u", idx);
++	ret = perf_pmu_register(&perf_iommu->pmu, perf_iommu->name, -1);
++	if (!ret) {
++		pr_info("Detected AMD IOMMU #%d (%d banks, %d counters/bank).\n",
++			idx, perf_iommu->max_banks, perf_iommu->max_counters);
++		list_add_tail(&perf_iommu->list, &perf_amd_iommu_list);
++	} else {
++		pr_warn("Error initializing IOMMU %d.\n", idx);
++		kfree(perf_iommu);
++	}
+ 	return ret;
  }
-diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index 000fdb2..14c0767 100644
---- a/include/linux/perf_event.h
-+++ b/include/linux/perf_event.h
-@@ -165,6 +165,13 @@ struct hw_perf_event {
- 			struct list_head		bp_list;
- 		};
- #endif
-+		struct { /* amd_iommu */
-+			u8	iommu_bank;
-+			u8	iommu_cntr;
-+			u16	padding;
-+			u64	conf;
-+			u64	conf1;
-+		};
- 	};
- 	/*
- 	 * If the event is a per task event, this will point to the task in
+ 
+-static struct perf_amd_iommu __perf_iommu = {
+-	.pmu = {
+-		.task_ctx_nr    = perf_invalid_context,
+-		.event_init	= perf_iommu_event_init,
+-		.add		= perf_iommu_add,
+-		.del		= perf_iommu_del,
+-		.start		= perf_iommu_start,
+-		.stop		= perf_iommu_stop,
+-		.read		= perf_iommu_read,
+-	},
+-};
+-
+ static __init int amd_iommu_pc_init(void)
+ {
+ 	int ret;
++	unsigned int i, cnt = 0;
+ 
+ 	/* Make sure the IOMMU PC resource is available */
+ 	if (!amd_iommu_pc_supported())
+@@ -451,11 +465,26 @@ static __init int amd_iommu_pc_init(void)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = _init_perf_amd_iommu(&__perf_iommu, "amd_iommu");
+-	if (ret)
+-		amd_iommu_pc_exit();
++	/*
++	 * An IOMMU PMU is specific to each IOMMU, and can
++	 * function independently. So, we go through all IOMMUs
++	 * and ignore the one that fails initialization unless
++	 * all IOMMU are failing.
++	 */
++	for (i = 0; i < amd_iommu_get_num_iommus(); i++) {
++		ret = init_one_iommu(i);
++		if (!ret)
++			cnt++;
++	}
+ 
+-	return ret;
++	if (!cnt) {
++		kfree(amd_iommu_events_group.attrs);
++		return -ENODEV;
++	}
++
++	/* Init cpumask attributes to only core 0 */
++	cpumask_set_cpu(0, &iommu_cpumask);
++	return 0;
+ }
+ 
+ device_initcall(amd_iommu_pc_init);
 -- 
 1.8.3.1
