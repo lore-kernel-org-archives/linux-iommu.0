@@ -1,11 +1,13 @@
 From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: [PATCH 0/7] iommu/iova: improve the allocation performance of dma64
-Date: Wed, 22 Mar 2017 14:27:40 +0800
-Message-ID: <1490164067-12552-1-git-send-email-thunder.leizhen@huawei.com>
+Subject: [PATCH 4/7] iommu/iova: adjust __cached_rbnode_insert_update
+Date: Wed, 22 Mar 2017 14:27:44 +0800
+Message-ID: <1490164067-12552-5-git-send-email-thunder.leizhen@huawei.com>
+References: <1490164067-12552-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1490164067-12552-1-git-send-email-thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,71 +21,86 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu <iommu-cu
 Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-64 bits devices is very common now. But currently we only defined a cached32_node
-to optimize the allocation performance of dma32, and I saw some dma64 drivers chose
-to allocate iova from dma32 space first, maybe becuase of current dma64 performance
-problem or some other reasons.
+For case 2 and 3, adjust cached32_node to the new place, case 1 keep no
+change.
 
-For example:(in drivers/iommu/amd_iommu.c)
-static unsigned long dma_ops_alloc_iova(......
-{
-	......
-	if (dma_mask > DMA_BIT_MASK(32))
-		pfn = alloc_iova_fast(&dma_dom->iovad, pages,
-				      IOVA_PFN(DMA_BIT_MASK(32)));
-	if (!pfn)
-		pfn = alloc_iova_fast(&dma_dom->iovad, pages, IOVA_PFN(dma_mask));
-		
-For the details of why dma64 iova allocation performance is very bad, please refer the
-description of patch-5.
+For example:
+case1: (the right part was allocated)
+	|------------------------------|
+	|<-----free---->|<--new_iova-->|
+	|
+	|
+   cached32_node
 
-In this patch series, I added a cached64_node to manage the dma64 iova space(iova>=4G), it
-takes the same effect as cached32_node(iova<4G).
+case2: (all was allocated)
+	|------------------------------|
+	|<---------new_iova----------->|
+	|
+	|
+   cached32_node
 
-Below it's the performance data before and after my patch series:
-(before)$ iperf -s
-------------------------------------------------------------
-Server listening on TCP port 5001
-TCP window size: 85.3 KByte (default)
-------------------------------------------------------------
-[  4] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 35898
-[ ID] Interval       Transfer     Bandwidth
-[  4]  0.0-10.2 sec  7.88 MBytes  6.48 Mbits/sec
-[  5] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 35900
-[  5]  0.0-10.3 sec  7.88 MBytes  6.43 Mbits/sec
-[  4] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 35902
-[  4]  0.0-10.3 sec  7.88 MBytes  6.43 Mbits/sec
+case3:
+	|-----------------------|......|---------|
+        |..free..|<--new_iova-->|<not enough iova space>
+        |                              |
+        |                              |
+   cached32_node(new)             cached32_node(old)
 
-(after)$ iperf -s
-------------------------------------------------------------
-Server listening on TCP port 5001
-TCP window size: 85.3 KByte (default)
-------------------------------------------------------------
-[  4] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 36330
-[ ID] Interval       Transfer     Bandwidth
-[  4]  0.0-10.0 sec  1.09 GBytes   933 Mbits/sec
-[  5] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 36332
-[  5]  0.0-10.0 sec  1.10 GBytes   939 Mbits/sec
-[  4] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 36334
-[  4]  0.0-10.0 sec  1.10 GBytes   938 Mbits/sec
+Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/iova.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-
-Zhen Lei (7):
-  iommu/iova: fix incorrect variable types
-  iommu/iova: cut down judgement times
-  iommu/iova: insert start_pfn boundary of dma32
-  iommu/iova: adjust __cached_rbnode_insert_update
-  iommu/iova: to optimize the allocation performance of dma64
-  iommu/iova: move the caculation of pad mask out of loop
-  iommu/iova: fix iovad->dma_32bit_pfn as the last pfn of dma32
-
- drivers/iommu/amd_iommu.c        |   7 +-
- drivers/iommu/dma-iommu.c        |  22 ++----
- drivers/iommu/intel-iommu.c      |  11 +--
- drivers/iommu/iova.c             | 143 +++++++++++++++++++++------------------
- drivers/misc/mic/scif/scif_rma.c |   3 +-
- include/linux/iova.h             |   7 +-
- 6 files changed, 94 insertions(+), 99 deletions(-)
-
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index b5a148e..87a9332 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -91,12 +91,16 @@ __get_cached_rbnode(struct iova_domain *iovad, unsigned long *limit_pfn)
+ }
+ 
+ static void
+-__cached_rbnode_insert_update(struct iova_domain *iovad,
+-	unsigned long limit_pfn, struct iova *new)
++__cached_rbnode_insert_update(struct iova_domain *iovad, struct iova *new)
+ {
+-	if (limit_pfn != iovad->dma_32bit_pfn)
++	struct iova *cached_iova;
++
++	if (new->pfn_hi > iovad->dma_32bit_pfn)
+ 		return;
+-	iovad->cached32_node = &new->node;
++
++	cached_iova = rb_entry(iovad->cached32_node, struct iova, node);
++	if (new->pfn_lo <= cached_iova->pfn_lo)
++		iovad->cached32_node = rb_prev(&new->node);
+ }
+ 
+ static void
+@@ -131,12 +135,10 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ {
+ 	struct rb_node *prev, *curr;
+ 	unsigned long flags;
+-	unsigned long saved_pfn;
+ 	unsigned long pad_size = 0;
+ 
+ 	/* Walk the tree backwards */
+ 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+-	saved_pfn = limit_pfn;
+ 	curr = __get_cached_rbnode(iovad, &limit_pfn);
+ 	prev = curr;
+ 	while (curr) {
+@@ -197,11 +199,10 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+ 		rb_link_node(&new->node, parent, entry);
+ 		rb_insert_color(&new->node, &iovad->rbroot);
+ 	}
+-	__cached_rbnode_insert_update(iovad, saved_pfn, new);
++	__cached_rbnode_insert_update(iovad, new);
+ 
+ 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+ 
+-
+ 	return 0;
+ }
+ 
 -- 
 2.5.0
