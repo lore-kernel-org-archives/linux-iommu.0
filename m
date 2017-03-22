@@ -1,16 +1,13 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 2/2] iommu: Add dummy implementations for !IOMMU_IOVA
-Date: Wed, 22 Mar 2017 15:55:30 +0100
-Message-ID: <20170322145530.GC7315@8bytes.org>
-References: <20170320191128.26474-1-thierry.reding@gmail.com>
-	<20170320191128.26474-2-thierry.reding@gmail.com>
-	<20170320191431.GF14787@ulmo.ba.sec>
+From: Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH v3 0/2] Handle Cavium ThunderX2 PCI topology quirk
+Date: Wed, 22 Mar 2017 11:13:05 -0400
+Message-ID: <122d7df5-8fde-c6fb-a608-9091dd59e79b@redhat.com>
+References: <1490172671-2648-1-git-send-email-jnair@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170320191431.GF14787-EkSeR96xj6Pcmrwk2tT4+A@public.gmane.org>
+In-Reply-To: <1490172671-2648-1-git-send-email-jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,23 +17,68 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Thierry Reding <thierry.reding-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: linux-tegra-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Mikko Perttunen <mperttunen-DDmLM1+adcrQT0dZR+AlfA@public.gmane.org>
+To: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Thierry
+On 03/22/2017 04:51 AM, Jayachandran C wrote:
+> Hi Bjorn, Alex,
+> 
+> Here is v3 of the patchset to handle the PCIe topology quirk of
+> Cavium ThunderX2 (previously called Broadcom Vulcan).
+> 
+> The earlier discussions on this can be seen at:
+> http://www.spinics.net/lists/linux-pci/msg51001.html
+> https://patchwork.ozlabs.org/patch/582633/ and
+> https://lists.linuxfoundation.org/pipermail/iommu/2016-June/017681.html
+> 
+> The earlier discussion on this patchset had stalled with a suggestion
+> that it may be possible to fix up this quirk by handling the issue in
+> the function argument of pci_for_each_dma_alias(). But at that point
+> all the ACPI and OF code for SMMU and GIC was to merged, and we did not
+> have reasonable codebase to make the changes.
+> 
+> For 4.11, I tried to fix it in both the SMMU and the GIC ITS code based
+> on this suggestion, but after going thru the effort, that does not look
+> like the right approach. I have the code changes at:
+> https://github.com/jchandra-cavm/linux/commits/rid-xlate-fixup
+> if anyone want to look over the code.
+> 
+> The problems with that approach is:
+>  - of the 14 uses of pci_for_each_dma_alias in the function in the kernel
+>    tree, I have to fixup 6 callers (which is all but one ofthe callers
+>    outside x86)
+>  - 4 of these can be reasonably handled (please see the github repo above),
+>    but the calls in drivers/irqchip/irq-gic-v3-its-pci-msi.c and
+>    drivers/iommu/iommu.c cannot be reasonably fixed up.
+>  - Even without the 2 above two changes I can get it to work for now.
+>    But pci_for_each_dma_alias does not work as expected on this platform
+>    and we have to be aware of that for all future uses of the function.
+>   
+> For now, I have ruled out that approach, and I have rebased the earlier
+> patch on to 4.11-rc and submitting again for review. The changes are:
+> 
+> v2>v3:
+>  - changed device flag name from PCI_DEV_FLAGS_DMA_ALIAS_ROOT to
+>    PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT
+>  - updated commit message to make the quirk clearer.
+> 
+> Let me know your comments and suggestions.
 
-On Mon, Mar 20, 2017 at 08:14:31PM +0100, Thierry Reding wrote:
-> I've got a series of patches that I'd like to merge for v4.12 that have
-> a build-time dependency on this patch. It would therefore be great to
-> get your Acked-by on this so that I can merge it through the DRM tree
-> with the rest of the patches. I can provide a stable branch with only
-> this patch for you to pull into the IOMMU tree.
+My opinion FWIW is that the quirk you have is one of the least intrusive
+ways of handling this. Generally in the case of ARM servers, we have a
+difference vs. x86 in that the latter usually have a magic RC at the
+top level that everything sits beneath (and then, presumably, Intel
+do some magic for multi-socket to fudge things over Q/UPI so that
+things look nice and boring to software). On ARM, we're typically
+dealing with third party RC IP that's disjoint from other parts of
+the SoC. We're certainly in the process of bolstering the specs to
+set some expectations and greater guidance around topologies that
+we would like to avoid, so I don't see this getting out of hand.
 
-I applied both patches to my 'core' branch. There is not much in there
-yet besides your patches, so you can easily pull that branch in once it
-is published (later today).
+That's my $0.02.
 
+Jon.
 
-
-	Joerg
+-- 
+Computer Architect | Sent from my Fedora powered laptop
