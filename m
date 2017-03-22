@@ -1,15 +1,14 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v7 05/07] iommu/ipmmu-vmsa: Add new IOMMU_DOMAIN_DMA ops
-Date: Wed, 22 Mar 2017 15:25:55 +0100
-Message-ID: <20170322142555.GN29659@8bytes.org>
-References: <148885660307.28553.995847796823338863.sendpatchset@little-apple>
-	<148885665352.28553.13907030016954382230.sendpatchset@little-apple>
+From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Subject: Re: [PATCH v3 0/3] iommu/ipmmu-vmsa: r8a7796 support V3
+Date: Wed, 22 Mar 2017 15:33:13 +0100
+Message-ID: <CAMuHMdVXL6CG1Wxxqua1vnKp5wLmYzD+rYAc107KzCA5vWamFQ@mail.gmail.com>
+References: <148929710090.20744.10912918031085568693.sendpatchset@little-apple>
+	<20170322142312.GB7266@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <148885665352.28553.13907030016954382230.sendpatchset@little-apple>
+In-Reply-To: <20170322142312.GB7266-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,31 +18,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Simon Horman <horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Mar 07, 2017 at 12:17:33PM +0900, Magnus Damm wrote:
-> From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-> 
-> Introduce an alternative set of iommu_ops suitable for 64-bit ARM
-> as well as 32-bit ARM when CONFIG_IOMMU_DMA=y. Also adjust the
-> Kconfig to depend on ARM or IOMMU_DMA. Initialize the device
-> from ->xlate() when CONFIG_IOMMU_DMA=y.
-> 
-> Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
-> ---
-> 
->  Changes since V6:
->  - Rolled in the following patches from "r8a7795 support V2":
->    [PATCH v2 04/11] iommu/ipmmu-vmsa: Reuse iommu groups
->    [PATCH v2 06/11] iommu/ipmmu-vmsa: Teach xlate() to skip disabled iommus
->  - Moved find_group() implementation to prevent warning on 32-bit ARM
->  - Rolled in the following patch from "IPMMU slave device whitelist V2":
->    [PATCH/RFC v2 3/4] iommu/ipmmu-vmsa: Check devices in xlate()
-> 
->  drivers/iommu/Kconfig      |    1 
->  drivers/iommu/ipmmu-vmsa.c |  164 +++++++++++++++++++++++++++++++++++++++++---
->  2 files changed, 157 insertions(+), 8 deletions(-)
-
-Reviewed-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+SGkgSsO2cmcsCgpPbiBXZWQsIE1hciAyMiwgMjAxNyBhdCAzOjIzIFBNLCBKb2VyZyBSb2VkZWwg
+PGpvcm9AOGJ5dGVzLm9yZz4gd3JvdGU6Cj4gT24gU3VuLCBNYXIgMTIsIDIwMTcgYXQgMDI6Mzg6
+MjBQTSArMDkwMCwgTWFnbnVzIERhbW0gd3JvdGU6Cj4+IGlvbW11L2lwbW11LXZtc2E6IHI4YTc3
+OTYgc3VwcG9ydCBWMwo+Pgo+PiBbUEFUQ0ggdjMgMS8zXSBpb21tdS9pcG1tdS12bXNhOiBBZGQg
+cjhhNzc5NiBEVCBiaW5kaW5nCj4+IFtQQVRDSCB2MyAyLzNdIGlvbW11L2lwbW11LXZtc2E6IElu
+Y3JlYXNlIG1heGltdW0gbWljcm8tVExCUyB0byA0OAo+PiBbUEFUQ0ggdjMgMy8zXSBpb21tdS9p
+cG1tdS12bXNhOiBIb29rIHVwIHI4YTc3OTYgRFQgbWF0Y2hpbmcgY29kZQo+Cj4gSSBqdXN0IHRy
+aWVkIHRvIGFwcGx5IGEgZmV3IG9mIHlvdXIgcGF0Y2gtc2V0cywgYnV0IGZhaWxlZCBiZWNhdXNl
+IHRoZXkKPiBkb24ndCBhcHBseSBjbGVhbmx5IGFuZCBpdCBpcyBub3QgY2xlYXIgd2hhdCB0aGUg
+ZGVwZW5kZW5jaWVzIGFyZSBhbmQgaW4KPiB3aGljaCBvcmRlciB0aGV5IG5lZWQgdG8gYmUgYXBw
+bGllZC4KPgo+IFNvIGZvciBub3cgSSBza2lwcGVkIGFsbCBpcG1tdS12bXNhIHBhdGNoZXMgdGhh
+dCBhcmUgY3VycmVudGx5IGluIG15Cj4gaW5ib3guIFBsZWFzZSByZWJhc2UgeW91ciBkaWZmZXJl
+bnQgc2VyaWVzIHRvIHY0LjExLXJjMyBhbmQgcmVzZW5kIHRoZW0KPiBpbiB0aGUgcmlnaHQgb3Jk
+ZXIsIHdpdGggYWxsIFJldmlld2VkLWJ5cyBhbmQgb3RoZXIgdGFncyB0aGF0IHBlb3BsZQo+IGdh
+dmUgeW91IGluY2x1ZGVkLiBUaGVuIEkgYW0gdGFraW5nIGFub3RoZXIgbG9vayBpbnRvIGFwcGx5
+aW5nIHRoZW0uCgpGb3IgdGhlIHJlY29yZCwgdGhleSBhcHBseSBjbGVhbmx5IG9uIHY0LjExLXJj
+MSwgY2ZyLgpodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9n
+ZWVydC9yZW5lc2FzLWRyaXZlcnMuZ2l0L2xvZy8/aD10b3BpYy9yOGE3Nzk2LWlwbW11LXYzCgpB
+cyBJIGhhZCBubyBjb25mbGljdHMgd2hlbiBjcmVhdGluZwpodHRwczovL2dpdC5rZXJuZWwub3Jn
+L3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9nZWVydC9yZW5lc2FzLWRyaXZlcnMuZ2l0L3RhZy8/
+aD1yZW5lc2FzLWRyaXZlcnMtMjAxNy0wMy0yMS12NC4xMS1yYzMKSSBleHBlY3QgdGhlbSB0byBh
+cHBseSBjbGVhbmx5IHRvIHlvdXIgbmV4dCBicmFuY2gsIHRvby4KCkdye29ldGplLGVldGluZ31z
+LAoKICAgICAgICAgICAgICAgICAgICAgICAgR2VlcnQKCi0tCkdlZXJ0IFV5dHRlcmhvZXZlbiAt
+LSBUaGVyZSdzIGxvdHMgb2YgTGludXggYmV5b25kIGlhMzIgLS0gZ2VlcnRAbGludXgtbTY4ay5v
+cmcKCkluIHBlcnNvbmFsIGNvbnZlcnNhdGlvbnMgd2l0aCB0ZWNobmljYWwgcGVvcGxlLCBJIGNh
+bGwgbXlzZWxmIGEgaGFja2VyLiBCdXQKd2hlbiBJJ20gdGFsa2luZyB0byBqb3VybmFsaXN0cyBJ
+IGp1c3Qgc2F5ICJwcm9ncmFtbWVyIiBvciBzb21ldGhpbmcgbGlrZSB0aGF0LgogICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIC0tIExpbnVzIFRvcnZhbGRzCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
+aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
+cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
