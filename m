@@ -1,99 +1,34 @@
-From: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [RFC PATCH 24/30] iommu: Specify PASID state when unbinding a
- task
-Date: Wed, 22 Mar 2017 23:53:20 +0100
-Message-ID: <20170322225320.GF7266@8bytes.org>
-References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
- <20170227195441.5170-25-jean-philippe.brucker@arm.com>
- <20170322154429.GE7266@8bytes.org>
- <e2bb4c67-9b61-01cf-cc17-68088cdc5e5b@arm.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [GIT PULL] iommu/arm-smmu: Fixes for 4.11
+Date: Thu, 23 Mar 2017 00:00:51 +0100
+Message-ID: <20170322230051.GG7266@8bytes.org>
+References: <20170322183849.GG13077@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <e2bb4c67-9b61-01cf-cc17-68088cdc5e5b@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Harv Abdulhamid <harba@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, Bjorn Helgaas <bhelgaas@google.com>, Sinan Kaya <okaya@qti.qualcomm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Nate Watterson <nwatters@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org
+In-Reply-To: <20170322183849.GG13077-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: oleksandr_tyshchenko-uRwfk40T5oI@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 22, 2017 at 06:31:01PM +0000, Jean-Philippe Brucker wrote:
-> The problem might be too tied to the specifics of the SMMU. As implemented
-> in this series, the normal flow for a PPR with the SMMU is the following:
+On Wed, Mar 22, 2017 at 06:38:50PM +0000, Will Deacon wrote:
+> The following changes since commit c1ae3cfa0e89fa1a7ecc4c99031f5e9ae99d9201:
 > 
-> (1) PCI device issues a PPR for PASID 1
-> (2) The PPR is queued by the SMMU in the (hardware) PRI queue
-> (3) The SMMU driver receives an interrupt, dequeues the PPR and moves it
->     to a software work queue.
-> (4) The PPR is finally handled and a PRI response is sent to the device.
-
-There are two ways a PASID could get shut down:
-
-	1) The device driver calls unbind()
-	2) The mm_struct bound to that PASID is going away
-
-Case 1) is the easy one, we can safely assume that the device driver did
-anything to stop new PPR requests from being created for that PASID. In
-this case we just shut down PPR processing by waiting until everything
-is handled and reply INVALID to any further PPR request before we remove
-the PASID from the per-device IOMMU data structures and flush caches.
-
-In case 2) we have more work to do. The mm_struct is going away
-(probably because the task segfaulted) and we can't assume that the
-device driver shut everything down already. But for this case we have
-the call-back into the device driver to tell it should clean everything
-up for that PASID and stop the device from creating further requests.
-
-After that call-back returns it is the same as in case 1), we drain the
-queue and deny any further request that comes in.
-
-> The case that worries me is if someone unbinds PASID 1 between (2) and
-> (3), while the PPR is still in the hardware queue, and immediately binds
-> it to a new address space.
+>   Linux 4.11-rc1 (2017-03-05 12:59:56 -0800)
 > 
-> Then (3) and (4) happen, the PPR is handled and the fault is for the new
-> address space. It's certainly undesirable, but I don't know if it could be
-> exploited. We don't kill the task for an unhandled fault at the moment,
-> simply report a failed PPR to the device, so I might be worrying for nothing.
-
-As I wrote above, when the device driver calls unbind() we should
-assume that the device does not sent any further requests with that
-PASID. If it does, we just answer with INVALID.
-
-> Having the caller tell us if PPRs might still be pending in the hardware
-> PRI queue ensures that the SMMU driver waits until it's entirely safe:
+> are available in the git repository at:
 > 
-> * If the device has no outstanding PPR, PASID can be reallocated
-> * If the device has outstanding PPRs, wait for a Stop Marker, or drain
->   the PRI queue after a while (if the Stop Marker was lost in a PRI queue
->   overflow).
+>   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/fixes
 
-That can't happen, when the device driver does its job right. It has to
-shut down the context which causes the PPR requests for the PASID on the
-device. This includes stopping the context and waiting until all PPR
-requests it sent are processed.
-
-And the device driver has to do this either before it calls unbind() or
-in the call-back it provided. Only after this the PASID should be freed.
-
-> Draining the PRI queue is very costly, we need to block the PRI thread to
-> inspect the queue, risking an overflow. And with these PASID state flags
-> we avoid flushing any queue.
-
-There is a configurable maximum of PPR requests a device can have
-in-flight. If you take that into account when allocation the PPR queue
-for the SMMU, there can't be any overflows. The AMD driver allocates a
-queue for 512 entries and allows devices to have a maximum of 32
-outstanding requests.
-
-> But since the problem seems too centered around the SMMU, I might just
-> drop this patch along with the CLEAN/FLUSHED flags in my next version, and
-> go with the full-drain solution. After all, unbind should be a fairly rare
-> event.
-
-I don't think all this is SMMU specific, it is the same on all other
-IOMMUs that have the ATS/PRI/PASID features.
-
-
-
-	Joerg
+Pulled, thanks Will.
