@@ -1,98 +1,66 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v2 5/5] iommu: Allow default domain type to be set on the
-	kernel command line
-Date: Thu, 23 Mar 2017 16:08:02 +0530
-Message-ID: <8125f87a-6dc9-170c-27c6-2a28b7660519@codeaurora.org>
-References: <1489178976-15353-1-git-send-email-will.deacon@arm.com>
-	<1489178976-15353-6-git-send-email-will.deacon@arm.com>
-	<20170321154527.GB29659@8bytes.org> <20170321172137.GF30948@arm.com>
-	<807ecbb0-c9d7-fc0a-25d2-93b5c4374107@arm.com>
-	<20170321181729.GG30948@arm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 1/7] iommu/iova: fix incorrect variable types
+Date: Thu, 23 Mar 2017 11:42:56 +0000
+Message-ID: <5fd3cc4b-44c1-e300-6254-892a6dfa435c@arm.com>
+References: <1490164067-12552-1-git-send-email-thunder.leizhen@huawei.com>
+ <1490164067-12552-2-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170321181729.GG30948-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1490164067-12552-2-git-send-email-thunder.leizhen@huawei.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Zhen Lei <thunder.leizhen@huawei.com>, Joerg Roedel <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, David Woodhouse <dwmw2@infradead.org>, Sudeep Dutt <sudeep.dutt@intel.com>, Ashutosh Dixit <ashutosh.dixit@intel.com>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Zefan Li <lizefan@huawei.com>, Xinwei Hu <huxinwei@huawei.com>, Tianhong Ding <dingtianhong@huawei.com>, Hanjun Guo <guohanjun@huawei.com>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+On 22/03/17 06:27, Zhen Lei wrote:
+> Keep these four variables type consistent with the paramters of function
+> __alloc_and_insert_iova_range and the members of struct iova:
+> 
+> 1. static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+> 		unsigned long size, unsigned long limit_pfn,
+> 
+> 2. struct iova {
+> 	unsigned long	pfn_hi;
+> 	unsigned long	pfn_lo;
+> 
+> In fact, limit_pfn is most likely larger than 32 bits on DMA64.
 
-Replying again, as there was some issue with mailer last time.
+FWIW if pad_size manages to overflow an int something's probably gone
+horribly wrong, but there's no harm in making it consistent with
+everything else here. However, given that patch #6 makes this irrelevant
+anyway, do we really need to bother?
 
-On 3/21/2017 11:47 PM, Will Deacon wrote:
-> On Tue, Mar 21, 2017 at 05:46:29PM +0000, Robin Murphy wrote:
->> On 21/03/17 17:21, Will Deacon wrote:
->>> On Tue, Mar 21, 2017 at 04:45:27PM +0100, Joerg Roedel wrote:
->>>> On Fri, Mar 10, 2017 at 08:49:36PM +0000, Will Deacon wrote:
->>>>> @@ -1014,8 +1027,8 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
->>>>>  	 * IOMMU driver.
->>>>>  	 */
->>>>>  	if (!group->default_domain) {
->>>>> -		group->default_domain = __iommu_domain_alloc(dev->bus,
->>>>> -							     IOMMU_DOMAIN_DMA);
->>>>> +		group->default_domain =
->>>>> +			__iommu_domain_alloc(dev->bus, iommu_def_domain_type);
->>>>
->>>> It would be good to have a fall-back here if we are talking to an IOMMU
->>>> driver that uses default domains, but does not support identity-mapped
->>>> domains (yet). Exynos and Rockchip IOMMU drivers seem to fall into this
->>>> category. A dev_warn() also makes sense in case allocating a identity
->>>> domain fails.
->>>
->>> Sure, something like the diff below?
->>>
->>> Will
->>>
->>> --->8
->>>
->>>
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>> index 42a842e3f95f..f787626a745d 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -1027,10 +1027,19 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
->>>  	 * IOMMU driver.
->>>  	 */
->>>  	if (!group->default_domain) {
->>> -		group->default_domain =
->>> -			__iommu_domain_alloc(dev->bus, iommu_def_domain_type);
->>> +		struct iommu_domain *dom;
->>> +
->>> +		dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type);
->>> +		if (!dom) {
->>> +			dev_warn(dev,
->>> +				 "failed to allocate default IOMMU domain of type %u; falling back to IOMMU_DOMAIN_DMA",
->>> +				 iommu_def_domain_type);
->>
->> Conversely, that's going to be noisy if iommu_def_domain_type was
->> IOMMU_DOMAIN_DMA to begin with. I think it makes sense to warn if the
->> user asked for a specific default domain type on the command line and
->> that didn't work, but maybe not to bother otherwise. Plus, if they asked
->> for passthrough, then not allocating a default domain at all is probably
->> closer to the desired result than installing a DMA ops domain would be.
->
-> You're right -- I'll hack this about to check if the default type isn't
-> DOMAIN_DMA before warning about the allocation failure.
+Robin.
 
-if some master devices want 'IDENTITY_DOMAIN' as default (because
-those devices do not want any iommu resources to be used/dma_ops to be
-set) and some 'DMA_DOMAIN' as default, then should the default be
-'DMA_DOMAIN' and then masters needing IDENTITY_DOMAIN explicitly do an
-detach_dev later. This [1] was adding the support for detach_dev
-of the default DMA_DOMAINs.
-
-[1] https://patchwork.codeaurora.org/patch/164933/
-
-Regards,
-  Sricharan
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> ---
+>  drivers/iommu/iova.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index b7268a1..8ba8b496 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -104,8 +104,8 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+>   * Computes the padding size required, to make the start address
+>   * naturally aligned on the power-of-two order of its size
+>   */
+> -static unsigned int
+> -iova_get_pad_size(unsigned int size, unsigned int limit_pfn)
+> +static unsigned long
+> +iova_get_pad_size(unsigned long size, unsigned long limit_pfn)
+>  {
+>  	return (limit_pfn + 1 - size) & (__roundup_pow_of_two(size) - 1);
+>  }
+> @@ -117,7 +117,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+>  	struct rb_node *prev, *curr = NULL;
+>  	unsigned long flags;
+>  	unsigned long saved_pfn;
+> -	unsigned int pad_size = 0;
+> +	unsigned long pad_size = 0;
+>  
+>  	/* Walk the tree backwards */
+>  	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+> 
