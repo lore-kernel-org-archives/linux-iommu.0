@@ -1,8 +1,8 @@
 From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 Subject: Re: [PATCH v2 5/5] iommu: Allow default domain type to be set on the
 	kernel command line
-Date: Thu, 23 Mar 2017 15:52:06 +0530
-Message-ID: <2fce5c37-cde1-e5d3-0490-835867789169@codeaurora.org>
+Date: Thu, 23 Mar 2017 16:08:02 +0530
+Message-ID: <8125f87a-6dc9-170c-27c6-2a28b7660519@codeaurora.org>
 References: <1489178976-15353-1-git-send-email-will.deacon@arm.com>
 	<1489178976-15353-6-git-send-email-will.deacon@arm.com>
 	<20170321154527.GB29659@8bytes.org> <20170321172137.GF30948@arm.com>
@@ -27,6 +27,8 @@ Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-ar
 List-Id: iommu@lists.linux-foundation.org
 
 Hi,
+
+Replying again, as there was some issue with mailer last time.
 
 On 3/21/2017 11:47 PM, Will Deacon wrote:
 > On Tue, Mar 21, 2017 at 05:46:29PM +0000, Robin Murphy wrote:
@@ -83,9 +85,9 @@ On 3/21/2017 11:47 PM, Will Deacon wrote:
 > You're right -- I'll hack this about to check if the default type isn't
 > DOMAIN_DMA before warning about the allocation failure.
 
-if some master devices want 'IDENTITY_DOMAIN' as default (because  those 
-devices do not want any iommu resources to be used/dma_ops to be set) 
-and some 'DMA_DOMAIN' as default, then should the default be 
+if some master devices want 'IDENTITY_DOMAIN' as default (because
+those devices do not want any iommu resources to be used/dma_ops to be
+set) and some 'DMA_DOMAIN' as default, then should the default be
 'DMA_DOMAIN' and then masters needing IDENTITY_DOMAIN explicitly do an
 detach_dev later. This [1] was adding the support for detach_dev
 of the default DMA_DOMAINs.
