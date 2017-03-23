@@ -1,145 +1,369 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC PATCH 24/30] iommu: Specify PASID state when unbinding a
- task
-Date: Thu, 23 Mar 2017 13:37:41 +0000
-Message-ID: <a093bc07-a345-a689-9d97-f15a306f922d@arm.com>
+Subject: Re: [RFC PATCH 29/30] vfio: Add support for Shared Virtual Memory
+Date: Thu, 23 Mar 2017 13:38:24 +0000
+Message-ID: <dfc76db2-0177-e67c-49cd-03f667b1589d@arm.com>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
- <20170227195441.5170-25-jean-philippe.brucker@arm.com>
- <20170322154429.GE7266@8bytes.org>
- <e2bb4c67-9b61-01cf-cc17-68088cdc5e5b@arm.com>
- <20170322225320.GF7266@8bytes.org>
+ <20170227195441.5170-30-jean-philippe.brucker@arm.com>
+ <A2975661238FB949B60364EF0F2C2574390206F0@shsmsx102.ccr.corp.intel.com>
+ <d12a4a91-1fae-2fee-6109-3e9a1b7f5abe@arm.com>
+ <A2975661238FB949B60364EF0F2C257439021F4D@shsmsx102.ccr.corp.intel.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <20170322225320.GF7266@8bytes.org>
+In-Reply-To: <A2975661238FB949B60364EF0F2C257439021F4D@shsmsx102.ccr.corp.intel.com>
 Sender: kvm-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Harv Abdulhamid <harba@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, Bjorn Helgaas <bhelgaas@google.com>, Sinan Kaya <okaya@qti.qualcomm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Nate Watterson <nwatters@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, kvm@vger.kernel.org
+To: "Liu, Yi L" <yi.l.liu@intel.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: Shanker Donthineni <shankerd@qti.qualcomm.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Sinan Kaya <okaya@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Harv Abdulhamid <harba@qti.qualcomm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, David Woodhouse <dwmw2@infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Nate Watterson <nwatters@qti.qualcomm.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Lan, Tianyu" <tianyu.lan@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, Joerg Roedel <joro@8bytes.>
 List-Id: iommu@lists.linux-foundation.org
 
-On 22/03/17 22:53, Joerg Roedel wrote:
-> On Wed, Mar 22, 2017 at 06:31:01PM +0000, Jean-Philippe Brucker wrote:
->> The problem might be too tied to the specifics of the SMMU. As implemented
->> in this series, the normal flow for a PPR with the SMMU is the following:
+On 23/03/17 08:39, Liu, Yi L wrote:
+> Hi Jean,
+> 
+> Thx for the excellent ideas. Pls refer to comments inline.
+> 
+> [...]
+> 
+>>> Hi Jean,
+>>>
+>>> I'm working on virtual SVM, and have some comments on the VFIO channel
+>>> definition.
 >>
->> (1) PCI device issues a PPR for PASID 1
->> (2) The PPR is queued by the SMMU in the (hardware) PRI queue
->> (3) The SMMU driver receives an interrupt, dequeues the PPR and moves it
->>     to a software work queue.
->> (4) The PPR is finally handled and a PRI response is sent to the device.
-> 
-> There are two ways a PASID could get shut down:
-> 
-> 	1) The device driver calls unbind()
-> 	2) The mm_struct bound to that PASID is going away
-> 
-> Case 1) is the easy one, we can safely assume that the device driver did
-> anything to stop new PPR requests from being created for that PASID. In
-> this case we just shut down PPR processing by waiting until everything
-> is handled and reply INVALID to any further PPR request before we remove
-> the PASID from the per-device IOMMU data structures and flush caches.
-> 
-> In case 2) we have more work to do. The mm_struct is going away
-> (probably because the task segfaulted) and we can't assume that the
-> device driver shut everything down already. But for this case we have
-> the call-back into the device driver to tell it should clean everything
-> up for that PASID and stop the device from creating further requests.
-> 
-> After that call-back returns it is the same as in case 1), we drain the
-> queue and deny any further request that comes in.
-
-I agree on the semantics (I didn't implement case 2) here but I will have
-to in the next version.)
-
->> The case that worries me is if someone unbinds PASID 1 between (2) and
->> (3), while the PPR is still in the hardware queue, and immediately binds
->> it to a new address space.
+>> Thanks a lot for the comments, this is quite interesting to me. I just have some
+>> concerns about portability so I'm proposing a way to be slightly more generic below.
 >>
->> Then (3) and (4) happen, the PPR is handled and the fault is for the new
->> address space. It's certainly undesirable, but I don't know if it could be
->> exploited. We don't kill the task for an unhandled fault at the moment,
->> simply report a failed PPR to the device, so I might be worrying for nothing.
 > 
-> As I wrote above, when the device driver calls unbind() we should
-> assume that the device does not sent any further requests with that
-> PASID. If it does, we just answer with INVALID.
+> yes, portability is what need to consider.
 > 
->> Having the caller tell us if PPRs might still be pending in the hardware
->> PRI queue ensures that the SMMU driver waits until it's entirely safe:
+> [...]
+> 
+>>>> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+>>>> index
+>>>> 519eff362c1c..3fe4197a5ea0 100644
+>>>> --- a/include/uapi/linux/vfio.h
+>>>> +++ b/include/uapi/linux/vfio.h
+>>>> @@ -198,6 +198,7 @@ struct vfio_device_info {
+>>>>  #define VFIO_DEVICE_FLAGS_PCI	(1 << 1)	/* vfio-pci device */
+>>>>  #define VFIO_DEVICE_FLAGS_PLATFORM (1 << 2)	/* vfio-platform device */
+>>>>  #define VFIO_DEVICE_FLAGS_AMBA  (1 << 3)	/* vfio-amba device */
+>>>> +#define VFIO_DEVICE_FLAGS_SVM	(1 << 4)	/* Device supports bind/unbind */
+>>>>  	__u32	num_regions;	/* Max region index + 1 */
+>>>>  	__u32	num_irqs;	/* Max IRQ index + 1 */
+>>>>  };
+>>>> @@ -409,6 +410,60 @@ struct vfio_irq_set {
+>>>>   */
+>>>>  #define VFIO_DEVICE_RESET		_IO(VFIO_TYPE, VFIO_BASE + 11)
+>>>>
+>>>> +struct vfio_device_svm {
+>>>> +	__u32	argsz;
+>>>> +	__u32	flags;
+>>>> +#define VFIO_SVM_PASID_RELEASE_FLUSHED	(1 << 0)
+>>>> +#define VFIO_SVM_PASID_RELEASE_CLEAN	(1 << 1)
+>>>> +	__u32	pasid;
+>>>> +};
+>>>
+>>> For virtual SVM work, the VFIO channel would be used to passdown guest
+>>> PASID tale PTR and invalidation information. And may have further
+>>> usage except the above.
+>>>
+>>> Here is the virtual SVM design doc which illustrates the VFIO usage.
+>>> https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg05311.html
+>>>
+>>> For the guest PASID table ptr passdown, I've following message in pseudo code.
+>>> struct pasid_table_info {
+>>>         __u64 ptr;
+>>>         __u32 size;
+>>>  };
 >>
->> * If the device has no outstanding PPR, PASID can be reallocated
->> * If the device has outstanding PPRs, wait for a Stop Marker, or drain
->>   the PRI queue after a while (if the Stop Marker was lost in a PRI queue
->>   overflow).
+>> There should probably be a way to specify the table format, so that the pIOMMU
+>> driver can check that it recognizes the format used by the vIOMMU before attaching
+>> it. This would allow to reuse the structure for other IOMMU architectures. If, for
+>> instance, the host has an intel IOMMU and someone decides to emulate an ARM
+>> SMMU with Qemu (their loss :), it can certainly use VFIO for passing-through devices
+>> with MAP/UNMAP. But if Qemu then attempts to passdown a PASID table in SMMU
+>> format, the Intel driver should have a way to reject it, as the SMMU format isn't
+>> compatible.
 > 
-> That can't happen, when the device driver does its job right. It has to
-> shut down the context which causes the PPR requests for the PASID on the
-> device. This includes stopping the context and waiting until all PPR
-> requests it sent are processed.
+> Exactly, it would be grt if we can have the API defined as generic as MAP/UNMAP. The
+> case you mentioned to emulate an ARM SMMU on an Intel platform is representative.
+> For such cases, the problem is different vendors may have different PASID table format
+> and also different page table format. In my understanding, these incompatible things
+> may just result in failure if users try such emulation. What's your opinion here?
+> Anyhow, better to listen to different voices.
 
-By "processed", do you mean that they are committed to the IOMMU, or that
-they came back with a PRG response?
+Yes, in case the vIOMMU and pIOMMU implement different PASID table
+formats, there is simply no way to virtualize SVM, the physical IOMMU will
+fault when reading the foreign PASID table, since it won't find the pgd
+pointers at the right location. Rejecting the bind gracefully seems much
+preferable than letting the pIOMMU fault, so the vIOMMU can always use the
+generic MAP/UNMAP API as a fallback.
 
-The driver might not be able to do the latter, since PCI defines two ways
-of shutting down a context:
-
-* Either wait for all PPR requests to come back with a PRG response,
-* Or send a Stop Marker PPR request and forget about it.
-
-The second one is problematic, all the device says is "I've stopped
-sending requests, some might still be in flight, but a Stop Marker ends
-the flow".
-
-Without having the device driver tell us which of the two models the
-device is implementing, draining the hardware queue is our best bet to
-ensure that no request is pending.
-
-In any case, this is a property of the device, and passing flags to
-unbind() as I suggested is probably excessive. The IOMMU driver could
-store that info somewhere and use it whenever it has to unbind(), as an
-indication of the minimum amount of work required to clean the context.
-Without this hint the default should be to drain both queues.
-
-My intent with passing flags to unbind() was to handle the case where VFIO
-is unable to tell us whether PPRs are still being issued by the device.
-But the issue seems moot to me now that I have a better understanding, as
-there will be a detach_dev/attach_dev sequence before we start rebinding
-PASIDs, and we can simply reset the PRI interface there (I'm currently
-doing that in add_device, but I should move it.)
-
-> And the device driver has to do this either before it calls unbind() or
-> in the call-back it provided. Only after this the PASID should be freed.
->
->> Draining the PRI queue is very costly, we need to block the PRI thread to
->> inspect the queue, risking an overflow. And with these PASID state flags
->> we avoid flushing any queue.
+>> I'm tackling a similar problem at the moment, but for passing a single page directory
+>> instead of full PASID table to the IOMMU.
 > 
-> There is a configurable maximum of PPR requests a device can have
-> in-flight. If you take that into account when allocation the PPR queue
-> for the SMMU, there can't be any overflows. The AMD driver allocates a
-> queue for 512 entries and allows devices to have a maximum of 32
-> outstanding requests.
+> For, Intel IOMMU, passing the whole guest PASID table is enough and it also avoids 
+> too much pgd passing. However, I'm open on this idea. You may just add a new flag
+> in "struct vfio_device_svm" and pass the single pgd down to host.
+> 
+>>
+>> So we need some kind of high-level classification that the vIOMMU must
+>> communicate to the physical one. Each IOMMU flavor would get a unique, global
+>> identifier, simply to make sure that vIOMMU and pIOMMU speak the same language.
+>> For example:
+>>
+>> 0x65776886 "AMDV" AMD IOMMU
+>> 0x73788476 "INTL" Intel IOMMU
+>> 0x83515748 "S390" s390 IOMMU
+>> 0x83777785 "SMMU" ARM SMMU
+>> etc.
+>>
+>> It needs to be a global magic number that everyone can recognize. Could be as
+>> simple as 32-bit numbers allocated from 0. Once we have a global magic number, we
+>> can use it to differentiate architecture-specific details.
+> 
+> I may need to think more on this part.
+>  
+>> struct pasid_table_info {
+>> 	__u64 ptr;
+>> 	__u64 size;		/* Is it number of entry or size in
+>> 				   bytes? */
+> 
+> For Intel platform, it's encoded. But I can make it in bytes. Here, I'd like
+> to check with you if whole guest PASID info is also needed on ARM?
 
-Yes, the SMMU specification also tells that over-committing the PPR queue
-is a programming error. I wonder how well it scales with hot-plugging of
-devices however. At the time when we start allocating PPR credits, we
-might not be sure that the number of devices with a PRI will be limited to
-16. So even if overflow is a programming error, I'm not comfortable with
-ruling it out just yet.
+It will be needed on ARM if someone ever emulates the SMMU with SVM.
+Though I'm not planning on doing that myself, it is unavoidable. And it
+would be a shame for the next SVM virtualization solution to have to
+introduce a new flag "VFIO_SVM_BIND_PASIDPT_2" if they could reuse most of
+the BIND_PASIDPT interface but simply needed to add one or two
+configuration fields specific to their IOMMU.
+
+>>
+>> 	__u32 model;		/* magic number */
+>> 	__u32 variant;		/* version of the IOMMU architecture,
+>> 				   maybe? IOMMU-specific. */
+>> 	__u8 opaque[];		/* IOMMU-specific details */
+>> };
+>>
+>> And then each IOMMU or page-table code can do low-level validation of the format,
+>> by reading the details in 'opaque'. I assume that for Intel this would be empty. But
+> 
+> yes, for Intel, if the PASID ptr is in the definition, opaque would be empty.
+> 
+>> for instance on ARM SMMUv3, PASID table can have either one or two levels, and
+>> vIOMMU would specify which one of the three available formats it is using.
+> 
+> Yes it is. PASID table could also be multi-level. I agree to have it into consideration.
+> 
+> 
+>> struct pasid_table_info_smmu {
+>> 	/*
+>> 	 * In 'opaque', architecture details only the IOMMU driver should
+>> 	 * be caring about.
+>> 	 */
+>> 	__u8 s1fmt;
+>> 	__u8 s1dss;
+>> }
+>>
+>> If the physical SMMU doesn't implement the particular PASID table format, it should
+>> reject the bind.
+> 
+> So far, I think reject may be the best policy. I can't assume that different have consistent
+> format for the PASID table and page table as previous comments.
+
+Yes, for example AMD and Intel formats could be compatible, but the SMMU
+format is quite different, using 64 bytes per PASID entry instead of 8 bytes.
+
+>>
+>> This would allow to keep architecture details outside of VFIO core (as well as virtio in
+>> my case), and only have vIOMMU and pIOMMU understand those details.
+>>
+>>>
+>>> For invalidation, I've following info in in pseudo code.
+>>> struct iommu_svm_tlb_invalidate_info
+>>> {
+>>>        __u32 inv_type;
+>>> #define IOTLB_INV			(1 << 0)
+>>> #define EXTENDED_IOTLB_INV		(1 << 1)
+>>> #define DEVICE_IOTLB_INV		(1 << 2)
+>>> #define EXTENDED_DEVICE_IOTLB_INV	(1 << 3)
+>>> #define PASID_CACHE_INV		(1 << 4)
+>>>        __u32 pasid;
+>>>        __u64 addr;
+>>>        __u64 size;
+>>>        __u8 granularity;
+>>> #define DEFAULT_INV_GRN        0
+>>> #define PAGE_SELECTIVE_INV     (1 << 0)
+>>> #define PASID_SELECVIVE_INV    (1 << 1)
+>>>        __u64 flags;
+>>> #define INVALIDATE_HINT_BIT    (1 << 0)
+>>> #define GLOBAL_HINT_BIT        (1 << 1)
+>>> #define DRAIN_READ_BIT         (1 << 2)
+>>> #define DRAIN_WRITE_BIT        (1 << 3)
+>>> #define DEVICE_TLB_GLOBAL_BIT  (1 << 4)
+>>>        __u8 mip;
+>>>        __u16 pfsid;
+>>> };
+>>
+>> This would also benefit from being split into generic and architectural parts. Former
+>> would be defined in VFIO, latter would be in the IOMMU driver.
+> 
+> For invalidation part, I'm trying to have a generic definition by including all possible information
+> for a TLB invalidation. Anyhow, I would  split the information when I send out my RFC patch
+> for virtual SVM.
+> 
+>>
+>> struct tlb_invalidate_info
+>> {
+>> 	__u8 granularity
+>> #define DEFAULT_INV_GRN		0	/* What is default? */
+> 
+> It's device selective. Since all invalidation from guest should be at least device-selective, so I
+> name it as default. Would rename it to make it clear.
+> 
+>> #define PAGE_SELECTIVE_INV	(1 << 0)
+>> #define PASID_SELECTIVE_INV	(1 << 1)
+>> 	__u32 pasid;
+>> 	__u64 addr;
+>> 	__u64 size;
+>>
+>> 	/* Since IOMMU format has already been validated for this table,
+>> 	   the IOMMU driver knows that the following structure is in a
+>> 	   format it knows */
+>> 	__u8 opaque[];
+>> };
+>>
+>> struct tlb_invalidate_info_intel
+>> {
+>> 	__u32 inv_type;
+>> 	...
+>> 	__u64 flags;
+>> 	...
+>> 	__u8 mip;
+>> 	__u16 pfsid;
+>> };
+>>
+>>> Although your proposal is for userspace driver SVM usage while mine is
+>>> for  SVM usage in virtual machine, there should be a chance to make
+>>> the channel meet our request. And I think it would be more acceptable.
+>>> So I'd like to see your comments if we define the channel as following definition.
+>>> If any better solution, pls feel free let me know.
+>>>
+>>> struct vfio_device_svm {
+>>>        __u32   argsz;
+>>> #define VFIO_SVM_BIND_PASIDTP           (1 << 0)
+>>
+>> To check we're on the same page: the absence of BIND_PASIDTP flag would mean
+>> "bind a single PASID" and in that case, data[] would be a "u32 pasid"?
+> 
+> Actually, I planned to use a single channel for both guest PASID table ptr passdown
+> and invalidation info passdown. So it is defined in this way.
+> 
+> VFIO_SVM_BIND_PASIDTP   -> data[] includes guest PASID table ptr and table size
+> VFIO_SVM_PASSDOWN_INVALIDATE    -> data[] includes infos for invalidataion
+> 
+> Now, we want to have it shared by different vendors. So I would remove invalidate
+> definition from it. Regards to your example, yes it would be a "u32 pasid" if you are
+> passing a PASID value from guest. I think we are on the same page for the usage? 
+> 
+
+Yes, that seems sensible. I could add an explicit VFIO_BIND_PASID flags to
+make it explicit that data[] is "u32 pasid" and avoid having any default.
+
+>>
+>>> #define VFIO_SVM_PASSDOWN_INVALIDATE    (1 << 1)
+>>
+>> Using the vfio_device_svm structure for invalidate operations is a bit odd, it might be
+>> nicer to add a new VFIO_SVM_INVALIDATE ioctl, that takes the above
+>> iommu_svm_tlb_invalidate_info as argument (with an added argsz.)
+> 
+> Agree, would add a separate IOCTL for invalidation.
+> 
+>>
+>>> #define VFIO_SVM_PASID_RELEASE_FLUSHED	(1 << 2)
+>>> #define VFIO_SVM_PASID_RELEASE_CLEAN	  (1 << 3)
+>>>        __u32   flags;
+>>>        __u32   length;
+>>
+>> If length is the size of data[], I guess we can already deduce this info from argsz.
+> 
+> yes, it is size of data. Maybe remove argsz. How about your opinion?
+
+Argsz as first argument is standard across all VFIO ioctls, it allows the
+kernel to check that the structure passed by the guest is consistent with
+the structure it knows (see the comment at the beginning of
+include/uapi/linux/vfio.h) So argsz would be the preferred way to
+communicate the size of data[]
+
+>>>        __u8    data[];
+>>> };
+>>
+>> In general, I think that your proposal would work fine along mine. Note that for my
+>> next version of this patch, I would like to move the BIND/UNBIND SVM operations
+>> onto a VFIO container fd, instead of a VFIO device fd, if possible.
+> 
+> Attach the BIND/UNBIND operation onto VFIO container fd is practical.
+> 
+> BTW. Before you send out your next version, we'd better have a consensus on the
+> vfio_device_svm definition. So that we can continue to drive our own work separately.
+> 
+>> ---
+>> As an aside, it also aligns with the one I'm working on at the moment, for virtual
+>> SVM at a finer granularity, where the BIND call is for a page table. I would add this
+>> flag to vfio_device_svm:
+>>
+>> #define VFIO_SVM_BIND_PGTABLE		(1 << x)
+> 
+> Sure. I think it may also be a requirement from other vendors. I think you've mentioned
+> it in the above statements.
+> 
+>> Which would indicate the following data (just a draft, I'm oscillating between this
+>> and a generic PASID table solution, which would instead reuse your proposal):
+>>
+>> struct pgtable_info {
+>> 	__u32 pasid;
+>>
+>> 	__u64 pgd;
+>>
+>> 	__u32 model;
+>> 	__u32 variant;
+>>
+>> 	__u8 opaque[];
+>> };
+>>
+>> On ARM SMMU we would need to specify an io-pgtable variant and the opaque
+>> structure would be bits of io_pgtable_cfg (tcr, mair, etc.)
+>>
+>> The problem of portability is slightly different here, because while PASID table
+>> format is specific to an IOMMU, page table format might be the same across
+>> multiple flavors of IOMMUs. For instance, the PASID table format I use in this series
+>> can only be found in the ARM SMMUv3 architecture, but the page table format is the
+>> same as ARM SMMUv2, and other MMUs. I'd like to implement an IOMMU
+>> independent of any page-table formats, that could use whatever the host offers (not
+>> necessarily MMU PT). The model numbers described above wouldn't be suitable, so
+>> we'd need another set of magic numbers for page table formats.
+> 
+> Not sure if I totally got your points. We may assume PASID table format differs from
+> vendor to vendor. For the page table format, I assume you mean the page table of
+> process. Or in other words MMU page table.
+> 
+> I'm a little bit confused about the following statements. Could you speak a little bit more?
+> Is it for virtual SVM or user-space driver SVM usage?
+> " I'd like to implement an IOMMU independent of any page-table formats, that could
+> use whatever the host offers (not necessarily MMU PT)."
+
+The IOMMU might be using a different page table format than the MMU. I'm
+currently toying with the idea of having a portable paravirtualized IOMMU
+that can query the page table format used by pIOMMU, and adopt it if the
+page table handling code is available in the guest. This would be for
+non-SVM nested translation, using VFIO to bind page tables private to the
+IOMMU. I'll send a separate RFC to discuss this.
+
+> I's nice to have such discussion. Let's co-work and have a well-defined API.
+
+I agree. I don't plan to send a new version immediately since it will take
+some time rework, but we can sync-up here or in private to avoid
+conflicting proposals.
 
 Thanks,
 Jean-Philippe
-
->> But since the problem seems too centered around the SMMU, I might just
->> drop this patch along with the CLEAN/FLUSHED flags in my next version, and
->> go with the full-drain solution. After all, unbind should be a fairly rare
->> event.
-> 
-> I don't think all this is SMMU specific, it is the same on all other
-> IOMMUs that have the ATS/PRI/PASID features.
-> 
-> 
-> 
-> 	Joerg
-> 
