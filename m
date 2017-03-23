@@ -1,84 +1,109 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH 5/4] iommu/arm-smmu: Poll for TLB sync completion more
-	effectively
-Date: Thu, 23 Mar 2017 17:59:40 +0000
-Message-ID: <67da197b56bb8763623fc215176b86ab04b1799e.1490291854.git.robin.murphy@arm.com>
-References: <cover.1488907474.git.robin.murphy@arm.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [RFC PATCH v4 15/28] Add support to access persistent memory in
+ the clear
+Date: Thu, 23 Mar 2017 16:02:53 -0500
+Message-ID: <01d5f854-c8ea-61db-7e1b-1f97952bff75@amd.com>
+References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
+ <20170216154521.19244.89502.stgit@tlendack-t1.amdoffice.net>
+ <DF4PR84MB01694A716568EFB01F5C1C5EAB390@DF4PR84MB0169.NAMPRD84.PROD.OUTLOOK.COM>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1488907474.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <DF4PR84MB01694A716568EFB01F5C1C5EAB390@DF4PR84MB0169.NAMPRD84.PROD.OUTLOOK.COM>
+Sender: owner-linux-mm@kvack.org
+To: "Elliott, Robert (Persistent Memory)" <elliott@hpe.com>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+Cc: Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, "Kani, Toshimitsu" <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Thomas Gleixner <tglx@linutronix.de>, Larry Woodman <lwoodman@redhat.com>, Dmitry Vyukov <dvyukov@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On relatively slow development platforms and software models, the
-inefficiency of our TLB sync loop tends not to show up - for instance on
-a Juno r1 board I typically see the TLBI has completed of its own accord
-by the time we get to the sync, such that the latter finishes instantly.
+On 3/17/2017 5:58 PM, Elliott, Robert (Persistent Memory) wrote:
+>
+>
+>> -----Original Message-----
+>> From: linux-kernel-owner@vger.kernel.org [mailto:linux-kernel-
+>> owner@vger.kernel.org] On Behalf Of Tom Lendacky
+>> Sent: Thursday, February 16, 2017 9:45 AM
+>> Subject: [RFC PATCH v4 15/28] Add support to access persistent memory in
+>> the clear
+>>
+>> Persistent memory is expected to persist across reboots. The encryption
+>> key used by SME will change across reboots which will result in corrupted
+>> persistent memory.  Persistent memory is handed out by block devices
+>> through memory remapping functions, so be sure not to map this memory as
+>> encrypted.
+>
+> The system might be able to save and restore the correct encryption key for a
+> region of persistent memory, in which case it does need to be mapped as
+> encrypted.
 
-However, on larger systems doing real I/O, it's less realistic for the
-TLBs to go idle immediately, and at that point falling into the 1MHz
-polling loop turns out to throw away performance drastically. Let's
-strike a balance by polling more than once between pauses, such that we
-have much more chance of catching normal operations completing before
-committing to the fixed delay, but also backing off exponentially, since
-if a sync really hasn't completed within one or two "reasonable time"
-periods, it becomes increasingly unlikely that it ever will.
+If the OS could get some indication that BIOS/UEFI has saved and
+restored the encryption key, then it could be mapped encrypted.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+>
+> This might deserve a new EFI_MEMORY_ENCRYPTED attribute bit so the
+> system firmware can communicate that information to the OS (in the
+> UEFI memory map and the ACPI NFIT SPA Range structures).  It wouldn't
+> likely ever be added to the E820h table - ACPI 6.1 already obsoleted the
+> Extended Attribute for AddressRangeNonVolatile.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index f7411109670f..aa17f3d937a0 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -162,6 +162,7 @@
- #define ARM_SMMU_GR0_sTLBGSTATUS	0x74
- #define sTLBGSTATUS_GSACTIVE		(1 << 0)
- #define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
-+#define TLB_SPIN_COUNT			10
- 
- /* Stream mapping registers */
- #define ARM_SMMU_GR0_SMR(n)		(0x800 + ((n) << 2))
-@@ -574,18 +575,17 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
- static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
- 				void __iomem *sync, void __iomem *status)
- {
--	int count = 0;
-+	unsigned int spin_count, delay;
- 
- 	writel_relaxed(0, sync);
--	while (readl_relaxed(status) & sTLBGSTATUS_GSACTIVE) {
--		cpu_relax();
--		if (++count == TLB_LOOP_TIMEOUT) {
--			dev_err_ratelimited(smmu->dev,
--			"TLB sync timed out -- SMMU may be deadlocked\n");
--			return;
--		}
--		udelay(1);
-+	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
-+		for (spin_count = TLB_SPIN_COUNT; spin_count > 0; spin_count--)
-+			if (!(readl_relaxed(status) & sTLBGSTATUS_GSACTIVE))
-+				return;
-+		udelay(delay);
- 	}
-+	dev_err_ratelimited(smmu->dev,
-+			    "TLB sync timed out -- SMMU may be deadlocked\n");
- }
- 
- static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu)
--- 
-2.11.0.dirty
+An attribute bit in some form would be a nice way to inform the OS that
+the persistent memory can be mapped encrypted.
+
+>
+>>
+>> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+>> ---
+>>  arch/x86/mm/ioremap.c |    2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
+>> index b0ff6bc..c6cb921 100644
+>> --- a/arch/x86/mm/ioremap.c
+>> +++ b/arch/x86/mm/ioremap.c
+>> @@ -498,6 +498,8 @@ static bool
+>> memremap_should_map_encrypted(resource_size_t phys_addr,
+>>  	case E820_TYPE_ACPI:
+>>  	case E820_TYPE_NVS:
+>>  	case E820_TYPE_UNUSABLE:
+>> +	case E820_TYPE_PMEM:
+>> +	case E820_TYPE_PRAM:
+>>  		return false;
+>>  	default:
+>>  		break;
+>
+> E820_TYPE_RESERVED is also used to report persistent memory in
+> some systems (patch 16 adds that for other reasons).
+>
+> You might want to intercept the persistent memory types in the
+> efi_mem_type(phys_addr) switch statement earlier in the function
+> as well.  https://lkml.org/lkml/2017/3/13/357 recently mentioned that
+> "in qemu hotpluggable memory isn't put into E820," with the latest
+> information only in the UEFI memory map.
+>
+> Persistent memory can be reported there as:
+> * EfiReservedMemoryType type with the EFI_MEMORY_NV attribute
+> * EfiPersistentMemory type with the EFI_MEMORY_NV attribute
+>
+> Even the UEFI memory map is not authoritative, though.  To really
+> determine what is in these regions requires parsing the ACPI NFIT
+> SPA Ranges structures.  Parts of the E820 or UEFI regions could be
+> reported as volatile there and should thus be encrypted.
+
+Thanks for the details on this. I'll take a closer look at this and
+update the checks appropriately.
+
+Thanks,
+Tom
+
+>
+> ---
+> Robert Elliott, HPE Persistent Memory
+>
+>
+>
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
