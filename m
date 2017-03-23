@@ -1,109 +1,167 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [RFC PATCH v4 15/28] Add support to access persistent memory in
- the clear
-Date: Thu, 23 Mar 2017 16:02:53 -0500
-Message-ID: <01d5f854-c8ea-61db-7e1b-1f97952bff75@amd.com>
-References: <20170216154158.19244.66630.stgit@tlendack-t1.amdoffice.net>
- <20170216154521.19244.89502.stgit@tlendack-t1.amdoffice.net>
- <DF4PR84MB01694A716568EFB01F5C1C5EAB390@DF4PR84MB0169.NAMPRD84.PROD.OUTLOOK.COM>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 3/9] Docs: dt: document qcom iommu bindings
+Date: Thu, 23 Mar 2017 17:21:37 -0500
+Message-ID: <20170323222137.okq227mgsmsjy5zf@rob-hp-laptop>
+References: <20170314151811.17234-1-robdclark@gmail.com>
+ <20170314151811.17234-4-robdclark@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <DF4PR84MB01694A716568EFB01F5C1C5EAB390@DF4PR84MB0169.NAMPRD84.PROD.OUTLOOK.COM>
-Sender: owner-linux-mm@kvack.org
-To: "Elliott, Robert (Persistent Memory)" <elliott@hpe.com>, "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>, "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "x86@kernel.org" <x86@kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>, "linux-mm@kvack.org" <linux-mm@kvack.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-Cc: Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, "Kani, Toshimitsu" <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Alexander Potapenko <glider@google.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Thomas Gleixner <tglx@linutronix.de>, Larry Woodman <lwoodman@redhat.com>, Dmitry Vyukov <dvyukov@google.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170314151811.17234-4-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 3/17/2017 5:58 PM, Elliott, Robert (Persistent Memory) wrote:
->
->
->> -----Original Message-----
->> From: linux-kernel-owner@vger.kernel.org [mailto:linux-kernel-
->> owner@vger.kernel.org] On Behalf Of Tom Lendacky
->> Sent: Thursday, February 16, 2017 9:45 AM
->> Subject: [RFC PATCH v4 15/28] Add support to access persistent memory in
->> the clear
->>
->> Persistent memory is expected to persist across reboots. The encryption
->> key used by SME will change across reboots which will result in corrupted
->> persistent memory.  Persistent memory is handed out by block devices
->> through memory remapping functions, so be sure not to map this memory as
->> encrypted.
->
-> The system might be able to save and restore the correct encryption key for a
-> region of persistent memory, in which case it does need to be mapped as
-> encrypted.
-
-If the OS could get some indication that BIOS/UEFI has saved and
-restored the encryption key, then it could be mapped encrypted.
-
->
-> This might deserve a new EFI_MEMORY_ENCRYPTED attribute bit so the
-> system firmware can communicate that information to the OS (in the
-> UEFI memory map and the ACPI NFIT SPA Range structures).  It wouldn't
-> likely ever be added to the E820h table - ACPI 6.1 already obsoleted the
-> Extended Attribute for AddressRangeNonVolatile.
-
-An attribute bit in some form would be a nice way to inform the OS that
-the persistent memory can be mapped encrypted.
-
->
->>
->> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
->> ---
->>  arch/x86/mm/ioremap.c |    2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/arch/x86/mm/ioremap.c b/arch/x86/mm/ioremap.c
->> index b0ff6bc..c6cb921 100644
->> --- a/arch/x86/mm/ioremap.c
->> +++ b/arch/x86/mm/ioremap.c
->> @@ -498,6 +498,8 @@ static bool
->> memremap_should_map_encrypted(resource_size_t phys_addr,
->>  	case E820_TYPE_ACPI:
->>  	case E820_TYPE_NVS:
->>  	case E820_TYPE_UNUSABLE:
->> +	case E820_TYPE_PMEM:
->> +	case E820_TYPE_PRAM:
->>  		return false;
->>  	default:
->>  		break;
->
-> E820_TYPE_RESERVED is also used to report persistent memory in
-> some systems (patch 16 adds that for other reasons).
->
-> You might want to intercept the persistent memory types in the
-> efi_mem_type(phys_addr) switch statement earlier in the function
-> as well.  https://lkml.org/lkml/2017/3/13/357 recently mentioned that
-> "in qemu hotpluggable memory isn't put into E820," with the latest
-> information only in the UEFI memory map.
->
-> Persistent memory can be reported there as:
-> * EfiReservedMemoryType type with the EFI_MEMORY_NV attribute
-> * EfiPersistentMemory type with the EFI_MEMORY_NV attribute
->
-> Even the UEFI memory map is not authoritative, though.  To really
-> determine what is in these regions requires parsing the ACPI NFIT
-> SPA Ranges structures.  Parts of the E820 or UEFI regions could be
-> reported as volatile there and should thus be encrypted.
-
-Thanks for the details on this. I'll take a closer look at this and
-update the checks appropriately.
-
-Thanks,
-Tom
-
->
+On Tue, Mar 14, 2017 at 11:18:05AM -0400, Rob Clark wrote:
+> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 > ---
-> Robert Elliott, HPE Persistent Memory
->
->
->
+>  .../devicetree/bindings/iommu/qcom,iommu.txt       | 113 +++++++++++++++++++++
+>  1 file changed, 113 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+> new file mode 100644
+> index 0000000..fd5b7fa
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+> @@ -0,0 +1,113 @@
+> +* QCOM IOMMU v1 Implementation
+> +
+> +Qualcomm "B" family devices which are not compatible with arm-smmu have
+> +a similar looking IOMMU but without access to the global register space,
+> +and optionally requiring additional configuration to route context irqs
+> +to non-secure vs secure interrupt line.
+> +
+> +** Required properties:
+> +
+> +- compatible       : Should be one of:
+> +
+> +                        "qcom,msm8916-iommu"
+> +
+> +- clock-names      : Should be a pair of "iface" (required for IOMMUs
+> +                     register group access) and "bus" (required for
+> +                     the IOMMUs underlying bus access).
+> +- clocks           : Phandles for respective clocks described by
+> +                     clock-names.
+> +- #address-cells   : must be 1.
+> +- #size-cells      : must be 1.
+> +- #iommu-cells     : Must be 1.
+> +- ranges           : Base address and size of the iommu context banks.
+> +- qcom,iommu-secure-id  : secure-id.
+> +
+> +- List of sub-nodes, one per translation context bank.  Each sub-node
+> +  has the following required properties:
+> +
+> +  - compatible     : Should be one of:
+> +        - "qcom,msm-iommu-v1-ns"  : non-secure context bank
+> +        - "qcom,msm-iommu-v1-sec" : secure context bank
+> +  - reg            : Base address and size of context bank within the iommu
+> +  - interrupts     : The context fault irq.
+> +
+> +** Optional properties:
+> +
+> +- reg              : Base address and size of the SMMU local base, should
+> +                     be only specified if the iommu requires configuration
+> +                     for routing of context bank irq's to secure vs non-
+> +                     secure lines.  (Ie. if the iommu contains secure
+> +                     context banks)
+> +
+> +
+> +** Examples:
+> +
+> +	apps_iommu: iommu@1e20000 {
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +		#iommu-cells = <1>;
+> +		compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
 
+You didn't document the fallback above. Maybe just drop it if only a few 
+chips have this iommu.
+
+> +		ranges = <0 0x1e20000 0x40000>;
+> +		reg = <0x1ef0000 0x3000>;
+
+When you have both reg and ranges, use reg value for the unit-address.
+
+> +		clocks = <&gcc GCC_SMMU_CFG_CLK>,
+> +			 <&gcc GCC_APSS_TCU_CLK>;
+> +		clock-names = "iface", "bus";
+> +		qcom,iommu-secure-id = <17>;
+> +
+> +		// mdp_0:
+> +		iommu-ctx@4000 {
+> +			compatible = "qcom,msm-iommu-v1-ns";
+> +			reg = <0x4000 0x1000>;
+> +			interrupts = <GIC_SPI 70 0>;
+> +		};
+> +
+> +		// venus_ns:
+> +		iommu-ctx@5000 {
+> +			compatible = "qcom,msm-iommu-v1-sec";
+> +			reg = <0x5000 0x1000>;
+> +			interrupts = <GIC_SPI 70 0>;
+> +		};
+> +	};
+> +
+> +	gpu_iommu: iommu@1f08000 {
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +		#iommu-cells = <1>;
+> +		compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
+> +		ranges = <0 0x1f08000 0x10000>;
+> +		clocks = <&gcc GCC_SMMU_CFG_CLK>,
+> +			 <&gcc GCC_GFX_TCU_CLK>;
+> +		clock-names = "iface", "bus";
+> +		qcom,iommu-secure-id = <18>;
+> +
+> +		// gfx3d_user:
+> +		iommu-ctx@1f09000 {
+
+iommu-ctx@1000
+
+> +			compatible = "qcom,msm-iommu-v1-ns";
+> +			reg = <0x1000 0x1000>;
+> +			interrupts = <GIC_SPI 241 0>;
+> +		};
+> +
+> +		// gfx3d_priv:
+> +		iommu-ctx@1f0a000 {
+
+iommu-ctx@2000
+
+> +			compatible = "qcom,msm-iommu-v1-ns";
+> +			reg = <0x2000 0x1000>;
+> +			interrupts = <GIC_SPI 242 0>;
+> +		};
+> +	};
+> +
+> +	...
+> +
+> +	venus: video-codec@1d00000 {
+> +		...
+> +		iommus = <&apps_iommu 5>;
+> +	};
+> +
+> +	mdp: mdp@1a01000 {
+> +		...
+> +		iommus = <&apps_iommu 4>;
+> +	};
+> +
+> +	gpu@01c00000 {
+> +		...
+> +		iommus = <&gpu_iommu 1>, <&gpu_iommu 2>;
+> +	};
+> -- 
+> 2.9.3
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 --
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+To unsubscribe from this list: send the line "unsubscribe devicetree" in
+the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
