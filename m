@@ -1,417 +1,535 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH V9 00/11] IOMMU probe deferral support
-Date: Fri, 24 Mar 2017 12:39:50 +0530
-Message-ID: <0ea8022b-a19b-335d-6cc6-81510196f891@codeaurora.org>
-References: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
-	<58D49845.9060407@hisilicon.com>
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: RE: [RFC PATCH 29/30] vfio: Add support for Shared Virtual Memory
+Date: Fri, 24 Mar 2017 07:46:00 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C257439030135@shsmsx102.ccr.corp.intel.com>
+References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
+ <20170227195441.5170-30-jean-philippe.brucker@arm.com>
+ <A2975661238FB949B60364EF0F2C2574390206F0@shsmsx102.ccr.corp.intel.com>
+ <d12a4a91-1fae-2fee-6109-3e9a1b7f5abe@arm.com>
+ <A2975661238FB949B60364EF0F2C257439021F4D@shsmsx102.ccr.corp.intel.com>
+ <dfc76db2-0177-e67c-49cd-03f667b1589d@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <58D49845.9060407-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Zhou Wang <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <dfc76db2-0177-e67c-49cd-03f667b1589d@arm.com>
+Content-Language: en-US
+Sender: kvm-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, Alex Williamson <alex.williamson@redhat.com>
+Cc: Shanker Donthineni <shankerd@qti.qualcomm.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Catalin Marinas <catalin.marinas@arm.com>, Sinan Kaya <okaya@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Harv Abdulhamid <harba@qti.qualcomm.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, David Woodhouse <dwmw2@infradead.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, Nate Watterson <nwatters@qti.qualcomm.com>, "Tian, Kevin" <kevin.tian@intel.com>, "Lan, Tianyu" <tianyu.lan@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>, Joerg Roedel <joro@8by>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Zhou,
+> -----Original Message-----
+> From: kvm-owner@vger.kernel.org [mailto:kvm-owner@vger.kernel.org] On Beh=
+alf
+> Of Jean-Philippe Brucker
+> Sent: Thursday, March 23, 2017 9:38 PM
+> To: Liu, Yi L <yi.l.liu@intel.com>; Alex Williamson <alex.williamson@redh=
+at.com>
+> Cc: Shanker Donthineni <shankerd@qti.qualcomm.com>; kvm@vger.kernel.org;
+> Catalin Marinas <catalin.marinas@arm.com>; Sinan Kaya
+> <okaya@qti.qualcomm.com>; Will Deacon <will.deacon@arm.com>;
+> iommu@lists.linux-foundation.org; Harv Abdulhamid <harba@qti.qualcomm.com=
+>;
+> linux-pci@vger.kernel.org; Bjorn Helgaas <bhelgaas@google.com>; David
+> Woodhouse <dwmw2@infradead.org>; linux-arm-kernel@lists.infradead.org; Na=
+te
+> Watterson <nwatters@qti.qualcomm.com>; Tian, Kevin <kevin.tian@intel.com>=
+;
+> Lan, Tianyu <tianyu.lan@intel.com>; Raj, Ashok <ashok.raj@intel.com>; Pan=
+, Jacob
+> jun <jacob.jun.pan@intel.com>; Joerg Roedel <joro@8bytes.org>; Robin Murp=
+hy
+> <robin.murphy@arm.com>
+> Subject: Re: [RFC PATCH 29/30] vfio: Add support for Shared Virtual Memor=
+y
+>=20
+> On 23/03/17 08:39, Liu, Yi L wrote:
+> > Hi Jean,
+> >
+> > Thx for the excellent ideas. Pls refer to comments inline.
+> >
+> > [...]
+> >
+> >>> Hi Jean,
+> >>>
+> >>> I'm working on virtual SVM, and have some comments on the VFIO
+> >>> channel definition.
+> >>
+> >> Thanks a lot for the comments, this is quite interesting to me. I
+> >> just have some concerns about portability so I'm proposing a way to be=
+ slightly
+> more generic below.
+> >>
+> >
+> > yes, portability is what need to consider.
+> >
+> > [...]
+> >
+> >>>> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> >>>> index
+> >>>> 519eff362c1c..3fe4197a5ea0 100644
+> >>>> --- a/include/uapi/linux/vfio.h
+> >>>> +++ b/include/uapi/linux/vfio.h
+> >>>> @@ -198,6 +198,7 @@ struct vfio_device_info {
+> >>>>  #define VFIO_DEVICE_FLAGS_PCI	(1 << 1)	/* vfio-pci device */
+> >>>>  #define VFIO_DEVICE_FLAGS_PLATFORM (1 << 2)	/* vfio-platform device=
+ */
+> >>>>  #define VFIO_DEVICE_FLAGS_AMBA  (1 << 3)	/* vfio-amba device */
+> >>>> +#define VFIO_DEVICE_FLAGS_SVM	(1 << 4)	/* Device supports
+> bind/unbind */
+> >>>>  	__u32	num_regions;	/* Max region index + 1 */
+> >>>>  	__u32	num_irqs;	/* Max IRQ index + 1 */
+> >>>>  };
+> >>>> @@ -409,6 +410,60 @@ struct vfio_irq_set {
+> >>>>   */
+> >>>>  #define VFIO_DEVICE_RESET		_IO(VFIO_TYPE, VFIO_BASE + 11)
+> >>>>
+> >>>> +struct vfio_device_svm {
+> >>>> +	__u32	argsz;
+> >>>> +	__u32	flags;
+> >>>> +#define VFIO_SVM_PASID_RELEASE_FLUSHED	(1 << 0)
+> >>>> +#define VFIO_SVM_PASID_RELEASE_CLEAN	(1 << 1)
+> >>>> +	__u32	pasid;
+> >>>> +};
+> >>>
+> >>> For virtual SVM work, the VFIO channel would be used to passdown
+> >>> guest PASID tale PTR and invalidation information. And may have
+> >>> further usage except the above.
+> >>>
+> >>> Here is the virtual SVM design doc which illustrates the VFIO usage.
+> >>> https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg05311.html
+> >>>
+> >>> For the guest PASID table ptr passdown, I've following message in pse=
+udo code.
+> >>> struct pasid_table_info {
+> >>>         __u64 ptr;
+> >>>         __u32 size;
+> >>>  };
+> >>
+> >> There should probably be a way to specify the table format, so that
+> >> the pIOMMU driver can check that it recognizes the format used by the
+> >> vIOMMU before attaching it. This would allow to reuse the structure
+> >> for other IOMMU architectures. If, for instance, the host has an
+> >> intel IOMMU and someone decides to emulate an ARM SMMU with Qemu
+> >> (their loss :), it can certainly use VFIO for passing-through devices
+> >> with MAP/UNMAP. But if Qemu then attempts to passdown a PASID table
+> >> in SMMU format, the Intel driver should have a way to reject it, as th=
+e SMMU
+> format isn't compatible.
+> >
+> > Exactly, it would be grt if we can have the API defined as generic as
+> > MAP/UNMAP. The case you mentioned to emulate an ARM SMMU on an Intel
+> platform is representative.
+> > For such cases, the problem is different vendors may have different
+> > PASID table format and also different page table format. In my
+> > understanding, these incompatible things may just result in failure if =
+users try such
+> emulation. What's your opinion here?
+> > Anyhow, better to listen to different voices.
+>=20
+> Yes, in case the vIOMMU and pIOMMU implement different PASID table format=
+s,
+> there is simply no way to virtualize SVM, the physical IOMMU will fault w=
+hen reading
+> the foreign PASID table, since it won't find the pgd pointers at the righ=
+t location.
+> Rejecting the bind gracefully seems much preferable than letting the pIOM=
+MU fault,
+> so the vIOMMU can always use the generic MAP/UNMAP API as a fallback.
+>=20
+> >> I'm tackling a similar problem at the moment, but for passing a
+> >> single page directory instead of full PASID table to the IOMMU.
+> >
+> > For, Intel IOMMU, passing the whole guest PASID table is enough and it
+> > also avoids too much pgd passing. However, I'm open on this idea. You
+> > may just add a new flag in "struct vfio_device_svm" and pass the single=
+ pgd down
+> to host.
+> >
+> >>
+> >> So we need some kind of high-level classification that the vIOMMU
+> >> must communicate to the physical one. Each IOMMU flavor would get a
+> >> unique, global identifier, simply to make sure that vIOMMU and pIOMMU =
+speak
+> the same language.
+> >> For example:
+> >>
+> >> 0x65776886 "AMDV" AMD IOMMU
+> >> 0x73788476 "INTL" Intel IOMMU
+> >> 0x83515748 "S390" s390 IOMMU
+> >> 0x83777785 "SMMU" ARM SMMU
+> >> etc.
+> >>
+> >> It needs to be a global magic number that everyone can recognize.
+> >> Could be as simple as 32-bit numbers allocated from 0. Once we have a
+> >> global magic number, we can use it to differentiate architecture-speci=
+fic details.
 
-On 3/24/2017 9:23 AM, Zhou Wang wrote:
-> On 2017/3/10 3:00, Sricharan R wrote:
->> This series calls the dma ops configuration for the devices
->> at a generic place so that it works for all busses.
->> The dma_configure_ops for a device is now called during
->> the device_attach callback just before the probe of the
->> bus/driver is called. Similarly dma_deconfigure is called during
->> device/driver_detach path.
->>
->> pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
->>        |                         |
->> pci_bus_add_device     (device_add/driver_register)
->>        |                         |
->> device_attach           device_initial_probe
->>        |                         |
->> __device_attach_driver    __device_attach_driver
->>        |
->> driver_probe_device
->>        |
->> really_probe
->>        |
->> dma_configure
->>
->> Similarly on the device/driver_unregister path __device_release_driver is
->> called which inturn calls dma_deconfigure.
->>
->> Rebased the series against mainline 4.11-rc1. Applies and builds cleanly
->> against mainline and linux-next. There is a conflict with patch#9
->> against iommu-next, but that should go away eventually as iommu-next
->> is rebased against 4.11-rc1.
->>
->> * Tested with platform and pci devices for probe deferral
->>   and reprobe on arm64 based platform.
->
-> Hi Sricharan,
->
-> I applied this series on v4.11-rc1 to test PCIe pass through in HiSilicon
-> D05 board(with Intel 82599 networking card). It failed.
->
-> After I used:
->
-> echo vfio-pci > /sys/bus/pci/devices/0002:81:10.0/driver_override
-> echo 0002:81:10.0 > /sys/bus/pci/drivers/ixgbevf/unbind
-> echo 0002:81:10.0 > /sys/bus/pci/drivers_probe
->
-> to bind vfio-pci driver to Intel 82599 networking card VF.
->
-> I got log in host:
-> [...]
-> [  414.275818] ixgbevf: Intel(R) 10 Gigabit PCI Express Virtual Function Network Driver - version 3.2.2-k
-> [  414.275824] ixgbevf: Copyright (c) 2009 - 2015 Intel Corporation.
-> [  414.276647] ixgbe 0002:81:00.0 eth12: SR-IOV enabled with 1 VFs
-> [  414.342252] pcieport 0002:80:00.0: can't derive routing for PCI INT A
-> [  414.342255] ixgbe 0002:81:00.0: PCI INT A: no GSI
-> [  414.343348] ixgbe 0002:81:00.0: Multiqueue Enabled: Rx Queue count = 4, Tx Queue count = 4
-> [  414.448135] pci 0002:81:10.0: [8086:10ed] type 00 class 0x020000
-> [  414.448713] iommu: Adding device 0002:81:10.0 to group 4
-> [  414.449798] ixgbevf 0002:81:10.0: enabling device (0000 -> 0002)
-> [  414.451101] ixgbevf 0002:81:10.0: PF still in reset state.  Is the PF interface up?
-> [  414.451103] ixgbevf 0002:81:10.0: Assigning random MAC address
-> [  414.451414] ixgbevf 0002:81:10.0: be:30:8f:ed:f8:02
-> [  414.451417] ixgbevf 0002:81:10.0: MAC: 1
-> [  414.451418] ixgbevf 0002:81:10.0: Intel(R) 82599 Virtual Function
-> [  414.464271] VFIO - User Level meta-driver version: 0.3
-> [  414.570074] ixgbe 0002:81:00.0: registered PHC device on eth12
-> [  414.700493] specified DMA range outside IOMMU capability                                      <-- error here
-> [  414.700496] Failed to set up IOMMU for device 0002:81:10.0; retaining platform DMA ops        <-- error here
+I prefer simple numbers to stand for each vendor.
 
-Looks like this triggers the start of the bug.
-So the below check in iommu_dma_init_domain fails,
+> > I may need to think more on this part.
+> >
+> >> struct pasid_table_info {
+> >> 	__u64 ptr;
+> >> 	__u64 size;		/* Is it number of entry or size in
+> >> 				   bytes? */
+> >
+> > For Intel platform, it's encoded. But I can make it in bytes. Here,
+> > I'd like to check with you if whole guest PASID info is also needed on =
+ARM?
+>=20
+> It will be needed on ARM if someone ever emulates the SMMU with SVM.
+> Though I'm not planning on doing that myself, it is unavoidable. And it w=
+ould be a
+> shame for the next SVM virtualization solution to have to introduce a new=
+ flag
+> "VFIO_SVM_BIND_PASIDPT_2" if they could reuse most of the BIND_PASIDPT
+> interface but simply needed to add one or two configuration fields specif=
+ic to their
+> IOMMU.
 
-         if (domain->geometry.force_aperture) {
-                 if (base > domain->geometry.aperture_end ||
-                     base + size <= domain->geometry.aperture_start) {
+So you are totally fine with putting PASID table ptr and size in the generi=
+c part? Maybe
+we have different usage for it. For me, it's a guest PASID table ptr. For y=
+ou, it may be
+different.
 
-and the rest goes out of sync after that. Can you print out the
-base, aperture_start and end values to see why the check fails ?
+> >>
+> >> 	__u32 model;		/* magic number */
+> >> 	__u32 variant;		/* version of the IOMMU architecture,
+> >> 				   maybe? IOMMU-specific. */
 
-The change that this series does is trying to add the
-dma/iommu ops to the device after the iommu is actually probed.
-So in your working case, does the device initially gets hooked
-to iommu_ops and the above same check passes in working case ?
+For variant, it will be combined with model to do sanity check. Am I right?
+Maybe it could be moved to opaque.
+=20
+> >> 	__u8 opaque[];		/* IOMMU-specific details */
+> >> };
+> >>
+> >> And then each IOMMU or page-table code can do low-level validation of
+> >> the format, by reading the details in 'opaque'. I assume that for
+> >> Intel this would be empty. But
+> >
+> > yes, for Intel, if the PASID ptr is in the definition, opaque would be =
+empty.
+> >
+> >> for instance on ARM SMMUv3, PASID table can have either one or two
+> >> levels, and vIOMMU would specify which one of the three available form=
+ats it is
+> using.
+> >
+> > Yes it is. PASID table could also be multi-level. I agree to have it in=
+to consideration.
+> >
+> >
+> >> struct pasid_table_info_smmu {
+> >> 	/*
+> >> 	 * In 'opaque', architecture details only the IOMMU driver should
+> >> 	 * be caring about.
+> >> 	 */
+> >> 	__u8 s1fmt;
+> >> 	__u8 s1dss;
+> >> }
+> >>
+> >> If the physical SMMU doesn't implement the particular PASID table
+> >> format, it should reject the bind.
+> >
+> > So far, I think reject may be the best policy. I can't assume that
+> > different have consistent format for the PASID table and page table as =
+previous
+> comments.
+>=20
+> Yes, for example AMD and Intel formats could be compatible, but the SMMU =
+format
+> is quite different, using 64 bytes per PASID entry instead of 8 bytes.
+>=20
+> >>
+> >> This would allow to keep architecture details outside of VFIO core
+> >> (as well as virtio in my case), and only have vIOMMU and pIOMMU unders=
+tand
+> those details.
+> >>
+> >>>
+> >>> For invalidation, I've following info in in pseudo code.
+> >>> struct iommu_svm_tlb_invalidate_info {
+> >>>        __u32 inv_type;
+> >>> #define IOTLB_INV			(1 << 0)
+> >>> #define EXTENDED_IOTLB_INV		(1 << 1)
+> >>> #define DEVICE_IOTLB_INV		(1 << 2)
+> >>> #define EXTENDED_DEVICE_IOTLB_INV	(1 << 3)
+> >>> #define PASID_CACHE_INV		(1 << 4)
+> >>>        __u32 pasid;
+> >>>        __u64 addr;
+> >>>        __u64 size;
+> >>>        __u8 granularity;
+> >>> #define DEFAULT_INV_GRN        0
+> >>> #define PAGE_SELECTIVE_INV     (1 << 0)
+> >>> #define PASID_SELECVIVE_INV    (1 << 1)
+> >>>        __u64 flags;
+> >>> #define INVALIDATE_HINT_BIT    (1 << 0)
+> >>> #define GLOBAL_HINT_BIT        (1 << 1)
+> >>> #define DRAIN_READ_BIT         (1 << 2)
+> >>> #define DRAIN_WRITE_BIT        (1 << 3)
+> >>> #define DEVICE_TLB_GLOBAL_BIT  (1 << 4)
+> >>>        __u8 mip;
+> >>>        __u16 pfsid;
+> >>> };
+> >>
+> >> This would also benefit from being split into generic and
+> >> architectural parts. Former would be defined in VFIO, latter would be =
+in the
+> IOMMU driver.
+> >
+> > For invalidation part, I'm trying to have a generic definition by
+> > including all possible information for a TLB invalidation. Anyhow, I
+> > would  split the information when I send out my RFC patch for virtual S=
+VM.
+> >
+> >>
+> >> struct tlb_invalidate_info
+> >> {
+> >> 	__u8 granularity
+> >> #define DEFAULT_INV_GRN		0	/* What is default? */
+> >
+> > It's device selective. Since all invalidation from guest should be at
+> > least device-selective, so I name it as default. Would rename it to mak=
+e it clear.
+> >
+> >> #define PAGE_SELECTIVE_INV	(1 << 0)
+> >> #define PASID_SELECTIVE_INV	(1 << 1)
+> >> 	__u32 pasid;
+> >> 	__u64 addr;
+> >> 	__u64 size;
+> >>
+> >> 	/* Since IOMMU format has already been validated for this table,
+> >> 	   the IOMMU driver knows that the following structure is in a
+> >> 	   format it knows */
+> >> 	__u8 opaque[];
+> >> };
+> >>
+> >> struct tlb_invalidate_info_intel
+> >> {
+> >> 	__u32 inv_type;
+> >> 	...
+> >> 	__u64 flags;
+> >> 	...
+> >> 	__u8 mip;
+> >> 	__u16 pfsid;
+> >> };
+> >>
+> >>> Although your proposal is for userspace driver SVM usage while mine
+> >>> is for  SVM usage in virtual machine, there should be a chance to
+> >>> make the channel meet our request. And I think it would be more accep=
+table.
+> >>> So I'd like to see your comments if we define the channel as followin=
+g definition.
+> >>> If any better solution, pls feel free let me know.
+> >>>
+> >>> struct vfio_device_svm {
+> >>>        __u32   argsz;
+> >>> #define VFIO_SVM_BIND_PASIDTP           (1 << 0)
+> >>
+> >> To check we're on the same page: the absence of BIND_PASIDTP flag
+> >> would mean "bind a single PASID" and in that case, data[] would be a "=
+u32 pasid"?
+> >
+> > Actually, I planned to use a single channel for both guest PASID table
+> > ptr passdown and invalidation info passdown. So it is defined in this w=
+ay.
+> >
+> > VFIO_SVM_BIND_PASIDTP   -> data[] includes guest PASID table ptr and ta=
+ble size
+> > VFIO_SVM_PASSDOWN_INVALIDATE    -> data[] includes infos for invalidata=
+ion
+> >
+> > Now, we want to have it shared by different vendors. So I would remove
+> > invalidate definition from it. Regards to your example, yes it would
+> > be a "u32 pasid" if you are passing a PASID value from guest. I think w=
+e are on the
+> same page for the usage?
+> >
+>=20
+> Yes, that seems sensible. I could add an explicit VFIO_BIND_PASID flags t=
+o make it
+> explicit that data[] is "u32 pasid" and avoid having any default.
 
-Regards,
-  Sricharan
+Add it in the comment I suppose. The length is 4 byes, it could be deduced =
+from argsz.
 
-> [  414.748043] ixgbe 0002:81:00.0 eth12: detected SFP+: 5
-> [  414.922277] ixgbe 0002:81:00.0 eth12: NIC Link is Up 10 Gbps, Flow Control: RX/TX
->
-> Then I tried to boot up VM using:
->
-> qemu-system-aarch64 \
-> -machine virt,gic-version=3 \
-> -enable-kvm \
-> -cpu host \
-> -m 1024 \
-> -kernel ./Image_vm \
-> -initrd ./minifs.cpio.gz \
-> -nographic \
-> -net none -device vfio-pci,host=0002:81:10.0,id=net0
->
-> I got this error:
->
-> root@ubuntu:~/scripts# ./qemu_run.sh
-> [  402.581445] kernel BUG at drivers/iommu/arm-smmu-v3.c:1064!
-> [  402.587007] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-> [  402.592479] Modules linked in: vfio_iommu_type1 vfio_pci irqbypass vfio_virqfd vfio ixgbevf ixgb                                                                                                            e mdio [last unloaded: vfio_iommu_type1]
-> [  402.604733] CPU: 26 PID: 4437 Comm: qemu-system-aar Not tainted 4.11.0-rc1-g4b62e7fa #21
-> [  402.612809] Hardware name: Huawei Taishan 2280 /D05, BIOS Hisilicon D05 UEFI 16.12 Release 02/22                                                                                                            /2017
-> [  402.622013] task: ffff8017e2161a00 task.stack: ffff8017e5a8c000
-> [  402.627926] PC is at arm_smmu_write_strtab_ent+0x1b4/0x1b8
-> [  402.633399] LR is at arm_smmu_install_ste_for_dev+0x9c/0xc0
-> [  402.638957] pc : [<ffff000008542b08>] lr : [<ffff000008542ba8>] pstate: 80000145
-> [  402.646338] sp : ffff8017e5a8fb50
-> [  402.649638] x29: ffff8017e5a8fb50 x28: ffff8013d3e4e468
-> [  402.654938] x27: ffff00000854240c x26: 0000ffffffffffff
-> [  402.660237] x25: ffff8013cd0b7100 x24: ffff8013e58fc018
-> [  402.665536] x23: ffff8013e58f8018 x22: 0000000000000018
-> [  402.670835] x21: 0000000000028180 x20: ffff8013e58f8018
-> [  402.676134] x19: 0000000000000001 x18: 0000000000783488
-> [  402.681434] x17: 0000ffff967caa50 x16: ffff000008207410
-> [  402.686733] x15: 0000000000782a54 x14: 0000ffff9670be14
-> [  402.692031] x13: 0000000000783060 x12: 0000000000000012
-> [  402.697330] x11: 0000000000000001 x10: 0000000000000900
-> [  402.702629] x9 : 00000000000000ff x8 : 0000000000000000
-> [  402.707928] x7 : ffff80003e040190 x6 : 000bdff385002ea1
-> [  402.713227] x5 : 0000000000000018 x4 : 0000000000000001
-> [  402.718526] x3 : ffff8013cd0b7108 x2 : ffff80003e6f6000
-> [  402.723824] x1 : ffff000008542ab0 x0 : ffff8013d3e4fe38
-> [  402.729123]
-> [  402.730602] Process qemu-system-aar (pid: 4437, stack limit = 0xffff8017e5a8c000)
-> [  402.738070] Stack: (0xffff8017e5a8fb50 to 0xffff8017e5a90000)
-> [  402.743802] fb40:                                   ffff8017e5a8fb90 ffff000008542ba8
-> [  402.751617] fb60: 0000000000000002 ffff8013cd0b7200 ffff8013cd0b7108 ffff8013e58f8140
-> [  402.759432] fb80: ffff8013e58f8018 ffff80003e6f6000 ffff8017e5a8fbd0 ffff000008543514
-> [  402.767247] fba0: ffff8013d3e4fe68 ffff8013cd0b7108 0000000000000000 ffff8013e68140a0
-> [  402.775063] fbc0: ffff8013d3e4fe08 ffff8013d3e4fe38 ffff8017e5a8fc80 ffff00000853a840
-> [  402.782878] fbe0: ffff8013e432df00 ffff8013d3e4fe68 ffff8013ccb28d48 ffff8013ccb28d00
-> [  402.790693] fc00: ffff8017e5f69a08 ffff8017e5f69a80 ffff00000096f380 ffff8017e5f69a18
-> [  402.798508] fc20: ffff8013ccb28d00 ffff8017e5f69a80 0000000000000000 0000000040201000
-> [  402.806323] fc40: 0000002c00000030 ffff0000089efae8 ffff8013e65b8410 00000017e59d8000
-> [  402.814138] fc60: 0000000000000000 0000000400803510 000000000004ff44 0000000000000000
-> [  402.821954] fc80: ffff8017e5a8fcb0 ffff00000853a8cc ffff8013ccb28d58 ffff8013d3e4fe68
-> [  402.829769] fca0: ffff8017e5f69b00 ffff0000009a93c0 ffff8017e5a8fce0 ffff0000009a7970
-> [  402.837584] fcc0: ffff8017e5f69b80 ffff8017e5f69a98 ffff8017e5a8fce0 ffff8013ccb28d00
-> [  402.845399] fce0: ffff8017e5a8fd90 ffff00000096c688 ffff8013d3e7f100 ffff8013ca9e9280
-> [  402.853214] fd00: ffff8017e5f69a00 0000000000000003 ffff8017e5f69a08 ffff8017e5f69a80
-> [  402.861029] fd20: ffff00000096f380 ffff8017e5f69a18 ffffffffffffffed ffff8017e2161a00
-> [  402.868844] fd40: ffff8017e5f69a08 0000000000000003 ffff00000096f380 ffff8017e5f69a18
-> [  402.876659] fd60: ffffffffffffffed 0000400000000010 ffff8017e5a8fd90 ffff000008e492d8
-> [  402.884475] fd80: 0000000000003b66 ffff8013ca9e9280 ffff8017e5a8fdf0 ffff000008206d28
-> [  402.892290] fda0: ffff8013d3e4fd00 0000000000000003 ffff8013d43a0318 0000000000000010
-> [  402.900105] fdc0: 0000000000003b66 0000000000000003 0000000000000123 000000000000001d
-> [  402.907920] fde0: ffff000008902000 0000000000000010 ffff8017e5a8fe80 ffff000008207494
-> [  402.915735] fe00: 0000000000000000 ffff8013d3e4fd01 ffff8013d3e4fd00 0000000000000010
-> [  402.923550] fe20: 0000000000003b66 ffff0000081f2594 ffff8017e5a8fe60 ffff000008212508
-> [  402.931365] fe40: ffff8017e5a8fe80 ffff000008207450 0000000000000000 ffff8013d3e4fd01
-> [  402.939180] fe60: ffff8013d3e4fd00 0000000000000010 0000000000003b66 ffff000008207434
-> [  402.946995] fe80: 0000000000000000 ffff000008082f30 0000000000000000 00008017f31b0000
-> [  402.954810] fea0: ffffffffffffffff 0000ffff967caa5c 0000000020000000 0000000000000015
-> [  402.962625] fec0: 0000000000000010 0000000000003b66 0000000000000003 0000000000000003
-> [  402.970440] fee0: 0000000000000000 0000000000000040 000000000000003f 0000000000000000
-> [  402.978255] ff00: 000000000000001d 0000000000000004 0000000000000000 0000ffffe6bbe7e0
-> [  402.986070] ff20: ffffffffffffffff 0000000000783060 0000ffff9670be14 0000000000782a54
-> [  402.993885] ff40: 0000000000a74630 0000ffff967caa50 0000000000783488 000000003151e080
-> [  403.001700] ff60: 0000ffffe6bbe86c 0000000000000004 0000000000af7000 0000000000b15000
-> [  403.009515] ff80: 0000000000af8450 0000000031222c50 0000000000000001 0000000031abb800
-> [  403.017331] ffa0: 0000000031de2650 0000ffffe6bbe7e0 00000000004b8468 0000ffffe6bbe7e0
-> [  403.025146] ffc0: 0000ffff967caa5c 0000000020000000 0000000000000010 000000000000001d
-> [  403.032961] ffe0: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
-> [  403.040775] Call trace:
-> [  403.043208] Exception stack(0xffff8017e5a8f980 to 0xffff8017e5a8fab0)
-> [  403.049635] f980: 0000000000000001 0001000000000000 ffff8017e5a8fb50 ffff000008542b08
-> [  403.057450] f9a0: ffff000008e1b778 0000000000000001 ffff000008f1ebb8 00000000000006fc
-> [  403.065265] f9c0: 0000000000000000 000000000003e6fb 0000000400000123 000000000003e800
-> [  403.073080] f9e0: 0000000000000000 0000000000000000 ffff8017e5a8f9f0 ffff8017e5a8f9f0
-> [  403.080895] fa00: ffff8017e5a8fa50 ffff00000838feb0 ffff8013e58f8030 0000005d4ebe3be6
-> [  403.088711] fa20: ffff8013d3e4fe38 ffff000008542ab0 ffff80003e6f6000 ffff8013cd0b7108
-> [  403.096526] fa40: 0000000000000001 0000000000000018 000bdff385002ea1 ffff80003e040190
-> [  403.104341] fa60: 0000000000000000 00000000000000ff 0000000000000900 0000000000000001
-> [  403.112155] fa80: 0000000000000012 0000000000783060 0000ffff9670be14 0000000000782a54
-> [  403.119970] faa0: ffff000008207410 0000ffff967caa50
-> [  403.124835] [<ffff000008542b08>] arm_smmu_write_strtab_ent+0x1b4/0x1b8
-> [  403.131349] [<ffff000008542ba8>] arm_smmu_install_ste_for_dev+0x9c/0xc0
-> [  403.137950] [<ffff000008543514>] arm_smmu_attach_dev+0x1a4/0x2c0
-> [  403.143942] [<ffff00000853a840>] __iommu_attach_group+0x48/0xa8
-> [  403.149848] [<ffff00000853a8cc>] iommu_attach_group+0x2c/0x48
-> [  403.155584] [<ffff0000009a7970>] vfio_iommu_type1_attach_group+0x208/0x720 [vfio_iommu_type1]
-> [  403.164099] [<ffff00000096c688>] vfio_fops_unl_ioctl+0x188/0x2b8 [vfio]
-> [  403.170701] [<ffff000008206d28>] do_vfs_ioctl+0xb4/0x79c
-> [  403.175998] [<ffff000008207494>] SyS_ioctl+0x84/0x98
-> [  403.180950] [<ffff000008082f30>] el0_svc_naked+0x24/0x28
-> [  403.186249] Code: f9400860 b5fff9c0 17ffffd9 d4210000 (d4210000)
-> [  403.192351] ---[ end trace 0bda8b3549cfd903 ]---
->
-> Dropping this series, 82599 VF can work well in QEMU.
->
-> P.S.
->
-> To avoid some hardware bugs, I temporarily commented/added some codes in v4.11-rc1:
->
-> @@ -1104,8 +1104,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_device *smmu, u32 sid,
->   	arm_smmu_sync_ste_for_sid(smmu, sid);
->
->   	/* It's likely that we'll want to use the new STE soon */
->  -	if (!(smmu->options & ARM_SMMU_OPT_SKIP_PREFETCH))
->  -		arm_smmu_cmdq_issue_cmd(smmu, &prefetch_cmd);
->  +//	if (!(smmu->options & ARM_SMMU_OPT_SKIP_PREFETCH))
->  +//		arm_smmu_cmdq_issue_cmd(smmu, &prefetch_cmd);
->   }
->
->   static void arm_smmu_init_bypass_stes(u64 *strtab, unsigned int nent)
->
->
->  @@ -664,7 +664,7 @@ static void its_irq_compose_msi_msg(struct irq_data *d, struct msi_msg *msg)
->   	msg->address_hi		= upper_32_bits(addr);
->   	msg->data		= its_get_event_id(d);
->
->  -	iommu_dma_map_msi_msg(d->irq, msg);
->  +	//iommu_dma_map_msi_msg(d->irq, msg);
->   }
->
->   static struct irq_chip its_irq_chip = {
->
-> @@ -4179,6 +4179,14 @@ static int pci_quirk_qcom_rp_acs(struct pci_dev *dev, u16 acs_flags)
->   	return ret;
->   }
->
->  +static int pci_quirk_hisi_rp_acs(struct pci_dev *dev, u16 acs_flags)
->  +{
->  +	u16 flags = (PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF | PCI_ACS_SV);
->  +	int ret = acs_flags & ~flags ? 0 : 1;
->  +
->  +	return ret;
->  +}
->  +
->   /*
->    * Sunrise Point PCH root ports implement ACS, but unfortunately as shown in
->    * the datasheet (Intel 100 Series Chipset Family PCH Datasheet, Vol. 2,
->  @@ -4345,6 +4353,8 @@ static const struct pci_dev_acs_enabled {
->   	{ 0x10df, 0x720, pci_quirk_mf_endpoint_acs }, /* Emulex Skyhawk-R */
->   	/* Cavium ThunderX */
->   	{ PCI_VENDOR_ID_CAVIUM, PCI_ANY_ID, pci_quirk_cavium_acs },
->  +	/* Hisilicon Hip05/Hip06 root ports */
->  +	{ PCI_VENDOR_ID_HUAWEI,	0x1610, pci_quirk_hisi_rp_acs },
->   	{ 0 }
->   };
->
-> If you have time, could you please take a look at this issue?
->
-> Thanks,
-> Zhou
->
->>
->> Previous post of this series [6].
->>
->>  [V9]
->>      * Rebased on top of 4.11-rc1.
->>
->>      * Merged Robin's fixes for legacy binding issue,
->>        pci devices with no iommu-map property.
->>
->>  [V8]
->>      * Picked up all the acks and tested tags from Marek and
->>        Hanjun for DT and ACPI patches respectively, since
->>        no functional changes was done.
->>
->>      * Addressed Minor comments Sinan and Bjorn.
->>
->>      * Added Robin's fix for fixing the deferencing NULL for
->>        of_iommu_table after init in patch #2.
->>
->>      * Rebased it on top of linux-next
->>
->>  [V7]
->>      * Updated the subject and commit log for patch #6 as per
->>        comments from Lorenzo. No functional changes.
->>
->>  [V6]
->>      * Fixed a bug in dma_configure function pointed out by
->>        Robin.
->>      * Reordered the patches as per comments from Robin and
->>        Lorenzo.
->>      * Added Tags.
->>
->>  [V5]
->>      * Reworked the pci configuration code hanging outside and
->>        pushed it to dma_configure as in PATCH#5,6,7.
->>        Also added a couple of patches that Lorenzo provided for
->>        correcting the Probe deferring mechanism in case of
->>        ACPI devices from here [5].
->>
->>  [V4]
->>      * Took the reworked patches [2] from Robin's branch and
->>        rebased on top of Lorenzo's ACPI IORT ARM support series [3].
->>
->>      * Added the patches for moving the dma ops configuration of
->>        acpi based devices to probe time as well.
->>  [V3]
->>      * Removed the patch to split dma_masks/dma_ops configuration
->>        separately based on review comments that both masks and ops are
->>        required only during the device probe time.
->>
->>      * Reworked the series based on Generic DT bindings series.
->>
->>      * Added call to iommu's remove_device in the cleanup path for arm and
->>        arm64.
->>
->>      * Removed the notifier trick in arm64 to handle early device
->>        registration.
->>
->>      * Added reset of dma_ops in cleanup path for arm based on comments.
->>
->>      * Fixed the pci_iommu_configure path and tested with PCI device as
->>        well.
->>
->>      * Fixed a bug to return the correct iommu_ops from patch 7 [4] in
->>        last post.
->>
->>      * Fixed few other cosmetic comments.
->>
->>  [V2]
->>      * Updated the Initial post to call dma_configure/deconfigure from
->>        generic code
->>
->>      * Added iommu add_device callback from of_iommu_configure path
->>
->>  [V1]
->>      * Initial post from Laurent Pinchart [1]
->>
->> [1] http://lists.linuxfoundation.org/pipermail/iommu/2015-May/013016.html
->> [2] http://www.linux-arm.org/git?p=linux-rm.git;a=shortlog;h=refs/heads/iommu/defer
->> [3] https://lkml.org/lkml/2016/11/21/141
->> [4] https://www.mail-archive.com/iommu@xxxxxxxxxxxxxxxxxxxxxxxxxx/msg13940.html
->> [5] git://git.kernel.org/pub/scm/linux/kernel/git/lpieralisi/linux.git iommu/probe-deferral
->> [6] http://www.spinics.net/lists/linux-pci/msg57992.html
->> [7] https://www.spinics.net/lists/arm-kernel/msg556209.html
->>
->> Laurent Pinchart (3):
->>   of: dma: Move range size workaround to of_dma_get_range()
->>   of: dma: Make of_dma_deconfigure() public
->>   iommu: of: Handle IOMMU lookup failure with deferred probing or error
->>
->> Lorenzo Pieralisi (2):
->>   ACPI/IORT: Add function to check SMMUs drivers presence
->>   ACPI/IORT: Remove linker section for IORT entries probing
->>
->> Robin Murphy (3):
->>   iommu/of: Refactor of_iommu_configure() for error handling
->>   iommu/of: Prepare for deferred IOMMU configuration
->>   iommu/arm-smmu: Clean up early-probing workarounds
->>
->> Sricharan R (3):
->>   of/acpi: Configure dma operations at probe time for platform/amba/pci
->>     bus devices
->>   drivers: acpi: Handle IOMMU lookup failure with deferred probing or
->>     error
->>   arm64: dma-mapping: Remove the notifier trick to handle early setting
->>     of dma_ops
->>
->>  arch/arm64/mm/dma-mapping.c       | 142 +++++---------------------------------
->>  drivers/acpi/arm64/iort.c         |  40 ++++++++++-
->>  drivers/acpi/glue.c               |   5 --
->>  drivers/acpi/scan.c               |   7 +-
->>  drivers/base/dd.c                 |   9 +++
->>  drivers/base/dma-mapping.c        |  41 +++++++++++
->>  drivers/iommu/arm-smmu-v3.c       |  46 +-----------
->>  drivers/iommu/arm-smmu.c          | 110 +++++++++++++----------------
->>  drivers/iommu/of_iommu.c          | 126 ++++++++++++++++++++++++---------
->>  drivers/of/address.c              |  20 +++++-
->>  drivers/of/device.c               |  34 ++++-----
->>  drivers/of/platform.c             |  10 +--
->>  drivers/pci/probe.c               |  28 --------
->>  include/acpi/acpi_bus.h           |   2 +-
->>  include/asm-generic/vmlinux.lds.h |   1 -
->>  include/linux/acpi.h              |   7 +-
->>  include/linux/acpi_iort.h         |   3 -
->>  include/linux/dma-mapping.h       |   3 +
->>  include/linux/of_device.h         |  10 ++-
->>  19 files changed, 308 insertions(+), 336 deletions(-)
->>
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
+>=20
+> >>
+> >>> #define VFIO_SVM_PASSDOWN_INVALIDATE    (1 << 1)
+> >>
+> >> Using the vfio_device_svm structure for invalidate operations is a
+> >> bit odd, it might be nicer to add a new VFIO_SVM_INVALIDATE ioctl,
+> >> that takes the above iommu_svm_tlb_invalidate_info as argument (with
+> >> an added argsz.)
+> >
+> > Agree, would add a separate IOCTL for invalidation.
+> >
+> >>
+> >>> #define VFIO_SVM_PASID_RELEASE_FLUSHED	(1 << 2)
+> >>> #define VFIO_SVM_PASID_RELEASE_CLEAN	  (1 << 3)
+> >>>        __u32   flags;
+> >>>        __u32   length;
+> >>
+> >> If length is the size of data[], I guess we can already deduce this in=
+fo from argsz.
+> >
+> > yes, it is size of data. Maybe remove argsz. How about your opinion?
+>=20
+> Argsz as first argument is standard across all VFIO ioctls, it allows the=
+ kernel to check
+> that the structure passed by the guest is consistent with the structure i=
+t knows (see
+> the comment at the beginning of
+> include/uapi/linux/vfio.h) So argsz would be the preferred way to communi=
+cate the
+> size of data[]
 
--- 
-"QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member of Code Aurora Forum, hosted by The Linux Foundation
+yes, it makes sense. BTW. I think it is still possible to leave the "length=
+" since there is
+similar usage. e.g. struct vfio_irq_set, count tells the size of data[] in =
+that structure.
+Anyhow, it's no big deal here.
+
+> >>>        __u8    data[];
+> >>> };
+> >>
+> >> In general, I think that your proposal would work fine along mine.
+> >> Note that for my next version of this patch, I would like to move the
+> >> BIND/UNBIND SVM operations onto a VFIO container fd, instead of a VFIO=
+ device
+> fd, if possible.
+> >
+> > Attach the BIND/UNBIND operation onto VFIO container fd is practical.
+> >
+> > BTW. Before you send out your next version, we'd better have a
+> > consensus on the vfio_device_svm definition. So that we can continue to=
+ drive our
+> own work separately.
+> >
+> >> ---
+> >> As an aside, it also aligns with the one I'm working on at the
+> >> moment, for virtual SVM at a finer granularity, where the BIND call
+> >> is for a page table. I would add this flag to vfio_device_svm:
+> >>
+> >> #define VFIO_SVM_BIND_PGTABLE		(1 << x)
+> >
+> > Sure. I think it may also be a requirement from other vendors. I think
+> > you've mentioned it in the above statements.
+> >
+> >> Which would indicate the following data (just a draft, I'm
+> >> oscillating between this and a generic PASID table solution, which wou=
+ld instead
+> reuse your proposal):
+> >>
+> >> struct pgtable_info {
+> >> 	__u32 pasid;
+> >>
+> >> 	__u64 pgd;
+> >>
+> >> 	__u32 model;
+> >> 	__u32 variant;
+> >>
+> >> 	__u8 opaque[];
+> >> };
+
+I think you would have this definition as an ARM specific one. Would be fil=
+led in
+the data[] of vfio_device_svm. Is it?
+
+> >>
+> >> On ARM SMMU we would need to specify an io-pgtable variant and the
+> >> opaque structure would be bits of io_pgtable_cfg (tcr, mair, etc.)
+> >>
+> >> The problem of portability is slightly different here, because while
+> >> PASID table format is specific to an IOMMU, page table format might
+> >> be the same across multiple flavors of IOMMUs. For instance, the
+> >> PASID table format I use in this series can only be found in the ARM
+> >> SMMUv3 architecture, but the page table format is the same as ARM
+> >> SMMUv2, and other MMUs. I'd like to implement an IOMMU independent of
+> >> any page-table formats, that could use whatever the host offers (not
+> >> necessarily MMU PT). The model numbers described above wouldn't be sui=
+table,
+> so we'd need another set of magic numbers for page table formats.
+> >
+> > Not sure if I totally got your points. We may assume PASID table
+> > format differs from vendor to vendor. For the page table format, I
+> > assume you mean the page table of process. Or in other words MMU page t=
+able.
+> >
+> > I'm a little bit confused about the following statements. Could you spe=
+ak a little bit
+> more?
+> > Is it for virtual SVM or user-space driver SVM usage?
+> > " I'd like to implement an IOMMU independent of any page-table
+> > formats, that could use whatever the host offers (not necessarily MMU P=
+T)."
+>=20
+> The IOMMU might be using a different page table format than the MMU. I'm
+> currently toying with the idea of having a portable paravirtualized IOMMU=
+ that can
+> query the page table format used by pIOMMU, and adopt it if the page tabl=
+e
+> handling code is available in the guest. This would be for non-SVM nested=
+ translation,
+> using VFIO to bind page tables private to the IOMMU. I'll send a separate=
+ RFC to
+> discuss this.
+
+sounds interesting. Look forward to your further work.
+
+>=20
+> > I's nice to have such discussion. Let's co-work and have a well-defined=
+ API.
+>=20
+> I agree. I don't plan to send a new version immediately since it will tak=
+e some time
+> rework, but we can sync-up here or in private to avoid conflicting propos=
+als.
+
+yes, let's keep in touch. For "struct vfio_device_svm", how about define it=
+ in such way:
+
+struct vfio_device_svm {
+       __u32   argsz;
+     /* data length would be sizeof(pasid_table_info) */
+#define VFIO_SVM_BIND_PASIDTP                            (1 << 0)=20
+     /* data length would be 4 byte */
+#define VFIO_BIND_PASID                                           (1 << 1)=
+=20
+     /* data length would be sizeof(x) */
+#define VFIO_SVM_PASID_RELEASE_FLUSHED	 (1 << 2)=20
+     /* data length would be sizeof(y) */
+#define VFIO_SVM_PASID_RELEASE_CLEAN	 (1 << 3)=20
+    /* data length would be sizeof(pgtable_info) */
+#define VFIO_SVM_BIND_PGTABLE		 (1 << 4)=20
+       __u32   flags;
+       __u32   length;  /*can remove it if you think it's better */
+       __u8    data[];   /* payload data for different bind/unbind request*=
+/
+};
+
+struct pasid_table_info {
+               __u16 sid;             /* It's BDF of device. */
+	__u64 ptr;            /* PASID table ptr */
+	__u64 size;	/* PASID table size in bytes */
+	__u32 model;	/* magic number */
+	__u32 variant;	/* YiL: maybe move it to opaque? */
+	__u8 opaque[];	/* IOMMU-specific details */
+};
+
+I added a new field as "sid". The reason is as below:
+Since the IOCTL is going to be on container fd, then needs to tell where do=
+es
+the bind request come from. SID could be used to filter the target core IOM=
+MU.
+Also, it's needed to find the corresponding context entry with the SID on I=
+ntel
+platform. I assume you also need an equivalent on your work. Pls let me kno=
+w
+if you prefer different definition.
+
+Thanks,
+Yi L
