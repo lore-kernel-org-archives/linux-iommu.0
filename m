@@ -1,18 +1,16 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH V9 00/11] IOMMU probe deferral support
-Date: Fri, 24 Mar 2017 15:09:49 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA81750BC12@lhreml504-mbs>
-References: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
-	<58D49845.9060407@hisilicon.com>
-	<0ea8022b-a19b-335d-6cc6-81510196f891@codeaurora.org>
-	<5FC3163CFD30C246ABAA99954A238FA81750B7CB@lhreml504-mbs>
-	<20170324144340.GA17560@red-moon>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH v12 09/10] perf/amd/iommu: Introduce amd_iommu-specific
+	struct in struct hw_perf_event
+Date: Fri, 24 Mar 2017 18:53:56 +0100
+Message-ID: <20170324175356.q2k7g64uqbk72y3y@pd.tnic>
+References: <1490166162-10002-1-git-send-email-Suravee.Suthikulpanit@amd.com>
+	<1490166162-10002-10-git-send-email-Suravee.Suthikulpanit@amd.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170324144340.GA17560@red-moon>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <1490166162-10002-10-git-send-email-Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,59 +20,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org" <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Suravee Suthikulpanit <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+Cc: peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: Lorenzo Pieralisi [mailto:lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org]
-> Sent: Friday, March 24, 2017 2:44 PM
-> To: Shameerali Kolothum Thodi
-> Cc: Sricharan R; Wangzhou (B); robin.murphy-5wv7dgnIgG8@public.gmane.org;
-> will.deacon-5wv7dgnIgG8@public.gmane.org; joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org;
-> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org;
-> m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org; bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linux-
-> pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org;
-> hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org; okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-> Subject: Re: [PATCH V9 00/11] IOMMU probe deferral support
+On Wed, Mar 22, 2017 at 02:02:41AM -0500, Suravee Suthikulpanit wrote:
+> From: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
 > 
-> On Fri, Mar 24, 2017 at 09:27:51AM +0000, Shameerali Kolothum Thodi wrote:
+> Current AMD IOMMU Perf PMU inappropriately uses hardware struct
+> inside the union inside the struct hw_perf_event, mainly the use of
+> extra_reg.
 > 
-> [...]
+> Instead, introduce amd_iommu-specific struct with required
+> parameters to be programmed onto the IOMMU performance counter
+> control register.
 > 
-> > @@ -107,7 +107,7 @@ int of_dma_configure(struct device *dev, struct
-> device_node *np)
-> >   	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
-> >   	if (ret < 0) {
-> >   		dma_addr = offset = 0;
-> >  -		size = dev->coherent_dma_mask + 1;
-> >  +		size = max(dev->coherent_dma_mask, dev-
-> >coherent_dma_mask + 1);
-> >
-> > @@ -1386,7 +1387,8 @@ int acpi_dma_configure(struct device *dev, enum
-> dev_dma_attr attr)
-> >   	 * Assume dma valid range starts at 0 and covers the whole
-> >   	 * coherent_dma_mask.
-> >   	 */
-> >  -	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1,
-> iommu,
-> >  +	size = max(dev->coherent_dma_mask, dev->coherent_dma_mask +
-> 1);
+> Also update the pasid field from 16 to 20 bits.
 > 
-> size is not defined in acpi_dma_configure(), so there is something missing in
-> the diff above, just to make sure we are testing the same thing.
+> Cc: Peter Zijlstra <peterz-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>
+> Cc: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit-5C7GfCeVMHo@public.gmane.org>
+> ---
+>  arch/x86/events/amd/iommu.c | 102 +++++++++++++++++++-------------------------
+>  include/linux/perf_event.h  |   7 +++
+>  2 files changed, 52 insertions(+), 57 deletions(-)
 > 
-> Mind posting kernel logs with and without patch above (fixed) for DT boot
-> and ACPI boot please.
+> diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+> index 7ac8138..915a20c 100644
+> --- a/arch/x86/events/amd/iommu.c
+> +++ b/arch/x86/events/amd/iommu.c
+> @@ -23,17 +23,16 @@
+>  
+>  #define COUNTER_SHIFT		16
+>  
+> -#define _GET_BANK(ev)       ((u8)(ev->hw.extra_reg.reg >> 8))
+> -#define _GET_CNTR(ev)       ((u8)(ev->hw.extra_reg.reg))
+> -
+> -/* iommu pmu config masks */
+> -#define _GET_CSOURCE(ev)    ((ev->hw.config & 0xFFULL))
+> -#define _GET_DEVID(ev)      ((ev->hw.config >> 8)  & 0xFFFFULL)
+> -#define _GET_PASID(ev)      ((ev->hw.config >> 24) & 0xFFFFULL)
+> -#define _GET_DOMID(ev)      ((ev->hw.config >> 40) & 0xFFFFULL)
+> -#define _GET_DEVID_MASK(ev) ((ev->hw.extra_reg.config)  & 0xFFFFULL)
+> -#define _GET_PASID_MASK(ev) ((ev->hw.extra_reg.config >> 16) & 0xFFFFULL)
+> -#define _GET_DOMID_MASK(ev) ((ev->hw.extra_reg.config >> 32) & 0xFFFFULL)
+> +/* iommu pmu conf masks */
+> +#define GET_CSOURCE(x)     (x->conf & 0xFFULL)
 
-Sure. We will rerun the tests to create the logs again and share.
+You need to prevent the macro arg from potentially wrong precedence
+rules/multiple eval:
 
-Also need to double check, v9 patches are applied correctly on top of our branch.
-If I remember correctly v7 was fine with DT(didn't test with ACPI). But then as 
-Shicharan said it had that size fix.
+#define GET_CSOURCE(x)     ((x)->conf & 0xFFULL)
+			    ^^^
 
-Thanks,
-Shameer
-[...]
+I fixed them up when applying.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
