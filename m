@@ -1,63 +1,167 @@
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH] iommu/exynos: Use smarter TLB flush method for v5 SYSMMU
-Date: Fri, 24 Mar 2017 10:19:01 +0100
-Message-ID: <1490347141-17980-1-git-send-email-m.szyprowski@samsung.com>
-References: <CGME20170324091908eucas1p1afc5e0375908fd2e620b119eeb089cad@eucas1p1.samsung.com>
-Return-path: <linux-samsung-soc-owner@vger.kernel.org>
-Sender: linux-samsung-soc-owner@vger.kernel.org
-To: iommu@lists.linux-foundation.org, linux-samsung-soc@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Krzysztof Kozlowski <krzk@kernel.org>, Andrzej Hajda <a.hajda@samsung.com>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: RE: [PATCH V9 00/11] IOMMU probe deferral support
+Date: Fri, 24 Mar 2017 09:27:51 +0000
+Message-ID: <5FC3163CFD30C246ABAA99954A238FA81750B7CB@lhreml504-mbs>
+References: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
+	<58D49845.9060407@hisilicon.com>
+	<0ea8022b-a19b-335d-6cc6-81510196f891@codeaurora.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <0ea8022b-a19b-335d-6cc6-81510196f891-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org" <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SYSMMU v5 has dedicated registers to perform TLB flush range operation,
-so use them instead of looping with FLUSH_ENTRY command.
+Hi Sricharan,
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- drivers/iommu/exynos-iommu.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
+> -----Original Message-----
+> From: Sricharan R [mailto:sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org]
+> Sent: Friday, March 24, 2017 7:10 AM
+> To: Wangzhou (B); robin.murphy-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
+> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
+> foundation.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-arm-
+> msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org;
+> bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
+> acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org; hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org;
+> okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+> Cc: Shameerali Kolothum Thodi
+> Subject: Re: [PATCH V9 00/11] IOMMU probe deferral support
+> 
+> Hi Zhou,
+> 
+> On 3/24/2017 9:23 AM, Zhou Wang wrote:
+> > On 2017/3/10 3:00, Sricharan R wrote:
+> >> This series calls the dma ops configuration for the devices at a
+> >> generic place so that it works for all busses.
+> >> The dma_configure_ops for a device is now called during the
+> >> device_attach callback just before the probe of the bus/driver is
+> >> called. Similarly dma_deconfigure is called during
+> >> device/driver_detach path.
+> >>
+> >> pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
+> >>        |                         |
+> >> pci_bus_add_device     (device_add/driver_register)
+> >>        |                         |
+> >> device_attach           device_initial_probe
+> >>        |                         |
+> >> __device_attach_driver    __device_attach_driver
+> >>        |
+> >> driver_probe_device
+> >>        |
+> >> really_probe
+> >>        |
+> >> dma_configure
+> >>
+> >> Similarly on the device/driver_unregister path
+> >> __device_release_driver is called which inturn calls dma_deconfigure.
+> >>
+> >> Rebased the series against mainline 4.11-rc1. Applies and builds
+> >> cleanly against mainline and linux-next. There is a conflict with
+> >> patch#9 against iommu-next, but that should go away eventually as
+> >> iommu-next is rebased against 4.11-rc1.
+> >>
+> >> * Tested with platform and pci devices for probe deferral
+> >>   and reprobe on arm64 based platform.
+> >
+> > Hi Sricharan,
+> >
+> > I applied this series on v4.11-rc1 to test PCIe pass through in
+> > HiSilicon
+> > D05 board(with Intel 82599 networking card). It failed.
+> >
+> > After I used:
+> >
+> > echo vfio-pci > /sys/bus/pci/devices/0002:81:10.0/driver_override
+> > echo 0002:81:10.0 > /sys/bus/pci/drivers/ixgbevf/unbind
+> > echo 0002:81:10.0 > /sys/bus/pci/drivers_probe
+> >
+> > to bind vfio-pci driver to Intel 82599 networking card VF.
+> >
+> > I got log in host:
+> > [...]
+> > [  414.275818] ixgbevf: Intel(R) 10 Gigabit PCI Express Virtual
+> > Function Network Driver - version 3.2.2-k [  414.275824] ixgbevf: Copyright
+> (c) 2009 - 2015 Intel Corporation.
+> > [  414.276647] ixgbe 0002:81:00.0 eth12: SR-IOV enabled with 1 VFs [
+> > 414.342252] pcieport 0002:80:00.0: can't derive routing for PCI INT A
+> > [  414.342255] ixgbe 0002:81:00.0: PCI INT A: no GSI [  414.343348]
+> > ixgbe 0002:81:00.0: Multiqueue Enabled: Rx Queue count = 4, Tx Queue
+> > count = 4 [  414.448135] pci 0002:81:10.0: [8086:10ed] type 00 class
+> > 0x020000 [  414.448713] iommu: Adding device 0002:81:10.0 to group 4 [
+> > 414.449798] ixgbevf 0002:81:10.0: enabling device (0000 -> 0002) [
+> > 414.451101] ixgbevf 0002:81:10.0: PF still in reset state.  Is the PF interface
+> up?
+> > [  414.451103] ixgbevf 0002:81:10.0: Assigning random MAC address [
+> > 414.451414] ixgbevf 0002:81:10.0: be:30:8f:ed:f8:02 [  414.451417]
+> > ixgbevf 0002:81:10.0: MAC: 1 [  414.451418] ixgbevf 0002:81:10.0:
+> > Intel(R) 82599 Virtual Function [  414.464271] VFIO - User Level
+> > meta-driver version: 0.3 [  414.570074] ixgbe 0002:81:00.0: registered
+> > PHC device on eth12
+> > [  414.700493] specified DMA range outside IOMMU capability
+> <-- error here
+> > [  414.700496] Failed to set up IOMMU for device 0002:81:10.0; retaining
+> platform DMA ops        <-- error here
+> 
+> Looks like this triggers the start of the bug.
+> So the below check in iommu_dma_init_domain fails,
+> 
+>          if (domain->geometry.force_aperture) {
+>                  if (base > domain->geometry.aperture_end ||
+>                      base + size <= domain->geometry.aperture_start) {
+> 
+> and the rest goes out of sync after that. Can you print out the base,
+> aperture_start and end values to see why the check fails ?
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index c01bfcdb2383..48b5dabd06ce 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -171,6 +171,9 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
- #define REG_V5_PT_BASE_PFN	0x00C
- #define REG_V5_MMU_FLUSH_ALL	0x010
- #define REG_V5_MMU_FLUSH_ENTRY	0x014
-+#define REG_V5_MMU_FLUSH_RANGE	0x018
-+#define REG_V5_MMU_FLUSH_START	0x020
-+#define REG_V5_MMU_FLUSH_END	0x024
- #define REG_V5_INT_STATUS	0x060
- #define REG_V5_INT_CLEAR	0x064
- #define REG_V5_FAULT_AR_VA	0x070
-@@ -319,14 +322,23 @@ static void __sysmmu_tlb_invalidate_entry(struct sysmmu_drvdata *data,
- {
- 	unsigned int i;
+dev_info(dev, "0x%llx 0x%llx, 0x%llx 0x%llx, 0x%llx 0x%llx\n", base, size, domain->geometry.aperture_start, domain->geometry.aperture_end, *dev->dma_mask, dev->coherent_dma_mask);
+
+[  183.752100] ixgbevf 0000:81:10.0: 0x0 0x100000000, 0x0 0xffffffffffff, 0xffffffff 0xffffffff
+.....
+[  319.508037] vfio-pci 0000:81:10.0: 0x0 0x0, 0x0 0xffffffffffff, 0xffffffffffffffff 0xffffffffffffffff
+
+Yes, size seems to be the problem here. When the VF  device gets attached to vfio-pci,
+somehow the dev->coherent_dma_mask is set to 64 bits and size become zero.
+
+@@ -107,7 +107,7 @@ int of_dma_configure(struct device *dev, struct device_node *np)
+  	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
+  	if (ret < 0) {
+  		dma_addr = offset = 0;
+ -		size = dev->coherent_dma_mask + 1;
+ +		size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
+
+@@ -1386,7 +1387,8 @@ int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
+  	 * Assume dma valid range starts at 0 and covers the whole
+  	 * coherent_dma_mask.
+  	 */
+ -	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
+ +	size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
+ +	arch_setup_dma_ops(dev, 0, size, iommu,
+  			   attr == DEV_DMA_COHERENT);
+
+With the above fixes, DT boot works fine. But we still get the below crash on ACPI
+
+> > [  402.581445] kernel BUG at drivers/iommu/arm-smmu-v3.c:1064!
+> > [  402.587007] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+> > [  402.592479] Modules linked in: vfio_iommu_type1 vfio_pci irqbypass
+> vfio_virqfd vfio ixgbevf ixgb
+
+> The change that this series does is trying to add the dma/iommu ops to the
+> device after the iommu is actually probed.
+> So in your working case, does the device initially gets hooked to iommu_ops
+> and the above same check passes in working case ?
+
+I believe so. Because didn't notice the "specified DMA range outside IOMMU capability"
+in the working case.
  
--	for (i = 0; i < num_inv; i++) {
--		if (MMU_MAJ_VER(data->version) < 5)
-+	if (MMU_MAJ_VER(data->version) < 5) {
-+		for (i = 0; i < num_inv; i++) {
- 			writel((iova & SPAGE_MASK) | 1,
- 				     data->sfrbase + REG_MMU_FLUSH_ENTRY);
--		else
-+			iova += SPAGE_SIZE;
-+		}
-+	} else {
-+		if (num_inv == 1) {
- 			writel((iova & SPAGE_MASK) | 1,
- 				     data->sfrbase + REG_V5_MMU_FLUSH_ENTRY);
--		iova += SPAGE_SIZE;
-+		} else {
-+			writel((iova & SPAGE_MASK),
-+				     data->sfrbase + REG_V5_MMU_FLUSH_START);
-+			writel((iova & SPAGE_MASK) + (num_inv - 1) * SPAGE_SIZE,
-+				     data->sfrbase + REG_V5_MMU_FLUSH_END);
-+			writel(1, data->sfrbase + REG_V5_MMU_FLUSH_RANGE);
-+		}
- 	}
- }
- 
--- 
-1.9.1
+Thanks,
+Shameer
