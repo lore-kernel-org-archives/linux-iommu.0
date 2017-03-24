@@ -1,16 +1,23 @@
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
-Subject: RE: [PATCH V9 00/11] IOMMU probe deferral support
-Date: Fri, 24 Mar 2017 09:27:51 +0000
-Message-ID: <5FC3163CFD30C246ABAA99954A238FA81750B7CB@lhreml504-mbs>
-References: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
-	<58D49845.9060407@hisilicon.com>
-	<0ea8022b-a19b-335d-6cc6-81510196f891@codeaurora.org>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH 24/30] iommu: Specify PASID state when unbinding a task
+Date: Fri, 24 Mar 2017 12:00:45 +0100
+Message-ID: <20170324110045.GM7266@8bytes.org>
+References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
+	<20170227195441.5170-25-jean-philippe.brucker@arm.com>
+	<20170322154429.GE7266@8bytes.org>
+	<e2bb4c67-9b61-01cf-cc17-68088cdc5e5b@arm.com>
+	<20170322225320.GF7266@8bytes.org>
+	<a093bc07-a345-a689-9d97-f15a306f922d@arm.com>
+	<20170323143014.GK7266@8bytes.org>
+	<20170323145311.GA22972@e106794-lin.localdomain>
+	<20170323165218.GL7266@8bytes.org>
+	<9d318e88-11af-6dab-b30e-d6b5c02443fe@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <0ea8022b-a19b-335d-6cc6-81510196f891-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-US
+Content-Disposition: inline
+In-Reply-To: <9d318e88-11af-6dab-b30e-d6b5c02443fe-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,148 +27,30 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org" <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Sricharan,
-
-> -----Original Message-----
-> From: Sricharan R [mailto:sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org]
-> Sent: Friday, March 24, 2017 7:10 AM
-> To: Wangzhou (B); robin.murphy-5wv7dgnIgG8@public.gmane.org; will.deacon-5wv7dgnIgG8@public.gmane.org;
-> joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org; iommu-cunTk1MwBs/ROKNJybVBZg@public.gmane.org
-> foundation.org; linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org; linux-arm-
-> msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org;
-> bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org; linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; linux-
-> acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org; tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org; hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org;
-> okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
-> Cc: Shameerali Kolothum Thodi
-> Subject: Re: [PATCH V9 00/11] IOMMU probe deferral support
+On Thu, Mar 23, 2017 at 05:03:46PM +0000, Jean-Philippe Brucker wrote:
+> On 23/03/17 16:52, Joerg Roedel wrote:
+> > Thanks for that, I have a closer look. Is that stopper packet visible to
+> > software (e.g. is an entry created in the queue)?
 > 
-> Hi Zhou,
-> 
-> On 3/24/2017 9:23 AM, Zhou Wang wrote:
-> > On 2017/3/10 3:00, Sricharan R wrote:
-> >> This series calls the dma ops configuration for the devices at a
-> >> generic place so that it works for all busses.
-> >> The dma_configure_ops for a device is now called during the
-> >> device_attach callback just before the probe of the bus/driver is
-> >> called. Similarly dma_deconfigure is called during
-> >> device/driver_detach path.
-> >>
-> >> pci_bus_add_devices    (platform/amba)(_device_create/driver_register)
-> >>        |                         |
-> >> pci_bus_add_device     (device_add/driver_register)
-> >>        |                         |
-> >> device_attach           device_initial_probe
-> >>        |                         |
-> >> __device_attach_driver    __device_attach_driver
-> >>        |
-> >> driver_probe_device
-> >>        |
-> >> really_probe
-> >>        |
-> >> dma_configure
-> >>
-> >> Similarly on the device/driver_unregister path
-> >> __device_release_driver is called which inturn calls dma_deconfigure.
-> >>
-> >> Rebased the series against mainline 4.11-rc1. Applies and builds
-> >> cleanly against mainline and linux-next. There is a conflict with
-> >> patch#9 against iommu-next, but that should go away eventually as
-> >> iommu-next is rebased against 4.11-rc1.
-> >>
-> >> * Tested with platform and pci devices for probe deferral
-> >>   and reprobe on arm64 based platform.
-> >
-> > Hi Sricharan,
-> >
-> > I applied this series on v4.11-rc1 to test PCIe pass through in
-> > HiSilicon
-> > D05 board(with Intel 82599 networking card). It failed.
-> >
-> > After I used:
-> >
-> > echo vfio-pci > /sys/bus/pci/devices/0002:81:10.0/driver_override
-> > echo 0002:81:10.0 > /sys/bus/pci/drivers/ixgbevf/unbind
-> > echo 0002:81:10.0 > /sys/bus/pci/drivers_probe
-> >
-> > to bind vfio-pci driver to Intel 82599 networking card VF.
-> >
-> > I got log in host:
-> > [...]
-> > [  414.275818] ixgbevf: Intel(R) 10 Gigabit PCI Express Virtual
-> > Function Network Driver - version 3.2.2-k [  414.275824] ixgbevf: Copyright
-> (c) 2009 - 2015 Intel Corporation.
-> > [  414.276647] ixgbe 0002:81:00.0 eth12: SR-IOV enabled with 1 VFs [
-> > 414.342252] pcieport 0002:80:00.0: can't derive routing for PCI INT A
-> > [  414.342255] ixgbe 0002:81:00.0: PCI INT A: no GSI [  414.343348]
-> > ixgbe 0002:81:00.0: Multiqueue Enabled: Rx Queue count = 4, Tx Queue
-> > count = 4 [  414.448135] pci 0002:81:10.0: [8086:10ed] type 00 class
-> > 0x020000 [  414.448713] iommu: Adding device 0002:81:10.0 to group 4 [
-> > 414.449798] ixgbevf 0002:81:10.0: enabling device (0000 -> 0002) [
-> > 414.451101] ixgbevf 0002:81:10.0: PF still in reset state.  Is the PF interface
-> up?
-> > [  414.451103] ixgbevf 0002:81:10.0: Assigning random MAC address [
-> > 414.451414] ixgbevf 0002:81:10.0: be:30:8f:ed:f8:02 [  414.451417]
-> > ixgbevf 0002:81:10.0: MAC: 1 [  414.451418] ixgbevf 0002:81:10.0:
-> > Intel(R) 82599 Virtual Function [  414.464271] VFIO - User Level
-> > meta-driver version: 0.3 [  414.570074] ixgbe 0002:81:00.0: registered
-> > PHC device on eth12
-> > [  414.700493] specified DMA range outside IOMMU capability
-> <-- error here
-> > [  414.700496] Failed to set up IOMMU for device 0002:81:10.0; retaining
-> platform DMA ops        <-- error here
-> 
-> Looks like this triggers the start of the bug.
-> So the below check in iommu_dma_init_domain fails,
-> 
->          if (domain->geometry.force_aperture) {
->                  if (base > domain->geometry.aperture_end ||
->                      base + size <= domain->geometry.aperture_start) {
-> 
-> and the rest goes out of sync after that. Can you print out the base,
-> aperture_start and end values to see why the check fails ?
+> As far as I understand, it should be added to the queue like a normal PPR,
+> and software should check the R/W/L flags combination. For SMMU at least,
+> it is the same. The only difference is that when the PRI queue overflows,
+> the SMMU would discard a Stop Marker instead of sending an automated
+> response to the device (as it would do with others PPR that have the L
+> flag.) Software shouldn't send a response to a Stop Marker either.
 
-dev_info(dev, "0x%llx 0x%llx, 0x%llx 0x%llx, 0x%llx 0x%llx\n", base, size, domain->geometry.aperture_start, domain->geometry.aperture_end, *dev->dma_mask, dev->coherent_dma_mask);
+The document you posted is an addition to the spec, so we can't rely on
+a stop marker being sent by a device when it shuts down a context.
+Current AMD GPUs don't send one, afaik.
 
-[  183.752100] ixgbevf 0000:81:10.0: 0x0 0x100000000, 0x0 0xffffffffffff, 0xffffffff 0xffffffff
-.....
-[  319.508037] vfio-pci 0000:81:10.0: 0x0 0x0, 0x0 0xffffffffffff, 0xffffffffffffffff 0xffffffffffffffff
+I think the best we can do is shutting down processing for this PASID
+when and inform the device driver, when we receive a stop marker. An
+additional, optional call-back would do the job.
 
-Yes, size seems to be the problem here. When the VF  device gets attached to vfio-pci,
-somehow the dev->coherent_dma_mask is set to 64 bits and size become zero.
 
-@@ -107,7 +107,7 @@ int of_dma_configure(struct device *dev, struct device_node *np)
-  	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
-  	if (ret < 0) {
-  		dma_addr = offset = 0;
- -		size = dev->coherent_dma_mask + 1;
- +		size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
 
-@@ -1386,7 +1387,8 @@ int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
-  	 * Assume dma valid range starts at 0 and covers the whole
-  	 * coherent_dma_mask.
-  	 */
- -	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
- +	size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
- +	arch_setup_dma_ops(dev, 0, size, iommu,
-  			   attr == DEV_DMA_COHERENT);
-
-With the above fixes, DT boot works fine. But we still get the below crash on ACPI
-
-> > [  402.581445] kernel BUG at drivers/iommu/arm-smmu-v3.c:1064!
-> > [  402.587007] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-> > [  402.592479] Modules linked in: vfio_iommu_type1 vfio_pci irqbypass
-> vfio_virqfd vfio ixgbevf ixgb
-
-> The change that this series does is trying to add the dma/iommu ops to the
-> device after the iommu is actually probed.
-> So in your working case, does the device initially gets hooked to iommu_ops
-> and the above same check passes in working case ?
-
-I believe so. Because didn't notice the "specified DMA range outside IOMMU capability"
-in the working case.
- 
-Thanks,
-Shameer
+	Joerg
