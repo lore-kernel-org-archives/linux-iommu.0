@@ -1,13 +1,17 @@
-From: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: [PATCH] x86/pci-calgary: use setup_timer
-Date: Fri, 24 Mar 2017 22:15:14 +0800
-Message-ID: <e4f1888b9e4a87f6a6345f86ed23071483763b22.1490340972.git.geliangtang@gmail.com>
-References: <4841d2c2936addc27a2e774041d04ec16885ba03.1490341208.git.geliangtang@gmail.com>
+From: Lorenzo Pieralisi <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH V9 00/11] IOMMU probe deferral support
+Date: Fri, 24 Mar 2017 14:43:40 +0000
+Message-ID: <20170324144340.GA17560@red-moon>
+References: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
+	<58D49845.9060407@hisilicon.com>
+	<0ea8022b-a19b-335d-6cc6-81510196f891@codeaurora.org>
+	<5FC3163CFD30C246ABAA99954A238FA81750B7CB@lhreml504-mbs>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <4841d2c2936addc27a2e774041d04ec16885ba03.1490341208.git.geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA81750B7CB@lhreml504-mbs>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,32 +21,55 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, Jon Mason <jdmason-zqedIHPRSYI@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
-Cc: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org" <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Use setup_timer() instead of init_timer() to simplify the code.
+On Fri, Mar 24, 2017 at 09:27:51AM +0000, Shameerali Kolothum Thodi wrote:
 
-Signed-off-by: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
----
- arch/x86/kernel/pci-calgary_64.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+[...]
 
-diff --git a/arch/x86/kernel/pci-calgary_64.c b/arch/x86/kernel/pci-calgary_64.c
-index 0c150c0..fda7867 100644
---- a/arch/x86/kernel/pci-calgary_64.c
-+++ b/arch/x86/kernel/pci-calgary_64.c
-@@ -1007,9 +1007,8 @@ static void __init calgary_enable_translation(struct pci_dev *dev)
- 	writel(cpu_to_be32(val32), target);
- 	readl(target); /* flush */
- 
--	init_timer(&tbl->watchdog_timer);
--	tbl->watchdog_timer.function = &calgary_watchdog;
--	tbl->watchdog_timer.data = (unsigned long)dev;
-+	setup_timer(&tbl->watchdog_timer, &calgary_watchdog,
-+		    (unsigned long)dev);
- 	mod_timer(&tbl->watchdog_timer, jiffies);
- }
- 
--- 
-2.9.3
+> @@ -107,7 +107,7 @@ int of_dma_configure(struct device *dev, struct device_node *np)
+>   	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
+>   	if (ret < 0) {
+>   		dma_addr = offset = 0;
+>  -		size = dev->coherent_dma_mask + 1;
+>  +		size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
+> 
+> @@ -1386,7 +1387,8 @@ int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
+>   	 * Assume dma valid range starts at 0 and covers the whole
+>   	 * coherent_dma_mask.
+>   	 */
+>  -	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
+>  +	size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
+
+size is not defined in acpi_dma_configure(), so there is
+something missing in the diff above, just to make sure we are
+testing the same thing.
+
+Mind posting kernel logs with and without patch above (fixed) for
+DT boot and ACPI boot please.
+
+Thanks,
+Lorenzo
+
+>  +	arch_setup_dma_ops(dev, 0, size, iommu,
+>   			   attr == DEV_DMA_COHERENT);
+> 
+> With the above fixes, DT boot works fine. But we still get the below crash on ACPI
+> 
+> > > [  402.581445] kernel BUG at drivers/iommu/arm-smmu-v3.c:1064!
+> > > [  402.587007] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+> > > [  402.592479] Modules linked in: vfio_iommu_type1 vfio_pci irqbypass
+> > vfio_virqfd vfio ixgbevf ixgb
+> 
+> > The change that this series does is trying to add the dma/iommu ops to the
+> > device after the iommu is actually probed.
+> > So in your working case, does the device initially gets hooked to iommu_ops
+> > and the above same check passes in working case ?
+> 
+> I believe so. Because didn't notice the "specified DMA range outside IOMMU capability"
+> in the working case.
+>  
+> Thanks,
+> Shameer
