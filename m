@@ -1,16 +1,13 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH V9 00/11] IOMMU probe deferral support
-Date: Fri, 24 Mar 2017 18:20:13 +0530
-Message-ID: <d9d33133-859a-0189-76c1-c3ec3abdaed6@codeaurora.org>
-References: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
-	<58D49845.9060407@hisilicon.com>
-	<0ea8022b-a19b-335d-6cc6-81510196f891@codeaurora.org>
-	<5FC3163CFD30C246ABAA99954A238FA81750B7CB@lhreml504-mbs>
+From: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] x86/pci-calgary: use setup_timer
+Date: Fri, 24 Mar 2017 22:15:14 +0800
+Message-ID: <e4f1888b9e4a87f6a6345f86ed23071483763b22.1490340972.git.geliangtang@gmail.com>
+References: <4841d2c2936addc27a2e774041d04ec16885ba03.1490341208.git.geliangtang@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA81750B7CB@lhreml504-mbs>
+In-Reply-To: <4841d2c2936addc27a2e774041d04ec16885ba03.1490341208.git.geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,102 +17,32 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org" <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+To: Muli Ben-Yehuda <mulix-BzGcCpaT2IbYtjvyW6yDsg@public.gmane.org>, Jon Mason <jdmason-zqedIHPRSYI@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>
+Cc: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Shameer,
+Use setup_timer() instead of init_timer() to simplify the code.
 
+Signed-off-by: Geliang Tang <geliangtang-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+---
+ arch/x86/kernel/pci-calgary_64.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
->>> [  414.700493] specified DMA range outside IOMMU capability
->> <-- error here
->>> [  414.700496] Failed to set up IOMMU for device 0002:81:10.0; retaining
->> platform DMA ops        <-- error here
->>
->> Looks like this triggers the start of the bug.
->> So the below check in iommu_dma_init_domain fails,
->>
->>          if (domain->geometry.force_aperture) {
->>                  if (base > domain->geometry.aperture_end ||
->>                      base + size <= domain->geometry.aperture_start) {
->>
->> and the rest goes out of sync after that. Can you print out the base,
->> aperture_start and end values to see why the check fails ?
->
-> dev_info(dev, "0x%llx 0x%llx, 0x%llx 0x%llx, 0x%llx 0x%llx\n", base, size, domain->geometry.aperture_start, domain->geometry.aperture_end, *dev->dma_mask, dev->coherent_dma_mask);
->
-> [  183.752100] ixgbevf 0000:81:10.0: 0x0 0x100000000, 0x0 0xffffffffffff, 0xffffffff 0xffffffff
-> .....
-> [  319.508037] vfio-pci 0000:81:10.0: 0x0 0x0, 0x0 0xffffffffffff, 0xffffffffffffffff 0xffffffffffffffff
->
-> Yes, size seems to be the problem here. When the VF  device gets attached to vfio-pci,
-> somehow the dev->coherent_dma_mask is set to 64 bits and size become zero.
->
-> @@ -107,7 +107,7 @@ int of_dma_configure(struct device *dev, struct device_node *np)
->   	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
->   	if (ret < 0) {
->   		dma_addr = offset = 0;
->  -		size = ';
->  +		size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
->
-
-But without this series, size is still set as
-dev->coherent_dma_mask + 1 , somehow not sure how it works
-fine in that case ?
-
-I remember i had this change in the V7 patchset, but later
-dropped it for the reason that this change is not relevant
-for this series, but should be there/sent to address the 64bit
-overflow separately.
-
-> @@ -1386,7 +1387,8 @@ int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
->   	 * Assume dma valid range starts at 0 and covers the whole
->   	 * coherent_dma_mask.
->   	 */
->  -	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
->  +	size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
->  +	arch_setup_dma_ops(dev, 0, size, iommu,
->   			   attr == DEV_DMA_COHERENT);
->
-> With the above fixes, DT boot works fine. But we still get the below crash on ACPI
->
->>> [  402.581445] kernel BUG at drivers/iommu/arm-smmu-v3.c:1064!
-
-Looks like this happens when the ste_live becomes true during
-the initial attach, but later without an detach,
-attach once again happens from vfio. Just thinking why the
-detach_dev is not happening only in ACPI case. Actually not
-having any of arm-smmuv3 or ACPI based setup in my place.
-Can i get some help by having some logs from the arm-smmv3
-driver ?
-
->>> [  402.587007] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
->>> [  402.592479] Modules linked in: vfio_iommu_type1 vfio_pci irqbypass
->> vfio_virqfd vfio ixgbevf ixgb
->
->> The change that this series does is trying to add the dma/iommu ops to the
->> device after the iommu is actually probed.
->> So in your working case, does the device initially gets hooked to iommu_ops
->> and the above same check passes in working case ?
->
-> I believe so. Because didn't notice the "specified DMA range outside IOMMU capability"
-> in the working case.
-
-ok, as i said above not sure why the overflow does not affect without
-this series.
-
-Regards,
-  Sricharan
-
-
->
-> Thanks,
-> Shameer
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
-
+diff --git a/arch/x86/kernel/pci-calgary_64.c b/arch/x86/kernel/pci-calgary_64.c
+index 0c150c0..fda7867 100644
+--- a/arch/x86/kernel/pci-calgary_64.c
++++ b/arch/x86/kernel/pci-calgary_64.c
+@@ -1007,9 +1007,8 @@ static void __init calgary_enable_translation(struct pci_dev *dev)
+ 	writel(cpu_to_be32(val32), target);
+ 	readl(target); /* flush */
+ 
+-	init_timer(&tbl->watchdog_timer);
+-	tbl->watchdog_timer.function = &calgary_watchdog;
+-	tbl->watchdog_timer.data = (unsigned long)dev;
++	setup_timer(&tbl->watchdog_timer, &calgary_watchdog,
++		    (unsigned long)dev);
+ 	mod_timer(&tbl->watchdog_timer, jiffies);
+ }
+ 
 -- 
-"QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member of Code Aurora Forum, hosted by The Linux Foundation
+2.9.3
