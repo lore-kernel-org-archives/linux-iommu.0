@@ -1,92 +1,121 @@
-From: Jayachandran C <jnair@caviumnetworks.com>
-Subject: Re: [PATCH v3 0/2] Handle Cavium ThunderX2 PCI topology quirk
-Date: Fri, 24 Mar 2017 12:44:08 +0000
-Message-ID: <20170324124327.GA2525@localhost>
-References: <1490172671-2648-1-git-send-email-jnair@caviumnetworks.com>
- <122d7df5-8fde-c6fb-a608-9091dd59e79b@redhat.com>
+From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH V9 00/11] IOMMU probe deferral support
+Date: Fri, 24 Mar 2017 18:20:13 +0530
+Message-ID: <d9d33133-859a-0189-76c1-c3ec3abdaed6@codeaurora.org>
+References: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
+	<58D49845.9060407@hisilicon.com>
+	<0ea8022b-a19b-335d-6cc6-81510196f891@codeaurora.org>
+	<5FC3163CFD30C246ABAA99954A238FA81750B7CB@lhreml504-mbs>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <122d7df5-8fde-c6fb-a608-9091dd59e79b@redhat.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jon Masters <jcm@redhat.com>
-Cc: Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5FC3163CFD30C246ABAA99954A238FA81750B7CB@lhreml504-mbs>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, "Wangzhou (B)" <wangzhou1-C8/M+/jPZTeaMJb+Lgu22Q@public.gmane.org>, "robin.murphy-5wv7dgnIgG8@public.gmane.org" <robin.murphy-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org" <lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org" <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, "bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org" <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org" <tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org>, "hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org" <okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 22, 2017 at 11:13:05AM -0400, Jon Masters wrote:
-> On 03/22/2017 04:51 AM, Jayachandran C wrote:
-> > Hi Bjorn, Alex,
-> > 
-> > Here is v3 of the patchset to handle the PCIe topology quirk of
-> > Cavium ThunderX2 (previously called Broadcom Vulcan).
-> > 
-> > The earlier discussions on this can be seen at:
-> > http://www.spinics.net/lists/linux-pci/msg51001.html
-> > https://patchwork.ozlabs.org/patch/582633/ and
-> > https://lists.linuxfoundation.org/pipermail/iommu/2016-June/017681.html
-> > 
-> > The earlier discussion on this patchset had stalled with a suggestion
-> > that it may be possible to fix up this quirk by handling the issue in
-> > the function argument of pci_for_each_dma_alias(). But at that point
-> > all the ACPI and OF code for SMMU and GIC was to merged, and we did not
-> > have reasonable codebase to make the changes.
-> > 
-> > For 4.11, I tried to fix it in both the SMMU and the GIC ITS code based
-> > on this suggestion, but after going thru the effort, that does not look
-> > like the right approach. I have the code changes at:
-> > https://github.com/jchandra-cavm/linux/commits/rid-xlate-fixup
-> > if anyone want to look over the code.
-> > 
-> > The problems with that approach is:
-> >  - of the 14 uses of pci_for_each_dma_alias in the function in the kernel
-> >    tree, I have to fixup 6 callers (which is all but one ofthe callers
-> >    outside x86)
-> >  - 4 of these can be reasonably handled (please see the github repo above),
-> >    but the calls in drivers/irqchip/irq-gic-v3-its-pci-msi.c and
-> >    drivers/iommu/iommu.c cannot be reasonably fixed up.
-> >  - Even without the 2 above two changes I can get it to work for now.
-> >    But pci_for_each_dma_alias does not work as expected on this platform
-> >    and we have to be aware of that for all future uses of the function.
-> >   
-> > For now, I have ruled out that approach, and I have rebased the earlier
-> > patch on to 4.11-rc and submitting again for review. The changes are:
-> > 
-> > v2>v3:
-> >  - changed device flag name from PCI_DEV_FLAGS_DMA_ALIAS_ROOT to
-> >    PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT
-> >  - updated commit message to make the quirk clearer.
-> > 
-> > Let me know your comments and suggestions.
-> 
-> My opinion FWIW is that the quirk you have is one of the least intrusive
-> ways of handling this. Generally in the case of ARM servers, we have a
-> difference vs. x86 in that the latter usually have a magic RC at the
-> top level that everything sits beneath (and then, presumably, Intel
-> do some magic for multi-socket to fudge things over Q/UPI so that
-> things look nice and boring to software). On ARM, we're typically
-> dealing with third party RC IP that's disjoint from other parts of
-> the SoC. We're certainly in the process of bolstering the specs to
-> set some expectations and greater guidance around topologies that
-> we would like to avoid, so I don't see this getting out of hand.
-> 
+Hi Shameer,
 
-The ACPI specification[1] and the device tree specification[2] have
-provisions for mapping RID ranges under an RC to different SMMUs with
-an offset to generate StreamIDs. This is also true for the mapping
-from RID to ITS and DeviceID. So having multiple SMMUs/ITSs for
-devices under the same RC is not really a quirk.
 
-It is also reasonable to have the traversal looking for aliases to
-stop at the point where the SMMU or ITS is attached. The quirk flag
-is only needed because the information on where the SMMU or ITS is
-attached is not available to the pci_for_each_dma_alias implementation.
-Usually this is not an issue, but unfortunately on ThunderX2, there
-are PCI and PCI/PCIe bridges above this point which causes the
-current code to calculate RIDs incorrectly.
+>>> [  414.700493] specified DMA range outside IOMMU capability
+>> <-- error here
+>>> [  414.700496] Failed to set up IOMMU for device 0002:81:10.0; retaining
+>> platform DMA ops        <-- error here
+>>
+>> Looks like this triggers the start of the bug.
+>> So the below check in iommu_dma_init_domain fails,
+>>
+>>          if (domain->geometry.force_aperture) {
+>>                  if (base > domain->geometry.aperture_end ||
+>>                      base + size <= domain->geometry.aperture_start) {
+>>
+>> and the rest goes out of sync after that. Can you print out the base,
+>> aperture_start and end values to see why the check fails ?
+>
+> dev_info(dev, "0x%llx 0x%llx, 0x%llx 0x%llx, 0x%llx 0x%llx\n", base, size, domain->geometry.aperture_start, domain->geometry.aperture_end, *dev->dma_mask, dev->coherent_dma_mask);
+>
+> [  183.752100] ixgbevf 0000:81:10.0: 0x0 0x100000000, 0x0 0xffffffffffff, 0xffffffff 0xffffffff
+> .....
+> [  319.508037] vfio-pci 0000:81:10.0: 0x0 0x0, 0x0 0xffffffffffff, 0xffffffffffffffff 0xffffffffffffffff
+>
+> Yes, size seems to be the problem here. When the VF  device gets attached to vfio-pci,
+> somehow the dev->coherent_dma_mask is set to 64 bits and size become zero.
+>
+> @@ -107,7 +107,7 @@ int of_dma_configure(struct device *dev, struct device_node *np)
+>   	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
+>   	if (ret < 0) {
+>   		dma_addr = offset = 0;
+>  -		size = ';
+>  +		size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
+>
 
-Thanks,
-JC.
+But without this series, size is still set as
+dev->coherent_dma_mask + 1 , somehow not sure how it works
+fine in that case ?
 
-[1] http://infocenter.arm.com/help/topic/com.arm.doc.den0049b/DEN0049B_IO_Remapping_Table.pdf
-[2] https://www.kernel.org/doc/Documentation/devicetree/bindings/pci/pci-iommu.txt 
+I remember i had this change in the V7 patchset, but later
+dropped it for the reason that this change is not relevant
+for this series, but should be there/sent to address the 64bit
+overflow separately.
+
+> @@ -1386,7 +1387,8 @@ int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
+>   	 * Assume dma valid range starts at 0 and covers the whole
+>   	 * coherent_dma_mask.
+>   	 */
+>  -	arch_setup_dma_ops(dev, 0, dev->coherent_dma_mask + 1, iommu,
+>  +	size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
+>  +	arch_setup_dma_ops(dev, 0, size, iommu,
+>   			   attr == DEV_DMA_COHERENT);
+>
+> With the above fixes, DT boot works fine. But we still get the below crash on ACPI
+>
+>>> [  402.581445] kernel BUG at drivers/iommu/arm-smmu-v3.c:1064!
+
+Looks like this happens when the ste_live becomes true during
+the initial attach, but later without an detach,
+attach once again happens from vfio. Just thinking why the
+detach_dev is not happening only in ACPI case. Actually not
+having any of arm-smmuv3 or ACPI based setup in my place.
+Can i get some help by having some logs from the arm-smmv3
+driver ?
+
+>>> [  402.587007] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+>>> [  402.592479] Modules linked in: vfio_iommu_type1 vfio_pci irqbypass
+>> vfio_virqfd vfio ixgbevf ixgb
+>
+>> The change that this series does is trying to add the dma/iommu ops to the
+>> device after the iommu is actually probed.
+>> So in your working case, does the device initially gets hooked to iommu_ops
+>> and the above same check passes in working case ?
+>
+> I believe so. Because didn't notice the "specified DMA range outside IOMMU capability"
+> in the working case.
+
+ok, as i said above not sure why the overflow does not affect without
+this series.
+
+Regards,
+  Sricharan
+
+
+>
+> Thanks,
+> Shameer
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-arm-msm" in
+> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+
+-- 
+"QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member of Code Aurora Forum, hosted by The Linux Foundation
