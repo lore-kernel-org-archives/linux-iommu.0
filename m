@@ -1,167 +1,89 @@
-From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 3/9] Docs: dt: document qcom iommu bindings
-Date: Thu, 23 Mar 2017 17:21:37 -0500
-Message-ID: <20170323222137.okq227mgsmsjy5zf@rob-hp-laptop>
-References: <20170314151811.17234-1-robdclark@gmail.com>
- <20170314151811.17234-4-robdclark@gmail.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: Re: [PATCH 1/7] iommu/iova: fix incorrect variable types
+Date: Fri, 24 Mar 2017 10:27:13 +0800
+Message-ID: <58D48401.10009@huawei.com>
+References: <1490164067-12552-1-git-send-email-thunder.leizhen@huawei.com>
+	<1490164067-12552-2-git-send-email-thunder.leizhen@huawei.com>
+	<5fd3cc4b-44c1-e300-6254-892a6dfa435c@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170314151811.17234-4-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Sricharan <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <5fd3cc4b-44c1-e300-6254-892a6dfa435c-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashutosh Dixit <ashutosh.dixit-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Mar 14, 2017 at 11:18:05AM -0400, Rob Clark wrote:
-> Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-> ---
->  .../devicetree/bindings/iommu/qcom,iommu.txt       | 113 +++++++++++++++++++++
->  1 file changed, 113 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,iommu.txt
+
+
+On 2017/3/23 19:42, Robin Murphy wrote:
+> On 22/03/17 06:27, Zhen Lei wrote:
+>> Keep these four variables type consistent with the paramters of function
+>> __alloc_and_insert_iova_range and the members of struct iova:
+>>
+>> 1. static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+>> 		unsigned long size, unsigned long limit_pfn,
+>>
+>> 2. struct iova {
+>> 	unsigned long	pfn_hi;
+>> 	unsigned long	pfn_lo;
+>>
+>> In fact, limit_pfn is most likely larger than 32 bits on DMA64.
 > 
-> diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-> new file mode 100644
-> index 0000000..fd5b7fa
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-> @@ -0,0 +1,113 @@
-> +* QCOM IOMMU v1 Implementation
-> +
-> +Qualcomm "B" family devices which are not compatible with arm-smmu have
-> +a similar looking IOMMU but without access to the global register space,
-> +and optionally requiring additional configuration to route context irqs
-> +to non-secure vs secure interrupt line.
-> +
-> +** Required properties:
-> +
-> +- compatible       : Should be one of:
-> +
-> +                        "qcom,msm8916-iommu"
-> +
-> +- clock-names      : Should be a pair of "iface" (required for IOMMUs
-> +                     register group access) and "bus" (required for
-> +                     the IOMMUs underlying bus access).
-> +- clocks           : Phandles for respective clocks described by
-> +                     clock-names.
-> +- #address-cells   : must be 1.
-> +- #size-cells      : must be 1.
-> +- #iommu-cells     : Must be 1.
-> +- ranges           : Base address and size of the iommu context banks.
-> +- qcom,iommu-secure-id  : secure-id.
-> +
-> +- List of sub-nodes, one per translation context bank.  Each sub-node
-> +  has the following required properties:
-> +
-> +  - compatible     : Should be one of:
-> +        - "qcom,msm-iommu-v1-ns"  : non-secure context bank
-> +        - "qcom,msm-iommu-v1-sec" : secure context bank
-> +  - reg            : Base address and size of context bank within the iommu
-> +  - interrupts     : The context fault irq.
-> +
-> +** Optional properties:
-> +
-> +- reg              : Base address and size of the SMMU local base, should
-> +                     be only specified if the iommu requires configuration
-> +                     for routing of context bank irq's to secure vs non-
-> +                     secure lines.  (Ie. if the iommu contains secure
-> +                     context banks)
-> +
-> +
-> +** Examples:
-> +
-> +	apps_iommu: iommu@1e20000 {
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
-> +		#iommu-cells = <1>;
-> +		compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
+> FWIW if pad_size manages to overflow an int something's probably gone
+> horribly wrong, but there's no harm in making it consistent with
+> everything else here. However, given that patch #6 makes this irrelevant
+> anyway, do we really need to bother?
 
-You didn't document the fallback above. Maybe just drop it if only a few 
-chips have this iommu.
+Because I'm not sure whether patch #6 can be applied or not.
 
-> +		ranges = <0 0x1e20000 0x40000>;
-> +		reg = <0x1ef0000 0x3000>;
-
-When you have both reg and ranges, use reg value for the unit-address.
-
-> +		clocks = <&gcc GCC_SMMU_CFG_CLK>,
-> +			 <&gcc GCC_APSS_TCU_CLK>;
-> +		clock-names = "iface", "bus";
-> +		qcom,iommu-secure-id = <17>;
-> +
-> +		// mdp_0:
-> +		iommu-ctx@4000 {
-> +			compatible = "qcom,msm-iommu-v1-ns";
-> +			reg = <0x4000 0x1000>;
-> +			interrupts = <GIC_SPI 70 0>;
-> +		};
-> +
-> +		// venus_ns:
-> +		iommu-ctx@5000 {
-> +			compatible = "qcom,msm-iommu-v1-sec";
-> +			reg = <0x5000 0x1000>;
-> +			interrupts = <GIC_SPI 70 0>;
-> +		};
-> +	};
-> +
-> +	gpu_iommu: iommu@1f08000 {
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
-> +		#iommu-cells = <1>;
-> +		compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
-> +		ranges = <0 0x1f08000 0x10000>;
-> +		clocks = <&gcc GCC_SMMU_CFG_CLK>,
-> +			 <&gcc GCC_GFX_TCU_CLK>;
-> +		clock-names = "iface", "bus";
-> +		qcom,iommu-secure-id = <18>;
-> +
-> +		// gfx3d_user:
-> +		iommu-ctx@1f09000 {
-
-iommu-ctx@1000
-
-> +			compatible = "qcom,msm-iommu-v1-ns";
-> +			reg = <0x1000 0x1000>;
-> +			interrupts = <GIC_SPI 241 0>;
-> +		};
-> +
-> +		// gfx3d_priv:
-> +		iommu-ctx@1f0a000 {
-
-iommu-ctx@2000
-
-> +			compatible = "qcom,msm-iommu-v1-ns";
-> +			reg = <0x2000 0x1000>;
-> +			interrupts = <GIC_SPI 242 0>;
-> +		};
-> +	};
-> +
-> +	...
-> +
-> +	venus: video-codec@1d00000 {
-> +		...
-> +		iommus = <&apps_iommu 5>;
-> +	};
-> +
-> +	mdp: mdp@1a01000 {
-> +		...
-> +		iommus = <&apps_iommu 4>;
-> +	};
-> +
-> +	gpu@01c00000 {
-> +		...
-> +		iommus = <&gpu_iommu 1>, <&gpu_iommu 2>;
-> +	};
-> -- 
-> 2.9.3
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe devicetree" in
-> the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Robin.
+> 
+>> Signed-off-by: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+>> ---
+>>  drivers/iommu/iova.c | 6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+>> index b7268a1..8ba8b496 100644
+>> --- a/drivers/iommu/iova.c
+>> +++ b/drivers/iommu/iova.c
+>> @@ -104,8 +104,8 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
+>>   * Computes the padding size required, to make the start address
+>>   * naturally aligned on the power-of-two order of its size
+>>   */
+>> -static unsigned int
+>> -iova_get_pad_size(unsigned int size, unsigned int limit_pfn)
+>> +static unsigned long
+>> +iova_get_pad_size(unsigned long size, unsigned long limit_pfn)
+>>  {
+>>  	return (limit_pfn + 1 - size) & (__roundup_pow_of_two(size) - 1);
+>>  }
+>> @@ -117,7 +117,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+>>  	struct rb_node *prev, *curr = NULL;
+>>  	unsigned long flags;
+>>  	unsigned long saved_pfn;
+>> -	unsigned int pad_size = 0;
+>> +	unsigned long pad_size = 0;
+>>  
+>>  	/* Walk the tree backwards */
+>>  	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+>>
+> 
+> 
+> .
+> 
+
+-- 
+Thanks!
+BestRegards
