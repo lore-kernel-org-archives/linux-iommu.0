@@ -1,13 +1,15 @@
 From: Oza Pawandeep via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [RFC PATCH 1/3] of/pci: dma-ranges to account highest possible host
-	bridge dma_mask
-Date: Sat, 25 Mar 2017 11:01:31 +0530
-Message-ID: <1490419893-5073-1-git-send-email-oza.oza@broadcom.com>
+Subject: [RFC PATCH 2/3] iommu/dma: account pci host bridge dma_mask for IOVA
+	allocation
+Date: Sat, 25 Mar 2017 11:01:32 +0530
+Message-ID: <1490419893-5073-2-git-send-email-oza.oza@broadcom.com>
+References: <1490419893-5073-1-git-send-email-oza.oza@broadcom.com>
 Reply-To: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1490419893-5073-1-git-send-email-oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -35,6 +37,14 @@ these transactions on SOC IO bus. This means on such ARM/ARM64
 SOCs the IOVA of in-bound transactions has to honor the addressing
 restrictions of the PCI Host.
 
+this patch is inspired by
+http://www.mail-archive.com/linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org/msg1306545.html
+http://www.spinics.net/lists/arm-kernel/msg566947.html
+
+but above inspiraiton solves the half of the problem.
+the rest of the problem is descrbied below, what we face on iproc based
+SOCs.
+
 current pcie frmework and of framework integration assumes dma-ranges
 in a way where memory-mapped devices define their dma-ranges.
 dma-ranges: (child-bus-address, parent-bus-address, length).
@@ -56,113 +66,112 @@ Reviewed-by: Anup Patel <anup.patel-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 
-Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 8c7c244..20cfff7 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -217,6 +217,9 @@ config NEED_DMA_MAP_STATE
+ config NEED_SG_DMA_LENGTH
+ 	def_bool y
+ 
++config ARCH_HAS_DMA_SET_COHERENT_MASK
++	def_bool y
++
+ config SMP
+ 	def_bool y
+ 
+diff --git a/arch/arm64/include/asm/device.h b/arch/arm64/include/asm/device.h
+index 73d5bab..64b4dc3 100644
+--- a/arch/arm64/include/asm/device.h
++++ b/arch/arm64/include/asm/device.h
+@@ -20,6 +20,7 @@ struct dev_archdata {
+ #ifdef CONFIG_IOMMU_API
+ 	void *iommu;			/* private IOMMU data */
+ #endif
++	u64 parent_dma_mask;
+ 	bool dma_coherent;
+ };
+ 
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 81cdb2e..5845ecd 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -564,6 +564,7 @@ static void flush_page(struct device *dev, const void *virt, phys_addr_t phys)
+ 	__dma_flush_area(virt, PAGE_SIZE);
+ }
+ 
++
+ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+ 				 dma_addr_t *handle, gfp_t gfp,
+ 				 unsigned long attrs)
+@@ -795,6 +796,20 @@ static void __iommu_unmap_sg_attrs(struct device *dev,
+ 	iommu_dma_unmap_sg(dev, sgl, nelems, dir, attrs);
+ }
+ 
++static int __iommu_set_dma_mask(struct device *dev, u64 mask)
++{
++	/* device is not DMA capable */
++	if (!dev->dma_mask)
++		return -EIO;
++
++	if (mask > dev->archdata.parent_dma_mask)
++		mask = dev->archdata.parent_dma_mask;
++
++	*dev->dma_mask = mask;
++
++	return 0;
++}
++
+ static const struct dma_map_ops iommu_dma_ops = {
+ 	.alloc = __iommu_alloc_attrs,
+ 	.free = __iommu_free_attrs,
+@@ -811,8 +826,21 @@ static void __iommu_unmap_sg_attrs(struct device *dev,
+ 	.map_resource = iommu_dma_map_resource,
+ 	.unmap_resource = iommu_dma_unmap_resource,
+ 	.mapping_error = iommu_dma_mapping_error,
++	.set_dma_mask = __iommu_set_dma_mask,
+ };
+ 
++int dma_set_coherent_mask(struct device *dev, u64 mask)
++{
++	if (get_dma_ops(dev) == &iommu_dma_ops &&
++	    mask > dev->archdata.parent_dma_mask)
++		mask = dev->archdata.parent_dma_mask;
++
++	dev->coherent_dma_mask = mask;
++	return 0;
++}
++EXPORT_SYMBOL(dma_set_coherent_mask);
++
++
+ /*
+  * TODO: Right now __iommu_setup_dma_ops() gets called too early to do
+  * everything it needs to - the device is only partially created and the
+@@ -975,6 +1003,8 @@ void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+ 	if (!dev->dma_ops)
+ 		dev->dma_ops = &swiotlb_dma_ops;
+ 
++	dev->archdata.parent_dma_mask = size - 1;
++
+ 	dev->archdata.dma_coherent = coherent;
+ 	__iommu_setup_dma_ops(dev, dma_base, size, iommu);
+ }
 diff --git a/drivers/of/device.c b/drivers/of/device.c
-index b1e6beb..d362a98 100644
+index d362a98..471dcdf 100644
 --- a/drivers/of/device.c
 +++ b/drivers/of/device.c
-@@ -9,6 +9,7 @@
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
- #include <linux/slab.h>
-+#include <linux/of_pci.h>
+@@ -139,10 +139,8 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+ 	 * Limit coherent and dma mask based on size and default mask
+ 	 * set by the driver.
+ 	 */
+-	dev->coherent_dma_mask = min(dev->coherent_dma_mask,
+-				     DMA_BIT_MASK(ilog2(dma_addr + size)));
+-	*dev->dma_mask = min((*dev->dma_mask),
+-			     DMA_BIT_MASK(ilog2(dma_addr + size)));
++	dev->coherent_dma_mask = DMA_BIT_MASK(ilog2(dma_addr + size));
++	*dev->dma_mask = dev->coherent_dma_mask;
  
- #include <asm/errno.h>
- #include "of_private.h"
-@@ -104,7 +105,11 @@ void of_dma_configure(struct device *dev, struct device_node *np)
- 	if (!dev->dma_mask)
- 		dev->dma_mask = &dev->coherent_dma_mask;
- 
--	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
-+	if (dev_is_pci(dev))
-+		ret = of_pci_get_dma_ranges(np, &dma_addr, &paddr, &size);
-+	else
-+		ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
-+
- 	if (ret < 0) {
- 		dma_addr = offset = 0;
- 		size = dev->coherent_dma_mask + 1;
-diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
-index 0ee42c3..c7f8626 100644
---- a/drivers/of/of_pci.c
-+++ b/drivers/of/of_pci.c
-@@ -283,6 +283,52 @@ int of_pci_get_host_bridge_resources(struct device_node *dev,
- 	return err;
- }
- EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
-+
-+int of_pci_get_dma_ranges(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
-+{
-+	struct device_node *node = of_node_get(np);
-+	int rlen, ret = 0;
-+	const int na = 3, ns = 2;
-+	struct of_pci_range_parser parser;
-+	struct of_pci_range range;
-+
-+	if (!node)
-+		return -EINVAL;
-+
-+	parser.node = node;
-+	parser.pna = of_n_addr_cells(node);
-+	parser.np = parser.pna + na + ns;
-+
-+	parser.range = of_get_property(node, "dma-ranges", &rlen);
-+
-+	if (!parser.range) {
-+		pr_debug("pcie device has no dma-ranges defined for node(%s)\n", np->full_name);
-+		ret = -ENODEV;
-+		goto out;
-+	}
-+
-+	parser.end = parser.range + rlen / sizeof(__be32);
-+	*size = 0;
-+
-+	for_each_of_pci_range(&parser, &range) {
-+		if (*size < range.size) {
-+			*dma_addr = range.pci_addr;
-+			*size = range.size;
-+			*paddr = range.cpu_addr;
-+		}
-+	}
-+
-+	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
-+		 *dma_addr, *paddr, *size);
-+		 *dma_addr = range.pci_addr;
-+		 *size = range.size;
-+
-+out:
-+	of_node_put(node);
-+	return ret;
-+
-+}
-+EXPORT_SYMBOL_GPL(of_pci_get_dma_ranges);
- #endif /* CONFIG_OF_ADDRESS */
- 
- #ifdef CONFIG_PCI_MSI
-diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
-index 0e0974e..907ace0 100644
---- a/include/linux/of_pci.h
-+++ b/include/linux/of_pci.h
-@@ -76,6 +76,7 @@ static inline void of_pci_check_probe_only(void) { }
- int of_pci_get_host_bridge_resources(struct device_node *dev,
- 			unsigned char busno, unsigned char bus_max,
- 			struct list_head *resources, resource_size_t *io_base);
-+int of_pci_get_dma_ranges(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size);
- #else
- static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
- 			unsigned char busno, unsigned char bus_max,
-@@ -83,6 +84,11 @@ static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
- {
- 	return -EINVAL;
- }
-+
-+static inline int of_pci_get_dma_ranges(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
-+{
-+	return -EINVAL;
-+}
- #endif
- 
- #if defined(CONFIG_OF) && defined(CONFIG_PCI_MSI)
+ 	coherent = of_dma_is_coherent(np);
+ 	dev_dbg(dev, "device is%sdma coherent\n",
 -- 
 1.9.1
