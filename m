@@ -1,16 +1,14 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 21/30] iommu/arm-smmu-v3: Handle device faults from PRI
-Date: Mon, 27 Mar 2017 12:05:47 +0100
-Message-ID: <132394da-38e9-1722-833e-88303463ca4c@arm.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 01/30] iommu/arm-smmu-v3: Link groups and devices
+Date: Mon, 27 Mar 2017 13:18:39 +0100
+Message-ID: <9ce9e3c5-3f94-8b06-2bd7-a665f0f33304@arm.com>
 References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
-	<20170227195441.5170-22-jean-philippe.brucker@arm.com>
-	<8520D5D51A55D047800579B0941471982640F43C@XAP-PVEXMBX02.xlnx.xilinx.com>
-	<0b3e3ddd-acc3-5ba7-639f-5c9192da57c3@gmail.com>
+	<20170227195441.5170-2-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <0b3e3ddd-acc3-5ba7-639f-5c9192da57c3-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20170227195441.5170-2-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,39 +18,220 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: valmiki <valmikibow-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Cc: Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Harv Abdulhamid <harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Valmiki,
+Hi Jean-Philippe,
 
-On 25/03/17 05:16, valmiki wrote:
->> When we receive a PRI Page Request (PPR) from the SMMU, it contains a
->> context identifier SID:SSID, an IOVA and the requested access flags.
->>
->> Search the domain corresponding to SID:SSID, and call handle_mm_fault on
->> its mm. If memory management is able to fix the fault, we ask the device
->> to retry the access with a PRI_SUCCESS message. Otherwise send PRI_FAIL.
->>
-> Hi Jean,
+On 27/02/17 19:54, Jean-Philippe Brucker wrote:
+> Reintroduce smmu_group. This structure was removed during the generic DT
+> bindings rework, but will be needed when implementing PCIe ATS, to lookup
+> devices attached to a given domain.
 > 
-> I need some clarification. Page fault handling is already part of MMU.
-> When PRI requested page results in page fault, smmu is going to invoke
-> handle_mm_fault which is part of memory management unit ?
+> When unmapping from a domain, we need to send an invalidation to all
+> devices that could have stored the mapping in their ATC. It would be nice
+> to use IOMMU API's iommu_group_for_each_dev, but that list is protected by
+> group->mutex, which we can't use because atc_invalidate won't be allowed
+> to sleep. So add a list of devices, protected by a spinlock.
 
-Yes, the SMMU driver calls into the memory management code.
+Much as I dislike that particular duplication, with patch #4 in mind I
+think there's a more fundamental problem - since the primary reason for
+multi-device groups is lack of ACS, is there any guarantee that ATS
+support/enablement will be actually be homogeneous across any old set of
+devices in that situation, and thus valid to evaluate at the iommu_group
+level?
 
-> If so this functionality is yet to be added in SMMU driver ?
->
-> Because i haven't seen this API being called in your patches.
+That said, looking at how things end up at the top commit, I think this
+is fairly easily sidestepped. We have this pattern a few times:
 
-This patch implements the fault handling part:
+	spin_lock_irqsave(&smmu_domain->groups_lock)
+	list_for_each_entry(&smmu_domain->groups)
+		spin_lock(&smmu_group->devices_lock)
+		list_for_each_entry(&smmu_group->devices)
+			do a thing for each device in the domain...
 
-(1) A PRI Page Request (PPR) is received by arm_smmu_handle_ppr. It is
-    forwarded to work queue fault_queue
-(2) The PPR is handled by arm_smmu_handle_fault, which calls
-    _arm_smmu_handle_fault, which calls arm_smmu_handle_mm_fault and
-    finally handle_mm_fault.
-(3) We send a response via arm_smmu_fault_reply
+which strongly suggests that we'd be better off just linking the devices
+to the domain directly - which would also let us scope ats_enabled to
+the per-device level which seems safer than per-group as above. And if
+only devices with ATS enabled are added to a domain's list in the first
+place, then ATC invalidate gets even simpler too.
 
-Thanks,
-Jean-Philippe
+The only other uses I can see are of smmu_group->domain, which always
+looks to be directly equivalent to to_smmu_domain(iommu_group->domain).
+Overall it really looks like the smmu_group abstraction winds up making
+the end result more complex than it needs to be.
+
+Robin.
+
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 74 +++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 74 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 5806a6acc94e..ce8b68fe254b 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -625,6 +625,9 @@ struct arm_smmu_device {
+>  struct arm_smmu_master_data {
+>  	struct arm_smmu_device		*smmu;
+>  	struct arm_smmu_strtab_ent	ste;
+> +
+> +	struct device			*dev;
+> +	struct list_head		group_head;
+>  };
+>  
+>  /* SMMU private data for an IOMMU domain */
+> @@ -650,6 +653,11 @@ struct arm_smmu_domain {
+>  	struct iommu_domain		domain;
+>  };
+>  
+> +struct arm_smmu_group {
+> +	struct list_head		devices;
+> +	spinlock_t			devices_lock;
+> +};
+> +
+>  struct arm_smmu_option_prop {
+>  	u32 opt;
+>  	const char *prop;
+> @@ -665,6 +673,8 @@ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+>  	return container_of(dom, struct arm_smmu_domain, domain);
+>  }
+>  
+> +#define to_smmu_group iommu_group_get_iommudata
+> +
+>  static void parse_driver_options(struct arm_smmu_device *smmu)
+>  {
+>  	int i = 0;
+> @@ -1595,6 +1605,30 @@ static int arm_smmu_install_ste_for_dev(struct iommu_fwspec *fwspec)
+>  	return 0;
+>  }
+>  
+> +static void arm_smmu_group_release(void *smmu_group)
+> +{
+> +	kfree(smmu_group);
+> +}
+> +
+> +static struct arm_smmu_group *arm_smmu_group_alloc(struct iommu_group *group)
+> +{
+> +	struct arm_smmu_group *smmu_group = to_smmu_group(group);
+> +
+> +	if (smmu_group)
+> +		return smmu_group;
+> +
+> +	smmu_group = kzalloc(sizeof(*smmu_group), GFP_KERNEL);
+> +	if (!smmu_group)
+> +		return NULL;
+> +
+> +	INIT_LIST_HEAD(&smmu_group->devices);
+> +	spin_lock_init(&smmu_group->devices_lock);
+> +
+> +	iommu_group_set_iommudata(group, smmu_group, arm_smmu_group_release);
+> +
+> +	return smmu_group;
+> +}
+> +
+>  static void arm_smmu_detach_dev(struct device *dev)
+>  {
+>  	struct arm_smmu_master_data *master = dev->iommu_fwspec->iommu_priv;
+> @@ -1607,7 +1641,9 @@ static void arm_smmu_detach_dev(struct device *dev)
+>  static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  {
+>  	int ret = 0;
+> +	struct iommu_group *group;
+>  	struct arm_smmu_device *smmu;
+> +	struct arm_smmu_group *smmu_group;
+>  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>  	struct arm_smmu_master_data *master;
+>  	struct arm_smmu_strtab_ent *ste;
+> @@ -1619,6 +1655,17 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  	smmu = master->smmu;
+>  	ste = &master->ste;
+>  
+> +	/*
+> +	 * When adding devices, this is the first occasion we have to create the
+> +	 * smmu_group and attach it to iommu_group.
+> +	 */
+> +	group = iommu_group_get(dev);
+> +	smmu_group = arm_smmu_group_alloc(group);
+> +	if (!smmu_group) {
+> +		iommu_group_put(group);
+> +		return -ENOMEM;
+> +	}
+> +
+>  	/* Already attached to a different domain? */
+>  	if (!ste->bypass)
+>  		arm_smmu_detach_dev(dev);
+> @@ -1659,6 +1706,9 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  
+>  out_unlock:
+>  	mutex_unlock(&smmu_domain->init_mutex);
+> +
+> +	iommu_group_put(group);
+> +
+>  	return ret;
+>  }
+>  
+> @@ -1745,7 +1795,9 @@ static struct iommu_ops arm_smmu_ops;
+>  static int arm_smmu_add_device(struct device *dev)
+>  {
+>  	int i, ret;
+> +	unsigned long flags;
+>  	struct arm_smmu_device *smmu;
+> +	struct arm_smmu_group *smmu_group;
+>  	struct arm_smmu_master_data *master;
+>  	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+>  	struct iommu_group *group;
+> @@ -1769,6 +1821,7 @@ static int arm_smmu_add_device(struct device *dev)
+>  			return -ENOMEM;
+>  
+>  		master->smmu = smmu;
+> +		master->dev = dev;
+>  		fwspec->iommu_priv = master;
+>  	}
+>  
+> @@ -1789,6 +1842,12 @@ static int arm_smmu_add_device(struct device *dev)
+>  
+>  	group = iommu_group_get_for_dev(dev);
+>  	if (!IS_ERR(group)) {
+> +		smmu_group = to_smmu_group(group);
+> +
+> +		spin_lock_irqsave(&smmu_group->devices_lock, flags);
+> +		list_add(&master->group_head, &smmu_group->devices);
+> +		spin_unlock_irqrestore(&smmu_group->devices_lock, flags);
+> +
+>  		iommu_group_put(group);
+>  		iommu_device_link(&smmu->iommu, dev);
+>  	}
+> @@ -1800,7 +1859,10 @@ static void arm_smmu_remove_device(struct device *dev)
+>  {
+>  	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+>  	struct arm_smmu_master_data *master;
+> +	struct arm_smmu_group *smmu_group;
+>  	struct arm_smmu_device *smmu;
+> +	struct iommu_group *group;
+> +	unsigned long flags;
+>  
+>  	if (!fwspec || fwspec->ops != &arm_smmu_ops)
+>  		return;
+> @@ -1809,6 +1871,18 @@ static void arm_smmu_remove_device(struct device *dev)
+>  	smmu = master->smmu;
+>  	if (master && master->ste.valid)
+>  		arm_smmu_detach_dev(dev);
+> +
+> +	if (master) {
+> +		group = iommu_group_get(dev);
+> +		smmu_group = to_smmu_group(group);
+> +
+> +		spin_lock_irqsave(&smmu_group->devices_lock, flags);
+> +		list_del(&master->group_head);
+> +		spin_unlock_irqrestore(&smmu_group->devices_lock, flags);
+> +
+> +		iommu_group_put(group);
+> +	}
+> +
+>  	iommu_group_remove_device(dev);
+>  	iommu_device_unlink(&smmu->iommu, dev);
+>  	kfree(master);
+> 
