@@ -1,15 +1,16 @@
-From: Sunil Kovvuri <sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH 5/4] iommu/arm-smmu: Poll for TLB sync completion more
-	effectively
-Date: Mon, 27 Mar 2017 16:08:09 +0530
-Message-ID: <CA+sq2Cc_41u5y51LkOXQ0R0LTBxY+iH3t5Pop=jtHiho4qb0dQ@mail.gmail.com>
-References: <cover.1488907474.git.robin.murphy@arm.com>
-	<67da197b56bb8763623fc215176b86ab04b1799e.1490291854.git.robin.murphy@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC PATCH 21/30] iommu/arm-smmu-v3: Handle device faults from PRI
+Date: Mon, 27 Mar 2017 12:05:47 +0100
+Message-ID: <132394da-38e9-1722-833e-88303463ca4c@arm.com>
+References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
+	<20170227195441.5170-22-jean-philippe.brucker@arm.com>
+	<8520D5D51A55D047800579B0941471982640F43C@XAP-PVEXMBX02.xlnx.xilinx.com>
+	<0b3e3ddd-acc3-5ba7-639f-5c9192da57c3@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <67da197b56bb8763623fc215176b86ab04b1799e.1490291854.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <0b3e3ddd-acc3-5ba7-639f-5c9192da57c3-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,76 +20,39 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, LAKML <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: valmiki <valmikibow-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, harba-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Shanker Donthineni <shankerd-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Sinan Kaya <okaya-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Nate Watterson <nwatters-Rm6X0d1/PG5y9aJCnZT0Uw@public.gmane.org>, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 23, 2017 at 11:29 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On relatively slow development platforms and software models, the
-> inefficiency of our TLB sync loop tends not to show up - for instance on
-> a Juno r1 board I typically see the TLBI has completed of its own accord
-> by the time we get to the sync, such that the latter finishes instantly.
->
-> However, on larger systems doing real I/O, it's less realistic for the
-> TLBs to go idle immediately, and at that point falling into the 1MHz
-> polling loop turns out to throw away performance drastically. Let's
-> strike a balance by polling more than once between pauses, such that we
-> have much more chance of catching normal operations completing before
-> committing to the fixed delay, but also backing off exponentially, since
-> if a sync really hasn't completed within one or two "reasonable time"
-> periods, it becomes increasingly unlikely that it ever will.
->
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
->  drivers/iommu/arm-smmu.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index f7411109670f..aa17f3d937a0 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -162,6 +162,7 @@
->  #define ARM_SMMU_GR0_sTLBGSTATUS       0x74
->  #define sTLBGSTATUS_GSACTIVE           (1 << 0)
->  #define TLB_LOOP_TIMEOUT               1000000 /* 1s! */
-> +#define TLB_SPIN_COUNT                 10
->
->  /* Stream mapping registers */
->  #define ARM_SMMU_GR0_SMR(n)            (0x800 + ((n) << 2))
-> @@ -574,18 +575,17 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
->  static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
->                                 void __iomem *sync, void __iomem *status)
->  {
-> -       int count = 0;
-> +       unsigned int spin_count, delay;
->
->         writel_relaxed(0, sync);
-> -       while (readl_relaxed(status) & sTLBGSTATUS_GSACTIVE) {
-> -               cpu_relax();
-> -               if (++count == TLB_LOOP_TIMEOUT) {
-> -                       dev_err_ratelimited(smmu->dev,
-> -                       "TLB sync timed out -- SMMU may be deadlocked\n");
-> -                       return;
-> -               }
-> -               udelay(1);
-> +       for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
-> +               for (spin_count = TLB_SPIN_COUNT; spin_count > 0; spin_count--)
-> +                       if (!(readl_relaxed(status) & sTLBGSTATUS_GSACTIVE))
-> +                               return;
-> +               udelay(delay);
->         }
-> +       dev_err_ratelimited(smmu->dev,
-> +                           "TLB sync timed out -- SMMU may be deadlocked\n");
->  }
->
->  static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu)
-> --
-> 2.11.0.dirty
->
+Hi Valmiki,
 
-With this patch I see only 0.0003% of TLB sync operations going
-through a udelay().
-So TLB_SPIN_COUNT set to '10' seems to be fine.
-I guess something similar would greatly help SMMUv3 as well.
+On 25/03/17 05:16, valmiki wrote:
+>> When we receive a PRI Page Request (PPR) from the SMMU, it contains a
+>> context identifier SID:SSID, an IOVA and the requested access flags.
+>>
+>> Search the domain corresponding to SID:SSID, and call handle_mm_fault on
+>> its mm. If memory management is able to fix the fault, we ask the device
+>> to retry the access with a PRI_SUCCESS message. Otherwise send PRI_FAIL.
+>>
+> Hi Jean,
+> 
+> I need some clarification. Page fault handling is already part of MMU.
+> When PRI requested page results in page fault, smmu is going to invoke
+> handle_mm_fault which is part of memory management unit ?
 
-Reviewed/Tested-by: sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
+Yes, the SMMU driver calls into the memory management code.
+
+> If so this functionality is yet to be added in SMMU driver ?
+>
+> Because i haven't seen this API being called in your patches.
+
+This patch implements the fault handling part:
+
+(1) A PRI Page Request (PPR) is received by arm_smmu_handle_ppr. It is
+    forwarded to work queue fault_queue
+(2) The PPR is handled by arm_smmu_handle_fault, which calls
+    _arm_smmu_handle_fault, which calls arm_smmu_handle_mm_fault and
+    finally handle_mm_fault.
+(3) We send a response via arm_smmu_fault_reply
+
+Thanks,
+Jean-Philippe
