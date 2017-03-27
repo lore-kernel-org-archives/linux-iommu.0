@@ -1,15 +1,14 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 3/3] of: fix node traversing in of_dma_get_range
-Date: Mon, 27 Mar 2017 15:45:05 +0100
-Message-ID: <3aec823d-d3c7-03d3-68f7-963d3649c184@arm.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH 1/3] of/pci: dma-ranges to account highest possible
+	host bridge dma_mask
+Date: Mon, 27 Mar 2017 09:46:21 -0500
+Message-ID: <CAL_JsqLtTiH7DhqKf_x7xy1KZYQyiOreK=M90HFr=8BDW9542w@mail.gmail.com>
 References: <1490419893-5073-1-git-send-email-oza.oza@broadcom.com>
-	<1490419893-5073-3-git-send-email-oza.oza@broadcom.com>
-	<CAL_Jsq+1f2pHEy7=2Q7xGYYJjuQk3rLHH4pPTKRVN4QTtSr4Kw@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAL_Jsq+1f2pHEy7=2Q7xGYYJjuQk3rLHH4pPTKRVN4QTtSr4Kw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <1490419893-5073-1-git-send-email-oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,42 +18,34 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+To: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Rob,
+On Sat, Mar 25, 2017 at 12:31 AM, Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
+> it is possible that PCI device supports 64-bit DMA addressing,
+> and thus it's driver sets device's dma_mask to DMA_BIT_MASK(64),
+> however PCI host bridge may have limitations on the inbound
+> transaction addressing. As an example, consider NVME SSD device
+> connected to iproc-PCIe controller.
+>
+> Currently, the IOMMU DMA ops only considers PCI device dma_mask
+> when allocating an IOVA. This is particularly problematic on
+> ARM/ARM64 SOCs where the IOMMU (i.e. SMMU) translates IOVA to
+> PA for in-bound transactions only after PCI Host has forwarded
+> these transactions on SOC IO bus. This means on such ARM/ARM64
+> SOCs the IOVA of in-bound transactions has to honor the addressing
+> restrictions of the PCI Host.
+>
+> current pcie frmework and of framework integration assumes dma-ranges
+> in a way where memory-mapped devices define their dma-ranges.
+> dma-ranges: (child-bus-address, parent-bus-address, length).
+>
+> but iproc based SOCs and even Rcar based SOCs has PCI world dma-ranges.
+> dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
 
-On 27/03/17 15:34, Rob Herring wrote:
-> On Sat, Mar 25, 2017 at 12:31 AM, Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
->> it jumps to the parent node without examining the child node.
->> also with that, it throws "no dma-ranges found for node"
->> for pci dma-ranges.
->>
->> this patch fixes device node traversing for dma-ranges.
-> 
-> What's the DT look like that doesn't work?
+If you implement a common function, then I expect to see other users
+converted to use it. There's also PCI hosts in arch/powerpc that parse
+dma-ranges.
 
-The problem is the bodge in pci_dma_configure() where we don't have an
-OF node for the actual device itself, so pass in the host bridge's OF
-node instead. This happens to work well enough for dma-coherent, but I
-don't think dma-ranges was even considered at the time.
-
-As it happens I'm currently halfway through writing an experiment
-wherein pci_dma_configure() creates a temporary child node for the
-of_dma_configure() call if no other suitable alternative (e.g. some
-intermediate bridge node) exists. How hard are you likely to NAK that
-approach? ;)
-
-> dma-ranges is supposed to be a bus property, not a device's property.
-> So looking at the parent is correct behavior generally.
-
-Indeed, this patch as-is will break currently correct DTs (because we
-won't find dma-ranges on the device, so will bail before even looking at
-the parent as we should).
-
-Robin.
-
-> 
-> Rob
-> 
+Rob
