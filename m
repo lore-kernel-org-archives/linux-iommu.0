@@ -1,71 +1,110 @@
-From: Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
-Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only
-Date: Mon, 27 Mar 2017 06:25:52 -0600
-Message-ID: <CAD8Lp46RjsUJEvCR5qVY6p8za5H9iDGTAyJMDd1zO7gbgBvqfA@mail.gmail.com>
+From: "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>
+Subject: RE: [PATCH] iommu/amd: flush IOTLB for specific domains only
+Date: Mon, 27 Mar 2017 12:27:04 +0000
+Message-ID: <MWHPR12MB1518A1EC9038DC2A94E280F09C330@MWHPR12MB1518.namprd12.prod.outlook.com>
 References: <20170322112242.GK29659@8bytes.org>
- <1490595427-11979-1-git-send-email-arindam.nath@amd.com>
+	<1490595427-11979-1-git-send-email-arindam.nath@amd.com>
+	<CAD8Lp46RjsUJEvCR5qVY6p8za5H9iDGTAyJMDd1zO7gbgBvqfA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-In-Reply-To: <1490595427-11979-1-git-send-email-arindam.nath-5C7GfCeVMHo@public.gmane.org>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
- <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
-List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
- <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
-Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
-Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
-To: "Nath, Arindam" <arindam.nath-5C7GfCeVMHo@public.gmane.org>
-Cc: "Bridgman, John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org, amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Suthikulpanit, Suravee" <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>, "Deucher,
- Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, Linux Upstreaming Team <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAD8Lp46RjsUJEvCR5qVY6p8za5H9iDGTAyJMDd1zO7gbgBvqfA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+Cc: "Bridgman, John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, Linux Upstreaming Team <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgQXJpbmRhbSwKCllvdSBDQydkIG1lIG9uIHRoaXMgLSBkb2VzIHRoaXMgbWVhbiB0aGF0IGl0
-IGlzIGEgZml4IGZvciB0aGUgaXNzdWUKZGVzY3JpYmVkIGluIHRoZSB0aHJlYWQgImFtZC1pb21t
-dTogY2FuJ3QgYm9vdCB3aXRoIGFtZGdwdSwgQU1ELVZpOgpDb21wbGV0aW9uLVdhaXQgbG9vcCB0
-aW1lZCBvdXQiID8KClRoYW5rcwpEYW5pZWwKCgpPbiBNb24sIE1hciAyNywgMjAxNyBhdCAxMjox
-NyBBTSwgIDxhcmluZGFtLm5hdGhAYW1kLmNvbT4gd3JvdGU6Cj4gRnJvbTogQXJpbmRhbSBOYXRo
-IDxhcmluZGFtLm5hdGhAYW1kLmNvbT4KPgo+IFRoZSBpZGVhIGJlaGluZCBmbHVzaCBxdWV1ZXMg
-aXMgdG8gZGVmZXIgdGhlIElPVExCIGZsdXNoaW5nCj4gZm9yIGRvbWFpbnMgZm9yIHdoaWNoIHRo
-ZSBtYXBwaW5ncyBhcmUgbm8gbG9uZ2VyIHZhbGlkLiBXZQo+IGFkZCBzdWNoIGRvbWFpbnMgaW4g
-cXVldWVfYWRkKCksIGFuZCB3aGVuIHRoZSBxdWV1ZSBzaXplCj4gcmVhY2hlcyBGTFVTSF9RVUVV
-RV9TSVpFLCB3ZSBwZXJmb3JtIF9fcXVldWVfZmx1c2goKS4KPgo+IFNpbmNlIHdlIGhhdmUgYWxy
-ZWFkeSB0YWtlbiBsb2NrIGJlZm9yZSBfX3F1ZXVlX2ZsdXNoKCkKPiBpcyBjYWxsZWQsIHdlIG5l
-ZWQgdG8gbWFrZSBzdXJlIHRoZSBJT1RMQiBmbHVzaGluZyBpcwo+IHBlcmZvcm1lZCBhcyBxdWlj
-a2x5IGFzIHBvc3NpYmxlLgo+Cj4gSW4gdGhlIGN1cnJlbnQgaW1wbGVtZW50YXRpb24sIHdlIHBl
-cmZvcm0gSU9UTEIgZmx1c2hpbmcKPiBmb3IgYWxsIGRvbWFpbnMgaXJyZXNwZWN0aXZlIG9mIHdo
-aWNoIG9uZXMgd2VyZSBhY3R1YWxseQo+IGFkZGVkIGluIHRoZSBmbHVzaCBxdWV1ZSBpbml0aWFs
-bHkuIFRoaXMgY2FuIGJlIHF1aXRlCj4gZXhwZW5zaXZlIGVzcGVjaWFsbHkgZm9yIGRvbWFpbnMg
-Zm9yIHdoaWNoIHVubWFwcGluZyBpcwo+IG5vdCByZXF1aXJlZCBhdCB0aGlzIHBvaW50IG9mIHRp
-bWUuCj4KPiBUaGlzIHBhdGNoIG1ha2VzIHVzZSBvZiBkb21haW4gaW5mb3JtYXRpb24gaW4KPiAn
-c3RydWN0IGZsdXNoX3F1ZXVlX2VudHJ5JyB0byBtYWtlIHN1cmUgd2Ugb25seSBmbHVzaAo+IElP
-VExCcyBmb3IgZG9tYWlucyB3aG8gbmVlZCBpdCwgc2tpcHBpbmcgb3RoZXJzLgo+Cj4gU2lnbmVk
-LW9mZi1ieTogQXJpbmRhbSBOYXRoIDxhcmluZGFtLm5hdGhAYW1kLmNvbT4KPiAtLS0KPiAgZHJp
-dmVycy9pb21tdS9hbWRfaW9tbXUuYyB8IDE1ICsrKysrKysrLS0tLS0tLQo+ICAxIGZpbGUgY2hh
-bmdlZCwgOCBpbnNlcnRpb25zKCspLCA3IGRlbGV0aW9ucygtKQo+Cj4gZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvaW9tbXUvYW1kX2lvbW11LmMgYi9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5jCj4gaW5k
-ZXggOTg5NDBkMS4uNmE5YTA0OCAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2lvbW11L2FtZF9pb21t
-dS5jCj4gKysrIGIvZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYwo+IEBAIC0yMjI3LDE1ICsyMjI3
-LDE2IEBAIHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmFtZF9pb21tdV9kZXZpY2VfZ3JvdXAo
-c3RydWN0IGRldmljZSAqZGV2KQo+Cj4gIHN0YXRpYyB2b2lkIF9fcXVldWVfZmx1c2goc3RydWN0
-IGZsdXNoX3F1ZXVlICpxdWV1ZSkKPiAgewo+IC0gICAgICAgc3RydWN0IHByb3RlY3Rpb25fZG9t
-YWluICpkb21haW47Cj4gLSAgICAgICB1bnNpZ25lZCBsb25nIGZsYWdzOwo+ICAgICAgICAgaW50
-IGlkeDsKPgo+IC0gICAgICAgLyogRmlyc3QgZmx1c2ggVExCIG9mIGFsbCBrbm93biBkb21haW5z
-ICovCj4gLSAgICAgICBzcGluX2xvY2tfaXJxc2F2ZSgmYW1kX2lvbW11X3BkX2xvY2ssIGZsYWdz
-KTsKPiAtICAgICAgIGxpc3RfZm9yX2VhY2hfZW50cnkoZG9tYWluLCAmYW1kX2lvbW11X3BkX2xp
-c3QsIGxpc3QpCj4gLSAgICAgICAgICAgICAgIGRvbWFpbl9mbHVzaF90bGIoZG9tYWluKTsKPiAt
-ICAgICAgIHNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmFtZF9pb21tdV9wZF9sb2NrLCBmbGFncyk7
-Cj4gKyAgICAgICAvKiBGaXJzdCBmbHVzaCBUTEIgb2YgYWxsIGRvbWFpbnMgd2hpY2ggd2VyZSBh
-ZGRlZCB0byBmbHVzaCBxdWV1ZSAqLwo+ICsgICAgICAgZm9yIChpZHggPSAwOyBpZHggPCBxdWV1
-ZS0+bmV4dDsgKytpZHgpIHsKPiArICAgICAgICAgICAgICAgc3RydWN0IGZsdXNoX3F1ZXVlX2Vu
-dHJ5ICplbnRyeTsKPiArCj4gKyAgICAgICAgICAgICAgIGVudHJ5ID0gcXVldWUtPmVudHJpZXMg
-KyBpZHg7Cj4gKwo+ICsgICAgICAgICAgICAgICBkb21haW5fZmx1c2hfdGxiKCZlbnRyeS0+ZG1h
-X2RvbS0+ZG9tYWluKTsKPiArICAgICAgIH0KPgo+ICAgICAgICAgLyogV2FpdCB1bnRpbCBmbHVz
-aGVzIGhhdmUgY29tcGxldGVkICovCj4gICAgICAgICBkb21haW5fZmx1c2hfY29tcGxldGUoTlVM
-TCk7Cj4gLS0KPiAxLjkuMQo+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmFtZC1nZnggbWFpbGluZyBsaXN0CmFtZC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Au
-b3JnCmh0dHBzOi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vYW1kLWdm
-eAo=
+>-----Original Message-----
+>From: Daniel Drake [mailto:drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org]
+>Sent: Monday, March 27, 2017 5:56 PM
+>To: Nath, Arindam
+>Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Deucher, Alexander; Bridgman, John; amd-
+>gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Suthikulpanit,
+>Suravee; Linux Upstreaming Team
+>Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only
+>
+>Hi Arindam,
+>
+>You CC'd me on this - does this mean that it is a fix for the issue
+>described in the thread "amd-iommu: can't boot with amdgpu, AMD-Vi:
+>Completion-Wait loop timed out" ?
+
+Yes Daniel, please test this patch to confirm if the issue gets resolved.
+
+Thanks,
+Arindam
+
+>
+>Thanks
+>Daniel
+>
+>
+>On Mon, Mar 27, 2017 at 12:17 AM,  <arindam.nath-5C7GfCeVMHo@public.gmane.org> wrote:
+>> From: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
+>>
+>> The idea behind flush queues is to defer the IOTLB flushing
+>> for domains for which the mappings are no longer valid. We
+>> add such domains in queue_add(), and when the queue size
+>> reaches FLUSH_QUEUE_SIZE, we perform __queue_flush().
+>>
+>> Since we have already taken lock before __queue_flush()
+>> is called, we need to make sure the IOTLB flushing is
+>> performed as quickly as possible.
+>>
+>> In the current implementation, we perform IOTLB flushing
+>> for all domains irrespective of which ones were actually
+>> added in the flush queue initially. This can be quite
+>> expensive especially for domains for which unmapping is
+>> not required at this point of time.
+>>
+>> This patch makes use of domain information in
+>> 'struct flush_queue_entry' to make sure we only flush
+>> IOTLBs for domains who need it, skipping others.
+>>
+>> Signed-off-by: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
+>> ---
+>>  drivers/iommu/amd_iommu.c | 15 ++++++++-------
+>>  1 file changed, 8 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+>> index 98940d1..6a9a048 100644
+>> --- a/drivers/iommu/amd_iommu.c
+>> +++ b/drivers/iommu/amd_iommu.c
+>> @@ -2227,15 +2227,16 @@ static struct iommu_group
+>*amd_iommu_device_group(struct device *dev)
+>>
+>>  static void __queue_flush(struct flush_queue *queue)
+>>  {
+>> -       struct protection_domain *domain;
+>> -       unsigned long flags;
+>>         int idx;
+>>
+>> -       /* First flush TLB of all known domains */
+>> -       spin_lock_irqsave(&amd_iommu_pd_lock, flags);
+>> -       list_for_each_entry(domain, &amd_iommu_pd_list, list)
+>> -               domain_flush_tlb(domain);
+>> -       spin_unlock_irqrestore(&amd_iommu_pd_lock, flags);
+>> +       /* First flush TLB of all domains which were added to flush queue */
+>> +       for (idx = 0; idx < queue->next; ++idx) {
+>> +               struct flush_queue_entry *entry;
+>> +
+>> +               entry = queue->entries + idx;
+>> +
+>> +               domain_flush_tlb(&entry->dma_dom->domain);
+>> +       }
+>>
+>>         /* Wait until flushes have completed */
+>>         domain_flush_complete(NULL);
+>> --
+>> 1.9.1
+>>
