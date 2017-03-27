@@ -1,16 +1,14 @@
-From: "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>
-Subject: RE: [PATCH] iommu/amd: flush IOTLB for specific domains only
-Date: Mon, 27 Mar 2017 12:27:04 +0000
-Message-ID: <MWHPR12MB1518A1EC9038DC2A94E280F09C330@MWHPR12MB1518.namprd12.prod.outlook.com>
-References: <20170322112242.GK29659@8bytes.org>
-	<1490595427-11979-1-git-send-email-arindam.nath@amd.com>
-	<CAD8Lp46RjsUJEvCR5qVY6p8za5H9iDGTAyJMDd1zO7gbgBvqfA@mail.gmail.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [RFC PATCH 3/3] of: fix node traversing in of_dma_get_range
+Date: Mon, 27 Mar 2017 09:34:35 -0500
+Message-ID: <CAL_Jsq+1f2pHEy7=2Q7xGYYJjuQk3rLHH4pPTKRVN4QTtSr4Kw@mail.gmail.com>
+References: <1490419893-5073-1-git-send-email-oza.oza@broadcom.com>
+	<1490419893-5073-3-git-send-email-oza.oza@broadcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAD8Lp46RjsUJEvCR5qVY6p8za5H9iDGTAyJMDd1zO7gbgBvqfA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1490419893-5073-3-git-send-email-oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,91 +18,20 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
-Cc: "Bridgman, John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, Linux Upstreaming Team <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+To: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
->-----Original Message-----
->From: Daniel Drake [mailto:drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org]
->Sent: Monday, March 27, 2017 5:56 PM
->To: Nath, Arindam
->Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Deucher, Alexander; Bridgman, John; amd-
->gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Suthikulpanit,
->Suravee; Linux Upstreaming Team
->Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only
+On Sat, Mar 25, 2017 at 12:31 AM, Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
+> it jumps to the parent node without examining the child node.
+> also with that, it throws "no dma-ranges found for node"
+> for pci dma-ranges.
 >
->Hi Arindam,
->
->You CC'd me on this - does this mean that it is a fix for the issue
->described in the thread "amd-iommu: can't boot with amdgpu, AMD-Vi:
->Completion-Wait loop timed out" ?
+> this patch fixes device node traversing for dma-ranges.
 
-Yes Daniel, please test this patch to confirm if the issue gets resolved.
+What's the DT look like that doesn't work?
 
-Thanks,
-Arindam
+dma-ranges is supposed to be a bus property, not a device's property.
+So looking at the parent is correct behavior generally.
 
->
->Thanks
->Daniel
->
->
->On Mon, Mar 27, 2017 at 12:17 AM,  <arindam.nath-5C7GfCeVMHo@public.gmane.org> wrote:
->> From: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
->>
->> The idea behind flush queues is to defer the IOTLB flushing
->> for domains for which the mappings are no longer valid. We
->> add such domains in queue_add(), and when the queue size
->> reaches FLUSH_QUEUE_SIZE, we perform __queue_flush().
->>
->> Since we have already taken lock before __queue_flush()
->> is called, we need to make sure the IOTLB flushing is
->> performed as quickly as possible.
->>
->> In the current implementation, we perform IOTLB flushing
->> for all domains irrespective of which ones were actually
->> added in the flush queue initially. This can be quite
->> expensive especially for domains for which unmapping is
->> not required at this point of time.
->>
->> This patch makes use of domain information in
->> 'struct flush_queue_entry' to make sure we only flush
->> IOTLBs for domains who need it, skipping others.
->>
->> Signed-off-by: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
->> ---
->>  drivers/iommu/amd_iommu.c | 15 ++++++++-------
->>  1 file changed, 8 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
->> index 98940d1..6a9a048 100644
->> --- a/drivers/iommu/amd_iommu.c
->> +++ b/drivers/iommu/amd_iommu.c
->> @@ -2227,15 +2227,16 @@ static struct iommu_group
->*amd_iommu_device_group(struct device *dev)
->>
->>  static void __queue_flush(struct flush_queue *queue)
->>  {
->> -       struct protection_domain *domain;
->> -       unsigned long flags;
->>         int idx;
->>
->> -       /* First flush TLB of all known domains */
->> -       spin_lock_irqsave(&amd_iommu_pd_lock, flags);
->> -       list_for_each_entry(domain, &amd_iommu_pd_list, list)
->> -               domain_flush_tlb(domain);
->> -       spin_unlock_irqrestore(&amd_iommu_pd_lock, flags);
->> +       /* First flush TLB of all domains which were added to flush queue */
->> +       for (idx = 0; idx < queue->next; ++idx) {
->> +               struct flush_queue_entry *entry;
->> +
->> +               entry = queue->entries + idx;
->> +
->> +               domain_flush_tlb(&entry->dma_dom->domain);
->> +       }
->>
->>         /* Wait until flushes have completed */
->>         domain_flush_complete(NULL);
->> --
->> 1.9.1
->>
+Rob
