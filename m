@@ -1,16 +1,15 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 1/3] of/pci: dma-ranges to account highest possible
-	host bridge dma_mask
-Date: Tue, 28 Mar 2017 15:29:45 +0100
-Message-ID: <de6bfedf-62aa-98e4-dae5-7862ab3ba754@arm.com>
-References: <1490419893-5073-1-git-send-email-oza.oza@broadcom.com>
-	<CAL_JsqLtTiH7DhqKf_x7xy1KZYQyiOreK=M90HFr=8BDW9542w@mail.gmail.com>
-	<CAMSpPPdnQdWeyTsnESRFx52gtxQLxwfPQwQgDFSN=katfW7suA@mail.gmail.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [V9, 07/11] iommu: of: Handle IOMMU lookup failure with deferred
+	probing or error
+Date: Tue, 28 Mar 2017 10:00:01 -0500
+Message-ID: <20170328150001.j57jko6mx35npgp2@rob-hp-laptop>
+References: <1489086061-9356-8-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAMSpPPdnQdWeyTsnESRFx52gtxQLxwfPQwQgDFSN=katfW7suA-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1489086061-9356-8-git-send-email-sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,210 +19,50 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Cc: linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 28/03/17 06:27, Oza Oza wrote:
-> On Mon, Mar 27, 2017 at 8:16 PM, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
->> On Sat, Mar 25, 2017 at 12:31 AM, Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
->>> it is possible that PCI device supports 64-bit DMA addressing,
->>> and thus it's driver sets device's dma_mask to DMA_BIT_MASK(64),
->>> however PCI host bridge may have limitations on the inbound
->>> transaction addressing. As an example, consider NVME SSD device
->>> connected to iproc-PCIe controller.
->>>
->>> Currently, the IOMMU DMA ops only considers PCI device dma_mask
->>> when allocating an IOVA. This is particularly problematic on
->>> ARM/ARM64 SOCs where the IOMMU (i.e. SMMU) translates IOVA to
->>> PA for in-bound transactions only after PCI Host has forwarded
->>> these transactions on SOC IO bus. This means on such ARM/ARM64
->>> SOCs the IOVA of in-bound transactions has to honor the addressing
->>> restrictions of the PCI Host.
->>>
->>> current pcie frmework and of framework integration assumes dma-ranges
->>> in a way where memory-mapped devices define their dma-ranges.
->>> dma-ranges: (child-bus-address, parent-bus-address, length).
->>>
->>> but iproc based SOCs and even Rcar based SOCs has PCI world dma-ranges.
->>> dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
->>
->> If you implement a common function, then I expect to see other users
->> converted to use it. There's also PCI hosts in arch/powerpc that parse
->> dma-ranges.
+On Fri, Mar 10, 2017 at 12:30:57AM +0530, Sricharan R wrote:
+> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
 > 
-> the common function should be similar to what
-> of_pci_get_host_bridge_resources is doing right now.
-> it parses ranges property right now.
+> Failures to look up an IOMMU when parsing the DT iommus property need to
+> be handled separately from the .of_xlate() failures to support deferred
+> probing.
 > 
-> the new function would look look following.
+> The lack of a registered IOMMU can be caused by the lack of a driver for
+> the IOMMU, the IOMMU device probe not having been performed yet, having
+> been deferred, or having failed.
 > 
-> of_pci_get_dma_ranges(struct device_node *dev, struct list_head *resources)
-> where resources would return the dma-ranges.
+> The first case occurs when the device tree describes the bus master and
+> IOMMU topology correctly but no device driver exists for the IOMMU yet
+> or the device driver has not been compiled in. Return NULL, the caller
+> will configure the device without an IOMMU.
 > 
-> but right now if you see the patch, of_dma_configure calls the new
-> function, which actually returns the largest possible size.
-> so this new function has to be generic in a way where other PCI hosts
-> can use it. but certainly iproc(Broadcom SOC) , rcar based SOCs can
-> use it for sure.
+> The second and third cases are handled by deferring the probe of the bus
+> master device which will eventually get reprobed after the IOMMU.
 > 
-> although having powerpc using it;  is a separate exercise, since I do
-> not have any access to other PCI hosts such as powerpc. but we can
-> workout with them on thsi forum if required.
+> The last case is currently handled by deferring the probe of the bus
+> master device as well. A mechanism to either configure the bus master
+> device without an IOMMU or to fail the bus master device probe depending
+> on whether the IOMMU is optional or mandatory would be a good
+> enhancement.
 > 
-> so overall, of_pci_get_dma_ranges has to serve following 2 purposes.
-> 
-> 1) it has to return largest possible size to of_dma_configure to
-> generate largest possible dma_mask.
-> 
-> 2) it also has to return resources (dma-ranges) parsed, to the users.
-> 
-> so to address above needs
-> 
-> of_pci_get_dma_ranges(struct device_node *dev, struct list_head
-> *resources, u64 *size)
-> 
-> dev -> device node.
-> resources -> dma-ranges in allocated list.
-> size -> highest possible size to generate possible dma_mask for
-> of_dma_configure.
-> 
-> let em know how this sounds.
+> Tested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> Signed-off-by: Laurent Pichart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
+> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+> ---
+>  drivers/base/dma-mapping.c | 5 +++--
+>  drivers/iommu/of_iommu.c   | 4 ++--
+>  drivers/of/device.c        | 7 ++++++-
+>  include/linux/of_device.h  | 9 ++++++---
+>  4 files changed, 17 insertions(+), 8 deletions(-)
 
-Note that the point of passing PCI host bridges into of_dma_configure()
-in the first place was to avoid having some separate PCI-specific path
-for DMA configuration. I worry that introducing bus-specific dma-ranges
-parsing largely defeats that, since we end up with the worst of both
-worlds; effectively-duplicated code, and/or a load of extra complexity
-to then attempt to reconverge the divergent paths (there really
-shouldn't be any need to allocate a list of anything). Given that
-of_translate_dma_address() is already bus-agnostic, it hardly seems
-justifiable for its caller not to be so as well, especially when it
-mostly just comes down to getting the right #address-cells value.
+Maybe it is the same issue reported for VFIO, but virtio-pci is broken 
+with v8 of this series. Bisecting blames this commit which looks like it 
+hasn't changeed. 
 
-The patch below is actually enough to make typical cases work, but is
-vile, so I'm not seriously considering it (hence I've not bothered
-making IOMMU configuration handle all circumstances). What it has served
-to do, though, is give me a clear idea of how to properly sort out the
-not-quite-right device/parent assumptions between of_dma_configure() and
-of_dma_get_range() rather than bodging around them any further - stay tuned.
+Rob
 
-Robin.
-
------>8-----
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] of/pci: Use child node for DMA configuration
-
-of_dma_configure() expects to be passed an OF node representing the
-device being configured - for PCI devices we currently pass the node of
-the appropriate host controller, which sort of works for inherited
-properties which may appear at any level, like "dma-coherent", but falls
-apart for properties which actually care about specific device-parent
-relationships, like "dma-ranges".
-
-Solve this by attempting to find a suitable child node if the PCI
-hierarchy is actually represented in DT, and if not then faking one up
-as a last resort, to make all of DMA configuration work as expected.
-
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/of_iommu.c |  3 ++-
- drivers/pci/of.c         | 24 ++++++++++++++++++++++++
- drivers/pci/probe.c      | 14 +++++++++++++-
- include/linux/pci.h      |  3 +++
- 4 files changed, 42 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 2683e9fc0dcf..35c97b945c15 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -146,7 +146,8 @@ const struct iommu_ops *of_iommu_configure(struct
-device *dev,
- 	int idx = 0;
-
- 	if (dev_is_pci(dev))
--		return of_pci_iommu_configure(to_pci_dev(dev), master_np);
-+		return of_pci_iommu_configure(to_pci_dev(dev),
-+					      of_get_next_parent(master_np));
-
- 	/*
- 	 * We don't currently walk up the tree looking for a parent IOMMU.
-diff --git a/drivers/pci/of.c b/drivers/pci/of.c
-index e112da11630e..96eece1c423d 100644
---- a/drivers/pci/of.c
-+++ b/drivers/pci/of.c
-@@ -88,3 +88,27 @@ struct irq_domain
-*pci_host_bridge_of_msi_domain(struct pci_bus *bus)
- 	return NULL;
- #endif
- }
-+
-+struct device_node *pci_dev_get_dma_of_node(struct pci_dev *dev)
-+{
-+	struct device_node *np;
-+	struct pci_bus *bus = dev->bus;
-+
-+	/* Is the device itself actually described in the DT? */
-+	np = of_node_get(dev->dev.of_node);
-+	if (np)
-+		return np;
-+
-+	/* Or is some intermediate bridge? That would do... */
-+	for (bus = dev->bus; bus->parent; bus = bus->parent) {
-+		np = of_node_get(bus->bridge->of_node);
-+		if (np)
-+			return np;
-+	}
-+
-+	/* Failing that, any child of the same host bridge? */
-+	if (bus->bridge->parent)
-+		np = of_get_next_child(bus->bridge->parent->of_node, NULL);
-+
-+	return np;
-+}
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index dfc9a2794141..4f7ade64aa3e 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -1906,7 +1906,19 @@ static void pci_dma_configure(struct pci_dev *dev)
-
- 	if (IS_ENABLED(CONFIG_OF) &&
- 		bridge->parent && bridge->parent->of_node) {
--			of_dma_configure(&dev->dev, bridge->parent->of_node);
-+		struct device_node *np, tmp = {0};
-+
-+		np = pci_dev_get_dma_of_node(dev);
-+		if (!np) {
-+			np = &tmp;
-+			of_node_set_flag(np, OF_DETACHED);
-+			of_node_init(np);
-+			tmp.parent = bridge->parent->of_node;
-+		}
-+
-+		of_dma_configure(&dev->dev, np);
-+		if (np != &tmp)
-+			of_node_put(np);
- 	} else if (has_acpi_companion(bridge)) {
- 		struct acpi_device *adev = to_acpi_device_node(bridge->fwnode);
- 		enum dev_dma_attr attr = acpi_get_dma_attr(adev);
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index eb3da1a04e6c..94ecd1817f58 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -2086,6 +2086,7 @@ void pci_release_of_node(struct pci_dev *dev);
- void pci_set_bus_of_node(struct pci_bus *bus);
- void pci_release_bus_of_node(struct pci_bus *bus);
- struct irq_domain *pci_host_bridge_of_msi_domain(struct pci_bus *bus);
-+struct device_node *pci_dev_get_dma_of_node(struct pci_dev *dev);
-
- /* Arch may override this (weak) */
- struct device_node *pcibios_get_phb_of_node(struct pci_bus *bus);
-@@ -2110,6 +2111,8 @@ static inline struct device_node *
- pci_device_to_OF_node(const struct pci_dev *pdev) { return NULL; }
- static inline struct irq_domain *
- pci_host_bridge_of_msi_domain(struct pci_bus *bus) { return NULL; }
-+static inline struct device_node *
-+pci_dev_get_dma_of_node(struct pci_dev *dev) { return NULL; }
- #endif  /* CONFIG_OF */
-
- #ifdef CONFIG_ACPI
+P.S. Doesn't look like you have copied the DT maintainers nor list for 
+the DT changes.
