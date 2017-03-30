@@ -1,15 +1,16 @@
 From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v2 2/4] iommu/arm-smmu: Tidy up context bank indexing
-Date: Thu, 30 Mar 2017 12:40:48 -0600
-Message-ID: <20170330184048.GB31088@jcrouse-lnx.qualcomm.com>
+Subject: Re: [PATCH v2 4/4] iommu/arm-smmu: Poll for TLB sync completion more
+	effectively
+Date: Thu, 30 Mar 2017 12:51:33 -0600
+Message-ID: <20170330185133.GC31088@jcrouse-lnx.qualcomm.com>
 References: <cover.1490890890.git.robin.murphy@arm.com>
-	<331119ede82f893a5f032a7b322ad5bae0c73548.1490890890.git.robin.murphy@arm.com>
+	<7c24c93137bc48f69225e6463d6d242b7d89d15c.1490890890.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <331119ede82f893a5f032a7b322ad5bae0c73548.1490890890.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+In-Reply-To: <7c24c93137bc48f69225e6463d6d242b7d89d15c.1490890890.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,148 +24,73 @@ To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 30, 2017 at 05:56:30PM +0100, Robin Murphy wrote:
-> ARM_AMMU_CB() is calculated relative to ARM_SMMU_CB_BASE(), but the
-> latter is never of use on its own, and what we end up with is the same
-> ARM_SMMU_CB_BASE() + ARM_AMMU_CB() expression being duplicated at every
-> callsite. Folding the two together gives us a self-contained context
-> bank accessor which is much more pleasant to work with.
+On Thu, Mar 30, 2017 at 05:56:32PM +0100, Robin Murphy wrote:
+> On relatively slow development platforms and software models, the
+> inefficiency of our TLB sync loop tends not to show up - for instance on
+> a Juno r1 board I typically see the TLBI has completed of its own accord
+> by the time we get to the sync, such that the latter finishes instantly.
 > 
-> Secondly, we might as well simplify CB_BASE itself at the same time.
-> We use the address space size for its own sake precisely once, at probe
-> time, and every other usage is to dynamically calculate CB_BASE over
-> and over and over again. Let's flip things around so that we just
-> maintain the CB_BASE address directly.
+> However, on larger systems doing real I/O, it's less realistic for the
+> TLBs to go idle immediately, and at that point falling into the 1MHz
+> polling loop turns out to throw away performance drastically. Let's
+> strike a balance by polling more than once between pauses, such that we
+> have much more chance of catching normal operations completing before
+> committing to the fixed delay, but also backing off exponentially, since
+> if a sync really hasn't completed within one or two "reasonable time"
+> periods, it becomes increasingly unlikely that it ever will.
+
+I really really like this.
 
 Reviewed-by: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
 
 > Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 > ---
 > 
-> v2: No change
+> v2: Restored the cpu_relax() to the inner loop
 > 
->  drivers/iommu/arm-smmu.c | 29 ++++++++++++++---------------
->  1 file changed, 14 insertions(+), 15 deletions(-)
+>  drivers/iommu/arm-smmu.c | 18 ++++++++++--------
+>  1 file changed, 10 insertions(+), 8 deletions(-)
 > 
 > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 34b745bf59f2..e79b623f9165 100644
+> index 759d5f261160..a15ca86e9703 100644
 > --- a/drivers/iommu/arm-smmu.c
 > +++ b/drivers/iommu/arm-smmu.c
-> @@ -216,8 +216,7 @@ enum arm_smmu_s2cr_privcfg {
->  #define CBA2R_VMID_MASK			0xffff
+> @@ -162,6 +162,7 @@
+>  #define ARM_SMMU_GR0_sTLBGSTATUS	0x74
+>  #define sTLBGSTATUS_GSACTIVE		(1 << 0)
+>  #define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
+> +#define TLB_SPIN_COUNT			10
 >  
->  /* Translation context bank */
-> -#define ARM_SMMU_CB_BASE(smmu)		((smmu)->base + ((smmu)->size >> 1))
-> -#define ARM_SMMU_CB(smmu, n)		((n) * (1 << (smmu)->pgshift))
-> +#define ARM_SMMU_CB(smmu, n)	((smmu)->cb_base + ((n) << (smmu)->pgshift))
+>  /* Stream mapping registers */
+>  #define ARM_SMMU_GR0_SMR(n)		(0x800 + ((n) << 2))
+> @@ -574,18 +575,19 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
+>  static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
+>  				void __iomem *sync, void __iomem *status)
+>  {
+> -	int count = 0;
+> +	unsigned int spin_cnt, delay;
 >  
->  #define ARM_SMMU_CB_SCTLR		0x0
->  #define ARM_SMMU_CB_ACTLR		0x4
-> @@ -344,7 +343,7 @@ struct arm_smmu_device {
->  	struct device			*dev;
->  
->  	void __iomem			*base;
-> -	unsigned long			size;
-> +	void __iomem			*cb_base;
->  	unsigned long			pgshift;
->  
->  #define ARM_SMMU_FEAT_COHERENT_WALK	(1 << 0)
-> @@ -603,7 +602,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
->  	void __iomem *base;
->  
->  	if (stage1) {
-> -		base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
-> +		base = ARM_SMMU_CB(smmu, cfg->cbndx);
->  		writel_relaxed(cfg->asid, base + ARM_SMMU_CB_S1_TLBIASID);
->  	} else {
->  		base = ARM_SMMU_GR0(smmu);
-> @@ -623,7 +622,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
->  	void __iomem *reg;
->  
->  	if (stage1) {
-> -		reg = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
-> +		reg = ARM_SMMU_CB(smmu, cfg->cbndx);
->  		reg += leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
->  
->  		if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
-> @@ -642,7 +641,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
->  			} while (size -= granule);
+>  	writel_relaxed(0, sync);
+> -	while (readl_relaxed(status) & sTLBGSTATUS_GSACTIVE) {
+> -		cpu_relax();
+> -		if (++count == TLB_LOOP_TIMEOUT) {
+> -			dev_err_ratelimited(smmu->dev,
+> -			"TLB sync timed out -- SMMU may be deadlocked\n");
+> -			return;
+> +	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
+> +		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
+> +			if (!(readl_relaxed(status) & sTLBGSTATUS_GSACTIVE))
+> +				return;
+> +			cpu_relax();
 >  		}
->  	} else if (smmu->version == ARM_SMMU_V2) {
-> -		reg = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
-> +		reg = ARM_SMMU_CB(smmu, cfg->cbndx);
->  		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
->  			      ARM_SMMU_CB_S2_TLBIIPAS2;
->  		iova >>= 12;
-> @@ -672,7 +671,7 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
->  	struct arm_smmu_device *smmu = smmu_domain->smmu;
->  	void __iomem *cb_base;
+> -		udelay(1);
+> +		udelay(delay);
+>  	}
+> +	dev_err_ratelimited(smmu->dev,
+> +			    "TLB sync timed out -- SMMU may be deadlocked\n");
+>  }
 >  
-> -	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
-> +	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
->  	fsr = readl_relaxed(cb_base + ARM_SMMU_CB_FSR);
->  
->  	if (!(fsr & FSR_FAULT))
-> @@ -725,7 +724,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
->  
->  	gr1_base = ARM_SMMU_GR1(smmu);
->  	stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
-> -	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
-> +	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
->  
->  	if (smmu->version > ARM_SMMU_V1) {
->  		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
-> @@ -1007,7 +1006,7 @@ static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
->  	 * Disable the context bank and free the page tables before freeing
->  	 * it.
->  	 */
-> -	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
-> +	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
->  	writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
->  
->  	if (cfg->irptndx != INVALID_IRPTNDX) {
-> @@ -1358,7 +1357,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
->  	u64 phys;
->  	unsigned long va;
->  
-> -	cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, cfg->cbndx);
-> +	cb_base = ARM_SMMU_CB(smmu, cfg->cbndx);
->  
->  	/* ATS1 registers can only be written atomically */
->  	va = iova & ~0xfffUL;
-> @@ -1685,7 +1684,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
->  
->  	/* Make sure all context banks are disabled and clear CB_FSR  */
->  	for (i = 0; i < smmu->num_context_banks; ++i) {
-> -		cb_base = ARM_SMMU_CB_BASE(smmu) + ARM_SMMU_CB(smmu, i);
-> +		cb_base = ARM_SMMU_CB(smmu, i);
->  		writel_relaxed(0, cb_base + ARM_SMMU_CB_SCTLR);
->  		writel_relaxed(FSR_FAULT, cb_base + ARM_SMMU_CB_FSR);
->  		/*
-> @@ -1865,11 +1864,11 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
->  
->  	/* Check for size mismatch of SMMU address space from mapped region */
->  	size = 1 << (((id >> ID1_NUMPAGENDXB_SHIFT) & ID1_NUMPAGENDXB_MASK) + 1);
-> -	size *= 2 << smmu->pgshift;
-> -	if (smmu->size != size)
-> +	size <<= smmu->pgshift;
-> +	if (smmu->cb_base != gr0_base + size)
->  		dev_warn(smmu->dev,
->  			"SMMU address space size (0x%lx) differs from mapped region size (0x%lx)!\n",
-> -			size, smmu->size);
-> +			size * 2, (smmu->cb_base - gr0_base) * 2);
->  
->  	smmu->num_s2_context_banks = (id >> ID1_NUMS2CB_SHIFT) & ID1_NUMS2CB_MASK;
->  	smmu->num_context_banks = (id >> ID1_NUMCB_SHIFT) & ID1_NUMCB_MASK;
-> @@ -2105,7 +2104,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->  	smmu->base = devm_ioremap_resource(dev, res);
->  	if (IS_ERR(smmu->base))
->  		return PTR_ERR(smmu->base);
-> -	smmu->size = resource_size(res);
-> +	smmu->cb_base = smmu->base + resource_size(res) / 2;
->  
->  	num_irqs = 0;
->  	while ((res = platform_get_resource(pdev, IORESOURCE_IRQ, num_irqs))) {
+>  static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu)
 > -- 
 > 2.11.0.dirty
 > 
