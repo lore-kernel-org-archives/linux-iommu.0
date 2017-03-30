@@ -1,20 +1,12 @@
-From: Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS mmaping
-	code
-Date: Thu, 30 Mar 2017 10:30:19 +0200
-Message-ID: <8dcbb0b3-dd13-d2b3-90f5-64b900d67778@samsung.com>
-References: <CGME20170329100540eucas1p22d428e33aa678cbef0a24dd249820451@eucas1p2.samsung.com>
-	<1490781926-6209-1-git-send-email-a.hajda@samsung.com>
-	<15b1be13-625f-db74-d213-ad1df86f7eb5@arm.com>
-	<073f1feb-d6da-c93f-8e67-0910befec27b@samsung.com>
-	<c13f6475-f503-238f-c101-4f9cdf1b0ae2@arm.com>
-	<45fde94b-9487-c28e-9d4e-3b36c4b4a934@samsung.com>
-	<CAMuHMdWkOdAD=d0DAy7cJTHcQc7oq5HVDvTNtjfQETMynx1_+g@mail.gmail.com>
+From: Oza Pawandeep via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: [RFC PATCH 1/2] of/pci: implement inbound dma-ranges for PCI
+Date: Thu, 30 Mar 2017 15:29:45 +0530
+Message-ID: <1490867986-5675-1-git-send-email-oza.oza@broadcom.com>
+Reply-To: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <CAMuHMdWkOdAD=d0DAy7cJTHcQc7oq5HVDvTNtjfQETMynx1_+g-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,143 +16,141 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Oza Pawandeep <oza.pawandeep-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 30.03.2017 09:40, Geert Uytterhoeven wrote:
-> Hi Andrzej,
->
-> On Thu, Mar 30, 2017 at 8:51 AM, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org> wrote:
->> On 29.03.2017 17:33, Robin Murphy wrote:
->>> On 29/03/17 16:12, Andrzej Hajda wrote:
->>>> On 29.03.2017 14:55, Robin Murphy wrote:
->>>>> On 29/03/17 11:05, Andrzej Hajda wrote:
->>>>>> In case of DMA_ATTR_FORCE_CONTIGUOUS allocations vm_area->pages
->>>>>> is invalid. __iommu_mmap_attrs and __iommu_get_sgtable cannot use
->>>>>> it. In first case temporary pages array is passed to iommu_dma_mmap,
->>>>>> in 2nd case single entry sg table is created directly instead
->>>>>> of calling helper.
->>>>>>
->>>>>> Fixes: 44176bb ("arm64: Add support for DMA_ATTR_FORCE_CONTIGUOUS to IOMMU")
->>>>>> Signed-off-by: Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->>>>>> ---
->>>>>> Hi,
->>>>>>
->>>>>> I am not familiar with this framework so please don't be too cruel ;)
->>>>>> Alternative solution I see is to always create vm_area->pages,
->>>>>> I do not know which approach is preferred.
->>>>>>
->>>>>> Regards
->>>>>> Andrzej
->>>>>> ---
->>>>>>  arch/arm64/mm/dma-mapping.c | 40 ++++++++++++++++++++++++++++++++++++++--
->>>>>>  1 file changed, 38 insertions(+), 2 deletions(-)
->>>>>>
->>>>>> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
->>>>>> index f7b5401..bba2bc8 100644
->>>>>> --- a/arch/arm64/mm/dma-mapping.c
->>>>>> +++ b/arch/arm64/mm/dma-mapping.c
->>>>>> @@ -704,7 +704,30 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
->>>>>>            return ret;
->>>>>>
->>>>>>    area = find_vm_area(cpu_addr);
->>>>>> -  if (WARN_ON(!area || !area->pages))
->>>>>> +  if (WARN_ON(!area))
->>>>> >From the look of things, it doesn't seem strictly necessary to change
->>>>> this, but whether that's a good thing is another matter. I'm not sure
->>>>> that dma_common_contiguous_remap() should really be leaving a dangling
->>>>> pointer in area->pages as it apparently does... :/
->>>>>
->>>>>> +          return -ENXIO;
->>>>>> +
->>>>>> +  if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
->>>>>> +          struct page *page = vmalloc_to_page(cpu_addr);
->>>>>> +          unsigned int count = size >> PAGE_SHIFT;
->>>>>> +          struct page **pages;
->>>>>> +          unsigned long pfn;
->>>>>> +          int i;
->>>>>> +
->>>>>> +          pages = kmalloc_array(count, sizeof(*pages), GFP_KERNEL);
->>>>>> +          if (!pages)
->>>>>> +                  return -ENOMEM;
->>>>>> +
->>>>>> +          for (i = 0, pfn = page_to_pfn(page); i < count; i++)
->>>>>> +                  pages[i] = pfn_to_page(pfn + i);
->>>>>> +
->>>>>> +          ret = iommu_dma_mmap(pages, size, vma);
->>>>> /**
->>>>>  * iommu_dma_mmap - Map a buffer into provided user VMA
->>>>>  * @pages: Array representing buffer from iommu_dma_alloc()
->>>>>    ...
->>>>>
->>>>> In this case, the buffer has not come from iommu_dma_alloc(), so passing
->>>>> into iommu_dma_mmap() is wrong by contract, even if having to fake up a
->>>>> page array wasn't enough of a red flag. Given that a FORCE_CONTIGUOUS
->>>>> allocation is essentially the same as for the non-IOMMU case, I think it
->>>>> should be sufficient to defer to that path, i.e.:
->>>>>
->>>>>     if (attrs & DMA_ATTR_FORCE_CONTIGUOUS)
->>>>>             return __swiotlb_mmap(dev, vma, cpu_addr,
->>>>>                             phys_to_dma(virt_to_phys(cpu_addr)),
->>>>>                             size, attrs);
->>>> Maybe I have make mistake somewhere but it does not work, here and below
->>>> (hangs or crashes). I suppose it can be due to different address
->>>> translations, my patch uses
->>>>     page = vmalloc_to_page(cpu_addr).
->>>> And here we have:
->>>>     handle = phys_to_dma(dev, virt_to_phys(cpu_addr)); // in
->>>> __iommu_mmap_attrs
->>>>     page = phys_to_page(dma_to_phys(dev, handle)); // in
->>>> __swiotlb_get_sgtable
->>>> I guess it is similarly in __swiotlb_mmap.
->>>>
->>>> Are these translations equivalent?
->>> Ah, my mistake, sorry - I managed to forget that cpu_addr is always
->>> remapped for FORCE_CONTIGUOUS (*and* somehow overlook the use of
->>> vmalloc_to_page() in the patch itself), so the virt_to_phys() part of my
->>> example is indeed bogus. The general point still stands, though.
->> I guess Geert's proposition to create pages permanently is also not
->> acceptable[2]. So how to fix crashes which appeared after patch adding
-> If I'm not mistaken, creating the pages permanently is what the
-> !DMA_ATTR_FORCE_CONTIGUOUS does? The only difference is where
-> the underlying memory is allocated from.
->
-> Am I missing something?
+current device frmework and of framework integration assumes dma-ranges
+in a way where memory-mapped devices define their dma-ranges.
+dma-ranges: (child-bus-address, parent-bus-address, length).
 
-Quoting Robin from his response:
-> in general is is not
-> safe to assume a coherent allocation is backed by struct pages at all
+but iproc based SOCs and other SOCs(rcar) have PCI world dma-ranges.
+dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
 
-As I said before I am not familiar with the subject, so it is possible I
-misunderstood something.
+of_dma_configure is specifically witten to take care of memory mapped devices.
+but no implementation exists for pci to take care of pcie based memory ranges.
+in fact pci world doesnt seem to define standard dma-ranges
 
-Regards
-Andrzej
+this exposes intrface not only to the pci host driver, but also
+it aims to provide an interface to callers such as of_dma_configure.
+so then the returned size get best possible (largest) dma_mask.
+for e.g.
+dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
+we should get dev->coherent_dma_mask=0x7fffffffff.
 
+also this patch intends to handle multiple inbound windows and dma-ranges.
+it is left to the caller, how it wants to use them.
 
->
-> Thanks!
->
->> support to DMA_ATTR_FORCE_CONTIGUOUS in IOMMU on arm64 [1]?
->> Maybe temporary solution is to drop the patch until proper handling of
->> mmapping is proposed, without it the patch looks incomplete and causes
->> regression.
->> Moreover __iommu_alloc_attrs uses also dma_common_contiguous_remap which
->> also assumes existence of struct pages.
->>
->> [1]: https://patchwork.kernel.org/patch/9609551/
->> [2]: https://www.spinics.net/lists/arm-kernel/msg572688.html
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
->
->
->
+Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+
+diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
+index 0ee42c3..5299438 100644
+--- a/drivers/of/of_pci.c
++++ b/drivers/of/of_pci.c
+@@ -283,6 +283,80 @@ int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
++
++/**
++ * of_pci_get_dma_ranges - Parse PCI host bridge inbound resources from DT
++ * @np: device node of the host bridge having the dma-ranges property
++ * @resources: list where the range of resources will be added after DT parsing
++ *
++ * It is the caller's job to free the @resources list.
++ *
++ * This function will parse the "dma-ranges" property of a PCI host bridge device
++ * node and setup the resource mapping based on its content.
++ *
++ * It returns zero if the range parsing has been successful or a standard error
++ * value if it failed.
++ */
++
++int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources)
++{
++	struct device_node *node = of_node_get(np);
++	int rlen;
++	int ret = 0;
++	const int na = 3, ns = 2;
++	struct resource *res;
++	struct of_pci_range_parser parser;
++	struct of_pci_range range;
++
++	if (!node)
++		return -EINVAL;
++
++	parser.node = node;
++	parser.pna = of_n_addr_cells(node);
++	parser.np = parser.pna + na + ns;
++
++	parser.range = of_get_property(node, "dma-ranges", &rlen);
++
++	if (!parser.range) {
++		pr_debug("pcie device has no dma-ranges defined for node(%s)\n", np->full_name);
++		ret = -ENODEV;
++		goto out;
++	}
++
++	parser.end = parser.range + rlen / sizeof(__be32);
++
++	for_each_of_pci_range(&parser, &range) {
++		/*
++		 * If we failed translation or got a zero-sized region
++		 * then skip this range
++		 */
++		if (range.cpu_addr == OF_BAD_ADDR || range.size == 0)
++			continue;
++
++		res = kzalloc(sizeof(struct resource), GFP_KERNEL);
++		if (!res) {
++			ret = -ENOMEM;
++			goto parse_failed;
++		}
++
++		ret = of_pci_range_to_resource(&range, np, res);
++		if (ret) {
++			kfree(res);
++			continue;
++		}
++
++		pci_add_resource_offset(resources, res,	res->start - range.pci_addr);
++        }
++
++	return ret;
++
++parse_failed:
++	pci_free_resource_list(resources);
++out:
++	of_node_put(node);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(of_pci_get_dma_ranges);
+ #endif /* CONFIG_OF_ADDRESS */
+ 
+ #ifdef CONFIG_PCI_MSI
+diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
+index 0e0974e..8509e3d 100644
+--- a/include/linux/of_pci.h
++++ b/include/linux/of_pci.h
+@@ -76,6 +76,7 @@ static inline void of_pci_check_probe_only(void) { }
+ int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 			unsigned char busno, unsigned char bus_max,
+ 			struct list_head *resources, resource_size_t *io_base);
++int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources);
+ #else
+ static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 			unsigned char busno, unsigned char bus_max,
+@@ -83,6 +84,11 @@ static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
+ {
+ 	return -EINVAL;
+ }
++
++static inline int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources)
++{
++	return -EINVAL;
++}
+ #endif
+ 
+ #if defined(CONFIG_OF) && defined(CONFIG_PCI_MSI)
+-- 
+1.9.1
