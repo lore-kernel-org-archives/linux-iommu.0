@@ -1,426 +1,78 @@
-From: Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH 5/9] iommu: add qcom_iommu
-Date: Thu, 30 Mar 2017 09:46:14 -0400
-Message-ID: <CAF6AEGtwkSgKNjbe==BK-mMTu-gJOYSUE0tMuTK3-PVOxQm2HA@mail.gmail.com>
-References: <20170314151811.17234-1-robdclark@gmail.com> <20170314151811.17234-6-robdclark@gmail.com>
- <01bfb9f2-22a6-4008-da21-a968b0153bc2@codeaurora.org>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 1/4] iommu/arm-smmu: Handle size mismatches better
+Date: Thu, 30 Mar 2017 15:09:00 +0100
+Message-ID: <20170330140900.GF22160@arm.com>
+References: <cover.1488907474.git.robin.murphy@arm.com>
+	<6e61306e6823943b3eeb0c405d4505dd565e723e.1488907474.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-In-Reply-To: <01bfb9f2-22a6-4008-da21-a968b0153bc2@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Archit Taneja <architt@codeaurora.org>
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Mark Rutland <mark.rutland@arm.com>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <will.deacon@arm.com>, Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <6e61306e6823943b3eeb0c405d4505dd565e723e.1488907474.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 30, 2017 at 2:19 AM, Archit Taneja <architt@codeaurora.org> wrote:
-> Hi,
->
-> On 03/14/2017 08:48 PM, Rob Clark wrote:
->>
->> An iommu driver for Qualcomm "B" family devices which do not completely
->> implement the ARM SMMU spec.  These devices have context-bank register
->> layout that is similar to ARM SMMU, but no global register space (or at
->> least not one that is accessible).
->>
->> Signed-off-by: Rob Clark <robdclark@gmail.com>
->> Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
->> ---
->>  drivers/iommu/Kconfig         |  10 +
->>  drivers/iommu/Makefile        |   1 +
->>  drivers/iommu/arm-smmu-regs.h |   2 +
->>  drivers/iommu/qcom_iommu.c    | 818
->> ++++++++++++++++++++++++++++++++++++++++++
->>  4 files changed, 831 insertions(+)
->>  create mode 100644 drivers/iommu/qcom_iommu.c
->
->
-> <snip>
->
->> +
->> +static int qcom_iommu_add_device(struct device *dev)
->> +{
->> +       struct qcom_iommu_dev *qcom_iommu = __to_iommu(dev->iommu_fwspec);
->
->
-> __to_iommu() has a WARN_ON() that gets triggered here for all devices on
-> the platform bus that aren't backed by our iommu. We should return -ENODEV
-> for all of them without throwing a warning.
->
->> +       struct iommu_group *group;
->> +       struct device_link *link;
->> +
->
->
-> We could do something like:
->
-> if (fwspec && fwspec->ops == &qcom_iommu_ops)
->         qcom_iommu = __to_iommu(fwspec);
-> else
->         qcom_iommu = NULL;
+Hi Robin,
 
-thanks.. I wonder how I wasn't hitting that?
+On Tue, Mar 07, 2017 at 06:09:04PM +0000, Robin Murphy wrote:
+> We currently warn if the firmware-described region size differs from the
+> SMMU address space size reported by the hardware, but continue to use
+> the former to calculate where our context bank base should be,
+> effectively guaranteeing that things will not work correctly.
+> 
+> Since over-mapping is effectively harmless, and under-mapping can be OK
+> provided all the usable context banks are still covered, let's let the
+> hardware information take precedence in the case of a mismatch, such
+> that we get the correct context bank base and in most cases things will
+> actually work instead of silently misbehaving. And at worst, if the
+> firmware is wrong enough to have not mapped something we actually try to
+> use, the resulting out-of-bounds access will hopefully provide a much
+> more obvious clue.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index abf6496843a6..bc7ef6a0c54d 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1864,10 +1864,12 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>  	/* Check for size mismatch of SMMU address space from mapped region */
+>  	size = 1 << (((id >> ID1_NUMPAGENDXB_SHIFT) & ID1_NUMPAGENDXB_MASK) + 1);
+>  	size *= 2 << smmu->pgshift;
+> -	if (smmu->size != size)
+> +	if (smmu->size != size) {
+>  		dev_warn(smmu->dev,
+>  			"SMMU address space size (0x%lx) differs from mapped region size (0x%lx)!\n",
+>  			size, smmu->size);
+> +		smmu->size = size;
+> +	}
 
-I'll incorporate this (plus small dt bindings doc update) into next
-version.. probably won't have time to send until the weekend or next
-week
+I'm not really in favour of this, but I admit that this case is a bit weird.
+Basically, we always have two ways to determine the size of the SMMU:
 
-BR,
--R
+  1. The device-tree reg property, since we need the base address to be
+     passed there and this will include a size.
 
+  2. The ID register on the hardware itself
 
-> Thanks,
-> Archit
->
->
->> +       if (!qcom_iommu)
->> +               return -ENODEV;
->> +
->> +       /*
->> +        * Establish the link between iommu and master, so that the
->> +        * iommu gets runtime enabled/disabled as per the master's
->> +        * needs.
->> +        */
->> +       link = device_link_add(dev, qcom_iommu->dev, DL_FLAG_PM_RUNTIME);
->> +       if (!link) {
->> +               dev_err(qcom_iommu->dev, "Unable to create device link
->> between %s and %s\n",
->> +                       dev_name(qcom_iommu->dev), dev_name(dev));
->> +               return -ENODEV;
->> +       }
->> +
->> +       group = iommu_group_get_for_dev(dev);
->> +       if (IS_ERR_OR_NULL(group))
->> +               return PTR_ERR_OR_ZERO(group);
->> +
->> +       iommu_group_put(group);
->> +       iommu_device_link(&qcom_iommu->iommu, dev);
->> +
->> +       return 0;
->> +}
->> +
->> +static void qcom_iommu_remove_device(struct device *dev)
->> +{
->> +       struct qcom_iommu_dev *qcom_iommu = __to_iommu(dev->iommu_fwspec);
->> +
->> +       if (!qcom_iommu)
->> +               return;
->> +
->> +       iommu_group_remove_device(dev);
->> +       iommu_device_unlink(&qcom_iommu->iommu, dev);
->> +       iommu_fwspec_free(dev);
->> +}
->> +
->> +static struct iommu_group *qcom_iommu_device_group(struct device *dev)
->> +{
->> +       struct iommu_fwspec *fwspec = dev->iommu_fwspec;
->> +       struct iommu_group *group = NULL;
->> +       unsigned i;
->> +
->> +       for (i = 0; i < fwspec->num_ids; i++) {
->> +               struct qcom_iommu_ctx *ctx = __to_ctx(fwspec,
->> fwspec->ids[i]);
->> +
->> +               if (group && ctx->group && group != ctx->group)
->> +                       return ERR_PTR(-EINVAL);
->> +
->> +               group = ctx->group;
->> +       }
->> +
->> +       if (group)
->> +               return iommu_group_ref_get(group);
->> +
->> +       group = generic_device_group(dev);
->> +
->> +       for (i = 0; i < fwspec->num_ids; i++) {
->> +               struct qcom_iommu_ctx *ctx = __to_ctx(fwspec,
->> fwspec->ids[i]);
->> +               ctx->group = iommu_group_ref_get(group);
->> +       }
->> +
->> +       return group;
->> +}
->> +
->> +static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args
->> *args)
->> +{
->> +       struct platform_device *iommu_pdev;
->> +
->> +       if (args->args_count != 1) {
->> +               dev_err(dev, "incorrect number of iommu params found for
->> %s "
->> +                       "(found %d, expected 1)\n",
->> +                       args->np->full_name, args->args_count);
->> +               return -EINVAL;
->> +       }
->> +
->> +       if (!dev->iommu_fwspec->iommu_priv) {
->> +               iommu_pdev = of_find_device_by_node(args->np);
->> +               if (WARN_ON(!iommu_pdev))
->> +                       return -EINVAL;
->> +
->> +               dev->iommu_fwspec->iommu_priv =
->> platform_get_drvdata(iommu_pdev);
->> +       }
->> +
->> +       return iommu_fwspec_add_ids(dev, &args->args[0], 1);
->> +}
->> +
->> +static const struct iommu_ops qcom_iommu_ops = {
->> +       .capable        = qcom_iommu_capable,
->> +       .domain_alloc   = qcom_iommu_domain_alloc,
->> +       .domain_free    = qcom_iommu_domain_free,
->> +       .attach_dev     = qcom_iommu_attach_dev,
->> +       .detach_dev     = qcom_iommu_detach_dev,
->> +       .map            = qcom_iommu_map,
->> +       .unmap          = qcom_iommu_unmap,
->> +       .map_sg         = default_iommu_map_sg,
->> +       .iova_to_phys   = qcom_iommu_iova_to_phys,
->> +       .add_device     = qcom_iommu_add_device,
->> +       .remove_device  = qcom_iommu_remove_device,
->> +       .device_group   = qcom_iommu_device_group,
->> +       .of_xlate       = qcom_iommu_of_xlate,
->> +       .pgsize_bitmap  = SZ_4K | SZ_64K | SZ_1M | SZ_16M,
->> +};
->> +
->> +static int qcom_iommu_enable_clocks(struct qcom_iommu_dev *qcom_iommu)
->> +{
->> +       int ret;
->> +
->> +       ret = clk_prepare_enable(qcom_iommu->iface_clk);
->> +       if (ret) {
->> +               dev_err(qcom_iommu->dev, "Couldn't enable iface_clk\n");
->> +               return ret;
->> +       }
->> +
->> +       ret = clk_prepare_enable(qcom_iommu->bus_clk);
->> +       if (ret) {
->> +               dev_err(qcom_iommu->dev, "Couldn't enable bus_clk\n");
->> +               clk_disable_unprepare(qcom_iommu->iface_clk);
->> +               return ret;
->> +       }
->> +
->> +       return 0;
->> +}
->> +
->> +static void qcom_iommu_disable_clocks(struct qcom_iommu_dev *qcom_iommu)
->> +{
->> +       clk_disable_unprepare(qcom_iommu->bus_clk);
->> +       clk_disable_unprepare(qcom_iommu->iface_clk);
->> +}
->> +
->> +static int qcom_iommu_ctx_probe(struct platform_device *pdev)
->> +{
->> +       struct qcom_iommu_ctx *ctx;
->> +       struct device *dev = &pdev->dev;
->> +       struct qcom_iommu_dev *qcom_iommu = dev_get_drvdata(dev->parent);
->> +       struct resource *res;
->> +       int ret;
->> +       u32 reg;
->> +
->> +       ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
->> +       if (!ctx)
->> +               return -ENOMEM;
->> +
->> +       ctx->dev = dev;
->> +       platform_set_drvdata(pdev, ctx);
->> +
->> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +       ctx->base = devm_ioremap_resource(dev, res);
->> +       if (IS_ERR(ctx->base))
->> +               return PTR_ERR(ctx->base);
->> +
->> +       ctx->irq = platform_get_irq(pdev, 0);
->> +       if (ctx->irq < 0) {
->> +               dev_err(dev, "failed to get irq\n");
->> +               return -ENODEV;
->> +       }
->> +
->> +       ret = devm_request_irq(dev, ctx->irq,
->> +                              qcom_iommu_fault,
->> +                              IRQF_SHARED,
->> +                              "qcom-iommu-fault",
->> +                              ctx);
->> +       if (ret) {
->> +               dev_err(dev, "failed to request IRQ %u\n", ctx->irq);
->> +               return ret;
->> +       }
->> +
->> +       /* read the "reg" property directly to get the relative address
->> +        * of the context bank, and calculate the asid from that:
->> +        */
->> +       if (of_property_read_u32_index(dev->of_node, "reg", 0, &reg)) {
->> +               dev_err(dev, "missing reg property\n");
->> +               return -ENODEV;
->> +       }
->> +
->> +       ctx->asid = reg / 0x1000;      /* context banks are 0x1000 apart
->> */
->> +
->> +       dev_dbg(dev, "found asid %u\n", ctx->asid);
->> +
->> +       list_add_tail(&ctx->node, &qcom_iommu->context_list);
->> +
->> +       return 0;
->> +}
->> +
->> +static int qcom_iommu_ctx_remove(struct platform_device *pdev)
->> +{
->> +       struct qcom_iommu_ctx *ctx = platform_get_drvdata(pdev);
->> +
->> +       iommu_group_put(ctx->group);
->> +       platform_set_drvdata(pdev, NULL);
->> +
->> +       return 0;
->> +}
->> +
->> +static const struct of_device_id ctx_of_match[] = {
->> +       { .compatible = "qcom,msm-iommu-v1-ns" },
->> +       { .compatible = "qcom,msm-iommu-v1-sec" },
->> +       { /* sentinel */ }
->> +};
->> +
->> +static struct platform_driver qcom_iommu_ctx_driver = {
->> +       .driver = {
->> +               .name           = "qcom-iommu-ctx",
->> +               .of_match_table = of_match_ptr(ctx_of_match),
->> +       },
->> +       .probe  = qcom_iommu_ctx_probe,
->> +       .remove = qcom_iommu_ctx_remove,
->> +};
->> +module_platform_driver(qcom_iommu_ctx_driver);
->> +
->> +static int qcom_iommu_device_probe(struct platform_device *pdev)
->> +{
->> +       struct qcom_iommu_dev *qcom_iommu;
->> +       struct device *dev = &pdev->dev;
->> +       struct resource *res;
->> +       int ret;
->> +
->> +       qcom_iommu = devm_kzalloc(dev, sizeof(*qcom_iommu), GFP_KERNEL);
->> +       if (!qcom_iommu)
->> +               return -ENOMEM;
->> +       qcom_iommu->dev = dev;
->> +
->> +       INIT_LIST_HEAD(&qcom_iommu->context_list);
->> +
->> +       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +       if (res)
->> +               qcom_iommu->local_base = devm_ioremap_resource(dev, res);
->> +
->> +       qcom_iommu->iface_clk = devm_clk_get(dev, "iface");
->> +       if (IS_ERR(qcom_iommu->iface_clk)) {
->> +               dev_err(dev, "failed to get iface clock\n");
->> +               return PTR_ERR(qcom_iommu->iface_clk);
->> +       }
->> +
->> +       qcom_iommu->bus_clk = devm_clk_get(dev, "bus");
->> +       if (IS_ERR(qcom_iommu->bus_clk)) {
->> +               dev_err(dev, "failed to get bus clock\n");
->> +               return PTR_ERR(qcom_iommu->bus_clk);
->> +       }
->> +
->> +       if (of_property_read_u32(dev->of_node, "qcom,iommu-secure-id",
->> +                                &qcom_iommu->sec_id)) {
->> +               dev_err(dev, "missing qcom,iommu-secure-id property\n");
->> +               return -ENODEV;
->> +       }
->> +
->> +       platform_set_drvdata(pdev, qcom_iommu);
->> +
->> +       /* register context bank devices, which are child nodes: */
->> +       ret = of_platform_populate(dev->of_node, ctx_of_match, NULL, dev);
->> +       if (ret) {
->> +               dev_err(dev, "Failed to populate iommu contexts\n");
->> +               return ret;
->> +       }
->> +
->> +       ret = iommu_device_sysfs_add(&qcom_iommu->iommu, dev, NULL,
->> +                                    "smmu.%pa", &res->start);
->> +       if (ret) {
->> +               dev_err(dev, "Failed to register iommu in sysfs\n");
->> +               return ret;
->> +       }
->> +
->> +       iommu_device_set_ops(&qcom_iommu->iommu, &qcom_iommu_ops);
->> +       iommu_device_set_fwnode(&qcom_iommu->iommu, dev->fwnode);
->> +
->> +       ret = iommu_device_register(&qcom_iommu->iommu);
->> +       if (ret) {
->> +               dev_err(dev, "Failed to register iommu\n");
->> +               return ret;
->> +       }
->> +
->> +       pm_runtime_enable(dev);
->> +       bus_set_iommu(&platform_bus_type, &qcom_iommu_ops);
->> +
->> +       if (qcom_iommu->local_base) {
->> +               pm_runtime_get_sync(dev);
->> +               writel_relaxed(0xffffffff, qcom_iommu->local_base +
->> SMMU_INTR_SEL_NS);
->> +               pm_runtime_put_sync(dev);
->> +       }
->> +
->> +       return 0;
->> +}
->> +
->> +static int qcom_iommu_device_remove(struct platform_device *pdev)
->> +{
->> +       pm_runtime_force_suspend(&pdev->dev);
->> +       platform_set_drvdata(pdev, NULL);
->> +
->> +       return 0;
->> +}
->> +
->> +#ifdef CONFIG_PM
->> +static int qcom_iommu_resume(struct device *dev)
->> +{
->> +       struct platform_device *pdev = to_platform_device(dev);
->> +       struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
->> +
->> +       return qcom_iommu_enable_clocks(qcom_iommu);
->> +}
->> +
->> +static int qcom_iommu_suspend(struct device *dev)
->> +{
->> +       struct platform_device *pdev = to_platform_device(dev);
->> +       struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
->> +
->> +       qcom_iommu_disable_clocks(qcom_iommu);
->> +
->> +       return 0;
->> +}
->> +#endif
->> +
->> +static const struct dev_pm_ops qcom_iommu_pm_ops = {
->> +       SET_RUNTIME_PM_OPS(qcom_iommu_suspend, qcom_iommu_resume, NULL)
->> +       SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
->> +                               pm_runtime_force_resume)
->> +};
->> +
->> +static const struct of_device_id qcom_iommu_of_match[] = {
->> +       { .compatible = "qcom,msm-iommu-v1" },
->> +       { /* sentinel */ }
->> +};
->> +MODULE_DEVICE_TABLE(of, qcom_iommu_of_match);
->> +
->> +static struct platform_driver qcom_iommu_driver = {
->> +       .driver = {
->> +               .name           = "qcom-iommu",
->> +               .of_match_table = of_match_ptr(qcom_iommu_of_match),
->> +               .pm             = &qcom_iommu_pm_ops,
->> +       },
->> +       .probe  = qcom_iommu_device_probe,
->> +       .remove = qcom_iommu_device_remove,
->> +};
->> +module_platform_driver(qcom_iommu_driver);
->> +
->> +IOMMU_OF_DECLARE(qcom_iommu_dev, "qcom,msm-iommu-v1", NULL);
->> +
->> +MODULE_DESCRIPTION("IOMMU API for QCOM IOMMU v1 implementations");
->> +MODULE_LICENSE("GPL v2");
->>
->
-> --
-> Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-> a Linux Foundation Collaborative Project
+Generally, I prefer that properties passed by firmware override those
+baked into the hardware, since this allows us to deal with broken ID
+registers easily. In this case, we basically have the size override from
+the reg property, so it takes precedence, but we warn if it differs from
+the hardware value so hopefully broken DTs are easily diagnosed.
+
+Will
