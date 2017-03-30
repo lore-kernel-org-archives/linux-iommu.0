@@ -1,8 +1,7 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH v2 4/4] iommu/arm-smmu: Poll for TLB sync completion more
-	effectively
-Date: Thu, 30 Mar 2017 17:56:32 +0100
-Message-ID: <7c24c93137bc48f69225e6463d6d242b7d89d15c.1490890890.git.robin.murphy@arm.com>
+Subject: [PATCH v2 3/4] iommu/arm-smmu: Use per-context TLB sync as appropriate
+Date: Thu, 30 Mar 2017 17:56:31 +0100
+Message-ID: <c008995c334e408d9eade37c60eb680d17c0f6f3.1490890890.git.robin.murphy@arm.com>
 References: <cover.1490890890.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,67 +21,247 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On relatively slow development platforms and software models, the
-inefficiency of our TLB sync loop tends not to show up - for instance on
-a Juno r1 board I typically see the TLBI has completed of its own accord
-by the time we get to the sync, such that the latter finishes instantly.
+TLB synchronisation typically involves the SMMU blocking all incoming
+transactions until the TLBs report completion of all outstanding
+operations. In the common SMMUv2 configuration of a single distributed
+SMMU serving multiple peripherals, that means that a single unmap
+request has the potential to bring the hammer down on the entire system
+if synchronised globally. Since stage 1 contexts, and stage 2 contexts
+under SMMUv2, offer local sync operations, let's make use of those
+wherever we can in the hope of minimising global disruption.
 
-However, on larger systems doing real I/O, it's less realistic for the
-TLBs to go idle immediately, and at that point falling into the 1MHz
-polling loop turns out to throw away performance drastically. Let's
-strike a balance by polling more than once between pauses, such that we
-have much more chance of catching normal operations completing before
-committing to the fixed delay, but also backing off exponentially, since
-if a sync really hasn't completed within one or two "reasonable time"
-periods, it becomes increasingly unlikely that it ever will.
+To that end, rather than add any more branches to the already unwieldy
+monolithic TLB maintenance ops, break them up into smaller, neater,
+functions which we can then mix and match as appropriate.
 
 Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
 
-v2: Restored the cpu_relax() to the inner loop
+v2: Undo unnecessary refactoring of arm_smmu_tlb_inv_range_nosync()
+    (and forget about further attempts, since this turns out to be
+    all of 3 lines longer than v1)
 
- drivers/iommu/arm-smmu.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/iommu/arm-smmu.c | 115 +++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 81 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 759d5f261160..a15ca86e9703 100644
+index e79b623f9165..759d5f261160 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -162,6 +162,7 @@
- #define ARM_SMMU_GR0_sTLBGSTATUS	0x74
- #define sTLBGSTATUS_GSACTIVE		(1 << 0)
- #define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
-+#define TLB_SPIN_COUNT			10
+@@ -237,6 +237,8 @@ enum arm_smmu_s2cr_privcfg {
+ #define ARM_SMMU_CB_S1_TLBIVAL		0x620
+ #define ARM_SMMU_CB_S2_TLBIIPAS2	0x630
+ #define ARM_SMMU_CB_S2_TLBIIPAS2L	0x638
++#define ARM_SMMU_CB_TLBSYNC		0x7f0
++#define ARM_SMMU_CB_TLBSTATUS		0x7f4
+ #define ARM_SMMU_CB_ATS1PR		0x800
+ #define ARM_SMMU_CB_ATSR		0x8f0
  
- /* Stream mapping registers */
- #define ARM_SMMU_GR0_SMR(n)		(0x800 + ((n) << 2))
-@@ -574,18 +575,19 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
- static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
- 				void __iomem *sync, void __iomem *status)
- {
--	int count = 0;
-+	unsigned int spin_cnt, delay;
- 
- 	writel_relaxed(0, sync);
--	while (readl_relaxed(status) & sTLBGSTATUS_GSACTIVE) {
--		cpu_relax();
--		if (++count == TLB_LOOP_TIMEOUT) {
--			dev_err_ratelimited(smmu->dev,
--			"TLB sync timed out -- SMMU may be deadlocked\n");
--			return;
-+	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
-+		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
-+			if (!(readl_relaxed(status) & sTLBGSTATUS_GSACTIVE))
-+				return;
-+			cpu_relax();
- 		}
--		udelay(1);
-+		udelay(delay);
- 	}
-+	dev_err_ratelimited(smmu->dev,
-+			    "TLB sync timed out -- SMMU may be deadlocked\n");
+@@ -569,14 +571,13 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
  }
  
- static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu)
+ /* Wait for any pending TLB invalidations to complete */
+-static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
++static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
++				void __iomem *sync, void __iomem *status)
+ {
+ 	int count = 0;
+-	void __iomem *gr0_base = ARM_SMMU_GR0(smmu);
+ 
+-	writel_relaxed(0, gr0_base + ARM_SMMU_GR0_sTLBGSYNC);
+-	while (readl_relaxed(gr0_base + ARM_SMMU_GR0_sTLBGSTATUS)
+-	       & sTLBGSTATUS_GSACTIVE) {
++	writel_relaxed(0, sync);
++	while (readl_relaxed(status) & sTLBGSTATUS_GSACTIVE) {
+ 		cpu_relax();
+ 		if (++count == TLB_LOOP_TIMEOUT) {
+ 			dev_err_ratelimited(smmu->dev,
+@@ -587,29 +588,49 @@ static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+ 	}
+ }
+ 
+-static void arm_smmu_tlb_sync(void *cookie)
++static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu)
+ {
+-	struct arm_smmu_domain *smmu_domain = cookie;
+-	__arm_smmu_tlb_sync(smmu_domain->smmu);
++	void __iomem *base = ARM_SMMU_GR0(smmu);
++
++	__arm_smmu_tlb_sync(smmu, base + ARM_SMMU_GR0_sTLBGSYNC,
++			    base + ARM_SMMU_GR0_sTLBGSTATUS);
+ }
+ 
+-static void arm_smmu_tlb_inv_context(void *cookie)
++static void arm_smmu_tlb_sync_context(void *cookie)
++{
++	struct arm_smmu_domain *smmu_domain = cookie;
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	void __iomem *base = ARM_SMMU_CB(smmu, smmu_domain->cfg.cbndx);
++
++	__arm_smmu_tlb_sync(smmu, base + ARM_SMMU_CB_TLBSYNC,
++			    base + ARM_SMMU_CB_TLBSTATUS);
++}
++
++static void arm_smmu_tlb_sync_vmid(void *cookie)
++{
++	struct arm_smmu_domain *smmu_domain = cookie;
++
++	arm_smmu_tlb_sync_global(smmu_domain->smmu);
++}
++
++static void arm_smmu_tlb_inv_context_s1(void *cookie)
+ {
+ 	struct arm_smmu_domain *smmu_domain = cookie;
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
++	void __iomem *base = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
++
++	writel_relaxed(cfg->asid, base + ARM_SMMU_CB_S1_TLBIASID);
++	arm_smmu_tlb_sync_context(cookie);
++}
++
++static void arm_smmu_tlb_inv_context_s2(void *cookie)
++{
++	struct arm_smmu_domain *smmu_domain = cookie;
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+-	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
+-	void __iomem *base;
++	void __iomem *base = ARM_SMMU_GR0(smmu);
+ 
+-	if (stage1) {
+-		base = ARM_SMMU_CB(smmu, cfg->cbndx);
+-		writel_relaxed(cfg->asid, base + ARM_SMMU_CB_S1_TLBIASID);
+-	} else {
+-		base = ARM_SMMU_GR0(smmu);
+-		writel_relaxed(cfg->vmid, base + ARM_SMMU_GR0_TLBIVMID);
+-	}
+-
+-	__arm_smmu_tlb_sync(smmu);
++	writel_relaxed(smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
++	arm_smmu_tlb_sync_global(smmu);
+ }
+ 
+ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+@@ -617,12 +638,10 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ {
+ 	struct arm_smmu_domain *smmu_domain = cookie;
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+-	struct arm_smmu_device *smmu = smmu_domain->smmu;
+ 	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
+-	void __iomem *reg;
++	void __iomem *reg = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
+ 
+ 	if (stage1) {
+-		reg = ARM_SMMU_CB(smmu, cfg->cbndx);
+ 		reg += leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
+ 
+ 		if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
+@@ -640,8 +659,7 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 				iova += granule >> 12;
+ 			} while (size -= granule);
+ 		}
+-	} else if (smmu->version == ARM_SMMU_V2) {
+-		reg = ARM_SMMU_CB(smmu, cfg->cbndx);
++	} else {
+ 		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
+ 			      ARM_SMMU_CB_S2_TLBIIPAS2;
+ 		iova >>= 12;
+@@ -649,16 +667,40 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+ 			smmu_write_atomic_lq(iova, reg);
+ 			iova += granule >> 12;
+ 		} while (size -= granule);
+-	} else {
+-		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
+-		writel_relaxed(cfg->vmid, reg);
+ 	}
+ }
+ 
+-static const struct iommu_gather_ops arm_smmu_gather_ops = {
+-	.tlb_flush_all	= arm_smmu_tlb_inv_context,
++/*
++ * On MMU-401 at least, the cost of firing off multiple TLBIVMIDs appears
++ * almost negligible, but the benefit of getting the first one in as far ahead
++ * of the sync as possible is significant, hence we don't just make this a
++ * no-op and set .tlb_sync to arm_smmu_inv_context_s2() as you might think.
++ */
++static void arm_smmu_tlb_inv_vmid_nosync(unsigned long iova, size_t size,
++					 size_t granule, bool leaf, void *cookie)
++{
++	struct arm_smmu_domain *smmu_domain = cookie;
++	void __iomem *base = ARM_SMMU_GR0(smmu_domain->smmu);
++
++	writel_relaxed(smmu_domain->cfg.vmid, base + ARM_SMMU_GR0_TLBIVMID);
++}
++
++static const struct iommu_gather_ops arm_smmu_s1_tlb_ops = {
++	.tlb_flush_all	= arm_smmu_tlb_inv_context_s1,
+ 	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
+-	.tlb_sync	= arm_smmu_tlb_sync,
++	.tlb_sync	= arm_smmu_tlb_sync_context,
++};
++
++static const struct iommu_gather_ops arm_smmu_s2_tlb_ops_v2 = {
++	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
++	.tlb_add_flush	= arm_smmu_tlb_inv_range_nosync,
++	.tlb_sync	= arm_smmu_tlb_sync_context,
++};
++
++static const struct iommu_gather_ops arm_smmu_s2_tlb_ops_v1 = {
++	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
++	.tlb_add_flush	= arm_smmu_tlb_inv_vmid_nosync,
++	.tlb_sync	= arm_smmu_tlb_sync_vmid,
+ };
+ 
+ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
+@@ -829,6 +871,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 	enum io_pgtable_fmt fmt;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
++	const struct iommu_gather_ops *tlb_ops;
+ 
+ 	mutex_lock(&smmu_domain->init_mutex);
+ 	if (smmu_domain->smmu)
+@@ -900,6 +943,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 			ias = min(ias, 32UL);
+ 			oas = min(oas, 32UL);
+ 		}
++		tlb_ops = &arm_smmu_s1_tlb_ops;
+ 		break;
+ 	case ARM_SMMU_DOMAIN_NESTED:
+ 		/*
+@@ -918,12 +962,15 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 			ias = min(ias, 40UL);
+ 			oas = min(oas, 40UL);
+ 		}
++		if (smmu->version == ARM_SMMU_V2)
++			tlb_ops = &arm_smmu_s2_tlb_ops_v2;
++		else
++			tlb_ops = &arm_smmu_s2_tlb_ops_v1;
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+ 		goto out_unlock;
+ 	}
+-
+ 	ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
+ 				      smmu->num_context_banks);
+ 	if (ret < 0)
+@@ -946,7 +993,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 		.pgsize_bitmap	= smmu->pgsize_bitmap,
+ 		.ias		= ias,
+ 		.oas		= oas,
+-		.tlb		= &arm_smmu_gather_ops,
++		.tlb		= tlb_ops,
+ 		.iommu_dev	= smmu->dev,
+ 	};
+ 
+@@ -1730,7 +1777,7 @@ static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 		reg |= sCR0_EXIDENABLE;
+ 
+ 	/* Push the button */
+-	__arm_smmu_tlb_sync(smmu);
++	arm_smmu_tlb_sync_global(smmu);
+ 	writel(reg, ARM_SMMU_GR0_NS(smmu) + ARM_SMMU_GR0_sCR0);
+ }
+ 
 -- 
 2.11.0.dirty
