@@ -1,180 +1,273 @@
-From: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Subject: Re: [RFC PATCH] of: Fix DMA configuration for non-DT masters
-Date: Thu, 30 Mar 2017 08:51:21 +0530
-Message-ID: <CAMSpPPfw3+vDoD_rJD9Ny=kUtXf2v6Fm6Qksi=K=OEhfVNYy1Q@mail.gmail.com>
-References: <67d1f46172599be243405f4341665fd0ef9ab969.1490726288.git.robin.murphy@arm.com>
- <CAMSpPPfJKKRkuDKxUgVBdg7vp7Ux5=PiHSxnMLc7-LMcCSatzg@mail.gmail.com>
- <CAMSpPPcSWxua_6ECZd4iEbTiAYk-KtapBDcOUxNdGaQkFF-LOQ@mail.gmail.com> <b02ace9b-f8f3-269d-6db4-3c1b1ea1e816@arm.com>
+From: Oza Oza via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [RFC PATCH 1/3] of/pci: dma-ranges to account highest possible
+	host bridge dma_mask
+Date: Thu, 30 Mar 2017 08:56:25 +0530
+Message-ID: <CAMSpPPd1emStxAqF2jdxLk07qHPvAc8wTARMq+f101q1N4TQtQ@mail.gmail.com>
+References: <1490419893-5073-1-git-send-email-oza.oza@broadcom.com>
+	<CAL_JsqLtTiH7DhqKf_x7xy1KZYQyiOreK=M90HFr=8BDW9542w@mail.gmail.com>
+	<CAMSpPPdnQdWeyTsnESRFx52gtxQLxwfPQwQgDFSN=katfW7suA@mail.gmail.com>
+	<de6bfedf-62aa-98e4-dae5-7862ab3ba754@arm.com>
+	<CAMSpPPd7awDB_JL0_4pY9qiSXeLt3QzpSL95XogyE9h0kgyq_A@mail.gmail.com>
+Reply-To: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <b02ace9b-f8f3-269d-6db4-3c1b1ea1e816-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <CAMSpPPd7awDB_JL0_4pY9qiSXeLt3QzpSL95XogyE9h0kgyq_A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 29, 2017 at 11:12 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On 29/03/17 06:46, Oza Oza wrote:
->> On Wed, Mar 29, 2017 at 10:23 AM, Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
->>> On Wed, Mar 29, 2017 at 12:27 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->>>> For PCI masters not represented in DT, we pass the OF node of their
->>>> associated host bridge to of_dma_configure(), such that they can inherit
->>>> the appropriate DMA configuration from whatever is described there.
->>>> Unfortunately, whilst this has worked for the "dma-coherent" property,
->>>> it turns out to miss the case where the host bridge node has a non-empty
->>>> "dma-ranges", since nobody is expecting the 'device' to be a bus itself.
+On Wed, Mar 29, 2017 at 10:13 AM, Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
+> On Tue, Mar 28, 2017 at 7:59 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+>> On 28/03/17 06:27, Oza Oza wrote:
+>>> On Mon, Mar 27, 2017 at 8:16 PM, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
+>>>> On Sat, Mar 25, 2017 at 12:31 AM, Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
+>>>>> it is possible that PCI device supports 64-bit DMA addressing,
+>>>>> and thus it's driver sets device's dma_mask to DMA_BIT_MASK(64),
+>>>>> however PCI host bridge may have limitations on the inbound
+>>>>> transaction addressing. As an example, consider NVME SSD device
+>>>>> connected to iproc-PCIe controller.
+>>>>>
+>>>>> Currently, the IOMMU DMA ops only considers PCI device dma_mask
+>>>>> when allocating an IOVA. This is particularly problematic on
+>>>>> ARM/ARM64 SOCs where the IOMMU (i.e. SMMU) translates IOVA to
+>>>>> PA for in-bound transactions only after PCI Host has forwarded
+>>>>> these transactions on SOC IO bus. This means on such ARM/ARM64
+>>>>> SOCs the IOVA of in-bound transactions has to honor the addressing
+>>>>> restrictions of the PCI Host.
+>>>>>
+>>>>> current pcie frmework and of framework integration assumes dma-ranges
+>>>>> in a way where memory-mapped devices define their dma-ranges.
+>>>>> dma-ranges: (child-bus-address, parent-bus-address, length).
+>>>>>
+>>>>> but iproc based SOCs and even Rcar based SOCs has PCI world dma-ranges.
+>>>>> dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
 >>>>
->>>> It transpires, though, that the de-facto interface since the prototype
->>>> change in 1f5c69aa51f9 ("of: Move of_dma_configure() to device.c to help
->>>> re-use") is very clear-cut: either the master_np argument is redundant
->>>> with dev->of_node, or dev->of_node is NULL and master_np is the relevant
->>>> parent bus. Let's ratify that behaviour, then teach the whole
->>>> of_dma_configure() pipeline to cope with both cases properly.
->>>>
->>>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->
-> [...]
->
+>>>> If you implement a common function, then I expect to see other users
+>>>> converted to use it. There's also PCI hosts in arch/powerpc that parse
+>>>> dma-ranges.
 >>>
->>> pci and memory mapped device world is different.
->
-> ???
->
-> No they aren't. There is nothing magic about PCI. PCI *is* a
-> memory-mapped bus.
->
-> The only PCI-specific aspect here is the Linux code path which passes a
-> host controller node into of_dma_configure() where the latter expects a
-> node for the actual endpoint device. It managed to work for
-> "dma-coherent", because that may appear either directly on a device node
-> or on any of its parent buses, but "dma-ranges" is *only* valid for DT
-> nodes representing buses, thus reveals that using a parent bus to stand
-> in for a device isn't actually correct. I only posted that horrible hack
-> patch to prove the point that having a child node to represent the
-> actual device is indeed sufficient to make of_dma_configure() work
-> correctly for PCI masters as-is (modulo the other issues).
->
->> of course if you talk
->>> from iommu perspective, all the master are same for IOMMU
->
-> I don't understand what you mean by that. There's nothing about IOMMUs
-> here, it's purely about parsing DT properties correctly.
->
->>> but the original intention of the patch is to try to solve 2 problems.
->>> please refer to https://lkml.org/lkml/2017/3/29/10
->
-> One patch should not solve two separate problems anyway. Taking a step
-> back, there are at least 3 things that this discussion has brought up:
->
-> 1) The way in which we call of_dma_configure() for PCI devices causes
-> the "dma-ranges" property on PCI host controllers to be ignored.
->
-> 2) of_dma_get_range() only considers the first entry in any "dma-ranges"
-> property.
->
-> 3) When of_dma_configure() does set a DMA mask, there is nothing on
-> arm64 and other architectures to prevent drivers overriding that with a
-> wider mask later.
->
-> Those are 3 separate problems, to solve with 3 or more separate patches,
-> and I have deliberately put the second and third to one side for the
-> moment. This patch fixes problem 1.
->
->>> 1) expose generic API for pci world clients to configure their
->>> dma-ranges. right now there is none.
->>> 2) same API can be used by IOMMU to derive dma_mask.
+>>> the common function should be similar to what
+>>> of_pci_get_host_bridge_resources is doing right now.
+>>> it parses ranges property right now.
 >>>
->>> while the current patch posted to handle dma-ranges for both memory
->>> mapped and pci devices, which I think is overdoing.
->
-> No, of_dma_configure() handles the "dma-ranges" property as it is
-> defined in the DT spec to describe the mapping between a child bus
-> address space and a parent bus address space. Whether those
-> memory-mapped parent and child buses are PCI, ISA, AMBA, HyperTransport,
-> or anything else is irrelevant other than for the encoding of the
-> address specifiers. All this patch does is sort out the cases where we
-> have a real device node to start at, from the cases where we don't and
-> so start directly at the device's parent bus node instead.
->
->>> besides we have different configuration of dma-ranges based on iommu
->>> is enabled or not enabled.
->
-> That doesn't sound right, unless you mean the firmware actually programs
-> the host controller's AXI bridge differently for system configurations
-> where the IOMMU is expected to be used or not? (and even then, I don't
-> really see why it would be necessary to do that...)
->
->>>  #define PCIE_DMA_RANGES dma-ranges = <0x43000000 0x00 0x80000000 0x00
->>> 0x80000000 0x00 0x80000000 \
->>>                                       0x43000000 0x08 0x00000000 0x08
->>> 0x00000000 0x08 0x00000000 \
->>>                                       0x43000000 0x80 0x00000000 0x80
->>> 0x00000000 0x40 0x00000000>;
->>> Not sure if this patch will consider above dma-ranges.
+>>> the new function would look look following.
 >>>
->>> my suggestion is to leave existing of_dma_get_range as is, and have
->>> new function for pci world as discussed in
->>> please refer to https://lkml.org/lkml/2017/3/29/10
->
-> And then we keep adding new functions to do the exact same thing for
-> every other discoverable bus type whose bridge is be described in DT? I
-> fail to see how that is in any way better than simply fixing the
-> existing code to work as it was intended to.
->
-> of_dma_get_ranges() uses of_translate_dma_address() just the same way as
-> existing PowerPC PCI code does, which further disproves your assertion
-> that parsing PCI addresses is somehow special - it's really only a
-> matter of getting the right number of address cells in order to to read
-> a child address to give to of_translate_dma_address() in the first
-> place. Incidentally, I now notice that the proposed
-> of_pci_get_dma_ranges() is incomplete as it doesn't use
-> of_translate_dma_address() or otherwise traverse upwards through the
-> dma-ranges of any further parent buses.
->
+>>> of_pci_get_dma_ranges(struct device_node *dev, struct list_head *resources)
+>>> where resources would return the dma-ranges.
 >>>
->>> Regards,
->>> Oza.
+>>> but right now if you see the patch, of_dma_configure calls the new
+>>> function, which actually returns the largest possible size.
+>>> so this new function has to be generic in a way where other PCI hosts
+>>> can use it. but certainly iproc(Broadcom SOC) , rcar based SOCs can
+>>> use it for sure.
+>>>
+>>> although having powerpc using it;  is a separate exercise, since I do
+>>> not have any access to other PCI hosts such as powerpc. but we can
+>>> workout with them on thsi forum if required.
+>>>
+>>> so overall, of_pci_get_dma_ranges has to serve following 2 purposes.
+>>>
+>>> 1) it has to return largest possible size to of_dma_configure to
+>>> generate largest possible dma_mask.
+>>>
+>>> 2) it also has to return resources (dma-ranges) parsed, to the users.
+>>>
+>>> so to address above needs
+>>>
+>>> of_pci_get_dma_ranges(struct device_node *dev, struct list_head
+>>> *resources, u64 *size)
+>>>
+>>> dev -> device node.
+>>> resources -> dma-ranges in allocated list.
+>>> size -> highest possible size to generate possible dma_mask for
+>>> of_dma_configure.
+>>>
+>>> let em know how this sounds.
 >>
->> also I see that, in case of multiple ranges of_dma_get_range doesnt handle that.
->> and also it is not meant to handle.
->
-> Yes, the existing code doesn't handle multiple dma-ranges entries,
-> because nobody's had the need to implement that so far, and this patch
-> does not change that because it's fixing a separate problem.
->
-> Now, of course of_dma_get_range() *should* be capable of handling
-> multiple entries regardless of this patch, and I'm going to write *that*
-> patch right now (it's going to be a case of adding a handful of lines
-> which probably won't even conflict with this one at all). If we had a
-> bunch of different range parsing functions, we'd then have to duplicate
-> the equivalent logic across all of them, which is clearly undesirable
-> when it can easily be avoided altogether.
->
-> Robin.
->
->> so with this patch will return wrong size and hence wrong dma_mask.
->> having said, I think it is better to separate pci world dma-ranges
->> function on of_pci.c
+>> Note that the point of passing PCI host bridges into of_dma_configure()
+>> in the first place was to avoid having some separate PCI-specific path
+>> for DMA configuration. I worry that introducing bus-specific dma-ranges
+>> parsing largely defeats that, since we end up with the worst of both
+>> worlds; effectively-duplicated code, and/or a load of extra complexity
+>> to then attempt to reconverge the divergent paths (there really
+>> shouldn't be any need to allocate a list of anything). Given that
+>> of_translate_dma_address() is already bus-agnostic, it hardly seems
+>> justifiable for its caller not to be so as well, especially when it
+>> mostly just comes down to getting the right #address-cells value.
 >>
->> for which my discussion with Rob already, (same thread)
->> https://lkml.org/lkml/2017/3/29/10
->> Waiting for Rob's viewpoint on this.
+>> The patch below is actually enough to make typical cases work, but is
+>> vile, so I'm not seriously considering it (hence I've not bothered
+>> making IOMMU configuration handle all circumstances). What it has served
+>> to do, though, is give me a clear idea of how to properly sort out the
+>> not-quite-right device/parent assumptions between of_dma_configure() and
+>> of_dma_get_range() rather than bodging around them any further - stay tuned.
 >>
+>> Robin.
 >>
->> Regards,
->> Oza.
+>> ----->8-----
+>> From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> Subject: [PATCH] of/pci: Use child node for DMA configuration
+>>
+>> of_dma_configure() expects to be passed an OF node representing the
+>> device being configured - for PCI devices we currently pass the node of
+>> the appropriate host controller, which sort of works for inherited
+>> properties which may appear at any level, like "dma-coherent", but falls
+>> apart for properties which actually care about specific device-parent
+>> relationships, like "dma-ranges".
+>>
+>> Solve this by attempting to find a suitable child node if the PCI
+>> hierarchy is actually represented in DT, and if not then faking one up
+>> as a last resort, to make all of DMA configuration work as expected.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+>> ---
+>>  drivers/iommu/of_iommu.c |  3 ++-
+>>  drivers/pci/of.c         | 24 ++++++++++++++++++++++++
+>>  drivers/pci/probe.c      | 14 +++++++++++++-
+>>  include/linux/pci.h      |  3 +++
+>>  4 files changed, 42 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+>> index 2683e9fc0dcf..35c97b945c15 100644
+>> --- a/drivers/iommu/of_iommu.c
+>> +++ b/drivers/iommu/of_iommu.c
+>> @@ -146,7 +146,8 @@ const struct iommu_ops *of_iommu_configure(struct
+>> device *dev,
+>>         int idx = 0;
+>>
+>>         if (dev_is_pci(dev))
+>> -               return of_pci_iommu_configure(to_pci_dev(dev), master_np);
+>> +               return of_pci_iommu_configure(to_pci_dev(dev),
+>> +                                             of_get_next_parent(master_np));
+>>
+>>         /*
+>>          * We don't currently walk up the tree looking for a parent IOMMU.
+>> diff --git a/drivers/pci/of.c b/drivers/pci/of.c
+>> index e112da11630e..96eece1c423d 100644
+>> --- a/drivers/pci/of.c
+>> +++ b/drivers/pci/of.c
+>> @@ -88,3 +88,27 @@ struct irq_domain
+>> *pci_host_bridge_of_msi_domain(struct pci_bus *bus)
+>>         return NULL;
+>>  #endif
+>>  }
+>> +
+>> +struct device_node *pci_dev_get_dma_of_node(struct pci_dev *dev)
+>> +{
+>> +       struct device_node *np;
+>> +       struct pci_bus *bus = dev->bus;
+>> +
+>> +       /* Is the device itself actually described in the DT? */
+>> +       np = of_node_get(dev->dev.of_node);
+>> +       if (np)
+>> +               return np;
+>> +
+>> +       /* Or is some intermediate bridge? That would do... */
+>> +       for (bus = dev->bus; bus->parent; bus = bus->parent) {
+>> +               np = of_node_get(bus->bridge->of_node);
+>> +               if (np)
+>> +                       return np;
+>> +       }
+>> +
+>> +       /* Failing that, any child of the same host bridge? */
+>> +       if (bus->bridge->parent)
+>> +               np = of_get_next_child(bus->bridge->parent->of_node, NULL);
+>> +
+>> +       return np;
+>> +}
+>> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+>> index dfc9a2794141..4f7ade64aa3e 100644
+>> --- a/drivers/pci/probe.c
+>> +++ b/drivers/pci/probe.c
+>> @@ -1906,7 +1906,19 @@ static void pci_dma_configure(struct pci_dev *dev)
+>>
+>>         if (IS_ENABLED(CONFIG_OF) &&
+>>                 bridge->parent && bridge->parent->of_node) {
+>> -                       of_dma_configure(&dev->dev, bridge->parent->of_node);
+>> +               struct device_node *np, tmp = {0};
+>> +
+>> +               np = pci_dev_get_dma_of_node(dev);
+>> +               if (!np) {
+>> +                       np = &tmp;
+>> +                       of_node_set_flag(np, OF_DETACHED);
+>> +                       of_node_init(np);
+>> +                       tmp.parent = bridge->parent->of_node;
+>> +               }
+>> +
+>> +               of_dma_configure(&dev->dev, np);
+>> +               if (np != &tmp)
+>> +                       of_node_put(np);
+>>         } else if (has_acpi_companion(bridge)) {
+>>                 struct acpi_device *adev = to_acpi_device_node(bridge->fwnode);
+>>                 enum dev_dma_attr attr = acpi_get_dma_attr(adev);
+>> diff --git a/include/linux/pci.h b/include/linux/pci.h
+>> index eb3da1a04e6c..94ecd1817f58 100644
+>> --- a/include/linux/pci.h
+>> +++ b/include/linux/pci.h
+>> @@ -2086,6 +2086,7 @@ void pci_release_of_node(struct pci_dev *dev);
+>>  void pci_set_bus_of_node(struct pci_bus *bus);
+>>  void pci_release_bus_of_node(struct pci_bus *bus);
+>>  struct irq_domain *pci_host_bridge_of_msi_domain(struct pci_bus *bus);
+>> +struct device_node *pci_dev_get_dma_of_node(struct pci_dev *dev);
+>>
+>>  /* Arch may override this (weak) */
+>>  struct device_node *pcibios_get_phb_of_node(struct pci_bus *bus);
+>> @@ -2110,6 +2111,8 @@ static inline struct device_node *
+>>  pci_device_to_OF_node(const struct pci_dev *pdev) { return NULL; }
+>>  static inline struct irq_domain *
+>>  pci_host_bridge_of_msi_domain(struct pci_bus *bus) { return NULL; }
+>> +static inline struct device_node *
+>> +pci_dev_get_dma_of_node(struct pci_dev *dev) { return NULL; }
+>>  #endif  /* CONFIG_OF */
+>>
+>>  #ifdef CONFIG_ACPI
 >>
 >
+> pci and memory mapped device world is different. of course if you talk
+> from iommu perspective, all the master are same for IOMMU
+> but the original intention of the patch is to try to solve 2 problems.
+>
+> 1) expose generic API for pci world clients to configure their
+> dma-ranges. right now there is none.
+> 2) same API can be used by IOMMU to derive dma_mask.
+>
+> the implementation tries to handle dma-ranges for both memory mapped
+> and pci devices, which I think is overkill.
+> besides we have different configuration of dma-ranges based on iommu
+> is enabled or not enabled.
+>
+>  #define PCIE_DMA_RANGES dma-ranges = <0x43000000 0x00 0x80000000 0x00
+> 0x80000000 0x00 0x80000000 \
+>                                       0x43000000 0x08 0x00000000 0x08
+> 0x00000000 0x08 0x00000000 \
+>                                       0x43000000 0x80 0x00000000 0x80
+> 0x00000000 0x40 0x00000000>;
+>
+>
+> the of_dma_get_range is written with respect to traditional memory
+> ranges, they were not meant for pci dma-ranges.
+>
+> Regards,
+> Oza.
 
-In my opinion NAKing to this, because
 
-1) some reasons already mentioned in https://lkml.org/lkml/2017/3/29/10
+Rob, gentle reminder on your viewpoint. my take on whole thing is as follows:
 
-2) also of_dma_get_range is supposed to handle traditional dma-ranges
+1) of_dma_get_range is supposed to handle traditional dma-ranges
 (not pci one)
 
-3) we need separate function for pci users such as iproc or rcar SOCs
+2) we need separate function for pci users such as iproc or rcar SOCs
 to have their dma-ranges parsed,
 which can be extended later for e.g. pci flags have some meanings.
 
@@ -182,17 +275,12 @@ besides of_dma_configure is written to pass only single out parameter
 (..., *dma_addr, *size)
 handling multiple ranges here, and passing only one range out is not desirable.
 
-also you would not like to handle pci flags (the first portion of DT
+also you would not like to handle pci flags in of_dma_get_range (the
+first portion of DT
 entry) in this function if required in future.
 
 this new function will be similar to of_pci_get_host_bridge_resources
-https://lkml.org/lkml/2017/3/29/10
 which I am writing/improving right now..
-
 
 Regards,
 Oza.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
