@@ -1,25 +1,16 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS mmaping
-	code
-Date: Thu, 30 Mar 2017 15:10:16 +0100
-Message-ID: <f81eeedd-4de7-3a71-5199-63bc32495a7a@arm.com>
-References: <CGME20170329100540eucas1p22d428e33aa678cbef0a24dd249820451@eucas1p2.samsung.com>
-	<1490781926-6209-1-git-send-email-a.hajda@samsung.com>
-	<15b1be13-625f-db74-d213-ad1df86f7eb5@arm.com>
-	<073f1feb-d6da-c93f-8e67-0910befec27b@samsung.com>
-	<c13f6475-f503-238f-c101-4f9cdf1b0ae2@arm.com>
-	<45fde94b-9487-c28e-9d4e-3b36c4b4a934@samsung.com>
-	<CAMuHMdWkOdAD=d0DAy7cJTHcQc7oq5HVDvTNtjfQETMynx1_+g@mail.gmail.com>
-	<8dcbb0b3-dd13-d2b3-90f5-64b900d67778@samsung.com>
-	<41097b2c-9bbc-31e4-d17d-8c3f638ec1a6@arm.com>
-	<bd77ea57-96a8-bbc4-8184-9ddfd443f3c6@samsung.com>
-	<868d0c3c-6b85-0709-1686-66b484ede46d@arm.com>
-	<CAMuHMdUp3-pdZ+w+Y-GRfHbkdnjHbP=+H=A_ukTwDD5q_WMi1Q@mail.gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH 4/4] iommu/arm-smmu: Use per-context TLB sync as
+	appropriate
+Date: Thu, 30 Mar 2017 15:37:44 +0100
+Message-ID: <20170330143744.GG22160@arm.com>
+References: <cover.1488907474.git.robin.murphy@arm.com>
+	<03ef837586cd991f2d8431908230fd3a3dd8c9cf.1488907474.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAMuHMdUp3-pdZ+w+Y-GRfHbkdnjHbP=+H=A_ukTwDD5q_WMi1Q-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <03ef837586cd991f2d8431908230fd3a3dd8c9cf.1488907474.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -29,92 +20,124 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 30/03/17 12:53, Geert Uytterhoeven wrote:
-> Hi Robin,
-> 
-> On Thu, Mar 30, 2017 at 1:46 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->> On 30/03/17 12:16, Andrzej Hajda wrote:
->> [...]
->>>>>>> I guess Geert's proposition to create pages permanently is also not
->>>>>>> acceptable[2]. So how to fix crashes which appeared after patch adding
->>>>>> If I'm not mistaken, creating the pages permanently is what the
->>>>>> !DMA_ATTR_FORCE_CONTIGUOUS does? The only difference is where
->>>>>> the underlying memory is allocated from.
->>>>>>
->>>>>> Am I missing something?
->>>>> Quoting Robin from his response:
->>>>>> in general is is not
->>>>>> safe to assume a coherent allocation is backed by struct pages at all
->>>>> As I said before I am not familiar with the subject, so it is possible I
->>>>> misunderstood something.
->>>> That's from the perspective of external callers of
->>>> dma_alloc_coherent()/dma_alloc_attrs(), wherein
->>>> dma_alloc_from_coherent() may have returned device-specific memory
->>>> without calling into the arch dma_map_ops implementation. Internal to
->>>> the arm64 implementation, however, everything *we* allocate comes from
->>>> either CMA or the normal page allocator, so should always be backed by
->>>> real kernel pages.
->>>>
->>>> Robin.
->>>
->>> OK, so what do you exactly mean by "The general point still stands", my
->>> patch fixes handling of allocations made internally?
->>
->> That since FORCE_CONTIGUOUS allocations always come from CMA, you can
->> let the existing CMA-based implementations handle them just by fixing up
->> dma_addr appropriately.
->>
->>> Anyway as I understand approach "creating the pages permanently" in
->>> __iommu_alloc_attrs is OK. Is it worth to create patch adding it? It
->>> should solve the issue as well and also looks saner (for me).
->>
->> Sure, you *could* - there's nothing technically wrong with that other
->> than violating a strict interpretation of the iommu-dma API
->> documentation if you pass it into iommu_dma_mmap() - it's just that the
->> only point of using the pages array here in the first place is to cover
->> the general case where an allocation might not be physically contiguous.
->> If you have a guarantee that a given allocation definitely *is* both
->> physically and virtually contiguous, then that's a bunch of extra work
->> you simply have no need to do.
-> 
-> The same can be said for dma_common_contiguous_remap() below...
+Hi Robin,
 
-Indeed it can. See if you can spot anything I've said in defence of that
-particular function ;)
+This mostly looks great, but I have a couple of minor comments below.
 
->> If you do want to go down that route, then I would much rather we fix
->> dma_common_contiguous_remap() to leave a valid array in area->pages in
->> the first place, than be temporarily faking them up around individual calls.
+On Tue, Mar 07, 2017 at 06:09:07PM +0000, Robin Murphy wrote:
+> TLB synchronisation typically involves the SMMU blocking all incoming
+> transactions until the TLBs report completion of all outstanding
+> operations. In the common SMMUv2 configuration of a single distributed
+> SMMU serving multiple peripherals, that means that a single unmap
+> request has the potential to bring the hammer down on the entire system
+> if synchronised globally. Since stage 1 contexts, and stage 2 contexts
+> under SMMUv2, offer local sync operations, let's make use of those
+> wherever we can in the hope of minimising global disruption.
 > 
-> The only point of using the pages array here in the first place is to cover
-> the general case in dma_common_pages_remap().
->
-> Providing a contiguous variant of map_vm_area() could resolve that.
+> To that end, rather than add any more branches to the already unwieldy
+> monolithic TLB maintenance ops, break them up into smaller, neater,
+> functions which we can then mix and match as appropriate.
+> 
+> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu.c | 156 ++++++++++++++++++++++++++++++-----------------
+>  1 file changed, 100 insertions(+), 56 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index c8aafe304171..f7411109670f 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -237,6 +237,8 @@ enum arm_smmu_s2cr_privcfg {
+>  #define ARM_SMMU_CB_S1_TLBIVAL		0x620
+>  #define ARM_SMMU_CB_S2_TLBIIPAS2	0x630
+>  #define ARM_SMMU_CB_S2_TLBIIPAS2L	0x638
+> +#define ARM_SMMU_CB_TLBSYNC		0x7f0
+> +#define ARM_SMMU_CB_TLBSTATUS		0x7f4
+>  #define ARM_SMMU_CB_ATS1PR		0x800
+>  #define ARM_SMMU_CB_ATSR		0x8f0
+>  
+> @@ -569,14 +571,13 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
+>  }
+>  
+>  /* Wait for any pending TLB invalidations to complete */
+> -static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu)
+> +static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
+> +				void __iomem *sync, void __iomem *status)
 
-Isn't that what remap_pfn_range() already is? iommu_dma_mmap() had to
-exist specifically because the likes of dma_common_mmap() *are* using
-that on the assumption of physically contiguous ranges. I don't really
-have the time or inclination to go digging into this myself, but there's
-almost certainly room for some improvement and/or cleanup in the common
-code too (and as I said, if something can be done there than I would
-rather it were tackled head-on than worked around with point fixes in
-the arch code).
+Given that you take the arm_smmu_device anyway, I think I'd prefer just
+passing the offsets for sync and status and avoiding the additions
+in the caller (a bit like your other patch in this series ;).
 
-Robin.
+>  static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+> @@ -617,48 +638,66 @@ static void arm_smmu_tlb_inv_range_nosync(unsigned long iova, size_t size,
+>  {
+>  	struct arm_smmu_domain *smmu_domain = cookie;
+>  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+> -	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>  	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
+> -	void __iomem *reg;
+> +	void __iomem *reg = ARM_SMMU_CB(smmu_domain->smmu, cfg->cbndx);
+> +	size_t step;
+>  
+> -	if (stage1) {
+> -		reg = ARM_SMMU_CB(smmu, cfg->cbndx);
+> -		reg += leaf ? ARM_SMMU_CB_S1_TLBIVAL : ARM_SMMU_CB_S1_TLBIVA;
+> -
+> -		if (cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
+> -			iova &= ~12UL;
+> -			iova |= cfg->asid;
+> -			do {
+> -				writel_relaxed(iova, reg);
+> -				iova += granule;
+> -			} while (size -= granule);
+> -		} else {
+> -			iova >>= 12;
+> -			iova |= (u64)cfg->asid << 48;
+> -			do {
+> -				writeq_relaxed(iova, reg);
+> -				iova += granule >> 12;
+> -			} while (size -= granule);
+> -		}
+> -	} else if (smmu->version == ARM_SMMU_V2) {
+> -		reg = ARM_SMMU_CB(smmu, cfg->cbndx);
+> +	if (stage1)
+> +		reg += leaf ? ARM_SMMU_CB_S1_TLBIVAL :
+> +			      ARM_SMMU_CB_S1_TLBIVA;
+> +	else
+>  		reg += leaf ? ARM_SMMU_CB_S2_TLBIIPAS2L :
+>  			      ARM_SMMU_CB_S2_TLBIIPAS2;
+> -		iova >>= 12;
+> -		do {
+> -			smmu_write_atomic_lq(iova, reg);
+> -			iova += granule >> 12;
+> -		} while (size -= granule);
+> +
+> +	if (stage1 && cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64) {
+> +		iova &= ~12UL;
+> +		iova |= cfg->asid;
+> +		step = granule;
+>  	} else {
+> -		reg = ARM_SMMU_GR0(smmu) + ARM_SMMU_GR0_TLBIVMID;
+> -		writel_relaxed(cfg->vmid, reg);
+> +		iova >>= 12;
+> +		step = granule >> 12;
+> +		if (stage1)
+> +			iova |= (u64)cfg->asid << 48;
+>  	}
+> +
+> +	do {
+> +		smmu_write_atomic_lq(iova, reg);
+> +		iova += step;
+> +	} while (size -= granule);
 
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
-> 
+There seems to be a lot of refactoring going on here, but I'm not entirely
+comfortable with the unconditional move to smmu_write_atomic_lq. Given the
+way in which arm_smmu_tlb_inv_range_nosync is now called (i.e. only for
+stage-1 or SMMUv2 stage-2), then I think you just need to delete the final
+else clause in the current code and you're done.
+
+Will
