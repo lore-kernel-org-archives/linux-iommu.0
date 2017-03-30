@@ -1,102 +1,34 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS mmaping
-	code
-Date: Thu, 30 Mar 2017 13:53:58 +0200
-Message-ID: <CAMuHMdUp3-pdZ+w+Y-GRfHbkdnjHbP=+H=A_ukTwDD5q_WMi1Q@mail.gmail.com>
-References: <CGME20170329100540eucas1p22d428e33aa678cbef0a24dd249820451@eucas1p2.samsung.com>
-	<1490781926-6209-1-git-send-email-a.hajda@samsung.com>
-	<15b1be13-625f-db74-d213-ad1df86f7eb5@arm.com>
-	<073f1feb-d6da-c93f-8e67-0910befec27b@samsung.com>
-	<c13f6475-f503-238f-c101-4f9cdf1b0ae2@arm.com>
-	<45fde94b-9487-c28e-9d4e-3b36c4b4a934@samsung.com>
-	<CAMuHMdWkOdAD=d0DAy7cJTHcQc7oq5HVDvTNtjfQETMynx1_+g@mail.gmail.com>
-	<8dcbb0b3-dd13-d2b3-90f5-64b900d67778@samsung.com>
-	<41097b2c-9bbc-31e4-d17d-8c3f638ec1a6@arm.com>
-	<bd77ea57-96a8-bbc4-8184-9ddfd443f3c6@samsung.com>
-	<868d0c3c-6b85-0709-1686-66b484ede46d@arm.com>
+From: Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only
+Date: Thu, 30 Mar 2017 07:45:15 -0600
+Message-ID: <CAD8Lp47VQ0X0ydsGMrpTu-y4LAXfg9N7+Mzb0hDWDsKc2P-kQg@mail.gmail.com>
+References: <20170322112242.GK29659@8bytes.org>
+ <1490595427-11979-1-git-send-email-arindam.nath@amd.com>
+ <CAD8Lp46RjsUJEvCR5qVY6p8za5H9iDGTAyJMDd1zO7gbgBvqfA@mail.gmail.com>
+ <MWHPR12MB15186B0A864F247BFBEF8EAD9C340@MWHPR12MB1518.namprd12.prod.outlook.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <868d0c3c-6b85-0709-1686-66b484ede46d-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+In-Reply-To: <MWHPR12MB15186B0A864F247BFBEF8EAD9C340-Gy0DoCVfaSXKu+HfpMNLNQdYzm3356FpvxpqHgZTriW3zl9H0oFU5g@public.gmane.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/amd-gfx>
+List-Post: <mailto:amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+List-Help: <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/amd-gfx>,
+ <mailto:amd-gfx-request-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org?subject=subscribe>
+Errors-To: amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org
+Sender: "amd-gfx" <amd-gfx-bounces-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>
+To: "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>
+Cc: "Bridgman, John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Suthikulpanit, Suravee" <Suravee.Suthikulpanit-5C7GfCeVMHo@public.gmane.org>, "Deucher,
+ Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, Linux Upstreaming Team <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Robin,
-
-On Thu, Mar 30, 2017 at 1:46 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On 30/03/17 12:16, Andrzej Hajda wrote:
-> [...]
->>>>>> I guess Geert's proposition to create pages permanently is also not
->>>>>> acceptable[2]. So how to fix crashes which appeared after patch adding
->>>>> If I'm not mistaken, creating the pages permanently is what the
->>>>> !DMA_ATTR_FORCE_CONTIGUOUS does? The only difference is where
->>>>> the underlying memory is allocated from.
->>>>>
->>>>> Am I missing something?
->>>> Quoting Robin from his response:
->>>>> in general is is not
->>>>> safe to assume a coherent allocation is backed by struct pages at all
->>>> As I said before I am not familiar with the subject, so it is possible I
->>>> misunderstood something.
->>> That's from the perspective of external callers of
->>> dma_alloc_coherent()/dma_alloc_attrs(), wherein
->>> dma_alloc_from_coherent() may have returned device-specific memory
->>> without calling into the arch dma_map_ops implementation. Internal to
->>> the arm64 implementation, however, everything *we* allocate comes from
->>> either CMA or the normal page allocator, so should always be backed by
->>> real kernel pages.
->>>
->>> Robin.
->>
->> OK, so what do you exactly mean by "The general point still stands", my
->> patch fixes handling of allocations made internally?
->
-> That since FORCE_CONTIGUOUS allocations always come from CMA, you can
-> let the existing CMA-based implementations handle them just by fixing up
-> dma_addr appropriately.
->
->> Anyway as I understand approach "creating the pages permanently" in
->> __iommu_alloc_attrs is OK. Is it worth to create patch adding it? It
->> should solve the issue as well and also looks saner (for me).
->
-> Sure, you *could* - there's nothing technically wrong with that other
-> than violating a strict interpretation of the iommu-dma API
-> documentation if you pass it into iommu_dma_mmap() - it's just that the
-> only point of using the pages array here in the first place is to cover
-> the general case where an allocation might not be physically contiguous.
-> If you have a guarantee that a given allocation definitely *is* both
-> physically and virtually contiguous, then that's a bunch of extra work
-> you simply have no need to do.
-
-The same can be said for dma_common_contiguous_remap() below...
-
-> If you do want to go down that route, then I would much rather we fix
-> dma_common_contiguous_remap() to leave a valid array in area->pages in
-> the first place, than be temporarily faking them up around individual calls.
-
-The only point of using the pages array here in the first place is to cover
-the general case in dma_common_pages_remap().
-
-Providing a contiguous variant of map_vm_area() could resolve that.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+T24gVGh1LCBNYXIgMzAsIDIwMTcgYXQgMTI6MjMgQU0sIE5hdGgsIEFyaW5kYW0gPEFyaW5kYW0u
+TmF0aEBhbWQuY29tPiB3cm90ZToKPiBEYW5pZWwsIGRpZCB5b3UgZ2V0IGNoYW5jZSB0byB0ZXN0
+IHRoaXMgcGF0Y2g/CgpOb3QgeWV0LiBTaG91bGQgd2UgdGVzdCBpdCBhbG9uZSBvciBhbG9uZ3Np
+ZGUgIlBDSTogQmxhY2tsaXN0IEFNRApTdG9uZXkgR1BVIGRldmljZXMgZm9yIEFUUyI/CgpUaGFu
+a3MKRGFuaWVsCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CmFtZC1nZnggbWFpbGluZyBsaXN0CmFtZC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBz
+Oi8vbGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vYW1kLWdmeAo=
