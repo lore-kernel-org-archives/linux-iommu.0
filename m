@@ -1,12 +1,15 @@
 From: Oza Pawandeep via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [RFC PATCH 1/2] of/pci: implement inbound dma-ranges for PCI
-Date: Thu, 30 Mar 2017 15:29:45 +0530
-Message-ID: <1490867986-5675-1-git-send-email-oza.oza@broadcom.com>
+Subject: [RFC PATCH 2/2] of/pci: call pci specific dma-ranges instead of
+	memory-mapped.
+Date: Thu, 30 Mar 2017 15:29:46 +0530
+Message-ID: <1490867986-5675-2-git-send-email-oza.oza@broadcom.com>
+References: <1490867986-5675-1-git-send-email-oza.oza@broadcom.com>
 Reply-To: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1490867986-5675-1-git-send-email-oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,137 +23,76 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <r
 Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Oza Pawandeep <oza.pawandeep-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-current device frmework and of framework integration assumes dma-ranges
-in a way where memory-mapped devices define their dma-ranges.
-dma-ranges: (child-bus-address, parent-bus-address, length).
+it is possible that PCI device supports 64-bit DMA addressing,
+and thus it's driver sets device's dma_mask to DMA_BIT_MASK(64),
+however PCI host bridge may have limitations on the inbound
+transaction addressing. As an example, consider NVME SSD device
+connected to iproc-PCIe controller.
 
-but iproc based SOCs and other SOCs(rcar) have PCI world dma-ranges.
-dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
+Currently, the IOMMU DMA ops only considers PCI device dma_mask
+when allocating an IOVA. This is particularly problematic on
+ARM/ARM64 SOCs where the IOMMU (i.e. SMMU) translates IOVA to
+PA for in-bound transactions only after PCI Host has forwarded
+these transactions on SOC IO bus. This means on such ARM/ARM64
+SOCs the IOVA of in-bound transactions has to honor the addressing
+restrictions of the PCI Host.
 
-of_dma_configure is specifically witten to take care of memory mapped devices.
-but no implementation exists for pci to take care of pcie based memory ranges.
-in fact pci world doesnt seem to define standard dma-ranges
+this patch calls pci specific of_pci_dma_get_ranges, instead of
+calling memory-mapped one, which returns wrong size and also
+not meant for PCI world.
 
-this exposes intrface not only to the pci host driver, but also
-it aims to provide an interface to callers such as of_dma_configure.
-so then the returned size get best possible (largest) dma_mask.
-for e.g.
-dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
-we should get dev->coherent_dma_mask=0x7fffffffff.
-
-also this patch intends to handle multiple inbound windows and dma-ranges.
-it is left to the caller, how it wants to use them.
+with this, it gets accurate resources back, and largest possible
+inbound window size. with that largest possible dma_mask can be
+generated.
 
 Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 
-diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
-index 0ee42c3..5299438 100644
---- a/drivers/of/of_pci.c
-+++ b/drivers/of/of_pci.c
-@@ -283,6 +283,80 @@ int of_pci_get_host_bridge_resources(struct device_node *dev,
- 	return err;
- }
- EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
-+
-+/**
-+ * of_pci_get_dma_ranges - Parse PCI host bridge inbound resources from DT
-+ * @np: device node of the host bridge having the dma-ranges property
-+ * @resources: list where the range of resources will be added after DT parsing
-+ *
-+ * It is the caller's job to free the @resources list.
-+ *
-+ * This function will parse the "dma-ranges" property of a PCI host bridge device
-+ * node and setup the resource mapping based on its content.
-+ *
-+ * It returns zero if the range parsing has been successful or a standard error
-+ * value if it failed.
-+ */
-+
-+int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources)
-+{
-+	struct device_node *node = of_node_get(np);
-+	int rlen;
-+	int ret = 0;
-+	const int na = 3, ns = 2;
-+	struct resource *res;
-+	struct of_pci_range_parser parser;
-+	struct of_pci_range range;
-+
-+	if (!node)
-+		return -EINVAL;
-+
-+	parser.node = node;
-+	parser.pna = of_n_addr_cells(node);
-+	parser.np = parser.pna + na + ns;
-+
-+	parser.range = of_get_property(node, "dma-ranges", &rlen);
-+
-+	if (!parser.range) {
-+		pr_debug("pcie device has no dma-ranges defined for node(%s)\n", np->full_name);
-+		ret = -ENODEV;
-+		goto out;
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index b1e6beb..d6a8dde 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -9,6 +9,7 @@
+ #include <linux/module.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/slab.h>
++#include <linux/of_pci.h>
+ 
+ #include <asm/errno.h>
+ #include "of_private.h"
+@@ -89,6 +90,8 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+ 	bool coherent;
+ 	unsigned long offset;
+ 	const struct iommu_ops *iommu;
++	struct resource_entry *window;
++	LIST_HEAD(res);
+ 
+ 	/*
+ 	 * Set default coherent_dma_mask to 32 bit.  Drivers are expected to
+@@ -104,7 +107,24 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+ 	if (!dev->dma_mask)
+ 		dev->dma_mask = &dev->coherent_dma_mask;
+ 
+-	ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
++	if (dev_is_pci(dev)) {
++		size = 0;
++		ret = of_pci_get_dma_ranges(np, &res);
++		if (!ret) {
++			resource_list_for_each_entry(window, &res) {
++				struct resource *res_dma = window->res;
++				if (size < resource_size(res_dma)) {
++					dma_addr = res_dma->start - window->offset;
++					paddr = res_dma->start;
++					size = resource_size(res_dma);
++				}
++			}
++		}
++		pci_free_resource_list(&res);
 +	}
++	else
++		ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
 +
-+	parser.end = parser.range + rlen / sizeof(__be32);
-+
-+	for_each_of_pci_range(&parser, &range) {
-+		/*
-+		 * If we failed translation or got a zero-sized region
-+		 * then skip this range
-+		 */
-+		if (range.cpu_addr == OF_BAD_ADDR || range.size == 0)
-+			continue;
-+
-+		res = kzalloc(sizeof(struct resource), GFP_KERNEL);
-+		if (!res) {
-+			ret = -ENOMEM;
-+			goto parse_failed;
-+		}
-+
-+		ret = of_pci_range_to_resource(&range, np, res);
-+		if (ret) {
-+			kfree(res);
-+			continue;
-+		}
-+
-+		pci_add_resource_offset(resources, res,	res->start - range.pci_addr);
-+        }
-+
-+	return ret;
-+
-+parse_failed:
-+	pci_free_resource_list(resources);
-+out:
-+	of_node_put(node);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(of_pci_get_dma_ranges);
- #endif /* CONFIG_OF_ADDRESS */
- 
- #ifdef CONFIG_PCI_MSI
-diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
-index 0e0974e..8509e3d 100644
---- a/include/linux/of_pci.h
-+++ b/include/linux/of_pci.h
-@@ -76,6 +76,7 @@ static inline void of_pci_check_probe_only(void) { }
- int of_pci_get_host_bridge_resources(struct device_node *dev,
- 			unsigned char busno, unsigned char bus_max,
- 			struct list_head *resources, resource_size_t *io_base);
-+int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources);
- #else
- static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
- 			unsigned char busno, unsigned char bus_max,
-@@ -83,6 +84,11 @@ static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
- {
- 	return -EINVAL;
- }
-+
-+static inline int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources)
-+{
-+	return -EINVAL;
-+}
- #endif
- 
- #if defined(CONFIG_OF) && defined(CONFIG_PCI_MSI)
+ 	if (ret < 0) {
+ 		dma_addr = offset = 0;
+ 		size = dev->coherent_dma_mask + 1;
 -- 
 1.9.1
