@@ -1,19 +1,14 @@
-From: Oza Oza via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [RFC PATCH 1/3] of/pci: dma-ranges to account highest possible
-	host bridge dma_mask
-Date: Thu, 30 Mar 2017 08:56:25 +0530
-Message-ID: <CAMSpPPd1emStxAqF2jdxLk07qHPvAc8wTARMq+f101q1N4TQtQ@mail.gmail.com>
-References: <1490419893-5073-1-git-send-email-oza.oza@broadcom.com>
-	<CAL_JsqLtTiH7DhqKf_x7xy1KZYQyiOreK=M90HFr=8BDW9542w@mail.gmail.com>
-	<CAMSpPPdnQdWeyTsnESRFx52gtxQLxwfPQwQgDFSN=katfW7suA@mail.gmail.com>
-	<de6bfedf-62aa-98e4-dae5-7862ab3ba754@arm.com>
-	<CAMSpPPd7awDB_JL0_4pY9qiSXeLt3QzpSL95XogyE9h0kgyq_A@mail.gmail.com>
-Reply-To: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+From: Archit Taneja <architt-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Subject: Re: [PATCH 5/9] iommu: add qcom_iommu
+Date: Thu, 30 Mar 2017 11:49:13 +0530
+Message-ID: <01bfb9f2-22a6-4008-da21-a968b0153bc2@codeaurora.org>
+References: <20170314151811.17234-1-robdclark@gmail.com>
+	<20170314151811.17234-6-robdclark@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <CAMSpPPd7awDB_JL0_4pY9qiSXeLt3QzpSL95XogyE9h0kgyq_A-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <20170314151811.17234-6-robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,264 +18,393 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 29, 2017 at 10:13 AM, Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
-> On Tue, Mar 28, 2017 at 7:59 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->> On 28/03/17 06:27, Oza Oza wrote:
->>> On Mon, Mar 27, 2017 at 8:16 PM, Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org> wrote:
->>>> On Sat, Mar 25, 2017 at 12:31 AM, Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
->>>>> it is possible that PCI device supports 64-bit DMA addressing,
->>>>> and thus it's driver sets device's dma_mask to DMA_BIT_MASK(64),
->>>>> however PCI host bridge may have limitations on the inbound
->>>>> transaction addressing. As an example, consider NVME SSD device
->>>>> connected to iproc-PCIe controller.
->>>>>
->>>>> Currently, the IOMMU DMA ops only considers PCI device dma_mask
->>>>> when allocating an IOVA. This is particularly problematic on
->>>>> ARM/ARM64 SOCs where the IOMMU (i.e. SMMU) translates IOVA to
->>>>> PA for in-bound transactions only after PCI Host has forwarded
->>>>> these transactions on SOC IO bus. This means on such ARM/ARM64
->>>>> SOCs the IOVA of in-bound transactions has to honor the addressing
->>>>> restrictions of the PCI Host.
->>>>>
->>>>> current pcie frmework and of framework integration assumes dma-ranges
->>>>> in a way where memory-mapped devices define their dma-ranges.
->>>>> dma-ranges: (child-bus-address, parent-bus-address, length).
->>>>>
->>>>> but iproc based SOCs and even Rcar based SOCs has PCI world dma-ranges.
->>>>> dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
->>>>
->>>> If you implement a common function, then I expect to see other users
->>>> converted to use it. There's also PCI hosts in arch/powerpc that parse
->>>> dma-ranges.
->>>
->>> the common function should be similar to what
->>> of_pci_get_host_bridge_resources is doing right now.
->>> it parses ranges property right now.
->>>
->>> the new function would look look following.
->>>
->>> of_pci_get_dma_ranges(struct device_node *dev, struct list_head *resources)
->>> where resources would return the dma-ranges.
->>>
->>> but right now if you see the patch, of_dma_configure calls the new
->>> function, which actually returns the largest possible size.
->>> so this new function has to be generic in a way where other PCI hosts
->>> can use it. but certainly iproc(Broadcom SOC) , rcar based SOCs can
->>> use it for sure.
->>>
->>> although having powerpc using it;  is a separate exercise, since I do
->>> not have any access to other PCI hosts such as powerpc. but we can
->>> workout with them on thsi forum if required.
->>>
->>> so overall, of_pci_get_dma_ranges has to serve following 2 purposes.
->>>
->>> 1) it has to return largest possible size to of_dma_configure to
->>> generate largest possible dma_mask.
->>>
->>> 2) it also has to return resources (dma-ranges) parsed, to the users.
->>>
->>> so to address above needs
->>>
->>> of_pci_get_dma_ranges(struct device_node *dev, struct list_head
->>> *resources, u64 *size)
->>>
->>> dev -> device node.
->>> resources -> dma-ranges in allocated list.
->>> size -> highest possible size to generate possible dma_mask for
->>> of_dma_configure.
->>>
->>> let em know how this sounds.
->>
->> Note that the point of passing PCI host bridges into of_dma_configure()
->> in the first place was to avoid having some separate PCI-specific path
->> for DMA configuration. I worry that introducing bus-specific dma-ranges
->> parsing largely defeats that, since we end up with the worst of both
->> worlds; effectively-duplicated code, and/or a load of extra complexity
->> to then attempt to reconverge the divergent paths (there really
->> shouldn't be any need to allocate a list of anything). Given that
->> of_translate_dma_address() is already bus-agnostic, it hardly seems
->> justifiable for its caller not to be so as well, especially when it
->> mostly just comes down to getting the right #address-cells value.
->>
->> The patch below is actually enough to make typical cases work, but is
->> vile, so I'm not seriously considering it (hence I've not bothered
->> making IOMMU configuration handle all circumstances). What it has served
->> to do, though, is give me a clear idea of how to properly sort out the
->> not-quite-right device/parent assumptions between of_dma_configure() and
->> of_dma_get_range() rather than bodging around them any further - stay tuned.
->>
->> Robin.
->>
->> ----->8-----
->> From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> Subject: [PATCH] of/pci: Use child node for DMA configuration
->>
->> of_dma_configure() expects to be passed an OF node representing the
->> device being configured - for PCI devices we currently pass the node of
->> the appropriate host controller, which sort of works for inherited
->> properties which may appear at any level, like "dma-coherent", but falls
->> apart for properties which actually care about specific device-parent
->> relationships, like "dma-ranges".
->>
->> Solve this by attempting to find a suitable child node if the PCI
->> hierarchy is actually represented in DT, and if not then faking one up
->> as a last resort, to make all of DMA configuration work as expected.
->>
->> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->> ---
->>  drivers/iommu/of_iommu.c |  3 ++-
->>  drivers/pci/of.c         | 24 ++++++++++++++++++++++++
->>  drivers/pci/probe.c      | 14 +++++++++++++-
->>  include/linux/pci.h      |  3 +++
->>  4 files changed, 42 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->> index 2683e9fc0dcf..35c97b945c15 100644
->> --- a/drivers/iommu/of_iommu.c
->> +++ b/drivers/iommu/of_iommu.c
->> @@ -146,7 +146,8 @@ const struct iommu_ops *of_iommu_configure(struct
->> device *dev,
->>         int idx = 0;
->>
->>         if (dev_is_pci(dev))
->> -               return of_pci_iommu_configure(to_pci_dev(dev), master_np);
->> +               return of_pci_iommu_configure(to_pci_dev(dev),
->> +                                             of_get_next_parent(master_np));
->>
->>         /*
->>          * We don't currently walk up the tree looking for a parent IOMMU.
->> diff --git a/drivers/pci/of.c b/drivers/pci/of.c
->> index e112da11630e..96eece1c423d 100644
->> --- a/drivers/pci/of.c
->> +++ b/drivers/pci/of.c
->> @@ -88,3 +88,27 @@ struct irq_domain
->> *pci_host_bridge_of_msi_domain(struct pci_bus *bus)
->>         return NULL;
->>  #endif
->>  }
->> +
->> +struct device_node *pci_dev_get_dma_of_node(struct pci_dev *dev)
->> +{
->> +       struct device_node *np;
->> +       struct pci_bus *bus = dev->bus;
->> +
->> +       /* Is the device itself actually described in the DT? */
->> +       np = of_node_get(dev->dev.of_node);
->> +       if (np)
->> +               return np;
->> +
->> +       /* Or is some intermediate bridge? That would do... */
->> +       for (bus = dev->bus; bus->parent; bus = bus->parent) {
->> +               np = of_node_get(bus->bridge->of_node);
->> +               if (np)
->> +                       return np;
->> +       }
->> +
->> +       /* Failing that, any child of the same host bridge? */
->> +       if (bus->bridge->parent)
->> +               np = of_get_next_child(bus->bridge->parent->of_node, NULL);
->> +
->> +       return np;
->> +}
->> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
->> index dfc9a2794141..4f7ade64aa3e 100644
->> --- a/drivers/pci/probe.c
->> +++ b/drivers/pci/probe.c
->> @@ -1906,7 +1906,19 @@ static void pci_dma_configure(struct pci_dev *dev)
->>
->>         if (IS_ENABLED(CONFIG_OF) &&
->>                 bridge->parent && bridge->parent->of_node) {
->> -                       of_dma_configure(&dev->dev, bridge->parent->of_node);
->> +               struct device_node *np, tmp = {0};
->> +
->> +               np = pci_dev_get_dma_of_node(dev);
->> +               if (!np) {
->> +                       np = &tmp;
->> +                       of_node_set_flag(np, OF_DETACHED);
->> +                       of_node_init(np);
->> +                       tmp.parent = bridge->parent->of_node;
->> +               }
->> +
->> +               of_dma_configure(&dev->dev, np);
->> +               if (np != &tmp)
->> +                       of_node_put(np);
->>         } else if (has_acpi_companion(bridge)) {
->>                 struct acpi_device *adev = to_acpi_device_node(bridge->fwnode);
->>                 enum dev_dma_attr attr = acpi_get_dma_attr(adev);
->> diff --git a/include/linux/pci.h b/include/linux/pci.h
->> index eb3da1a04e6c..94ecd1817f58 100644
->> --- a/include/linux/pci.h
->> +++ b/include/linux/pci.h
->> @@ -2086,6 +2086,7 @@ void pci_release_of_node(struct pci_dev *dev);
->>  void pci_set_bus_of_node(struct pci_bus *bus);
->>  void pci_release_bus_of_node(struct pci_bus *bus);
->>  struct irq_domain *pci_host_bridge_of_msi_domain(struct pci_bus *bus);
->> +struct device_node *pci_dev_get_dma_of_node(struct pci_dev *dev);
->>
->>  /* Arch may override this (weak) */
->>  struct device_node *pcibios_get_phb_of_node(struct pci_bus *bus);
->> @@ -2110,6 +2111,8 @@ static inline struct device_node *
->>  pci_device_to_OF_node(const struct pci_dev *pdev) { return NULL; }
->>  static inline struct irq_domain *
->>  pci_host_bridge_of_msi_domain(struct pci_bus *bus) { return NULL; }
->> +static inline struct device_node *
->> +pci_dev_get_dma_of_node(struct pci_dev *dev) { return NULL; }
->>  #endif  /* CONFIG_OF */
->>
->>  #ifdef CONFIG_ACPI
->>
+Hi,
+
+On 03/14/2017 08:48 PM, Rob Clark wrote:
+> An iommu driver for Qualcomm "B" family devices which do not completely
+> implement the ARM SMMU spec.  These devices have context-bank register
+> layout that is similar to ARM SMMU, but no global register space (or at
+> least not one that is accessible).
 >
-> pci and memory mapped device world is different. of course if you talk
-> from iommu perspective, all the master are same for IOMMU
-> but the original intention of the patch is to try to solve 2 problems.
+> Signed-off-by: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+> Signed-off-by: Stanimir Varbanov <stanimir.varbanov-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>
+> ---
+>  drivers/iommu/Kconfig         |  10 +
+>  drivers/iommu/Makefile        |   1 +
+>  drivers/iommu/arm-smmu-regs.h |   2 +
+>  drivers/iommu/qcom_iommu.c    | 818 ++++++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 831 insertions(+)
+>  create mode 100644 drivers/iommu/qcom_iommu.c
+
+<snip>
+
+> +
+> +static int qcom_iommu_add_device(struct device *dev)
+> +{
+> +	struct qcom_iommu_dev *qcom_iommu = __to_iommu(dev->iommu_fwspec);
+
+__to_iommu() has a WARN_ON() that gets triggered here for all devices on
+the platform bus that aren't backed by our iommu. We should return -ENODEV
+for all of them without throwing a warning.
+
+> +	struct iommu_group *group;
+> +	struct device_link *link;
+> +
+
+We could do something like:
+
+if (fwspec && fwspec->ops == &qcom_iommu_ops)
+	qcom_iommu = __to_iommu(fwspec);
+else
+	qcom_iommu = NULL;
+
+Thanks,
+Archit
+
+> +	if (!qcom_iommu)
+> +		return -ENODEV;
+> +
+> +	/*
+> +	 * Establish the link between iommu and master, so that the
+> +	 * iommu gets runtime enabled/disabled as per the master's
+> +	 * needs.
+> +	 */
+> +	link = device_link_add(dev, qcom_iommu->dev, DL_FLAG_PM_RUNTIME);
+> +	if (!link) {
+> +		dev_err(qcom_iommu->dev, "Unable to create device link between %s and %s\n",
+> +			dev_name(qcom_iommu->dev), dev_name(dev));
+> +		return -ENODEV;
+> +	}
+> +
+> +	group = iommu_group_get_for_dev(dev);
+> +	if (IS_ERR_OR_NULL(group))
+> +		return PTR_ERR_OR_ZERO(group);
+> +
+> +	iommu_group_put(group);
+> +	iommu_device_link(&qcom_iommu->iommu, dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static void qcom_iommu_remove_device(struct device *dev)
+> +{
+> +	struct qcom_iommu_dev *qcom_iommu = __to_iommu(dev->iommu_fwspec);
+> +
+> +	if (!qcom_iommu)
+> +		return;
+> +
+> +	iommu_group_remove_device(dev);
+> +	iommu_device_unlink(&qcom_iommu->iommu, dev);
+> +	iommu_fwspec_free(dev);
+> +}
+> +
+> +static struct iommu_group *qcom_iommu_device_group(struct device *dev)
+> +{
+> +	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+> +	struct iommu_group *group = NULL;
+> +	unsigned i;
+> +
+> +	for (i = 0; i < fwspec->num_ids; i++) {
+> +		struct qcom_iommu_ctx *ctx = __to_ctx(fwspec, fwspec->ids[i]);
+> +
+> +		if (group && ctx->group && group != ctx->group)
+> +			return ERR_PTR(-EINVAL);
+> +
+> +		group = ctx->group;
+> +	}
+> +
+> +	if (group)
+> +		return iommu_group_ref_get(group);
+> +
+> +	group = generic_device_group(dev);
+> +
+> +	for (i = 0; i < fwspec->num_ids; i++) {
+> +		struct qcom_iommu_ctx *ctx = __to_ctx(fwspec, fwspec->ids[i]);
+> +		ctx->group = iommu_group_ref_get(group);
+> +	}
+> +
+> +	return group;
+> +}
+> +
+> +static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+> +{
+> +	struct platform_device *iommu_pdev;
+> +
+> +	if (args->args_count != 1) {
+> +		dev_err(dev, "incorrect number of iommu params found for %s "
+> +			"(found %d, expected 1)\n",
+> +			args->np->full_name, args->args_count);
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (!dev->iommu_fwspec->iommu_priv) {
+> +		iommu_pdev = of_find_device_by_node(args->np);
+> +		if (WARN_ON(!iommu_pdev))
+> +			return -EINVAL;
+> +
+> +		dev->iommu_fwspec->iommu_priv = platform_get_drvdata(iommu_pdev);
+> +	}
+> +
+> +	return iommu_fwspec_add_ids(dev, &args->args[0], 1);
+> +}
+> +
+> +static const struct iommu_ops qcom_iommu_ops = {
+> +	.capable	= qcom_iommu_capable,
+> +	.domain_alloc	= qcom_iommu_domain_alloc,
+> +	.domain_free	= qcom_iommu_domain_free,
+> +	.attach_dev	= qcom_iommu_attach_dev,
+> +	.detach_dev	= qcom_iommu_detach_dev,
+> +	.map		= qcom_iommu_map,
+> +	.unmap		= qcom_iommu_unmap,
+> +	.map_sg		= default_iommu_map_sg,
+> +	.iova_to_phys	= qcom_iommu_iova_to_phys,
+> +	.add_device	= qcom_iommu_add_device,
+> +	.remove_device	= qcom_iommu_remove_device,
+> +	.device_group	= qcom_iommu_device_group,
+> +	.of_xlate	= qcom_iommu_of_xlate,
+> +	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
+> +};
+> +
+> +static int qcom_iommu_enable_clocks(struct qcom_iommu_dev *qcom_iommu)
+> +{
+> +	int ret;
+> +
+> +	ret = clk_prepare_enable(qcom_iommu->iface_clk);
+> +	if (ret) {
+> +		dev_err(qcom_iommu->dev, "Couldn't enable iface_clk\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = clk_prepare_enable(qcom_iommu->bus_clk);
+> +	if (ret) {
+> +		dev_err(qcom_iommu->dev, "Couldn't enable bus_clk\n");
+> +		clk_disable_unprepare(qcom_iommu->iface_clk);
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void qcom_iommu_disable_clocks(struct qcom_iommu_dev *qcom_iommu)
+> +{
+> +	clk_disable_unprepare(qcom_iommu->bus_clk);
+> +	clk_disable_unprepare(qcom_iommu->iface_clk);
+> +}
+> +
+> +static int qcom_iommu_ctx_probe(struct platform_device *pdev)
+> +{
+> +	struct qcom_iommu_ctx *ctx;
+> +	struct device *dev = &pdev->dev;
+> +	struct qcom_iommu_dev *qcom_iommu = dev_get_drvdata(dev->parent);
+> +	struct resource *res;
+> +	int ret;
+> +	u32 reg;
+> +
+> +	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
+> +	if (!ctx)
+> +		return -ENOMEM;
+> +
+> +	ctx->dev = dev;
+> +	platform_set_drvdata(pdev, ctx);
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	ctx->base = devm_ioremap_resource(dev, res);
+> +	if (IS_ERR(ctx->base))
+> +		return PTR_ERR(ctx->base);
+> +
+> +	ctx->irq = platform_get_irq(pdev, 0);
+> +	if (ctx->irq < 0) {
+> +		dev_err(dev, "failed to get irq\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	ret = devm_request_irq(dev, ctx->irq,
+> +			       qcom_iommu_fault,
+> +			       IRQF_SHARED,
+> +			       "qcom-iommu-fault",
+> +			       ctx);
+> +	if (ret) {
+> +		dev_err(dev, "failed to request IRQ %u\n", ctx->irq);
+> +		return ret;
+> +	}
+> +
+> +	/* read the "reg" property directly to get the relative address
+> +	 * of the context bank, and calculate the asid from that:
+> +	 */
+> +	if (of_property_read_u32_index(dev->of_node, "reg", 0, &reg)) {
+> +		dev_err(dev, "missing reg property\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	ctx->asid = reg / 0x1000;      /* context banks are 0x1000 apart */
+> +
+> +	dev_dbg(dev, "found asid %u\n", ctx->asid);
+> +
+> +	list_add_tail(&ctx->node, &qcom_iommu->context_list);
+> +
+> +	return 0;
+> +}
+> +
+> +static int qcom_iommu_ctx_remove(struct platform_device *pdev)
+> +{
+> +	struct qcom_iommu_ctx *ctx = platform_get_drvdata(pdev);
+> +
+> +	iommu_group_put(ctx->group);
+> +	platform_set_drvdata(pdev, NULL);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id ctx_of_match[] = {
+> +	{ .compatible = "qcom,msm-iommu-v1-ns" },
+> +	{ .compatible = "qcom,msm-iommu-v1-sec" },
+> +	{ /* sentinel */ }
+> +};
+> +
+> +static struct platform_driver qcom_iommu_ctx_driver = {
+> +	.driver	= {
+> +		.name		= "qcom-iommu-ctx",
+> +		.of_match_table	= of_match_ptr(ctx_of_match),
+> +	},
+> +	.probe	= qcom_iommu_ctx_probe,
+> +	.remove = qcom_iommu_ctx_remove,
+> +};
+> +module_platform_driver(qcom_iommu_ctx_driver);
+> +
+> +static int qcom_iommu_device_probe(struct platform_device *pdev)
+> +{
+> +	struct qcom_iommu_dev *qcom_iommu;
+> +	struct device *dev = &pdev->dev;
+> +	struct resource *res;
+> +	int ret;
+> +
+> +	qcom_iommu = devm_kzalloc(dev, sizeof(*qcom_iommu), GFP_KERNEL);
+> +	if (!qcom_iommu)
+> +		return -ENOMEM;
+> +	qcom_iommu->dev = dev;
+> +
+> +	INIT_LIST_HEAD(&qcom_iommu->context_list);
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (res)
+> +		qcom_iommu->local_base = devm_ioremap_resource(dev, res);
+> +
+> +	qcom_iommu->iface_clk = devm_clk_get(dev, "iface");
+> +	if (IS_ERR(qcom_iommu->iface_clk)) {
+> +		dev_err(dev, "failed to get iface clock\n");
+> +		return PTR_ERR(qcom_iommu->iface_clk);
+> +	}
+> +
+> +	qcom_iommu->bus_clk = devm_clk_get(dev, "bus");
+> +	if (IS_ERR(qcom_iommu->bus_clk)) {
+> +		dev_err(dev, "failed to get bus clock\n");
+> +		return PTR_ERR(qcom_iommu->bus_clk);
+> +	}
+> +
+> +	if (of_property_read_u32(dev->of_node, "qcom,iommu-secure-id",
+> +				 &qcom_iommu->sec_id)) {
+> +		dev_err(dev, "missing qcom,iommu-secure-id property\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, qcom_iommu);
+> +
+> +	/* register context bank devices, which are child nodes: */
+> +	ret = of_platform_populate(dev->of_node, ctx_of_match, NULL, dev);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to populate iommu contexts\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = iommu_device_sysfs_add(&qcom_iommu->iommu, dev, NULL,
+> +				     "smmu.%pa", &res->start);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to register iommu in sysfs\n");
+> +		return ret;
+> +	}
+> +
+> +	iommu_device_set_ops(&qcom_iommu->iommu, &qcom_iommu_ops);
+> +	iommu_device_set_fwnode(&qcom_iommu->iommu, dev->fwnode);
+> +
+> +	ret = iommu_device_register(&qcom_iommu->iommu);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to register iommu\n");
+> +		return ret;
+> +	}
+> +
+> +	pm_runtime_enable(dev);
+> +	bus_set_iommu(&platform_bus_type, &qcom_iommu_ops);
+> +
+> +	if (qcom_iommu->local_base) {
+> +		pm_runtime_get_sync(dev);
+> +		writel_relaxed(0xffffffff, qcom_iommu->local_base + SMMU_INTR_SEL_NS);
+> +		pm_runtime_put_sync(dev);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int qcom_iommu_device_remove(struct platform_device *pdev)
+> +{
+> +	pm_runtime_force_suspend(&pdev->dev);
+> +	platform_set_drvdata(pdev, NULL);
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM
+> +static int qcom_iommu_resume(struct device *dev)
+> +{
+> +	struct platform_device *pdev = to_platform_device(dev);
+> +	struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
+> +
+> +	return qcom_iommu_enable_clocks(qcom_iommu);
+> +}
+> +
+> +static int qcom_iommu_suspend(struct device *dev)
+> +{
+> +	struct platform_device *pdev = to_platform_device(dev);
+> +	struct qcom_iommu_dev *qcom_iommu = platform_get_drvdata(pdev);
+> +
+> +	qcom_iommu_disable_clocks(qcom_iommu);
+> +
+> +	return 0;
+> +}
+> +#endif
+> +
+> +static const struct dev_pm_ops qcom_iommu_pm_ops = {
+> +	SET_RUNTIME_PM_OPS(qcom_iommu_suspend, qcom_iommu_resume, NULL)
+> +	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+> +				pm_runtime_force_resume)
+> +};
+> +
+> +static const struct of_device_id qcom_iommu_of_match[] = {
+> +	{ .compatible = "qcom,msm-iommu-v1" },
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, qcom_iommu_of_match);
+> +
+> +static struct platform_driver qcom_iommu_driver = {
+> +	.driver	= {
+> +		.name		= "qcom-iommu",
+> +		.of_match_table	= of_match_ptr(qcom_iommu_of_match),
+> +		.pm		= &qcom_iommu_pm_ops,
+> +	},
+> +	.probe	= qcom_iommu_device_probe,
+> +	.remove	= qcom_iommu_device_remove,
+> +};
+> +module_platform_driver(qcom_iommu_driver);
+> +
+> +IOMMU_OF_DECLARE(qcom_iommu_dev, "qcom,msm-iommu-v1", NULL);
+> +
+> +MODULE_DESCRIPTION("IOMMU API for QCOM IOMMU v1 implementations");
+> +MODULE_LICENSE("GPL v2");
 >
-> 1) expose generic API for pci world clients to configure their
-> dma-ranges. right now there is none.
-> 2) same API can be used by IOMMU to derive dma_mask.
->
-> the implementation tries to handle dma-ranges for both memory mapped
-> and pci devices, which I think is overkill.
-> besides we have different configuration of dma-ranges based on iommu
-> is enabled or not enabled.
->
->  #define PCIE_DMA_RANGES dma-ranges = <0x43000000 0x00 0x80000000 0x00
-> 0x80000000 0x00 0x80000000 \
->                                       0x43000000 0x08 0x00000000 0x08
-> 0x00000000 0x08 0x00000000 \
->                                       0x43000000 0x80 0x00000000 0x80
-> 0x00000000 0x40 0x00000000>;
->
->
-> the of_dma_get_range is written with respect to traditional memory
-> ranges, they were not meant for pci dma-ranges.
->
-> Regards,
-> Oza.
 
-
-Rob, gentle reminder on your viewpoint. my take on whole thing is as follows:
-
-1) of_dma_get_range is supposed to handle traditional dma-ranges
-(not pci one)
-
-2) we need separate function for pci users such as iproc or rcar SOCs
-to have their dma-ranges parsed,
-which can be extended later for e.g. pci flags have some meanings.
-
-besides of_dma_configure is written to pass only single out parameter
-(..., *dma_addr, *size)
-handling multiple ranges here, and passing only one range out is not desirable.
-
-also you would not like to handle pci flags in of_dma_get_range (the
-first portion of DT
-entry) in this function if required in future.
-
-this new function will be similar to of_pci_get_host_bridge_resources
-which I am writing/improving right now..
-
-Regards,
-Oza.
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
