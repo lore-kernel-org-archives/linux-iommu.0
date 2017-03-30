@@ -1,15 +1,18 @@
-From: "Nath, Arindam" <Arindam.Nath-5C7GfCeVMHo@public.gmane.org>
-Subject: RE: [PATCH] iommu/amd: flush IOTLB for specific domains only
-Date: Thu, 30 Mar 2017 06:23:13 +0000
-Message-ID: <MWHPR12MB15186B0A864F247BFBEF8EAD9C340@MWHPR12MB1518.namprd12.prod.outlook.com>
-References: <20170322112242.GK29659@8bytes.org>
-	<1490595427-11979-1-git-send-email-arindam.nath@amd.com>
-	<CAD8Lp46RjsUJEvCR5qVY6p8za5H9iDGTAyJMDd1zO7gbgBvqfA@mail.gmail.com>
+From: Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS mmaping
+	code
+Date: Thu, 30 Mar 2017 08:51:40 +0200
+Message-ID: <45fde94b-9487-c28e-9d4e-3b36c4b4a934@samsung.com>
+References: <CGME20170329100540eucas1p22d428e33aa678cbef0a24dd249820451@eucas1p2.samsung.com>
+	<1490781926-6209-1-git-send-email-a.hajda@samsung.com>
+	<15b1be13-625f-db74-d213-ad1df86f7eb5@arm.com>
+	<073f1feb-d6da-c93f-8e67-0910befec27b@samsung.com>
+	<c13f6475-f503-238f-c101-4f9cdf1b0ae2@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Language: en-US
+In-reply-to: <c13f6475-f503-238f-c101-4f9cdf1b0ae2-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,106 +22,164 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Daniel Drake <drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
-Cc: "Bridgman, John" <John.Bridgman-5C7GfCeVMHo@public.gmane.org>, "amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org" <amd-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Deucher, Alexander" <Alexander.Deucher-5C7GfCeVMHo@public.gmane.org>, Linux Upstreaming Team <linux-6IF/jdPJHihWk0Htik3J/w@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
->-----Original Message-----
->From: Nath, Arindam
->Sent: Monday, March 27, 2017 5:57 PM
->To: 'Daniel Drake'
->Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Deucher, Alexander; Bridgman, John; amd-
->gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Suthikulpanit,
->Suravee; Linux Upstreaming Team
->Subject: RE: [PATCH] iommu/amd: flush IOTLB for specific domains only
->
->>-----Original Message-----
->>From: Daniel Drake [mailto:drake-6IF/jdPJHihWk0Htik3J/w@public.gmane.org]
->>Sent: Monday, March 27, 2017 5:56 PM
->>To: Nath, Arindam
->>Cc: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org; Deucher, Alexander; Bridgman, John; amd-
->>gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org; iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org; Suthikulpanit,
->>Suravee; Linux Upstreaming Team
->>Subject: Re: [PATCH] iommu/amd: flush IOTLB for specific domains only
+On 29.03.2017 17:33, Robin Murphy wrote:
+> On 29/03/17 16:12, Andrzej Hajda wrote:
+>> On 29.03.2017 14:55, Robin Murphy wrote:
+>>> On 29/03/17 11:05, Andrzej Hajda wrote:
+>>>> In case of DMA_ATTR_FORCE_CONTIGUOUS allocations vm_area->pages
+>>>> is invalid. __iommu_mmap_attrs and __iommu_get_sgtable cannot use
+>>>> it. In first case temporary pages array is passed to iommu_dma_mmap,
+>>>> in 2nd case single entry sg table is created directly instead
+>>>> of calling helper.
+>>>>
+>>>> Fixes: 44176bb ("arm64: Add support for DMA_ATTR_FORCE_CONTIGUOUS to IOMMU")
+>>>> Signed-off-by: Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+>>>> ---
+>>>> Hi,
+>>>>
+>>>> I am not familiar with this framework so please don't be too cruel ;)
+>>>> Alternative solution I see is to always create vm_area->pages,
+>>>> I do not know which approach is preferred.
+>>>>
+>>>> Regards
+>>>> Andrzej
+>>>> ---
+>>>>  arch/arm64/mm/dma-mapping.c | 40 ++++++++++++++++++++++++++++++++++++++--
+>>>>  1 file changed, 38 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+>>>> index f7b5401..bba2bc8 100644
+>>>> --- a/arch/arm64/mm/dma-mapping.c
+>>>> +++ b/arch/arm64/mm/dma-mapping.c
+>>>> @@ -704,7 +704,30 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+>>>>  		return ret;
+>>>>  
+>>>>  	area = find_vm_area(cpu_addr);
+>>>> -	if (WARN_ON(!area || !area->pages))
+>>>> +	if (WARN_ON(!area))
+>>> >From the look of things, it doesn't seem strictly necessary to change
+>>> this, but whether that's a good thing is another matter. I'm not sure
+>>> that dma_common_contiguous_remap() should really be leaving a dangling
+>>> pointer in area->pages as it apparently does... :/
+>>>
+>>>> +		return -ENXIO;
+>>>> +
+>>>> +	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+>>>> +		struct page *page = vmalloc_to_page(cpu_addr);
+>>>> +		unsigned int count = size >> PAGE_SHIFT;
+>>>> +		struct page **pages;
+>>>> +		unsigned long pfn;
+>>>> +		int i;
+>>>> +
+>>>> +		pages = kmalloc_array(count, sizeof(*pages), GFP_KERNEL);
+>>>> +		if (!pages)
+>>>> +			return -ENOMEM;
+>>>> +
+>>>> +		for (i = 0, pfn = page_to_pfn(page); i < count; i++)
+>>>> +			pages[i] = pfn_to_page(pfn + i);
+>>>> +
+>>>> +		ret = iommu_dma_mmap(pages, size, vma);
+>>> /**
+>>>  * iommu_dma_mmap - Map a buffer into provided user VMA
+>>>  * @pages: Array representing buffer from iommu_dma_alloc()
+>>>    ...
+>>>
+>>> In this case, the buffer has not come from iommu_dma_alloc(), so passing
+>>> into iommu_dma_mmap() is wrong by contract, even if having to fake up a
+>>> page array wasn't enough of a red flag. Given that a FORCE_CONTIGUOUS
+>>> allocation is essentially the same as for the non-IOMMU case, I think it
+>>> should be sufficient to defer to that path, i.e.:
+>>>
+>>> 	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS)
+>>> 		return __swiotlb_mmap(dev, vma, cpu_addr,
+>>> 				phys_to_dma(virt_to_phys(cpu_addr)),
+>>> 				size, attrs);
+>> Maybe I have make mistake somewhere but it does not work, here and below
+>> (hangs or crashes). I suppose it can be due to different address
+>> translations, my patch uses
+>>     page = vmalloc_to_page(cpu_addr).
+>> And here we have:
+>>     handle = phys_to_dma(dev, virt_to_phys(cpu_addr)); // in
+>> __iommu_mmap_attrs
+>>     page = phys_to_page(dma_to_phys(dev, handle)); // in
+>> __swiotlb_get_sgtable
+>> I guess it is similarly in __swiotlb_mmap.
 >>
->>Hi Arindam,
->>
->>You CC'd me on this - does this mean that it is a fix for the issue
->>described in the thread "amd-iommu: can't boot with amdgpu, AMD-Vi:
->>Completion-Wait loop timed out" ?
->
->Yes Daniel, please test this patch to confirm if the issue gets resolved.
+>> Are these translations equivalent?
+> Ah, my mistake, sorry - I managed to forget that cpu_addr is always
+> remapped for FORCE_CONTIGUOUS (*and* somehow overlook the use of
+> vmalloc_to_page() in the patch itself), so the virt_to_phys() part of my
+> example is indeed bogus. The general point still stands, though.
 
-Daniel, did you get chance to test this patch?
+I guess Geert's proposition to create pages permanently is also not
+acceptable[2]. So how to fix crashes which appeared after patch adding
+support to DMA_ATTR_FORCE_CONTIGUOUS in IOMMU on arm64 [1]?
+Maybe temporary solution is to drop the patch until proper handling of
+mmapping is proposed, without it the patch looks incomplete and causes
+regression.
+Moreover __iommu_alloc_attrs uses also dma_common_contiguous_remap which
+also assumes existence of struct pages.
 
-Thanks,
-Arindam
+[1]: https://patchwork.kernel.org/patch/9609551/
+[2]: https://www.spinics.net/lists/arm-kernel/msg572688.html
+
+Regards
+Andrzej
+
 
 >
->Thanks,
->Arindam
+> Robin.
 >
 >>
->>Thanks
->>Daniel
+>> Regards
+>> Andrzej
 >>
->>
->>On Mon, Mar 27, 2017 at 12:17 AM,  <arindam.nath-5C7GfCeVMHo@public.gmane.org> wrote:
->>> From: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
+>>>> +		kfree(pages);
+>>>> +
+>>>> +		return ret;
+>>>> +	}
+>>>> +
+>>>> +	if (WARN_ON(!area->pages))
+>>>>  		return -ENXIO;
+>>>>  
+>>>>  	return iommu_dma_mmap(area->pages, size, vma);
+>>>> @@ -717,7 +740,20 @@ static int __iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
+>>>>  	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+>>>>  	struct vm_struct *area = find_vm_area(cpu_addr);
+>>>>  
+>>>> -	if (WARN_ON(!area || !area->pages))
+>>>> +	if (WARN_ON(!area))
+>>>> +		return -ENXIO;
+>>>> +
+>>>> +	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+>>>> +		int ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+>>>> +
+>>>> +		if (!ret)
+>>>> +			sg_set_page(sgt->sgl, vmalloc_to_page(cpu_addr),
+>>>> +				PAGE_ALIGN(size), 0);
+>>>> +
+>>>> +		return ret;
+>>>> +	}
+>>> As above, this may as well just go straight to the non-IOMMU version,
+>>> although I agree with Russell's concerns[1] that in general is is not
+>>> safe to assume a coherent allocation is backed by struct pages at all.
 >>>
->>> The idea behind flush queues is to defer the IOTLB flushing
->>> for domains for which the mappings are no longer valid. We
->>> add such domains in queue_add(), and when the queue size
->>> reaches FLUSH_QUEUE_SIZE, we perform __queue_flush().
+>>> Robin.
 >>>
->>> Since we have already taken lock before __queue_flush()
->>> is called, we need to make sure the IOTLB flushing is
->>> performed as quickly as possible.
+>>> [1]:http://lists.infradead.org/pipermail/linux-arm-kernel/2017-March/496068.html
 >>>
->>> In the current implementation, we perform IOTLB flushing
->>> for all domains irrespective of which ones were actually
->>> added in the flush queue initially. This can be quite
->>> expensive especially for domains for which unmapping is
->>> not required at this point of time.
+>>>> +
+>>>> +	if (WARN_ON(!area->pages))
+>>>>  		return -ENXIO;
+>>>>  
+>>>>  	return sg_alloc_table_from_pages(sgt, area->pages, count, 0, size,
+>>>>
 >>>
->>> This patch makes use of domain information in
->>> 'struct flush_queue_entry' to make sure we only flush
->>> IOTLBs for domains who need it, skipping others.
 >>>
->>> Signed-off-by: Arindam Nath <arindam.nath-5C7GfCeVMHo@public.gmane.org>
->>> ---
->>>  drivers/iommu/amd_iommu.c | 15 ++++++++-------
->>>  1 file changed, 8 insertions(+), 7 deletions(-)
->>>
->>> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
->>> index 98940d1..6a9a048 100644
->>> --- a/drivers/iommu/amd_iommu.c
->>> +++ b/drivers/iommu/amd_iommu.c
->>> @@ -2227,15 +2227,16 @@ static struct iommu_group
->>*amd_iommu_device_group(struct device *dev)
->>>
->>>  static void __queue_flush(struct flush_queue *queue)
->>>  {
->>> -       struct protection_domain *domain;
->>> -       unsigned long flags;
->>>         int idx;
->>>
->>> -       /* First flush TLB of all known domains */
->>> -       spin_lock_irqsave(&amd_iommu_pd_lock, flags);
->>> -       list_for_each_entry(domain, &amd_iommu_pd_list, list)
->>> -               domain_flush_tlb(domain);
->>> -       spin_unlock_irqrestore(&amd_iommu_pd_lock, flags);
->>> +       /* First flush TLB of all domains which were added to flush queue */
->>> +       for (idx = 0; idx < queue->next; ++idx) {
->>> +               struct flush_queue_entry *entry;
->>> +
->>> +               entry = queue->entries + idx;
->>> +
->>> +               domain_flush_tlb(&entry->dma_dom->domain);
->>> +       }
->>>
->>>         /* Wait until flushes have completed */
->>>         domain_flush_complete(NULL);
->>> --
->>> 1.9.1
->>>
+>
+>
+>
