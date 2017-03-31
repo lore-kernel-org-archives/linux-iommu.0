@@ -1,69 +1,45 @@
-From: Russell King - ARM Linux <linux@armlinux.org.uk>
-Subject: Re: [PATCH v2] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS
- mmaping code
-Date: Fri, 31 Mar 2017 12:16:24 +0100
-Message-ID: <20170331111624.GR7909@n2100.armlinux.org.uk>
-References: <CGME20170331110300eucas1p1535f003de554a9f6e1db56eb47630885@eucas1p1.samsung.com>
- <1490958171-2303-1-git-send-email-a.hajda@samsung.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: [PATCH 0/5] iommu/omap: Add support for iommu-groups and 'struct
+	iommu_device'
+Date: Fri, 31 Mar 2017 14:10:43 +0200
+Message-ID: <1490962248-12602-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-Content-Disposition: inline
-In-Reply-To: <1490958171-2303-1-git-send-email-a.hajda@samsung.com>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: Andrzej Hajda <a.hajda@samsung.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>, Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 31, 2017 at 01:02:51PM +0200, Andrzej Hajda wrote:
-> In this version of the patch I have replaced temporal pages and
-> iommu_dma_mmap with remap_pfn_range or rather its simplified version
-> vm_iomap_memory.
-> Unfortunately I have not find nice helper for sgtable creation, so I
-> left sg allocation inside _iommu_mmap_attrs.
-> 
-> As the fixing of DMA_ATTR_FORCE_CONTIGUOUS related crashes has higher
-> priority I have focused only on it in this patch.
+Hi,
 
-As I mentioned elsewhere, I don't believe that fudging around in this way
-is a proper fix.
+here is a small patch-set for the omap-iommu driver to make
+it use new features of the iommu-core. Please review.
 
-DMA coherent memory was never, ever, intended to be passed back into the
-streaming APIs - it was designed that the two would be mutually exclusive.
+Thanks,
 
-The problem is that we now have DMA coherent allocations being passed
-through the dma-buf API using this dma_get_sgtable() thing, which is quite
-broken.  I regard dma_get_sgtable() as very broken, and had I realised at
-the time that this was what it was trying to do, I would have NAK'd it.
+	Joerg
 
-Rather than bodging around this brokenness, trying to get dma_get_sgtable()
-to work, I believe we need to address the root cause - which is proper
-support for passing DMA coherent allocations through dma-buf, which does
-not involve scatterlists and calling dma_map_sg() on it.
+Joerg Roedel (5):
+  iommu/omap: Move data structures to omap-iommu.h
+  iommu/omap: Permanently keep iommu_dev pointer in arch_data
+  iommu/omap: Set dev->archdata.iommu = NULL in omap_iommu_remove_device
+  iommu/omap: Make use of 'struct iommu_device'
+  iommu/omap: Add iommu-group support
 
-That's going to need to be addressed in any case, because of the
-dma_declare_coherent_memory() issue, where we may not have struct pages
-backing a coherent allocation.  Such a case can come up on ARM64 via
-DT's "shared-dma-pool" reserved memory stuff.
-
-Right now, I have a "fix" for ARM queued which causes dma_get_sgtable()
-to fail when used with reserved memory, but we have one user who needs
-this to work.  So, dma-buf needs to be fixed for this one way or another,
-and I don't think that bending the current broken stuff to suit it by
-trying these vmalloc_to_page() hacks is acceptable.
-
-dma_get_sgtable() is fundamentally broken IMHO.
+ drivers/iommu/omap-iommu.c               | 137 ++++++++++++++++++++-----------
+ drivers/iommu/omap-iommu.h               |  35 ++++++++
+ include/linux/platform_data/iommu-omap.h |  15 ----
+ 3 files changed, 124 insertions(+), 63 deletions(-)
 
 -- 
-RMK's Patch system: http://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line: currently at 9.6Mbps down 400kbps up
-according to speedtest.net.
+1.9.1
