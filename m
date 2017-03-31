@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH] iommu/mediatek: Teach MTK-IOMMUv1 about 'struct iommu_device'
-Date: Fri, 31 Mar 2017 16:29:13 +0200
-Message-ID: <1490970553-19787-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH] iommu/rockchip: Make use of 'struct iommu_device'
+Date: Fri, 31 Mar 2017 16:30:24 +0200
+Message-ID: <1490970624-19981-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -15,87 +15,102 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Matthias Brugger <matthias.bgg-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-mediatek-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Heiko Stuebner <heiko-4mtYJXux2i+zQB+pC5nmwQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-rockchip-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Make use of the iommu_device_register() interface.
+Register hardware IOMMUs seperatly with the iommu-core code
+and add a sysfs representation of the iommu topology.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/mtk_iommu_v1.c | 25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
+ drivers/iommu/rockchip-iommu.c | 30 ++++++++++++++++++++++++++++--
+ 1 file changed, 28 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 19e0100..a27ef57 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -431,9 +431,10 @@ static int mtk_iommu_create_mapping(struct device *dev,
- 
- static int mtk_iommu_add_device(struct device *dev)
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 9afcbf7..36d0890 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -90,6 +90,7 @@ struct rk_iommu {
+ 	void __iomem **bases;
+ 	int num_mmu;
+ 	int irq;
++	struct iommu_device iommu;
+ 	struct list_head node; /* entry in rk_iommu_domain.iommus */
+ 	struct iommu_domain *domain; /* domain to which iommu is attached */
+ };
+@@ -1032,6 +1033,7 @@ static int rk_iommu_group_set_iommudata(struct iommu_group *group,
+ static int rk_iommu_add_device(struct device *dev)
  {
--	struct iommu_group *group;
- 	struct of_phandle_args iommu_spec;
- 	struct of_phandle_iterator it;
-+	struct mtk_iommu_data *data;
-+	struct iommu_group *group;
- 	int err;
+ 	struct iommu_group *group;
++	struct rk_iommu *iommu;
+ 	int ret;
  
- 	of_for_each_phandle(&it, err, dev->of_node, "iommus",
-@@ -450,6 +451,9 @@ static int mtk_iommu_add_device(struct device *dev)
- 	if (!dev->iommu_fwspec || dev->iommu_fwspec->ops != &mtk_iommu_ops)
- 		return -ENODEV; /* Not a iommu client device */
+ 	if (!rk_iommu_is_dev_iommu_master(dev))
+@@ -1054,6 +1056,10 @@ static int rk_iommu_add_device(struct device *dev)
+ 	if (ret)
+ 		goto err_remove_device;
  
-+	data = dev->iommu_fwspec->iommu_priv;
-+	iommu_device_link(&data->iommu, dev);
++	iommu = rk_iommu_from_dev(dev);
++	if (iommu)
++		iommu_device_link(&iommu->iommu, dev);
 +
- 	group = iommu_group_get_for_dev(dev);
- 	if (IS_ERR(group))
- 		return PTR_ERR(group);
-@@ -460,9 +464,14 @@ static int mtk_iommu_add_device(struct device *dev)
+ 	iommu_group_put(group);
  
- static void mtk_iommu_remove_device(struct device *dev)
+ 	return 0;
+@@ -1067,9 +1073,15 @@ static int rk_iommu_add_device(struct device *dev)
+ 
+ static void rk_iommu_remove_device(struct device *dev)
  {
-+	struct mtk_iommu_data *data;
++	struct rk_iommu *iommu;
 +
- 	if (!dev->iommu_fwspec || dev->iommu_fwspec->ops != &mtk_iommu_ops)
+ 	if (!rk_iommu_is_dev_iommu_master(dev))
  		return;
  
-+	data = dev->iommu_fwspec->iommu_priv;
-+	iommu_device_unlink(&data->iommu, dev);
++	iommu = rk_iommu_from_dev(dev);
++	if (iommu)
++		iommu_device_unlink(&iommu->iommu, dev);
 +
  	iommu_group_remove_device(dev);
- 	iommu_fwspec_free(dev);
  }
-@@ -627,6 +636,17 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
  
-+	ret = iommu_device_sysfs_add(&data->iommu, &pdev->dev, NULL,
-+				     dev_name(&pdev->dev));
-+	if (ret)
-+		return ret;
-+
-+	iommu_device_set_ops(&data->iommu, &mtk_iommu_ops);
-+
-+	ret = iommu_device_register(&data->iommu);
-+	if (ret)
-+		return ret;
-+
- 	if (!iommu_present(&platform_bus_type))
- 		bus_set_iommu(&platform_bus_type,  &mtk_iommu_ops);
+@@ -1117,7 +1129,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
+ 	struct rk_iommu *iommu;
+ 	struct resource *res;
+ 	int num_res = pdev->num_resources;
+-	int i;
++	int err, i;
  
-@@ -637,6 +657,9 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ 	iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
+ 	if (!iommu)
+@@ -1150,11 +1162,25 @@ static int rk_iommu_probe(struct platform_device *pdev)
+ 		return -ENXIO;
+ 	}
+ 
+-	return 0;
++	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
++	if (err)
++		return err;
++
++	iommu_device_set_ops(&iommu->iommu, &rk_iommu_ops);
++	err = iommu_device_register(&iommu->iommu);
++
++	return err;
+ }
+ 
+ static int rk_iommu_remove(struct platform_device *pdev)
  {
- 	struct mtk_iommu_data *data = platform_get_drvdata(pdev);
- 
-+	iommu_device_sysfs_remove(&data->iommu);
-+	iommu_device_unregister(&data->iommu);
++	struct rk_iommu *iommu = platform_get_drvdata(pdev);
 +
- 	if (iommu_present(&platform_bus_type))
- 		bus_set_iommu(&platform_bus_type, NULL);
++	if (iommu) {
++		iommu_device_sysfs_remove(&iommu->iommu);
++		iommu_device_unregister(&iommu->iommu);
++	}
++
+ 	return 0;
+ }
  
 -- 
 1.9.1
