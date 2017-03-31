@@ -1,9 +1,7 @@
-From: Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: [PATCH v2] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS mmaping
-	code
-Date: Fri, 31 Mar 2017 13:02:51 +0200
-Message-ID: <1490958171-2303-1-git-send-email-a.hajda@samsung.com>
-References: <CGME20170331110300eucas1p1535f003de554a9f6e1db56eb47630885@eucas1p1.samsung.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH v2] iommu/arm-smmu: Add global SMR masking property
+Date: Fri, 31 Mar 2017 12:03:33 +0100
+Message-ID: <7472f6f57d04431bca5b2dba2a53918225eaf432.1490958040.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -17,69 +15,91 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-In case of DMA_ATTR_FORCE_CONTIGUOUS allocations vm_area->pages
-is invalid. __iommu_mmap_attrs and __iommu_get_sgtable should not
-use it and take advantage of contiguous nature of the allocation.
+The current SMR masking support using a 2-cell iommu-specifier is
+primarily intended to handle individual masters with large and/or
+complex Stream ID assignments; it quickly gets a bit clunky in other SMR
+use-cases where we just want to consistently mask out the same part of
+every Stream ID (e.g. for MMU-500 configurations where the appended TBU
+number gets in the way unnecessarily). Let's add a new property to allow
+a single global mask value to better fit the latter situation.
 
-Fixes: 44176bb ("arm64: Add support for DMA_ATTR_FORCE_CONTIGUOUS to IOMMU")
-Signed-off-by: Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Tested-by: Nipun Gupta <nipun.gupta-3arQi8VN3Tc@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
 ---
-Hi Robin, Geert,
 
-In this version of the patch I have replaced temporal pages and
-iommu_dma_mmap with remap_pfn_range or rather its simplified version
-vm_iomap_memory.
-Unfortunately I have not find nice helper for sgtable creation, so I
-left sg allocation inside _iommu_mmap_attrs.
+v2: Rewrite the documentation to actually make sense, and add an
+    explicit example per Mark's suggestion.
 
-As the fixing of DMA_ATTR_FORCE_CONTIGUOUS related crashes has higher
-priority I have focused only on it in this patch.
+ .../devicetree/bindings/iommu/arm,smmu.txt         | 27 ++++++++++++++++++++++
+ drivers/iommu/arm-smmu.c                           |  4 +++-
+ 2 files changed, 30 insertions(+), 1 deletion(-)
 
-Regards
-Andrzej
----
- arch/arm64/mm/dma-mapping.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
-index f7b5401..41c7c36 100644
---- a/arch/arm64/mm/dma-mapping.c
-+++ b/arch/arm64/mm/dma-mapping.c
-@@ -703,6 +703,10 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
- 	if (dma_mmap_from_coherent(dev, vma, cpu_addr, size, &ret))
- 		return ret;
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.txt b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+index 6cdf32d037fc..b744b231766f 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.txt
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.txt
+@@ -60,6 +60,16 @@ conditions.
+                   aliases of secure registers have to be used during
+                   SMMU configuration.
  
-+	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS)
-+		return vm_iomap_memory(vma,
-+				page_to_phys(vmalloc_to_page(cpu_addr)), size);
++- stream-match-mask : For SMMUs supporting stream matching and using
++                  #iommu-cells = <1>, specifies a fixed value to set in
++                  the SMRn.MASK field of every stream match register
++                  used, for cases where it is desirable to ignore some
++                  portion of every Stream ID (e.g. for certain MMU-500
++                  configurations given globally unique input IDs). This
++                  property is not valid for SMMUs using stream indexing,
++                  or using stream matching with #iommu-cells = <2>, and
++                  may be ignored if present in such cases.
 +
- 	area = find_vm_area(cpu_addr);
- 	if (WARN_ON(!area || !area->pages))
- 		return -ENXIO;
-@@ -715,8 +719,19 @@ static int __iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
- 			       size_t size, unsigned long attrs)
+ ** Deprecated properties:
+ 
+ - mmu-masters (deprecated in favour of the generic "iommus" binding) :
+@@ -109,3 +119,20 @@ conditions.
+         master3 {
+                 iommus = <&smmu2 1 0x30>;
+         };
++
++
++        /* ARM MMU-500 with 10-bit stream ID input configuration */
++        smmu3: iommu {
++                compatible = "arm,mmu-500", "arm,smmu-v2";
++                ...
++                #iommu-cells = <1>;
++                /* always ignore appended 5-bit TBU number */
++                stream-match-mask = 0x7c00;
++        };
++
++        bus {
++                /* bus whose child devices emit one unique 10-bit stream
++                   ID each, but may master through multiple SMMU TBUs */
++                iommu-map = <0 &smmu3 0 0x400>;
++                ...
++        };
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index abf6496843a6..e394d55146a6 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1590,13 +1590,15 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+ 
+ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
  {
- 	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	struct vm_struct *area = find_vm_area(cpu_addr);
-+	struct vm_struct *area;
-+
-+	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
-+		int ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
-+
-+		if (!ret)
-+			sg_set_page(sgt->sgl, vmalloc_to_page(cpu_addr),
-+				    PAGE_ALIGN(size), 0);
+-	u32 fwid = 0;
++	u32 mask, fwid = 0;
  
-+		return ret;
-+	}
-+
-+	area = find_vm_area(cpu_addr);
- 	if (WARN_ON(!area || !area->pages))
- 		return -ENXIO;
+ 	if (args->args_count > 0)
+ 		fwid |= (u16)args->args[0];
  
+ 	if (args->args_count > 1)
+ 		fwid |= (u16)args->args[1] << SMR_MASK_SHIFT;
++	else if (!of_property_read_u32(args->np, "stream-match-mask", &mask))
++		fwid |= (u16)mask << SMR_MASK_SHIFT;
+ 
+ 	return iommu_fwspec_add_ids(dev, &fwid, 1);
+ }
 -- 
-2.7.4
+2.11.0.dirty
