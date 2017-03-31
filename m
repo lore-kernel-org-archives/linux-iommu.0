@@ -1,16 +1,11 @@
-From: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH v2 4/4] iommu/arm-smmu: Poll for TLB sync completion more
-	effectively
-Date: Thu, 30 Mar 2017 12:51:33 -0600
-Message-ID: <20170330185133.GC31088@jcrouse-lnx.qualcomm.com>
-References: <cover.1490890890.git.robin.murphy@arm.com>
-	<7c24c93137bc48f69225e6463d6d242b7d89d15c.1490890890.git.robin.murphy@arm.com>
+From: Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
+Subject: [PATCH v2 0/7] iommu/iova: improve the allocation performance of dma64
+Date: Fri, 31 Mar 2017 11:24:18 +0800
+Message-ID: <1490930665-9696-1-git-send-email-thunder.leizhen@huawei.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <7c24c93137bc48f69225e6463d6d242b7d89d15c.1490890890.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,85 +15,80 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, Sudeep Dutt <sudeep.dutt-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Ashutosh Dixit <ashutosh.dixit-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-kernel <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
+Cc: Xinwei Hu <huxinwei-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zhen Lei <thunder.leizhen-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Zefan Li <lizefan-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Hanjun Guo <guohanjun-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Tianhong Ding <dingtianhong-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Thu, Mar 30, 2017 at 05:56:32PM +0100, Robin Murphy wrote:
-> On relatively slow development platforms and software models, the
-> inefficiency of our TLB sync loop tends not to show up - for instance on
-> a Juno r1 board I typically see the TLBI has completed of its own accord
-> by the time we get to the sync, such that the latter finishes instantly.
-> 
-> However, on larger systems doing real I/O, it's less realistic for the
-> TLBs to go idle immediately, and at that point falling into the 1MHz
-> polling loop turns out to throw away performance drastically. Let's
-> strike a balance by polling more than once between pauses, such that we
-> have much more chance of catching normal operations completing before
-> committing to the fixed delay, but also backing off exponentially, since
-> if a sync really hasn't completed within one or two "reasonable time"
-> periods, it becomes increasingly unlikely that it ever will.
+v1 -> v2:
+Because the problem of my email-server, all patches sent to Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> failed.
+So I repost all these patches again, there is no changes.
 
-I really really like this.
+v1:
+64 bits devices is very common now. But currently we only defined a cached32_node
+to optimize the allocation performance of dma32, and I saw some dma64 drivers chose
+to allocate iova from dma32 space first, maybe becuase of current dma64 performance
+problem or some other reasons.
 
-Reviewed-by: Jordan Crouse <jcrouse-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+For example:(in drivers/iommu/amd_iommu.c)
+static unsigned long dma_ops_alloc_iova(......
+{
+	......
+	if (dma_mask > DMA_BIT_MASK(32))
+		pfn = alloc_iova_fast(&dma_dom->iovad, pages,
+				      IOVA_PFN(DMA_BIT_MASK(32)));
+	if (!pfn)
+		pfn = alloc_iova_fast(&dma_dom->iovad, pages, IOVA_PFN(dma_mask));
+		
+For the details of why dma64 iova allocation performance is very bad, please refer the
+description of patch-5.
 
-> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-> ---
-> 
-> v2: Restored the cpu_relax() to the inner loop
-> 
->  drivers/iommu/arm-smmu.c | 18 ++++++++++--------
->  1 file changed, 10 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 759d5f261160..a15ca86e9703 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -162,6 +162,7 @@
->  #define ARM_SMMU_GR0_sTLBGSTATUS	0x74
->  #define sTLBGSTATUS_GSACTIVE		(1 << 0)
->  #define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
-> +#define TLB_SPIN_COUNT			10
->  
->  /* Stream mapping registers */
->  #define ARM_SMMU_GR0_SMR(n)		(0x800 + ((n) << 2))
-> @@ -574,18 +575,19 @@ static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
->  static void __arm_smmu_tlb_sync(struct arm_smmu_device *smmu,
->  				void __iomem *sync, void __iomem *status)
->  {
-> -	int count = 0;
-> +	unsigned int spin_cnt, delay;
->  
->  	writel_relaxed(0, sync);
-> -	while (readl_relaxed(status) & sTLBGSTATUS_GSACTIVE) {
-> -		cpu_relax();
-> -		if (++count == TLB_LOOP_TIMEOUT) {
-> -			dev_err_ratelimited(smmu->dev,
-> -			"TLB sync timed out -- SMMU may be deadlocked\n");
-> -			return;
-> +	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
-> +		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
-> +			if (!(readl_relaxed(status) & sTLBGSTATUS_GSACTIVE))
-> +				return;
-> +			cpu_relax();
->  		}
-> -		udelay(1);
-> +		udelay(delay);
->  	}
-> +	dev_err_ratelimited(smmu->dev,
-> +			    "TLB sync timed out -- SMMU may be deadlocked\n");
->  }
->  
->  static void arm_smmu_tlb_sync_global(struct arm_smmu_device *smmu)
-> -- 
-> 2.11.0.dirty
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+In this patch series, I added a cached64_node to manage the dma64 iova space(iova>=4G), it
+takes the same effect as cached32_node(iova<4G).
+
+Below it's the performance data before and after my patch series:
+(before)$ iperf -s
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size: 85.3 KByte (default)
+------------------------------------------------------------
+[  4] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 35898
+[ ID] Interval       Transfer     Bandwidth
+[  4]  0.0-10.2 sec  7.88 MBytes  6.48 Mbits/sec
+[  5] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 35900
+[  5]  0.0-10.3 sec  7.88 MBytes  6.43 Mbits/sec
+[  4] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 35902
+[  4]  0.0-10.3 sec  7.88 MBytes  6.43 Mbits/sec
+
+(after)$ iperf -s
+------------------------------------------------------------
+Server listening on TCP port 5001
+TCP window size: 85.3 KByte (default)
+------------------------------------------------------------
+[  4] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 36330
+[ ID] Interval       Transfer     Bandwidth
+[  4]  0.0-10.0 sec  1.09 GBytes   933 Mbits/sec
+[  5] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 36332
+[  5]  0.0-10.0 sec  1.10 GBytes   939 Mbits/sec
+[  4] local 192.168.1.106 port 5001 connected with 192.168.1.198 port 36334
+[  4]  0.0-10.0 sec  1.10 GBytes   938 Mbits/sec
+
+
+Zhen Lei (7):
+  iommu/iova: fix incorrect variable types
+  iommu/iova: cut down judgement times
+  iommu/iova: insert start_pfn boundary of dma32
+  iommu/iova: adjust __cached_rbnode_insert_update
+  iommu/iova: to optimize the allocation performance of dma64
+  iommu/iova: move the caculation of pad mask out of loop
+  iommu/iova: fix iovad->dma_32bit_pfn as the last pfn of dma32
+
+ drivers/iommu/amd_iommu.c        |   7 +-
+ drivers/iommu/dma-iommu.c        |  22 ++----
+ drivers/iommu/intel-iommu.c      |  11 +--
+ drivers/iommu/iova.c             | 143 +++++++++++++++++++++------------------
+ drivers/misc/mic/scif/scif_rma.c |   3 +-
+ include/linux/iova.h             |   7 +-
+ 6 files changed, 94 insertions(+), 99 deletions(-)
 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.5.0
