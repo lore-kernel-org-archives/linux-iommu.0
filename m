@@ -1,13 +1,11 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH RESEND 3/3] iommu/dma: Plumb in the per-CPU IOVA caches
-Date: Fri, 31 Mar 2017 15:46:07 +0100
-Message-ID: <fcb9121e608da4f62e21538f558710fbb12d4a69.1490971180.git.robin.murphy@arm.com>
-References: <cover.1490971180.git.robin.murphy@arm.com>
+Subject: [PATCH RESEND 0/3] IOVA allocation improvements for iommu-dma
+Date: Fri, 31 Mar 2017 15:46:04 +0100
+Message-ID: <cover.1490971180.git.robin.murphy@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <cover.1490971180.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,93 +19,21 @@ To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
 Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-With IOVA allocation suitably tidied up, we are finally free to opt in
-to the per-CPU caching mechanism. The caching alone can provide a modest
-improvement over walking the rbtree for weedier systems (iperf3 shows
-~10% more ethernet throughput on an ARM Juno r1 constrained to a single
-650MHz Cortex-A53), but the real gain will be in sidestepping the rbtree
-lock contention which larger ARM-based systems with lots of parallel I/O
-are starting to feel the pain of.
+Hi Joerg,
 
-Reviewed-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Tested-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
----
- drivers/iommu/dma-iommu.c | 39 ++++++++++++++++++---------------------
- 1 file changed, 18 insertions(+), 21 deletions(-)
+Here's the series rebased onto your current next branch just for the
+sake of it, and with the tags added. No other changes.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 1b94beb43036..8348f366ddd1 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -361,8 +361,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
- {
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
- 	struct iova_domain *iovad = &cookie->iovad;
--	unsigned long shift, iova_len;
--	struct iova *iova = NULL;
-+	unsigned long shift, iova_len, iova = 0;
- 
- 	if (cookie->type == IOMMU_DMA_MSI_COOKIE) {
- 		cookie->msi_iova += size;
-@@ -371,41 +370,39 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
- 
- 	shift = iova_shift(iovad);
- 	iova_len = size >> shift;
-+	/*
-+	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
-+	 * will come back to bite us badly, so we have to waste a bit of space
-+	 * rounding up anything cacheable to make sure that can't happen. The
-+	 * order of the unadjusted size will still match upon freeing.
-+	 */
-+	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
-+		iova_len = roundup_pow_of_two(iova_len);
- 
- 	if (domain->geometry.force_aperture)
- 		dma_limit = min(dma_limit, domain->geometry.aperture_end);
- 
- 	/* Try to get PCI devices a SAC address */
- 	if (dma_limit > DMA_BIT_MASK(32) && dev_is_pci(dev))
--		iova = alloc_iova(iovad, iova_len, DMA_BIT_MASK(32) >> shift,
--				  true);
--	/*
--	 * Enforce size-alignment to be safe - there could perhaps be an
--	 * attribute to control this per-device, or at least per-domain...
--	 */
--	if (!iova)
--		iova = alloc_iova(iovad, iova_len, dma_limit >> shift, true);
-+		iova = alloc_iova_fast(iovad, iova_len, DMA_BIT_MASK(32) >> shift);
- 
--	return (dma_addr_t)iova->pfn_lo << shift;
-+	if (!iova)
-+		iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift);
-+
-+	return (dma_addr_t)iova << shift;
- }
- 
- static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
- 		dma_addr_t iova, size_t size)
- {
- 	struct iova_domain *iovad = &cookie->iovad;
--	struct iova *iova_rbnode;
-+	unsigned long shift = iova_shift(iovad);
- 
- 	/* The MSI case is only ever cleaning up its most recent allocation */
--	if (cookie->type == IOMMU_DMA_MSI_COOKIE) {
-+	if (cookie->type == IOMMU_DMA_MSI_COOKIE)
- 		cookie->msi_iova -= size;
--		return;
--	}
--
--	iova_rbnode = find_iova(iovad, iova_pfn(iovad, iova));
--	if (WARN_ON(!iova_rbnode))
--		return;
--
--	__free_iova(iovad, iova_rbnode);
-+	else
-+		free_iova_fast(iovad, iova >> shift, size >> shift);
- }
- 
- static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr,
+Thanks,
+Robin.
+
+Robin Murphy (3):
+  iommu/dma: Convert to address-based allocation
+  iommu/dma: Clean up MSI IOVA allocation
+  iommu/dma: Plumb in the per-CPU IOVA caches
+
+ drivers/iommu/dma-iommu.c | 176 ++++++++++++++++++++++++----------------------
+ 1 file changed, 90 insertions(+), 86 deletions(-)
+
 -- 
 2.11.0.dirty
