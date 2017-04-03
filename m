@@ -1,82 +1,38 @@
-From: Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
-Subject: Re: [PATCH v2] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS
-	mmaping code
-Date: Mon, 03 Apr 2017 09:06:56 +0200
-Message-ID: <e08c6221-2902-f855-fd10-87f7895f8b43@samsung.com>
-References: <CGME20170331110300eucas1p1535f003de554a9f6e1db56eb47630885@eucas1p1.samsung.com>
-	<1490958171-2303-1-git-send-email-a.hajda@samsung.com>
-	<20170331111624.GR7909@n2100.armlinux.org.uk>
+From: Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Subject: Re: [RFC PATCH 04/30] iommu/arm-smmu-v3: Add support for PCI ATS
+Date: Mon, 3 Apr 2017 14:04:35 +0530
+Message-ID: <CA+sq2CeWpGarhT9p+iVo8nJXR=xpkj6XNMwv4LvbP0M6JxA_SA@mail.gmail.com>
+References: <20170227195441.5170-1-jean-philippe.brucker@arm.com> <20170227195441.5170-5-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-reply-to: <20170331111624.GR7909-l+eeeJia6m9URfEZ8mYm6t73F7V6hmMc@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <20170227195441.5170-5-jean-philippe.brucker@arm.com>
+Sender: kvm-owner@vger.kernel.org
+To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Cc: Harv Abdulhamid <harba@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, Bjorn Helgaas <bhelgaas@google.com>, Sinan Kaya <okaya@qti.qualcomm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Nate Watterson <nwatters@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, LAKML <linux-arm-kernel@lists.infradead.org>, linux-pci <linux-pci@vger.kernel.org>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Russel,
+> +static size_t arm_smmu_atc_invalidate_domain(struct arm_smmu_domain *smmu_domain,
+> +                                            unsigned long iova, size_t size)
+> +{
+> +       unsigned long flags;
+> +       struct arm_smmu_cmdq_ent cmd = {0};
+> +       struct arm_smmu_group *smmu_group;
+> +       struct arm_smmu_master_data *master;
+> +       struct arm_smmu_device *smmu = smmu_domain->smmu;
+> +       struct arm_smmu_cmdq_ent sync_cmd = {
+> +               .opcode = CMDQ_OP_CMD_SYNC,
+> +       };
+> +
+> +       spin_lock_irqsave(&smmu_domain->groups_lock, flags);
+> +
+> +       list_for_each_entry(smmu_group, &smmu_domain->groups, domain_head) {
+> +               if (!smmu_group->ats_enabled)
+> +                       continue;
 
+If ATS is not supported, this seems to increase no of cycles spent in
+pgtbl_lock.
+Can we return from this API by checking 'ARM_SMMU_FEAT_ATS' in smmu->features ?
 
-On 31.03.2017 13:16, Russell King - ARM Linux wrote:
-> On Fri, Mar 31, 2017 at 01:02:51PM +0200, Andrzej Hajda wrote:
->> In this version of the patch I have replaced temporal pages and
->> iommu_dma_mmap with remap_pfn_range or rather its simplified version
->> vm_iomap_memory.
->> Unfortunately I have not find nice helper for sgtable creation, so I
->> left sg allocation inside _iommu_mmap_attrs.
->>
->> As the fixing of DMA_ATTR_FORCE_CONTIGUOUS related crashes has higher
->> priority I have focused only on it in this patch.
-> As I mentioned elsewhere, I don't believe that fudging around in this way
-> is a proper fix.
->
-> DMA coherent memory was never, ever, intended to be passed back into the
-> streaming APIs - it was designed that the two would be mutually exclusive.
->
-> The problem is that we now have DMA coherent allocations being passed
-> through the dma-buf API using this dma_get_sgtable() thing, which is quite
-> broken.  
-
-This patch just fixes current implementation of the API by re-using
-existing techniques, nothing more.
-It prevents code from using some pointer (area->pages) not because of
-lack backing struct pages, but because this pointer is just not
-initialized and apparently not necessary in case of contiguous allocations.
-I think, the problem of fixing DMA-API should be addressed in separate
-set of patches, as it is a different issue and requires much more
-experience in MM and DMA-API than I have.
-
-Regards
-Andrzej
-
-> I regard dma_get_sgtable() as very broken, and had I realised at
-> the time that this was what it was trying to do, I would have NAK'd it.
->
-> Rather than bodging around this brokenness, trying to get dma_get_sgtable()
-> to work, I believe we need to address the root cause - which is proper
-> support for passing DMA coherent allocations through dma-buf, which does
-> not involve scatterlists and calling dma_map_sg() on it.
->
-> That's going to need to be addressed in any case, because of the
-> dma_declare_coherent_memory() issue, where we may not have struct pages
-> backing a coherent allocation.  Such a case can come up on ARM64 via
-> DT's "shared-dma-pool" reserved memory stuff.
->
-> Right now, I have a "fix" for ARM queued which causes dma_get_sgtable()
-> to fail when used with reserved memory, but we have one user who needs
-> this to work.  So, dma-buf needs to be fixed for this one way or another,
-> and I don't think that bending the current broken stuff to suit it by
-> trying these vmalloc_to_page() hacks is acceptable.
->
-> dma_get_sgtable() is fundamentally broken IMHO.
->
+Thanks,
+Sunil.
