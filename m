@@ -1,15 +1,14 @@
 From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 1/2] PCI: Add device flag
-	PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT
-Date: Mon, 3 Apr 2017 15:59:11 +0100
-Message-ID: <0a9a404b-3a97-f0ea-ab46-06d9a0669d8a@arm.com>
+Subject: Re: [PATCH v4 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
+Date: Mon, 3 Apr 2017 16:07:53 +0100
+Message-ID: <b44e6df5-4840-ecb4-59c6-b4bc474ad28c@arm.com>
 References: <1491225304-3559-1-git-send-email-jnair@caviumnetworks.com>
-	<1491225304-3559-2-git-send-email-jnair@caviumnetworks.com>
+	<1491225304-3559-3-git-send-email-jnair@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1491225304-3559-2-git-send-email-jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+In-Reply-To: <1491225304-3559-3-git-send-email-jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,61 +23,68 @@ Cc: Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-
 List-Id: iommu@lists.linux-foundation.org
 
 On 03/04/17 14:15, Jayachandran C wrote:
-> Add a new quirk flag PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT to limit the DMA
-> alias search to go no further than the bridge where the IOMMU unit is
-> attached.
+> The Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the PCI
+> topology is slightly unusual. For a multi-node system, it looks like:
 > 
-> The flag will be used to indicate a bridge device which forwards the
-> address translation requests to the IOMMU, i.e where the interrupt and
-> DMA requests leave the PCIe hierarchy and go into the system blocks.
+> [node level PCI bridges - one per node]
+>     [SoC PCI devices with MSI-X but no IOMMU]
+>     [PCI-PCIe "glue" bridges - upto 14, one per real port below]
+>         [PCIe real root ports associated with IOMMU and GICv3 ITS]
+>             [External PCI devices connected to PCIe links]
+
+Since it's not entirely obvious, what does the actual DT - or IORT if
+you must ;) - topology for this look like? I can't help thinking that
+either it's inaccurate, or that this is going to expose a shortcoming in
+pci_dma_configure() which breaks things - unless I'm missing something,
+isn't find_pci_root_bus() going to go all the way up to the top-level
+glue bridge and pick up the wrong firmware node (if any) for the
+appropriate DMA properties?
+
+Robin.
+
+> The top two levels of bridges should have introduced aliases since they
+> are PCI and PCI/PCIe bridges, but in the case of ThunderX2 they do not.
+> In the case of external PCIe devices, the "real" root ports are connected
+> to the SMMU and the GIC ITS, so PCI-PCIe bridge does not introduce an
+> alias. The SoC PCI devices are directly connected to the GIC ITS, so the
+> node level bridges do not introduce an alias either.
 > 
-> Usually this happens at the PCI RC, so this flag is not needed. But
-> on systems where there are bridges that introduce aliases above the
-> "real" root bridge, this flag is needed to ensure that the function
-> pci_for_each_dma_alias() works correctly.
+> To handle this quirk, we mark the real PCIe root ports and node level
+> PCI bridges with the flag PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT.  With this,
+> pci_for_each_dma_alias() works correctly for external PCIe devices and
+> SoC PCI devices.
 > 
-> The function pci_for_each_dma_alias() is updated to stop when it see a
-> bridge with this flag set.
-
-As it seems to have been me positing most of the alternative
-suggestions, which have indeed turned out to have holes in (no, I can't
-see how we'd cleanly fix pci_device_group() either), I'll stand by my
-earlier "(I have no actual objection to this patch, though, [...])":
-
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-
+> For the current revision of Cavium ThunderX2, the VendorID and Device ID
+> are from Broadcom Vulcan (14e4:90XX).
+> 
 > Signed-off-by: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
 > ---
->  drivers/pci/search.c | 4 ++++
->  include/linux/pci.h  | 2 ++
->  2 files changed, 6 insertions(+)
+>  drivers/pci/quirks.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
 > 
-> diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-> index 33e0f03..4c6044a 100644
-> --- a/drivers/pci/search.c
-> +++ b/drivers/pci/search.c
-> @@ -60,6 +60,10 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> index 6736836..564a84a 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -3958,6 +3958,20 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2260, quirk_mic_x200_dma_alias);
+>  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2264, quirk_mic_x200_dma_alias);
 >  
->  		tmp = bus->self;
->  
-> +		/* stop at bridge where translation unit is associated */
-> +		if (tmp->dev_flags & PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT)
-> +			return ret;
+>  /*
+> + * The IOMMU and interrupt controller on Broadcom Vulcan/Cavium ThunderX2 are
+> + * associated not at the root bus, but at a bridge below. This quirk flag
+> + * will ensure that the aliases are identified correctly.
+> + */
+> +static void quirk_bridge_cavm_thrx2_pcie_root(struct pci_dev *pdev)
+> +{
+> +	pdev->dev_flags |= PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT;
+> +}
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+> +				quirk_bridge_cavm_thrx2_pcie_root);
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
+> +				quirk_bridge_cavm_thrx2_pcie_root);
 > +
->  		/*
->  		 * PCIe-to-PCI/X bridges alias transactions from downstream
->  		 * devices using the subordinate bus number (PCI Express to
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index eb3da1a..3f596ac 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -178,6 +178,8 @@ enum pci_dev_flags {
->  	PCI_DEV_FLAGS_NO_PM_RESET = (__force pci_dev_flags_t) (1 << 7),
->  	/* Get VPD from function 0 VPD */
->  	PCI_DEV_FLAGS_VPD_REF_F0 = (__force pci_dev_flags_t) (1 << 8),
-> +	/* a non-root bridge where translation occurs, stop alias search here */
-> +	PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT = (__force pci_dev_flags_t) (1 << 9),
->  };
->  
->  enum pci_irq_reroute_variant {
+> +/*
+>   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
+>   * class code.  Fix it.
+>   */
 > 
