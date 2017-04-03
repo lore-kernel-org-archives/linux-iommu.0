@@ -1,47 +1,34 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC PATCH 04/30] iommu/arm-smmu-v3: Add support for PCI ATS
-Date: Mon, 3 Apr 2017 11:14:17 +0100
-Message-ID: <5af054c8-28cd-6719-b506-d0133c03042b@arm.com>
-References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
- <20170227195441.5170-5-jean-philippe.brucker@arm.com>
- <CA+sq2CeWpGarhT9p+iVo8nJXR=xpkj6XNMwv4LvbP0M6JxA_SA@mail.gmail.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH RESEND 0/3] IOVA allocation improvements for iommu-dma
+Date: Mon, 3 Apr 2017 12:45:33 +0200
+Message-ID: <20170403104532.GA4683@8bytes.org>
+References: <cover.1490971180.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <CA+sq2CeWpGarhT9p+iVo8nJXR=xpkj6XNMwv4LvbP0M6JxA_SA@mail.gmail.com>
-Sender: kvm-owner@vger.kernel.org
-To: Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Cc: Harv Abdulhamid <harba@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, Bjorn Helgaas <bhelgaas@google.com>, Sinan Kaya <okaya@qti.qualcomm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Nate Watterson <nwatters@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, LAKML <linux-arm-kernel@lists.infradead.org>, linux-pci <linux-pci@vger.kernel.org>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <cover.1490971180.git.robin.murphy-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/04/17 09:34, Sunil Kovvuri wrote:
->> +static size_t arm_smmu_atc_invalidate_domain(struct arm_smmu_domain *smmu_domain,
->> +                                            unsigned long iova, size_t size)
->> +{
->> +       unsigned long flags;
->> +       struct arm_smmu_cmdq_ent cmd = {0};
->> +       struct arm_smmu_group *smmu_group;
->> +       struct arm_smmu_master_data *master;
->> +       struct arm_smmu_device *smmu = smmu_domain->smmu;
->> +       struct arm_smmu_cmdq_ent sync_cmd = {
->> +               .opcode = CMDQ_OP_CMD_SYNC,
->> +       };
->> +
->> +       spin_lock_irqsave(&smmu_domain->groups_lock, flags);
->> +
->> +       list_for_each_entry(smmu_group, &smmu_domain->groups, domain_head) {
->> +               if (!smmu_group->ats_enabled)
->> +                       continue;
+On Fri, Mar 31, 2017 at 03:46:04PM +0100, Robin Murphy wrote:
+> Robin Murphy (3):
+>   iommu/dma: Convert to address-based allocation
+>   iommu/dma: Clean up MSI IOVA allocation
+>   iommu/dma: Plumb in the per-CPU IOVA caches
 > 
-> If ATS is not supported, this seems to increase no of cycles spent in
-> pgtbl_lock.
-> Can we return from this API by checking 'ARM_SMMU_FEAT_ATS' in smmu->features ?
+>  drivers/iommu/dma-iommu.c | 176 ++++++++++++++++++++++++----------------------
+>  1 file changed, 90 insertions(+), 86 deletions(-)
 
-Sure, I can add a check before taking the lock. Have you been able to
-observe a significant difference in cycles between checking FEAT_ATS,
-checking group->ats_enabled after taking the lock, and removing this
-function call altogether?
-
-Thanks,
-Jean-Philippe
+Applied to arm/core, thanks Robin.
