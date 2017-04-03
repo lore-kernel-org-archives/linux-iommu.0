@@ -1,14 +1,16 @@
-From: Rob Clark <robdclark-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH V3 0/5] iommu/arm-smmu: Add runtime pm/sleep support
-Date: Fri, 31 Mar 2017 22:58:16 -0400
-Message-ID: <CAF6AEGv_1pNvhCc-mVP5S28Yt5kTJmTRfe8tKSJpEmxfOKM7Jg@mail.gmail.com>
-References: <1489073748-3659-1-git-send-email-sricharan@codeaurora.org>
-	<20170331175457.GD4897@arm.com>
+From: Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v2] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS
+	mmaping code
+Date: Mon, 03 Apr 2017 09:06:56 +0200
+Message-ID: <e08c6221-2902-f855-fd10-87f7895f8b43@samsung.com>
+References: <CGME20170331110300eucas1p1535f003de554a9f6e1db56eb47630885@eucas1p1.samsung.com>
+	<1490958171-2303-1-git-send-email-a.hajda@samsung.com>
+	<20170331111624.GR7909@n2100.armlinux.org.uk>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170331175457.GD4897-5wv7dgnIgG8@public.gmane.org>
+In-reply-to: <20170331111624.GR7909-l+eeeJia6m9URfEZ8mYm6t73F7V6hmMc@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,88 +20,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: Mark Rutland <mark.rutland-5wv7dgnIgG8@public.gmane.org>, "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Mathieu Poirier <mathieu.poirier-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, linux-arm-msm <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Stephen Boyd <sboyd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Rob Herring <robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-clk-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Russell King - ARM Linux <linux-I+IVW8TIWO2tmTQ+vhA3Yw@public.gmane.org>
+Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 31, 2017 at 1:54 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Thu, Mar 09, 2017 at 09:05:43PM +0530, Sricharan R wrote:
->> This series provides the support for turning on the arm-smmu's
->> clocks/power domains using runtime pm. This is done using the
->> recently introduced device links patches, which lets the symmu's
->> runtime to follow the master's runtime pm, so the smmu remains
->> powered only when the masters use it.
->
-> Do you have any numbers for the power savings you achieve with this?
-> How often do we actually manage to stop the SMMU clocks on an SoC with
-> a handful of masters?
->
-> In other words, is this too coarse-grained to be useful, or is it common
-> that all the devices upstream of the SMMU are suspended?
+Hi Russel,
 
-well, if you think about a phone/tablet with a command mode panel,
-pretty much all devices will be suspended most of the time ;-)
 
-maybe it's a different case with servers.. unfortunately we have to
-share the same driver across both..
-
-BR,
--R
-
-> Thanks,
+On 31.03.2017 13:16, Russell King - ARM Linux wrote:
+> On Fri, Mar 31, 2017 at 01:02:51PM +0200, Andrzej Hajda wrote:
+>> In this version of the patch I have replaced temporal pages and
+>> iommu_dma_mmap with remap_pfn_range or rather its simplified version
+>> vm_iomap_memory.
+>> Unfortunately I have not find nice helper for sgtable creation, so I
+>> left sg allocation inside _iommu_mmap_attrs.
+>>
+>> As the fixing of DMA_ATTR_FORCE_CONTIGUOUS related crashes has higher
+>> priority I have focused only on it in this patch.
+> As I mentioned elsewhere, I don't believe that fudging around in this way
+> is a proper fix.
 >
-> Will
+> DMA coherent memory was never, ever, intended to be passed back into the
+> streaming APIs - it was designed that the two would be mutually exclusive.
 >
->>
->> Took some reference from the exynos runtime patches [2].
->> Tested this with MDP, GPU, VENUS devices on apq8096-db820c board.
->>
->> Previous version of the patchset [1].
->>
->> [V3]
->>    * Reworked the patches to keep the clocks init/enabling function
->>      seperately for each compatible.
->>
->>    * Added clocks bindings for MMU40x/500.
->>
->>    * Added a new compatible for qcom,smmu-v2 implementation and
->>      the clock bindings for the same.
->>
->>    * Rebased on top of 4.11-rc1
->>
->> [V2]
->>    * Split the patches little differently.
->>
->>    * Addressed comments.
->>
->>    * Removed the patch #4 [3] from previous post
->>      for arm-smmu context save restore. Planning to
->>      post this separately after reworking/addressing Robin's
->>      feedback.
->>
->>    * Reversed the sequence to disable clocks than enabling.
->>      This was required for those cases where the
->>      clocks are populated in a dependent order from DT.
->>
->> [1] https://www.spinics.net/lists/linux-arm-msm/msg23870.html
->> [2] https://lkml.org/lkml/2016/10/20/70
->> [3] https://patchwork.kernel.org/patch/9389717/
->>
->> Sricharan R (5):
->>   iommu/arm-smmu: Add pm_runtime/sleep ops
->>   iommu/arm-smmu: Add support for MMU40x/500 clocks
->>   drivers: arm-smmu: Add clock support for QCOM_SMMUV2
->>   iommu/arm-smmu: Invoke pm_runtime during probe, add/remove device
->>   iommu/arm-smmu: Add the device_link between masters and smmu
->>
->>  .../devicetree/bindings/iommu/arm,smmu.txt         |  35 +++
->>  drivers/iommu/arm-smmu.c                           | 349 ++++++++++++++++++++-
->>  2 files changed, 373 insertions(+), 11 deletions(-)
->>
->> --
->> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
->>
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> The problem is that we now have DMA coherent allocations being passed
+> through the dma-buf API using this dma_get_sgtable() thing, which is quite
+> broken.  
+
+This patch just fixes current implementation of the API by re-using
+existing techniques, nothing more.
+It prevents code from using some pointer (area->pages) not because of
+lack backing struct pages, but because this pointer is just not
+initialized and apparently not necessary in case of contiguous allocations.
+I think, the problem of fixing DMA-API should be addressed in separate
+set of patches, as it is a different issue and requires much more
+experience in MM and DMA-API than I have.
+
+Regards
+Andrzej
+
+> I regard dma_get_sgtable() as very broken, and had I realised at
+> the time that this was what it was trying to do, I would have NAK'd it.
+>
+> Rather than bodging around this brokenness, trying to get dma_get_sgtable()
+> to work, I believe we need to address the root cause - which is proper
+> support for passing DMA coherent allocations through dma-buf, which does
+> not involve scatterlists and calling dma_map_sg() on it.
+>
+> That's going to need to be addressed in any case, because of the
+> dma_declare_coherent_memory() issue, where we may not have struct pages
+> backing a coherent allocation.  Such a case can come up on ARM64 via
+> DT's "shared-dma-pool" reserved memory stuff.
+>
+> Right now, I have a "fix" for ARM queued which causes dma_get_sgtable()
+> to fail when used with reserved memory, but we have one user who needs
+> this to work.  So, dma-buf needs to be fixed for this one way or another,
+> and I don't think that bending the current broken stuff to suit it by
+> trying these vmalloc_to_page() hacks is acceptable.
+>
+> dma_get_sgtable() is fundamentally broken IMHO.
+>
