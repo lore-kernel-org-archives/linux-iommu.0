@@ -1,14 +1,14 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
-Date: Mon, 3 Apr 2017 16:07:53 +0100
-Message-ID: <b44e6df5-4840-ecb4-59c6-b4bc474ad28c@arm.com>
-References: <1491225304-3559-1-git-send-email-jnair@caviumnetworks.com>
-	<1491225304-3559-3-git-send-email-jnair@caviumnetworks.com>
+From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH 0/5] iommu/omap: Add support for iommu-groups and 'struct
+	iommu_device'
+Date: Mon, 3 Apr 2017 12:09:51 -0500
+Message-ID: <9af51f75-312a-8137-82d1-e3b08cec3448@ti.com>
+References: <1490962248-12602-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1491225304-3559-3-git-send-email-jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+In-Reply-To: <1490962248-12602-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,73 +18,43 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Alex Williamson <alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/04/17 14:15, Jayachandran C wrote:
-> The Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the PCI
-> topology is slightly unusual. For a multi-node system, it looks like:
-> 
-> [node level PCI bridges - one per node]
->     [SoC PCI devices with MSI-X but no IOMMU]
->     [PCI-PCIe "glue" bridges - upto 14, one per real port below]
->         [PCIe real root ports associated with IOMMU and GICv3 ITS]
->             [External PCI devices connected to PCIe links]
+Hi Joerg,
 
-Since it's not entirely obvious, what does the actual DT - or IORT if
-you must ;) - topology for this look like? I can't help thinking that
-either it's inaccurate, or that this is going to expose a shortcoming in
-pci_dma_configure() which breaks things - unless I'm missing something,
-isn't find_pci_root_bus() going to go all the way up to the top-level
-glue bridge and pick up the wrong firmware node (if any) for the
-appropriate DMA properties?
+On 03/31/2017 07:10 AM, Joerg Roedel wrote:
+> Hi,
+> 
+> here is a small patch-set for the omap-iommu driver to make
+> it use new features of the iommu-core. Please review.
 
-Robin.
+Thanks for the patches - this has been on my TODO list but you beat me
+in getting there first :). Are these for 4.12?
 
-> The top two levels of bridges should have introduced aliases since they
-> are PCI and PCI/PCIe bridges, but in the case of ThunderX2 they do not.
-> In the case of external PCIe devices, the "real" root ports are connected
-> to the SMMU and the GIC ITS, so PCI-PCIe bridge does not introduce an
-> alias. The SoC PCI devices are directly connected to the GIC ITS, so the
-> node level bridges do not introduce an alias either.
+I have given the series a quick try and these currently break the
+functionality. I am investigating the failures, so will mostly need some
+additional changes. Let me know if you want me to take up posting of the
+v2. Meanwhile, I have added some comments on the patches.
+
+regards
+Suman
+
 > 
-> To handle this quirk, we mark the real PCIe root ports and node level
-> PCI bridges with the flag PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT.  With this,
-> pci_for_each_dma_alias() works correctly for external PCIe devices and
-> SoC PCI devices.
+> Thanks,
 > 
-> For the current revision of Cavium ThunderX2, the VendorID and Device ID
-> are from Broadcom Vulcan (14e4:90XX).
+> 	Joerg
 > 
-> Signed-off-by: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-> ---
->  drivers/pci/quirks.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
+> Joerg Roedel (5):
+>   iommu/omap: Move data structures to omap-iommu.h
+>   iommu/omap: Permanently keep iommu_dev pointer in arch_data
+>   iommu/omap: Set dev->archdata.iommu = NULL in omap_iommu_remove_device
+>   iommu/omap: Make use of 'struct iommu_device'
+>   iommu/omap: Add iommu-group support
 > 
-> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-> index 6736836..564a84a 100644
-> --- a/drivers/pci/quirks.c
-> +++ b/drivers/pci/quirks.c
-> @@ -3958,6 +3958,20 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2260, quirk_mic_x200_dma_alias);
->  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2264, quirk_mic_x200_dma_alias);
->  
->  /*
-> + * The IOMMU and interrupt controller on Broadcom Vulcan/Cavium ThunderX2 are
-> + * associated not at the root bus, but at a bridge below. This quirk flag
-> + * will ensure that the aliases are identified correctly.
-> + */
-> +static void quirk_bridge_cavm_thrx2_pcie_root(struct pci_dev *pdev)
-> +{
-> +	pdev->dev_flags |= PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT;
-> +}
-> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
-> +				quirk_bridge_cavm_thrx2_pcie_root);
-> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
-> +				quirk_bridge_cavm_thrx2_pcie_root);
-> +
-> +/*
->   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
->   * class code.  Fix it.
->   */
+>  drivers/iommu/omap-iommu.c               | 137 ++++++++++++++++++++-----------
+>  drivers/iommu/omap-iommu.h               |  35 ++++++++
+>  include/linux/platform_data/iommu-omap.h |  15 ----
+>  3 files changed, 124 insertions(+), 63 deletions(-)
 > 
