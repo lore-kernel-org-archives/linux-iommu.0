@@ -1,41 +1,94 @@
-From: Will Deacon <will.deacon@arm.com>
-Subject: Re: [PATCH V3 0/5] iommu/arm-smmu: Add runtime pm/sleep support
-Date: Mon, 3 Apr 2017 18:23:07 +0100
-Message-ID: <20170403172307.GI5706@arm.com>
-References: <1489073748-3659-1-git-send-email-sricharan@codeaurora.org>
- <20170331175457.GD4897@arm.com>
- <CAF6AEGv_1pNvhCc-mVP5S28Yt5kTJmTRfe8tKSJpEmxfOKM7Jg@mail.gmail.com>
+From: Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu: Fix 16bit ASID configuration
+Date: Mon, 3 Apr 2017 23:16:33 +0530
+Message-ID: <CA+sq2CeUKZfr_DgHQ9kmW7-UwRKbC2=sfLfq=YwSB3TwZQwUBw@mail.gmail.com>
+References: <1490697672-15928-1-git-send-email-sunil.kovvuri@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <CAF6AEGv_1pNvhCc-mVP5S28Yt5kTJmTRfe8tKSJpEmxfOKM7Jg@mail.gmail.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Rob Clark <robdclark@gmail.com>
-Cc: Sricharan R <sricharan@codeaurora.org>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Mathieu Poirier <mathieu.poirier@linaro.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, linux-clk@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-kernel-owner@vger.kernel.org>
+In-Reply-To: <1490697672-15928-1-git-send-email-sunil.kovvuri@gmail.com>
+Sender: linux-kernel-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org, LAKML <linux-arm-kernel@lists.infradead.org>, LKML <linux-kernel@vger.kernel.org>, Sunil Goutham <sgoutham@cavium.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Mar 31, 2017 at 10:58:16PM -0400, Rob Clark wrote:
-> On Fri, Mar 31, 2017 at 1:54 PM, Will Deacon <will.deacon@arm.com> wrote:
-> > On Thu, Mar 09, 2017 at 09:05:43PM +0530, Sricharan R wrote:
-> >> This series provides the support for turning on the arm-smmu's
-> >> clocks/power domains using runtime pm. This is done using the
-> >> recently introduced device links patches, which lets the symmu's
-> >> runtime to follow the master's runtime pm, so the smmu remains
-> >> powered only when the masters use it.
-> >
-> > Do you have any numbers for the power savings you achieve with this?
-> > How often do we actually manage to stop the SMMU clocks on an SoC with
-> > a handful of masters?
-> >
-> > In other words, is this too coarse-grained to be useful, or is it common
-> > that all the devices upstream of the SMMU are suspended?
-> 
-> well, if you think about a phone/tablet with a command mode panel,
-> pretty much all devices will be suspended most of the time ;-)
+On Tue, Mar 28, 2017 at 4:11 PM,  <sunil.kovvuri@gmail.com> wrote:
+> From: Sunil Goutham <sgoutham@cavium.com>
+>
+> 16bit ASID should be enabled before initializing TTBR0/1,
+> otherwise only LSB 8bit ASID will be considered. Hence
+> moving configuration of TTBCR register ahead of TTBR0/1
+> while initializing context bank.
+>
+> Signed-off-by: Sunil Goutham <sgoutham@cavium.com>
+> ---
+>  drivers/iommu/arm-smmu.c | 41 ++++++++++++++++++++++-------------------
+>  1 file changed, 22 insertions(+), 19 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 9b33700..2845d73 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -758,6 +758,28 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>         }
+>         writel_relaxed(reg, gr1_base + ARM_SMMU_GR1_CBAR(cfg->cbndx));
+>
+> +       /* TTBCR */
+> +       if (stage1) {
+> +               if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+> +                       reg = pgtbl_cfg->arm_v7s_cfg.tcr;
+> +                       reg2 = 0;
+> +               } else {
+> +                       reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+> +                       reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+> +                       reg2 |= TTBCR2_SEP_UPSTREAM;
+> +                       /* 16bit ASID should be enabled before write to TTBR,
+> +                        * otherwise only LSB 8bit will be considered.
+> +                        */
+> +                       if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
+> +                               reg2 |= TTBCR2_AS;
+> +               }
+> +               if (smmu->version > ARM_SMMU_V1)
+> +                       writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
+> +       } else {
+> +               reg = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
+> +       }
+> +       writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
+> +
+>         /* TTBRs */
+>         if (stage1) {
+>                 u16 asid = ARM_SMMU_CB_ASID(smmu, cfg);
+> @@ -781,25 +803,6 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+>                 writeq_relaxed(reg64, cb_base + ARM_SMMU_CB_TTBR0);
+>         }
+>
+> -       /* TTBCR */
+> -       if (stage1) {
+> -               if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+> -                       reg = pgtbl_cfg->arm_v7s_cfg.tcr;
+> -                       reg2 = 0;
+> -               } else {
+> -                       reg = pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+> -                       reg2 = pgtbl_cfg->arm_lpae_s1_cfg.tcr >> 32;
+> -                       reg2 |= TTBCR2_SEP_UPSTREAM;
+> -                       if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64)
+> -                               reg2 |= TTBCR2_AS;
+> -               }
+> -               if (smmu->version > ARM_SMMU_V1)
+> -                       writel_relaxed(reg2, cb_base + ARM_SMMU_CB_TTBCR2);
+> -       } else {
+> -               reg = pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
+> -       }
+> -       writel_relaxed(reg, cb_base + ARM_SMMU_CB_TTBCR);
+> -
+>         /* MAIRs (stage-1 only) */
+>         if (stage1) {
+>                 if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+> --
+> 2.7.4
+>
 
-Well, that's really what I was asking about. I assumed that periodic
-modem/radio transactions would keep the SMMU clocked, so would like to get a
-rough idea of the power savings achieved with this coarse-grained approach.
+Any comments or feedback on this patch ?
 
-Will
+Thanks,
+Sunil.
