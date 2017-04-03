@@ -1,59 +1,75 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: Re: [RFC PATCH 04/30] iommu/arm-smmu-v3: Add support for PCI ATS
-Date: Mon, 3 Apr 2017 12:56:28 +0100
-Message-ID: <19143d08-07ee-c2a4-eb71-e48fef0c8874@arm.com>
-References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
- <20170227195441.5170-5-jean-philippe.brucker@arm.com>
- <CA+sq2CeWpGarhT9p+iVo8nJXR=xpkj6XNMwv4LvbP0M6JxA_SA@mail.gmail.com>
- <5af054c8-28cd-6719-b506-d0133c03042b@arm.com>
- <CA+sq2Ccb1mUQpTvHWsEGWyc+9HjLdq8FSqBGRM7Ey932_6X5jg@mail.gmail.com>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/io-pgtable-arm: Avoid shift overflow in block size
+Date: Mon,  3 Apr 2017 13:12:10 +0100
+Message-ID: <db7c46e78bae4054d22a2524095857c5eda834f7.1491221353.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <CA+sq2Ccb1mUQpTvHWsEGWyc+9HjLdq8FSqBGRM7Ey932_6X5jg@mail.gmail.com>
-Sender: kvm-owner@vger.kernel.org
-To: Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Cc: Harv Abdulhamid <harba@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, Bjorn Helgaas <bhelgaas@google.com>, Sinan Kaya <okaya@qti.qualcomm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Nate Watterson <nwatters@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, David Woodhouse <dwmw2@infradead.org>, LAKML <linux-arm-kernel@lists.infradead.org>, linux-pci <linux-pci@vger.kernel.org>, iommu@lists.linux-foundation.org, kvm@vger.kernel.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org
+Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 03/04/17 12:42, Sunil Kovvuri wrote:
-> On Mon, Apr 3, 2017 at 3:44 PM, Jean-Philippe Brucker
-> <jean-philippe.brucker@arm.com> wrote:
->> On 03/04/17 09:34, Sunil Kovvuri wrote:
->>>> +static size_t arm_smmu_atc_invalidate_domain(struct arm_smmu_domain *smmu_domain,
->>>> +                                            unsigned long iova, size_t size)
->>>> +{
->>>> +       unsigned long flags;
->>>> +       struct arm_smmu_cmdq_ent cmd = {0};
->>>> +       struct arm_smmu_group *smmu_group;
->>>> +       struct arm_smmu_master_data *master;
->>>> +       struct arm_smmu_device *smmu = smmu_domain->smmu;
->>>> +       struct arm_smmu_cmdq_ent sync_cmd = {
->>>> +               .opcode = CMDQ_OP_CMD_SYNC,
->>>> +       };
->>>> +
->>>> +       spin_lock_irqsave(&smmu_domain->groups_lock, flags);
->>>> +
->>>> +       list_for_each_entry(smmu_group, &smmu_domain->groups, domain_head) {
->>>> +               if (!smmu_group->ats_enabled)
->>>> +                       continue;
->>>
->>> If ATS is not supported, this seems to increase no of cycles spent in
->>> pgtbl_lock.
->>> Can we return from this API by checking 'ARM_SMMU_FEAT_ATS' in smmu->features ?
->>
->> Sure, I can add a check before taking the lock. Have you been able to
->> observe a significant difference in cycles between checking FEAT_ATS,
->> checking group->ats_enabled after taking the lock, and removing this
->> function call altogether?
->>
->> Thanks,
->> Jean-Philippe
-> 
-> No, I haven't verified, was just making an observation.
+The recursive nature of __arm_lpae_{map,unmap}() means that
+ARM_LPAE_BLOCK_SIZE() is evaluated for every level, including those
+where block mappings aren't possible. This in itself is harmless enough,
+as we will only ever be called with valid sizes from the pgsize_bitmap,
+and thus always recurse down past any imaginary block sizes. The only
+problem is that most of those imaginary sizes overflow the type used for
+the calculation, and thus trigger warnings under UBsan:
 
-Fair enough, I think avoiding the lock when ATS isn't in use makes sense.
+[   63.020939] ================================================================================
+[   63.021284] UBSAN: Undefined behaviour in drivers/iommu/io-pgtable-arm.c:312:22
+[   63.021602] shift exponent 39 is too large for 32-bit type 'int'
+[   63.021909] CPU: 0 PID: 1119 Comm: lkvm Not tainted 4.7.0-rc3+ #819
+[   63.022163] Hardware name: FVP Base (DT)
+[   63.022345] Call trace:
+[   63.022629] [<ffffff900808f258>] dump_backtrace+0x0/0x3a8
+[   63.022975] [<ffffff900808f614>] show_stack+0x14/0x20
+[   63.023294] [<ffffff90086bc9dc>] dump_stack+0x104/0x148
+[   63.023609] [<ffffff9008713ce8>] ubsan_epilogue+0x18/0x68
+[   63.023956] [<ffffff9008714410>] __ubsan_handle_shift_out_of_bounds+0x18c/0x1bc
+[   63.024365] [<ffffff900890fcb0>] __arm_lpae_map+0x720/0xae0
+[   63.024732] [<ffffff9008910170>] arm_lpae_map+0x100/0x190
+[   63.025049] [<ffffff90089183d8>] arm_smmu_map+0x78/0xc8
+[   63.025390] [<ffffff9008906c18>] iommu_map+0x130/0x230
+[   63.025763] [<ffffff9008bf7564>] vfio_iommu_type1_attach_group+0x4bc/0xa00
+[   63.026156] [<ffffff9008bf3c78>] vfio_fops_unl_ioctl+0x320/0x580
+[   63.026515] [<ffffff9008377420>] do_vfs_ioctl+0x140/0xd28
+[   63.026858] [<ffffff9008378094>] SyS_ioctl+0x8c/0xa0
+[   63.027179] [<ffffff9008086e70>] el0_svc_naked+0x24/0x28
+[   63.027412] ================================================================================
 
-Thanks,
-Jean-Philippe
+Perform the shift in a 64-bit type to prevent the theoretical overflow
+and keep the peace. As it turns out, this generates identical code for
+32-bit ARM, and marginally shorter AArch64 code, so it's good all round.
+
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
+ drivers/iommu/io-pgtable-arm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index f9bc6ebb8140..6e5df5e0a3bd 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -74,7 +74,7 @@
+ 
+ /* Calculate the block/page mapping size at level l for pagetable in d. */
+ #define ARM_LPAE_BLOCK_SIZE(l,d)					\
+-	(1 << (ilog2(sizeof(arm_lpae_iopte)) +				\
++	(1ULL << (ilog2(sizeof(arm_lpae_iopte)) +			\
+ 		((ARM_LPAE_MAX_LEVELS - (l)) * (d)->bits_per_level)))
+ 
+ /* Page table bits */
+-- 
+2.11.0.dirty
