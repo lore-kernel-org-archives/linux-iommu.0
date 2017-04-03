@@ -1,75 +1,70 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu/io-pgtable-arm: Avoid shift overflow in block size
-Date: Mon,  3 Apr 2017 13:12:10 +0100
-Message-ID: <db7c46e78bae4054d22a2524095857c5eda834f7.1491221353.git.robin.murphy@arm.com>
+From: Jayachandran C <jnair@caviumnetworks.com>
+Subject: [PATCH v4 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
+Date: Mon,  3 Apr 2017 13:15:04 +0000
+Message-ID: <1491225304-3559-3-git-send-email-jnair@caviumnetworks.com>
+References: <1491225304-3559-1-git-send-email-jnair@caviumnetworks.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org
-Cc: mark.rutland-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <1491225304-3559-1-git-send-email-jnair@caviumnetworks.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org
+Cc: Jayachandran C <jnair@caviumnetworks.com>, linux-arm-kernel@lists.infradead.org, Jon Masters <jcm@redhat.com>, Robin Murphy <robin.murphy@arm.com>
 List-Id: iommu@lists.linux-foundation.org
 
-The recursive nature of __arm_lpae_{map,unmap}() means that
-ARM_LPAE_BLOCK_SIZE() is evaluated for every level, including those
-where block mappings aren't possible. This in itself is harmless enough,
-as we will only ever be called with valid sizes from the pgsize_bitmap,
-and thus always recurse down past any imaginary block sizes. The only
-problem is that most of those imaginary sizes overflow the type used for
-the calculation, and thus trigger warnings under UBsan:
+The Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the PCI
+topology is slightly unusual. For a multi-node system, it looks like:
 
-[   63.020939] ================================================================================
-[   63.021284] UBSAN: Undefined behaviour in drivers/iommu/io-pgtable-arm.c:312:22
-[   63.021602] shift exponent 39 is too large for 32-bit type 'int'
-[   63.021909] CPU: 0 PID: 1119 Comm: lkvm Not tainted 4.7.0-rc3+ #819
-[   63.022163] Hardware name: FVP Base (DT)
-[   63.022345] Call trace:
-[   63.022629] [<ffffff900808f258>] dump_backtrace+0x0/0x3a8
-[   63.022975] [<ffffff900808f614>] show_stack+0x14/0x20
-[   63.023294] [<ffffff90086bc9dc>] dump_stack+0x104/0x148
-[   63.023609] [<ffffff9008713ce8>] ubsan_epilogue+0x18/0x68
-[   63.023956] [<ffffff9008714410>] __ubsan_handle_shift_out_of_bounds+0x18c/0x1bc
-[   63.024365] [<ffffff900890fcb0>] __arm_lpae_map+0x720/0xae0
-[   63.024732] [<ffffff9008910170>] arm_lpae_map+0x100/0x190
-[   63.025049] [<ffffff90089183d8>] arm_smmu_map+0x78/0xc8
-[   63.025390] [<ffffff9008906c18>] iommu_map+0x130/0x230
-[   63.025763] [<ffffff9008bf7564>] vfio_iommu_type1_attach_group+0x4bc/0xa00
-[   63.026156] [<ffffff9008bf3c78>] vfio_fops_unl_ioctl+0x320/0x580
-[   63.026515] [<ffffff9008377420>] do_vfs_ioctl+0x140/0xd28
-[   63.026858] [<ffffff9008378094>] SyS_ioctl+0x8c/0xa0
-[   63.027179] [<ffffff9008086e70>] el0_svc_naked+0x24/0x28
-[   63.027412] ================================================================================
+[node level PCI bridges - one per node]
+    [SoC PCI devices with MSI-X but no IOMMU]
+    [PCI-PCIe "glue" bridges - upto 14, one per real port below]
+        [PCIe real root ports associated with IOMMU and GICv3 ITS]
+            [External PCI devices connected to PCIe links]
 
-Perform the shift in a 64-bit type to prevent the theoretical overflow
-and keep the peace. As it turns out, this generates identical code for
-32-bit ARM, and marginally shorter AArch64 code, so it's good all round.
+The top two levels of bridges should have introduced aliases since they
+are PCI and PCI/PCIe bridges, but in the case of ThunderX2 they do not.
+In the case of external PCIe devices, the "real" root ports are connected
+to the SMMU and the GIC ITS, so PCI-PCIe bridge does not introduce an
+alias. The SoC PCI devices are directly connected to the GIC ITS, so the
+node level bridges do not introduce an alias either.
 
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+To handle this quirk, we mark the real PCIe root ports and node level
+PCI bridges with the flag PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT.  With this,
+pci_for_each_dma_alias() works correctly for external PCIe devices and
+SoC PCI devices.
+
+For the current revision of Cavium ThunderX2, the VendorID and Device ID
+are from Broadcom Vulcan (14e4:90XX).
+
+Signed-off-by: Jayachandran C <jnair@caviumnetworks.com>
 ---
- drivers/iommu/io-pgtable-arm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/quirks.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index f9bc6ebb8140..6e5df5e0a3bd 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -74,7 +74,7 @@
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 6736836..564a84a 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -3958,6 +3958,20 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2260, quirk_mic_x200_dma_alias);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2264, quirk_mic_x200_dma_alias);
  
- /* Calculate the block/page mapping size at level l for pagetable in d. */
- #define ARM_LPAE_BLOCK_SIZE(l,d)					\
--	(1 << (ilog2(sizeof(arm_lpae_iopte)) +				\
-+	(1ULL << (ilog2(sizeof(arm_lpae_iopte)) +			\
- 		((ARM_LPAE_MAX_LEVELS - (l)) * (d)->bits_per_level)))
- 
- /* Page table bits */
+ /*
++ * The IOMMU and interrupt controller on Broadcom Vulcan/Cavium ThunderX2 are
++ * associated not at the root bus, but at a bridge below. This quirk flag
++ * will ensure that the aliases are identified correctly.
++ */
++static void quirk_bridge_cavm_thrx2_pcie_root(struct pci_dev *pdev)
++{
++	pdev->dev_flags |= PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT;
++}
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
++				quirk_bridge_cavm_thrx2_pcie_root);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
++				quirk_bridge_cavm_thrx2_pcie_root);
++
++/*
+  * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
+  * class code.  Fix it.
+  */
 -- 
-2.11.0.dirty
+2.7.4
