@@ -1,84 +1,92 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH V10 12/12] ACPI/IORT: Remove linker section for IORT
- entries probing
-Date: Tue, 4 Apr 2017 12:33:11 +0100
-Message-ID: <fd719e47-2dff-c8f5-b979-d54d2cbf7796@arm.com>
-References: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
- <1491301105-5274-1-git-send-email-sricharan@codeaurora.org>
- <1491301105-5274-13-git-send-email-sricharan@codeaurora.org>
+From: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v4 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
+Date: Tue, 4 Apr 2017 11:50:39 +0000
+Message-ID: <20170404115037.GA2401@localhost>
+References: <1491225304-3559-1-git-send-email-jnair@caviumnetworks.com>
+	<1491225304-3559-3-git-send-email-jnair@caviumnetworks.com>
+	<b44e6df5-4840-ecb4-59c6-b4bc474ad28c@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1491301105-5274-13-git-send-email-sricharan@codeaurora.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Sricharan R <sricharan@codeaurora.org>, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, tn@semihalf.com, hanjun.guo@linaro.org, okaya@codeaurora.org, robh+dt@kernel.org, frowand.list@gmail.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, catalin.marinas@arm.com, arnd@arndb.de, linux-arch@vger.kernel.org, gregkh@linuxfoundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <b44e6df5-4840-ecb4-59c6-b4bc474ad28c-5wv7dgnIgG8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/04/17 11:18, Sricharan R wrote:
-> From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+On Mon, Apr 03, 2017 at 04:07:53PM +0100, Robin Murphy wrote:
+> On 03/04/17 14:15, Jayachandran C wrote:
+> > The Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the PCI
+> > topology is slightly unusual. For a multi-node system, it looks like:
+> > 
+> > [node level PCI bridges - one per node]
+> >     [SoC PCI devices with MSI-X but no IOMMU]
+> >     [PCI-PCIe "glue" bridges - upto 14, one per real port below]
+> >         [PCIe real root ports associated with IOMMU and GICv3 ITS]
+> >             [External PCI devices connected to PCIe links]
 > 
-> The IORT linker section introduced by commit 34ceea275f62
-> ("ACPI/IORT: Introduce linker section for IORT entries probing")
-> was needed to make sure SMMU drivers are registered (and therefore
-> probed) in the kernel before devices using the SMMU have a chance
-> to probe in turn.
-> 
-> Through the introduction of deferred IOMMU configuration the linker
-> section based IORT probing infrastructure is not needed any longer, in
-> that device/SMMU probe dependencies are managed through the probe
-> deferral mechanism, making the IORT linker section infrastructure
-> unused, so that it can be removed.
-> 
-> Remove the unused IORT linker section probing infrastructure
-> from the kernel to complete the ACPI IORT IOMMU configure probe
-> deferral mechanism implementation.
+> Since it's not entirely obvious, what does the actual DT - or IORT if
+> you must ;) - topology for this look like? I can't help thinking that
+> either it's inaccurate, or that this is going to expose a shortcoming in
+> pci_dma_configure() which breaks things - unless I'm missing something,
+> isn't find_pci_root_bus() going to go all the way up to the top-level
+> glue bridge and pick up the wrong firmware node (if any) for the
+> appropriate DMA properties?
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+I will try to describe the ACPI interface:
 
-> Tested-by: Hanjun Guo <hanjun.guo@linaro.org>
-> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Sricharan R <sricharan@codeaurora.org>
-> ---
->  drivers/acpi/arm64/iort.c         | 2 --
->  include/asm-generic/vmlinux.lds.h | 1 -
->  include/linux/acpi_iort.h         | 3 ---
->  3 files changed, 6 deletions(-)
-> 
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index e323ece..e7b1940 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -1000,6 +1000,4 @@ void __init acpi_iort_init(void)
->  	}
->  
->  	iort_init_platform_devices();
-> -
-> -	acpi_probe_device_table(iort);
->  }
-> diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-> index 0968d13..9faa26c 100644
-> --- a/include/asm-generic/vmlinux.lds.h
-> +++ b/include/asm-generic/vmlinux.lds.h
-> @@ -566,7 +566,6 @@
->  	IRQCHIP_OF_MATCH_TABLE()					\
->  	ACPI_PROBE_TABLE(irqchip)					\
->  	ACPI_PROBE_TABLE(clksrc)					\
-> -	ACPI_PROBE_TABLE(iort)						\
->  	EARLYCON_TABLE()
->  
->  #define INIT_TEXT							\
-> diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-> index 77e0809..f167e1d04 100644
-> --- a/include/linux/acpi_iort.h
-> +++ b/include/linux/acpi_iort.h
-> @@ -52,7 +52,4 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
->  { return NULL; }
->  #endif
->  
-> -#define IORT_ACPI_DECLARE(name, table_id, fn)		\
-> -	ACPI_DECLARE_PROBE_ENTRY(iort, name, table_id, 0, NULL, 0, fn)
-> -
->  #endif /* __ACPI_IORT_H__ */
-> 
+There is just one ECAM area, a single bus range and one set of memory
+windows for the whole system - so there is just one entry in DSDT for
+the PCI controller. This entry also corresponds to the PCI RC node in
+IORT. DMA is coherent and supports 64 bits system-wide, the attributes
+(in DSDT and IORT) reflect this.
+
+lspci on the system looks like this:
+-[0000:00]-+-00.0-[01-1e]--+-04.0  14e4:9026
+           |               +-04.1  14e4:9026
+           |               +-05.0  14e4:9027
+           |               +-05.1  14e4:9027
+           |               +-0a.0-[02-03]----00.0-[03]--
+           |               +-0a.1-[04-05]----00.0-[05]--
+           |           [...etc...]
+           |               +-0b.0-[12-14]----00.0-[13-14]--+-00.0  8086:1583
+           |               |                               \-00.1  8086:1583
+           |           [...etc...]
+           |               \-0b.5-[1d-1e]----00.0-[1e]--
+           \-00.1-[1f-3b]--+-04.0  14e4:9026
+                           +-04.1  14e4:9026
+                           +-05.0  14e4:9027
+                           +-05.1  14e4:9027
+                           +-0a.0-[20-21]----00.0-[21]--
+                       [...etc...]
+
+The devices here are:
+ - 00:00.0 and 00:00.1 are the node (socket) level bridges
+ - 01:[45].x and 1f:[45].x are SoC PCI devices like SATA and USB
+ - 01:[ab].x and 1f:[ab].x are the PCI-PCIe "reverse"/glue bridges
+ - 02:00.0 etc are the "real" PCIe ports connected to external PCIe cards. 
+Each node has a GIC ITS, and a group of 4 PCIe ports have an SMMU.
+
+The IORT is built by the firmware based on its PCI enumeration. The IORT
+will have multiple entries under the PCI RC node:
+ - one entry per node to map the SoC devices directly to ITS for MSI-X,
+   since the SoC devices are not attached to any SMMU.
+ - An entry per "real" PCIe port to map RIDs under it to the corresponding
+   SMMU.
+The SMMU nodes will have an entry to map its RID ranges to the node ITS.
+
+The IORT spec supports this configuration, and the corresponding code is
+already upstream, so the only sticking point right now is
+pci_for_each_dma_alias().
+
+JC.
