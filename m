@@ -1,214 +1,75 @@
-From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
-Subject: Re: [PATCH 2/5] iommu/omap: Permanently keep iommu_dev pointer in
-	arch_data
-Date: Mon, 3 Apr 2017 15:35:46 -0500
-Message-ID: <c3305742-b927-c789-c7c2-883f98a77ada@ti.com>
-References: <1490962248-12602-1-git-send-email-joro@8bytes.org>
-	<1490962248-12602-3-git-send-email-joro@8bytes.org>
+From: Sricharan R <sricharan@codeaurora.org>
+Subject: Re: [PATCH V3 0/5] iommu/arm-smmu: Add runtime pm/sleep support
+Date: Tue, 4 Apr 2017 10:45:59 +0530
+Message-ID: <8b5298ed-72cf-f62a-03e4-7f27d7d91a20@codeaurora.org>
+References: <1489073748-3659-1-git-send-email-sricharan@codeaurora.org>
+ <20170331175457.GD4897@arm.com>
+ <CAF6AEGv_1pNvhCc-mVP5S28Yt5kTJmTRfe8tKSJpEmxfOKM7Jg@mail.gmail.com>
+ <20170403172307.GI5706@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1490962248-12602-3-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-clk-owner@vger.kernel.org>
+In-Reply-To: <20170403172307.GI5706@arm.com>
+Sender: linux-clk-owner@vger.kernel.org
+To: Will Deacon <will.deacon@arm.com>, Rob Clark <robdclark@gmail.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Mathieu Poirier <mathieu.poirier@linaro.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, linux-clk@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+Hi Will,
 
-On 03/31/2017 07:10 AM, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> 
-> Instead of finding the matching IOMMU for a device using
-> string comparision functions, keep the pointer to the
-> iommu_dev in arch_data permanently populated.
-> 
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
->  drivers/iommu/omap-iommu.c | 56 ++++++++++++++++++++--------------------------
->  drivers/iommu/omap-iommu.h |  2 +-
->  2 files changed, 25 insertions(+), 33 deletions(-)
-> 
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index e9c9b08..45df5c8 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -802,33 +802,14 @@ static irqreturn_t iommu_fault_handler(int irq, void *data)
->  	return IRQ_NONE;
->  }
->  
-> -static int device_match_by_alias(struct device *dev, void *data)
-> -{
-> -	struct omap_iommu *obj = to_iommu(dev);
-> -	const char *name = data;
-> -
-> -	pr_debug("%s: %s %s\n", __func__, obj->name, name);
-> -
-> -	return strcmp(obj->name, name) == 0;
-> -}
-> -
->  /**
->   * omap_iommu_attach() - attach iommu device to an iommu domain
-> - * @name:	name of target omap iommu device
-> + * @obj:	target omap iommu device
->   * @iopgd:	page table
->   **/
-> -static struct omap_iommu *omap_iommu_attach(const char *name, u32 *iopgd)
-> +static int omap_iommu_attach(struct omap_iommu *obj, u32 *iopgd)
->  {
->  	int err;
-> -	struct device *dev;
-> -	struct omap_iommu *obj;
-> -
-> -	dev = driver_find_device(&omap_iommu_driver.driver, NULL, (void *)name,
-> -				 device_match_by_alias);
-> -	if (!dev)
-> -		return ERR_PTR(-ENODEV);
-> -
-> -	obj = to_iommu(dev);
->  
->  	spin_lock(&obj->iommu_lock);
->  
-> @@ -841,11 +822,13 @@ static struct omap_iommu *omap_iommu_attach(const char *name, u32 *iopgd)
->  	spin_unlock(&obj->iommu_lock);
->  
->  	dev_dbg(obj->dev, "%s: %s\n", __func__, obj->name);
-> -	return obj;
-> +
-> +	return 0;
->  
->  err_enable:
->  	spin_unlock(&obj->iommu_lock);
-> -	return ERR_PTR(err);
-> +
-> +	return err;
->  }
->  
->  /**
-> @@ -1061,11 +1044,11 @@ static size_t omap_iommu_unmap(struct iommu_domain *domain, unsigned long da,
->  omap_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  {
->  	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
-> -	struct omap_iommu *oiommu;
->  	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
-> +	struct omap_iommu *oiommu;
->  	int ret = 0;
->  
-> -	if (!arch_data || !arch_data->name) {
-> +	if (!arch_data || !arch_data->iommu_dev) {
->  		dev_err(dev, "device doesn't have an associated iommu\n");
->  		return -EINVAL;
->  	}
-> @@ -1079,15 +1062,17 @@ static size_t omap_iommu_unmap(struct iommu_domain *domain, unsigned long da,
->  		goto out;
->  	}
->  
-> +	oiommu = arch_data->iommu_dev;
-> +
->  	/* get a handle to and enable the omap iommu */
-> -	oiommu = omap_iommu_attach(arch_data->name, omap_domain->pgtable);
-> -	if (IS_ERR(oiommu)) {
-> -		ret = PTR_ERR(oiommu);
-> +	ret = omap_iommu_attach(oiommu, omap_domain->pgtable);
-> +	if (ret) {
->  		dev_err(dev, "can't get omap iommu: %d\n", ret);
->  		goto out;
->  	}
->  
-> -	omap_domain->iommu_dev = arch_data->iommu_dev = oiommu;
-> +	arch_data->domain = omap_domain;
-> +	omap_domain->iommu_dev = oiommu;
->  	omap_domain->dev = dev;
->  	oiommu->domain = domain;
->  
-> @@ -1112,7 +1097,8 @@ static void _omap_iommu_detach_dev(struct omap_iommu_domain *omap_domain,
->  
->  	omap_iommu_detach(oiommu);
->  
-> -	omap_domain->iommu_dev = arch_data->iommu_dev = NULL;
-> +	omap_domain->iommu_dev = NULL;
-> +	arch_data->domain = NULL;
->  	omap_domain->dev = NULL;
->  	oiommu->domain = NULL;
->  }
-> @@ -1216,6 +1202,7 @@ static phys_addr_t omap_iommu_iova_to_phys(struct iommu_domain *domain,
->  static int omap_iommu_add_device(struct device *dev)
->  {
->  	struct omap_iommu_arch_data *arch_data;
-> +	struct omap_iommu *iommu;
->  	struct device_node *np;
->  	struct platform_device *pdev;
->  
-> @@ -1238,13 +1225,19 @@ static int omap_iommu_add_device(struct device *dev)
->  		return -EINVAL;
->  	}
->  
-> +	iommu = platform_get_drvdata(pdev);
-> +	if (!iommu) {
-> +		of_node_put(np);
-> +		return -EINVAL;
-> +	}
+On 4/3/2017 10:53 PM, Will Deacon wrote:
+> On Fri, Mar 31, 2017 at 10:58:16PM -0400, Rob Clark wrote:
+>> On Fri, Mar 31, 2017 at 1:54 PM, Will Deacon <will.deacon@arm.com> wrote:
+>>> On Thu, Mar 09, 2017 at 09:05:43PM +0530, Sricharan R wrote:
+>>>> This series provides the support for turning on the arm-smmu's
+>>>> clocks/power domains using runtime pm. This is done using the
+>>>> recently introduced device links patches, which lets the symmu's
+>>>> runtime to follow the master's runtime pm, so the smmu remains
+>>>> powered only when the masters use it.
+>>>
+>>> Do you have any numbers for the power savings you achieve with this?
+>>> How often do we actually manage to stop the SMMU clocks on an SoC with
+>>> a handful of masters?
+>>>
+>>> In other words, is this too coarse-grained to be useful, or is it common
+>>> that all the devices upstream of the SMMU are suspended?
+>>
+>> well, if you think about a phone/tablet with a command mode panel,
+>> pretty much all devices will be suspended most of the time ;-)
+>
+> Well, that's really what I was asking about. I assumed that periodic
+> modem/radio transactions would keep the SMMU clocked, so would like to get a
+> rough idea of the power savings achieved with this coarse-grained approach.
+>
 
-This change is causing the issues. OMAP IOMMU driver is not probed yet,
-but this gets called during the driver's init function in
-bus_set_iommu() and bus's iommu_ops gets set to NULL. The add_device
-today is used to add the linking to an IOMMU device (currently name
-primarily to support the legacy non-DT mode which is no longer an issue,
-but a dev pointer can be used instead here, and the real enabling is
-done during the domain's attach_dev callback.
+One main reason for introducing this was to enable power for
+the iommus separately in those places where the iommu gets
+accessed without the context of the master, pm runtime was
+done to use the device links feature and also those iommus
+had their power-domains to be enabled (during the iommu probe,
+faults) (downstream was modelling those power-domains as
+'regulators' which was not correct) and have to be clocked
+as well.
 
-> +
->  	arch_data = kzalloc(sizeof(*arch_data), GFP_KERNEL);
->  	if (!arch_data) {
->  		of_node_put(np);
->  		return -ENOMEM;
->  	}
->  
-> -	arch_data->name = kstrdup(dev_name(&pdev->dev), GFP_KERNEL);
-> +	arch_data->iommu_dev = iommu;
->  	dev->archdata.iommu = arch_data;
->  
->  	of_node_put(np);
-> @@ -1259,7 +1252,6 @@ static void omap_iommu_remove_device(struct device *dev)
->  	if (!dev->of_node || !arch_data)
->  		return;
->  
-> -	kfree(arch_data->name);
->  	kfree(arch_data);
->  }
->  
-> diff --git a/drivers/iommu/omap-iommu.h b/drivers/iommu/omap-iommu.h
-> index 3cd414a..05bd279 100644
-> --- a/drivers/iommu/omap-iommu.h
-> +++ b/drivers/iommu/omap-iommu.h
-> @@ -80,8 +80,8 @@ struct omap_iommu {
->   * utilize omap-specific plumbing anymore.
->   */
->  struct omap_iommu_arch_data {
-> -	const char *name;
+I was in the process of trying to measure the power difference
+that this would achieve. One concern here is, this series depends
+on the device link between master and iommu.
+So essentially the masters have to be pm runtime adapted fully
+to use this. For my testing i was using couple of them (mdp, gpu),
+by just enabling pm runtime for them, not full pm runtime though.
+But i will come-up with the numbers by instrumenting little more.
+The downstream code explicitly turns on the iommu clocks/regulators
+in the standalone path (called without master context and after
+that, lets the master to control the iommu clocks ( the iommu
+clocks are populated in master DT data as well), so ensures iommu
+is clocked only when really needed by the master. So number
+measured from downstream should also give the power numbers in
+another way.
 
-Missing the removal from the structure kerneldoc documentation.
+Regards,
+  Sricharan
 
->  	struct omap_iommu *iommu_dev;
-> +	struct omap_iommu_domain *domain;
-
-This doesn't seem to serve any purpose for now, is there a plan/purpose
-for this? The iommu_domain is being stored within the omap_iommu
-structure at the moment and it is stored during attach_dev() callback.
-
-regards
-Suman
-
->  };
->  
->  struct cr_regs {
-> 
+-- 
+"QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member of Code Aurora Forum, hosted by The Linux Foundation
