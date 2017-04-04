@@ -1,125 +1,60 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
-Date: Tue, 4 Apr 2017 15:28:26 +0100
-Message-ID: <2f6b5c29-c985-dbfc-8738-cbc9bd85e408@arm.com>
-References: <1491225304-3559-1-git-send-email-jnair@caviumnetworks.com>
-	<1491225304-3559-3-git-send-email-jnair@caviumnetworks.com>
-	<b44e6df5-4840-ecb4-59c6-b4bc474ad28c@arm.com>
-	<20170404115037.GA2401@localhost>
+From: Sinan Kaya <okaya@codeaurora.org>
+Subject: [RFC] PCI ACS Flags Clarification
+Date: Tue, 4 Apr 2017 14:47:58 -0400
+Message-ID: <49257b71-6fa1-5870-fba6-1b8c5179b8ec@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170404115037.GA2401@localhost>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Cc: linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-pci-owner@vger.kernel.org>
+Sender: linux-pci-owner@vger.kernel.org
+To: Linux PCI <linux-pci@vger.kernel.org>, Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/04/17 12:50, Jayachandran C wrote:
-> On Mon, Apr 03, 2017 at 04:07:53PM +0100, Robin Murphy wrote:
->> On 03/04/17 14:15, Jayachandran C wrote:
->>> The Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the PCI
->>> topology is slightly unusual. For a multi-node system, it looks like:
->>>
->>> [node level PCI bridges - one per node]
->>>     [SoC PCI devices with MSI-X but no IOMMU]
->>>     [PCI-PCIe "glue" bridges - upto 14, one per real port below]
->>>         [PCIe real root ports associated with IOMMU and GICv3 ITS]
->>>             [External PCI devices connected to PCIe links]
->>
->> Since it's not entirely obvious, what does the actual DT - or IORT if
->> you must ;) - topology for this look like? I can't help thinking that
->> either it's inaccurate, or that this is going to expose a shortcoming in
->> pci_dma_configure() which breaks things - unless I'm missing something,
->> isn't find_pci_root_bus() going to go all the way up to the top-level
->> glue bridge and pick up the wrong firmware node (if any) for the
->> appropriate DMA properties?
-> 
-> I will try to describe the ACPI interface:
-> 
-> There is just one ECAM area, a single bus range and one set of memory
-> windows for the whole system - so there is just one entry in DSDT for
-> the PCI controller. This entry also corresponds to the PCI RC node in
-> IORT. DMA is coherent and supports 64 bits system-wide, the attributes
-> (in DSDT and IORT) reflect this.
-> 
-> lspci on the system looks like this:
-> -[0000:00]-+-00.0-[01-1e]--+-04.0  14e4:9026
->            |               +-04.1  14e4:9026
->            |               +-05.0  14e4:9027
->            |               +-05.1  14e4:9027
->            |               +-0a.0-[02-03]----00.0-[03]--
->            |               +-0a.1-[04-05]----00.0-[05]--
->            |           [...etc...]
->            |               +-0b.0-[12-14]----00.0-[13-14]--+-00.0  8086:1583
->            |               |                               \-00.1  8086:1583
->            |           [...etc...]
->            |               \-0b.5-[1d-1e]----00.0-[1e]--
->            \-00.1-[1f-3b]--+-04.0  14e4:9026
->                            +-04.1  14e4:9026
->                            +-05.0  14e4:9027
->                            +-05.1  14e4:9027
->                            +-0a.0-[20-21]----00.0-[21]--
->                        [...etc...]
-> 
-> The devices here are:
->  - 00:00.0 and 00:00.1 are the node (socket) level bridges
->  - 01:[45].x and 1f:[45].x are SoC PCI devices like SATA and USB
->  - 01:[ab].x and 1f:[ab].x are the PCI-PCIe "reverse"/glue bridges
->  - 02:00.0 etc are the "real" PCIe ports connected to external PCIe cards. 
-> Each node has a GIC ITS, and a group of 4 PCIe ports have an SMMU.
-> 
-> The IORT is built by the firmware based on its PCI enumeration. The IORT
-> will have multiple entries under the PCI RC node:
->  - one entry per node to map the SoC devices directly to ITS for MSI-X,
->    since the SoC devices are not attached to any SMMU.
->  - An entry per "real" PCIe port to map RIDs under it to the corresponding
->    SMMU.
-> The SMMU nodes will have an entry to map its RID ranges to the node ITS.
-> 
-> The IORT spec supports this configuration, and the corresponding code is
-> already upstream, so the only sticking point right now is
-> pci_for_each_dma_alias().
+I'm looking for a guideline on how Access Control Services (ACS) need to be
+implemented in HW for cases where peer to peer is and isn't supported.
 
-Thanks, that helps a lot. The "single global ECAM space" idea was
-eluding me, but in that context it all makes much more sense - I'm
-assuming the two quirked device IDs correspond to the 00:00.[01] devices
-and the [02-1e]:00.0 ones.
+I see conflicting information in the code. 
 
-So (at the risk of Jon mooing at me), I guess the DT description would
-be a single node looking something like:
+iommu.c calls pci_acs_enabled() from pci_device_group() to determine if
+ACS path is enabled for the following flags.
 
-pcie {
-	reg = [global ECAM space for segment 0000];
+This paragraph lays out the requirements. 
 
-	msi-map = <0x0100 &its0 0x0100 0x1d00>,
-		  <0x1f00 &its1 0x1f00 0x1d00>;
-	iommu-map = <0x0200 &smmu0 0x0200 0x1c00>,
-		    <0x2000 &smmu0 0x2000 0x1c00>;
-};
+ /*
+  * To consider a PCI device isolated, we require ACS to support Source
+  * Validation, Request Redirection, Completer Redirection, and Upstream
+  * Forwarding.  This effectively means that devices cannot spoof their
+  * requester ID, requests and completions cannot be redirected, and all
+  * transactions are forwarded upstream, even as it passes through a
+  * bridge where the target device is downstream.
+  */
+#define REQ_ACS_FLAGS   (PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
 
-(note to self: which incidentally also means of_pci_map_rid() probably
-wants fixing to not treat gaps in the map as an error)
+I also see the following comment in pci_acs_flags_enabled() which gets
+called from pci_acs_enabled()
 
-With only one node like that, rather than having the whole first 3
-levels of bridges described, the "stop at the appropriate node in the
-callback" approach does become even more impractical in all cases. So,
-for $TITLE, based on the above understanding:
+/*
+ * Except for egress control, capabilities are either required
+ * or only required if controllable.  Features missing from the
+ * capability field can therefore be assumed as hard-wired enabled.
+ */
 
-Reviewed-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+This comment in pci_acs_flags_enabled() is confusing. A capability that reads
+0 usually means it is not enabled. This code is assuming enabled. 
+Are we trying to say that we'll use the capability bits as a mask while
+verifying the requested ACS flags?
 
-Cheers,
-Robin.
+For systems that don't support P2P, the code will check PCI_ACS_SV only. 
+So, if I summarize this correctly;
 
-> 
-> JC.
-> 
+The requirement is to have an 
+1. ACS capability with PCI_ACS_SV if p2p is not supported
+2. ACS capability with PCI_ACS_SV|PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF if p2p
+is supported.
+
+Did I get this right?
+
+-- 
+Sinan Kaya
+Qualcomm Datacenter Technologies, Inc. as an affiliate of Qualcomm Technologies, Inc.
+Qualcomm Technologies, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project.
