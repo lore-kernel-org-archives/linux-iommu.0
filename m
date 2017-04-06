@@ -1,115 +1,108 @@
-From: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [RFC] PCI ACS Flags Clarification
-Date: Wed, 5 Apr 2017 12:57:33 -0600
-Message-ID: <20170405125733.2235e6e6@t450s.home>
-References: <49257b71-6fa1-5870-fba6-1b8c5179b8ec@codeaurora.org>
-        <20170404133923.5232e424@t450s.home>
-        <615834cc-37d2-afd4-d093-23fc9e33f5d7@codeaurora.org>
+From: Frank Rowand <frowand.list@gmail.com>
+Subject: Re: [PATCH V10 03/12] of: dma: Move range size workaround to
+ of_dma_get_range()
+Date: Wed, 5 Apr 2017 23:24:19 -0700
+Message-ID: <58E5DF13.2020700@gmail.com>
+References: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
+ <1491301105-5274-1-git-send-email-sricharan@codeaurora.org>
+ <1491301105-5274-4-git-send-email-sricharan@codeaurora.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <615834cc-37d2-afd4-d093-23fc9e33f5d7@codeaurora.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Sinan Kaya <okaya@codeaurora.org>
-Cc: Linux PCI <linux-pci@vger.kernel.org>, iommu@lists.linux-foundation.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1491301105-5274-4-git-send-email-sricharan@codeaurora.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Sricharan R <sricharan@codeaurora.org>, robin.murphy@arm.com, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, tn@semihalf.com, hanjun.guo@linaro.org, okaya@codeaurora.org, robh+dt@kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, catalin.marinas@arm.com, arnd@arndb.de, linux-arch@vger.kernel.org, gregkh@linuxfoundation.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, 5 Apr 2017 09:51:06 -0400
-Sinan Kaya <okaya@codeaurora.org> wrote:
-
-> Hi Alex,
+On 04/04/17 03:18, Sricharan R wrote:
+> From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 > 
-> Thank you very much for the detailed explanation.
+> Invalid dma-ranges values should be worked around when retrieving the
+> DMA range in of_dma_get_range(), not by all callers of the function.
+> This isn't much of a problem now that we have a single caller, but that
+> situation will change when moving DMA configuration to device probe
+> time.
+
+Please drop this patch from the series.  I just now sent Rob an
+alternative that reflects other changes that have occurred since
+this patch series was first created many, many moons ago
+(https://lkml.org/lkml/2017/4/6/53).
+
+Thanks,
+
+Frank
+
 > 
-> On 4/4/2017 3:39 PM, Alex Williamson wrote:
-> > On Tue, 4 Apr 2017 14:47:58 -0400
-> > Sinan Kaya <okaya@codeaurora.org> wrote:
-> >   
-> [cut]
+> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+> ---
+>  drivers/of/address.c | 20 ++++++++++++++++++--
+>  drivers/of/device.c  | 15 ---------------
+>  2 files changed, 18 insertions(+), 17 deletions(-)
 > 
-> >> The requirement is to have an 
-> >> 1. ACS capability with PCI_ACS_SV if p2p is not supported
-> >> 2. ACS capability with PCI_ACS_SV|PCI_ACS_RR | PCI_ACS_CR |
-> >>   PCI_ACS_UF if p2p is supported.
-> >>
-> >> Did I get this right?  
-> >   
+> diff --git a/drivers/of/address.c b/drivers/of/address.c
+> index 02b2903..6aeb816 100644
+> --- a/drivers/of/address.c
+> +++ b/drivers/of/address.c
+> @@ -819,8 +819,8 @@ void __iomem *of_io_request_and_map(struct device_node *np, int index,
+>   *	CPU addr (phys_addr_t)	: pna cells
+>   *	size			: nsize cells
+>   *
+> - * It returns -ENODEV if "dma-ranges" property was not found
+> - * for this device in DT.
+> + * Return 0 on success, -ENODEV if the "dma-ranges" property was not found for
+> + * this device in DT, or -EINVAL if the CPU address or size is invalid.
+>   */
+>  int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *size)
+>  {
+> @@ -880,6 +880,22 @@ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *siz
+>  	*dma_addr = dmaaddr;
+>  
+>  	*size = of_read_number(ranges + naddr + pna, nsize);
+> +	/*
+> +	 * DT nodes sometimes incorrectly set the size as a mask. Work around
+> +	 * those incorrect DT by computing the size as mask + 1.
+> +	 */
+> +	if (*size & 1) {
+> +		pr_warn("%s: size 0x%llx for dma-range in node(%s) set as mask\n",
+> +			__func__, *size, np->full_name);
+> +		*size = *size + 1;
+> +	}
+> +
+> +	if (!*size) {
+> +		pr_err("%s: invalid size zero for dma-range in node(%s)\n",
+> +		       __func__, np->full_name);
+> +		ret = -EINVAL;
+> +		goto out;
+> +	}
+>  
+>  	pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
+>  		 *dma_addr, *paddr, *size);
+> diff --git a/drivers/of/device.c b/drivers/of/device.c
+> index b1e6beb..09dedd0 100644
+> --- a/drivers/of/device.c
+> +++ b/drivers/of/device.c
+> @@ -110,21 +110,6 @@ void of_dma_configure(struct device *dev, struct device_node *np)
+>  		size = dev->coherent_dma_mask + 1;
+>  	} else {
+>  		offset = PFN_DOWN(paddr - dma_addr);
+> -
+> -		/*
+> -		 * Add a work around to treat the size as mask + 1 in case
+> -		 * it is defined in DT as a mask.
+> -		 */
+> -		if (size & 1) {
+> -			dev_warn(dev, "Invalid size 0x%llx for dma-range\n",
+> -				 size);
+> -			size = size + 1;
+> -		}
+> -
+> -		if (!size) {
+> -			dev_err(dev, "Adjusted size 0x%llx invalid\n", size);
+> -			return;
+> -		}
+>  		dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
+>  	}
+>  
 > 
-> I'm looking for sanity check on OS requirements. According to the PCIE spec,
-> ACS itself is optional. However, Linux requires ACS capability. I want to
-> make sure that we are satisfying the Linux requirements here.
-
-This is like saying Linux requires ACPI, it's simply not true.  ACS is
-a PCIe spec defined feature which gives us a standard mechanism of
-determining if a device is DMA isolated within a PCIe topology.  For
-those that do not implement the standard, we have numerous quirks
-implementing platform specific mechanism to provide the equivalent
-behavior.  Even this device isolation is not required by Linux, except
-for the use case of userspace drivers, where we make the incredibly
-reasonable requirement (IMO) that we cannot mix devices which are not
-isolated from one another between kernel and user or one user and
-another.
- 
-> I also agree that spec should be the guide. Maybe, a combination of spec+linux
-> is the right answer.
-> 
-> > I'd suggest following the spec, not the code, that way you always have a
-> > case for how you interpret the spec and the behavior of your hardware.
-> > The code is an attempt to validate the device against the spec, but more
-> > thorough implementations may follow.  REQ_ACS_FLAGS defines the set of
-> > ACS capabilities we think are relevant to device isolation.  In
-> > particular, UF seems like a key feature and our current test for it may
-> > not be fully correct.  Note how RR and CR only specify p2p with other
-> > root ports while UF requires transaction towards to the RC.  Section
-> > 6.12.2 further defines Redirected Request Validation as a feature
-> > within the context of RR and CR.  So rather than look at the code,
-> > discuss section 6.12 with the hardware engineers and understand how it
-> > behaves relative to each device and transaction type.  Implement the
-> > capabilities that best match.  Attempting a minimal implementation
-> > based on the current software interpretation may bite later, for
-> > instance if we re-interpret how UF works.  Thanks,  
-> 
-> I read your reply multiple times. Here is what I got from it.
-> 
-> The summary below is for the root ports only.
-> 
-> - P2P on root ports is optional. 
-
-And unless told otherwise (by ACS or ACS-equivalent quirks), Linux
-assumes p2p is possible.
-
-> - If P2P is there source validation, translation blocking, upstream forwarding,
-> p2p request redirection and p2p completion redirection ACS capabilities need to be
-> there for spec+linux compliance.
-
-Again, this is not a Linux requirement.  If you want Linux to recognize
-the isolation of devices downstream of the root port using standard
-mechanism, this would be the way to do so.
- 
-> - If P2P is not there source validation, translation blocking and upstream forwarding
-> needs to be there for spec+linux compliance.
-
-This is interpretation of a rather confusing section of the spec where
-we currently take a fairly liberal approach.  The spec says RR must be
-implemented by RPs that support p2p traffic _with_other_root_ports_.
-That doesn't necessarily say anything about p2p "reflected" back
-downstream, however enabling RR clearly states that p2p request must be
-redirected upstream.  Thus supporting RR is clearly the safer choice
-here for long term compliance if your device uses the RR behavior
-already.  Supporting CR also falls out of that since RR necessitates
-CR.  UF also references RR and CR behavior when enabled, so as per the
-footnote in 6.12.1.1, it's not entirely clear that we can assume what
-happens if a RP supports UF but not RR/CR.  The safe bet is to
-implement each capability that matches your hardware behavior.
-
-> - The code is relaxed to allow any combination of these today based on the ACS
-> capability but it can change tomorrow. 
-
-Yes, we somewhat assume that if a device supports ACS at all, it's
-probably doing the "right thing".  I don't know that the current
-behavior of assuming p2p is not possible when the capability is not
-present is actually used by any existing hardware.  It seems
-questionable on a strict reading of the spec.  Thanks,
-
-Alex
