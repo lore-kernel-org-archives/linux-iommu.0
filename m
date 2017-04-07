@@ -1,138 +1,80 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH V10 06/12] of: device: Fix overflow of coherent_dma_mask
-Date: Fri, 7 Apr 2017 15:46:27 +0100
-Message-ID: <b38312b0-268b-ed86-a5b3-886f86ea13f5@arm.com>
-References: <1489086061-9356-1-git-send-email-sricharan@codeaurora.org>
- <1491301105-5274-1-git-send-email-sricharan@codeaurora.org>
- <1491301105-5274-7-git-send-email-sricharan@codeaurora.org>
- <58E5E7B7.1050400@gmail.com>
- <b77e3405-f060-bcd5-99f6-7d76f9edf08a@codeaurora.org>
- <58E69831.6010306@gmail.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: [GIT PULL] iommu/arm-smmu: Updates for 4.12
+Date: Fri, 7 Apr 2017 17:02:12 +0100
+Message-ID: <20170407160212.GR19342@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <58E69831.6010306@gmail.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Frank Rowand <frowand.list@gmail.com>, Sricharan R <sricharan@codeaurora.org>, will.deacon@arm.com, joro@8bytes.org, lorenzo.pieralisi@arm.com, iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org, m.szyprowski@samsung.com, bhelgaas@google.com, linux-pci@vger.kernel.org, linux-acpi@vger.kernel.org, tn@semihalf.com, hanjun.guo@linaro.org, okaya@codeaurora.org, robh+dt@kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, catalin.marinas@arm.com, arnd@arndb.de, linux-arch@vger.kernel.org, gregkh@linuxfoundation.org
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 06/04/17 20:34, Frank Rowand wrote:
-> On 04/06/17 04:01, Sricharan R wrote:
->> Hi Frank,
->>
->> On 4/6/2017 12:31 PM, Frank Rowand wrote:
->>> On 04/04/17 03:18, Sricharan R wrote:
->>>> Size of the dma-range is calculated as coherent_dma_mask + 1
->>>> and passed to arch_setup_dma_ops further. It overflows when
->>>> the coherent_dma_mask is set for full 64 bits 0xFFFFFFFFFFFFFFFF,
->>>> resulting in size getting passed as 0 wrongly. Fix this by
->>>> passsing in max(mask, mask + 1). Note that in this case
->>>> when the mask is set to full 64bits, we will be passing the mask
->>>> itself to arch_setup_dma_ops instead of the size. The real fix
->>>> for this should be to make arch_setup_dma_ops receive the
->>>> mask and handle it, to be done in the future.
->>>>
->>>> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
->>>> ---
->>>>  drivers/of/device.c | 2 +-
->>>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/of/device.c b/drivers/of/device.c
->>>> index c17c19d..c2ae6bb 100644
->>>> --- a/drivers/of/device.c
->>>> +++ b/drivers/of/device.c
->>>> @@ -107,7 +107,7 @@ void of_dma_configure(struct device *dev, struct device_node *np)
->>>>      ret = of_dma_get_range(np, &dma_addr, &paddr, &size);
->>>>      if (ret < 0) {
->>>>          dma_addr = offset = 0;
->>>> -        size = dev->coherent_dma_mask + 1;
->>>> +        size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
->>>>      } else {
->>>>          offset = PFN_DOWN(paddr - dma_addr);
->>>>          dev_dbg(dev, "dma_pfn_offset(%#08lx)\n", offset);
->>>>
->>>
->>> NACK.
->>>
->>> Passing an invalid size to arch_setup_dma_ops() is only part of the problem.
->>> size is also used in of_dma_configure() before calling arch_setup_dma_ops():
->>>
->>>         dev->coherent_dma_mask = min(dev->coherent_dma_mask,
->>>                                      DMA_BIT_MASK(ilog2(dma_addr + size)));
->>>         *dev->dma_mask = min((*dev->dma_mask),
->>>                              DMA_BIT_MASK(ilog2(dma_addr + size)));
->>>
->>> which would be incorrect for size == 0xffffffffffffffffULL when
->>> dma_addr != 0.  So the proposed fix really is not papering over
->>> the base problem very well.
->>>
->>
->> Ok, but with your fix for of_dma_get_range and the above fix,
->> dma_addr will be '0' when size = 0xffffffffffffffffULL,
->> but DMA_BIT_MASK(ilog2(dma_addr + size)) would be wrong though,
->> making coherent_dma_mask to be smaller 0x7fffffffffffffffULL.
-> 
-> Yes, that was my point.  Setting size to 0x7fffffffffffffffULL
-> affects several places.  Another potential location (based only
-> on the function header comment, not from reading the code) is
-> iommu_dma_init_domain().  The header comment says:
-> 
->     * @base and @size should be exact multiples of IOMMU page granularity to
->     * avoid rounding surprises.
+Hi Joerg,
 
-That is really only referring to the fact that some of the work done
-therein involves truncation to PFNs, so anyone passing in non-exact
-values expecting them to round a particular way may get things off by a
-page one way or the other. It's not going to have much practical
-significance for real devices (in particular since size is used more as
-a sanity check than any kind of actual limit there).
+Please pull these arm-smmu updates for 4.12. Highlights include:
 
-> I have not read enough context to really understand of_dma_configure(), but
-> it seems there is yet another issue in how the error return case from
-> of_dma_get_range() is handled (with the existing code, as well as if
-> my patch gets accepted).  An error return value can mean _either_
-> there is no dma-ranges property _or_ "an other problem occurred".  Should
-> the "an other problem occurred" case be handled by defaulting size to
-> a value based on dev->coherent_dma_mask (the current case) or should the
-> attempt to set up the DMA configuration just fail?
+  * TLB sync optimisations for SMMUv2
+  * Support for using an IDENTITY domain in conjunction with DMA ops
+  * Support for SMR masking
+  * Support for 16-bit ASIDs (was previously broken)
 
-There is indeed a lot wrong with of_dma_configure() and
-arch_setup_dma_ops(), but fixing those is beyond the scope of this
-series. This is just working around a latent bug in the one specific
-case where a value is *not* derived from DT. Any DT which worked before
-still works; any DT which made of_dma_configure() go wrong before still
-makes of_dma_configure() go wrong exactly the same.
+Thanks,
 
-Whilst it's not ideal, since a DMA mask basically represents the maximum
-size of address that that particular device can be given, I can't see it
-making any practical difference for a full 64-bit DMA mask to be trimmed
-down to 63 bits upon re-probing - no system is likely to have that many
-physical address bits anyway, and I don't think any IOMMUs support that
-large an IOVA space either, so as long as it's still big enough to cover
-"everything", it'll be OK.
+Will
 
-Of course, whether DMA_BIT_MASK(ilog2(dma_addr + size)) is the right
-thing to do in the first place is yet another matter, as there are
-plenty of cases where it results in something which can't reach the
-given range at all, but again, this isn't the place. Much as I'm keen to
-get the behaviour of of_dma_configure() sorted out properly, it doesn't
-seem reasonable that that should suddenly block this
-almost-entirely-orthogonal series that various other work has been
-waiting on for some time now. The WIP patch I have for
-arch_setup_dma_ops() already touches 3 architectures and 4 other
-subsystems...
+--->8
 
-Robin.
+The following changes since commit c02ed2e75ef4c74e41e421acb4ef1494671585e8:
 
-> 
->>
->> Regards,
->>  Sricharan
->>
->>> I agree that the proper solution involves passing a mask instead
->>> of a size to arch_setup_dma_ops().
->>>
->>
-> 
+  Linux 4.11-rc4 (2017-03-26 14:15:16 -0700)
 
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/updates
+
+for you to fetch changes up to 022f4e4f31fea69702f3ec810dc567af6a6d86d8:
+
+  iommu/io-pgtable-arm: Avoid shift overflow in block size (2017-04-06 16:06:44 +0100)
+
+----------------------------------------------------------------
+Robert Richter (1):
+      iommu/arm-smmu: Print message when Cavium erratum 27704 was detected
+
+Robin Murphy (7):
+      iommu: Better document the IOMMU_PRIV flag
+      iommu/arm-smmu: Simplify ASID/VMID handling
+      iommu/arm-smmu: Tidy up context bank indexing
+      iommu/arm-smmu: Use per-context TLB sync as appropriate
+      iommu/arm-smmu: Poll for TLB sync completion more effectively
+      iommu/arm-smmu: Add global SMR masking property
+      iommu/io-pgtable-arm: Avoid shift overflow in block size
+
+Sunil Goutham (1):
+      iommu/arm-smmu: Fix 16-bit ASID configuration
+
+Will Deacon (5):
+      iommu/arm-smmu: Restrict domain attributes to UNMANAGED domains
+      iommu/arm-smmu: Install bypass S2CRs for IOMMU_DOMAIN_IDENTITY domains
+      iommu/arm-smmu-v3: Make arm_smmu_install_ste_for_dev return void
+      iommu/arm-smmu-v3: Install bypass STEs for IOMMU_DOMAIN_IDENTITY domains
+      iommu: Allow default domain type to be set on the kernel command line
+
+ Documentation/admin-guide/kernel-parameters.txt    |   6 +
+ .../devicetree/bindings/iommu/arm,smmu.txt         |  28 +++
+ drivers/iommu/arm-smmu-v3.c                        |  76 +++---
+ drivers/iommu/arm-smmu.c                           | 259 +++++++++++++--------
+ drivers/iommu/io-pgtable-arm.c                     |   2 +-
+ drivers/iommu/iommu.c                              |  28 ++-
+ include/linux/iommu.h                              |  11 +-
+ 7 files changed, 281 insertions(+), 129 deletions(-)
