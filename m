@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 3/4] iommu/omap: Make use of 'struct iommu_device'
-Date: Fri,  7 Apr 2017 16:41:31 +0200
-Message-ID: <1491576092-23339-4-git-send-email-joro@8bytes.org>
+Subject: [PATCH 1/4] iommu/omap: Move data structures to omap-iommu.h
+Date: Fri,  7 Apr 2017 16:41:29 +0200
+Message-ID: <1491576092-23339-2-git-send-email-joro@8bytes.org>
 References: <1491576092-23339-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,100 +23,127 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Modify the driver to register individual iommus and
-establish links between devices and iommus in sysfs.
+The internal data-structures are scattered over various
+header and C files. Consolidate them in omap-iommu.h.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- drivers/iommu/omap-iommu.c | 25 +++++++++++++++++++++++++
- drivers/iommu/omap-iommu.h |  2 ++
- 2 files changed, 27 insertions(+)
+ drivers/iommu/omap-iommu.c               | 16 ----------------
+ drivers/iommu/omap-iommu.h               | 32 ++++++++++++++++++++++++++++++++
+ include/linux/platform_data/iommu-omap.h | 17 -----------------
+ 3 files changed, 32 insertions(+), 33 deletions(-)
 
 diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 08bd731..a1ed13c 100644
+index e2583cc..e9c9b08 100644
 --- a/drivers/iommu/omap-iommu.c
 +++ b/drivers/iommu/omap-iommu.c
-@@ -36,6 +36,8 @@
- #include "omap-iopgtable.h"
- #include "omap-iommu.h"
+@@ -42,22 +42,6 @@
+ /* bitmap of the page sizes currently supported */
+ #define OMAP_IOMMU_PGSIZES	(SZ_4K | SZ_64K | SZ_1M | SZ_16M)
  
-+static const struct iommu_ops omap_iommu_ops;
-+
- #define to_iommu(dev)							\
- 	((struct omap_iommu *)platform_get_drvdata(to_platform_device(dev)))
- 
-@@ -963,6 +965,16 @@ static int omap_iommu_probe(struct platform_device *pdev)
- 	pm_runtime_irq_safe(obj->dev);
- 	pm_runtime_enable(obj->dev);
- 
-+	err = iommu_device_sysfs_add(&obj->iommu, obj->dev, NULL, obj->name);
-+	if (err)
-+		return err;
-+
-+	iommu_device_set_ops(&obj->iommu, &omap_iommu_ops);
-+
-+	err = iommu_device_register(&obj->iommu);
-+	if (err)
-+		return err;
-+
- 	omap_iommu_debugfs_add(obj);
- 
- 	dev_info(&pdev->dev, "%s registered\n", obj->name);
-@@ -973,6 +985,9 @@ static int omap_iommu_remove(struct platform_device *pdev)
- {
- 	struct omap_iommu *obj = platform_get_drvdata(pdev);
- 
-+	iommu_device_sysfs_remove(&obj->iommu);
-+	iommu_device_unregister(&obj->iommu);
-+
- 	omap_iommu_debugfs_remove(obj);
- 
- 	pm_runtime_disable(obj->dev);
-@@ -1087,6 +1102,12 @@ static size_t omap_iommu_unmap(struct iommu_domain *domain, unsigned long da,
- 		goto out;
- 	}
- 
-+	ret = iommu_device_link(&oiommu->iommu, dev);
-+	if (ret) {
-+		dev_err(dev, "can't link device to iommu\n");
-+		goto out;
-+	}
-+
- 	omap_domain->iommu_dev = arch_data->iommu_dev = oiommu;
- 	omap_domain->dev = dev;
- 	oiommu->domain = domain;
-@@ -1121,8 +1142,11 @@ static void omap_iommu_detach_dev(struct iommu_domain *domain,
- 				  struct device *dev)
- {
- 	struct omap_iommu_domain *omap_domain = to_omap_domain(domain);
-+	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
- 
- 	spin_lock(&omap_domain->lock);
-+	if (arch_data)
-+		iommu_device_unlink(&arch_data->iommu_dev->iommu, dev);
- 	_omap_iommu_detach_dev(omap_domain, dev);
- 	spin_unlock(&omap_domain->lock);
- }
-@@ -1263,6 +1287,7 @@ static void omap_iommu_remove_device(struct device *dev)
- 
- 	kfree(arch_data->name);
- 	kfree(arch_data);
-+
- }
- 
- static const struct iommu_ops omap_iommu_ops = {
+-/**
+- * struct omap_iommu_domain - omap iommu domain
+- * @pgtable:	the page table
+- * @iommu_dev:	an omap iommu device attached to this domain. only a single
+- *		iommu device can be attached for now.
+- * @dev:	Device using this domain.
+- * @lock:	domain lock, should be taken when attaching/detaching
+- */
+-struct omap_iommu_domain {
+-	u32 *pgtable;
+-	struct omap_iommu *iommu_dev;
+-	struct device *dev;
+-	spinlock_t lock;
+-	struct iommu_domain domain;
+-};
+-
+ #define MMU_LOCK_BASE_SHIFT	10
+ #define MMU_LOCK_BASE_MASK	(0x1f << MMU_LOCK_BASE_SHIFT)
+ #define MMU_LOCK_BASE(x)	\
 diff --git a/drivers/iommu/omap-iommu.h b/drivers/iommu/omap-iommu.h
-index 3cd414a..ba16a18 100644
+index 59628e5..3cd414a 100644
 --- a/drivers/iommu/omap-iommu.h
 +++ b/drivers/iommu/omap-iommu.h
-@@ -67,6 +67,8 @@ struct omap_iommu {
+@@ -14,6 +14,7 @@
+ #define _OMAP_IOMMU_H
  
- 	int has_bus_err_back;
- 	u32 id;
-+
-+	struct iommu_device iommu;
+ #include <linux/bitops.h>
++#include <linux/iommu.h>
+ 
+ #define for_each_iotlb_cr(obj, n, __i, cr)				\
+ 	for (__i = 0;							\
+@@ -27,6 +28,22 @@ struct iotlb_entry {
+ 	u32 endian, elsz, mixed;
  };
  
- /**
++/**
++ * struct omap_iommu_domain - omap iommu domain
++ * @pgtable:	the page table
++ * @iommu_dev:	an omap iommu device attached to this domain. only a single
++ *		iommu device can be attached for now.
++ * @dev:	Device using this domain.
++ * @lock:	domain lock, should be taken when attaching/detaching
++ */
++struct omap_iommu_domain {
++	u32 *pgtable;
++	struct omap_iommu *iommu_dev;
++	struct device *dev;
++	spinlock_t lock;
++	struct iommu_domain domain;
++};
++
+ struct omap_iommu {
+ 	const char	*name;
+ 	void __iomem	*regbase;
+@@ -52,6 +69,21 @@ struct omap_iommu {
+ 	u32 id;
+ };
+ 
++/**
++ * struct iommu_arch_data - omap iommu private data
++ * @name: name of the iommu device
++ * @iommu_dev: handle of the iommu device
++ *
++ * This is an omap iommu private data object, which binds an iommu user
++ * to its iommu device. This object should be placed at the iommu user's
++ * dev_archdata so generic IOMMU API can be used without having to
++ * utilize omap-specific plumbing anymore.
++ */
++struct omap_iommu_arch_data {
++	const char *name;
++	struct omap_iommu *iommu_dev;
++};
++
+ struct cr_regs {
+ 	u32 cam;
+ 	u32 ram;
+diff --git a/include/linux/platform_data/iommu-omap.h b/include/linux/platform_data/iommu-omap.h
+index 0496d17..cd42721 100644
+--- a/include/linux/platform_data/iommu-omap.h
++++ b/include/linux/platform_data/iommu-omap.h
+@@ -12,23 +12,6 @@
+ 
+ #include <linux/platform_device.h>
+ 
+-#define MMU_REG_SIZE		256
+-
+-/**
+- * struct iommu_arch_data - omap iommu private data
+- * @name: name of the iommu device
+- * @iommu_dev: handle of the iommu device
+- *
+- * This is an omap iommu private data object, which binds an iommu user
+- * to its iommu device. This object should be placed at the iommu user's
+- * dev_archdata so generic IOMMU API can be used without having to
+- * utilize omap-specific plumbing anymore.
+- */
+-struct omap_iommu_arch_data {
+-	const char *name;
+-	struct omap_iommu *iommu_dev;
+-};
+-
+ struct iommu_platform_data {
+ 	const char *name;
+ 	const char *reset_name;
 -- 
 1.9.1
