@@ -1,7 +1,7 @@
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Subject: [RFC PATCH kvmtool 06/15] irq: register MSI doorbell addresses
-Date: Fri,  7 Apr 2017 20:24:46 +0100
-Message-ID: <20170407192455.26814-7-jean-philippe.brucker@arm.com>
+Subject: [RFC PATCH kvmtool 08/15] virtio: add vIOMMU instance for virtio devices
+Date: Fri,  7 Apr 2017 20:24:48 +0100
+Message-ID: <20170407192455.26814-9-jean-philippe.brucker@arm.com>
 References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
  <20170407192455.26814-1-jean-philippe.brucker@arm.com>
 Return-path: <kvm-owner@vger.kernel.org>
@@ -11,98 +11,273 @@ To: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.
 Cc: cdall@linaro.org, will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, joro@8bytes.org, mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com, marc.zyngier@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-For passed-through devices behind a vIOMMU, we'll need to translate writes
-to MSI vectors. Let the IRQ code register MSI doorbells, and add a simple
-way for other systems to check if an address is a doorbell.
+Virtio devices can now opt-in to use an IOMMU, by setting the use_iommu
+field. None of this will work in the current state, since virtio devices
+still access memory linearly. A subsequent patch implements sg accesses.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- arm/gic.c         |  4 ++++
- include/kvm/irq.h |  3 +++
- irq.c             | 35 +++++++++++++++++++++++++++++++++++
- 3 files changed, 42 insertions(+)
+ include/kvm/virtio-mmio.h |  1 +
+ include/kvm/virtio-pci.h  |  1 +
+ include/kvm/virtio.h      | 13 ++++++++++++
+ virtio/core.c             | 52 +++++++++++++++++++++++++++++++++++++++++++++++
+ virtio/mmio.c             | 27 ++++++++++++++++++++++++
+ virtio/pci.c              | 26 ++++++++++++++++++++++++
+ 6 files changed, 120 insertions(+)
 
-diff --git a/arm/gic.c b/arm/gic.c
-index bf7a22a9..c708031e 100644
---- a/arm/gic.c
-+++ b/arm/gic.c
-@@ -108,6 +108,10 @@ static int gic__create_its_frame(struct kvm *kvm, u64 its_frame_addr)
- 	};
- 	int err;
+diff --git a/include/kvm/virtio-mmio.h b/include/kvm/virtio-mmio.h
+index 835f421b..c25a4fd7 100644
+--- a/include/kvm/virtio-mmio.h
++++ b/include/kvm/virtio-mmio.h
+@@ -44,6 +44,7 @@ struct virtio_mmio_hdr {
+ struct virtio_mmio {
+ 	u32			addr;
+ 	void			*dev;
++	struct virtio_device	*vdev;
+ 	struct kvm		*kvm;
+ 	u8			irq;
+ 	struct virtio_mmio_hdr	hdr;
+diff --git a/include/kvm/virtio-pci.h b/include/kvm/virtio-pci.h
+index b70cadd8..26772f74 100644
+--- a/include/kvm/virtio-pci.h
++++ b/include/kvm/virtio-pci.h
+@@ -22,6 +22,7 @@ struct virtio_pci {
+ 	struct pci_device_header pci_hdr;
+ 	struct device_header	dev_hdr;
+ 	void			*dev;
++	struct virtio_device	*vdev;
+ 	struct kvm		*kvm;
  
-+	err = irq__add_msi_doorbell(kvm, its_frame_addr, KVM_VGIC_V3_ITS_SIZE);
-+	if (err)
-+		return err;
-+
- 	err = ioctl(kvm->vm_fd, KVM_CREATE_DEVICE, &its_device);
- 	if (err) {
- 		fprintf(stderr,
-diff --git a/include/kvm/irq.h b/include/kvm/irq.h
-index a188a870..2a59257e 100644
---- a/include/kvm/irq.h
-+++ b/include/kvm/irq.h
-@@ -24,6 +24,9 @@ int irq__allocate_routing_entry(void);
- int irq__add_msix_route(struct kvm *kvm, struct msi_msg *msg, u32 device_id);
- void irq__update_msix_route(struct kvm *kvm, u32 gsi, struct msi_msg *msg);
+ 	u16			port_addr;
+diff --git a/include/kvm/virtio.h b/include/kvm/virtio.h
+index 24c0c487..9f2ff237 100644
+--- a/include/kvm/virtio.h
++++ b/include/kvm/virtio.h
+@@ -9,6 +9,7 @@
+ #include <linux/types.h>
+ #include <sys/uio.h>
  
-+int irq__add_msi_doorbell(struct kvm *kvm, u64 addr, u64 size);
-+bool irq__addr_is_msi_doorbell(struct kvm *kvm, u64 addr);
-+
- /*
-  * The function takes two eventfd arguments, trigger_fd and resample_fd. If
-  * resample_fd is <= 0, resampling is disabled and the IRQ is edge-triggered
-diff --git a/irq.c b/irq.c
-index a4ef75e4..a04f4d37 100644
---- a/irq.c
-+++ b/irq.c
-@@ -8,6 +8,14 @@
- #include "kvm/irq.h"
- #include "kvm/kvm-arch.h"
++#include "kvm/iommu.h"
+ #include "kvm/kvm.h"
  
-+struct kvm_msi_doorbell_region {
-+	u64			start;
-+	u64			end;
-+	struct list_head	head;
-+};
-+
-+static LIST_HEAD(msi_doorbells);
-+
- static u8 next_line = KVM_IRQ_OFFSET;
- static int allocated_gsis = 0;
+ #define VIRTIO_IRQ_LOW		0
+@@ -137,10 +138,12 @@ enum virtio_trans {
+ };
  
-@@ -147,6 +155,33 @@ void irq__update_msix_route(struct kvm *kvm, u32 gsi, struct msi_msg *msg)
- 		die_perror("KVM_SET_GSI_ROUTING");
+ struct virtio_device {
++	bool			use_iommu;
+ 	bool			use_vhost;
+ 	void			*virtio;
+ 	struct virtio_ops	*ops;
+ 	u16			endian;
++	void			*iotlb;
+ };
+ 
+ struct virtio_ops {
+@@ -182,4 +185,14 @@ static inline void virtio_init_device_vq(struct kvm *kvm,
+ 	vring_init(&vq->vring, nr_descs, p, align);
  }
  
-+int irq__add_msi_doorbell(struct kvm *kvm, u64 addr, u64 size)
-+{
-+	struct kvm_msi_doorbell_region *doorbell = malloc(sizeof(*doorbell));
++/*
++ * These are callbacks for IOMMU operations on virtio devices. They are not
++ * operations on the virtio-iommu device. Confusing, I know.
++ */
++const struct iommu_properties *
++virtio__iommu_get_properties(struct device_header *dev);
 +
-+	if (!doorbell)
++int virtio__iommu_attach(void *, struct virtio_device *vdev, int flags);
++int virtio__iommu_detach(void *, struct virtio_device *vdev);
++
+ #endif /* KVM__VIRTIO_H */
+diff --git a/virtio/core.c b/virtio/core.c
+index d6ac289d..32bd4ebc 100644
+--- a/virtio/core.c
++++ b/virtio/core.c
+@@ -6,11 +6,16 @@
+ #include "kvm/guest_compat.h"
+ #include "kvm/barrier.h"
+ #include "kvm/virtio.h"
++#include "kvm/virtio-iommu.h"
+ #include "kvm/virtio-pci.h"
+ #include "kvm/virtio-mmio.h"
+ #include "kvm/util.h"
+ #include "kvm/kvm.h"
+ 
++static void *iommu = NULL;
++static struct iommu_properties iommu_props = {
++	.name		= "viommu-virtio",
++};
+ 
+ const char* virtio_trans_name(enum virtio_trans trans)
+ {
+@@ -198,6 +203,41 @@ bool virtio_queue__should_signal(struct virt_queue *vq)
+ 	return false;
+ }
+ 
++const struct iommu_properties *
++virtio__iommu_get_properties(struct device_header *dev)
++{
++	return &iommu_props;
++}
++
++int virtio__iommu_attach(void *priv, struct virtio_device *vdev, int flags)
++{
++	struct virtio_tlb *iotlb = priv;
++
++	if (!iotlb)
 +		return -ENOMEM;
 +
-+	doorbell->start = addr;
-+	doorbell->end = addr + size - 1;
++	if (vdev->iotlb) {
++		pr_err("device already attached");
++		return -EINVAL;
++	}
 +
-+	list_add(&doorbell->head, &msi_doorbells);
++	vdev->iotlb = iotlb;
 +
 +	return 0;
 +}
 +
-+bool irq__addr_is_msi_doorbell(struct kvm *kvm, u64 addr)
++int virtio__iommu_detach(void *priv, struct virtio_device *vdev)
 +{
-+	struct kvm_msi_doorbell_region *doorbell;
-+
-+	list_for_each_entry(doorbell, &msi_doorbells, head) {
-+		if (addr >= doorbell->start && addr <= doorbell->end)
-+			return true;
++	if (vdev->iotlb != priv) {
++		pr_err("wrong iotlb"); /* bug */
++		return -EINVAL;
 +	}
 +
-+	return false;
++	vdev->iotlb = NULL;
++
++	return 0;
 +}
 +
- int irq__common_add_irqfd(struct kvm *kvm, unsigned int gsi, int trigger_fd,
- 			   int resample_fd)
+ int virtio_init(struct kvm *kvm, void *dev, struct virtio_device *vdev,
+ 		struct virtio_ops *ops, enum virtio_trans trans,
+ 		int device_id, int subsys_id, int class)
+@@ -233,6 +273,18 @@ int virtio_init(struct kvm *kvm, void *dev, struct virtio_device *vdev,
+ 		return -1;
+ 	};
+ 
++	if (!iommu && vdev->use_iommu) {
++		iommu_props.pgsize_mask = ~(PAGE_SIZE - 1);
++		/*
++		 * With legacy MMIO, we only have 32-bit to hold the vring PFN.
++		 * This limits the IOVA size to (32 + 12) = 44 bits, when using
++		 * 4k pages.
++		 */
++		iommu_props.input_addr_size = 44;
++		iommu = viommu_register(kvm, &iommu_props);
++	}
++
++
+ 	return 0;
+ }
+ 
+diff --git a/virtio/mmio.c b/virtio/mmio.c
+index 16b44fbb..24a14a71 100644
+--- a/virtio/mmio.c
++++ b/virtio/mmio.c
+@@ -1,4 +1,5 @@
+ #include "kvm/devices.h"
++#include "kvm/virtio-iommu.h"
+ #include "kvm/virtio-mmio.h"
+ #include "kvm/ioeventfd.h"
+ #include "kvm/iommu.h"
+@@ -286,6 +287,30 @@ void virtio_mmio_assign_irq(struct device_header *dev_hdr)
+ 	vmmio->irq = irq__alloc_line();
+ }
+ 
++#define mmio_dev_to_virtio(dev_hdr)					\
++	container_of(dev_hdr, struct virtio_mmio, dev_hdr)->vdev
++
++static int virtio_mmio_iommu_attach(void *priv, struct device_header *dev_hdr,
++				    int flags)
++{
++	return virtio__iommu_attach(priv, mmio_dev_to_virtio(dev_hdr), flags);
++}
++
++static int virtio_mmio_iommu_detach(void *priv, struct device_header *dev_hdr)
++{
++	return virtio__iommu_detach(priv, mmio_dev_to_virtio(dev_hdr));
++}
++
++static struct iommu_ops virtio_mmio_iommu_ops = {
++	.get_properties		= virtio__iommu_get_properties,
++	.alloc_address_space	= iommu_alloc_address_space,
++	.free_address_space	= iommu_free_address_space,
++	.attach			= virtio_mmio_iommu_attach,
++	.detach			= virtio_mmio_iommu_detach,
++	.map			= iommu_map,
++	.unmap			= iommu_unmap,
++};
++
+ int virtio_mmio_init(struct kvm *kvm, void *dev, struct virtio_device *vdev,
+ 		     int device_id, int subsys_id, int class)
  {
+@@ -294,6 +319,7 @@ int virtio_mmio_init(struct kvm *kvm, void *dev, struct virtio_device *vdev,
+ 	vmmio->addr	= virtio_mmio_get_io_space_block(VIRTIO_MMIO_IO_SIZE);
+ 	vmmio->kvm	= kvm;
+ 	vmmio->dev	= dev;
++	vmmio->vdev	= vdev;
+ 
+ 	kvm__register_mmio(kvm, vmmio->addr, VIRTIO_MMIO_IO_SIZE,
+ 			   false, virtio_mmio_mmio_callback, vdev);
+@@ -309,6 +335,7 @@ int virtio_mmio_init(struct kvm *kvm, void *dev, struct virtio_device *vdev,
+ 	vmmio->dev_hdr = (struct device_header) {
+ 		.bus_type	= DEVICE_BUS_MMIO,
+ 		.data		= generate_virtio_mmio_fdt_node,
++		.iommu_ops	= vdev->use_iommu ? &virtio_mmio_iommu_ops : NULL,
+ 	};
+ 
+ 	device__register(&vmmio->dev_hdr);
+diff --git a/virtio/pci.c b/virtio/pci.c
+index b6ef389e..674d5143 100644
+--- a/virtio/pci.c
++++ b/virtio/pci.c
+@@ -408,6 +408,30 @@ static void virtio_pci__io_mmio_callback(struct kvm_cpu *vcpu,
+ 	kvm__emulate_io(vcpu, port, data, direction, len, 1);
+ }
+ 
++#define pci_dev_to_virtio(dev_hdr)				\
++	(container_of(dev_hdr, struct virtio_pci, dev_hdr)->vdev)
++
++static int virtio_pci_iommu_attach(void *priv, struct device_header *dev_hdr,
++				   int flags)
++{
++	return virtio__iommu_attach(priv, pci_dev_to_virtio(dev_hdr), flags);
++}
++
++static int virtio_pci_iommu_detach(void *priv, struct device_header *dev_hdr)
++{
++	return virtio__iommu_detach(priv, pci_dev_to_virtio(dev_hdr));
++}
++
++static struct iommu_ops virtio_pci_iommu_ops = {
++	.get_properties		= virtio__iommu_get_properties,
++	.alloc_address_space	= iommu_alloc_address_space,
++	.free_address_space	= iommu_free_address_space,
++	.attach			= virtio_pci_iommu_attach,
++	.detach			= virtio_pci_iommu_detach,
++	.map			= iommu_map,
++	.unmap			= iommu_unmap,
++};
++
+ int virtio_pci__init(struct kvm *kvm, void *dev, struct virtio_device *vdev,
+ 		     int device_id, int subsys_id, int class)
+ {
+@@ -416,6 +440,7 @@ int virtio_pci__init(struct kvm *kvm, void *dev, struct virtio_device *vdev,
+ 
+ 	vpci->kvm = kvm;
+ 	vpci->dev = dev;
++	vpci->vdev = vdev;
+ 
+ 	r = ioport__register(kvm, IOPORT_EMPTY, &virtio_pci__io_ops, IOPORT_SIZE, vdev);
+ 	if (r < 0)
+@@ -461,6 +486,7 @@ int virtio_pci__init(struct kvm *kvm, void *dev, struct virtio_device *vdev,
+ 	vpci->dev_hdr = (struct device_header) {
+ 		.bus_type		= DEVICE_BUS_PCI,
+ 		.data			= &vpci->pci_hdr,
++		.iommu_ops		= vdev->use_iommu ? &virtio_pci_iommu_ops : NULL,
+ 	};
+ 
+ 	vpci->pci_hdr.msix.cap = PCI_CAP_ID_MSIX;
 -- 
 2.12.1
