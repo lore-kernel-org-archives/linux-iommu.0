@@ -1,78 +1,129 @@
-From: Jordan Crouse <jcrouse@codeaurora.org>
-Subject: Re: [PATCH V3 0/5] iommu/arm-smmu: Add runtime pm/sleep support
-Date: Fri, 7 Apr 2017 12:01:05 -0600
-Message-ID: <20170407180105.GA22050@jcrouse-lnx.qualcomm.com>
-References: <1489073748-3659-1-git-send-email-sricharan@codeaurora.org>
- <20170331175457.GD4897@arm.com>
- <CAF6AEGv_1pNvhCc-mVP5S28Yt5kTJmTRfe8tKSJpEmxfOKM7Jg@mail.gmail.com>
- <20170403172307.GI5706@arm.com>
- <20170404193914.GF18246@codeaurora.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170404193914.GF18246@codeaurora.org>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Stephen Boyd <sboyd@codeaurora.org>
-Cc: Will Deacon <will.deacon@arm.com>, Mark Rutland <mark.rutland@arm.com>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, Mathieu Poirier <mathieu.poirier@linaro.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Rob Herring <robh+dt@kernel.org>, linux-clk@vger.kernel.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+Subject: [RFC 0/3] virtio-iommu: a paravirtualized IOMMU
+Date: Fri,  7 Apr 2017 20:17:44 +0100
+Message-ID: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
+Return-path: <virtio-dev-return-2042-gcvd-virtio-dev=m.gmane.org@lists.oasis-open.org>
+Sender: <virtio-dev@lists.oasis-open.org>
+List-Post: <mailto:virtio-dev@lists.oasis-open.org>
+List-Help: <mailto:virtio-dev-help@lists.oasis-open.org>
+List-Unsubscribe: <mailto:virtio-dev-unsubscribe@lists.oasis-open.org>
+List-Subscribe: <mailto:virtio-dev-subscribe@lists.oasis-open.org>
+To: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org
+Cc: cdall@linaro.org, will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, joro@8bytes.org, mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com, marc.zyngier@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 04, 2017 at 12:39:14PM -0700, Stephen Boyd wrote:
-> On 04/03, Will Deacon wrote:
-> > On Fri, Mar 31, 2017 at 10:58:16PM -0400, Rob Clark wrote:
-> > > On Fri, Mar 31, 2017 at 1:54 PM, Will Deacon <will.deacon@arm.com> wrote:
-> > > > On Thu, Mar 09, 2017 at 09:05:43PM +0530, Sricharan R wrote:
-> > > >> This series provides the support for turning on the arm-smmu's
-> > > >> clocks/power domains using runtime pm. This is done using the
-> > > >> recently introduced device links patches, which lets the symmu's
-> > > >> runtime to follow the master's runtime pm, so the smmu remains
-> > > >> powered only when the masters use it.
-> > > >
-> > > > Do you have any numbers for the power savings you achieve with this?
-> > > > How often do we actually manage to stop the SMMU clocks on an SoC with
-> > > > a handful of masters?
-> > > >
-> > > > In other words, is this too coarse-grained to be useful, or is it common
-> > > > that all the devices upstream of the SMMU are suspended?
-> > > 
-> > > well, if you think about a phone/tablet with a command mode panel,
-> > > pretty much all devices will be suspended most of the time ;-)
-> > 
-> > Well, that's really what I was asking about. I assumed that periodic
-> > modem/radio transactions would keep the SMMU clocked, so would like to get a
-> > rough idea of the power savings achieved with this coarse-grained approach.
-> 
-> Sometimes we distribute SMMUs to each IP block in the system and
-> let each one of those live in their own clock + power domain. In
-> these cases, the SMMU can be powered down along with the only IP
-> block that uses it. Furthermore, sometimes we put the IP block
-> and the SMMU inside the same power domain to really tie the two
-> together, so we definitely have cases where all devices (device?)
-> upstream of the SMMU are suspended. And in the case of
-> multimedia, it could be very often that something like the camera
-> app isn't open and thus the SMMU dedicated for the camera can be
-> powered down.
-> 
-> Other times we have two SMMUs in the system where one is
-> dedicated to GPU and the other is "everything else". Even in
-> these cases, we can suspend the GPU one when the GPU is inactive
-> because it's the only consumer. The other SMMU might not be as
-> fine grained, but I think we still power it down quite often
-> because the consumers are mostly multimedia devices that aren't
-> active when the display is off.
+This is the initial proposal for a paravirtualized IOMMU device using
+virtio transport. It contains a description of the device, a Linux driver,
+and a toy implementation in kvmtool. With this prototype, you can
+translate DMA to guest memory from emulated (virtio), or passed-through
+(VFIO) devices.
 
-And just to confuse things even further: with per-instance pagetables we have an
-interest in forcing the SMMU clocks *on* because we don't know when the GPU
-might try to hit the registers to switch a pagetable and if somebody in the
-pipeline is actively trying to do power management at the same time hilarity
-will ensue.
+In its simplest form, implemented here, the device handles map/unmap
+requests from the guest. Future extensions proposed in "RFC 3/3" should
+allow to bind page tables to devices.
 
-The alternative to pm_runtime is the downstream driver that probes the SMMU
-clocks from DT and frobs them itself. I think we can agree that is far less
-reasonable.
+There are a number of advantages in a paravirtualized IOMMU over a full
+emulation. It is portable and could be reused on different architectures.
+It is easier to implement than a full emulation, with less state tracking.
+It might be more efficient in some cases, with less context switches to
+the host and the possibility of in-kernel emulation.
 
-Jordan
+When designing it and writing the kvmtool device, I considered two main
+scenarios, illustrated below.
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Scenario 1: a hardware device passed through twice via VFIO
+
+   MEM____pIOMMU________PCI device________________________       HARDWARE
+            |     (2b)                                    \
+  ----------|-------------+-------------+------------------\-------------
+            |             :     KVM     :                   \
+            |             :             :                    \
+       pIOMMU drv         :         _______virtio-iommu drv   \    KERNEL
+            |             :        |    :          |           \
+          VFIO            :        |    :        VFIO           \
+            |             :        |    :          |             \
+            |             :        |    :          |             /
+  ----------|-------------+--------|----+----------|------------/--------
+            |                      |    :          |           /
+            | (1c)            (1b) |    :     (1a) |          / (2a)
+            |                      |    :          |         /
+            |                      |    :          |        /   USERSPACE
+            |___virtio-iommu dev___|    :        net drv___/
+                                        :
+  --------------------------------------+--------------------------------
+                 HOST                   :             GUEST
+
+(1) a. Guest userspace is running a net driver (e.g. DPDK). It allocates a
+       buffer with mmap, obtaining virtual address VA. It then send a
+       VFIO_IOMMU_MAP_DMA request to map VA to an IOVA (possibly VA=IOVA).
+    b. The maping request is relayed to the host through virtio
+       (VIRTIO_IOMMU_T_MAP).
+    c. The mapping request is relayed to the physical IOMMU through VFIO.
+
+(2) a. The guest userspace driver can now instruct the device to directly
+       access the buffer at IOVA
+    b. IOVA accesses from the device are translated into physical
+       addresses by the IOMMU.
+
+Scenario 2: a virtual net device behind a virtual IOMMU.
+
+  MEM__pIOMMU___PCI device                                     HARDWARE
+         |         |
+  -------|---------|------+-------------+-------------------------------
+         |         |      :     KVM     :
+         |         |      :             :
+    pIOMMU drv     |      :             :
+             \     |      :      _____________virtio-net drv      KERNEL
+              \_net drv   :     |       :          / (1a)
+                   |      :     |       :         /
+                  tap     :     |    ________virtio-iommu drv
+                   |      :     |   |   : (1b)
+  -----------------|------+-----|---|---+-------------------------------
+                   |            |   |   :
+                   |_virtio-net_|   |   :
+                         / (2)      |   :
+                        /           |   :                      USERSPACE
+              virtio-iommu dev______|   :
+                                        :
+  --------------------------------------+-------------------------------
+                 HOST                   :             GUEST
+
+(1) a. Guest virtio-net driver maps the virtio ring and a buffer
+    b. The mapping requests are relayed to the host through virtio.
+(2) The virtio-net device now needs to access any guest memory via the
+    IOMMU.
+
+Physical and virtual IOMMUs are completely dissociated. The net driver is
+mapping its own buffers via DMA/IOMMU API, and buffers are copied between
+virtio-net and tap.
+
+
+The description itself seemed too long for a single email, so I split it
+into three documents, and will attach Linux and kvmtool patches to this
+email.
+
+	1. Firmware note,
+	2. device operations (draft for the virtio specification),
+	3. future work/possible improvements.
+
+Just to be clear on the terms I'm using:
+
+pIOMMU	physical IOMMU, controlling DMA accesses from physical devices
+vIOMMU	virtual IOMMU (virtio-iommu), controlling DMA accesses from
+	physical and virtual devices to guest memory.
+GVA, GPA, HVA, HPA
+	Guest/Host Virtual/Physical Address
+IOVA	I/O Virtual Address, the address accessed by a device doing DMA
+	through an IOMMU. In the context of a guest OS, IOVA is GVA.
+
+Note: kvmtool is GPLv2. Linux patches are GPLv2, except for UAPI
+virtio-iommu.h header, which is BSD 3-clause. For the time being, the
+specification draft in RFC 2/3 is also BSD 3-clause.
+
+
+This proposal may be involuntarily centered around ARM architectures at
+times. Any feedback would be appreciated, especially regarding other IOMMU
+architectures.
+
+Thanks,
+Jean-Philippe
