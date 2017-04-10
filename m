@@ -1,11 +1,13 @@
-From: Nick Sarnie <commendsarnex-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: AMD Nested Paging Performance Issues
-Date: Sat, 8 Apr 2017 02:11:26 -0400
-Message-ID: <CAOcCaLZ+6z8RdUH4Fh1R1J=QQxBWbTEeG6f7sFdfS-D+BRsSTg@mail.gmail.com>
+From: valmiki <valmikibow-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Need information on type 2 IOMMU
+Date: Mon, 10 Apr 2017 08:00:45 +0530
+Message-ID: <1b48daab-c9e1-84d1-78a9-84d3e2001f32@gmail.com>
+References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170407191747.26618-1-jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -15,29 +17,16 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Alexander.Deucher-5C7GfCeVMHo@public.gmane.org, Arindam.Nath-5C7GfCeVMHo@public.gmane.org
+To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org
+Cc: marc.zyngier-5wv7dgnIgG8@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi all,
+Hi All,
 
-Myself and many community members have noticed an issue when enabling
-Nested Page Tables in a VM which uses GPU Passthrough on AMD CPUs. I
-have found that NPT universally increases CPU performance when it is
-enabled, but it destroys passed-through GPU performance by around two
-to three times depending on the application. For example, my Dota 2
-FPS with NPT enabled is around 30 FPS, where as it is around 110 FPS
-with NPT disabled.  This has been reproduced by myself on both Linux
-and Windows VMs, is widely reported in the VFIO community, and Alex
-Williamson told me that he was able to reproduce the issue on both AMD
-and Nvidia GPUs, but isn't sure of the cause.
+We have drivers/vfio/vfio_iommu_type1.c. what is type1 iommu? Is it 
+w.r.t vfio layer it is being referred?
 
-Because of this, we are forced to disable NPT if we want to have any
-sort of reasonable GPU performance, which in turn causes CPU
-performance issues.
+Is there type 2 IOMMU w.r.t vfio? If so what is it?
 
-Please let me know if you have any ideas on this issue, I can test any
-patches or provide any more information.
-
-Thank you,
-Nick Sarnie
+Regards,
+Valmiki
