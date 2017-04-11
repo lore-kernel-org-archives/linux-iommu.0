@@ -1,7 +1,7 @@
 From: linucherian@gmail.com
-Subject: [RFC PATCH 4/7] ACPICA: IORT: Add SMMuV3 model definitions.
-Date: Tue, 11 Apr 2017 20:12:42 +0530
-Message-ID: <1491921765-29475-5-git-send-email-linucherian@gmail.com>
+Subject: [RFC PATCH 5/7] iommu/arm-smmu-v3: For ACPI based device probing, set relevant options for different SMMUv3 implementations.
+Date: Tue, 11 Apr 2017 20:12:43 +0530
+Message-ID: <1491921765-29475-6-git-send-email-linucherian@gmail.com>
 References: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
 Return-path: <linux-acpi-owner@vger.kernel.org>
 In-Reply-To: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
@@ -12,29 +12,65 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Linu Cherian <linu.cherian@cavium.com>
 
-Add SMMuV3 model definitions.
+Enable SKIP_PREFETCH option for HiSilicon SMMUv3 model.
+Enable PAGE0_REGS_ONLY and USE_SHARED_IRQS options for
+Cavium 99xx SMMUv3 model.
 
 Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
 ---
- include/acpi/actbl2.h | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
-index 2b4af07..9db67d6 100644
---- a/include/acpi/actbl2.h
-+++ b/include/acpi/actbl2.h
-@@ -778,6 +778,11 @@ struct acpi_iort_smmu {
- #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002	/* ARM Corelink MMU-400 */
- #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003	/* ARM Corelink MMU-500 */
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 1475ad8..00b48b4 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2634,18 +2634,45 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ }
  
-+#define ACPI_IORT_SMMU_V3               0x00000000      /* Generic SMMUv3 */
-+#define ACPI_IORT_SMMU_CORELINK_MMU600  0x00000001      /* ARM Corelink MMU-600 */
-+#define ACPI_IORT_SMMU_V3_HISILICON     0x00000002      /* HiSilicon SMMUv3 */
-+#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX 0x00000003      /* Cavium CN99xx SMMUv3 */
+ #ifdef CONFIG_ACPI
++static int acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
++{
++	int ret = 0;
 +
- /* Masks for Flags field above */
++	switch (model) {
++	case ACPI_IORT_SMMU_V3:
++	case ACPI_IORT_SMMU_CORELINK_MMU600:
++		break;
++	case ACPI_IORT_SMMU_V3_HISILICON:
++		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
++		break;
++	case ACPI_IORT_SMMU_V3_CAVIUM_CN99XX:
++		smmu->options |= (ARM_SMMU_OPT_PAGE0_REGS_ONLY |
++				  ARM_SMMU_OPT_USE_SHARED_IRQS);
++		break;
++	default:
++		ret = -ENODEV;
++	}
++
++	return ret;
++}
++
+ static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
+ 				      struct arm_smmu_device *smmu)
+ {
+ 	struct acpi_iort_smmu_v3 *iort_smmu;
+ 	struct device *dev = smmu->dev;
+ 	struct acpi_iort_node *node;
++	int ret;
  
- #define ACPI_IORT_SMMU_DVM_SUPPORTED    (1)
+ 	node = *(struct acpi_iort_node **)dev_get_platdata(dev);
+ 
+ 	/* Retrieve SMMUv3 specific data */
+ 	iort_smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+ 
++	ret = acpi_smmu_get_options(iort_smmu->model, smmu);
++	if (ret < 0)
++		return ret;
++
+ 	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
+ 		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
+ 
 -- 
 1.9.1
 
