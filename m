@@ -1,7 +1,7 @@
 From: linucherian@gmail.com
-Subject: [RFC PATCH 5/7] iommu/arm-smmu-v3: For ACPI based device probing, set relevant options for different SMMUv3 implementations.
-Date: Tue, 11 Apr 2017 20:12:43 +0530
-Message-ID: <1491921765-29475-6-git-send-email-linucherian@gmail.com>
+Subject: [RFC PATCH 6/7] ACPI/IORT: Fixup SMMUv3 resource size for Cavium 99xx SMMUv3 model.
+Date: Tue, 11 Apr 2017 20:12:44 +0530
+Message-ID: <1491921765-29475-7-git-send-email-linucherian@gmail.com>
 References: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
 Return-path: <linux-acpi-owner@vger.kernel.org>
 In-Reply-To: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
@@ -12,65 +12,40 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Linu Cherian <linu.cherian@cavium.com>
 
-Enable SKIP_PREFETCH option for HiSilicon SMMUv3 model.
-Enable PAGE0_REGS_ONLY and USE_SHARED_IRQS options for
-Cavium 99xx SMMUv3 model.
+Cavium 99xx implementation doesn't support second page in SMMU
+register space. Hence, resource size is set as 64k for this model.
 
 Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ drivers/acpi/arm64/iort.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 1475ad8..00b48b4 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2634,18 +2634,45 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- }
- 
- #ifdef CONFIG_ACPI
-+static int acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
-+{
-+	int ret = 0;
-+
-+	switch (model) {
-+	case ACPI_IORT_SMMU_V3:
-+	case ACPI_IORT_SMMU_CORELINK_MMU600:
-+		break;
-+	case ACPI_IORT_SMMU_V3_HISILICON:
-+		smmu->options |= ARM_SMMU_OPT_SKIP_PREFETCH;
-+		break;
-+	case ACPI_IORT_SMMU_V3_CAVIUM_CN99XX:
-+		smmu->options |= (ARM_SMMU_OPT_PAGE0_REGS_ONLY |
-+				  ARM_SMMU_OPT_USE_SHARED_IRQS);
-+		break;
-+	default:
-+		ret = -ENODEV;
-+	}
-+
-+	return ret;
-+}
-+
- static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
- 				      struct arm_smmu_device *smmu)
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 22e08d2..ac22280 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -765,12 +765,20 @@ static void __init arm_smmu_v3_init_resources(struct resource *res,
  {
- 	struct acpi_iort_smmu_v3 *iort_smmu;
- 	struct device *dev = smmu->dev;
- 	struct acpi_iort_node *node;
-+	int ret;
- 
- 	node = *(struct acpi_iort_node **)dev_get_platdata(dev);
+ 	struct acpi_iort_smmu_v3 *smmu;
+ 	int num_res = 0;
++	unsigned long size = SZ_128K;
  
  	/* Retrieve SMMUv3 specific data */
- 	iort_smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+ 	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
  
-+	ret = acpi_smmu_get_options(iort_smmu->model, smmu);
-+	if (ret < 0)
-+		return ret;
++	/*
++	 * Override the size, for Cavium CN99xx implementations
++	 * which doesn't support the page 1 SMMU register space.
++	 */
++	if (smmu->model == ACPI_IORT_SMMU_V3_CAVIUM_CN99XX)
++		size = SZ_64K;
 +
- 	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
- 		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
+ 	res[num_res].start = smmu->base_address;
+-	res[num_res].end = smmu->base_address + SZ_128K - 1;
++	res[num_res].end = smmu->base_address + size - 1;
+ 	res[num_res].flags = IORESOURCE_MEM;
  
+ 	num_res++;
 -- 
 1.9.1
 
