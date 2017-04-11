@@ -1,63 +1,141 @@
-From: linucherian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Subject: [RFC PATCH 0/7] Cavium CN99xx SMMUv3 Errata workarounds
-Date: Tue, 11 Apr 2017 20:12:38 +0530
-Message-ID: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: catalin.marinas-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org
-Cc: Sunil.Goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Geethasowjanya.Akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+From: linucherian@gmail.com
+Subject: [RFC PATCH 1/7] iommu/arm-smmu-v3: Introduce smmu option PAGE0_REGS_ONLY for Silicon errata.
+Date: Tue, 11 Apr 2017 20:12:39 +0530
+Message-ID: <1491921765-29475-2-git-send-email-linucherian@gmail.com>
+References: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com
+Cc: rjw@rjwysocki.net, lenb@kernel.org, robin.murphy@arm.com, joro@8bytes.org, robert.moore@intel.com, lv.zheng@intel.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, devel@acpica.org, Sunil.Goutham@cavium.com, Geethasowjanya.Akula@cavium.com, robert.richter@cavium.com, linu.cherian@cavium.com
 List-Id: iommu@lists.linux-foundation.org
 
-From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+From: Linu Cherian <linu.cherian@cavium.com>
 
-Cavium CN99xx SMMUv3 implementation has two Silicon Erratas.
-1. Errata ID #74
-   SMMU register alias Page 1 is not implemented
-2. Errata ID #126
-   SMMU doesnt support unique IRQ lines for gerror, eventq and cmdq-sync
+Cavium 99xx SMMU implementation doesn't support page 1 register space
+and PAGE0_REGS_ONLY option will be enabled as an errata workaround.
 
-The following patchset does software workaround for these two erratas.
-An option flag is introduced for each errata which will enable/disable
-the errata workarounds.
-For device tree based probing, option flags can be turned on by passing 
-relevant options along with the smmuv3 device node. For ACPI, option flags
-are turned on when Cavium CN99xx SMMuv3 model is identified in the IORT.
+This option when turned on, replaces all page 1 offsets used for
+EVTQ_PROD/CONS, PRIQ_PROD/CONS register access with page 0 offsets.
 
-Note: We are in the process of getting necessary IORT SMMUv3 model ID 
-      for Cavium CN99xx SMMUv3 implementation and it is yet to get
-      allocated. We have assumed model ID 3 for this.
+Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
+---
+ drivers/iommu/arm-smmu-v3.c | 44 ++++++++++++++++++++++++++++++++------------
+ 1 file changed, 32 insertions(+), 12 deletions(-)
 
-Geetha (1):
-  iommu/arm-smmu-v3: Introduce smmu option USE_SHARED_IRQS for Silicon
-    errata
-
-Linu Cherian (6):
-  iommu/arm-smmu-v3: Introduce smmu option PAGE0_REGS_ONLY for Silicon
-    errata.
-  iommu/arm-smmu-v3: Do resource size checks based on smmu option
-    PAGE0_REGS_ONLY
-  ACPICA: IORT: Add SMMuV3 model definitions.
-  iommu/arm-smmu-v3: For ACPI based device probing, set relevant options
-    for different SMMUv3 implementations.
-  ACPI/IORT: Fixup SMMUv3 resource size for Cavium 99xx SMMUv3 model.
-  arm64: Documentation: Add Cavium ThunderX2 SMMUv3 erratas.
-
- Documentation/arm64/silicon-errata.txt |   2 +
- drivers/acpi/arm64/iort.c              |  10 ++-
- drivers/iommu/arm-smmu-v3.c            | 115 ++++++++++++++++++++++++++-------
- include/acpi/actbl2.h                  |   5 ++
- 4 files changed, 107 insertions(+), 25 deletions(-)
-
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 05b4592..df9f27b 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -176,15 +176,15 @@
+ #define ARM_SMMU_CMDQ_CONS		0x9c
+ 
+ #define ARM_SMMU_EVTQ_BASE		0xa0
+-#define ARM_SMMU_EVTQ_PROD		0x100a8
+-#define ARM_SMMU_EVTQ_CONS		0x100ac
++#define ARM_SMMU_EVTQ_PROD(s)	        (page1_offset_adjust(0x100a8, s))
++#define ARM_SMMU_EVTQ_CONS(s)		(page1_offset_adjust(0x100ac, s))
+ #define ARM_SMMU_EVTQ_IRQ_CFG0		0xb0
+ #define ARM_SMMU_EVTQ_IRQ_CFG1		0xb8
+ #define ARM_SMMU_EVTQ_IRQ_CFG2		0xbc
+ 
+ #define ARM_SMMU_PRIQ_BASE		0xc0
+-#define ARM_SMMU_PRIQ_PROD		0x100c8
+-#define ARM_SMMU_PRIQ_CONS		0x100cc
++#define ARM_SMMU_PRIQ_PROD(s)		(page1_offset_adjust(0x100c8, s))
++#define ARM_SMMU_PRIQ_CONS(s)		(page1_offset_adjust(0x100cc, s))
+ #define ARM_SMMU_PRIQ_IRQ_CFG0		0xd0
+ #define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
+ #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
+@@ -412,6 +412,9 @@
+ #define MSI_IOVA_BASE			0x8000000
+ #define MSI_IOVA_LENGTH			0x100000
+ 
++#define ARM_SMMU_PAGE0_REGS_ONLY(s)		\
++	((s)->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY)
++
+ static bool disable_bypass;
+ module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
+ MODULE_PARM_DESC(disable_bypass,
+@@ -597,6 +600,7 @@ struct arm_smmu_device {
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
++#define ARM_SMMU_OPT_PAGE0_REGS_ONLY    (1 << 1)
+ 	u32				options;
+ 
+ 	struct arm_smmu_cmdq		cmdq;
+@@ -663,9 +667,19 @@ struct arm_smmu_option_prop {
+ 
+ static struct arm_smmu_option_prop arm_smmu_options[] = {
+ 	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
++	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium-cn99xx,broken-page1-regspace"},
+ 	{ 0, NULL},
+ };
+ 
++static inline unsigned long page1_offset_adjust(
++	unsigned long off, struct arm_smmu_device *smmu)
++{
++	if (!ARM_SMMU_PAGE0_REGS_ONLY(smmu))
++		return off;
++	else
++		return (off - SZ_64K);
++}
++
+ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+ {
+ 	return container_of(dom, struct arm_smmu_domain, domain);
+@@ -1983,8 +1997,10 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+ 		return ret;
+ 
+ 	/* evtq */
+-	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, ARM_SMMU_EVTQ_PROD,
+-				      ARM_SMMU_EVTQ_CONS, EVTQ_ENT_DWORDS);
++	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q,
++				      ARM_SMMU_EVTQ_PROD(smmu),
++				      ARM_SMMU_EVTQ_CONS(smmu),
++				      EVTQ_ENT_DWORDS);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1992,8 +2008,10 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+ 	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
+ 		return 0;
+ 
+-	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, ARM_SMMU_PRIQ_PROD,
+-				       ARM_SMMU_PRIQ_CONS, PRIQ_ENT_DWORDS);
++	return arm_smmu_init_one_queue(smmu, &smmu->priq.q,
++				       ARM_SMMU_PRIQ_PROD(smmu),
++				       ARM_SMMU_PRIQ_CONS(smmu),
++				       PRIQ_ENT_DWORDS);
+ }
+ 
+ static int arm_smmu_init_l1_strtab(struct arm_smmu_device *smmu)
+@@ -2360,8 +2378,10 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+ 
+ 	/* Event queue */
+ 	writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
+-	writel_relaxed(smmu->evtq.q.prod, smmu->base + ARM_SMMU_EVTQ_PROD);
+-	writel_relaxed(smmu->evtq.q.cons, smmu->base + ARM_SMMU_EVTQ_CONS);
++	writel_relaxed(smmu->evtq.q.prod, smmu->base +
++		       ARM_SMMU_EVTQ_PROD(smmu));
++	writel_relaxed(smmu->evtq.q.cons, smmu->base +
++		       ARM_SMMU_EVTQ_CONS(smmu));
+ 
+ 	enables |= CR0_EVTQEN;
+ 	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+@@ -2376,9 +2396,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+ 		writeq_relaxed(smmu->priq.q.q_base,
+ 			       smmu->base + ARM_SMMU_PRIQ_BASE);
+ 		writel_relaxed(smmu->priq.q.prod,
+-			       smmu->base + ARM_SMMU_PRIQ_PROD);
++			       smmu->base + ARM_SMMU_PRIQ_PROD(smmu));
+ 		writel_relaxed(smmu->priq.q.cons,
+-			       smmu->base + ARM_SMMU_PRIQ_CONS);
++			       smmu->base + ARM_SMMU_PRIQ_CONS(smmu));
+ 
+ 		enables |= CR0_PRIQEN;
+ 		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
 -- 
 1.9.1
+
