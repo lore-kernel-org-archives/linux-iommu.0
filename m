@@ -1,80 +1,85 @@
-From: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [virtio-dev] Re: [RFC 0/3] virtio-iommu: a paravirtualized IOMMU
-Date: Mon, 10 Apr 2017 23:04:45 +0300
-Message-ID: <20170410230139-mutt-send-email-mst@kernel.org>
-References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
- <20170407211922.GA23772@redhat.com>
- <c6bb7071-f419-1346-7985-e9b4718894a8@arm.com>
+From: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH v4 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
+Date: Mon, 10 Apr 2017 20:28:47 -0500
+Message-ID: <20170411012847.GA15291@bhelgaas-glaptop.roam.corp.google.com>
+References: <1491225304-3559-1-git-send-email-jnair@caviumnetworks.com>
+ <1491225304-3559-3-git-send-email-jnair@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Return-path: <kvm-owner@vger.kernel.org>
+Return-path: <linux-pci-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <c6bb7071-f419-1346-7985-e9b4718894a8@arm.com>
-Sender: kvm-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: iommu@lists.linux-foundation.org, kvm@vger.kernel.org, virtualization@lists.linux-foundation.org, virtio-dev@lists.oasis-open.org, cdall@linaro.org, will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, joro@8bytes.org, jasowang@redhat.com, alex.williamson@redhat.com, marc.zyngier@arm.com
+In-Reply-To: <1491225304-3559-3-git-send-email-jnair@caviumnetworks.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Jayachandran C <jnair@caviumnetworks.com>
+Cc: linux-pci@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org, Jon Masters <jcm@redhat.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 10, 2017 at 07:39:24PM +0100, Jean-Philippe Brucker wrote:
-> On 07/04/17 22:19, Michael S. Tsirkin wrote:
-> > On Fri, Apr 07, 2017 at 08:17:44PM +0100, Jean-Philippe Brucker wrote:
-> >> There are a number of advantages in a paravirtualized IOMMU over a full
-> >> emulation. It is portable and could be reused on different architectures.
-> >> It is easier to implement than a full emulation, with less state tracking.
-> >> It might be more efficient in some cases, with less context switches to
-> >> the host and the possibility of in-kernel emulation.
-> > 
-> > Thanks, this is very interesting. I am read to read it all, but I really
-> > would like you to expand some more on the motivation for this work.
-> > Productising this would be quite a bit of work. Spending just 6 lines on
-> > motivation seems somewhat disproportionate. In particular, do you have
-> > any specific efficiency measurements or estimates that you can share?
-> 
-> The main motivation for this work is to bring IOMMU virtualization to the
-> ARM world. We don't have any at the moment, and a full ARM SMMU
-> virtualization solution would be counter-productive. We would have to do
-> it for SMMUv2, for the completely orthogonal SMMUv3, and for any future
-> version of the architecture. Doing so in userspace might be acceptable,
-> but then for performance reasons people will want in-kernel emulation of
-> every IOMMU variant out there, which is a maintenance and security
-> nightmare. A single generic vIOMMU is preferable because it reduces
-> maintenance cost and attack surface.
-> 
-> The transport code is the same as any virtio device, both for userspace
-> and in-kernel implementations. So instead of rewriting everything from
-> scratch (and the lot of bugs that go with it) for each IOMMU variation, we
-> reuse well-tested code for transport and write the emulation layer once
-> and for all.
-> 
-> Note that this work applies to any architecture with an IOMMU, not only
-> ARM and their partners'. Introducing an IOMMU specially designed for
-> virtualization allows us to get rid of complex state tracking inherent to
-> full IOMMU emulations. With a full emulation, all guest accesses to page
-> table and configuration structures have to be trapped and interpreted. A
-> Virtio interface provides well-defined semantics and doesn't need to guess
-> what the guest is trying to do. It transmits requests made from guest
-> device drivers to host IOMMU almost unaltered, removing the intermediate
-> layer of arch-specific configuration structures and page tables.
-> 
-> Using a portable standard like Virtio also allows for efficient IOMMU
-> virtualization when guest and host are built for different architectures
-> (for instance when using Qemu TCG.) In-kernel emulation would still work
-> with vhost-iommu, but a platform-specific vIOMMUs would have to stay in
-> userspace.
-> 
-> I don't have any measurements at the moment, it is a bit early for that.
-> The kvmtool example was developed on a software model and is mostly here
-> for illustrative purpose, a Qemu implementation would be more suitable for
-> performance analysis. I wouldn't be able to give meaning to these numbers
-> anyway, since on ARM we don't have any existing solution to compare it
-> against. One could compare the complexity of handling guest accesses and
-> parsing page tables in Qemu's VT-d emulation with reading a chain of
-> buffers in Virtio, for a very rough estimate.
-> 
-> Thanks,
-> Jean-Philippe
+Hi Jayachandran,
 
-This last suggestion sounds very reasonable.
+On Mon, Apr 03, 2017 at 01:15:04PM +0000, Jayachandran C wrote:
+> The Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the PCI
+> topology is slightly unusual. For a multi-node system, it looks like:
+> 
+> [node level PCI bridges - one per node]
+>     [SoC PCI devices with MSI-X but no IOMMU]
+>     [PCI-PCIe "glue" bridges - upto 14, one per real port below]
+>         [PCIe real root ports associated with IOMMU and GICv3 ITS]
+>             [External PCI devices connected to PCIe links]
+> 
+> The top two levels of bridges should have introduced aliases since they
+> are PCI and PCI/PCIe bridges, but in the case of ThunderX2 they do not.
+> In the case of external PCIe devices, the "real" root ports are connected
+> to the SMMU and the GIC ITS, so PCI-PCIe bridge does not introduce an
+> alias. The SoC PCI devices are directly connected to the GIC ITS, so the
+> node level bridges do not introduce an alias either.
+> 
+> To handle this quirk, we mark the real PCIe root ports and node level
+> PCI bridges with the flag PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT.  With this,
+> pci_for_each_dma_alias() works correctly for external PCIe devices and
+> SoC PCI devices.
+> 
+> For the current revision of Cavium ThunderX2, the VendorID and Device ID
+> are from Broadcom Vulcan (14e4:90XX).
 
--- 
-MST
+Can you supply some text here about why we want to apply this patch?
+E.g., does it avoid making unnecessary IOMMU mappings, improve
+performance, avoid a crash, etc?
+
+> Signed-off-by: Jayachandran C <jnair@caviumnetworks.com>
+> ---
+>  drivers/pci/quirks.c | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> index 6736836..564a84a 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -3958,6 +3958,20 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2260, quirk_mic_x200_dma_alias);
+>  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2264, quirk_mic_x200_dma_alias);
+>  
+>  /*
+> + * The IOMMU and interrupt controller on Broadcom Vulcan/Cavium ThunderX2 are
+> + * associated not at the root bus, but at a bridge below. This quirk flag
+> + * will ensure that the aliases are identified correctly.
+> + */
+> +static void quirk_bridge_cavm_thrx2_pcie_root(struct pci_dev *pdev)
+> +{
+> +	pdev->dev_flags |= PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT;
+> +}
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+> +				quirk_bridge_cavm_thrx2_pcie_root);
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
+> +				quirk_bridge_cavm_thrx2_pcie_root);
+> +
+> +/*
+>   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
+>   * class code.  Fix it.
+>   */
+> -- 
+> 2.7.4
+> 
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
