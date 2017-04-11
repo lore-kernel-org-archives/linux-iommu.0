@@ -1,105 +1,38 @@
-From: David Daney <ddaney.cavm@gmail.com>
-Subject: Re: [PATCH v4 0/2] Handle Cavium ThunderX2 PCI topology quirk
-Date: Tue, 11 Apr 2017 09:01:27 -0700
-Message-ID: <bdfc225a-7859-926b-6e17-327fb93c02bc@gmail.com>
-References: <1491225304-3559-1-git-send-email-jnair@caviumnetworks.com>
- <20170411134407.GB31773@bhelgaas-glaptop.roam.corp.google.com>
+From: Will Deacon <will.deacon@arm.com>
+Subject: Re: [RFC PATCH 3/7] iommu/arm-smmu-v3: Introduce smmu option
+ USE_SHARED_IRQS for Silicon errata
+Date: Tue, 11 Apr 2017 17:21:24 +0100
+Message-ID: <20170411162123.GF17109@arm.com>
+References: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
+ <1491921765-29475-4-git-send-email-linucherian@gmail.com>
+ <b84e2383-1a65-3c5a-8e2c-28eafdb20adc@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20170411134407.GB31773@bhelgaas-glaptop.roam.corp.google.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <helgaas@kernel.org>, Jayachandran C <jnair@caviumnetworks.com>
-Cc: David Daney <david.daney@cavium.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Alex Williamson <alex.williamson@redhat.com>, Jon Masters <jcm@redhat.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <b84e2383-1a65-3c5a-8e2c-28eafdb20adc@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: linucherian@gmail.com, catalin.marinas@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, rjw@rjwysocki.net, lenb@kernel.org, joro@8bytes.org, robert.moore@intel.com, lv.zheng@intel.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, devel@acpica.org, Sunil.Goutham@cavium.com, Geethasowjanya.Akula@cavium.com, robert.richter@cavium.com, linu.cherian@cavium.com, Geetha <gakula@cavium.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/11/2017 06:44 AM, Bjorn Helgaas wrote:
-> [+cc David]
->
-> I forgot to mention that I'm also hoping for an ack from David, since
-> he's listed as the maintainer of the ThunderX drivers.
->
+On Tue, Apr 11, 2017 at 04:54:26PM +0100, Robin Murphy wrote:
+> On 11/04/17 15:42, linucherian@gmail.com wrote:
+> > From: Geetha <gakula@cavium.com>
+> > 
+> > Cavium 99xx SMMU implementation doesn't not support unique irq lines for
+> > gerror, eventq and cmdq-sync. USE_SHARED_IRQS option enables to use single
+> > irq line for all three interrupts.
+> 
+> AFAICS, there's nothing actually wrong with using shared wired IRQs -
+> the architecture spec doesn't appear to say anything about it. I think
+> it might suffice to simply add IRQF_SHARED if we can see the SMMU
+> doesn't support MSIs anyway - it doesn't really seem like something we
+> need to treat as a specific quirk.
 
-JC is really leading the development of this particular PCI 
-implementation, but I am happy to supply my:
+No, this is not permitted by the spec. See 3.18.2 ("Interrupt sources"),
+where it's clear that each source asserts a *unique* wired interrupt.
 
-Acked-by: David Daney <david.daney@cavium.com>
+Geetha: does your implementation support MSIs?
 
-
-
-> On Mon, Apr 03, 2017 at 01:15:02PM +0000, Jayachandran C wrote:
->> Hi Bjorn, Alex,
->>
->> Sending this again (with a trivial fix to author name), please review.
->> Updated summary below:
->>
->> Here is v4 of the patchset to handle the PCIe topology quirk of Cavium
->> ThunderX2 systems (previously known as Broadcom Vulcan).
->>
->> The earlier discussions on this can be seen at:
->> http://www.spinics.net/lists/linux-pci/msg51001.html
->> https://patchwork.ozlabs.org/patch/582633/ and
->> https://lists.linuxfoundation.org/pipermail/iommu/2016-June/017681.html
->>
->> The earlier discussion on this patchset ended with a suggestion that it
->> may be possible to fix up this quirk by handling the issue in the
->> function argument of pci_for_each_dma_alias(). But at that point we did
->> not have the codebase to make the changes since the full ACPI and OF code
->> for SMMU and GIC ITS was not upstream.
->>
->> Now that the changes are upstream, I tried to fix it in both the SMMU
->> and the GIC ITS code based on this suggestion, the changes needed are at:
->>  https://github.com/jchandra-cavm/linux/commits/rid-xlate-fixup
->>
->> The problems with this approach are:
->>  - of the 14 uses of pci_for_each_dma_alias in the function in the kernel
->>    tree, I have to fixup 6 callers (which is all but one ofthe callers
->>    outside x86)
->>  - 4 of these can be reasonably handled (please see the github repo above),
->>    but the calls in drivers/irqchip/irq-gic-v3-its-pci-msi.c and
->>    drivers/iommu/iommu.c cannot be reasonably fixed up.
->>  - Even without the 2 above two changes I can get it to work for now.
->>    But pci_for_each_dma_alias does not work as expected on this platform
->>    and we have to be aware of that for all future uses of the function.
->>
->> For now, I have ruled out the approach, and I have rebased the earlier
->> patch on to 4.11-rc and submitting again for review. The changes are:
->>
->> v3->v4:
->>  - new address of author
->>
->> v2>v3:
->>  - changed device flag name from PCI_DEV_FLAGS_DMA_ALIAS_ROOT to
->>    PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT
->>  - updated commit message to make the quirk clearer.
->>
->> Let me know your comments and suggestions.
->>
->> Thanks,
->> JC.
->>
->>
->> Jayachandran C (2):
->>   PCI: Add device flag PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT
->>   PCI: quirks: Fix ThunderX2 dma alias handling
->>
->>  drivers/pci/quirks.c | 14 ++++++++++++++
->>  drivers/pci/search.c |  4 ++++
->>  include/linux/pci.h  |  2 ++
->>  3 files changed, 20 insertions(+)
->>
->> --
->> 2.7.4
->>
->>
->> _______________________________________________
->> linux-arm-kernel mailing list
->> linux-arm-kernel@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
->
+Will
