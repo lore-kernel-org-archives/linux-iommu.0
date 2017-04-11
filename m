@@ -1,197 +1,162 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH v4 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
-Date: Tue, 11 Apr 2017 16:34:07 +0100
-Message-ID: <cd9ffb91-5627-d26a-3e4a-32205a501621@arm.com>
-References: <1491225304-3559-1-git-send-email-jnair@caviumnetworks.com>
-	<1491225304-3559-3-git-send-email-jnair@caviumnetworks.com>
-	<20170411012847.GA15291@bhelgaas-glaptop.roam.corp.google.com>
-	<20170411071047.GA3610@localhost>
-	<20170411134125.GA31773@bhelgaas-glaptop.roam.corp.google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC PATCH 1/7] iommu/arm-smmu-v3: Introduce smmu option
+ PAGE0_REGS_ONLY for Silicon errata.
+Date: Tue, 11 Apr 2017 16:42:06 +0100
+Message-ID: <d89ecbd2-ed1b-b13b-a7e4-ff2478655203@arm.com>
+References: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
+ <1491921765-29475-2-git-send-email-linucherian@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170411134125.GA31773-1RhO1Y9PlrlHTL0Zs8A6p5iNqAH0jzoTYJqu5kTmcBRl57MIdRCFDg@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Cc: Marc Zyngier <Marc.Zyngier-5wv7dgnIgG8@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <1491921765-29475-2-git-send-email-linucherian@gmail.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: linucherian@gmail.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com
+Cc: rjw@rjwysocki.net, lenb@kernel.org, joro@8bytes.org, robert.moore@intel.com, lv.zheng@intel.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, devel@acpica.org, Sunil.Goutham@cavium.com, Geethasowjanya.Akula@cavium.com, robert.richter@cavium.com, linu.cherian@cavium.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/04/17 14:41, Bjorn Helgaas wrote:
-> [+cc Joerg]
+On 11/04/17 15:42, linucherian@gmail.com wrote:
+> From: Linu Cherian <linu.cherian@cavium.com>
 > 
-> On Tue, Apr 11, 2017 at 07:10:48AM +0000, Jayachandran C wrote:
->> On Mon, Apr 10, 2017 at 08:28:47PM -0500, Bjorn Helgaas wrote:
->>> Hi Jayachandran,
->>>
->>> On Mon, Apr 03, 2017 at 01:15:04PM +0000, Jayachandran C wrote:
->>>> The Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the PCI
->>>> topology is slightly unusual. For a multi-node system, it looks like:
->>>>
->>>> [node level PCI bridges - one per node]
->>>>     [SoC PCI devices with MSI-X but no IOMMU]
->>>>     [PCI-PCIe "glue" bridges - upto 14, one per real port below]
->>>>         [PCIe real root ports associated with IOMMU and GICv3 ITS]
->>>>             [External PCI devices connected to PCIe links]
->>>>
->>>> The top two levels of bridges should have introduced aliases since they
->>>> are PCI and PCI/PCIe bridges, but in the case of ThunderX2 they do not.
->>>> In the case of external PCIe devices, the "real" root ports are connected
->>>> to the SMMU and the GIC ITS, so PCI-PCIe bridge does not introduce an
->>>> alias. The SoC PCI devices are directly connected to the GIC ITS, so the
->>>> node level bridges do not introduce an alias either.
->>>>
->>>> To handle this quirk, we mark the real PCIe root ports and node level
->>>> PCI bridges with the flag PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT.  With this,
->>>> pci_for_each_dma_alias() works correctly for external PCIe devices and
->>>> SoC PCI devices.
->>>>
->>>> For the current revision of Cavium ThunderX2, the VendorID and Device ID
->>>> are from Broadcom Vulcan (14e4:90XX).
->>>
->>> Can you supply some text here about why we want to apply this patch?
->>> E.g., does it avoid making unnecessary IOMMU mappings, improve
->>> performance, avoid a crash, etc?
->>
->> If this is for the commit message, I hope the following is ok:
->>
->> "With this change, both MSI-X and IO virtualization work correctly on
->> Cavium ThunderX2. The GIC ITS driver gets the correct device ID to
->> configure MSI-X, the SMMUv3 driver gets the correct Stream IDs for PCI
->> devices, and the IOMMU groups are setup correctly."
-> 
-> This doesn't get at what the actual problem is.  I'm hoping for
-> something like "without this change, we set up an IOMMU mapping for
-> requestor ID X, but device DMA uses requestor ID Y because ...., which
-> results in an IOMMU fault"
+> Cavium 99xx SMMU implementation doesn't support page 1 register space
+> and PAGE0_REGS_ONLY option will be enabled as an errata workaround.
 
-The fact that certain bits of code only consider the last-seen alias RID
-does mean we will install all mappings for a RID the IOMMU will never
-see, causing subsequent attempt to access them (via the real RID) to
-fault. Even with that fixed, considering the past-the-IOMMU-connection
-bridges will cause IOMMU group assignment to believe the IOMMU can't
-distinguish them and thus prevent individual devices being assignable to
-different VMs.
+Ugh :(
 
-> I've been puzzling over the fact that most of the callers of
-> pci_for_each_dma_alias() don't seem to use it correctly.  For Intel
-> IOMMUs, domain_context_mapping() uses it to add a mapping for every
-> possible alias.  But most of the other callers only look at the last
-> alias and ignore all the others.
+> This option when turned on, replaces all page 1 offsets used for
+> EVTQ_PROD/CONS, PRIQ_PROD/CONS register access with page 0 offsets.
 
-As it happens, I've just been looking into this and reaching the same
-conclusion (not least because a fair few of of the incorrect uses have
-my fingerprints all over them). The of_iommu_configure() and
-corresponding iort_iommu_configure() uses turn out to already be broken
-WRT DMA phantom functions vs. MSIs, but pretty straightforward to fix
-(and I now have one of the offending Marvell SATA cards to test things
-with). The one in its_pci_msi_prepare() turns out to be totally
-backwards, as it actually wants to iterate through every device which
-may alias with the given device (any suggestions for the neatest way to
-do that are most welcome).
+I think it might be neater to have something like:
 
-The other uses in pci_msi_*() are a little trickier, as in general we're
-assuming every device is associated with just a single ID (certainly for
-ARM GICv3 this assumption runs quite strongly through the architecture)
-- Marc and I have chucked some ideas around, but in the short term, it
-might be easier to just not even pretend to support MSIs from behind
-aliasing bridges for the DT/IORT cases. Either way, those are also
-broken for the phantom function case (and the tentative fix I've written
-will need rethinking in light of this discussion, oh well).
+arm_smmu_page1(smmu) {
+	if (smmu->quirk)
+		return smmu->base;
+	return smmu->base + 64k;
+}
 
->  That might work most of the time,
-> but:
-> 
->   - There's no guarantee that pci_for_each_dma_alias() iterates in any
->     particular order, so relying on the current order is fragile,
-> 
->   - The pci_add_dma_alias() interface allows an arbitrary number of
->     aliases (as long as they're all on the same bus), and some devices
->     do use more than one, e.g., quirk_dma_func0_alias(),
->     quirk_mic_x200_dma_alias(),
-> 
->   - pci_for_each_dma_alias() translates the rules in the PCIe to
->     PCI/PCI-X Bridge spec, r1.0, sec 2.3, about taking ownership into
->     aliases.  I think it's important to pay attention to *every*
->     possible alias, not just the last one.
-
-Ha, that exact page is still open on my desktop since the "oh crap!"
-moment last Friday :)
-
-If I've interpreted that spec correctly, and it definitely is the case
-that a bridge may alias or not on a per-transaction basis, then that
-does end up making matters simpler; I can remove all the attempts to
-skip any IDs that the IOMMU is guaranteed never to see due to aliasing,
-if that set is in fact empty.
-
-> I suspect the reason this patch makes a difference is because the
-> current pci_for_each_dma_alias() believes one of those top-level
-> bridges is an alias, and the iterator produces it last, so that's the
-> one you map.  The IOMMU is attached lower down, so that top-level
-> bridge is not in fact an alias, but since you only look at the *last*
-> one, you don't map the correct aliases from lower down in the tree.
-> 
-> Stopping the iterator earlier happens to make the last alias be one of
-> the correct ones, but it doesn't solve the problems of quirked devices
-> that can use multiple requester IDs, and it doesn't solve the problem
-> of PCIe-to-PCI bridges that optionally take ownership of transactions.
-
-Yes, that's pretty much the state of things, other than also solving the
-legitimate problem of get_pci_alias_group() going too far and inferring
-a false lack of isolation.
+and use it as the base in the appropriate places, rather than override
+the individual registers. Much like ARM_SMMU_GR0_NS in the SMMUv2 driver.
 
 Robin.
 
->> I can send out a new patch if needed.
->>
->> The on chip SATA and USB use MSI-X, so this is needed for basic
->> functionality of the platform.
 > 
-> No need for a new patch; I can integrate something into the changelog.
+> Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 44 ++++++++++++++++++++++++++++++++------------
+>  1 file changed, 32 insertions(+), 12 deletions(-)
 > 
->>>> Signed-off-by: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
->>>> ---
->>>>  drivers/pci/quirks.c | 14 ++++++++++++++
->>>>  1 file changed, 14 insertions(+)
->>>>
->>>> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
->>>> index 6736836..564a84a 100644
->>>> --- a/drivers/pci/quirks.c
->>>> +++ b/drivers/pci/quirks.c
->>>> @@ -3958,6 +3958,20 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2260, quirk_mic_x200_dma_alias);
->>>>  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2264, quirk_mic_x200_dma_alias);
->>>>  
->>>>  /*
->>>> + * The IOMMU and interrupt controller on Broadcom Vulcan/Cavium ThunderX2 are
->>>> + * associated not at the root bus, but at a bridge below. This quirk flag
->>>> + * will ensure that the aliases are identified correctly.
->>>> + */
->>>> +static void quirk_bridge_cavm_thrx2_pcie_root(struct pci_dev *pdev)
->>>> +{
->>>> +	pdev->dev_flags |= PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT;
->>>> +}
->>>> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
->>>> +				quirk_bridge_cavm_thrx2_pcie_root);
->>>> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
->>>> +				quirk_bridge_cavm_thrx2_pcie_root);
->>>> +
->>>> +/*
->>>>   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
->>>>   * class code.  Fix it.
->>>>   */
->>
->> Thanks,
->> JC.
->>
->> _______________________________________________
->> linux-arm-kernel mailing list
->> linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
->> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 05b4592..df9f27b 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -176,15 +176,15 @@
+>  #define ARM_SMMU_CMDQ_CONS		0x9c
+>  
+>  #define ARM_SMMU_EVTQ_BASE		0xa0
+> -#define ARM_SMMU_EVTQ_PROD		0x100a8
+> -#define ARM_SMMU_EVTQ_CONS		0x100ac
+> +#define ARM_SMMU_EVTQ_PROD(s)	        (page1_offset_adjust(0x100a8, s))
+> +#define ARM_SMMU_EVTQ_CONS(s)		(page1_offset_adjust(0x100ac, s))
+>  #define ARM_SMMU_EVTQ_IRQ_CFG0		0xb0
+>  #define ARM_SMMU_EVTQ_IRQ_CFG1		0xb8
+>  #define ARM_SMMU_EVTQ_IRQ_CFG2		0xbc
+>  
+>  #define ARM_SMMU_PRIQ_BASE		0xc0
+> -#define ARM_SMMU_PRIQ_PROD		0x100c8
+> -#define ARM_SMMU_PRIQ_CONS		0x100cc
+> +#define ARM_SMMU_PRIQ_PROD(s)		(page1_offset_adjust(0x100c8, s))
+> +#define ARM_SMMU_PRIQ_CONS(s)		(page1_offset_adjust(0x100cc, s))
+>  #define ARM_SMMU_PRIQ_IRQ_CFG0		0xd0
+>  #define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
+>  #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
+> @@ -412,6 +412,9 @@
+>  #define MSI_IOVA_BASE			0x8000000
+>  #define MSI_IOVA_LENGTH			0x100000
+>  
+> +#define ARM_SMMU_PAGE0_REGS_ONLY(s)		\
+> +	((s)->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY)
+> +
+>  static bool disable_bypass;
+>  module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
+>  MODULE_PARM_DESC(disable_bypass,
+> @@ -597,6 +600,7 @@ struct arm_smmu_device {
+>  	u32				features;
+>  
+>  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+> +#define ARM_SMMU_OPT_PAGE0_REGS_ONLY    (1 << 1)
+>  	u32				options;
+>  
+>  	struct arm_smmu_cmdq		cmdq;
+> @@ -663,9 +667,19 @@ struct arm_smmu_option_prop {
+>  
+>  static struct arm_smmu_option_prop arm_smmu_options[] = {
+>  	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
+> +	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium-cn99xx,broken-page1-regspace"},
+>  	{ 0, NULL},
+>  };
+>  
+> +static inline unsigned long page1_offset_adjust(
+> +	unsigned long off, struct arm_smmu_device *smmu)
+> +{
+> +	if (!ARM_SMMU_PAGE0_REGS_ONLY(smmu))
+> +		return off;
+> +	else
+> +		return (off - SZ_64K);
+> +}
+> +
+>  static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+>  {
+>  	return container_of(dom, struct arm_smmu_domain, domain);
+> @@ -1983,8 +1997,10 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+>  		return ret;
+>  
+>  	/* evtq */
+> -	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, ARM_SMMU_EVTQ_PROD,
+> -				      ARM_SMMU_EVTQ_CONS, EVTQ_ENT_DWORDS);
+> +	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q,
+> +				      ARM_SMMU_EVTQ_PROD(smmu),
+> +				      ARM_SMMU_EVTQ_CONS(smmu),
+> +				      EVTQ_ENT_DWORDS);
+>  	if (ret)
+>  		return ret;
+>  
+> @@ -1992,8 +2008,10 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
+>  	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
+>  		return 0;
+>  
+> -	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, ARM_SMMU_PRIQ_PROD,
+> -				       ARM_SMMU_PRIQ_CONS, PRIQ_ENT_DWORDS);
+> +	return arm_smmu_init_one_queue(smmu, &smmu->priq.q,
+> +				       ARM_SMMU_PRIQ_PROD(smmu),
+> +				       ARM_SMMU_PRIQ_CONS(smmu),
+> +				       PRIQ_ENT_DWORDS);
+>  }
+>  
+>  static int arm_smmu_init_l1_strtab(struct arm_smmu_device *smmu)
+> @@ -2360,8 +2378,10 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>  
+>  	/* Event queue */
+>  	writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
+> -	writel_relaxed(smmu->evtq.q.prod, smmu->base + ARM_SMMU_EVTQ_PROD);
+> -	writel_relaxed(smmu->evtq.q.cons, smmu->base + ARM_SMMU_EVTQ_CONS);
+> +	writel_relaxed(smmu->evtq.q.prod, smmu->base +
+> +		       ARM_SMMU_EVTQ_PROD(smmu));
+> +	writel_relaxed(smmu->evtq.q.cons, smmu->base +
+> +		       ARM_SMMU_EVTQ_CONS(smmu));
+>  
+>  	enables |= CR0_EVTQEN;
+>  	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+> @@ -2376,9 +2396,9 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+>  		writeq_relaxed(smmu->priq.q.q_base,
+>  			       smmu->base + ARM_SMMU_PRIQ_BASE);
+>  		writel_relaxed(smmu->priq.q.prod,
+> -			       smmu->base + ARM_SMMU_PRIQ_PROD);
+> +			       smmu->base + ARM_SMMU_PRIQ_PROD(smmu));
+>  		writel_relaxed(smmu->priq.q.cons,
+> -			       smmu->base + ARM_SMMU_PRIQ_CONS);
+> +			       smmu->base + ARM_SMMU_PRIQ_CONS(smmu));
+>  
+>  		enables |= CR0_PRIQEN;
+>  		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+> 
+
