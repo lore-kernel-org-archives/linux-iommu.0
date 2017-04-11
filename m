@@ -1,60 +1,67 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 3/7] iommu/arm-smmu-v3: Introduce smmu option
-	USE_SHARED_IRQS for Silicon errata
-Date: Tue, 11 Apr 2017 17:41:03 +0100
-Message-ID: <20170411164103.GI17109@arm.com>
+From: Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Subject: Re: [RFC PATCH 4/7] ACPICA: IORT: Add SMMuV3 model definitions.
+Date: Tue, 11 Apr 2017 22:27:55 +0530
+Message-ID: <CA+sq2CfXQAM-ooNRQBbYNYc_T=p2yrvA2FYD=2_=_-Z9kQwVcA@mail.gmail.com>
 References: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
-	<1491921765-29475-4-git-send-email-linucherian@gmail.com>
-	<b84e2383-1a65-3c5a-8e2c-28eafdb20adc@arm.com>
-	<20170411162123.GF17109@arm.com>
-	<a971af83-10f1-5696-f0c6-0600c04705c3@arm.com>
+ <1491921765-29475-5-git-send-email-linucherian@gmail.com> <d60a1fcc-081e-03e8-3454-6802e830ddb9@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <a971af83-10f1-5696-f0c6-0600c04705c3-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: lv.zheng-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Sunil.Goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Geethasowjanya.Akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, rjw-LthD3rsA81gm4RdzfppkhA@public.gmane.org, robert.moore-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linucherian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, devel-E0kO6a4B6psdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, lenb-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <d60a1fcc-081e-03e8-3454-6802e830ddb9@arm.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: linucherian@gmail.com, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, hanjun.guo@linaro.org, sudeep.holla@arm.com, "Goutham, Sunil" <Sunil.Goutham@cavium.com>, Geethasowjanya.Akula@cavium.com, Joerg Roedel <joro@8bytes.org>, rjw@rjwysocki.net, robert.moore@intel.com, robert.richter@cavium.com, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, lv.zheng@intel.com, linu.cherian@cavium.com, devel@acpica.org, LAKML <linux-arm-kernel@lists.infradead.org>, lenb@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 11, 2017 at 05:38:21PM +0100, Robin Murphy wrote:
-> On 11/04/17 17:21, Will Deacon wrote:
-> > On Tue, Apr 11, 2017 at 04:54:26PM +0100, Robin Murphy wrote:
-> >> On 11/04/17 15:42, linucherian-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
-> >>> From: Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> >>>
-> >>> Cavium 99xx SMMU implementation doesn't not support unique irq lines for
-> >>> gerror, eventq and cmdq-sync. USE_SHARED_IRQS option enables to use single
-> >>> irq line for all three interrupts.
-> >>
-> >> AFAICS, there's nothing actually wrong with using shared wired IRQs -
-> >> the architecture spec doesn't appear to say anything about it. I think
-> >> it might suffice to simply add IRQF_SHARED if we can see the SMMU
-> >> doesn't support MSIs anyway - it doesn't really seem like something we
-> >> need to treat as a specific quirk.
-> > 
-> > No, this is not permitted by the spec. See 3.18.2 ("Interrupt sources"),
-> > where it's clear that each source asserts a *unique* wired interrupt.
-> 
-> Perhaps I'm reading it too generously; it does indeed specify that the
-> *implementation* has to provide a unique output for each source, but
-> other than suggesting a particular mode of operation based on that I
-> don't see anything actually forbidding the *integration* from then just
-> munging those lines together externally, as integrators so often like to
-> do. That's the case I had in mind.
+On Tue, Apr 11, 2017 at 9:29 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 11/04/17 15:42, linucherian@gmail.com wrote:
+>> From: Linu Cherian <linu.cherian@cavium.com>
+>>
+>> Add SMMuV3 model definitions.
+>>
+>> Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
+>> ---
+>>  include/acpi/actbl2.h | 5 +++++
+>>  1 file changed, 5 insertions(+)
+>>
+>> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
+>> index 2b4af07..9db67d6 100644
+>> --- a/include/acpi/actbl2.h
+>> +++ b/include/acpi/actbl2.h
+>> @@ -778,6 +778,11 @@ struct acpi_iort_smmu {
+>>  #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002   /* ARM Corelink MMU-400 */
+>>  #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003   /* ARM Corelink MMU-500 */
+>>
+>> +#define ACPI_IORT_SMMU_V3               0x00000000      /* Generic SMMUv3 */
+>> +#define ACPI_IORT_SMMU_CORELINK_MMU600  0x00000001      /* ARM Corelink MMU-600 */
+>> +#define ACPI_IORT_SMMU_V3_HISILICON     0x00000002      /* HiSilicon SMMUv3 */
+>> +#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX 0x00000003      /* Cavium CN99xx SMMUv3 */
+>
+> None of those models are listed in the current IORT spec.
 
-Sure, but then there wouldn't be any point in the architecture mandating
-a unique source, would there? What next, OR all the address lines together
-too?
+As mentioned in the cover letter, we are in the process of getting
+model no added for
+our silicon in the soon to be published updated IORT spec. Meanwhile
+we wanted to take
+feedback on the errata patches from experts. Hence patches were
+submitted as RFC.
 
-Will
+Thanks,
+Sunil.
+
+>
+> What's MMU-600?
+>
+> Robin.
+>
+>> +
+>>  /* Masks for Flags field above */
+>>
+>>  #define ACPI_IORT_SMMU_DVM_SUPPORTED    (1)
+>>
+>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
