@@ -1,51 +1,105 @@
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH 4/7] ACPICA: IORT: Add SMMuV3 model definitions.
-Date: Tue, 11 Apr 2017 16:59:17 +0100
-Message-ID: <d60a1fcc-081e-03e8-3454-6802e830ddb9@arm.com>
-References: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
- <1491921765-29475-5-git-send-email-linucherian@gmail.com>
+From: David Daney <ddaney.cavm@gmail.com>
+Subject: Re: [PATCH v4 0/2] Handle Cavium ThunderX2 PCI topology quirk
+Date: Tue, 11 Apr 2017 09:01:27 -0700
+Message-ID: <bdfc225a-7859-926b-6e17-327fb93c02bc@gmail.com>
+References: <1491225304-3559-1-git-send-email-jnair@caviumnetworks.com>
+ <20170411134407.GB31773@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1491921765-29475-5-git-send-email-linucherian@gmail.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: linucherian@gmail.com, catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com
-Cc: rjw@rjwysocki.net, lenb@kernel.org, joro@8bytes.org, robert.moore@intel.com, lv.zheng@intel.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, devel@acpica.org, Sunil.Goutham@cavium.com, Geethasowjanya.Akula@cavium.com, robert.richter@cavium.com, linu.cherian@cavium.com
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20170411134407.GB31773@bhelgaas-glaptop.roam.corp.google.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <helgaas@kernel.org>, Jayachandran C <jnair@caviumnetworks.com>
+Cc: David Daney <david.daney@cavium.com>, linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Alex Williamson <alex.williamson@redhat.com>, Jon Masters <jcm@redhat.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 11/04/17 15:42, linucherian@gmail.com wrote:
-> From: Linu Cherian <linu.cherian@cavium.com>
-> 
-> Add SMMuV3 model definitions.
-> 
-> Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
-> ---
->  include/acpi/actbl2.h | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
-> index 2b4af07..9db67d6 100644
-> --- a/include/acpi/actbl2.h
-> +++ b/include/acpi/actbl2.h
-> @@ -778,6 +778,11 @@ struct acpi_iort_smmu {
->  #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002	/* ARM Corelink MMU-400 */
->  #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003	/* ARM Corelink MMU-500 */
->  
-> +#define ACPI_IORT_SMMU_V3               0x00000000      /* Generic SMMUv3 */
-> +#define ACPI_IORT_SMMU_CORELINK_MMU600  0x00000001      /* ARM Corelink MMU-600 */
-> +#define ACPI_IORT_SMMU_V3_HISILICON     0x00000002      /* HiSilicon SMMUv3 */
-> +#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX 0x00000003      /* Cavium CN99xx SMMUv3 */
+On 04/11/2017 06:44 AM, Bjorn Helgaas wrote:
+> [+cc David]
+>
+> I forgot to mention that I'm also hoping for an ack from David, since
+> he's listed as the maintainer of the ThunderX drivers.
+>
 
-None of those models are listed in the current IORT spec.
+JC is really leading the development of this particular PCI 
+implementation, but I am happy to supply my:
 
-What's MMU-600?
+Acked-by: David Daney <david.daney@cavium.com>
 
-Robin.
 
-> +
->  /* Masks for Flags field above */
->  
->  #define ACPI_IORT_SMMU_DVM_SUPPORTED    (1)
-> 
 
+> On Mon, Apr 03, 2017 at 01:15:02PM +0000, Jayachandran C wrote:
+>> Hi Bjorn, Alex,
+>>
+>> Sending this again (with a trivial fix to author name), please review.
+>> Updated summary below:
+>>
+>> Here is v4 of the patchset to handle the PCIe topology quirk of Cavium
+>> ThunderX2 systems (previously known as Broadcom Vulcan).
+>>
+>> The earlier discussions on this can be seen at:
+>> http://www.spinics.net/lists/linux-pci/msg51001.html
+>> https://patchwork.ozlabs.org/patch/582633/ and
+>> https://lists.linuxfoundation.org/pipermail/iommu/2016-June/017681.html
+>>
+>> The earlier discussion on this patchset ended with a suggestion that it
+>> may be possible to fix up this quirk by handling the issue in the
+>> function argument of pci_for_each_dma_alias(). But at that point we did
+>> not have the codebase to make the changes since the full ACPI and OF code
+>> for SMMU and GIC ITS was not upstream.
+>>
+>> Now that the changes are upstream, I tried to fix it in both the SMMU
+>> and the GIC ITS code based on this suggestion, the changes needed are at:
+>>  https://github.com/jchandra-cavm/linux/commits/rid-xlate-fixup
+>>
+>> The problems with this approach are:
+>>  - of the 14 uses of pci_for_each_dma_alias in the function in the kernel
+>>    tree, I have to fixup 6 callers (which is all but one ofthe callers
+>>    outside x86)
+>>  - 4 of these can be reasonably handled (please see the github repo above),
+>>    but the calls in drivers/irqchip/irq-gic-v3-its-pci-msi.c and
+>>    drivers/iommu/iommu.c cannot be reasonably fixed up.
+>>  - Even without the 2 above two changes I can get it to work for now.
+>>    But pci_for_each_dma_alias does not work as expected on this platform
+>>    and we have to be aware of that for all future uses of the function.
+>>
+>> For now, I have ruled out the approach, and I have rebased the earlier
+>> patch on to 4.11-rc and submitting again for review. The changes are:
+>>
+>> v3->v4:
+>>  - new address of author
+>>
+>> v2>v3:
+>>  - changed device flag name from PCI_DEV_FLAGS_DMA_ALIAS_ROOT to
+>>    PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT
+>>  - updated commit message to make the quirk clearer.
+>>
+>> Let me know your comments and suggestions.
+>>
+>> Thanks,
+>> JC.
+>>
+>>
+>> Jayachandran C (2):
+>>   PCI: Add device flag PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT
+>>   PCI: quirks: Fix ThunderX2 dma alias handling
+>>
+>>  drivers/pci/quirks.c | 14 ++++++++++++++
+>>  drivers/pci/search.c |  4 ++++
+>>  include/linux/pci.h  |  2 ++
+>>  3 files changed, 20 insertions(+)
+>>
+>> --
+>> 2.7.4
+>>
+>>
+>> _______________________________________________
+>> linux-arm-kernel mailing list
+>> linux-arm-kernel@lists.infradead.org
+>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>
