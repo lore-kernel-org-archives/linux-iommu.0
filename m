@@ -1,67 +1,35 @@
-From: Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Subject: Re: [RFC PATCH 4/7] ACPICA: IORT: Add SMMuV3 model definitions.
-Date: Tue, 11 Apr 2017 22:27:55 +0530
-Message-ID: <CA+sq2CfXQAM-ooNRQBbYNYc_T=p2yrvA2FYD=2_=_-Z9kQwVcA@mail.gmail.com>
-References: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
- <1491921765-29475-5-git-send-email-linucherian@gmail.com> <d60a1fcc-081e-03e8-3454-6802e830ddb9@arm.com>
+From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Subject: Re: [PATCH 1/4] iommu/omap: Move data structures to omap-iommu.h
+Date: Tue, 11 Apr 2017 16:24:49 -0500
+Message-ID: <c7a777a9-3776-5450-b29f-d1a720d371b1@ti.com>
+References: <1491576092-23339-1-git-send-email-joro@8bytes.org>
+	<1491576092-23339-2-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <d60a1fcc-081e-03e8-3454-6802e830ddb9@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: linucherian@gmail.com, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, hanjun.guo@linaro.org, sudeep.holla@arm.com, "Goutham, Sunil" <Sunil.Goutham@cavium.com>, Geethasowjanya.Akula@cavium.com, Joerg Roedel <joro@8bytes.org>, rjw@rjwysocki.net, robert.moore@intel.com, robert.richter@cavium.com, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, lv.zheng@intel.com, linu.cherian@cavium.com, devel@acpica.org, LAKML <linux-arm-kernel@lists.infradead.org>, lenb@kernel.org
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1491576092-23339-2-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 11, 2017 at 9:29 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 11/04/17 15:42, linucherian@gmail.com wrote:
->> From: Linu Cherian <linu.cherian@cavium.com>
->>
->> Add SMMuV3 model definitions.
->>
->> Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
->> ---
->>  include/acpi/actbl2.h | 5 +++++
->>  1 file changed, 5 insertions(+)
->>
->> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
->> index 2b4af07..9db67d6 100644
->> --- a/include/acpi/actbl2.h
->> +++ b/include/acpi/actbl2.h
->> @@ -778,6 +778,11 @@ struct acpi_iort_smmu {
->>  #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002   /* ARM Corelink MMU-400 */
->>  #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003   /* ARM Corelink MMU-500 */
->>
->> +#define ACPI_IORT_SMMU_V3               0x00000000      /* Generic SMMUv3 */
->> +#define ACPI_IORT_SMMU_CORELINK_MMU600  0x00000001      /* ARM Corelink MMU-600 */
->> +#define ACPI_IORT_SMMU_V3_HISILICON     0x00000002      /* HiSilicon SMMUv3 */
->> +#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX 0x00000003      /* Cavium CN99xx SMMUv3 */
->
-> None of those models are listed in the current IORT spec.
+On 04/07/2017 09:41 AM, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
+> 
+> The internal data-structures are scattered over various
+> header and C files. Consolidate them in omap-iommu.h.
+> 
+> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-As mentioned in the cover letter, we are in the process of getting
-model no added for
-our silicon in the soon to be published updated IORT spec. Meanwhile
-we wanted to take
-feedback on the errata patches from experts. Hence patches were
-submitted as RFC.
+Acked-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
 
-Thanks,
-Sunil.
-
->
-> What's MMU-600?
->
-> Robin.
->
->> +
->>  /* Masks for Flags field above */
->>
->>  #define ACPI_IORT_SMMU_DVM_SUPPORTED    (1)
->>
->
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+[snip]
