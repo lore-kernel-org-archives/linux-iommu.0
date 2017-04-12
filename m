@@ -1,68 +1,81 @@
-From: Linu Cherian <linucherian@gmail.com>
-Subject: Re: [RFC PATCH 1/7] iommu/arm-smmu-v3: Introduce smmu option
- PAGE0_REGS_ONLY for Silicon errata.
-Date: Wed, 12 Apr 2017 10:35:19 +0530
-Message-ID: <CAGOz-0Z-kwxdD0x=X51baRmGe1bWJ4PyNkmRSuyheepPUYKxmg@mail.gmail.com>
-References: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
- <1491921765-29475-2-git-send-email-linucherian@gmail.com> <d89ecbd2-ed1b-b13b-a7e4-ff2478655203@arm.com>
+From: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+Subject: [PATCH v3 1/7] iommu/omap: Register driver before setting IOMMU ops
+Date: Wed, 12 Apr 2017 00:21:26 -0500
+Message-ID: <20170412052132.14406-2-s-anna@ti.com>
+References: <20170412052132.14406-1-s-anna@ti.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <d89ecbd2-ed1b-b13b-a7e4-ff2478655203@arm.com>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, Hanjun Guo <hanjun.guo@linaro.org>, sudeep.holla@arm.com, rjw@rjwysocki.net, Len Brown <lenb@kernel.org>, joro@8bytes.org, robert.moore@intel.com, lv.zheng@intel.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, devel@acpica.org, Sunil.Goutham@cavium.com, Geethasowjanya.Akula@cavium.com, robert.richter@cavium.com, Linu Cherian <linu.cherian@cavium.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <20170412052132.14406-1-s-anna-l0cyMroinI0@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Cc: linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laurent Pinchart <laurent.pinchart-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>, linux-omap-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 11, 2017 at 9:12 PM, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 11/04/17 15:42, linucherian@gmail.com wrote:
->> From: Linu Cherian <linu.cherian@cavium.com>
->>
->> Cavium 99xx SMMU implementation doesn't support page 1 register space
->> and PAGE0_REGS_ONLY option will be enabled as an errata workaround.
->
-> Ugh :(
->
->> This option when turned on, replaces all page 1 offsets used for
->> EVTQ_PROD/CONS, PRIQ_PROD/CONS register access with page 0 offsets.
->
-> I think it might be neater to have something like:
->
-> arm_smmu_page1(smmu) {
->         if (smmu->quirk)
->                 return smmu->base;
->         return smmu->base + 64k;
-> }
->
-> and use it as the base in the appropriate places, rather than override
-> the individual registers. Much like ARM_SMMU_GR0_NS in the SMMUv2 driver.
->
+Move the registration of the OMAP IOMMU platform driver before
+setting the IOMMU callbacks on the platform bus. This causes
+the IOMMU devices to be probed first before the .add_device()
+callback is invoked for all registered devices, and allows
+the iommu_group support to be added to the OMAP IOMMU driver.
 
-IIUC, we need to change the offsets as well for this,
-Like,
- #define ARM_SMMU_EVTQ_BASE             0xa0
--#define ARM_SMMU_EVTQ_PROD             0x100a8
--#define ARM_SMMU_EVTQ_CONS             0x100ac
-+#define ARM_SMMU_EVTQ_PROD             0xa8
-+#define ARM_SMMU_EVTQ_CONS             0xac
- #define ARM_SMMU_EVTQ_IRQ_CFG0         0xb0
- #define ARM_SMMU_EVTQ_IRQ_CFG1         0xb8
- #define ARM_SMMU_EVTQ_IRQ_CFG2         0xbc
+While at this, also check for the return status from bus_set_iommu.
 
- #define ARM_SMMU_PRIQ_BASE             0xc0
--#define ARM_SMMU_PRIQ_PROD             0x100c8
--#define ARM_SMMU_PRIQ_CONS             0x100cc
-+#define ARM_SMMU_PRIQ_PROD             0xc8
-+#define ARM_SMMU_PRIQ_CONS             0xcc
+Signed-off-by: Suman Anna <s-anna-l0cyMroinI0@public.gmane.org>
+---
+v3: New patch
 
+ drivers/iommu/omap-iommu.c | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
 
-But, it appears difficult to take this approach, at least with
-arm_smmu_init_one_queue function.
-This function takes both page0 register offset and and page1 register
-offset as an argument.
-So, we might need to do additional checks in this function to decide,
-whether to use
-a pag0 base or page1 base.
-
-
-Thanks.
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index e2583cce2cc1..54556713c8d1 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1299,6 +1299,7 @@ static int __init omap_iommu_init(void)
+ 	const unsigned long flags = SLAB_HWCACHE_ALIGN;
+ 	size_t align = 1 << 10; /* L2 pagetable alignement */
+ 	struct device_node *np;
++	int ret;
+ 
+ 	np = of_find_matching_node(NULL, omap_iommu_of_match);
+ 	if (!np)
+@@ -1312,11 +1313,25 @@ static int __init omap_iommu_init(void)
+ 		return -ENOMEM;
+ 	iopte_cachep = p;
+ 
+-	bus_set_iommu(&platform_bus_type, &omap_iommu_ops);
+-
+ 	omap_iommu_debugfs_init();
+ 
+-	return platform_driver_register(&omap_iommu_driver);
++	ret = platform_driver_register(&omap_iommu_driver);
++	if (ret) {
++		pr_err("%s: failed to register driver\n", __func__);
++		goto fail_driver;
++	}
++
++	ret = bus_set_iommu(&platform_bus_type, &omap_iommu_ops);
++	if (ret)
++		goto fail_bus;
++
++	return 0;
++
++fail_bus:
++	platform_driver_unregister(&omap_iommu_driver);
++fail_driver:
++	kmem_cache_destroy(iopte_cachep);
++	return ret;
+ }
+ subsys_initcall(omap_iommu_init);
+ /* must be ready before omap3isp is probed */
+-- 
+2.12.0
