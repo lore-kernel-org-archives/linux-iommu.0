@@ -1,57 +1,68 @@
-From: Hanjun Guo <hanjun.guo@linaro.org>
-Subject: Re: [RFC PATCH 4/7] ACPICA: IORT: Add SMMuV3 model definitions.
-Date: Wed, 12 Apr 2017 10:33:49 +0800
-Message-ID: <e40bacb5-0341-dde8-eee7-894b199da7ca@linaro.org>
+From: Linu Cherian <linucherian@gmail.com>
+Subject: Re: [RFC PATCH 1/7] iommu/arm-smmu-v3: Introduce smmu option
+ PAGE0_REGS_ONLY for Silicon errata.
+Date: Wed, 12 Apr 2017 10:35:19 +0530
+Message-ID: <CAGOz-0Z-kwxdD0x=X51baRmGe1bWJ4PyNkmRSuyheepPUYKxmg@mail.gmail.com>
 References: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
- <1491921765-29475-5-git-send-email-linucherian@gmail.com>
- <d60a1fcc-081e-03e8-3454-6802e830ddb9@arm.com>
- <CA+sq2CfXQAM-ooNRQBbYNYc_T=p2yrvA2FYD=2_=_-Z9kQwVcA@mail.gmail.com>
+ <1491921765-29475-2-git-send-email-linucherian@gmail.com> <d89ecbd2-ed1b-b13b-a7e4-ff2478655203@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
 Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <CA+sq2CfXQAM-ooNRQBbYNYc_T=p2yrvA2FYD=2_=_-Z9kQwVcA@mail.gmail.com>
+In-Reply-To: <d89ecbd2-ed1b-b13b-a7e4-ff2478655203@arm.com>
 Sender: linux-acpi-owner@vger.kernel.org
-To: Sunil Kovvuri <sunil.kovvuri@gmail.com>, Robin Murphy <robin.murphy@arm.com>
-Cc: linucherian@gmail.com, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, sudeep.holla@arm.com, "Goutham, Sunil" <Sunil.Goutham@cavium.com>, Geethasowjanya.Akula@cavium.com, Joerg Roedel <joro@8bytes.org>, rjw@rjwysocki.net, robert.moore@intel.com, robert.richter@cavium.com, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, lv.zheng@intel.com, linu.cherian@cavium.com, devel@acpica.org, LAKML <linux-arm-kernel@lists.infradead.org>, lenb@kernel.org
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: catalin.marinas@arm.com, will.deacon@arm.com, lorenzo.pieralisi@arm.com, Hanjun Guo <hanjun.guo@linaro.org>, sudeep.holla@arm.com, rjw@rjwysocki.net, Len Brown <lenb@kernel.org>, joro@8bytes.org, robert.moore@intel.com, lv.zheng@intel.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, devel@acpica.org, Sunil.Goutham@cavium.com, Geethasowjanya.Akula@cavium.com, robert.richter@cavium.com, Linu Cherian <linu.cherian@cavium.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 2017/4/12 0:57, Sunil Kovvuri wrote:
-> On Tue, Apr 11, 2017 at 9:29 PM, Robin Murphy <robin.murphy@arm.com> wrote:
->> On 11/04/17 15:42, linucherian@gmail.com wrote:
->>> From: Linu Cherian <linu.cherian@cavium.com>
->>>
->>> Add SMMuV3 model definitions.
->>>
->>> Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
->>> ---
->>>  include/acpi/actbl2.h | 5 +++++
->>>  1 file changed, 5 insertions(+)
->>>
->>> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
->>> index 2b4af07..9db67d6 100644
->>> --- a/include/acpi/actbl2.h
->>> +++ b/include/acpi/actbl2.h
->>> @@ -778,6 +778,11 @@ struct acpi_iort_smmu {
->>>  #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002   /* ARM Corelink MMU-400 */
->>>  #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003   /* ARM Corelink MMU-500 */
->>>
->>> +#define ACPI_IORT_SMMU_V3               0x00000000      /* Generic SMMUv3 */
->>> +#define ACPI_IORT_SMMU_CORELINK_MMU600  0x00000001      /* ARM Corelink MMU-600 */
->>> +#define ACPI_IORT_SMMU_V3_HISILICON     0x00000002      /* HiSilicon SMMUv3 */
->>> +#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX 0x00000003      /* Cavium CN99xx SMMUv3 */
+On Tue, Apr 11, 2017 at 9:12 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 11/04/17 15:42, linucherian@gmail.com wrote:
+>> From: Linu Cherian <linu.cherian@cavium.com>
 >>
->> None of those models are listed in the current IORT spec.
+>> Cavium 99xx SMMU implementation doesn't support page 1 register space
+>> and PAGE0_REGS_ONLY option will be enabled as an errata workaround.
 >
-> As mentioned in the cover letter, we are in the process of getting
-> model no added for
-> our silicon in the soon to be published updated IORT spec. Meanwhile
-> we wanted to take
-> feedback on the errata patches from experts. Hence patches were
-> submitted as RFC.
+> Ugh :(
+>
+>> This option when turned on, replaces all page 1 offsets used for
+>> EVTQ_PROD/CONS, PRIQ_PROD/CONS register access with page 0 offsets.
+>
+> I think it might be neater to have something like:
+>
+> arm_smmu_page1(smmu) {
+>         if (smmu->quirk)
+>                 return smmu->base;
+>         return smmu->base + 64k;
+> }
+>
+> and use it as the base in the appropriate places, rather than override
+> the individual registers. Much like ARM_SMMU_GR0_NS in the SMMUv2 driver.
+>
 
-Thanks. The name for Hisilicon SMMUv3 might be changed, we need to wait
-for the released IORT spec.
+IIUC, we need to change the offsets as well for this,
+Like,
+ #define ARM_SMMU_EVTQ_BASE             0xa0
+-#define ARM_SMMU_EVTQ_PROD             0x100a8
+-#define ARM_SMMU_EVTQ_CONS             0x100ac
++#define ARM_SMMU_EVTQ_PROD             0xa8
++#define ARM_SMMU_EVTQ_CONS             0xac
+ #define ARM_SMMU_EVTQ_IRQ_CFG0         0xb0
+ #define ARM_SMMU_EVTQ_IRQ_CFG1         0xb8
+ #define ARM_SMMU_EVTQ_IRQ_CFG2         0xbc
 
-Thanks
-Hanjun
+ #define ARM_SMMU_PRIQ_BASE             0xc0
+-#define ARM_SMMU_PRIQ_PROD             0x100c8
+-#define ARM_SMMU_PRIQ_CONS             0x100cc
++#define ARM_SMMU_PRIQ_PROD             0xc8
++#define ARM_SMMU_PRIQ_CONS             0xcc
+
+
+But, it appears difficult to take this approach, at least with
+arm_smmu_init_one_queue function.
+This function takes both page0 register offset and and page1 register
+offset as an argument.
+So, we might need to do additional checks in this function to decide,
+whether to use
+a pag0 base or page1 base.
+
+
+Thanks.
