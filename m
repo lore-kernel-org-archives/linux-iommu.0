@@ -1,94 +1,57 @@
-From: Baoquan He <bhe-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] iommu/vt-d: Make sure IOMMUs are off when intel_iommu=off
-Date: Wed, 12 Apr 2017 09:40:56 +0800
-Message-ID: <20170412014056.GB3033@x1>
-References: <1490799639-15965-1-git-send-email-joro@8bytes.org>
+From: Hanjun Guo <hanjun.guo@linaro.org>
+Subject: Re: [RFC PATCH 4/7] ACPICA: IORT: Add SMMuV3 model definitions.
+Date: Wed, 12 Apr 2017 10:33:49 +0800
+Message-ID: <e40bacb5-0341-dde8-eee7-894b199da7ca@linaro.org>
+References: <1491921765-29475-1-git-send-email-linucherian@gmail.com>
+ <1491921765-29475-5-git-send-email-linucherian@gmail.com>
+ <d60a1fcc-081e-03e8-3454-6802e830ddb9@arm.com>
+ <CA+sq2CfXQAM-ooNRQBbYNYc_T=p2yrvA2FYD=2_=_-Z9kQwVcA@mail.gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1490799639-15965-1-git-send-email-joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>, David Woodhouse <dwmw2-wEGCiKHe2LqWVfeAwA7xHQ@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <CA+sq2CfXQAM-ooNRQBbYNYc_T=p2yrvA2FYD=2_=_-Z9kQwVcA@mail.gmail.com>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Sunil Kovvuri <sunil.kovvuri@gmail.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: linucherian@gmail.com, Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will.deacon@arm.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, sudeep.holla@arm.com, "Goutham, Sunil" <Sunil.Goutham@cavium.com>, Geethasowjanya.Akula@cavium.com, Joerg Roedel <joro@8bytes.org>, rjw@rjwysocki.net, robert.moore@intel.com, robert.richter@cavium.com, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, lv.zheng@intel.com, linu.cherian@cavium.com, devel@acpica.org, LAKML <linux-arm-kernel@lists.infradead.org>, lenb@kernel.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Joerg,
+On 2017/4/12 0:57, Sunil Kovvuri wrote:
+> On Tue, Apr 11, 2017 at 9:29 PM, Robin Murphy <robin.murphy@arm.com> wrote:
+>> On 11/04/17 15:42, linucherian@gmail.com wrote:
+>>> From: Linu Cherian <linu.cherian@cavium.com>
+>>>
+>>> Add SMMuV3 model definitions.
+>>>
+>>> Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
+>>> ---
+>>>  include/acpi/actbl2.h | 5 +++++
+>>>  1 file changed, 5 insertions(+)
+>>>
+>>> diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
+>>> index 2b4af07..9db67d6 100644
+>>> --- a/include/acpi/actbl2.h
+>>> +++ b/include/acpi/actbl2.h
+>>> @@ -778,6 +778,11 @@ struct acpi_iort_smmu {
+>>>  #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002   /* ARM Corelink MMU-400 */
+>>>  #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003   /* ARM Corelink MMU-500 */
+>>>
+>>> +#define ACPI_IORT_SMMU_V3               0x00000000      /* Generic SMMUv3 */
+>>> +#define ACPI_IORT_SMMU_CORELINK_MMU600  0x00000001      /* ARM Corelink MMU-600 */
+>>> +#define ACPI_IORT_SMMU_V3_HISILICON     0x00000002      /* HiSilicon SMMUv3 */
+>>> +#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX 0x00000003      /* Cavium CN99xx SMMUv3 */
+>>
+>> None of those models are listed in the current IORT spec.
+>
+> As mentioned in the cover letter, we are in the process of getting
+> model no added for
+> our silicon in the soon to be published updated IORT spec. Meanwhile
+> we wanted to take
+> feedback on the errata patches from experts. Hence patches were
+> submitted as RFC.
 
-Do you plan to merge this one as urgent?
-
-There's bug created about this issue on rhel, it would be great if it
-can be put in next or merged so that we can back port it.
+Thanks. The name for Hisilicon SMMUv3 might be changed, we need to wait
+for the released IORT spec.
 
 Thanks
-Baoquan
-
-On 03/29/17 at 05:00pm, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> 
-> When booting into a kexec kernel with intel_iommu=off, and
-> the previous kernel had intel_iommu=on, the IOMMU hardware
-> is still enabled and gets not disabled by the new kernel.
-> 
-> This causes the boot to fail because DMA is blocked by the
-> hardware. Disable the IOMMUs when we find it enabled in the
-> kexec kernel and boot with intel_iommu=off.
-> 
-> Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
-> ---
->  drivers/iommu/intel-iommu.c | 18 +++++++++++++++++-
->  1 file changed, 17 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index d412a31..1662288 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -4730,6 +4730,15 @@ static int intel_iommu_cpu_dead(unsigned int cpu)
->  	return 0;
->  }
->  
-> +static void intel_disable_iommus(void)
-> +{
-> +	struct intel_iommu *iommu = NULL;
-> +	struct dmar_drhd_unit *drhd;
-> +
-> +	for_each_iommu(iommu, drhd)
-> +		iommu_disable_translation(iommu);
-> +}
-> +
->  static inline struct intel_iommu *dev_to_intel_iommu(struct device *dev)
->  {
->  	return container_of(dev, struct intel_iommu, iommu.dev);
-> @@ -4840,8 +4849,15 @@ int __init intel_iommu_init(void)
->  		goto out_free_dmar;
->  	}
->  
-> -	if (no_iommu || dmar_disabled)
-> +	if (no_iommu || dmar_disabled) {
-> +		/*
-> +		 * Make sure the IOMMUs are switched off, even when we
-> +		 * boot into a kexec kernel and the previous kernel left
-> +		 * them enabled
-> +		 */
-> +		intel_disable_iommus();
->  		goto out_free_dmar;
-> +	}
->  
->  	if (list_empty(&dmar_rmrr_units))
->  		pr_info("No RMRR found\n");
-> -- 
-> 1.9.1
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Hanjun
