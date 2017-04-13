@@ -1,60 +1,64 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [PATCH V5] drm/i915: Disable stolen memory when
- i915 runs on qemu
-Date: Thu, 13 Apr 2017 07:23:25 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190CA9803@SHSMSX101.ccr.corp.intel.com>
-References: <1491358106-26329-1-git-send-email-xiong.y.zhang@intel.com>
- <1491999600-4406-1-git-send-email-xiong.y.zhang@intel.com>
- <1492003316.3274.44.camel@linux.intel.com>
+From: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: RE: [RFC 0/3] virtio-iommu: a paravirtualized IOMMU
+Date: Thu, 13 Apr 2017 08:16:26 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190CA990E@SHSMSX101.ccr.corp.intel.com>
+References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
+	<a0920e37-a11e-784c-7d90-be6617ea7686@redhat.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <1492003316.3274.44.camel@linux.intel.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <a0920e37-a11e-784c-7d90-be6617ea7686-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 Content-Language: en-US
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, "Zhang, Xiong Y" <xiong.y.zhang@intel.com>, "daniel@ffwll.ch" <daniel@ffwll.ch>, "zhenyuw@linux.intel.com" <zhenyuw@linux.intel.com>, "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>
-Cc: "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>, "intel-gvt-dev@lists.freedesktop.org" <intel-gvt-dev@lists.freedesktop.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Jason Wang <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>
+Cc: "cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-PiBGcm9tOiBKb29uYXMgTGFodGluZW4gW21haWx0bzpqb29uYXMubGFodGluZW5AbGludXguaW50
-ZWwuY29tXQ0KPiBTZW50OiBXZWRuZXNkYXksIEFwcmlsIDEyLCAyMDE3IDk6MjIgUE0NCj4gDQpb
-Li4uXQ0KPiBCeSBteSBsaW1pdGVkIHVuZGVyc3RhbmRpbmcgb2YgVlQtZCBkZXRhaWxzOiBUaGUg
-c3RvbGVuIG1lbW9yeSBpcyBuZXZlcg0KPiBkaXJlY3RseSBhY2Nlc3NlZCBieSBpOTE1IGRyaXZl
-ciAoYmVjYXVzZSBDUFUgYWNjZXNzIGRvZXNuJ3Qgd29yayBldmVuDQo+IGluIERPTTApLiBJdCBp
-cyBvbmx5IHVzZWQgdGhyb3VnaCB0aGUgYXBlcnR1cmUsIHdoaWNoIGp1c3QgcmVxdWlyZXMgZm9y
-DQo+IHRoZSBHVCBkZXZpY2UgdG8gaGF2ZSBhY2Nlc3MgdG8gdGhlIFJNUlIuIEZ1cnRoZXIsIHRo
-ZSBHVCBkZXZpY2UgbmVlZHMNCj4gdG8gaGF2ZSBhY2Nlc3MgdG8gc3RvbGVuIG1lbW9yeSwgYmVj
-YXVzZSB0aGF0J3Mgd2hhdCBHdUMgdXNlcyBmb3INCj4gYmFja2luZyBzdG9yYWdlIGZvciBmb3Ig
-V09QQ00uDQo+IA0KPiBBbmQgZXZlbiBpZiBhZnRlciBhbGwgb2YgdGhlIGFib3ZlIGlzIGFkZHJl
-c3NlZCwgc2hvdWxkbid0IHdlIHJhdGhlcg0KPiB0cnkgdG8gZGV0ZWN0IHRoZSBsYWNrIG9mIFJN
-UlIsIHRoYW4gcHJlc2VuY2Ugb2YgUUVNVSBJU0E/DQo+IA0KPiBXaGF0IGNvbWVzIHRvIG15IG1p
-bmQgaXMgZXhwb3J0aW5nIGZ1bmN0aW9uIGxpa2UgZGV2aWNlX2hhc19ybXJyKCkgZnJvbQ0KPiBp
-bnRlbC1pb21tdS5jb20gYW5kIGNvbnN1bWluZyB0aGF0LCBpZiB3ZSBlbmQgdXAgZG9pbmcgdGhp
-cy4gVGhhdCB3YXksDQo+IGlmIHNvbWVib2R5LCBzb21lIGRheSwgZ29lcyBhbmQgd3JpdGUgUk1S
-UiBwYXNzLXRocm91Z2ggY29kZSBjdXJyZW50bHkNCj4gbWlzc2luZywgaXQnbGwgc3RhcnQgd29y
-a2luZywganVzdCBsaWtlIGl0IHNob3VsZC4NCj4gDQoNCkkgbGlrZSB3aGF0IHlvdSBwcm9wb3Nl
-ZCBpbiB0aGUgbG9uZyBydW4sIGUuZy4gaW4gYSBuZXN0ZWQgdmlydHVhbGl6YXRpb24NCmVudmly
-b25tZW50IEwwLVZNTSBhc3NpZ25zIHRoZSBkZXZpY2UgdG8gTDEtVk1NIHdoaWNoIGZ1cnRoZXIN
-CndhbnRzIHRvIGFzc2lnbiBkZXZpY2UgdG8gTDItVk0uIEluIHN1Y2ggY2FzZSBSTVJSIGluZm9y
-bWF0aW9uIA0KbXVzdCBiZSBwcm9wYWdhdGVkIHRocm91Z2ggdGhlIHBhdGggdG8gTDEtVk1NLg0K
-DQpIb3dldmVyIEkgY2FuIHNlZSBvbmUgbGltaXRhdGlvbiBoZXJlIG9uIHlvdXIgcHJvcG9zYWwu
-IFRoZXJlIGlzIG5vIA0KUk1SUiBpZiBWVC1kIGlzIGRpc2FibGVkIGluIEJJT1MuIFRoZW4geW91
-IGNhbm5vdCB1c2Ugc3RvbGVuIG1lbW9yeSANCmV2ZW4gb24gYmFyZSBtZXRhbCBpbiBzdWNoIGNv
-bmZpZ3VyYXRpb24sIHdoaWNoIGlzIHBvc3NpYmx5IG5vdCBkZXNpcmVkLg0KDQpBbHNvIHRoZSBs
-b25nIHRlcm0gZGlyZWN0aW9uIGlzIHRvIG1vdmUgYXdheSBmcm9tIFJNUlIgZm9yIEludGVsDQpp
-bnRlZ3JhdGVkIGRldmljZXMuIFBlb3BsZSByZWFsaXplZCBpdHMgbGltaXRhdGlvbiAoZXNwZWNp
-YWxseSB0aGUNCm9iamVjdGlvbiBmcm9tIEtWTSBjb21tdW5pdHkuIEkgZG9uJ3QgdGhpbmsgUk1S
-UiBwYXNzdGhyb3VnaA0Kd291bGQgYmUgYW4gb3B0aW9uIHRoZXJlKS4gU28gSSdkIGJlIHdpdGgg
-WGlvbmcncyBzaW1wbGUgd29ya2Fyb3VuZA0KaGVyZS4gOi0pDQoNClRoYW5rcw0KS2V2aW4NCl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCkludGVsLWdmeCBt
-YWlsaW5nIGxpc3QKSW50ZWwtZ2Z4QGxpc3RzLmZyZWVkZXNrdG9wLm9yZwpodHRwczovL2xpc3Rz
-LmZyZWVkZXNrdG9wLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2ludGVsLWdmeAo=
+PiBGcm9tOiBKYXNvbiBXYW5nDQo+IFNlbnQ6IFdlZG5lc2RheSwgQXByaWwgMTIsIDIwMTcgNTow
+NyBQTQ0KPiANCj4gT24gMjAxN+W5tDA05pyIMDjml6UgMDM6MTcsIEplYW4tUGhpbGlwcGUgQnJ1
+Y2tlciB3cm90ZToNCj4gPiBUaGlzIGlzIHRoZSBpbml0aWFsIHByb3Bvc2FsIGZvciBhIHBhcmF2
+aXJ0dWFsaXplZCBJT01NVSBkZXZpY2UgdXNpbmcNCj4gPiB2aXJ0aW8gdHJhbnNwb3J0LiBJdCBj
+b250YWlucyBhIGRlc2NyaXB0aW9uIG9mIHRoZSBkZXZpY2UsIGEgTGludXggZHJpdmVyLA0KPiA+
+IGFuZCBhIHRveSBpbXBsZW1lbnRhdGlvbiBpbiBrdm10b29sLiBXaXRoIHRoaXMgcHJvdG90eXBl
+LCB5b3UgY2FuDQo+ID4gdHJhbnNsYXRlIERNQSB0byBndWVzdCBtZW1vcnkgZnJvbSBlbXVsYXRl
+ZCAodmlydGlvKSwgb3IgcGFzc2VkLXRocm91Z2gNCj4gPiAoVkZJTykgZGV2aWNlcy4NCj4gPg0K
+PiA+IEluIGl0cyBzaW1wbGVzdCBmb3JtLCBpbXBsZW1lbnRlZCBoZXJlLCB0aGUgZGV2aWNlIGhh
+bmRsZXMgbWFwL3VubWFwDQo+ID4gcmVxdWVzdHMgZnJvbSB0aGUgZ3Vlc3QuIEZ1dHVyZSBleHRl
+bnNpb25zIHByb3Bvc2VkIGluICJSRkMgMy8zIiBzaG91bGQNCj4gPiBhbGxvdyB0byBiaW5kIHBh
+Z2UgdGFibGVzIHRvIGRldmljZXMuDQo+ID4NCj4gPiBUaGVyZSBhcmUgYSBudW1iZXIgb2YgYWR2
+YW50YWdlcyBpbiBhIHBhcmF2aXJ0dWFsaXplZCBJT01NVSBvdmVyIGEgZnVsbA0KPiA+IGVtdWxh
+dGlvbi4gSXQgaXMgcG9ydGFibGUgYW5kIGNvdWxkIGJlIHJldXNlZCBvbiBkaWZmZXJlbnQgYXJj
+aGl0ZWN0dXJlcy4NCj4gPiBJdCBpcyBlYXNpZXIgdG8gaW1wbGVtZW50IHRoYW4gYSBmdWxsIGVt
+dWxhdGlvbiwgd2l0aCBsZXNzIHN0YXRlIHRyYWNraW5nLg0KPiA+IEl0IG1pZ2h0IGJlIG1vcmUg
+ZWZmaWNpZW50IGluIHNvbWUgY2FzZXMsIHdpdGggbGVzcyBjb250ZXh0IHN3aXRjaGVzIHRvDQo+
+ID4gdGhlIGhvc3QgYW5kIHRoZSBwb3NzaWJpbGl0eSBvZiBpbi1rZXJuZWwgZW11bGF0aW9uLg0K
+PiANCj4gSSBsaWtlIHRoZSBpZGVhLiBDb25zaWRlciB0aGUgY29tcGxleGl0eSBvZiBJT01NVSBo
+YXJkd2FyZS4gSSBiZWxpZXZlIHdlDQo+IGRvbid0IHdhbnQgdG8gaGF2ZSBhbmQgZmlnaHQgIGZv
+ciBidWdzIG9mIHRocmVlIG9yIG1vcmUgZGlmZmVyZW50IElPTU1VDQo+IGltcGxlbWVudGF0aW9u
+cyBpbiBlaXRoZXIgdXNlcnNwYWNlIG9yIGtlcm5lbC4NCj4gDQoNClRob3VnaCB0aGVyZSBhcmUg
+ZGVmaW5pdGVseSBwb3NpdGl2ZSB0aGluZ3MgYXJvdW5kIHB2SU9NTVUgYXBwcm9hY2gsDQppdCBh
+bHNvIGhhcyBzb21lIGxpbWl0YXRpb25zOg0KDQotIEV4aXN0aW5nIElPTU1VIGltcGxlbWVudGF0
+aW9ucyBoYXZlIGJlZW4gaW4gb2xkIGRpc3Ryb3MgZm9yIHF1aXRlIHNvbWUNCnRpbWUsIHdoaWxl
+IHB2SU9NTVUgZHJpdmVyIHdpbGwgb25seSBsYW5kIGluIGZ1dHVyZSBkaXN0cm9zLiBEb2luZyBw
+dklPTU1VDQpvbmx5IG1lYW5zIHdlIGNvbXBsZXRlbHkgZHJvcCBzdXBwb3J0IG9mIG9sZCBkaXN0
+cm9zIGluIFZNOw0KDQotIFNpbWlsYXIgc2l0dWF0aW9uIG9uIHN1cHBvcnRpbmcgb3RoZXIgZ3Vl
+c3QgT1NlcyBlLmcuIFdpbmRvd3MuIElPTU1VIGlzDQphIGtleSBrZXJuZWwgY29tcG9uZW50IHdo
+aWNoIEknbSBub3Qgc3VyZSBwdklPTU1VIHRocm91Z2ggdmlydGlvIGNhbiBiZQ0KcmVjb2duaXpl
+ZCBpbiB0aG9zZSBPU2VzIChub3QgbGlrZSBhIHZpcnRpbyBkZXZpY2UgZHJpdmVyKTsNCg0KSSB3
+b3VsZCBpbWFnZSBib3RoIGZ1bGwtZW11bGF0ZWQgSU9NTVVzIGFuZCBwdklPTU1VIHdvdWxkIGNv
+LWV4aXN0DQpmb3Igc29tZSB0aW1lIGR1ZSB0byBhYm92ZSByZWFzb25zLiBTb21lZGF5IHdoZW4g
+cHZJT01NVSBpcyBtYXR1cmUvDQpzcHJlYWQgZW5vdWdoIGluIHRoZSBlY28tc3lzdGVtIChhbmQg
+ZmVhdHVyZS13aXNlIGNvbXBhcmFibGUgdG8gZnVsbC1lbXVsYXRlZA0KSU9NTVVzIGZvciBhbGwg
+dmVuZG9ycyksIHRoZW4gd2UgbWF5IG1ha2UgYSBjYWxsLg0KDQpUaGFua3MsDQpLZXZpbg0KX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGlu
+ZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGlu
+dXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
