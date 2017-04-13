@@ -1,234 +1,161 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v4 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
-Date: Wed, 12 Apr 2017 18:18:44 -0500
-Message-ID: <20170412231844.GA28316@bhelgaas-glaptop.roam.corp.google.com>
-References: <1491225304-3559-1-git-send-email-jnair@caviumnetworks.com>
- <1491225304-3559-3-git-send-email-jnair@caviumnetworks.com>
- <20170411012847.GA15291@bhelgaas-glaptop.roam.corp.google.com>
- <20170411071047.GA3610@localhost>
- <20170411134125.GA31773@bhelgaas-glaptop.roam.corp.google.com>
- <20170411152702.GA2910@localhost>
- <20170412162118.GC25197@bhelgaas-glaptop.roam.corp.google.com>
- <20170412181034.GA3671@localhost>
- <20170412191138.GH25197@bhelgaas-glaptop.roam.corp.google.com>
- <20170412204120.GA2231@localhost>
+From: "Zhang, Xiong Y" <xiong.y.zhang@intel.com>
+Subject: Re: [PATCH V5] drm/i915: Disable stolen memory when
+ i915 runs on qemu
+Date: Thu, 13 Apr 2017 04:15:39 +0000
+Message-ID: <8082FF9BCB2B054996454E47167FF4EC1C4BDC44@SHSMSX104.ccr.corp.intel.com>
+References: <1491358106-26329-1-git-send-email-xiong.y.zhang@intel.com>
+ <1491999600-4406-1-git-send-email-xiong.y.zhang@intel.com>
+ <1492003316.3274.44.camel@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170412204120.GA2231@localhost>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jayachandran C <jnair@caviumnetworks.com>
-Cc: linux-pci@vger.kernel.org, Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org, Jon Masters <jcm@redhat.com>, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
+In-Reply-To: <1492003316.3274.44.camel@linux.intel.com>
+Content-Language: en-US
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, "daniel@ffwll.ch" <daniel@ffwll.ch>, "zhenyuw@linux.intel.com" <zhenyuw@linux.intel.com>, "jani.nikula@linux.intel.com" <jani.nikula@linux.intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, David Woodhouse <dwmw2@infradead.org>
+Cc: "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>, "intel-gvt-dev@lists.freedesktop.org" <intel-gvt-dev@lists.freedesktop.org>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 12, 2017 at 08:41:20PM +0000, Jayachandran C wrote:
-> On Wed, Apr 12, 2017 at 02:11:38PM -0500, Bjorn Helgaas wrote:
-> > On Wed, Apr 12, 2017 at 06:10:34PM +0000, Jayachandran C wrote:
-> > > On Wed, Apr 12, 2017 at 11:21:18AM -0500, Bjorn Helgaas wrote:
-> > > > On Tue, Apr 11, 2017 at 03:27:02PM +0000, Jayachandran C wrote:
-> > > > > On Tue, Apr 11, 2017 at 08:41:25AM -0500, Bjorn Helgaas wrote:
-> > > > > > [+cc Joerg]
-> > > > > > 
-> > > > > > On Tue, Apr 11, 2017 at 07:10:48AM +0000, Jayachandran C wrote:
-> > > > > > > On Mon, Apr 10, 2017 at 08:28:47PM -0500, Bjorn Helgaas wrote:
-> > > > > > > > Hi Jayachandran,
-> > > > > > > > 
-> > > > > > > > On Mon, Apr 03, 2017 at 01:15:04PM +0000, Jayachandran C wrote:
-> > > > > > > > > The Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the PCI
-> > > > > > > > > topology is slightly unusual. For a multi-node system, it looks like:
-> > > > > > > > > 
-> > > > > > > > > [node level PCI bridges - one per node]
-> > > > > > > > >     [SoC PCI devices with MSI-X but no IOMMU]
-> > > > > > > > >     [PCI-PCIe "glue" bridges - upto 14, one per real port below]
-> > > > > > > > >         [PCIe real root ports associated with IOMMU and GICv3 ITS]
-> > > > > > > > >             [External PCI devices connected to PCIe links]
-> > > > > > > > > 
-> > > > > > > > > The top two levels of bridges should have introduced aliases since they
-> > > > > > > > > are PCI and PCI/PCIe bridges, but in the case of ThunderX2 they do not.
-> > > > > > > > > In the case of external PCIe devices, the "real" root ports are connected
-> > > > > > > > > to the SMMU and the GIC ITS, so PCI-PCIe bridge does not introduce an
-> > > > > > > > > alias. The SoC PCI devices are directly connected to the GIC ITS, so the
-> > > > > > > > > node level bridges do not introduce an alias either.
-> > > > > > > > > 
-> > > > > > > > > To handle this quirk, we mark the real PCIe root ports and node level
-> > > > > > > > > PCI bridges with the flag PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT.  With this,
-> > > > > > > > > pci_for_each_dma_alias() works correctly for external PCIe devices and
-> > > > > > > > > SoC PCI devices.
-> > > > > > > > > 
-> > > > > > > > > For the current revision of Cavium ThunderX2, the VendorID and Device ID
-> > > > > > > > > are from Broadcom Vulcan (14e4:90XX).
-> > > > > > > > 
-> > > > > > > > Can you supply some text here about why we want to apply this patch?
-> > > > > > > > E.g., does it avoid making unnecessary IOMMU mappings, improve
-> > > > > > > > performance, avoid a crash, etc?
-> > > > > > > 
-> > > > > > > If this is for the commit message, I hope the following is ok:
-> > > > > > > 
-> > > > > > > "With this change, both MSI-X and IO virtualization work correctly on
-> > > > > > > Cavium ThunderX2. The GIC ITS driver gets the correct device ID to
-> > > > > > > configure MSI-X, the SMMUv3 driver gets the correct Stream IDs for PCI
-> > > > > > > devices, and the IOMMU groups are setup correctly."
-> > > > > > 
-> > > > > > This doesn't get at what the actual problem is.  I'm hoping for
-> > > > > > something like "without this change, we set up an IOMMU mapping for
-> > > > > > requestor ID X, but device DMA uses requestor ID Y because ...., which
-> > > > > > results in an IOMMU fault"
-> > > > > 
-> > > > > Ok. I hope this would be better:
-> > > > > 
-> > > > > "Without this change, the last alias seen while traversing the PCI
-> > > > > hierarchy will be used as the RID to generate the device ID for ITS
-> > > > > and stream ID for SMMU. This in turn causes the MSI-X generated by the
-> > > > > device to fail since the ITS expects to have translation tables based
-> > > > > on the actual PCIe RID and not the (irrelevant) alias. Similarly, the
-> > > > > device DMA also fails when SMMU is enabled due to incorrect value in
-> > > > > SMMU translation tables"
-> > > > 
-> > > > This description is true, but I don't think it addresses the real
-> > > > problem.  I think the real problem is that your IOMMU code doesn't
-> > > > handle aliases correctly, and by ignoring these invalid aliases, we
-> > > > happen to map an alias that works for the builtin devices.  But that's
-> > > > only because we got lucky (those devices use a single RID and they're
-> > > > not behind bridges that optionally take ownership).
-> > > > 
-> > > > It would make sense to me if we fixed the IOMMU code to map *all* the
-> > > > aliases, which should be enough to make your devices work.  If we then
-> > > > wanted to apply a patch like this on top, it would be simply an
-> > > > optimization that avoids unnecessary IOMMU mappings.
-> > > 
-> > > The issue that the IOMMU code does not handle valid aliases is
-> > > unrelated to what I am trying to fix. The quirk is to make sure
-> > > that invalid aliases are not seen on ThunderX2 while doing
-> > > pci_for_each_dma_alias().
-> > > 
-> > > The DMA and MSI-X requests leave the PCI/PCIe hierarchy at the point
-> > > where the SMMU (or ITS) is attached, i.e. at the bridge marked with
-> > > PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT. The quirk ensures that we don't look
-> > > for aliases above that point.
-> > > 
-> > > The toplevel bridge is marked PCI_DEV_FLAGS_BRIDGE_XLATE_ROOT since
-> > > the on-chip devices are directly connected to the ITS (they do not
-> > > use SMMU).
-> > > 
-> > > The top two levels of bridges are not real PCI bridges but just
-> > > PCI bridge-like things that were added to tie the whole hierarchy
-> > > together for configuration and enumeration. They do not handle
-> > > PCI/PCIe transactions in the traditional sense.
-> > > 
-> > > I think my problem description is still not correct, maybe:
-> > > "The SMMU (and ITS) expects to device tables to use the RID seen
-> > > at the bridge they are associated with. Currently the
-> > > pci_for_each_dma_alias() code traverses beyond this point and
-> > > generates incorrect aliases due to the PCI and PCI/PCIe bridges
-> > > above. This causes MSI-X interrupts and device DMA to fail since
-> > > the SMMU and ITS tables to be setup with incorrect IDs"
-> > 
-> > I haven't tried to figure out the MSI-X piece of this, but let me try
-> > to come up with a concrete DMA example.  Assume this topology:
-> > 
-> >   00:00.0 bridge to [bus 01-1e]
-> >   01:0a.0 bridge to [bus 04-05]
-> >   04:00.0 [14e4:9000 or 9084] bridge to [bus 05] (XLATE_ROOT)
-> >   05:00.0 endpoint
-> > 
-> > Assume 05:00.0 generates a DMA request.  Assume the top two bridges
-> > are such that pci_for_each_dma_alias() includes them as well, so it
-> > iterates through 05:00.0, 01:0a.0, and 00:00.0.
-> > 
-> > When the driver for 05:00.0 makes a DMA mapping, the current code
-> > apparently makes an IOMMU mapping for requester ID 00:00.0 because
-> > that's the last alias.  Obviously this doesn't work because the IOMMU
-> > at 04:00.0 will see a requester ID of 05:00.0, not 00:00.0.
-> > 
-> > With this quirk, we'll omit 01:0a.0 and 00:00.0, so we'll make an
-> > IOMMU mapping for requester ID 05:00.0, which will work fine.  I think
-> > it would *also* work fine if we made IOMMU mappings for 05:00.0,
-> > 01:0a.0, and 00:0.0.  The last two are unnecessary, but probably not
-> > harmful.
->  
-> Ok. The last two are not harmful but still incorrect. The bridges
-> 0:0.0 and 1:a.0 are outside the path with the PCI transactions takes
-> (they go from 4:0.0 to the SMMU).
-> 
-> > Now assume 05:00 is a multi-function device that has a DMA alias
-> > quirk, e.g., see quirk_dma_func0_alias().  It has another function:
-> > 
-> >   05:00.3 endpoint
-> > 
-> > DMA from 05:00.3 may use a requester ID of either 05:00.3 or 05:00.0.
-> > The driver makes a DMA mapping, pci_for_each_dma_alias() iterates
-> > through 05:00.3, 05:00.0, 01:0a.0, and 00:00.0, and we again map only
-> > 00:00.0, which again doesn't work.
-> > 
-> > With this quirk, we create a single mapping for 05:00.0.  That will
-> > work sometimes, but the device may also generate DMA with a requester
-> > ID of 05:00.3, and that won't work.
-> 
-> Note that here, pci_for_each_dma_alias() works correctly with the quirk
-> and incorrectly without the quirk. With the quirk, the callback function
-> is involved on 05:00.3 and 05:00.0 as expected.
-
-With the quirk, pci_for_each_dma_alias() works correctly and iterates
-through 05:00.3 and 05:00.0.  But the IOMMU code only pay attention to
-the *last* alias, i.e., 05:00.0.  So this does not work.
-
-> Without the quirk the
-> call back is invoked on 05:00.3, 05:00.0, 01:0a.0, and 00:00.0, which
-> includes aliases that are not valid.
-> 
-> The idea behind the quirk is to get pci_for_each_dma_alias work correctly
-> on ThunderX2, and invoke the function only on the valid aliases. With the
-> quirk, the code using it - like the SMMU code - gets the correct aliases
-> to process, and do not have to deal with or filter out incorrect aliases.
-> 
-> I don't think it would be safe to assume that all callers of
-> pci_for_each_dma_alias will be ok to handle invalid aliases. Even in
-> the IOMMU case, the case which calculates stream IDs is one usage, the
-> usage for iommu groups also did not deal with invalid aliases correctly
-> when I tried it. Then there are the MSI cases too, I had done some work
-> on trying to filter out invalid aliases in the relevant code[1], but
-> in my opinion, getting pci_for_each_dma_alias() do the right thing is
-> the correct solution.
-
-I agree, we should fix this and it sounds like it's more than just an
-optimization.  But I don't think the quirk is a complete fix, and the
-changelog needs a short sketch of this discussion to make it clear
-that this happens to fix some DMA faults, but others remain because
-the current IOMMU code only maps one of the valid aliases.
-
-So I think the only thing we need to move forward on this is a revised
-changelog.  I propose something like this:
-
-  On Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the
-  PCI topology is slightly unusual.  For a multi-node system, it looks
-  like:
-
-    00:00.0 [?? type] bridge to [bus 01-1e]
-    01:0a.0 [?? type] bridge to [bus 04-05]
-    04:00.0 [?? type] bridge to [bus 05] (ThunderX2 XLATE_ROOT)
-    05:00.0 endpoint
-
-  pci_for_each_dma_alias() assumes IOMMU translation is done at the
-  root of the PCI hierarchy.  It generates 05:00.0 and <BB:DD.F> as
-  DMA aliases for 05:00.0 because bus <BB> is a non-PCIe bus that
-  doesn't carry the Requester ID.
-
-  Because the ThunderX2 IOMMU is at 04:00.0, <BB:DD.F> is never a valid
-  Requester ID.  This quirk stops alias generation at the XLATE_ROOT
-  bridge so we won't generate <BB:DD.F>.
-
-  The current IOMMU code only maps the last alias (this is a separate
-  bug in itself).  Prior to this quirk, we only created IOMMU mappings
-  for the invalid Requester ID <BB:DD.F>, which never matched any DMA
-  transactions.
-  
-  With this quirk, we create IOMMU mappings for a valid Requester ID,
-  which fixes devices with no aliases but leaves devices with aliases
-  still broken.
-
-I don't know the details of what type of bridges those are
-(conventional PCI?  PCIe PCI-to-PCIe? etc?) and exactly what RIDs are
-involved.  It'd be nice if you could fill those in.
-
-Bjorn
+PiArIEtldmluIGFuZCBEYXZpZA0KPiANCj4gT24ga2UsIDIwMTctMDQtMTIgYXQgMjA6MjAgKzA4
+MDAsIFhpb25nIFpoYW5nIHdyb3RlOg0KPiA+IFN0b2xlbiBtZW1vcnkgaXNuJ3QgYSBzdGFuZGFy
+ZCBwY2kgcmVzb3VyY2UgYW5kIGV4aXN0cyBpbiBSTVJSIHdoaWNoIGhhcw0KPiA+IGlkZW50aXR5
+IG1hcHBpbmcgaW4gaW9tbXUgdGFibGUsIElHRCBjb3VsZCBhY2Nlc3Mgc3RvbGVuIG1lbW9yeSBp
+biBob3N0DQo+IE9TLg0KPiA+IFdoaWxlIGFjY29yZGluZyB0byAnY29tbWl0IGM4NzVkMmMxYjgw
+OCAoImlvbW11L3Z0LWQ6IEV4Y2x1ZGUgZGV2aWNlcw0KPiB1c2luZw0KPiA+IFJNUlJzIGZyb20g
+SU9NTVUgQVBJIGRvbWFpbnMiKScsUk1SUiBpc24ndCBzdXBwb3J0ZWQgYnkga3ZtLCB0aGVuDQo+
+IGJvdGggRVBUDQo+ID4gYW5kIGd1ZXN0IGlvbW11IGRvbWFpbiB0YWJsZSBsYWNrIG9mIG1hYXBp
+bmcgZm9yIHN0b2xlbiBtZW1vcnkgaW4ga3ZtDQo+IElHRA0KPiA+IHBhc3N0aHJvdWdoIGVudmly
+b25tZW50LiBJZiBJR0QgYWNjZXNzIHN0b2xlbiBtZW1vcnkgaW4gc3VjaCBlbnZpcm9ubWVudCwN
+Cj4gPiBtYW55IGlvbW11IGV4Y2VwdGlvbnMgZXhpc3QgaW4gaG9zdCBkbWVzZyBhbmQgZ3B1IGhh
+bmcgZXhpc3RzIGFsc28uDQo+ID4gRE1BUjogW0RNQSBSZWFkXSBSZXF1ZXN0IGRldmljZSBbMDA6
+MDIuMF0gZmF1bHQgYWRkciBkYTAxMjAwMA0KPiA+IFtmYXVsdCByZWFzb24gMDVdIFBURSBXcml0
+ZSBhY2Nlc3MgaXMgbm90IHNldA0KPiA+IERNQVI6IFtETUEgUmVhZF0gUmVxdWVzdCBkZXZpY2Ug
+WzAwOjAyLjBdIGZhdWx0IGFkZHIgZGEyZGYwMDANCj4gPiBbZmF1bHQgcmVhc29uIDA2XSBQVEUg
+UmVhZCBhY2Nlc3MgaXMgbm90IHNldA0KPiA+DQo+ID4gU28gc3RvbGVuIG1lbW9yeSBzaG91bGQg
+YmUgZGlzYWJsZWQgaW4gS1ZNIElHRCBwYXNzdGhyb3VnaCBlbnZpcm9ubWVudCwNCj4gPiB0aGlz
+IHBhdGNoIGRldGVjdHMgc3VjaCBlbnZpcm9ubWVudCB0aHJvdWdoIHRoZSBleGlzdGVuY2Ugb2Yg
+cWVtdQ0KPiBlbXVsYXRlZA0KPiA+IGlzYSBicmlkZ2UuDQo+ID4NCj4gPiBXaGVuIHRoZSByZWFs
+IElTQSBicmlkZ2UgaXMgYWxzbyBwYXNzZWQgdGhyb3VnaCB0byBndWVzdCwgZ3Vlc3Qgd2lsbCBo
+YXZlDQo+ID4gdHdvIGlzYSBicmlkZ2VzOiBlbXVsYXRlZCBhbmQgcmVhbC4gUWVtdSBndWFyYW50
+ZWVzIHRoZSBidXNudW06ZGV2bnVtLg0KPiA+IGZ1bmNudW0gb2YgZW11bGF0ZWQgaXNhIGJyaWRn
+ZSBpcyBhbHdheXMgbGVzcyB0aGFuIHRoZSByZWFsIG9uZS4gVGhlbg0KPiA+IGVtdWxhdGVkIGlz
+YSBicmlkZ2UgaXMgYWx3YXlzIGRldGVjdGVkIGZpcnN0IGJ5IHBjaV9nZXRfY2xhc3MoSVNBKS4g
+U28NCj4gPiBzdG9sZW4gbWVtb3J5IHdpbGwgYmUgZGlzYWJsZWQgaW4gdGhpcyBjYXNlIGFsc28u
+DQo+ID4NCj4gPiBTdG9sZW4gbWVtb3J5IGV4aXN0cyBpbiBrZXJuZWwgZm9yIGEgbG9uZyB0aW1l
+LCBidXQgdGhpcyBwYXRjaCBkZXBlbmRzDQo+ID4gb24gSU5URUxfUENIX1FFTVVfREVWSUNFX0lE
+X1RZUEUgd2hpY2ggd2FzIGludHJvZHVjZWQgaW4gdjQuNSBrZXJuZWwsDQo+ID4gc28gdGhpcyBw
+YXRjaCBzaG91bGQgYmUgYmFja3BvcnRlZCBpbnRvIHY0LjUga2VybmVsIGFuZCBhYm92ZS4NCj4g
+Pg0KPiA+IHYyOkdWVC1nIG1heSBydW4gaW4gbm9uIHFlbXUgKFpoZW55dSkNCj4gPiB2MzpNYWtl
+IGNvbW1pdCBtZXNzYWdlIGNsZWFyIChEYW5pZWwpDQo+ID4gdjQ6Rml4IHR5cG8NCj4gPiB2NTpF
+eGNsdWRlIFAyWCBhcyBpdCBpcyB1c2VkIGZvciBWTXdhcmUgKEpvb25hcykNCj4gPg0KPiA+IEJ1
+Z3ppbGxhOiBodHRwczovL2J1Z3MuZnJlZWRlc2t0b3Aub3JnL3Nob3dfYnVnLmNnaT9pZD05OTAy
+OA0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogWGlvbmcgWmhhbmcgPHhpb25nLnkuemhhbmdAaW50
+ZWwuY29tPg0KPiA+IFJldmlld2VkLWJ5OiBaaGVueXUgV2FuZyA8emhlbnl1d0BsaW51eC5pbnRl
+bC5jb20+DQo+ID4gUmV2aWV3ZWQtYnk6IERhbmllbCBWZXR0ZXIgPGRhbmllbC52ZXR0ZXJAZmZ3
+bGwuY2g+DQo+ID4gQ2M6IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcNCj4gDQo+IFRoZSBjb21taXQg
+bWVzc2FnZSBzdGlsbCBmYWlscyB0byBhZGRyZXNzIHRoZSBmYWN0IHRoYXQgdGhlIEJ1Z3ppbGxh
+DQo+IGVudHJ5IGhhcyBhIGNvbXBsZXRlbHkgYm9ndXMgYmlzZWN0LCB0aGUgZmFjdCB0aGF0IHRo
+ZXJlIGlzIGEgbGF0ZXINCj4gY29tbWl0IHRoYXQgYWxsb3dzIFJNUlJzIG9uIGdyYXBoaWNzIGRl
+dmljZXM7DQpbWmhhbmcsIFhpb25nIFldIEluZGVlZCB3aGVuIEkgYm9vdCBrZXJuZWwgMy4xOCwg
+Z3B1IGhhbmcgZG9uJ3QNCmhhcHBlbiBkdXJpbmcgYm9vdCBwcm9jZXNzLCBidXQgSU9NTVUgRE1B
+IFIvVyB0byBzdG9sZW4gbWVtb3J5DQpleGNlcHRpb24gc3RpbGwgZXhpc3QgaW4gaG9zdCBkbWVz
+Zy4NCldoZW4gSSBib290IGtlcm5lbCAzLjE5IGFuZCBhYm92ZSwgSSBzZWUgRE1BIFIvVyBleGNl
+cHRpb24NCmluIGhvc3QgZG1lc2cgYW5kIGdwdSBoYW5nLiBJJ20gbGFjayBvZiB0aGUga25vd2xl
+ZGdlIHRvIGFuYWx5emUgdGhlDQpncHUgaGFuZyBlcnJvci4gQW5kIEkgaGF2ZSB1cGRhdGVkIHRo
+ZSBlcnJvciBpbnRvIGJ1Z3ppbGxhLCBjb3VsZCB5b3UNCmhlbHAgY2hlY2sgd2hldGhlciB0aGlz
+IGhhbmcgaXMgY2F1c2VkIGJ5IEdUIGFjY2Vzc2luZyB0byBzdG9sZW4gbWVtb3J5DQpvciBub3Q/
+DQoNCmh0dHBzOi8vYnVncy5mcmVlZGVza3RvcC5vcmcvc2hvd19idWcuY2dpP2lkPTk5MDI4DQph
+bmQNCmh0dHBzOi8vYnVncy5mcmVlZGVza3RvcC5vcmcvc2hvd19idWcuY2dpP2lkPTk5MDI1DQph
+cmUgdGhlIHNhbWUgaXNzdWUgd2hpY2ggY291bGQgYmUgZml4ZWQgYnkgZGlzYWJsZSBzdG9sZW4g
+bWVtb3J5Lg0KQnV0IGJpc2VjdCByZXN1bHQgYXJlIGRpZmZlcmVudCwgc28gSSB0aGluayB0aGUg
+Zmlyc3QgYmFkIGNvbW1pdCBvZiANCmdpdCBiaXNlY3QgaXNuJ3QgYWNjdXJhdGUuDQoNCj4gDQo+
+IGNvbW1pdCAxODQzNmFmZGMxMWEwMGFjODgxOTkwYjQ1NGNmYjJlYWU4MWQ2MDAzDQo+IEF1dGhv
+cjogRGF2aWQgV29vZGhvdXNlIDxEYXZpZC5Xb29kaG91c2VAaW50ZWwuY29tPg0KPiBEYXRlOsKg
+wqDCoFdlZCBNYXIgMjUgMTU6MDU6NDcgMjAxNSArMDAwMA0KPiANCj4gwqDCoMKgwqBpb21tdS92
+dC1kOiBBbGxvdyBSTVJSIG9uIGdyYXBoaWNzIGRldmljZXMgdG9vDQo+IA0KW1poYW5nLCBYaW9u
+ZyBZXSAnY29tbWl0IGM4NzVkMmMxYjgwOCAoImlvbW11L3Z0LWQ6IEV4Y2x1ZGUgZGV2aWNlcw0K
+VXNpbmcgUk1SUnMgZnJvbSBJT01NVSBBUEkgZG9tYWlucyIpJywgdGhpcyBjb21taXQgcHJldmVu
+dCBkZXZpY2VzDQphc3NvY2lhdGVkIHdpdGggUk1SUiBmcm9tIHBhc3NpbmcgdGhyb3VnaCB0byBn
+dWVzdC4NCidjb21taXQgMTg0MzZhZmRjMTFhICgiaW9tbXUvdnQtZDogQWxsb3cgUk1SUiBvbiBn
+cmFwaGljcyBkZXZpY2VzIHRvbyIpJywNCnRoaXMgY29tbWl0IGFkZCBhbiBleGNlcHRpb24gZm9y
+IGdyYXBoaWNzIGRldmljZSB0byBhYm92ZSBjb21taXQuIFNvIHRoYXQNCklHRCBjb3VsZCBiZSBh
+c3NpZ25lZCAocGFzcyB0aHJvdWdoKSB0byBndWVzdC4NCg0KSGksIERhdmlkOg0KICAgVGhlIGZv
+bGxvd2luZyBtZXNzYWdlIGV4aXN0cyBpbiB5b3VyIDE4NDM2YWZkYzExYSBjb21taXQgbWVzc2Fn
+ZTogDQogICAgIkFkZCBhbiBleGNsdXNpb24gZm9yIGdyYXBoaWNzIGRldmljZXMgdG9vLCBzbyB0
+aGF0ICdpb21tdT1wdCcgd29ya3MNCiAgICB0aGVyZS4gV2Ugc2hvdWxkIGJlIGFibGUgdG8gc3Vj
+Y2Vzc2Z1bGx5IGFzc2lnbiBncmFwaGljcyBkZXZpY2VzIHRvDQogICAgZ3Vlc3RzIHRvbywgYXMg
+bG9uZyBhcyB0aGUgaW5pdGlhbCBoYW5kbGluZyBvZiBzdG9sZW4gbWVtb3J5IGlzDQogICAgcmVj
+b25maWd1cmVkIGFwcHJvcHJpYXRlbHkuIFRoaXMgaGFzIGNlcnRhaW5seSB3b3JrZWQgaW4gdGhl
+IHBhc3QuIg0KV2hhdCdzIHRoZSBtZWFuIG9mICJpbml0aWFsIGhhbmRsaW5nIG9mIHN0b2xlbiBt
+ZW1vcnkgaXMgcmVjb25maWd1cmVkIA0KYXBwcm9wcmlhdGVseSIgPyB3ZSBtZWV0IGd1ZXN0IElH
+RCBhY2Nlc3Npbmcgc3RvbGVuIG1lbW9yeSBpc3N1ZS4NCiANCj4gQW5kIHRoZSBmYWN0IHRoYXQg
+R3VDIHN0YXR1cyBpcyBzdGlsbCBub3QgYW5zd2VyZWQgZXZlbiBJIGV4cGxpY2l0bHkNCj4gYXNr
+ZWQgZm9yIGl0Lg0KW1poYW5nLCBYaW9uZyBZXSBHdUMgYWNjZXNzaW5nIHRvIHN0b2xlbiBtZW1v
+cnkgYnlwYXNzIFZULWQsIEtldmluIGhhcw0KY29uZmlybWVkIHRoaXMgd2l0aCBWUEcuDQoNCkkg
+YWRkIGk5MTUuZW5hYmxlX2d1Y19sb2FkaW5nPTEgYW5kIGk5MTUuZW5hYmxlX2d1Y19zdWJtaXNz
+aW9uPTEgb3B0aW9uLCBhbmQgdGhlIGRtZXNnIGRlbW9uc3RyYXRlIGd1YyB3b3JrcyB3aGVuIHN0
+b2xlbiBtZW1vcnkgaXMgZGlzYWJsZWQuDQpbICAgIDUuMjY1NjUzXSBbZHJtOmludGVsX3VjX3By
+ZXBhcmVfZncgW2k5MTVdXSBmZXRjaCB1QyBmdyBmcm9tIGk5MTUvc2tsX2d1Y192ZXI2XzEuYmlu
+IHN1Y2NlZWRlZCwgZncgZmZmZjkxNjdiYzkzYzFlMA0KWyAgICA1LjI2NTY2OF0gW2RybTppbnRl
+bF91Y19wcmVwYXJlX2Z3IFtpOTE1XV0gZmlybXdhcmUgdmVyc2lvbiA2LjEgT0sgKG1pbmltdW0g
+Ni4xKQ0KWyAgICA1LjI2NTcwOV0gW2RybTppbnRlbF91Y19wcmVwYXJlX2Z3IFtpOTE1XV0gdUMg
+ZncgZmV0Y2ggc3RhdHVzIFNVQ0NFU1MsIG9iaiBmZmZmOTE2NzVjZTg4NjAwDQpbICAgIDUuMjY3
+NDkzXSBbZHJtOmludGVsX2d1Y19pbml0X2h3IFtpOTE1XV0gR3VDIGZ3IHN0YXR1czogcGF0aCBp
+OTE1L3NrbF9ndWNfdmVyNl8xLmJpbiwgZmV0Y2ggU1VDQ0VTUywgbG9hZCBOT05FDQpbICAgIDUu
+MjY3NTA4XSBbZHJtOmludGVsX2d1Y19pbml0X2h3IFtpOTE1XV0gR3VDIGZ3IHN0YXR1czogZmV0
+Y2ggU1VDQ0VTUywgbG9hZCBQRU5ESU5HDQpbICAgIDUuMjcxNTcxXSBbZHJtOmd1Y191Y29kZV94
+ZmVyX2RtYSBbaTkxNV1dIERNQSBzdGF0dXMgMHgxMCwgR3VDIHN0YXR1cyAweDgwMDJmMGVjDQpb
+ICAgIDUuMjcxNTg2XSBbZHJtOmd1Y191Y29kZV94ZmVyX2RtYSBbaTkxNV1dIHJldHVybmluZyAw
+DQpbICAgIDUuMjcxNTg3XSBbZHJtXSBHdUMgc3VibWlzc2lvbiBlbmFibGVkIChmaXJtd2FyZSBp
+OTE1L3NrbF9ndWNfdmVyNl8xLmJpbiBbdmVyc2lvbiA2LjFdKQ0KWyAgICA1LjI3MjIzMl0gW2Ry
+bTppOTE1X2d1Y19zdWJtaXNzaW9uX2VuYWJsZSBbaTkxNV1dIHJlc2VydmVkIGNhY2hlbGluZSAw
+eDAsIG5leHQgMHg0MCwgbGluZXNpemUgNjQNClsgICAgNS4yNzIyNDhdIFtkcm06aTkxNV9ndWNf
+c3VibWlzc2lvbl9lbmFibGUgW2k5MTVdXSBIb3N0IGVuZ2luZXMgMHgxNyA9PiBHdUMgZW5naW5l
+cyB1c2VkIDB4Zg0KWyAgICA1LjI3MjI2M10gW2RybTpfX3Jlc2VydmVfZG9vcmJlbGwgW2k5MTVd
+XSBjbGllbnQgMCAoaGlnaCBwcmlvPW5vKSByZXNlcnZlZCBkb29yYmVsbDogMA0KWyAgICA1LjI3
+NDM1Ml0gW2RybTppOTE1X2d1Y19zdWJtaXNzaW9uX2VuYWJsZSBbaTkxNV1dIG5ldyBwcmlvcml0
+eSAyIGNsaWVudCBmZmZmOTE2NzVjYzU2ZDgwIGZvciBlbmdpbmUocykgMHgxNzogc3RhZ2VfaWQg
+MA0KWyAgICA1LjI3NDM4OV0gW2RybTppOTE1X2d1Y19zdWJtaXNzaW9uX2VuYWJsZSBbaTkxNV1d
+IGRvb3JiZWxsIGlkIDAsIGNhY2hlbGluZSBvZmZzZXQgMHgwPiANCg0KPiBCeSBteSBsaW1pdGVk
+IHVuZGVyc3RhbmRpbmcgb2YgVlQtZCBkZXRhaWxzOiBUaGUgc3RvbGVuIG1lbW9yeSBpcyBuZXZl
+cg0KPiBkaXJlY3RseSBhY2Nlc3NlZCBieSBpOTE1IGRyaXZlciAoYmVjYXVzZSBDUFUgYWNjZXNz
+IGRvZXNuJ3Qgd29yayBldmVuDQo+IGluIERPTTApLiBJdCBpcyBvbmx5IHVzZWQgdGhyb3VnaCB0
+aGUgYXBlcnR1cmUsIHdoaWNoIGp1c3QgcmVxdWlyZXMgZm9yDQo+IHRoZSBHVCBkZXZpY2UgdG8g
+aGF2ZSBhY2Nlc3MgdG8gdGhlIFJNUlIuIEZ1cnRoZXIsIHRoZSBHVCBkZXZpY2UgbmVlZHMNCj4g
+dG8gaGF2ZSBhY2Nlc3MgdG8gc3RvbGVuIG1lbW9yeSwgYmVjYXVzZSB0aGF0J3Mgd2hhdCBHdUMg
+dXNlcyBmb3INCj4gYmFja2luZyBzdG9yYWdlIGZvciBmb3IgV09QQ00uDQo+IA0KPiBBbmQgZXZl
+biBpZiBhZnRlciBhbGwgb2YgdGhlIGFib3ZlIGlzIGFkZHJlc3NlZCwgc2hvdWxkbid0IHdlIHJh
+dGhlcg0KPiB0cnkgdG8gZGV0ZWN0IHRoZSBsYWNrIG9mIFJNUlIsIHRoYW4gcHJlc2VuY2Ugb2Yg
+UUVNVSBJU0E/DQpbWmhhbmcsIFhpb25nIFldIEdvb2QgaWRlYS4gRGV2aWNlcyBrbm93IEkgbmVl
+ZCBSTVJSLCBidXQgb24gYSBuYXRpdmUNCm1hY2hpbmUsIFJNUlIgbmVlZCBiaW9zIHN1cHBvcnQg
+d2hpY2ggYWxsb2NhdGUgYW5kIHJlc2VydmUgbWVtb3J5IHJhbmdlDQpmb3IgUk1SUi4gU28gUk1S
+UiBuZWVkIGh5cGVydmlzb3IncyBoZWxwIGluIGVtdWxhdGVkIGVudmlyb25tZW50LiBPbmx5DQpo
+eXBlcnZpc29yIGtub3dzIHdoZXRoZXIgaXQgc3VwcG9ydCBSTVJSIG9yIG5vdC4gSW4gb3JkZXIg
+dG8gZGV0ZWN0IHRoZSBsYWNrDQpvZiBSTVJSIGluIGd1ZXN0LCBpOTE1IGRyaXZlciBuZWVkIHRv
+IGRldGVjdCBoeXBlcnZpc29yLiBTbyBpbiBteSBsYXN0IG1haWwsDQpJIHRyeSB0byB1c2UgY3Vw
+aWQoNDAwMDAwMDEpIHRvIGRldGVjdCBoeXBlcnZpc29yLiBaaGVueXUgdGhpbmsgaXQgaXMgdW5h
+Y2NlcHRhYmxlDQp0byB1c2UgY3VwaWQoNDAwMDAwMDEpIGluIGEgVVBUKHVuaXZlcnNhbCBwYXNz
+IHRocm91Z2gpIGRyaXZlci4gDQo+IA0KPiBXaGF0IGNvbWVzIHRvIG15IG1pbmQgaXMgZXhwb3J0
+aW5nIGZ1bmN0aW9uIGxpa2UgZGV2aWNlX2hhc19ybXJyKCkgZnJvbQ0KPiBpbnRlbC1pb21tdS5j
+b20gYW5kIGNvbnN1bWluZyB0aGF0LCBpZiB3ZSBlbmQgdXAgZG9pbmcgdGhpcy4gVGhhdCB3YXks
+DQo+IGlmIHNvbWVib2R5LCBzb21lIGRheSwgZ29lcyBhbmQgd3JpdGUgUk1SUiBwYXNzLXRocm91
+Z2ggY29kZSBjdXJyZW50bHkNCj4gbWlzc2luZywgaXQnbGwgc3RhcnQgd29ya2luZywganVzdCBs
+aWtlIGl0IHNob3VsZC4NCltaaGFuZywgWGlvbmcgWV0gSSBhbHNvIHdhbnQgdG8gaW1wbGVtZW50
+IFJNUlIgcGFzcy10aHJvdWdoIGNvZGUgYXQgZmlyc3QuDQpCdXQgdGhpcyBzb2x1dGlvbiBpcyBk
+ZW5pZWQgaW4gbXkgdGVhbSdzIG1lZXRpbmcuIEFzIGt2bS9xZW11IGNvbW11bml0eQ0KZGlzY3Vz
+c2VkIHRoaXMgYmVmb3JlIGFuZCBjYW1lIHRvIGEgc29sdXRpb246DQpodHRwczovL2FjY2Vzcy5y
+ZWRoYXQuY29tL3NpdGVzL2RlZmF1bHQvZmlsZXMvYXR0YWNobWVudHMvcm1yci13cDEucGRmDQo+
+IA0KPiBSZWdhcmRzLCBKb29uYXMNCj4gLS0NCj4gSm9vbmFzIExhaHRpbmVuDQo+IE9wZW4gU291
+cmNlIFRlY2hub2xvZ3kgQ2VudGVyDQo+IEludGVsIENvcnBvcmF0aW9uDQpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBsaXN0
+CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVza3Rv
+cC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
