@@ -1,218 +1,77 @@
-From: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Subject: Re: [RFC PATCH] of: Fix DMA configuration for non-DT masters
-Date: Thu, 13 Apr 2017 17:11:25 +0530
-Message-ID: <CAMSpPPcZQk8hM+TCFpPx_K86E9+XpwdRO+Ae15JTrfP74zSm=Q@mail.gmail.com>
-References: <67d1f46172599be243405f4341665fd0ef9ab969.1490726288.git.robin.murphy@arm.com>
- <CAMSpPPfJKKRkuDKxUgVBdg7vp7Ux5=PiHSxnMLc7-LMcCSatzg@mail.gmail.com>
- <CAMSpPPcSWxua_6ECZd4iEbTiAYk-KtapBDcOUxNdGaQkFF-LOQ@mail.gmail.com> <b02ace9b-f8f3-269d-6db4-3c1b1ea1e816@arm.com>
+From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [RFC 0/3] virtio-iommu: a paravirtualized IOMMU
+Date: Thu, 13 Apr 2017 14:12:19 +0100
+Message-ID: <1c07db27-4b5e-6712-b0bb-e2d9176c6607@arm.com>
+References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
+	<a0920e37-a11e-784c-7d90-be6617ea7686@redhat.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D190CA990E@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>
-In-Reply-To: <b02ace9b-f8f3-269d-6db4-3c1b1ea1e816-5wv7dgnIgG8@public.gmane.org>
-Sender: devicetree-owner-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robh+dt-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D190CA990E-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Tian, Kevin" <kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Jason Wang <jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <virtualization-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org" <virtio-dev-sDuHXQ4OtrM4h7I2RyI4rWD2FQJk+8+b@public.gmane.org>
+Cc: "cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org" <cdall-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org>, "mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "marc.zyngier-5wv7dgnIgG8@public.gmane.org" <marc.zyngier-5wv7dgnIgG8@public.gmane.org>, "will.deacon-5wv7dgnIgG8@public.gmane.org" <will.deacon-5wv7dgnIgG8@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Mar 29, 2017 at 11:12 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
-> On 29/03/17 06:46, Oza Oza wrote:
->> On Wed, Mar 29, 2017 at 10:23 AM, Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
->>> On Wed, Mar 29, 2017 at 12:27 AM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
->>>> For PCI masters not represented in DT, we pass the OF node of their
->>>> associated host bridge to of_dma_configure(), such that they can inherit
->>>> the appropriate DMA configuration from whatever is described there.
->>>> Unfortunately, whilst this has worked for the "dma-coherent" property,
->>>> it turns out to miss the case where the host bridge node has a non-empty
->>>> "dma-ranges", since nobody is expecting the 'device' to be a bus itself.
->>>>
->>>> It transpires, though, that the de-facto interface since the prototype
->>>> change in 1f5c69aa51f9 ("of: Move of_dma_configure() to device.c to help
->>>> re-use") is very clear-cut: either the master_np argument is redundant
->>>> with dev->of_node, or dev->of_node is NULL and master_np is the relevant
->>>> parent bus. Let's ratify that behaviour, then teach the whole
->>>> of_dma_configure() pipeline to cope with both cases properly.
->>>>
->>>> Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
->
-> [...]
->
->>>
->>> pci and memory mapped device world is different.
->
-> ???
->
-> No they aren't. There is nothing magic about PCI. PCI *is* a
-> memory-mapped bus.
->
-> The only PCI-specific aspect here is the Linux code path which passes a
-> host controller node into of_dma_configure() where the latter expects a
-> node for the actual endpoint device. It managed to work for
-> "dma-coherent", because that may appear either directly on a device node
-> or on any of its parent buses, but "dma-ranges" is *only* valid for DT
-> nodes representing buses, thus reveals that using a parent bus to stand
-> in for a device isn't actually correct. I only posted that horrible hack
-> patch to prove the point that having a child node to represent the
-> actual device is indeed sufficient to make of_dma_configure() work
-> correctly for PCI masters as-is (modulo the other issues).
->
->> of course if you talk
->>> from iommu perspective, all the master are same for IOMMU
->
-> I don't understand what you mean by that. There's nothing about IOMMUs
-> here, it's purely about parsing DT properties correctly.
->
->>> but the original intention of the patch is to try to solve 2 problems.
->>> please refer to https://lkml.org/lkml/2017/3/29/10
->
-> One patch should not solve two separate problems anyway. Taking a step
-> back, there are at least 3 things that this discussion has brought up:
->
-> 1) The way in which we call of_dma_configure() for PCI devices causes
-> the "dma-ranges" property on PCI host controllers to be ignored.
->
-> 2) of_dma_get_range() only considers the first entry in any "dma-ranges"
-> property.
->
-> 3) When of_dma_configure() does set a DMA mask, there is nothing on
-> arm64 and other architectures to prevent drivers overriding that with a
-> wider mask later.
->
-> Those are 3 separate problems, to solve with 3 or more separate patches,
-> and I have deliberately put the second and third to one side for the
-> moment. This patch fixes problem 1.
->
->>> 1) expose generic API for pci world clients to configure their
->>> dma-ranges. right now there is none.
->>> 2) same API can be used by IOMMU to derive dma_mask.
->>>
->>> while the current patch posted to handle dma-ranges for both memory
->>> mapped and pci devices, which I think is overdoing.
->
-> No, of_dma_configure() handles the "dma-ranges" property as it is
-> defined in the DT spec to describe the mapping between a child bus
-> address space and a parent bus address space. Whether those
-> memory-mapped parent and child buses are PCI, ISA, AMBA, HyperTransport,
-> or anything else is irrelevant other than for the encoding of the
-> address specifiers. All this patch does is sort out the cases where we
-> have a real device node to start at, from the cases where we don't and
-> so start directly at the device's parent bus node instead.
->
->>> besides we have different configuration of dma-ranges based on iommu
->>> is enabled or not enabled.
->
-> That doesn't sound right, unless you mean the firmware actually programs
-> the host controller's AXI bridge differently for system configurations
-> where the IOMMU is expected to be used or not? (and even then, I don't
-> really see why it would be necessary to do that...)
->
->>>  #define PCIE_DMA_RANGES dma-ranges = <0x43000000 0x00 0x80000000 0x00
->>> 0x80000000 0x00 0x80000000 \
->>>                                       0x43000000 0x08 0x00000000 0x08
->>> 0x00000000 0x08 0x00000000 \
->>>                                       0x43000000 0x80 0x00000000 0x80
->>> 0x00000000 0x40 0x00000000>;
->>> Not sure if this patch will consider above dma-ranges.
->>>
->>> my suggestion is to leave existing of_dma_get_range as is, and have
->>> new function for pci world as discussed in
->>> please refer to https://lkml.org/lkml/2017/3/29/10
->
-> And then we keep adding new functions to do the exact same thing for
-> every other discoverable bus type whose bridge is be described in DT? I
-> fail to see how that is in any way better than simply fixing the
-> existing code to work as it was intended to.
->
-> of_dma_get_ranges() uses of_translate_dma_address() just the same way as
-> existing PowerPC PCI code does, which further disproves your assertion
-> that parsing PCI addresses is somehow special - it's really only a
-> matter of getting the right number of address cells in order to to read
-> a child address to give to of_translate_dma_address() in the first
-> place. Incidentally, I now notice that the proposed
-> of_pci_get_dma_ranges() is incomplete as it doesn't use
-> of_translate_dma_address() or otherwise traverse upwards through the
-> dma-ranges of any further parent buses.
->
->>>
->>> Regards,
->>> Oza.
->>
->> also I see that, in case of multiple ranges of_dma_get_range doesnt handle that.
->> and also it is not meant to handle.
->
-> Yes, the existing code doesn't handle multiple dma-ranges entries,
-> because nobody's had the need to implement that so far, and this patch
-> does not change that because it's fixing a separate problem.
->
-> Now, of course of_dma_get_range() *should* be capable of handling
-> multiple entries regardless of this patch, and I'm going to write *that*
-> patch right now (it's going to be a case of adding a handful of lines
-> which probably won't even conflict with this one at all). If we had a
-> bunch of different range parsing functions, we'd then have to duplicate
-> the equivalent logic across all of them, which is clearly undesirable
-> when it can easily be avoided altogether.
->
-> Robin.
->
->> so with this patch will return wrong size and hence wrong dma_mask.
->> having said, I think it is better to separate pci world dma-ranges
->> function on of_pci.c
->>
->> for which my discussion with Rob already, (same thread)
->> https://lkml.org/lkml/2017/3/29/10
->> Waiting for Rob's viewpoint on this.
->>
->>
->> Regards,
->> Oza.
->>
->
-
-first of all the patch
-
-https://lkml.org/lkml/2017/3/30/304
-
-is not only to address the original problem of dma_mask but also to
-provide generic APIs
-to PCI RC drivers such as pcie-iproc.c or even rcar to get their dma-ranges.
-
-this API not only provides basis to retrieve the ranges but also it
-should have capability to handle
-inbound memory flags.
-
-having said that the PCI dma-ranges do differ slightly from
-traditional memory ranges.
-because it has got flags.
-
-now those flags could be IORESOURCE_CACHEABLE or anything else.
-our SOC will be having use of these flags in near future (although can
-not discuss details as of now).
-but in short we will need these flags to be taken care which were
-passed form DT.
-
-so PCIe iproc driver calls this function to get all teh information
-about dma-ranges.
-
-now if such function exists, other framework could also make use of it
-to get resources and figure out dma_mask.
-and in that case you really need not change of_dma_get_range.
-
-not only of_dma_get_range can hdnle PCI flags property but also it can
-not handle multiple ranges because finally it has only
-single *dma_addr, *paddr, *size  out parameters.
-so the burdon will be on API to fix the behavior as what to return
-rather than having Caller to choose what to do with the ranges.
-
-coming back to my current patch
-currently it does not do flag handling, but in near future I will have
-to add, but for that, this patch
-https://lkml.org/lkml/2017/3/30/304
-needs to bring under consideration to be ACKed.
-
-hope this explains the need of API.
-
-Regards,
-Oza.
---
-To unsubscribe from this list: send the line "unsubscribe devicetree" in
-the body of a message to majordomo-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
-More majordomo info at  http://vger.kernel.org/majordomo-info.html
+T24gMTMvMDQvMTcgMDk6MTYsIFRpYW4sIEtldmluIHdyb3RlOgo+PiBGcm9tOiBKYXNvbiBXYW5n
+Cj4+IFNlbnQ6IFdlZG5lc2RheSwgQXByaWwgMTIsIDIwMTcgNTowNyBQTQo+Pgo+PiBPbiAyMDE3
+5bm0MDTmnIgwOOaXpSAwMzoxNywgSmVhbi1QaGlsaXBwZSBCcnVja2VyIHdyb3RlOgo+Pj4gVGhp
+cyBpcyB0aGUgaW5pdGlhbCBwcm9wb3NhbCBmb3IgYSBwYXJhdmlydHVhbGl6ZWQgSU9NTVUgZGV2
+aWNlIHVzaW5nCj4+PiB2aXJ0aW8gdHJhbnNwb3J0LiBJdCBjb250YWlucyBhIGRlc2NyaXB0aW9u
+IG9mIHRoZSBkZXZpY2UsIGEgTGludXggZHJpdmVyLAo+Pj4gYW5kIGEgdG95IGltcGxlbWVudGF0
+aW9uIGluIGt2bXRvb2wuIFdpdGggdGhpcyBwcm90b3R5cGUsIHlvdSBjYW4KPj4+IHRyYW5zbGF0
+ZSBETUEgdG8gZ3Vlc3QgbWVtb3J5IGZyb20gZW11bGF0ZWQgKHZpcnRpbyksIG9yIHBhc3NlZC10
+aHJvdWdoCj4+PiAoVkZJTykgZGV2aWNlcy4KPj4+Cj4+PiBJbiBpdHMgc2ltcGxlc3QgZm9ybSwg
+aW1wbGVtZW50ZWQgaGVyZSwgdGhlIGRldmljZSBoYW5kbGVzIG1hcC91bm1hcAo+Pj4gcmVxdWVz
+dHMgZnJvbSB0aGUgZ3Vlc3QuIEZ1dHVyZSBleHRlbnNpb25zIHByb3Bvc2VkIGluICJSRkMgMy8z
+IiBzaG91bGQKPj4+IGFsbG93IHRvIGJpbmQgcGFnZSB0YWJsZXMgdG8gZGV2aWNlcy4KPj4+Cj4+
+PiBUaGVyZSBhcmUgYSBudW1iZXIgb2YgYWR2YW50YWdlcyBpbiBhIHBhcmF2aXJ0dWFsaXplZCBJ
+T01NVSBvdmVyIGEgZnVsbAo+Pj4gZW11bGF0aW9uLiBJdCBpcyBwb3J0YWJsZSBhbmQgY291bGQg
+YmUgcmV1c2VkIG9uIGRpZmZlcmVudCBhcmNoaXRlY3R1cmVzLgo+Pj4gSXQgaXMgZWFzaWVyIHRv
+IGltcGxlbWVudCB0aGFuIGEgZnVsbCBlbXVsYXRpb24sIHdpdGggbGVzcyBzdGF0ZSB0cmFja2lu
+Zy4KPj4+IEl0IG1pZ2h0IGJlIG1vcmUgZWZmaWNpZW50IGluIHNvbWUgY2FzZXMsIHdpdGggbGVz
+cyBjb250ZXh0IHN3aXRjaGVzIHRvCj4+PiB0aGUgaG9zdCBhbmQgdGhlIHBvc3NpYmlsaXR5IG9m
+IGluLWtlcm5lbCBlbXVsYXRpb24uCj4+Cj4+IEkgbGlrZSB0aGUgaWRlYS4gQ29uc2lkZXIgdGhl
+IGNvbXBsZXhpdHkgb2YgSU9NTVUgaGFyZHdhcmUuIEkgYmVsaWV2ZSB3ZQo+PiBkb24ndCB3YW50
+IHRvIGhhdmUgYW5kIGZpZ2h0ICBmb3IgYnVncyBvZiB0aHJlZSBvciBtb3JlIGRpZmZlcmVudCBJ
+T01NVQo+PiBpbXBsZW1lbnRhdGlvbnMgaW4gZWl0aGVyIHVzZXJzcGFjZSBvciBrZXJuZWwuCj4+
+Cj4gCj4gVGhvdWdoIHRoZXJlIGFyZSBkZWZpbml0ZWx5IHBvc2l0aXZlIHRoaW5ncyBhcm91bmQg
+cHZJT01NVSBhcHByb2FjaCwKPiBpdCBhbHNvIGhhcyBzb21lIGxpbWl0YXRpb25zOgo+IAo+IC0g
+RXhpc3RpbmcgSU9NTVUgaW1wbGVtZW50YXRpb25zIGhhdmUgYmVlbiBpbiBvbGQgZGlzdHJvcyBm
+b3IgcXVpdGUgc29tZQo+IHRpbWUsIHdoaWxlIHB2SU9NTVUgZHJpdmVyIHdpbGwgb25seSBsYW5k
+IGluIGZ1dHVyZSBkaXN0cm9zLiBEb2luZyBwdklPTU1VCj4gb25seSBtZWFucyB3ZSBjb21wbGV0
+ZWx5IGRyb3Agc3VwcG9ydCBvZiBvbGQgZGlzdHJvcyBpbiBWTTsKPiAKPiAtIFNpbWlsYXIgc2l0
+dWF0aW9uIG9uIHN1cHBvcnRpbmcgb3RoZXIgZ3Vlc3QgT1NlcyBlLmcuIFdpbmRvd3MuIElPTU1V
+IGlzCj4gYSBrZXkga2VybmVsIGNvbXBvbmVudCB3aGljaCBJJ20gbm90IHN1cmUgcHZJT01NVSB0
+aHJvdWdoIHZpcnRpbyBjYW4gYmUKPiByZWNvZ25pemVkIGluIHRob3NlIE9TZXMgKG5vdCBsaWtl
+IGEgdmlydGlvIGRldmljZSBkcml2ZXIpOwoKSSBjYW4ndCB0YWxrIGFib3V0IG90aGVyIE9TZXMs
+IGJ1dCBvbiBMaW51eCB2aXJ0aW8taW9tbXUgaXMgaW1wbGVtZW50ZWQKdGhlIHNhbWUgd2F5IGFz
+IG90aGVyIElPTU1VIGRyaXZlcnMgYW5kIGRvZXNuJ3QgcmVxdWlyZSBjb3JlIG1vZGlmaWNhdGlv
+bnMuCgo+IEkgd291bGQgaW1hZ2UgYm90aCBmdWxsLWVtdWxhdGVkIElPTU1VcyBhbmQgcHZJT01N
+VSB3b3VsZCBjby1leGlzdAo+IGZvciBzb21lIHRpbWUgZHVlIHRvIGFib3ZlIHJlYXNvbnMuIFNv
+bWVkYXkgd2hlbiBwdklPTU1VIGlzIG1hdHVyZS8KPiBzcHJlYWQgZW5vdWdoIGluIHRoZSBlY28t
+c3lzdGVtIChhbmQgZmVhdHVyZS13aXNlIGNvbXBhcmFibGUgdG8gZnVsbC1lbXVsYXRlZAo+IElP
+TU1VcyBmb3IgYWxsIHZlbmRvcnMpLCB0aGVuIHdlIG1heSBtYWtlIGEgY2FsbC4KCkFncmVlZC4g
+VGhlIG1haW4gaW5jb252ZW5pZW50IG9mIGFueSBwYXJhdmlydHVhbGl6ZWQgZGV2aWNlIGlzIHRo
+YXQgdGhleQpuZWVkIGFkZGl0aW9uYWwgc3VwcG9ydCBpbiB0aGUgZ3Vlc3QuIEl0IGlzIG5vdCBv
+dXIgaW50ZW50aW9uIHRvIGRpc3J1cHQKYWxsIHRoZSB3b3JrIGRvbmUgb24gSU9NTVUgdmlydHVh
+bGl6YXRpb24gZm9yIHg4NiBhbmQgb3RoZXIgYXJjaGl0ZWN0dXJlcy4KRXZlbiBmb3IgQVJNLCBw
+ZW9wbGUgbWlnaHQgd2FudCB0byBwcm92aWRlIFNNTVUgZW11bGF0aW9ucyB0byB1bm1vZGlmaWVk
+Cmd1ZXN0cywgaW1wbGVtZW50ZWQgaW4gdXNlcnNwYWNlLiBXaGF0IHdlIGludGVuZCB0byBhdm9p
+ZCwgYXMgZGV0YWlsZWQgaW4KbXkgb3RoZXIgcmVwbHksIGlzIGluLWtlcm5lbCBlbXVsYXRpb24g
+b2YgYWxsIHBvc3NpYmxlIEFSTS1iYXNlZCBJT01NVQp2YXJpYXRpb25zIGZvciBMaW51eC4gU28g
+d2UgcHJvcG9zZSBhIGdlbmVyaWMgYWx0ZXJuYXRpdmUgZnJvbSB0aGUgc3RhcnQsCnRoYXQgb3Ro
+ZXJzIGNhbiByZXVzZSBsYXRlci4KClRoYW5rcywKSmVhbi1QaGlsaXBwZQoKX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
+bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
+aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
