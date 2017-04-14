@@ -1,64 +1,69 @@
-From: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Subject: [PATCH] drivers/of_iommu: ignore SMMU DT nodes with status 'disabled'
-Date: Fri, 14 Apr 2017 13:43:15 +0100
-Message-ID: <20170414124315.2401-1-ard.biesheuvel@linaro.org>
+From: Jayachandran C <jnair@caviumnetworks.com>
+Subject: Re: [PATCH v5 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
+Date: Fri, 14 Apr 2017 21:06:46 +0000
+Message-ID: <20170414210646.GA5346@localhost>
+References: <1492115445-4069-1-git-send-email-jnair@caviumnetworks.com>
+ <1492115445-4069-3-git-send-email-jnair@caviumnetworks.com>
+ <20170414001911.GA13163@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org>
-List-Unsubscribe: <http://lists.infradead.org/mailman/options/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=unsubscribe>
-List-Archive: <http://lists.infradead.org/pipermail/linux-arm-kernel/>
-List-Post: <mailto:linux-arm-kernel@lists.infradead.org>
-List-Help: <mailto:linux-arm-kernel-request@lists.infradead.org?subject=help>
-List-Subscribe: <http://lists.infradead.org/mailman/listinfo/linux-arm-kernel>,
- <mailto:linux-arm-kernel-request@lists.infradead.org?subject=subscribe>
-Sender: "linux-arm-kernel" <linux-arm-kernel-bounces@lists.infradead.org>
-Errors-To: linux-arm-kernel-bounces+linux-arm-kernel=m.gmane.org@lists.infradead.org
-To: linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, joro@8bytes.org
-Cc: robin.murphy@arm.com, will.deacon@arm.com, Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-pci-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20170414001911.GA13163@bhelgaas-glaptop.roam.corp.google.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Jon Masters <jcm@redhat.com>, linux-arm-kernel@lists.infradead.org, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-DT nodes may have a status property, and if they do, such nodes should
-only be considered present if the status property is set to 'okay'.
+On Thu, Apr 13, 2017 at 07:19:11PM -0500, Bjorn Helgaas wrote:
+> I tentatively applied both patches to pci/host-thunder for v4.12.
+> 
+> However, I am concerned about the topology here:
+> 
+> On Thu, Apr 13, 2017 at 08:30:45PM +0000, Jayachandran C wrote:
+> > On Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the
+> > PCI topology is slightly unusual.  For a multi-node system, it looks
+> > like:
+> > 
+> >     00:00.0 [PCI] bridge to [bus 01-1e]
+> >     01:0a.0 [PCI-PCIe bridge, type 8] bridge to [bus 02-04]
+> >     02:00.0 [PCIe root port, type 4] bridge to [bus 03-04] (XLATE_ROOT)
+> >     03:00.0 PCIe Endpoint
+> 
+> A root port normally has a single PCIe link leading downstream.
+> According to this, 02:00.0 is a root port that has the usual
+> downstream link leading to 03:00.0, but it also has an upstream link
+> to 01:0a.0.
 
-Currently, we call the init function of IOMMUs described by the device
-tree without taking this into account, which may result in the output
-below on systems where some SMMUs may be legally disabled.
+The PCI topology is a bit broken due to the way that the PCIe IP block
+was integrated into SoC PCI bridges and devices. The current mechanism
+of adding a PCI-PCIe bridge to glue these together is not ideal.
 
- Failed to initialise IOMMU /smb/smmu@e0200000
- Failed to initialise IOMMU /smb/smmu@e0c00000
- arm-smmu e0a00000.smmu: probing hardware configuration...
- arm-smmu e0a00000.smmu: SMMUv1 with:
- arm-smmu e0a00000.smmu:  stage 2 translation
- arm-smmu e0a00000.smmu:  coherent table walk
- arm-smmu e0a00000.smmu:  stream matching with 32 register groups, mask 0x7fff
- arm-smmu e0a00000.smmu:  8 context banks (8 stage-2 only)
- arm-smmu e0a00000.smmu:  Supported page sizes: 0x60211000
- arm-smmu e0a00000.smmu:  Stage-2: 40-bit IPA -> 40-bit PA
- Failed to initialise IOMMU /smb/smmu@e0600000
- Failed to initialise IOMMU /smb/smmu@e0800000
-
-Since this is not an error condition, only call the init function if
-the device is enabled, which also inhibits the spurious error messages.
-
-Signed-off-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
----
- drivers/iommu/of_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 2683e9fc0dcf..2dd1206e6c0d 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -183,7 +183,7 @@ static int __init of_iommu_init(void)
- 	for_each_matching_node_and_match(np, matches, &match) {
- 		const of_iommu_init_fn init_fn = match->data;
+> Maybe this example is omitting details that are not relevant to DMA
+> aliases?  The PCIe capability only contains one set of link-related
+> registers, so I don't know how we could manage a single device that
+> has two links.
  
--		if (init_fn(np))
-+		if (of_device_is_available(np) && init_fn(np))
- 			pr_err("Failed to initialise IOMMU %s\n",
- 				of_node_full_name(np));
- 	}
--- 
-2.9.3
+The root port is standard and has just one link to the EP (or whatever
+is on the external PCIe slot). The fallout of the current hw design is
+that the PCI-PCIe bridge has a link that does not follow standard and
+does not have a counterpart (as you noted).
+
+> A device with two links would break things like ASPM.  In
+> set_pcie_port_type(), for example, we have this comment:
+> 
+>    * A Root Port or a PCI-to-PCIe bridge is always the upstream end
+>    * of a Link.  No PCIe component has two Links.  Two Links are
+>    * connected by a Switch that has a Port on each Link and internal
+>    * logic to connect the two Ports.
+> 
+> The topology above breaks these assumptions, which will make
+> pdev->has_secondary_link incorrect, which means ASPM won't work
+> correctly.
+
+Given the current hardware, the pcieport driver seems to work reasonably
+for the root port at 02:00.0, with AER support. I will take a look at the
+ASPM part.
+
+Thanks,
+JC.
