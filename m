@@ -1,55 +1,93 @@
-From: Bjorn Helgaas <helgaas@kernel.org>
-Subject: Re: [PATCH v5 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
-Date: Thu, 13 Apr 2017 19:19:11 -0500
-Message-ID: <20170414001911.GA13163@bhelgaas-glaptop.roam.corp.google.com>
-References: <1492115445-4069-1-git-send-email-jnair@caviumnetworks.com>
- <1492115445-4069-3-git-send-email-jnair@caviumnetworks.com>
+From: Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Subject: Re: [PATCH v2] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS
+	mmaping code
+Date: Fri, 14 Apr 2017 10:28:58 +0200
+Message-ID: <a9b645bc-0991-555f-93d4-9e2f5d1fefa4@samsung.com>
+References: <CGME20170331110300eucas1p1535f003de554a9f6e1db56eb47630885@eucas1p1.samsung.com>
+	<1490958171-2303-1-git-send-email-a.hajda@samsung.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-pci-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <1492115445-4069-3-git-send-email-jnair@caviumnetworks.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jayachandran C <jnair@caviumnetworks.com>
-Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, Jon Masters <jcm@redhat.com>, linux-arm-kernel@lists.infradead.org, Joerg Roedel <joro@8bytes.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-reply-to: <1490958171-2303-1-git-send-email-a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-I tentatively applied both patches to pci/host-thunder for v4.12.
+Hi,
 
-However, I am concerned about the topology here:
+Gently ping.
 
-On Thu, Apr 13, 2017 at 08:30:45PM +0000, Jayachandran C wrote:
-> On Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the
-> PCI topology is slightly unusual.  For a multi-node system, it looks
-> like:
-> 
->     00:00.0 [PCI] bridge to [bus 01-1e]
->     01:0a.0 [PCI-PCIe bridge, type 8] bridge to [bus 02-04]
->     02:00.0 [PCIe root port, type 4] bridge to [bus 03-04] (XLATE_ROOT)
->     03:00.0 PCIe Endpoint
+Regards
+Andrzej
 
-A root port normally has a single PCIe link leading downstream.
-According to this, 02:00.0 is a root port that has the usual
-downstream link leading to 03:00.0, but it also has an upstream link
-to 01:0a.0.
-
-Maybe this example is omitting details that are not relevant to DMA
-aliases?  The PCIe capability only contains one set of link-related
-registers, so I don't know how we could manage a single device that
-has two links.
-
-A device with two links would break things like ASPM.  In
-set_pcie_port_type(), for example, we have this comment:
-
-   * A Root Port or a PCI-to-PCIe bridge is always the upstream end
-   * of a Link.  No PCIe component has two Links.  Two Links are
-   * connected by a Switch that has a Port on each Link and internal
-   * logic to connect the two Ports.
-
-The topology above breaks these assumptions, which will make
-pdev->has_secondary_link incorrect, which means ASPM won't work
-correctly.
-
-What am I missing?
-
-Bjorn
+On 31.03.2017 13:02, Andrzej Hajda wrote:
+> In case of DMA_ATTR_FORCE_CONTIGUOUS allocations vm_area->pages
+> is invalid. __iommu_mmap_attrs and __iommu_get_sgtable should not
+> use it and take advantage of contiguous nature of the allocation.
+>
+> Fixes: 44176bb ("arm64: Add support for DMA_ATTR_FORCE_CONTIGUOUS to IOMMU")
+> Signed-off-by: Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> ---
+> Hi Robin, Geert,
+>
+> In this version of the patch I have replaced temporal pages and
+> iommu_dma_mmap with remap_pfn_range or rather its simplified version
+> vm_iomap_memory.
+> Unfortunately I have not find nice helper for sgtable creation, so I
+> left sg allocation inside _iommu_mmap_attrs.
+>
+> As the fixing of DMA_ATTR_FORCE_CONTIGUOUS related crashes has higher
+> priority I have focused only on it in this patch.
+>
+> Regards
+> Andrzej
+> ---
+>  arch/arm64/mm/dma-mapping.c | 17 ++++++++++++++++-
+>  1 file changed, 16 insertions(+), 1 deletion(-)
+>
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index f7b5401..41c7c36 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -703,6 +703,10 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+>  	if (dma_mmap_from_coherent(dev, vma, cpu_addr, size, &ret))
+>  		return ret;
+>  
+> +	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS)
+> +		return vm_iomap_memory(vma,
+> +				page_to_phys(vmalloc_to_page(cpu_addr)), size);
+> +
+>  	area = find_vm_area(cpu_addr);
+>  	if (WARN_ON(!area || !area->pages))
+>  		return -ENXIO;
+> @@ -715,8 +719,19 @@ static int __iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
+>  			       size_t size, unsigned long attrs)
+>  {
+>  	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> -	struct vm_struct *area = find_vm_area(cpu_addr);
+> +	struct vm_struct *area;
+> +
+> +	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+> +		int ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+> +
+> +		if (!ret)
+> +			sg_set_page(sgt->sgl, vmalloc_to_page(cpu_addr),
+> +				    PAGE_ALIGN(size), 0);
+>  
+> +		return ret;
+> +	}
+> +
+> +	area = find_vm_area(cpu_addr);
+>  	if (WARN_ON(!area || !area->pages))
+>  		return -ENXIO;
+>  
