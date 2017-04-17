@@ -1,12 +1,18 @@
-From: sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Subject: [PATCH] iommu/arm-smmu: Return IOVA in iova_to_phys when SMMU is
-	bypassed
-Date: Mon, 17 Apr 2017 17:27:26 +0530
-Message-ID: <1492430246-17267-1-git-send-email-sunil.kovvuri@gmail.com>
+From: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: Re: [PATCH v5 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
+Date: Mon, 17 Apr 2017 17:47:13 +0000
+Message-ID: <20170417174712.GA7575@localhost>
+References: <1492115445-4069-1-git-send-email-jnair@caviumnetworks.com>
+	<1492115445-4069-3-git-send-email-jnair@caviumnetworks.com>
+	<20170414001911.GA13163@bhelgaas-glaptop.roam.corp.google.com>
+	<20170414210646.GA5346@localhost>
+	<CAErSpo731xSzrnKF+G+8SA_UUHy7ROA1V9oFkpwKi85GQf9VAg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CAErSpo731xSzrnKF+G+8SA_UUHy7ROA1V9oFkpwKi85GQf9VAg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -16,37 +22,89 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+On Fri, Apr 14, 2017 at 09:00:06PM -0500, Bjorn Helgaas wrote:
+> On Fri, Apr 14, 2017 at 4:06 PM, Jayachandran C
+> <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org> wrote:
+> > On Thu, Apr 13, 2017 at 07:19:11PM -0500, Bjorn Helgaas wrote:
+> >> I tentatively applied both patches to pci/host-thunder for v4.12.
+> >>
+> >> However, I am concerned about the topology here:
+> >>
+> >> On Thu, Apr 13, 2017 at 08:30:45PM +0000, Jayachandran C wrote:
+> >> > On Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the
+> >> > PCI topology is slightly unusual.  For a multi-node system, it looks
+> >> > like:
+> >> >
+> >> >     00:00.0 [PCI] bridge to [bus 01-1e]
+> >> >     01:0a.0 [PCI-PCIe bridge, type 8] bridge to [bus 02-04]
+> >> >     02:00.0 [PCIe root port, type 4] bridge to [bus 03-04] (XLATE_ROOT)
+> >> >     03:00.0 PCIe Endpoint
+> >>
+> >> A root port normally has a single PCIe link leading downstream.
+> >> According to this, 02:00.0 is a root port that has the usual
+> >> downstream link leading to 03:00.0, but it also has an upstream link
+> >> to 01:0a.0.
+> >
+> > The PCI topology is a bit broken due to the way that the PCIe IP block
+> > was integrated into SoC PCI bridges and devices. The current mechanism
+> > of adding a PCI-PCIe bridge to glue these together is not ideal.
+> 
+> Yeah, that's definitely broken.
+> 
+> >> Maybe this example is omitting details that are not relevant to DMA
+> >> aliases?  The PCIe capability only contains one set of link-related
+> >> registers, so I don't know how we could manage a single device that
+> >> has two links.
+> >
+> > The root port is standard and has just one link to the EP (or whatever
+> > is on the external PCIe slot). The fallout of the current hw design is
+> > that the PCI-PCIe bridge has a link that does not follow standard and
+> > does not have a counterpart (as you noted).
+> >
+> >> A device with two links would break things like ASPM.  In
+> >> set_pcie_port_type(), for example, we have this comment:
+> >>
+> >>    * A Root Port or a PCI-to-PCIe bridge is always the upstream end
+> >>    * of a Link.  No PCIe component has two Links.  Two Links are
+> >>    * connected by a Switch that has a Port on each Link and internal
+> >>    * logic to connect the two Ports.
+> >>
+> >> The topology above breaks these assumptions, which will make
+> >> pdev->has_secondary_link incorrect, which means ASPM won't work
+> >> correctly.
+> >
+> > Given the current hardware, the pcieport driver seems to work reasonably
+> > for the root port at 02:00.0, with AER support. I will take a look at the
+> > ASPM part.
+> 
+> I don't think pcieport itself cares much about links.  ASPM does, but
+> it looks like set_pcie_port_type() actually is smart enough to know
+> that PCI-to-PCIe bridges and Root Ports always have links on their
+> secondary sides.  So has_secondary_link probably does get set
+> correctly.
+> 
+> But I think you'll hit the VIA "strange chipset" thing in
+> pcie_aspm_init_link_state(), which will probably prevent us from doing
+> ASPM on the link from 02:00.0 to 03:00.0.
+> 
+> Could you collect "lspci -vv" output from this system?  I'd like to
+> archive that as background for this IOMMU issue and the ASPM tweaks I
+> suspect we'll have to do.  I *wish* we had more information about that
+> VIA thing, because I suspect we could get rid of it if we had more
+> details.
 
-For software initiated address translation, when domain type is
-IOMMU_DOMAIN_IDENTITY i.e SMMU is bypassed, mimic HW behavior
-i.e return the same IOVA as translated address.
+The full logs are slightly large, so I have kept them at:
+https://github.com/jchandra-cavm/thunderx2/blob/master/logs/
+The lspci -vv output is lspci-vv.txt and lspci -tvn output is lspci-tvn.txt
 
-This patch is an extension to Will Deacon's patchset 
-"Implement SMMU passthrough using the default domain".
+The output is from 2 socket system, the cards are not on the first slot
+like the example above, so the bus and device numbers are different.
 
-Signed-off-by: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/arm-smmu.c | 3 +++
- 1 file changed, 3 insertions(+)
+Looks like I have to spend some time on ASPM next.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 41afb07..2f4a130 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1405,6 +1405,9 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
- 
-+	if (domain->type == IOMMU_DOMAIN_IDENTITY)
-+		return iova;
-+
- 	if (!ops)
- 		return 0;
- 
--- 
-2.7.4
+Thanks,
+JC.
