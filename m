@@ -1,42 +1,64 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v5 01/32] x86: Documentation for AMD Secure Memory
- Encryption (SME)
-Date: Wed, 19 Apr 2017 17:38:19 +0200
-Message-ID: <20170419153818.3pl3gkdpe42lve44@pd.tnic>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418211625.10190.52568.stgit@tlendack-t1.amdoffice.net>
- <20170419090224.frmv2jhwfwoxvdie@pd.tnic>
- <bbda868c-9b34-4404-f563-98b000124ac5@amd.com>
+From: Jon Masters <jcm@redhat.com>
+Subject: Re: [PATCH v5 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
+Date: Wed, 19 Apr 2017 19:38:53 -0400
+Message-ID: <baed1ecf-7a57-0229-42b0-d87599a225b5@redhat.com>
+References: <1492115445-4069-1-git-send-email-jnair@caviumnetworks.com>
+ <1492115445-4069-3-git-send-email-jnair@caviumnetworks.com>
+ <20170414001911.GA13163@bhelgaas-glaptop.roam.corp.google.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-arch-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <bbda868c-9b34-4404-f563-98b000124ac5@amd.com>
-Sender: linux-arch-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Return-path: <linux-pci-owner@vger.kernel.org>
+In-Reply-To: <20170414001911.GA13163@bhelgaas-glaptop.roam.corp.google.com>
+Sender: linux-pci-owner@vger.kernel.org
+To: Bjorn Helgaas <helgaas@kernel.org>, Jayachandran C <jnair@caviumnetworks.com>
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 19, 2017 at 09:23:47AM -0500, Tom Lendacky wrote:
-> Btw, I tried to update all the subjects and descriptions to be
-> more descriptive but I'm sure there is still room for improvement
-> so keep the comments on them coming.
+Hi Bjorn, JC,
 
-No worries there :)
+On 04/13/2017 08:19 PM, Bjorn Helgaas wrote:
 
-> Note, just because the bit is set in %cr3 doesn't mean the full
-> hierarchy is encrypted. Each level in the hierarchy needs to have the
-> encryption bit set. So, theoretically, you could have the encryption
-> bit set in %cr3 so that the PGD is encrypted, but not set the encryption
-> bit in the PGD entry for a PUD and so the PUD pointed to by that entry
-> would not be encrypted.
+> I tentatively applied both patches to pci/host-thunder for v4.12.
 
-Ha, that is a nice detail I didn't realize. You could add it to the text.
+Thanks for that :)
 
-Thanks.
+> However, I am concerned about the topology here:
+
+Various feedback has been provided on this one over the past $time. In
+addition, I have requested that this serve as an example of why we need
+a more complete PCIe integration guide for ARMv8. It's on the list of
+things for my intended opus magnum on the topic ;)
+
+> On Thu, Apr 13, 2017 at 08:30:45PM +0000, Jayachandran C wrote:
+>> On Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the
+>> PCI topology is slightly unusual.  For a multi-node system, it looks
+>> like:
+>>
+>>     00:00.0 [PCI] bridge to [bus 01-1e]
+>>     01:0a.0 [PCI-PCIe bridge, type 8] bridge to [bus 02-04]
+>>     02:00.0 [PCIe root port, type 4] bridge to [bus 03-04] (XLATE_ROOT)
+>>     03:00.0 PCIe Endpoint
+> 
+> A root port normally has a single PCIe link leading downstream.
+
+In integration terms, there's always a bus on the other side of the RC.
+It's just usually a processor local bus of some kind on a proprietary
+interconnect, but there's always something there. The issue is when you
+can see it as PCIe and it's not through a transparent glue bridge.
+
+I had originally hoped that the ECAM could be hacked up so that we would
+first walk the topology at the 02:00.0 as a root and not see what's
+above it BUT there are other device attachments up there for the on-SoC
+devices and I think we really intend to use those.
+
+Bottom line in my opinion is document this case, use it as a learning
+example, and move forward. This has been useful in justifying why we
+need better integration documentation from the server community. And in
+particular from the OS vendors, of which I guess we can allude to their
+being more than Linux interested in ARM server these days ;)
+
+Jon.
 
 -- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+Computer Architect | Sent from my Fedora powered Ryzen
