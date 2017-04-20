@@ -1,35 +1,50 @@
-From: Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v5 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
-Date: Thu, 20 Apr 2017 08:20:38 -0500
-Message-ID: <CAErSpo4+sVEydsxi8quK=avN=mWyoHV=bUxDDKgOfGR7=15zgA@mail.gmail.com>
-References: <1492115445-4069-1-git-send-email-jnair@caviumnetworks.com>
- <1492115445-4069-3-git-send-email-jnair@caviumnetworks.com>
- <20170414001911.GA13163@bhelgaas-glaptop.roam.corp.google.com>
- <baed1ecf-7a57-0229-42b0-d87599a225b5@redhat.com> <832cb9b3-ceaf-6771-bfc9-7bae35494f6d@redhat.com>
+From: Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH] iommu/ipmmu-vmsa: Fix pgsize_bitmap semicolon typo
+Date: Thu, 20 Apr 2017 22:49:51 +0900
+Message-ID: <149269619140.29240.8313759935990074477.sendpatchset@little-apple>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <832cb9b3-ceaf-6771-bfc9-7bae35494f6d@redhat.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jon Masters <jcm@redhat.com>
-Cc: Bjorn Helgaas <helgaas@kernel.org>, Jayachandran C <jnair@caviumnetworks.com>, "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>, linux-arm <linux-arm-kernel@lists.infradead.org>, Joerg Roedel <joro@8bytes.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org, geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, horms+renesas-/R6kz+dDXgpPR4JQBCEnsQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 19, 2017 at 7:25 PM, Jon Masters <jcm@redhat.com> wrote:
-> One additional footnote. I spent a bunch of time recently on my personal
-> Xeon systems walking through the PCIe topology and aligning on how to
-> advise the ARM server community proceed going forward. If you look at
-> how Intel vs AMD handle their host bridges for example, you'll see two
-> very different approaches to the case of cross-socket PCIe.
+From: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
 
-As a learning opportunity for me, can you share "lspci -vv" examples
-that show this Intel vs AMD difference?  Maybe the ACPI host bridge
-descriptions from dmesg are relevant too?
+Fix comman-instead-of-semicolon typo error present
+in the latest version of the IPMMU driver.
 
-> But my
-> operating assumption is that anything longer term which looks boring and
-> x86 enough is probably fine from an ARM server point of view.
+Will in the future be rolled into next driver update.
 
-That sounds pretty safe to me.
+Signed-off-by: Magnus Damm <damm+renesas-yzvPICuk2ACczHhG9Qg4qA@public.gmane.org>
+---
 
-Bjorn
+ Applies on top of renesas-drivers-2017-04-18-v4.11-rc7 or -next plus:
+ [PATCH v7 00/07] iommu/ipmmu-vmsa: IPMMU multi-arch update V7
+ [PATCH v3 00/09] iommu/ipmmu-vmsa: r8a7795 support V3
+ [PATCH v3 0/3] iommu/ipmmu-vmsa: r8a7796 support V3
+
+ drivers/iommu/ipmmu-vmsa.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- 0001/drivers/iommu/ipmmu-vmsa.c
++++ work/drivers/iommu/ipmmu-vmsa.c	2017-04-20 22:30:07.000607110 +0900
+@@ -431,7 +431,7 @@ static int ipmmu_domain_init_context(str
+ 	 * non-secure mode.
+ 	 */
+ 	domain->cfg.quirks = IO_PGTABLE_QUIRK_ARM_NS;
+-	domain->cfg.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
++	domain->cfg.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K;
+ 	domain->cfg.ias = 32;
+ 	domain->cfg.oas = 40;
+ 	domain->cfg.tlb = &ipmmu_gather_ops;
