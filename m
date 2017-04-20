@@ -1,75 +1,61 @@
-From: Jon Masters <jcm@redhat.com>
-Subject: Re: [PATCH v5 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
-Date: Wed, 19 Apr 2017 20:25:54 -0400
-Message-ID: <832cb9b3-ceaf-6771-bfc9-7bae35494f6d@redhat.com>
-References: <1492115445-4069-1-git-send-email-jnair@caviumnetworks.com>
- <1492115445-4069-3-git-send-email-jnair@caviumnetworks.com>
- <20170414001911.GA13163@bhelgaas-glaptop.roam.corp.google.com>
- <baed1ecf-7a57-0229-42b0-d87599a225b5@redhat.com>
+From: Sunil Kovvuri <sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: Return IOVA in iova_to_phys when SMMU is
+	bypassed
+Date: Thu, 20 Apr 2017 09:50:23 +0530
+Message-ID: <CA+sq2Cdf8OOUmM_PU+b5T5G6mRRxJb1e4UZnx60bbqwJUY20Dg@mail.gmail.com>
+References: <1492430246-17267-1-git-send-email-sunil.kovvuri@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <baed1ecf-7a57-0229-42b0-d87599a225b5@redhat.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Bjorn Helgaas <helgaas@kernel.org>, Jayachandran C <jnair@caviumnetworks.com>
-Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org, Joerg Roedel <joro@8bytes.org>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1492430246-17267-1-git-send-email-sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, LAKML <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-One additional footnote. I spent a bunch of time recently on my personal
-Xeon systems walking through the PCIe topology and aligning on how to
-advise the ARM server community proceed going forward. If you look at
-how Intel vs AMD handle their host bridges for example, you'll see two
-very different approaches to the case of cross-socket PCIe. But my
-operating assumption is that anything longer term which looks boring and
-x86 enough is probably fine from an ARM server point of view.
+On Mon, Apr 17, 2017 at 5:27 PM,  <sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> From: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>
+> For software initiated address translation, when domain type is
+> IOMMU_DOMAIN_IDENTITY i.e SMMU is bypassed, mimic HW behavior
+> i.e return the same IOVA as translated address.
+>
+> This patch is an extension to Will Deacon's patchset
+> "Implement SMMU passthrough using the default domain".
+>
+> Signed-off-by: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> ---
+>  drivers/iommu/arm-smmu.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 41afb07..2f4a130 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1405,6 +1405,9 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+>         struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>         struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
+>
+> +       if (domain->type == IOMMU_DOMAIN_IDENTITY)
+> +               return iova;
+> +
+>         if (!ops)
+>                 return 0;
+>
+> --
+> 2.7.4
+>
 
-On 04/19/2017 07:38 PM, Jon Masters wrote:
-> Hi Bjorn, JC,
-> 
-> On 04/13/2017 08:19 PM, Bjorn Helgaas wrote:
-> 
->> I tentatively applied both patches to pci/host-thunder for v4.12.
-> 
-> Thanks for that :)
-> 
->> However, I am concerned about the topology here:
-> 
-> Various feedback has been provided on this one over the past $time. In
-> addition, I have requested that this serve as an example of why we need
-> a more complete PCIe integration guide for ARMv8. It's on the list of
-> things for my intended opus magnum on the topic ;)
-> 
->> On Thu, Apr 13, 2017 at 08:30:45PM +0000, Jayachandran C wrote:
->>> On Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the
->>> PCI topology is slightly unusual.  For a multi-node system, it looks
->>> like:
->>>
->>>     00:00.0 [PCI] bridge to [bus 01-1e]
->>>     01:0a.0 [PCI-PCIe bridge, type 8] bridge to [bus 02-04]
->>>     02:00.0 [PCIe root port, type 4] bridge to [bus 03-04] (XLATE_ROOT)
->>>     03:00.0 PCIe Endpoint
->>
->> A root port normally has a single PCIe link leading downstream.
-> 
-> In integration terms, there's always a bus on the other side of the RC.
-> It's just usually a processor local bus of some kind on a proprietary
-> interconnect, but there's always something there. The issue is when you
-> can see it as PCIe and it's not through a transparent glue bridge.
-> 
-> I had originally hoped that the ECAM could be hacked up so that we would
-> first walk the topology at the 02:00.0 as a root and not see what's
-> above it BUT there are other device attachments up there for the on-SoC
-> devices and I think we really intend to use those.
-> 
-> Bottom line in my opinion is document this case, use it as a learning
-> example, and move forward. This has been useful in justifying why we
-> need better integration documentation from the server community. And in
-> particular from the OS vendors, of which I guess we can allude to their
-> being more than Linux interested in ARM server these days ;)
-> 
-> Jon.
-> 
+Any comments or is this patch accepted ?
 
--- 
-Computer Architect | Sent from my Fedora powered Ryzen
+Thanks,
+Sunil.
