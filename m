@@ -1,81 +1,79 @@
-From: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH v5 05/32] x86/CPU/AMD: Handle SME reduction in physical
- address size
-Date: Thu, 20 Apr 2017 12:29:20 -0500
-Message-ID: <aaa52e93-5875-6033-e72f-8fc3de43ca3a@amd.com>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418211711.10190.30861.stgit@tlendack-t1.amdoffice.net>
- <20170420165922.j2inlwbchrs6senw@pd.tnic>
+From: Catalin Marinas <catalin.marinas@arm.com>
+Subject: Re: [PATCH v5] arm64: Add support for DMA_ATTR_FORCE_CONTIGUOUS to
+ IOMMU
+Date: Thu, 20 Apr 2017 18:59:06 +0100
+Message-ID: <20170420175905.GB755@e104818-lin.cambridge.arm.com>
+References: <1488908612-22522-1-git-send-email-geert+renesas@glider.be>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Return-path: <owner-linux-mm@kvack.org>
-In-Reply-To: <20170420165922.j2inlwbchrs6senw@pd.tnic>
-Sender: owner-linux-mm@kvack.org
-To: Borislav Petkov <bp@alien8.de>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S.
- Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy Lutomirski <luto@kernel.org>, "H. Peter
- Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>
+Content-Type: text/plain; charset=us-ascii
+Return-path: <linux-renesas-soc-owner@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <1488908612-22522-1-git-send-email-geert+renesas@glider.be>
+Sender: linux-renesas-soc-owner@vger.kernel.org
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Will Deacon <will.deacon@arm.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>, Magnus Damm <magnus.damm@gmail.com>, linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, linux-arm-kernel@lists.infradead.org, Marek Szyprowski <m.szyprowski@samsung.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 4/20/2017 11:59 AM, Borislav Petkov wrote:
-> On Tue, Apr 18, 2017 at 04:17:11PM -0500, Tom Lendacky wrote:
->> When System Memory Encryption (SME) is enabled, the physical address
->> space is reduced. Adjust the x86_phys_bits value to reflect this
->> reduction.
->>
->> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
->> ---
->>  arch/x86/kernel/cpu/amd.c |   14 +++++++++++---
->>  1 file changed, 11 insertions(+), 3 deletions(-)
->
-> ...
->
->> @@ -622,8 +624,14 @@ static void early_init_amd(struct cpuinfo_x86 *c)
->>
->>  			/* Check if SME is enabled */
->>  			rdmsrl(MSR_K8_SYSCFG, msr);
->> -			if (!(msr & MSR_K8_SYSCFG_MEM_ENCRYPT))
->> +			if (msr & MSR_K8_SYSCFG_MEM_ENCRYPT) {
->> +				unsigned int ebx;
->> +
->> +				ebx = cpuid_ebx(0x8000001f);
->> +				c->x86_phys_bits -= (ebx >> 6) & 0x3f;
->> +			} else {
->>  				clear_cpu_cap(c, X86_FEATURE_SME);
->> +			}
->
-> Lemme do some simplifying to save an indent level, get rid of local var
-> ebx and kill some { }-brackets for a bit better readability:
->
->         if (c->extended_cpuid_level >= 0x8000001f) {
->                 u64 msr;
->
->                 if (!cpu_has(c, X86_FEATURE_SME))
->                         return;
->
->                 /* Check if SME is enabled */
->                 rdmsrl(MSR_K8_SYSCFG, msr);
->                 if (msr & MSR_K8_SYSCFG_MEM_ENCRYPT)
->                         c->x86_phys_bits -= (cpuid_ebx(0x8000001f) >> 6) & 0x3f;
->                 else
->                         clear_cpu_cap(c, X86_FEATURE_SME);
->         }
->
+Catching up with these threads, so replying to a patch I already
+applied.
 
-Hmmm... and actually if cpu_has(X86_FEATURE_SME) is true then it's a
-given that extended_cpuid_level >= 0x8000001f.  So this can be
-simplified to just:
+On Tue, Mar 07, 2017 at 06:43:32PM +0100, Geert Uytterhoeven wrote:
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -584,20 +584,7 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+>  	 */
+>  	gfp |= __GFP_ZERO;
+>  
+> -	if (gfpflags_allow_blocking(gfp)) {
+> -		struct page **pages;
+> -		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
+> -
+> -		pages = iommu_dma_alloc(dev, iosize, gfp, attrs, ioprot,
+> -					handle, flush_page);
+> -		if (!pages)
+> -			return NULL;
+> -
+> -		addr = dma_common_pages_remap(pages, size, VM_USERMAP, prot,
+> -					      __builtin_return_address(0));
+> -		if (!addr)
+> -			iommu_dma_free(dev, pages, iosize, handle);
+> -	} else {
+> +	if (!gfpflags_allow_blocking(gfp)) {
+>  		struct page *page;
+>  		/*
+>  		 * In atomic context we can't remap anything, so we'll only
+> @@ -621,6 +608,45 @@ static void *__iommu_alloc_attrs(struct device *dev, size_t size,
+>  				__free_from_pool(addr, size);
+>  			addr = NULL;
+>  		}
+> +	} else if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+> +		pgprot_t prot = __get_dma_pgprot(attrs, PAGE_KERNEL, coherent);
+> +		struct page *page;
+> +
+> +		page = dma_alloc_from_contiguous(dev, size >> PAGE_SHIFT,
+> +						 get_order(size), gfp);
+> +		if (!page)
+> +			return NULL;
+> +
+> +		*handle = iommu_dma_map_page(dev, page, 0, iosize, ioprot);
+> +		if (iommu_dma_mapping_error(dev, *handle)) {
+> +			dma_release_from_contiguous(dev, page,
+> +						    size >> PAGE_SHIFT);
+> +			return NULL;
+> +		}
+> +		if (!coherent)
+> +			__dma_flush_area(page_to_virt(page), iosize);
+> +
+> +		addr = dma_common_contiguous_remap(page, size, VM_USERMAP,
+> +						   prot,
+> +						   __builtin_return_address(0));
 
-	if (cpu_has(c, X86_FEATURE_SME)) {
-		... the rest of your suggestion (minus cpu_has()) ...
-	}
+Do we need to call dma_common_pages_remap() if the allocation is
+coherent? In the __dma_alloc() case we don't do it but simply use
+page_address(page) as returned by __dma_alloc_coherent().
 
-Thanks,
-Tom
+(note that my comment is not meant to fix the issue reported by Andrzej
+Hajda but I just spotted it)
 
---
-To unsubscribe, send a message with 'unsubscribe linux-mm' in
-the body to majordomo@kvack.org.  For more info on Linux MM,
-see: http://www.linux-mm.org/ .
-Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
+-- 
+Catalin
