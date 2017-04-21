@@ -1,88 +1,37 @@
-From: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: RE: [RFC 2/3] virtio-iommu: device probing and operations
-Date: Fri, 21 Apr 2017 09:02:35 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D190CB262D@SHSMSX101.ccr.corp.intel.com>
-References: <20170407191747.26618-1-jean-philippe.brucker@arm.com>
-	<20170407191747.26618-3-jean-philippe.brucker@arm.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D190CADECE@SHSMSX101.ccr.corp.intel.com>
-	<34166633-f4d5-21d5-20db-9091243ccd84@arm.com>
+From: Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH] iommu: arm-smmu: correct sid to mask
+Date: Fri, 21 Apr 2017 17:03:36 +0800
+Message-ID: <1492765416-30835-1-git-send-email-peng.fan@nxp.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <virtualization-bounces@lists.linux-foundation.org>
-In-Reply-To: <34166633-f4d5-21d5-20db-9091243ccd84@arm.com>
-Content-Language: en-US
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/virtualization>,
-	<mailto:virtualization-request@lists.linux-foundation.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/virtualization/>
-List-Post: <mailto:virtualization@lists.linux-foundation.org>
-List-Help: <mailto:virtualization-request@lists.linux-foundation.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/virtualization>,
-	<mailto:virtualization-request@lists.linux-foundation.org?subject=subscribe>
-Sender: virtualization-bounces@lists.linux-foundation.org
-Errors-To: virtualization-bounces@lists.linux-foundation.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>, "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>
-Cc: "cdall@linaro.org" <cdall@linaro.org>, "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>, "mst@redhat.com" <mst@redhat.com>, "marc.zyngier@arm.com" <marc.zyngier@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, "will.deacon@arm.com" <will.deacon@arm.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>
+Content-Type: text/plain
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: will.deacon@arm.com
+Cc: robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
 List-Id: iommu@lists.linux-foundation.org
 
-PiBGcm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgW21haWx0bzpqZWFuLXBoaWxpcHBlLmJydWNr
-ZXJAYXJtLmNvbV0NCj4gU2VudDogV2VkbmVzZGF5LCBBcHJpbCAxOSwgMjAxNyAyOjQ2IEFNDQo+
-IA0KPiBPbiAxOC8wNC8xNyAxMToyNiwgVGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4+IEZyb206IEpl
-YW4tUGhpbGlwcGUgQnJ1Y2tlcg0KPiA+PiBTZW50OiBTYXR1cmRheSwgQXByaWwgOCwgMjAxNyAz
-OjE4IEFNDQo+ID4+DQo+ID4gWy4uLl0NCj4gPj4gICBJSS4gRmVhdHVyZSBiaXRzDQo+ID4+ICAg
-PT09PT09PT09PT09PT09PQ0KPiA+Pg0KPiA+PiBWSVJUSU9fSU9NTVVfRl9JTlBVVF9SQU5HRSAo
-MCkNCj4gPj4gIEF2YWlsYWJsZSByYW5nZSBvZiB2aXJ0dWFsIGFkZHJlc3NlcyBpcyBkZXNjcmli
-ZWQgaW4gaW5wdXRfcmFuZ2UNCj4gPg0KPiA+IFVzdWFsbHkgb25seSB0aGUgbWF4aW11bSBzdXBw
-b3J0ZWQgYWRkcmVzcyBiaXRzIGFyZSBpbXBvcnRhbnQuDQo+ID4gQ3VyaW91cyBkbyB5b3Ugc2Vl
-IHN1Y2ggc2l0dWF0aW9uIHdoZXJlIGxvdyBlbmQgb2YgdGhlIGFkZHJlc3MNCj4gPiBzcGFjZSBp
-cyBub3QgdXNhYmxlIChzaW5jZSB5b3UgaGF2ZSBib3RoIHN0YXJ0L2VuZCBkZWZpbmVkIGxhdGVy
-KT8NCj4gDQo+IEEgc3RhcnQgYWRkcmVzcyB3b3VsZCBhbGxvdyB0byBwcm92aWRlIHNvbWV0aGlu
-ZyByZXNlbWJsaW5nIGEgR0FSVCB0byB0aGUNCj4gZ3Vlc3Q6IGFuIElPTU1VIHdpdGggb25lIGFk
-ZHJlc3Mgc3BhY2UgKGlvYXNpZF9iaXRzPTApIGFuZCBhIHNtYWxsIElPVkENCj4gYXBlcnR1cmUu
-IEknbSBub3Qgc3VyZSBob3cgdXNlZnVsIHRoYXQgd291bGQgYmUgaW4gcHJhY3RpY2UuDQoNCklu
-dGVsIFZULWQgaGFzIG5vIHN1Y2ggbGltaXRhdGlvbiwgd2hpY2ggSSBjYW4gdGVsbC4gOi0pDQoN
-Cj4gDQo+IE9uIGEgcmVsYXRlZCBub3RlLCB0aGUgdmlydGlvLWlvbW11IGl0c2VsZiBkb2Vzbid0
-IHByb3ZpZGUgYQ0KPiBwZXItYWRkcmVzcy1zcGFjZSBhcGVydHVyZSBhcyBpdCBzdGFuZHMuIEZv
-ciBleGFtcGxlLCBhdHRhY2hpbmcgYSBkZXZpY2UNCj4gdG8gYW4gYWRkcmVzcyBzcGFjZSBtaWdo
-dCByZXN0cmljdCB0aGUgYXZhaWxhYmxlIElPVkEgcmFuZ2UgZm9yIHRoZSB3aG9sZQ0KPiBBUyBp
-ZiB0aGF0IGRldmljZSBjYW5ub3Qgd3JpdGUgdG8gaGlnaCBtZW1vcnkgKGFib3ZlIDMyLWJpdCku
-IElmIHRoZSBndWVzdA0KPiBhdHRlbXB0cyB0byBtYXAgYW4gSU9WQSBvdXRzaWRlIHRoaXMgd2lu
-ZG93IGludG8gdGhlIGRldmljZSdzIGFkZHJlc3MNCj4gc3BhY2UsIGl0IHNob3VsZCBleHBlY3Qg
-dGhlIE1BUCByZXF1ZXN0IHRvIGZhaWwuIEFuZCB3aGVuIGF0dGFjaGluZywgaWYNCj4gdGhlIGFk
-ZHJlc3Mgc3BhY2UgYWxyZWFkeSBoYXMgbWFwcGluZ3Mgb3V0c2lkZSB0aGlzIHdpbmRvdywgdGhl
-biBBVFRBQ0gNCj4gc2hvdWxkIGZhaWwuDQo+IA0KPiBUaGlzIHRvbyBzZWVtcyB0byBiZSBzb21l
-dGhpbmcgdGhhdCBvdWdodCB0byBiZSBjb21tdW5pY2F0ZWQgYnkgZmlybXdhcmUsDQo+IGJ1dCBi
-aXRzIGFyZSBtaXNzaW5nIChJIGNhbid0IGZpbmQgYW55dGhpbmcgZXF1aXZhbGVudCB0byBEVCdz
-IGRtYS1yYW5nZXMNCj4gZm9yIFBDSSByb290IGJyaWRnZXMgaW4gQUNQSSB0YWJsZXMsIGZvciBl
-eGFtcGxlKS4gSW4gYWRkaXRpb24gVkZJTw0KPiBkb2Vzbid0IGNvbW11bmljYXRlIGFueSBETUEg
-bWFzayBmb3IgZGV2aWNlcywgYW5kIGRvZXNuJ3QgY2hlY2sgdGhlbQ0KPiBpdHNlbGYuIEkgZ3Vl
-c3MgdGhhdCB0aGUgaG9zdCBjb3VsZCBmaW5kIG91dCB0aGUgRE1BIG1hc2sgb2YgZGV2aWNlcyBv
-bmUNCj4gd2F5IG9yIGFub3RoZXIsIGJ1dCBpdCBpcyB0cmlja3kgdG8gZW5mb3JjZSwgc28gSSBk
-aWRuJ3QgbWFrZSB0aGlzIGEgaGFyZA0KPiByZXF1aXJlbWVudC4gQWx0aG91Z2ggSSBzaG91bGQg
-cHJvYmFibHkgYWRkIGEgZmV3IHdvcmRzIGFib3V0IGl0Lg0KDQpJZiB0aGVyZSBpcyBubyBzdWNo
-IGNvbW11bmljYXRpb24gb24gYmFyZSBtZXRhbCwgdGhlbiBzYW1lIGZvciBwdklPTU1VLg0KDQo+
-IA0KPiA+IFsuLi5dDQo+ID4+ICAgMS4gQXR0YWNoIGRldmljZQ0KPiA+PiAgIC0tLS0tLS0tLS0t
-LS0tLS0NCj4gPj4NCj4gPj4gc3RydWN0IHZpcnRpb19pb21tdV9yZXFfYXR0YWNoIHsNCj4gPj4g
-CWxlMzIJYWRkcmVzc19zcGFjZTsNCj4gPj4gCWxlMzIJZGV2aWNlOw0KPiA+PiAJbGUzMglmbGFn
-cy9yZXNlcnZlZDsNCj4gPj4gfTsNCj4gPj4NCj4gPj4gQXR0YWNoIGEgZGV2aWNlIHRvIGFuIGFk
-ZHJlc3Mgc3BhY2UuICdhZGRyZXNzX3NwYWNlJyBpcyBhbiBpZGVudGlmaWVyDQo+ID4+IHVuaXF1
-ZSB0byB0aGUgZ3Vlc3QuIElmIHRoZSBhZGRyZXNzIHNwYWNlIGRvZXNuJ3QgZXhpc3QgaW4gdGhl
-IElPTU1VDQo+ID4NCj4gPiBCYXNlZCBvbiB5b3VyIGRlc2NyaXB0aW9uIHRoaXMgYWRkcmVzcyBz
-cGFjZSBJRCBpcyBwZXIgb3BlcmF0aW9uIHJpZ2h0Pw0KPiA+IE1BUC9VTk1BUCBhbmQgcGFnZS10
-YWJsZSBzaGFyaW5nIHNob3VsZCBoYXZlIGRpZmZlcmVudCBJRCBzcGFjZXMuLi4NCj4gDQo+IEkg
-dGhpbmsgaXQncyBzaW1wbGVyIGlmIHdlIGtlZXAgYSBzaW5nbGUgSU9BU0lEIHNwYWNlIHBlciB2
-aXJ0aW8taW9tbXUNCj4gZGV2aWNlLCBiZWNhdXNlIHRoZSBtYXhpbXVtIG51bWJlciBvZiBhZGRy
-ZXNzIHNwYWNlcyAoZGVzY3JpYmVkIGJ5DQo+IGlvYXNpZF9iaXRzKSBtaWdodCBiZSBhIHJlc3Ry
-aWN0aW9uIG9mIHRoZSBwSU9NTVUuIEZvciBwYWdlLXRhYmxlIHNoYXJpbmcNCj4geW91IHN0aWxs
-IG5lZWQgdG8gZGVmaW5lIHdoaWNoIGRldmljZXMgd2lsbCBzaGFyZSBhIHBhZ2UgZGlyZWN0b3J5
-IHVzaW5nDQo+IEFUVEFDSCByZXF1ZXN0cywgdGhvdWdoIHRoYXQgaW50ZXJmYWNlIGlzIG5vdCBz
-ZXQgaW4gc3RvbmUuDQoNCmdvdCB5b3UuIHllcyBWTSBpcyBzdXBwb3NlZCB0byBjb25zdW1lIGxl
-c3MgSU9BU0lEcyB0aGFuIHBoeXNpY2FsbHkNCmF2YWlsYWJsZS4gSXQgZG9lc27igJl0IGh1cnQg
-dG8gaGF2ZSBvbmUgSU9BU0lEIHNwYWNlIGZvciBib3RoIElPVkENCm1hcC91bm1hcCB1c2FnZXMg
-KG9uZSBJT0FTSUQgcGVyIGRldmljZSkgYW5kIFNWTSB1c2FnZXMgKG11bHRpcGxlDQpJT0FTSURz
-IHBlciBkZXZpY2UpLiBUaGUgZm9ybWVyIGlzIGRpZ2VzdGVkIGJ5IHNvZnR3YXJlIGFuZCB0aGUg
-bGF0dGVyDQp3aWxsIGJlIGJvdW5kIHRvIGhhcmR3YXJlLg0KDQpUaGFua3MNCktldmluDQoNCl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fClZpcnR1YWxpemF0
-aW9uIG1haWxpbmcgbGlzdApWaXJ0dWFsaXphdGlvbkBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
-ZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby92aXJ0
-dWFsaXphdGlvbg==
+>From code "SMR mask 0x%x out of range for SMMU",
+so, we need to use mask, not sid.
+
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/iommu/arm-smmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index b493c99..5a06de2 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -1467,7 +1467,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 		}
+ 		if (mask & ~smmu->smr_mask_mask) {
+ 			dev_err(dev, "SMR mask 0x%x out of range for SMMU (0x%x)\n",
+-				sid, smmu->smr_mask_mask);
++				mask, smmu->smr_mask_mask);
+ 			goto out_free;
+ 		}
+ 	}
+-- 
+2.6.6
