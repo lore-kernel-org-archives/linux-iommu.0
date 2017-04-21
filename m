@@ -1,16 +1,21 @@
-From: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Subject: Re: [PATCH v2] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS
-	mmaping code
-Date: Fri, 21 Apr 2017 19:39:43 +0200
-Message-ID: <CAMuHMdXRkZGTd71emwVBpm4bWcuE--YR2avaMDZX=KG50zZ2Yg@mail.gmail.com>
-References: <CGME20170331110300eucas1p1535f003de554a9f6e1db56eb47630885@eucas1p1.samsung.com>
-	<1490958171-2303-1-git-send-email-a.hajda@samsung.com>
-	<20170421173233.GE5312@e104818-lin.cambridge.arm.com>
+From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH v5 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
+Date: Fri, 21 Apr 2017 12:57:05 -0500
+Message-ID: <20170421175705.GB17916@bhelgaas-glaptop.roam.corp.google.com>
+References: <1492115445-4069-1-git-send-email-jnair@caviumnetworks.com>
+	<1492115445-4069-3-git-send-email-jnair@caviumnetworks.com>
+	<20170414001911.GA13163@bhelgaas-glaptop.roam.corp.google.com>
+	<20170414210646.GA5346@localhost>
+	<CAErSpo731xSzrnKF+G+8SA_UUHy7ROA1V9oFkpwKi85GQf9VAg@mail.gmail.com>
+	<20170417174712.GA7575@localhost>
+	<CAErSpo6+do8GXon3EzZAUpqc2TFsA0BDwWBULqZCd1ayCJhD6w@mail.gmail.com>
+	<20170421170414.GA2429@localhost>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170421173233.GE5312-M2fw3Uu6cmfZROr8t4l/smS4ubULX0JqMm0uRHvK7Nw@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170421170414.GA2429@localhost>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,66 +25,68 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-arm <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Catalin,
+On Fri, Apr 21, 2017 at 05:05:41PM +0000, Jayachandran C wrote:
+> On Fri, Apr 21, 2017 at 10:48:15AM -0500, Bjorn Helgaas wrote:
+> > On Mon, Apr 17, 2017 at 12:47 PM, Jayachandran C
+> > <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org> wrote:
+> > > On Fri, Apr 14, 2017 at 09:00:06PM -0500, Bjorn Helgaas wrote:
 
-On Fri, Apr 21, 2017 at 7:32 PM, Catalin Marinas
-<catalin.marinas-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Fri, Mar 31, 2017 at 01:02:51PM +0200, Andrzej Hajda wrote:
->> In case of DMA_ATTR_FORCE_CONTIGUOUS allocations vm_area->pages
->> is invalid. __iommu_mmap_attrs and __iommu_get_sgtable should not
->> use it and take advantage of contiguous nature of the allocation.
->
-> As I replied to your original patch, I think
-> dma_common_contiguous_remap() should be fixed not to leave a dangling
-> area->pages pointer.
->
->>  arch/arm64/mm/dma-mapping.c | 17 ++++++++++++++++-
->>  1 file changed, 16 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
->> index f7b5401..41c7c36 100644
->> --- a/arch/arm64/mm/dma-mapping.c
->> +++ b/arch/arm64/mm/dma-mapping.c
->> @@ -703,6 +703,10 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
->>       if (dma_mmap_from_coherent(dev, vma, cpu_addr, size, &ret))
->>               return ret;
->>
->> +     if (attrs & DMA_ATTR_FORCE_CONTIGUOUS)
->> +             return vm_iomap_memory(vma,
->> +                             page_to_phys(vmalloc_to_page(cpu_addr)), size);
->
-> I replied to Geert's patch on whether we actually need to call
-> dma_common_contiguous_remap() in __iommu_alloc_attrs() if the device is
-> coherent. We don't do this for the swiotlb allocation. If we are going
-> to change this, cpu_addr may or may not be in the vmalloc range and
-> vmalloc_to_page() would fail (I guess we could add an is_vmalloc_addr()
-> check).
->
-> Alternatively, just open-code dma_common_contiguous_remap() in
-> __iommu_alloc_attrs() to keep a valid area->pages around (I think Geert
-> already suggested this). AFAICT, arch/arm does this already in its own
-> __iommu_alloc_buffer().
->
-> Yet another option would be for iommu_dma_alloc() to understand
-> DMA_ATTR_FORCE_CONTIGUOUS and remove the arm64-specific handling.
+> > >> Could you collect "lspci -vv" output from this system?  I'd like to
+> > >> archive that as background for this IOMMU issue and the ASPM tweaks I
+> > >> suspect we'll have to do.  I *wish* we had more information about that
+> > >> VIA thing, because I suspect we could get rid of it if we had more
+> > >> details.
+> > >
+> > > The full logs are slightly large, so I have kept them at:
+> > > https://github.com/jchandra-cavm/thunderx2/blob/master/logs/
+> > > The lspci -vv output is lspci-vv.txt and lspci -tvn output is lspci-tvn.txt
+> > >
+> > > The output is from 2 socket system, the cards are not on the first slot
+> > > like the example above, so the bus and device numbers are different.
+> > 
+> > Can somebody with this system collect the "lspci -xxxx" output as well?
+> > 
+> > I'm making some lspci changes to handle the PCI-to-PCIe bridge
+> > correctly, and I can use the "lspci -xxxx" output to create an lspci
+> > test case.
+> 
+> [Sorry was AFK for a few days]
+> 
+> I have updated the above directory with the log. Also tested your next branch
+> and it works fine on ThunderX2.
 
-That was actually the approach I took in my v1.
-V2 changed that to provide standalone iommu_dma_{alloc,free}_contiguous()
-functions.
-V3 changed that to call everything directly from the arm64 code.
-...
+Thanks!
 
-Gr{oetje,eeting}s,
+With regard to my lspci changes, they add "Slot-" here:
 
-                        Geert
+   01:0a.0 PCI bridge: Broadcom Corporation Device 9039
+   ...
+  -   Capabilities: [40] Express (v2) PCI/PCI-X to PCI-Express Bridge, MSI 00
+  +   Capabilities: [40] Express (v2) PCI/PCI-X to PCI-Express Bridge (Slot-), MSI 00
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org
+for all your PCI-to-PCIe bridges.  I assume the "Slot-" is correct, i.e.,
+the link is not connected to a slot, right?  This comes from the "Slot
+Implemented" bit in the PCIe Capabilities Register.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+I did notice that all the Root Port devices claim to *not* be connected to
+slots, which doesn't seem right.  For example,
+
+  12:00.0 PCI bridge: Broadcom Corporation Device 9084
+      Bus: primary=12, secondary=13, subordinate=14, sec-latency=0
+      Capabilities: [ac] Express (v2) Root Port (Slot-), MSI 00
+
+  13:00.0 Ethernet controller: Intel Corporation 82599EB 10-Gigabit SFI/SFP+ Network Connection
+
+It seems strange because the 12:00.0 Root Port looks like it probably
+*does* lead to a slot where the NIC is plugged in.  Or is that NIC really
+soldered down?
+
+But I assume there are *some* PCIe slots, so at some of those Root Ports
+should advertise "Slot+" (which by itself does not imply hotplug support,
+if that's the concern).
+
+Bjorn
