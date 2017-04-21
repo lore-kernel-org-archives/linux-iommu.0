@@ -1,19 +1,17 @@
-From: Bjorn Helgaas via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH v5 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
-Date: Fri, 21 Apr 2017 10:48:15 -0500
-Message-ID: <CAErSpo6+do8GXon3EzZAUpqc2TFsA0BDwWBULqZCd1ayCJhD6w@mail.gmail.com>
-References: <1492115445-4069-1-git-send-email-jnair@caviumnetworks.com>
-	<1492115445-4069-3-git-send-email-jnair@caviumnetworks.com>
-	<20170414001911.GA13163@bhelgaas-glaptop.roam.corp.google.com>
-	<20170414210646.GA5346@localhost>
-	<CAErSpo731xSzrnKF+G+8SA_UUHy7ROA1V9oFkpwKi85GQf9VAg@mail.gmail.com>
-	<20170417174712.GA7575@localhost>
-Reply-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS mmaping
+	code
+Date: Fri, 21 Apr 2017 17:12:35 +0100
+Message-ID: <20170421161234.GD5312@e104818-lin.cambridge.arm.com>
+References: <CGME20170329100540eucas1p22d428e33aa678cbef0a24dd249820451@eucas1p2.samsung.com>
+	<1490781926-6209-1-git-send-email-a.hajda@samsung.com>
+	<15b1be13-625f-db74-d213-ad1df86f7eb5@arm.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170417174712.GA7575@localhost>
+Content-Disposition: inline
+In-Reply-To: <15b1be13-625f-db74-d213-ad1df86f7eb5-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,92 +21,127 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 17, 2017 at 12:47 PM, Jayachandran C
-<jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org> wrote:
-> On Fri, Apr 14, 2017 at 09:00:06PM -0500, Bjorn Helgaas wrote:
->> On Fri, Apr 14, 2017 at 4:06 PM, Jayachandran C
->> <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org> wrote:
->> > On Thu, Apr 13, 2017 at 07:19:11PM -0500, Bjorn Helgaas wrote:
->> >> I tentatively applied both patches to pci/host-thunder for v4.12.
->> >>
->> >> However, I am concerned about the topology here:
->> >>
->> >> On Thu, Apr 13, 2017 at 08:30:45PM +0000, Jayachandran C wrote:
->> >> > On Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the
->> >> > PCI topology is slightly unusual.  For a multi-node system, it looks
->> >> > like:
->> >> >
->> >> >     00:00.0 [PCI] bridge to [bus 01-1e]
->> >> >     01:0a.0 [PCI-PCIe bridge, type 8] bridge to [bus 02-04]
->> >> >     02:00.0 [PCIe root port, type 4] bridge to [bus 03-04] (XLATE_ROOT)
->> >> >     03:00.0 PCIe Endpoint
->> >>
->> >> A root port normally has a single PCIe link leading downstream.
->> >> According to this, 02:00.0 is a root port that has the usual
->> >> downstream link leading to 03:00.0, but it also has an upstream link
->> >> to 01:0a.0.
->> >
->> > The PCI topology is a bit broken due to the way that the PCIe IP block
->> > was integrated into SoC PCI bridges and devices. The current mechanism
->> > of adding a PCI-PCIe bridge to glue these together is not ideal.
->>
->> Yeah, that's definitely broken.
->>
->> >> Maybe this example is omitting details that are not relevant to DMA
->> >> aliases?  The PCIe capability only contains one set of link-related
->> >> registers, so I don't know how we could manage a single device that
->> >> has two links.
->> >
->> > The root port is standard and has just one link to the EP (or whatever
->> > is on the external PCIe slot). The fallout of the current hw design is
->> > that the PCI-PCIe bridge has a link that does not follow standard and
->> > does not have a counterpart (as you noted).
->> >
->> >> A device with two links would break things like ASPM.  In
->> >> set_pcie_port_type(), for example, we have this comment:
->> >>
->> >>    * A Root Port or a PCI-to-PCIe bridge is always the upstream end
->> >>    * of a Link.  No PCIe component has two Links.  Two Links are
->> >>    * connected by a Switch that has a Port on each Link and internal
->> >>    * logic to connect the two Ports.
->> >>
->> >> The topology above breaks these assumptions, which will make
->> >> pdev->has_secondary_link incorrect, which means ASPM won't work
->> >> correctly.
->> >
->> > Given the current hardware, the pcieport driver seems to work reasonably
->> > for the root port at 02:00.0, with AER support. I will take a look at the
->> > ASPM part.
->>
->> I don't think pcieport itself cares much about links.  ASPM does, but
->> it looks like set_pcie_port_type() actually is smart enough to know
->> that PCI-to-PCIe bridges and Root Ports always have links on their
->> secondary sides.  So has_secondary_link probably does get set
->> correctly.
->>
->> But I think you'll hit the VIA "strange chipset" thing in
->> pcie_aspm_init_link_state(), which will probably prevent us from doing
->> ASPM on the link from 02:00.0 to 03:00.0.
->>
->> Could you collect "lspci -vv" output from this system?  I'd like to
->> archive that as background for this IOMMU issue and the ASPM tweaks I
->> suspect we'll have to do.  I *wish* we had more information about that
->> VIA thing, because I suspect we could get rid of it if we had more
->> details.
->
-> The full logs are slightly large, so I have kept them at:
-> https://github.com/jchandra-cavm/thunderx2/blob/master/logs/
-> The lspci -vv output is lspci-vv.txt and lspci -tvn output is lspci-tvn.txt
->
-> The output is from 2 socket system, the cards are not on the first slot
-> like the example above, so the bus and device numbers are different.
+On Wed, Mar 29, 2017 at 01:55:32PM +0100, Robin Murphy wrote:
+> On 29/03/17 11:05, Andrzej Hajda wrote:
+> > In case of DMA_ATTR_FORCE_CONTIGUOUS allocations vm_area->pages
+> > is invalid. __iommu_mmap_attrs and __iommu_get_sgtable cannot use
+> > it. In first case temporary pages array is passed to iommu_dma_mmap,
+> > in 2nd case single entry sg table is created directly instead
+> > of calling helper.
+> > 
+> > Fixes: 44176bb ("arm64: Add support for DMA_ATTR_FORCE_CONTIGUOUS to IOMMU")
+> > Signed-off-by: Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+> > ---
+> > Hi,
+> > 
+> > I am not familiar with this framework so please don't be too cruel ;)
+> > Alternative solution I see is to always create vm_area->pages,
+> > I do not know which approach is preferred.
+> > 
+> > Regards
+> > Andrzej
+> > ---
+> >  arch/arm64/mm/dma-mapping.c | 40 ++++++++++++++++++++++++++++++++++++++--
+> >  1 file changed, 38 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> > index f7b5401..bba2bc8 100644
+> > --- a/arch/arm64/mm/dma-mapping.c
+> > +++ b/arch/arm64/mm/dma-mapping.c
+> > @@ -704,7 +704,30 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+> >  		return ret;
+> >  
+> >  	area = find_vm_area(cpu_addr);
+> > -	if (WARN_ON(!area || !area->pages))
+> > +	if (WARN_ON(!area))
+> 
+> From the look of things, it doesn't seem strictly necessary to change
+> this, but whether that's a good thing is another matter. I'm not sure
+> that dma_common_contiguous_remap() should really be leaving a dangling
+> pointer in area->pages as it apparently does... :/
 
-Can somebody with this system collect the "lspci -xxxx" output as well?
+On this specific point, I don't think area->pages should be set either
+(cc'ing Laura). As in the vmalloc vs vmap case, area->pages when pages
+need to be freed (via vfree), which is not the case here. The
+dma_common_pages_remap() would need to set area->pages when called
+directly from the iommu DMA ops. Proposal below, not tested with the
+iommu ops. I assume the patch would cause __iommu_mmap_attrs() to return
+-ENXIO if DMA_ATTR_FORCE_CONTIGUOUS is set.
 
-I'm making some lspci changes to handle the PCI-to-PCIe bridge
-correctly, and I can use the "lspci -xxxx" output to create an lspci
-test case.
+------------8<---------------------------------
+diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
+index efd71cf4fdea..ab7071041141 100644
+--- a/drivers/base/dma-mapping.c
++++ b/drivers/base/dma-mapping.c
+@@ -277,8 +277,8 @@ EXPORT_SYMBOL(dma_common_mmap);
+  * remaps an array of PAGE_SIZE pages into another vm_area
+  * Cannot be used in non-sleeping contexts
+  */
+-void *dma_common_pages_remap(struct page **pages, size_t size,
+-			unsigned long vm_flags, pgprot_t prot,
++static struct vm_struct *__dma_common_pages_remap(struct page **pages,
++			size_t size, unsigned long vm_flags, pgprot_t prot,
+ 			const void *caller)
+ {
+ 	struct vm_struct *area;
+@@ -287,13 +287,26 @@ void *dma_common_pages_remap(struct page **pages, size_t size,
+ 	if (!area)
+ 		return NULL;
+ 
+-	area->pages = pages;
+-
+ 	if (map_vm_area(area, prot, pages)) {
+ 		vunmap(area->addr);
+ 		return NULL;
+ 	}
+ 
++	return area;
++}
++
++void *dma_common_pages_remap(struct page **pages, size_t size,
++			unsigned long vm_flags, pgprot_t prot,
++			const void *caller)
++{
++	struct vm_struct *area;
++
++	area = __dma_common_pages_remap(pages, size, vm_flags, prot, caller);
++	if (!area)
++		return NULL;
++
++	area->pages = pages;
++
+ 	return area->addr;
+ }
+ 
+@@ -308,7 +321,7 @@ void *dma_common_contiguous_remap(struct page *page, size_t size,
+ {
+ 	int i;
+ 	struct page **pages;
+-	void *ptr;
++	struct vm_struct *area;
+ 	unsigned long pfn;
+ 
+ 	pages = kmalloc(sizeof(struct page *) << get_order(size), GFP_KERNEL);
+@@ -318,11 +331,13 @@ void *dma_common_contiguous_remap(struct page *page, size_t size,
+ 	for (i = 0, pfn = page_to_pfn(page); i < (size >> PAGE_SHIFT); i++)
+ 		pages[i] = pfn_to_page(pfn + i);
+ 
+-	ptr = dma_common_pages_remap(pages, size, vm_flags, prot, caller);
++	area = __dma_common_pages_remap(pages, size, vm_flags, prot, caller);
+ 
+ 	kfree(pages);
+ 
+-	return ptr;
++	if (!area)
++		return NULL;
++	return area->addr;
+ }
+ 
+ /*
+
+-- 
+Catalin
