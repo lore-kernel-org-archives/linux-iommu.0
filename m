@@ -1,20 +1,16 @@
-From: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [PATCH v5 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
-Date: Fri, 21 Apr 2017 17:05:41 +0000
-Message-ID: <20170421170414.GA2429@localhost>
-References: <1492115445-4069-1-git-send-email-jnair@caviumnetworks.com>
-	<1492115445-4069-3-git-send-email-jnair@caviumnetworks.com>
-	<20170414001911.GA13163@bhelgaas-glaptop.roam.corp.google.com>
-	<20170414210646.GA5346@localhost>
-	<CAErSpo731xSzrnKF+G+8SA_UUHy7ROA1V9oFkpwKi85GQf9VAg@mail.gmail.com>
-	<20170417174712.GA7575@localhost>
-	<CAErSpo6+do8GXon3EzZAUpqc2TFsA0BDwWBULqZCd1ayCJhD6w@mail.gmail.com>
+From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS
+	mmaping code
+Date: Fri, 21 Apr 2017 18:32:33 +0100
+Message-ID: <20170421173233.GE5312@e104818-lin.cambridge.arm.com>
+References: <CGME20170331110300eucas1p1535f003de554a9f6e1db56eb47630885@eucas1p1.samsung.com>
+	<1490958171-2303-1-git-send-email-a.hajda@samsung.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CAErSpo6+do8GXon3EzZAUpqc2TFsA0BDwWBULqZCd1ayCJhD6w-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <1490958171-2303-1-git-send-email-a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -24,100 +20,73 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arm <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
+Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 21, 2017 at 10:48:15AM -0500, Bjorn Helgaas wrote:
-> On Mon, Apr 17, 2017 at 12:47 PM, Jayachandran C
-> <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org> wrote:
-> > On Fri, Apr 14, 2017 at 09:00:06PM -0500, Bjorn Helgaas wrote:
-> >> On Fri, Apr 14, 2017 at 4:06 PM, Jayachandran C
-> >> <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org> wrote:
-> >> > On Thu, Apr 13, 2017 at 07:19:11PM -0500, Bjorn Helgaas wrote:
-> >> >> I tentatively applied both patches to pci/host-thunder for v4.12.
-> >> >>
-> >> >> However, I am concerned about the topology here:
-> >> >>
-> >> >> On Thu, Apr 13, 2017 at 08:30:45PM +0000, Jayachandran C wrote:
-> >> >> > On Cavium ThunderX2 arm64 SoCs (called Broadcom Vulcan earlier), the
-> >> >> > PCI topology is slightly unusual.  For a multi-node system, it looks
-> >> >> > like:
-> >> >> >
-> >> >> >     00:00.0 [PCI] bridge to [bus 01-1e]
-> >> >> >     01:0a.0 [PCI-PCIe bridge, type 8] bridge to [bus 02-04]
-> >> >> >     02:00.0 [PCIe root port, type 4] bridge to [bus 03-04] (XLATE_ROOT)
-> >> >> >     03:00.0 PCIe Endpoint
-> >> >>
-> >> >> A root port normally has a single PCIe link leading downstream.
-> >> >> According to this, 02:00.0 is a root port that has the usual
-> >> >> downstream link leading to 03:00.0, but it also has an upstream link
-> >> >> to 01:0a.0.
-> >> >
-> >> > The PCI topology is a bit broken due to the way that the PCIe IP block
-> >> > was integrated into SoC PCI bridges and devices. The current mechanism
-> >> > of adding a PCI-PCIe bridge to glue these together is not ideal.
-> >>
-> >> Yeah, that's definitely broken.
-> >>
-> >> >> Maybe this example is omitting details that are not relevant to DMA
-> >> >> aliases?  The PCIe capability only contains one set of link-related
-> >> >> registers, so I don't know how we could manage a single device that
-> >> >> has two links.
-> >> >
-> >> > The root port is standard and has just one link to the EP (or whatever
-> >> > is on the external PCIe slot). The fallout of the current hw design is
-> >> > that the PCI-PCIe bridge has a link that does not follow standard and
-> >> > does not have a counterpart (as you noted).
-> >> >
-> >> >> A device with two links would break things like ASPM.  In
-> >> >> set_pcie_port_type(), for example, we have this comment:
-> >> >>
-> >> >>    * A Root Port or a PCI-to-PCIe bridge is always the upstream end
-> >> >>    * of a Link.  No PCIe component has two Links.  Two Links are
-> >> >>    * connected by a Switch that has a Port on each Link and internal
-> >> >>    * logic to connect the two Ports.
-> >> >>
-> >> >> The topology above breaks these assumptions, which will make
-> >> >> pdev->has_secondary_link incorrect, which means ASPM won't work
-> >> >> correctly.
-> >> >
-> >> > Given the current hardware, the pcieport driver seems to work reasonably
-> >> > for the root port at 02:00.0, with AER support. I will take a look at the
-> >> > ASPM part.
-> >>
-> >> I don't think pcieport itself cares much about links.  ASPM does, but
-> >> it looks like set_pcie_port_type() actually is smart enough to know
-> >> that PCI-to-PCIe bridges and Root Ports always have links on their
-> >> secondary sides.  So has_secondary_link probably does get set
-> >> correctly.
-> >>
-> >> But I think you'll hit the VIA "strange chipset" thing in
-> >> pcie_aspm_init_link_state(), which will probably prevent us from doing
-> >> ASPM on the link from 02:00.0 to 03:00.0.
-> >>
-> >> Could you collect "lspci -vv" output from this system?  I'd like to
-> >> archive that as background for this IOMMU issue and the ASPM tweaks I
-> >> suspect we'll have to do.  I *wish* we had more information about that
-> >> VIA thing, because I suspect we could get rid of it if we had more
-> >> details.
-> >
-> > The full logs are slightly large, so I have kept them at:
-> > https://github.com/jchandra-cavm/thunderx2/blob/master/logs/
-> > The lspci -vv output is lspci-vv.txt and lspci -tvn output is lspci-tvn.txt
-> >
-> > The output is from 2 socket system, the cards are not on the first slot
-> > like the example above, so the bus and device numbers are different.
+On Fri, Mar 31, 2017 at 01:02:51PM +0200, Andrzej Hajda wrote:
+> In case of DMA_ATTR_FORCE_CONTIGUOUS allocations vm_area->pages
+> is invalid. __iommu_mmap_attrs and __iommu_get_sgtable should not
+> use it and take advantage of contiguous nature of the allocation.
+
+As I replied to your original patch, I think
+dma_common_contiguous_remap() should be fixed not to leave a dangling
+area->pages pointer.
+
+>  arch/arm64/mm/dma-mapping.c | 17 ++++++++++++++++-
+>  1 file changed, 16 insertions(+), 1 deletion(-)
 > 
-> Can somebody with this system collect the "lspci -xxxx" output as well?
-> 
-> I'm making some lspci changes to handle the PCI-to-PCIe bridge
-> correctly, and I can use the "lspci -xxxx" output to create an lspci
-> test case.
+> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> index f7b5401..41c7c36 100644
+> --- a/arch/arm64/mm/dma-mapping.c
+> +++ b/arch/arm64/mm/dma-mapping.c
+> @@ -703,6 +703,10 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+>  	if (dma_mmap_from_coherent(dev, vma, cpu_addr, size, &ret))
+>  		return ret;
+>  
+> +	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS)
+> +		return vm_iomap_memory(vma,
+> +				page_to_phys(vmalloc_to_page(cpu_addr)), size);
 
-[Sorry was AFK for a few days]
+I replied to Geert's patch on whether we actually need to call
+dma_common_contiguous_remap() in __iommu_alloc_attrs() if the device is
+coherent. We don't do this for the swiotlb allocation. If we are going
+to change this, cpu_addr may or may not be in the vmalloc range and
+vmalloc_to_page() would fail (I guess we could add an is_vmalloc_addr()
+check).
 
-I have updated the above directory with the log. Also tested your next branch
-and it works fine on ThunderX2.
+Alternatively, just open-code dma_common_contiguous_remap() in
+__iommu_alloc_attrs() to keep a valid area->pages around (I think Geert
+already suggested this). AFAICT, arch/arm does this already in its own
+__iommu_alloc_buffer().
 
-JC.
+Yet another option would be for iommu_dma_alloc() to understand
+DMA_ATTR_FORCE_CONTIGUOUS and remove the arm64-specific handling.
+
+> @@ -715,8 +719,19 @@ static int __iommu_get_sgtable(struct device *dev, struct sg_table *sgt,
+>  			       size_t size, unsigned long attrs)
+>  {
+>  	unsigned int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+> -	struct vm_struct *area = find_vm_area(cpu_addr);
+> +	struct vm_struct *area;
+> +
+> +	if (attrs & DMA_ATTR_FORCE_CONTIGUOUS) {
+> +		int ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
+> +
+> +		if (!ret)
+> +			sg_set_page(sgt->sgl, vmalloc_to_page(cpu_addr),
+> +				    PAGE_ALIGN(size), 0);
+>  
+> +		return ret;
+> +	}
+> +
+> +	area = find_vm_area(cpu_addr);
+
+As Russell already stated, this function needs a "fix" regardless of the
+DMA_ATTR_FORCE_CONTIGUOUS as we may not have page structures
+(*_from_coherent allocations). But I agree with you that
+dma_get_sgtable() issues should be addressed separately (and I'm happy
+to disable such API on arm64 until sorted).
+
+-- 
+Catalin
