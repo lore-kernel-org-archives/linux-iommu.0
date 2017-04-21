@@ -1,92 +1,142 @@
-From: Bjorn Helgaas <helgaas-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH v5 2/2] PCI: quirks: Fix ThunderX2 dma alias handling
-Date: Fri, 21 Apr 2017 12:57:05 -0500
-Message-ID: <20170421175705.GB17916@bhelgaas-glaptop.roam.corp.google.com>
-References: <1492115445-4069-1-git-send-email-jnair@caviumnetworks.com>
-	<1492115445-4069-3-git-send-email-jnair@caviumnetworks.com>
-	<20170414001911.GA13163@bhelgaas-glaptop.roam.corp.google.com>
-	<20170414210646.GA5346@localhost>
-	<CAErSpo731xSzrnKF+G+8SA_UUHy7ROA1V9oFkpwKi85GQf9VAg@mail.gmail.com>
-	<20170417174712.GA7575@localhost>
-	<CAErSpo6+do8GXon3EzZAUpqc2TFsA0BDwWBULqZCd1ayCJhD6w@mail.gmail.com>
-	<20170421170414.GA2429@localhost>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [PATCH v5 32/32] x86/mm: Add support to make use of Secure Memory
+ Encryption
+Date: Fri, 21 Apr 2017 13:56:13 -0500
+Message-ID: <c29edaff-24f2-ee9b-4142-bdbf8c42083f@amd.com>
+References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
+ <20170418212223.10190.85121.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170421170414.GA2429@localhost>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Jayachandran C <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Cc: "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "open list:INTEL IOMMU (VT-d)" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, Jon Masters <jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, linux-arm <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <20170418212223.10190.85121.stgit@tlendack-t1.amdoffice.net>
+Sender: owner-linux-mm@kvack.org
+To: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org
+Cc: Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, "H. Peter
+ Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Dave Young <dyoung@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, Apr 21, 2017 at 05:05:41PM +0000, Jayachandran C wrote:
-> On Fri, Apr 21, 2017 at 10:48:15AM -0500, Bjorn Helgaas wrote:
-> > On Mon, Apr 17, 2017 at 12:47 PM, Jayachandran C
-> > <jnair-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org> wrote:
-> > > On Fri, Apr 14, 2017 at 09:00:06PM -0500, Bjorn Helgaas wrote:
+On 4/18/2017 4:22 PM, Tom Lendacky wrote:
+> Add support to check if SME has been enabled and if memory encryption
+> should be activated (checking of command line option based on the
+> configuration of the default state).  If memory encryption is to be
+> activated, then the encryption mask is set and the kernel is encrypted
+> "in place."
+>
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> ---
+>  arch/x86/kernel/head_64.S |    1 +
+>  arch/x86/mm/mem_encrypt.c |   83 +++++++++++++++++++++++++++++++++++++++++++--
+>  2 files changed, 80 insertions(+), 4 deletions(-)
+>
 
-> > >> Could you collect "lspci -vv" output from this system?  I'd like to
-> > >> archive that as background for this IOMMU issue and the ASPM tweaks I
-> > >> suspect we'll have to do.  I *wish* we had more information about that
-> > >> VIA thing, because I suspect we could get rid of it if we had more
-> > >> details.
-> > >
-> > > The full logs are slightly large, so I have kept them at:
-> > > https://github.com/jchandra-cavm/thunderx2/blob/master/logs/
-> > > The lspci -vv output is lspci-vv.txt and lspci -tvn output is lspci-tvn.txt
-> > >
-> > > The output is from 2 socket system, the cards are not on the first slot
-> > > like the example above, so the bus and device numbers are different.
-> > 
-> > Can somebody with this system collect the "lspci -xxxx" output as well?
-> > 
-> > I'm making some lspci changes to handle the PCI-to-PCIe bridge
-> > correctly, and I can use the "lspci -xxxx" output to create an lspci
-> > test case.
-> 
-> [Sorry was AFK for a few days]
-> 
-> I have updated the above directory with the log. Also tested your next branch
-> and it works fine on ThunderX2.
+...
 
-Thanks!
+>
+> -unsigned long __init sme_enable(void)
+> +unsigned long __init sme_enable(struct boot_params *bp)
+>  {
+> +	const char *cmdline_ptr, *cmdline_arg, *cmdline_on, *cmdline_off;
+> +	unsigned int eax, ebx, ecx, edx;
+> +	unsigned long me_mask;
+> +	bool active_by_default;
+> +	char buffer[16];
 
-With regard to my lspci changes, they add "Slot-" here:
+So it turns out that when KASLR is enabled (CONFIG_RAMDOMIZE_BASE=y)
+the stack-protector support causes issues with this function because
+it is called so early. I can get past it by adding:
 
-   01:0a.0 PCI bridge: Broadcom Corporation Device 9039
-   ...
-  -   Capabilities: [40] Express (v2) PCI/PCI-X to PCI-Express Bridge, MSI 00
-  +   Capabilities: [40] Express (v2) PCI/PCI-X to PCI-Express Bridge (Slot-), MSI 00
+CFLAGS_mem_encrypt.o := $(nostackp)
 
-for all your PCI-to-PCIe bridges.  I assume the "Slot-" is correct, i.e.,
-the link is not connected to a slot, right?  This comes from the "Slot
-Implemented" bit in the PCIe Capabilities Register.
+in the arch/x86/mm/Makefile, but that obviously eliminates the support
+for the whole file.  Would it be better to split out the sme_enable()
+and other boot routines into a separate file or just apply the
+$(nostackp) to the whole file?
 
-I did notice that all the Root Port devices claim to *not* be connected to
-slots, which doesn't seem right.  For example,
+Thanks,
+Tom
 
-  12:00.0 PCI bridge: Broadcom Corporation Device 9084
-      Bus: primary=12, secondary=13, subordinate=14, sec-latency=0
-      Capabilities: [ac] Express (v2) Root Port (Slot-), MSI 00
+> +	u64 msr;
+> +
+> +	/* Check for the SME support leaf */
+> +	eax = 0x80000000;
+> +	ecx = 0;
+> +	native_cpuid(&eax, &ebx, &ecx, &edx);
+> +	if (eax < 0x8000001f)
+> +		goto out;
+> +
+> +	/*
+> +	 * Check for the SME feature:
+> +	 *   CPUID Fn8000_001F[EAX] - Bit 0
+> +	 *     Secure Memory Encryption support
+> +	 *   CPUID Fn8000_001F[EBX] - Bits 5:0
+> +	 *     Pagetable bit position used to indicate encryption
+> +	 */
+> +	eax = 0x8000001f;
+> +	ecx = 0;
+> +	native_cpuid(&eax, &ebx, &ecx, &edx);
+> +	if (!(eax & 1))
+> +		goto out;
+> +	me_mask = 1UL << (ebx & 0x3f);
+> +
+> +	/* Check if SME is enabled */
+> +	msr = __rdmsr(MSR_K8_SYSCFG);
+> +	if (!(msr & MSR_K8_SYSCFG_MEM_ENCRYPT))
+> +		goto out;
+> +
+> +	/*
+> +	 * Fixups have not been applied to phys_base yet, so we must obtain
+> +	 * the address to the SME command line option data in the following
+> +	 * way.
+> +	 */
+> +	asm ("lea sme_cmdline_arg(%%rip), %0"
+> +	     : "=r" (cmdline_arg)
+> +	     : "p" (sme_cmdline_arg));
+> +	asm ("lea sme_cmdline_on(%%rip), %0"
+> +	     : "=r" (cmdline_on)
+> +	     : "p" (sme_cmdline_on));
+> +	asm ("lea sme_cmdline_off(%%rip), %0"
+> +	     : "=r" (cmdline_off)
+> +	     : "p" (sme_cmdline_off));
+> +
+> +	if (IS_ENABLED(CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT))
+> +		active_by_default = true;
+> +	else
+> +		active_by_default = false;
+> +
+> +	cmdline_ptr = (const char *)((u64)bp->hdr.cmd_line_ptr |
+> +				     ((u64)bp->ext_cmd_line_ptr << 32));
+> +
+> +	cmdline_find_option(cmdline_ptr, cmdline_arg, buffer, sizeof(buffer));
+> +
+> +	if (strncmp(buffer, cmdline_on, sizeof(buffer)) == 0)
+> +		sme_me_mask = me_mask;
+> +	else if (strncmp(buffer, cmdline_off, sizeof(buffer)) == 0)
+> +		sme_me_mask = 0;
+> +	else
+> +		sme_me_mask = active_by_default ? me_mask : 0;
+> +
+> +out:
+>  	return sme_me_mask;
+>  }
+>
+> @@ -543,9 +618,9 @@ unsigned long sme_get_me_mask(void)
+>
+>  #else	/* !CONFIG_AMD_MEM_ENCRYPT */
+>
+> -void __init sme_encrypt_kernel(void)	{ }
+> -unsigned long __init sme_enable(void)	{ return 0; }
+> +void __init sme_encrypt_kernel(void)			{ }
+> +unsigned long __init sme_enable(struct boot_params *bp)	{ return 0; }
+>
+> -unsigned long sme_get_me_mask(void)	{ return 0; }
+> +unsigned long sme_get_me_mask(void)			{ return 0; }
+>
+>  #endif	/* CONFIG_AMD_MEM_ENCRYPT */
+>
 
-  13:00.0 Ethernet controller: Intel Corporation 82599EB 10-Gigabit SFI/SFP+ Network Connection
-
-It seems strange because the 12:00.0 Root Port looks like it probably
-*does* lead to a slot where the NIC is plugged in.  Or is that NIC really
-soldered down?
-
-But I assume there are *some* PCIe slots, so at some of those Root Ports
-should advertise "Slot+" (which by itself does not imply hotplug support,
-if that's the concern).
-
-Bjorn
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
