@@ -1,18 +1,17 @@
-From: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Subject: Re: [PATCH v5 09/32] x86/mm: Provide general kernel support for
-	memory encryption
-Date: Mon, 24 Apr 2017 11:10:31 -0500
-Message-ID: <8bb579a0-2855-f311-e087-d97cdd730922@amd.com>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
-	<20170418211754.10190.25082.stgit@tlendack-t1.amdoffice.net>
-	<0106e3fc-9780-e872-2274-fecf79c28923@intel.com>
-	<9fc79e28-ad64-1c2f-4c46-a4efcdd550b0@amd.com>
-	<67926f62-a068-6114-92ee-39bc08488b32@intel.com>
+From: Sunil Kovvuri <sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu: Return IOVA in iova_to_phys when SMMU is
+	bypassed
+Date: Mon, 24 Apr 2017 21:50:32 +0530
+Message-ID: <CA+sq2CfOZsAWhqLV-SNajUo+SNobNX9TFJfgZr76NOzz5h+RCg@mail.gmail.com>
+References: <1492430246-17267-1-git-send-email-sunil.kovvuri@gmail.com>
+	<20170424144429.GI12323@arm.com>
+	<CA+sq2Cc3cjjPcw0F1D_BOu0j3x+MUNO27MeRguj6BpQ+t11_HQ@mail.gmail.com>
+	<20170424160030.GQ12323@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <67926f62-a068-6114-92ee-39bc08488b32-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+In-Reply-To: <20170424160030.GQ12323-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,45 +21,85 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, "Michael S. Tsirkin" <mst-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, "H. Peter
-	Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, LAKML <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On 4/24/2017 10:57 AM, Dave Hansen wrote:
-> On 04/24/2017 08:53 AM, Tom Lendacky wrote:
->> On 4/21/2017 4:52 PM, Dave Hansen wrote:
->>> On 04/18/2017 02:17 PM, Tom Lendacky wrote:
->>>> @@ -55,7 +57,7 @@ static inline void copy_user_page(void *to, void
->>>> *from, unsigned long vaddr,
->>>>      __phys_addr_symbol(__phys_reloc_hide((unsigned long)(x)))
->>>>
->>>>  #ifndef __va
->>>> -#define __va(x)            ((void *)((unsigned long)(x)+PAGE_OFFSET))
->>>> +#define __va(x)            ((void *)(__sme_clr(x) + PAGE_OFFSET))
->>>>  #endif
->>>
->>> It seems wrong to be modifying __va().  It currently takes a physical
->>> address, and this modifies it to take a physical address plus the SME
->>> bits.
->>
->> This actually modifies it to be sure the encryption bit is not part of
->> the physical address.
+On Mon, Apr 24, 2017 at 9:30 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> On Mon, Apr 24, 2017 at 09:23:16PM +0530, Sunil Kovvuri wrote:
+>> On Mon, Apr 24, 2017 at 8:14 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+>> > On Mon, Apr 17, 2017 at 05:27:26PM +0530, sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
+>> >> From: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>> >>
+>> >> For software initiated address translation, when domain type is
+>> >> IOMMU_DOMAIN_IDENTITY i.e SMMU is bypassed, mimic HW behavior
+>> >> i.e return the same IOVA as translated address.
+>> >>
+>> >> This patch is an extension to Will Deacon's patchset
+>> >> "Implement SMMU passthrough using the default domain".
+>> >
+>> > Are you actually seeing an issue here? If so, why isn't SMMUv3 affected too?
+>> Yes and SMMUv3 should also be effected but as of now I don't see any use case.
+>> If needed, i can re-submit the patch with changes in SMMUv3 as well.
 >
-> If SME bits make it this far, we have a bug elsewhere.  Right?  Probably
-> best not to paper over it.
+> Yes, please.
+>
+>> >> Signed-off-by: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>> >> ---
+>> >>  drivers/iommu/arm-smmu.c | 3 +++
+>> >>  1 file changed, 3 insertions(+)
+>> >>
+>> >> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+>> >> index 41afb07..2f4a130 100644
+>> >> --- a/drivers/iommu/arm-smmu.c
+>> >> +++ b/drivers/iommu/arm-smmu.c
+>> >> @@ -1405,6 +1405,9 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+>> >>       struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>> >>       struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
+>> >>
+>> >> +     if (domain->type == IOMMU_DOMAIN_IDENTITY)
+>> >> +             return iova;
+>> >> +
+>> >>       if (!ops)
+>> >>               return 0;
+>> >
+>> > I'd have thought ops would be NULL, since arm_smmu_init_domain_context
+>> > doesn't allocate them for an identity domain.
+>> Yes ops is set to NULL.
+>
+> Argh, sorry, I completely overlooked that we return 0 in that case, rather
+> than the iova.
+>
+>> > I don't understand this patch. Please can you explain the problem more
+>> > clearly?
+>> AFAIK for any driver outside IOMMU there is only one way to identify
+>> if device is attached to
+>> IOMMU or not and that is by checking iommu_domain. And I don't think
+>> it would be appropriate
+>> for the driver to check domain->type before calling 'iommu_iova_to_phys()' API.
+>>
+>> The difference between IOMMU disabled and IOMMU being in passthrough
+>> mode is that, in the
+>> later case device is still attached to default domain but in former's
+>> case it's NULL. So there is no
+>> way to differentiate for the external driver whether IOMMU is in
+>> passthrough mode or DMA mode.
+>>
+>> And since ops is NULL in passthrough mode, 'iommu_iova_to_phys()' will
+>> return zero.
+>>
+>> Use case for your reference
+>> https://lkml.org/lkml/2017/3/7/299
+>> This driver is for a NIC interface on platform which supports SMMUv2.
+>
+> Blimey, that driver is horrible, but I take your point on the API. Please
+> repost, fixing SMMUv3 at the same time.
 
-That all depends on the approach.  Currently that's not the case for
-the one situation that you mentioned with cr3.  But if we do take the
-approach that we should never feed physical addresses to __va() with
-the encryption bit set then, yes, it would imply a bug elsewhere - which
-is probably a good approach.
+Sure, will re-submit the patch with SMMUv3 changes.
 
-I'll work on that. I could even add a debug config option that would
-issue a warning should __va() encounter the encryption bit if SME is
-enabled or active.
+On a separate note, if you have time, I would definitely like to know
+your feedback and what's horrible in that driver, probably in a different
+email to keep that out of scope of this patch.
 
 Thanks,
-Tom
-
->
+Sunil.
