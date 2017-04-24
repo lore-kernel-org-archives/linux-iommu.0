@@ -1,16 +1,18 @@
-From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Increase SMMU CMD queue poll timeout
-Date: Mon, 24 Apr 2017 18:05:18 +0100
-Message-ID: <20170424170518.GU12323@arm.com>
-References: <1493035176-3633-1-git-send-email-gakula@caviumnetworks.com>
-	<20170424160841.GS12323@arm.com>
-	<CA+sq2CeyVm4pcAVME7OAFVxpOcSJc5CsP0vz3ypDkSxdx0SKnQ@mail.gmail.com>
+From: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH v2] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS
+	mmaping code
+Date: Mon, 24 Apr 2017 18:38:53 +0100
+Message-ID: <20170424173853.GJ25449@e104818-lin.cambridge.arm.com>
+References: <CGME20170331110300eucas1p1535f003de554a9f6e1db56eb47630885@eucas1p1.samsung.com>
+	<1490958171-2303-1-git-send-email-a.hajda@samsung.com>
+	<20170421173233.GE5312@e104818-lin.cambridge.arm.com>
+	<CAMuHMdXRkZGTd71emwVBpm4bWcuE--YR2avaMDZX=KG50zZ2Yg@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CA+sq2CeyVm4pcAVME7OAFVxpOcSJc5CsP0vz3ypDkSxdx0SKnQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <CAMuHMdXRkZGTd71emwVBpm4bWcuE--YR2avaMDZX=KG50zZ2Yg-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,47 +22,78 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sunil Kovvuri <sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "Goutham, Sunil" <Sunil.Goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, LAKML <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
+Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 24, 2017 at 10:26:53PM +0530, Sunil Kovvuri wrote:
-> On Mon, Apr 24, 2017 at 9:38 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Mon, Apr 24, 2017 at 05:29:36PM +0530, Geetha sowjanya wrote:
-> >> From: Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> >>
-> >> When large memory is being unmapped, huge no of tlb invalidation cmds are
-> >> submitted followed by a SYNC command. This sometimes hits CMD queue full and
-> >> poll on queue drain is being timedout throwing error message 'CMD_SYNC timeout'.
-> >>
-> >> Although there is no functional issue, error message confuses user. Hence increased
-> >> poll timeout to 500us
+Hi Geert,
+
+On Fri, Apr 21, 2017 at 07:39:43PM +0200, Geert Uytterhoeven wrote:
+> On Fri, Apr 21, 2017 at 7:32 PM, Catalin Marinas
+> <catalin.marinas-5wv7dgnIgG8@public.gmane.org> wrote:
+> > On Fri, Mar 31, 2017 at 01:02:51PM +0200, Andrzej Hajda wrote:
+> >> In case of DMA_ATTR_FORCE_CONTIGUOUS allocations vm_area->pages
+> >> is invalid. __iommu_mmap_attrs and __iommu_get_sgtable should not
+> >> use it and take advantage of contiguous nature of the allocation.
 > >
-> > Hmm, what are you doing to unmap that much? Is this VFIO teardown? Do you
-> > have 7c6d90e2bb1a ("iommu/io-pgtable-arm: Fix iova_to_phys for block
-> > entries") applied?
+> > As I replied to your original patch, I think
+> > dma_common_contiguous_remap() should be fixed not to leave a dangling
+> > area->pages pointer.
+> >
+> >>  arch/arm64/mm/dma-mapping.c | 17 ++++++++++++++++-
+> >>  1 file changed, 16 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+> >> index f7b5401..41c7c36 100644
+> >> --- a/arch/arm64/mm/dma-mapping.c
+> >> +++ b/arch/arm64/mm/dma-mapping.c
+> >> @@ -703,6 +703,10 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+> >>       if (dma_mmap_from_coherent(dev, vma, cpu_addr, size, &ret))
+> >>               return ret;
+> >>
+> >> +     if (attrs & DMA_ATTR_FORCE_CONTIGUOUS)
+> >> +             return vm_iomap_memory(vma,
+> >> +                             page_to_phys(vmalloc_to_page(cpu_addr)), size);
+> >
+> > I replied to Geert's patch on whether we actually need to call
+> > dma_common_contiguous_remap() in __iommu_alloc_attrs() if the device is
+> > coherent. We don't do this for the swiotlb allocation. If we are going
+> > to change this, cpu_addr may or may not be in the vmalloc range and
+> > vmalloc_to_page() would fail (I guess we could add an is_vmalloc_addr()
+> > check).
+> >
+> > Alternatively, just open-code dma_common_contiguous_remap() in
+> > __iommu_alloc_attrs() to keep a valid area->pages around (I think Geert
+> > already suggested this). AFAICT, arch/arm does this already in its own
+> > __iommu_alloc_buffer().
+> >
+> > Yet another option would be for iommu_dma_alloc() to understand
+> > DMA_ATTR_FORCE_CONTIGUOUS and remove the arm64-specific handling.
 > 
-> Yes it's VFIO teardown and again yes the above fix is applied.
-> But i didn't get how above fix is related.
-> TLB invalidation commands are submitted at 'arm_smmu_tlb_inv_range_nosync()'
-> and it's a loop over granule size.
-> 
-> 1357         do {
-> 1358                 arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-> 1359                 cmd.tlbi.addr += granule;
-> 1360         } while (size -= granule);
-> 
-> So if invalidation size is big then huge no of invalidation commands
-> will be submitted
-> irrespective of fix that you pointed above, right ?
+> That was actually the approach I took in my v1.
+> V2 changed that to provide standalone iommu_dma_{alloc,free}_contiguous()
+> functions.
+> V3 changed that to call everything directly from the arm64 code.
+> ...
 
-VFIO has some logic to batch up invalidations, but this didn't work properly
-for us without the fix above. However, I guess you have a huge memory range
-that's mapped with 2M sections or something, so there are still loads of
-entries to invalidate.
+I now read through the past discussions (as I ignored the threads
+previously). I got Robin's point of not extending iommu_dma_alloc()
+(though it looked simpler) and open-coding dma_common_contiguous_remap()
+wouldn't make sense either as a way to pass this buffer to
+iommu_dma_mmap() since it wasn't returned by iommu_dma_alloc().
 
-I would much prefer it if VFIO could just teardown the whole address space
-so that we could do an invalidate all, but there's a chicken-and-egg problem
-with page accounting iirc.
+So I think we should just fall back to the swiotlb ops for the mmap and
+get_sgtable but since we don't have a dma_addr_t handle (we only have
+the one of the other side of the IOMMU), we'd need to factor out the
+common code from __swiotlb_mmap into a __swiotlb_mmap_page (similarly
+for __swiotlb_get_sgtable). The __iommu_* functions would call these
+with the correct page (from vmalloc_to_page) if
+DMA_ATTR_FORCE_CONTIGUOUS and the buffer is not a candidate for
+*_from_coherent.
 
-Will
+While fixing/removing dma_get_sgtable() is a nice goal, we first need to
+address DMA_ATTR_FORCE_CONTIGUOUS on arm64 since the patch breaks
+existing use-cases (and I'd like to avoid reverting this patch).
+
+-- 
+Catalin
