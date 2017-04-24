@@ -1,17 +1,16 @@
-From: Laura Abbott <labbott-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH] arm64/dma-mapping: fix DMA_ATTR_FORCE_CONTIGUOUS mmaping
-	code
-Date: Mon, 24 Apr 2017 09:58:23 -0700
-Message-ID: <a344c9c8-8a1f-cfc4-4dcd-1b49f3e1ac6c@redhat.com>
-References: <CGME20170329100540eucas1p22d428e33aa678cbef0a24dd249820451@eucas1p2.samsung.com>
-	<1490781926-6209-1-git-send-email-a.hajda@samsung.com>
-	<15b1be13-625f-db74-d213-ad1df86f7eb5@arm.com>
-	<20170421161234.GD5312@e104818-lin.cambridge.arm.com>
+From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Increase SMMU CMD queue poll timeout
+Date: Mon, 24 Apr 2017 18:05:18 +0100
+Message-ID: <20170424170518.GU12323@arm.com>
+References: <1493035176-3633-1-git-send-email-gakula@caviumnetworks.com>
+	<20170424160841.GS12323@arm.com>
+	<CA+sq2CeyVm4pcAVME7OAFVxpOcSJc5CsP0vz3ypDkSxdx0SKnQ@mail.gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170421161234.GD5312-M2fw3Uu6cmfZROr8t4l/smS4ubULX0JqMm0uRHvK7Nw@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <CA+sq2CeyVm4pcAVME7OAFVxpOcSJc5CsP0vz3ypDkSxdx0SKnQ-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -21,133 +20,47 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Cc: Geert Uytterhoeven <geert+renesas-gXvu3+zWzMSzQB+pC5nmwQ@public.gmane.org>, Bartlomiej Zolnierkiewicz <b.zolnierkie-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: Sunil Kovvuri <sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Cc: "Goutham, Sunil" <Sunil.Goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, LAKML <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/21/2017 09:12 AM, Catalin Marinas wrote:
-> On Wed, Mar 29, 2017 at 01:55:32PM +0100, Robin Murphy wrote:
->> On 29/03/17 11:05, Andrzej Hajda wrote:
->>> In case of DMA_ATTR_FORCE_CONTIGUOUS allocations vm_area->pages
->>> is invalid. __iommu_mmap_attrs and __iommu_get_sgtable cannot use
->>> it. In first case temporary pages array is passed to iommu_dma_mmap,
->>> in 2nd case single entry sg table is created directly instead
->>> of calling helper.
->>>
->>> Fixes: 44176bb ("arm64: Add support for DMA_ATTR_FORCE_CONTIGUOUS to IOMMU")
->>> Signed-off-by: Andrzej Hajda <a.hajda-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->>> ---
->>> Hi,
->>>
->>> I am not familiar with this framework so please don't be too cruel ;)
->>> Alternative solution I see is to always create vm_area->pages,
->>> I do not know which approach is preferred.
->>>
->>> Regards
->>> Andrzej
->>> ---
->>>  arch/arm64/mm/dma-mapping.c | 40 ++++++++++++++++++++++++++++++++++++++--
->>>  1 file changed, 38 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
->>> index f7b5401..bba2bc8 100644
->>> --- a/arch/arm64/mm/dma-mapping.c
->>> +++ b/arch/arm64/mm/dma-mapping.c
->>> @@ -704,7 +704,30 @@ static int __iommu_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
->>>  		return ret;
->>>  
->>>  	area = find_vm_area(cpu_addr);
->>> -	if (WARN_ON(!area || !area->pages))
->>> +	if (WARN_ON(!area))
->>
->> From the look of things, it doesn't seem strictly necessary to change
->> this, but whether that's a good thing is another matter. I'm not sure
->> that dma_common_contiguous_remap() should really be leaving a dangling
->> pointer in area->pages as it apparently does... :/
+On Mon, Apr 24, 2017 at 10:26:53PM +0530, Sunil Kovvuri wrote:
+> On Mon, Apr 24, 2017 at 9:38 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
+> > On Mon, Apr 24, 2017 at 05:29:36PM +0530, Geetha sowjanya wrote:
+> >> From: Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> >>
+> >> When large memory is being unmapped, huge no of tlb invalidation cmds are
+> >> submitted followed by a SYNC command. This sometimes hits CMD queue full and
+> >> poll on queue drain is being timedout throwing error message 'CMD_SYNC timeout'.
+> >>
+> >> Although there is no functional issue, error message confuses user. Hence increased
+> >> poll timeout to 500us
+> >
+> > Hmm, what are you doing to unmap that much? Is this VFIO teardown? Do you
+> > have 7c6d90e2bb1a ("iommu/io-pgtable-arm: Fix iova_to_phys for block
+> > entries") applied?
 > 
-> On this specific point, I don't think area->pages should be set either
-> (cc'ing Laura). As in the vmalloc vs vmap case, area->pages when pages
-> need to be freed (via vfree), which is not the case here. The
-> dma_common_pages_remap() would need to set area->pages when called
-> directly from the iommu DMA ops. Proposal below, not tested with the
-> iommu ops. I assume the patch would cause __iommu_mmap_attrs() to return
-> -ENXIO if DMA_ATTR_FORCE_CONTIGUOUS is set.
+> Yes it's VFIO teardown and again yes the above fix is applied.
+> But i didn't get how above fix is related.
+> TLB invalidation commands are submitted at 'arm_smmu_tlb_inv_range_nosync()'
+> and it's a loop over granule size.
 > 
-> ------------8<---------------------------------
-> diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
-> index efd71cf4fdea..ab7071041141 100644
-> --- a/drivers/base/dma-mapping.c
-> +++ b/drivers/base/dma-mapping.c
-> @@ -277,8 +277,8 @@ EXPORT_SYMBOL(dma_common_mmap);
->   * remaps an array of PAGE_SIZE pages into another vm_area
->   * Cannot be used in non-sleeping contexts
->   */
-> -void *dma_common_pages_remap(struct page **pages, size_t size,
-> -			unsigned long vm_flags, pgprot_t prot,
-> +static struct vm_struct *__dma_common_pages_remap(struct page **pages,
-> +			size_t size, unsigned long vm_flags, pgprot_t prot,
->  			const void *caller)
->  {
->  	struct vm_struct *area;
-> @@ -287,13 +287,26 @@ void *dma_common_pages_remap(struct page **pages, size_t size,
->  	if (!area)
->  		return NULL;
->  
-> -	area->pages = pages;
-> -
->  	if (map_vm_area(area, prot, pages)) {
->  		vunmap(area->addr);
->  		return NULL;
->  	}
->  
-> +	return area;
-> +}
-> +
-> +void *dma_common_pages_remap(struct page **pages, size_t size,
-> +			unsigned long vm_flags, pgprot_t prot,
-> +			const void *caller)
-> +{
-> +	struct vm_struct *area;
-> +
-> +	area = __dma_common_pages_remap(pages, size, vm_flags, prot, caller);
-> +	if (!area)
-> +		return NULL;
-> +
-> +	area->pages = pages;
-> +
->  	return area->addr;
->  }
->  
-> @@ -308,7 +321,7 @@ void *dma_common_contiguous_remap(struct page *page, size_t size,
->  {
->  	int i;
->  	struct page **pages;
-> -	void *ptr;
-> +	struct vm_struct *area;
->  	unsigned long pfn;
->  
->  	pages = kmalloc(sizeof(struct page *) << get_order(size), GFP_KERNEL);
-> @@ -318,11 +331,13 @@ void *dma_common_contiguous_remap(struct page *page, size_t size,
->  	for (i = 0, pfn = page_to_pfn(page); i < (size >> PAGE_SHIFT); i++)
->  		pages[i] = pfn_to_page(pfn + i);
->  
-> -	ptr = dma_common_pages_remap(pages, size, vm_flags, prot, caller);
-> +	area = __dma_common_pages_remap(pages, size, vm_flags, prot, caller);
->  
->  	kfree(pages);
->  
-> -	return ptr;
-> +	if (!area)
-> +		return NULL;
-> +	return area->addr;
->  }
->  
->  /*
+> 1357         do {
+> 1358                 arm_smmu_cmdq_issue_cmd(smmu, &cmd);
+> 1359                 cmd.tlbi.addr += granule;
+> 1360         } while (size -= granule);
 > 
+> So if invalidation size is big then huge no of invalidation commands
+> will be submitted
+> irrespective of fix that you pointed above, right ?
 
->From a quick glance, this looks okay. I can give a proper tag when
-the fix to allow mmaping comes in since I'm guessing -ENXIO is not the
-end goal.
+VFIO has some logic to batch up invalidations, but this didn't work properly
+for us without the fix above. However, I guess you have a huge memory range
+that's mapped with 2M sections or something, so there are still loads of
+entries to invalidate.
 
-Thanks,
-Laura
+I would much prefer it if VFIO could just teardown the whole address space
+so that we could do an invalidate all, but there's a chicken-and-egg problem
+with page accounting iirc.
+
+Will
