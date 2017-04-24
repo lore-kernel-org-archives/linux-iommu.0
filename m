@@ -1,39 +1,35 @@
-From: Pan Bian <bianpan201602@163.com>
-Subject: [PATCH 1/1] iommu/amd: fix incorrect error handling
-Date: Sun, 23 Apr 2017 18:23:21 +0800
-Message-ID: <1492943001-1078-1-git-send-email-bianpan201602@163.com>
-Return-path: <linux-kernel-owner@vger.kernel.org>
-Sender: linux-kernel-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, Pan Bian <bianpan2016@163.com>
+From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/1] iommu/amd: fix incorrect error handling
+Date: Mon, 24 Apr 2017 12:39:05 +0200
+Message-ID: <20170424103905.GH7266@8bytes.org>
+References: <1492943001-1078-1-git-send-email-bianpan201602@163.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <1492943001-1078-1-git-send-email-bianpan201602-9Onoh4P/yGk@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Pan Bian <bianpan201602-9Onoh4P/yGk@public.gmane.org>
+Cc: Pan Bian <bianpan2016-9Onoh4P/yGk@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Pan Bian <bianpan2016@163.com>
+On Sun, Apr 23, 2017 at 06:23:21PM +0800, Pan Bian wrote:
+> From: Pan Bian <bianpan2016-9Onoh4P/yGk@public.gmane.org>
+> 
+> In function amd_iommu_bind_pasid(), the control flow jumps to label
+> out_free when pasid_state->mm and mm is NULL. And mmput(mm) is called.
+> In function mmput(mm), mm is referenced without validation. This will
+> result in a NULL dereference bug. This patch fixes the bug.
+> 
+> Signed-off-by: Pan Bian <bianpan2016-9Onoh4P/yGk@public.gmane.org>
 
-In function amd_iommu_bind_pasid(), the control flow jumps to label
-out_free when pasid_state->mm and mm is NULL. And mmput(mm) is called.
-In function mmput(mm), mm is referenced without validation. This will
-result in a NULL dereference bug. This patch fixes the bug.
-
-Signed-off-by: Pan Bian <bianpan2016@163.com>
----
- drivers/iommu/amd_iommu_v2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd_iommu_v2.c
-index 0633439..6629c47 100644
---- a/drivers/iommu/amd_iommu_v2.c
-+++ b/drivers/iommu/amd_iommu_v2.c
-@@ -696,9 +696,9 @@ int amd_iommu_bind_pasid(struct pci_dev *pdev, int pasid,
- 
- out_unregister:
- 	mmu_notifier_unregister(&pasid_state->mn, mm);
-+	mmput(mm);
- 
- out_free:
--	mmput(mm);
- 	free_pasid_state(pasid_state);
- 
- out:
--- 
-1.9.1
+Applied, thanks.
