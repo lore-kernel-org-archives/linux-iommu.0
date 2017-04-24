@@ -1,94 +1,61 @@
-From: Sunil Kovvuri <sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Return IOVA in iova_to_phys when SMMU is
-	bypassed
-Date: Mon, 24 Apr 2017 21:23:16 +0530
-Message-ID: <CA+sq2Cc3cjjPcw0F1D_BOu0j3x+MUNO27MeRguj6BpQ+t11_HQ@mail.gmail.com>
-References: <1492430246-17267-1-git-send-email-sunil.kovvuri@gmail.com>
-	<20170424144429.GI12323@arm.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [PATCH v5 09/32] x86/mm: Provide general kernel support for
+ memory encryption
+Date: Mon, 24 Apr 2017 10:53:58 -0500
+Message-ID: <9fc79e28-ad64-1c2f-4c46-a4efcdd550b0@amd.com>
+References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
+ <20170418211754.10190.25082.stgit@tlendack-t1.amdoffice.net>
+ <0106e3fc-9780-e872-2274-fecf79c28923@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170424144429.GI12323-5wv7dgnIgG8@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, LAKML <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
+Return-path: <owner-linux-mm@kvack.org>
+In-Reply-To: <0106e3fc-9780-e872-2274-fecf79c28923@intel.com>
+Sender: owner-linux-mm@kvack.org
+To: Dave Hansen <dave.hansen@intel.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org
+Cc: Rik van Riel <riel@redhat.com>, =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>, "H. Peter
+ Anvin" <hpa@zytor.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Alexander Potapenko <glider@google.com>, Dave Young <dyoung@redhat.com>, Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Mon, Apr 24, 2017 at 8:14 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> On Mon, Apr 17, 2017 at 05:27:26PM +0530, sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
->> From: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+On 4/21/2017 4:52 PM, Dave Hansen wrote:
+> On 04/18/2017 02:17 PM, Tom Lendacky wrote:
+>> @@ -55,7 +57,7 @@ static inline void copy_user_page(void *to, void *from, unsigned long vaddr,
+>>  	__phys_addr_symbol(__phys_reloc_hide((unsigned long)(x)))
 >>
->> For software initiated address translation, when domain type is
->> IOMMU_DOMAIN_IDENTITY i.e SMMU is bypassed, mimic HW behavior
->> i.e return the same IOVA as translated address.
->>
->> This patch is an extension to Will Deacon's patchset
->> "Implement SMMU passthrough using the default domain".
+>>  #ifndef __va
+>> -#define __va(x)			((void *)((unsigned long)(x)+PAGE_OFFSET))
+>> +#define __va(x)			((void *)(__sme_clr(x) + PAGE_OFFSET))
+>>  #endif
 >
-> Are you actually seeing an issue here? If so, why isn't SMMUv3 affected too?
-Yes and SMMUv3 should also be effected but as of now I don't see any use case.
-If needed, i can re-submit the patch with changes in SMMUv3 as well.
+> It seems wrong to be modifying __va().  It currently takes a physical
+> address, and this modifies it to take a physical address plus the SME bits.
 
->
->> Signed-off-by: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
->> ---
->>  drivers/iommu/arm-smmu.c | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
->> index 41afb07..2f4a130 100644
->> --- a/drivers/iommu/arm-smmu.c
->> +++ b/drivers/iommu/arm-smmu.c
->> @@ -1405,6 +1405,9 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
->>       struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->>       struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
->>
->> +     if (domain->type == IOMMU_DOMAIN_IDENTITY)
->> +             return iova;
->> +
->>       if (!ops)
->>               return 0;
->
-> I'd have thought ops would be NULL, since arm_smmu_init_domain_context
-> doesn't allocate them for an identity domain.
-Yes ops is set to NULL.
+This actually modifies it to be sure the encryption bit is not part of
+the physical address.
 
 >
-> I don't understand this patch. Please can you explain the problem more
-> clearly?
-AFAIK for any driver outside IOMMU there is only one way to identify
-if device is attached to
-IOMMU or not and that is by checking iommu_domain. And I don't think
-it would be appropriate
-for the driver to check domain->type before calling 'iommu_iova_to_phys()' API.
+> How does that end up ever happening?  If we are pulling physical
+> addresses out of the page tables, we use p??_phys().  I'd expect *those*
+> to be masking off the SME bits.
+>
+> Is it these cases?
+>
+> 	pgd_t *base = __va(read_cr3());
+>
+> For those, it seems like we really want to create two modes of reading
+> cr3.  One that truly reads CR3 and another that reads the pgd's physical
+> address out of CR3.  Then you only do the SME masking on the one
+> fetching a physical address, and the SME bits never leak into __va().
 
-The difference between IOMMU disabled and IOMMU being in passthrough
-mode is that, in the
-later case device is still attached to default domain but in former's
-case it's NULL. So there is no
-way to differentiate for the external driver whether IOMMU is in
-passthrough mode or DMA mode.
-
-And since ops is NULL in passthrough mode, 'iommu_iova_to_phys()' will
-return zero.
-
-Use case for your reference
-https://lkml.org/lkml/2017/3/7/299
-This driver is for a NIC interface on platform which supports SMMUv2.
-
-Let me know if any more details are needed.
+I'll investigate this and see if I can remove the mod to __va().
 
 Thanks,
-Sunil.
+Tom
 
 >
-> Will
+
+--
+To unsubscribe, send a message with 'unsubscribe linux-mm' in
+the body to majordomo@kvack.org.  For more info on Linux MM,
+see: http://www.linux-mm.org/ .
+Don't email: <a href=mailto:"dont@kvack.org"> email@kvack.org </a>
