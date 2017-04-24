@@ -1,14 +1,11 @@
-From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: Re: [PATCH 1/1] iommu/amd: fix incorrect error handling
-Date: Mon, 24 Apr 2017 12:39:05 +0200
-Message-ID: <20170424103905.GH7266@8bytes.org>
-References: <1492943001-1078-1-git-send-email-bianpan201602@163.com>
+From: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH] iommu/arm-smmu-v3: Increase SMMU CMD queue poll timeout
+Date: Mon, 24 Apr 2017 17:29:36 +0530
+Message-ID: <1493035176-3633-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1492943001-1078-1-git-send-email-bianpan201602-9Onoh4P/yGk@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,18 +15,36 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Pan Bian <bianpan201602-9Onoh4P/yGk@public.gmane.org>
-Cc: Pan Bian <bianpan2016-9Onoh4P/yGk@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org
+To: robin.murphy-5wv7dgnIgG8@public.gmane.org, will.deacon-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: catalin.marinas-5wv7dgnIgG8@public.gmane.org, Sunil.Goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Sun, Apr 23, 2017 at 06:23:21PM +0800, Pan Bian wrote:
-> From: Pan Bian <bianpan2016-9Onoh4P/yGk@public.gmane.org>
-> 
-> In function amd_iommu_bind_pasid(), the control flow jumps to label
-> out_free when pasid_state->mm and mm is NULL. And mmput(mm) is called.
-> In function mmput(mm), mm is referenced without validation. This will
-> result in a NULL dereference bug. This patch fixes the bug.
-> 
-> Signed-off-by: Pan Bian <bianpan2016-9Onoh4P/yGk@public.gmane.org>
+From: Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 
-Applied, thanks.
+When large memory is being unmapped, huge no of tlb invalidation cmds are
+submitted followed by a SYNC command. This sometimes hits CMD queue full and
+poll on queue drain is being timedout throwing error message 'CMD_SYNC timeout'.
+
+Although there is no functional issue, error message confuses user. Hence increased
+poll timeout to 500us
+
+Signed-off-by: Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 591bb96..1dcd154 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -407,7 +407,7 @@
+ #define PRIQ_1_ADDR_MASK		0xfffffffffffffUL
+ 
+ /* High-level queue structures */
+-#define ARM_SMMU_POLL_TIMEOUT_US	100
++#define ARM_SMMU_POLL_TIMEOUT_US	500
+ 
+ #define MSI_IOVA_BASE			0x8000000
+ #define MSI_IOVA_LENGTH			0x100000
+-- 
+1.9.1
