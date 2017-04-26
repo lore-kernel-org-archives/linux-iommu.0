@@ -1,46 +1,45 @@
 From: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/4] iommu: Include device.h in iommu.h
-Date: Wed, 26 Apr 2017 17:45:03 +0200
-Message-ID: <1493221506-7651-2-git-send-email-joro@8bytes.org>
-References: <1493221506-7651-1-git-send-email-joro@8bytes.org>
+Subject: [PATCH 0/4] iommu: Header file cleanups
+Date: Wed, 26 Apr 2017 17:45:02 +0200
+Message-ID: <1493221506-7651-1-git-send-email-joro@8bytes.org>
 Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1493221506-7651-1-git-send-email-joro@8bytes.org>
 Sender: linux-kernel-owner@vger.kernel.org
 To: iommu@lists.linux-foundation.org
-Cc: linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>
+Cc: linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>
 List-Id: iommu@lists.linux-foundation.org
 
-From: Joerg Roedel <jroedel@suse.de>
+Hi,
 
-We make use of 'struct device' in iommu.h, so include
-device.h to make it available explicitly.
+here is a small patch-set to remove some header dependencies
+from the IOMMU header files. The linux/iommu.h file does not
+include linux/pci.h and the iommu trace-event headers
+anymore.
 
-Re-order the other headers while at it.
+For this the report_iommu_fault function was moved to
+iommu.c and the place relying on above includes were fixed.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- include/linux/iommu.h | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Please review.
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 2e4de0d..0232104 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -19,11 +19,13 @@
- #ifndef __LINUX_IOMMU_H
- #define __LINUX_IOMMU_H
- 
-+#include <linux/scatterlist.h>
-+#include <linux/device.h>
-+#include <linux/types.h>
- #include <linux/errno.h>
- #include <linux/err.h>
- #include <linux/of.h>
--#include <linux/types.h>
--#include <linux/scatterlist.h>
-+
- #include <trace/events/iommu.h>
- 
- #define IOMMU_READ	(1 << 0)
+Thanks,
+
+	Joerg
+
+Joerg Roedel (4):
+  iommu: Include device.h in iommu.h
+  iommu: Move report_iommu_fault() to iommu.c
+  iommu: Remove pci.h include from trace/events/iommu.h
+  iommu: Remove trace-events include from iommu.h
+
+ arch/arm64/mm/dma-mapping.c              |  1 +
+ drivers/iommu/fsl_pamu.h                 |  1 +
+ drivers/iommu/iommu.c                    | 42 ++++++++++++++++++++++++++++
+ drivers/iommu/rockchip-iommu.c           |  1 +
+ drivers/iommu/tegra-smmu.c               |  1 +
+ drivers/media/platform/mtk-vpu/mtk_vpu.c |  1 +
+ include/linux/dma-iommu.h                |  1 +
+ include/linux/iommu.h                    | 47 ++++----------------------------
+ include/trace/events/iommu.h             |  1 -
+ 9 files changed, 53 insertions(+), 43 deletions(-)
+
 -- 
 1.9.1
