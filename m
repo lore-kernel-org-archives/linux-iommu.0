@@ -1,137 +1,60 @@
-From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
-Subject: [RFC PATCH 19/20] intel_iommu: propagate PASID-Cache invalidate to host
-Date: Wed, 26 Apr 2017 18:06:49 +0800
-Message-ID: <1493201210-14357-20-git-send-email-yi.l.liu@linux.intel.com>
-References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: [RFC PATCH 0/8] Shared Virtual Memory virtualization for VT-d
+Date: Wed, 26 Apr 2017 18:11:57 +0800
+Message-ID: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
 Return-path: <kvm-owner@vger.kernel.org>
-In-Reply-To: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
 Sender: kvm-owner@vger.kernel.org
-To: qemu-devel@nongnu.org, alex.williamson@redhat.com, peterx@redhat.com
-Cc: kvm@vger.kernel.org, jasowang@redhat.com, iommu@lists.linux-foundation.org, kevin.tian@intel.com, ashok.raj@intel.com, jacob.jun.pan@intel.com, tianyu.lan@intel.com, yi.l.liu@intel.com, jean-philippe.brucker@arm.com, "Liu, Yi L" <yi.l.liu@linux.intel.com>
+To: kvm@vger.kernel.org, iommu@lists.linux-foundation.org, alex.williamson@redhat.com, peterx@redhat.com
+Cc: jasowang@redhat.com, qemu-devel@nongnu.org, kevin.tian@intel.com, ashok.raj@intel.com, jacob.jun.pan@intel.com, tianyu.lan@intel.com, yi.l.liu@intel.com, jean-philippe.brucker@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-This patch adds support for propagating PASID-Cache invalidation to host.
-Similar with Extended-IOTLB invalidation, intel_iommu emulator would also
-check all the assigned devices and do sanity check, then pass it to host.
+Hi,
 
-Host pIOMMU driver would replace some fields in the raw data before
-submitting to pIOMMU. e.g. guest domain ID must be replaced with the real
-domain ID in host. In future PASID may need to be replaced.
+This patchset introduces SVM virtualization for intel_iommu in
+IOMMU/VFIO. The total SVM virtualization for intel_iommu touched
+Qemu/IOMMU/VFIO.
 
-Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
----
- hw/i386/intel_iommu.c          | 56 ++++++++++++++++++++++++++++++++++++++++++
- hw/i386/intel_iommu_internal.h | 10 ++++++++
- 2 files changed, 66 insertions(+)
+Another patchset would change the Qemu. It is "[RFC PATCH 0/20] Qemu:
+Extend intel_iommu emulator to support Shared Virtual Memory"
 
-diff --git a/hw/i386/intel_iommu.c b/hw/i386/intel_iommu.c
-index 5fbb7f1..c5e9170 100644
---- a/hw/i386/intel_iommu.c
-+++ b/hw/i386/intel_iommu.c
-@@ -2006,6 +2006,7 @@ static void vtd_tlb_inv_notify_hook(VTDNotifierIterator *iter,
-     tlb_hook_info = (VTDIOTLBInvHookInfo *) hook_info;
-     switch (tlb_hook_info->inv_desc->lo & VTD_INV_DESC_TYPE) {
-     case VTD_INV_DESC_EXT_IOTLB:
-+    case VTD_INV_DESC_PC:
-         if (iter->did == *tlb_hook_info->did) {
-             break;
-         } else {
-@@ -2098,6 +2099,54 @@ static bool vtd_process_exiotlb_desc(IntelIOMMUState *s,
-     return true;
- }
- 
-+static bool vtd_process_pasid_desc(IntelIOMMUState *s,
-+                                   VTDInvDesc *inv_desc)
-+{
-+    uint16_t domain_id;
-+    uint32_t pasid;
-+    VTDIOTLBInvHookInfo tlb_hook_info;
-+
-+    if ((inv_desc->lo & VTD_INV_DESC_PASIDC_RSVD_LO) ||
-+        (inv_desc->hi & VTD_INV_DESC_PASIDC_RSVD_HI)) {
-+        VTD_DPRINTF(GENERAL, "error: non-zero reserved field"
-+                    " in PASID desc, hi 0x%"PRIx64 " lo 0x%"PRIx64,
-+                    inv_desc->hi, inv_desc->lo);
-+        return false;
-+    }
-+
-+    domain_id = VTD_INV_DESC_PASIDC_DID(inv_desc->lo);
-+
-+    switch (inv_desc->lo & VTD_INV_DESC_PASIDC_G) {
-+    case VTD_INV_DESC_PASIDC_ALL_ALL:
-+        VTD_DPRINTF(INV, "Invalidate all PASID");
-+        break;
-+
-+    case VTD_INV_DESC_PASIDC_PASID_SI:
-+        VTD_DPRINTF(INV, "pasid-selective invalidation"
-+                    " domain 0x%"PRIx16, domain_id);
-+        break;
-+
-+    default:
-+        VTD_DPRINTF(GENERAL, "error: invalid granularity"
-+                    " in PASID-Cache Invalidate Descriptor"
-+                    " hi 0x%"PRIx64 " lo 0x%"PRIx64,
-+                    inv_desc->hi, inv_desc->lo);
-+        return false;
-+    }
-+
-+    pasid = VTD_INV_DESC_PASIDC_PASID(inv_desc->lo);
-+
-+    tlb_hook_info.did = &domain_id;
-+    tlb_hook_info.sid = NULL;
-+    tlb_hook_info.pasid = &pasid;
-+    tlb_hook_info.inv_desc = inv_desc;
-+    vtd_tlb_inv_passdown_notify(s,
-+                                &tlb_hook_info,
-+                                vtd_tlb_inv_notify_hook);
-+
-+    return true;
-+}
-+
- static bool vtd_process_inv_desc(IntelIOMMUState *s)
- {
-     VTDInvDesc inv_desc;
-@@ -2134,6 +2183,13 @@ static bool vtd_process_inv_desc(IntelIOMMUState *s)
-         }
-         break;
- 
-+     case VTD_INV_DESC_PC:
-+        trace_vtd_inv_desc("pasid-cache", inv_desc.hi, inv_desc.lo);
-+        if (!vtd_process_pasid_desc(s, &inv_desc)) {
-+            return false;
-+        }
-+        break;
-+
-     case VTD_INV_DESC_WAIT:
-         trace_vtd_inv_desc("wait", inv_desc.hi, inv_desc.lo);
-         if (!vtd_process_wait_desc(s, &inv_desc)) {
-diff --git a/hw/i386/intel_iommu_internal.h b/hw/i386/intel_iommu_internal.h
-index 9f89751..a6b9350 100644
---- a/hw/i386/intel_iommu_internal.h
-+++ b/hw/i386/intel_iommu_internal.h
-@@ -342,6 +342,7 @@ typedef union VTDInvDesc VTDInvDesc;
-                                                Invalidate Descriptor */
- #define VTD_INV_DESC_WAIT               0x5 /* Invalidation Wait Descriptor */
- #define VTD_INV_DESC_EXT_IOTLB          0x6 /* Ext-IOTLB Invalidate Desc */
-+#define VTD_INV_DESC_PC                 0x7 /* PASID-cache Invalidate Desc */
- #define VTD_INV_DESC_NONE               0   /* Not an Invalidate Descriptor */
- 
- /* Masks for Invalidation Wait Descriptor*/
-@@ -397,6 +398,15 @@ typedef union VTDInvDesc VTDInvDesc;
- #define VTD_INV_DESC_EXIOTLB_IH(val)       (((val) >> 6) & 0x1)
- #define VTD_INV_DESC_EXIOTLB_GL(val)       (((val) >> 7) & 0x1)
- 
-+#define VTD_INV_DESC_PASIDC_G          (3ULL << 4)
-+#define VTD_INV_DESC_PASIDC_PASID(val) (((val) >> 32) & 0xfffffULL)
-+#define VTD_INV_DESC_PASIDC_DID(val)   (((val) >> 16) & VTD_DOMAIN_ID_MASK)
-+#define VTD_INV_DESC_PASIDC_RSVD_LO    0xfff000000000ffc0ULL
-+#define VTD_INV_DESC_PASIDC_RSVD_HI    0xffffffffffffffffULL
-+
-+#define VTD_INV_DESC_PASIDC_ALL_ALL    (0ULL << 4)
-+#define VTD_INV_DESC_PASIDC_PASID_SI   (1ULL << 4)
-+
- /* Information about page-selective IOTLB invalidate */
- struct VTDIOTLBPageInvInfo {
-     uint16_t domain_id;
+In this patchset, it adds two new IOMMU APIs and their implementation
+in intel_iommu driver. In VFIO, it adds two IOCTL cmd attached on
+container->fd to propagate data from QEMU to kernel space.
+
+[Patch Overview]
+* 1 adds iommu API definition for binding guest PASID table
+* 2 adds binding PASID table API implementation in VT-d iommu driver
+* 3 adds iommu API definition to do IOMMU TLB invalidation from guest
+* 4 adds IOMMU TLB invalidation implementation in VT-d iommu driver
+* 5 adds VFIO IOCTL for propagating PASID table binding from guest
+* 6 adds processing of pasid table binding in vfio_iommu_type1
+* 7 adds VFIO IOCTL for propagating IOMMU TLB invalidation from guest
+* 8 adds processing of IOMMU TLB invalidation in vfio_iommu_type1
+
+Best Wishes,
+Yi L
+
+
+Jacob Pan (3):
+  iommu: Introduce bind_pasid_table API function
+  iommu/vt-d: add bind_pasid_table function
+  iommu/vt-d: Add iommu do invalidate function
+
+Liu, Yi L (5):
+  iommu: Introduce iommu do invalidate API function
+  VFIO: Add new IOTCL for PASID Table bind propagation
+  VFIO: do pasid table binding
+  VFIO: Add new IOCTL for IOMMU TLB invalidate propagation
+  VFIO: do IOMMU TLB invalidation from guest
+
+ drivers/iommu/intel-iommu.c     | 146 ++++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/iommu.c           |  32 +++++++++
+ drivers/vfio/vfio_iommu_type1.c |  98 +++++++++++++++++++++++++++
+ include/linux/dma_remapping.h   |   1 +
+ include/linux/intel-iommu.h     |  11 +++
+ include/linux/iommu.h           |  47 +++++++++++++
+ include/uapi/linux/vfio.h       |  26 +++++++
+ 7 files changed, 361 insertions(+)
+
 -- 
 1.9.1
