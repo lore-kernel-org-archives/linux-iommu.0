@@ -1,7 +1,7 @@
 From: "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: [RFC PATCH 7/8] VFIO: Add new IOCTL for IOMMU TLB invalidate propagation
-Date: Wed, 26 Apr 2017 18:12:04 +0800
-Message-ID: <1493201525-14418-8-git-send-email-yi.l.liu@intel.com>
+Subject: [RFC PATCH 8/8] VFIO: do IOMMU TLB invalidation from guest
+Date: Wed, 26 Apr 2017 18:12:05 +0800
+Message-ID: <1493201525-14418-9-git-send-email-yi.l.liu@intel.com>
 References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
 Return-path: <kvm-owner@vger.kernel.org>
 In-Reply-To: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
@@ -12,39 +12,61 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
 
-This patch adds VFIO_IOMMU_TLB_INVALIDATE to propagate IOMMU TLB
-invalidate request from guest to host.
+This patch adds support for VFIO_IOMMU_TLB_INVALIDATE cmd in
+vfio_iommu_type1.
 
-In the case of SVM virtualization on VT-d, host IOMMU driver has
-no knowledge of caching structure updates unless the guest
-invalidation activities are passed down to the host. So a new
-IOCTL is needed to propagate the guest cache invalidation through
-VFIO.
+For SVM virtualization on VT-d, for VFIO_IOMMU_TLB_INVALIDATE, it
+calls iommu_ops->do_invalidate() to submit the guest iommu cache
+invalidation to pIOMMU.
 
 Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
 ---
- include/uapi/linux/vfio.h | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/vfio/vfio_iommu_type1.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index 6b97987..50c51f8 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -564,6 +564,15 @@ struct vfio_device_svm {
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index 30b6d48..6cebdfd 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -1528,6 +1528,17 @@ static int bind_pasid_tbl_fn(struct device *dev, void *data)
+ 	return ret;
+ }
  
- #define VFIO_IOMMU_SVM_BIND_TASK	_IO(VFIO_TYPE, VFIO_BASE + 22)
- 
-+/* For IOMMU TLB Invalidation Propagation */
-+struct vfio_iommu_tlb_invalidate {
-+	__u32	argsz;
-+	__u32	length;
-+	__u8	data[];
-+};
++static int do_tlb_inv_fn(struct device *dev, void *data)
++{
++	int ret = 0;
++	struct vfio_svm_task *task = data;
++	struct tlb_invalidate_info *inv_info;
 +
-+#define VFIO_IOMMU_TLB_INVALIDATE	_IO(VFIO_TYPE, VFIO_BASE + 23)
++	inv_info = task->payload;
++	ret = iommu_do_invalidate(task->domain, dev, inv_info);
++	return ret;
++}
 +
- /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
+ static int vfio_do_svm_task(struct vfio_iommu *iommu, void *data,
+ 				int (*fn)(struct device *, void *))
+ {
+@@ -1654,6 +1665,21 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 		}
+ 		kfree(data);
+ 		return ret;
++	} else if (cmd == VFIO_IOMMU_TLB_INVALIDATE) {
++		struct vfio_iommu_tlb_invalidate hdr;
++		u8 *data = NULL;
++		int ret = 0;
++
++		minsz = offsetofend(struct vfio_iommu_tlb_invalidate, length);
++		if (copy_from_user(&hdr, (void __user *)arg, minsz))
++			return -EFAULT;
++		if (hdr.length == 0)
++			return -EINVAL;
++		data = memdup_user((void __user *)(arg + minsz),
++				hdr.length);
++		ret = vfio_do_svm_task(iommu, data, do_tlb_inv_fn);
++		kfree(data);
++		return ret;
+ 	}
  
- /*
+ 	return -ENOTTY;
 -- 
 1.9.1
