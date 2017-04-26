@@ -1,7 +1,7 @@
 From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
-Subject: [RFC PATCH 20/20] intel_iommu: propagate Ext-Device-TLB invalidate to host
-Date: Wed, 26 Apr 2017 18:06:50 +0800
-Message-ID: <1493201210-14357-21-git-send-email-yi.l.liu@linux.intel.com>
+Subject: [RFC PATCH 19/20] intel_iommu: propagate PASID-Cache invalidate to host
+Date: Wed, 26 Apr 2017 18:06:49 +0800
+Message-ID: <1493201210-14357-20-git-send-email-yi.l.liu@linux.intel.com>
 References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
 Return-path: <kvm-owner@vger.kernel.org>
 In-Reply-To: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
@@ -10,81 +10,94 @@ To: qemu-devel@nongnu.org, alex.williamson@redhat.com, peterx@redhat.com
 Cc: kvm@vger.kernel.org, jasowang@redhat.com, iommu@lists.linux-foundation.org, kevin.tian@intel.com, ashok.raj@intel.com, jacob.jun.pan@intel.com, tianyu.lan@intel.com, yi.l.liu@intel.com, jean-philippe.brucker@arm.com, "Liu, Yi L" <yi.l.liu@linux.intel.com>
 List-Id: iommu@lists.linux-foundation.org
 
-For Extended-Device-TLB invalidation, intel_iommu emulator needs to check
-all the assigned device and find the affected device. Replace the guest
-SID with the host SID in the invalidate descriptor and pass the request to
-host.
+This patch adds support for propagating PASID-Cache invalidation to host.
+Similar with Extended-IOTLB invalidation, intel_iommu emulator would also
+check all the assigned devices and do sanity check, then pass it to host.
 
-Host may just submit the request to corresponding invalidation queue in
-pIOMMU. In future maybe PASID needs to be replaced.
+Host pIOMMU driver would replace some fields in the raw data before
+submitting to pIOMMU. e.g. guest domain ID must be replaced with the real
+domain ID in host. In future PASID may need to be replaced.
 
 Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
 ---
- hw/i386/intel_iommu.c          | 43 ++++++++++++++++++++++++++++++++++++++++++
- hw/i386/intel_iommu_internal.h |  7 +++++++
- 2 files changed, 50 insertions(+)
+ hw/i386/intel_iommu.c          | 56 ++++++++++++++++++++++++++++++++++++++++++
+ hw/i386/intel_iommu_internal.h | 10 ++++++++
+ 2 files changed, 66 insertions(+)
 
 diff --git a/hw/i386/intel_iommu.c b/hw/i386/intel_iommu.c
-index c5e9170..4370790 100644
+index 5fbb7f1..c5e9170 100644
 --- a/hw/i386/intel_iommu.c
 +++ b/hw/i386/intel_iommu.c
-@@ -2012,6 +2012,13 @@ static void vtd_tlb_inv_notify_hook(VTDNotifierIterator *iter,
+@@ -2006,6 +2006,7 @@ static void vtd_tlb_inv_notify_hook(VTDNotifierIterator *iter,
+     tlb_hook_info = (VTDIOTLBInvHookInfo *) hook_info;
+     switch (tlb_hook_info->inv_desc->lo & VTD_INV_DESC_TYPE) {
+     case VTD_INV_DESC_EXT_IOTLB:
++    case VTD_INV_DESC_PC:
+         if (iter->did == *tlb_hook_info->did) {
+             break;
          } else {
-             return;
-         }
-+    case VTD_INV_DESC_EXT_DIOTLB:
-+        if (iter->sid != *tlb_hook_info->sid) {
-+            return;
-+        }
-+        tlb_hook_info->inv_desc->lo &= ~VTD_INV_DESC_EXT_DIOTLB_SID_MASK;
-+        tlb_hook_info->inv_desc->lo |= (iter->host_sid << 16);
-+        break;
-     default:
-         return;
-     }
-@@ -2147,6 +2154,34 @@ static bool vtd_process_pasid_desc(IntelIOMMUState *s,
+@@ -2098,6 +2099,54 @@ static bool vtd_process_exiotlb_desc(IntelIOMMUState *s,
      return true;
  }
  
-+static bool vtd_process_ext_device_iotlb(IntelIOMMUState *s,
-+                                         VTDInvDesc *inv_desc)
++static bool vtd_process_pasid_desc(IntelIOMMUState *s,
++                                   VTDInvDesc *inv_desc)
 +{
++    uint16_t domain_id;
 +    uint32_t pasid;
-+    uint16_t sid;
 +    VTDIOTLBInvHookInfo tlb_hook_info;
 +
-+    if ((inv_desc->lo & VTD_INV_DESC_EXT_DIOTLB_RSVD_LO) ||
-+        (inv_desc->hi & VTD_INV_DESC_EXT_DIOTLB_RSVD_HI)) {
-+        VTD_DPRINTF(GENERAL, "error: non-zero reserved field in"
-+                    " Device ExIOTLB desc, hi 0x%"PRIx64 " lo 0x%"PRIx64,
++    if ((inv_desc->lo & VTD_INV_DESC_PASIDC_RSVD_LO) ||
++        (inv_desc->hi & VTD_INV_DESC_PASIDC_RSVD_HI)) {
++        VTD_DPRINTF(GENERAL, "error: non-zero reserved field"
++                    " in PASID desc, hi 0x%"PRIx64 " lo 0x%"PRIx64,
 +                    inv_desc->hi, inv_desc->lo);
 +        return false;
 +    }
 +
-+    pasid = VTD_INV_DESC_EXT_DIOTLB_PASID(inv_desc->lo);
-+    sid = VTD_INV_DESC_EXT_DIOTLB_SID(inv_desc->lo);
++    domain_id = VTD_INV_DESC_PASIDC_DID(inv_desc->lo);
 +
-+    tlb_hook_info.did = NULL;
-+    tlb_hook_info.sid = &sid;
++    switch (inv_desc->lo & VTD_INV_DESC_PASIDC_G) {
++    case VTD_INV_DESC_PASIDC_ALL_ALL:
++        VTD_DPRINTF(INV, "Invalidate all PASID");
++        break;
++
++    case VTD_INV_DESC_PASIDC_PASID_SI:
++        VTD_DPRINTF(INV, "pasid-selective invalidation"
++                    " domain 0x%"PRIx16, domain_id);
++        break;
++
++    default:
++        VTD_DPRINTF(GENERAL, "error: invalid granularity"
++                    " in PASID-Cache Invalidate Descriptor"
++                    " hi 0x%"PRIx64 " lo 0x%"PRIx64,
++                    inv_desc->hi, inv_desc->lo);
++        return false;
++    }
++
++    pasid = VTD_INV_DESC_PASIDC_PASID(inv_desc->lo);
++
++    tlb_hook_info.did = &domain_id;
++    tlb_hook_info.sid = NULL;
 +    tlb_hook_info.pasid = &pasid;
 +    tlb_hook_info.inv_desc = inv_desc;
 +    vtd_tlb_inv_passdown_notify(s,
 +                                &tlb_hook_info,
 +                                vtd_tlb_inv_notify_hook);
++
 +    return true;
 +}
 +
  static bool vtd_process_inv_desc(IntelIOMMUState *s)
  {
      VTDInvDesc inv_desc;
-@@ -2190,6 +2225,14 @@ static bool vtd_process_inv_desc(IntelIOMMUState *s)
+@@ -2134,6 +2183,13 @@ static bool vtd_process_inv_desc(IntelIOMMUState *s)
          }
          break;
  
-+    case VTD_INV_DESC_EXT_DIOTLB:
-+        trace_vtd_inv_desc("device-extended-iotlb",
-+                           inv_desc.hi, inv_desc.lo);
-+        if (!vtd_process_ext_device_iotlb(s, &inv_desc)) {
++     case VTD_INV_DESC_PC:
++        trace_vtd_inv_desc("pasid-cache", inv_desc.hi, inv_desc.lo);
++        if (!vtd_process_pasid_desc(s, &inv_desc)) {
 +            return false;
 +        }
 +        break;
@@ -93,26 +106,29 @@ index c5e9170..4370790 100644
          trace_vtd_inv_desc("wait", inv_desc.hi, inv_desc.lo);
          if (!vtd_process_wait_desc(s, &inv_desc)) {
 diff --git a/hw/i386/intel_iommu_internal.h b/hw/i386/intel_iommu_internal.h
-index a6b9350..3cb2361 100644
+index 9f89751..a6b9350 100644
 --- a/hw/i386/intel_iommu_internal.h
 +++ b/hw/i386/intel_iommu_internal.h
-@@ -343,6 +343,7 @@ typedef union VTDInvDesc VTDInvDesc;
+@@ -342,6 +342,7 @@ typedef union VTDInvDesc VTDInvDesc;
+                                                Invalidate Descriptor */
  #define VTD_INV_DESC_WAIT               0x5 /* Invalidation Wait Descriptor */
  #define VTD_INV_DESC_EXT_IOTLB          0x6 /* Ext-IOTLB Invalidate Desc */
- #define VTD_INV_DESC_PC                 0x7 /* PASID-cache Invalidate Desc */
-+#define VTD_INV_DESC_EXT_DIOTLB         0x8 /* Ext-DIOTLB Invalidate Desc */
++#define VTD_INV_DESC_PC                 0x7 /* PASID-cache Invalidate Desc */
  #define VTD_INV_DESC_NONE               0   /* Not an Invalidate Descriptor */
  
  /* Masks for Invalidation Wait Descriptor*/
-@@ -407,6 +408,12 @@ typedef union VTDInvDesc VTDInvDesc;
- #define VTD_INV_DESC_PASIDC_ALL_ALL    (0ULL << 4)
- #define VTD_INV_DESC_PASIDC_PASID_SI   (1ULL << 4)
+@@ -397,6 +398,15 @@ typedef union VTDInvDesc VTDInvDesc;
+ #define VTD_INV_DESC_EXIOTLB_IH(val)       (((val) >> 6) & 0x1)
+ #define VTD_INV_DESC_EXIOTLB_GL(val)       (((val) >> 7) & 0x1)
  
-+#define VTD_INV_DESC_EXT_DIOTLB_PASID(val) (((val) >> 32) & 0xfffffULL)
-+#define VTD_INV_DESC_EXT_DIOTLB_SID(val)   (((val) >> 16) & 0xffff)
-+#define VTD_INV_DESC_EXT_DIOTLB_RSVD_LO    0xe00ULL
-+#define VTD_INV_DESC_EXT_DIOTLB_RSVD_HI    0x7feULL
-+#define VTD_INV_DESC_EXT_DIOTLB_SID_MASK   0xFFFF0000ULL
++#define VTD_INV_DESC_PASIDC_G          (3ULL << 4)
++#define VTD_INV_DESC_PASIDC_PASID(val) (((val) >> 32) & 0xfffffULL)
++#define VTD_INV_DESC_PASIDC_DID(val)   (((val) >> 16) & VTD_DOMAIN_ID_MASK)
++#define VTD_INV_DESC_PASIDC_RSVD_LO    0xfff000000000ffc0ULL
++#define VTD_INV_DESC_PASIDC_RSVD_HI    0xffffffffffffffffULL
++
++#define VTD_INV_DESC_PASIDC_ALL_ALL    (0ULL << 4)
++#define VTD_INV_DESC_PASIDC_PASID_SI   (1ULL << 4)
 +
  /* Information about page-selective IOTLB invalidate */
  struct VTDIOTLBPageInvInfo {
