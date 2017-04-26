@@ -1,107 +1,82 @@
-From: Tomasz Nowicki <tn@semihalf.com>
-Subject: Re: [RFC PATCH 30/30] vfio: Allow to bind foreign task
-Date: Wed, 26 Apr 2017 09:25:38 +0200
-Message-ID: <b937914a-d215-8223-0846-65271a568170@semihalf.com>
-References: <20170227195441.5170-1-jean-philippe.brucker@arm.com>
- <20170227195441.5170-31-jean-philippe.brucker@arm.com>
+From: Sunil Kovvuri <sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH v2] iommu/arm-smmu: Return IOVA in iova_to_phys when SMMU
+	is bypassed
+Date: Wed, 26 Apr 2017 14:42:38 +0530
+Message-ID: <CA+sq2CcUqPqkKU7bZb_SKPJagVRQDXqFE0FA0tt_FDuWt26zwA@mail.gmail.com>
+References: <1493114272-30093-1-git-send-email-sunil.kovvuri@gmail.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20170227195441.5170-31-jean-philippe.brucker@arm.com>
-Sender: linux-pci-owner@vger.kernel.org
-To: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Shanker Donthineni <shankerd@qti.qualcomm.com>, kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>, Joerg Roedel <joro@8bytes.org>, Sinan Kaya <okaya@qti.qualcomm.com>, Will Deacon <will.deacon@arm.com>, iommu@lists.linux-foundation.org, Harv Abdulhamid <harba@qti.qualcomm.com>, Alex Williamson <alex.williamson@redhat.com>, linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org, Nate Watterson <nwatters@qti.qualcomm.com>
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1493114272-30093-1-git-send-email-sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, LAKML <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 27.02.2017 20:54, Jean-Philippe Brucker wrote:
-> Let the process that owns the device create an address space bond on
-> behalf of another process. We add a pid argument to the BIND_TASK ioctl,
-> allowing the caller to bind a foreign task. The expected program flow in
-> this case is:
+On Tue, Apr 25, 2017 at 3:27 PM,  <sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> From: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 >
-> * Process A creates the VFIO context and initializes the device.
-> * Process B asks A to bind its address space.
-> * Process A issues an ioctl to the VFIO device fd with BIND_TASK(pid).
->   It may communicate the given PASID back to process B or keep track of it
->   internally.
-> * Process B asks A to perform transactions on its virtual address.
-> * Process A launches transaction tagged with the given PASID.
+> For software initiated address translation, when domain type is
+> IOMMU_DOMAIN_IDENTITY i.e SMMU is bypassed, mimic HW behavior
+> i.e return the same IOVA as translated address.
 >
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> This patch is an extension to Will Deacon's patchset
+> "Implement SMMU passthrough using the default domain".
+>
+> Signed-off-by: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 > ---
->  drivers/vfio/vfio.c       | 35 +++++++++++++++++++++++++++++++++--
->  include/uapi/linux/vfio.h | 15 +++++++++++++++
->  2 files changed, 48 insertions(+), 2 deletions(-)
 >
-> diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-> index c4505d8f4c61..ecc5d07e3dbb 100644
-> --- a/drivers/vfio/vfio.c
-> +++ b/drivers/vfio/vfio.c
-> @@ -26,6 +26,7 @@
->  #include <linux/module.h>
->  #include <linux/mutex.h>
->  #include <linux/pci.h>
-> +#include <linux/ptrace.h>
->  #include <linux/rwsem.h>
->  #include <linux/sched.h>
->  #include <linux/slab.h>
-> @@ -1660,7 +1661,7 @@ static long vfio_svm_ioctl(struct vfio_device *device, unsigned int cmd,
->  	struct vfio_device_svm svm;
->  	struct vfio_task *vfio_task;
+> V2
+> - As per Will's suggestion applied fix to SMMUv3 driver as well.
 >
-> -	minsz = offsetofend(struct vfio_device_svm, pasid);
-> +	minsz = offsetofend(struct vfio_device_svm, pid);
+>  drivers/iommu/arm-smmu-v3.c | 3 +++
+>  drivers/iommu/arm-smmu.c    | 3 +++
+>  2 files changed, 6 insertions(+)
 >
->  	if (copy_from_user(&svm, (void __user *)arg, minsz))
->  		return -EFAULT;
-> @@ -1669,9 +1670,39 @@ static long vfio_svm_ioctl(struct vfio_device *device, unsigned int cmd,
->  		return -EINVAL;
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 05b4592..d412bdd 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -1714,6 +1714,9 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
+>         struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>         struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
 >
->  	if (cmd == VFIO_DEVICE_BIND_TASK) {
-> -		struct task_struct *task = current;
-> +		struct mm_struct *mm;
-> +		struct task_struct *task;
+> +       if (domain->type == IOMMU_DOMAIN_IDENTITY)
+> +               return iova;
 > +
-> +		if (svm.flags & ~VFIO_SVM_PID)
-> +			return -EINVAL;
-> +
-> +		if (svm.flags & VFIO_SVM_PID) {
-> +			rcu_read_lock();
-> +			task = find_task_by_vpid(svm.pid);
-> +			if (task)
-> +				get_task_struct(task);
-> +			rcu_read_unlock();
-> +			if (!task)
-> +				return -ESRCH;
-> +
-> +			/*
-> +			 * Ensure process has RW access on the task's mm
-> +			 * FIXME:
-> +			 * - I think this ought to be in the IOMMU API
-> +			 * - I'm assuming permission is never revoked during the
-> +			 *   task's lifetime. Might be mistaken.
-> +			 */
-> +			mm = mm_access(task, PTRACE_MODE_ATTACH_REALCREDS);
-> +			if (!mm || IS_ERR(mm))
-
-I know this is RFC patch but considering we will keep this as is, we 
-need here:
-+put_task_struct(task);
-
-
-> +				return IS_ERR(mm) ? PTR_ERR(mm) : -ESRCH;
-> +			mmput(mm);
-> +		} else {
-> +			get_task_struct(current);
-> +			task = current;
-> +		}
+>         if (!ops)
+>                 return 0;
 >
->  		ret = iommu_bind_task(device->dev, task, &svm.pasid, 0, NULL);
-> +		put_task_struct(task);
->  		if (ret)
->  			return ret;
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index bfab4f7..81088cd 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1459,6 +1459,9 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+>         struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>         struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
 >
+> +       if (domain->type == IOMMU_DOMAIN_IDENTITY)
+> +               return iova;
+> +
+>         if (!ops)
+>                 return 0;
+>
+> --
+> 2.7.4
+>
+
+Will,
+
+if you are okay with the patch, can you please ACK.
 
 Thanks,
-Tomasz
+Sunil.
