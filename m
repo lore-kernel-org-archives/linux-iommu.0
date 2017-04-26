@@ -1,18 +1,15 @@
 From: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Increase SMMU CMD queue poll timeout
-Date: Wed, 26 Apr 2017 10:48:46 +0100
-Message-ID: <20170426094846.GD21744@arm.com>
-References: <1493035176-3633-1-git-send-email-gakula@caviumnetworks.com>
-	<20170424160841.GS12323@arm.com>
-	<CA+sq2CeyVm4pcAVME7OAFVxpOcSJc5CsP0vz3ypDkSxdx0SKnQ@mail.gmail.com>
-	<20170424170518.GU12323@arm.com>
-	<CA+sq2CfNYKs8Ub4bWTM1GRGO=06N-Tn7BkehwJE6LpZvC0=R=Q@mail.gmail.com>
+Subject: Re: [PATCH v2] iommu/arm-smmu: Return IOVA in iova_to_phys when SMMU
+	is bypassed
+Date: Wed, 26 Apr 2017 11:01:50 +0100
+Message-ID: <20170426100150.GE21744@arm.com>
+References: <1493114272-30093-1-git-send-email-sunil.kovvuri@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <CA+sq2CfNYKs8Ub4bWTM1GRGO=06N-Tn7BkehwJE6LpZvC0=R=Q@mail.gmail.com>
+In-Reply-To: <1493114272-30093-1-git-send-email-sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -22,62 +19,79 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Sunil Kovvuri <sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: "Goutham, Sunil" <Sunil.Goutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Catalin Marinas <catalin.marinas-5wv7dgnIgG8@public.gmane.org>, Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, LAKML <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 26, 2017 at 02:50:04PM +0530, Sunil Kovvuri wrote:
-> On Mon, Apr 24, 2017 at 10:35 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> > On Mon, Apr 24, 2017 at 10:26:53PM +0530, Sunil Kovvuri wrote:
-> >> On Mon, Apr 24, 2017 at 9:38 PM, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org> wrote:
-> >> > On Mon, Apr 24, 2017 at 05:29:36PM +0530, Geetha sowjanya wrote:
-> >> >> From: Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-> >> >>
-> >> >> When large memory is being unmapped, huge no of tlb invalidation cmds are
-> >> >> submitted followed by a SYNC command. This sometimes hits CMD queue full and
-> >> >> poll on queue drain is being timedout throwing error message 'CMD_SYNC timeout'.
-> >> >>
-> >> >> Although there is no functional issue, error message confuses user. Hence increased
-> >> >> poll timeout to 500us
-> >> >
-> >> > Hmm, what are you doing to unmap that much? Is this VFIO teardown? Do you
-> >> > have 7c6d90e2bb1a ("iommu/io-pgtable-arm: Fix iova_to_phys for block
-> >> > entries") applied?
-> >>
-> >> Yes it's VFIO teardown and again yes the above fix is applied.
-> >> But i didn't get how above fix is related.
-> >> TLB invalidation commands are submitted at 'arm_smmu_tlb_inv_range_nosync()'
-> >> and it's a loop over granule size.
-> >>
-> >> 1357         do {
-> >> 1358                 arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-> >> 1359                 cmd.tlbi.addr += granule;
-> >> 1360         } while (size -= granule);
-> >>
-> >> So if invalidation size is big then huge no of invalidation commands
-> >> will be submitted
-> >> irrespective of fix that you pointed above, right ?
-> >
-> > VFIO has some logic to batch up invalidations, but this didn't work properly
-> > for us without the fix above. However, I guess you have a huge memory range
-> > that's mapped with 2M sections or something, so there are still loads of
-> > entries to invalidate.
-> >
-> > I would much prefer it if VFIO could just teardown the whole address space
-> > so that we could do an invalidate all, but there's a chicken-and-egg problem
-> > with page accounting iirc.
-> >
+Hi Sunil,
+
+On Tue, Apr 25, 2017 at 03:27:52PM +0530, sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org wrote:
+> From: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 > 
-> We can definitely look into this from VFIO perspective but for now I am guessing
-> this patch is fine, as no functionality is being changed.
-> What do you say ?
+> For software initiated address translation, when domain type is
+> IOMMU_DOMAIN_IDENTITY i.e SMMU is bypassed, mimic HW behavior
+> i.e return the same IOVA as translated address.
+> 
+> This patch is an extension to Will Deacon's patchset
+> "Implement SMMU passthrough using the default domain".
+> 
+> Signed-off-by: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> ---
+> 
+> V2
+> - As per Will's suggestion applied fix to SMMUv3 driver as well.
 
-Thinking about it some more, I'd rather we rework the polling loop so that:
+This follows what the AMD driver does, so:
 
-1. It's structured more like the arm-smmu.c TLB loop queued for 4.11
-   (so we don't udelay(1) if the thing doesn't sync immediately)
+Acked-by: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>
 
-2. Have a larger timeout for the drain case, which I think is what you're
-   running into. This could even be 1s, like arm-smmu.c.
+but I still think that having drivers/net/ethernet/cavium/thunder/nicvf_queues.c
+poke around with the physical address to get at the struct pages underlying
+a DMA buffer is really dodgy. Is there no way this can be avoided, perhaps
+by tracking the pages some other way (although I don't understand why you're
+having to mess with the page reference counts to start with)?
+
+At least, I think you should be checking the domain type in
+nicvf_iova_to_phys, which clearly expects a DMA domain if one exists at all.
+
+Joerg: sorry, this is another one for you to pick up if possible.
+
+Cheers,
 
 Will
+
+>  drivers/iommu/arm-smmu-v3.c | 3 +++
+>  drivers/iommu/arm-smmu.c    | 3 +++
+>  2 files changed, 6 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 05b4592..d412bdd 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -1714,6 +1714,9 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
+>  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>  	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
+>  
+> +	if (domain->type == IOMMU_DOMAIN_IDENTITY)
+> +		return iova;
+> +
+>  	if (!ops)
+>  		return 0;
+>  
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index bfab4f7..81088cd 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1459,6 +1459,9 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
+>  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>  	struct io_pgtable_ops *ops= smmu_domain->pgtbl_ops;
+>  
+> +	if (domain->type == IOMMU_DOMAIN_IDENTITY)
+> +		return iova;
+> +
+>  	if (!ops)
+>  		return 0;
+>  
+> -- 
+> 2.7.4
+> 
