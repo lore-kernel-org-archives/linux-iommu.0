@@ -1,8 +1,7 @@
-From: sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
-Subject: [PATCH] iommu/arm-smmu-v3: Poll for CMDQ drain completion more
-	effectively
-Date: Thu, 27 Apr 2017 16:43:07 +0530
-Message-ID: <1493291587-23488-1-git-send-email-sunil.kovvuri@gmail.com>
+From: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
+Subject: [PATCH 0/3] Cavium ThunderX2 SMMUv3 errata workarounds
+Date: Thu, 27 Apr 2017 17:16:21 +0530
+Message-ID: <1493293584-20287-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -16,65 +15,38 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Cc: jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, lorenzo.pieralisi-5wv7dgnIgG8@public.gmane.org, hanjun.guo-QSEj5FYQhm4dnm+yROfE0A@public.gmane.org, sudeep.holla-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+From: Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 
-Modified polling on CMDQ consumer similar to how polling is done for TLB SYNC
-completion in SMMUv2 driver. Code changes are done with reference to
+Cavium CN99xx SMMUv3 implementation has two Silicon Erratas.
+1. Errata ID #74
+   SMMU register alias Page 1 is not implemented
+2. Errata ID #126
+   SMMU doesnt support unique IRQ lines for gerror, eventq and cmdq-sync
 
-8513c8930069 iommu/arm-smmu: Poll for TLB sync completion more effectively
+The following patchset does software workaround for these two erratas.
 
-Poll timeout has been increased which addresses issue of 100us timeout not
-sufficient, when command queue is full with TLB invalidation commands.
+This series is based on RFC patch.  
+https://www.spinics.net/lists/arm-kernel/msg575739.html
 
-Signed-off-by: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Signed-off-by: Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
----
- drivers/iommu/arm-smmu-v3.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+As suggested by Will Deacon, code is modified to use silicon id to
+enable errata#74 workaround.
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index d412bdd..34599d4 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -379,6 +379,9 @@
- #define CMDQ_SYNC_0_CS_NONE		(0UL << CMDQ_SYNC_0_CS_SHIFT)
- #define CMDQ_SYNC_0_CS_SEV		(2UL << CMDQ_SYNC_0_CS_SHIFT)
- 
-+#define CMDQ_DRAIN_TIMEOUT_US		1000
-+#define CMDQ_SPIN_COUNT			10
-+
- /* Event queue */
- #define EVTQ_ENT_DWORDS			4
- #define EVTQ_MAX_SZ_SHIFT		7
-@@ -737,7 +740,8 @@ static void queue_inc_prod(struct arm_smmu_queue *q)
-  */
- static int queue_poll_cons(struct arm_smmu_queue *q, bool drain, bool wfe)
- {
--	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_POLL_TIMEOUT_US);
-+	ktime_t timeout = ktime_add_us(ktime_get(), CMDQ_DRAIN_TIMEOUT_US);
-+	unsigned int spin_cnt, delay = 1;
- 
- 	while (queue_sync_cons(q), (drain ? !queue_empty(q) : queue_full(q))) {
- 		if (ktime_compare(ktime_get(), timeout) > 0)
-@@ -746,8 +750,13 @@ static int queue_poll_cons(struct arm_smmu_queue *q, bool drain, bool wfe)
- 		if (wfe) {
- 			wfe();
- 		} else {
--			cpu_relax();
--			udelay(1);
-+			for (spin_cnt = 0;
-+			     spin_cnt < CMDQ_SPIN_COUNT; spin_cnt++) {
-+				cpu_relax();
-+				continue;
-+			}
-+			udelay(delay);
-+			delay *= 2;
- 		}
- 	}
- 
+Linu Cherian (1):
+  iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #74
+
+Geetha (2):
+  arm64: Add MIDR values for Cavium cn99xx SoCs
+  iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #126
+
+ Documentation/arm64/silicon-errata.txt |  2 ++
+ arch/arm64/include/asm/cputype.h       |  3 ++
+ drivers/acpi/arm64/iort.c              | 14 +++++++-
+ drivers/iommu/arm-smmu-v3.c            | 64 +++++++++++++++++++++++++++++-----
+ 4 files changed, 73 insertions(+), 10 deletions(-)
+
 -- 
-2.7.4
+1.9.1
