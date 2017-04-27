@@ -1,59 +1,54 @@
-From: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v5 09/32] x86/mm: Provide general kernel support for
- memory encryption
-Date: Thu, 27 Apr 2017 18:12:27 +0200
-Message-ID: <20170427161227.c57dkvghz63pvmu2@pd.tnic>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418211754.10190.25082.stgit@tlendack-t1.amdoffice.net>
+From: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
+Subject: Re: Does a new booting kernel by "kexec -l" need to copy IR table
+	from previous kernel?
+Date: Thu, 27 Apr 2017 18:12:38 +0200
+Message-ID: <20170427161238.GD1332@8bytes.org>
+References: <E6AF1AFDEA62A94A97508F458CBDD47F6EBEFCC9@SHSMSX101.ccr.corp.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Return-path: <linux-arch-owner@vger.kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <20170418211754.10190.25082.stgit@tlendack-t1.amdoffice.net>
-Sender: linux-arch-owner@vger.kernel.org
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Rik van Riel <riel@redhat.com>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, "Michael S. Tsirkin" <mst@redhat.com>, Joerg Roedel <joro@8bytes.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Paolo Bonzini <pbonzini@redhat.com>, Larry Woodman <lwoodman@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Ingo Molnar <mingo@redhat.com>, Andy
+In-Reply-To: <E6AF1AFDEA62A94A97508F458CBDD47F6EBEFCC9-0J0gbvR4kThpB2pF5aRoyrfspsVTdybXVpNB7YpNyf8@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Zhuo, Qiuxu" <qiuxu.zhuo-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "Luck, Tony" <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 18, 2017 at 04:17:54PM -0500, Tom Lendacky wrote:
-> Changes to the existing page table macros will allow the SME support to
-> be enabled in a simple fashion with minimal changes to files that use these
-> macros.  Since the memory encryption mask will now be part of the regular
-> pagetable macros, we introduce two new macros (_PAGE_TABLE_NOENC and
-> _KERNPG_TABLE_NOENC) to allow for early pagetable creation/initialization
-> without the encryption mask before SME becomes active.  Two new pgprot()
-> macros are defined to allow setting or clearing the page encryption mask.
-
-...
-
-> @@ -55,7 +57,7 @@ static inline void copy_user_page(void *to, void *from, unsigned long vaddr,
->  	__phys_addr_symbol(__phys_reloc_hide((unsigned long)(x)))
->  
->  #ifndef __va
-> -#define __va(x)			((void *)((unsigned long)(x)+PAGE_OFFSET))
-> +#define __va(x)			((void *)(__sme_clr(x) + PAGE_OFFSET))
->  #endif
->  
->  #define __boot_va(x)		__va(x)
-> diff --git a/arch/x86/include/asm/page_types.h b/arch/x86/include/asm/page_types.h
-> index 7bd0099..fead0a5 100644
-> --- a/arch/x86/include/asm/page_types.h
-> +++ b/arch/x86/include/asm/page_types.h
-> @@ -15,7 +15,7 @@
->  #define PUD_PAGE_SIZE		(_AC(1, UL) << PUD_SHIFT)
->  #define PUD_PAGE_MASK		(~(PUD_PAGE_SIZE-1))
->  
-> -#define __PHYSICAL_MASK		((phys_addr_t)((1ULL << __PHYSICAL_MASK_SHIFT) - 1))
-> +#define __PHYSICAL_MASK		((phys_addr_t)(__sme_clr((1ULL << __PHYSICAL_MASK_SHIFT) - 1)))
-
-That looks strange: poking SME mask hole into a mask...?
-
->  #define __VIRTUAL_MASK		((1UL << __VIRTUAL_MASK_SHIFT) - 1)
->  
->  /* Cast *PAGE_MASK to a signed type so that it is sign-extended if
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+T24gVGh1LCBBcHIgMjcsIDIwMTcgYXQgMDM6MzQ6MDZQTSArMDAwMCwgWmh1bywgUWl1eHUgd3Jv
+dGU6Cj4gSXQgbG9va3MgbGlrZSB0aGUgcHJpbnRrIGlzIG1pc2xlYWRpbmcgYW5kIGl04oCZcyBu
+b3RoaW5nIGFjdHVhbGx5Cj4gZmFpbGVkLCBidXQganVzdCBpdCBpc27igJl0IGNvcHlpbmcgaWYg
+dGhlIG5ldyBrZXJuZWwgaXMgbm90IGEga2R1bXAKPiBrZXJuZWwuCgpZZXMsIHRoYXQgaXMgdHJ1
+ZS4gQnV0IHRoZSBtZXNzYWdlcyBhcmUgaGFybWxlc3MgYW5kIHlvdSBhcmUgc2FmZSB0bwppZ25v
+cmUgdGhlbSBpbiB5b3VyIHVzZWNhc2UuIFdlIG9ubHkgY2FyZSBhYm91dCB0aGUga2R1bXAgY2Fz
+ZSB3aGVuCmNvcHlpbmcgdGhlIG9sZCBJUiBhbmQgRE1BUiB0YWJsZXMgaW50byB0aGUgbmV3IGtl
+cm5lbCwgYmVjYXVzZSBpbiB0aGUKa2R1bXAgY2FzZSB0aGUgb2xkIGtlcm5lbCBjcmFzaGVkIGFu
+ZCBsZWZ0IGRldmljZXMgaW4gYW4gdW5kZWZpbmVkCnN0YXRlLCBzbyB0aGF0IHRoZXkgbWlnaHQg
+c3RpbGwgc2VuZCBETUEgYW5kIElSUSByZXF1ZXN0cyB0byB0aGUgbmV3Cmtlcm5lbCwgY29ycnVw
+dGluZyBkYXRhIG9yIGNhdXNpbmcgc3B1cmlvdXMvYmxvY2tlZCBpcnFzLiBCbG9ja2VkIElSUXMK
+b3IgRE1BIHJlcXVlc3RzIG1pZ2h0IGV2ZW4gYnJlYWsgZGV2aWNlcyBzbyB0aGF0IHRoZSBuZXcg
+a2VybmVsIGNhbid0CmluaXRpYWxpemUgdGhlbSBhbnltb3JlLgoKVGhhdCBpcyB3aHkgd2Ugd2Fu
+dCB0byBtYWtlIHN1cmUsIHRoYXQgbm8gc3B1cmlvdXMgSVJRIG9yIERNQSByZXF1ZXN0cwphcmUg
+YmxvY2tlZCB3aGVuIHRoZSBuZXcga2VybmVsIGluaXRpYWxpemVzIHRoZSBJT01NVS4gSW4gdGhl
+IG5vbi1rZHVtcApjYXNlIHdlIGNhbiBhc3N1bWUgdGhhdCB0aGUgb2xkIGtlcm5lbCBwdXQgdGhl
+IGRldmljZXMgaW50byBhIGRlZmluZWQKc3RhdGUgd2hlcmUgdGhleSBhcmUgbm90IHNlbmRpbmcg
+c3B1cmlvdXMgcmVxdWVzdHMuCgo+ICAgICAgICBGb3Iga2R1bXAga2VybmVsIGNhbiB3ZSBqdXN0
+IHJlaW5pdGlhbGl6aW5nIElSIHRhYmxlKGFzIGxpa2Ugbm9ybWFsCj4ga2VybmVsIGJvb3QgZnJv
+bSBwb3dlciBvbikgdG8gaGFuZGxlIHRoZSDigJxzcHVyaW91cyBpbnRlcnJ1cHRz4oCdIGlzc3Vl
+IGluc3RlYWQgb2YKPiBjb3B5aW5nIElSICB0YWJsZSBmcm9tIHByZXZpb3VzIGtlcm5lbD8KPiAK
+PiAgICAgICAgRm9yIGJvb3RpbmcgYSBuZXcga2VybmVsIGJ5IOKAnGtleGVjIC1s4oCdIChteSB0
+ZXN0IGNhc2UpLCBkbyB3ZSBzdGlsbCBuZWVkCj4gdG8gY29weSBJUiB0YWJsZSBmcm9tIHByZXZp
+b3VzIGtlcm5lbCB0byBoYW5kbGUgdGhlIOKAnHNwdXJpb3VzIGludGVycnVwdHPigJ0KPiBpc3N1
+ZT8KCkFzIEkgc2FpZCwgZm9yIHlvdXIgY2FzZSB0aGVyZSBpcyBubyBuZWVkIHRvIGRvIHRoZSBj
+b3B5aW5nIGFuZCB5b3UgY2FuCmlnbm9yZSB0aGUgbWVzc2FnZXMuCgoKUmVnYXJkcywKCglKb2Vy
+ZwoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUg
+bWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlz
+dHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
