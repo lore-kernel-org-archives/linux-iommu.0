@@ -1,90 +1,78 @@
-From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+From: "Liu, Yi L" <yi.l.liu@linux.intel.com>
 Subject: Re: [Qemu-devel] [RFC PATCH 12/20] Memory: Add func to fire
-	pasidt_bind notifier
-Date: Thu, 27 Apr 2017 14:14:27 +0800
-Message-ID: <20170427061427.GA1542@pxdev.xzpeter.org>
+ pasidt_bind notifier
+Date: Thu, 27 Apr 2017 10:37:19 +0800
+Message-ID: <20170427023719.GA14925@sky-dev>
 References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
-	<1493201210-14357-13-git-send-email-yi.l.liu@linux.intel.com>
-	<0f2966cf-4e5a-a2cc-5eb3-7e7d4f62bb85@redhat.com>
-	<20170427023719.GA14925@sky-dev>
+ <1493201210-14357-13-git-send-email-yi.l.liu@linux.intel.com>
+ <0f2966cf-4e5a-a2cc-5eb3-7e7d4f62bb85@redhat.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <kvm-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <20170427023719.GA14925@sky-dev>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <0f2966cf-4e5a-a2cc-5eb3-7e7d4f62bb85@redhat.com>
+Sender: kvm-owner@vger.kernel.org
+To: Paolo Bonzini <pbonzini@redhat.com>
+Cc: qemu-devel@nongnu.org, alex.williamson@redhat.com, peterx@redhat.com, tianyu.lan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org, jean-philippe.brucker@arm.com, jasowang@redhat.com, iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCBBcHIgMjcsIDIwMTcgYXQgMTA6Mzc6MTlBTSArMDgwMCwgTGl1LCBZaSBMIHdyb3Rl
-Ogo+IE9uIFdlZCwgQXByIDI2LCAyMDE3IGF0IDAzOjUwOjE2UE0gKzAyMDAsIFBhb2xvIEJvbnpp
-bmkgd3JvdGU6Cj4gPiAKPiA+IAo+ID4gT24gMjYvMDQvMjAxNyAxMjowNiwgTGl1LCBZaSBMIHdy
-b3RlOgo+ID4gPiArdm9pZCBtZW1vcnlfcmVnaW9uX25vdGlmeV9pb21tdV9zdm1fYmluZChNZW1v
-cnlSZWdpb24gKm1yLAo+ID4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICB2b2lkICpkYXRhKQo+ID4gPiArewo+ID4gPiArICAgIElPTU1VTm90aWZpZXIgKmlvbW11
-X25vdGlmaWVyOwo+ID4gPiArICAgIElPTU1VTm90aWZpZXJGbGFnIHJlcXVlc3RfZmxhZ3M7Cj4g
-PiA+ICsKPiA+ID4gKyAgICBhc3NlcnQobWVtb3J5X3JlZ2lvbl9pc19pb21tdShtcikpOwo+ID4g
-PiArCj4gPiA+ICsgICAgLypUT0RPOiBzdXBwb3J0IG90aGVyIGJpbmQgcmVxdWVzdHMgd2l0aCBz
-bWFsbGVyIGdyYW4sCj4gPiA+ICsgICAgICogZS5nLiBiaW5kIHNpZ25sZSBwYXNpZCBlbnRyeQo+
-ID4gPiArICAgICAqLwo+ID4gPiArICAgIHJlcXVlc3RfZmxhZ3MgPSBJT01NVV9OT1RJRklFUl9T
-Vk1fUEFTSURUX0JJTkQ7Cj4gPiA+ICsKPiA+ID4gKyAgICBRTElTVF9GT1JFQUNIKGlvbW11X25v
-dGlmaWVyLCAmbXItPmlvbW11X25vdGlmeSwgbm9kZSkgewo+ID4gPiArICAgICAgICBpZiAoaW9t
-bXVfbm90aWZpZXItPm5vdGlmaWVyX2ZsYWdzICYgcmVxdWVzdF9mbGFncykgewo+ID4gPiArICAg
-ICAgICAgICAgaW9tbXVfbm90aWZpZXItPm5vdGlmeShpb21tdV9ub3RpZmllciwgZGF0YSk7Cj4g
-PiA+ICsgICAgICAgICAgICBicmVhazsKPiA+ID4gKyAgICAgICAgfQo+ID4gPiArICAgIH0KPiA+
-IAo+ID4gUGV0ZXIsCj4gPiAKPiA+IHNob3VsZCB0aGlzIHJldXNlIC0+bm90aWZ5LCBvciBzaG91
-bGQgaXQgYmUgZGlmZmVyZW50IGZ1bmN0aW9uIHBvaW50ZXIKPiA+IGluIElPTU1VTm90aWZpZXI/
-Cj4gCj4gSGkgUGFvbG8sCj4gCj4gVGh4IGZvciB5b3VyIHJldmlldy4KPiAKPiBJIHRoaW5rIGl0
-IHNob3VsZCBiZSDigJwtPm5vdGlmeeKAnSBoZXJlLiBJbiB0aGlzIHBhdGNoc2V0LCB0aGUgbmV3
-IG5vdGlmaWVyCj4gaXMgcmVnaXN0ZXJlZCB3aXRoIHRoZSBleGlzdGluZyBub3RpZmllciByZWdp
-c3RyYXRpb24gQVBJLiBTbyB0aGUgYWxsIHRoZQo+IG5vdGlmaWVycyBhcmUgaW4gdGhlIG1yLT5p
-b21tdV9ub3RpZnkgbGlzdC4gQW5kIG5vdGlmaWVycyBhcmUgbGFiZWxlZAo+IGJ5IG5vdGlmeSBm
-bGFnLCBzbyBpdCBpcyBhYmxlIHRvIGRpZmZlcmVudGlhdGUgdGhlIElPTU1VTm90aWZpZXIgbm9k
-ZXMuCj4gV2hlbiB0aGUgZmxhZyBtZWV0cywgdHJpZ2dlciBpdCBieSDigJwtPm5vdGlmeeKAnS4g
-VGhlIGRpYWdyYW0gYmVsb3cgc2hvd3MKPiBteSB1bmRlcnN0YW5kaW5nICwgd2lzaCBpdCBoZWxw
-cyB0byBtYWtlIG1lIHVuZGVyc3Rvb2QuCj4gCj4gVkZJT0NvbnRhaW5lcgo+ICAgICAgICB8Cj4g
-ICAgICAgIGdpb21tdV9saXN0KFZGSU9HdWVzdElPTU1VKQo+ICAgICAgICAgICAgICAgICBcCj4g
-ICAgICAgICAgICAgICAgICBWRklPR3Vlc3RJT01NVTEgLT4gICBWRklPR3Vlc3RJT01NVTIgLT4g
-VkZJT0d1ZXN0SU9NTVUzIC4uLgo+ICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAgICAg
-ICAgICAgIHwgICAgICAgICAgICAgICAgIHwKPiBtci0+aW9tbXVfbm90aWZ5OiBJT01NVU5vdGlm
-aWVyICAgLT4gICAgSU9NTVVOb3RpZmllciAgLT4gIElPTU1VTm90aWZpZXIKPiAgICAgICAgICAg
-ICAgICAgICAoRmxhZzpNQVAvVU5NQVApICAgICAoRmxhZzpTVk0gYmluZCkgIChGbGFnOnRsYiBp
-bnZhbGlkYXRlKQo+IAo+IAo+IEFjdHVhbGx5LCBjb21wYXJlZCB3aXRoIHRoZSBNQVAvVU5NQVAg
-bm90aWZpZXIsIHRoZSBuZXdseSBhZGRlZCBub3RpZmllciBoYXMKPiBubyBzdGFydC9lbmQgY2hl
-Y2ssIGFuZCB0aGVyZSBtYXkgYmUgb3RoZXIgdHlwZXMgb2YgYmluZCBub3RmaWVyIGZsYWcgaW4K
-PiBmdXR1cmUsIHNvIEkgYWRkZWQgYSBzZXBhcmF0ZSBmaXJlIGZ1bmMgZm9yIFNWTSBiaW5kIG5v
-dGlmaWVyLgoKSSBhZ3JlZSB3aXRoIFBhb2xvIHRoYXQgdGhpcyBpbnRlcmZhY2UgbWlnaHQgbm90
-IGJlIHRoZSBzdWl0YWJsZSBwbGFjZQpmb3IgdGhlIFNWTSBub3RpZmllcnMgKGp1c3QgbGlrZSB3
-aGF0IEkgd29ycmllZCBhYm91dCBpbiBwcmV2aW91cwpkaXNjdXNzaW9ucykuCgpUaGUgYmlnZ2Vz
-dCBwcm9ibGVtIGlzIHRoYXQsIGlmIHlvdSBzZWUgY3VycmVudCBub3RpZmllciBtZWNoYW5pc20s
-Cml0J3MgcGVyLW1lbW9yeS1yZWdpb24uIEhvd2V2ZXIgaWl1YyB5b3VyIG1lc3NhZ2VzIHNob3Vs
-ZCBiZQpwZXItaW9tbXUsIG9yIHNheSwgcGVyIHRyYW5zbGF0aW9uIHVuaXQuIFdoaWxlLCBmb3Ig
-ZWFjaCBpb21tdSwgdGhlcmUKY2FuIGJlIG1vcmUgdGhhbiBvbmUgbWVtb3J5IHJlZ2lvbnMgKHBw
-YyBjYW4gYmUgYW4gZXhhbXBsZSkuIFdoZW4KdGhlcmUgYXJlIG1vcmUgdGhhbiBvbmUgTVJzIGJp
-bmRlZCB0byB0aGUgc2FtZSBpb21tdSB1bml0LCB3aGljaAptZW1vcnkgcmVnaW9uIHNob3VsZCB5
-b3UgcmVnaXN0ZXIgdG8/IEFueSBvbmUgb2YgdGhlbSwgb3IgYWxsPwoKU28gbXkgY29uY2x1c2lv
-biBpcywgaXQganVzdCBoYXMgbm90aGluZyB0byBkbyB3aXRoIG1lbW9yeSByZWdpb25zLi4uCgpJ
-bnN0ZWFkIG9mIGEgZGlmZmVyZW50IGZ1bmN0aW9uIHBvaW50ZXIgaW4gSU9NTVVOb3RpZmVyLCBJ
-TUhPIHdlIGNhbgpldmVuIG1vdmUgYSBzdGVwIGZ1cnRoZXIsIHRvIGlzb2xhdGUgSU9UTEIgbm90
-aWZpY2F0aW9ucyAodGFyZ2V0ZWQgYXQKbWVtb3J5IHJlZ2lvbnMgYW5kIHdpdGggc3RhcnQvZW5k
-IHJhbmdlcykgb3V0IG9mIFNWTS9vdGhlcgpub3RpZmljYXRpb25zLCBzaW5jZSB0aGV5IGFyZSBk
-aWZmZXJlbnQgaW4gZ2VuZXJhbC4gU28gd2UgYmFzaWNhbGx5Cm5lZWQgdHdvIG5vdGlmaWNhdGlv
-biBtZWNoYW5pc206CgotIG9uZSBmb3IgbWVtb3J5IHJlZ2lvbnMsIGN1cnJlbnRseSB3aGF0IEkg
-Y2FuIHNlZSBpcyBJT1RMQgogIG5vdGlmaWNhdGlvbnMKCi0gb25lIGZvciB0cmFuc2xhdGlvbiB1
-bml0cywgY3VycmVudGx5IEkgc2VlIGFsbCB0aGUgcmVzdCBvZgogIG5vdGlmaWNhdGlvbnMgbmVl
-ZGVkIGluIHZpcnQtc3ZtIGluIHRoaXMgY2F0ZWdvcnkKCk1heWJlIHNvbWUgUkZDIHBhdGNoZXMg
-d291bGQgYmUgZ29vZCB0byBzaG93IHdoYXQgSSBtZWFuLi4uIEknbGwgc2VlCndoZXRoZXIgSSBj
-YW4gcHJlcGFyZSBzb21lLgoKVGhhbmtzLAoKLS0gClBldGVyIFh1Cl9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
-aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
-cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Wed, Apr 26, 2017 at 03:50:16PM +0200, Paolo Bonzini wrote:
+> 
+> 
+> On 26/04/2017 12:06, Liu, Yi L wrote:
+> > +void memory_region_notify_iommu_svm_bind(MemoryRegion *mr,
+> > +                                         void *data)
+> > +{
+> > +    IOMMUNotifier *iommu_notifier;
+> > +    IOMMUNotifierFlag request_flags;
+> > +
+> > +    assert(memory_region_is_iommu(mr));
+> > +
+> > +    /*TODO: support other bind requests with smaller gran,
+> > +     * e.g. bind signle pasid entry
+> > +     */
+> > +    request_flags = IOMMU_NOTIFIER_SVM_PASIDT_BIND;
+> > +
+> > +    QLIST_FOREACH(iommu_notifier, &mr->iommu_notify, node) {
+> > +        if (iommu_notifier->notifier_flags & request_flags) {
+> > +            iommu_notifier->notify(iommu_notifier, data);
+> > +            break;
+> > +        }
+> > +    }
+> 
+> Peter,
+> 
+> should this reuse ->notify, or should it be different function pointer
+> in IOMMUNotifier?
+
+Hi Paolo,
+
+Thx for your review.
+
+I think it should be “->notify” here. In this patchset, the new notifier
+is registered with the existing notifier registration API. So the all the
+notifiers are in the mr->iommu_notify list. And notifiers are labeled
+by notify flag, so it is able to differentiate the IOMMUNotifier nodes.
+When the flag meets, trigger it by “->notify”. The diagram below shows
+my understanding , wish it helps to make me understood.
+
+VFIOContainer
+       |
+       giommu_list(VFIOGuestIOMMU)
+                \
+                 VFIOGuestIOMMU1 ->   VFIOGuestIOMMU2 -> VFIOGuestIOMMU3 ...
+                    |                     |                 |
+mr->iommu_notify: IOMMUNotifier   ->    IOMMUNotifier  ->  IOMMUNotifier
+                  (Flag:MAP/UNMAP)     (Flag:SVM bind)  (Flag:tlb invalidate)
+
+
+Actually, compared with the MAP/UNMAP notifier, the newly added notifier has
+no start/end check, and there may be other types of bind notfier flag in
+future, so I added a separate fire func for SVM bind notifier.
+
+Thanks,
+Yi L
+
+> Paolo
+> 
