@@ -1,7 +1,7 @@
 From: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Subject: [PATCH 1/2] iommu/s390: Fix IOMMU groups
-Date: Thu, 27 Apr 2017 17:28:24 +0200
-Message-ID: <1493306905-32334-2-git-send-email-joro@8bytes.org>
+Subject: [PATCH 2/2] iommu/s390: Add support for iommu_device handling
+Date: Thu, 27 Apr 2017 17:28:25 +0200
+Message-ID: <1493306905-32334-3-git-send-email-joro@8bytes.org>
 References: <1493306905-32334-1-git-send-email-joro@8bytes.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -23,161 +23,100 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 
-Currently the s390 iommu driver allocates an iommu-group for
-every device that is added. But that is wrong, as there is
-only one dma-table per pci-root-bus. Make all devices behind
-one dma-table share one iommu-group.
+Add support for the iommu_device_register interface to make
+the s390 hardware iommus visible to the iommu core and in
+sysfs.
 
 Signed-off-by: Joerg Roedel <jroedel-l3A5Bk7waGM@public.gmane.org>
 ---
- arch/s390/include/asm/pci.h |  7 +++++++
- arch/s390/pci/pci.c         | 10 +++++++++-
- drivers/iommu/s390-iommu.c  | 43 ++++++++++++++++++++++++++++++++-----------
- 3 files changed, 48 insertions(+), 12 deletions(-)
+ arch/s390/include/asm/pci.h |  1 +
+ drivers/iommu/s390-iommu.c  | 30 ++++++++++++++++++++++++++++++
+ 2 files changed, 31 insertions(+)
 
 diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
-index 4e31866..045665d 100644
+index 045665d..8c071af 100644
 --- a/arch/s390/include/asm/pci.h
 +++ b/arch/s390/include/asm/pci.h
-@@ -8,6 +8,7 @@
- 
- #include <linux/pci.h>
- #include <linux/mutex.h>
-+#include <linux/iommu.h>
- #include <asm-generic/pci.h>
- #include <asm/pci_clp.h>
- #include <asm/pci_debug.h>
-@@ -123,6 +124,8 @@ struct zpci_dev {
+@@ -124,6 +124,7 @@ struct zpci_dev {
  	unsigned long	iommu_pages;
  	unsigned int	next_bit;
  
-+	struct iommu_group *group;	/* IOMMU group for all devices behind this zdev */
-+
++	struct iommu_device iommu_dev;  /* IOMMU core handle */
+ 	struct iommu_group *group;	/* IOMMU group for all devices behind this zdev */
+ 
  	char res_name[16];
- 	struct zpci_bar_struct bars[PCI_BAR_COUNT];
- 
-@@ -173,6 +176,10 @@ static inline bool zdev_enabled(struct zpci_dev *zdev)
- int clp_enable_fh(struct zpci_dev *, u8);
- int clp_disable_fh(struct zpci_dev *);
- 
-+/* IOMMU Interface */
-+int zpci_init_iommu(struct zpci_dev *zdev);
-+void zpci_destroy_iommu(struct zpci_dev *zdev);
-+
- #ifdef CONFIG_PCI
- /* Error handling and recovery */
- void zpci_event_error(void *);
-diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-index 364b9d8..3178e4d 100644
---- a/arch/s390/pci/pci.c
-+++ b/arch/s390/pci/pci.c
-@@ -754,6 +754,7 @@ void pcibios_remove_bus(struct pci_bus *bus)
- 
- 	zpci_exit_slot(zdev);
- 	zpci_cleanup_bus_resources(zdev);
-+	zpci_destroy_iommu(zdev);
- 	zpci_free_domain(zdev);
- 
- 	spin_lock(&zpci_list_lock);
-@@ -825,11 +826,15 @@ int zpci_create_device(struct zpci_dev *zdev)
- 	if (rc)
- 		goto out;
- 
-+	rc = zpci_init_iommu(zdev);
-+	if (rc)
-+		goto out_free;
-+
- 	mutex_init(&zdev->lock);
- 	if (zdev->state == ZPCI_FN_STATE_CONFIGURED) {
- 		rc = zpci_enable_device(zdev);
- 		if (rc)
--			goto out_free;
-+			goto out_iommu;
- 	}
- 	rc = zpci_scan_bus(zdev);
- 	if (rc)
-@@ -846,6 +851,9 @@ int zpci_create_device(struct zpci_dev *zdev)
- out_disable:
- 	if (zdev->state == ZPCI_FN_STATE_ONLINE)
- 		zpci_disable_device(zdev);
-+out_iommu:
-+	zpci_destroy_iommu(zdev);
-+
- out_free:
- 	zpci_free_domain(zdev);
- out:
 diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 179e636..cad3ad0 100644
+index cad3ad0..ec7f5e4 100644
 --- a/drivers/iommu/s390-iommu.c
 +++ b/drivers/iommu/s390-iommu.c
-@@ -163,22 +163,22 @@ static void s390_iommu_detach_device(struct iommu_domain *domain,
- 	}
- }
+@@ -18,6 +18,8 @@
+  */
+ #define S390_IOMMU_PGSIZES	(~0xFFFUL)
  
--static int s390_iommu_add_device(struct device *dev)
-+static struct iommu_group *s390_iommu_device_group(struct device *dev)
++static struct iommu_ops s390_iommu_ops;
++
+ struct s390_domain {
+ 	struct iommu_domain	domain;
+ 	struct list_head	devices;
+@@ -173,10 +175,13 @@ static struct iommu_group *s390_iommu_device_group(struct device *dev)
+ static int s390_iommu_add_device(struct device *dev)
  {
--	struct iommu_group *group;
--	int rc;
+ 	struct iommu_group *group = iommu_group_get_for_dev(dev);
 +	struct zpci_dev *zdev = to_pci_dev(dev)->sysdata;
- 
--	group = iommu_group_get(dev);
--	if (!group) {
--		group = iommu_group_alloc();
--		if (IS_ERR(group))
--			return PTR_ERR(group);
--	}
-+	return zdev->group;
-+}
 +
-+static int s390_iommu_add_device(struct device *dev)
-+{
-+	struct iommu_group *group = iommu_group_get_for_dev(dev);
-+	if (IS_ERR(group))
-+		return PTR_ERR(group);
+ 	if (IS_ERR(group))
+ 		return PTR_ERR(group);
  
--	rc = iommu_group_add_device(group, dev);
  	iommu_group_put(group);
++	iommu_device_link(&zdev->iommu_dev, dev);
  
--	return rc;
+ 	return 0;
+ }
+@@ -203,6 +208,7 @@ static void s390_iommu_remove_device(struct device *dev)
+ 			s390_iommu_detach_device(domain, dev);
+ 	}
+ 
++	iommu_device_unlink(&zdev->iommu_dev, dev);
+ 	iommu_group_remove_device(dev);
+ }
+ 
+@@ -342,13 +348,37 @@ int zpci_init_iommu(struct zpci_dev *zdev)
+ 	if (IS_ERR(zdev->group)) {
+ 		rc = PTR_ERR(zdev->group);
+ 		zdev->group = NULL;
++		goto out_err;
+ 	}
+ 
++	rc = iommu_device_sysfs_add(&zdev->iommu_dev, NULL, NULL,
++				    "s390-iommu.%08x", zdev->fid);
++	if (rc)
++		goto out_group;
++
++	iommu_device_set_ops(&zdev->iommu_dev, &s390_iommu_ops);
++
++	rc = iommu_device_register(&zdev->iommu_dev);
++	if (rc)
++		goto out_sysfs;
++
 +	return 0;
- }
- 
- static void s390_iommu_remove_device(struct device *dev)
-@@ -333,6 +333,26 @@ static size_t s390_iommu_unmap(struct iommu_domain *domain,
- 	return size;
- }
- 
-+int zpci_init_iommu(struct zpci_dev *zdev)
-+{
-+	int rc = 0;
 +
-+	zdev->group = iommu_group_alloc();
++out_sysfs:
++	iommu_device_sysfs_remove(&zdev->iommu_dev);
 +
-+	if (IS_ERR(zdev->group)) {
-+		rc = PTR_ERR(zdev->group);
-+		zdev->group = NULL;
-+	}
-+
-+	return rc;
-+}
-+
-+void zpci_destroy_iommu(struct zpci_dev *zdev)
-+{
++out_group:
 +	iommu_group_put(zdev->group);
 +	zdev->group = NULL;
-+}
 +
- static struct iommu_ops s390_iommu_ops = {
- 	.capable = s390_iommu_capable,
- 	.domain_alloc = s390_domain_alloc,
-@@ -344,6 +364,7 @@ static size_t s390_iommu_unmap(struct iommu_domain *domain,
- 	.iova_to_phys = s390_iommu_iova_to_phys,
- 	.add_device = s390_iommu_add_device,
- 	.remove_device = s390_iommu_remove_device,
-+	.device_group = s390_iommu_device_group,
- 	.pgsize_bitmap = S390_IOMMU_PGSIZES,
- };
++out_err:
+ 	return rc;
+ }
  
+ void zpci_destroy_iommu(struct zpci_dev *zdev)
+ {
++	iommu_device_unregister(&zdev->iommu_dev);
++	iommu_device_sysfs_remove(&zdev->iommu_dev);
+ 	iommu_group_put(zdev->group);
+ 	zdev->group = NULL;
+ }
 -- 
 1.9.1
