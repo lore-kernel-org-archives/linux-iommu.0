@@ -1,14 +1,12 @@
-From: Lan Tianyu <tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: [RFC PATCH 14/20] intel_iommu: add FOR_EACH_ASSIGN_DEVICE macro
-Date: Fri, 28 Apr 2017 15:33:28 +0800
-Message-ID: <fbc61d10-5bd4-50b4-80cf-9ca460faa5bc@intel.com>
-References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
-	<1493201210-14357-15-git-send-email-yi.l.liu@linux.intel.com>
+From: Qiuxu Zhuo <qiuxu.zhuo-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Subject: [PATCH 1/1] iommu/vt-d: Don't print the failure message when booting
+	non-kdump kernel
+Date: Fri, 28 Apr 2017 01:16:15 +0800
+Message-ID: <20170427171615.78999-1-qiuxu.zhuo@intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1493201210-14357-15-git-send-email-yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -18,64 +16,63 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, alex.williamson-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org
-Cc: kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, Qiuxu Zhuo <qiuxu.zhuo-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gMjAxN+W5tDA05pyIMjbml6UgMTg6MDYsIExpdSwgWWkgTCB3cm90ZToKPiBBZGQgRk9SX0VB
-Q0hfQVNTSUdOX0RFVklDRS4gSXQgd291bGQgYmUgdXNlZCB0byBsb29wIGFsbCBhc3NpZ25lZAo+
-IGRldmljZXMgd2hlbiBwcm9jZXNzaW5nIGd1ZXN0IHBhc2lkIHRhYmxlIGxpbmtpbmcgYW5kIGlv
-bW11IGNhY2hlCj4gaW52YWxpZGF0ZSBwcm9wYWdhdGlvbi4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBM
-aXUsIFlpIEwgPHlpLmwubGl1QGxpbnV4LmludGVsLmNvbT4KPiAtLS0KPiAgaHcvaTM4Ni9pbnRl
-bF9pb21tdS5jICAgICAgICAgIHwgMzIgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysK
-PiAgaHcvaTM4Ni9pbnRlbF9pb21tdV9pbnRlcm5hbC5oIHwgMTEgKysrKysrKysrKysKPiAgMiBm
-aWxlcyBjaGFuZ2VkLCA0MyBpbnNlcnRpb25zKCspCj4gCj4gZGlmZiAtLWdpdCBhL2h3L2kzODYv
-aW50ZWxfaW9tbXUuYyBiL2h3L2kzODYvaW50ZWxfaW9tbXUuYwo+IGluZGV4IDBjNDEyZDIuLmYy
-OTE5OTUgMTAwNjQ0Cj4gLS0tIGEvaHcvaTM4Ni9pbnRlbF9pb21tdS5jCj4gKysrIGIvaHcvaTM4
-Ni9pbnRlbF9pb21tdS5jCj4gQEAgLTU1LDYgKzU1LDM4IEBAIHN0YXRpYyBpbnQgdnRkX2RiZ2Zs
-YWdzID0gVlREX0RCR0JJVChHRU5FUkFMKSB8IFZURF9EQkdCSVQoQ1NSKTsKPiAgI2RlZmluZSBW
-VERfRFBSSU5URih3aGF0LCBmbXQsIC4uLikgZG8ge30gd2hpbGUgKDApCj4gICNlbmRpZgo+ICAK
-PiArI2RlZmluZSBGT1JfRUFDSF9BU1NJR05fREVWSUNFKF9fbm90aWZ5X2luZm9fdHlwZSwgXAo+
-ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgX19vcGFxdWVfdHlwZSwgXAo+ICsgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgX19ob29rX2luZm8sIFwKPiArICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIF9faG9va19mbikgXAo+ICtkbyB7IFwKPiArICAgIEludGVsSU9N
-TVVOb3RpZmllck5vZGUgKm5vZGU7IFwKPiArICAgIFZURE5vdGlmaWVySXRlcmF0b3IgaXRlcmF0
-b3I7IFwKPiArICAgIGludCByZXQgPSAwOyBcCj4gKyAgICBfX25vdGlmeV9pbmZvX3R5cGUgKm5v
-dGlmeV9pbmZvOyBcCj4gKyAgICBfX29wYXF1ZV90eXBlICpvcGFxOyBcCj4gKyAgICBpbnQgYXJn
-c3o7IFwKPiArICAgIGFyZ3N6ID0gc2l6ZW9mKCpub3RpZnlfaW5mbykgKyBzaXplb2YoKm9wYXEp
-OyBcCj4gKyAgICBub3RpZnlfaW5mbyA9IGdfbWFsbG9jMChhcmdzeik7IFwKPiArICAgIFFMSVNU
-X0ZPUkVBQ0gobm9kZSwgJihzLT5ub3RpZmllcnNfbGlzdCksIG5leHQpIHsgXAo+ICsgICAgICAg
-IFZUREFkZHJlc3NTcGFjZSAqdnRkX2FzID0gbm9kZS0+dnRkX2FzOyBcCj4gKyAgICAgICAgVlRE
-Q29udGV4dEVudHJ5IGNlWzJdOyBcCj4gKyAgICAgICAgaXRlcmF0b3IuYnVzID0gcGNpX2J1c19u
-dW0odnRkX2FzLT5idXMpOyBcCj4gKyAgICAgICAgcmV0ID0gdnRkX2Rldl90b19jb250ZXh0X2Vu
-dHJ5KHMsIGl0ZXJhdG9yLmJ1cywgXAo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-dnRkX2FzLT5kZXZmbiwgJmNlWzBdKTsgXAo+ICsgICAgICAgIGlmIChyZXQgIT0gMCkgeyBcCj4g
-KyAgICAgICAgICAgIGNvbnRpbnVlOyBcCj4gKyAgICAgICAgfSBcCj4gKyAgICAgICAgaXRlcmF0
-b3Iuc2lkID0gdnRkX21ha2Vfc291cmNlX2lkKGl0ZXJhdG9yLmJ1cywgdnRkX2FzLT5kZXZmbik7
-IFwKPiArICAgICAgICBpdGVyYXRvci5kaWQgPSAgVlREX0NPTlRFWFRfRU5UUllfRElEKGNlWzBd
-LmhpKTsgXAo+ICsgICAgICAgIGl0ZXJhdG9yLmhvc3Rfc2lkID0gbm9kZS0+aG9zdF9zaWQ7IFwK
-PiArICAgICAgICBpdGVyYXRvci52dGRfYXMgPSB2dGRfYXM7IFwKPiArICAgICAgICBpdGVyYXRv
-ci5jZSA9ICZjZVswXTsgXAo+ICsgICAgICAgIF9faG9va19mbigmaXRlcmF0b3IsIF9faG9va19p
-bmZvLCBub3RpZnlfaW5mbyk7IFwKPiArICAgIH0gXAo+ICsgICAgZ19mcmVlKG5vdGlmeV9pbmZv
-KTsgXAo+ICt9IHdoaWxlICgwKQo+ICsKPiAgc3RhdGljIHZvaWQgdnRkX2RlZmluZV9xdWFkKElu
-dGVsSU9NTVVTdGF0ZSAqcywgaHdhZGRyIGFkZHIsIHVpbnQ2NF90IHZhbCwKPiAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIHVpbnQ2NF90IHdtYXNrLCB1aW50NjRfdCB3MWNtYXNrKQo+ICB7
-Cj4gZGlmZiAtLWdpdCBhL2h3L2kzODYvaW50ZWxfaW9tbXVfaW50ZXJuYWwuaCBiL2h3L2kzODYv
-aW50ZWxfaW9tbXVfaW50ZXJuYWwuaAo+IGluZGV4IGYyYTdkMTIuLjUxNzgzOTggMTAwNjQ0Cj4g
-LS0tIGEvaHcvaTM4Ni9pbnRlbF9pb21tdV9pbnRlcm5hbC5oCj4gKysrIGIvaHcvaTM4Ni9pbnRl
-bF9pb21tdV9pbnRlcm5hbC5oCj4gQEAgLTQzOSw2ICs0MzksMTcgQEAgdHlwZWRlZiBzdHJ1Y3Qg
-VlREUm9vdEVudHJ5IFZURFJvb3RFbnRyeTsKPiAgI2RlZmluZSBWVERfRVhUX0NPTlRFWFRfVFRf
-Tk9fREVWX0lPVExCICAgKDRVTEwgPDwgMikKPiAgI2RlZmluZSBWVERfRVhUX0NPTlRFWFRfVFRf
-REVWX0lPVExCICAgICAgKDVVTEwgPDwgMikKPiAgCj4gK3N0cnVjdCBWVEROb3RpZmllckl0ZXJh
-dG9yIHsKPiArICAgIFZUREFkZHJlc3NTcGFjZSAqdnRkX2FzOwo+ICsgICAgVlREQ29udGV4dEVu
-dHJ5ICpjZTsKPiArICAgIHVpbnQxNl90IGhvc3Rfc2lkOwo+ICsgICAgdWludDE2X3Qgc2lkOwo+
-ICsgICAgdWludDE2X3QgZGlkOwo+ICsgICAgdWludDhfdCAgYnVzOwoKVGhlICJidXMiIHNlZW1z
-IHRvIGJlIHJlZHVuZGFudC4KSXQgaXMgYWxyZWFkeSBjb250YWluZWQgaW4gdGhlICJzaWQiLCBy
-aWdodD8KCj4gK307Cj4gKwo+ICt0eXBlZGVmIHN0cnVjdCBWVEROb3RpZmllckl0ZXJhdG9yIFZU
-RE5vdGlmaWVySXRlcmF0b3I7Cj4gKwo+ICAvKiBQYWdpbmcgU3RydWN0dXJlIGNvbW1vbiAqLwo+
-ICAjZGVmaW5lIFZURF9TTF9QVF9QQUdFX1NJWkVfTUFTSyAgICAoMVVMTCA8PCA3KQo+ICAvKiBC
-aXRzIHRvIGRlY2lkZSB0aGUgb2Zmc2V0IGZvciBlYWNoIGxldmVsICovCj4gCgoKLS0gCkJlc3Qg
-cmVnYXJkcwpUaWFueXUgTGFuCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
-Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
-b21tdQ==
+When booting a new non-kdump kernel, we have below failure message:
+
+[    0.004000] DMAR-IR: IRQ remapping was enabled on dmar2 but we are not in kdump mode
+[    0.004000] DMAR-IR: Failed to copy IR table for dmar2 from previous kernel
+[    0.004000] DMAR-IR: IRQ remapping was enabled on dmar1 but we are not in kdump mode
+[    0.004000] DMAR-IR: Failed to copy IR table for dmar1 from previous kernel
+[    0.004000] DMAR-IR: IRQ remapping was enabled on dmar0 but we are not in kdump mode
+[    0.004000] DMAR-IR: Failed to copy IR table for dmar0 from previous kernel
+[    0.004000] DMAR-IR: IRQ remapping was enabled on dmar3 but we are not in kdump mode
+[    0.004000] DMAR-IR: Failed to copy IR table for dmar3 from previous kernel
+
+For non-kdump case, we no need to copy IR table from previous kernel
+so it's nonthing actually failed. To be less alarming or misleading,
+do not print "DMAR-IR: Failed to copy IR table for dmar[0-9] from
+previous kernel" messages when booting non-kdump kernel.
+
+Signed-off-by: Qiuxu Zhuo <qiuxu.zhuo-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+---
+ drivers/iommu/intel_irq_remapping.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index e7af2a4..7f63d2a 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -408,14 +408,6 @@ static int iommu_load_old_irte(struct intel_iommu *iommu)
+ 	size_t size;
+ 	u64 irta;
+ 
+-	if (!is_kdump_kernel()) {
+-		pr_warn("IRQ remapping was enabled on %s but we are not in kdump mode\n",
+-			iommu->name);
+-		clear_ir_pre_enabled(iommu);
+-		iommu_disable_irq_remapping(iommu);
+-		return -EINVAL;
+-	}
+-
+ 	/* Check whether the old ir-table has the same size as ours */
+ 	irta = dmar_readq(iommu->reg + DMAR_IRTA_REG);
+ 	if ((irta & INTR_REMAP_TABLE_REG_SIZE_MASK)
+@@ -567,7 +559,12 @@ static int intel_setup_irq_remapping(struct intel_iommu *iommu)
+ 	init_ir_status(iommu);
+ 
+ 	if (ir_pre_enabled(iommu)) {
+-		if (iommu_load_old_irte(iommu))
++		if (!is_kdump_kernel()) {
++			pr_warn("IRQ remapping was enabled on %s but we are not in kdump mode\n",
++				iommu->name);
++			clear_ir_pre_enabled(iommu);
++			iommu_disable_irq_remapping(iommu);
++		} else if (iommu_load_old_irte(iommu))
+ 			pr_err("Failed to copy IR table for %s from previous kernel\n",
+ 			       iommu->name);
+ 		else
+-- 
+2.9.0.GIT
