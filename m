@@ -1,16 +1,18 @@
-From: Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org>
-Subject: Re: [RFC PATCH 1/8] iommu: Introduce bind_pasid_table API function
-Date: Wed, 26 Apr 2017 19:59:39 +0100
-Message-ID: <e24c4e8d-24f6-6e0d-8084-918f94dcff0d@arm.com>
-References: <1493201525-14418-1-git-send-email-yi.l.liu@intel.com>
-	<1493201525-14418-2-git-send-email-yi.l.liu@intel.com>
-	<c042bf90-d48b-4ebf-c01a-fca7c4875277@arm.com>
-	<20170426112948.00004520@intel.com>
+From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Subject: Re: [Qemu-devel] [RFC PATCH 12/20] Memory: Add func to fire
+	pasidt_bind notifier
+Date: Thu, 27 Apr 2017 14:14:27 +0800
+Message-ID: <20170427061427.GA1542@pxdev.xzpeter.org>
+References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
+	<1493201210-14357-13-git-send-email-yi.l.liu@linux.intel.com>
+	<0f2966cf-4e5a-a2cc-5eb3-7e7d4f62bb85@redhat.com>
+	<20170427023719.GA14925@sky-dev>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170426112948.00004520-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170427023719.GA14925@sky-dev>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,171 +22,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: jacob pan <jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On 26/04/17 19:29, jacob pan wrote:
-> On Wed, 26 Apr 2017 17:56:45 +0100
-> Jean-Philippe Brucker <jean-philippe.brucker-5wv7dgnIgG8@public.gmane.org> wrote:
-> 
->> Hi Yi, Jacob,
->>
->> On 26/04/17 11:11, Liu, Yi L wrote:
->>> From: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->>>
->>> Virtual IOMMU was proposed to support Shared Virtual Memory (SVM)
->>> use case in the guest:
->>> https://lists.gnu.org/archive/html/qemu-devel/2016-11/msg05311.html
->>>
->>> As part of the proposed architecture, when a SVM capable PCI
->>> device is assigned to a guest, nested mode is turned on. Guest owns
->>> the first level page tables (request with PASID) and performs
->>> GVA->GPA translation. Second level page tables are owned by the
->>> host for GPA->HPA translation for both request with and without
->>> PASID.
->>>
->>> A new IOMMU driver interface is therefore needed to perform tasks as
->>> follows:
->>> * Enable nested translation and appropriate translation type
->>> * Assign guest PASID table pointer (in GPA) and size to host IOMMU
->>>
->>> This patch introduces new functions called
->>> iommu_(un)bind_pasid_table() to IOMMU APIs. Architecture specific
->>> IOMMU function can be added later to perform the specific steps for
->>> binding pasid table of assigned devices.
->>>
->>> This patch also adds model definition in iommu.h. It would be used
->>> to check if the bind request is from a compatible entity. e.g. a
->>> bind request from an intel_iommu emulator may not be supported by
->>> an ARM SMMU driver.
->>>
->>> Signed-off-by: Jacob Pan <jacob.jun.pan-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->>> Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
->>> ---
->>>  drivers/iommu/iommu.c | 19 +++++++++++++++++++
->>>  include/linux/iommu.h | 31 +++++++++++++++++++++++++++++++
->>>  2 files changed, 50 insertions(+)
->>>
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>> index dbe7f65..f2da636 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -1134,6 +1134,25 @@ int iommu_attach_device(struct iommu_domain
->>> *domain, struct device *dev) }
->>>  EXPORT_SYMBOL_GPL(iommu_attach_device);
->>>  
->>> +int iommu_bind_pasid_table(struct iommu_domain *domain, struct
->>> device *dev,
->>> +			struct pasid_table_info *pasidt_binfo)
->>
->> I guess that domain can always be deduced from dev using
->> iommu_get_domain_for_dev, and doesn't need to be passed as argument?
->>
-> true. device should have attached a domain before calling this API.
->> For the next version of my SVM series, I was thinking of passing group
->> instead of device to iommu_bind. Since all devices in a group are
->> expected to share the same mappings (whether they want it or not),
->> users will have to do iommu_group_for_each_dev anyway (as you do in
->> patch 6/8). So it might be simpler to let the IOMMU core take the
->> group lock and do group->domain->ops->bind_task(dev...) for each
->> device. The question also holds for iommu_do_invalidate in patch 3/8.
->>
->> This way the prototypes would be:
->> int iommu_bind...(struct iommu_group *group, struct ... *info)
->> int iommu_unbind...(struct iommu_group *group, struct ...*info)
->> int iommu_invalidate...(struct iommu_group *group, struct ...*info)
->>
-> Just to understand this granularity implication of fault notification
-> (e.g. page request) of this change. PRI for all devices in the group
-> will be enabled. IOMMU driver receives page request per device with the
-> same PASID bond to the group. There can be two scenarios:
-> 1. If iommu_bind() to a task, IOMMU driver handles page fault
-> internally per device, there is no need to do group level, true?
-
-Yes, we find the task corresponding to the PASID, and call handle_mm_fault
-on it.
-
-> 2. If the device iommu_bind_pasid_table() is called, then we propagate
-> PRQ to VFIO per device.
-
-I guess yes. Although it could be reported on the container, but the guest
-IOMMU driver probably wants to know which device triggered the fault anyway.
-
-The implication of having a group granularity instead of device is that
-after the fault is handled, all other devices in the group are also able
-to access the region that was just mapped.
-
-If I understand correctly, unlike putting multiple groups in a domain,
-putting multiple devices in a group is generally not a software choice.
-Usually with PCIe there is a single device per group, but in some cases
-(lack of ACS isolation, legacy PCI, bugs), functions cannot be
-distinguished by the IOMMU, or can snoop each other's DMA. If this is the
-case they need to be put in the same group by the bus driver.
-
-Thanks,
-Jean
-
->> For PASID table binding it might not matter much, as VFIO will most
->> likely be the only user. But task binding will be called by device
->> drivers, which by now should be encouraged to do things at
->> iommu_group granularity. Alternatively it could be done implicitly
->> like in iommu_attach_device, with "iommu_bind_device_x" calling
->> "iommu_bind_group_x".
->>
->>
->> Extending this reasoning, since groups in a domain are also supposed
->> to have the same mappings, then similarly to map/unmap,
->> bind/unbind/invalidate should really be done with an iommu_domain (and
->> nothing else) as target argument. However this requires the IOMMU
->> core to keep a group list in each domain, which might complicate
->> things a little too much.
->>
->> But "all devices in a domain share the same PASID table" is the
->> paradigm I'm currently using in the guts of arm-smmu-v3. And I wonder
->> if, as with iommu_group, it should be made more explicit to users, so
->> they don't assume that devices within a domain are isolated from each
->> others with regard to PASID DMA.
->>
->>> +{
->>> +	if (unlikely(!domain->ops->bind_pasid_table))
->>> +		return -EINVAL;
->>> +
->>> +	return domain->ops->bind_pasid_table(domain, dev,
->>> pasidt_binfo); +}
->>> +EXPORT_SYMBOL_GPL(iommu_bind_pasid_table);
->>> +
->>> +int iommu_unbind_pasid_table(struct iommu_domain *domain, struct
->>> device *dev) +{
->>> +	if (unlikely(!domain->ops->unbind_pasid_table))
->>> +		return -EINVAL;
->>> +
->>> +	return domain->ops->unbind_pasid_table(domain, dev);
->>> +}
->>> +EXPORT_SYMBOL_GPL(iommu_unbind_pasid_table);
->>> +
->>>  static void __iommu_detach_device(struct iommu_domain *domain,
->>>  				  struct device *dev)
->>>  {
->>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->>> index 0ff5111..491a011 100644
->>> --- a/include/linux/iommu.h
->>> +++ b/include/linux/iommu.h
->>> @@ -131,6 +131,15 @@ struct iommu_dm_region {
->>>  	int			prot;
->>>  };
->>>  
->>> +struct pasid_table_info {
->>> +	__u64	ptr;	/* PASID table ptr */
->>> +	__u64	size;	/* PASID table size*/
->>> +	__u32	model;	/* magic number */
->>> +#define INTEL_IOMMU	(1 << 0)
->>> +#define ARM_SMMU	(1 << 1)
->>
->> Not sure if there is any advantage in this being a bitfield rather
->> than simple values (1, 2, 3, etc).
->> The names should also have a prefix, such as "PASID_TABLE_MODEL_"
->>
->> Thanks a lot for doing this,
->> Jean
-> 
+T24gVGh1LCBBcHIgMjcsIDIwMTcgYXQgMTA6Mzc6MTlBTSArMDgwMCwgTGl1LCBZaSBMIHdyb3Rl
+Ogo+IE9uIFdlZCwgQXByIDI2LCAyMDE3IGF0IDAzOjUwOjE2UE0gKzAyMDAsIFBhb2xvIEJvbnpp
+bmkgd3JvdGU6Cj4gPiAKPiA+IAo+ID4gT24gMjYvMDQvMjAxNyAxMjowNiwgTGl1LCBZaSBMIHdy
+b3RlOgo+ID4gPiArdm9pZCBtZW1vcnlfcmVnaW9uX25vdGlmeV9pb21tdV9zdm1fYmluZChNZW1v
+cnlSZWdpb24gKm1yLAo+ID4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICB2b2lkICpkYXRhKQo+ID4gPiArewo+ID4gPiArICAgIElPTU1VTm90aWZpZXIgKmlvbW11
+X25vdGlmaWVyOwo+ID4gPiArICAgIElPTU1VTm90aWZpZXJGbGFnIHJlcXVlc3RfZmxhZ3M7Cj4g
+PiA+ICsKPiA+ID4gKyAgICBhc3NlcnQobWVtb3J5X3JlZ2lvbl9pc19pb21tdShtcikpOwo+ID4g
+PiArCj4gPiA+ICsgICAgLypUT0RPOiBzdXBwb3J0IG90aGVyIGJpbmQgcmVxdWVzdHMgd2l0aCBz
+bWFsbGVyIGdyYW4sCj4gPiA+ICsgICAgICogZS5nLiBiaW5kIHNpZ25sZSBwYXNpZCBlbnRyeQo+
+ID4gPiArICAgICAqLwo+ID4gPiArICAgIHJlcXVlc3RfZmxhZ3MgPSBJT01NVV9OT1RJRklFUl9T
+Vk1fUEFTSURUX0JJTkQ7Cj4gPiA+ICsKPiA+ID4gKyAgICBRTElTVF9GT1JFQUNIKGlvbW11X25v
+dGlmaWVyLCAmbXItPmlvbW11X25vdGlmeSwgbm9kZSkgewo+ID4gPiArICAgICAgICBpZiAoaW9t
+bXVfbm90aWZpZXItPm5vdGlmaWVyX2ZsYWdzICYgcmVxdWVzdF9mbGFncykgewo+ID4gPiArICAg
+ICAgICAgICAgaW9tbXVfbm90aWZpZXItPm5vdGlmeShpb21tdV9ub3RpZmllciwgZGF0YSk7Cj4g
+PiA+ICsgICAgICAgICAgICBicmVhazsKPiA+ID4gKyAgICAgICAgfQo+ID4gPiArICAgIH0KPiA+
+IAo+ID4gUGV0ZXIsCj4gPiAKPiA+IHNob3VsZCB0aGlzIHJldXNlIC0+bm90aWZ5LCBvciBzaG91
+bGQgaXQgYmUgZGlmZmVyZW50IGZ1bmN0aW9uIHBvaW50ZXIKPiA+IGluIElPTU1VTm90aWZpZXI/
+Cj4gCj4gSGkgUGFvbG8sCj4gCj4gVGh4IGZvciB5b3VyIHJldmlldy4KPiAKPiBJIHRoaW5rIGl0
+IHNob3VsZCBiZSDigJwtPm5vdGlmeeKAnSBoZXJlLiBJbiB0aGlzIHBhdGNoc2V0LCB0aGUgbmV3
+IG5vdGlmaWVyCj4gaXMgcmVnaXN0ZXJlZCB3aXRoIHRoZSBleGlzdGluZyBub3RpZmllciByZWdp
+c3RyYXRpb24gQVBJLiBTbyB0aGUgYWxsIHRoZQo+IG5vdGlmaWVycyBhcmUgaW4gdGhlIG1yLT5p
+b21tdV9ub3RpZnkgbGlzdC4gQW5kIG5vdGlmaWVycyBhcmUgbGFiZWxlZAo+IGJ5IG5vdGlmeSBm
+bGFnLCBzbyBpdCBpcyBhYmxlIHRvIGRpZmZlcmVudGlhdGUgdGhlIElPTU1VTm90aWZpZXIgbm9k
+ZXMuCj4gV2hlbiB0aGUgZmxhZyBtZWV0cywgdHJpZ2dlciBpdCBieSDigJwtPm5vdGlmeeKAnS4g
+VGhlIGRpYWdyYW0gYmVsb3cgc2hvd3MKPiBteSB1bmRlcnN0YW5kaW5nICwgd2lzaCBpdCBoZWxw
+cyB0byBtYWtlIG1lIHVuZGVyc3Rvb2QuCj4gCj4gVkZJT0NvbnRhaW5lcgo+ICAgICAgICB8Cj4g
+ICAgICAgIGdpb21tdV9saXN0KFZGSU9HdWVzdElPTU1VKQo+ICAgICAgICAgICAgICAgICBcCj4g
+ICAgICAgICAgICAgICAgICBWRklPR3Vlc3RJT01NVTEgLT4gICBWRklPR3Vlc3RJT01NVTIgLT4g
+VkZJT0d1ZXN0SU9NTVUzIC4uLgo+ICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAgICAg
+ICAgICAgIHwgICAgICAgICAgICAgICAgIHwKPiBtci0+aW9tbXVfbm90aWZ5OiBJT01NVU5vdGlm
+aWVyICAgLT4gICAgSU9NTVVOb3RpZmllciAgLT4gIElPTU1VTm90aWZpZXIKPiAgICAgICAgICAg
+ICAgICAgICAoRmxhZzpNQVAvVU5NQVApICAgICAoRmxhZzpTVk0gYmluZCkgIChGbGFnOnRsYiBp
+bnZhbGlkYXRlKQo+IAo+IAo+IEFjdHVhbGx5LCBjb21wYXJlZCB3aXRoIHRoZSBNQVAvVU5NQVAg
+bm90aWZpZXIsIHRoZSBuZXdseSBhZGRlZCBub3RpZmllciBoYXMKPiBubyBzdGFydC9lbmQgY2hl
+Y2ssIGFuZCB0aGVyZSBtYXkgYmUgb3RoZXIgdHlwZXMgb2YgYmluZCBub3RmaWVyIGZsYWcgaW4K
+PiBmdXR1cmUsIHNvIEkgYWRkZWQgYSBzZXBhcmF0ZSBmaXJlIGZ1bmMgZm9yIFNWTSBiaW5kIG5v
+dGlmaWVyLgoKSSBhZ3JlZSB3aXRoIFBhb2xvIHRoYXQgdGhpcyBpbnRlcmZhY2UgbWlnaHQgbm90
+IGJlIHRoZSBzdWl0YWJsZSBwbGFjZQpmb3IgdGhlIFNWTSBub3RpZmllcnMgKGp1c3QgbGlrZSB3
+aGF0IEkgd29ycmllZCBhYm91dCBpbiBwcmV2aW91cwpkaXNjdXNzaW9ucykuCgpUaGUgYmlnZ2Vz
+dCBwcm9ibGVtIGlzIHRoYXQsIGlmIHlvdSBzZWUgY3VycmVudCBub3RpZmllciBtZWNoYW5pc20s
+Cml0J3MgcGVyLW1lbW9yeS1yZWdpb24uIEhvd2V2ZXIgaWl1YyB5b3VyIG1lc3NhZ2VzIHNob3Vs
+ZCBiZQpwZXItaW9tbXUsIG9yIHNheSwgcGVyIHRyYW5zbGF0aW9uIHVuaXQuIFdoaWxlLCBmb3Ig
+ZWFjaCBpb21tdSwgdGhlcmUKY2FuIGJlIG1vcmUgdGhhbiBvbmUgbWVtb3J5IHJlZ2lvbnMgKHBw
+YyBjYW4gYmUgYW4gZXhhbXBsZSkuIFdoZW4KdGhlcmUgYXJlIG1vcmUgdGhhbiBvbmUgTVJzIGJp
+bmRlZCB0byB0aGUgc2FtZSBpb21tdSB1bml0LCB3aGljaAptZW1vcnkgcmVnaW9uIHNob3VsZCB5
+b3UgcmVnaXN0ZXIgdG8/IEFueSBvbmUgb2YgdGhlbSwgb3IgYWxsPwoKU28gbXkgY29uY2x1c2lv
+biBpcywgaXQganVzdCBoYXMgbm90aGluZyB0byBkbyB3aXRoIG1lbW9yeSByZWdpb25zLi4uCgpJ
+bnN0ZWFkIG9mIGEgZGlmZmVyZW50IGZ1bmN0aW9uIHBvaW50ZXIgaW4gSU9NTVVOb3RpZmVyLCBJ
+TUhPIHdlIGNhbgpldmVuIG1vdmUgYSBzdGVwIGZ1cnRoZXIsIHRvIGlzb2xhdGUgSU9UTEIgbm90
+aWZpY2F0aW9ucyAodGFyZ2V0ZWQgYXQKbWVtb3J5IHJlZ2lvbnMgYW5kIHdpdGggc3RhcnQvZW5k
+IHJhbmdlcykgb3V0IG9mIFNWTS9vdGhlcgpub3RpZmljYXRpb25zLCBzaW5jZSB0aGV5IGFyZSBk
+aWZmZXJlbnQgaW4gZ2VuZXJhbC4gU28gd2UgYmFzaWNhbGx5Cm5lZWQgdHdvIG5vdGlmaWNhdGlv
+biBtZWNoYW5pc206CgotIG9uZSBmb3IgbWVtb3J5IHJlZ2lvbnMsIGN1cnJlbnRseSB3aGF0IEkg
+Y2FuIHNlZSBpcyBJT1RMQgogIG5vdGlmaWNhdGlvbnMKCi0gb25lIGZvciB0cmFuc2xhdGlvbiB1
+bml0cywgY3VycmVudGx5IEkgc2VlIGFsbCB0aGUgcmVzdCBvZgogIG5vdGlmaWNhdGlvbnMgbmVl
+ZGVkIGluIHZpcnQtc3ZtIGluIHRoaXMgY2F0ZWdvcnkKCk1heWJlIHNvbWUgUkZDIHBhdGNoZXMg
+d291bGQgYmUgZ29vZCB0byBzaG93IHdoYXQgSSBtZWFuLi4uIEknbGwgc2VlCndoZXRoZXIgSSBj
+YW4gcHJlcGFyZSBzb21lLgoKVGhhbmtzLAoKLS0gClBldGVyIFh1Cl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
+aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
+cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
