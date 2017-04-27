@@ -1,15 +1,12 @@
-From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH 03/20] intel_iommu: add "svm" option
-Date: Thu, 27 Apr 2017 18:53:17 +0800
-Message-ID: <20170427105317.GE1542@pxdev.xzpeter.org>
-References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
-	<1493201210-14357-4-git-send-email-yi.l.liu@linux.intel.com>
+From: sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Subject: [PATCH] iommu/arm-smmu-v3: Poll for CMDQ drain completion more
+	effectively
+Date: Thu, 27 Apr 2017 16:43:07 +0530
+Message-ID: <1493291587-23488-1-git-send-email-sunil.kovvuri@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1493201210-14357-4-git-send-email-yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -19,101 +16,65 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 26, 2017 at 06:06:33PM +0800, Liu, Yi L wrote:
-> Expose "Shared Virtual Memory" to guest by using "svm" option.
-> Also use "svm" to expose SVM related capabilities to guest.
-> e.g. "-device intel-iommu, svm=on"
-> 
-> Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> ---
->  hw/i386/intel_iommu.c          | 10 ++++++++++
->  hw/i386/intel_iommu_internal.h |  5 +++++
->  include/hw/i386/intel_iommu.h  |  1 +
->  3 files changed, 16 insertions(+)
-> 
-> diff --git a/hw/i386/intel_iommu.c b/hw/i386/intel_iommu.c
-> index bf98fa5..ba1e7eb 100644
-> --- a/hw/i386/intel_iommu.c
-> +++ b/hw/i386/intel_iommu.c
-> @@ -2453,6 +2453,7 @@ static Property vtd_properties[] = {
->      DEFINE_PROP_BOOL("x-buggy-eim", IntelIOMMUState, buggy_eim, false),
->      DEFINE_PROP_BOOL("caching-mode", IntelIOMMUState, caching_mode, FALSE),
->      DEFINE_PROP_BOOL("ecs", IntelIOMMUState, ecs, FALSE),
-> +    DEFINE_PROP_BOOL("svm", IntelIOMMUState, svm, FALSE),
->      DEFINE_PROP_END_OF_LIST(),
->  };
->  
-> @@ -2973,6 +2974,15 @@ static void vtd_init(IntelIOMMUState *s)
->          s->ecap |= VTD_ECAP_ECS;
->      }
->  
-> +    if (s->svm) {
-> +        if (!s->ecs || !x86_iommu->pt_supported || !s->caching_mode) {
-> +            error_report("Need to set ecs, pt, caching-mode for svm");
-> +            exit(1);
-> +        }
-> +        s->cap |= VTD_CAP_DWD | VTD_CAP_DRD;
-> +        s->ecap |= VTD_ECAP_PRS | VTD_ECAP_PTS | VTD_ECAP_PASID28;
-> +    }
-> +
->      if (s->caching_mode) {
->          s->cap |= VTD_CAP_CM;
->      }
-> diff --git a/hw/i386/intel_iommu_internal.h b/hw/i386/intel_iommu_internal.h
-> index 71a1c1e..f2a7d12 100644
-> --- a/hw/i386/intel_iommu_internal.h
-> +++ b/hw/i386/intel_iommu_internal.h
-> @@ -191,6 +191,9 @@
->  #define VTD_ECAP_PT                 (1ULL << 6)
->  #define VTD_ECAP_MHMV               (15ULL << 20)
->  #define VTD_ECAP_ECS                (1ULL << 24)
-> +#define VTD_ECAP_PASID28            (1ULL << 28)
+From: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 
-Could I ask what's this bit? On my spec, it says this bit is reserved
-and defunct (spec version: June 2016).
+Modified polling on CMDQ consumer similar to how polling is done for TLB SYNC
+completion in SMMUv2 driver. Code changes are done with reference to
 
-> +#define VTD_ECAP_PRS                (1ULL << 29)
-> +#define VTD_ECAP_PTS                (0xeULL << 35)
+8513c8930069 iommu/arm-smmu: Poll for TLB sync completion more effectively
 
-Would it better we avoid using 0xe here, or at least add some comment?
+Poll timeout has been increased which addresses issue of 100us timeout not
+sufficient, when command queue is full with TLB invalidation commands.
 
->  
->  /* CAP_REG */
->  /* (offset >> 4) << 24 */
-> @@ -207,6 +210,8 @@
->  #define VTD_CAP_PSI                 (1ULL << 39)
->  #define VTD_CAP_SLLPS               ((1ULL << 34) | (1ULL << 35))
->  #define VTD_CAP_CM                  (1ULL << 7)
-> +#define VTD_CAP_DWD                 (1ULL << 54)
-> +#define VTD_CAP_DRD                 (1ULL << 55)
+Signed-off-by: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-Just to confirm: after this series, we should support drain read/write
-then, right?
-
-Thanks,
-
->  
->  /* Supported Adjusted Guest Address Widths */
->  #define VTD_CAP_SAGAW_SHIFT         8
-> diff --git a/include/hw/i386/intel_iommu.h b/include/hw/i386/intel_iommu.h
-> index ae21fe5..8981615 100644
-> --- a/include/hw/i386/intel_iommu.h
-> +++ b/include/hw/i386/intel_iommu.h
-> @@ -267,6 +267,7 @@ struct IntelIOMMUState {
->  
->      bool caching_mode;          /* RO - is cap CM enabled? */
->      bool ecs;                       /* Extended Context Support */
-> +    bool svm;                       /* Shared Virtual Memory */
->  
->      dma_addr_t root;                /* Current root table pointer */
->      bool root_extended;             /* Type of root table (extended or not) */
-> -- 
-> 1.9.1
-> 
-
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index d412bdd..34599d4 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -379,6 +379,9 @@
+ #define CMDQ_SYNC_0_CS_NONE		(0UL << CMDQ_SYNC_0_CS_SHIFT)
+ #define CMDQ_SYNC_0_CS_SEV		(2UL << CMDQ_SYNC_0_CS_SHIFT)
+ 
++#define CMDQ_DRAIN_TIMEOUT_US		1000
++#define CMDQ_SPIN_COUNT			10
++
+ /* Event queue */
+ #define EVTQ_ENT_DWORDS			4
+ #define EVTQ_MAX_SZ_SHIFT		7
+@@ -737,7 +740,8 @@ static void queue_inc_prod(struct arm_smmu_queue *q)
+  */
+ static int queue_poll_cons(struct arm_smmu_queue *q, bool drain, bool wfe)
+ {
+-	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_POLL_TIMEOUT_US);
++	ktime_t timeout = ktime_add_us(ktime_get(), CMDQ_DRAIN_TIMEOUT_US);
++	unsigned int spin_cnt, delay = 1;
+ 
+ 	while (queue_sync_cons(q), (drain ? !queue_empty(q) : queue_full(q))) {
+ 		if (ktime_compare(ktime_get(), timeout) > 0)
+@@ -746,8 +750,13 @@ static int queue_poll_cons(struct arm_smmu_queue *q, bool drain, bool wfe)
+ 		if (wfe) {
+ 			wfe();
+ 		} else {
+-			cpu_relax();
+-			udelay(1);
++			for (spin_cnt = 0;
++			     spin_cnt < CMDQ_SPIN_COUNT; spin_cnt++) {
++				cpu_relax();
++				continue;
++			}
++			udelay(delay);
++			delay *= 2;
+ 		}
+ 	}
+ 
 -- 
-Peter Xu
+2.7.4
