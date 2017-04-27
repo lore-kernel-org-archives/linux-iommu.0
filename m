@@ -1,16 +1,19 @@
-From: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [RFC PATCH 02/20] intel_iommu: exposed extended-context mode to
-	guest
-Date: Thu, 27 Apr 2017 18:32:21 +0800
-Message-ID: <20170427103221.GD1542@pxdev.xzpeter.org>
+From: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+Subject: Re: [Qemu-devel] [RFC PATCH 12/20] Memory: Add func to fire
+	pasidt_bind notifier
+Date: Thu, 27 Apr 2017 18:25:37 +0800
+Message-ID: <20170427102537.GE14925@sky-dev>
 References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
-	<1493201210-14357-3-git-send-email-yi.l.liu@linux.intel.com>
+	<1493201210-14357-13-git-send-email-yi.l.liu@linux.intel.com>
+	<0f2966cf-4e5a-a2cc-5eb3-7e7d4f62bb85@redhat.com>
+	<20170427023719.GA14925@sky-dev>
+	<20170427061427.GA1542@pxdev.xzpeter.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
 Content-Disposition: inline
-In-Reply-To: <1493201210-14357-3-git-send-email-yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
+In-Reply-To: <20170427061427.GA1542-QJIicYCqamqhazCxEpVPD9i2O/JbrIOy@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,171 +23,90 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "Liu, Yi L" <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org
+To: Peter Xu <peterx-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+Cc: tianyu.lan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kevin.tian-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, jasowang-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, qemu-devel-qX2TKyscuCcdnm+yROfE0A@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, jacob.jun.pan-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org, Paolo Bonzini <pbonzini-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, Apr 26, 2017 at 06:06:32PM +0800, Liu, Yi L wrote:
-> VT-d implementations reporting PASID or PRS fields as "Set", must also
-> report ecap.ECS as "Set". Extended-Context is required for SVM.
-> 
-> When ECS is reported, intel iommu driver would initiate extended root entry
-> and extended context entry, and also PASID table if there is any SVM capable
-> device.
-> 
-> Signed-off-by: Liu, Yi L <yi.l.liu-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>
-> ---
->  hw/i386/intel_iommu.c          | 131 +++++++++++++++++++++++++++--------------
->  hw/i386/intel_iommu_internal.h |   9 +++
->  include/hw/i386/intel_iommu.h  |   2 +-
->  3 files changed, 97 insertions(+), 45 deletions(-)
-> 
-> diff --git a/hw/i386/intel_iommu.c b/hw/i386/intel_iommu.c
-> index 400d0d1..bf98fa5 100644
-> --- a/hw/i386/intel_iommu.c
-> +++ b/hw/i386/intel_iommu.c
-> @@ -497,6 +497,11 @@ static inline bool vtd_root_entry_present(VTDRootEntry *root)
->      return root->val & VTD_ROOT_ENTRY_P;
->  }
->  
-> +static inline bool vtd_root_entry_upper_present(VTDRootEntry *root)
-> +{
-> +    return root->rsvd & VTD_ROOT_ENTRY_P;
-> +}
-> +
->  static int vtd_get_root_entry(IntelIOMMUState *s, uint8_t index,
->                                VTDRootEntry *re)
->  {
-> @@ -509,6 +514,9 @@ static int vtd_get_root_entry(IntelIOMMUState *s, uint8_t index,
->          return -VTD_FR_ROOT_TABLE_INV;
->      }
->      re->val = le64_to_cpu(re->val);
-> +    if (s->ecs) {
-> +        re->rsvd = le64_to_cpu(re->rsvd);
-> +    }
-
-I feel it slightly hacky to play with re->rsvd. How about:
-
-union VTDRootEntry {
-    struct {
-        uint64_t val;
-        uint64_t rsvd;
-    } base;
-    struct {
-        uint64_t ext_lo;
-        uint64_t ext_hi;
-    } extended;
-};
-
-(Or any better way that can get rid of rsvd...)
-
-Even:
-
-struct VTDRootEntry {
-    union {
-        struct {
-                uint64_t val;
-                uint64_t rsvd;
-        } base;
-        struct {
-                uint64_t ext_lo;
-                uint64_t ext_hi;
-        } extended;
-    } data;
-    bool extended;
-};
-
-Then we read the entry into data, and setup extended bit. A benefit of
-it is that we may avoid passing around IntelIOMMUState everywhere to
-know whether we are using extended context entries.
-
->      return 0;
->  }
->  
-> @@ -517,19 +525,30 @@ static inline bool vtd_context_entry_present(VTDContextEntry *context)
->      return context->lo & VTD_CONTEXT_ENTRY_P;
->  }
->  
-> -static int vtd_get_context_entry_from_root(VTDRootEntry *root, uint8_t index,
-> -                                           VTDContextEntry *ce)
-> +static int vtd_get_context_entry_from_root(IntelIOMMUState *s,
-> +                 VTDRootEntry *root, uint8_t index, VTDContextEntry *ce)
->  {
-> -    dma_addr_t addr;
-> +    dma_addr_t addr, ce_size;
->  
->      /* we have checked that root entry is present */
-> -    addr = (root->val & VTD_ROOT_ENTRY_CTP) + index * sizeof(*ce);
-> -    if (dma_memory_read(&address_space_memory, addr, ce, sizeof(*ce))) {
-> +    ce_size = (s->ecs) ? (2 * sizeof(*ce)) : (sizeof(*ce));
-> +    addr = (s->ecs && (index > 0x7f)) ?
-> +           ((root->rsvd & VTD_ROOT_ENTRY_CTP) + (index - 0x80) * ce_size) :
-> +           ((root->val & VTD_ROOT_ENTRY_CTP) + index * ce_size);
-> +
-> +    if (dma_memory_read(&address_space_memory, addr, ce, ce_size)) {
->          trace_vtd_re_invalid(root->rsvd, root->val);
->          return -VTD_FR_CONTEXT_TABLE_INV;
->      }
-> -    ce->lo = le64_to_cpu(ce->lo);
-> -    ce->hi = le64_to_cpu(ce->hi);
-> +
-> +    ce[0].lo = le64_to_cpu(ce[0].lo);
-> +    ce[0].hi = le64_to_cpu(ce[0].hi);
-
-Again, I feel this even hackier. :)
-
-I would slightly prefer to play the same union trick to context
-entries, just like what I proposed to the root entries above...
-
-> +
-> +    if (s->ecs) {
-> +        ce[1].lo = le64_to_cpu(ce[1].lo);
-> +        ce[1].hi = le64_to_cpu(ce[1].hi);
-> +    }
-> +
->      return 0;
->  }
->  
-> @@ -595,9 +614,11 @@ static inline uint32_t vtd_get_agaw_from_context_entry(VTDContextEntry *ce)
->      return 30 + (ce->hi & VTD_CONTEXT_ENTRY_AW) * 9;
->  }
->  
-> -static inline uint32_t vtd_ce_get_type(VTDContextEntry *ce)
-> +static inline uint32_t vtd_ce_get_type(IntelIOMMUState *s,
-> +                                       VTDContextEntry *ce)
->  {
-> -    return ce->lo & VTD_CONTEXT_ENTRY_TT;
-> +    return s->ecs ? (ce->lo & VTD_CONTEXT_ENTRY_TT) :
-> +                    (ce->lo & VTD_EXT_CONTEXT_ENTRY_TT);
->  }
->  
->  static inline uint64_t vtd_iova_limit(VTDContextEntry *ce)
-> @@ -842,16 +863,20 @@ static int vtd_dev_to_context_entry(IntelIOMMUState *s, uint8_t bus_num,
->          return ret_fr;
->      }
->  
-> -    if (!vtd_root_entry_present(&re)) {
-> +    if (!vtd_root_entry_present(&re) ||
-> +        (s->ecs && (devfn > 0x7f) && (!vtd_root_entry_upper_present(&re)))) {
->          /* Not error - it's okay we don't have root entry. */
->          trace_vtd_re_not_present(bus_num);
->          return -VTD_FR_ROOT_ENTRY_P;
-> -    } else if (re.rsvd || (re.val & VTD_ROOT_ENTRY_RSVD)) {
-> -        trace_vtd_re_invalid(re.rsvd, re.val);
-> -        return -VTD_FR_ROOT_ENTRY_RSVD;
-> +    }
-> +    if ((s->ecs && (devfn > 0x7f) && (re.rsvd & VTD_ROOT_ENTRY_RSVD)) ||
-> +        (s->ecs && (devfn < 0x80) && (re.val & VTD_ROOT_ENTRY_RSVD)) ||
-> +        ((!s->ecs) && (re.rsvd || (re.val & VTD_ROOT_ENTRY_RSVD)))) {
-> +            trace_vtd_re_invalid(re.rsvd, re.val);
-> +            return -VTD_FR_ROOT_ENTRY_RSVD;
-
-Nit: I feel like we can better wrap these 0x7f and 0x80 into helper
-functions, especially if with above structure change...
-
-(will hold here...)
-
-Thanks,
-
--- 
-Peter Xu
+T24gVGh1LCBBcHIgMjcsIDIwMTcgYXQgMDI6MTQ6MjdQTSArMDgwMCwgUGV0ZXIgWHUgd3JvdGU6
+Cj4gT24gVGh1LCBBcHIgMjcsIDIwMTcgYXQgMTA6Mzc6MTlBTSArMDgwMCwgTGl1LCBZaSBMIHdy
+b3RlOgo+ID4gT24gV2VkLCBBcHIgMjYsIDIwMTcgYXQgMDM6NTA6MTZQTSArMDIwMCwgUGFvbG8g
+Qm9uemluaSB3cm90ZToKPiA+ID4gCj4gPiA+IAo+ID4gPiBPbiAyNi8wNC8yMDE3IDEyOjA2LCBM
+aXUsIFlpIEwgd3JvdGU6Cj4gPiA+ID4gK3ZvaWQgbWVtb3J5X3JlZ2lvbl9ub3RpZnlfaW9tbXVf
+c3ZtX2JpbmQoTWVtb3J5UmVnaW9uICptciwKPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICB2b2lkICpkYXRhKQo+ID4gPiA+ICt7Cj4gPiA+ID4gKyAgICBJ
+T01NVU5vdGlmaWVyICppb21tdV9ub3RpZmllcjsKPiA+ID4gPiArICAgIElPTU1VTm90aWZpZXJG
+bGFnIHJlcXVlc3RfZmxhZ3M7Cj4gPiA+ID4gKwo+ID4gPiA+ICsgICAgYXNzZXJ0KG1lbW9yeV9y
+ZWdpb25faXNfaW9tbXUobXIpKTsKPiA+ID4gPiArCj4gPiA+ID4gKyAgICAvKlRPRE86IHN1cHBv
+cnQgb3RoZXIgYmluZCByZXF1ZXN0cyB3aXRoIHNtYWxsZXIgZ3JhbiwKPiA+ID4gPiArICAgICAq
+IGUuZy4gYmluZCBzaWdubGUgcGFzaWQgZW50cnkKPiA+ID4gPiArICAgICAqLwo+ID4gPiA+ICsg
+ICAgcmVxdWVzdF9mbGFncyA9IElPTU1VX05PVElGSUVSX1NWTV9QQVNJRFRfQklORDsKPiA+ID4g
+PiArCj4gPiA+ID4gKyAgICBRTElTVF9GT1JFQUNIKGlvbW11X25vdGlmaWVyLCAmbXItPmlvbW11
+X25vdGlmeSwgbm9kZSkgewo+ID4gPiA+ICsgICAgICAgIGlmIChpb21tdV9ub3RpZmllci0+bm90
+aWZpZXJfZmxhZ3MgJiByZXF1ZXN0X2ZsYWdzKSB7Cj4gPiA+ID4gKyAgICAgICAgICAgIGlvbW11
+X25vdGlmaWVyLT5ub3RpZnkoaW9tbXVfbm90aWZpZXIsIGRhdGEpOwo+ID4gPiA+ICsgICAgICAg
+ICAgICBicmVhazsKPiA+ID4gPiArICAgICAgICB9Cj4gPiA+ID4gKyAgICB9Cj4gPiA+IAo+ID4g
+PiBQZXRlciwKPiA+ID4gCj4gPiA+IHNob3VsZCB0aGlzIHJldXNlIC0+bm90aWZ5LCBvciBzaG91
+bGQgaXQgYmUgZGlmZmVyZW50IGZ1bmN0aW9uIHBvaW50ZXIKPiA+ID4gaW4gSU9NTVVOb3RpZmll
+cj8KPiA+IAo+ID4gSGkgUGFvbG8sCj4gPiAKPiA+IFRoeCBmb3IgeW91ciByZXZpZXcuCj4gPiAK
+PiA+IEkgdGhpbmsgaXQgc2hvdWxkIGJlIOKAnC0+bm90aWZ54oCdIGhlcmUuIEluIHRoaXMgcGF0
+Y2hzZXQsIHRoZSBuZXcgbm90aWZpZXIKPiA+IGlzIHJlZ2lzdGVyZWQgd2l0aCB0aGUgZXhpc3Rp
+bmcgbm90aWZpZXIgcmVnaXN0cmF0aW9uIEFQSS4gU28gdGhlIGFsbCB0aGUKPiA+IG5vdGlmaWVy
+cyBhcmUgaW4gdGhlIG1yLT5pb21tdV9ub3RpZnkgbGlzdC4gQW5kIG5vdGlmaWVycyBhcmUgbGFi
+ZWxlZAo+ID4gYnkgbm90aWZ5IGZsYWcsIHNvIGl0IGlzIGFibGUgdG8gZGlmZmVyZW50aWF0ZSB0
+aGUgSU9NTVVOb3RpZmllciBub2Rlcy4KPiA+IFdoZW4gdGhlIGZsYWcgbWVldHMsIHRyaWdnZXIg
+aXQgYnkg4oCcLT5ub3RpZnnigJ0uIFRoZSBkaWFncmFtIGJlbG93IHNob3dzCj4gPiBteSB1bmRl
+cnN0YW5kaW5nICwgd2lzaCBpdCBoZWxwcyB0byBtYWtlIG1lIHVuZGVyc3Rvb2QuCj4gPiAKPiA+
+IFZGSU9Db250YWluZXIKPiA+ICAgICAgICB8Cj4gPiAgICAgICAgZ2lvbW11X2xpc3QoVkZJT0d1
+ZXN0SU9NTVUpCj4gPiAgICAgICAgICAgICAgICAgXAo+ID4gICAgICAgICAgICAgICAgICBWRklP
+R3Vlc3RJT01NVTEgLT4gICBWRklPR3Vlc3RJT01NVTIgLT4gVkZJT0d1ZXN0SU9NTVUzIC4uLgo+
+ID4gICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAg
+ICAgICAgfAo+ID4gbXItPmlvbW11X25vdGlmeTogSU9NTVVOb3RpZmllciAgIC0+ICAgIElPTU1V
+Tm90aWZpZXIgIC0+ICBJT01NVU5vdGlmaWVyCj4gPiAgICAgICAgICAgICAgICAgICAoRmxhZzpN
+QVAvVU5NQVApICAgICAoRmxhZzpTVk0gYmluZCkgIChGbGFnOnRsYiBpbnZhbGlkYXRlKQo+ID4g
+Cj4gPiAKPiA+IEFjdHVhbGx5LCBjb21wYXJlZCB3aXRoIHRoZSBNQVAvVU5NQVAgbm90aWZpZXIs
+IHRoZSBuZXdseSBhZGRlZCBub3RpZmllciBoYXMKPiA+IG5vIHN0YXJ0L2VuZCBjaGVjaywgYW5k
+IHRoZXJlIG1heSBiZSBvdGhlciB0eXBlcyBvZiBiaW5kIG5vdGZpZXIgZmxhZyBpbgo+ID4gZnV0
+dXJlLCBzbyBJIGFkZGVkIGEgc2VwYXJhdGUgZmlyZSBmdW5jIGZvciBTVk0gYmluZCBub3RpZmll
+ci4KPiAKPiBJIGFncmVlIHdpdGggUGFvbG8gdGhhdCB0aGlzIGludGVyZmFjZSBtaWdodCBub3Qg
+YmUgdGhlIHN1aXRhYmxlIHBsYWNlCj4gZm9yIHRoZSBTVk0gbm90aWZpZXJzIChqdXN0IGxpa2Ug
+d2hhdCBJIHdvcnJpZWQgYWJvdXQgaW4gcHJldmlvdXMKPiBkaXNjdXNzaW9ucykuCj4gCj4gVGhl
+IGJpZ2dlc3QgcHJvYmxlbSBpcyB0aGF0LCBpZiB5b3Ugc2VlIGN1cnJlbnQgbm90aWZpZXIgbWVj
+aGFuaXNtLAo+IGl0J3MgcGVyLW1lbW9yeS1yZWdpb24uIEhvd2V2ZXIgaWl1YyB5b3VyIG1lc3Nh
+Z2VzIHNob3VsZCBiZQo+IHBlci1pb21tdSwgb3Igc2F5LCBwZXIgdHJhbnNsYXRpb24gdW5pdC4K
+CkhpIFBldGVyLAoKeWVzLCB5b3UncmUgcmlnaHQuIHRoZSBuZXdseSBhZGRlZCBub3RpZmllciBp
+cyBwZXItaW9tbXUuCgo+IFdoaWxlLCBmb3IgZWFjaCBpb21tdSwgdGhlcmUKPiBjYW4gYmUgbW9y
+ZSB0aGFuIG9uZSBtZW1vcnkgcmVnaW9ucyAocHBjIGNhbiBiZSBhbiBleGFtcGxlKS4gV2hlbgo+
+IHRoZXJlIGFyZSBtb3JlIHRoYW4gb25lIE1ScyBiaW5kZWQgdG8gdGhlIHNhbWUgaW9tbXUgdW5p
+dCwgd2hpY2gKPiBtZW1vcnkgcmVnaW9uIHNob3VsZCB5b3UgcmVnaXN0ZXIgdG8/IEFueSBvbmUg
+b2YgdGhlbSwgb3IgYWxsPwoKSG9uZXN0bHksIEknbSBub3QgZXhwZXJ0IG9uIHBwYy4gQWNjb3Jk
+aW5nIHRvIHRoZSBjdXJyZW50IGNvZGUsCkkgY2FuIG9ubHkgZmluZCBvbmUgTVIgaW5pdGlhbGl6
+ZWQgd2l0aCBtZW1vcnlfcmVnaW9uX2luaXRfaW9tbXUoKQppbiBzcGFwcl90Y2VfdGFibGVfcmVh
+bGl6ZSgpLiBTbyB0byBiZXR0ZXIgZ2V0IHlvdXIgcG9pbnQsIGxldCBtZQpjaGVjay4gRG8geW91
+IG1lYW4gdGhlcmUgbWF5IGJlIG11bHRpcGxlIG9mIGlvbW11IE1ScyBiZWhpbmQgYSBpb21tdT8K
+CkkgYWRtaXQgaXQgbXVzdCBiZSBjb25zaWRlcmVkIGlmIHRoZXJlIGFyZSBtdWx0aXBsZSBpb21t
+dSBNUnMuIEkgbWF5CmNob29zZSB0byByZWdpc3RlciBmb3Igb25lIG9mIHRoZW0gc2luY2UgdGhl
+IG5vdGlmaWVyIGlzIHBlci1pb21tdSBhcwp5b3UndmUgcG9pbnRlZC4gVGhlbiB2SU9NTVUgZW11
+bGF0b3IgbmVlZCB0byB0cmlnZ2VyIHRoZSBub3RpZmllciB3aXRoCnRoZSBjb3JyZWN0IE1SLiBO
+b3Qgc3VyZSBpZiBwcGMgdklPTU1VIGlzIGZpbmUgd2l0aCBpdC4KCj4gU28gbXkgY29uY2x1c2lv
+biBpcywgaXQganVzdCBoYXMgbm90aGluZyB0byBkbyB3aXRoIG1lbW9yeSByZWdpb25zLi4uCj4K
+PiBJbnN0ZWFkIG9mIGEgZGlmZmVyZW50IGZ1bmN0aW9uIHBvaW50ZXIgaW4gSU9NTVVOb3RpZmVy
+LCBJTUhPIHdlIGNhbgo+IGV2ZW4gbW92ZSBhIHN0ZXAgZnVydGhlciwgdG8gaXNvbGF0ZSBJT1RM
+QiBub3RpZmljYXRpb25zICh0YXJnZXRlZCBhdAo+IG1lbW9yeSByZWdpb25zIGFuZCB3aXRoIHN0
+YXJ0L2VuZCByYW5nZXMpIG91dCBvZiBTVk0vb3RoZXIKPiBub3RpZmljYXRpb25zLCBzaW5jZSB0
+aGV5IGFyZSBkaWZmZXJlbnQgaW4gZ2VuZXJhbC4gU28gd2UgYmFzaWNhbGx5Cj4gbmVlZCB0d28g
+bm90aWZpY2F0aW9uIG1lY2hhbmlzbToKPiAKPiAtIG9uZSBmb3IgbWVtb3J5IHJlZ2lvbnMsIGN1
+cnJlbnRseSB3aGF0IEkgY2FuIHNlZSBpcyBJT1RMQgo+ICAgbm90aWZpY2F0aW9ucwo+IAo+IC0g
+b25lIGZvciB0cmFuc2xhdGlvbiB1bml0cywgY3VycmVudGx5IEkgc2VlIGFsbCB0aGUgcmVzdCBv
+Zgo+ICAgbm90aWZpY2F0aW9ucyBuZWVkZWQgaW4gdmlydC1zdm0gaW4gdGhpcyBjYXRlZ29yeQo+
+IAo+IE1heWJlIHNvbWUgUkZDIHBhdGNoZXMgd291bGQgYmUgZ29vZCB0byBzaG93IHdoYXQgSSBt
+ZWFuLi4uIEknbGwgc2VlCj4gd2hldGhlciBJIGNhbiBwcmVwYXJlIHNvbWUuCgpJIGFncmVlIHRo
+YXQgaXQgd291bGQgYmUgaGVscGZ1bCB0byBzcGxpdCB0aGUgdHdvIGtpbmRzIG9mIG5vdGlmaWVy
+cy4gSQptYXJrZWQgaXQgYXMgYSBGSVhNRSBpbiBwYXRjaCAwMDA2IG9mIHRoaXMgc2VyaWVzLiBK
+dXN0IHNhdyB5b3VyIFJGQyBwYXRjaApmb3IgY29tbW9uIElPTU1VT2JqZWN0LiBUaHggZm9yIHlv
+dXIgd29yaywgd291bGQgdHJ5IHRvIHJldmlldyBpdC4KCkJlc2lkZXMgdGhlIG5vdGlmaWVyIHJl
+Z2lzdHJhdGlvbiwgcGxzIGFsc28gaGVscCB0byByZXZpZXcgdGhlIFNWTQp2aXJ0dWFsaXphdGlv
+biBpdHNlbGYuIFdvdWxkIGJlIGdsYWQgdG8ga25vdyB5b3VyIGNvbW1lbnRzLgoKVGhhbmtzLApZ
+aSBMCgo+IFRoYW5rcywKPiAKPiAtLSAKPiBQZXRlciBYdQo+IApfX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlz
+dHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3Jn
+L21haWxtYW4vbGlzdGluZm8vaW9tbXU=
