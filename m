@@ -1,40 +1,113 @@
-From: Dave Young <dyoung@redhat.com>
-Subject: Re: [PATCH v5 31/32] x86: Add sysfs support for Secure Memory
- Encryption
-Date: Thu, 27 Apr 2017 15:25:47 +0800
-Message-ID: <20170427072547.GB15297@dhcp-128-65.nay.redhat.com>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
- <20170418212212.10190.73484.stgit@tlendack-t1.amdoffice.net>
- <1498ec98-b19d-c47d-902b-a68870a3f860@intel.com>
+From: Peter Xu <peterx@redhat.com>
+Subject: Re: [Qemu-devel] [RFC PATCH 12/20] Memory: Add func to fire
+ pasidt_bind notifier
+Date: Thu, 27 Apr 2017 18:09:29 +0800
+Message-ID: <20170427100929.GC1542@pxdev.xzpeter.org>
+References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
+ <1493201210-14357-13-git-send-email-yi.l.liu@linux.intel.com>
+ <0f2966cf-4e5a-a2cc-5eb3-7e7d4f62bb85@redhat.com>
+ <20170427023719.GA14925@sky-dev>
+ <20170427061427.GA1542@pxdev.xzpeter.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Return-path: <kvm-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1498ec98-b19d-c47d-902b-a68870a3f860@intel.com>
+In-Reply-To: <20170427061427.GA1542@pxdev.xzpeter.org>
 Sender: kvm-owner@vger.kernel.org
-To: Dave Hansen <dave.hansen@intel.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>, linux-arch@vger.kernel.org, linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-doc@vger.kernel.org, x86@kernel.org, kexec@lists.infradead.org, linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-mm@kvack.org, iommu@lists.linux-foundation.org, Thomas Gleixner <tglx@linutronix.de>, Rik van Riel <riel@redhat.com>, Brijesh Singh <brijesh.singh@amd.com>, Toshimitsu Kani <toshi.kani@hpe.com>, Arnd Bergmann <arnd@arndb.de>, Jonathan Corbet <corbet@lwn.net>, Matt Fleming <matt@codeblueprint.co.uk>, Joerg Roedel <joro@8bytes.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar@redhat.com>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Andrey Ryabinin <aryabinin@virtuozzo.com>, Ingo Molnar <mingo@redhat.com>
+To: "Liu, Yi L" <yi.l.liu@linux.intel.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>, qemu-devel@nongnu.org, alex.williamson@redhat.com, tianyu.lan@intel.com, kevin.tian@intel.com, yi.l.liu@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org, jean-philippe.brucker@arm.com, jasowang@redhat.com, iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/21/17 at 02:55pm, Dave Hansen wrote:
-> On 04/18/2017 02:22 PM, Tom Lendacky wrote:
-> > Add sysfs support for SME so that user-space utilities (kdump, etc.) can
-> > determine if SME is active.
+On Thu, Apr 27, 2017 at 02:14:27PM +0800, Peter Xu wrote:
+> On Thu, Apr 27, 2017 at 10:37:19AM +0800, Liu, Yi L wrote:
+> > On Wed, Apr 26, 2017 at 03:50:16PM +0200, Paolo Bonzini wrote:
+> > > 
+> > > 
+> > > On 26/04/2017 12:06, Liu, Yi L wrote:
+> > > > +void memory_region_notify_iommu_svm_bind(MemoryRegion *mr,
+> > > > +                                         void *data)
+> > > > +{
+> > > > +    IOMMUNotifier *iommu_notifier;
+> > > > +    IOMMUNotifierFlag request_flags;
+> > > > +
+> > > > +    assert(memory_region_is_iommu(mr));
+> > > > +
+> > > > +    /*TODO: support other bind requests with smaller gran,
+> > > > +     * e.g. bind signle pasid entry
+> > > > +     */
+> > > > +    request_flags = IOMMU_NOTIFIER_SVM_PASIDT_BIND;
+> > > > +
+> > > > +    QLIST_FOREACH(iommu_notifier, &mr->iommu_notify, node) {
+> > > > +        if (iommu_notifier->notifier_flags & request_flags) {
+> > > > +            iommu_notifier->notify(iommu_notifier, data);
+> > > > +            break;
+> > > > +        }
+> > > > +    }
+> > > 
+> > > Peter,
+> > > 
+> > > should this reuse ->notify, or should it be different function pointer
+> > > in IOMMUNotifier?
 > > 
-> > A new directory will be created:
-> >   /sys/kernel/mm/sme/
+> > Hi Paolo,
 > > 
-> > And two entries within the new directory:
-> >   /sys/kernel/mm/sme/active
-> >   /sys/kernel/mm/sme/encryption_mask
+> > Thx for your review.
+> > 
+> > I think it should be “->notify” here. In this patchset, the new notifier
+> > is registered with the existing notifier registration API. So the all the
+> > notifiers are in the mr->iommu_notify list. And notifiers are labeled
+> > by notify flag, so it is able to differentiate the IOMMUNotifier nodes.
+> > When the flag meets, trigger it by “->notify”. The diagram below shows
+> > my understanding , wish it helps to make me understood.
+> > 
+> > VFIOContainer
+> >        |
+> >        giommu_list(VFIOGuestIOMMU)
+> >                 \
+> >                  VFIOGuestIOMMU1 ->   VFIOGuestIOMMU2 -> VFIOGuestIOMMU3 ...
+> >                     |                     |                 |
+> > mr->iommu_notify: IOMMUNotifier   ->    IOMMUNotifier  ->  IOMMUNotifier
+> >                   (Flag:MAP/UNMAP)     (Flag:SVM bind)  (Flag:tlb invalidate)
+> > 
+> > 
+> > Actually, compared with the MAP/UNMAP notifier, the newly added notifier has
+> > no start/end check, and there may be other types of bind notfier flag in
+> > future, so I added a separate fire func for SVM bind notifier.
 > 
-> Why do they care, and what will they be doing with this information?
+> I agree with Paolo that this interface might not be the suitable place
+> for the SVM notifiers (just like what I worried about in previous
+> discussions).
+> 
+> The biggest problem is that, if you see current notifier mechanism,
+> it's per-memory-region. However iiuc your messages should be
+> per-iommu, or say, per translation unit. While, for each iommu, there
+> can be more than one memory regions (ppc can be an example). When
+> there are more than one MRs binded to the same iommu unit, which
+> memory region should you register to? Any one of them, or all?
+> 
+> So my conclusion is, it just has nothing to do with memory regions...
+> 
+> Instead of a different function pointer in IOMMUNotifer, IMHO we can
+> even move a step further, to isolate IOTLB notifications (targeted at
+> memory regions and with start/end ranges) out of SVM/other
+> notifications, since they are different in general. So we basically
+> need two notification mechanism:
+> 
+> - one for memory regions, currently what I can see is IOTLB
+>   notifications
+> 
+> - one for translation units, currently I see all the rest of
+>   notifications needed in virt-svm in this category
+> 
+> Maybe some RFC patches would be good to show what I mean... I'll see
+> whether I can prepare some.
 
-Since kdump will copy old memory but need this to know if the old memory
-was encrypted or not. With this sysfs file we can know the previous SME
-status and pass to kdump kernel as like a kernel param.
+Here it is (on qemu-devel):
 
-Tom, have you got chance to try if it works or not?
+[RFC PATCH 0/8] IOMMU: introduce common IOMMUObject
 
-Thanks
-Dave
+Thanks,
+
+-- 
+Peter Xu
