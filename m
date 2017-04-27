@@ -1,46 +1,98 @@
-From: "Raj, Ashok" <ashok.raj-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Subject: Re: Does a new booting kernel by "kexec -l" need to copy IR table
-	from previous kernel?
-Date: Thu, 27 Apr 2017 09:21:12 -0700
-Message-ID: <20170427162111.GA7556@linux.intel.com>
-References: <E6AF1AFDEA62A94A97508F458CBDD47F6EBEFCC9@SHSMSX101.ccr.corp.intel.com>
-	<20170427161238.GD1332@8bytes.org>
+From: Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Subject: Re: [PATCH 0/3] Cavium ThunderX2 SMMUv3 errata workarounds
+Date: Thu, 27 Apr 2017 22:07:34 +0530
+Message-ID: <CA+sq2CfX+rrJniu7Fe0E47mF+nWkdx94=8buGtrP8zBdFrXV+Q@mail.gmail.com>
+References: <1493293584-20287-1-git-send-email-gakula@caviumnetworks.com> <20170427133910.GB31368@rric.localdomain>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <20170427161238.GD1332-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: "joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org" <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: "iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org" <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "Zhuo, Qiuxu" <qiuxu.zhuo-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, "jroedel-l3A5Bk7waGM@public.gmane.org" <jroedel-l3A5Bk7waGM@public.gmane.org>, "Luck, Tony" <tony.luck-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-acpi-owner@vger.kernel.org>
+In-Reply-To: <20170427133910.GB31368@rric.localdomain>
+Sender: linux-acpi-owner@vger.kernel.org
+To: Robert Richter <robert.richter@cavium.com>
+Cc: Geetha sowjanya <gakula@caviumnetworks.com>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, jcm@redhat.com, linu.cherian@cavium.com, Will Deacon <will.deacon@arm.com>, LKML <linux-kernel@vger.kernel.org>, geethasowjanya.akula@gmail.com, linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org, Hanjun Guo <hanjun.guo@linaro.org>, sudeep.holla@arm.com, Geetha <gakula@cavium.com>, Sunil Goutham <sgoutham@cavium.com>, Robin Murphy <robin.murphy@arm.com>, LAKML <linux-arm-kernel@lists.infradead.org>
 List-Id: iommu@lists.linux-foundation.org
 
-SGkgSm9lcmcsCgpPbiBUaHUsIEFwciAyNywgMjAxNyBhdCAwNjoxMjozOFBNICswMjAwLCBqb3Jv
-QDhieXRlcy5vcmcgd3JvdGU6Cj4gT24gVGh1LCBBcHIgMjcsIDIwMTcgYXQgMDM6MzQ6MDZQTSAr
-MDAwMCwgWmh1bywgUWl1eHUgd3JvdGU6Cj4gPiBJdCBsb29rcyBsaWtlIHRoZSBwcmludGsgaXMg
-bWlzbGVhZGluZyBhbmQgaXTigJlzIG5vdGhpbmcgYWN0dWFsbHkKPiA+IGZhaWxlZCwgYnV0IGp1
-c3QgaXQgaXNu4oCZdCBjb3B5aW5nIGlmIHRoZSBuZXcga2VybmVsIGlzIG5vdCBhIGtkdW1wCj4g
-PiBrZXJuZWwuCj4gCj4gWWVzLCB0aGF0IGlzIHRydWUuIEJ1dCB0aGUgbWVzc2FnZXMgYXJlIGhh
-cm1sZXNzIGFuZCB5b3UgYXJlIHNhZmUgdG8KPiBpZ25vcmUgdGhlbSBpbiB5b3VyIHVzZWNhc2Uu
-IFdlIG9ubHkgY2FyZSBhYm91dCB0aGUga2R1bXAgY2FzZSB3aGVuCgpMb29rcyBsaWtlIG1heWJl
-IHNhbml0aXppbmcgdGhlIG1lc3NhZ2UgdG8gbWFrZSBpdCBsZXNzIGRpc3R1cmJpbmcgCnNob3Vs
-ZCBiZSBlbm91Z2ggOi0pIAoKPiBjb3B5aW5nIHRoZSBvbGQgSVIgYW5kIERNQVIgdGFibGVzIGlu
-dG8gdGhlIG5ldyBrZXJuZWwsIGJlY2F1c2UgaW4gdGhlCj4ga2R1bXAgY2FzZSB0aGUgb2xkIGtl
-cm5lbCBjcmFzaGVkIGFuZCBsZWZ0IGRldmljZXMgaW4gYW4gdW5kZWZpbmVkCj4gc3RhdGUsIHNv
-IHRoYXQgdGhleSBtaWdodCBzdGlsbCBzZW5kIERNQSBhbmQgSVJRIHJlcXVlc3RzIHRvIHRoZSBu
-ZXcKPiBrZXJuZWwsIGNvcnJ1cHRpbmcgZGF0YSBvciBjYXVzaW5nIHNwdXJpb3VzL2Jsb2NrZWQg
-aXJxcy4gQmxvY2tlZCBJUlFzCj4gb3IgRE1BIHJlcXVlc3RzIG1pZ2h0IGV2ZW4gYnJlYWsgZGV2
-aWNlcyBzbyB0aGF0IHRoZSBuZXcga2VybmVsIGNhbid0Cj4gaW5pdGlhbGl6ZSB0aGVtIGFueW1v
-cmUuCgpDaGVlcnMsCkFzaG9rCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
-Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
-b21tdQ==
+On Thu, Apr 27, 2017 at 7:09 PM, Robert Richter
+<robert.richter@cavium.com> wrote:
+> On 27.04.17 17:16:21, Geetha sowjanya wrote:
+>> From: Geetha <gakula@cavium.com>
+>>
+>> Cavium CN99xx SMMUv3 implementation has two Silicon Erratas.
+>> 1. Errata ID #74
+>>    SMMU register alias Page 1 is not implemented
+>> 2. Errata ID #126
+>>    SMMU doesnt support unique IRQ lines for gerror, eventq and cmdq-sync
+>>
+>> The following patchset does software workaround for these two erratas.
+>>
+>> This series is based on RFC patch.
+>> https://www.spinics.net/lists/arm-kernel/msg575739.html
+>>
+>> As suggested by Will Deacon, code is modified to use silicon id to
+>> enable errata#74 workaround.
+>
+> Can we go with the previous series [1] and:
+>
+>  * drop the iort model numbering part,
+>
+>  * add an enablement function that enables flags (smmu->options)
+>    depending on midr values (which replaces the macro code)?
+
+I don't see how it is efficient and consistent, if we take data from DT
+for non-ACPI mode and read CPU ID from MIDR for ACPI mode.
+
+Thanks,
+Sunil.
+
+>
+> E.g.:
+>
+> static void acpi_smmu_enable_cavium(struct arm_smmu_device *smmu)
+> {
+>         u32 cpu_model;
+>
+>         if (!IS_ENABLED(CONFIG_ARM64))
+>                 return;
+>
+>         cpu_model = read_cpuid_id() & MIDR_CPU_MODEL_MASK;
+>         switch (cpu_model) {
+>         case ...:
+>         case ...:
+>                 break;
+>         default:
+>                 /* No Cavium CN99xx SMMU v3 */
+>                 return;
+>         }
+>
+>         smmu->options |= (ARM_SMMU_OPT_PAGE0_REGS_ONLY |
+>                          ARM_SMMU_OPT_USE_SHARED_IRQS);
+> }
+>
+> -Robert
+>
+>
+> [1] [RFC PATCH 0/7] Cavium CN99xx SMMUv3 Errata workarounds
+>     https://marc.info/?l=linux-acpi&m=149192179623708&w=2
+>
+>>
+>> Linu Cherian (1):
+>>   iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #74
+>>
+>> Geetha (2):
+>>   arm64: Add MIDR values for Cavium cn99xx SoCs
+>>   iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #126
+>>
+>>  Documentation/arm64/silicon-errata.txt |  2 ++
+>>  arch/arm64/include/asm/cputype.h       |  3 ++
+>>  drivers/acpi/arm64/iort.c              | 14 +++++++-
+>>  drivers/iommu/arm-smmu-v3.c            | 64 +++++++++++++++++++++++++++++-----
+>>  4 files changed, 73 insertions(+), 10 deletions(-)
+>>
+>> --
+>> 1.9.1
+>>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
