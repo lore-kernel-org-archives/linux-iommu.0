@@ -1,68 +1,189 @@
-From: Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
-Subject: Re: [PATCH v5 31/32] x86: Add sysfs support for Secure Memory
-	Encryption
-Date: Fri, 28 Apr 2017 13:32:33 +0800
-Message-ID: <20170428053233.GA6149@dhcp-128-65.nay.redhat.com>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
-	<20170418212212.10190.73484.stgit@tlendack-t1.amdoffice.net>
-	<1498ec98-b19d-c47d-902b-a68870a3f860@intel.com>
-	<20170427072547.GB15297@dhcp-128-65.nay.redhat.com>
-	<1f034974-20e6-b5e9-e6ff-434b634e1522@intel.com>
+From: Lan Tianyu <tianyu.lan@intel.com>
+Subject: Re: [RFC PATCH 02/20] intel_iommu: exposed extended-context mode to
+ guest
+Date: Fri, 28 Apr 2017 14:00:15 +0800
+Message-ID: <a7cd779f-2cd6-3a3f-7e73-e79a49c48961@intel.com>
+References: <1493201210-14357-1-git-send-email-yi.l.liu@linux.intel.com>
+ <1493201210-14357-3-git-send-email-yi.l.liu@linux.intel.com>
+ <20170427103221.GD1542@pxdev.xzpeter.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <1f034974-20e6-b5e9-e6ff-434b634e1522-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Dave Hansen <dave.hansen-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEmw@public.gmane.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Return-path: <kvm-owner@vger.kernel.org>
+In-Reply-To: <20170427103221.GD1542@pxdev.xzpeter.org>
+Sender: kvm-owner@vger.kernel.org
+To: Peter Xu <peterx@redhat.com>, "Liu, Yi L" <yi.l.liu@linux.intel.com>
+Cc: qemu-devel@nongnu.org, alex.williamson@redhat.com, kvm@vger.kernel.org, jasowang@redhat.com, iommu@lists.linux-foundation.org, kevin.tian@intel.com, ashok.raj@intel.com, jacob.jun.pan@intel.com, yi.l.liu@intel.com, jean-philippe.brucker@arm.com
 List-Id: iommu@lists.linux-foundation.org
 
-On 04/27/17 at 08:52am, Dave Hansen wrote:
-> On 04/27/2017 12:25 AM, Dave Young wrote:
-> > On 04/21/17 at 02:55pm, Dave Hansen wrote:
-> >> On 04/18/2017 02:22 PM, Tom Lendacky wrote:
-> >>> Add sysfs support for SME so that user-space utilities (kdump, etc.) can
-> >>> determine if SME is active.
-> >>>
-> >>> A new directory will be created:
-> >>>   /sys/kernel/mm/sme/
-> >>>
-> >>> And two entries within the new directory:
-> >>>   /sys/kernel/mm/sme/active
-> >>>   /sys/kernel/mm/sme/encryption_mask
-> >>
-> >> Why do they care, and what will they be doing with this information?
-> > 
-> > Since kdump will copy old memory but need this to know if the old memory
-> > was encrypted or not. With this sysfs file we can know the previous SME
-> > status and pass to kdump kernel as like a kernel param.
-> > 
-> > Tom, have you got chance to try if it works or not?
+On 2017年04月27日 18:32, Peter Xu wrote:
+> On Wed, Apr 26, 2017 at 06:06:32PM +0800, Liu, Yi L wrote:
+>> VT-d implementations reporting PASID or PRS fields as "Set", must also
+>> report ecap.ECS as "Set". Extended-Context is required for SVM.
+>>
+>> When ECS is reported, intel iommu driver would initiate extended root entry
+>> and extended context entry, and also PASID table if there is any SVM capable
+>> device.
+>>
+>> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+>> ---
+>>  hw/i386/intel_iommu.c          | 131 +++++++++++++++++++++++++++--------------
+>>  hw/i386/intel_iommu_internal.h |   9 +++
+>>  include/hw/i386/intel_iommu.h  |   2 +-
+>>  3 files changed, 97 insertions(+), 45 deletions(-)
+>>
+>> diff --git a/hw/i386/intel_iommu.c b/hw/i386/intel_iommu.c
+>> index 400d0d1..bf98fa5 100644
+>> --- a/hw/i386/intel_iommu.c
+>> +++ b/hw/i386/intel_iommu.c
+>> @@ -497,6 +497,11 @@ static inline bool vtd_root_entry_present(VTDRootEntry *root)
+>>      return root->val & VTD_ROOT_ENTRY_P;
+>>  }
+>>  
+>> +static inline bool vtd_root_entry_upper_present(VTDRootEntry *root)
+>> +{
+>> +    return root->rsvd & VTD_ROOT_ENTRY_P;
+>> +}
+>> +
+>>  static int vtd_get_root_entry(IntelIOMMUState *s, uint8_t index,
+>>                                VTDRootEntry *re)
+>>  {
+>> @@ -509,6 +514,9 @@ static int vtd_get_root_entry(IntelIOMMUState *s, uint8_t index,
+>>          return -VTD_FR_ROOT_TABLE_INV;
+>>      }
+>>      re->val = le64_to_cpu(re->val);
+>> +    if (s->ecs) {
+>> +        re->rsvd = le64_to_cpu(re->rsvd);
+>> +    }
 > 
-> What will the kdump kernel do with it though?  We kexec() into that
-> kernel so the SME keys will all be the same, right?  So, will the kdump
-> kernel be just setting the encryption bit in the PTE so it can copy the
-> old plaintext out?
-
-I assume it is for active -> non active case, the new boot need to know
-the old memory is encrypted. But I think I did not read all the patches
-I may miss things.
-
+> I feel it slightly hacky to play with re->rsvd. How about:
 > 
-> Why do we need both 'active' and 'encryption_mask'?  How could it be
-> that the hardware-enumerated 'encryption_mask' changes across a kexec()?
+> union VTDRootEntry {
+>     struct {
+>         uint64_t val;
+>         uint64_t rsvd;
+>     } base;
+>     struct {
+>         uint64_t ext_lo;
+>         uint64_t ext_hi;
+>     } extended;
+> };
+> 
+> (Or any better way that can get rid of rsvd...)
+> 
+> Even:
+> 
+> struct VTDRootEntry {
+>     union {
+>         struct {
+>                 uint64_t val;
+>                 uint64_t rsvd;
+>         } base;
+>         struct {
+>                 uint64_t ext_lo;
+>                 uint64_t ext_hi;
+>         } extended;
+>     } data;
+>     bool extended;
+> };
+> 
+> Then we read the entry into data, and setup extended bit. A benefit of
+> it is that we may avoid passing around IntelIOMMUState everywhere to
+> know whether we are using extended context entries.
+> 
+>>      return 0;
+>>  }
+>>  
+>> @@ -517,19 +525,30 @@ static inline bool vtd_context_entry_present(VTDContextEntry *context)
+>>      return context->lo & VTD_CONTEXT_ENTRY_P;
+>>  }
+>>  
+>> -static int vtd_get_context_entry_from_root(VTDRootEntry *root, uint8_t index,
+>> -                                           VTDContextEntry *ce)
+>> +static int vtd_get_context_entry_from_root(IntelIOMMUState *s,
+>> +                 VTDRootEntry *root, uint8_t index, VTDContextEntry *ce)
+>>  {
+>> -    dma_addr_t addr;
+>> +    dma_addr_t addr, ce_size;
+>>  
+>>      /* we have checked that root entry is present */
+>> -    addr = (root->val & VTD_ROOT_ENTRY_CTP) + index * sizeof(*ce);
+>> -    if (dma_memory_read(&address_space_memory, addr, ce, sizeof(*ce))) {
+>> +    ce_size = (s->ecs) ? (2 * sizeof(*ce)) : (sizeof(*ce));
+>> +    addr = (s->ecs && (index > 0x7f)) ?
+>> +           ((root->rsvd & VTD_ROOT_ENTRY_CTP) + (index - 0x80) * ce_size) :
+>> +           ((root->val & VTD_ROOT_ENTRY_CTP) + index * ce_size);
+>> +
+>> +    if (dma_memory_read(&address_space_memory, addr, ce, ce_size)) {
+>>          trace_vtd_re_invalid(root->rsvd, root->val);
+>>          return -VTD_FR_CONTEXT_TABLE_INV;
+>>      }
+>> -    ce->lo = le64_to_cpu(ce->lo);
+>> -    ce->hi = le64_to_cpu(ce->hi);
+>> +
+>> +    ce[0].lo = le64_to_cpu(ce[0].lo);
+>> +    ce[0].hi = le64_to_cpu(ce[0].hi);
+> 
+> Again, I feel this even hackier. :)
+> 
+> I would slightly prefer to play the same union trick to context
+> entries, just like what I proposed to the root entries above...
+> 
+>> +
+>> +    if (s->ecs) {
+>> +        ce[1].lo = le64_to_cpu(ce[1].lo);
+>> +        ce[1].hi = le64_to_cpu(ce[1].hi);
+>> +    }
+>> +
+>>      return 0;
+>>  }
+>>  
+>> @@ -595,9 +614,11 @@ static inline uint32_t vtd_get_agaw_from_context_entry(VTDContextEntry *ce)
+>>      return 30 + (ce->hi & VTD_CONTEXT_ENTRY_AW) * 9;
+>>  }
+>>  
+>> -static inline uint32_t vtd_ce_get_type(VTDContextEntry *ce)
+>> +static inline uint32_t vtd_ce_get_type(IntelIOMMUState *s,
+>> +                                       VTDContextEntry *ce)
+>>  {
+>> -    return ce->lo & VTD_CONTEXT_ENTRY_TT;
+>> +    return s->ecs ? (ce->lo & VTD_CONTEXT_ENTRY_TT) :
+>> +                    (ce->lo & VTD_EXT_CONTEXT_ENTRY_TT);
+>>  }
+>>  
+>>  static inline uint64_t vtd_iova_limit(VTDContextEntry *ce)
+>> @@ -842,16 +863,20 @@ static int vtd_dev_to_context_entry(IntelIOMMUState *s, uint8_t bus_num,
+>>          return ret_fr;
+>>      }
+>>  
+>> -    if (!vtd_root_entry_present(&re)) {
+>> +    if (!vtd_root_entry_present(&re) ||
+>> +        (s->ecs && (devfn > 0x7f) && (!vtd_root_entry_upper_present(&re)))) {
+>>          /* Not error - it's okay we don't have root entry. */
+>>          trace_vtd_re_not_present(bus_num);
+>>          return -VTD_FR_ROOT_ENTRY_P;
+>> -    } else if (re.rsvd || (re.val & VTD_ROOT_ENTRY_RSVD)) {
+>> -        trace_vtd_re_invalid(re.rsvd, re.val);
+>> -        return -VTD_FR_ROOT_ENTRY_RSVD;
+>> +    }
+>> +    if ((s->ecs && (devfn > 0x7f) && (re.rsvd & VTD_ROOT_ENTRY_RSVD)) ||
+>> +        (s->ecs && (devfn < 0x80) && (re.val & VTD_ROOT_ENTRY_RSVD)) ||
+>> +        ((!s->ecs) && (re.rsvd || (re.val & VTD_ROOT_ENTRY_RSVD)))) {
+>> +            trace_vtd_re_invalid(re.rsvd, re.val);
+>> +            return -VTD_FR_ROOT_ENTRY_RSVD;
+> 
+> Nit: I feel like we can better wrap these 0x7f and 0x80 into helper
+> functions, especially if with above structure change...
+> 
+> (will hold here...)
+> 
+> Thanks,
+> 
 
-Leave this question to Tom..
 
-Thanks
-Dave
+It's possible to add helper macro to check bits in context entry and
+extend context entry and put the check of ecs mode into helper macro?
+
+-- 
+Best regards
+Tianyu Lan
