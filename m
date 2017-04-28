@@ -1,63 +1,142 @@
-From: Sebastian Ott <sebott-23VcF4HTsmIX0ybBhKVfKdBPR1lH4CV8@public.gmane.org>
-Subject: Re: [RFC PATCH 0/2] iommu/s390: Fix iommu-groups and add sysfs support
-Date: Fri, 28 Apr 2017 17:25:20 +0200 (CEST)
-Message-ID: <alpine.LFD.2.20.1704281709350.1788@schleppi.fritz.box>
-References: <1493306905-32334-1-git-send-email-joro@8bytes.org>
-	<20170427201018.70c8be5a@thinkpad>
-	<20170427210325.GE1332@8bytes.org>
-	<20170428144634.7950c8cf@thinkpad>
-	<20170428145513.GH1332@8bytes.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <20170428145513.GH1332-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Gerald Schaefer <gerald.schaefer-tA70FqPdS9bQT0dZR+AlfA@public.gmane.org>
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH] ACPI/IORT: Fix CONFIG_IOMMU_API dependency
+Date: Fri, 28 Apr 2017 16:59:49 +0100
+Message-ID: <1493395189-10857-1-git-send-email-lorenzo.pieralisi@arm.com>
+Return-path: <linux-acpi-owner@vger.kernel.org>
+Sender: linux-acpi-owner@vger.kernel.org
+To: joro@8bytes.org, iommu@lists.linux-foundation.org
+Cc: linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Arnd Bergmann <arnd@arndb.de>, Will Deacon <will.deacon@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Robin Murphy <robin.murphy@arm.com>, Sricharan R <sricharan@codeaurora.org>, "Rafael J. Wysocki" <rjw@rjwysocki.net>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, 28 Apr 2017, Joerg Roedel wrote:
-> On Fri, Apr 28, 2017 at 02:46:34PM +0200, Gerald Schaefer wrote:
-> > On Thu, 27 Apr 2017 23:03:25 +0200
-> > Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org> wrote:
-> > 
-> > > > Well, there is a separate zpci_dev for each pci_dev on s390,
-> > > > and each of those has its own separate dma-table (thus not shared).  
-> > > 
-> > > Is that true for all functions of a PCIe card, so does every function of
-> > > a device has its own zpci_dev structure and thus its own DMA-table?
-> > 
-> > Yes, clp_add_pci_device() is called for every function, which in turn calls
-> > zpci_create_device() with a freshly allocated zdev. zpci_enable_device()
-> > then sets up a new DMA address space for each function.
-> 
-> That sounds special :) So will every function of a single device end up
-> as a seperate device on a seperate root-bus?
+The IOMMU probe deferral IORT rework had to add code in
+iort_iommu_configure() and iort_iommu_xlate() that requires
+the IOMMU_API to be selected in order to compile and work.
 
-Yes. That's true even for multi-function and SRIOV.
+Stub out the pieces of code that depend on CONFIG_IOMMU_API
+to be selected to prevent compilation failures such as:
 
-> > > My assumption came from the fact that the zpci_dev is read from
-> > > pci_dev->sysdata, which is propagated there from the pci_bridge
-> > > through the pci_root_bus structures.
-> > 
-> > The zdev gets there via zpci_create_device() -> zpci_scan_bus() ->
-> > pci_scan_root_bus(), which is done for every single function.
-> > 
-> > Not sure if I understand this right, but it looks like we set up a new PCI
-> > bus for each function.
-> 
-> Yeah, it sounds like this. Maybe Sebastian can confirm that?
+drivers/acpi/arm64/iort.c: In function 'iort_iommu_xlate':
+drivers/acpi/arm64/iort.c:647:22: error: 'struct iommu_fwspec' has no
+member named 'ops'
 
-Yes. Confirmed.
+by wrapping the code in static inline functions that provide a NOP
+implementation when CONFIG_IOMMU_API is not selected.
 
-Regards,
-Sebastian
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Reported-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Sricharan R <sricharan@codeaurora.org>
+---
+Joerg, all,
+
+as reported by Arnd:
+
+https://lkml.org/lkml/2017/4/27/303
+
+we have this issue in -next and I managed to write this patch in a
+way that applies to Joerg's tree - branch:
+
+arm/core
+
+and does not conflict with ACPI IORT patches queued via arm64 tree.
+
+I know it is late and it is not a major breakage, so either Joerg
+applies this patch to his arm/core branch or I can send a fix for -rc1
+when both the IOMMU and arm64 trees are merged, please let me know how
+you prefer handling it, it is a bit rushed owing to where we are in
+the cycle.
+
+Thanks !
+Lorenzo
+
+ drivers/acpi/arm64/iort.c | 44 ++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 34 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index e7b1940..a629e83 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -536,6 +536,33 @@ static inline bool iort_iommu_driver_enabled(u8 type)
+ 	}
+ }
+ 
++#ifdef CONFIG_IOMMU_API
++static inline
++const struct iommu_ops *iort_fwspec_iommu_ops(struct iommu_fwspec *fwspec)
++{
++	return (fwspec && fwspec->ops) ? fwspec->ops : NULL;
++}
++
++static inline
++int iort_add_device_replay(const struct iommu_ops *ops, struct device *dev)
++{
++	int err = 0;
++
++	if (!IS_ERR_OR_NULL(ops) && ops->add_device && dev->bus &&
++	    !dev->iommu_group)
++		err = ops->add_device(dev);
++
++	return err;
++}
++#else
++static inline
++const struct iommu_ops *iort_fwspec_iommu_ops(struct iommu_fwspec *fwspec)
++{ return NULL; }
++static inline
++int iort_add_device_replay(const struct iommu_ops *ops, struct device *dev)
++{ return 0; }
++#endif
++
+ static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
+ 					struct acpi_iort_node *node,
+ 					u32 streamid)
+@@ -543,14 +570,14 @@ static const struct iommu_ops *iort_iommu_xlate(struct device *dev,
+ 	const struct iommu_ops *ops = NULL;
+ 	int ret = -ENODEV;
+ 	struct fwnode_handle *iort_fwnode;
+-	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
+ 
+ 	/*
+ 	 * If we already translated the fwspec there
+ 	 * is nothing left to do, return the iommu_ops.
+ 	 */
+-	if (fwspec && fwspec->ops)
+-		return fwspec->ops;
++	ops = iort_fwspec_iommu_ops(dev->iommu_fwspec);
++	if (ops)
++		return ops;
+ 
+ 	if (node) {
+ 		iort_fwnode = iort_get_fwnode(node);
+@@ -611,6 +638,7 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+ 	struct acpi_iort_node *node, *parent;
+ 	const struct iommu_ops *ops = NULL;
+ 	u32 streamid = 0;
++	int err;
+ 
+ 	if (dev_is_pci(dev)) {
+ 		struct pci_bus *bus = to_pci_dev(dev)->bus;
+@@ -654,13 +682,9 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+ 	 * If we have reason to believe the IOMMU driver missed the initial
+ 	 * add_device callback for dev, replay it to get things in order.
+ 	 */
+-	if (!IS_ERR_OR_NULL(ops) && ops->add_device &&
+-	    dev->bus && !dev->iommu_group) {
+-		int err = ops->add_device(dev);
+-
+-		if (err)
+-			ops = ERR_PTR(err);
+-	}
++	err = iort_add_device_replay(ops, dev);
++	if (err)
++		ops = ERR_PTR(err);
+ 
+ 	return ops;
+ }
+-- 
+2.10.0
+
