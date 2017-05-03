@@ -1,7 +1,7 @@
 From: Oza Pawandeep via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: [PATCH 2/3] iommu/pci: reserve iova for PCI masters
-Date: Wed,  3 May 2017 10:16:34 +0530
-Message-ID: <1493786795-28153-2-git-send-email-oza.oza@broadcom.com>
+Subject: [PATCH 3/3] PCI/of fix of_dma_get_range; get PCI specific dma-ranges
+Date: Wed,  3 May 2017 10:16:35 +0530
+Message-ID: <1493786795-28153-3-git-send-email-oza.oza@broadcom.com>
 References: <1493786795-28153-1-git-send-email-oza.oza@broadcom.com>
 Reply-To: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
@@ -22,94 +22,108 @@ To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <r
 Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Oza Pawandeep <oza.pawandeep-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-this patch reserves the iova for PCI masters.
-ARM64 based SOCs may have scattered memory banks.
-such as iproc based SOC has
+current device framework and of framework integration assumes
+dma-ranges in a way where memory-mapped devices define their
+dma-ranges. (child-bus-address, parent-bus-address, length).
 
-<0x00000000 0x80000000 0x0 0x80000000>, /* 2G @ 2G */
-<0x00000008 0x80000000 0x3 0x80000000>, /* 14G @ 34G */
-<0x00000090 0x00000000 0x4 0x00000000>, /* 16G @ 576G */
-<0x000000a0 0x00000000 0x4 0x00000000>; /* 16G @ 640G */
+of_dma_configure is specifically written to take care of memory
+mapped devices. but no implementation exists for pci to take
+care of pcie based memory ranges.
 
-but incoming PCI transcation addressing capability is limited
-by host bridge, for example if max incoming window capability
-is 512 GB, then 0x00000090 and 0x000000a0 will fall beyond it.
+for e.g. iproc based SOCs and other SOCs(suc as rcar) have PCI
+world dma-ranges.
+dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
 
-to address this problem, iommu has to avoid allocating iovas which
-are reserved. which inturn does not allocate iova if it falls into hole.
+this patch fixes this patch fixes the bug in of_dma_get_range,
+which with as is, parses the PCI memory ranges and return wrong
+size as 0.
+
+in order to get largest possible dma_mask. this patch also
+retuns the largest possible size based on dma-ranges,
+
+for e.g.
+dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
+we should get dev->coherent_dma_mask=0x7fffffffff.
+
+based on which iova allocation space will honour PCI host
+bridge limitations.
 
 Bug: SOC-5216
-Change-Id: Icbfc99a045d730be143fef427098c937b9d46353
+Change-Id: I4c534bdd17e70c6b27327d39d1656e8ed0cf56d6
 Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Reviewed-on: http://gerrit-ccxsw.broadcom.net/40760
+Reviewed-on: http://gerrit-ccxsw.broadcom.net/40762
 Reviewed-by: vpx_checkpatch status <vpx_checkpatch-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Reviewed-by: CCXSW <ccxswbuild-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Tested-by: vpx_autobuild status <vpx_autobuild-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Tested-by: vpx_smoketest status <vpx_smoketest-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Tested-by: CCXSW <ccxswbuild-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
-Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 48d36ce..08764b0 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -27,6 +27,7 @@
- #include <linux/iova.h>
- #include <linux/irq.h>
- #include <linux/mm.h>
+diff --git a/drivers/of/address.c b/drivers/of/address.c
+index 02b2903..f7734fc 100644
+--- a/drivers/of/address.c
++++ b/drivers/of/address.c
+@@ -6,6 +6,7 @@
+ #include <linux/ioport.h>
+ #include <linux/module.h>
+ #include <linux/of_address.h>
 +#include <linux/of_pci.h>
  #include <linux/pci.h>
- #include <linux/scatterlist.h>
- #include <linux/vmalloc.h>
-@@ -171,8 +172,12 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
- 		struct iova_domain *iovad)
- {
- 	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
-+	struct device_node *np = bridge->dev.parent->of_node;
- 	struct resource_entry *window;
- 	unsigned long lo, hi;
-+	int ret;
-+	dma_addr_t tmp_dma_addr = 0, dma_addr;
-+	LIST_HEAD(res);
+ #include <linux/pci_regs.h>
+ #include <linux/sizes.h>
+@@ -830,6 +831,54 @@ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *siz
+ 	int ret = 0;
+ 	u64 dmaaddr;
  
- 	resource_list_for_each_entry(window, &bridge->windows) {
- 		if (resource_type(window->res) != IORESOURCE_MEM &&
-@@ -183,6 +188,36 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
- 		hi = iova_pfn(iovad, window->res->end - window->offset);
- 		reserve_iova(iovad, lo, hi);
- 	}
++#ifdef CONFIG_PCI
++	struct resource_entry *window;
++	LIST_HEAD(res);
 +
-+	/* PCI inbound memory reservation. */
-+	ret = of_pci_get_dma_ranges(np, &res);
-+	if (!ret) {
-+		resource_list_for_each_entry(window, &res) {
++	if (!node)
++		return -EINVAL;
++
++	if (of_bus_pci_match(np)) {
++		*size = 0;
++		/*
++		 * PCI dma-ranges is not mandatory property.
++		 * many devices do no need to have it, since
++		 * host bridge does not require inbound memory
++		 * configuration or rather have design limitations.
++		 * so we look for dma-ranges, if missing we
++		 * just return the caller full size, and also
++		 * no dma-ranges suggests that, host bridge allows
++		 * whatever comes in, so we set dma_addr to 0.
++		 */
++		ret = of_pci_get_dma_ranges(np, &res);
++		if (!ret) {
++			resource_list_for_each_entry(window, &res) {
 +			struct resource *res_dma = window->res;
 +
-+			dma_addr = res_dma->start - window->offset;
-+			if (tmp_dma_addr > dma_addr) {
-+				pr_warn("PCI: failed to reserve iovas; ranges should be sorted\n");
-+				return;
++			if (*size < resource_size(res_dma)) {
++				*dma_addr = res_dma->start - window->offset;
++				*paddr = res_dma->start;
++				*size = resource_size(res_dma);
++				}
 +			}
-+			if (tmp_dma_addr != dma_addr) {
-+				lo = iova_pfn(iovad, tmp_dma_addr);
-+				hi = iova_pfn(iovad, dma_addr - 1);
-+				reserve_iova(iovad, lo, hi);
-+			}
-+			tmp_dma_addr = window->res->end - window->offset;
 +		}
-+		/*
-+		 * the last dma-range should honour based on the
-+		 * 32/64-bit dma addresses.
-+		 */
-+		if (tmp_dma_addr < DMA_BIT_MASK(sizeof(dma_addr_t) * 8)) {
-+			lo = iova_pfn(iovad, tmp_dma_addr);
-+			hi = iova_pfn(iovad,
-+				      DMA_BIT_MASK(sizeof(dma_addr_t) * 8) - 1);
-+			reserve_iova(iovad, lo, hi);
++		pci_free_resource_list(&res);
++
++		/* ignore the empty ranges. */
++		if (*size == 0) {
++			pr_debug("empty/zero size dma-ranges found for node(%s)\n",
++				np->full_name);
++			*size = DMA_BIT_MASK(sizeof(dma_addr_t) * 8);
++			*dma_addr = *paddr = 0;
++			ret = 0;
 +		}
++
++		pr_err("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
++			 *dma_addr, *paddr, *size);
++		goto out;
 +	}
- }
++#endif
++
+ 	if (!node)
+ 		return -EINVAL;
  
- /**
 -- 
 1.9.1
