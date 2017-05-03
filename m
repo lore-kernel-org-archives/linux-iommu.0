@@ -1,39 +1,39 @@
-From: Matthias Ehrenfeuchter <efeu-5Zrl/DuVEGLQT0dZR+AlfA@public.gmane.org>
-Subject: AMD Ryzen KVM/NPT/IOMMU issue
-Date: Wed, 3 May 2017 16:37:31 +0200
-Message-ID: <575f8fbc-0fdc-f336-e3da-53f27da4b2e1@markju.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+From: Matthias Brugger <mbrugger@suse.com>
+Subject: [PATCH] iommu/rockchip: Enable Rockchip IOMMU on ARM64
+Date: Wed,  3 May 2017 17:19:40 +0200
+Message-ID: <20170503151940.3987-1-mbrugger@suse.com>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: joro@8bytes.org
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, xxm@rock-chips.com, zhengsq@rock-chips.com, tfiga@chromium.org, ykaukab@suse.com
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
+From: Simon Xue <xxm@rock-chips.com>
 
-There are a lot of messages/threads out there about bad performance 
-while using AMDs Ryzen with KVM GPU passthrough. It revolves all on 
-enabling/disabling npt, while enabled overall VM performance is nice but 
-the GPU performance gives me about 20% (and a lot of drops to zero GPU 
-usage, while CPU/Disk/Ram also doing nothing) compared to npt disabled. 
-But while npt is disabled overall VM performance is like beeing on 4x86 
-with floppy disk as only storage. (Ex. it takes 2 seconds just to open 
-startmenu while host and vm are in idle, and neither CPU pinning, 
-changing CPU model, changing storage device nor using hugepages changed 
-anything).
+This patch makes it possible to compile the rockchip-iommu driver on
+ARM64, so that it can be used with 64-bit SoCs equipped with this type
+of IOMMU.
 
-So everything I read pointed to a bug in the npt implementation? 
-Anything I could do to get closer to the "thing" issuing this?
+Signed-off-by: Simon Xue <xxm@rock-chips.com>
+Signed-off-by: Shunqian Zheng <zhengsq@rock-chips.com>
+Signed-off-by: Tomasz Figa <tfiga@chromium.org>
+Reviewed-by: Matthias Brugger <mbrugger@suse.com>
+---
+ drivers/iommu/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best Regards
-
-efeu
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 6ee3a25ae731..99c6366a2551 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -219,7 +219,7 @@ config OMAP_IOMMU_DEBUG
+ 
+ config ROCKCHIP_IOMMU
+ 	bool "Rockchip IOMMU Support"
+-	depends on ARM
++	depends on ARM || ARM64
+ 	depends on ARCH_ROCKCHIP || COMPILE_TEST
+ 	select IOMMU_API
+ 	select ARM_DMA_USE_IOMMU
+-- 
+2.12.0
