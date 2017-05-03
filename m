@@ -1,19 +1,14 @@
-From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Subject: Re: [PATCH V8 07/11] iommu: of: Handle IOMMU lookup failure with
-	deferred probing or error
-Date: Wed, 3 May 2017 16:43:05 +0530
-Message-ID: <9742498a-a415-6725-3aa0-b29089152383@codeaurora.org>
-References: <1486136933-20328-1-git-send-email-sricharan@codeaurora.org>
-	<1486136933-20328-8-git-send-email-sricharan@codeaurora.org>
-	<CAMuHMdV05uCcVss+V1E+_OQYosJO6P95rU1WynV-G08-iHJnyg@mail.gmail.com>
-	<2bfd11dc-9f94-2b69-7b03-c640e53155e1@arm.com>
-	<26defadf-6380-4af4-6323-b51198376bc1@codeaurora.org>
+From: Sunil Kovvuri <sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Poll for CMDQ drain completion more
+	effectively
+Date: Wed, 3 May 2017 18:49:09 +0530
+Message-ID: <CA+sq2CdR0vC76F1m-LvYGfZW32nKbQg9dQsfJ_jtvYgZ7yyt3g@mail.gmail.com>
+References: <1493291587-23488-1-git-send-email-sunil.kovvuri@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <26defadf-6380-4af4-6323-b51198376bc1-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Content-Language: en-US
+In-Reply-To: <1493291587-23488-1-git-send-email-sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -23,107 +18,76 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, Geert Uytterhoeven <geert-Td1EMuHUCqxL1ZNQvxDV9g@public.gmane.org>
-Cc: okaya-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org, "linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-arm-msm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Magnus Damm <magnus.damm-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Linux-Renesas <linux-renesas-soc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, ACPI Devel Maling List <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, linux-pci <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, tn-nYOzD4b6Jr9Wk0Htik3J/w@public.gmane.org, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
+To: Will Deacon <will.deacon-5wv7dgnIgG8@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, LKML <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Robert Richter <robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, LAKML <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-Hi,
-
-On 5/3/2017 3:54 PM, Sricharan R wrote:
-> Hi Robin,
-> 
-> On 5/3/2017 3:24 PM, Robin Murphy wrote:
->> Hi Geert,
->>
->> On 02/05/17 19:35, Geert Uytterhoeven wrote:
->>> Hi Sricharan,
->>>
->>> On Fri, Feb 3, 2017 at 4:48 PM, Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org> wrote:
->>>> From: Laurent Pinchart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
->>>>
->>>> Failures to look up an IOMMU when parsing the DT iommus property need to
->>>> be handled separately from the .of_xlate() failures to support deferred
->>>> probing.
->>>>
->>>> The lack of a registered IOMMU can be caused by the lack of a driver for
->>>> the IOMMU, the IOMMU device probe not having been performed yet, having
->>>> been deferred, or having failed.
->>>>
->>>> The first case occurs when the device tree describes the bus master and
->>>> IOMMU topology correctly but no device driver exists for the IOMMU yet
->>>> or the device driver has not been compiled in. Return NULL, the caller
->>>> will configure the device without an IOMMU.
->>>>
->>>> The second and third cases are handled by deferring the probe of the bus
->>>> master device which will eventually get reprobed after the IOMMU.
->>>>
->>>> The last case is currently handled by deferring the probe of the bus
->>>> master device as well. A mechanism to either configure the bus master
->>>> device without an IOMMU or to fail the bus master device probe depending
->>>> on whether the IOMMU is optional or mandatory would be a good
->>>> enhancement.
->>>>
->>>> Tested-by: Marek Szyprowski <m.szyprowski-Sze3O3UU22JBDgjK7y7TUQ@public.gmane.org>
->>>> Signed-off-by: Laurent Pichart <laurent.pinchart+renesas-ryLnwIuWjnjg/C1BVhZhaw@public.gmane.org>
->>>> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
->>>
->>> This patch broke Renesas R-Car Gen3 platforms in renesas-drivers.
->>> As the IOMMU nodes in DT are not yet enabled, all devices having iommus
->>> properties in DT now fail to probe.
->>
->> How exactly do they fail to probe? Per d7b0558230e4, if there are no ops
->> registered then they should merely defer until we reach the point of
->> giving up and ignoring the IOMMU. Is it just that you have no other
->> late-probing drivers or post-init module loads to kick the deferred
->> queue after that point? I did try to find a way to explicitly kick it
->> from a suitably late initcall, but there didn't seem to be any obvious
->> public interface - anyone have any suggestions?
->>
->> I think that's more of a general problem with the probe deferral
->> mechanism itself (I've seen the same thing happen with some of the
->> CoreSight stuff on Juno due to the number of inter-component
->> dependencies) rather than any specific fault of this series.
->>
-> 
-> I was thinking of an additional check like below to avoid the
-> situation ?
-> 
-> From 499b6e662f60f23740b8880882b0a16f16434501 Mon Sep 17 00:00:00 2001
-> From: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-> Date: Wed, 3 May 2017 13:16:59 +0530
-> Subject: [PATCH] iommu: of: Fix check for returning EPROBE_DEFER
-> 
-> While returning EPROBE_DEFER for iommu masters
-> take in to account of iommu nodes that could be
-> marked in DT as 'status=disabled', in which case
-> simply return NULL and let the master's probe
-> continue rather than deferring.
-> 
-> Signed-off-by: Sricharan R <sricharan-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+On Thu, Apr 27, 2017 at 4:43 PM,  <sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org> wrote:
+> From: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+>
+> Modified polling on CMDQ consumer similar to how polling is done for TLB SYNC
+> completion in SMMUv2 driver. Code changes are done with reference to
+>
+> 8513c8930069 iommu/arm-smmu: Poll for TLB sync completion more effectively
+>
+> Poll timeout has been increased which addresses issue of 100us timeout not
+> sufficient, when command queue is full with TLB invalidation commands.
+>
+> Signed-off-by: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+> Signed-off-by: Geetha <gakula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 > ---
->  drivers/iommu/of_iommu.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 9f44ee8..e6e9bec 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -118,6 +118,7 @@ static bool of_iommu_driver_present(struct device_node *np)
-> 
->         ops = iommu_ops_from_fwnode(fwnode);
->         if ((ops && !ops->of_xlate) ||
-> +           !of_device_is_available(iommu_spec->np) ||
->             (!ops && !of_iommu_driver_present(iommu_spec->np)))
->                 return NULL;
-> 
+>  drivers/iommu/arm-smmu-v3.c | 15 ++++++++++++---
+>  1 file changed, 12 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index d412bdd..34599d4 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -379,6 +379,9 @@
+>  #define CMDQ_SYNC_0_CS_NONE            (0UL << CMDQ_SYNC_0_CS_SHIFT)
+>  #define CMDQ_SYNC_0_CS_SEV             (2UL << CMDQ_SYNC_0_CS_SHIFT)
+>
+> +#define CMDQ_DRAIN_TIMEOUT_US          1000
+> +#define CMDQ_SPIN_COUNT                        10
+> +
+>  /* Event queue */
+>  #define EVTQ_ENT_DWORDS                        4
+>  #define EVTQ_MAX_SZ_SHIFT              7
+> @@ -737,7 +740,8 @@ static void queue_inc_prod(struct arm_smmu_queue *q)
+>   */
+>  static int queue_poll_cons(struct arm_smmu_queue *q, bool drain, bool wfe)
+>  {
+> -       ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_POLL_TIMEOUT_US);
+> +       ktime_t timeout = ktime_add_us(ktime_get(), CMDQ_DRAIN_TIMEOUT_US);
+> +       unsigned int spin_cnt, delay = 1;
+>
+>         while (queue_sync_cons(q), (drain ? !queue_empty(q) : queue_full(q))) {
+>                 if (ktime_compare(ktime_get(), timeout) > 0)
+> @@ -746,8 +750,13 @@ static int queue_poll_cons(struct arm_smmu_queue *q, bool drain, bool wfe)
+>                 if (wfe) {
+>                         wfe();
+>                 } else {
+> -                       cpu_relax();
+> -                       udelay(1);
+> +                       for (spin_cnt = 0;
+> +                            spin_cnt < CMDQ_SPIN_COUNT; spin_cnt++) {
+> +                               cpu_relax();
+> +                               continue;
+> +                       }
+> +                       udelay(delay);
+> +                       delay *= 2;
+>                 }
+>         }
+>
+> --
+> 2.7.4
+>
 
-While same as the other 'status=disabled' patch [1], better not to
-defer the probe itself in the case ?
+Sorry for the ignorance.
+Is there a patchwork where I can check current status of ARM IOMMU
+related patches ?
 
-[1] https://patchwork.kernel.org/patch/9681211/
+And is this patch accepted, if not any comments / feedback ?
 
-Regards,
- Sricharan
-
--- 
-"QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+Thanks,
+Sunil.
