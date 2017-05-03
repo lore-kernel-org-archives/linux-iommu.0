@@ -1,13 +1,13 @@
-From: Nick Sarnie <commendsarnex-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Subject: Re: AMD Ryzen KVM/NPT/IOMMU issue
-Date: Wed, 3 May 2017 12:28:35 -0400
-Message-ID: <CAOcCaLbdi9KZoXiV5htjShc_mYvZ5jK2B3Ot7NeM=3v_ZA39aA@mail.gmail.com>
-References: <575f8fbc-0fdc-f336-e3da-53f27da4b2e1@markju.com>
+From: Rob Herring <robh-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>
+Subject: Re: [PATCH 1/3] of/pci/dma: fix DMA configuration for PCI masters
+Date: Wed, 3 May 2017 14:55:25 -0500
+Message-ID: <CAL_JsqLE+CmukEYFnjkYTApGiXZVQn_Xz2GvOshPWLZoaoXvCA@mail.gmail.com>
+References: <1493786795-28153-1-git-send-email-oza.oza@broadcom.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <575f8fbc-0fdc-f336-e3da-53f27da4b2e1-5Zrl/DuVEGLQT0dZR+AlfA@public.gmane.org>
+In-Reply-To: <1493786795-28153-1-git-send-email-oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -17,34 +17,62 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Matthias Ehrenfeuchter <efeu-5Zrl/DuVEGLQT0dZR+AlfA@public.gmane.org>
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Cc: "devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Oza Pawandeep <oza.pawandeep-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, "linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, "linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org" <linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, "bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org" <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, "linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org" <linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org>
 List-Id: iommu@lists.linux-foundation.org
 
-On Wed, May 3, 2017 at 10:37 AM, Matthias Ehrenfeuchter <efeu-5Zrl/DuVEGLQT0dZR+AlfA@public.gmane.org> wrote:
-> Hi,
+On Tue, May 2, 2017 at 11:46 PM, Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org> wrote:
+> current device framework and of framework integration assumes
+> dma-ranges in a way where memory-mapped devices define their
+> dma-ranges. (child-bus-address, parent-bus-address, length).
 >
-> There are a lot of messages/threads out there about bad performance while
-> using AMDs Ryzen with KVM GPU passthrough. It revolves all on
-> enabling/disabling npt, while enabled overall VM performance is nice but the
-> GPU performance gives me about 20% (and a lot of drops to zero GPU usage,
-> while CPU/Disk/Ram also doing nothing) compared to npt disabled. But while
-> npt is disabled overall VM performance is like beeing on 4x86 with floppy
-> disk as only storage. (Ex. it takes 2 seconds just to open startmenu while
-> host and vm are in idle, and neither CPU pinning, changing CPU model,
-> changing storage device nor using hugepages changed anything).
+> of_dma_configure is specifically written to take care of memory
+> mapped devices. but no implementation exists for pci to take
+> care of pcie based memory ranges.
 >
-> So everything I read pointed to a bug in the npt implementation? Anything I
-> could do to get closer to the "thing" issuing this?
+> for e.g. iproc based SOCs and other SOCs(suc as rcar) have PCI
+> world dma-ranges.
+> dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
 >
-> Best Regards
+> this patch serves following:
 >
-> efeu
-> _______________________________________________
-> iommu mailing list
-> iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 1) exposes interface to the pci host driver for their
+> inbound memory ranges
+>
+> 2) provide an interface to callers such as of_dma_get_ranges.
+> so then the returned size get best possible (largest) dma_mask.
+> because PCI RC drivers do not call APIs such as
+> dma_set_coherent_mask() and hence rather it shows its addressing
+> capabilities based on dma-ranges.
+> for e.g.
+> dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
+> we should get dev->coherent_dma_mask=0x7fffffffff.
+>
+> 3) this patch handles multiple inbound windows and dma-ranges.
+> it is left to the caller, how it wants to use them.
+> the new function returns the resources in a standard and unform way
+>
+> 4) this way the callers of for e.g. of_dma_get_ranges
+> does not need to change.
+>
+> 5) leaves scope of adding PCI flag handling for inbound memory
+> by the new function.
+>
+> Bug: SOC-5216
+> Change-Id: Ie045386df91e1e0587846bb147ae40d96f6d7d2e
+> Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Reviewed-on: http://gerrit-ccxsw.broadcom.net/40428
+> Reviewed-by: vpx_checkpatch status <vpx_checkpatch-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Reviewed-by: CCXSW <ccxswbuild-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Reviewed-by: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Tested-by: vpx_autobuild status <vpx_autobuild-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Tested-by: vpx_smoketest status <vpx_smoketest-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+> Tested-by: CCXSW <ccxswbuild-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 
-I heard from Joerg that it might be related to a lower intercept rate
-being used when NPT is enabled, but we haven't been able to find a way
-to trace that to confirm.
+All these non-person, probably internal Broadcom Tested-by and
+Reviewed-by's should be removed too.
+
+> Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>
+
+Rob
