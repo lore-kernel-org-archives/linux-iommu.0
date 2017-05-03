@@ -1,14 +1,15 @@
 From: Oza Oza via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Subject: Re: [PATCH 1/3] of/pci/dma: fix DMA configuration for PCI masters
-Date: Wed, 3 May 2017 10:36:10 +0530
-Message-ID: <CAMSpPPdYJE80nAGS7O5tG5YWprWi3wts5ZjJXhfgpG3kY5Kbvw@mail.gmail.com>
+Subject: Re: [PATCH 2/3] iommu/pci: reserve iova for PCI masters
+Date: Wed, 3 May 2017 10:37:00 +0530
+Message-ID: <CAMSpPPf3t0DVU0GR9cgREkc+tBVVamfmzHfkV+SrvvTb42s3mQ@mail.gmail.com>
 References: <1493786795-28153-1-git-send-email-oza.oza@broadcom.com>
+	<1493786795-28153-2-git-send-email-oza.oza@broadcom.com>
 Reply-To: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-In-Reply-To: <1493786795-28153-1-git-send-email-oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+In-Reply-To: <1493786795-28153-2-git-send-email-oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
