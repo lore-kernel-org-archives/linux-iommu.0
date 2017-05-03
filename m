@@ -1,186 +1,185 @@
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH V8 07/11] iommu: of: Handle IOMMU lookup failure with
- deferred probing or error
-Date: Tue, 2 May 2017 20:35:37 +0200
-Message-ID: <CAMuHMdV05uCcVss+V1E+_OQYosJO6P95rU1WynV-G08-iHJnyg@mail.gmail.com>
-References: <1486136933-20328-1-git-send-email-sricharan@codeaurora.org> <1486136933-20328-8-git-send-email-sricharan@codeaurora.org>
+From: Oza Pawandeep via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: [PATCH 1/3] of/pci/dma: fix DMA configuration for PCI masters
+Date: Wed,  3 May 2017 10:16:33 +0530
+Message-ID: <1493786795-28153-1-git-send-email-oza.oza@broadcom.com>
+Reply-To: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-acpi-owner@vger.kernel.org>
-In-Reply-To: <1486136933-20328-8-git-send-email-sricharan@codeaurora.org>
-Sender: linux-acpi-owner@vger.kernel.org
-To: Sricharan R <sricharan@codeaurora.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will.deacon@arm.com>, Joerg Roedel <joro@8bytes.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, iommu@lists.linux-foundation.org, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, Bjorn Helgaas <bhelgaas@google.com>, linux-pci <linux-pci@vger.kernel.org>, ACPI Devel Maling List <linux-acpi@vger.kernel.org>, tn@semihalf.com, Hanjun Guo <hanjun.guo@linaro.org>, okaya@codeaurora.org, Magnus Damm <magnus.damm@gmail.com>, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Oza Pawandeep <oza.pawandeep-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-Hi Sricharan,
+current device framework and of framework integration assumes
+dma-ranges in a way where memory-mapped devices define their
+dma-ranges. (child-bus-address, parent-bus-address, length).
 
-On Fri, Feb 3, 2017 at 4:48 PM, Sricharan R <sricharan@codeaurora.org> wrote:
-> From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
->
-> Failures to look up an IOMMU when parsing the DT iommus property need to
-> be handled separately from the .of_xlate() failures to support deferred
-> probing.
->
-> The lack of a registered IOMMU can be caused by the lack of a driver for
-> the IOMMU, the IOMMU device probe not having been performed yet, having
-> been deferred, or having failed.
->
-> The first case occurs when the device tree describes the bus master and
-> IOMMU topology correctly but no device driver exists for the IOMMU yet
-> or the device driver has not been compiled in. Return NULL, the caller
-> will configure the device without an IOMMU.
->
-> The second and third cases are handled by deferring the probe of the bus
-> master device which will eventually get reprobed after the IOMMU.
->
-> The last case is currently handled by deferring the probe of the bus
-> master device as well. A mechanism to either configure the bus master
-> device without an IOMMU or to fail the bus master device probe depending
-> on whether the IOMMU is optional or mandatory would be a good
-> enhancement.
->
-> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> Signed-off-by: Laurent Pichart <laurent.pinchart+renesas@ideasonboard.com>
-> Signed-off-by: Sricharan R <sricharan@codeaurora.org>
+of_dma_configure is specifically written to take care of memory
+mapped devices. but no implementation exists for pci to take
+care of pcie based memory ranges.
 
-This patch broke Renesas R-Car Gen3 platforms in renesas-drivers.
-As the IOMMU nodes in DT are not yet enabled, all devices having iommus
-properties in DT now fail to probe.
+for e.g. iproc based SOCs and other SOCs(suc as rcar) have PCI
+world dma-ranges.
+dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
 
-This can be fixed by either:
-  - Disabling CONFIG_IPMMU_VMSA, or
-  - Reverting commit 7b07cbefb68d486f (but keeping "int ret = 0;").
+this patch serves following:
 
-Note that this was a bit hard to investigate, as R-Car Gen3 support wasn't
-upstreamed yet, so bisection pointed to a merge commit.
+1) exposes interface to the pci host driver for their
+inbound memory ranges
 
-> ---
->  [*] Fixed minor comment from Bjorn for removing the pci.h header inclusion
->      in of_iommu.c
->
->  drivers/base/dma-mapping.c | 5 +++--
->  drivers/iommu/of_iommu.c   | 4 ++--
->  drivers/of/device.c        | 7 ++++++-
->  include/linux/of_device.h  | 9 ++++++---
->  4 files changed, 17 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/base/dma-mapping.c b/drivers/base/dma-mapping.c
-> index 449b948..82bd45c 100644
-> --- a/drivers/base/dma-mapping.c
-> +++ b/drivers/base/dma-mapping.c
-> @@ -353,6 +353,7 @@ int dma_configure(struct device *dev)
->  {
->         struct device *bridge = NULL, *dma_dev = dev;
->         enum dev_dma_attr attr;
-> +       int ret = 0;
->
->         if (dev_is_pci(dev)) {
->                 bridge = pci_get_host_bridge_device(to_pci_dev(dev));
-> @@ -363,7 +364,7 @@ int dma_configure(struct device *dev)
->         }
->
->         if (dma_dev->of_node) {
-> -               of_dma_configure(dev, dma_dev->of_node);
-> +               ret = of_dma_configure(dev, dma_dev->of_node);
->         } else if (has_acpi_companion(dma_dev)) {
->                 attr = acpi_get_dma_attr(to_acpi_device_node(dma_dev->fwnode));
->                 if (attr != DEV_DMA_NOT_SUPPORTED)
-> @@ -373,7 +374,7 @@ int dma_configure(struct device *dev)
->         if (bridge)
->                 pci_put_host_bridge_device(bridge);
->
-> -       return 0;
-> +       return ret;
->  }
->
->  void dma_deconfigure(struct device *dev)
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 1f92d98..2d04663 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -236,7 +236,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
->                         ops = ERR_PTR(err);
->         }
->
-> -       return IS_ERR(ops) ? NULL : ops;
-> +       return ops;
->  }
->
->  static int __init of_iommu_init(void)
-> @@ -247,7 +247,7 @@ static int __init of_iommu_init(void)
->         for_each_matching_node_and_match(np, matches, &match) {
->                 const of_iommu_init_fn init_fn = match->data;
->
-> -               if (init_fn(np))
-> +               if (init_fn && init_fn(np))
->                         pr_err("Failed to initialise IOMMU %s\n",
->                                 of_node_full_name(np));
->         }
-> diff --git a/drivers/of/device.c b/drivers/of/device.c
-> index c17c19d..ba51ca6 100644
-> --- a/drivers/of/device.c
-> +++ b/drivers/of/device.c
-> @@ -82,7 +82,7 @@ int of_device_add(struct platform_device *ofdev)
->   * can use a platform bus notifier and handle BUS_NOTIFY_ADD_DEVICE events
->   * to fix up DMA configuration.
->   */
-> -void of_dma_configure(struct device *dev, struct device_node *np)
-> +int of_dma_configure(struct device *dev, struct device_node *np)
->  {
->         u64 dma_addr, paddr, size;
->         int ret;
-> @@ -129,10 +129,15 @@ void of_dma_configure(struct device *dev, struct device_node *np)
->                 coherent ? " " : " not ");
->
->         iommu = of_iommu_configure(dev, np);
-> +       if (IS_ERR(iommu))
-> +               return PTR_ERR(iommu);
-> +
->         dev_dbg(dev, "device is%sbehind an iommu\n",
->                 iommu ? " " : " not ");
->
->         arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
-> +
-> +       return 0;
->  }
->  EXPORT_SYMBOL_GPL(of_dma_configure);
->
-> diff --git a/include/linux/of_device.h b/include/linux/of_device.h
-> index 3cb2288..9499861 100644
-> --- a/include/linux/of_device.h
-> +++ b/include/linux/of_device.h
-> @@ -56,7 +56,7 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
->         return of_node_get(cpu_dev->of_node);
->  }
->
-> -void of_dma_configure(struct device *dev, struct device_node *np);
-> +int of_dma_configure(struct device *dev, struct device_node *np);
->  void of_dma_deconfigure(struct device *dev);
->  #else /* CONFIG_OF */
->
-> @@ -105,8 +105,11 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
->  {
->         return NULL;
->  }
-> -static inline void of_dma_configure(struct device *dev, struct device_node *np)
-> -{}
-> +
-> +static inline int of_dma_configure(struct device *dev, struct device_node *np)
-> +{
-> +       return 0;
-> +}
->  static inline void of_dma_deconfigure(struct device *dev)
->  {}
->  #endif /* CONFIG_OF */
+2) provide an interface to callers such as of_dma_get_ranges.
+so then the returned size get best possible (largest) dma_mask.
+because PCI RC drivers do not call APIs such as
+dma_set_coherent_mask() and hence rather it shows its addressing
+capabilities based on dma-ranges.
+for e.g.
+dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
+we should get dev->coherent_dma_mask=0x7fffffffff.
 
-Gr{oetje,eeting}s,
+3) this patch handles multiple inbound windows and dma-ranges.
+it is left to the caller, how it wants to use them.
+the new function returns the resources in a standard and unform way
 
-                        Geert
+4) this way the callers of for e.g. of_dma_get_ranges
+does not need to change.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+5) leaves scope of adding PCI flag handling for inbound memory
+by the new function.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Bug: SOC-5216
+Change-Id: Ie045386df91e1e0587846bb147ae40d96f6d7d2e
+Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Reviewed-on: http://gerrit-ccxsw.broadcom.net/40428
+Reviewed-by: vpx_checkpatch status <vpx_checkpatch-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Reviewed-by: CCXSW <ccxswbuild-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Reviewed-by: Ray Jui <ray.jui-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Tested-by: vpx_autobuild status <vpx_autobuild-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Tested-by: vpx_smoketest status <vpx_smoketest-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Tested-by: CCXSW <ccxswbuild-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+
+diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
+index 0ee42c3..ed6e69a 100644
+--- a/drivers/of/of_pci.c
++++ b/drivers/of/of_pci.c
+@@ -283,6 +283,83 @@ int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
++
++/**
++ * of_pci_get_dma_ranges - Parse PCI host bridge inbound resources from DT
++ * @np: device node of the host bridge having the dma-ranges property
++ * @resources: list where the range of resources will be added after DT parsing
++ *
++ * It is the caller's job to free the @resources list.
++ *
++ * This function will parse the "dma-ranges" property of a
++ * PCI host bridge device node and setup the resource mapping based
++ * on its content.
++ *
++ * It returns zero if the range parsing has been successful or a standard error
++ * value if it failed.
++ */
++
++int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources)
++{
++	struct device_node *node = of_node_get(np);
++	int rlen;
++	int ret = 0;
++	const int na = 3, ns = 2;
++	struct resource *res;
++	struct of_pci_range_parser parser;
++	struct of_pci_range range;
++
++	if (!node)
++		return -EINVAL;
++
++	parser.node = node;
++	parser.pna = of_n_addr_cells(node);
++	parser.np = parser.pna + na + ns;
++
++	parser.range = of_get_property(node, "dma-ranges", &rlen);
++
++	if (!parser.range) {
++		pr_debug("pcie device has no dma-ranges defined for node(%s)\n",
++			  np->full_name);
++		ret = -EINVAL;
++		goto out;
++	}
++
++	parser.end = parser.range + rlen / sizeof(__be32);
++
++	for_each_of_pci_range(&parser, &range) {
++		/*
++		 * If we failed translation or got a zero-sized region
++		 * then skip this range
++		 */
++		if (range.cpu_addr == OF_BAD_ADDR || range.size == 0)
++			continue;
++
++		res = kzalloc(sizeof(struct resource), GFP_KERNEL);
++		if (!res) {
++			ret = -ENOMEM;
++			goto parse_failed;
++		}
++
++		ret = of_pci_range_to_resource(&range, np, res);
++		if (ret) {
++			kfree(res);
++			continue;
++		}
++
++		pci_add_resource_offset(resources, res,
++					res->start - range.pci_addr);
++	}
++
++	return ret;
++
++parse_failed:
++	pci_free_resource_list(resources);
++out:
++	of_node_put(node);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(of_pci_get_dma_ranges);
+ #endif /* CONFIG_OF_ADDRESS */
+ 
+ #ifdef CONFIG_PCI_MSI
+diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
+index 0e0974e..617b90d 100644
+--- a/include/linux/of_pci.h
++++ b/include/linux/of_pci.h
+@@ -76,6 +76,7 @@ static inline void of_pci_check_probe_only(void) { }
+ int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 			unsigned char busno, unsigned char bus_max,
+ 			struct list_head *resources, resource_size_t *io_base);
++int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources);
+ #else
+ static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 			unsigned char busno, unsigned char bus_max,
+@@ -83,6 +84,12 @@ static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
+ {
+ 	return -EINVAL;
+ }
++
++static inline int of_pci_get_dma_ranges(struct device_node *np,
++					struct list_head *resources)
++{
++	return -EINVAL;
++}
+ #endif
+ 
+ #if defined(CONFIG_OF) && defined(CONFIG_PCI_MSI)
+-- 
+1.9.1
