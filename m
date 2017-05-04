@@ -1,56 +1,84 @@
-From: Jani Nikula <jani.nikula@linux.intel.com>
-Subject: Re: [PATCH v1] ACPI: Switch to use generic UUID API
-Date: Thu, 04 May 2017 12:37:27 +0300
-Message-ID: <87d1bpotd4.fsf@intel.com>
-References: <20170504092151.88646-1-andriy.shevchenko@linux.intel.com>
+From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
+Subject: Re: [PATCH v5 12/32] x86/mm: Insure that boot memory areas are
+	mapped properly
+Date: Thu, 4 May 2017 12:16:09 +0200
+Message-ID: <20170504101609.vazu4tuc3gqapaqk@pd.tnic>
+References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
+	<20170418211822.10190.67435.stgit@tlendack-t1.amdoffice.net>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Return-path: <intel-gfx-bounces@lists.freedesktop.org>
-In-Reply-To: <20170504092151.88646-1-andriy.shevchenko@linux.intel.com>
-List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
-List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
-List-Post: <mailto:intel-gfx@lists.freedesktop.org>
-List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
-List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
- <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
-Errors-To: intel-gfx-bounces@lists.freedesktop.org
-Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
-To: linux-acpi@vger.kernel.org, tpmdd-devel@lists.sourceforge.net, intel-gfx@lists.freedesktop.org, nouveau@lists.freedesktop.org, linux-input@vger.kernel.org, iommu@lists.linux-foundation.org, linux-mmc@vger.kernel.org, netdev@vger.kernel.org, linux-pci@vger.kernel.org, linux-usb@vger.kernel.org, alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Cc: Felipe Balbi <balbi@kernel.org>, Borislav Petkov <bp@suse.de>, Mathias Nyman <mathias.nyman@intel.com>, Yisen Zhuang <yisen.zhuang@huawei.com>, Joerg Roedel <joro@8bytes.org>, Amir Goldstein <amir73il@gmail.com>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Adrian Hunter <adrian.hunter@intel.com>, Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>, Liam Girdwood <lgirdwood@gmail.com>, Benjamin Tissoires <benjamin.tissoires@redhat.com>, Heikki Krogerus <heikki.krogerus@linux.intel.com>, Ben Skeggs <bskeggs@redhat.com>, Mark Brown <broonie@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Zhang Rui <rui.zhang@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Disposition: inline
+In-Reply-To: <20170418211822.10190.67435.stgit-qCXWGYdRb2BnqfbPTmsdiZQ+2ll4COg0XqFh9Ls21Oc@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Michael S. Tsirkin" <mst@r>
 List-Id: iommu@lists.linux-foundation.org
 
-T24gVGh1LCAwNCBNYXkgMjAxNywgQW5keSBTaGV2Y2hlbmtvIDxhbmRyaXkuc2hldmNoZW5rb0Bs
-aW51eC5pbnRlbC5jb20+IHdyb3RlOgo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vaTkx
-NS9pbnRlbF9hY3BpLmMgYi9kcml2ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9hY3BpLmMKPiBpbmRl
-eCBlYjYzOGExZTY5ZDIuLjcyYmZlNmNlYWRmOCAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2dwdS9k
-cm0vaTkxNS9pbnRlbF9hY3BpLmMKPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vaTkxNS9pbnRlbF9h
-Y3BpLmMKPiBAQCAtMTUsMTMgKzE1LDkgQEAgc3RhdGljIHN0cnVjdCBpbnRlbF9kc21fcHJpdiB7
-Cj4gIAlhY3BpX2hhbmRsZSBkaGFuZGxlOwo+ICB9IGludGVsX2RzbV9wcml2Owo+ICAKPiAtc3Rh
-dGljIGNvbnN0IHU4IGludGVsX2RzbV9ndWlkW10gPSB7Cj4gLQkweGQzLCAweDczLCAweGQ4LCAw
-eDdlLAo+IC0JMHhkMCwgMHhjMiwKPiAtCTB4NGYsIDB4NGUsCj4gLQkweGE4LCAweDU0LAo+IC0J
-MHgwZiwgMHgxMywgMHgxNywgMHhiMCwgMHgxYywgMHgyYwo+IC19Owo+ICtzdGF0aWMgY29uc3Qg
-dXVpZF9sZSBpbnRlbF9kc21fZ3VpZCA9Cj4gKwlVVUlEX0xFKDB4N2VkODczZDMsIDB4YzJkMCwg
-MHg0ZTRmLAo+ICsJCTB4YTgsIDB4NTQsIDB4MGYsIDB4MTMsIDB4MTcsIDB4YjAsIDB4MWMsIDB4
-MmMpOwo+ICAKPiAgc3RhdGljIGNoYXIgKmludGVsX2RzbV9wb3J0X25hbWUodTggaWQpCj4gIHsK
-PiBAQCAtODAsNyArNzYsNyBAQCBzdGF0aWMgdm9pZCBpbnRlbF9kc21fcGxhdGZvcm1fbXV4X2lu
-Zm8odm9pZCkKPiAgCWludCBpOwo+ICAJdW5pb24gYWNwaV9vYmplY3QgKnBrZywgKmNvbm5lY3Rv
-cl9jb3VudDsKPiAgCj4gLQlwa2cgPSBhY3BpX2V2YWx1YXRlX2RzbV90eXBlZChpbnRlbF9kc21f
-cHJpdi5kaGFuZGxlLCBpbnRlbF9kc21fZ3VpZCwKPiArCXBrZyA9IGFjcGlfZXZhbHVhdGVfZHNt
-X3R5cGVkKGludGVsX2RzbV9wcml2LmRoYW5kbGUsICZpbnRlbF9kc21fZ3VpZCwKPiAgCQkJSU5U
-RUxfRFNNX1JFVklTSU9OX0lELCBJTlRFTF9EU01fRk5fUExBVEZPUk1fTVVYX0lORk8sCj4gIAkJ
-CU5VTEwsIEFDUElfVFlQRV9QQUNLQUdFKTsKPiAgCWlmICghcGtnKSB7Cj4gQEAgLTExOCw3ICsx
-MTQsNyBAQCBzdGF0aWMgYm9vbCBpbnRlbF9kc21fcGNpX3Byb2JlKHN0cnVjdCBwY2lfZGV2ICpw
-ZGV2KQo+ICAJaWYgKCFkaGFuZGxlKQo+ICAJCXJldHVybiBmYWxzZTsKPiAgCj4gLQlpZiAoIWFj
-cGlfY2hlY2tfZHNtKGRoYW5kbGUsIGludGVsX2RzbV9ndWlkLCBJTlRFTF9EU01fUkVWSVNJT05f
-SUQsCj4gKwlpZiAoIWFjcGlfY2hlY2tfZHNtKGRoYW5kbGUsICZpbnRlbF9kc21fZ3VpZCwgSU5U
-RUxfRFNNX1JFVklTSU9OX0lELAo+ICAJCQkgICAgMSA8PCBJTlRFTF9EU01fRk5fUExBVEZPUk1f
-TVVYX0lORk8pKSB7Cj4gIAkJRFJNX0RFQlVHX0tNUygibm8gX0RTTSBtZXRob2QgZm9yIGludGVs
-IGRldmljZVxuIik7Cj4gIAkJcmV0dXJuIGZhbHNlOwoKVGhlIGRybS9pOTE1IGh1bmsgYWJvdmUg
-aXMKClJldmlld2VkLWJ5OiBKYW5pIE5pa3VsYSA8amFuaS5uaWt1bGFAaW50ZWwuY29tPgoKYW5k
-IGFja2VkIGZvciBtZXJnaW5nIHZpYSB3aGljaGV2ZXIgdHJlZSBpcyBzdWl0YWJsZS4KCgpCUiwK
-SmFuaS4KCi0tIApKYW5pIE5pa3VsYSwgSW50ZWwgT3BlbiBTb3VyY2UgVGVjaG5vbG9neSBDZW50
-ZXIKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KSW50ZWwt
-Z2Z4IG1haWxpbmcgbGlzdApJbnRlbC1nZnhAbGlzdHMuZnJlZWRlc2t0b3Aub3JnCmh0dHBzOi8v
-bGlzdHMuZnJlZWRlc2t0b3Aub3JnL21haWxtYW4vbGlzdGluZm8vaW50ZWwtZ2Z4Cg==
+On Tue, Apr 18, 2017 at 04:18:22PM -0500, Tom Lendacky wrote:
+> The boot data and command line data are present in memory in a decrypted
+> state and are copied early in the boot process.  The early page fault
+> support will map these areas as encrypted, so before attempting to copy
+> them, add decrypted mappings so the data is accessed properly when copied.
+> 
+> For the initrd, encrypt this data in place. Since the future mapping of the
+> initrd area will be mapped as encrypted the data will be accessed properly.
+> 
+> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
+> ---
+>  arch/x86/include/asm/mem_encrypt.h |   11 +++++
+>  arch/x86/include/asm/pgtable.h     |    3 +
+>  arch/x86/kernel/head64.c           |   30 ++++++++++++--
+>  arch/x86/kernel/setup.c            |   10 +++++
+>  arch/x86/mm/mem_encrypt.c          |   77 ++++++++++++++++++++++++++++++++++++
+>  5 files changed, 127 insertions(+), 4 deletions(-)
+
+...
+
+> diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+> index 603a166..a95800b 100644
+> --- a/arch/x86/kernel/setup.c
+> +++ b/arch/x86/kernel/setup.c
+> @@ -115,6 +115,7 @@
+>  #include <asm/microcode.h>
+>  #include <asm/mmu_context.h>
+>  #include <asm/kaslr.h>
+> +#include <asm/mem_encrypt.h>
+>  
+>  /*
+>   * max_low_pfn_mapped: highest direct mapped pfn under 4GB
+> @@ -374,6 +375,15 @@ static void __init reserve_initrd(void)
+>  	    !ramdisk_image || !ramdisk_size)
+>  		return;		/* No initrd provided by bootloader */
+>  
+> +	/*
+> +	 * If SME is active, this memory will be marked encrypted by the
+> +	 * kernel when it is accessed (including relocation). However, the
+> +	 * ramdisk image was loaded decrypted by the bootloader, so make
+> +	 * sure that it is encrypted before accessing it.
+> +	 */
+> +	if (sme_active())
+
+That test is not needed here because __sme_early_enc_dec() already tests
+sme_me_mask. There you should change that test to sme_active() instead.
+
+> +		sme_early_encrypt(ramdisk_image, ramdisk_end - ramdisk_image);
+> +
+>  	initrd_start = 0;
+>  
+>  	mapped_size = memblock_mem_size(max_pfn_mapped);
+
+-- 
+Regards/Gruss,
+    Boris.
+
+Good mailing practices for 400: avoid top-posting and trim the reply.
