@@ -1,84 +1,53 @@
-From: Borislav Petkov <bp-Gina5bIWoIWzQB+pC5nmwQ@public.gmane.org>
-Subject: Re: [PATCH v5 12/32] x86/mm: Insure that boot memory areas are
-	mapped properly
-Date: Thu, 4 May 2017 12:16:09 +0200
-Message-ID: <20170504101609.vazu4tuc3gqapaqk@pd.tnic>
-References: <20170418211612.10190.82788.stgit@tlendack-t1.amdoffice.net>
-	<20170418211822.10190.67435.stgit@tlendack-t1.amdoffice.net>
+From: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Subject: Re: [PATCH v1] ACPI: Switch to use generic UUID API
+Date: Thu, 4 May 2017 15:14:46 +0300
+Message-ID: <20170504121446.GA26032@kuha.fi.intel.com>
+References: <20170504092151.88646-1-andriy.shevchenko@linux.intel.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Return-path: <intel-gfx-bounces@lists.freedesktop.org>
 Content-Disposition: inline
-In-Reply-To: <20170418211822.10190.67435.stgit-qCXWGYdRb2BnqfbPTmsdiZQ+2ll4COg0XqFh9Ls21Oc@public.gmane.org>
-List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
-List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
-List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
-List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
-	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
-Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-Cc: linux-efi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Brijesh Singh <brijesh.singh-5C7GfCeVMHo@public.gmane.org>, Toshimitsu Kani <toshi.kani-ZPxbGqLxI0U@public.gmane.org>, Radim =?utf-8?B?S3LEjW3DocWZ?= <rkrcmar-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Matt Fleming <matt-mF/unelCI9GS6iBeEJttW/XRex20P6io@public.gmane.org>, x86-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org, linux-mm-Bw31MaZKKs3YtjvyW6yDsg@public.gmane.org, Alexander Potapenko <glider-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, "H. Peter Anvin" <hpa-YMNOUZJC4hwAvxtiuMwx3w@public.gmane.org>, Larry Woodman <lwoodman-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, linux-arch-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kvm-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jonathan Corbet <corbet-T1hC0tSOHrs@public.gmane.org>, linux-doc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, kasan-dev-/JYPxA39Uh5TLH3MbocFFw@public.gmane.org, Ingo Molnar <mingo-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Andrey Ryabinin <aryabinin-5HdwGun5lf+gSpxsJD1C4w@public.gmane.org>, Dave Young <dyoung-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Rik van Riel <riel-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Arnd Bergmann <arnd-r2nGTMty4D4@public.gmane.org>, Andy Lutomirski <luto-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Thomas Gleixner <tglx-hfZtesqFncYOwBW4kG4KsQ@public.gmane.org>, Dmitry Vyukov <dvyukov-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, kexec-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, "Michael S. Tsirkin" <mst@r>
+In-Reply-To: <20170504092151.88646-1-andriy.shevchenko@linux.intel.com>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/intel-gfx>
+List-Post: <mailto:intel-gfx@lists.freedesktop.org>
+List-Help: <mailto:intel-gfx-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/intel-gfx>,
+ <mailto:intel-gfx-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: intel-gfx-bounces@lists.freedesktop.org
+Sender: "Intel-gfx" <intel-gfx-bounces@lists.freedesktop.org>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: alsa-devel@alsa-project.org, Liam Girdwood <lgirdwood@gmail.com>, linux-pci@vger.kernel.org, Amir Goldstein <amir73il@gmail.com>, Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>, Adrian Hunter <adrian.hunter@intel.com>, Benjamin Tissoires <benjamin.tissoires@redhat.com>, Joerg Roedel <joro@8bytes.org>, linux-acpi@vger.kernel.org, tpmdd-devel@lists.sourceforge.net, Ben Skeggs <bskeggs@redhat.com>, nouveau@lists.freedesktop.org, linux-mmc@vger.kernel.org, Zhang Rui <rui.zhang@intel.com>, Borislav Petkov <bp@suse.de>, Yisen Zhuang <yisen.zhuang@huawei.com>, Mathias Nyman <mathias.nyman@intel.com>, intel-gfx@lists.freedesktop.org, linux-input@vger.kernel.org, Mark Brown <broonie@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>, Mika Westerberg <mika.westerberg@linux.intel.com>, Felipe Balbi <balbi@kernel.org>, netdev@vger.kernel.or
 List-Id: iommu@lists.linux-foundation.org
 
-On Tue, Apr 18, 2017 at 04:18:22PM -0500, Tom Lendacky wrote:
-> The boot data and command line data are present in memory in a decrypted
-> state and are copied early in the boot process.  The early page fault
-> support will map these areas as encrypted, so before attempting to copy
-> them, add decrypted mappings so the data is accessed properly when copied.
-> 
-> For the initrd, encrypt this data in place. Since the future mapping of the
-> initrd area will be mapped as encrypted the data will be accessed properly.
-> 
-> Signed-off-by: Tom Lendacky <thomas.lendacky-5C7GfCeVMHo@public.gmane.org>
-> ---
->  arch/x86/include/asm/mem_encrypt.h |   11 +++++
->  arch/x86/include/asm/pgtable.h     |    3 +
->  arch/x86/kernel/head64.c           |   30 ++++++++++++--
->  arch/x86/kernel/setup.c            |   10 +++++
->  arch/x86/mm/mem_encrypt.c          |   77 ++++++++++++++++++++++++++++++++++++
->  5 files changed, 127 insertions(+), 4 deletions(-)
-
-...
-
-> diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-> index 603a166..a95800b 100644
-> --- a/arch/x86/kernel/setup.c
-> +++ b/arch/x86/kernel/setup.c
-> @@ -115,6 +115,7 @@
->  #include <asm/microcode.h>
->  #include <asm/mmu_context.h>
->  #include <asm/kaslr.h>
-> +#include <asm/mem_encrypt.h>
->  
->  /*
->   * max_low_pfn_mapped: highest direct mapped pfn under 4GB
-> @@ -374,6 +375,15 @@ static void __init reserve_initrd(void)
->  	    !ramdisk_image || !ramdisk_size)
->  		return;		/* No initrd provided by bootloader */
->  
-> +	/*
-> +	 * If SME is active, this memory will be marked encrypted by the
-> +	 * kernel when it is accessed (including relocation). However, the
-> +	 * ramdisk image was loaded decrypted by the bootloader, so make
-> +	 * sure that it is encrypted before accessing it.
-> +	 */
-> +	if (sme_active())
-
-That test is not needed here because __sme_early_enc_dec() already tests
-sme_me_mask. There you should change that test to sme_active() instead.
-
-> +		sme_early_encrypt(ramdisk_image, ramdisk_end - ramdisk_image);
-> +
->  	initrd_start = 0;
->  
->  	mapped_size = memblock_mem_size(max_pfn_mapped);
-
--- 
-Regards/Gruss,
-    Boris.
-
-Good mailing practices for 400: avoid top-posting and trim the reply.
+T24gVGh1LCBNYXkgMDQsIDIwMTcgYXQgMTI6MjE6NTFQTSArMDMwMCwgQW5keSBTaGV2Y2hlbmtv
+IHdyb3RlOgo+IGFjcGlfZXZhbHVhdGVfZHNtKCkgYW5kIGZyaWVuZHMgdGFrZSBhIHBvaW50ZXIg
+dG8gYSByYXcgYnVmZmVyIG9mIDE2Cj4gYnl0ZXMuIEluc3RlYWQgd2UgY29udmVydCB0aGVtIHRv
+IHVzZSB1dWlkX2xlIHR5cGUuIEF0IHRoZSBzYW1lIHRpbWUgd2UKPiBjb252ZXJ0IGN1cnJlbnQg
+dXNlcnMuCj4gCj4gYWNwaV9zdHJfdG9fdXVpZCgpIGJlY29tZXMgdXNlbGVzcyBhZnRlciB0aGUg
+Y29udmVyc2lvbiBhbmQgaXQncyBzYWZlIHRvCj4gZ2V0IHJpZCBvZiBpdC4KPiAKPiBUaGUgY29u
+dmVyc2lvbiBmaXhlcyBhIHBvdGVudGlhbCBidWcgaW4gaW50MzQweF90aGVybWFsIGFzIHdlbGwg
+c2luY2UKPiB3ZSBoYXZlIHRvIHVzZSBtZW1jbXAoKSBvbiBiaW5hcnkgZGF0YS4KPiAKPiBDYzog
+UmFmYWVsIEouIFd5c29ja2kgPHJqd0Byand5c29ja2kubmV0Pgo+IENjOiBNaWthIFdlc3RlcmJl
+cmcgPG1pa2Eud2VzdGVyYmVyZ0BsaW51eC5pbnRlbC5jb20+Cj4gQ2M6IEJvcmlzbGF2IFBldGtv
+diA8YnBAc3VzZS5kZT4KPiBDYzogRGFuIFdpbGxpYW1zIDxkYW4uai53aWxsaWFtc0BpbnRlbC5j
+b20+Cj4gQ2M6IEFtaXIgR29sZHN0ZWluIDxhbWlyNzNpbEBnbWFpbC5jb20+Cj4gQ2M6IEphcmtr
+byBTYWtraW5lbiA8amFya2tvLnNha2tpbmVuQGxpbnV4LmludGVsLmNvbT4KPiBDYzogSmFuaSBO
+aWt1bGEgPGphbmkubmlrdWxhQGxpbnV4LmludGVsLmNvbT4KPiBDYzogQmVuIFNrZWdncyA8YnNr
+ZWdnc0ByZWRoYXQuY29tPgo+IENjOiBCZW5qYW1pbiBUaXNzb2lyZXMgPGJlbmphbWluLnRpc3Nv
+aXJlc0ByZWRoYXQuY29tPgo+IENjOiBKb2VyZyBSb2VkZWwgPGpvcm9AOGJ5dGVzLm9yZz4KPiBD
+YzogQWRyaWFuIEh1bnRlciA8YWRyaWFuLmh1bnRlckBpbnRlbC5jb20+Cj4gQ2M6IFlpc2VuIFpo
+dWFuZyA8eWlzZW4uemh1YW5nQGh1YXdlaS5jb20+Cj4gQ2M6IEJqb3JuIEhlbGdhYXMgPGJoZWxn
+YWFzQGdvb2dsZS5jb20+Cj4gQ2M6IFpoYW5nIFJ1aSA8cnVpLnpoYW5nQGludGVsLmNvbT4KPiBD
+YzogRmVsaXBlIEJhbGJpIDxiYWxiaUBrZXJuZWwub3JnPgo+IENjOiBNYXRoaWFzIE55bWFuIDxt
+YXRoaWFzLm55bWFuQGludGVsLmNvbT4KPiBDYzogSGVpa2tpIEtyb2dlcnVzIDxoZWlra2kua3Jv
+Z2VydXNAbGludXguaW50ZWwuY29tPgo+IENjOiBMaWFtIEdpcmR3b29kIDxsZ2lyZHdvb2RAZ21h
+aWwuY29tPgo+IENjOiBNYXJrIEJyb3duIDxicm9vbmllQGtlcm5lbC5vcmc+Cj4gU2lnbmVkLW9m
+Zi1ieTogQW5keSBTaGV2Y2hlbmtvIDxhbmRyaXkuc2hldmNoZW5rb0BsaW51eC5pbnRlbC5jb20+
+CgpPSyBieSBtZSwgRldJVzoKClJldmlld2VkLWJ5OiBIZWlra2kgS3JvZ2VydXMgPGhlaWtraS5r
+cm9nZXJ1c0BsaW51eC5pbnRlbC5jb20+CgoKVGhhbmtzLAoKLS0gCmhlaWtraQpfX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpJbnRlbC1nZnggbWFpbGluZyBs
+aXN0CkludGVsLWdmeEBsaXN0cy5mcmVlZGVza3RvcC5vcmcKaHR0cHM6Ly9saXN0cy5mcmVlZGVz
+a3RvcC5vcmcvbWFpbG1hbi9saXN0aW5mby9pbnRlbC1nZngK
