@@ -1,8 +1,8 @@
 From: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v2 5/7] ACPI/IORT: Fixup SMMUv3 resource size for Cavium
-	ThunderX2 SMMUv3 model
-Date: Thu,  4 May 2017 18:05:37 +0530
-Message-ID: <1493901339-14929-6-git-send-email-gakula@caviumnetworks.com>
+Subject: [PATCH v2 6/7] iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2
+	erratum #126
+Date: Thu,  4 May 2017 18:05:38 +0530
+Message-ID: <1493901339-14929-7-git-send-email-gakula@caviumnetworks.com>
 References: <1493901339-14929-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -22,42 +22,99 @@ To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gm
 Cc: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, geethasowjanya.akula-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org, linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, catalin.marinas-5wv7dgnIgG8@public.gmane.org, sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org, Charles.Garcia-Tobin-5wv7dgnIgG8@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+From: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 
-Cavium ThunderX2 implementation doesn't support second page in SMMU
-register space. Hence, resource size is set as 64k for this model.
+Cavium ThunderX2 SMMU doesn't support MSI and also doesn't have unique irq
+lines for gerror, eventq and cmdq-sync.
 
-Signed-off-by: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+This patch addresses the issue by checking if any interrupt sources are
+using same irq number, then they are registered as shared irqs.
+
 Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/acpi/arm64/iort.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu-v3.c | 32 ++++++++++++++++++++++++++++----
+ 1 file changed, 28 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index c5fecf9..23c5350 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -833,12 +833,20 @@ static void __init arm_smmu_v3_init_resources(struct resource *res,
- {
- 	struct acpi_iort_smmu_v3 *smmu;
- 	int num_res = 0;
-+	unsigned long size = SZ_128K;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 016b702..46428e7 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2236,10 +2236,30 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+ 	devm_add_action(dev, arm_smmu_free_msis, dev);
+ }
  
- 	/* Retrieve SMMUv3 specific data */
- 	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
- 
-+	/*
-+	 * Override the size, for Cavium ThunderX2 implementation
-+	 * which doesn't support the page 1 SMMU register space.
-+	 */
-+	if (smmu->model == ACPI_IORT_SMMU_V3_CAVIUM_CN99XX)
-+		size = SZ_64K;
++static int get_irq_flags(struct arm_smmu_device *smmu, int irq)
++{
++	int match_count = 0;
 +
- 	res[num_res].start = smmu->base_address;
--	res[num_res].end = smmu->base_address + SZ_128K - 1;
-+	res[num_res].end = smmu->base_address + size - 1;
- 	res[num_res].flags = IORESOURCE_MEM;
++	if (irq == smmu->evtq.q.irq)
++		match_count++;
++	if (irq == smmu->cmdq.q.irq)
++		match_count++;
++	if (irq == smmu->gerr_irq)
++		match_count++;
++	if (irq == smmu->priq.q.irq)
++		match_count++;
++
++	if (match_count > 1)
++		return IRQF_SHARED | IRQF_ONESHOT;
++
++	return 0;
++}
++
+ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+ {
+ 	int ret, irq;
+ 	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
++	u32 irqflags = 0;
  
- 	num_res++;
+ 	/* Disable IRQs first */
+ 	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
+@@ -2254,9 +2274,10 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+ 	/* Request interrupt lines */
+ 	irq = smmu->evtq.q.irq;
+ 	if (irq) {
++		irqflags = get_irq_flags(smmu, irq);
+ 		ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
+ 						arm_smmu_evtq_thread,
+-						IRQF_ONESHOT,
++						IRQF_ONESHOT | irqflags,
+ 						"arm-smmu-v3-evtq", smmu);
+ 		if (ret < 0)
+ 			dev_warn(smmu->dev, "failed to enable evtq irq\n");
+@@ -2264,8 +2285,9 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+ 
+ 	irq = smmu->cmdq.q.irq;
+ 	if (irq) {
++		irqflags = get_irq_flags(smmu, irq);
+ 		ret = devm_request_irq(smmu->dev, irq,
+-				       arm_smmu_cmdq_sync_handler, 0,
++				       arm_smmu_cmdq_sync_handler, irqflags,
+ 				       "arm-smmu-v3-cmdq-sync", smmu);
+ 		if (ret < 0)
+ 			dev_warn(smmu->dev, "failed to enable cmdq-sync irq\n");
+@@ -2273,8 +2295,9 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+ 
+ 	irq = smmu->gerr_irq;
+ 	if (irq) {
++		irqflags = get_irq_flags(smmu, irq);
+ 		ret = devm_request_irq(smmu->dev, irq, arm_smmu_gerror_handler,
+-				       0, "arm-smmu-v3-gerror", smmu);
++				       irqflags, "arm-smmu-v3-gerror", smmu);
+ 		if (ret < 0)
+ 			dev_warn(smmu->dev, "failed to enable gerror irq\n");
+ 	}
+@@ -2282,9 +2305,10 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+ 	if (smmu->features & ARM_SMMU_FEAT_PRI) {
+ 		irq = smmu->priq.q.irq;
+ 		if (irq) {
++			irqflags = get_irq_flags(smmu, irq);
+ 			ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
+ 							arm_smmu_priq_thread,
+-							IRQF_ONESHOT,
++							IRQF_ONESHOT | irqflags,
+ 							"arm-smmu-v3-priq",
+ 							smmu);
+ 			if (ret < 0)
 -- 
 1.8.3.1
