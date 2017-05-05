@@ -1,8 +1,8 @@
 From: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v3 4/7] iommu/arm-smmu-v3: For ACPI based device probing,
-	set  PAGE0_REGS_ONLY option for ThunderX2 SMMUv3 implementation.
-Date: Fri,  5 May 2017 17:38:08 +0530
-Message-ID: <1493986091-30521-5-git-send-email-gakula@caviumnetworks.com>
+Subject: [PATCH v3 5/7] ACPI/IORT: Fixup SMMUv3 resource size for Cavium
+	ThunderX2 SMMUv3 model
+Date: Fri,  5 May 2017 17:38:09 +0530
+Message-ID: <1493986091-30521-6-git-send-email-gakula@caviumnetworks.com>
 References: <1493986091-30521-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,41 +24,40 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 
-Enable PAGE0_REGS_ONLY option for Cavium ThunderX2 SMMUv3 model.
+Cavium ThunderX2 implementation doesn't support second page in SMMU
+register space. Hence, resource size is set as 64k for this model.
 
 Signed-off-by: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/acpi/arm64/iort.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index f027676..8f7d8ad 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2625,6 +2625,14 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- }
- 
- #ifdef CONFIG_ACPI
-+static void acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
-+{
-+	if (model == ACPI_IORT_SMMU_V3_CAVIUM_CN99XX)
-+		smmu->options |= ARM_SMMU_OPT_PAGE0_REGS_ONLY;
-+
-+	dev_notice(smmu->dev, "option mask 0x%x\n", smmu->options);
-+}
-+
- static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
- 				      struct arm_smmu_device *smmu)
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index c5fecf9..23c5350 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -833,12 +833,20 @@ static void __init arm_smmu_v3_init_resources(struct resource *res,
  {
-@@ -2637,6 +2645,8 @@ static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
+ 	struct acpi_iort_smmu_v3 *smmu;
+ 	int num_res = 0;
++	unsigned long size = SZ_128K;
+ 
  	/* Retrieve SMMUv3 specific data */
- 	iort_smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
+ 	smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
  
-+	acpi_smmu_get_options(iort_smmu->model, smmu);
++	/*
++	 * Override the size, for Cavium ThunderX2 implementation
++	 * which doesn't support the page 1 SMMU register space.
++	 */
++	if (smmu->model == ACPI_IORT_SMMU_V3_CAVIUM_CN99XX)
++		size = SZ_64K;
 +
- 	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
- 		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
+ 	res[num_res].start = smmu->base_address;
+-	res[num_res].end = smmu->base_address + SZ_128K - 1;
++	res[num_res].end = smmu->base_address + size - 1;
+ 	res[num_res].flags = IORESOURCE_MEM;
  
+ 	num_res++;
 -- 
 1.8.3.1
