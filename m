@@ -1,69 +1,44 @@
 From: Robert Richter <robert.richter@cavium.com>
-Subject: Re: [PATCH v3 0/7] Cavium ThunderX2 SMMUv3 errata workarounds
-Date: Sat, 6 May 2017 00:22:50 +0200
-Message-ID: <20170505222250.GY16981@rric.localdomain>
+Subject: Re: [PATCH v3 1/7] iommu/arm-smmu-v3: Introduce SMMU option
+ PAGE0_REGS_ONLY for ThunderX2 errata #74
+Date: Sat, 6 May 2017 00:26:45 +0200
+Message-ID: <20170505222645.GZ16981@rric.localdomain>
 References: <1493986091-30521-1-git-send-email-gakula@caviumnetworks.com>
+ <1493986091-30521-2-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Return-path: <linux-acpi-owner@vger.kernel.org>
 Content-Disposition: inline
-In-Reply-To: <1493986091-30521-1-git-send-email-gakula@caviumnetworks.com>
+In-Reply-To: <1493986091-30521-2-git-send-email-gakula@caviumnetworks.com>
 Sender: linux-acpi-owner@vger.kernel.org
 To: Geetha sowjanya <gakula@caviumnetworks.com>
-Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, jcm@redhat.com, linux-kernel@vger.kernel.org, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com
+Cc: will.deacon@arm.com, robin.murphy@arm.com, lorenzo.pieralisi@arm.com, hanjun.guo@linaro.org, sudeep.holla@arm.com, iommu@lists.linux-foundation.org, jcm@redhat.com, linux-kernel@vger.kernel.org, catalin.marinas@arm.com, sgoutham@cavium.com, linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, geethasowjanya.akula@gmail.com, linu.cherian@cavium.com, Charles.Garcia-Tobin@arm.com, Geetha Sowjanya <geethasowjanya.akula@cavium.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On 05.05.17 17:38:04, Geetha sowjanya wrote:
+On 05.05.17 17:38:05, Geetha sowjanya wrote:
 > From: Linu Cherian <linu.cherian@cavium.com>
 > 
-> Cavium ThunderX2 SMMUv3 implementation has two Silicon Erratas.
-> 1. Errata ID #74
->    SMMU register alias Page 1 is not implemented
-> 2. Errata ID #126
->    SMMU doesnt support unique IRQ lines and also MSI for gerror, 
->    eventq and cmdq-sync
+> Cavium ThunderX2 SMMU implementation doesn't support page 1 register space
+> and PAGE0_REGS_ONLY option will be enabled as an errata workaround.
 > 
-> The following patchset does software workaround for these two erratas.
+> This option when turned on, replaces all page 1 offsets used for
+> EVTQ_PROD/CONS, PRIQ_PROD/CONS register access with page 0 offsets.
 > 
-> This series is based on patchset. 
-> https://www.spinics.net/lists/arm-kernel/msg578443.html
-> 
-> Changes from v1:
->  Since the use of MIDR register is rejected and SMMU_IIDR is broken on this 
->  silicon, as suggested by Will Deacon modified the patches to use ThunderX2 
->  SMMUv3 IORT model number to enable errata workaround.
-> 
-> Changes from v2:
->  Updated "Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt" document with 
->  new SMMU option used to enable errata workaround.
->  
-> Geetha Sowjanya (1):
->   iommu/arm-smmu-v3: Add workaround for Cavium ThunderX2 erratum #126
-> 
-> Linu Cherian (6):
->   iommu/arm-smmu-v3: Introduce smmu option PAGE0_REGS_ONLY for ThunderX2
->     errata#74.
->   iommu/arm-smmu-v3: Do resource size checks based on SMMU option
->     PAGE0_REGS_ONLY
->   ACPICA: IORT: Add Cavium ThunderX2 SMMUv3 model definition.
->   iommu/arm-smmu-v3: For ACPI based device probing, set PAGE0_REGS_ONLY
->     option     for ThunderX2 SMMUv3 implementations.
->   ACPI/IORT: Fixup SMMUv3 resource size for Cavium ThunderX2 SMMUv3
->     model
->   arm64: Documentation: Add Cavium ThunderX2 SMMUv3 erratas
+> Signed-off-by: Linu Cherian <linu.cherian@cavium.com>
+> Signed-off-by: Geetha Sowjanya <geethasowjanya.akula@cavium.com>
+> ---
+>  .../devicetree/bindings/iommu/arm,smmu-v3.txt      |  6 +++
+>  drivers/iommu/arm-smmu-v3.c                        | 44 ++++++++++++++++------
+>  2 files changed, 38 insertions(+), 12 deletions(-)
 
-This split into patches does not look reasonable to me. 1 patch only
-for each workaround should be sufficient.
+> @@ -412,6 +412,9 @@
+>  #define MSI_IOVA_BASE			0x8000000
+>  #define MSI_IOVA_LENGTH			0x100000
+>  
+> +#define ARM_SMMU_PAGE0_REGS_ONLY(smmu)		\
+> +	((smmu)->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY)
+
+Why hide the check behind this macro? Maybe make
+ARM_SMMU_OPT_PAGE0_REGS_ONLY shorter a bit instead?
 
 -Robert
-
-> 
->  Documentation/arm64/silicon-errata.txt |   2 +
->  drivers/acpi/arm64/iort.c              |  10 ++-
->  drivers/iommu/arm-smmu-v3.c            | 122 ++++++++++++++++++++++++++-------
->  include/acpi/actbl2.h                  |   2 +
->  4 files changed, 110 insertions(+), 26 deletions(-)
-> 
-> -- 
-> 1.8.3.1
-> 
