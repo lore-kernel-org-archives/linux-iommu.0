@@ -1,8 +1,8 @@
 From: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v3 2/7] iommu/arm-smmu-v3: Do resource size checks based on
-	SMMU
-Date: Fri,  5 May 2017 17:38:06 +0530
-Message-ID: <1493986091-30521-3-git-send-email-gakula@caviumnetworks.com>
+Subject: [PATCH v3 3/7] ACPICA: IORT: Add Cavium ThunderX2 SMMUv3 model
+	definition.
+Date: Fri,  5 May 2017 17:38:07 +0530
+Message-ID: <1493986091-30521-4-git-send-email-gakula@caviumnetworks.com>
 References: <1493986091-30521-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,71 +24,26 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 
-With implementations supporting only page 0 register space,
-resource size can be 64k as well and hence perform size checks
-based on SMMU option PAGE0_REGS_ONLY.
+Add SMMUv3 model definition for ThunderX2.
 
-For this, arm_smmu_device_dt_probe/acpi_probe has been moved before
-platform_get_resource call, so that SMMU options are set beforehand.
-
-Signed-off-by:  Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
-Signed-off-by:  Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
+Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 26 +++++++++++++++++---------
- 1 file changed, 17 insertions(+), 9 deletions(-)
+ include/acpi/actbl2.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 107b4a6..f027676 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2672,6 +2672,14 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
- 	return ret;
- }
+diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
+index faa9f2c..76a6f5d 100644
+--- a/include/acpi/actbl2.h
++++ b/include/acpi/actbl2.h
+@@ -779,6 +779,8 @@ struct acpi_iort_smmu {
+ #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002	/* ARM Corelink MMU-400 */
+ #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003	/* ARM Corelink MMU-500 */
  
-+static unsigned long arm_smmu_resource_size(struct arm_smmu_device *smmu)
-+{
-+	if (ARM_SMMU_PAGE0_REGS_ONLY(smmu))
-+		return SZ_64K;
-+	else
-+		return SZ_128K;
-+}
++#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX 0x00000002 /* Cavium ThunderX2 SMMUv3 */
 +
- static int arm_smmu_device_probe(struct platform_device *pdev)
- {
- 	int irq, ret;
-@@ -2688,9 +2696,17 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	}
- 	smmu->dev = dev;
+ /* Masks for Flags field above */
  
-+	if (dev->of_node) {
-+		ret = arm_smmu_device_dt_probe(pdev, smmu);
-+	} else {
-+		ret = arm_smmu_device_acpi_probe(pdev, smmu);
-+		if (ret == -ENODEV)
-+			return ret;
-+	}
-+
- 	/* Base address */
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (resource_size(res) + 1 < SZ_128K) {
-+	if (resource_size(res) + 1 < arm_smmu_resource_size(smmu)) {
- 		dev_err(dev, "MMIO region too small (%pr)\n", res);
- 		return -EINVAL;
- 	}
-@@ -2717,14 +2733,6 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	if (irq > 0)
- 		smmu->gerr_irq = irq;
- 
--	if (dev->of_node) {
--		ret = arm_smmu_device_dt_probe(pdev, smmu);
--	} else {
--		ret = arm_smmu_device_acpi_probe(pdev, smmu);
--		if (ret == -ENODEV)
--			return ret;
--	}
--
- 	/* Set bypass mode according to firmware probing result */
- 	bypass = !!ret;
- 
+ #define ACPI_IORT_SMMU_DVM_SUPPORTED    (1)
 -- 
 1.8.3.1
