@@ -1,7 +1,7 @@
-From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
-Subject: [PATCH] iommu/dma: Don't touch invalid iova_domain members
-Date: Fri,  5 May 2017 11:04:00 +0100
-Message-ID: <16c0483f5e66d51a11ba6d71bf64a969480a1587.1493977757.git.robin.murphy@arm.com>
+From: sunil.kovvuri-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org
+Subject: [PATCH v2] iommu/arm-smmu-v3: Increase CMDQ drain timeout value
+Date: Fri,  5 May 2017 16:47:46 +0530
+Message-ID: <1493983066-28202-1-git-send-email-sunil.kovvuri@gmail.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
@@ -15,74 +15,71 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
-Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
+To: will.deacon-5wv7dgnIgG8@public.gmane.org, robin.murphy-5wv7dgnIgG8@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Cc: jcm-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org, robert.richter-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org, Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-When __iommu_dma_map() and iommu_dma_free_iova() are called from
-iommu_dma_get_msi_page(), various iova_*() helpers are still invoked in
-the process, whcih is unwise since they access a different member of the
-union (the iova_domain) from that which was last written, and there's no
-guarantee that sensible values will result anyway.
+From: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 
-CLean up the code paths that are valid for an MSI cookie to ensure we
-only do iova_domain-specific things when we're actually dealing with one.
+Processing queue full of TLB invalidation commands might
+take more time on some platforms than current timeout
+of 100us. So increased drain timeout value.
 
-Reported-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Tested-by: Shanker Donthineni <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
-Tested-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
-Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Also now udelay time is increased exponentially for each poll.
+
+Signed-off-by: Sunil Goutham <sgoutham-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 ---
 
-I've taken the liberty of upgrading the prose testing confirmations
-into tested-by tags, hope that's OK.
+v2
+- Addressed Will's and Robin's comments i.e
+  increased poll timeout only for drain case and removed spin loop
+  whose logic anyway is screwed up.
+- Also changed commit subject and message as this patch no longer
+  exactly reflects what is done in SMMU driver i.e
+  8513c8930069 iommu/arm-smmu: Poll for TLB sync completion more effectively
 
-Joerg; I'm happy to resend this after -rc1 with a fixes tag if you'd
-rather - I'm just throwing it out now for the sake of catching up with
-things.
+ drivers/iommu/arm-smmu-v3.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-Robin.
-
- drivers/iommu/dma-iommu.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 8348f366ddd1..62618e77bedc 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -396,13 +396,13 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
- 		dma_addr_t iova, size_t size)
- {
- 	struct iova_domain *iovad = &cookie->iovad;
--	unsigned long shift = iova_shift(iovad);
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index d412bdd..cbc8309 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -379,6 +379,8 @@
+ #define CMDQ_SYNC_0_CS_NONE		(0UL << CMDQ_SYNC_0_CS_SHIFT)
+ #define CMDQ_SYNC_0_CS_SEV		(2UL << CMDQ_SYNC_0_CS_SHIFT)
  
- 	/* The MSI case is only ever cleaning up its most recent allocation */
- 	if (cookie->type == IOMMU_DMA_MSI_COOKIE)
- 		cookie->msi_iova -= size;
- 	else
--		free_iova_fast(iovad, iova >> shift, size >> shift);
-+		free_iova_fast(iovad, iova_pfn(iovad, iova),
-+				size >> iova_shift(iovad));
- }
- 
- static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr,
-@@ -617,11 +617,14 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
- {
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
--	struct iova_domain *iovad = &cookie->iovad;
--	size_t iova_off = iova_offset(iovad, phys);
-+	size_t iova_off = 0;
- 	dma_addr_t iova;
- 
--	size = iova_align(iovad, size + iova_off);
-+	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
-+		iova_off = iova_offset(&cookie->iovad, phys);
-+		size = iova_align(&cookie->iovad, size + iova_off);
-+	}
++#define CMDQ_DRAIN_TIMEOUT_US		1000
 +
- 	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
- 	if (!iova)
- 		return DMA_ERROR_CODE;
+ /* Event queue */
+ #define EVTQ_ENT_DWORDS			4
+ #define EVTQ_MAX_SZ_SHIFT		7
+@@ -737,7 +739,12 @@ static void queue_inc_prod(struct arm_smmu_queue *q)
+  */
+ static int queue_poll_cons(struct arm_smmu_queue *q, bool drain, bool wfe)
+ {
+-	ktime_t timeout = ktime_add_us(ktime_get(), ARM_SMMU_POLL_TIMEOUT_US);
++	ktime_t timeout;
++	unsigned int delay = 1;
++
++	/* Wait longer if it's queue drain */
++	timeout = ktime_add_us(ktime_get(), drain ? CMDQ_DRAIN_TIMEOUT_US :
++						    ARM_SMMU_POLL_TIMEOUT_US);
+ 
+ 	while (queue_sync_cons(q), (drain ? !queue_empty(q) : queue_full(q))) {
+ 		if (ktime_compare(ktime_get(), timeout) > 0)
+@@ -747,7 +754,11 @@ static int queue_poll_cons(struct arm_smmu_queue *q, bool drain, bool wfe)
+ 			wfe();
+ 		} else {
+ 			cpu_relax();
+-			udelay(1);
++			udelay(delay);
++			/* No point in sleeping for fixed time,
++			 * if cons isn't moving fast.
++			 */
++			delay *= 2;
+ 		}
+ 	}
+ 
 -- 
-2.11.0.dirty
+2.7.4
