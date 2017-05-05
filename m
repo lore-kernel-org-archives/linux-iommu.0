@@ -1,16 +1,16 @@
-From: Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>
-Subject: Re: [PATCH v1] ACPI: Switch to use generic UUID API
-Date: Fri, 5 May 2017 09:30:35 +0200
-Message-ID: <20170505073035.GA3112@lst.de>
-References: <20170504092151.88646-1-andriy.shevchenko@linux.intel.com>
-	<CAPcyv4jzD0MEBRNTwTokVzgdDWas682ArUjRAGT1hp=QRE8Pjg@mail.gmail.com>
-	<CAOQ4uxjha8_2_HwgdgBN=G-vNytAW5Gk155E9z8OWyFiGNEZVw@mail.gmail.com>
+From: Oza Oza via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: Re: [PATCH 2/3] iommu/pci: reserve iova for PCI masters
+Date: Fri, 5 May 2017 13:40:40 +0530
+Message-ID: <CAMSpPPe9UExb2Wd2BeaWB0mY1fE788h57bsSZkhk5eZjcTdPpg@mail.gmail.com>
+References: <1493786795-28153-1-git-send-email-oza.oza@broadcom.com>
+	<1493786795-28153-2-git-send-email-oza.oza@broadcom.com>
+	<0c9a6b09-139c-df49-cf73-6a3935a6aacd@arm.com>
+Reply-To: Oza Oza <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
-Content-Disposition: inline
-In-Reply-To: <CAOQ4uxjha8_2_HwgdgBN=G-vNytAW5Gk155E9z8OWyFiGNEZVw-JsoAwUIsXosN+BqQ9rBEUg@public.gmane.org>
+In-Reply-To: <0c9a6b09-139c-df49-cf73-6a3935a6aacd-5wv7dgnIgG8@public.gmane.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
 List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
@@ -20,44 +20,144 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
 Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
 Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
-To: Amir Goldstein <amir73il-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>
-Cc: alsa-devel-K7yf7f+aM1XWsZ/bQMPhNw@public.gmane.org, Heikki Krogerus <heikki.krogerus-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Liam Girdwood <lgirdwood-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jarkko Sakkinen <jarkko.sakkinen-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Adrian Hunter <adrian.hunter-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Benjamin Tissoires <benjamin.tissoires-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, Christoph Hellwig <hch-jcswGhMUV9g@public.gmane.org>, Linux ACPI <linux-acpi-u79uwXL29TY76Z2rM5mHXA@public.gmane.org>, tpmdd-devel-5NWGOfrQmneRv+LV9MX5uipxlwaOVQ5f@public.gmane.org, Ben Skeggs <bskeggs-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>, nouveau-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-mmc-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Zhang Rui <rui.zhang-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Borislav Petkov <bp-l3A5Bk7waGM@public.gmane.org>, Yisen Zhuang <yisen.zhuang-hv44wF8Li93QT0dZR+AlfA@public.gmane.org>, Mathias Nyman <mathias.nyman-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, intel-gfx-PD4FTy7X32lNgt0PjOBp9y5qC8QIuHrW@public.gmane.org, linux-input-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Jani Nikula <jani.nikula-VuQAYsv1563Yd54FQh9/CA@public.gmane.org>, Mark Brown <broonie-DgEjT+Ai2ygdnm+yROfE0A@public.gmane.org>, Bjorn Helgaas <bhelgaas-hpIqsD4AKlfQT0dZR+AlfA@public.gmane.org>, Dan Williams <dan.j.williams-ral2JQCrhuEAvxtiuMwx3w@public.gmane.org>, Andy Shevchenko <andriy.shevchenk>
+To: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Oza Pawandeep <oza.pawandeep-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Linux IOMMU <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>, BCM Kernel Feedback <bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 05, 2017 at 10:06:06AM +0300, Amir Goldstein wrote:
-> I much rather that you sort out uuid helpers in a way that will
-> satisfy the filesystem
-> needs (just provide the helpers don't need to convert filesystems code).
+On Thu, May 4, 2017 at 11:50 PM, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org> wrote:
+> On 03/05/17 05:46, Oza Pawandeep wrote:
+>> this patch reserves the iova for PCI masters.
+>> ARM64 based SOCs may have scattered memory banks.
+>> such as iproc based SOC has
+>>
+>> <0x00000000 0x80000000 0x0 0x80000000>, /* 2G @ 2G */
+>> <0x00000008 0x80000000 0x3 0x80000000>, /* 14G @ 34G */
+>> <0x00000090 0x00000000 0x4 0x00000000>, /* 16G @ 576G */
+>> <0x000000a0 0x00000000 0x4 0x00000000>; /* 16G @ 640G */
+>>
+>> but incoming PCI transcation addressing capability is limited
+>> by host bridge, for example if max incoming window capability
+>> is 512 GB, then 0x00000090 and 0x000000a0 will fall beyond it.
+>>
+>> to address this problem, iommu has to avoid allocating iovas which
+>> are reserved. which inturn does not allocate iova if it falls into hole.
+>
+> I don't necessarily disagree with doing this, as we could do with facing
+> up to the issue of discontiguous DMA ranges in particular (I too have a
+> platform with this problem), but I'm still not overly keen on pulling DT
+> specifics into this layer. More than that, though, if we are going to do
+> it, then we should do it for all devices with a restrictive
+> "dma-ranges", not just PCI ones.
+>
 
-Yeah.
+pci_create_root_bus allocates host bridge, and currently it takes only
+oubound resources.
 
-> IMO, you should acknowledge that the common use case for filesystems is
-> to handle an opaque char[16] which most likely holds a uuid_be and you
-> should provide 'neutral' helpers to satisfy this use case.
-> 
-> The simplest would be to typedef uuid_t to struct uuid_be and to name 'neutral'
-> helpers' uuid_cmp/uuid_copy(uuid_t *, uuid_t *), similar to my proposal.
+if inbound memory is also added as a part of  pci_create_root_bus params,
+then IOVA allocation can directly make use of inbound_windows member
+of structure pci_host_bridge.
 
-It's not jut neutral, it's the right thing to to.  The Apollo / DCE
-uuids (later also specified in RFC 4122) are big endian, so we should
-use the name there.
+struct pci_host_bridge {
+        struct device dev;
+        struct pci_bus *bus; /* root bus */
+        struct list_head windows; /* resource_entry */
+        struct list_head inbound_windows; /* resource_entry */
+        .
+        .
+}
 
-> Christoph also suggested a similar treatment to typedef guid_t to
-> struct uuid_le.
+so iova_reserve_pci_windows can iterate throough
+resource_list_for_each_entry(window, &bridge->inbound_windows)
+this way we can remove the dependency of dma-iommu.c on OF layer.
 
-Exactly.  The whole idea of "little endian UUIDs" comes from the
-Wintel world, and if you look at the relevant specs they are almost
-exclusively referred to as GUIDs.
+but only thing is:
+pci_create_root_bus is called by handful of RC drivers, which needs to change.
+ideally if you see both inbound and outbound resource should belong to
+pci_host_bridge anyway.
+and inbound is completely missing.
 
-The magic XFS and AFS types for specific interpretations of one of
-the RFC4122 formats don't really help, but I'll just send a patch
-to kill them off for XFS ASAP to at least get that out, and we
-probably should revert at least
+let me know your thoughts on this, Robin.
 
-"afs: Move UUID struct to linux/uuid.h"
-
-That moved the AFS mess to common code as a start, and then
-also clean up the way we generate random UUIDs, where we currently
-have le helper, a be helper and then also generate_random_uuid
-just to confuse the heck out of people.  With no description of
-either of them.
+>> Bug: SOC-5216
+>> Change-Id: Icbfc99a045d730be143fef427098c937b9d46353
+>> Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>> Reviewed-on: http://gerrit-ccxsw.broadcom.net/40760
+>> Reviewed-by: vpx_checkpatch status <vpx_checkpatch-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>> Reviewed-by: CCXSW <ccxswbuild-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>> Tested-by: vpx_autobuild status <vpx_autobuild-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>> Tested-by: vpx_smoketest status <vpx_smoketest-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>> Tested-by: CCXSW <ccxswbuild-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>> Reviewed-by: Scott Branden <scott.branden-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+>>
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index 48d36ce..08764b0 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -27,6 +27,7 @@
+>>  #include <linux/iova.h>
+>>  #include <linux/irq.h>
+>>  #include <linux/mm.h>
+>> +#include <linux/of_pci.h>
+>>  #include <linux/pci.h>
+>>  #include <linux/scatterlist.h>
+>>  #include <linux/vmalloc.h>
+>> @@ -171,8 +172,12 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
+>>               struct iova_domain *iovad)
+>>  {
+>>       struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
+>> +     struct device_node *np = bridge->dev.parent->of_node;
+>>       struct resource_entry *window;
+>>       unsigned long lo, hi;
+>> +     int ret;
+>> +     dma_addr_t tmp_dma_addr = 0, dma_addr;
+>> +     LIST_HEAD(res);
+>>
+>>       resource_list_for_each_entry(window, &bridge->windows) {
+>>               if (resource_type(window->res) != IORESOURCE_MEM &&
+>> @@ -183,6 +188,36 @@ static void iova_reserve_pci_windows(struct pci_dev *dev,
+>>               hi = iova_pfn(iovad, window->res->end - window->offset);
+>>               reserve_iova(iovad, lo, hi);
+>>       }
+>> +
+>> +     /* PCI inbound memory reservation. */
+>> +     ret = of_pci_get_dma_ranges(np, &res);
+>> +     if (!ret) {
+>> +             resource_list_for_each_entry(window, &res) {
+>> +                     struct resource *res_dma = window->res;
+>> +
+>> +                     dma_addr = res_dma->start - window->offset;
+>> +                     if (tmp_dma_addr > dma_addr) {
+>> +                             pr_warn("PCI: failed to reserve iovas; ranges should be sorted\n");
+>
+> I don't see anything in the DT spec about the entries having to be
+> sorted, and it's not exactly impossible to sort a list if you need it so
+> (and if I'm being really pedantic, one could still trigger this with a
+> list that *is* sorted, only by different criteria).
+>
+> Robin.
+>
+>> +                             return;
+>> +                     }
+>> +                     if (tmp_dma_addr != dma_addr) {
+>> +                             lo = iova_pfn(iovad, tmp_dma_addr);
+>> +                             hi = iova_pfn(iovad, dma_addr - 1);
+>> +                             reserve_iova(iovad, lo, hi);
+>> +                     }
+>> +                     tmp_dma_addr = window->res->end - window->offset;
+>> +             }
+>> +             /*
+>> +              * the last dma-range should honour based on the
+>> +              * 32/64-bit dma addresses.
+>> +              */
+>> +             if (tmp_dma_addr < DMA_BIT_MASK(sizeof(dma_addr_t) * 8)) {
+>> +                     lo = iova_pfn(iovad, tmp_dma_addr);
+>> +                     hi = iova_pfn(iovad,
+>> +                                   DMA_BIT_MASK(sizeof(dma_addr_t) * 8) - 1);
+>> +                     reserve_iova(iovad, lo, hi);
+>> +             }
+>> +     }
+>>  }
+>>
+>>  /**
+>>
+>
