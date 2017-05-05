@@ -1,38 +1,88 @@
-From: Amir Goldstein <amir73il@gmail.com>
-Subject: Re: [PATCH v1] ACPI: Switch to use generic UUID API
-Date: Fri, 5 May 2017 13:02:21 +0300
-Message-ID: <CAOQ4uxg6+_0KRMkMyupFJDtXrTqxx8vOz3=ZyEuj8BakvfuEJQ@mail.gmail.com>
-References: <20170504092151.88646-1-andriy.shevchenko@linux.intel.com>
- <CAPcyv4jzD0MEBRNTwTokVzgdDWas682ArUjRAGT1hp=QRE8Pjg@mail.gmail.com>
- <CAOQ4uxjha8_2_HwgdgBN=G-vNytAW5Gk155E9z8OWyFiGNEZVw@mail.gmail.com>
- <1493976265.30052.21.camel@linux.intel.com> <CAOQ4uxjErce01+xyDnM=nCJS+avQ4g6hQVvH3fVotj7Ws2moCQ@mail.gmail.com>
- <20170505095739.GB6762@lst.de>
+From: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Subject: [PATCH] iommu/dma: Don't touch invalid iova_domain members
+Date: Fri,  5 May 2017 11:04:00 +0100
+Message-ID: <16c0483f5e66d51a11ba6d71bf64a969480a1587.1493977757.git.robin.murphy@arm.com>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Return-path: <linux-pci-owner@vger.kernel.org>
-In-Reply-To: <20170505095739.GB6762@lst.de>
-Sender: linux-pci-owner@vger.kernel.org
-To: Christoph Hellwig <hch@lst.de>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Dan Williams <dan.j.williams@intel.com>, Linux ACPI <linux-acpi@vger.kernel.org>, tpmdd-devel@lists.sourceforge.net, intel-gfx@lists.freedesktop.org, nouveau@lists.freedesktop.org, linux-input@vger.kernel.org, iommu@lists.linux-foundation.org, linux-mmc@vger.kernel.org, Netdev <netdev@vger.kernel.org>, linux-pci@vger.kernel.org, USB list <linux-usb@vger.kernel.org>, alsa-devel@alsa-project.org, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Rafael J . Wysocki" <rjw@rjwysocki.net>, Mika Westerberg <mika.westerberg@linux.intel.com>, Borislav Petkov <bp@suse.de>, Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>, Jani Nikula <jani.nikula@linux.intel.com>, Ben Skeggs <bskeggs@redhat.com>, Benj
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org
+Cc: iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 5, 2017 at 12:57 PM, Christoph Hellwig <hch@lst.de> wrote:
-> On Fri, May 05, 2017 at 12:50:31PM +0300, Amir Goldstein wrote:
->> To complete the picture for folks not cc'ed on my patches,
->> xfs use case suggests there is also justification for the additional helpers:
->>
->> uuid_is_null() / uuid_equal()
->> guid_is_null() / guid_equal()
->
-> The is_null is useful and I bet we'll find other instances. I'm
-> not sure _equals really adds much value over the existing _cmp
-> helpers, but on the other hand they are so trivial that we might as
-> well add them.
+When __iommu_dma_map() and iommu_dma_free_iova() are called from
+iommu_dma_get_msi_page(), various iova_*() helpers are still invoked in
+the process, whcih is unwise since they access a different member of the
+union (the iova_domain) from that which was last written, and there's no
+guarantee that sensible values will result anyway.
 
-Exactly. The fact that not only xfs used the same helper name
-(drivers/md/md.c) suggests that it useful.
+CLean up the code paths that are valid for an MSI cookie to ensure we
+only do iova_domain-specific things when we're actually dealing with one.
 
->
-> The other thing XFS has is uuid_copy.
+Reported-by: Nate Watterson <nwatters-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Tested-by: Shanker Donthineni <shankerd-sgV2jX0FEOL9JmXXK+q4OQ@public.gmane.org>
+Tested-by: Bharat Bhushan <bharat.bhushan-3arQi8VN3Tc@public.gmane.org>
+Signed-off-by: Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+---
 
-Andy already listed uuid_copy.
+I've taken the liberty of upgrading the prose testing confirmations
+into tested-by tags, hope that's OK.
+
+Joerg; I'm happy to resend this after -rc1 with a fixes tag if you'd
+rather - I'm just throwing it out now for the sake of catching up with
+things.
+
+Robin.
+
+ drivers/iommu/dma-iommu.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 8348f366ddd1..62618e77bedc 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -396,13 +396,13 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
+ 		dma_addr_t iova, size_t size)
+ {
+ 	struct iova_domain *iovad = &cookie->iovad;
+-	unsigned long shift = iova_shift(iovad);
+ 
+ 	/* The MSI case is only ever cleaning up its most recent allocation */
+ 	if (cookie->type == IOMMU_DMA_MSI_COOKIE)
+ 		cookie->msi_iova -= size;
+ 	else
+-		free_iova_fast(iovad, iova >> shift, size >> shift);
++		free_iova_fast(iovad, iova_pfn(iovad, iova),
++				size >> iova_shift(iovad));
+ }
+ 
+ static void __iommu_dma_unmap(struct iommu_domain *domain, dma_addr_t dma_addr,
+@@ -617,11 +617,14 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+ {
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+-	struct iova_domain *iovad = &cookie->iovad;
+-	size_t iova_off = iova_offset(iovad, phys);
++	size_t iova_off = 0;
+ 	dma_addr_t iova;
+ 
+-	size = iova_align(iovad, size + iova_off);
++	if (cookie->type == IOMMU_DMA_IOVA_COOKIE) {
++		iova_off = iova_offset(&cookie->iovad, phys);
++		size = iova_align(&cookie->iovad, size + iova_off);
++	}
++
+ 	iova = iommu_dma_alloc_iova(domain, size, dma_get_mask(dev), dev);
+ 	if (!iova)
+ 		return DMA_ERROR_CODE;
+-- 
+2.11.0.dirty
