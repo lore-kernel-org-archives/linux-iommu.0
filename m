@@ -1,46 +1,59 @@
-From: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [PATCH] iommu: fix device remove
-Date: Fri, 5 May 2017 11:24:52 -0700
-Message-ID: <20170505182452.GA3575@kroah.com>
-References: <20170505180837.11326-1-robdclark@gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Return-path: <linux-arm-msm-owner@vger.kernel.org>
-Content-Disposition: inline
-In-Reply-To: <20170505180837.11326-1-robdclark@gmail.com>
-Sender: linux-arm-msm-owner@vger.kernel.org
-To: Rob Clark <robdclark@gmail.com>
-Cc: iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org, Rob Herring <robh@kernel.org>
+From: KarimAllah Ahmed <karahmed@amazon.de>
+Subject: [PATCH] iommu: intel: Flush the IOTLB to get rid of the initial kdump mappings
+Date: Fri,  5 May 2017 11:39:59 -0700
+Message-ID: <1494009599-20962-1-git-send-email-karahmed@amazon.de>
+Return-path: <linux-kernel-owner@vger.kernel.org>
+Sender: linux-kernel-owner@vger.kernel.org
+To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: KarimAllah Ahmed <karahmed@amazon.de>, Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, David Woodhouse <dwmw@amazon.co.uk>, Anthony Liguori <aliguori@amazon.com>
 List-Id: iommu@lists.linux-foundation.org
 
-On Fri, May 05, 2017 at 02:08:37PM -0400, Rob Clark wrote:
-> It looks like it *used* to make sense to free the device.  But now it is
-> embedded in 'struct iommu' (which is allocated or embedded in something
-> that the device allocated).
-> 
-> Spotted when testing qcom_iommu with CONFIG_DEBUG_TEST_DRIVER_REMOVE.
-> 
-> Fixes: 39ab955 ("iommu: Add sysfs bindings for struct iommu_device")
-> Signed-off-by: Rob Clark <robdclark@gmail.com>
-> ---
->  drivers/iommu/iommu-sysfs.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/iommu-sysfs.c b/drivers/iommu/iommu-sysfs.c
-> index c58351e..ad19cbb 100644
-> --- a/drivers/iommu/iommu-sysfs.c
-> +++ b/drivers/iommu/iommu-sysfs.c
-> @@ -34,7 +34,6 @@ static const struct attribute_group *iommu_dev_groups[] = {
->  
->  static void iommu_release_device(struct device *dev)
->  {
-> -	kfree(dev);
->  }
+Ever since commit 091d42e43d ("iommu/vt-d: Copy translation tables from
+old kernel") the kdump kernel copies the IOMMU context tables from the
+previous kernel. Each device mappings will be destroyed once the driver
+for the respective device takes over.
 
-As per the documentation in the kernel tree, I now get to make fun of
-you for doing such a crazh and foolish thing!
+This unfortunately breaks the workflow of mapping and unmapping a new
+context to the IOMMU. The mapping function assumes that either:
 
-Come on, don't do that, a release function _HAS_ to free the memory
-involved.  If not, then it is really broken...
+1) Unmapping did the proper IOMMU flushing and it only ever flush if the
+   IOMMU unit supports caching invalid entries.
+2) The system just booted and the initialization code took care of
+   flushing all IOMMU caches.
 
-greg k-h
+This assumption is not true for the kdump kernel since the context
+tables have been copied from the previous kernel and translations could
+have been cached ever since. So make sure to flush the IOTLB as well
+when we destroy these old copied mappings.
+
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+Cc: Anthony Liguori <aliguori@amazon.com>
+Signed-off-by: KarimAllah Ahmed <karahmed@amazon.de>
+---
+ drivers/iommu/intel-iommu.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index d412a31..478130d 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -2050,11 +2050,14 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
+ 	if (context_copied(context)) {
+ 		u16 did_old = context_domain_id(context);
+ 
+-		if (did_old >= 0 && did_old < cap_ndoms(iommu->cap))
++		if (did_old >= 0 && did_old < cap_ndoms(iommu->cap)) {
+ 			iommu->flush.flush_context(iommu, did_old,
+ 						   (((u16)bus) << 8) | devfn,
+ 						   DMA_CCMD_MASK_NOBIT,
+ 						   DMA_CCMD_DEVICE_INVL);
++			iommu->flush.flush_iotlb(iommu, did_old, 0, 0,
++						 DMA_TLB_DSI_FLUSH);
++		}
+ 	}
+ 
+ 	pgd = domain->pgd;
+-- 
+2.7.4
