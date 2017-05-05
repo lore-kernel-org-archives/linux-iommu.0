@@ -1,149 +1,72 @@
-From: David Woodhouse <dwmw2@infradead.org>
-Subject: Re: [PATCH] iommu: intel: Flush the IOTLB to get rid of the
- initial kdump mappings
-Date: Fri, 05 May 2017 20:56:46 +0200
-Message-ID: <1494010606.6350.27.camel@infradead.org>
-References: <1494009599-20962-1-git-send-email-karahmed@amazon.de>
+From: Rob Clark <robdclark@gmail.com>
+Subject: Re: [PATCH] iommu: fix device remove
+Date: Fri, 5 May 2017 16:24:17 -0400
+Message-ID: <CAF6AEGvz8ZLue8=P8w4g_SwzaZsuucN1-v4LgJQu8kejKeXagg@mail.gmail.com>
+References: <20170505180837.11326-1-robdclark@gmail.com> <20170505182452.GA3575@kroah.com>
+ <CAF6AEGsTrOJG2+a=vPc8iLDPOK5rxQujS8wuoCEmBhgT7Zpb9w@mail.gmail.com> <20170505195821.GC7351@kroah.com>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg="sha-256"; protocol="application/x-pkcs7-signature"; boundary="=-siLdc7PfluMgMw7bmui5"
-Return-path: <linux-kernel-owner@vger.kernel.org>
-In-Reply-To: <1494009599-20962-1-git-send-email-karahmed@amazon.de>
-Sender: linux-kernel-owner@vger.kernel.org
-To: KarimAllah Ahmed <karahmed@amazon.de>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>, Anthony Liguori <aliguori@amazon.com>
+Content-Type: text/plain; charset=UTF-8
+Return-path: <linux-arm-msm-owner@vger.kernel.org>
+In-Reply-To: <20170505195821.GC7351@kroah.com>
+Sender: linux-arm-msm-owner@vger.kernel.org
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>, Rob Herring <robh@kernel.org>
 List-Id: iommu@lists.linux-foundation.org
 
+On Fri, May 5, 2017 at 3:58 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
+> On Fri, May 05, 2017 at 02:56:00PM -0400, Rob Clark wrote:
+>> On Fri, May 5, 2017 at 2:24 PM, Greg KH <gregkh@linuxfoundation.org> wrote:
+>> > On Fri, May 05, 2017 at 02:08:37PM -0400, Rob Clark wrote:
+>> >> It looks like it *used* to make sense to free the device.  But now it is
+>> >> embedded in 'struct iommu' (which is allocated or embedded in something
+>> >> that the device allocated).
+>> >>
+>> >> Spotted when testing qcom_iommu with CONFIG_DEBUG_TEST_DRIVER_REMOVE.
+>> >>
+>> >> Fixes: 39ab955 ("iommu: Add sysfs bindings for struct iommu_device")
+>> >> Signed-off-by: Rob Clark <robdclark@gmail.com>
+>> >> ---
+>> >>  drivers/iommu/iommu-sysfs.c | 1 -
+>> >>  1 file changed, 1 deletion(-)
+>> >>
+>> >> diff --git a/drivers/iommu/iommu-sysfs.c b/drivers/iommu/iommu-sysfs.c
+>> >> index c58351e..ad19cbb 100644
+>> >> --- a/drivers/iommu/iommu-sysfs.c
+>> >> +++ b/drivers/iommu/iommu-sysfs.c
+>> >> @@ -34,7 +34,6 @@ static const struct attribute_group *iommu_dev_groups[] = {
+>> >>
+>> >>  static void iommu_release_device(struct device *dev)
+>> >>  {
+>> >> -     kfree(dev);
+>> >>  }
+>> >
+>> > As per the documentation in the kernel tree, I now get to make fun of
+>> > you for doing such a crazh and foolish thing!
+>> >
+>> > Come on, don't do that, a release function _HAS_ to free the memory
+>> > involved.  If not, then it is really broken...
+>>
+>> There are shenanigans going on.. so release isn't counterpoint to a
+>> _probe() which allocates some memory.  See iommu_device_sysfs_add().
+>> So I'm not the one you get to make fun of ;-)
+>>
+>> This the correct thing to do.  Whether the way the extra fake device
+>> embedded in something allocated in the iommu driver's probe (and
+>> free'd it *it's* _release()) stuff for iommu sysfs stuff works is
+>> bonkers or not, I'll let someone else decide..  it was like that when
+>> I got here.
+>
+> If you have multiple reference counts in the same structure, your code
+> is wrong.  That is the root issue here that needs to be resolved.  Yes,
+> your patch papers over that, but again, it isn't right either.
+>
 
---=-siLdc7PfluMgMw7bmui5
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+fair enough, I should have been more precise and said that this patch
+is "the correct thing to do for how the code works now".. as far as
+bigger refactoring, I'll leave that to someone who understands why the
+code works the way it currently does.  My patch at least makes things
+less wrong.  (But removing an iommu is kind of a crazy thing to do so
+it's perhaps a rather theoretical problem.)
 
-On Fri, 2017-05-05 at 11:39 -0700, KarimAllah Ahmed wrote:
-> Ever since commit 091d42e43d ("iommu/vt-d: Copy translation tables from
-> old kernel") the kdump kernel copies the IOMMU context tables from the
-> previous kernel. Each device mappings will be destroyed once the driver
-> for the respective device takes over.
->=20
-> This unfortunately breaks the workflow of mapping and unmapping a new
-> context to the IOMMU. The mapping function assumes that either:
->=20
-> 1) Unmapping did the proper IOMMU flushing and it only ever flush if the
-> =C2=A0=C2=A0=C2=A0IOMMU unit supports caching invalid entries.
-> 2) The system just booted and the initialization code took care of
-> =C2=A0=C2=A0=C2=A0flushing all IOMMU caches.
->=20
-> This assumption is not true for the kdump kernel since the context
-> tables have been copied from the previous kernel and translations could
-> have been cached ever since. So make sure to flush the IOTLB as well
-> when we destroy these old copied mappings.
->=20
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: David Woodhouse <dwmw2@infradead.org>
-> Cc: David Woodhouse <dwmw@amazon.co.uk>
-> Cc: Anthony Liguori <aliguori@amazon.com>
-> Signed-off-by: KarimAllah Ahmed <karahmed@amazon.de>
-
-Acked-by: David Woodhouse <dwmw@amazon.co.uk>
-Cc: stable@vger.kernel.org=C2=A0 v4.2+
-
-I'm still moderately unhappy about the whole "preserve existing
-mappings during kdump" thing, and wanted to have a PCI quirk for the
-known-broken-can't-be-reset-after-fault devices, and trigger this
-behaviour only then. Although I have a vague recollection of there
-being a slightly saner justification for it... perhaps this should be
-documented, if there is one?
---=-siLdc7PfluMgMw7bmui5
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCDzUw
-ggSvMIIDl6ADAgECAhEA4CPLFRKDU4mtYW56VGdrITANBgkqhkiG9w0BAQsFADBvMQswCQYDVQQG
-EwJTRTEUMBIGA1UEChMLQWRkVHJ1c3QgQUIxJjAkBgNVBAsTHUFkZFRydXN0IEV4dGVybmFsIFRU
-UCBOZXR3b3JrMSIwIAYDVQQDExlBZGRUcnVzdCBFeHRlcm5hbCBDQSBSb290MB4XDTE0MTIyMjAw
-MDAwMFoXDTIwMDUzMDEwNDgzOFowgZsxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1h
-bmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMUEw
-PwYDVQQDEzhDT01PRE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBF
-bWFpbCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAImxDdp6UxlOcFIdvFamBia3
-uEngludRq/HwWhNJFaO0jBtgvHpRQqd5jKQi3xdhTpHVdiMKFNNKAn+2HQmAbqUEPdm6uxb+oYep
-LkNSQxZ8rzJQyKZPWukI2M+TJZx7iOgwZOak+FaA/SokFDMXmaxE5WmLo0YGS8Iz1OlAnwawsayT
-QLm1CJM6nCpToxDbPSBhPFUDjtlOdiUCISn6o3xxdk/u4V+B6ftUgNvDezVSt4TeIj0sMC0xf1m9
-UjewM2ktQ+v61qXxl3dnUYzZ7ifrvKUHOHaMpKk4/9+M9QOsSb7K93OZOg8yq5yVOhM9DkY6V3Rh
-UL7GQD/L5OKfoiECAwEAAaOCARcwggETMB8GA1UdIwQYMBaAFK29mHo0tCb3+sQmVO8DveAky1Qa
-MB0GA1UdDgQWBBSSYWuC4aKgqk/sZ/HCo/e0gADB7DAOBgNVHQ8BAf8EBAMCAYYwEgYDVR0TAQH/
-BAgwBgEB/wIBADAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwEQYDVR0gBAowCDAGBgRV
-HSAAMEQGA1UdHwQ9MDswOaA3oDWGM2h0dHA6Ly9jcmwudXNlcnRydXN0LmNvbS9BZGRUcnVzdEV4
-dGVybmFsQ0FSb290LmNybDA1BggrBgEFBQcBAQQpMCcwJQYIKwYBBQUHMAGGGWh0dHA6Ly9vY3Nw
-LnVzZXJ0cnVzdC5jb20wDQYJKoZIhvcNAQELBQADggEBABsqbqxVwTqriMXY7c1V86prYSvACRAj
-mQ/FZmpvsfW0tXdeDwJhAN99Bf4Ss6SAgAD8+x1banICCkG8BbrBWNUmwurVTYT7/oKYz1gb4yJj
-nFL4uwU2q31Ypd6rO2Pl2tVz7+zg+3vio//wQiOcyraNTT7kSxgDsqgt1Ni7QkuQaYUQ26Y3NOh7
-4AEQpZzKOsefT4g0bopl0BqKu6ncyso20fT8wmQpNa/WsadxEdIDQ7GPPprsnjJT9HaSyoY0B7ks
-yuYcStiZDcGG4pCS+1pCaiMhEOllx/XVu37qjIUgAmLq0ToHLFnFmTPyOInltukWeh95FPZKEBom
-+nyK+5swggU9MIIEJaADAgECAhBqC1BYlVMtBFBN4igR/howMA0GCSqGSIb3DQEBCwUAMIGbMQsw
-CQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3Jk
-MRowGAYDVQQKExFDT01PRE8gQ0EgTGltaXRlZDFBMD8GA1UEAxM4Q09NT0RPIFNIQS0yNTYgQ2xp
-ZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTYxMjIwMDAwMDAwWhcN
-MTcxMjIwMjM1OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjAN
-BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwbTrFaiGdvN2pThnR9q+4eaXB2wQZQNqhter5ZrJ
-pPO47e87bZ+f1tmYoh6+rB90G/XN24NErPRfvU4zVzNT9pCtCzSSVnBlZQBpaEYMKhcXo5PGKNsm
-An8BoGwNXjlxwbBNRaNO+ky0wNCaMNd1JLxEuvqg9J7rrcpHhWmnpXD5IKa8gv9GyVAJgOpiBOts
-p91sShc2kHvWJ5waPEWPCHDH9J+twGGKqKIIU7fdbURLUgUL1wlDSAHf/lgIAVCSj2H2HpoGqHpy
-HgOAClX9iRSLNa0Znj8HTaqfOwxXevsz1KkLFY+Ahm426GIEqdfkK2iT6Hhgc7tjNO3f8i5ALQID
-AQABo4IB8TCCAe0wHwYDVR0jBBgwFoAUkmFrguGioKpP7GfxwqP3tIAAwewwHQYDVR0OBBYEFILE
-dmHLtK6oxmFJZvBhTQhvqrS0MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMCAGA1UdJQQZ
-MBcGCCsGAQUFBwMEBgsrBgEEAbIxAQMFAjARBglghkgBhvhCAQEEBAMCBSAwRgYDVR0gBD8wPTA7
-BgwrBgEEAbIxAQIBAQEwKzApBggrBgEFBQcCARYdaHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9D
-UFMwXQYDVR0fBFYwVDBSoFCgToZMaHR0cDovL2NybC5jb21vZG9jYS5jb20vQ09NT0RPU0hBMjU2
-Q2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNybDCBkAYIKwYBBQUHAQEEgYMw
-gYAwWAYIKwYBBQUHMAKGTGh0dHA6Ly9jcnQuY29tb2RvY2EuY29tL0NPTU9ET1NIQTI1NkNsaWVu
-dEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYIKwYBBQUHMAGGGGh0dHA6Ly9v
-Y3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZyYWRlYWQub3JnMA0GCSqGSIb3
-DQEBCwUAA4IBAQA+AfvNhFwtapF5Lzjapgul3zYuEnMfR538Ya1vhP8wuOkcoJeT2gEFXzVO2WUu
-eWM0g0/DumnRB53htV/Qq/+vsL0i6a2+iOO7kHi5O7bZkgbdNv0t2lzonDUHi6LTa7NUj+tv+j6y
-hW+iNquC3ACP1dIZH8gJmicHblW63qRgp6wxhn315MLBeavi3uiSag2eeKFePiTIwJjN2UYq6kWg
-PL5G/Ycf9x/xN1XBTfJiURc0FsXhrA98VMWnt52C5Lo4txhGjzTI+IZg40b3YDs6E7mTYb5KKmbc
-QZA9priOFDdj1z5W9BdWhU6I/D0P9y8Z4Tr6+ZscMUVD0RqWy2LeMIIFPTCCBCWgAwIBAgIQagtQ
-WJVTLQRQTeIoEf4aMDANBgkqhkiG9w0BAQsFADCBmzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdy
-ZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExp
-bWl0ZWQxQTA/BgNVBAMTOENPTU9ETyBTSEEtMjU2IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQg
-U2VjdXJlIEVtYWlsIENBMB4XDTE2MTIyMDAwMDAwMFoXDTE3MTIyMDIzNTk1OVowJDEiMCAGCSqG
-SIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
-ggEBAMG06xWohnbzdqU4Z0favuHmlwdsEGUDaobXq+WayaTzuO3vO22fn9bZmKIevqwfdBv1zduD
-RKz0X71OM1czU/aQrQs0klZwZWUAaWhGDCoXF6OTxijbJgJ/AaBsDV45ccGwTUWjTvpMtMDQmjDX
-dSS8RLr6oPSe663KR4Vpp6Vw+SCmvIL/RslQCYDqYgTrbKfdbEoXNpB71iecGjxFjwhwx/SfrcBh
-iqiiCFO33W1ES1IFC9cJQ0gB3/5YCAFQko9h9h6aBqh6ch4DgApV/YkUizWtGZ4/B02qnzsMV3r7
-M9SpCxWPgIZuNuhiBKnX5Ctok+h4YHO7YzTt3/IuQC0CAwEAAaOCAfEwggHtMB8GA1UdIwQYMBaA
-FJJha4LhoqCqT+xn8cKj97SAAMHsMB0GA1UdDgQWBBSCxHZhy7SuqMZhSWbwYU0Ib6q0tDAOBgNV
-HQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAgBgNVHSUEGTAXBggrBgEFBQcDBAYLKwYBBAGyMQED
-BQIwEQYJYIZIAYb4QgEBBAQDAgUgMEYGA1UdIAQ/MD0wOwYMKwYBBAGyMQECAQEBMCswKQYIKwYB
-BQUHAgEWHWh0dHBzOi8vc2VjdXJlLmNvbW9kby5uZXQvQ1BTMF0GA1UdHwRWMFQwUqBQoE6GTGh0
-dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NPTU9ET1NIQTI1NkNsaWVudEF1dGhlbnRpY2F0aW9uYW5k
-U2VjdXJlRW1haWxDQS5jcmwwgZAGCCsGAQUFBwEBBIGDMIGAMFgGCCsGAQUFBzAChkxodHRwOi8v
-Y3J0LmNvbW9kb2NhLmNvbS9DT01PRE9TSEEyNTZDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
-ZUVtYWlsQ0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0R
-BBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAPgH7zYRcLWqReS84
-2qYLpd82LhJzH0ed/GGtb4T/MLjpHKCXk9oBBV81TtllLnljNINPw7pp0Qed4bVf0Kv/r7C9Iumt
-vojju5B4uTu22ZIG3Tb9Ldpc6Jw1B4ui02uzVI/rb/o+soVvojargtwAj9XSGR/ICZonB25Vut6k
-YKesMYZ99eTCwXmr4t7okmoNnnihXj4kyMCYzdlGKupFoDy+Rv2HH/cf8TdVwU3yYlEXNBbF4awP
-fFTFp7edguS6OLcYRo80yPiGYONG92A7OhO5k2G+Sipm3EGQPaa4jhQ3Y9c+VvQXVoVOiPw9D/cv
-GeE6+vmbHDFFQ9Ealsti3jGCA9MwggPPAgEBMIGwMIGbMQswCQYDVQQGEwJHQjEbMBkGA1UECBMS
-R3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRowGAYDVQQKExFDT01PRE8gQ0Eg
-TGltaXRlZDFBMD8GA1UEAxM4Q09NT0RPIFNIQS0yNTYgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFu
-ZCBTZWN1cmUgRW1haWwgQ0ECEGoLUFiVUy0EUE3iKBH+GjAwDQYJYIZIAWUDBAIBBQCgggHzMBgG
-CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE3MDUwNTE4NTY0NlowLwYJ
-KoZIhvcNAQkEMSIEIEIlk9jAhrAs4j9BrZstmKmTNQhRwtM2la3PhkMBZtEhMIHBBgkrBgEEAYI3
-EAQxgbMwgbAwgZsxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAO
-BgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMUEwPwYDVQQDEzhDT01P
-RE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIQagtQ
-WJVTLQRQTeIoEf4aMDCBwwYLKoZIhvcNAQkQAgsxgbOggbAwgZsxCzAJBgNVBAYTAkdCMRswGQYD
-VQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9E
-TyBDQSBMaW1pdGVkMUEwPwYDVQQDEzhDT01PRE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRp
-b24gYW5kIFNlY3VyZSBFbWFpbCBDQQIQagtQWJVTLQRQTeIoEf4aMDANBgkqhkiG9w0BAQEFAASC
-AQBCgDrqARaDDtWB4XCdMlpE1Krkn3f0nBCrAwWi7/P7ZxKY41N5sQ1A8XhnwDY1XV4xZXLsUmKB
-UZkrEFigmftxTNB3jOp6bxOH882SI929fwNpYu2c05K6I/YSitydvkECpp97XCniVLzL+wligmvY
-b6SSiG7O+AQINVEef7AIc9mIRCDrKmjpwmoZwCzzrb4RQO+86bo793RziruTBkYOeis/yOOJw1IR
-PrWu8/R+jICwZ6BWVsOWhM9LFON+8eh9bdi80NkGyP6G4fIhi9R3lF4Diy55p5jPH5ym62aQxSUk
-+S9Q2rIoNV1JcWuxdSupcq4on+c7WXad+fa7NiAiAAAAAAAA
-
-
---=-siLdc7PfluMgMw7bmui5--
+BR,
+-R
