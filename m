@@ -1,8 +1,8 @@
 From: Geetha sowjanya <gakula-M3mlKVOIwJVv6pq1l3V1OdBPR1lH4CV8@public.gmane.org>
-Subject: [PATCH v3 3/7] ACPICA: IORT: Add Cavium ThunderX2 SMMUv3 model
-	definition.
-Date: Fri,  5 May 2017 17:38:07 +0530
-Message-ID: <1493986091-30521-4-git-send-email-gakula@caviumnetworks.com>
+Subject: [PATCH v3 4/7] iommu/arm-smmu-v3: For ACPI based device probing,
+	set  PAGE0_REGS_ONLY option for ThunderX2 SMMUv3 implementation.
+Date: Fri,  5 May 2017 17:38:08 +0530
+Message-ID: <1493986091-30521-5-git-send-email-gakula@caviumnetworks.com>
 References: <1493986091-30521-1-git-send-email-gakula@caviumnetworks.com>
 Mime-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
@@ -24,26 +24,41 @@ List-Id: iommu@lists.linux-foundation.org
 
 From: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 
-Add SMMUv3 model definition for ThunderX2.
+Enable PAGE0_REGS_ONLY option for Cavium ThunderX2 SMMUv3 model.
 
 Signed-off-by: Linu Cherian <linu.cherian-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 Signed-off-by: Geetha Sowjanya <geethasowjanya.akula-YGCgFSpz5w/QT0dZR+AlfA@public.gmane.org>
 ---
- include/acpi/actbl2.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
-index faa9f2c..76a6f5d 100644
---- a/include/acpi/actbl2.h
-+++ b/include/acpi/actbl2.h
-@@ -779,6 +779,8 @@ struct acpi_iort_smmu {
- #define ACPI_IORT_SMMU_CORELINK_MMU400  0x00000002	/* ARM Corelink MMU-400 */
- #define ACPI_IORT_SMMU_CORELINK_MMU500  0x00000003	/* ARM Corelink MMU-500 */
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index f027676..8f7d8ad 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2625,6 +2625,14 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ }
  
-+#define ACPI_IORT_SMMU_V3_CAVIUM_CN99XX 0x00000002 /* Cavium ThunderX2 SMMUv3 */
+ #ifdef CONFIG_ACPI
++static void acpi_smmu_get_options(u32 model, struct arm_smmu_device *smmu)
++{
++	if (model == ACPI_IORT_SMMU_V3_CAVIUM_CN99XX)
++		smmu->options |= ARM_SMMU_OPT_PAGE0_REGS_ONLY;
 +
- /* Masks for Flags field above */
++	dev_notice(smmu->dev, "option mask 0x%x\n", smmu->options);
++}
++
+ static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
+ 				      struct arm_smmu_device *smmu)
+ {
+@@ -2637,6 +2645,8 @@ static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
+ 	/* Retrieve SMMUv3 specific data */
+ 	iort_smmu = (struct acpi_iort_smmu_v3 *)node->node_data;
  
- #define ACPI_IORT_SMMU_DVM_SUPPORTED    (1)
++	acpi_smmu_get_options(iort_smmu->model, smmu);
++
+ 	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
+ 		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
+ 
 -- 
 1.8.3.1
