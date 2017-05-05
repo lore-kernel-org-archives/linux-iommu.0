@@ -1,76 +1,177 @@
-From: Oza Pawandeep <oza.oza@broadcom.com>
-Subject: [PATCH v4 0/3] OF/PCI address PCI inbound memory limitations
-Date: Fri,  5 May 2017 19:17:17 +0530
-Message-ID: <1493992040-31222-1-git-send-email-oza.oza@broadcom.com>
-Return-path: <linux-pci-owner@vger.kernel.org>
-Sender: linux-pci-owner@vger.kernel.org
-To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com, Oza Pawandeep <oza.pawandeep@gmail.com>, Oza Pawandeep <oza.oza@broadcom.com>
+From: Oza Pawandeep via iommu <iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+Subject: [PATCH v4 1/3] of/pci/dma: fix DMA configuration for PCI masters
+Date: Fri,  5 May 2017 19:17:18 +0530
+Message-ID: <1493992040-31222-2-git-send-email-oza.oza@broadcom.com>
+References: <1493992040-31222-1-git-send-email-oza.oza@broadcom.com>
+Reply-To: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Return-path: <iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+In-Reply-To: <1493992040-31222-1-git-send-email-oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=unsubscribe>
+List-Archive: <http://lists.linuxfoundation.org/pipermail/iommu/>
+List-Post: <mailto:iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org>
+List-Help: <mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=help>
+List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
+	<mailto:iommu-request-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org?subject=subscribe>
+Sender: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+Errors-To: iommu-bounces-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org
+To: Joerg Roedel <joro-zLv9SwRftAIdnm+yROfE0A@public.gmane.org>, Robin Murphy <robin.murphy-5wv7dgnIgG8@public.gmane.org>
+Cc: devicetree-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, Oza Pawandeep <oza.pawandeep-Re5JQEeQqe8AvxtiuMwx3w@public.gmane.org>, linux-pci-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, linux-kernel-u79uwXL29TY76Z2rM5mHXA@public.gmane.org, iommu-cunTk1MwBs9QetFLy7KEm3xJsTq8ys+cHZ5vskTnxNA@public.gmane.org, bcm-kernel-feedback-list-dY08KVG/lbpWk0Htik3J/w@public.gmane.org, linux-arm-kernel-IAPFreCvJWM7uuMidbF8XUB+6BGkLq7r@public.gmane.org
 List-Id: iommu@lists.linux-foundation.org
 
-It is possible that PCI device supports 64-bit DMA addressing,
-and thus it's driver sets device's dma_mask to DMA_BIT_MASK(64),
-however PCI host bridge may have limitations on the inbound 
-transaction addressing.
-
-This is particularly problematic on ARM/ARM64 SOCs where the 
-IOMMU (i.e. SMMU) translates IOVA to PA for in-bound transactions
-only after PCI Host has forwarded these transactions on SOC IO bus. 
-
-This means, on such ARM/ARM64 SOCs the IOVA of in-bound transactions
-has to honor the addressing restrictions of the PCI Host.
-
-Current device framework and OF framework integration assumes
+current device framework and OF framework integration assumes
 dma-ranges in a way where memory-mapped devices define their
 dma-ranges. (child-bus-address, parent-bus-address, length).
 
 of_dma_configure is specifically written to take care of memory
-mapped devices but no implementation exists for pci devices.
+mapped devices. but no implementation exists for pci to take
+care of pcie based memory ranges.
 
-For e.g. iproc based SOCs and other SOCs (such as rcar) have
-PCI world dma-ranges.
+for e.g. iproc based SOCs and other SOCs(suc as rcar) have PCI
+world dma-ranges.
 dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
 
-This patchset
-reserves the IOVA ranges for PCI masters based
-on the PCI world dma-ranges.
-fix of_dma_get_range to cater to PCI dma-ranges.
-fix of_dma_get_range which currently returns size 0 for PCI devices.
+this patch serves following:
 
-IOVA allocation patch:
-[PATCH 2/3] iommu/pci: reserve iova for PCI masters
+1) exposes interface to the pci host driver for their
+inbound memory ranges
 
-Fix of_dma_get_range bug and address PCI master.
-[PATCH 3/3] PCI/of fix of_dma_get_range; get PCI specific
+2) provide an interface to callers such as of_dma_get_ranges.
+so then the returned size get best possible (largest) dma_mask.
+because PCI RC drivers do not call APIs such as
+dma_set_coherent_mask() and hence rather it shows its addressing
+capabilities based on dma-ranges.
+for e.g.
+dma-ranges = <0x43000000 0x00 0x00 0x00 0x00 0x80 0x00>;
+we should get dev->coherent_dma_mask=0x7fffffffff.
 
-Base patch for both of the above patches:
-[PATCH 1/3] of/pci/dma: fix DMA configuration for PCI masters
+3) this patch handles multiple inbound windows and dma-ranges.
+it is left to the caller, how it wants to use them.
+the new function returns the resources in a standard and unform way
 
-Changes since v3:
-- redudant check removed
-- no revison for [PATCH 2/3] iommu/pci: reserve iova for PCI masters; since under discussion with Robin
-Changes since v2:
-- internal review names removed.
-- no revison for [PATCH 2/3] iommu/pci: reserve iova for PCI masters; since under discussion with Robin
-Changes since v1:
-- Remove internal GERRIT details from patch descriptions
-- address Rob's comments.
-- Add a get_dma_ranges() function to of_bus struct..
-- Convert existing contents of this function to of_bus_default_dma_get_ranges
-  and adding that to the default of_bus struct.
-- Make of_dma_get_range call of_bus_match() and then bus->get_dma_ranges.
-- no revison for [PATCH 2/3] iommu/pci: reserve iova for PCI masters; since under discussion with Robin
-  
-Oza Pawandeep (3):
-  of/pci/dma: fix DMA configuration for PCI masters
-  iommu/pci: reserve iova for PCI masters
-  PCI/of fix of_dma_get_range; get PCI specific dma-ranges
+4) this way the callers of for e.g. of_dma_get_ranges
+does not need to change.
 
- drivers/iommu/dma-iommu.c | 35 +++++++++++++++++++++
- drivers/of/address.c      | 52 ++++++++++++++++++++++++++++++++
- drivers/of/of_pci.c       | 77 +++++++++++++++++++++++++++++++++++++++++++++++
- include/linux/of_pci.h    |  7 +++++
- 4 files changed, 171 insertions(+)
+5) leaves scope of adding PCI flag handling for inbound memory
+by the new function.
 
+Signed-off-by: Oza Pawandeep <oza.oza-dY08KVG/lbpWk0Htik3J/w@public.gmane.org>
+
+diff --git a/drivers/of/of_pci.c b/drivers/of/of_pci.c
+index 0ee42c3..ed6e69a 100644
+--- a/drivers/of/of_pci.c
++++ b/drivers/of/of_pci.c
+@@ -283,6 +283,83 @@ int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(of_pci_get_host_bridge_resources);
++
++/**
++ * of_pci_get_dma_ranges - Parse PCI host bridge inbound resources from DT
++ * @np: device node of the host bridge having the dma-ranges property
++ * @resources: list where the range of resources will be added after DT parsing
++ *
++ * It is the caller's job to free the @resources list.
++ *
++ * This function will parse the "dma-ranges" property of a
++ * PCI host bridge device node and setup the resource mapping based
++ * on its content.
++ *
++ * It returns zero if the range parsing has been successful or a standard error
++ * value if it failed.
++ */
++
++int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources)
++{
++	struct device_node *node = of_node_get(np);
++	int rlen;
++	int ret = 0;
++	const int na = 3, ns = 2;
++	struct resource *res;
++	struct of_pci_range_parser parser;
++	struct of_pci_range range;
++
++	if (!node)
++		return -EINVAL;
++
++	parser.node = node;
++	parser.pna = of_n_addr_cells(node);
++	parser.np = parser.pna + na + ns;
++
++	parser.range = of_get_property(node, "dma-ranges", &rlen);
++
++	if (!parser.range) {
++		pr_debug("pcie device has no dma-ranges defined for node(%s)\n",
++			  np->full_name);
++		ret = -EINVAL;
++		goto out;
++	}
++
++	parser.end = parser.range + rlen / sizeof(__be32);
++
++	for_each_of_pci_range(&parser, &range) {
++		/*
++		 * If we failed translation or got a zero-sized region
++		 * then skip this range
++		 */
++		if (range.cpu_addr == OF_BAD_ADDR || range.size == 0)
++			continue;
++
++		res = kzalloc(sizeof(struct resource), GFP_KERNEL);
++		if (!res) {
++			ret = -ENOMEM;
++			goto parse_failed;
++		}
++
++		ret = of_pci_range_to_resource(&range, np, res);
++		if (ret) {
++			kfree(res);
++			continue;
++		}
++
++		pci_add_resource_offset(resources, res,
++					res->start - range.pci_addr);
++	}
++
++	return ret;
++
++parse_failed:
++	pci_free_resource_list(resources);
++out:
++	of_node_put(node);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(of_pci_get_dma_ranges);
+ #endif /* CONFIG_OF_ADDRESS */
+ 
+ #ifdef CONFIG_PCI_MSI
+diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
+index 0e0974e..617b90d 100644
+--- a/include/linux/of_pci.h
++++ b/include/linux/of_pci.h
+@@ -76,6 +76,7 @@ static inline void of_pci_check_probe_only(void) { }
+ int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 			unsigned char busno, unsigned char bus_max,
+ 			struct list_head *resources, resource_size_t *io_base);
++int of_pci_get_dma_ranges(struct device_node *np, struct list_head *resources);
+ #else
+ static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
+ 			unsigned char busno, unsigned char bus_max,
+@@ -83,6 +84,12 @@ static inline int of_pci_get_host_bridge_resources(struct device_node *dev,
+ {
+ 	return -EINVAL;
+ }
++
++static inline int of_pci_get_dma_ranges(struct device_node *np,
++					struct list_head *resources)
++{
++	return -EINVAL;
++}
+ #endif
+ 
+ #if defined(CONFIG_OF) && defined(CONFIG_PCI_MSI)
 -- 
 1.9.1
